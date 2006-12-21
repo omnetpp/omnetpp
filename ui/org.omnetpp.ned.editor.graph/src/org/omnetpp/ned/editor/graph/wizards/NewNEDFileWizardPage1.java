@@ -96,7 +96,11 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
 
 	@Override
     protected InputStream getInitialContents() {
-		String contents = NEDFILE_TEMPLATES[modelSelected].replaceAll("#NAME#", "MouleName");
+        if (getFileName() == null)
+            return null;
+        
+        String name = getFileName().substring(0, getFileName().lastIndexOf('.'));
+		String contents = NEDFILE_TEMPLATES[modelSelected].replaceAll("#NAME#", name);
 		return new ByteArrayInputStream(contents.getBytes());
 	}
 

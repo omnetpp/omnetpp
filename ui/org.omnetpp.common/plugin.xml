@@ -4,9 +4,16 @@
    <extension
          point="org.eclipse.ui.newWizards">
       <category
-            name="OMNEST/OMNeT++ Wizards"
+            name="OMNEST/OMNeT++"
             id="org.omnetpp.wizards">
       </category>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="org.omnetpp.views"
+            name="OMNEST/OMNeT++"/>
    </extension>
 
 </plugin>

@@ -7,7 +7,7 @@
       <editor
             name="OMNeT++ Analysis"
             extensions="scave"
-            icon="icons/sample.gif"
+            icon="icons/analfile.gif"
             contributorClass="org.omnetpp.scave.editors.ScaveEditorContributor"
             class="org.omnetpp.scave.editors.ScaveEditor"
             id="org.omnetpp.scave.editors.ScaveEditor">
@@ -40,13 +40,12 @@
      <wizard
            category="org.omnetpp.wizards"
            class="org.omnetpp.scave.wizard.ScaveModelWizard"
-           icon="icons/sample.gif"
+           icon="icons/analfile.gif"
            id="org.omnetpp.scave.wizard.ScaveModelModelWizardID"
-           name="Analysis">
+           name="Analysis File (scave)">
         <description>
-           Create a new Analysis
+           Create a new Analysis file that describes how charts and plottings should be created from recorded data.
         </description>
-        <selection class="org.eclipse.core.resources.IResource"/>
      </wizard>
   </extension>
   <extension
@@ -54,7 +53,7 @@
      <view
            category="org.omnetpp.views"
            class="org.omnetpp.scave.views.VectorBrowserView"
-           icon="icons/sample.gif"
+           icon="icons/analfile.gif"
            id="org.omnetpp.scave.vectorBrowserView"
            name="Vector Browser"/>
   </extension>

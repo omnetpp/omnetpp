@@ -5,32 +5,15 @@
    <extension
          point="org.eclipse.ui.newWizards">
       <wizard
-            name="NED file"
             category="org.omnetpp.wizards"
             class="org.omnetpp.ned.editor.graph.wizards.NewNEDFileWizard"
-            id="org.omnetpp.ned.editor.graph.wizard.new.file">
+            icon="icons/nedfile.gif"
+            id="org.omnetpp.ned.editor.graph.wizard.new.file"
+            name="Network Description File (ned)">
          <description>
-            Create a new module in the NED file
+            Create a file that contains network elements, like simple or compound modules, channels etc.
          </description>
-         <selection
-               class="org.eclipse.core.resources.IResource">
-         </selection>
       </wizard>
-   </extension>
-   <extension
-         point="org.eclipse.ui.popupMenus">
-      <objectContribution
-            objectClass="org.eclipse.core.resources.IFile"
-            nameFilter="*.ned"
-            id="org.omnetpp.ned.editor.graph">
-         <action
-               label="Print"
-               class="org.omnetpp.ned.editor.graph.actions.ModulePrintAction"
-               menubarPath="additions"
-               enablesFor="1"
-               id="org.omnetpp.ned.editor.graph.actions.print">
-         </action>
-      </objectContribution>
    </extension>
 
 </plugin>
