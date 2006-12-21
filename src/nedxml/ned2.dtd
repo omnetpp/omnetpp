@@ -14,7 +14,7 @@
                     channel-interface|simple-module|compound-module|module-interface)*)>
 <!ATTLIST ned-file
      filename           CDATA     #REQUIRED
-     version            CDATA     #IMPLIED
+     version            CDATA     "2"
      package            CDATA     #IMPLIED>
 
 <!-- comments and whitespace; comments include '//' marks. Note that although
