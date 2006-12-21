@@ -363,7 +363,7 @@ void NED1Generator::doCompoundModule(CompoundModuleNode *node, const char *inden
             OUT << increaseIndent(indent) << "display: " << opp_quotestr(dispstr.c_str()) << ";" << getRightComment(displayProp);
         }
         catch (std::exception& e) {
-            errors->add(node, ERRCAT_WARNING, e.what());
+            errors->add(node, ERRCAT_WARNING, opp_stringf("error converting display string: %s", e.what()).c_str());
         }
     }
 
@@ -759,7 +759,7 @@ void NED1Generator::doSubmodule(SubmoduleNode *node, const char *indent, bool is
             OUT << increaseIndent(indent) << "display: " << opp_quotestr(dispstr.c_str()) << ";" << getRightComment(displayProp);
         }
         catch (std::exception& e) {
-            errors->add(node, ERRCAT_WARNING, e.what());
+            errors->add(node, ERRCAT_WARNING, opp_stringf("error converting display string: %s", e.what()).c_str());
         }
     }
 }
@@ -856,7 +856,7 @@ void NED1Generator::doConnection(ConnectionNode *node, const char *indent, bool 
                 OUT << " display " << opp_quotestr(dispstr.c_str());
             }
             catch (std::exception& e) {
-                errors->add(node, ERRCAT_WARNING, e.what());
+                errors->add(node, ERRCAT_WARNING, opp_stringf("error converting display string: %s", e.what()).c_str());
             }
         }
     }

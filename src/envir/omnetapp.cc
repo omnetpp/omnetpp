@@ -409,7 +409,7 @@ void TOmnetApp::readParameter(cPar *par)
         }
         catch (std::exception& e)
         {
-            ev.printfmsg("%s -- please try again", e.what());
+            ev.printfmsg("%s -- please try again.", e.what());
         }
     }
 }

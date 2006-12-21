@@ -31,12 +31,7 @@ void cWatch_stdstring::assign(const char *s)
 {
     if (s[0]=='"' && s[strlen(s)-1]=='"')
     {
-        try {
-            r = opp_parsequotedstr(s);
-        }
-        catch (std::exception& e) {
-            //FIXME ignore it, or throw it further?
-        }
+        r = opp_parsequotedstr(s);
     }
     else
     {

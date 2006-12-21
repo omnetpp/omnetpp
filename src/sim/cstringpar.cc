@@ -165,9 +165,10 @@ std::string cStringPar::toString() const
 void cStringPar::parse(const char *text)
 {
 /*XXX not really needed
-    // maybe it's just a string literal in quotes
+    // try fast track: maybe it's just a string literal in quotes
     try {
         setStringValue(opp_parsequotedstr(text));
+        return;
     }
     catch (std::exception& e) {
         // no problem, we'll try it differently
@@ -185,6 +186,7 @@ void cStringPar::parse(const char *text)
         delete dynexpr;
         throw;
     }
+    setExpression(dynexpr);
 
     // simplify if possible: store as constant instead of expression
     if (dynexpr->isAConstant())

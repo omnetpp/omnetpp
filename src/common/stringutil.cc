@@ -24,7 +24,7 @@ std::string opp_parsequotedstr(const char *txt)
     char *endp;
     std::string ret = opp_parsequotedstr(txt, endp);
     if (*endp)
-        throw opp_runtime_error("trailing garbage after string literal in `%s'", txt);
+        throw opp_runtime_error("trailing garbage after string literal");
     return ret;
 }
 
@@ -53,7 +53,7 @@ std::string opp_parsequotedstr(const char *txt, const char *&endp)
     while (isspace(*s))
         s++;
     if (*s++!='"')
-        throw opp_runtime_error("no opening quote in string `%s'", txt);
+        throw opp_runtime_error("missing opening quote");
     char *buf = new char [strlen(txt)+1];
     char *d = buf;
     for (; *s && *s!='"'; s++, d++)
@@ -76,10 +76,10 @@ std::string opp_parsequotedstr(const char *txt, const char *&endp)
                 case '\0': d--; s--; break; // string ends in stray backslash
                 case '=':
                 case ';':
-                case ',': throw opp_runtime_error("invalid escape sequence `\\%c' in string `%s' "
-                          "(hint: use double backslash to quote display string special chars: "
-                          "equal sign, comma, semicolon)", *s, txt);
-                default:  throw opp_runtime_error("invalid escape sequence `\\%c' in string `%s'", *s, txt);
+                case ',': throw opp_runtime_error("illegal escape sequence `\\%c' "
+                          "(Hint: use double backslashes to quote display string "
+                          "special chars: equal sign, comma, semicolon)", *s);
+                default:  throw opp_runtime_error("illegal escape sequence `\\%c'", *s);
             }
         }
         else
@@ -89,7 +89,7 @@ std::string opp_parsequotedstr(const char *txt, const char *&endp)
     }
     *d = '\0';
     if (*s++!='"')
-        {delete [] buf; throw opp_runtime_error("no closing quote in string `%s'", txt); }
+        {delete [] buf; throw opp_runtime_error("missing closing quote"); }
     while (isspace(*s))
         s++;
     endp = s;  // if (*s!='\0'), something comes after the string
