@@ -109,7 +109,8 @@ public class NedHelper {
     public final static String[] proposedPrivateDocTodo = highlightPrivateDocTodo;
     public final static String[] proposedDocTags = highlightDocTags;
     public final static String[] proposedDocKeywords = highlightDocKeywords;
-    public final static String[] proposedNedParamTypes = { "bool", "double", "int", "string", "volatile bool", "volatile double", "volatile int", "volatile string", "xml" };
+    public final static String[] proposedNedBaseParamTypes = { "bool", "double", "int", "string", "xml" };
+    public final static String[] proposedNedParamTypes = { "bool", "double", "int", "string", "xml", "volatile bool", "volatile double", "volatile int", "volatile string", "volatile xml" };
     public final static String[] proposedNedGateTypes = { "inout", "input", "output" };
     public final static String[] proposedNedGlobalStartingKeywords = { "channel", "channel withcppclass", "channelinterface", "import", "interface", "module", "network", "package", "property", "simple"};
     public final static String[] proposedNedSectionNameKeywords = {"connections:", "connections allowunconnected:", "gates:", "parameters:", "submodules:", "types:"};

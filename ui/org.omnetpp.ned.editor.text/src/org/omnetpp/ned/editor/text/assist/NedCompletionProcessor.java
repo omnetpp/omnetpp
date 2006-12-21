@@ -149,7 +149,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 			if (info.sectionType == SECT_PARAMETERS)
 				addProposals(viewer, documentOffset, result, NedHelper.proposedNedParamTypes, null);
 			else if (info.sectionType == SECT_GATES)
-					addProposals(viewer, documentOffset, result, NedHelper.proposedNedGateTypes, null);
+				addProposals(viewer, documentOffset, result, NedHelper.proposedNedGateTypes, null);
 
 			// provide global start keywords and section names
 	    	if (info.sectionType==SECT_GLOBAL || info.sectionType==SECT_TYPES) {
@@ -172,6 +172,11 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 	    	}
 		}
 
+		// offer double/int/string/xml after "volatile"
+		if (line.equals("volatile")) {
+			addProposals(viewer, documentOffset, result, NedHelper.proposedNedBaseParamTypes, null);
+		}
+		
 		// offer existing and standard property names after "@"
 		if (line.matches("@")) {
 			addProposals(viewer, documentOffset, result, NedHelper.proposedNedComponentPropertyNames, "standard property");
@@ -337,7 +342,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
         try {
     		String source = docu.get(0,offset);
     		// kill string literals
-			source = source.replaceAll("\".*\"", "\"###\"");
+			source = source.replaceAll("\".*\"", "\"###\"");  //FIXME but ignore embedded backslash+quote \" !!!
     		// kill comments
     		source = source.replaceAll("(?m)//.*", "");
 
