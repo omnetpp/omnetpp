@@ -59,21 +59,16 @@
    </extension>
    <extension
          point="org.eclipse.ui.newWizards">
-      <category
-            id="org.omnetpp.ide.wizards"
-            name="OMNeT++"/>
       <wizard
-            category="org.omnetpp.ide.wizards"
+            category="org.omnetpp.wizards"
             class="org.omnetpp.ide.wizard.NewOmnetppProjectWizard"
+            icon="icons/project.gif"
             id="org.omnetpp.ide.wizard.newProjectWizard"
-            name="New OMNeT++ Project"
-            project="true"/>
+            name="OMNEST/OMNeT++ Project"
+            project="true">
+         <description>
+            Create a Project that can handle OMNEST/OMNeT++ specific files, like NED, VEC, SCA etc.
+         </description>
+      </wizard>
    </extension>
-   <extension
-         point="org.eclipse.ui.views">
-      <category
-            id="org.omnetpp.views"
-            name="OMNeT++"/>
-   </extension>
-
 </plugin>
