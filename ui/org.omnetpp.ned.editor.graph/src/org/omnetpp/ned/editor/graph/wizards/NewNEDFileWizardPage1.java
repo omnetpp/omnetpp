@@ -24,20 +24,26 @@ import org.eclipse.ui.ide.IDE;
 
 public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
 
+    private static String[] NEDFILE_TEMPLATES = {
+        "//\n// NED file\n//\n\n",
+        "//\n// NED file\n//\n\nsimple #NAME# {\n  parameters:\n  gates:\n}\n",
+        "//\n// NED file\n//\n\nmodule #NAME# {\n  parameters:\n  gates:\n  submodules:\n connections:\n}\n"
+    };
+    
 	private IWorkbench workbench;
-
 	private static int exampleCount = 1;
 
 	//FIXME FIXME FIXME factor out UI controls to another page!!!!! --Andras
-	private Button model1 = null;
-	private Button model2 = null;
-	private int modelSelected = 1;
+	private Button emptyButton = null;
+    private Button simpleButton = null;
+    private Button compoundButton = null;
+	private int modelSelected = 0;
 
 	public NewNEDFileWizardPage1(IWorkbench aWorkbench,
 			IStructuredSelection selection) {
 		super("page1", selection); //$NON-NLS-1$
 		this.setTitle("Create a NED file");
-		this.setDescription("This wizard allows you to create a new network description");
+		this.setDescription("This wizard allows you to create a new network description file");
 		this.setImageDescriptor(ImageDescriptor.createFromFile(getClass(),
 				"icons/logicbanner.gif")); //$NON-NLS-1$
 		this.workbench = aWorkbench;
@@ -59,25 +65,29 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
 
 		SelectionListener listener = new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				if (e.getSource() == model1) {
+				if (e.getSource() == emptyButton) {
+					modelSelected = 0;
+				} else if (e.getSource() == simpleButton) {
 					modelSelected = 1;
-					setFileName("untitled" + exampleCount + ".ned"); //$NON-NLS-2$//$NON-NLS-1$
-				} else {
-					modelSelected = 2;
-					setFileName("new" + exampleCount + ".ned"); //$NON-NLS-2$//$NON-NLS-1$
-				}
+				} else if (e.getSource() == compoundButton) {
+                    modelSelected = 2;
+                }
 			}
 		};
 
 		// sample section generation checkboxes
-		model1 = new Button(group, SWT.RADIO);
-		model1.setText("Empty file");
-		model1.addSelectionListener(listener);
-		model1.setSelection(true);
+		emptyButton = new Button(group, SWT.RADIO);
+		emptyButton.setText("Empty file");
+		emptyButton.addSelectionListener(listener);
+		emptyButton.setSelection(true);
 
-		model2 = new Button(group, SWT.RADIO);
-		model2.setText("Example");
-		model2.addSelectionListener(listener);
+		simpleButton = new Button(group, SWT.RADIO);
+		simpleButton.setText("A new Simple Module");
+		simpleButton.addSelectionListener(listener);
+
+        compoundButton = new Button(group, SWT.RADIO);
+        compoundButton.setText("A new Compound Module");
+        compoundButton.addSelectionListener(listener);
 
 		new Label(composite, SWT.NONE);
 
@@ -86,7 +96,7 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
 
 	@Override
     protected InputStream getInitialContents() {
-		String contents = "//\n// NED file\n//\n\n"; //FIXME
+		String contents = NEDFILE_TEMPLATES[modelSelected].replaceAll("#NAME#", "MouleName");
 		return new ByteArrayInputStream(contents.getBytes());
 	}
 

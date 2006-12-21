@@ -79,7 +79,7 @@
       <plugin id="org.omnetpp.common"/>
       <plugin id="org.omnetpp.scave.engine"/>
       <plugin id="org.omnetpp.scave.model"/>
-      <plugin id="org.omnetpp.scave2"/>
+      <plugin id="org.omnetpp.scave"/>
    </plugins>
 
 </product>

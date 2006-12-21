@@ -10,7 +10,7 @@
             icon="icons/sample.gif"
             contributorClass="org.omnetpp.scave.editors.ScaveEditorContributor"
             class="org.omnetpp.scave.editors.ScaveEditor"
-            id="org.omnetpp.scave2.editors.ScaveEditor">
+            id="org.omnetpp.scave.editors.ScaveEditor">
       </editor>
    </extension>
    
@@ -41,7 +41,7 @@
            category="org.omnetpp.wizards"
            class="org.omnetpp.scave.wizard.ScaveModelWizard"
            icon="icons/sample.gif"
-           id="org.omnetpp.scave2.wizard.ScaveModelModelWizardID"
+           id="org.omnetpp.scave.wizard.ScaveModelModelWizardID"
            name="Analysis">
         <description>
            Create a new Analysis
