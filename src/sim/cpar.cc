@@ -164,34 +164,37 @@ bool cPar::isExpression() const
     return p->isExpression();
 }
 
+#define TRY(x) \
+    try {x;} catch (std::exception& e) {throw cRuntimeError(ePARAM, fullName(), e.what());}
+
 bool cPar::boolValue() const
 {
-    return p->boolValue(ownercomponent);
+    TRY(return p->boolValue(ownercomponent));
 }
 
 long cPar::longValue() const
 {
-    return p->longValue(ownercomponent);
+    TRY(return p->longValue(ownercomponent));
 }
 
 double cPar::doubleValue() const
 {
-    return p->doubleValue(ownercomponent);
+    TRY(return p->doubleValue(ownercomponent));
 }
 
 const char *cPar::stringValue() const
 {
-    return p->stringValue(ownercomponent);
+    TRY(return p->stringValue(ownercomponent));
 }
 
 std::string cPar::stdstringValue() const
 {
-    return p->stdstringValue(ownercomponent);
+    TRY(return p->stdstringValue(ownercomponent));
 }
 
 cXMLElement *cPar::xmlValue() const
 {
-    return p->xmlValue(ownercomponent);
+    TRY(return p->xmlValue(ownercomponent));
 }
 
 cExpression *cPar::expression() const
@@ -295,7 +298,11 @@ void cPar::read()
 void cPar::convertToConst()
 {
     copyIfShared();
-    p->convertToConst(ownercomponent);
+    try {
+        p->convertToConst(ownercomponent);
+    } catch (std::exception& e) {
+        throw cRuntimeError(ePARAM, fullName(), e.what());
+    }
 
     // maybe replace it with a shared copy
     cComponentType *componentType = ownercomponent->componentType();

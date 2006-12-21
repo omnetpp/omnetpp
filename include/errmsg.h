@@ -29,6 +29,7 @@ enum ErrorCode
     eBADCAST,
     eBADEXP,
     eBADINIT,
+    ePARAM,
     eCANCEL,
     eCANTCOPY,
     eCANTDUP,
