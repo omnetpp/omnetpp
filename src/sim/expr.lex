@@ -54,9 +54,9 @@ extern YYSTYPE yylval;
 #define count       exprcount
 #define extendCount exprextendCount
 
-void comment(void);
-void count(void);
-void extendCount(void);
+void comment();
+void count();
+void extendCount();
 
 #define TEXTBUF_LEN 1024
 static char textbuf[TEXTBUF_LEN];
@@ -91,7 +91,7 @@ std::string extendbuf;
 {D}+{E}                  { count(); yylval = opp_strdup(yytext); return REALCONSTANT; }
 {D}*"."{D}+({E})?        { count(); yylval = opp_strdup(yytext); return REALCONSTANT; }
 
-\"                       { BEGIN(stringliteral); extendCount(); }
+\"                       { BEGIN(stringliteral); count(); }
 <stringliteral>{
       \n                 { throw std::runtime_error("Error parsing expression: unterminated string literal (append backslash to line for multi-line strings)"); }
       \\\n               { extendCount(); /* line continuation */ }
@@ -142,7 +142,7 @@ std::string extendbuf;
 
 %%
 
-int yywrap(void)
+int yywrap()
 {
      return 1;
 }
@@ -161,7 +161,7 @@ int yywrap(void)
 /* the following #define is needed for broken flex versions */
 #define yytext_ptr yytext
 
-void comment(void)
+void comment()
 {
     int c;
     while ((c = input())!='\n' && c!=0 && c!=EOF);
@@ -173,7 +173,7 @@ void comment(void)
  * - keeps a record of the complete current line in `textbuf[]'
  * - yytext[] is the current token passed by (f)lex
  */
-static void _count(int updateprevpos)
+static void _count(bool updateprevpos)
 {
     static int textbuflen;
     int i;
@@ -190,9 +190,8 @@ static void _count(int updateprevpos)
     if (updateprevpos) {
         extendbuf = "";
         prevpos = pos;
-    } else {
-        extendbuf += yytext;
     }
+    extendbuf += yytext;
     for (i = 0; yytext[i] != '\0'; i++) {
         if (yytext[i] == '\n') {
             pos.co = 0;
@@ -216,14 +215,14 @@ static void _count(int updateprevpos)
     }
 }
 
-void count(void)
+void count()
 {
-    _count(1);
+    _count(true);
 }
 
-void extendCount(void)
+void extendCount()
 {
-    _count(0);
+    _count(false);
 }
 
 

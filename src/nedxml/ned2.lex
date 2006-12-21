@@ -55,9 +55,9 @@ extern YYLTYPE yylloc;
 #define count       ned2count
 #define extendCount ned2extendCount
 
-void comment(void);
-void count(void);
-void extendCount(void);
+void comment();
+void count();
+void extendCount();
 
 #define TEXTBUF_LEN 1024
 static char textbuf[TEXTBUF_LEN];
@@ -184,7 +184,7 @@ static char textbuf[TEXTBUF_LEN];
 
 %%
 
-int yywrap(void)
+int yywrap()
 {
      return 1;
 }
@@ -203,7 +203,7 @@ int yywrap(void)
 /* the following #define is needed for broken flex versions */
 #define yytext_ptr yytext
 
-void comment(void)
+void comment()
 {
     int c;
     while ((c = input())!='\n' && c!=0 && c!=EOF);
@@ -215,7 +215,7 @@ void comment(void)
  * - keeps a record of the complete current line in `textbuf[]'
  * - yytext[] is the current token passed by (f)lex
  */
-static void _count(int updateprevpos)
+static void _count(bool updateprevpos)
 {
     static int textbuflen;
     int i;
@@ -260,14 +260,14 @@ static void _count(int updateprevpos)
     yylloc.last_column  = pos.co;
 }
 
-void count(void)
+void count()
 {
-    _count(1);
+    _count(true);
 }
 
-void extendCount(void)
+void extendCount()
 {
-    _count(0);
+    _count(false);
 }
 
 
