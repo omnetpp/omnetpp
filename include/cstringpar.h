@@ -186,7 +186,7 @@ class SIM_API cStringPar : public cParValue
     /**
      * Converts from text.
      */
-    virtual bool parse(const char *text);
+    virtual void parse(const char *text);
 
     /**
      * Object comparison.

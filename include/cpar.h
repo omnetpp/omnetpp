@@ -276,9 +276,10 @@ class SIM_API cPar : public cObject
 
     /**
      * Converts the value from string, and stores the result.
-     * Returns true on success, false otherwise. No error is thrown.
+     * If the text cannot be parsed, an exception is thrown, which
+     * can be caught as std::runtime_error& if necessary.
      */
-    bool parse(const char *text);
+    void parse(const char *text);
     //@}
 
     /** @name Overloaded assignment and conversion operators. */

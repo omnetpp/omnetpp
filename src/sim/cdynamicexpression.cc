@@ -642,20 +642,10 @@ std::string cDynamicExpression::toString() const
     }
 }
 
-bool cDynamicExpression::parse(const char *text)
+void cDynamicExpression::parse(const char *text)
 {
-    // try parse it
-    Elem *tmpelems;
-    int tmpnelems;
-    ::doParseExpression(text, tmpelems, tmpnelems);  //FIXME exceptions??????
-    if (!tmpelems)
-        return false;
-
-    // OK, store it
-    delete [] elems;
-    elems = tmpelems;
-    nelems = tmpnelems;
-    return true;
+    // throws exception if something goes wrong
+    ::doParseExpression(text, elems, nelems);
 }
 
 bool cDynamicExpression::isAConstant() const
@@ -664,6 +654,7 @@ bool cDynamicExpression::isAConstant() const
     {
         switch(elems[i].type)
         {
+            // literals and anything calculated from them are OK
             case Elem::BOOL:
             case Elem::DBL:
             case Elem::STR:

@@ -124,9 +124,12 @@ class SIM_API cExpression : public cObject
 
     /**
      * Interprets the string as an expression, and store it.
-     * This may not be possible with all subclasses.
+     * If the text cannot be parsed, an exception is thrown, which
+     * can be caught as std::runtime_error& if necessary.
+     * An exception is also thrown if the particular cExpression subclass
+     * does not support parsing.
      */
-    virtual bool parse(const char *text) = 0;
+    virtual void parse(const char *text) = 0;
 
     /**
      * Returns the unit of the expression if it can be determined, or NULL.

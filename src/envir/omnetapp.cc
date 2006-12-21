@@ -380,9 +380,7 @@ void TOmnetApp::readParameter(cPar *par)
     std::string str = getParameter(simulation.runNumber(), parfullpath.c_str());
     if (!str.empty())
     {
-        bool success = par->parse(str.c_str());
-        if (!success)
-            throw cRuntimeError("Wrong value `%s' for parameter `%s'", str.c_str(), parfullpath.c_str());
+        par->parse(str.c_str());
         return;
     }
 
@@ -402,17 +400,16 @@ void TOmnetApp::readParameter(cPar *par)
             reply = ev.gets(prompt.c_str(), par->toString().c_str());
         else
             reply = ev.gets((std::string("Enter parameter `")+parfullpath+"':").c_str(), par->toString().c_str());
+        //FIXME any chance to cancel?
 
         try
         {
-            success = false;
-            success = par->parse(reply.c_str());
-            if (!success)
-                throw cRuntimeError("Syntax error, please try again.");
+            par->parse(reply.c_str());
+            success = true;
         }
         catch (std::exception& e)
         {
-            ev.printfmsg("%s", e.what());
+            ev.printfmsg("%s -- please try again", e.what());
         }
     }
 }

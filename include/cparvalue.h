@@ -304,9 +304,10 @@ class SIM_API cParValue : public cNamedObject
 
     /**
      * Convert the value from string, and store the result.
-     * Returns true on success, false otherwise. No error message is generated.
+     * If the text cannot be parsed, an exception is thrown, which
+     * can be caught as std::runtime_error& if necessary.
      */
-    virtual bool parse(const char *text) = 0;
+    virtual void parse(const char *text) = 0;
 
     /**
      * Factory method: creates a parameter object representing the given type.

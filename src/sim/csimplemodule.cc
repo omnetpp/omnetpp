@@ -82,7 +82,7 @@ void cSimpleModule::activate(void *p)
         //
         mod->activity();
     }
-    catch (cException *e) // compat
+    catch (cRuntimeError *e) // compat
     {
         // IMPORTANT: No transferTo() in catch blocks! See Note 2 below.
         exception = new cRuntimeError("%s [NOTE: exception was thrown with pointer. "
@@ -91,7 +91,7 @@ void cSimpleModule::activate(void *p)
                                       e->what());
         delete e;
     }
-    catch (cRuntimeError *e) // compat
+    catch (cException *e) // compat
     {
         // IMPORTANT: No transferTo() in catch blocks! See Note 2 below.
         exception = new cRuntimeError("%s [NOTE: exception was thrown with pointer. "

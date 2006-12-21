@@ -168,26 +168,24 @@ std::string cXMLPar::toString() const
         return std::string("NULL");
 }
 
-bool cXMLPar::parse(const char *text)
+void cXMLPar::parse(const char *text)
 {
-    // maybe it's just xmldoc(...)
-    // FIXME TBD
-    // if (success)
-    // {
-    //     setXMLValue(node);
-    //     return true;
-    // }
-
     // try parsing it as an expression
     cDynamicExpression *dynexpr = new cDynamicExpression();
-    if (dynexpr->parse(text))
+    try
     {
-        setExpression(dynexpr);
-        return true;
+        dynexpr->parse(text);
     }
+    catch (std::exception& e)
+    {
+        delete dynexpr;
+        throw;
+    }
+    setExpression(dynexpr);
 
-    // bad luck
-    return false;
+    // simplify if possible: store as constant instead of expression
+    if (dynexpr->isAConstant())
+        convertToConst(NULL);
 }
 
 int cXMLPar::compare(const cParValue *other) const

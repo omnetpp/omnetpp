@@ -106,7 +106,7 @@ static void addFunction(const char *funcname, int numargs)
         *e++ = af;
         return;
     }
-    yyerror((std::string("function `")+funcname+"' not found (Define_Function() missing from C++ code?)").c_str());
+    yyerror(opp_stringf("function `%s' not found (Define_Function() missing from C++ code?)", funcname).c_str());
 }
 
 static double parseQuantity(const char *text, std::string& unit)
@@ -311,7 +311,7 @@ void doParseExpression(const char *nedtext, cDynamicExpression::Elem *&elems, in
     // alloc buffer
     struct yy_buffer_state *handle = yy_scan_string(nedtext);
     if (!handle)
-        throw cRuntimeError("Error during expression parsing: unable to allocate work memory");
+        throw std::runtime_error("parser is unable to allocate work memory");
 
     cDynamicExpression::Elem *v = new cDynamicExpression::Elem[100]; // overestimate for now; XXX danger of overrun
     e = v;
@@ -325,6 +325,7 @@ void doParseExpression(const char *nedtext, cDynamicExpression::Elem *&elems, in
     catch (std::exception& e)
     {
         yy_delete_buffer(handle);
+        delete [] v;
         throw;
     }
     yy_delete_buffer(handle);
@@ -334,6 +335,7 @@ void doParseExpression(const char *nedtext, cDynamicExpression::Elem *&elems, in
     elems = new cDynamicExpression::Elem[nelems];
     for (int i=0; i<nelems; i++)
         elems[i] = v[i];
+    delete [] v;
 }
 
 void yyerror(const char *s)
@@ -344,6 +346,6 @@ void yyerror(const char *s)
     if (buf[strlen(buf)-1] == '\n')
         buf[strlen(buf)-1] = '\0';
 
-    throw cRuntimeError("Error parsing expression: %s", buf);
+    throw std::runtime_error(buf);
 }
 

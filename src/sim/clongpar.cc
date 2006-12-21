@@ -164,9 +164,10 @@ std::string cLongPar::toString() const
     return buf;
 }
 
-bool cLongPar::parse(const char *text)
+void cLongPar::parse(const char *text)
 {
-    // maybe it's just a number  FIXME do we need this code? it'll work via cDynamicExpression too!
+/*XXX not really needed
+    // maybe it's just a number
     cStringTokenizer tok(text);
     const char *word = tok.nextToken();
     if (word!=NULL && !tok.hasMoreTokens())
@@ -179,19 +180,24 @@ bool cLongPar::parse(const char *text)
             return true;
         }
     }
+*/
 
     // try parsing it as an expression
     cDynamicExpression *dynexpr = new cDynamicExpression();
-    if (dynexpr->parse(text))
+    try
     {
-        setExpression(dynexpr);
-        if (dynexpr->isAConstant()) //FIXME add this trick to all param types???
-            convertToConst(NULL); // optimization: store as a constant value instead of an expression
-        return true;
+        dynexpr->parse(text);
     }
+    catch (std::exception& e)
+    {
+        delete dynexpr;
+        throw;
+    }
+    setExpression(dynexpr);
 
-    // bad luck
-    return false;
+    // simplify if possible: store as constant instead of expression
+    if (dynexpr->isAConstant())
+        convertToConst(NULL);
 }
 
 int cLongPar::compare(const cParValue *other) const

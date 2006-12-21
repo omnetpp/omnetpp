@@ -306,7 +306,7 @@ void cPar::convertToConst()
         componentType->parValueCache2()->put(p);
 }
 
-bool cPar::parse(const char *text)
+void cPar::parse(const char *text)
 {
     // Implementation note: we are trying to share cParValue objects for
     // values coming from the configuration. This is possible because an
@@ -325,27 +325,24 @@ bool cPar::parse(const char *text)
     {
         // an identical value found in the map -- use it
         reassign(cachedValue);
-        return true;
     }
     else
     {
         // not found: clone existing parameter, then parse text into it
         cParValue *tmp = p->dup();
-        if (tmp->parse(text))  //FIXME parse() may throw exceptions!!!
-                               //   1) change its return type to void!!!!
-                               //   2) catch exception here, wrap it into cRuntimeError, then re-throw!
+        try
         {
-            // successfully parsed: install it
-            componentType->parValueCache()->put(key.c_str(), tmp);
-            reassign(tmp);
-            return true;
+            tmp->parse(text);
         }
-        else
+        catch (std::exception& e)
         {
-            // parse error
             delete tmp;
-            return false;
+            throw cRuntimeError("Wrong value `%s' for parameter `%s': %s", text, fullPath().c_str(), e.what());
         }
+
+        // successfully parsed: install it
+        componentType->parValueCache()->put(key.c_str(), tmp);
+        reassign(tmp);
     }
 }
 

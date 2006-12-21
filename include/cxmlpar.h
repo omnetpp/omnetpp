@@ -189,7 +189,7 @@ class SIM_API cXMLPar : public cParValue
     /**
      * Converts from text.
      */
-    virtual bool parse(const char *text);
+    virtual void parse(const char *text);
 
     /**
      * Object comparison.

@@ -158,35 +158,43 @@ std::string cBoolPar::toString() const
     return val ? "true" : "false";
 }
 
-bool cBoolPar::parse(const char *text)
+void cBoolPar::parse(const char *text)
 {
+/*XXX not really needed
     // maybe it's a single word, "true" or "false"
     cStringTokenizer tok(text);
     const char *word = tok.nextToken();
     if (word!=NULL && !tok.hasMoreTokens())
     {
-        if (!strcmp(word,"true"))
+        if (!strcmp(word, "true"))
         {
             setBoolValue(true);
-            return true;
+            return;
         }
-        else if (!strcmp(word,"false"))
+        else if (!strcmp(word, "false"))
         {
             setBoolValue(false);
-            return true;
+            return;
         }
     }
+*/
 
     // try parsing it as an expression
     cDynamicExpression *dynexpr = new cDynamicExpression();
-    if (dynexpr->parse(text))
+    try
     {
-        setExpression(dynexpr);
-        return true;
+        dynexpr->parse(text);
     }
+    catch (std::exception& e)
+    {
+        delete dynexpr;
+        throw;
+    }
+    setExpression(dynexpr);
 
-    // bad luck
-    return false;
+    // simplify if possible: store as constant instead of expression
+    if (dynexpr->isAConstant())
+        convertToConst(NULL);
 }
 
 int cBoolPar::compare(const cParValue *other) const

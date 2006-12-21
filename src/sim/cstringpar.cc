@@ -162,28 +162,33 @@ std::string cStringPar::toString() const
     return opp_quotestr(val.c_str());
 }
 
-bool cStringPar::parse(const char *text)
+void cStringPar::parse(const char *text)
 {
+/*XXX not really needed
     // maybe it's just a string literal in quotes
     try {
-        std::string str = opp_parsequotedstr(text);
-        setStringValue(str.c_str());
-        return true;
+        setStringValue(opp_parsequotedstr(text));
     }
     catch (std::exception& e) {
-        // no problem, we'll try it another way
+        // no problem, we'll try it differently
     }
+*/
 
     // try parsing it as an expression
     cDynamicExpression *dynexpr = new cDynamicExpression();
-    if (dynexpr->parse(text))
+    try
     {
-        setExpression(dynexpr);
-        return true;
+        dynexpr->parse(text);
+    }
+    catch (std::exception& e)
+    {
+        delete dynexpr;
+        throw;
     }
 
-    // bad luck
-    return false;
+    // simplify if possible: store as constant instead of expression
+    if (dynexpr->isAConstant())
+        convertToConst(NULL);
 }
 
 int cStringPar::compare(const cParValue *other) const

@@ -164,8 +164,9 @@ std::string cDoublePar::toString() const
     return buf;
 }
 
-bool cDoublePar::parse(const char *text)
+void cDoublePar::parse(const char *text)
 {
+/*XXX not really needed
     // maybe it's just a number
     cStringTokenizer tok(text);
     const char *word = tok.nextToken();
@@ -176,22 +177,27 @@ bool cDoublePar::parse(const char *text)
         if (*endp == '\0')
         {
             setDoubleValue(num);
-            return true;
+            return;
         }
     }
+*/
 
     // try parsing it as an expression
     cDynamicExpression *dynexpr = new cDynamicExpression();
-    if (dynexpr->parse(text))   //FIXME catch exceptions!!!!! in all partypes!!!!!
+    try
     {
-        setExpression(dynexpr);
-        if (dynexpr->isAConstant()) //FIXME add this trick to all param types???
-            convertToConst(NULL); // optimization: store as a constant value instead of an expression
-        return true;
+        dynexpr->parse(text);
     }
+    catch (std::exception& e)
+    {
+        delete dynexpr;
+        throw;
+    }
+    setExpression(dynexpr);
 
-    // bad luck
-    return false;
+    // simplify if possible: store as constant instead of expression
+    if (dynexpr->isAConstant())
+        convertToConst(NULL);
 }
 
 int cDoublePar::compare(const cParValue *other) const

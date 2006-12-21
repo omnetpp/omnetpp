@@ -332,9 +332,8 @@ class SIM_API cDynamicExpression : public cExpression
 
     /**
      * Interprets the string as an expression, and stores it.
-     * This may not be possible with all subclasses.
      */
-    virtual bool parse(const char *text);
+    virtual void parse(const char *text);
 
     /**
      * Returns true if the expression is just a literal (or equivalent to one,
