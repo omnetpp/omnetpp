@@ -21,10 +21,11 @@
 #endif
 
 #include <vector>
+#include <map>
 #include <string>
 
 #include <tk.h> // only for debugDraw
-
+#include "forcedirectedembedding.h"
 
 // currently it works fine without boxing the graph
 //#define USE_CONTRACTING_BOX
@@ -268,6 +269,77 @@ class AdvSpringEmbedderLayout : public BasicSpringEmbedderLayout
      */
     AdvSpringEmbedderLayout();
 };
+
+
+class ForceDirectedGraphLayouter : public GraphLayouter
+{
+  protected:
+      bool finalized;
+      bool bordersAdded;
+      ForceDirectedEmbedding embedding;
+      std::map<std::string, Variable *> anchorNameToVariableMap;
+      std::map<cModule *, IBody *> moduleToBodyMap;
+
+  public:
+    /**
+     * Ctor, dtor
+     */
+    //@{
+    ForceDirectedGraphLayouter();
+    virtual ~ForceDirectedGraphLayouter() {}
+    //@}
+
+    /**
+     * Add node that can be moved.
+     */
+    virtual void addMovableNode(cModule *mod, int width, int height);
+
+    /**
+     * Add fixed node
+     */
+    virtual void addFixedNode(cModule *mod, int x, int y, int width, int height);
+
+    /**
+     * Add node that is anchored to a freely movable anchor point. Nodes anchored
+     * to the same anchor point can only move together. Anchor points are
+     * identified by name, and they need not be predeclared (they are registered
+     * on demand.) Usage: module vectors in ring, matrix, etc. layout.
+     *
+     * offx, offy: offset to anchor point
+     */
+    virtual void addAnchoredNode(cModule *mod, const char *anchorname, int offx, int offy, int width, int height);
+
+    /**
+     * Add connection (graph edge)
+     */
+    virtual void addEdge(cModule *from, cModule *to, int len=0);
+
+    /**
+     * Add connection (graph edge) to enclosing (parent) module
+     */
+    virtual void addEdgeToBorder(cModule *from, int len=0);
+
+    /**
+     * The layouting algorithm.
+     */
+    virtual void execute();
+
+    /**
+     * Extracting the results
+     */
+    virtual void getNodePosition(cModule *mod, int& x, int& y);
+
+  protected:
+    void addBody(cModule *mod, IBody *body);
+    IBody *findBody(cModule *mod);
+    Variable *ensureAnchorVariable(const char *anchorname);
+    void addElectricalRepeals();
+    void ensureFinalized();
+    void ensureBorders();
+    void ensurePositions();
+    void debugDraw(int step);
+};
+
 
 #endif
 

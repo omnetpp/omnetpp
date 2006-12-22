@@ -363,7 +363,8 @@ void TGraphicalModWindow::refreshLayout()
     cModule *parentmodule = static_cast<cModule *>(object);
 
     // create and configure layouter object
-    BasicSpringEmbedderLayout layouter;
+    //BasicSpringEmbedderLayout layouter;
+    ForceDirectedGraphLayouter layouter;
     layouter.setSeed(random_seed);
 
     // enable graphics only if full re-layouting (no cached coordinates in submodPosMap)
@@ -378,6 +379,7 @@ void TGraphicalModWindow::refreshLayout()
     int sy = resolveNumericDispStrArg(ds.getTagArg("bgb",1), parentmodule, 500);
     layouter.setScaleToArea(sx,sy,50); // FIXME position "bgp" is ignored here...
 
+/*
     int repf = resolveNumericDispStrArg(ds.getTagArg("bgl",0), parentmodule, -1);
     if (repf>0) layouter.setRepulsiveForce(repf);
 
@@ -389,6 +391,7 @@ void TGraphicalModWindow::refreshLayout()
 
     int maxiter = resolveNumericDispStrArg(ds.getTagArg("bgl",3), parentmodule, -1);
     if (maxiter>0) layouter.setMaxIterations(maxiter);
+*/
 
     int seed = resolveNumericDispStrArg(ds.getTagArg("bgl",4), parentmodule, -1);
     if (seed>0) layouter.setSeed(seed);
