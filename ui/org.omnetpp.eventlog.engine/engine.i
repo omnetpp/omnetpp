@@ -1,4 +1,4 @@
-%module ScaveEngine
+%module EventLogEngine
 
 %include "enumtypeunsafe.swg"
 %javaconst(1);
@@ -113,7 +113,7 @@ namespace std {
 
    %typemap(javacode) set<int> %{
        public IntSet(boolean cMemoryOwn) {
-           this(ScaveEngineJNI.new_IntSet__SWIG_0(), cMemoryOwn);
+           this(EventLogEngineJNI.new_IntSet__SWIG_0(), cMemoryOwn);
        }
    %}
 
@@ -204,12 +204,12 @@ import java.lang.reflect.Constructor;
          if (cPtr == 0)
             return null;
 
-         int index = ScaveEngineJNI.EventLogEntry_getClassIndex(cPtr);
+         int index = EventLogEngineJNI.EventLogEntry_getClassIndex(cPtr);
          Constructor constructor = eventLogConstructors[index];
 
          if (constructor == null)
          {
-            String name = "org.omnetpp.eventlog.engine." + ScaveEngineJNI.EventLogEntry_getClassName(cPtr);
+            String name = "org.omnetpp.eventlog.engine." + EventLogEngineJNI.EventLogEntry_getClassName(cPtr);
             Class clazz = Class.forName(name);
             constructor = clazz.getDeclaredConstructor(long.class, boolean.class);
             eventLogConstructors[index] = constructor;
