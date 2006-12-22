@@ -40,6 +40,11 @@
 %include "std_vector.i"
 
 %typemap(javacode) Variable %{
+    protected Variable disown() {
+		swigCMemOwn = false;
+	    return this;
+    }
+
     public boolean equals(Object obj) {
         return (obj instanceof Variable) && getCPtr(this)==getCPtr((Variable)obj);
     }
@@ -48,35 +53,23 @@
     }
 %}
 
-%typemap(javacode) ForceDirectedEmbedding %{
-    private java.util.ArrayList<Object> members = new java.util.ArrayList<Object>();
+%typemap(javain) Variable * "Variable.getCPtr($javainput.disown())";
 
-	public void addForceProvider(IForceProvider forceProvider) {
-	    members.add(forceProvider);
-		addForceProvider0(forceProvider);
-	}
+%typemap(javain) IBody * "IBody.getCPtr($javainput.disown())";
 
-	public void addBody(IBody body) {
-	    members.add(body);
-	    members.add(body.getVariable());
-		addBody0(body);
-    }
-%}
-
-%typemap(javacode) Body %{
-    private Variable variable;
+%typemap(javaimports) IBody %{
+import java.lang.reflect.Constructor;
 %}
 
 %typemap(javaout) IBody * {
    return IBody.newIBody($jnicall, $owner);
 }
 
-%typemap(javaimports) IBody %{
-import java.lang.reflect.Constructor;
-%}
-
 %typemap(javacode) IBody %{
-   private Variable variable;
+   protected IBody disown() {
+      swigCMemOwn = false;
+      return this;
+   }
 
    private static java.util.ArrayList<Constructor> bodyConstructors = new java.util.ArrayList<Constructor>();
 
@@ -107,15 +100,22 @@ import java.lang.reflect.Constructor;
    }
 %}
 
-%typemap(javaout) IForceProvider * {
-   return IForceProvider.newIForceProvider($jnicall, $owner);
-}
+%typemap(javain) IForceProvider * "IForceProvider.getCPtr($javainput.disown())";
 
 %typemap(javaimports) IForceProvider %{
 import java.lang.reflect.Constructor;
 %}
 
+%typemap(javaout) IForceProvider * {
+   return IForceProvider.newIForceProvider($jnicall, $owner);
+}
+
 %typemap(javacode) IForceProvider %{
+   protected IForceProvider disown() {
+      swigCMemOwn = false;
+      return this;
+   }
+
    private static java.util.ArrayList<Constructor> forceProviderConstructors = new java.util.ArrayList<Constructor>();
 
    public static IForceProvider newIForceProvider(long cPtr, boolean isOwner) {
@@ -161,9 +161,6 @@ namespace std {
    specialize_std_vector(Variable *);
    %template(VariableList) vector<Variable *>;
 };
-
-%rename ForceDirectedEmbedding::addBody addBody0;
-%rename ForceDirectedEmbedding::addForceProvider addForceProvider0;
 
 %ignore zero;
 %ignore NaN;
