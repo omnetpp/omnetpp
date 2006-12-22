@@ -90,6 +90,7 @@ int setSimOption_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getNetworkTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getStringHashCode_cmd(ClientData, Tcl_Interp *, int, const char **);
 int displayString_cmd(ClientData, Tcl_Interp *, int, const char **);
+int setModDispStrTagArg_cmd(ClientData, Tcl_Interp *, int, const char **);
 int hsbToRgb_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getModulePar_cmd(ClientData, Tcl_Interp *, int, const char **);
 int setModulePar_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -178,6 +179,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getnetworktypes",  getNetworkTypes_cmd      }, // args: - ret: ptrlist
    { "opp_getstringhashcode",getStringHashCode_cmd    }, // args: <string> ret: numeric hash code
    { "opp_displaystring",    displayString_cmd        }, // args: <displaystring> <command> <args>
+   { "opp_set_moduledisplaystring_tagarg", setModDispStrTagArg_cmd}, // args: <modp> <tag> <index> <value>
    { "opp_hsb_to_rgb",       hsbToRgb_cmd             }, // args: <@hhssbb> ret: <#rrggbb>
    { "opp_modulebypath",     moduleByPath_cmd         }, // args: <fullpath> ret: modptr
    { "opp_getmodulepar",     getModulePar_cmd         }, // args: <modptr> <parname> ret: value
@@ -945,6 +947,7 @@ int getStringHashCode_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    return TCL_OK;
 }
 
+
 int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc<3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
@@ -999,6 +1002,21 @@ int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    return TCL_OK;
 }
 
+int setModDispStrTagArg_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   // args: <modp> <tag> <index> <value>
+   if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   cObject *object = strToPtr(argv[1]);
+   cModule *modp = dynamic_cast<cModule *>(object);
+   if (!modp) {Tcl_SetResult(interp, "wrong or null module pointer", TCL_STATIC); return TCL_ERROR;}
+
+   const char *tag = argv[2];
+   int k = atoi(argv[3]);
+   const char *value = argv[4];
+
+   modp->displayString().setTagArg(tag, k, value);
+   return TCL_OK;
+}
 
 //
 // HSB-to-RGB conversion
