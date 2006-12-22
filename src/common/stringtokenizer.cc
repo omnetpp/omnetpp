@@ -49,12 +49,12 @@ void StringTokenizer::setDelimiter(const char *delim)
     delimiter = delim;
 }
 
-inline void skipDelimiters(const char *&s, const char *delims)
+inline void skipDelimiters(char *&s, const char *delims)
 {
     while (*s && strchr(delims, *s)!=NULL) s++;
 }
 
-inline void skipToken(const char *&s, const char *delims)
+inline void skipToken(char *&s, const char *delims)
 {
     while (*s && strchr(delims, *s)==NULL) s++;
 }

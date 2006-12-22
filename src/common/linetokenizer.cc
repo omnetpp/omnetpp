@@ -45,7 +45,7 @@ inline int h2d(char c)
     return -1;
 }
 
-inline int h2d(const char *&s)
+inline int h2d(char *&s)
 {
     int a = h2d(*s);
     if (a<0) return 0;

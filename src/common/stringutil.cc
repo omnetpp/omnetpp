@@ -21,7 +21,7 @@
 
 std::string opp_parsequotedstr(const char *txt)
 {
-    char *endp;
+    const char *endp;
     std::string ret = opp_parsequotedstr(txt, endp);
     if (*endp)
         throw opp_runtime_error("trailing garbage after string literal");
