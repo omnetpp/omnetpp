@@ -186,16 +186,22 @@ class ForceDirectedEmbedding
         double maxCalculationTime;
 
         /**
+         * Lower limit of acceleration approximation difference (between a1, a2, a3 and a4 in RK-4).
+         * During updating the time step this is the lower limit to accept the current time step.
+         */
+        double minAccelerationError;
+
+        /**
          * Upper limit of acceleration approximation difference (between a1, a2, a3 and a4 in RK-4).
          * Acceleration error limit is updated automatically during the solution. It decreases towards zero proportional to the
          * time spent on the calculation.
          */
         double maxAccelerationError;
-
+        
         /**
-         * During updating the time step this is the lower limit to accept the current time step.
+         * This gets updated.
          */
-        double minAccelerationError;
+        double updatedMinAccelerationError;
         
         /**
          * This gets updated.

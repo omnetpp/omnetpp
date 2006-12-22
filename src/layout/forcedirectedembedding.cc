@@ -30,15 +30,17 @@ ForceDirectedEmbedding::ForceDirectedEmbedding() {
     frictionCoefficientMultiplier = 2;
 
     timeStep = 1;
-    minTimeStep = 0.001;
-    maxTimeStep = 1000;
+    minTimeStep = 0.01;
+    maxTimeStep = 100;
     timeStepMultiplier = 2;
 
     maxCalculationTime = 1000;
-    maxAccelerationError = 1;
+    
+    minAccelerationError = 5;
+    maxAccelerationError = 10;
 
     accelerationRelaxLimit = 1;
-    velocityRelaxLimit = 0.1;
+    velocityRelaxLimit = 1;
 
     maxVelocity = 100;
 
@@ -91,6 +93,7 @@ void ForceDirectedEmbedding::reinitialize() {
     // initial values
     updatedTimeStep = timeStep;
     updatedMaxAccelerationError = maxAccelerationError;
+    updatedMinAccelerationError = minAccelerationError;
 
     if (frictionCoefficient)
         updatedFrictionCoefficient = frictionCoefficient;
@@ -131,12 +134,16 @@ void ForceDirectedEmbedding::embed() {
         while (true) {
             probCycle++;
 
-            // update acceleration error limit
+            // update acceleration errors
             time = ticksToMilliseconds(ticks + clock() - begin);
             if (time > maxCalculationTime && cycle > minCycle)
                 break;
-            else
-                updatedMaxAccelerationError = (maxCalculationTime - time) / maxCalculationTime * this->maxAccelerationError;
+            else {
+                double coefficient = std::min(1.0, std::max(0.0, (maxCalculationTime - time) / maxCalculationTime));
+
+                updatedMinAccelerationError = coefficient * minAccelerationError;
+                updatedMaxAccelerationError = coefficient * maxAccelerationError;
+            }
 
             // a1 = a[pn, vn]
             a(a1, pn, vn);
@@ -163,25 +170,31 @@ void ForceDirectedEmbedding::embed() {
             accelerationError = maximumDifference(a1, a2, a3, a4);
 
             if (debug >= 3)
-                std::cout << "Prob cycle at real time: " << time << " time: " << timeStepSum << " h: " << updatedTimeStep << " friction: " << updatedFrictionCoefficient << " acceleration error limit: " << updatedMaxAccelerationError << " acceleration error: " << accelerationError << " cycle: " << cycle << " prob cycle: " << probCycle << "\n";
+                std::cout << "Prob cycle at real time: " << time << " time: " << timeStepSum << " h: " << updatedTimeStep << " friction: " << updatedFrictionCoefficient << " min acceleration error: " << updatedMinAccelerationError << " max acceleration error: " << updatedMaxAccelerationError << " acceleration error: " << accelerationError << " cycle: " << cycle << " prob cycle: " << probCycle << "\n";
 
+            // stop if acceleration error and time step are within range
+            if (updatedMinAccelerationError < accelerationError && accelerationError < updatedMaxAccelerationError &&
+                minTimeStep < updatedTimeStep && updatedTimeStep < maxTimeStep)
+                break;
+
+            // find now to update time step
             if (accelerationError < updatedMaxAccelerationError) {
                 if (hMultiplier == 0)
                     hMultiplier = timeStepMultiplier;
-                else
+                else if (hMultiplier = 1.0 / timeStepMultiplier)
                     break;
             }
             else {
                 if (hMultiplier == 0 || hMultiplier == timeStepMultiplier)
                     hMultiplier = 1.0 / timeStepMultiplier;
             }
-            
-            double hNext = updatedTimeStep * hMultiplier;
 
-            if (hNext < minTimeStep || hNext > maxTimeStep)
+            // stop if time step would be out of valid time step range
+            double nextUpdatedTimeStep = updatedTimeStep * hMultiplier;
+            if (nextUpdatedTimeStep < minTimeStep || maxTimeStep < nextUpdatedTimeStep)
                 break;
             
-            updatedTimeStep *= hMultiplier;
+            updatedTimeStep = nextUpdatedTimeStep;
         }
 
         // pn+1 = pn + h * vn + h * h / 6 * [a1 + a2 + a3]
@@ -208,7 +221,7 @@ void ForceDirectedEmbedding::embed() {
 
         time = ticksToMilliseconds(ticks + clock() - begin);
         if (debug >= 2)
-            std::cout << "Cycle at real time: " << time << " time: " << timeStepSum << " h: " << updatedTimeStep << " friction: " << updatedFrictionCoefficient << " acceleration error limit: " << updatedMaxAccelerationError << " acceleration error: " << accelerationError << " cycle: " << cycle << " prob cycle: " << probCycle << "\n";
+            std::cout << "Cycle at real time: " << time << " time: " << timeStepSum << " h: " << updatedTimeStep << " friction: " << updatedFrictionCoefficient << " min acceleration error: " << updatedMinAccelerationError << " max acceleration error: " << updatedMaxAccelerationError << " acceleration error: " << accelerationError << " cycle: " << cycle << " prob cycle: " << probCycle << "\n";
 
         // update friction
         timeStepSum += updatedTimeStep;
@@ -227,7 +240,7 @@ void ForceDirectedEmbedding::embed() {
         else
             updatedFrictionCoefficient = getEnergyBasedFrictionCoefficient(std::max(0.0, maxCalculationTime - time));
         
-        // Check if relaxed
+        // check if relaxed
         finished = true;
         for (int i = 0; i < vn.size(); i++) {
             an[i].assign(a1[i]).add(a2[i]).add(a3[i]).add(a4[i]).divide(4);
@@ -247,6 +260,7 @@ void ForceDirectedEmbedding::embed() {
             }
         }
 
+        // check if end of requested calculation has been reached
         if ((cycle == maxCycle) || (time > maxCalculationTime && cycle > minCycle))
             finished = true;
     }
