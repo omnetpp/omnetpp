@@ -37,7 +37,7 @@ LIBS=
 
 # User interface libs
 CMDENV_LIBS=envir.lib cmdenv.lib
-TKENV_LIBS=envir.lib tkenv.lib $(TK_LIBS)
+TKENV_LIBS=envir.lib tkenv.lib layout.lib $(TK_LIBS)
 
 # Simulation kernel
 KERNEL_LIBS=common.lib sim_std.lib
