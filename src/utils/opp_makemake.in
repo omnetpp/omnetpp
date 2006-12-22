@@ -372,7 +372,7 @@ SYS_LIBS_PURE=-ldl -lsocket -lnsl -lm \$(shell \$(CXX) -print-file-name=libstdc+
 
 # User interface libs
 CMDENV_LIBS=-lenvir -lcmdenv
-TKENV_LIBS=-lenvir -ltkenv \$(TK_LIBS)
+TKENV_LIBS=-lenvir -ltkenv -llayout \$(TK_LIBS)
 
 # Simulation kernel
 KERNEL_LIBS=-lcommon -lsim_std
