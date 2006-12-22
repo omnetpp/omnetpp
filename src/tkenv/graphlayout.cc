@@ -913,6 +913,8 @@ Variable *ForceDirectedGraphLayouter::ensureAnchorVariable(const char *anchorNam
 
 void ForceDirectedGraphLayouter::ensureBorders()
 {
+    ensurePositions();
+
     // TODO: move this to the embedding, so that it can be called from java
     if (!bordersAdded) {
         double coefficient = 0.1;
@@ -992,6 +994,28 @@ void ForceDirectedGraphLayouter::ensureFinalized()
     }
 }
 
+void ForceDirectedGraphLayouter::normalize()
+{
+	double top = DBL_MAX;
+	double left = DBL_MAX;
+
+    const std::vector<IBody *>& bodies = embedding.getBodies();
+	for (int i = 0; i < bodies.size(); i++) {
+		IBody *body = bodies[i];
+		Pt position = body->getPosition();
+
+        if (!dynamic_cast<WallBody *>(body)) {
+            top = std::min(top, position.y);
+		    left = std::min(left, position.x);
+        }
+	}
+
+    const std::vector<Variable *>& variables = embedding.getVariables();
+	for (int i = 0; i < variables.size(); i++) {
+        variables[i]->assignPosition(variables[i]->getPosition().subtract(Pt(left - border, top - border)));
+    }
+}
+
 void ForceDirectedGraphLayouter::addMovableNode(cModule *mod, int width, int height)
 {
     addBody(mod, new Body(new Variable(Pt::getNil()), Rs(width, height)));
@@ -1067,6 +1091,9 @@ void ForceDirectedGraphLayouter::execute()
                             canvas," xview moveto 0\n",
                             canvas," yview moveto 0\n", NULL);
     }
+
+    // TODO: normalize only when there are no fixed nodes!
+    normalize();
 }
 
 void ForceDirectedGraphLayouter::getNodePosition(cModule *mod, int& x, int& y)
@@ -1092,6 +1119,19 @@ void ForceDirectedGraphLayouter::debugDraw(int step)
         Pt pt = body->getPosition();
         Rs rs = body->getSize();
         pt.subtract(Pt(rs.width / 2, rs.height / 2));
+
+        if (dynamic_cast<WallBody *>(body)) {
+			if (isNaN(pt.x)) {
+				pt.x = -1000;
+				rs.width = 2000;
+			}
+
+			if (isNaN(pt.y)) {
+				pt.y = -1000;
+				rs.height = 2000;
+			}
+        }
+
         sprintf(coords,"%g %g %g %g", pt.x, pt.y, pt.x + rs.width, pt.y + rs.height);
         const char *color = "black";//colors[n.color % (sizeof(colors)/sizeof(char*))];
         Tcl_VarEval(interp, canvas, " create rect ",coords," -outline ",color," -tag node", NULL);

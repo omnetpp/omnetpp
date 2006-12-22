@@ -337,6 +337,7 @@ class ForceDirectedGraphLayouter : public GraphLayouter
     void ensureFinalized();
     void ensureBorders();
     void ensurePositions();
+    void normalize();
     void debugDraw(int step);
 };
 
