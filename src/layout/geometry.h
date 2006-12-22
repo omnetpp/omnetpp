@@ -64,7 +64,7 @@ class Pt
             return *this;
         }
 
-        Pt copy() {
+        Pt copy() const {
             return Pt(*this);
         }
 
@@ -72,18 +72,22 @@ class Pt
             assign(0, 0);
         }
 
-        double getLength() {
+        double getLength() const {
             return sqrt(x * x + y * y);
         }
 
         double getDistance(const Pt& other) const {
-            double dx = x - other.x;
-            double dy = y - other.y;
+            return getDistance(x, y, other.x, other.y);
+        }
+
+        static double getDistance(double x1, double y1, double x2, double y2) {
+            double dx = x1 - x2;
+            double dy = y1 - y2;
 
             return sqrt(dx * dx + dy * dy);
         }
 
-        double getAngle() {
+        double getAngle() const {
             return atan2(y, x);
         }
 
@@ -145,7 +149,7 @@ class Pt
             return *this;
         }
 
-        double crossProduct(Pt& pt) {
+        double crossProduct(const Pt& pt) const {
             return x * pt.y - y * pt.x;
         }
 
@@ -161,7 +165,7 @@ class Pt
                 y = 0;
         }
 
-        bool isZero() {
+        bool isZero() const {
             return x == 0 && y == 0;
         }
 
@@ -177,11 +181,11 @@ class Pt
             return Pt(0, 0);
         }
 
-        bool isNil() {
+        bool isNil() const {
             return isNaN(x) && isNaN(y);
         }
 
-        bool isFullySpecified() {
+        bool isFullySpecified() const {
             return !isNaN(x) && !isNaN(y);
         }
 };
@@ -201,32 +205,31 @@ class Ln {
             assign(Pt(x1, y1), Pt(x2, y2));
         }
 
-        Ln(Pt& begin, Pt& end) {
+        Ln(const Pt& begin, const Pt& end) {
             assign(begin, end);
         }
 
-        Ln& assign(Pt& begin, Pt& end) {
+        Ln& assign(const Pt& begin, const Pt& end) {
             this->begin = begin;
             this->end = end;
 
             return *this;
         }
 
-        Pt getClosestPoint(Pt& pt) {
+        Pt getClosestPoint(const Pt& pt) const {
             Pt n = getDirectionVector().transpose();
 
             return intersect(Ln(pt, n.add(pt)));
         }
 
-        Pt getDirectionVector() {
+        Pt getDirectionVector() const {
             Pt v(end);
             v.subtract(begin);
-            v.normalize();
 
             return v;
         }
 
-        Pt intersect(Ln& ln) {
+        Pt intersect(const Ln& ln) const {
             double x1 = begin.x;
             double y1 = begin.y;
             double x2 = end.x;
@@ -244,8 +247,12 @@ class Ln {
             return Pt(x, y);
         }
 
-        double determinant(double a, double b, double c, double d) {
+        double determinant(double a, double b, double c, double d) const {
             return a * d - b * c;
+        }
+
+        static Ln getNil() {
+            return Ln(Pt::getNil(), Pt::getNil());
         }
 };
 
@@ -275,17 +282,15 @@ class Rs {
             return Rs(NaN, NaN);
         }
 
-        bool isNil() {
+        bool isNil() const {
             return isNaN(width) && isNaN(height);
         }
 
-        double getDiagonalLength()
-        {
+        double getDiagonalLength() const {
             return sqrt(width * width + height * height);
         }
 
-        double getArea()
-        {
+        double getArea() const {
             return width * height;
         }
 };
@@ -305,18 +310,18 @@ class Rc {
             assign(Pt(x, y), Rs(width, height));
         }
 
-        Rc(Pt& pt, Rs& rs) {
+        Rc(const Pt& pt, const Rs& rs) {
             assign(pt, rs);
         }
 
-        Rc& assign(Pt& pt, Rs& rs) {
+        Rc& assign(const Pt& pt, const Rs& rs) {
             this->pt = pt;
             this->rs = rs;
 
             return *this;
         }
 
-        bool intersects(Rc rc2) {
+        bool intersects(Rc rc2) const {
             return
                 rc2.contains(getTopLeft()) ||
                 rc2.contains(getTopRight()) ||
@@ -324,46 +329,112 @@ class Rc {
                 rc2.contains(getBottomRight());
         }
 
-        bool contains(Pt& p) {
+        bool contains(Pt& p) const {
             return pt.x <= p.x && p.x <= pt.x + rs.width && pt.y <= p.y && p.y <= pt.y + rs.height;
         }
 
-        double getLeft() {
+        double getLeft() const {
             return pt.x;
         }
 
-        double getRight() {
+        double getRight() const {
             return pt.x + rs.width;
         }
 
-        double getTop() {
+        double getTop() const {
             return pt.y;
         }
 
-        double getBottom() {
+        double getBottom() const {
             return pt.y + rs.height;
         }
-        Pt getTopLeft() {
+
+        Pt getTopLeft() const {
             return Pt(pt.x, pt.y);
         }
 
-        Pt getTopRight() {
+        Pt getTopRight() const {
             return Pt(pt.x + rs.width, pt.y);
         }
 
-        Pt getBottomLeft() {
+        Pt getBottomLeft() const {
             return Pt(pt.x, pt.y + rs.height);
         }
 
-        Pt getBottomRight() {
+        Pt getBottomRight() const {
             return Pt(pt.x + rs.width, pt.y + rs.height);
+        }
+
+        Ln getDistance(const Rc &other, double &distance) const {
+            double x1 = pt.x;
+            double y1 = pt.y;
+            double x2 = pt.x + rs.width;
+            double y2 = pt.y + rs.height;
+            double x3 = other.pt.x;
+            double y3 = other.pt.y;
+            double x4 = other.pt.x + other.rs.width;
+            double y4 = other.pt.y + other.rs.height;
+
+            int bx;
+            if (x2 <= x3)
+                bx = 0;
+            else if (x4 <= x1)
+                bx = 2;
+            else
+                bx = 1;
+
+            int by;
+            if (y2 <= y3)
+                by = 0;
+            else if (y4 <= y1)
+                by = 2;
+            else
+                by = 1;
+
+            int b = by * 3 + bx;
+            switch (b) {
+                case 0:
+                    distance = Pt::getDistance(x2, y2, x3, y3);
+                    return Ln(x2, y2, x3, y3);
+                case 1:
+                    distance = y3 - y2;
+                    return Ln(NaN, y2, NaN, y3);
+                case 2:
+                    distance = Pt::getDistance(x1, y2, x4, y3);
+                    return Ln(x1, y2, x4, y3);
+                case 3:
+                    distance = x3 - x2;
+                    return Ln(x2, NaN, x3, NaN);
+                case 4:
+                    distance = 0;
+                    return Ln::getNil();
+                case 5:
+                    distance = x1 - x4;
+                    return Ln(x1, NaN, x4, NaN);
+                case 6:
+                    distance = Pt::getDistance(x2, y1, x3, y4);
+                    return Ln(x2, y1, x3, y4);
+                case 7:
+                    distance = y1 - y4;
+                    return Ln(NaN, y1, NaN, y4);
+                case 8:
+                    distance = Pt::getDistance(x1, y1, x4, y4);
+                    return Ln(x1, y1, x4, y4);
+                default:
+                    distance = NaN;
+                    return Ln::getNil();
+            }
+        }
+
+        static Rc getRcFromCenterSize(const Pt& center, const Rs& size) {
+            return Rc(center.x - size.width / 2, center.y - size.height / 2, size.width, size.height);
         }
 
         static Rc getNil() {
             return Rc(Pt::getNil(), Rs::getNil());
         }
 
-        bool isNil() {
+        bool isNil() const {
             return pt.isNil() && rs.isNil();
         }
 };
@@ -383,22 +454,22 @@ class Cc {
             assign(Pt(x, y), radius);
         }
 
-        Cc(Pt& origin, double radius) {
+        Cc(const Pt& origin, double radius) {
             assign(origin, radius);
         }
 
-        Cc& assign(Pt& origin, double radius) {
+        Cc& assign(const Pt& origin, double radius) {
             this->origin = origin;
             this->radius = radius;
 
             return *this;
         }
 
-        bool contains(Pt& pt) {
+        bool contains(Pt& pt) const {
             return origin.getDistance(pt) <= radius;
         }
 
-        std::vector<Pt> intersect(Cc& other) {
+        std::vector<Pt> intersect(const Cc& other) const {
             double R2 = radius * radius;
             double r2 = other.radius * other.radius;
             double d = origin.getDistance(other.origin);
@@ -430,16 +501,16 @@ class Cc {
             return pts;
         }
 
-        static Cc getEnclosingCircle(std::vector<Cc>& circles) {
+        static Cc getEnclosingCircle(const std::vector<Cc>& circles) {
             Cc cc = circles[0];
 
-            for (std::vector<Cc>::iterator it = circles.begin(); it != circles.end(); it++)
+            for (std::vector<Cc>::const_iterator it = circles.begin(); it != circles.end(); it++)
                 cc = cc.getEnclosingCircle(*it);
 
             return cc;
         }
 
-        Cc getEnclosingCircle(Cc& other) {
+        Cc getEnclosingCircle(const Cc& other) const {
             double distance = origin.getDistance(other.origin);
             double d = distance + std::max(radius, other.radius - distance) + std::max(other.radius, radius - distance);
             Pt pt(d / 2 - std::max(radius, other.radius - distance), 0);
@@ -450,19 +521,19 @@ class Cc {
             return Cc(pt, d / 2);
         }
 
-        Pt getCenterTop() {
+        Pt getCenterTop() const {
             return Pt(origin.x, origin.y - radius);
         }
 
-        Pt getCenterBottom() {
+        Pt getCenterBottom() const {
             return Pt(origin.x, origin.y + radius);
         }
 
-        Pt getLeftCenter() {
+        Pt getLeftCenter() const {
             return Pt(origin.x - radius, origin.y);
         }
 
-        Pt getRightCenter() {
+        Pt getRightCenter() const {
             return Pt(origin.x + radius, origin.y);
         }
 };

@@ -116,6 +116,19 @@ class Variable : public IPositioned {
 	    }
 };
 
+class IBody : public IPositioned {
+    public:
+        virtual const char *getClassName() = 0;
+
+        virtual Rs& getSize() = 0;
+
+        virtual double getMass() = 0;
+
+        virtual double getCharge() = 0;
+
+        virtual Variable *getVariable() = 0;
+};
+
 class IForceProvider {
     protected:
         double maxForce;
@@ -141,24 +154,41 @@ class IForceProvider {
                 return getValidForce(fabs(force));
 	    }
 
+        Pt getStandardDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
+            Pt vector = Pt(body1->getPosition()).subtract(body2->getPosition());
+            distance = vector.getLength();
+            return vector;
+        }
+
+        Pt getStandardHorizontalDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
+            distance = body1->getPosition().x - body2->getPosition().x;
+            Pt vector = Pt(distance, 0);
+            distance = std::abs(distance);
+            return vector;
+        }
+
+        Pt getStandardVerticalDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
+            distance = body1->getPosition().y - body2->getPosition().y;
+            Pt vector = Pt(0, distance);
+            distance = std::abs(distance);
+            return vector;
+        }
+
+        Pt getSlipperyDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
+            Rc rc1 = Rc::getRcFromCenterSize(body1->getPosition(), body1->getSize());
+            Rc rc2 = Rc::getRcFromCenterSize(body2->getPosition(), body2->getSize());
+            Ln ln = rc1.getDistance(rc2, distance);
+            Pt vector = ln.begin;
+            vector.subtract(ln.end);
+            vector.setNaNToZero();
+            return vector;
+        }
+
         virtual const char *getClassName() = 0;
 
         virtual void applyForces(const ForceDirectedEmbedding& embedding) = 0;
 
         virtual double getPotentialEnergy(const ForceDirectedEmbedding& embedding) = 0;
-};
-
-class IBody : public IPositioned {
-    public:
-        virtual const char *getClassName() = 0;
-
-        virtual Rs& getSize() = 0;
-
-        virtual double getMass() = 0;
-
-        virtual double getCharge() = 0;
-
-        virtual Variable *getVariable() = 0;
 };
 
 #endif

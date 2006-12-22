@@ -147,10 +147,13 @@ class AbstractElectricRepeal : public IElectricRepeal {
     
         IBody *charge2;
 
+        bool slippery;
+
     public:
-        AbstractElectricRepeal(IBody *charge1, IBody *charge2) {
+        AbstractElectricRepeal(IBody *charge1, IBody *charge2, bool slippery) {
             this->charge1 = charge1;
             this->charge2 = charge2;
+            this->slippery = slippery;
         }
 
         virtual IBody *getCharge1() {
@@ -161,37 +164,47 @@ class AbstractElectricRepeal : public IElectricRepeal {
             return charge2;
         }
         
-        virtual Pt getDistance() = 0;
+        virtual Pt getDistanceAndVector(double &distance) = 0;
+
+        virtual double getDistance() {
+            double distance;
+            getDistanceAndVector(distance);
+            return distance;
+        }
 
         virtual void applyForces(const ForceDirectedEmbedding& embedding) {
-            Pt distance = getDistance();
-            double distanceLength = distance.getLength();
-            double power;
-            
-            if (distanceLength <= 0)
-                power = maxForce;
-            else
-                power = getValidForce(embedding.electricRepealCoefficient * charge1->getCharge() * charge2->getCharge() / distanceLength / distanceLength);
-            
-            charge1->getVariable()->addForce(distance, +power, embedding.inspected);
-            charge2->getVariable()->addForce(distance, -power, embedding.inspected);
+            double distance;
+            Pt vector = getDistanceAndVector(distance);
+            ASSERT(distance >= 0);
+
+            if (!vector.isZero()) {
+                double power;
+
+                if (distance == 0)
+                    power = maxForce;
+                else
+                    power = getValidForce(embedding.electricRepealCoefficient * charge1->getCharge() * charge2->getCharge() / distance / distance);
+
+                charge1->getVariable()->addForce(vector, +power, embedding.inspected);
+                charge2->getVariable()->addForce(vector, -power, embedding.inspected);
+            }
         }
 
         virtual double getPotentialEnergy(const ForceDirectedEmbedding& embedding) {
-            return embedding.electricRepealCoefficient * charge1->getCharge() * charge2->getCharge() / getDistance().getLength();
+            return embedding.electricRepealCoefficient * charge1->getCharge() * charge2->getCharge() / getDistance();
         }
 };
 
 class ElectricRepeal : public AbstractElectricRepeal {
     public:
-        ElectricRepeal(IBody *charge1, IBody *charge2) : AbstractElectricRepeal(charge1, charge2) {
+        ElectricRepeal(IBody *charge1, IBody *charge2, bool slippery = false) : AbstractElectricRepeal(charge1, charge2, slippery) {
         }
 
-        virtual Pt getDistance() {
-            Pt distance = Pt(charge1->getPosition()).subtract(charge2->getPosition());
-            // TODO: find intersection with boxes and use the distance between the boxes
-            // distance.getLength() - charge1->getSize().getDiagonalLength() / 2 - charge2->getSize().getDiagonalLength() / 2;
-            return distance;
+        virtual Pt getDistanceAndVector(double &distance) {
+            if (slippery)
+                return getSlipperyDistanceAndVector(charge1, charge2, distance);
+            else
+                return getStandardDistanceAndVector(charge1, charge2, distance);
         }
 
         virtual const char *getClassName() {
@@ -201,12 +214,12 @@ class ElectricRepeal : public AbstractElectricRepeal {
 
 class VerticalElectricRepeal : public AbstractElectricRepeal {
     public:
-        VerticalElectricRepeal(IBody *charge1, IBody *charge2) : AbstractElectricRepeal(charge1, charge2) {
+        VerticalElectricRepeal(IBody *charge1, IBody *charge2) : AbstractElectricRepeal(charge1, charge2, false) {
         }
 
-        virtual Pt getDistance() {
-            return Pt(0, charge1->getPosition().y - charge2->getPosition().y);
-        }
+        virtual Pt getDistanceAndVector(double &distance) {
+            return getStandardVerticalDistanceAndVector(charge1, charge2, distance);
+       }
 
         virtual const char *getClassName() {
             return "VerticalElectricRepeal";
@@ -215,11 +228,11 @@ class VerticalElectricRepeal : public AbstractElectricRepeal {
 
 class HorizontalElectricRepeal : public AbstractElectricRepeal {
     public:
-        HorizontalElectricRepeal(IBody *charge1, IBody *charge2) : AbstractElectricRepeal(charge1, charge2) {
+        HorizontalElectricRepeal(IBody *charge1, IBody *charge2) : AbstractElectricRepeal(charge1, charge2, false) {
         }
 
-        virtual Pt getDistance() {
-            return Pt(charge1->getPosition().x - charge2->getPosition().x, 0);
+        virtual Pt getDistanceAndVector(double &distance) {
+            return getStandardHorizontalDistanceAndVector(charge1, charge2, distance);
         }
 
         virtual const char *getClassName() {
@@ -248,21 +261,24 @@ class AbstractSpring : public ISpring {
 
         double reposeLength;
 
+        bool slippery;
+
     private:
-        void constructor(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) {
+        void constructor(IBody *body1, IBody *body2, double springCoefficient, double reposeLength, bool slippery) {
             this->body1 = body1;
             this->body2 = body2;
             this->springCoefficient = springCoefficient;
             this->reposeLength = reposeLength;
+            this->slippery = slippery;
         }
 
     public:
         AbstractSpring(IBody *body1, IBody *body2) {
-            constructor(body1, body2, 1, 0);
+            constructor(body1, body2, 1, 0, false);
         }
         
-        AbstractSpring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) {
-            constructor(body1, body2, springCoefficient, reposeLength);
+        AbstractSpring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength, bool slippery) {
+            constructor(body1, body2, springCoefficient, reposeLength, slippery);
         }
 
         double getSpringCoefficient() {
@@ -281,24 +297,30 @@ class AbstractSpring : public ISpring {
             return body2;
         }
         
-        virtual Pt getDistance() = 0;
-        
-        virtual void applyForces(const ForceDirectedEmbedding& embedding) {
-            Pt distance = getDistance();
-            double expansion = distance.getLength() - reposeLength;
+        virtual Pt getDistanceAndVector(double &distance) = 0;
 
-            if (expansion != 0) {
+        virtual double getDistance() {
+            double distance;
+            getDistanceAndVector(distance);
+            return distance;
+        }
+
+        virtual void applyForces(const ForceDirectedEmbedding& embedding) {
+            double distance;
+            Pt vector = getDistanceAndVector(distance);
+            ASSERT(distance >= 0);
+            double expansion = distance - reposeLength;
+
+            if (expansion != 0 && !vector.isZero()) {
                 double power = getValidSignedForce(embedding.springCoefficient * springCoefficient * expansion);
                 
-                body1->getVariable()->addForce(distance, -power, embedding.inspected);
-                body2->getVariable()->addForce(distance, +power, embedding.inspected);
+                body1->getVariable()->addForce(vector, -power, embedding.inspected);
+                body2->getVariable()->addForce(vector, +power, embedding.inspected);
             }
         }
 
         virtual double getPotentialEnergy(const ForceDirectedEmbedding& embedding) {
-            Pt distance = getDistance();
-            double expansion = distance.getLength() - reposeLength;
-
+            double expansion = getDistance() - reposeLength;
             return embedding.springCoefficient * springCoefficient * expansion * expansion / 2; 
         }
 };
@@ -308,11 +330,14 @@ class Spring : public AbstractSpring {
         Spring(IBody *body1, IBody *body2) : AbstractSpring(body1, body2) {
         }
         
-        Spring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) : AbstractSpring(body1, body2, springCoefficient, reposeLength) {
+        Spring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength, bool slippery = false) : AbstractSpring(body1, body2, springCoefficient, reposeLength, slippery) {
         }
 
-        virtual Pt getDistance() {
-            return Pt(body1->getPosition()).subtract(body2->getPosition());
+        virtual Pt getDistanceAndVector(double &distance) {
+            if (slippery)
+                return getSlipperyDistanceAndVector(body1, body2, distance);
+            else
+                return getStandardDistanceAndVector(body1, body2, distance);
         }
 
         virtual const char *getClassName() {
@@ -325,11 +350,11 @@ class VerticalSpring : public AbstractSpring {
         VerticalSpring(IBody *body1, IBody *body2) : AbstractSpring(body1, body2) {
         }
         
-        VerticalSpring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) : AbstractSpring(body1, body2, springCoefficient, reposeLength){
+        VerticalSpring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) : AbstractSpring(body1, body2, springCoefficient, reposeLength, false){
         }
 
-        virtual Pt getDistance() {
-            return Pt(0, body1->getPosition().y - body2->getPosition().y);
+        virtual Pt getDistanceAndVector(double &distance) {
+            return getStandardVerticalDistanceAndVector(body1, body2, distance);
         }
 
         virtual const char *getClassName() {
@@ -342,11 +367,11 @@ class HorizonalSpring : public AbstractSpring {
         HorizonalSpring(IBody *body1, IBody *body2) : AbstractSpring(body1, body2) {
         }
         
-        HorizonalSpring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) : AbstractSpring(body1, body2, springCoefficient, reposeLength) {
+        HorizonalSpring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) : AbstractSpring(body1, body2, springCoefficient, reposeLength, false) {
         }
 
-        virtual Pt getDistance() {
-            return Pt(body1->getPosition().x - body2->getPosition().x, 0);
+        virtual Pt getDistanceAndVector(double &distance) {
+            return getStandardHorizontalDistanceAndVector(body1, body2, distance);
         }
 
         virtual const char *getClassName() {
