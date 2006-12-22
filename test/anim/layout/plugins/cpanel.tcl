@@ -67,7 +67,6 @@ proc cpanel_readParams {} {
     catch {
         set modp [opp_object_systemmodule]
         set dispstr [opp_getobjectfield $modp displayString]
-        puts "DISP: $dispstr"
 
         set param(springCoeff) 0.1
         set param(electricRepealCoeff) 100000
@@ -87,12 +86,13 @@ proc cpanel_paramChanged {arr name op} {
     if [catch {
         global param
         set value $param($name)
+        set modp [opp_object_systemmodule]
         #debug "$name changed to $value"
 
         if {$name=="springCoeff"} {
-            # apply $value
+            opp_set_moduledisplaystring_tagarg $modp "layout" 0 $value
         } elseif {$name=="electricRepealCoeff"} {
-            # apply $value
+            opp_set_moduledisplaystring_tagarg $modp "layout" 1 $value
         } else {
             error "wrong param name"
         }
