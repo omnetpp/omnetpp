@@ -362,19 +362,21 @@ void TGraphicalModWindow::refreshLayout()
 
     cModule *parentmodule = static_cast<cModule *>(object);
 
+    // Note trick avoid calling displayString() directly because it'd cause
+    // the display string object inside cModule to spring into existence
+    const cDisplayString blank;
+    const cDisplayString& ds = parentmodule->hasDisplayString() ? parentmodule->displayString() : blank;
+
     // create and configure layouter object
     //BasicSpringEmbedderLayout layouter;
-    ForceDirectedGraphLayouter layouter;
+    ForceDirectedGraphLayouter layouter(ds);
     layouter.setSeed(random_seed);
 
     // enable graphics only if full re-layouting (no cached coordinates in submodPosMap)
     if (submodPosMap.empty() && getTkApplication()->opt_showlayouting)
         layouter.setCanvas(getTkApplication()->getInterp(), canvas);
 
-    // Note trick avoid calling displayString() directly because it'd cause
-    // the display string object inside cModule to spring into existence
-    const cDisplayString blank;
-    const cDisplayString& ds = parentmodule->hasDisplayString() ? parentmodule->displayString() : blank;
+    // size
     int sx = resolveNumericDispStrArg(ds.getTagArg("bgb",0), parentmodule, 740);
     int sy = resolveNumericDispStrArg(ds.getTagArg("bgb",1), parentmodule, 500);
     layouter.setScaleToArea(sx,sy,50); // FIXME position "bgp" is ignored here...

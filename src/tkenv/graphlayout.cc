@@ -879,10 +879,23 @@ double AdvSpringEmbedderLayout::relax()
 
 /*******************************************************/
 
-ForceDirectedGraphLayouter::ForceDirectedGraphLayouter()
+static double resolveDoubleDispStrArg(const char *s, double defaultval)
+{
+   if (!s || !*s)
+       return defaultval;
+   return atof(s);
+}
+
+ForceDirectedGraphLayouter::ForceDirectedGraphLayouter(const cDisplayString& ds)
 {
     finalized = false;
     bordersAdded = false;
+
+    embedding.springCoefficient = resolveDoubleDispStrArg(ds.getTagArg("sc",0),embedding.springCoefficient);
+    embedding.electricRepealCoefficient = resolveDoubleDispStrArg(ds.getTagArg("erc",0),embedding.electricRepealCoefficient);
+    printf("1 sc: %s\n", ds.getTagArg("sc",0));
+    printf("2 sc: %g\n", atof(ds.getTagArg("sc",0)));
+    printf("3 sc: %g\n", embedding.springCoefficient);
 }
 
 void ForceDirectedGraphLayouter::addBody(cModule *mod, IBody *body)

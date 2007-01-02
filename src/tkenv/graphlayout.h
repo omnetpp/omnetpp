@@ -27,6 +27,14 @@
 #include <tk.h> // only for debugDraw
 #include "forcedirectedembedding.h"
 
+#include "csimplemodule.h"
+#include "cchannel.h"
+#include "cgate.h"
+#include "cmessage.h"
+#include "cpar.h"
+#include "cdensity.h"
+#include "cdisplaystring.h"
+
 // currently it works fine without boxing the graph
 //#define USE_CONTRACTING_BOX
 
@@ -285,7 +293,7 @@ class ForceDirectedGraphLayouter : public GraphLayouter
      * Ctor, dtor
      */
     //@{
-    ForceDirectedGraphLayouter();
+    ForceDirectedGraphLayouter(const cDisplayString& ds);
     virtual ~ForceDirectedGraphLayouter() {}
     //@}
 
