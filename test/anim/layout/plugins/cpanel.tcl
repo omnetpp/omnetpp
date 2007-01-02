@@ -45,17 +45,17 @@ proc cpanel_createControls {} {
     wm protocol $w WM_DELETE_WINDOW {exit_omnetpp}
 
     # create sliders
-    cpanel_slider $w.springCoeff "Spring Coeff"
-    $w.springCoeff.e config -from 0 -to 1 -resolution 0.01 -variable param(springCoeff)
-    pack $w.springCoeff -expand 0 -fill x
+    cpanel_slider $w.springCoefficient "Spring Coefficient"
+    $w.springCoefficient.e config -from 0 -to 10 -resolution 0.01 -variable param(springCoefficient)
+    pack $w.springCoefficient -expand 0 -fill x
 
-    cpanel_slider $w.electricRepealCoeff "Electrical Repeal Coeff"
-    $w.electricRepealCoeff.e config -from 1000 -to 500000 -resolution 1000 -variable param(electricRepealCoeff)
-    pack $w.electricRepealCoeff -expand 0 -fill x
+    cpanel_slider $w.electricRepealCoefficient "Electrical Repeal Coefficient"
+    $w.electricRepealCoefficient.e config -from 1000 -to 500000 -resolution 1000 -variable param(electricRepealCoefficient)
+    pack $w.electricRepealCoefficient -expand 0 -fill x
 
     # this is the old syntax, still accepted by Tcl8.4
-    trace variable param(springCoeff) w cpanel_paramChanged
-    trace variable param(electricRepealCoeff) w cpanel_paramChanged
+    trace variable param(springCoefficient) w cpanel_paramChanged
+    trace variable param(electricRepealCoefficient) w cpanel_paramChanged
 }
 
 #
@@ -68,12 +68,12 @@ proc cpanel_readParams {} {
         set modp [opp_object_systemmodule]
         set dispstr [opp_getobjectfield $modp displayString]
 
-        set param(springCoeff) 0.1
-        set param(electricRepealCoeff) 100000
-        catch {set param(springCoeff) [opp_displaystring $dispstr getTagArg "layout" 0]}
-        catch {set param(electricRepealCoeff) [opp_displaystring $dispstr getTagArg "layout" 1]}
+        set param(springCoefficient) 0.1
+        set param(electricRepealCoefficient) 100000
+        catch {set param(springCoefficient) [opp_displaystring $dispstr getTagArg "layout" 0]}
+        catch {set param(electricRepealCoefficient) [opp_displaystring $dispstr getTagArg "layout" 1]}
 
-        puts "read params: springCoeff=$param(springCoeff), electricRepealCoeff=$param(electricRepealCoeff)"
+        puts "read params: springCoefficient=$param(springCoefficient), electricRepealCoefficient=$param(electricRepealCoefficient)"
     }
 }
 
@@ -89,10 +89,10 @@ proc cpanel_paramChanged {arr name op} {
         set modp [opp_object_systemmodule]
         #debug "$name changed to $value"
 
-        if {$name=="springCoeff"} {
-            opp_set_moduledisplaystring_tagarg $modp "layout" 0 $value
-        } elseif {$name=="electricRepealCoeff"} {
-            opp_set_moduledisplaystring_tagarg $modp "layout" 1 $value
+        if {$name=="springCoefficient"} {
+            opp_set_moduledisplaystring_tagarg $modp "sc" 0 $value
+        } elseif {$name=="electricRepealCoefficient"} {
+            opp_set_moduledisplaystring_tagarg $modp "erc" 0 $value
         } else {
             error "wrong param name"
         }
