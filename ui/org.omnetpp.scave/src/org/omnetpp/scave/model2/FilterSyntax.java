@@ -4,20 +4,29 @@ import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.util.StringUtils;
 
-// Work in progress...
+/**
+ * Parser for filter texts with error recovery.
+ *
+ * @author tomi
+ */
 public class FilterSyntax {
 	
+	/**
+	 * Parse the <code>filter</code> string and returns the parse tree.
+	 */
 	public static Node parseFilter(String filter) {
 		Lexer lexer = new Lexer(filter);
 		Parser parser = new Parser(lexer);
 		return parser.parse();
 	}
 	
-	enum TokenType
+	public enum TokenType
 	{
 		AND,
 		OR,
@@ -85,57 +94,70 @@ public class FilterSyntax {
 	
 	public static class Node
 	{
-		public static final int FIELDPATTERN = 0; // fieldName ( pattern )
-		public static final int PATTERN = 1;      // pattern
-		public static final int NOT = 2;          // NOT <node>
-		public static final int AND = 3;          // <node> AND <node>
-		public static final int OR = 4;           // <node> OR <node>
+		public static final int ROOT = 0;
+		public static final int FIELDPATTERN = 1; // fieldName ( pattern )
+		public static final int PATTERN = 2;      // pattern
+		public static final int UNARY_OPERATOR_EXPR = 3;          // <operator> <node>
+		public static final int BINARY_OPERATOR_EXPR = 4;          // <node> <operator> <node>
+		public static final int PARENTHESISED_EXPR = 5;
 		
 		int type;
 		Object[] content; // Tokens and Nodes
 		Node parent;
 		
+		public Node(Node expr, Token end) {
+			type = ROOT;
+			content = new Object[2];
+			addChild(0, expr);
+			addChild(1, end);
+		}
+		
 		public Node(Token fieldName, Token open, Token pattern, Token close) {
 			type = FIELDPATTERN;
 			content = new Object[4];
-			content[0] = fieldName;
-			content[1] = open;
-			content[2] = pattern;
-			content[3] = close;
-			link();
+			addChild(0, fieldName);
+			addChild(1, open);
+			addChild(2, pattern);
+			addChild(3, close);
 		}
 		
 		public Node(Token pattern) {
 			type = PATTERN;
 			content = new Object[1];
-			content[0] = pattern;
-			link();
+			addChild(0, pattern);
 		}
 		
 		public Node(Token operator, Node operand) {
-			type = NOT;
+			type = UNARY_OPERATOR_EXPR;
 			content = new Object[2];
-			content[0] = operator;
-			content[1] = operand;
-			link();
+			addChild(0, operator);
+			addChild(1, operand);
 		}
 		
 		public Node(Token operator, Node leftOperand, Node rightOperand) {
-			type = operator.type == TokenType.AND ? AND : OR;
+			type = BINARY_OPERATOR_EXPR;
 			content = new Object[3];
-			content[0] = leftOperand;
-			content[1] = operator;
-			content[2] = rightOperand;
-			link();
+			addChild(0, leftOperand);
+			addChild(1, operator);
+			addChild(2, rightOperand);
 		}
 		
-		private void link() {
-			for (Object obj : content) {
-				if (obj instanceof Node)
-					((Node)obj).parent = this;
-				else if (obj instanceof Token)
-					((Token)obj).parent = this;
-			}
+		public Node(Token open, Node expr, Token close) {
+			type = PARENTHESISED_EXPR;
+			content = new Object[3];
+			addChild(0, open);
+			addChild(1, expr);
+			addChild(2, close);
+		}
+		
+		private void addChild(int index, Node child) {
+			child.parent = this;
+			content[index] = child;
+		}
+		
+		private void addChild(int index, Token child) {
+			child.parent = this;
+			content[index] = child;
 		}
 		
 		public Node getParent() {
@@ -150,18 +172,34 @@ public class FilterSyntax {
 			return content;
 		}
 		
+		public Node getExpr() {
+			Assert.isTrue(type == ROOT || type == PARENTHESISED_EXPR);
+			if (type == ROOT)
+				return (Node)content[0];
+			else
+				return (Node)content[1];
+		}
+		
+		public Token getOperator() {
+			Assert.isTrue(type == UNARY_OPERATOR_EXPR || type == BINARY_OPERATOR_EXPR);
+			if (type == UNARY_OPERATOR_EXPR)
+				return (Token)content[0];
+			else
+				return (Token)content[1];
+		}
+		
 		public Node getOperand() {
-			Assert.isTrue(type == NOT);
+			Assert.isTrue(type == UNARY_OPERATOR_EXPR);
 			return (Node)content[1];
 		}
 		
 		public Node getLeftOperand() {
-			Assert.isTrue(type == OR || type == AND);
+			Assert.isTrue(type == BINARY_OPERATOR_EXPR);
 			return (Node)content[0];
 		}
 		
 		public Node getRightOperand() {
-			Assert.isTrue(type == OR || type == AND);
+			Assert.isTrue(type == BINARY_OPERATOR_EXPR);
 			return (Node)content[2];
 		}
 		
@@ -220,24 +258,31 @@ public class FilterSyntax {
 			sb.append(StringUtils.repeat("  ", level));
 
 			switch (type) {
+			case ROOT:
+				getExpr().format(sb, level);
+				break;
 			case FIELDPATTERN:
 				sb.append(getFieldName()).append("(").append(getPatternString()).append(")\n");
 				break;
 			case PATTERN:
 				sb.append(getPatternString()).append("\n");
 				break;
-			case NOT:
-				sb.append("NOT\n");
+			case UNARY_OPERATOR_EXPR:
+				sb.append(getOperator().getValue()).append("\n");
 				if (getOperand() != null)
 					getOperand().format(sb, level+1);
 				break;
-			case AND: case OR:
-				sb.append(type == AND ? "AND" : "OR").append("\n");
+			case BINARY_OPERATOR_EXPR:
+				sb.append(getOperator().getValue()).append("\n");
 				if (getLeftOperand() != null)
 					getLeftOperand().format(sb, level+1);
 				if (getRightOperand() != null)
 					getRightOperand().format(sb, level+1);
 				break;
+			case PARENTHESISED_EXPR:
+				sb.append("(");
+				getExpr().format(sb, level+1);
+				sb.append(")");
 			default:
 				sb.append("<ERROR>\n");
 			}
@@ -246,10 +291,20 @@ public class FilterSyntax {
 	
 	static class Lexer
 	{
-		public static final int EOF_CHAR = -1;
+		public static final int EOF = -1;
+		public static final Map<String, TokenType> keywords = new HashMap<String, TokenType>(3);
+		
+		static {
+			keywords.put("OR", TokenType.OR);
+			keywords.put("or", TokenType.OR);
+			keywords.put("AND", TokenType.AND);
+			keywords.put("and", TokenType.AND);
+			keywords.put("NOT", TokenType.NOT);
+			keywords.put("not", TokenType.NOT);
+		}
 		
 		PushbackReader input;
-		int pos;
+		int pos; 				// index of the next character
 		boolean finished;
 		
 		public Lexer(String input) {
@@ -265,11 +320,14 @@ public class FilterSyntax {
 			int ch;
 			StringBuffer value;
 			
+			if (finished)
+				return new Token(TokenType.END, pos, pos);
+			
 			while (true) {
 				int startPos = pos;
 				ch = getChar();
 				switch (ch) {
-				case EOF_CHAR: return new Token(TokenType.END, startPos, pos);
+				case EOF: return new Token(TokenType.END, startPos, pos);
 				case '(':		return new Token(TokenType.OP, startPos, pos);
 				case ')':		return new Token(TokenType.CP, startPos, pos);
 				case '"':
@@ -277,7 +335,7 @@ public class FilterSyntax {
 					while (true) {
 						switch (ch = getChar()) {
 						case '"': return new Token(TokenType.STRING_LITERAL, value.toString(), startPos, pos);
-						case EOF_CHAR: return new Token(TokenType.STRING_LITERAL, value.toString(), startPos, pos);
+						case EOF: return new Token(TokenType.STRING_LITERAL, value.toString(), startPos, pos);
 						default: value.append((char)ch);
 						}
 					}
@@ -288,19 +346,16 @@ public class FilterSyntax {
 					LOOP:
 					while (true) {
 						switch (ch = getChar()) {
-						case ' ': case '\t': case '\n': case EOF_CHAR: case '(': case ')': ungetChar(ch); break LOOP;
+						case EOF: break LOOP;
+						case ' ': case '\t': case '\n': case '(': case ')': ungetChar(ch); break LOOP;
 						default: value.append((char)ch); break;
 						}
 					};
 					String v = value.toString();
-					if ("AND".equals(v) || "and".equals(v))
-						return new Token(TokenType.AND, startPos, pos);
-					else if ("OR".equals(v) || "or".equals(v))
-						return new Token(TokenType.OR, startPos, pos);
-					else if ("NOT".equals(v) || "not".equals(v))
-						return new Token(TokenType.NOT, startPos, pos);
-						
-					return new Token(TokenType.STRING_LITERAL, value.toString(), startPos, pos);
+					if (keywords.containsKey(v))
+						return new Token(keywords.get(v), startPos, pos);
+					else
+						return new Token(TokenType.STRING_LITERAL, value.toString(), startPos, pos);
 				}
 			}
 		}
@@ -308,20 +363,19 @@ public class FilterSyntax {
 		private int getChar() {
 			try {
 				int ch = input.read();
-				if (!finished)
-					pos++;
-				if (ch == EOF_CHAR)
+				if (ch == EOF)
 					finished = true;
+				else
+					pos++;
 				return ch;
 			} catch (IOException e) {
-				return EOF_CHAR;
+				return EOF;
 			}
 		}
 		
 		private void ungetChar(int ch) {
 			try {
-				if (ch != EOF_CHAR)
-					input.unread(ch);
+				input.unread(ch);
 				pos--;
 			} catch (IOException e) {
 				// XXX
@@ -365,9 +419,9 @@ public class FilterSyntax {
 		}
 		
 		public Node expression() {
-			Node result = expr();
-			match(TokenType.END);
-			return result;
+			Node expr = expr();
+			Token end = match(TokenType.END);
+			return new Node(expr, end);
 		}
 		
 		private Node expr() {
@@ -400,7 +454,7 @@ public class FilterSyntax {
 			if (lookAhead1.type == TokenType.NOT) {
 				Token operator = match(TokenType.NOT);
 				Node expr = primaryExpr();
-				return new Node(operator, expr, null);
+				return new Node(operator, expr);
 			}
 			else
 				return primaryExpr();
@@ -409,10 +463,10 @@ public class FilterSyntax {
 		private Node primaryExpr() {
 			
 			if (lookAhead1.type == TokenType.OP) {
-				match(TokenType.OP);
-				Node result = expr();
-				match(TokenType.CP, true);
-				return result;
+				Token open = match(TokenType.OP);
+				Node expr = expr();
+				Token close = match(TokenType.CP, true);
+				return new Node(open, expr, close);
 			}
 			else if (lookAhead1.type == TokenType.STRING_LITERAL && lookAhead2.type == TokenType.OP) {
 				Token fieldName = match(TokenType.STRING_LITERAL);

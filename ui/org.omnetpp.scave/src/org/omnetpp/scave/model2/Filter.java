@@ -7,6 +7,7 @@ import org.omnetpp.scave.model.SetOperation;
 import org.omnetpp.scave.model2.FilterSyntax.INodeVisitor;
 import org.omnetpp.scave.model2.FilterSyntax.Node;
 import org.omnetpp.scave.model2.FilterSyntax.Token;
+import org.omnetpp.scave.model2.FilterSyntax.TokenType;
 
 /**
  * Filter parameters for datasets. 
@@ -144,8 +145,14 @@ public class Filter {
 		
 		public boolean visit(Node node) {
 			switch (node.type) {
-			case Node.OR: case Node.NOT: simple = false; return false;
-			case Node.AND: return true;
+			case Node.UNARY_OPERATOR_EXPR: simple = false; return false;
+			case Node.BINARY_OPERATOR_EXPR:
+				if (node.getOperator().getType() == TokenType.AND)
+					return true;
+				else {
+					simple = false;
+					return false;
+				}
 			case Node.PATTERN:
 				if (!fields.containsKey(Filter.getDefaultField())) {
 					if (!node.getPattern().isEmpty())
@@ -162,6 +169,8 @@ public class Filter {
 				else
 					simple = false;
 				return false;
+			case Node.PARENTHESISED_EXPR:
+				return true;
 			default: /*TODO*/ return false;
 			}
 		}

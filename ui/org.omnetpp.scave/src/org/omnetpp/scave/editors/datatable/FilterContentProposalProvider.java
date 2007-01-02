@@ -16,30 +16,28 @@ import org.omnetpp.scave.model2.FilterSyntax.Token;
 
 class FilterContentProposalProvider implements IContentProposalProvider
 {
-	private static ContentProposal[] fieldProposals;
-	private static ContentProposal[] operatorProposals;
-	private static final IContentProposal[] EMPTY = null; // new IContentProposal[0];
-	
 	private static final boolean debug = true;
 
-	private Map<String,ContentProposal[]> patternProposals = new HashMap<String,ContentProposal[]>();
+	private static ContentProposal[] fieldProposals;
+	private static ContentProposal[] binaryOperatorProposals;
+	private static ContentProposal[] unaryOperatorProposals;
+	private static ContentProposal noProposal = new ContentProposal("", "No proposal");
 	
-	enum TokenType {
-		OPERATOR,
-		FIELD,
-		PATTERN,
-	}
+	private Map<String,ContentProposal[]> patternProposals = new HashMap<String,ContentProposal[]>();
 	
 	static {
 		String[] filterFields = Filter.getFieldNames();
 		fieldProposals = new ContentProposal[filterFields.length];
 		for (int i = 0; i < filterFields.length; ++i) {
-			fieldProposals[i] = new ContentProposal(filterFields[i], true);
+			fieldProposals[i] = new ContentProposal(filterFields[i]);
 		}
-		operatorProposals = new ContentProposal[3];
-		operatorProposals[0] = new ContentProposal("AND");
-		operatorProposals[1] = new ContentProposal("AND");
-		operatorProposals[2] = new ContentProposal("AND");
+		binaryOperatorProposals = new ContentProposal[] {
+				new ContentProposal("OR"),
+				new ContentProposal("AND")
+		};
+		unaryOperatorProposals = new ContentProposal[] {
+				new ContentProposal("NOT")
+		};
 	}
 	
 	public void setFilterHints(FilterHints hints) {
@@ -57,53 +55,125 @@ class FilterContentProposalProvider implements IContentProposalProvider
 	}
 
 	public IContentProposal[] getProposals(String contents, int position) {
-		IContentProposal[] proposals = EMPTY;
-		Token token = getContainingToken(contents, position);
+		List<IContentProposal> result = new ArrayList<IContentProposal>();
+		
+		Token token = getContainingOrPrecedingToken(contents, position);
 		if (token != null) {
 			Node parent = token.getParent();
 			if (parent != null) {
 				int type = parent.getType();
-				if (type == Node.FIELDPATTERN && token == parent.getField()) {
-					proposals = getFieldProposals(token.getValue());
+				String prefix;
+				int startIndex, endIndex;
+				boolean addOpeningParen, addClosingParen;
+				boolean atEnd = token.getEndPos() <= position;
+
+				if (type == Node.FIELDPATTERN && token == parent.getField() && !atEnd) { // replace field name
+					prefix = "";
+					startIndex = token.getStartPos();
+					endIndex = token.getEndPos();
+					addOpeningParen = parent.getOpeningParen().isEmpty();
+					addClosingParen = parent.getPattern().isEmpty() && parent.getClosingParen().isEmpty();
+					collectFilteredProposals(result, fieldProposals, prefix, startIndex, endIndex,
+							addOpeningParen, addClosingParen, false);
 				}
-				else if (type == Node.PATTERN && token == parent.getPattern() ||
-						 type == Node.FIELDPATTERN && (token == parent.getPattern() || token == parent.getOpeningParen())) {
-					String field = type == Node.PATTERN ? Filter.getDefaultField() : parent.getFieldName();
-					boolean addClosingParen = type == Node.FIELDPATTERN && parent.getClosingParen().isEmpty();
-					proposals = getPatternProposals(field, parent.getPatternString(), addClosingParen);
+				else if (type == Node.FIELDPATTERN && token == parent.getField() && atEnd) { // extend field name
+					prefix = parent.getFieldName();
+					startIndex = parent.getField().getStartPos();
+					endIndex = parent.getField().getEndPos();
+					collectFilteredProposals(result, fieldProposals, prefix, startIndex, endIndex,
+							false, false, true);
+				}
+				else if (type == Node.FIELDPATTERN && token == parent.getPattern() && !atEnd) { // replace pattern
+					prefix = "";
+					startIndex = parent.getPattern().getStartPos();
+					endIndex = parent.getPattern().getEndPos();
+					addClosingParen = parent.getClosingParen().isEmpty();
+					collectFilteredProposals(result, patternProposals.get(parent.getFieldName()), prefix, startIndex, endIndex,
+							false, addClosingParen, true);
+				}
+				else if (type == Node.FIELDPATTERN && (token == parent.getPattern() || token == parent.getOpeningParen()) && atEnd) { // extend pattern
+					prefix = parent.getPatternString();
+					startIndex = parent.getPattern().getStartPos();
+					endIndex = parent.getPattern().getEndPos();
+					addClosingParen = parent.getClosingParen().isEmpty();
+					collectFilteredProposals(result, patternProposals.get(parent.getFieldName()), prefix, startIndex, endIndex,
+							false, addClosingParen, true);
+				}
+				else if (type == Node.FIELDPATTERN && token == parent.getClosingParen()) {
+					collectFilteredProposals(result, binaryOperatorProposals, "", position, position, false, false, false);
+				}
+				else if (type == Node.PATTERN && token == parent.getPattern()) { // extend pattern or field name
+					prefix = parent.getPatternString();
+					startIndex = parent.getPattern().getStartPos();
+					endIndex = parent.getPattern().getEndPos();
+					String field = Filter.getDefaultField();
+					collectFilteredProposals(result, unaryOperatorProposals, prefix, startIndex, endIndex, false, false, false);
+					collectFilteredProposals(result, fieldProposals, prefix, startIndex, endIndex, true, true, false);
+					collectFilteredProposals(result, patternProposals.get(field), prefix, startIndex, endIndex, false, false, true);
+				}
+				else if (type == Node.UNARY_OPERATOR_EXPR && !atEnd) { // replace unary operator
+					collectFilteredProposals(result, unaryOperatorProposals, "", token.getStartPos(), token.getEndPos(),
+							false, false, false);
+				}
+				else if (type == Node.BINARY_OPERATOR_EXPR && !atEnd) { // replace binary operator
+					collectFilteredProposals(result, binaryOperatorProposals, "", token.getStartPos(), token.getEndPos(),
+							false, false, false);
+				}
+				else if ((type == Node.BINARY_OPERATOR_EXPR  || type == Node.UNARY_OPERATOR_EXPR || type == Node.PARENTHESISED_EXPR) && atEnd) { // insert after unary or binary operator
+					collectFilteredProposals(result, unaryOperatorProposals, "", position, position, false, false, false);
+					collectFilteredProposals(result, fieldProposals, "", position, position, true, true, false);
+					collectFilteredProposals(result, patternProposals.get(Filter.getDefaultField()), "", position, position, false, false, true);
+				}
+				else if (type == Node.ROOT && token.getType() == FilterSyntax.TokenType.END) {
+					prefix = "";
+					startIndex = position;
+					endIndex = position;
+					//collectFilteredProposals(result, operatorProposals, prefix, startIndex, endIndex, false, false, false);
+					collectFilteredProposals(result, fieldProposals, prefix, startIndex, endIndex, true, true, false);
+					collectFilteredProposals(result, patternProposals.get(Filter.getDefaultField()), prefix, startIndex, endIndex, false, false, true);
 				}
 			}
+		} 
+		
+		if (result.isEmpty()) {
+			result.add(noProposal);
 		}
+
 		if (debug) {
-			if (proposals != null)
-				for (IContentProposal proposal : proposals) {
-					System.out.println("Proposal: " + proposal.getContent());
-				}
-			else
-				System.out.println("No proposals");
+			for (IContentProposal proposal : result) {
+				System.out.println("Proposal: " + proposal.getContent());
+			}
 		}
-		return proposals;
+
+		return result.toArray(new IContentProposal[result.size()]);
 	}
 	
-	private Token getContainingToken(String contents, final int position) {
+	private Token getContainingOrPrecedingToken(String contents, final int position) {
 		class Visitor implements INodeVisitor
 		{
+			boolean found;
 			Token token;
 			
 			public boolean visit(Node node) {
-				return token == null;
+				return !found;
 			}
 			
 			public void visit(Token token) {
 				if (debug)
 					System.out.println("Visiting: " + token);
-				if (token.getStartPos() < position && position <= token.getEndPos())
-					this.token = token;
+				if (!found) {
+					if (token.getStartPos() >= position && this.token != null)
+						found = true;
+					else
+						this.token = token;
+				}
 			}
 		}
 
-		if (debug)
+		if (debug) {
 			System.out.println("Position: " + position);
+			System.out.println("Parsing: " + contents);
+		}
 		Node root = FilterSyntax.parseFilter(contents);
 		if (debug)
 			System.out.println("Parse tree:\n" + root);
@@ -115,64 +185,68 @@ class FilterContentProposalProvider implements IContentProposalProvider
 	}
 	
 	
-	private IContentProposal[] getFieldProposals(String prefix) {
-		// TODO: sort proposals
-		return getFilteredProposals(fieldProposals, prefix, false);
-	}
-	
-	private IContentProposal[] getPatternProposals(String field, String prefix, boolean addClosingParen) {
-		return getFilteredProposals(patternProposals.get(field), prefix, addClosingParen);
-	}
-	
-	private IContentProposal[] getFilteredProposals(ContentProposal[] proposals, String prefix, boolean addClosingParen) {
-		List<ContentProposal> result = new ArrayList<ContentProposal>(fieldProposals.length);
-		int prefixLength = prefix.length();
+	private void collectFilteredProposals(List<IContentProposal> result, ContentProposal[] proposals, String prefix,
+			int startIndex, int endIndex, boolean addOpeningParen, boolean addClosingParen, boolean addQuotes) {
 		if (proposals != null) {
 			for (ContentProposal proposal : proposals) {
-				if (proposal.getContent().startsWith(prefix)) {
-					proposal.setPrefixLength(prefixLength);
+				if (proposal.startsWith(prefix)) {
+					proposal.setStartIndex(startIndex);
+					proposal.setEndIndex(endIndex);
+					proposal.setOpeningParenNeeded(addOpeningParen);
 					proposal.setClosingParenNeeded(addClosingParen);
+					proposal.setQuotesNeeded(addQuotes);
 					result.add(proposal);
 				}
 			}
 		}
-		return result.toArray(new IContentProposal[result.size()]);
 	}
 	
-	static class ContentProposal implements IContentProposal {
+	public static class ContentProposal implements IContentProposal {
 		
+		private int startIndex;
+		private int endIndex;
 		private String content;
 		private int cursorPosition;
 		private String label;
 		private String description;
-		private int prefixLength;
-		private boolean closingParenNeeded;
+		private boolean quotesNeeded;       // if true surrounds the content with '"' characters
+		private boolean openingParenNeeded; // if true puts an '(' after the content
+		private boolean closingParenNeeded; // if true puts a ')' after the content and opening parenthesis
+		private boolean containsWhitespace; // true if the content should be quoted
+		
 		
 		public ContentProposal(String proposal) {
-			this(proposal, false);
-		}
-		
-		public ContentProposal(String proposal, boolean addParenthesis) {
-			if (addParenthesis) {
-				content = proposal + "()";
-				cursorPosition = proposal.length()+1;
-			}
-			else {
-				content = proposal;
-				cursorPosition = proposal.length();
-			}
-			label = proposal;
+			this(proposal, proposal);
 		}
 
+		public ContentProposal(String content, String label) {
+			this.content = content;
+			this.label = label;
+			this.cursorPosition = content.length();
+			this.containsWhitespace = content.indexOf(' ') >= 0;
+		}
+		
 		public String getContent() {
-			String result  = prefixLength == 0 ? content : content.substring(prefixLength);
-			if (closingParenNeeded) result += ")";
+			String result  = content;
+			if (quotesNeeded) result = "\"" + result + "\"";
+			if (openingParenNeeded) result += "(";
+			if (closingParenNeeded) result += ") ";
 			return result;
 		}
+		
+		public int getStartIndex() {
+			return startIndex;
+		}
+		
+		public int getEndIndex() {
+			return endIndex;
+		}
+		
 		public int getCursorPosition() {
-			int position = cursorPosition - prefixLength;
-			if (closingParenNeeded)
-				position++;
+			int position = cursorPosition;
+			if (quotesNeeded) position++; // shift due to beginning '"'
+			if (openingParenNeeded)	position++;
+			else if (closingParenNeeded) position += 2; // put cursor after the closing parenthesis if no opening inserted
 			return position;
 		}
 		public String getDescription() {
@@ -182,12 +256,35 @@ class FilterContentProposalProvider implements IContentProposalProvider
 			return label;
 		}
 		
-		public void setPrefixLength(int length) {
-			this.prefixLength = length;
+		public void setStartIndex(int index) {
+			startIndex = index;
+		}
+		
+		public void setEndIndex(int index) {
+			endIndex = index;
+		}
+		
+		public void setOpeningParenNeeded(boolean openingParenNeeded) {
+			this.openingParenNeeded = openingParenNeeded;
 		}
 		
 		public void setClosingParenNeeded(boolean closingParenNeeded) {
 			this.closingParenNeeded = closingParenNeeded;
 		}
+		
+		public void setQuotesNeeded(boolean quotesNeeded) {
+			this.quotesNeeded = quotesNeeded && containsWhitespace;
+		}
+		
+		public boolean startsWith(String prefix) {
+			return content.startsWith(prefix);
+		}
 	}
+	
+	public static void test() {
+		FilterContentProposalProvider provider = new FilterContentProposalProvider();
+		provider.getProposals("", 0);
+	}
+	
+	
 }

@@ -1,12 +1,9 @@
 package org.omnetpp.scave.editors.datatable;
 
-import org.eclipse.jface.bindings.keys.KeyStroke;
-import org.eclipse.jface.bindings.keys.ParseException;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.jface.fieldassist.IContentProposal;
-import org.eclipse.jface.fieldassist.IContentProposalProvider;
-import org.eclipse.jface.fieldassist.SimpleContentProposalProvider;
-import org.eclipse.jface.fieldassist.TextContentAdapter;
+import org.eclipse.jface.fieldassist.IContentProposalListener;
+import org.eclipse.jface.fieldassist.TextControlCreator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -18,9 +15,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
+import org.eclipse.ui.fieldassist.ContentAssistField;
 import org.omnetpp.scave.editors.ui.FilterParamsPanel;
-import org.omnetpp.scave.model2.FilterHints;
 import org.omnetpp.scave.model2.Filter;
+import org.omnetpp.scave.model2.FilterHints;
 
 /**
  * A composite with UI elements to filter a data table.
@@ -33,7 +32,7 @@ public class FilteringPanel extends Composite {
 	private Button toggleFilterTypeButton;
 	private Text advancedFilterText;
 	private FilterParamsPanel simpleFilterPanel;
-	private FilterContentProposalProvider proposalProvider = new FilterContentProposalProvider();
+	private FilterContentProposalProvider proposalProvider;
 
 	private Button filterButton;
 
@@ -89,7 +88,8 @@ public class FilteringPanel extends Composite {
 	
 	public void setFilterHints(FilterHints hints) {
 		simpleFilterPanel.setFilterHints(hints);
-		proposalProvider.setFilterHints(hints);
+		if (proposalProvider != null)
+			proposalProvider.setFilterHints(hints);
 	}
 	
 	public String getFilterPattern() {
@@ -121,13 +121,20 @@ public class FilteringPanel extends Composite {
 		filterLabel.setText("Filter:");
 		filterLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 		
-		advancedFilterText = new Text(advancedFilterPanel, SWT.SINGLE | SWT.BORDER);
-		advancedFilterText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		
-		new ContentProposalAdapter(
-				advancedFilterText, new TextContentAdapter(), 
-				proposalProvider,
-				getProposalKeyStroke(), null);
+		final IControlContentAdapter2 contentAdapter = new TextContentAdapter2();
+		proposalProvider = new FilterContentProposalProvider();
+		ContentAssistField advancedFilter = new ContentAssistField(advancedFilterPanel, SWT.SINGLE | SWT.BORDER, 
+				new TextControlCreator(), contentAdapter, proposalProvider, null /*commandId*/, null/*auto-activation*/);
+		advancedFilter.getLayoutControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		ContentAssistCommandAdapter adapter = advancedFilter.getContentAssistCommandAdapter();
+		advancedFilterText = (Text)adapter.getControl(); 
+		adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_IGNORE);
+		adapter.addContentProposalListener(new IContentProposalListener() {
+			public void proposalAccepted(IContentProposal proposal) {
+				FilterContentProposalProvider.ContentProposal filterProposal = (FilterContentProposalProvider.ContentProposal)proposal;
+				contentAdapter.replaceControlContents(advancedFilterText, filterProposal.getStartIndex(), filterProposal.getEndIndex(),  filterProposal.getContent(), filterProposal.getCursorPosition());
+			}
+		});
 
 		simpleFilterPanel = new FilterParamsPanel(filterContainer, SWT.NONE);
 		simpleFilterPanel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
@@ -165,13 +172,4 @@ public class FilteringPanel extends Composite {
 		control.setVisible(visible);
 		((GridData)control.getLayoutData()).exclude = !visible;
 	}
-	
-	private static KeyStroke getProposalKeyStroke() {
-		try {
-			return KeyStroke.getInstance("Ctrl+Space");
-		} catch (ParseException e) {
-			return null;
-		}
-	}
-	
 }
