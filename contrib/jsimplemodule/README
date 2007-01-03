@@ -23,24 +23,119 @@ corresponding C++ object, and delegates all method calls to it. This
 has a few consequences about the programming model, as will be covered later.
 The wrapper classes have been generated using SWIG (www.swig.org).
 
+SO, SHOULD I DEVELOP MY SIMULATIONS IN JAVA? No. This is extension has far
+too many limitations to be recommended as a primary means of writing
+simulation models. However, it can be useful if you have some existing
+body of Java code which you want to reuse as part of a simulation.
 
 
-Usage:
-======
-Prerequisite: JDK installed.
+Contents
+--------
+1. Building the simulation executable
+2. Writing NED files
+3. Writing Java-based simple modules
 
-Build a simulation executable which contains the distributed .cc files:
+
+1. Building the simulation executable
+-------------------------------------
+
+Prerequisite: JDK.
+
+First, you'll need a simulation executable that contains JSimpleModule,
+plus the C++ simple modules you'll need in the simulation. For this,
+the provided .cc files need to be compiled and linked into the executable:
+
    JSimpleModule.cc
    simkernel_wrap.cc
    SimkernelJNI_registerNatives.cc
 
-These files want to include the JNI headers. If you get a compiler error
-message that <jni.h> is not found, you in the
-include path,
+These files need the JNI headers to compile, and the simulation executable
+needs to be linked against the JVM. If you generate the makefile with
+opp_(n)makemake...
+
+If you get a compiler error message that <jni.h> is not found, you in the
+include path,...
 
 
-    submodules:
-        fifo: JSimpleModule;
-            parameters:
-                javaClass = "Fifo";
+2. Creating the simulation
+
+Your Java-based simple modules will be run by JSimpleModule instances,
+which get the Java class name in a parameter. That is, you would write
+something like this in the NED file:
+
+   module Net2
+       submodules:
+           source: JSimpleModule;
+               parameters:
+                   javaClass = "Source";
+           sink: JSimpleModule;
+               parameters:
+                   javaClass = "Sink";
+       connections:
+           source.out++ --> sink.in++;
+   endmodule
+
+The current JSimpleModule ...
+Parameters...
+
+
+3. Writing simple modules in Java
+
+Simple module classes need to subclass from JSimpleModule, and redefine
+at least handleMessage() [activity() is not supported] and possibly also
+initialize() and finish():
+
+  import org.omnetpp.simkernel.*;
+
+  public class MyModule extends JSimpleModule
+  {
+      ...
+      public MyModule(long cptr) { super(cptr); }
+      protected void initialize() { ... }
+      protected void handleMessage(cMessage msg) { ... }
+      protected void finish() { ... }
+      ...
+  }
+
+The constructor taking (long cptr) is needed by SWIG, and must always be
+present. The module class can make use of cMessage, cQueue, cOutVector
+and other OMNeT++ classes.
+
+The above Java classes are just wrappers around the corresponding C++
+classes. They all hold a pointer to an underlying C++ object, and delegate
+method calls to it.
+
+When you write
+
+   cMessage msg = new cMessage();
+
+in Java, the org.omnetpp.simkernel.cMessage wrapper object will create an
+underlying C++ cMessage object via JNI, and hold on to its pointer.
+When you perform
+
+   send(msg, "out");
+
+which is actually
+
+   this.send(msg, "out");
+
+then the underlying C++ simple module's and the C++ cMessage object's pointer
+will be read from the Java objects, and the corresponding module->send(msg,
+"out") C++ call will be made. At the same time, a flag in the "msg" Java object
+will be set to indicate that it no longer has control over its the C++ message.
+
+
+When you
+
+
+4. Compiling your Java code and running the simulation
+
+When invoking the Java compiler, make sure that the provided simkernel.jar
+is in the compile-time classpath.
+
+Running the simulaton is no different from running any OMNeT++ simulation,
+but make sure simkernel.jar is in the CLASSPATH, and that the JVM can be loaded
+(i.e. JRE/bin is in the PATH).
+
+
 
