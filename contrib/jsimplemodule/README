@@ -119,18 +119,40 @@ which is actually
 
    this.send(msg, "out");
 
-then the underlying C++ simple module's and the C++ cMessage object's pointer
-will be read from the Java objects, and the corresponding module->send(msg,
-"out") C++ call will be made. At the same time, a flag in the "msg" Java object
-will be cleared to indicate that it no longer has control over the C++ object.
-After sending out a message, the corresponding Java object should no longer
-be referenced (i.e. should be allowed to be garbage-collected by the VM).
+then the underlying C++ simple module's and the C++ cMessage object's
+pointer will be read from the Java objects, and the corresponding
+module->send(msg, "out") C++ call will be made. At the same time, a flag in
+the "msg" Java object will be cleared to indicate that it no longer has
+control over the C++ object. After sending out a message, the corresponding
+Java object should no longer be referenced (i.e. should be allowed to be
+garbage-collected by the VM).
 
-The flag is named swigCMemOwn, and it is associated with memory management
-of the underlying C++ object. swigMemOwn is member of every SWIG-generated
-Java wrapper class. It is automatically managed most of the time, but because
-Java garbage collection and C++ explicit new/delete are a difficult match,
-it is useful to know how it works.
+MEMORY MANAGEMENT. The above mentioned flag is named swigCMemOwn, and it is
+associated with memory management of the underlying C++ object. swigMemOwn
+is member of every SWIG-generated Java wrapper class. It is automatically
+managed most of the time, but because Java garbage collection and C++
+explicit new/delete are a difficult match, it is useful to know how it
+works.
+
+Most importantly: when swigCMemOwn is set (==true), then garbage collecting
+the Java object will delete the underlying C++ object as well: finalize()
+calls the delete() method, which deallocates the C++ object with a JNI
+call. (Actually, delete() may be invoked explicitly too; after calling it,
+the Java object should be considered zombie, and no method should be called
+on it any more.) When swigCMemOwn is false, finalize() has no effect.
+
+Explicitly creating a Java object will create an underlying C++ object too,
+and will initialize swigCMemOwn to true. Certain methods, such as sending a
+message or inserting it into a cQueue, will cause the Java object to
+"disown" the C++ pointer, i.e. swigCMemOwn set to false.
+
+Methods which return an object (such as parentModule() or cQueue.pop())
+make a JNI call to retrieve a C++ object pointer, then wrap it into a Java
+object. The Java object's swigCMemOwn flag will be initialized to either
+true or false, depending on who owns the C++ object: still the simulation
+library (-->false), or the Java code (-->true). For example, parentModule()
+will return a Java object with swigCMemOwn==false, while cQueue.pop() with
+swigCMemOwn==true.
 
 
 There are two other artifacts (as a consequence of the wrapping), that you
