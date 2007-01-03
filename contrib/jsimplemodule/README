@@ -7,8 +7,24 @@ simulations. Integration is not seamless though, there are limitations as
 to what OMNeT++ features are available, as well special coding rules to
 obey in the Java code.
 
-Overview:
+Operation is based on the JSimpleModule class. This is an ordinary C++
+simple module, which receives the name of a Java class in a module parameter.
+During initialize, it loads the Java Virtual Machine (if not already loaded),
+instantiates the given Java class, then simply delegates initialize(),
+handleMessage() and finish() calls to it. The Java class should be subclassed
+from org.omnetpp.simkernel.JSimpleModule, which provides the usual methods:
+send(), scheduleAt(), cancelEvent(), etc. Messages are instances of
+org.omnetpp.simkernel.cMessage, and the org.omnetpp.simkernel package contains
+Java versions of most simulation kernel classes.
 
+The org.omnetpp.simkernel.* Java classes are just JNI-based wrappers around
+the corresponding C++ classes: every Java object holds a pointer to a
+corresponding C++ object, and delegates all method calls to it. This
+has a few consequences about the programming model, as will be covered later.
+The wrapper classes have been generated using SWIG (www.swig.org).
+
+
+Usage:
     submodules:
         fifo: JSimpleModule;
             parameters:
