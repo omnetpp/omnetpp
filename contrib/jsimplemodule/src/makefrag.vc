@@ -1,0 +1,47 @@
+INCLUDE_PATH=$(INCLUDE_PATH) -I$(JDK)/include -I$(JDK)/include/win32
+LIBS=$(LIBS) /libpath:$(JDK)/lib jvm.lib
+# SWIG="$(TOOLS_DIR)\swigwin-1.3.31\swig.exe"
+SWIG="$(TOOLS_DIR)\swig-1.3.25\swig.exe"
+JAVAC=$(JDK)\bin\javac.exe
+JAR=$(JDK)\bin\jar.exe
+PERL="$(TOOLS_DIR)\Perl\bin\perl.exe"
+
+JAVAPKG = org.omnetpp.simkernel
+JAVADIR = java\$(JAVAPKG:.=\)
+DISTDIR = distrib
+
+OBJS = $(OBJS) SimkernelJNI_registerNatives.obj simkernel_wrap.obj
+
+all: $(TARGET) javafiles dist
+
+$(TARGET): simkernel_wrap.cc
+
+simkernel_wrap.cc: simkernel.i Makefile.vc $(OMNETPP_ROOT)/include/*.h  # and many oher things
+	-mkdir java >nul 2>nul
+	-mkdir java\org >nul 2>nul
+	-mkdir java\org\omnetpp >nul 2>nul
+	-mkdir java\org\omnetpp\simkernel >nul 2>nul
+	-del $(JAVADIR)\*.java >nul
+	$(SWIG) -c++ -java -package $(JAVAPKG) -I$(OMNETPP_ROOT)/include -I$(OMNETPP_ROOT)/src/envir -I$(OMNETPP_ROOT) -outdir $(JAVADIR) simkernel.i
+	-del simkernel_wrap.cc >nul
+	ren simkernel_wrap.cxx simkernel_wrap.cc
+	$(PERL) -i.bak -pe "s/JNIEXPORT +//g" simkernel_wrap.cc
+	$(PERL) -i.bak -pe "s/JNICALL +//g" simkernel_wrap.cc
+	$(PERL) -i.bak -pe "s/jenv;/jenv; LOG_JNI_CALL();/g" simkernel_wrap.cc
+	$(PERL) registernatives.pl $(JAVADIR)/SimkernelJNI.java
+	$(PERL) patchownership.pl $(JAVADIR)
+	$(PERL) patchcastfrom.pl $(JAVADIR)
+
+javafiles:
+	copy ProxyObjectMap.java.in java\org\omnetpp\simkernel\ProxyObjectMap.java
+	dir /b/s java\*.java >listfile.tmp
+	-rd /s/q bin 2>nul
+	mkdir bin >nul
+	$(JAVAC) -sourcepath java -d bin @listfile.tmp
+
+dist: $(TARGET) javafiles
+	-mkdir $(DISTDIR) >nul 2>nul
+	$(JAR) cvf $(DISTDIR)/simkernel.jar -C bin org
+	copy *.cc $(DISTDIR)
+	copy *.h $(DISTDIR)
+	copy JSimpleModule.ned $(DISTDIR)

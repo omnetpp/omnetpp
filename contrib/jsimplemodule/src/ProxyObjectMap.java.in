@@ -1,0 +1,46 @@
+package org.omnetpp.simkernel;
+
+import java.util.HashMap;
+import java.lang.ref.WeakReference;
+
+/**
+ * Hashtable to help maintain one-to-one relationship of C++ objects and
+ * their SWIG-generated Java proxy objects.
+ */
+class ProxyObjectMap {
+
+    // cptr-to-proxy object
+    private static HashMap<Long,WeakReference> m = new HashMap<Long,WeakReference>();
+
+    /**
+     * Add a proxy object with the corresponding C++ base class pointer
+     * (i.e. cPolymorphic *) into the map. It must not be in there before.
+     */
+    public static void put(long cptr, Object object) {
+        if (m.get(cptr)!=null) {
+            System.out.println("WARNING: duplicate wrapper object! "+object.getClass().toString());
+            if (m.get(cptr).get()!=null)
+                System.out.println("      ^^^ and WeakReference is NON-NULL!");
+        }
+        m.put(cptr, new WeakReference(object));
+    }
+
+    /**
+     * Look up a proxy object from the C++ base class pointer (i.e. cPolymorphic *).
+     */
+    public static Object lookup(long cptr) {
+        WeakReference ref = m.get(cptr);
+        if (ref==null)
+            return null;
+        if (ref.get()==null)
+            m.remove(cptr);
+        return ref.get();
+    }
+
+    /**
+     * Clears the map.
+     */
+    public static void clear() {
+        m.clear();
+    }
+};
