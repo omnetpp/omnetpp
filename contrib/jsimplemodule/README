@@ -1,0 +1,16 @@
+JSimpleModule
+=============
+
+This is an extension that makes it possible to write OMNeT++ simple modules
+in Java. Java and C++-based simple modules can be freely mixed in
+simulations. Integration is not seamless though, there are limitations as
+to what OMNeT++ features are available, as well special coding rules to
+obey in the Java code.
+
+Overview:
+
+    submodules:
+        fifo: JSimpleModule;
+            parameters:
+                javaClass = "Fifo";
+
