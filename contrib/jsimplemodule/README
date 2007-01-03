@@ -24,7 +24,21 @@ has a few consequences about the programming model, as will be covered later.
 The wrapper classes have been generated using SWIG (www.swig.org).
 
 
+
 Usage:
+======
+Prerequisite: JDK installed.
+
+Build a simulation executable which contains the distributed .cc files:
+   JSimpleModule.cc
+   simkernel_wrap.cc
+   SimkernelJNI_registerNatives.cc
+
+These files want to include the JNI headers. If you get a compiler error
+message that <jni.h> is not found, you in the
+include path,
+
+
     submodules:
         fifo: JSimpleModule;
             parameters:
