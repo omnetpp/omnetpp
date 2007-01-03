@@ -1,6 +1,8 @@
 package org.omnetpp.scave.builder;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Plugin;
+import org.eclipse.core.runtime.Status;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -46,5 +48,18 @@ public class Activator extends Plugin {
 	public static Activator getDefault() {
 		return plugin;
 	}
-
+	
+	public static void logError(Throwable exception) {
+		logError(exception.toString(), exception);
+	}
+	
+	public static void logError(String message, Throwable exception) {
+		if (plugin != null) {
+			plugin.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
+		}
+		else {
+			System.err.println(message);
+			exception.printStackTrace();
+		}
+	}
 }

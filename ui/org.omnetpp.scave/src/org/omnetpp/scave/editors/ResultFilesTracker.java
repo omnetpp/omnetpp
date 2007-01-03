@@ -14,10 +14,13 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
+import org.omnetpp.scave.Activator;
 import org.omnetpp.scave.ContentTypes;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
@@ -87,17 +90,23 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			IFile file = (IFile)resource;
 			switch (delta.getKind()) {
 			case IResourceDelta.ADDED:
-					if (isResultFile(file) && inputsMatches(file))
-						loadFile(file);
+					if (isResultFile(file)) {
+						if (inputsMatches(file))
+							loadFile(file);
+					}
+					else if (isIndexFile(file))
+						reloadFile(getVectorFile(file));
 					break;
 			case IResourceDelta.REMOVED:
-					unloadFile(file);
+					if (isResultFile(file))
+						unloadFile(file);
 					break;
 			case IResourceDelta.CHANGED:
 					if ((delta.getFlags() & ~IResourceDelta.MARKERS) != 0) {
-						unloadFile(file);
-						if (isResultFile(file) && inputsMatches(file))
-							loadFile(file);
+						if (isResultFile(file))
+							reloadFile(file);
+						else if (isIndexFile(file))
+							reloadFile(getVectorFile(file));
 					}
 					break;
 			}
@@ -111,8 +120,6 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	 */
 	public void synchronize() {
 		System.out.println("ResultFileTracker.synchronize()");
-		matchPattern("/xxx/demo1.sca", "*demo*");
-		// TODO: handle wildcards
 		//XXX also: must unload files which have been removed from Inputs
 		//FIXME for now, a primitive solution, TO BE REPLACED: unload everything
 		for (ResultFile file : manager.getFiles().toArray())
@@ -157,7 +164,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		try {
 			root.accept(new IResourceVisitor() {
-				public boolean visit(IResource resource) throws CoreException {
+				public boolean visit(IResource resource) {
 					if (resource instanceof IFile && isResultFile((IFile)resource)) {
 						files.add((IFile)resource);
 						return false;
@@ -165,7 +172,9 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 					return true;
 				}
 			});
-		} catch (CoreException e) { e.printStackTrace(); }
+		} catch (CoreException e) {
+			Activator.logError(e);
+		}
 		return files;
 	}
 	
@@ -208,6 +217,23 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	}
 	
 	/**
+	 * Reloads the specified <code>file</code> into the ResultFileManager.
+	 * Has no effect when the file was not loaded.
+	 */
+	private void reloadFile(IFile file) {
+		System.out.println("reloadFile: "+file);
+		if (isResultFile(file)) {
+			String resourcePath = file.getFullPath().toString();
+			String osPath = file.getLocation().toOSString();
+			ResultFile resultFile = manager.getFile(resourcePath);
+			if (resultFile != null) {
+				manager.unloadFile(resultFile);
+				manager.loadFile(resourcePath, osPath);
+			}
+		}
+	}
+	
+	/**
 	 * Returns true iff <code>file</code> is a result file (scalar or vector).
 	 */
 	private boolean isResultFile(IFile file) {
@@ -217,7 +243,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 				return ContentTypes.SCALAR.equals(contentType.getId()) || ContentTypes.VECTOR.equals(contentType.getId());
 			}
 		} catch (CoreException e) {
-			System.err.println("Cannot open resource: " + file.getFullPath()); //XXX proper error message
+			Activator.logError("Cannot open resource: " + file.getFullPath(), e);
 		}
 		return false;
 	}
@@ -286,5 +312,16 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		}
 		
 		return strStart == strEnd && patternStart == patternEnd;
+	}
+	
+	private static boolean isIndexFile(IFile file) {
+		return "vci".equals(file.getFullPath().getFileExtension());
+	}
+	
+	private static IFile getVectorFile(IFile indexFile) {
+		Assert.isLegal(isIndexFile(indexFile));
+		IPath vectorFilePath = indexFile.getFullPath().removeFileExtension().addFileExtension("vec");
+		IFile vectorFile = ResourcesPlugin.getWorkspace().getRoot().getFile(vectorFilePath);
+		return  vectorFile;
 	}
 }

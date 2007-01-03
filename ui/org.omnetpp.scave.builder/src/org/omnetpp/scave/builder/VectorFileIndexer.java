@@ -25,6 +25,7 @@ public class VectorFileIndexer extends IncrementalProjectBuilder {
 	
 	private org.omnetpp.scave.engine.VectorFileIndexer indexer = 
 				new org.omnetpp.scave.engine.VectorFileIndexer();
+	
 	private Queue<IFile> filesToBeIndexed = new ConcurrentLinkedQueue<IFile>();
 	
 	@Override
@@ -105,7 +106,7 @@ public class VectorFileIndexer extends IncrementalProjectBuilder {
 						indexer.generateIndex(path.getAbsolutePath());
 				}
 				catch (Exception e) {
-					e.printStackTrace(); // TODO: retry?
+					Activator.logError(e); // TODO: retry?
 				}
 				monitor.worked(1);
 			}

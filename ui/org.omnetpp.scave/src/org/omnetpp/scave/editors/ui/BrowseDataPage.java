@@ -111,8 +111,6 @@ public class BrowseDataPage extends ScaveEditorPage {
 		
 		// stay up to date
 		manager.addListener(new IResultFilesChangeListener() {
-			public void idlistChanged(IDList idlist) {
-			}
 			public void resultFileManagerChanged(final ResultFileManager manager) {
 				getDisplay().asyncExec(new Runnable() {
 					public void run() {
