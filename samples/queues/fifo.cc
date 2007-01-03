@@ -34,7 +34,7 @@ void Fifo::initialize()
     int index = this->index(); // get the index no of this fifo queue
     char msgname[32];
 
-    for(int i=0; i< (int) par("num_init_jobs"); ++i)
+    for(int i=0; i< (int) par("numInitJobs"); ++i)
     {
         sprintf( msgname, "job-%d_%d", index, i);
 
@@ -44,7 +44,7 @@ void Fifo::initialize()
     }
 
     // Arrange for the statistics gathering
-    int numcells = par("num_cells");
+    int numcells = par("numCells");
 
     jobDist = new cDoubleHistogram("Job Distribution", numcells);
     jobDist->setRange(0,numcells);
@@ -118,7 +118,7 @@ void Fifo::finish()
 simtime_t Fifo::serviceRequirement(cMessage *msg)
 {
     ev << "Starting service of " << msg->name() << endl;
-    return par("service_time");
+    return par("serviceTime");
 }
 
 void Fifo::endService(cMessage *msg)

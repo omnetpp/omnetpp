@@ -154,7 +154,7 @@ const char *NedFileNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return NULL;
-        case 1: return "";
+        case 1: return "2";
         case 2: return "";
         default: return 0;
     }

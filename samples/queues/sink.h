@@ -18,7 +18,7 @@
 class Sink : public cSimpleModule
 {
   private:
-    cStdDev waitStats;
+    cOutVector waitStats;
 
   protected:
     virtual void initialize();

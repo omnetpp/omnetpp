@@ -190,7 +190,7 @@ class FilesNode : public NEDElement
  *                     channel-interface|simple-module|compound-module|module-interface)*)>
  * <!ATTLIST ned-file
  *      filename           CDATA     #REQUIRED
- *      version            CDATA     #IMPLIED
+ *      version            CDATA     "2"
  *      package            CDATA     #IMPLIED>
  * </pre>
  * 

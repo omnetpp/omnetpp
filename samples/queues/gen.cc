@@ -14,8 +14,8 @@ Define_Module( Generator );
 
 void Generator::activity()
 {
-    int num_messages = par("num_messages");
-    cPar& ia_time = par("ia_time");
+    int num_messages = par("numMessages");
+    cPar& ia_time = par("iaTime");
 
     for (int i=0; i<num_messages; i++)
     {
