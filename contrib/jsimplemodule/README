@@ -58,6 +58,7 @@ include path,...
 
 
 2. Creating the simulation
+--------------------------
 
 Your Java-based simple modules will be run by JSimpleModule instances,
 which get the Java class name in a parameter. That is, you would write
@@ -173,16 +174,17 @@ would yield FALSE! Rather, the underlying C++ pointers have to be compared:
 
    parentModule().getBaseCPtr() == parentModule().getBaseCPtr()
 
-gives the expected result of true. There is a convenience method this test,
+gives the expected result of true. There is a convenience method for this test,
 isSameAs():
 
    if (parentModule().isSameAs(module)) ...
 
-The same is true for message objects. In C++ simple modules it is a common
-practice to remember the pointer of self-messages, and in handleMessage()
-to test using pointer comparison if the same message arrived. In Java,
-isSameAs() has to be used for this purpose too, because the C++ message
-gets wrapped into a different Java object when handleMessage is called:
+The same holds especially for message objects. In C++ simple modules it is
+a common practice to remember the pointer of self-messages, and in
+handleMessage() to test using pointer comparison if the same message
+arrived. In Java, isSameAs() has to be used for this purpose too, because
+the C++ message gets wrapped into a different Java object when
+handleMessage is called:
 
    if (msg == timoutMsg) ... // WRONG!
 
@@ -190,8 +192,42 @@ gets wrapped into a different Java object when handleMessage is called:
 
 This requires some attention during coding to avoid bad surprises.
 
+   Rationale: ...
 
-NO POLYMORPHIC RETURN TYPES. ...
+NO POLYMORPHIC RETURN TYPES. When a method returns an object, the C++ object
+object will be wrapped into a Java object of the declared return type of the
+method, and no the actual C++ type. That is, the following code causes
+ClassCastException even if the actual C++ object retrieved from the queue
+is a cMessage:
+
+  cQueue queue = new cQueue();
+  queue.insert(new cMessage());
+  ...
+  cObject obj = queue.pop();
+  cMessage msg = (cMessage)obj; // BANG: ClassCastException!
+
+The correct solution is to re-wrap the C++ object into a Java object
+of the correct type:
+
+  cObject obj = queue.pop();
+  cMessage msg = cMessage.convertFrom(obj); // correct: re-wraps the C++ object
+
+This behaves like C++ dynamic_cast<>, in that the convertFrom() method
+returns null if the conversion cannot be performed. (It actually indeed
+contains a C++ dynamic_cast<> inside the JNI code.) Also, the conversion
+actually performs transfer of ownership to new wrapper object. That is,
+swigCPtr... .. , meaning that the original Java wrapper object (obj above)
+should be considered a zombie afterwards and should not be touched.
+d
+   Rationale: immediately creating the wrapper object of the right (dynamic)
+   type would cause a high runtime cost in every method that returns an object.
+   The code would have to invoke className() on the C++ object to get the
+   C++ class name, prefix it with "org.omnetpp.simkernel." to get a fully
+   qualified Java class name, then invoke Class.forName() and newInstance().
+   This is far more costly than a plain "new cObject(cPtr, false)" call.
+   Caching of the Java Class would alleviate the pain, but would require
+   modification to the underlying C++ classes, i.e. this Java extension would
+   not be able to run on an unmodified OMNeT++ installation.
 
 
 4. Compiling your Java code and running the simulation
