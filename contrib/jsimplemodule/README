@@ -76,7 +76,8 @@ something like this in the NED file:
    endmodule
 
 The current JSimpleModule ...
-Parameters...
+Gates: use in[] and out[], possibly via "++".
+Parameters: use parent module's parameters (parentModule().par("hello").doubleValue()).
 
 
 3. Writing simple modules in Java
@@ -99,7 +100,10 @@ initialize() and finish():
 
 The constructor taking (long cptr) is needed by SWIG, and must always be
 present. The module class can make use of cMessage, cQueue, cOutVector
-and other OMNeT++ classes.
+and other OMNeT++ classes. The same methods and operations are available
+as in C++; the only difference is that accessor ("getter") method names
+have been prefixed with "get" to follow the Java convention, for example,
+name() is available as getName().
 
 The above Java classes are just wrappers around the corresponding C++
 classes. They all hold a pointer to an underlying C++ object, and delegate
@@ -109,8 +113,8 @@ When you write
 
    cMessage msg = new cMessage();
 
-in Java, the org.omnetpp.simkernel.cMessage wrapper object will create an
-underlying C++ cMessage object via JNI, and hold on to its pointer.
+in Java, the org.omnetpp.simkernel.cMessage wrapper object will actually
+create an underlying C++ cMessage object via JNI, and hold on to its pointer.
 When you perform
 
    send(msg, "out");
@@ -120,12 +124,13 @@ which is actually
    this.send(msg, "out");
 
 then the underlying C++ simple module's and the C++ cMessage object's
-pointer will be read from the Java objects, and the corresponding
+pointer will be taken from the Java objects, and the corresponding
 module->send(msg, "out") C++ call will be made. At the same time, a flag in
 the "msg" Java object will be cleared to indicate that it no longer has
 control over the C++ object. After sending out a message, the corresponding
 Java object should no longer be referenced (i.e. should be allowed to be
 garbage-collected by the VM).
+
 
 MEMORY MANAGEMENT. The above mentioned flag is named swigCMemOwn, and it is
 associated with memory management of the underlying C++ object. swigMemOwn
