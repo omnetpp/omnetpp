@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.1"?>
 
-<product name="%productName" id="org.eclipse.platform.ide" application="org.eclipse.ui.ide.workbench" useFeatures="false">
+<product name="%productName" id="org.omnetpp.scave.product" application="org.eclipse.ui.ide.workbench" useFeatures="false">
 
    <aboutInfo>
       <image path="eclipse_lg.gif"/>
@@ -27,7 +27,6 @@
          <bmp/>
       </win>
    </launcher>
-
 
    <plugins>
       <plugin id="com.ibm.icu"/>

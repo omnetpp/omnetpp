@@ -57,5 +57,34 @@
            id="org.omnetpp.scave.vectorBrowserView"
            name="Vector Browser"/>
   </extension>
+  <extension
+        id="product"
+        point="org.eclipse.core.runtime.products">
+     <product
+           application="org.eclipse.ui.ide.workbench"
+           name="OMNeT++ Scave IDE">
+        <property
+              name="preferenceCustomization"
+              value="plugin_customization.ini"/>
+        <property
+              name="windowImages"
+              value="eclipse.gif,eclipse32.gif,eclipse48.gif,eclipse.png,eclipse32.png"/>
+        <property
+              name="aboutText"
+              value="%productBlurb"/>
+        <property
+              name="aboutImage"
+              value="eclipse_lg.gif"/>
+        <property
+              name="startupForegroundColor"
+              value="C8D5EA"/>
+        <property
+              name="startupProgressRect"
+              value="0,280,455,15"/>
+        <property
+              name="startupMessageRect"
+              value="7,220,441,20"/>
+     </product>
+  </extension>
 
 </plugin>
