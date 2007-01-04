@@ -40,7 +40,7 @@ Contents
 1. Building the simulation executable
 -------------------------------------
 
-Prerequisite: JDK.
+Prerequisite: JDK. The code is not very sensitive to the particular JDK version.
 
 First, you'll need a simulation executable that contains JSimpleModule,
 plus the C++ simple modules you'll need in the simulation. For this,
@@ -52,10 +52,14 @@ the provided .cc files need to be compiled and linked into the executable:
 
 These files need the JNI headers to compile, and the simulation executable
 needs to be linked against the JVM. If you generate the makefile with
-opp_(n)makemake...
+opp_(n)makemake, the provided makefrag(.vc) file gets built into the
+makefile, and modifies the INCLUDE_PATH and LIBS variables accordingly.
+makefrag(.vc) needs the JDK variable, you can define it either as an
+environment variable, or add it directly into makefrag(.vc).
 
-If you get a compiler error message that <jni.h> is not found, you in the
-include path,...
+If you get a compiler error message that <jni.h> is not found or a linker
+message that the "jvm" library is not found, review the settings in
+makefrag(.vc), and re-run opp_(n)makemake.
 
 
 2. Creating the simulation
