@@ -77,9 +77,22 @@ something like this in the NED file:
            source.out++ --> sink.in++;
    endmodule
 
-The current JSimpleModule ...
-Gates: use in[] and out[], possibly via "++".
-Parameters: use parent module's parameters (parentModule().par("hello").doubleValue()).
+JSimpleModule has the following NED declaration:
+
+   simple JSimpleModule
+       parameters:
+           javaClass: string;
+       gates:
+           in: in[];
+           out: out[];
+   endsimple
+
+That is, it has in[]/out[] vector gates and no parameters. Gates can be
+conveniently created and connected with the in++/out++ syntax as in the
+example above. It is a bigger problem that the simple module cannot
+have parameters (unless you add them into JSimpleModule.ned itself).
+In practice, this can be resolved by using the parent module's parameters.
+From the Java code they can be accessed as parentModule().par("hello").
 
 
 3. Writing simple modules in Java
