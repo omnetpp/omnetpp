@@ -1192,7 +1192,7 @@ jstring Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1getDetailedInfo(JN
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1dup(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1clone(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
     cPolymorphic *result;
@@ -1380,7 +1380,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cObject(JNIEnv *jenv, jclas
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1dup(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1clone(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cObject *arg1 = (cObject *) 0 ;
     cPolymorphic *result;
@@ -1737,58 +1737,6 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1findObject_1_1SWIG_11(JNI
         if (arg2) jenv->ReleaseStringUTFChars(jarg2, arg2); 
     }
     return jresult;
-}
-
-
-jint Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1getTotalObjectCount(JNIEnv *jenv, jclass jcls) {
-    jint jresult = 0 ;
-    long result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    {
-        try {
-            result = (long)cObject::totalObjectCount();
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    jresult = (jint)result; 
-    return jresult;
-}
-
-
-jint Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1getLiveObjectCount(JNIEnv *jenv, jclass jcls) {
-    jint jresult = 0 ;
-    long result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    {
-        try {
-            result = (long)cObject::liveObjectCount();
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    jresult = (jint)result; 
-    return jresult;
-}
-
-
-void Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1resetObjectCounters(JNIEnv *jenv, jclass jcls) {
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    {
-        try {
-            cObject::resetObjectCounters();
-            
-        } catch (cException *e) {
-            SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
 }
 
 
@@ -3548,7 +3496,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cDefaultList_1assign(JNIEnv *jenv,
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cDefaultList_1dup(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cDefaultList_1clone(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cDefaultList *arg1 = (cDefaultList *) 0 ;
     cPolymorphic *result;
@@ -3809,7 +3757,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cSimulation(JNIEnv *jenv, j
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cSimulation_1dup(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cSimulation_1clone(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cSimulation *arg1 = (cSimulation *) 0 ;
     cPolymorphic *result;
@@ -4292,7 +4240,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cModuleType_1assign(JNIEnv *jenv, 
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cModuleType_1dup(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cModuleType_1clone(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cModuleType *arg1 = (cModuleType *) 0 ;
     cPolymorphic *result;
@@ -4948,7 +4896,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cArray_1assign(JNIEnv *jenv, jclas
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cArray_1dup(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cArray_1clone(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cArray *arg1 = (cArray *) 0 ;
     cPolymorphic *result;
@@ -5562,7 +5510,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cQueue_1assign(JNIEnv *jenv, jclas
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cQueue_1dup(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cQueue_1clone(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cQueue *arg1 = (cQueue *) 0 ;
     cPolymorphic *result;
@@ -6155,7 +6103,7 @@ jboolean Java_org_omnetpp_simkernel_SimkernelJNI_cExpression_1parseText(JNIEnv *
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cExpression_1dup(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cExpression_1clone(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cExpression *arg1 = (cExpression *) 0 ;
     cExpression *result;
@@ -6483,7 +6431,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_10(JNIEnv *je
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1dup(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1clone(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPar *arg1 = (cPar *) 0 ;
     cPolymorphic *result;
@@ -7775,7 +7723,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cModulePar_1assign(JNIEnv *jenv, j
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cModulePar_1dup(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cModulePar_1clone(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cModulePar *arg1 = (cModulePar *) 0 ;
     cPolymorphic *result;
@@ -8113,7 +8061,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1assign(JNIEnv *jenv, jclass
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1dup(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1clone(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cGate *arg1 = (cGate *) 0 ;
     cPolymorphic *result;
@@ -9392,7 +9340,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1assign(JNIEnv *jenv, jcl
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1dup(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1clone(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cMessage *arg1 = (cMessage *) 0 ;
     cPolymorphic *result;
@@ -12642,7 +12590,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cCompoundModule_1assign(JNIEnv *je
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cCompoundModule_1dup(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cCompoundModule_1clone(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cCompoundModule *arg1 = (cCompoundModule *) 0 ;
     cPolymorphic *result;
@@ -13017,7 +12965,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cSimpleModule_1assign(JNIEnv *jenv
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cSimpleModule_1dup(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cSimpleModule_1clone(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cSimpleModule *arg1 = (cSimpleModule *) 0 ;
     cPolymorphic *result;
@@ -14479,7 +14427,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cStdDev_1assign(JNIEnv *jenv, jcla
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cStdDev_1dup(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cStdDev_1clone(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cStdDev *arg1 = (cStdDev *) 0 ;
     cPolymorphic *result;
@@ -14928,7 +14876,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cWeightedStdDev_1assign(JNIEnv *je
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cWeightedStdDev_1dup(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cWeightedStdDev_1clone(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cWeightedStdDev *arg1 = (cWeightedStdDev *) 0 ;
     cPolymorphic *result;
@@ -15290,7 +15238,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1setName(JNIEnv *jenv, j
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1dup(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1clone(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cOutVector *arg1 = (cOutVector *) 0 ;
     cPolymorphic *result;
@@ -15730,7 +15678,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cChannel_1assign(JNIEnv *jenv, jcl
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cChannel_1dup(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cChannel_1clone(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cChannel *arg1 = (cChannel *) 0 ;
     cPolymorphic *result;
@@ -16229,7 +16177,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cBasicChannel_1assign(JNIEnv *jenv
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cBasicChannel_1dup(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cBasicChannel_1clone(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cBasicChannel *arg1 = (cBasicChannel *) 0 ;
     cPolymorphic *result;
