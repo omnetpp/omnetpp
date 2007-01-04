@@ -510,6 +510,7 @@ cSimulation *getSimulation();
   }
 %}
 
+%rename dup clone;
 
 //
 // Add "get" to getter method names.
