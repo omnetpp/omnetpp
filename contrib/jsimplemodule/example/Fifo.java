@@ -35,6 +35,7 @@ public class Fifo extends JSimpleModule
 
     protected void handleMessage(cMessage msg) {
 
+        msg.swigDisown(); //XXX
         if (msg.isSameAs(endServiceMsg)) {
             //
             // Departure

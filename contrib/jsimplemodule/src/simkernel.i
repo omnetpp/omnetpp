@@ -6,8 +6,8 @@
 
 // for debugging:
 #include <stdio.h>
-#define LOG_JNI_CALL() (void)0
-//#define LOG_JNI_CALL() {printf("DEBUG: entered JNI method %s\n", __FUNCTION__);fflush(stdout);}
+//#define LOG_JNI_CALL() (void)0
+#define LOG_JNI_CALL() {printf("DEBUG: entered JNI method %s\n", __FUNCTION__);fflush(stdout);}
 %}
 
 %pragma(java) jniclasscode=%{
