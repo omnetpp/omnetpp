@@ -295,6 +295,9 @@ BASECLASS_ZERO(std::vector<cXMLElement*>);
 
 %ignore cObject::cmpbyname;
 %ignore cObject::removeFromOwnershipTree;
+%ignore cObject::totalObjectCount;
+%ignore cObject::liveObjectCount;
+%ignore cObject::resetObjectCounters;
 
 %ignore cPar::setDoubleValue(ExprElem *, int);
 %ignore cPar::setDoubleValue(cStatistic *);
@@ -519,8 +522,6 @@ cSimulation *getSimulation();
 %rename cPolymorphic::detailedInfo getDetailedInfo;
 
 %rename cObject::owner  getOwner;
-%rename cObject::totalObjectCount getTotalObjectCount;
-%rename cObject::liveObjectCount getLiveObjectCount;
 
 %rename cDefaultList::defaultOwner getDefaultOwner;
 
