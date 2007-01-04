@@ -55,6 +55,7 @@ class cFileOutputVectorManager : public cOutputVectorManager
 
   protected:
     void openFile();
+    void writeHeader();
     void closeFile();
     void initVector(sVectorData *vp);
     virtual sVectorData *createVectorData();

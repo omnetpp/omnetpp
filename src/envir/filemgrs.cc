@@ -33,6 +33,7 @@
 #include "filemgrs.h"
 #include "ccomponenttype.h"
 #include "stringutil.h"
+#include "ivfilemgr.h"
 
 using std::ostream;
 using std::ofstream;
@@ -46,14 +47,25 @@ Register_Class(cFileOutputVectorManager);
 #endif
 #define CHECK(fprintf)    if (fprintf<0) throw cRuntimeError("Cannot write output vector file `%s'", fname.c_str())
 
-// helper function
+// helper functions
+static const char *getRunSectionName(int runNumber)
+{
+    static int lastRunNumber = -1;
+    static char section[16];
+
+    if (runNumber != lastRunNumber)
+    {
+        sprintf(section, "Run %d", runNumber);
+        lastRunNumber = runNumber;
+    }
+
+    return section;
+}
+
 static void createFileName(opp_string& fname, int run_no, const char *configentry, const char *defaultval)
 {
     // get file name from ini file
-    char section[16];
-    sprintf(section,"Run %d",run_no);
-
-    fname = ev.config()->getAsFilename2(section,"General",configentry,defaultval).c_str();
+    fname = ev.config()->getAsFilename2(getRunSectionName(run_no),"General",configentry,defaultval).c_str();
     ev.app->processFileName(fname);
 }
 
@@ -82,6 +94,42 @@ void cFileOutputVectorManager::openFile()
         throw cRuntimeError("Cannot open output file `%s'",fname.c_str());
 }
 
+void cFileOutputVectorManager::writeHeader()
+{
+    cConfiguration *config = ev.config();
+    const char *section = getRunSectionName(simulation.runNumber());
+    const char *runId = "run_id"; // TODO: generate id in TOmnetApp.startRun() and make it available
+    fprintf(f, "run %s\n", QUOTE(runId));
+    const char *inifile = config->fileName();
+    if (inifile) fprintf(f, "attr inifile %s\n", QUOTE(inifile));
+
+    int numSections = config->getNumSections();
+    for (int i=0; i<numSections; ++i)
+    {
+        const char *sectionName = config->getSectionName(i);
+        bool isRunSection = strncmp(sectionName, "Run ", 4) == 0;
+        bool isCurrentRunSection = strcmp(sectionName, section) == 0;
+        if (isCurrentRunSection || !isRunSection) // skip other run sections
+        {
+            std::vector<opp_string> entries = config->getEntriesWithPrefix(sectionName, "", "");
+            for (int j=0; j<entries.size()-1; j+=2)
+            {
+                const char *name = entries[j].c_str();
+                const char *value = entries[j+1].c_str();
+
+                if (isCurrentRunSection || !config->exists(section, name))
+                {
+                    bool isModuleParam = strchr(name, '.') && !strchr(name, '-');
+                    if (isModuleParam)
+                        fprintf(f, "param %s %s\n", name, QUOTE(value));
+                    else
+                        fprintf(f, "attr %s %s\n", name, QUOTE(value));
+                }
+            }
+        }
+    }
+}
+
 void cFileOutputVectorManager::closeFile()
 {
     if (f)
@@ -97,6 +145,7 @@ void cFileOutputVectorManager::initVector(sVectorData *vp)
     {
         openFile();
         if (!f) return;
+        writeHeader();
     }
 
     CHECK(fprintf(f,"vector %ld  %s  %s  %d\n",
@@ -317,3 +366,8 @@ const char *cFileSnapshotManager::fileName() const
     return fname.c_str();
 }
 
+// create some reference to cIndexedFileOutputVectorManager
+// otherwise the MS linker omits ivfilemgr.obj
+void dummyMethodReferencingCIndexedFileOutputVectorManager() {
+  cIndexedFileOutputVectorManager m;
+}
