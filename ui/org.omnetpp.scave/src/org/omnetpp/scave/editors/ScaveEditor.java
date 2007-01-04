@@ -1,13 +1,13 @@
 package org.omnetpp.scave.editors;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.edit.command.CreateChildCommand;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
@@ -22,18 +22,15 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.internal.IChangeListener;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.editors.ui.BrowseVectorPage;
-import org.omnetpp.scave.editors.ui.ChartPage;
 import org.omnetpp.scave.editors.ui.ChartPage2;
 import org.omnetpp.scave.editors.ui.ChartSheetPage;
 import org.omnetpp.scave.editors.ui.DatasetPage;
 import org.omnetpp.scave.editors.ui.DatasetsAndChartsPage;
 import org.omnetpp.scave.editors.ui.InputsPage;
 import org.omnetpp.scave.editors.ui.ScaveEditorPage;
-import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Analysis;
@@ -370,7 +367,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 			// use the EMF.Edit Framework's command interface to do the job (undoable)
 			InputFile inputFile = ScaveModelFactory.eINSTANCE.createInputFile();
 			inputFile.setName(resourcePath);
-			ArrayList selection = new ArrayList();
+			ArrayList<EObject> selection = new ArrayList<EObject>();
 			selection.add(inputs);
 			Command command = new CreateChildCommand(getEditingDomain(), inputs, ScaveModelFactory.eINSTANCE.getScaveModelPackage().getInputs_Inputs(), inputFile, selection);
 			executeCommand(command);

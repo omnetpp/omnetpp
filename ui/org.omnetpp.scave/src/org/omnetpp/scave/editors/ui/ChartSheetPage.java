@@ -22,7 +22,6 @@ import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.charting.ChartFactory;
 import org.omnetpp.scave.charting.ChartUpdater;
 import org.omnetpp.scave.charting.ScalarChart;
-import org.omnetpp.scave.charting.VectorChart;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
@@ -62,6 +61,7 @@ public class ChartSheetPage extends ScaveEditorPage {
 		updaters.add(new ChartUpdater(chart, view, scaveEditor.getResultFileManager()));
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void initialize() {
 		// set up UI
 		setPageTitle("Charts: " + getChartSheetName(chartsheet));

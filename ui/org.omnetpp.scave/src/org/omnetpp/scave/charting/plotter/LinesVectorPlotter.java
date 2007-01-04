@@ -1,7 +1,6 @@
 package org.omnetpp.scave.charting.plotter;
 
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.swt.graphics.Color;
 import org.jfree.data.xy.XYDataset;
 import org.omnetpp.scave.charting.VectorChart;
 

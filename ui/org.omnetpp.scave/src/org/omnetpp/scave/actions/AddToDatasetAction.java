@@ -27,6 +27,7 @@ public class AddToDatasetAction extends AbstractScaveAction {
 		setToolTipText("Add to dataset");
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
 		FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();

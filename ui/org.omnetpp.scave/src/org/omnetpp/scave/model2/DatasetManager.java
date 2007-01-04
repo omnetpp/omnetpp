@@ -35,8 +35,6 @@ import org.omnetpp.scave.model.SelectDeselectOp;
 import org.omnetpp.scave.model.SetOperation;
 import org.omnetpp.scave.model.util.ScaveModelSwitch;
 
-import com.sun.corba.se.spi.legacy.connection.GetEndPointInfoAgainException;
-
 /**
  * This class calculates the content of a dataset
  * applying the operations described by the dataset. 

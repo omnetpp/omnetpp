@@ -1,7 +1,6 @@
 package org.omnetpp.scave.charting.plotter;
 
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.swt.SWT;
 
 /**
  * Draws a "plus" symbol.

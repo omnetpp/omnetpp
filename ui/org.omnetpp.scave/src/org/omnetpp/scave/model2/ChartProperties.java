@@ -9,7 +9,6 @@ import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.common.properties.BasePropertySource;
 import org.omnetpp.common.properties.PropertySource;
@@ -132,6 +131,7 @@ public class ChartProperties extends PropertySource {
 		this.owner = null;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public ChartProperties(Chart chart, ResultFileManager manager) {
 		this.properties = chart.getProperties();
 		this.owner = chart;

@@ -446,7 +446,7 @@ public class DataTable extends Table {
 	
 	protected void fireContentChangedEvent() {
 		if (listeners != null) {
-			for (Object listener : new ArrayList(Arrays.asList(this.listeners.getListeners())))
+			for (Object listener : new ArrayList<Object>(Arrays.asList(this.listeners.getListeners())))
 				((IDataTableListener)listener).contentChanged(this);
 		}
 	}

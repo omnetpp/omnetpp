@@ -4,7 +4,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.omnetpp.scave.jobs.VectorFileIndexerJob;
 import org.osgi.framework.BundleContext;
 
 /**

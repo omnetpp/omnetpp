@@ -21,6 +21,7 @@ public class CreateChartAction extends AbstractScaveAction {
 		setToolTipText("Create chart from current data");
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
 		FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();

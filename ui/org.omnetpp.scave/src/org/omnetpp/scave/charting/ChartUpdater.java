@@ -27,6 +27,7 @@ public class ChartUpdater {
 		this.manager = manager;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void updateChart(Notification notification) {
 		if (!(notification.getNotifier() instanceof EObject) ||
 				(notification.getNotifier() != chart &&

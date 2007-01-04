@@ -3,7 +3,6 @@ package org.omnetpp.scave.charting;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Paint;
-import java.awt.Stroke;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,8 +41,6 @@ import org.jfree.ui.HorizontalAlignment;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
 import org.jfree.ui.VerticalAlignment;
-
-import org.omnetpp.scave.charting.ChartSWTWrapper;
 import org.omnetpp.common.properties.EnumPropertyDescriptor;
 import org.omnetpp.common.properties.Property;
 import org.omnetpp.common.properties.PropertySource;

@@ -244,9 +244,9 @@ class FilterContentProposalProvider implements IContentProposalProvider
 		
 		public int getCursorPosition() {
 			int position = cursorPosition;
-			if (quotesNeeded) position++; // shift due to beginning '"'
-			if (openingParenNeeded)	position++;
-			else if (closingParenNeeded) position += 2; // put cursor after the closing parenthesis if no opening inserted
+			if (quotesNeeded) position+=2; // put cursor after the ending '"'
+			if (openingParenNeeded)	position++; // put cursor after the '('
+			else if (closingParenNeeded) position += 2; // put cursor after the ')' if no opening inserted
 			return position;
 		}
 		public String getDescription() {

@@ -3,7 +3,6 @@ package org.omnetpp.scave.editors.ui;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.model.AddDiscardOp;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Dataset;

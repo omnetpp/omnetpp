@@ -11,7 +11,6 @@ import org.eclipse.emf.edit.command.ReplaceCommand;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Group;
-import org.omnetpp.scave.model.ScaveModelPackage;
 
 /**
  * Ungroup the items of the selected group.
@@ -22,6 +21,7 @@ public class UngroupAction extends AbstractScaveAction {
 		setToolTipText("Remove group item and merge its contents");
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
 		Group group = getSelectedGroup(selection);

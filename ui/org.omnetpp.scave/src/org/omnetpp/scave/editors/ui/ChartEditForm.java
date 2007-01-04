@@ -332,6 +332,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setValue(EStructuralFeature feature, Object value) {
 		switch (feature.getFeatureID()) {
 		case ScaveModelPackage.CHART__NAME:
@@ -386,6 +387,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		return newProps.getProperties();
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void getLineProperties(VectorChartProperties newProps, String lineId) {
 		List<Property> origProps = (List<Property>)chart.getProperties();
 		

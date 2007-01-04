@@ -1,7 +1,6 @@
 package org.omnetpp.scave.model2.provider;
 
 import org.eclipse.emf.common.notify.Adapter;
-import org.omnetpp.scave.actions.GroupAction;
 
 /**
  * 

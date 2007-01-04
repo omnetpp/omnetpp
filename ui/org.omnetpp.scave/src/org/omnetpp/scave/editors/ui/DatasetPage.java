@@ -14,7 +14,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.CustomSashForm;
 import org.omnetpp.scave.actions.EditAction;

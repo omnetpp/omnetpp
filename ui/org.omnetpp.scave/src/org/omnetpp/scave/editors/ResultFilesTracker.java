@@ -3,8 +3,6 @@ package org.omnetpp.scave.editors;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -143,6 +141,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void partitionInputFiles(List<InputFile> files, List<InputFile> wildcards) {
 		for (InputFile inputfile : (List<InputFile>)inputs.getInputs()) {
 			if (containsWildcard(inputfile.getName()))
@@ -251,6 +250,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	/**
 	 * Return true iff the <code>file</code> matches any of the input files.
 	 */
+	@SuppressWarnings("unchecked")
 	private boolean inputsMatches(IFile file) {
 		for (InputFile inputfile : (List<InputFile>)inputs.getInputs())
 			if (matchFile(file, inputfile))

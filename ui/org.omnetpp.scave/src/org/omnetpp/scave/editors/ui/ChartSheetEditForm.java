@@ -149,6 +149,7 @@ public class ChartSheetEditForm implements IScaveObjectEditForm {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setValue(EStructuralFeature feature, Object value) {
 		switch (feature.getFeatureID()) {
 		case ScaveModelPackage.CHART_SHEET__NAME:
