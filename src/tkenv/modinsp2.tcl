@@ -55,6 +55,19 @@ proc get_parsed_display_string {str array w modptr parent} {
    }
 }
 
+proc lookup_image {imgname {imgsize ""}} {
+    global bitmaps icons
+
+    if {[catch {set img $bitmaps($imgname,$imgsize)}] && \
+        [catch {set img $bitmaps($imgname)}] && \
+        [catch {set img $bitmaps(old/$imgname,$imgsize)}] && \
+        [catch {set img $bitmaps(old/$imgname)}]} {
+       set img $icons(unknown)
+    }
+
+    return $img
+}
+
 
 #
 # helper function

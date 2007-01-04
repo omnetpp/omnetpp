@@ -262,6 +262,7 @@ void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoor
     if (ds.existsTag("i"))
     {
         const char *imgname = ds.getTagArg("i",0);
+        const char *imgsize = ds.getTagArg("is",0);
         if (!imgname || !*imgname)
         {
             iconsx = UNKNOWNICON_WIDTH;
@@ -270,7 +271,8 @@ void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoor
         else
         {
             Tcl_Interp *interp = getTkApplication()->getInterp();
-            Tk_Image img = Tk_GetImage(interp, Tk_MainWindow(interp), TCLCONST(imgname), NULL, NULL);
+            Tcl_VarEval(interp, "lookup_image ", imgname, " ", imgsize, NULL);
+            Tk_Image img = Tk_GetImage(interp, Tk_MainWindow(interp), Tcl_GetStringResult(interp), NULL, NULL);
             if (!img)
             {
                 iconsx = UNKNOWNICON_WIDTH;

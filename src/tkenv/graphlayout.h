@@ -26,6 +26,7 @@
 
 #include <tk.h> // only for debugDraw
 #include "forcedirectedembedding.h"
+#include "graphcomponent.h"
 
 #include "csimplemodule.h"
 #include "cchannel.h"
@@ -284,6 +285,9 @@ class ForceDirectedGraphLayouter : public GraphLayouter
   protected:
       bool finalized;
       bool bordersAdded;
+      bool starTreeEmbedding;
+      bool forceDirectedEmbedding;
+      bool threeDimensions;
       ForceDirectedEmbedding embedding;
       std::map<std::string, Variable *> anchorNameToVariableMap;
       std::map<cModule *, IBody *> moduleToBodyMap;
@@ -342,14 +346,15 @@ class ForceDirectedGraphLayouter : public GraphLayouter
     IBody *findBody(cModule *mod);
     Variable *ensureAnchorVariable(const char *anchorname);
     void addElectricalRepeals();
+    void addBasePlaneSprings();
     void ensureFinalized();
     void ensureBorders();
-    void ensurePositions();
+    void setRandomPositions();
+    void setStarTreePositions(double distance);
+    Vertex* findVertex(GraphComponent *graphComponent, Variable *variable);
     void normalize();
     void debugDraw(int step);
 };
 
 
 #endif
-
-
