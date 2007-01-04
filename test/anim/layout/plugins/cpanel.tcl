@@ -45,6 +45,10 @@ proc cpanel_createControls {} {
     wm protocol $w WM_DELETE_WINDOW {exit_omnetpp}
 
     # create sliders
+    cpanel_slider $w.maxCalculationTime "Max Calculation Time"
+    $w.maxCalculationTime.e config -from 100 -to 100000 -resolution 100 -variable param(maxCalculationTime)
+    pack $w.maxCalculationTime -expand 0 -fill x
+
     cpanel_slider $w.springCoefficient "Spring Coefficient"
     $w.springCoefficient.e config -from 0 -to 10 -resolution 0.01 -variable param(springCoefficient)
     pack $w.springCoefficient -expand 0 -fill x
@@ -53,9 +57,26 @@ proc cpanel_createControls {} {
     $w.electricRepealCoefficient.e config -from 1000 -to 500000 -resolution 1000 -variable param(electricRepealCoefficient)
     pack $w.electricRepealCoefficient -expand 0 -fill x
 
+    cpanel_slider $w.velocityRelaxLimit "Velocity relax limit"
+    $w.velocityRelaxLimit.e config -from 0.01 -to 2 -resolution 0.01 -variable param(velocityRelaxLimit)
+    pack $w.velocityRelaxLimit -expand 0 -fill x
+
+    checkbutton $w.starTreeEmbedding -text "star tree embedding" -variable param(starTreeEmbedding)
+    pack $w.starTreeEmbedding -expand 0 -fill none -anchor w
+
+    checkbutton $w.forceDirectedEmbedding -text "force directed embedding" -variable param(forceDirectedEmbedding)
+    pack $w.forceDirectedEmbedding -expand 0 -fill none -anchor w
+
+    checkbutton $w.3d -text "3d" -variable param(3d)
+    pack $w.3d -expand 0 -fill none -anchor w
+
     # this is the old syntax, still accepted by Tcl8.4
     trace variable param(springCoefficient) w cpanel_paramChanged
     trace variable param(electricRepealCoefficient) w cpanel_paramChanged
+    trace variable param(velocityRelaxLimit) w cpanel_paramChanged
+    trace variable param(starTreeEmbedding) w cpanel_paramChanged
+    trace variable param(forceDirectedEmbedding) w cpanel_paramChanged
+    trace variable param(3d) w cpanel_paramChanged
 }
 
 #
@@ -68,12 +89,14 @@ proc cpanel_readParams {} {
         set modp [opp_object_systemmodule]
         set dispstr [opp_getobjectfield $modp displayString]
 
+        set param(maxCalculationTime) 10000
         set param(springCoefficient) 0.1
-        set param(electricRepealCoefficient) 100000
-        catch {set param(springCoefficient) [opp_displaystring $dispstr getTagArg "layout" 0]}
-        catch {set param(electricRepealCoefficient) [opp_displaystring $dispstr getTagArg "layout" 1]}
+        set param(electricRepealCoefficient) 10000
+        set param(velocityRelaxLimit) 0.5
+        set param(starTreeEmbedding) 1
+        set param(forceDirectedEmbedding) 1
+        set param(3d) 1
 
-        puts "read params: springCoefficient=$param(springCoefficient), electricRepealCoefficient=$param(electricRepealCoefficient)"
     }
 }
 
@@ -89,10 +112,20 @@ proc cpanel_paramChanged {arr name op} {
         set modp [opp_object_systemmodule]
         #debug "$name changed to $value"
 
-        if {$name=="springCoefficient"} {
+        if {$name=="maxCalculationTime"} {
+            opp_set_moduledisplaystring_tagarg $modp "mct" 0 $value
+        } elseif {$name=="springCoefficient"} {
             opp_set_moduledisplaystring_tagarg $modp "sc" 0 $value
         } elseif {$name=="electricRepealCoefficient"} {
             opp_set_moduledisplaystring_tagarg $modp "erc" 0 $value
+        } elseif {$name=="velocityRelaxLimit"} {
+            opp_set_moduledisplaystring_tagarg $modp "vrl" 0 $value
+        } elseif {$name=="starTreeEmbedding"} {
+            opp_set_moduledisplaystring_tagarg $modp "ste" 0 $value
+        } elseif {$name=="forceDirectedEmbedding"} {
+            opp_set_moduledisplaystring_tagarg $modp "fde" 0 $value
+        } elseif {$name=="3d"} {
+            opp_set_moduledisplaystring_tagarg $modp "3d" 0 $value
         } else {
             error "wrong param name"
         }

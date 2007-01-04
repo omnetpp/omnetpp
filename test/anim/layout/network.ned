@@ -1,97 +1,123 @@
-
 module Node
+{
     gates:
-        in: in[];
-        out: out[];
-    connections nocheck:
-endmodule
+        input in[];
+        output out[];
+    connections allowunconnected:
+}
 
-
-module Anchors
+network Anchors
+{
     submodules:
-        vec1: Node[10];
-            gatesizes: in[3], out[3];
-            display: "p=,,row;i=pc_s,cyan";
-        vec2: Node[9];
-            gatesizes: in[3], out[3];
-            display: "p=,,m,3;i=pc_s,green";
-        vec3: Node[10];
-            gatesizes: in[3], out[3];
-            display: "p=,,ring;i=pc_s,gold";
-        hub: Node;
-            gatesizes: in[3], out[3];
-            display: "i=server1";
-    connections nocheck:
+        vec1[10]: Node {
+            parameters:
+                @display("p=,,row;i=pc_s,cyan");
+            gates:
+                in[3];
+                out[3];
+        };
+        vec2[9]: Node {
+            parameters:
+                @display("p=,,m,3;i=pc_s,green");
+            gates:
+                in[3];
+                out[3];
+        };
+        vec3[10]: Node {
+            parameters:
+                @display("p=,,ring;i=pc_s,gold");
+            gates:
+                in[3];
+                out[3];
+        };
+        hub: Node {
+            parameters:
+                @display("i=server1");
+            gates:
+                in[3];
+                out[3];
+        };
+    connections allowunconnected:
         // connect three anchored layouts
         hub.out[0] --> vec1[5].in[2];
         hub.out[1] --> vec2[3].in[2];
         hub.out[2] --> vec3[6].in[2];
 
         // following connections are only decoration, don't affect layout
-        for i=0..8 do
+        for i=0..8 {
             vec1[i].out[0] --> vec1[i+1].in[0];
-        endfor;
-        for i=0..1, j=0..1 do
-            vec2[3*i+j].out[0] --> vec2[3*i+j+1].in[0];
-            vec2[3*i+j].out[1] --> vec2[3*i+j+3].in[1];
-        endfor;
-        for i=0..9 do
+        };
+        for i=0..1, for j=0..1 {
+            vec2[3*i+j].out[0] --> vec2[(3*i+j)+1].in[0];
+            vec2[3*i+j].out[1] --> vec2[(3*i+j)+3].in[1];
+        };
+        for i=0..9 {
             vec3[i].out[0] --> vec3[(i+1)%10].in[0];
-        endfor;
-endmodule
+        };
+}
 
-network anchors : Anchors
-endnetwork
-
-module Ethernet
+network Ethernet
+{
     submodules:
-        vec1: Node[10];
-            gatesizes: in[3], out[3];
-            display: "i=pc_s,cyan";
-        vec2: Node[6];
-            gatesizes: in[3], out[3];
-            display: "i=pc_s,gold";
-        seg: Node;
-            gatesizes: in[11], out[11];
-            display: "b=400,10;o=,blue";
-    connections nocheck:
-        for i=0..9 do
+        vec1[10]: Node {
+            parameters:
+                @display("i=pc_s,cyan");
+            gates:
+                in[3];
+                out[3];
+        };
+        vec2[6]: Node {
+            parameters:
+                @display("i=pc_s,gold");
+            gates:
+                in[3];
+                out[3];
+        };
+        seg: Node {
+            parameters:
+                @display("b=400,10,,,blue");
+            gates:
+                in[11];
+                out[11];
+        };
+    connections allowunconnected:
+        for i=0..9 {
             seg.out[i] --> vec1[i].in[0];
-        endfor;
-        for i=0..5 do
+        };
+        for i=0..5 {
             vec2[i].out[0] --> vec2[(i+1)%6].in[0];
-        endfor;
+        };
         seg.out[10] --> vec2[1].in[1];
-endmodule
-
-network ethernet : Ethernet
-endnetwork
+}
 
 // These nodes should be scattered, not arranged in a ring
-module Wireless
+network Wireless
+{
     parameters:
-        numNodes: numeric;
+        volatile double numNodes = default(20) @prompt("Number of nodes");
     submodules:
-        vec: Node[numNodes];
-            gatesizes: in[1], out[1];
-            display: "i=ball2_vs,gold,100";
-    connections nocheck:
-endmodule
+        vec[numNodes]: Node {
+            parameters:
+                @display("i=ball2,gold,100;is=vs");
+            gates:
+                in[1];
+                out[1];
+        };
+    connections allowunconnected:
+}
 
-network wireless : Wireless
-    parameters:
-       numNodes = input(20);
-endnetwork
-
-module Net60
+network Net60
+{
     submodules:
-        rte: Node[57];
-            gatesizes:
-                in[6],
+        rte[57]: Node {
+            parameters:
+                @display("i=old/ball2;is=vs");
+
+            gates:
+                in[6];
                 out[6];
-            display: "i=ball2_vs";
-
-    connections nocheck:
+        };
+    connections allowunconnected:
         rte[0].out[0] --> rte[1].in[0];
         rte[0].in[0] <-- rte[1].out[0];
 
@@ -334,215 +360,249 @@ module Net60
 
         rte[55].out[1] --> rte[56].in[1];
         rte[55].in[1] <-- rte[56].out[1];
-endmodule
+}
 
-network net60 : Net60
-endnetwork
-
-module BinaryTree
+network BinaryTree
+{
     parameters:
-        height : numeric const;
+        double height = default(5) @prompt("Binary tree height");
     submodules:
-        node: Node[ 2^height-1 ];
-            gatesizes: in[1], out[2];
-            display: "i=ball2_vs";
-    connections nocheck:
-        for i=0..2^(height-1)-2 do
+        node[2^height-1]: Node {
+            parameters:
+                @display("i=ball2;is=vs");
+            gates:
+                in[1];
+                out[2];
+        };
+    connections allowunconnected:
+        for i=0..2^(height-1)-2 {
             node[i].out[0] --> node[2*i+1].in[0];
             node[i].out[1] --> node[2*i+2].in[0];
-        endfor;
-endmodule
+        };
+}
 
-network binaryTree : BinaryTree
-   parameters: height = input(5);
-endnetwork
-
-module HexGrid
+network HexGrid
+{
     parameters:
-        rows : numeric const,
-        cols : numeric const;
+        double rows = default(6) @prompt("Mest rows");
+        double cols = default(3) @prompt("Mesh columns");
     submodules:
-        node  : Node[rows * cols];
-            gatesizes: in[3], out[3];
-            display: "i=ball2_vs";
-    connections nocheck:
-        for i = 0..rows*cols-1 do
+        node[rows*cols]: Node {
+            parameters:
+                @display("i=ball2;is=vs");
+            gates:
+                in[3];
+                out[3];
+        };
+    connections allowunconnected:
+        for i=0..rows*cols-1 {
             node[i].in[0] <-- node[i-2*cols].out[0] if i+1>2*cols;
-            node[i].in[1] <-- node[i-cols-(i/cols+1)%2].out[1] if i%(2*cols)!=0 && i+1>cols;
-            node[i].in[2] <-- node[i+cols-1+(i/cols)%2].out[2] if i%(2*cols)!=0 && i<rows*cols-cols;
-        endfor;
-endmodule
+            node[i].in[1] <-- node[(i-cols)-(i/cols+1)%2].out[1] if i%(2*cols)!=0 && i+1>cols;
+            node[i].in[2] <-- node[((i+cols)-1)+(i/cols)%2].out[2] if i%(2*cols)!=0 && i<rows*cols-cols;
+        };
+}
 
-network hexGrid : HexGrid
-   parameters: rows = input(6), cols = input(3);
-endnetwork
-
-module Dyna
+network Dyna
+{
     parameters:
-        numNodes: numeric;
+        volatile double numNodes = default(10) @prompt("Number of nodes");
     submodules:
-        server: Node;
-            gatesizes: in[1], out[1];
-            display: "i=server1,gold";
-        switch: Node;
-            gatesizes: in[numNodes+1], out[numNodes+1];
-            display: "i=switch2,cyan";
-        client: Node[numNodes];
-            gatesizes: in[1], out[1];
-            display: "i=pc,green;p=,,m,10";
-    connections nocheck:
+        server: Node {
+            parameters:
+                @display("i=server1,gold");
+            gates:
+                in[1];
+                out[1];
+        };
+        switch: Node {
+            parameters:
+                @display("i=switch2,cyan");
+            gates:
+                in[numNodes+1];
+                out[numNodes+1];
+        };
+        client[numNodes]: Node {
+            parameters:
+                @display("i=pc,green;p=,,m,10");
+            gates:
+                in[1];
+                out[1];
+        };
+    connections allowunconnected:
         server.out[0] --> switch.in[0];
-        for i=0..numNodes-1 do
+        for i=0..numNodes-1 {
             client[i].out[0] --> switch.in[i+1];
-        endfor;
-endmodule
+        };
+}
 
-network dyna : Dyna
+network RandomNet
+{
     parameters:
-       numNodes = input(10);
-endnetwork
-
-module RandomNet
-    parameters:
-        numNodes: numeric;
+        volatile double numNodes = default(60) @prompt("Number of nodes");
     submodules:
-        vec: Node[numNodes];
-            gatesizes: in[numNodes], out[numNodes];
-            display: "i=ball2_vs,gold,100";
-    connections nocheck:
-        for i=0..numNodes-1, j=0..numNodes-1 do
-            vec[i].out[j] --> vec[j].in[i] if uniform(0,1)<0.7/numNodes && i!=j;
-        endfor;
-endmodule
+        vec[numNodes]: Node {
+            parameters:
+                @display("i=ball2,gold,100;is=vs");
+            gates:
+                in[numNodes];
+                out[numNodes];
+        };
+    connections allowunconnected:
+        for i=0..numNodes-1, for j=0..numNodes-1 {
+            vec[i].out[j] --> vec[j].in[i] if uniform(0, 1)<0.8/numNodes && i!=j;
+        };
+}
 
-network randomNet : RandomNet
-    parameters:
-       numNodes = input(60);
-endnetwork
-
-module Protocols1
+network Protocols1
+{
     gates:
-        in: in;
-        out: out;
+        input in;
+        output out;
     submodules:
-        mac: Node;
-            gatesizes: in[2], out[2];
-            display: "i=queue";
-        gen: Node;
-            gatesizes: in[0], out[1];
-            display: "i=gen";
-        sink: Node;
-            gatesizes: in[1], out[0];
-            display: "i=sink";
-    connections nocheck:
+        mac: Node {
+            parameters:
+                @display("i=queue");
+            gates:
+                in[2];
+                out[2];
+        };
+        gen: Node {
+            parameters:
+                @display("i=gen");
+            gates:
+                in[0];
+                out[1];
+        };
+        sink: Node {
+            parameters:
+                @display("i=sink");
+            gates:
+                in[1];
+                out[0];
+        };
+    connections allowunconnected:
         in --> mac.in[0];
         out <-- mac.out[0];
         mac.out[1] --> sink.in[0];
         mac.in[1] <-- gen.out[0];
-endmodule
-
-network protocols1 : Protocols1
-endnetwork
+}
 
 module NetworkLayers
+{
     parameters:
-        numPorts: numeric;
+        volatile double numPorts;
     gates:
-        in: TCPIn;
-        out: TCPOut;
-        in: physIn[];
-        out: physOut[];
+        input TCPIn;
+        output TCPOut;
+        input physIn[];
+        output physOut[];
     submodules:
-        proc: Node;
-            gatesizes: in[numPorts+2],out[numPorts+2];
-            display: "i=cogwheel";
-        outputQueue: Node[numPorts];
-            gatesizes: in[2],out[2];
-            display: "p=,,row;i=queue";
-        inputQueue: Node;
-            gatesizes: in[numPorts],out[1];
-            display: "i=queue";
-        networkInterface: Node[numPorts];
-            gatesizes: in[3],out[3];
-            display: "p=,,row;i=bwxconn";
-        routingTable: Node;
-            display: "p=,,row;i=box3";
+        proc: Node {
+            parameters:
+                @display("i=cogwheel");
+            gates:
+                in[numPorts+2];
+                out[numPorts+2];
+        };
+        outputQueue[numPorts]: Node {
+            parameters:
+                @display("p=,,row;i=queue");
+            gates:
+                in[2];
+                out[2];
+        };
+        inputQueue: Node {
+            parameters:
+                @display("i=queue");
+            gates:
+                in[numPorts];
+                out[1];
+        };
+        networkInterface[numPorts]: Node {
+            parameters:
+                @display("p=,,row;i=bwxconn");
+        //routingTable: Node;
+        //    display: "p=,,row;i=box3";
 
-    connections nocheck:
+            gates:
+                in[3];
+                out[3];
+        };
+    connections allowunconnected:
         proc.out[numPorts] --> TCPOut;
         proc.in[numPorts] <-- TCPIn;
         proc.in[numPorts+1] <-- inputQueue.out[0];
 
-        for i=0..numPorts-1 do
+        for i=0..numPorts-1 {
             proc.out[i] --> outputQueue[i].in[0];
             networkInterface[i].out[0] --> inputQueue.in[i];
             networkInterface[i].out[2] --> outputQueue[i].in[1];
             networkInterface[i].in[2] <-- outputQueue[i].out[0];
             networkInterface[i].out[1] --> physOut[i];
             networkInterface[i].in[1] <-- physIn[i];
-        endfor;
-endmodule
+        };
+}
 
-module NetworkLayersWrapper
+network NetworkLayersWrapper
+{
     parameters:
-       numPorts: numeric;
+        volatile double numPorts = default(3) @prompt("Number of ports");
     submodules:
-       doubleClickHere : NetworkLayers;
-           parameters:
-              numPorts = numPorts;
-           gatesizes:
-              physIn[numPorts],
-              physOut[numPorts];
-           display: "i=cloud_l";
-    connections nocheck:
-endmodule
+        doubleClickHere: NetworkLayers {
+            parameters:
+                numPorts = numPorts;
+                @display("i=cloud_l");
+            gates:
+                physIn[numPorts];
+                physOut[numPorts];
+        };
+    connections allowunconnected:
+}
 
-network networkLayers : NetworkLayersWrapper
+network Ring
+{
     parameters:
-       numPorts = input(3);
-endnetwork
-
-module Ring
-    parameters:
-        numNodes : numeric const;
+        double numNodes = default(8) @prompt("Number of nodes");
     submodules:
-        comp: Node[numNodes];
-            gatesizes: in[1], out[1];
-            display: "i=pc,cyan";
-    connections nocheck:
+        comp[numNodes]: Node {
+            parameters:
+                @display("i=pc,cyan");
+            gates:
+                in[1];
+                out[1];
+        };
+    connections allowunconnected:
         comp[numNodes-1].out[0] --> comp[0].in[0];
-        for i=0..numNodes-2 do
+        for i=0..numNodes-2 {
             comp[i].out[0] --> comp[i+1].in[0];
-        endfor;
-endmodule
+        };
+}
 
-network ring : Ring
+network Chain
+{
     parameters:
-       numNodes = input(6);
-endnetwork
-
-module Chain
-    parameters:
-        numNodes : numeric const;
+        double numNodes = default(20) @prompt("Number of nodes");
     submodules:
-        comp: Node[numNodes];
-            gatesizes: in[1], out[1];
-            display: "i=ball2";
-    connections nocheck:
-        for i=0..numNodes-2 do
+        comp[numNodes]: Node {
+            parameters:
+                @display("i=ball2");
+            gates:
+                in[1];
+                out[1];
+        };
+    connections allowunconnected:
+        for i=0..numNodes-2 {
             comp[i].out[0] --> comp[i+1].in[0];
-        endfor;
-endmodule
+        };
+}
 
-network chain : Chain
-    parameters:
-       numNodes = input(20);
-endnetwork
-
-module SixNodes
+network SixNodes
+{
     submodules:
-        tic: Node[6];
-            display: "i=ball2";
+        tic[6]: Node {
+            parameters:
+                @display("i=ball2");
+        };
     connections:
         tic[0].out++ --> tic[1].in++;
         tic[0].in++ <-- tic[1].out++;
@@ -564,7 +624,429 @@ module SixNodes
 
         tic[4].out++ --> tic[5].in++;
         tic[4].in++ <-- tic[5].out++;
-endmodule
+}
 
-network sixNodes : SixNodes
-endnetwork
+network R37
+{
+    submodules:
+        LSR0: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR1: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR2: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR3: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR4: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR5: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR6: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR7: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR8: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR9: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR10: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR11: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR12: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR13: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR14: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR15: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR16: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR17: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR18: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR19: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR20: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR21: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR22: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR23: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR24: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR25: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR26: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR27: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR28: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR29: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR30: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR31: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR32: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR33: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR34: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR35: Node {
+            parameters:
+                @display("i=abstract/router_s");
+        };
+        LSR36: Node {
+            parameters:
+                @display("i=abstract/router_s");
+
+        };
+        host1: Node {
+            parameters:
+                @display("i=device/laptop_s");
+        };
+        host2: Node {
+            parameters:
+                @display("i=device/laptop_s");
+
+        };
+    connections:
+        LSR7.out++ --> LSR0.in++;
+        LSR7.in++ <-- LSR0.out++; // cost 259
+        LSR8.out++ --> LSR3.in++;
+        LSR8.in++ <-- LSR3.out++; // cost 474
+        LSR9.out++ --> LSR4.in++;
+        LSR9.in++ <-- LSR4.out++; // cost 540
+        LSR11.out++ --> LSR7.in++;
+        LSR11.in++ <-- LSR7.out++; // cost 264
+        LSR12.out++ --> LSR11.in++;
+        LSR12.in++ <-- LSR11.out++; // cost 275
+        LSR13.out++ --> LSR0.in++;
+        LSR13.in++ <-- LSR0.out++; // cost 1067
+        LSR13.out++ --> LSR5.in++;
+        LSR13.in++ <-- LSR5.out++; // cost 610
+        LSR13.out++ --> LSR10.in++;
+        LSR13.in++ <-- LSR10.out++; // cost 462
+        LSR14.out++ --> LSR0.in++;
+        LSR14.in++ <-- LSR0.out++; // cost 552
+        LSR14.out++ --> LSR4.in++;
+        LSR14.in++ <-- LSR4.out++; // cost 381
+        LSR14.out++ --> LSR12.in++;
+        LSR14.in++ <-- LSR12.out++; // cost 592
+        LSR16.out++ --> LSR8.in++;
+        LSR16.in++ <-- LSR8.out++; // cost 436
+        LSR18.out++ --> LSR0.in++;
+        LSR18.in++ <-- LSR0.out++; // cost 540
+        LSR18.out++ --> LSR5.in++;
+        LSR18.in++ <-- LSR5.out++; // cost 239
+        LSR18.out++ --> LSR10.in++;
+        LSR18.in++ <-- LSR10.out++; // cost 690
+        LSR18.out++ --> LSR17.in++;
+        LSR18.in++ <-- LSR17.out++; // cost 1977
+        LSR20.out++ --> LSR2.in++;
+        LSR20.in++ <-- LSR2.out++; // cost 760
+        LSR20.out++ --> LSR6.in++;
+        LSR20.in++ <-- LSR6.out++; // cost 834
+        LSR20.out++ --> LSR17.in++;
+        LSR20.in++ <-- LSR17.out++; // cost 751
+        LSR21.out++ --> LSR2.in++;
+        LSR21.in++ <-- LSR2.out++; // cost 508
+        LSR21.out++ --> LSR6.in++;
+        LSR21.in++ <-- LSR6.out++; // cost 756
+        LSR21.out++ --> LSR19.in++;
+        LSR21.in++ <-- LSR19.out++; // cost 411
+        LSR23.out++ --> LSR4.in++;
+        LSR23.in++ <-- LSR4.out++; // cost 757
+        LSR23.out++ --> LSR12.in++;
+        LSR23.in++ <-- LSR12.out++; // cost 456
+        LSR23.out++ --> LSR22.in++;
+        LSR23.in++ <-- LSR22.out++; // cost 522
+        LSR24.out++ --> LSR9.in++;
+        LSR24.in++ <-- LSR9.out++; // cost 722
+        LSR24.out++ --> LSR15.in++;
+        LSR24.in++ <-- LSR15.out++; // cost 1182
+        LSR25.out++ --> LSR1.in++;
+        LSR25.in++ <-- LSR1.out++; // cost 1363
+        LSR26.out++ --> LSR6.in++;
+        LSR26.in++ <-- LSR6.out++; // cost 747
+        LSR26.out++ --> LSR7.in++;
+        LSR26.in++ <-- LSR7.out++; // cost 393
+        LSR26.out++ --> LSR18.in++;
+        LSR26.in++ <-- LSR18.out++; // cost 514
+        LSR26.out++ --> LSR19.in++;
+        LSR26.in++ <-- LSR19.out++; // cost 594
+        LSR27.out++ --> LSR4.in++;
+        LSR27.in++ <-- LSR4.out++; // cost 420
+        LSR27.out++ --> LSR8.in++;
+        LSR27.in++ <-- LSR8.out++; // cost 668
+        LSR28.out++ --> LSR21.in++;
+        LSR28.in++ <-- LSR21.out++; // cost 907
+        LSR28.out++ --> LSR22.in++;
+        LSR28.in++ <-- LSR22.out++; // cost 720
+        LSR28.out++ --> LSR25.in++;
+        LSR28.in++ <-- LSR25.out++; // cost 638
+        LSR29.out++ --> LSR2.in++;
+        LSR29.in++ <-- LSR2.out++; // cost 1244
+        LSR29.out++ --> LSR17.in++;
+        LSR29.in++ <-- LSR17.out++; // cost 471
+        LSR30.out++ --> LSR1.in++;
+        LSR30.in++ <-- LSR1.out++; // cost 794
+        LSR30.out++ --> LSR3.in++;
+        LSR30.in++ <-- LSR3.out++; // cost 487
+        LSR31.out++ --> LSR9.in++;
+        LSR31.in++ <-- LSR9.out++; // cost 777
+        LSR31.out++ --> LSR15.in++;
+        LSR31.in++ <-- LSR15.out++; // cost 597
+        LSR32.out++ --> LSR12.in++;
+        LSR32.in++ <-- LSR12.out++; // cost 271
+        LSR32.out++ --> LSR26.in++;
+        LSR32.in++ <-- LSR26.out++; // cost 600
+        LSR33.out++ --> LSR23.in++;
+        LSR33.in++ <-- LSR23.out++; // cost 534
+        LSR33.out++ --> LSR27.in++;
+        LSR33.in++ <-- LSR27.out++; // cost 376
+        LSR34.out++ --> LSR4.in++;
+        LSR34.in++ <-- LSR4.out++; // cost 775
+        LSR34.out++ --> LSR15.in++;
+        LSR34.in++ <-- LSR15.out++; // cost 1370
+        LSR34.out++ --> LSR16.in++;
+        LSR34.in++ <-- LSR16.out++; // cost 383
+        LSR35.out++ --> LSR1.in++;
+        LSR35.in++ <-- LSR1.out++; // cost 1500
+        LSR35.out++ --> LSR3.in++;
+        LSR35.in++ <-- LSR3.out++; // cost 551
+        LSR35.out++ --> LSR28.in++;
+        LSR35.in++ <-- LSR28.out++; // cost 783
+        LSR35.out++ --> LSR33.in++;
+        LSR35.in++ <-- LSR33.out++; // cost 400
+        LSR36.out++ --> LSR19.in++;
+        LSR36.in++ <-- LSR19.out++; // cost 507
+        LSR36.out++ --> LSR22.in++;
+        LSR36.in++ <-- LSR22.out++; // cost 327
+        LSR36.out++ --> LSR32.in++;
+        LSR36.in++ <-- LSR32.out++; // cost 218
+
+        host1.out++ --> LSR2.in++;
+        host1.in++ <-- LSR2.out++;
+        host2.out++ --> LSR34.in++;
+        host2.in++ <-- LSR34.out++;
+
+}
+
+module MeshNode
+{
+    parameters:
+        @display("i=misc/node_s");
+    gates:
+        input up;
+        input left;
+        output down;
+        output right;
+    connections allowunconnected:
+}
+
+
+network Mesh
+{
+    parameters:
+        int height = default(4) @prompt("Number of rows");
+        int width = default(6) @prompt("Number of columns");
+    submodules:
+        node[height*width]: MeshNode {
+            parameters:
+                @display("p=,,,$width");
+        };
+    connections allowunconnected:
+        for i=0..height-1, for j=0..width-1 {
+            node[i*width+j].down --> node[(i+1)*width+j].up if i!=height-1;
+            node[i*width+j].right --> node[(i*width+j)+1].left if j!=width-1;
+        };
+}
+
+module FullGraphNode
+{
+    parameters:
+        @display("i=misc/node_vs");
+    gates:
+        input in[];
+        output out[];
+    connections allowunconnected:
+}
+
+
+network FullGraph
+{
+    parameters:
+        int n = default(10) @prompt("Number of nodes");
+    submodules:
+        node[n]: FullGraphNode {
+            gates:
+                in[n];
+                out[n];
+        };
+    connections allowunconnected:
+        for i=0..n-1, for j=0..n-1 {
+            node[i].out[j] --> node[j].in[i] if i!=j;
+        };
+}
+
+module StarNode
+{
+    parameters:
+        @display("i=device/pc2_s");
+    gates:
+        input in;
+    connections allowunconnected:
+}
+
+
+module HubNode
+{
+    parameters:
+        @display("i=device/switch");
+    gates:
+        output out[];
+    connections allowunconnected:
+}
+
+
+network Star
+{
+    parameters:
+        int n = default(11) @prompt("Number of stations");
+    submodules:
+        node[n]: StarNode {
+            parameters:
+                @display("p=,,,150,150");
+        };
+        hub: HubNode {
+            parameters:
+                @display("p=200,200");
+            gates:
+                out[n];
+        };
+    connections allowunconnected:
+        for i=0..n-1 {
+            hub.out[i] --> node[i].in;
+        };
+}
+
+network complex
+{
+    parameters:
+        int starNodes = default(11) @prompt("Number of star stations");
+        int height = default(4) @prompt("Number of mesh rows");
+        int width = default(6) @prompt("Number of mesh columns");
+        int ringNodes = default(8) @prompt("Number of ring nodes");
+        int chainNodes = default(10) @prompt("Number of chain nodes");
+    submodules:
+        star_node[starNodes]: Node;
+        hub: Node;
+        mesh_node[height*width]: MeshNode {
+            @display("i=misc/globe;p=,,m,$width");
+        };
+        ring_comp[ringNodes]: Node {
+            @display("i=misc/node;is=s;p=,,ring");
+        };
+        chain_comp[chainNodes]: Node;
+    connections allowunconnected:
+        for i=0..starNodes-1 {
+            hub.out++ --> star_node[i].in++;
+        };
+
+        for i=0..height-1, for j=0..width-1 {
+            mesh_node[i*width+j].down --> mesh_node[(i+1)*width+j].up if i!=height-1;
+            mesh_node[i*width+j].right --> mesh_node[(i*width+j)+1].left if j!=width-1;
+        };
+
+        ring_comp[ringNodes-1].out++ --> ring_comp[0].in++;
+        for i=0..ringNodes-2 {
+            ring_comp[i].out++ --> ring_comp[i+1].in++;
+        };
+
+        for i=0..chainNodes-2 {
+            chain_comp[i].out++ --> chain_comp[i+1].in++;
+        };
+
+        hub.in++ <-- ring_comp[0].out++;
+        ring_comp[ringNodes/2].in++ <-- chain_comp[0].out++;
+        chain_comp[chainNodes/2].in++ <-- mesh_node[height*width-1].right;
+        mesh_node[0].left <-- hub.out++;
+}
