@@ -54,7 +54,7 @@ These files need the JNI headers to compile, and the simulation executable
 needs to be linked against the JVM. If you generate the makefile with
 opp_(n)makemake, the provided makefrag(.vc) file gets built into the
 makefile, and modifies the INCLUDE_PATH and LIBS variables accordingly.
-makefrag(.vc) needs the JDK variable, you can define it either as an
+makefrag(.vc) needs the JAVA_HOME variable, you can define it either as an
 environment variable, or add it directly into makefrag(.vc).
 
 If you get a compiler error message that <jni.h> is not found or a linker

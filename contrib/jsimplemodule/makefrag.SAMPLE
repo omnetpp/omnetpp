@@ -1,2 +1,2 @@
-INCLUDE_PATH=$(INCLUDE_PATH) -I$(JDK)/include -I$(JDK)/include/win32
-LIBS=$(LIBS) -L$(JDK)/lib -ljvm
+INCLUDE_PATH=$(INCLUDE_PATH) -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/YOURPLATFORM
+LIBS=$(LIBS) -L$(JAVA_HOME)/lib -ljvm

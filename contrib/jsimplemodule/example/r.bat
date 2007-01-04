@@ -2,8 +2,8 @@
 ::
 :: Modify this batch file according to your needs!
 ::
-set JDK=%TOOLS_DIR%\jdk1.5.0
-PATH=%PATH%;%JDK%\jre\bin\client;%JDK%\bin
+REM set JAVA_HOME=%TOOLS_DIR%\JDK1.5.0
+PATH=%PATH%;%JAVA_HOME%\jre\bin\client;%JAVA_HOME%\bin
 set CLASSPATH=%CLASSPATH%;..\simkernel.jar;.\bin
 
 mkdir bin >nul 2>nul
