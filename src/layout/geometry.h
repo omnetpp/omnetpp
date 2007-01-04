@@ -33,6 +33,9 @@ extern double POSITIVE_INFINITY;
 
 inline bool isNaN(double x) { return x != x; }
 
+/**
+ * A 3 dimensional point. Base plane means z = 0.
+ */
 class Pt
 {
     public:
@@ -40,13 +43,15 @@ class Pt
 
         double y;
 
+        double z;
+
     public:
         Pt() {
-            assign(NaN, NaN);
+            assign(NaN, NaN, NaN);
         }
 
-        Pt(double x, double y) {
-            assign(x, y);
+        Pt(double x, double y, double z) {
+            assign(x, y, z);
         }
 
         Pt(const Pt& pt) {
@@ -54,12 +59,13 @@ class Pt
         }
 
         Pt& assign(const Pt& pt) {
-            return assign(pt.x, pt.y);
+            return assign(pt.x, pt.y, pt.z);
         }
 
-        Pt& assign(double x, double y) {
+        Pt& assign(double x, double y, double z) {
             this->x = x;
             this->y = y;
+            this->z = z;
 
             return *this;
         }
@@ -69,64 +75,85 @@ class Pt
         }
 
         void setZero() {
-            assign(0, 0);
+            assign(0, 0, 0);
         }
 
         double getLength() const {
+            return sqrt(x * x + y * y + z * z);
+        }
+
+        double getBasePlaneProjectionLength() const {
             return sqrt(x * x + y * y);
         }
 
         double getDistance(const Pt& other) const {
-            return getDistance(x, y, other.x, other.y);
+            return getDistance(x, y, z, other.x, other.y, other.z);
         }
 
-        static double getDistance(double x1, double y1, double x2, double y2) {
+        double getBasePlaneProjectionDistance(const Pt& other) const {
+            return getDistance(x, y, 0, other.x, other.y, 0);
+        }
+
+        static double getDistance(double x1, double y1, double z1, double x2, double y2, double z2) {
             double dx = x1 - x2;
             double dy = y1 - y2;
+            double dz = z1 - z2;
 
-            return sqrt(dx * dx + dy * dy);
+            return sqrt(dx * dx + dy * dy + dz * dz);
         }
 
-        double getAngle() const {
+        Pt getBasePlaneProjection() const {
+            return Pt(x, y, 0);
+        }
+
+        double getBasePlaneProjectionAngle() const {
             return atan2(y, x);
         }
 
-        void rotate(double rotateAngle) {
-            double angle = getAngle();
+        void basePlaneRotate(double rotateAngle) {
+            double angle = getBasePlaneProjectionAngle();
 
             if (!isNaN(angle)) {
-                double length = getLength();
+                double length = getBasePlaneProjectionLength();
                 angle += rotateAngle;
                 x = cos(angle) * length;
                 y = sin(angle) * length;
             }
         }
 
+        Pt& basePlaneTranspose() {
+            return assign(y, -x, z);
+        }
+
         Pt& normalize() {
             double length = getLength();
             x /= length;
             y /= length;
+            z /= length;
 
             return *this;
         }
 
         Pt& add(const Pt& pt) {
-            x += pt.x;
-            y += pt.y;
-
-            return *this;
+            return add(pt.x, pt.y, pt.z);
         }
 
-        Pt& add(double x, double y) {
+        Pt& add(double x, double y, double z) {
             this->x += x;
             this->y += y;
+            this->z += z;
 
             return *this;
         }
 
         Pt& subtract(const Pt& pt) {
-            x -= pt.x;
-            y -= pt.y;
+            return subtract(pt.x, pt.y, pt.z);
+        }
+
+        Pt& subtract(double x, double y, double z) {
+            this->x -= x;
+            this->y -= y;
+            this->z -= z;
 
             return *this;
         }
@@ -134,6 +161,7 @@ class Pt
         Pt& multiply(double d) {
             x *= d;
             y *= d;
+            z *= d;
 
             return *this;
         }
@@ -145,16 +173,19 @@ class Pt
         Pt& divide(double d) {
             x /= d;
             y /= d;
+            z /= d;
 
             return *this;
         }
 
-        double crossProduct(const Pt& pt) const {
-            return x * pt.y - y * pt.x;
+        double dotProduct(Pt& other) {
+            return x * other.x + y * other.y + z * other.z;
         }
 
-        Pt& transpose() {
-            return assign(y, -x);
+        Pt& crossProduct(Pt& other) {
+            assign(y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x);
+
+            return *this;
         }
 
         void setNaNToZero() {
@@ -163,33 +194,47 @@ class Pt
 
             if (isNaN(y))
                 y = 0;
+
+            if (isNaN(z))
+                z = 0;
         }
 
         bool isZero() const {
-            return x == 0 && y == 0;
+            return x == 0 && y == 0 && z == 0;
         }
 
-        static Pt getRadial(double radius, double angle) {
-            return Pt(cos(angle) * radius, sin(angle) * radius);
+        static Pt getBasePlaneRadial(double radius, double angle) {
+            return Pt(cos(angle) * radius, sin(angle) * radius, 0);
         }
 
         static Pt getNil() {
-            return Pt(NaN, NaN);
+            return Pt(NaN, NaN, NaN);
         }
 
         static Pt getZero() {
-            return Pt(0, 0);
+            return Pt(0, 0, 0);
         }
 
         bool isNil() const {
-            return isNaN(x) && isNaN(y);
+            return isNaN(x) && isNaN(y) && isNaN(z);
         }
 
         bool isFullySpecified() const {
-            return !isNaN(x) && !isNaN(y);
+            return !isNaN(x) && !isNaN(y) && !isNaN(z);
+        }
+
+        static double determinant(double a1, double a2, double b1, double b2) {
+            return a1 * b2 - a2 * b1;
+        }
+
+        static double determinant(double a1, double a2, double a3, double b1, double b2, double b3, double c1, double c2, double c3) {
+            return a1 * b2 * c3 - a1 * b3 * c2 - a2 * b1 * c3 + a2 * b3 * c1 + a3 * b1 * c2 - a3 * b2 * c1;
         }
 };
 
+/**
+ * A three dimensional line or section.
+ */
 class Ln {
     public:
         Pt begin;
@@ -201,8 +246,8 @@ class Ln {
             assign(Pt::getNil(), Pt::getNil());
         }
 
-        Ln(double x1, double y1, double x2, double y2) {
-            assign(Pt(x1, y1), Pt(x2, y2));
+        Ln(double x1, double y1, double z1, double x2, double y2, double z2) {
+            assign(Pt(x1, y1, z1), Pt(x2, y2, z2));
         }
 
         Ln(const Pt& begin, const Pt& end) {
@@ -216,10 +261,20 @@ class Ln {
             return *this;
         }
 
-        Pt getClosestPoint(const Pt& pt) const {
-            Pt n = getDirectionVector().transpose();
+        Ln getBasePlaneProjection() const {
+            return Ln(begin.getBasePlaneProjection(), end.getBasePlaneProjection());
+        }
 
-            return intersect(Ln(pt, n.add(pt)));
+        Pt getClosestPoint(const Pt& pt) const {
+            Pt r(pt);
+            r.subtract(begin);
+
+            Pt q = getDirectionVector();
+            q.normalize();
+            q.multiply(q.dotProduct(r));
+            q.add(begin);
+
+            return q;
         }
 
         Pt getDirectionVector() const {
@@ -229,7 +284,7 @@ class Ln {
             return v;
         }
 
-        Pt intersect(const Ln& ln) const {
+        Pt basePlaneProjectionIntersect(const Ln& ln) const {
             double x1 = begin.x;
             double y1 = begin.y;
             double x2 = end.x;
@@ -238,17 +293,13 @@ class Ln {
             double y3 = ln.begin.y;
             double x4 = ln.end.x;
             double y4 = ln.end.y;
-            double a = determinant(x1, y1, x2, y2);
-            double b = determinant(x3, y3, x4, y4);
-            double c = determinant(x1 - x2, y1 - y2, x3 - x4, y3 - y4);
-            double x = determinant(a, x1 - x2, b, x3 - x4) / c;
-            double y = determinant(a, y1 - y2, b, y3 - y4) / c;
+            double a = Pt::determinant(x1, y1, x2, y2);
+            double b = Pt::determinant(x3, y3, x4, y4);
+            double c = Pt::determinant(x1 - x2, y1 - y2, x3 - x4, y3 - y4);
+            double x = Pt::determinant(a, x1 - x2, b, x3 - x4) / c;
+            double y = Pt::determinant(a, y1 - y2, b, y3 - y4) / c;
 
-            return Pt(x, y);
-        }
-
-        double determinant(double a, double b, double c, double d) const {
-            return a * d - b * c;
+            return Pt(x, y, 0);
         }
 
         static Ln getNil() {
@@ -256,6 +307,9 @@ class Ln {
         }
 };
 
+/**
+ * A rectangular size parallel with the base plane.
+ */
 class Rs {
     public:
         double width;
@@ -295,6 +349,9 @@ class Rs {
         }
 };
 
+/**
+ * A rectangle parallel with the base plane.
+ */
 class Rc {
     public:
         Pt pt;
@@ -306,8 +363,8 @@ class Rc {
             assign(Pt::getNil(), Rs::getNil());
         }
 
-        Rc(double x, double y, double width, double height) {
-            assign(Pt(x, y), Rs(width, height));
+        Rc(double x, double y, double z, double width, double height) {
+            assign(Pt(x, y, z), Rs(width, height));
         }
 
         Rc(const Pt& pt, const Rs& rs) {
@@ -321,15 +378,15 @@ class Rc {
             return *this;
         }
 
-        bool intersects(Rc rc2) const {
+        bool basePlaneProjectionIntersects(Rc rc2) const {
             return
-                rc2.contains(getTopLeft()) ||
-                rc2.contains(getTopRight()) ||
-                rc2.contains(getBottomLeft()) ||
-                rc2.contains(getBottomRight());
+                rc2.basePlaneProjectionContains(getTopLeft()) ||
+                rc2.basePlaneProjectionContains(getTopRight()) ||
+                rc2.basePlaneProjectionContains(getBottomLeft()) ||
+                rc2.basePlaneProjectionContains(getBottomRight());
         }
 
-        bool contains(Pt& p) const {
+        bool basePlaneProjectionContains(Pt& p) const {
             return pt.x <= p.x && p.x <= pt.x + rs.width && pt.y <= p.y && p.y <= pt.y + rs.height;
         }
 
@@ -350,28 +407,30 @@ class Rc {
         }
 
         Pt getTopLeft() const {
-            return Pt(pt.x, pt.y);
+            return Pt(pt.x, pt.y, pt.z);
         }
 
         Pt getTopRight() const {
-            return Pt(pt.x + rs.width, pt.y);
+            return Pt(pt.x + rs.width, pt.y, pt.z);
         }
 
         Pt getBottomLeft() const {
-            return Pt(pt.x, pt.y + rs.height);
+            return Pt(pt.x, pt.y + rs.height, pt.z);
         }
 
         Pt getBottomRight() const {
-            return Pt(pt.x + rs.width, pt.y + rs.height);
+            return Pt(pt.x + rs.width, pt.y + rs.height, pt.z);
         }
 
-        Ln getDistance(const Rc &other, double &distance) const {
+        Ln getBasePlaneProjectionDistance(const Rc &other, double &distance) const {
             double x1 = pt.x;
             double y1 = pt.y;
+            double z = pt.z;
             double x2 = pt.x + rs.width;
             double y2 = pt.y + rs.height;
             double x3 = other.pt.x;
             double y3 = other.pt.y;
+            double zOther = other.pt.z;
             double x4 = other.pt.x + other.rs.width;
             double y4 = other.pt.y + other.rs.height;
 
@@ -394,32 +453,32 @@ class Rc {
             int b = by * 3 + bx;
             switch (b) {
                 case 0:
-                    distance = Pt::getDistance(x2, y2, x3, y3);
-                    return Ln(x2, y2, x3, y3);
+                    distance = Pt::getDistance(x2, y2, 0, x3, y3, 0);
+                    return Ln(x2, y2, z, x3, y3, zOther);
                 case 1:
                     distance = y3 - y2;
-                    return Ln(NaN, y2, NaN, y3);
+                    return Ln(NaN, y2, z, NaN, y3, zOther);
                 case 2:
-                    distance = Pt::getDistance(x1, y2, x4, y3);
-                    return Ln(x1, y2, x4, y3);
+                    distance = Pt::getDistance(x1, y2, 0, x4, y3, 0);
+                    return Ln(x1, y2, z, x4, y3, zOther);
                 case 3:
                     distance = x3 - x2;
-                    return Ln(x2, NaN, x3, NaN);
+                    return Ln(x2, NaN, z, x3, NaN, zOther);
                 case 4:
                     distance = 0;
                     return Ln::getNil();
                 case 5:
                     distance = x1 - x4;
-                    return Ln(x1, NaN, x4, NaN);
+                    return Ln(x1, NaN, z, x4, NaN, zOther);
                 case 6:
-                    distance = Pt::getDistance(x2, y1, x3, y4);
-                    return Ln(x2, y1, x3, y4);
+                    distance = Pt::getDistance(x2, y1, 0, x3, y4, 0);
+                    return Ln(x2, y1, z, x3, y4, zOther);
                 case 7:
                     distance = y1 - y4;
-                    return Ln(NaN, y1, NaN, y4);
+                    return Ln(NaN, y1, z, NaN, y4, zOther);
                 case 8:
-                    distance = Pt::getDistance(x1, y1, x4, y4);
-                    return Ln(x1, y1, x4, y4);
+                    distance = Pt::getDistance(x1, y1, 0, x4, y4, 0);
+                    return Ln(x1, y1, z, x4, y4, zOther);
                 default:
                     distance = NaN;
                     return Ln::getNil();
@@ -427,7 +486,7 @@ class Rc {
         }
 
         static Rc getRcFromCenterSize(const Pt& center, const Rs& size) {
-            return Rc(center.x - size.width / 2, center.y - size.height / 2, size.width, size.height);
+            return Rc(center.x - size.width / 2, center.y - size.height / 2, size.width, size.height, center.z);
         }
 
         static Rc getNil() {
@@ -439,10 +498,16 @@ class Rc {
         }
 };
 
+/**
+ * A two dimensional circle parallel to the base plane.
+ */
 class Cc {
     public:
         Pt origin;
 
+        /**
+         * Radius is always interpreted parallel to the base plane.
+         */
         double radius;
 
     public:
@@ -450,8 +515,8 @@ class Cc {
             assign(Pt::getNil(), NaN);
         }
 
-        Cc(double x, double y, double radius) {
-            assign(Pt(x, y), radius);
+        Cc(double x, double y, double z, double radius) {
+            assign(Pt(x, y, z), radius);
         }
 
         Cc(const Pt& origin, double radius) {
@@ -465,14 +530,18 @@ class Cc {
             return *this;
         }
 
-        bool contains(Pt& pt) const {
-            return origin.getDistance(pt) <= radius;
+        Cc getBasePlaneProjection() const {
+            return Cc(Pt(origin.x, origin.y, 0), radius);
         }
 
-        std::vector<Pt> intersect(const Cc& other) const {
+        bool basePlaneProjectionContains(Pt& pt) const {
+            return origin.getBasePlaneProjectionDistance(pt) <= radius;
+        }
+
+        std::vector<Pt> basePlaneProjectionIntersect(const Cc& other) const {
             double R2 = radius * radius;
             double r2 = other.radius * other.radius;
-            double d = origin.getDistance(other.origin);
+            double d = origin.getBasePlaneProjectionDistance(other.origin);
             double d2 = d * d;
             double a = (d2 - r2 + R2);
 
@@ -486,11 +555,11 @@ class Cc {
 
             double y = sqrt(y2);
             double x = (d2 - r2 + R2) / (2 * d);
-            Pt pt1 = Pt(x, y);
-            Pt pt2 = Pt(x, -y);
-            double angle = other.origin.copy().subtract(origin).getAngle();
-            pt1.rotate(angle);
-            pt2.rotate(angle);
+            Pt pt1 = Pt(x, y, 0);
+            Pt pt2 = Pt(x, -y, 0);
+            double angle = other.origin.copy().subtract(origin).getBasePlaneProjectionAngle();
+            pt1.basePlaneRotate(angle);
+            pt2.basePlaneRotate(angle);
             pt1.add(origin);
             pt2.add(origin);
 
@@ -513,28 +582,28 @@ class Cc {
         Cc getEnclosingCircle(const Cc& other) const {
             double distance = origin.getDistance(other.origin);
             double d = distance + std::max(radius, other.radius - distance) + std::max(other.radius, radius - distance);
-            Pt pt(d / 2 - std::max(radius, other.radius - distance), 0);
-            double angle = other.origin.copy().subtract(origin).getAngle();
-            pt.rotate(angle);
+            Pt pt(d / 2 - std::max(radius, other.radius - distance), 0, 0);
+            double angle = other.origin.copy().subtract(origin).getBasePlaneProjectionAngle();
+            pt.basePlaneRotate(angle);
             pt.add(origin);
 
             return Cc(pt, d / 2);
         }
 
         Pt getCenterTop() const {
-            return Pt(origin.x, origin.y - radius);
+            return Pt(origin.x, origin.y - radius, origin.z);
         }
 
         Pt getCenterBottom() const {
-            return Pt(origin.x, origin.y + radius);
+            return Pt(origin.x, origin.y + radius, origin.z);
         }
 
         Pt getLeftCenter() const {
-            return Pt(origin.x - radius, origin.y);
+            return Pt(origin.x - radius, origin.y, origin.z);
         }
 
         Pt getRightCenter() const {
-            return Pt(origin.x + radius, origin.y);
+            return Pt(origin.x + radius, origin.y, origin.z);
         }
 };
 

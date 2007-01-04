@@ -39,7 +39,7 @@ class ForceDirectedEmbedding
         /**
          * The total number of ticks spent on calculation since the last reinitialize call.
          */
-        long ticks;
+        long elapsedTicks;
 
         /**
          * Total number of cycles since the last reinitialize call.
@@ -65,6 +65,11 @@ class ForceDirectedEmbedding
          * Total mass of bodies.
          */
         double massSum;
+
+        /**
+         * Last acceleration error.
+         */
+        double accelerationError;
 
         // positions
         std::vector<Pt> pn;
@@ -186,6 +191,11 @@ class ForceDirectedEmbedding
         double maxCalculationTime;
 
         /**
+         * The total time spent on calculation since the last reinitialize call.
+         */
+        double elapsedCalculationTime;
+
+        /**
          * Lower limit of acceleration approximation difference (between a1, a2, a3 and a4 in RK-4).
          * During updating the time step this is the lower limit to accept the current time step.
          */
@@ -249,6 +259,7 @@ class ForceDirectedEmbedding
 
         void addForceProvider(IForceProvider *forceProvider) {
             forceProviders.push_back(forceProvider);
+            forceProvider->setForceDirectedEmbedding(this);
         }
 
         void removeForceProvider(IForceProvider *forceProvider) {
@@ -286,7 +297,7 @@ class ForceDirectedEmbedding
         double getPotentialEnergy() {
             double sum = 0;
             for (int i = 0; i < forceProviders.size(); i++)
-                sum += forceProviders[i]->getPotentialEnergy(*this);
+                sum += forceProviders[i]->getPotentialEnergy();
 
             return sum;
         }
@@ -310,6 +321,8 @@ class ForceDirectedEmbedding
          * This algorithm adaptively modifies timeStep and friction.
          */
         void embed();
+
+        void writeDebugInformation(std::ostream& ostream);
 
     protected:
         std::vector<Pt> createPtArray() {
@@ -352,14 +365,12 @@ class ForceDirectedEmbedding
          */
         void incrementWithMultiplied(std::vector<Pt>& pts, double a, const std::vector<Pt>& b)
         {
+            Pt pt;
             ASSERT(pts.size() == b.size());
 
             for (int i = 0; i < pts.size(); i++) {
-                Pt& pt = pts[i];
-                double x = pt.x;
-                double y = pt.y;
-
-                pts[i].assign(b[i]).multiply(a).add(x, y);
+                pt.assign(b[i]).multiply(a);
+                pts[i].add(pt);
             }
         }
 

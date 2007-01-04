@@ -12,7 +12,7 @@ void main()
     IBody *previous = NULL;
 
 	for (int i = 0; i < count; i++) {
-        IBody *body = new Body(new Variable(Pt(500.0 * (double)rand() / RAND_MAX, 500.0 * (double)rand() / RAND_MAX)));
+        IBody *body = new Body(new Variable(Pt(500.0 * (double)rand() / RAND_MAX, 500.0 * (double)rand() / RAND_MAX, 0)));
 		embedding.addBody(body);
 		
 		if (previous)
@@ -31,8 +31,10 @@ void main()
 				embedding.addForceProvider(new ElectricRepeal(body1, body2));
 		}
     }
-    embedding.addForceProvider(new Friction());
 
+    embedding.addForceProvider(new Drag());
+
+    embedding.debug = 4;
     embedding.maxCycle = 100;
 
     for (int i = 0; i < 100; i++) {

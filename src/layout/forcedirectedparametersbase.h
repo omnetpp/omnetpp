@@ -131,11 +131,17 @@ class IBody : public IPositioned {
 
 class IForceProvider {
     protected:
+        ForceDirectedEmbedding *embedding;
+
         double maxForce;
 
     public:
         IForceProvider() {
             maxForce = 1000;
+        }
+
+        void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
+            this->embedding = embedding;
         }
 
 	    double getMaxForce() {
@@ -161,23 +167,23 @@ class IForceProvider {
         }
 
         Pt getStandardHorizontalDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
-            distance = body1->getPosition().x - body2->getPosition().x;
-            Pt vector = Pt(distance, 0);
-            distance = std::abs(distance);
+            Pt vector = Pt(body1->getPosition()).subtract(body2->getPosition());
+            vector.y = 0;
+            distance = vector.getLength();
             return vector;
         }
 
         Pt getStandardVerticalDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
-            distance = body1->getPosition().y - body2->getPosition().y;
-            Pt vector = Pt(0, distance);
-            distance = std::abs(distance);
+            Pt vector = Pt(body1->getPosition()).subtract(body2->getPosition());
+            vector.x = 0;
+            distance = vector.getLength();
             return vector;
         }
 
         Pt getSlipperyDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
             Rc rc1 = Rc::getRcFromCenterSize(body1->getPosition(), body1->getSize());
             Rc rc2 = Rc::getRcFromCenterSize(body2->getPosition(), body2->getSize());
-            Ln ln = rc1.getDistance(rc2, distance);
+            Ln ln = rc1.getBasePlaneProjectionDistance(rc2, distance);
             Pt vector = ln.begin;
             vector.subtract(ln.end);
             vector.setNaNToZero();
@@ -186,9 +192,9 @@ class IForceProvider {
 
         virtual const char *getClassName() = 0;
 
-        virtual void applyForces(const ForceDirectedEmbedding& embedding) = 0;
+        virtual void applyForces() = 0;
 
-        virtual double getPotentialEnergy(const ForceDirectedEmbedding& embedding) = 0;
+        virtual double getPotentialEnergy() = 0;
 };
 
 #endif

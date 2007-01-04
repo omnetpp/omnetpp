@@ -118,7 +118,7 @@ class RelativelyPositionedBody : public Body {
 
 class WallBody : public Body {
     public:
-        WallBody(bool horizontal, double position) : Body(new Variable(Pt(horizontal ? NaN : position, horizontal ? position : NaN))) {
+        WallBody(bool horizontal, double position) : Body(new Variable(Pt(horizontal ? NaN : position, horizontal ? position : NaN, NaN))) {
             if (horizontal)
                 size = Rs(POSITIVE_INFINITY, 0);
             else
@@ -172,7 +172,7 @@ class AbstractElectricRepeal : public IElectricRepeal {
             return distance;
         }
 
-        virtual void applyForces(const ForceDirectedEmbedding& embedding) {
+        virtual void applyForces() {
             double distance;
             Pt vector = getDistanceAndVector(distance);
             ASSERT(distance >= 0);
@@ -183,15 +183,15 @@ class AbstractElectricRepeal : public IElectricRepeal {
                 if (distance == 0)
                     power = maxForce;
                 else
-                    power = getValidForce(embedding.electricRepealCoefficient * charge1->getCharge() * charge2->getCharge() / distance / distance);
+                    power = getValidForce(embedding->electricRepealCoefficient * charge1->getCharge() * charge2->getCharge() / distance / distance);
 
-                charge1->getVariable()->addForce(vector, +power, embedding.inspected);
-                charge2->getVariable()->addForce(vector, -power, embedding.inspected);
+                charge1->getVariable()->addForce(vector, +power, embedding->inspected);
+                charge2->getVariable()->addForce(vector, -power, embedding->inspected);
             }
         }
 
-        virtual double getPotentialEnergy(const ForceDirectedEmbedding& embedding) {
-            return embedding.electricRepealCoefficient * charge1->getCharge() * charge2->getCharge() / getDistance();
+        virtual double getPotentialEnergy() {
+            return embedding->electricRepealCoefficient * charge1->getCharge() * charge2->getCharge() / getDistance();
         }
 };
 
@@ -281,7 +281,7 @@ class AbstractSpring : public ISpring {
             constructor(body1, body2, springCoefficient, reposeLength, slippery);
         }
 
-        double getSpringCoefficient() {
+        virtual double getSpringCoefficient() {
             return springCoefficient;
         }
 
@@ -305,23 +305,26 @@ class AbstractSpring : public ISpring {
             return distance;
         }
 
-        virtual void applyForces(const ForceDirectedEmbedding& embedding) {
+        virtual void applyForces() {
             double distance;
             Pt vector = getDistanceAndVector(distance);
             ASSERT(distance >= 0);
             double expansion = distance - reposeLength;
 
             if (expansion != 0 && !vector.isZero()) {
-                double power = getValidSignedForce(embedding.springCoefficient * springCoefficient * expansion);
-                
-                body1->getVariable()->addForce(vector, -power, embedding.inspected);
-                body2->getVariable()->addForce(vector, +power, embedding.inspected);
+                double power = getValidSignedForce(embedding->springCoefficient * getSpringCoefficient() * expansion);
+
+                if (body1)
+                    body1->getVariable()->addForce(vector, -power, embedding->inspected);
+
+                if (body2)
+                    body2->getVariable()->addForce(vector, +power, embedding->inspected);
             }
         }
 
-        virtual double getPotentialEnergy(const ForceDirectedEmbedding& embedding) {
+        virtual double getPotentialEnergy() {
             double expansion = getDistance() - reposeLength;
-            return embedding.springCoefficient * springCoefficient * expansion * expansion / 2; 
+            return embedding->springCoefficient * getSpringCoefficient() * expansion * expansion / 2; 
         }
 };
 
@@ -379,12 +382,37 @@ class HorizonalSpring : public AbstractSpring {
         }
 };
 
+class BasePlaneSpring : public AbstractSpring {
+    public:
+        BasePlaneSpring(IBody *body) : AbstractSpring(body, NULL) {
+        }
+        
+        BasePlaneSpring(IBody *body, double springCoefficient, double reposeLength) : AbstractSpring(body, NULL, springCoefficient, reposeLength, false) {
+        }
+
+        virtual double getSpringCoefficient() {
+            return springCoefficient * embedding->elapsedCalculationTime / embedding->maxCalculationTime;
+        }
+
+        virtual Pt getDistanceAndVector(double &distance) {
+            Pt vector = body1->getPosition();
+            vector.x = 0;
+            vector.y = 0;
+            distance = std::abs(vector.z);
+            return vector;
+        }
+
+        virtual const char *getClassName() {
+            return "BasePlaneSpring";
+        }
+};
+
 class AbstractVelocityBasedForceProvider : public IForceProvider {
     public:
-        virtual double getPower(const ForceDirectedEmbedding& embedding, Variable *variable, double vlen) = 0;
+        virtual double getPower(Variable *variable, double vlen) = 0;
 
-        virtual void applyForces(const ForceDirectedEmbedding& embedding) {
-            const std::vector<Variable *>& variables = embedding.getVariables();
+        virtual void applyForces() {
+            const std::vector<Variable *>& variables = embedding->getVariables();
 
             for (std::vector<Variable *>::const_iterator it = variables.begin(); it != variables.end(); it++) {
                 Variable *variable = *it;
@@ -393,22 +421,22 @@ class AbstractVelocityBasedForceProvider : public IForceProvider {
                 double vlen = vector.getLength();
 
                 if (!vector.isZero()) {
-                    double power = getPower(embedding, variable, vlen);
+                    double power = getPower(variable, vlen);
 
-                    variable->addForce(vector, power, embedding.inspected);
+                    variable->addForce(vector, power, embedding->inspected);
                 }
             }
         }
 
-        virtual double getPotentialEnergy(const ForceDirectedEmbedding& embedding) {
+        virtual double getPotentialEnergy() {
             return 0;
         }
 };
 
 class Friction : public AbstractVelocityBasedForceProvider {
     public:
-        virtual double getPower(const ForceDirectedEmbedding& embedding, Variable *variable, double vlen) {
-            return std::max(embedding.updatedFrictionCoefficient * 0.01, vlen / embedding.updatedTimeStep) * variable->getMass();
+        virtual double getPower(Variable *variable, double vlen) {
+            return std::max(embedding->updatedFrictionCoefficient * 0.01, vlen / embedding->updatedTimeStep) * variable->getMass();
         }
 
         virtual const char *getClassName() {
@@ -418,8 +446,8 @@ class Friction : public AbstractVelocityBasedForceProvider {
 
 class Drag : public AbstractVelocityBasedForceProvider {
     public:
-        virtual double getPower(const ForceDirectedEmbedding& embedding, Variable *variable, double vlen) {
-            return embedding.updatedFrictionCoefficient * vlen;
+        virtual double getPower(Variable *variable, double vlen) {
+            return embedding->updatedFrictionCoefficient * vlen;
         }
 
         virtual const char *getClassName() {
@@ -427,7 +455,6 @@ class Drag : public AbstractVelocityBasedForceProvider {
         }
 };
 
-// TODO: why is it not variable constraint?
 class BodyConstraint : public IForceProvider {
     protected:
         IBody *body;
@@ -441,9 +468,9 @@ class BodyConstraint : public IForceProvider {
             return body;
         }
 
-        virtual void applyForces(const ForceDirectedEmbedding& embedding) = 0;
+        virtual void applyForces() = 0;
 
-        virtual double getPotentialEnergy(const ForceDirectedEmbedding& embedding) {
+        virtual double getPotentialEnergy() {
             // TODO:
             return 0;
         }
@@ -461,12 +488,12 @@ class PointConstraint : public BodyConstraint {
             this->constraint = constraint;
         }
 
-        virtual void applyForces(const ForceDirectedEmbedding& embedding) {
+        virtual void applyForces() {
             Pt vector(constraint);
             vector.subtract(body->getPosition());
             double power = coefficient * vector.getLength();
 
-            body->getVariable()->addForce(vector, power, embedding.inspected);
+            body->getVariable()->addForce(vector, power, embedding->inspected);
         }
 
         virtual const char *getClassName() {
@@ -486,13 +513,13 @@ class LineConstraint : public BodyConstraint {
             this->constraint = constraint;
         }
 
-        virtual void applyForces(const ForceDirectedEmbedding& embedding) {
+        virtual void applyForces() {
             Pt position = body->getPosition();
             Pt vector(constraint.getClosestPoint(position));
             vector.subtract(position);
             double power = coefficient * vector.getLength();
 
-            body->getVariable()->addForce(vector, power, embedding.inspected);
+            body->getVariable()->addForce(vector, power, embedding->inspected);
         }
 
         virtual const char *getClassName() {
@@ -513,13 +540,13 @@ class CircleConstraint : public BodyConstraint {
             this->constraint = constraint;
         }
 
-        virtual void applyForces(const ForceDirectedEmbedding& embedding) {
+        virtual void applyForces() {
             Pt position = body->getPosition();
             Pt vector(constraint.origin);
             vector.subtract(position);
             double power = coefficient * (constraint.origin.getDistance(position) - constraint.radius);
 
-            body->getVariable()->addForce(vector, power, embedding.inspected);
+            body->getVariable()->addForce(vector, power, embedding->inspected);
         }
 
         virtual const char *getClassName() {

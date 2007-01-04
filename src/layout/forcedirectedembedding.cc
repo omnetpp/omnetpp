@@ -22,7 +22,7 @@ ForceDirectedEmbedding::ForceDirectedEmbedding() {
 
     // parameters
     springCoefficient = 0.1;
-    electricRepealCoefficient = 100000;
+    electricRepealCoefficient = 10000;
 
     frictionCoefficient = 1;
     minFrictionCoefficient = 0.1;
@@ -67,7 +67,8 @@ void ForceDirectedEmbedding::reinitialize() {
     probCycle = 0;
     timeStepSum = 0;
     kineticEnergySum = 0;
-    ticks = 0;
+    elapsedTicks = 0;
+    elapsedCalculationTime = 0;
     massSum = 0;
 
     pn = createPtArray();
@@ -126,20 +127,18 @@ void ForceDirectedEmbedding::embed() {
 
     // modified Runge Kutta 4th order
     do {
-        long time;
         double hMultiplier = 0;
-        double accelerationError = 0;
         cycle++;
 
         while (true) {
             probCycle++;
 
             // update acceleration errors
-            time = ticksToMilliseconds(ticks + clock() - begin);
-            if (time > maxCalculationTime && cycle > minCycle)
+            elapsedCalculationTime = ticksToMilliseconds(elapsedTicks + clock() - begin);
+            if (elapsedCalculationTime > maxCalculationTime && cycle > minCycle)
                 break;
             else {
-                double coefficient = std::min(1.0, std::max(0.0, (maxCalculationTime - time) / maxCalculationTime));
+                double coefficient = std::min(1.0, std::max(0.0, (maxCalculationTime - elapsedCalculationTime) / maxCalculationTime));
 
                 updatedMinAccelerationError = coefficient * minAccelerationError;
                 updatedMaxAccelerationError = coefficient * maxAccelerationError;
@@ -169,8 +168,10 @@ void ForceDirectedEmbedding::embed() {
             // Adjust time step (h)
             accelerationError = maximumDifference(a1, a2, a3, a4);
 
-            if (debug >= 3)
-                std::cout << "Prob cycle at real time: " << time << " time: " << timeStepSum << " h: " << updatedTimeStep << " friction: " << updatedFrictionCoefficient << " min acceleration error: " << updatedMinAccelerationError << " max acceleration error: " << updatedMaxAccelerationError << " acceleration error: " << accelerationError << " cycle: " << cycle << " prob cycle: " << probCycle << "\n";
+            if (debug >= 3) {
+                std::cout << "Prob cycle ";
+                writeDebugInformation(std::cout);
+            }
 
             // stop if acceleration error and time step are within range
             if (updatedMinAccelerationError < accelerationError && accelerationError < updatedMaxAccelerationError &&
@@ -219,16 +220,18 @@ void ForceDirectedEmbedding::embed() {
             }
         }
 
-        time = ticksToMilliseconds(ticks + clock() - begin);
-        if (debug >= 2)
-            std::cout << "Cycle at real time: " << time << " time: " << timeStepSum << " h: " << updatedTimeStep << " friction: " << updatedFrictionCoefficient << " min acceleration error: " << updatedMinAccelerationError << " max acceleration error: " << updatedMaxAccelerationError << " acceleration error: " << accelerationError << " cycle: " << cycle << " prob cycle: " << probCycle << "\n";
+        elapsedCalculationTime = ticksToMilliseconds(elapsedTicks + clock() - begin);
+        if (debug >= 2) {
+            std::cout << "Cycle ";
+            writeDebugInformation(std::cout);
+        }
 
         // update friction
         timeStepSum += updatedTimeStep;
         double kineticEnergy = getKineticEnergy();
         kineticEnergySum += kineticEnergy * updatedTimeStep;
         double kineticEnergyAvg = (kineticEnergySum / timeStepSum);
-        double kineticEnergyExpected = kineticEnergyAvg * (maxCalculationTime - time) / maxCalculationTime;
+        double kineticEnergyExpected = kineticEnergyAvg * (maxCalculationTime - elapsedCalculationTime) / maxCalculationTime;
         if (debug >= 3)
             std::cout << "Current kinetic energy: " << kineticEnergy << " expected: " << kineticEnergyExpected << "\n";
         if (frictionCoefficient) {
@@ -238,7 +241,7 @@ void ForceDirectedEmbedding::embed() {
                 updatedFrictionCoefficient *= frictionCoefficientMultiplier;
         }
         else
-            updatedFrictionCoefficient = getEnergyBasedFrictionCoefficient(std::max(0.0, maxCalculationTime - time));
+            updatedFrictionCoefficient = getEnergyBasedFrictionCoefficient(std::max(0.0, maxCalculationTime - elapsedCalculationTime));
         
         // check if relaxed
         finished = true;
@@ -261,16 +264,19 @@ void ForceDirectedEmbedding::embed() {
         }
 
         // check if end of requested calculation has been reached
-        if ((cycle == maxCycle) || (time > maxCalculationTime && cycle > minCycle))
+        if ((cycle == maxCycle) || (elapsedCalculationTime > maxCalculationTime && cycle > minCycle))
             finished = true;
     }
     while (!inspected && !finished);
 
-    ticks += clock() - begin;
+    elapsedTicks += clock() - begin;
+    elapsedCalculationTime = ticksToMilliseconds(elapsedTicks);
 
     if (debug >= 1) {
-        if (finished)
-            std::cout << "Runge-Kutta-4 ended, at real time: " << ticksToMilliseconds(ticks) << " time: " << timeStepSum << " cycle: " << cycle << " prob cycle: " << probCycle << "\n";
+        if (finished) {
+            std::cout << "Runge-Kutta-4 ended ";
+            writeDebugInformation(std::cout);
+        }
 
         std::cout.flush();
     }
@@ -284,8 +290,8 @@ void ForceDirectedEmbedding::a(std::vector<Pt>& an, const std::vector<Pt>& pn, c
     if (debug >= 4) {
         std::cout << "Calling a() with:\n";
         for (int i = 0; i < pn.size(); i++) {
-            std::cout << "p[" << i << "] = " << pn[i].x << ", " << pn[i].y << " ";
-            std::cout << "v[" << i << "] = " << vn[i].x << ", " << vn[i].y << "\n";
+            std::cout << "p[" << i << "] = " << pn[i].x << ", " << pn[i].y << ", " << pn[i].z << " ";
+            std::cout << "v[" << i << "] = " << vn[i].x << ", " << vn[i].y << ", " << vn[i].z << "\n";
         }
     }
 
@@ -302,7 +308,7 @@ void ForceDirectedEmbedding::a(std::vector<Pt>& an, const std::vector<Pt>& pn, c
 
     // calculate forces
     for (std::vector<IForceProvider *>::iterator it = forceProviders.begin(); it != forceProviders.end(); it++)
-        (*it)->applyForces(*this);
+        (*it)->applyForces();
 
     // return accelerations
     for (int i = 0; i < variables.size(); i++) {
@@ -313,6 +319,12 @@ void ForceDirectedEmbedding::a(std::vector<Pt>& an, const std::vector<Pt>& pn, c
     if (debug >= 4) {
         std::cout << "Returning from a() with:\n";
         for (int i = 0; i < pn.size(); i++)
-            std::cout << "a[" << i << "] = " << an[i].x << ", " << an[i].y << "\n";
+            std::cout << "a[" << i << "] = " << an[i].x << ", " << an[i].y << ", " << an[i].z << "\n";
     }
+}
+
+void ForceDirectedEmbedding::writeDebugInformation(std::ostream& ostream)
+{
+    if (initialized)
+        ostream << "At real time: " << elapsedCalculationTime << " time: " << timeStepSum << " h: " << updatedTimeStep << " friction: " << updatedFrictionCoefficient << " min acceleration error: " << updatedMinAccelerationError << " max acceleration error: " << updatedMaxAccelerationError << " acceleration error: " << accelerationError << " cycle: " << cycle << " prob cycle: " << probCycle << "\n";
 }
