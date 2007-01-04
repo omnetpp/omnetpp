@@ -34,6 +34,7 @@ Contents
 1. Building the simulation executable
 2. Writing NED files
 3. Writing Java-based simple modules
+4. Compiling the Java code and running the simulation
 
 
 1. Building the simulation executable
@@ -82,6 +83,7 @@ Parameters: use parent module's parameters (parentModule().par("hello").doubleVa
 
 
 3. Writing simple modules in Java
+---------------------------------
 
 Simple module classes need to subclass from JSimpleModule, and redefine
 at least handleMessage() [activity() is not supported] and possibly also
@@ -192,7 +194,20 @@ handleMessage is called:
 
 This requires some attention during coding to avoid bad surprises.
 
-   Rationale: ...
+   Rationale: Implementing one-to-one mapping of C++ objects to Java wrapper
+   objects is not done, because it would not be possible without modifying
+   the C++ base class, and the extension could not be run on an unmodified
+   OMNeT++ installation. (If we accepted modification of the C++ base class,
+   then storing a jobject reference in it would be the best solution. One
+   might think that by introducing a global hash table [to store cptr-to-
+   wrapperobject mapping] we could spare the need for modifying the C++ base
+   class, but that doesn't work in practice. Given a CPtr, we cannot tell if
+   it is still the same object, or a new object allocated on the same memory
+   location after the original object was destroyed. This problem could only
+   be resolved either with help from the C++ destructor (it would remove
+   the entry from the hashtable), or by introducing a unique object ID into
+   C++ objects.)
+
 
 NO POLYMORPHIC RETURN TYPES. When a method returns an object, the C++ object
 object will be wrapped into a Java object of the declared return type of the
@@ -215,10 +230,10 @@ of the correct type:
 This behaves like C++ dynamic_cast<>, in that the convertFrom() method
 returns null if the conversion cannot be performed. (It actually indeed
 contains a C++ dynamic_cast<> inside the JNI code.) Also, the conversion
-actually performs transfer of ownership to new wrapper object. That is,
-swigCPtr... .. , meaning that the original Java wrapper object (obj above)
-should be considered a zombie afterwards and should not be touched.
-d
+transfers ownership of the C++ object (swigCMemOwn) to new wrapper object,
+that is, the original Java wrapper object (obj above) should be considered
+a zombie afterwards and should not be touched.
+
    Rationale: immediately creating the wrapper object of the right (dynamic)
    type would cause a high runtime cost in every method that returns an object.
    The code would have to invoke className() on the C++ object to get the
@@ -230,7 +245,8 @@ d
    not be able to run on an unmodified OMNeT++ installation.
 
 
-4. Compiling your Java code and running the simulation
+4. Compiling the Java code and running the simulation
+-----------------------------------------------------
 
 When invoking the Java compiler, make sure that the provided simkernel.jar
 is in the compile-time classpath.
@@ -246,3 +262,5 @@ Please post to the mailing list.
 
 --
 Andras
+
+
