@@ -26,7 +26,8 @@
 #include "matchexpression.h"
 #include "patternmatcher.h"
 #include "resultfilemanager.h"
-#include "filetokenizer.h"
+#include "filereader.h"
+#include "linetokenizer.h"
 #include "stringtokenizer.h"
 #include "filereader.h"
 
@@ -953,20 +954,18 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
             fileSystemFileName = indexFileName;
     }
 
-    FileTokenizer ftok(fileSystemFileName);
-    while (ftok.readLine())
+    FileReader freader(fileSystemFileName);
+    char *line;
+    LineTokenizer tokenizer;
+    while ((line=freader.readNextLine())!=NULL)
     {
-        int numTokens = ftok.numTokens();
-        char **vec = ftok.tokens();
-        processLine(vec, numTokens, fileRunRef, fileRef, ftok.lineNum());
+        int len = freader.getLastLineLength();
+        int numTokens = tokenizer.tokenize(line, len);
+        char **tokens = tokenizer.tokens();
+        processLine(tokens, numTokens, fileRunRef, fileRef, freader.getNumReadLines());
     }
 
-    // ignore "incomplete last line" error, because we might be reading
-    // from a vec file currently being written by a simulation
-    if (!ftok.eof() && ftok.errorCode()!=FileTokenizer::INCOMPLETELINE)
-        throw opp_runtime_error(ftok.errorMsg().c_str());
-
-    fileRef->numLines = ftok.lineNum();
+    fileRef->numLines = freader.getNumReadLines();
 
     return fileRef;
 }
