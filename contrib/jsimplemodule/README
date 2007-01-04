@@ -96,7 +96,7 @@ conveniently created and connected with the in++/out++ syntax as in the
 example above. It is a bigger problem that the simple module cannot
 have parameters (unless you add them into JSimpleModule.ned itself).
 In practice, this can be resolved by using the parent module's parameters.
-From the Java code they can be accessed as parentModule().par("hello").
+From the Java code they can be accessed as getParentModule().par("hello").
 
 
 3. Writing simple modules in Java

@@ -1,9 +1,13 @@
 @echo off
+::
+:: Modify this batch file according to your needs!
+::
 set JDK=%TOOLS_DIR%\jdk1.5.0
 PATH=%PATH%;%JDK%\jre\bin\client;%JDK%\bin
-set CLASSPATH=%CLASSPATH%;..\distrib\simkernel.jar
+set CLASSPATH=%CLASSPATH%;..\simkernel.jar;.\bin
 
-del *.class
-javac *.java || exit 1
+mkdir bin >nul 2>nul
+del bin\*.class
+javac *.java -d bin || exit 1
 
-..\full.exe
+..\src\src.exe

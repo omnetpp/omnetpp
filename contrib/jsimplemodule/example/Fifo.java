@@ -22,7 +22,7 @@ public class Fifo extends JSimpleModule
         // Set up the initial number of jobs in the queue
         int index = this.getIndex(); // get the index no of this fifo queue
 
-        int n = par("numInitialJobs").longValue();
+        int n = getParentModule().par("queueNumInitialJobs").longValue();
         for (int i=0; i<n; ++i) {
             cMessage msg = new cMessage("job-"+index+"-"+i);
             msg.setTimestamp();
@@ -86,7 +86,7 @@ public class Fifo extends JSimpleModule
 
     protected double serviceRequirement(cMessage msg) {
         ev().println("Starting service of "+msg.getName());
-        return Simkernel.exponential(1); //XXX par("service_time").doubleValue();
+        return getParentModule().par("queueServiceTime").doubleValue();
     }
 
     protected void endService(cMessage msg) {

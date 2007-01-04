@@ -17,6 +17,9 @@ endnetwork
 
 
 module Net2
+    parameters:
+        queueNumInitialJobs: numeric const,
+        queueServiceTime: numeric;
     submodules:
         src: JSimpleModule;
             parameters:
@@ -36,4 +39,7 @@ module Net2
 endmodule
 
 network net2 : Net2
+    parameters:
+        queueNumInitialJobs = 5,
+        queueServiceTime = exponential(1);
 endnetwork
