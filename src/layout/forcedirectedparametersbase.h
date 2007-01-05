@@ -18,26 +18,51 @@
 #include <math.h>
 #include "geometry.h"
 
-class Variable;
 class ForceDirectedEmbedding;
 
+/**
+ * Base class for things that have position.
+ */
 class IPositioned {
     public:
         virtual Pt getPosition() = 0;
 };
 
+/**
+ * A variable used in the differential equation.
+ * The actual value of the variable is the position, the first derivative is the velocity
+ * and the second derivative is the acceleration.
+ */
 class Variable : public IPositioned {
     protected:
+        /**
+         * Value of the variable.
+         */
 	    Pt position;
 
+        /**
+         * First derivative.
+         */
 	    Pt velocity;
 
+        /**
+         * Second derivative.
+         */
         Pt acceleration;
 
+        /**
+         * Total applied force.
+         */
         Pt force;
 
+        /**
+         * The list of all applied forces for debug purposes.
+         */
 	    std::vector<Pt> forces;
-	
+
+        /**
+         * Total mass of bodies appling forces to this variable.
+         */
 	    double mass;
 
     private:
@@ -62,26 +87,26 @@ class Variable : public IPositioned {
 		    return position;
 	    }
 
-	    void assignPosition(const Pt& position) {
+	    virtual void assignPosition(const Pt& position) {
 		    this->position.assign(position);
 	    }
 
-	    Pt& getVelocity() {
+	    Pt getVelocity() {
 		    return velocity;
 	    }
 
-	    void assignVelocity(const Pt& velocity) {
+	    virtual void assignVelocity(const Pt& velocity) {
 		    this->velocity.assign(velocity);
+	    }
+
+	    virtual Pt getAcceleration() {
+		    return acceleration.assign(force).divide(mass);
 	    }
 
         double getKineticEnergy() {
             double vlen = velocity.getLength();
             return 0.5 * mass * vlen * vlen;
         }
-
-	    Pt& getAcceleration() {
-		    return acceleration.assign(force).divide(mass);
-	    }
 
 	    void resetForce() {
             force = Pt::getZero();
@@ -97,14 +122,14 @@ class Variable : public IPositioned {
 
 	    void addForce(const Pt& vector, double power, bool inspected = false) {
 		    Pt f(vector);
-            f.normalize().multiply(power);
 
-		    ASSERT(f.isFullySpecified());
+            if (!f.isZero() && f.isFullySpecified()) {
+                f.normalize().multiply(power);
+		        force.add(f);
 
-		    force.add(f);
-
-            if (inspected)
-    		    forces.push_back(f);
+                if (inspected)
+    		        forces.push_back(f);
+            }
 	    }
 
 	    void resetForces() {
@@ -116,6 +141,30 @@ class Variable : public IPositioned {
 	    }
 };
 
+/**
+ * A variable which has fix x and y coordinates but still has a free z coordinate.
+ */
+class PointConstrainedVariable : public Variable {
+    public:
+        PointConstrainedVariable(Pt position) : Variable(position) {
+        }
+
+	    virtual void assignPosition(const Pt& position) {
+            this->position.z = position.z;
+        }
+
+	    virtual void assignVelocity(const Pt& velocity) {
+            this->velocity.z = velocity.z;
+        }
+
+	    virtual Pt getAcceleration() {
+		    return acceleration.assign(0, 0, force.z).divide(mass);
+	    }
+};
+
+/**
+ * Interface class for bodies.
+ */
 class IBody : public IPositioned {
     public:
         virtual const char *getClassName() = 0;
@@ -129,6 +178,9 @@ class IBody : public IPositioned {
         virtual Variable *getVariable() = 0;
 };
 
+/**
+ * Interface class used by the force directed embedding to generate forces among bodies.
+ */
 class IForceProvider {
     protected:
         ForceDirectedEmbedding *embedding;
@@ -140,7 +192,7 @@ class IForceProvider {
             maxForce = 1000;
         }
 
-        void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
+        virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
             this->embedding = embedding;
         }
 
@@ -166,9 +218,11 @@ class IForceProvider {
             return vector;
         }
 
+        // TODO: allow infinite sizes and calculate distance by that?
         Pt getStandardHorizontalDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
             Pt vector = Pt(body1->getPosition()).subtract(body2->getPosition());
             vector.y = 0;
+            vector.z = 0;
             distance = vector.getLength();
             return vector;
         }
@@ -176,6 +230,7 @@ class IForceProvider {
         Pt getStandardVerticalDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
             Pt vector = Pt(body1->getPosition()).subtract(body2->getPosition());
             vector.x = 0;
+            vector.z = 0;
             distance = vector.getLength();
             return vector;
         }

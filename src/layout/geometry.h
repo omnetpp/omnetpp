@@ -34,7 +34,7 @@ extern double POSITIVE_INFINITY;
 inline bool isNaN(double x) { return x != x; }
 
 /**
- * A 3 dimensional point. Base plane means z = 0.
+ * A three dimensional point. Base plane means z = 0.
  */
 class Pt
 {
@@ -308,7 +308,7 @@ class Ln {
 };
 
 /**
- * A rectangular size parallel with the base plane.
+ * A two dimensional rectangular size parallel to the base plane.
  */
 class Rs {
     public:
@@ -350,7 +350,7 @@ class Rs {
 };
 
 /**
- * A rectangle parallel with the base plane.
+ * A two dimensional rectangle parallel to the base plane.
  */
 class Rc {
     public:
@@ -570,16 +570,16 @@ class Cc {
             return pts;
         }
 
-        static Cc getEnclosingCircle(const std::vector<Cc>& circles) {
+        static Cc getBasePlaneProjectionEnclosingCircle(const std::vector<Cc>& circles) {
             Cc cc = circles[0];
 
             for (std::vector<Cc>::const_iterator it = circles.begin(); it != circles.end(); it++)
-                cc = cc.getEnclosingCircle(*it);
+                cc = cc.getBasePlaneProjectionEnclosingCircle(*it);
 
             return cc;
         }
 
-        Cc getEnclosingCircle(const Cc& other) const {
+        Cc getBasePlaneProjectionEnclosingCircle(const Cc& other) const {
             double distance = origin.getDistance(other.origin);
             double d = distance + std::max(radius, other.radius - distance) + std::max(other.radius, radius - distance);
             Pt pt(d / 2 - std::max(radius, other.radius - distance), 0, 0);

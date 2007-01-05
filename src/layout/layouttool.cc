@@ -28,13 +28,13 @@ void main()
 			IBody *body2 = bodies[j];
 
 			if (body1->getVariable() != body2->getVariable())
-				embedding.addForceProvider(new ElectricRepeal(body1, body2));
+				embedding.addForceProvider(new ElectricRepulsion(body1, body2));
 		}
     }
 
     embedding.addForceProvider(new Drag());
 
-    embedding.debug = 4;
+    embedding.debugLevel = 4;
     embedding.maxCycle = 100;
 
     for (int i = 0; i < 100; i++) {

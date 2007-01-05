@@ -26,8 +26,8 @@ class ForceDirectedEmbedding
     protected:
         /**
          * True means internal state for the layout has been initialized.
-         * Initialization is not done during construction time, but it is done not later than
-         * the first call to embed.
+         * Initialization is not done during construction time,
+         * but it is done not later than the first call to embed.
          */
         bool initialized;
 
@@ -37,24 +37,24 @@ class ForceDirectedEmbedding
         bool finished;
 
         /**
+         * Total number of calculation cycles in the main loop since the last reinitialize call.
+         */
+        int cycle;
+
+        /**
+         * Total number of calculation probe cycles in the inner loop since the last reinitialize call.
+         */
+        int probCycle;
+
+        /**
          * The total number of ticks spent on calculation since the last reinitialize call.
          */
         long elapsedTicks;
 
         /**
-         * Total number of cycles since the last reinitialize call.
-         */
-        int cycle;
-
-        /**
-         * Total number of probe cycles since the last reinitialize call.
-         */
-        int probCycle;
-
-        /**
          * Total virtual calculation time since the last reinitialize call.
          */
-        double timeStepSum;
+        double elapsedTime;
 
         /**
          * Total kinetic energy seen in all cycles since the last reinitialize call.
@@ -67,9 +67,19 @@ class ForceDirectedEmbedding
         double massSum;
 
         /**
-         * Last acceleration error.
+         * Last calculated acceleration error.
          */
-        double accelerationError;
+        double lastAccelerationError;
+
+        /**
+         * Last calculated maximum velocity.
+         */
+        double lastMaxVelocity;
+
+        /**
+         * Last calculated maximum acceleration.
+         */
+        double lastMaxAcceleration;
 
         // positions
         std::vector<Pt> pn;
@@ -109,14 +119,24 @@ class ForceDirectedEmbedding
 
     public:
         /**
-         * Prints debug messages to standard output during embedding.
+         * Valid debug levels are: 0, 1, 2, 3, 4.
+         * Higher debug level will print more debug messages to the standard output during embedding.
+         * Debug level 0 means embedding will not print anything.
          */
-        int debug;
+        int debugLevel;
 
         /**
-         * Stops at every cycle to be able to inspect the state of the embedding. Call embed again to continue.
+         * When true embedding stops at every cycle to be able to inspect the state of the embedding.
+         * Call embed again to continue.
          */
         bool inspected;
+
+        /**
+         * A value between 0 and 1, where 0 means initialized state and 1 means finished state.
+         * This will be updated according to the current internal state during the solution.
+         * The value might decrease during the calculation although it is expected to increase most of the time.
+         */
+        double relaxFactor;
 
         /**
          * Spring force coefficient.
@@ -124,9 +144,9 @@ class ForceDirectedEmbedding
         double springCoefficient;
 
         /**
-         * Electric repeal force coefficient.
+         * Electric repulsion force coefficient.
          */
-        double electricRepealCoefficient;
+        double electricRepulsionCoefficient;
 
         /**
          * Friction reduces the energy of the system. The friction force points in the opposite direction of the current velocity.
@@ -159,7 +179,7 @@ class ForceDirectedEmbedding
         /**
          * The default time step when solution starts.
          * Time step is automatically updated during the solution. It will always have the highest value so that the acceleration error
-         * is less than the acceleration error limit. The time step is either multiplied or divided by the time step multiplier according to
+         * is less than the max acceleration error. The time step is either multiplied or divided by the time step multiplier according to
          * the current acceleration error.
          */
         double timeStep;
@@ -185,8 +205,8 @@ class ForceDirectedEmbedding
         double timeStepMultiplier;
 
         /**
-         * Maximum time spend on the calculation in milliseconds.
-         * The algorithm will always return after this time has elapsed.
+         * Maximum time to be spent on the calculation in milliseconds.
+         * The algorithm will return after this time has been elapsed.
          */
         double maxCalculationTime;
 
@@ -220,28 +240,23 @@ class ForceDirectedEmbedding
 
         /**
          * Acceleration limit during the solution.
-         * When all vertices has lower acceleration than this limit then the algorithm may be stopped.
+         * When all bodies has lower acceleration than this limit then the algorithm may be stopped.
          */
         double accelerationRelaxLimit;
 
         /**
          * Velocity limit during the solution.
-         * When all vertices has lower velocity than this limit then the algorithm may be stopped.
+         * When all bodies has lower velocity than this limit then the algorithm may be stopped.
          */
         double velocityRelaxLimit;
 
         /**
-         * Maximim velocity.
+         * Maximim velocity that a body may have.
          */
         double maxVelocity;
 
         /**
-         * Minimum number of cycles to run.
-         */
-        int minCycle;
-
-        /**
-         * Maximum number of cycles to run.
+         * Maximum number of calculation cycles to run.
          */
         int maxCycle;
 
@@ -284,8 +299,19 @@ class ForceDirectedEmbedding
             return finished;
         }
 
+        /**
+         * Sets the default parameters.
+         */
+        void setDefaultParameters();
+
+        /**
+         * Clears all results from previous calculations and sets initial values.
+         */
         void reinitialize();
 
+        /**
+         * Calculate the total current kinetic energy.
+         */
         double getKineticEnergy() {
             double sum = 0;
             for (int i = 0; i < variables.size(); i++)
@@ -294,6 +320,9 @@ class ForceDirectedEmbedding
             return sum;
         }
 
+        /**
+         * Calculate the total current potential energy.
+         */
         double getPotentialEnergy() {
             double sum = 0;
             for (int i = 0; i < forceProviders.size(); i++)
@@ -322,9 +351,15 @@ class ForceDirectedEmbedding
          */
         void embed();
 
+        /**
+         * Writes internal debug information into the given stream.
+         */
         void writeDebugInformation(std::ostream& ostream);
 
     protected:
+        /**
+         * Create an Pt array filled with zeros.
+         */
         std::vector<Pt> createPtArray() {
             std::vector<Pt> pts;
 
@@ -334,6 +369,9 @@ class ForceDirectedEmbedding
             return pts;
         }
 
+        /**
+         * Calculate the maximum difference of any corresponding pair between a1, a2, a3 and a4.
+         */
         double maximumDifference(const std::vector<Pt>& a1, const std::vector<Pt>& a2, const std::vector<Pt>& a3, const std::vector<Pt>& a4)
         {
             double max = 0;
@@ -410,6 +448,9 @@ class ForceDirectedEmbedding
          */
         void a(std::vector<Pt>& an, const std::vector<Pt>& pn, const std::vector<Pt>& vn);
 
+        /**
+         * Convert measured ticks to milliseconds.
+         */
         double ticksToMilliseconds(long ticks) {
             return (double)ticks / CLOCKS_PER_SEC * 1000;
         }

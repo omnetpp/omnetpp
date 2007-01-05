@@ -141,7 +141,7 @@ class StarTreeEmbedding
 				    circles.push_back(Cc(vertexChild->starTreeCenter.copy().add(vertexChild->starTreeCircleCenter), vertexChild->starTreeRadius));
                 }
 
-                Cc circleEncolsing = Cc::getEnclosingCircle(circles);
+                Cc circleEncolsing = Cc::getBasePlaneProjectionEnclosingCircle(circles);
 
 			    vertex->starTreeRadius = circleEncolsing.radius;
 			    vertex->starTreeCircleCenter = circleEncolsing.origin;

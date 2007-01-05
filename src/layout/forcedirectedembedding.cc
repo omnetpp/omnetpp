@@ -15,37 +15,10 @@
 #include "forcedirectedembedding.h"
 
 ForceDirectedEmbedding::ForceDirectedEmbedding() {
-    debug = 0;
+    debugLevel = 0;
     inspected = false;
     initialized = false;
     finished = false;
-
-    // parameters
-    springCoefficient = 0.1;
-    electricRepealCoefficient = 10000;
-
-    frictionCoefficient = 1;
-    minFrictionCoefficient = 0.1;
-    maxFrictionCoefficient = 10;
-    frictionCoefficientMultiplier = 2;
-
-    timeStep = 1;
-    minTimeStep = 0.01;
-    maxTimeStep = 100;
-    timeStepMultiplier = 2;
-
-    maxCalculationTime = 1000;
-    
-    minAccelerationError = 5;
-    maxAccelerationError = 10;
-
-    accelerationRelaxLimit = 1;
-    velocityRelaxLimit = 1;
-
-    maxVelocity = 100;
-
-    minCycle = 0;
-    maxCycle = INT_MAX;
 }
 
 ForceDirectedEmbedding::~ForceDirectedEmbedding() {
@@ -59,29 +32,57 @@ ForceDirectedEmbedding::~ForceDirectedEmbedding() {
         delete *it;
 }
 
+void ForceDirectedEmbedding::setDefaultParameters() {
+    springCoefficient = 0.1;
+    electricRepulsionCoefficient = 10000;
+
+    frictionCoefficient = 1;
+    minFrictionCoefficient = 0.1;
+    maxFrictionCoefficient = 10;
+    frictionCoefficientMultiplier = 2;
+
+    timeStep = 1;
+    minTimeStep = 0.01;
+    maxTimeStep = 100;
+    timeStepMultiplier = 2;
+    
+    minAccelerationError = 5;
+    maxAccelerationError = 10;
+
+    accelerationRelaxLimit = 1;
+    velocityRelaxLimit = 1;
+
+    maxVelocity = 100;
+
+    maxCycle = INT_MAX;
+    maxCalculationTime = 1000;
+}
+
 void ForceDirectedEmbedding::reinitialize() {
     initialized = true;
     finished = false;
 
+    relaxFactor = 0;
     cycle = 0;
     probCycle = 0;
-    timeStepSum = 0;
-    kineticEnergySum = 0;
+    elapsedTime = 0;
     elapsedTicks = 0;
     elapsedCalculationTime = 0;
+    kineticEnergySum = 0;
     massSum = 0;
 
+    // internal state arrays
     pn = createPtArray();
-    an = createPtArray();
     vn = createPtArray();
+    an = createPtArray();
     a1 = createPtArray();
     a2 = createPtArray();
     a3 = createPtArray();
     a4 = createPtArray();
-    dvn = createPtArray();
-    tvn = createPtArray();
     dpn = createPtArray();
     tpn = createPtArray();
+    dvn = createPtArray();
+    tvn = createPtArray();
 
     // set positions and velocities
     for (int i = 0; i < variables.size(); i++) {
@@ -96,7 +97,7 @@ void ForceDirectedEmbedding::reinitialize() {
     updatedMaxAccelerationError = maxAccelerationError;
     updatedMinAccelerationError = minAccelerationError;
 
-    if (frictionCoefficient)
+    if (frictionCoefficient != 0)
         updatedFrictionCoefficient = frictionCoefficient;
     else
         updatedFrictionCoefficient = getEnergyBasedFrictionCoefficient(maxCalculationTime);
@@ -135,10 +136,11 @@ void ForceDirectedEmbedding::embed() {
 
             // update acceleration errors
             elapsedCalculationTime = ticksToMilliseconds(elapsedTicks + clock() - begin);
-            if (elapsedCalculationTime > maxCalculationTime && cycle > minCycle)
+            if (elapsedCalculationTime > maxCalculationTime)
                 break;
             else {
-                double coefficient = std::min(1.0, std::max(0.0, (maxCalculationTime - elapsedCalculationTime) / maxCalculationTime));
+                //double coefficient = std::min(1.0, std::max(0.0, (maxCalculationTime - elapsedCalculationTime) / maxCalculationTime));
+                double coefficient = 1 - relaxFactor;
 
                 updatedMinAccelerationError = coefficient * minAccelerationError;
                 updatedMaxAccelerationError = coefficient * maxAccelerationError;
@@ -166,20 +168,20 @@ void ForceDirectedEmbedding::embed() {
             a(a4, tpn, tvn);
 
             // Adjust time step (h)
-            accelerationError = maximumDifference(a1, a2, a3, a4);
+            lastAccelerationError = maximumDifference(a1, a2, a3, a4);
 
-            if (debug >= 3) {
+            if (debugLevel >= 3) {
                 std::cout << "Prob cycle ";
                 writeDebugInformation(std::cout);
             }
 
             // stop if acceleration error and time step are within range
-            if (updatedMinAccelerationError < accelerationError && accelerationError < updatedMaxAccelerationError &&
+            if (updatedMinAccelerationError < lastAccelerationError && lastAccelerationError < updatedMaxAccelerationError &&
                 minTimeStep < updatedTimeStep && updatedTimeStep < maxTimeStep)
                 break;
 
             // find now to update time step
-            if (accelerationError < updatedMaxAccelerationError) {
+            if (lastAccelerationError < updatedMaxAccelerationError) {
                 if (hMultiplier == 0)
                     hMultiplier = timeStepMultiplier;
                 else if (hMultiplier = 1.0 / timeStepMultiplier)
@@ -220,19 +222,20 @@ void ForceDirectedEmbedding::embed() {
             }
         }
 
+        elapsedTime += updatedTimeStep;
         elapsedCalculationTime = ticksToMilliseconds(elapsedTicks + clock() - begin);
-        if (debug >= 2) {
+        if (debugLevel >= 2) {
             std::cout << "Cycle ";
             writeDebugInformation(std::cout);
         }
 
         // update friction
-        timeStepSum += updatedTimeStep;
+        /*
         double kineticEnergy = getKineticEnergy();
         kineticEnergySum += kineticEnergy * updatedTimeStep;
-        double kineticEnergyAvg = (kineticEnergySum / timeStepSum);
+        double kineticEnergyAvg = (kineticEnergySum / elapsedTime);
         double kineticEnergyExpected = kineticEnergyAvg * (maxCalculationTime - elapsedCalculationTime) / maxCalculationTime;
-        if (debug >= 3)
+        if (debugLevel >= 3)
             std::cout << "Current kinetic energy: " << kineticEnergy << " expected: " << kineticEnergyExpected << "\n";
         if (frictionCoefficient) {
             if (kineticEnergy <  kineticEnergyExpected && updatedFrictionCoefficient / frictionCoefficientMultiplier > minFrictionCoefficient)
@@ -242,29 +245,29 @@ void ForceDirectedEmbedding::embed() {
         }
         else
             updatedFrictionCoefficient = getEnergyBasedFrictionCoefficient(std::max(0.0, maxCalculationTime - elapsedCalculationTime));
-        
+        */
+
         // check if relaxed
-        finished = true;
+        lastMaxVelocity = 0;
+        lastMaxAcceleration = 0;
         for (int i = 0; i < vn.size(); i++) {
+            double velocity = vn[i].getLength();
+            if (velocity > lastMaxVelocity)
+                lastMaxVelocity = velocity;
+
             an[i].assign(a1[i]).add(a2[i]).add(a3[i]).add(a4[i]).divide(4);
-
-            if (vn[i].getLength() > velocityRelaxLimit) {
-                if (debug >= 2)
-                    std::cout << "Not relax due to velocity: " << vn[i].getLength() << "\n";
-                finished = false;
-                break;
-            }
-
-            if (an[i].getLength() > accelerationRelaxLimit) {
-                if (debug >= 2)
-                    std::cout << "Not relax due to acceleration: " << an[i].getLength() << "\n";
-                finished = false;
-                break;
-            }
+            double acceleration = an[i].getLength();
+            if (acceleration > lastMaxAcceleration)
+                lastMaxAcceleration = acceleration;
         }
+        double velocityRelaxFactor = std::min(1.0, velocityRelaxLimit / lastMaxVelocity);
+        double accelerationRelaxFactor = std::min(1.0, accelerationRelaxLimit / lastMaxAcceleration);
+        relaxFactor = std::max(relaxFactor, std::min(velocityRelaxFactor, accelerationRelaxFactor));
 
-        // check if end of requested calculation has been reached
-        if ((cycle == maxCycle) || (elapsedCalculationTime > maxCalculationTime && cycle > minCycle))
+        // stop condition
+        if (cycle > maxCycle ||
+            elapsedCalculationTime > maxCalculationTime ||
+            (lastMaxVelocity <= velocityRelaxLimit && lastMaxAcceleration <= accelerationRelaxLimit))
             finished = true;
     }
     while (!inspected && !finished);
@@ -272,7 +275,7 @@ void ForceDirectedEmbedding::embed() {
     elapsedTicks += clock() - begin;
     elapsedCalculationTime = ticksToMilliseconds(elapsedTicks);
 
-    if (debug >= 1) {
+    if (debugLevel >= 1) {
         if (finished) {
             std::cout << "Runge-Kutta-4 ended ";
             writeDebugInformation(std::cout);
@@ -287,8 +290,8 @@ void ForceDirectedEmbedding::embed() {
  */
 void ForceDirectedEmbedding::a(std::vector<Pt>& an, const std::vector<Pt>& pn, const std::vector<Pt>& vn)
 {
-    if (debug >= 4) {
-        std::cout << "Calling a() with:\n";
+    if (debugLevel >= 4) {
+        std::cout << "\nCalling a() with:\n";
         for (int i = 0; i < pn.size(); i++) {
             std::cout << "p[" << i << "] = " << pn[i].x << ", " << pn[i].y << ", " << pn[i].z << " ";
             std::cout << "v[" << i << "] = " << vn[i].x << ", " << vn[i].y << ", " << vn[i].z << "\n";
@@ -316,7 +319,7 @@ void ForceDirectedEmbedding::a(std::vector<Pt>& an, const std::vector<Pt>& pn, c
         an[i].assign(variable->getAcceleration());
     }
 
-    if (debug >= 4) {
+    if (debugLevel >= 4) {
         std::cout << "Returning from a() with:\n";
         for (int i = 0; i < pn.size(); i++)
             std::cout << "a[" << i << "] = " << an[i].x << ", " << an[i].y << ", " << an[i].z << "\n";
@@ -326,5 +329,5 @@ void ForceDirectedEmbedding::a(std::vector<Pt>& an, const std::vector<Pt>& pn, c
 void ForceDirectedEmbedding::writeDebugInformation(std::ostream& ostream)
 {
     if (initialized)
-        ostream << "At real time: " << elapsedCalculationTime << " time: " << timeStepSum << " h: " << updatedTimeStep << " friction: " << updatedFrictionCoefficient << " min acceleration error: " << updatedMinAccelerationError << " max acceleration error: " << updatedMaxAccelerationError << " acceleration error: " << accelerationError << " cycle: " << cycle << " prob cycle: " << probCycle << "\n";
+        ostream << "at real time: " << elapsedCalculationTime << " time: " << elapsedTime << " relaxFactor: " << relaxFactor << " h: " << updatedTimeStep << " friction: " << updatedFrictionCoefficient << " min acceleration error: " << updatedMinAccelerationError << " max acceleration error: " << updatedMaxAccelerationError << " last acceleration error: " << lastAccelerationError << " cycle: " << cycle << " prob cycle: " << probCycle << " last max velocity: " << lastMaxVelocity << " last max acceleration: " << lastMaxAcceleration << "\n";
 }

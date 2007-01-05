@@ -20,6 +20,12 @@
 #include "forcedirectedparametersbase.h"
 #include "forcedirectedembedding.h"
 
+/**
+ * Represents a freely positioned two dimensional body with a finite mass and charge.
+ * The actual position of the body is stored in the corresponding variable. This allows
+ * having multiple bodies sharing the same variable which is important for relatively positioned
+ * bodies.
+ */
 class Body : public IBody {
     protected:
         Variable *variable;
@@ -82,6 +88,9 @@ class Body : public IBody {
         }
 };
 
+/**
+ * A body which is relatively positioned to something. The anchor may be a variable or another body.
+ */
 class RelativelyPositionedBody : public Body {
     protected:
         Pt relativePosition;
@@ -116,9 +125,17 @@ class RelativelyPositionedBody : public Body {
         }
 };
 
+/**
+ * Represents a body which has infinite size in one dimension and zero size in the other dimension.
+ */
 class WallBody : public Body {
+    private:
+        bool horizontal;
+
     public:
         WallBody(bool horizontal, double position) : Body(new Variable(Pt(horizontal ? NaN : position, horizontal ? position : NaN, NaN))) {
+            this->horizontal = horizontal;
+
             if (horizontal)
                 size = Rs(POSITIVE_INFINITY, 0);
             else
@@ -129,19 +146,29 @@ class WallBody : public Body {
             delete variable;
         }
 
+        void setPosition(double position) {
+            getVariable()->assignPosition(Pt(horizontal ? NaN : position, horizontal ? position : NaN, NaN));
+        }
+
         virtual const char *getClassName() {
             return "WallBody";
         }
 };
 
-class IElectricRepeal : public IForceProvider {
+/**
+ * A repulsive force which decreases in a quadratic way propoportional to the distance of the bodies.
+ */
+class IElectricRepulsion : public IForceProvider {
     public:
         virtual IBody *getCharge1() = 0;
     
         virtual IBody *getCharge2() = 0;
 };
 
-class AbstractElectricRepeal : public IElectricRepeal {
+/**
+ * Abstract base class for electric repulsive forces.
+ */
+class AbstractElectricRepulsion : public IElectricRepulsion {
     protected:
         IBody *charge1;
     
@@ -150,7 +177,7 @@ class AbstractElectricRepeal : public IElectricRepeal {
         bool slippery;
 
     public:
-        AbstractElectricRepeal(IBody *charge1, IBody *charge2, bool slippery) {
+        AbstractElectricRepulsion(IBody *charge1, IBody *charge2, bool slippery) {
             this->charge1 = charge1;
             this->charge2 = charge2;
             this->slippery = slippery;
@@ -177,27 +204,28 @@ class AbstractElectricRepeal : public IElectricRepeal {
             Pt vector = getDistanceAndVector(distance);
             ASSERT(distance >= 0);
 
-            if (!vector.isZero()) {
-                double power;
+            double power;
+            if (distance == 0)
+                power = maxForce;
+            else
+                power = getValidForce(embedding->electricRepulsionCoefficient * charge1->getCharge() * charge2->getCharge() / distance / distance);
 
-                if (distance == 0)
-                    power = maxForce;
-                else
-                    power = getValidForce(embedding->electricRepealCoefficient * charge1->getCharge() * charge2->getCharge() / distance / distance);
-
-                charge1->getVariable()->addForce(vector, +power, embedding->inspected);
-                charge2->getVariable()->addForce(vector, -power, embedding->inspected);
-            }
+            charge1->getVariable()->addForce(vector, +power, embedding->inspected);
+            charge2->getVariable()->addForce(vector, -power, embedding->inspected);
         }
 
         virtual double getPotentialEnergy() {
-            return embedding->electricRepealCoefficient * charge1->getCharge() * charge2->getCharge() / getDistance();
+            return embedding->electricRepulsionCoefficient * charge1->getCharge() * charge2->getCharge() / getDistance();
         }
 };
 
-class ElectricRepeal : public AbstractElectricRepeal {
+/**
+ * Standard electric repulsion. Slippery mode means the distance will be calculated between the two
+ * rectangles instead of the two center points.
+ */
+class ElectricRepulsion : public AbstractElectricRepulsion {
     public:
-        ElectricRepeal(IBody *charge1, IBody *charge2, bool slippery = false) : AbstractElectricRepeal(charge1, charge2, slippery) {
+        ElectricRepulsion(IBody *charge1, IBody *charge2, bool slippery = false) : AbstractElectricRepulsion(charge1, charge2, slippery) {
         }
 
         virtual Pt getDistanceAndVector(double &distance) {
@@ -208,13 +236,13 @@ class ElectricRepeal : public AbstractElectricRepeal {
         }
 
         virtual const char *getClassName() {
-            return "ElectricRepeal";
+            return "ElectricRepulsion";
         }
 };
 
-class VerticalElectricRepeal : public AbstractElectricRepeal {
+class VerticalElectricRepulsion : public AbstractElectricRepulsion {
     public:
-        VerticalElectricRepeal(IBody *charge1, IBody *charge2) : AbstractElectricRepeal(charge1, charge2, false) {
+        VerticalElectricRepulsion(IBody *charge1, IBody *charge2) : AbstractElectricRepulsion(charge1, charge2, false) {
         }
 
         virtual Pt getDistanceAndVector(double &distance) {
@@ -222,13 +250,13 @@ class VerticalElectricRepeal : public AbstractElectricRepeal {
        }
 
         virtual const char *getClassName() {
-            return "VerticalElectricRepeal";
+            return "VerticalElectricRepulsion";
         }
 };
 
-class HorizontalElectricRepeal : public AbstractElectricRepeal {
+class HorizontalElectricRepulsion : public AbstractElectricRepulsion {
     public:
-        HorizontalElectricRepeal(IBody *charge1, IBody *charge2) : AbstractElectricRepeal(charge1, charge2, false) {
+        HorizontalElectricRepulsion(IBody *charge1, IBody *charge2) : AbstractElectricRepulsion(charge1, charge2, false) {
         }
 
         virtual Pt getDistanceAndVector(double &distance) {
@@ -236,10 +264,13 @@ class HorizontalElectricRepeal : public AbstractElectricRepeal {
         }
 
         virtual const char *getClassName() {
-            return "HorizontalElectricRepeal";
+            return "HorizontalElectricRepulsion";
         }
 };
 
+/**
+ * An attractive force which increases in a linear way proportional to the distance of the bodies.
+ */
 class ISpring : public IForceProvider {
     public:
         virtual double getSpringCoefficient() = 0;
@@ -251,6 +282,9 @@ class ISpring : public IForceProvider {
         virtual IBody *getBody2() = 0;
 };
 
+/**
+ * Abstract base class for spring attractive forces.
+ */
 class AbstractSpring : public ISpring {
     protected:
         IBody *body1;
@@ -310,16 +344,13 @@ class AbstractSpring : public ISpring {
             Pt vector = getDistanceAndVector(distance);
             ASSERT(distance >= 0);
             double expansion = distance - reposeLength;
+            double power = getValidSignedForce(embedding->springCoefficient * getSpringCoefficient() * expansion);
 
-            if (expansion != 0 && !vector.isZero()) {
-                double power = getValidSignedForce(embedding->springCoefficient * getSpringCoefficient() * expansion);
+            if (body1)
+                body1->getVariable()->addForce(vector, -power, embedding->inspected);
 
-                if (body1)
-                    body1->getVariable()->addForce(vector, -power, embedding->inspected);
-
-                if (body2)
-                    body2->getVariable()->addForce(vector, +power, embedding->inspected);
-            }
+            if (body2)
+                body2->getVariable()->addForce(vector, +power, embedding->inspected);
         }
 
         virtual double getPotentialEnergy() {
@@ -328,6 +359,10 @@ class AbstractSpring : public ISpring {
         }
 };
 
+/**
+ * Standard spring attraction. Slippery mode means the distance will be calculated between the two
+ * rectangles instead of the two center points.
+ */
 class Spring : public AbstractSpring {
     public:
         Spring(IBody *body1, IBody *body2) : AbstractSpring(body1, body2) {
@@ -382,6 +417,63 @@ class HorizonalSpring : public AbstractSpring {
         }
 };
 
+class ShortestSpring : public IForceProvider {
+    private:
+        std::vector<AbstractSpring *> springs;
+
+    public:
+        ShortestSpring(std::vector<AbstractSpring *> springs) {
+            this->springs = springs;
+        }
+
+        ~ShortestSpring() {
+            for (std::vector<AbstractSpring *>::iterator it = springs.begin(); it != springs.end(); it++)
+                delete *it;
+        }
+
+        virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
+            IForceProvider::setForceDirectedEmbedding(embedding);
+            for (std::vector<AbstractSpring *>::iterator it = springs.begin(); it != springs.end(); it++) {
+                AbstractSpring *spring = *it;
+                spring->setForceDirectedEmbedding(embedding);
+            }
+        }
+
+        virtual void applyForces() {
+            AbstractSpring *shortestSpring;
+            double shortestExpansion = POSITIVE_INFINITY;
+
+            for (std::vector<AbstractSpring *>::iterator it = springs.begin(); it != springs.end(); it++) {
+                AbstractSpring *spring = *it;
+                double distance;
+                Pt vector = spring->getDistanceAndVector(distance);
+                double expansion = abs(distance - spring->getReposeLength());
+
+                if (expansion < shortestExpansion) {
+                    shortestExpansion = expansion;
+                    shortestSpring = spring;
+                }
+            }
+
+            shortestSpring->applyForces();
+        }
+
+        virtual double getPotentialEnergy() {
+            // TODO:
+            return 0;
+        }
+
+        virtual const char *getClassName() {
+            return "ShortestSpring";
+        }
+};
+
+/**
+ * This constraint is like a spring between a body and the base plane (z = 0).
+ * The spring coefficient increases by time proportional to the relax factor.
+ * This allows nodes to move in the third dimension in the beginning of the calculation
+ * while it forces to them to move to the base plane as time goes by. 
+ */
 class BasePlaneSpring : public AbstractSpring {
     public:
         BasePlaneSpring(IBody *body) : AbstractSpring(body, NULL) {
@@ -391,7 +483,7 @@ class BasePlaneSpring : public AbstractSpring {
         }
 
         virtual double getSpringCoefficient() {
-            return springCoefficient * embedding->elapsedCalculationTime / embedding->maxCalculationTime;
+            return springCoefficient * embedding->relaxFactor;
         }
 
         virtual Pt getDistanceAndVector(double &distance) {
@@ -407,6 +499,9 @@ class BasePlaneSpring : public AbstractSpring {
         }
 };
 
+/**
+ * Base class for velocity based kinetic energy reducers.
+ */
 class AbstractVelocityBasedForceProvider : public IForceProvider {
     public:
         virtual double getPower(Variable *variable, double vlen) = 0;
@@ -419,12 +514,9 @@ class AbstractVelocityBasedForceProvider : public IForceProvider {
                 Pt vector(variable->getVelocity());
                 vector.reverse();
                 double vlen = vector.getLength();
+                double power = getPower(variable, vlen);
 
-                if (!vector.isZero()) {
-                    double power = getPower(variable, vlen);
-
-                    variable->addForce(vector, power, embedding->inspected);
-                }
+                variable->addForce(vector, power, embedding->inspected);
             }
         }
 
@@ -433,6 +525,9 @@ class AbstractVelocityBasedForceProvider : public IForceProvider {
         }
 };
 
+/**
+ * Reduces kinetic energy during the calculation.
+ */
 class Friction : public AbstractVelocityBasedForceProvider {
     public:
         virtual double getPower(Variable *variable, double vlen) {
@@ -444,6 +539,9 @@ class Friction : public AbstractVelocityBasedForceProvider {
         }
 };
 
+/**
+ * Reduces kinetic energy during the calculation.
+ */
 class Drag : public AbstractVelocityBasedForceProvider {
     public:
         virtual double getPower(Variable *variable, double vlen) {
@@ -455,6 +553,11 @@ class Drag : public AbstractVelocityBasedForceProvider {
         }
 };
 
+/**
+ * Abstract base class for position constraints applied to a single body. These constraints are
+ * more expensive to calculate with than the constrained variables and the final position will not
+ * exactly satisfy the constraint.
+ */
 class BodyConstraint : public IForceProvider {
     protected:
         IBody *body;
@@ -476,6 +579,9 @@ class BodyConstraint : public IForceProvider {
         }
 };
 
+/**
+ * This constraint is like a spring between a body and a fixed point.
+ */
 class PointConstraint : public BodyConstraint {
     protected:
         Pt constraint;
@@ -501,10 +607,13 @@ class PointConstraint : public BodyConstraint {
         }
 };
 
+/**
+ * This constraint is like a spring between a body and a fixed line, the end connected to the line is slippery.
+ */
 class LineConstraint : public BodyConstraint {
     protected:
         Ln constraint;
-    
+
         double coefficient;
 
     public:
@@ -527,6 +636,9 @@ class LineConstraint : public BodyConstraint {
         }
 };
 
+/**
+ * This constraint is like a spring between a body and a fixed circle, the end connected to the circle is slippery.
+ */
 class CircleConstraint : public BodyConstraint {
     protected:
         Cc constraint;
