@@ -94,9 +94,22 @@ void JSimpleModule::createJavaObject()
 
     // create Java module object
     DEBUGPRINTF("Instantiating class %s...\n", clazzName);
-    jmethodID ctor = findMethod(clazz, clazzName, "<init>", "(J)V");
-    javaObject = jenv->NewObject(clazz, ctor, (jlong)this);
-    checkExceptions();
+
+    jmethodID setCPtrMethod = jenv->GetMethodID(clazz, "setCPtr", "(J)V");
+    jenv->ExceptionClear();
+    if (setCPtrMethod)
+    {
+        jmethodID ctor = findMethod(clazz, clazzName, "<init>", "()V");
+        javaObject = jenv->NewObject(clazz, ctor);
+        checkExceptions();
+        jenv->CallVoidMethod(javaObject, setCPtrMethod, (jlong)this);
+    }
+    else
+    {
+        jmethodID ctor = findMethod(clazz, clazzName, "<init>", "(J)V");
+        javaObject = jenv->NewObject(clazz, ctor, (jlong)this);
+        checkExceptions();
+    }
     javaObject = jenv->NewGlobalRef(javaObject);
     checkExceptions();
 }
