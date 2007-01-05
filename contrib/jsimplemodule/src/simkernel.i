@@ -67,17 +67,19 @@
 //     identity would help (less frequent need for wrapping).
 //
 
-/*
- * THE FOLLOWING BLOCK IS FOR PROVIDING OBJECT IDENTITY IN JAVA.
- * TURNED OFF UNTIL PROBLEM GETS SOLVED (SEE ABOVE).
 %typemap(javabody) SWIGTYPE %{
   private long swigCPtr;
   protected boolean swigCMemOwn;
 
   protected $javaclassname(long cPtr, boolean cMemoryOwn) {
+    this(cPtr, cMemoryOwn, (byte)0); // go to another ctor which doesn't call swigSetAsProxyObject() in base classes
+    if (cMemoryOwn)
+      swigSetAsProxyObject(this);
+  }
+
+  protected $javaclassname(long cPtr, boolean cMemoryOwn, byte dummy) {
     swigCMemOwn = cMemoryOwn;
     swigCPtr = cPtr;
-    ProxyObjectMap.put(cPtr, this);
   }
 
   public static long getCPtr($javaclassname obj) {
@@ -91,22 +93,74 @@
   public void swigSetMemOwn(boolean value) {
     swigCMemOwn = value;
   }
+
+  @Override
+  public int hashCode() {
+    return (int)swigCPtr;
+  }
+%}
+
+%typemap(javabody_derived) SWIGTYPE %{
+  private long swigCPtr;
+
+  protected $javaclassname(long cPtr, boolean cMemoryOwn) {
+    this(SimkernelJNI.SWIG$javaclassnameUpcast(cPtr), cMemoryOwn, (byte)0); // go to another ctor which doesn't call swigSetAsProxyObject() in base classes
+    if (cMemoryOwn)
+      swigSetAsProxyObject(this);
+  }
+
+  protected $javaclassname(long cPtr, boolean cMemoryOwn, byte dummy) {
+    super(SimkernelJNI.SWIG$javaclassnameUpcast(cPtr), cMemoryOwn, (byte)0);
+    swigCPtr = cPtr;
+  }
+
+  public static long getCPtr($javaclassname obj) {
+    return (obj == null) ? 0 : obj.swigCPtr;
+  }
 %}
 
 %typemap(javaout) SWIGTYPE, SWIGTYPE&, SWIGTYPE *, SWIGTYPE [], SWIGTYPE (CLASS::*) {
     long cPtr = $jnicall;
     if (cPtr == 0)
-        return null;
-    //System.out.println("$javaclassname.swigBaseClassOffset() = "+$javaclassname.swigBaseClassOffset());
-    $javaclassname ret = ($javaclassname)ProxyObjectMap.lookup(cPtr + $javaclassname.swigBaseClassOffset());
-    if (ret == null)
-        ret = new $javaclassname(cPtr, $owner); // Note: ctor will call ProxyObjectMap.put()
-    else
-        ret.swigSetMemOwn($owner);
-    return ret;
+      return null;
+    // @notnull@ -- do not delete this mark
+    // use existing proxy object if there is one
+    System.out.println("ENTER");
+    $javaclassname tmp = new $javaclassname(cPtr, false); // false == don't call swigSetAsProxyObject()
+    System.out.println("tmp created:"+tmp);
+    $javaclassname proxy = ($javaclassname) tmp.swigProxyObject();
+    System.out.println("proxy:"+proxy);
+    if (proxy!=null) {
+      // return existing proxy object
+      System.out.println("returning existing");
+      proxy.swigSetMemOwn($owner);
+      return proxy;
+    }
+    else {
+      // make tmp the proxy object
+      System.out.println("returning new tmp");
+      tmp.swigSetAsProxyObject(tmp);
+      tmp.swigSetMemOwn($owner);
+      return tmp;
+    }
   };
-*/
 
+%typemap(javadestruct_derived, methodname="delete", methodmodifiers="public synchronized") cMessage {
+    if(swigCPtr != 0)
+      swigFinalizeProxyObject();
+    if(swigCPtr != 0 && swigCMemOwn) {
+      swigCMemOwn = false;
+      $jnicall;
+    }
+    swigCPtr = 0;
+  }
+
+%typemap(javafinalize) SWIGTYPE %{
+  protected void finalize() {
+    System.out.println("FINALIZING "+toString());
+    delete();
+  }
+%}
 
 //
 // CURRENT SOLUTION: no object identity, no polymorphic return types.
@@ -116,11 +170,11 @@
 //    if one wrapper object refers to a C++ object which *previously*
 //    existed on the same memory location!
 //
-//  - cMessage.convertFrom(object) can be used to cast to subtypes.
-//    convertFrom() also does transfer of ownership, so the original
+//  - cMessage.castFrom(object) can be used to cast to subtypes.
+//    castFrom() also does transfer of ownership, so the original
 //    "object" pointer SHOULD NOT be referenced afterwards!
 //
-
+/*
 %typemap(javabody) SWIGTYPE %{
   private long swigCPtr;
   protected boolean swigCMemOwn;
@@ -155,56 +209,84 @@
     return (int)swigCPtr;
   }
 %}
+*/
 
-%define BASECLASS(CLASS,BASECLASS)
+%extend cMessage {
+  jobject swigProxyObject() {
+      printf("returning JOBJECT=%p\n", self->contextPointer());
+      return (jobject)(self->contextPointer());
+  }
+  void swigSetAsProxyObject(jobject obj) {
+      if (self->contextPointer()!=0) printf("WARNING: swigSetAsProxyObject: already set!!!\n");
+      obj = JSimpleModule::jenv->NewWeakGlobalRef(obj);
+      self->setContextPointer((void *)obj);
+      printf("remembering JOBJECT=%p\n", self->contextPointer());
+  }
+  void swigFinalizeProxyObject() {
+      printf("finalizing JOBJECT=%p\n", self->contextPointer());
+      if (self->contextPointer()==0) printf("WARNING: swigFinalizeProxyObject: ref is already null!!!\n");
+      jobject obj = (jobject)(self->contextPointer());
+      JSimpleModule::jenv->DeleteWeakGlobalRef(obj);
+      self->setContextPointer(NULL);
+  }
+}
+
+%define DERIVEDCLASS(CLASS,BASECLASS)
 %extend CLASS {
-  static int swigBaseClassOffset() {CLASS *p = (CLASS *)0x10000; return (int)(static_cast<BASECLASS *>(p)) - 0x10000;}
-  static CLASS *convertFrom(BASECLASS *obj) {return dynamic_cast<CLASS *>(obj);}
+  //static int swigBaseClassOffset() {CLASS *p = (CLASS *)0x10000; return (int)(static_cast<BASECLASS *>(p)) - 0x10000;}
+  static CLASS *castFrom(BASECLASS *obj) {return dynamic_cast<CLASS *>(obj);}
 }
 %enddef
 
-%define BASECLASS_ZERO(CLASS)
+%define BASECLASS(CLASS)
 %extend CLASS {
-  static int swigBaseClassOffset() {return 0;}
+  //static int swigBaseClassOffset() {return 0;}
+  jobject swigProxyObject()              {return 0;}
+  void swigSetAsProxyObject(jobject obj) {}
+  void swigFinalizeProxyObject()         {}
 }
 %enddef
 
-BASECLASS(cArray, cPolymorphic);
-BASECLASS(cBasicChannel, cPolymorphic);
-BASECLASS(cChannel, cPolymorphic);
-BASECLASS(cChannelType, cPolymorphic);
-BASECLASS(cCompoundModule, cPolymorphic);
-BASECLASS(cDefaultList, cPolymorphic);
-BASECLASS_ZERO(cDisplayString);
-BASECLASS(cDoubleExpression, cExpression);
-BASECLASS_ZERO(cEnvir);
-BASECLASS_ZERO(cException);
-BASECLASS_ZERO(cExpression);
-BASECLASS(cGate, cPolymorphic);
-BASECLASS(cMessage, cPolymorphic);
-BASECLASS(cModule, cPolymorphic);
-BASECLASS(cModulePar, cPolymorphic);
-BASECLASS(cModuleType, cPolymorphic);
-BASECLASS(cNetworkType, cPolymorphic);
-BASECLASS(cObject, cPolymorphic);
-BASECLASS(cOutVector, cPolymorphic);
-BASECLASS(cPar, cPolymorphic);
-BASECLASS(cPolymorphic, cPolymorphic);
-BASECLASS(cQueue, cPolymorphic);
-BASECLASS(cRuntimeError, cException);
-BASECLASS(cSimpleModule, cPolymorphic);
-BASECLASS(cSimulation, cPolymorphic);
-BASECLASS(cStatistic, cPolymorphic);
-BASECLASS(cStdDev, cPolymorphic);
-BASECLASS_ZERO(cSubModIterator);
-BASECLASS_ZERO(cVisitor);
-BASECLASS(cWeightedStdDev, cPolymorphic);
-BASECLASS_ZERO(cXMLElement);
-BASECLASS_ZERO(std::vector<cXMLElement*>);
-//BASECLASS_ZERO(std::map<std::string,std::string>);
+BASECLASS(cPolymorphic);
+BASECLASS(cDisplayString);
+BASECLASS(cEnvir);
+BASECLASS(cException);
+BASECLASS(cExpression);
+BASECLASS(cSubModIterator);
+BASECLASS(cVisitor);
+BASECLASS(cXMLElement);
+BASECLASS(std::vector<cXMLElement*>);
+//BASECLASS(std::map<std::string,std::string>);
 %extend std::map<std::string,std::string> {
-  static int swigBaseClassOffset() {return 0;}
+  //static int swigBaseClassOffset() {return 0;}
+  jobject swigProxyObject()              {return 0;}
+  void swigSetAsProxyObject(jobject obj) {}
+  void swigFinalizeProxyObject()         {}
 }
+DERIVEDCLASS(cArray, cPolymorphic);
+DERIVEDCLASS(cBasicChannel, cPolymorphic);
+DERIVEDCLASS(cChannel, cPolymorphic);
+DERIVEDCLASS(cChannelType, cPolymorphic);
+DERIVEDCLASS(cCompoundModule, cPolymorphic);
+DERIVEDCLASS(cDefaultList, cPolymorphic);
+DERIVEDCLASS(cDoubleExpression, cExpression);
+DERIVEDCLASS(cGate, cPolymorphic);
+DERIVEDCLASS(cMessage, cPolymorphic);
+DERIVEDCLASS(cModule, cPolymorphic);
+DERIVEDCLASS(cModulePar, cPolymorphic);
+DERIVEDCLASS(cModuleType, cPolymorphic);
+DERIVEDCLASS(cNetworkType, cPolymorphic);
+DERIVEDCLASS(cObject, cPolymorphic);
+DERIVEDCLASS(cOutVector, cPolymorphic);
+DERIVEDCLASS(cPar, cPolymorphic);
+DERIVEDCLASS(cPolymorphic, cPolymorphic);
+DERIVEDCLASS(cQueue, cPolymorphic);
+DERIVEDCLASS(cRuntimeError, cException);
+DERIVEDCLASS(cSimpleModule, cPolymorphic);
+DERIVEDCLASS(cSimulation, cPolymorphic);
+DERIVEDCLASS(cStatistic, cPolymorphic);
+DERIVEDCLASS(cStdDev, cPolymorphic);
+DERIVEDCLASS(cWeightedStdDev, cPolymorphic);
 
 
 // memory management (see also patchownership.pl)
@@ -477,6 +559,8 @@ cSimulation *getSimulation();
 // JSimpleModule
 %newobject JSimpleModule::retrieveMsgToBeHandled;
 %ignore JSimpleModule::JSimpleModule;
+%ignore JSimpleModule::vm;
+%ignore JSimpleModule::jenv;
 
 %typemap(javacode) JSimpleModule %{
   public JSimpleModule(long cPtr) {

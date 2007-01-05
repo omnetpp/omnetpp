@@ -106,6 +106,7 @@ sub toJNI()
     return $a."F" if ($t eq "float");
     return $a."D" if ($t eq "double");
     return $a."Ljava/lang/String;" if ($t eq "String");
+    return $a."Ljava/lang/Object;" if ($t eq "Object");
     return $a."Lorg/omnetpp/simkernel/$t;";
 }
 
