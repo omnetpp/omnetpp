@@ -22,7 +22,6 @@
 #include <iostream>
 #include <memory>
 #include <algorithm>
-#include <sys/stat.h>
 #include "matchexpression.h"
 #include "patternmatcher.h"
 #include "resultfilemanager.h"
@@ -30,6 +29,7 @@
 #include "linetokenizer.h"
 #include "stringtokenizer.h"
 #include "filereader.h"
+#include "indexfile.h"
 
 static double zero = 0.0;
 static double NaN = zero / zero;
@@ -834,23 +834,11 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
         const char *vectorName = vec[3];
         vecdata.moduleNameRef = stringSetFindOrInsert(moduleNames, std::string(moduleName));
         vecdata.nameRef = stringSetFindOrInsert(names, std::string(vectorName));
-        // count, min, max, sum, sumSqr
-        if (numTokens>=11) // read from index
-        {
-            vecdata.count = strtol(vec[6],&e,10);
-            vecdata.min = strtod(vec[7],&e);
-            vecdata.max = strtod(vec[8],&e);
-            vecdata.sum = strtod(vec[9],&e);
-            vecdata.sumSqr = strtod(vec[10],&e);
-        }
-        else
-        {
-            vecdata.count = 0;
-            vecdata.min = NaN;
-            vecdata.max = NaN;
-            vecdata.sum = NaN;
-            vecdata.sumSqr = NaN;
-        }
+        vecdata.count = 0;
+        vecdata.min = NaN;
+        vecdata.max = NaN;
+        vecdata.sum = NaN;
+        vecdata.sumSqr = NaN;
 
         fileRef->vectorResults.push_back(vecdata);
     }
@@ -865,41 +853,6 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
     }
 }
 
-/**
- * Determines if the given file is a vector file.
- * If it finds a line starting with "vector" in the first
- * 300 lines it is a vector file.
- */
-static bool isVectorFile(const char *fileName)
-{
-    FileReader reader = FileReader(fileName);
-    char *line;
-    for (int i=0; i<1000; i++)
-    {
-        line=reader.readNextLine();
-        if (line == NULL)
-            return false;
-        if (line[0]=='v' && strncmp(line, "vector", 6)==0)
-            return true;
-        else if (line[0]=='s' && strncmp(line, "scalar", 6)==0)
-            return false;
-    }
-    return false;
-}
-
-static char *getIndexFileName(const char *fileName)
-{
-    // change file extension to "vci"
-    int len = strlen(fileName);
-    char *indexFileName = new char[len+4];
-    strcpy(indexFileName, fileName);
-    char *ext = strrchr(indexFileName, '.');
-    if (ext == NULL)
-        ext = indexFileName + len;
-    strcpy(ext, ".vci");
-    return indexFileName;
-}
-
 static bool isFileReadable(const char *fileName)
 {
     FILE *f = fopen(fileName, "r");
@@ -910,16 +863,6 @@ static bool isFileReadable(const char *fileName)
     }
     else
         return false;
-}
-
-static bool isFileNewer(const char *newer, const char *older)
-{
-    struct stat s;
-    stat(newer, &s);
-    time_t newerTime = s.st_mtime;
-    stat(older, &s);
-    time_t olderTime = s.st_mtime;
-    return newerTime >= olderTime;
 }
 
 ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSystemFileName)
@@ -946,14 +889,20 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
 
     FileRun *fileRunRef = NULL;
 
-    // if vector file and has index, load data from the index file
-    if (isVectorFile(fileSystemFileName))
+    // if vector file and has index, load vectors from the index file
+    if (IndexFile::isVectorFile(fileSystemFileName) && IndexFile::isIndexFileUpToDate(fileSystemFileName))
     {
-        char *indexFileName = getIndexFileName(fileSystemFileName);
-        if (indexFileName!=NULL && isFileReadable(indexFileName) && isFileNewer(indexFileName, fileSystemFileName))
-            fileSystemFileName = indexFileName;
+        std::string indexFileName = IndexFile::getIndexFileName(fileSystemFileName);
+        // fake a new Run, should be stored in the index
+        Run *runRef = addRun();
+        fileRunRef = addFileRun(fileRef, runRef);
+        runRef->runNumber = 0;
+        // load index
+        loadVectorsFromIndex(indexFileName.c_str(), fileRef, fileRunRef);
+        return fileRef;
     }
 
+    // process lines in file
     FileReader freader(fileSystemFileName);
     char *line;
     LineTokenizer tokenizer;
@@ -968,6 +917,27 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
     fileRef->numLines = freader.getNumReadLines();
 
     return fileRef;
+}
+
+void ResultFileManager::loadVectorsFromIndex(const char *filename, ResultFile *fileRef, FileRun *fileRunRef)
+{
+    VectorFileIndex *index = IndexFileReader(filename).readAll();
+    Vectors &vectors = index->vectors;
+    for (Vectors::iterator vectorRef = vectors.begin(); vectorRef != vectors.end(); ++vectorRef)
+    {
+        VectorResult vectorResult;
+        vectorResult.fileRunRef = fileRunRef;
+        vectorResult.vectorId = vectorRef->vectorId;
+        vectorResult.moduleNameRef = stringSetFindOrInsert(moduleNames, vectorRef->moduleName);
+        vectorResult.nameRef = stringSetFindOrInsert(names, vectorRef->name);
+        vectorResult.count = vectorRef->count;
+        vectorResult.min = vectorRef->min;
+        vectorResult.max = vectorRef->max;
+        vectorResult.sum = vectorRef->sum;
+        vectorResult.sumSqr = vectorRef->sumSqr;
+        fileRef->vectorResults.push_back(vectorResult);
+    }
+    delete index;
 }
 
 void ResultFileManager::unloadFile(ResultFile *file)

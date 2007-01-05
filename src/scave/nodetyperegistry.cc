@@ -22,7 +22,7 @@
 #include "arraybuilder.h"
 #include "vectorfilereader.h"
 #include "vectorfilewriter.h"
-#include "ivectorfilewriter.h"
+#include "indexedvectorfile.h"
 #include "filewriter.h"
 #include "windowavg.h"
 #include "slidingwinavg.h"

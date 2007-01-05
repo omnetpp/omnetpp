@@ -1,5 +1,5 @@
 //=========================================================================
-//  INDEXEDVECTORFILEWRITER.CC - part of
+//  INDEXEDVECTORFILE.CC - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -12,20 +12,127 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+
+#include "exception.h"
+#include "linetokenizer.h"
+#include "channel.h"
+#include "stringutil.h"
+#include "indexedvectorfile.h"
+
 #ifdef _MSC_VER
 #pragma warning(disable:4786)
 #endif
 
-#include "channel.h"
-#include "ivectorfilewriter.h"
-#include "stringutil.h"
+//=========================================================================
+
+IndexedVectorFileReader::IndexedVectorFileReader(const char *filename, long vectorId)
+    : fname(filename), reader(NULL), index(NULL), vector(NULL), currentBlock(NULL)
+{
+    std::string ifname = IndexFile::getIndexFileName(filename);
+    IndexFileReader indexReader(ifname.c_str());
+    index = indexReader.readAll(); // XXX do not read whole index
+    vector = index->getVector(vectorId);
+}
+
+IndexedVectorFileReader::~IndexedVectorFileReader()
+{
+    if (reader!=NULL)
+        delete reader;
+    if (index != NULL)
+        delete index;
+    if (currentBlock != NULL)
+        delete currentBlock;
+}
+
+//=========================================================================
+
+// see filemgrs.h
+#define MIN_BUFFER_SIZE 512
+
+
+static double zero =0;
+
+static bool parseDouble(char *s, double& dest)
+{
+    char *e;
+    dest = strtod(s,&e);
+    if (!*e)
+    {
+        return true;
+    }
+    if (strstr(s,"INF") || strstr(s, "inf"))
+    {
+        dest = 1/zero;  // +INF or -INF
+        if (*s=='-') dest = -dest;
+        return true;
+    }
+    return false;
+}
+
+BlockWithEntries *IndexedVectorFileReader::loadBlock(Block &block)
+{
+    if (reader==NULL)
+        reader=new FileReader(fname.c_str(), vector->blockSize);
+
+    BlockWithEntries *result = new BlockWithEntries(block);
+
+    long count=block.endSerial-block.startSerial;
+    reader->seekTo(block.startOffset);
+    result->entries=new OutputVectorEntry[count];
+
+    char *line, **tokens, *end;
+    int numTokens;
+    LineTokenizer tokenizer;
+    long id;
+    double t, val;
+
+    for (int i=0; i<count; ++i)
+    {
+        if ((line=reader->readNextLine())==NULL)
+            throw opp_runtime_error("Unexpected end of file in '%s'", fname);
+        int len = reader->getLastLineLength();
+
+        tokenizer.tokenize(line, len);
+        tokens=tokenizer.tokens();
+        numTokens = tokenizer.numTokens();
+        if (numTokens < 3)
+            throw opp_runtime_error("Line to short: %.*s", len, line);
+
+        id = strtol(tokens[0], &end, 10);
+        if (*end || id!=vector->vectorId)
+            throw opp_runtime_error("Missing or unexpected vector id: %.*s", len, line);
+
+        if (!parseDouble(tokens[1], t) || !parseDouble(tokens[2], val))
+            throw opp_runtime_error("Malformed line: %.*s", len, line);
+
+        result->entries[i] = OutputVectorEntry(block.startSerial+i, t, val);
+    }
+
+    return result;
+}
+
+OutputVectorEntry *IndexedVectorFileReader::getEntryBySerial(long serial)
+{
+    if (serial<0 || serial>=vector->count)
+        return NULL;
+
+    if (currentBlock == NULL || !currentBlock->contains(serial))
+    {
+        if (currentBlock != NULL) {
+            delete currentBlock;
+            currentBlock = NULL;
+        }
+        currentBlock = loadBlock(*(vector->getBlockForEntry(serial)));
+    }
+
+    return currentBlock->getEntryBySerial(serial);
+}
+
+//=========================================================================
+
 
 #define CHECK(printf) if (printf<0) throw opp_runtime_error("Cannot write vector file '%s'", fileName.c_str());
 
-#ifndef min
-#define min(a,b)     ( (a)<(b) ? (a) : (b) )
-#define max(a,b)     ( (a)>(b) ? (a) : (b) )
-#endif
 
 static FILE *openFile(const std::string fileName)
 {
@@ -38,7 +145,7 @@ static FILE *openFile(const std::string fileName)
 IndexedVectorFileWriterNode::IndexedVectorFileWriterNode(const char *fileName, const char *indexFileName, int blockSize, const char *fileHeader)
 {
     f = NULL;
-    fi = NULL;
+    indexWriter = NULL;
     this->prec = DEFAULT_PRECISION;
     this->fileHeader = (fileHeader ? fileHeader : "");
     this->fileName = fileName;
@@ -53,8 +160,8 @@ IndexedVectorFileWriterNode::~IndexedVectorFileWriterNode()
 
     if (f != NULL)
         fclose(f);
-    if (fi != NULL)
-        fclose(fi);
+    if (indexWriter != NULL)
+        delete indexWriter;
 }
 
 Port *IndexedVectorFileWriterNode::addVector(int vectorId, std::string moduleName, std::string name)
@@ -86,9 +193,9 @@ void IndexedVectorFileWriterNode::process()
         for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
         {
             VectorInputPort *port = *it;
-            CHECK(fprintf(f, "vector %ld  %s  %s  %d\n", port->id,
-                             QUOTE(port->moduleName.c_str()),
-                             QUOTE(port->name.c_str()), 1));
+            CHECK(fprintf(f, "vector %ld  %s  %s  %d\n", port->vector.vectorId,
+                             QUOTE(port->vector.moduleName.c_str()),
+                             QUOTE(port->vector.name.c_str()), 1));
         }
     }
 
@@ -127,16 +234,12 @@ void IndexedVectorFileWriterNode::writeRecordsToBuffer(VectorInputPort *port)
         chan->read(&a,1);
         if (port->bufferPtr - port->buffer >= port->bufferSize - 100)
             writeBufferToFile(port);
-        int count = sprintf(port->bufferPtr, "%ld\t%.*g\t%.*g\n", port->id, prec, a.x, prec, a.y);
+        int count = sprintf(port->bufferPtr, "%ld\t%.*g\t%.*g\n", port->vector.vectorId, prec, a.x, prec, a.y);
         if (count > 0)
         {
             port->bufferPtr+=count;
             port->bufferNumOfRecords++;
-            port->numOfRecords++;
-            port->min = min(port->min, a.y);
-            port->max = max(port->max, a.y);
-            port->sum += a.y;
-            port->sumSqr += a.y*a.y;
+            port->vector.collect(a.y);
         }
         else
             throw opp_runtime_error("Cannot write data to output buffer.");
@@ -148,40 +251,20 @@ void IndexedVectorFileWriterNode::writeBufferToFile(VectorInputPort *port)
     assert(f!=NULL);
     long offset = ftell(f);
     CHECK(fputs(port->buffer, f));
-    port->blocks.push_back(Block(offset, port->bufferNumOfRecords));
+    port->vector.addBlock(offset, port->bufferNumOfRecords);
     port->clearBuffer();
 }
 
-#define CHECK_I(printf) if (printf<0) throw opp_runtime_error("Cannot write index file '%s'", indexFileName.c_str());
-
 void IndexedVectorFileWriterNode::writeIndex(VectorInputPort *port)
 {
-    if (!fi)
-        fi = openFile(indexFileName);
+    if (indexWriter == NULL)
+        indexWriter = new IndexFileWriter(indexFileName.c_str(), prec);
 
-    int nBlocks = port->blocks.size();
-    if (nBlocks > 0)
-    {
-        CHECK_I(fprintf(fi, "vector %ld  %s  %s  %d  %d  %d  %.*g  %.*g  %.*g  %.*g\n",
-                        port->id, QUOTE(port->moduleName.c_str()), QUOTE(port->name.c_str()), 1/*tuple*/,
-                        port->bufferSize, port->numOfRecords, prec, port->min, prec, port->max,
-                        prec, port->sum, prec, port->sumSqr));
-        for (int i=0; i<nBlocks; i+=10)
-        {
-            CHECK_I(fprintf(fi, "%ld\t", port->id));
-            for (int j = 0; j<10 && i+j < nBlocks; ++j)
-            {
-                Block &block=port->blocks[i+j];
-                CHECK_I(fprintf(fi, "%ld:%ld ", block.offset, block.numOfRecords));
-            }
-            CHECK_I(fprintf(fi, "\n"));
-        }
-        port->blocks.clear();
-    }
+    indexWriter->writeVector(port->vector);
 }
 
 
-//-------
+//=========================================================================
 
 const char *IndexedVectorFileWriterNodeType::description() const
 {
@@ -217,4 +300,5 @@ Port *IndexedVectorFileWriterNodeType::getPort(Node *node, const char *portname)
     int vectorId = atoi(portname);  // FIXME check it's numeric at all
     return node1->addVector(vectorId, "n/a", "n/a");
 }
+
 

@@ -201,6 +201,7 @@ class ResultFileManager
     void addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, double value);
 
     ResultFile *getFileForID(ID id) const; // checks for NULL
+    void loadVectorsFromIndex(const char *filename, ResultFile *fileRef, FileRun *fileRunRef);
 
   public:
     ResultFileManager();

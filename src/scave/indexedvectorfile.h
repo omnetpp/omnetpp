@@ -1,5 +1,5 @@
 //=========================================================================
-//  VECTORFILEWRITER.H - part of
+//  INDEXEDVECTORFILE.H - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -12,14 +12,63 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _IVECTORFILEWRITER_H_
-#define _IVECTORFILEWRITER_H_
+#ifndef _INDEXEDVECTORFILE_H_
+#define _INDEXEDVECTORFILE_H_
 
+#include <assert.h>
 #include <float.h>
 #include <vector>
+#include "filereader.h"
+#include "indexfile.h"
 #include "node.h"
 #include "nodetype.h"
 
+
+struct OutputVectorEntry {
+    long serial;
+    double simtime;
+    double value;
+
+    OutputVectorEntry() {}
+    OutputVectorEntry(long serial, double simtime, double value)
+        : serial(serial), simtime(simtime), value(value) {}
+};
+
+struct BlockWithEntries {
+    Block block;
+    OutputVectorEntry *entries;
+
+    BlockWithEntries(Block block)
+        : block(block), entries(NULL) {}
+    ~BlockWithEntries() { if(entries) { delete entries; entries=NULL; } }
+    long numOfEntries() { return block.numOfEntries(); }
+    bool contains(long serial) { return block.contains(serial); }
+    OutputVectorEntry* getEntryBySerial(long serial) { assert(entries != NULL); return &entries[serial - block.startSerial]; }
+};
+
+/**
+ * Vector file reader with random access.
+ * Each instance reads one vector from a vector file.
+ */
+class IndexedVectorFileReader
+{
+    std::string fname;
+    FileReader *reader;
+    
+    VectorFileIndex *index;
+    VectorData *vector;
+    BlockWithEntries *currentBlock;
+
+    public:
+        explicit IndexedVectorFileReader(const char* filename, long vectorId);
+        ~IndexedVectorFileReader();
+    protected:
+        // reads a block from the vector file
+        BlockWithEntries *loadBlock(Block &block);
+    public:
+        int getNumberOfEntries() { return vector->count; };
+        OutputVectorEntry *getEntryBySerial(long serial);
+};
 
 /**
  * Consumer node which writes an indexed output vector file.
@@ -27,31 +76,16 @@
 class IndexedVectorFileWriterNode : public Node
 {
     protected:
-        struct Block {
-          long offset;
-          long numOfRecords;
-          Block(long offset, long numOfRecords) : offset(offset), numOfRecords(numOfRecords) {}
-        };
-
         class VectorInputPort : public Port {
             public:
-            int id;
-            std::string moduleName;
-            std::string name;
+            VectorData vector;
             char *buffer;     // buffer holding recorded data
             int bufferSize;  // size of the allocated buffer
             char *bufferPtr; // pointer to the current position in the buffer
             int bufferNumOfRecords; //
-            int numOfRecords; // number of records written into the buffer
-            double min;
-            double max;
-            double sum;
-            double sumSqr;
-            std::vector<Block> blocks; // attributes of the blocks written into the file
 
             VectorInputPort(int id, std::string moduleName, std::string name, int bufferSize, Node *owner)
-                : id(id), moduleName(moduleName), name(name), numOfRecords(0), min(DBL_MAX), max(DBL_MIN),
-                  sum(0.0), sumSqr(0.0), Port(owner)
+                : vector(id, moduleName, name), Port(owner)
                 { this->allocateBuffer(bufferSize); }
             ~VectorInputPort() { if (buffer) delete[] buffer; }
 
@@ -69,7 +103,7 @@ class IndexedVectorFileWriterNode : public Node
         std::string indexFileName;
         int blockSize;
         FILE *f;
-        FILE *fi;
+        IndexFileWriter *indexWriter;
         int prec;
 
     public:
@@ -102,5 +136,3 @@ class IndexedVectorFileWriterNodeType : public NodeType
 };
 
 #endif
-
-
