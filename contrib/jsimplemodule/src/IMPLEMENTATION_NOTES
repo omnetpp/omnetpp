@@ -11,17 +11,19 @@ here I added getBaseCPtr() for this.
 
 ISSUES WITH C++/JAVA INTEGRATION:
 
-1. JAVA OBJECT IDENTITY. By default, SWIG creates a new Java wrapper
+1.
+
+2. JAVA OBJECT IDENTITY. By default, SWIG creates a new Java wrapper
    object every time a C++ method returns an object. This has drawbacks:
     1. one cannot use "==" with wrapper objects, the CPtrs have to be
        compared instead;
     2. if finalize() methods of wrapper objects are allowed to delete
        their C++ objects (swigCMemOwn=true), then sane memory management
        is very hard. One wrapper object may delete the C++ object while
-       other wrappers with the same CPtr still exist. In highly dynamic 
+       other wrappers with the same CPtr still exist. In highly dynamic
        applications (where several objects get created, passed around
-       and deleted, possibly by both the C++ and Java code, users
-       must be extremely cautius in writing the Java code to prevent 
+       and deleted, possibly by both the C++ and Java code), users
+       must be extremely cautius in writing the Java code to prevent
        crashes!
 
    How to guarantee Java object identity (ie at most one Java wrapper per
@@ -67,7 +69,7 @@ ISSUES WITH C++/JAVA INTEGRATION:
         the C++ destructor still has to be modified to remove invalidate
         the wrapper object and remove it from the hash table.
 
-2. Polymorphic return types. When a method returns an object, we create
+3. Polymorphic return types. When a method returns an object, we create
    it into a Java proxy object that corresponds to its actual type,
    not the declared return type of the method. We derive the Java class
    as "org.omnetpp.simkernel.<cplusplus-classname>".
@@ -84,3 +86,5 @@ ISSUES WITH C++/JAVA INTEGRATION:
    Caching of the Java Class would alleviate the pain, but would require
    modification to the underlying C++ classes, i.e. this Java extension would
    not be able to run on an unmodified OMNeT++ installation.
+
+   TODO: cMessage.castFrom() example
