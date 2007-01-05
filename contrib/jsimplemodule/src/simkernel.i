@@ -3,6 +3,7 @@
 %{
 #include <omnetpp.h>
 #include "JSimpleModule.h"
+#include "JMessage.h"
 
 // for debugging:
 #include <stdio.h>
@@ -325,7 +326,21 @@ cSimulation *getSimulation();
   }
 %}
 
+// JMessage
+%typemap(javainterfaces) JMessage "Cloneable";
+%javamethodmodifiers JMessage::JMessage "private";
+
+%typemap(javacode) JMessage %{
+  public JMessage() {this(null, 0, 99); swigSetJavaPeer(this); }
+  public JMessage(String name) {this(name, 0, 99); swigSetJavaPeer(this); }
+  public JMessage(String name, int kind) {this(name, kind, 99); swigSetJavaPeer(this); }
+%}
+
+//
+// Map C++ dup() to Java's clone()
+//
 %rename dup clone;
+
 
 //
 // Add "get" to getter method names.
@@ -549,5 +564,6 @@ DERIVEDCLASS(cWeightedStdDev, cPolymorphic);
 //%include "crng.h" -- no need to wrap
 
 %include "JSimpleModule.h"
+%include "JMessage.h"
 
 
