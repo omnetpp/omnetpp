@@ -10,21 +10,6 @@ die "no directory specified" if ($dir eq '');
 
 chdir $dir || die "cannot cd to $dir";
 foreach $fname (glob("*.java")) {
-    #  public static cOutVector castFrom(cPolymorphic obj) {
-    #    long cPtr = SimkernelJNI.cOutVector_castFrom(cPolymorphic.getCPtr(obj), obj);
-    #    return (cPtr == 0) ? null : new cOutVector(cPtr, false);
-    #  }
-    #
-    #  TO:
-    #
-    #  public static cOutVector castFrom(cPolymorphic obj) {
-    #    long cPtr = SimkernelJNI.cOutVector_castFrom(cPolymorphic.getCPtr(obj), obj);
-    #    if (cPtr==0) return null;
-    #    boolean memOwn = obj.swigCMemOwn;
-    #    obj.swigDisown();
-    #    return new cOutVector(cPtr, memOwn);
-    #  }
-
     print "patching castFrom() in $fname...";
     $content = load_file("$fname");
 
@@ -32,7 +17,7 @@ foreach $fname (glob("*.java")) {
         $body = $2;
 
         $body =~ s/^.*\@notnull\@.*/    boolean memOwn = obj.swigCMemOwn;\n    obj.swigDisown();/m;
-        $body =~ s/swigSetMemOwn\(false\)/swigSetMemOwn(memOwn)/s;
+        $body =~ s/false\);/memOwn);/s;
 
         $content =~ s/__BODY__/$body/gs;
         print "OK\n";

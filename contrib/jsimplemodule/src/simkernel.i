@@ -120,31 +120,20 @@ jlong jarg1 = -1; //fallback for LOG_JNI_CALL() in JNI functions with no jarg1 a
   }
 %}
 
-%typemap(javaout) SWIGTYPE, SWIGTYPE&, SWIGTYPE *, SWIGTYPE [], SWIGTYPE (CLASS::*) {
-//    System.gc();  //FIXME
+%typemap(javaout) cMessage* {
     long cPtr = $jnicall;
     if (cPtr == 0)
       return null;
     // @notnull@ -- do not delete this mark
-    // use existing proxy object if there is one
-    System.out.println("ENTER");
-    $javaclassname tmp = new $javaclassname(cPtr, false); // false == don't call swigSetAsProxyObject()
-    System.out.println("tmp created:"+tmp);
-    $javaclassname proxy = ($javaclassname) tmp.swigProxyObject();
-    System.out.println("proxy:"+proxy);
-    if (proxy!=null) {
-      // return existing proxy object
-      System.out.println("returning existing");
-      proxy.swigSetMemOwn($owner);
-      return proxy;
-    }
-    else {
-      // make tmp the proxy object
-      System.out.println("returning new tmp");
-      tmp.swigSetAsProxyObject(tmp);
-      tmp.swigSetMemOwn($owner);
-      return tmp;
-    }
+    return cMessage.wrap(cPtr, $owner);
+  };
+
+%typemap(javaout) SWIGTYPE, SWIGTYPE*, SWIGTYPE& {
+    long cPtr = $jnicall;
+    if (cPtr == 0)
+      return null;
+    // @notnull@ -- do not delete this mark
+    return new $javaclassname(cPtr, $owner);
   };
 
 %typemap(javadestruct_derived, methodname="delete", methodmodifiers="public synchronized") cMessage {
@@ -232,6 +221,32 @@ jlong jarg1 = -1; //fallback for LOG_JNI_CALL() in JNI functions with no jarg1 a
       self->setContextPointer(NULL);
   }
 }
+
+%typemap(javacode) cMessage %{
+  public static cMessage wrap(long cPtr, boolean memOwn) {
+    if (cPtr == 0)
+      return null;
+    // use existing proxy object if there is one
+    System.out.println("ENTER");
+    $javaclassname tmp = new $javaclassname(cPtr, false); // false == don't call swigSetAsProxyObject()
+    System.out.println("tmp created:"+tmp);
+    $javaclassname proxy = ($javaclassname) tmp.swigProxyObject();
+    System.out.println("proxy:"+proxy);
+    if (proxy!=null) {
+      // return existing proxy object
+      System.out.println("returning existing");
+      proxy.swigSetMemOwn(memOwn);
+      return proxy;
+    }
+    else {
+      // make tmp the proxy object
+      System.out.println("returning new tmp");
+      tmp.swigSetAsProxyObject(tmp);
+      tmp.swigSetMemOwn(memOwn);
+      return tmp;
+    }
+  }
+%}
 
 %define DERIVEDCLASS(CLASS,BASECLASS)
 %extend CLASS {
