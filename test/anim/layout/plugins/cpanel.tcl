@@ -51,8 +51,8 @@ proc cpanel_createControls {} {
     cpanel_addCheckButton starTreeEmbedding "Star tree embedding" 1 "ste"
     cpanel_addCheckButton forceDirectedEmbedding "Force directed embedding" 1 "fde"
     cpanel_addCheckButton 3d "3d" 1 "3d"
-    cpanel_addCheckButton showForces "Show forces" 1 "sf"
-    cpanel_addCheckButton showSummaForces "Show summa force" 1 "ssf"
+    cpanel_addCheckButton showForces "Show forces" 0 "sf"
+    cpanel_addCheckButton showSummaForces "Show summa force" 0 "ssf"
 }
 
 #
