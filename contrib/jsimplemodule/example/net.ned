@@ -4,9 +4,11 @@ module Net1
         tic: JSimpleModule;
             parameters:
                 javaClass = "Txc";
+            display: "i=misc/node,blue";
         toc: JSimpleModule;
             parameters:
                 javaClass = "Txc";
+            display: "i=misc/node,yellow";
     connections:
         tic.out++ --> toc.in++;
         tic.in++ <-- toc.out++;
