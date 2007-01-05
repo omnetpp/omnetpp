@@ -918,8 +918,8 @@ ForceDirectedGraphLayouter::ForceDirectedGraphLayouter(const cDisplayString& ds)
     embedding.springCoefficient = resolveDoubleDispStrArg(ds.getTagArg("sc", 0), 0.1);
     embedding.electricRepulsionCoefficient = resolveDoubleDispStrArg(ds.getTagArg("erc", 0), 10000);
 
-    showForces = resolveBoolDispStrArg(ds.getTagArg("sf", 0), true);
-    showSummaForce = resolveBoolDispStrArg(ds.getTagArg("ssf", 0), true);
+    showForces = resolveBoolDispStrArg(ds.getTagArg("sf", 0), false);
+    showSummaForce = resolveBoolDispStrArg(ds.getTagArg("ssf", 0), false);
 
     starTreeEmbedding = resolveBoolDispStrArg(ds.getTagArg("ste", 0), true);
     forceDirectedEmbedding = resolveBoolDispStrArg(ds.getTagArg("fde", 0), true);
