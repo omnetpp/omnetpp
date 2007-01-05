@@ -204,17 +204,17 @@ jlong jarg1 = -1; //fallback for LOG_JNI_CALL() in JNI functions with no jarg1 a
 
 %extend cMessage {
   jobject swigProxyObject() {
-      printf("returning JOBJECT=%p\n", self->contextPointer());
+      printf("returning JOBJECT=%p\n", self->contextPointer());fflush(stdout);
       return (jobject)(self->contextPointer());
   }
   void swigSetAsProxyObject(jobject obj) {
       if (self->contextPointer()!=0) printf("WARNING: swigSetAsProxyObject: already set!!!\n");
       obj = JSimpleModule::jenv->NewWeakGlobalRef(obj);
       self->setContextPointer((void *)obj);
-      printf("remembering JOBJECT=%p\n", self->contextPointer());
+      printf("remembering JOBJECT=%p\n", self->contextPointer());fflush(stdout);
   }
   void swigFinalizeProxyObject() {
-      printf("finalizing JOBJECT=%p\n", self->contextPointer());
+      printf("finalizing JOBJECT=%p\n", self->contextPointer());fflush(stdout);
       if (self->contextPointer()==0) printf("WARNING: swigFinalizeProxyObject: ref is already null!!!\n");
       jobject obj = (jobject)(self->contextPointer());
       JSimpleModule::jenv->DeleteWeakGlobalRef(obj);
@@ -227,20 +227,17 @@ jlong jarg1 = -1; //fallback for LOG_JNI_CALL() in JNI functions with no jarg1 a
     if (cPtr == 0)
       return null;
     // use existing proxy object if there is one
-    System.out.println("ENTER");
     $javaclassname tmp = new $javaclassname(cPtr, false); // false == don't call swigSetAsProxyObject()
-    System.out.println("tmp created:"+tmp);
     $javaclassname proxy = ($javaclassname) tmp.swigProxyObject();
-    System.out.println("proxy:"+proxy);
     if (proxy!=null) {
       // return existing proxy object
-      System.out.println("returning existing");
+      System.out.println("returning existing: "+proxy);
       proxy.swigSetMemOwn(memOwn);
       return proxy;
     }
     else {
       // make tmp the proxy object
-      System.out.println("returning new tmp");
+      System.out.println("returning new wrapper: "+tmp);
       tmp.swigSetAsProxyObject(tmp);
       tmp.swigSetMemOwn(memOwn);
       return tmp;
