@@ -2,12 +2,6 @@ import org.omnetpp.simkernel.*;
 
 class Tic extends JSimpleModule {
 
-/*
-    public Tic(long cptr) {
-        super(cptr);
-    }
-*/
-
     protected void initialize() {
         System.out.println("initialize of "+getFullPath());
         cMessage msg = new cMessage("TESTMSG-"+getFullName());

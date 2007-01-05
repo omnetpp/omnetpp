@@ -1,7 +1,7 @@
 import org.omnetpp.simkernel.*;
 
 /**
- * Implements a single-server queue; see NED file for more info.
+ * Implements a single-server queue
  */
 public class Fifo extends JSimpleModule
 {
@@ -9,17 +9,11 @@ public class Fifo extends JSimpleModule
     protected cMessage endServiceMsg;
     protected cQueue queue;
 
-    protected cOutVector jobsInSys;
-
-/*
-    public Fifo(long cptr) {
-        super(cptr);
-    }
-*/
+    protected cOutVector qlenVector;
 
     protected void initialize() {
         queue = new cQueue("queue");
-        jobsInSys = new cOutVector("Jobs in System");
+        qlenVector = new cOutVector("queue length");
 
         // Set up the initial number of jobs in the queue
         int index = this.getIndex(); // get the index no of this fifo queue
@@ -58,7 +52,7 @@ public class Fifo extends JSimpleModule
             arrival(msg);
 
             // Statistics collection
-            jobsInSys.record(0);
+            qlenVector.record(0);
 
             msgServiced = msg;
             double serviceTime = serviceRequirement(msgServiced);
@@ -72,7 +66,7 @@ public class Fifo extends JSimpleModule
 
             // Statistics collection
             // There is one customer in service, hence queue.length + 1
-            jobsInSys.record(queue.getLength()+1);
+            qlenVector.record(queue.getLength()+1);
             queue.insert(msg);
         }
     }

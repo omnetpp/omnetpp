@@ -1,13 +1,7 @@
 import org.omnetpp.simkernel.*;
 
-public class Src extends JSimpleModule {
+public class Source extends JSimpleModule {
     private int i = 0;
-
-/*
-    public Src(long cptr) {
-        super(cptr);
-    }
-*/
 
     protected void initialize() {
         ev().println("initialize of "+getFullPath());
@@ -26,7 +20,6 @@ public class Src extends JSimpleModule {
     protected void finish() {
         ev().println("finish of "+getFullPath());
     }
-
 };
 
 
