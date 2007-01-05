@@ -290,6 +290,9 @@ class ForceDirectedGraphLayouter : public GraphLayouter
       double debugWaitTime;
       double springReposeLength;
 
+      bool showForces;
+      bool showSummaForce;
+
       bool finalized;
       /**
        * True means wall bodies representing borders has been already added.

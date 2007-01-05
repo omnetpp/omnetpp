@@ -891,7 +891,7 @@ proc graphmodwin_bubble {c modptr txt} {
 #
 proc layouter_debugDraw_finish {c msg} {
     # create label
-    set bb [$c bbox all]
+    set bb [$c bbox bbox]
     $c create text [expr ([lindex $bb 0]+[lindex $bb 2])/2] [lindex $bb 1] -anchor n -text $msg
 
     # rescale to fit canvas
@@ -905,7 +905,7 @@ proc layouter_debugDraw_finish {c msg} {
     if {$fy>1} {set fy 1}
     $c scale all 0 0 $fx $fy
 
-    $c config -scrollregion [$c bbox all]
+    $c config -scrollregion [$c bbox bbox]
     $c xview moveto 0
     $c yview moveto 0
     update idletasks

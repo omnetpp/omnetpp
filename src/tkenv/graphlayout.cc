@@ -662,21 +662,21 @@ void BasicSpringEmbedderLayout::debugDraw(int step)
     char coords[100];
 #ifdef USE_CONTRACTING_BOX
     sprintf(coords,"%lg %lg %lg %lg", box.x1, box.y1, box.x2, box.y2);
-    Tcl_VarEval(interp, canvas, " create rect ", coords, " -outline black -tag box", NULL);
+    Tcl_VarEval(interp, canvas, " create rect ", coords, " -outline black -tag {box bbox}", NULL);
 #endif
     for (NodeList::iterator i=nodes.begin(); i!=nodes.end(); ++i)
     {
         Node& n = *(*i);
         sprintf(coords,"%g %g %g %g", n.x-n.sx, n.y-n.sy, n.x+n.sx, n.y+n.sy);
         const char *color = colors[n.color % (sizeof(colors)/sizeof(char*))];
-        Tcl_VarEval(interp, canvas, " create rect ",coords," -outline ",color," -tag node", NULL);
+        Tcl_VarEval(interp, canvas, " create rect ",coords," -outline ",color," -tag {node bbox}", NULL);
     }
     for (EdgeList::iterator j=edges.begin(); j!=edges.end(); ++j)
     {
         Edge& e = *j;
         sprintf(coords,"%g %g %g %g", e.from->x, e.from->y, e.to->x, e.to->y);
         const char *color = colors[e.from->color % (sizeof(colors)/sizeof(char*))];
-        Tcl_VarEval(interp, canvas, " create line ",coords," -fill ",color,NULL);
+        Tcl_VarEval(interp, canvas, " create line ",coords," -fill ",color," -tag {edge bbox}",NULL);
     }
     Tcl_VarEval(interp, canvas, " raise node", NULL);
 
@@ -912,12 +912,14 @@ ForceDirectedGraphLayouter::ForceDirectedGraphLayouter(const cDisplayString& ds)
     embedding.maxTimeStep = resolveDoubleDispStrArg(ds.getTagArg("mats", 0), 10);
     embedding.minAccelerationError = resolveDoubleDispStrArg(ds.getTagArg("miae", 0), 5);
     embedding.maxAccelerationError = resolveDoubleDispStrArg(ds.getTagArg("maae", 0), 10);
-    embedding.minFrictionCoefficient = resolveDoubleDispStrArg(ds.getTagArg("mifc", 0), 0.5);
-    embedding.maxFrictionCoefficient = resolveDoubleDispStrArg(ds.getTagArg("mafc", 0), 10);
-    embedding.velocityRelaxLimit = resolveDoubleDispStrArg(ds.getTagArg("vrl", 0), 0.5);
+    embedding.frictionCoefficient = resolveDoubleDispStrArg(ds.getTagArg("fc", 0), 1);
+    embedding.velocityRelaxLimit = resolveDoubleDispStrArg(ds.getTagArg("vrl", 0), 0.25);
     springReposeLength = resolveDoubleDispStrArg(ds.getTagArg("srl", 0), 50);
     embedding.springCoefficient = resolveDoubleDispStrArg(ds.getTagArg("sc", 0), 0.1);
     embedding.electricRepulsionCoefficient = resolveDoubleDispStrArg(ds.getTagArg("erc", 0), 10000);
+
+    showForces = resolveBoolDispStrArg(ds.getTagArg("sf", 0), true);
+    showSummaForce = resolveBoolDispStrArg(ds.getTagArg("ssf", 0), true);
 
     starTreeEmbedding = resolveBoolDispStrArg(ds.getTagArg("ste", 0), true);
     forceDirectedEmbedding = resolveBoolDispStrArg(ds.getTagArg("fde", 0), true);
@@ -1180,17 +1182,6 @@ void ForceDirectedGraphLayouter::addEdgeToBorder(cModule *from, int len)
     springs.push_back(new HorizonalSpring(rightBorder, body));
 
     embedding.addForceProvider(new ShortestSpring(springs));
-    // TODO: which border? maybe delay until the prelayout position is available and find closest
-//    const std::vector<IBody *>& bodies = embedding.getBodies();
-//    for (int i = 0; i < bodies.size(); i++) {
-//		IBody *border = dynamic_cast<WallBody *>(bodies[i]);
-
-//        if (border) {
-            // TODO: use vertical or horizontal depending on wall type
-//            embedding.addForceProvider(new VerticalSpring(findBody(from), border));
- //           break;
-  //      }
-   // }
 }
 
 void ForceDirectedGraphLayouter::execute()
@@ -1221,6 +1212,7 @@ void ForceDirectedGraphLayouter::execute()
     {
         Tcl_VarEval(interp, canvas," delete node\n",
                             canvas," delete edge\n",
+                            canvas," delete force\n",
                             canvas," config -scrollregion {0 0 1 1}\n",
                             canvas," xview moveto 0\n",
                             canvas," yview moveto 0\n",
@@ -1264,8 +1256,8 @@ void ForceDirectedGraphLayouter::debugDraw()
         }
 
         sprintf(coords,"%g %g %g %g", pt.x, pt.y, pt.x + rs.width, pt.y + rs.height);
-        const char *color = "black";//colors[n.color % (sizeof(colors)/sizeof(char*))];
-        Tcl_VarEval(interp, canvas, " create rect ", coords, " -outline ", color, " -tag node", NULL);
+        const char *color = "black";
+        Tcl_VarEval(interp, canvas, " create rect ", coords, " -outline ", color, " -tag {node bbox}", NULL);
     }
 
     const std::vector<IForceProvider *>& forceProviders = embedding.getForceProviders();
@@ -1276,8 +1268,39 @@ void ForceDirectedGraphLayouter::debugDraw()
             Pt pt1 = spring->getBody1()->getPosition();
             Pt pt2 = spring->getBody2()->getPosition();
             sprintf(coords,"%g %g %g %g", pt1.x, pt1.y, pt2.x, pt2.y);
-            const char *color = "black";//colors[e.from->color % (sizeof(colors)/sizeof(char*))];
-            Tcl_VarEval(interp, canvas, " create line ", coords, " -fill ", color, " -tag edge", NULL);
+            const char *color = "black";
+            Tcl_VarEval(interp, canvas, " create line ", coords, " -fill ", color, " -tag {edge bbox}", NULL);
+        }
+    }
+
+    double forceScale = 10;
+    const std::vector<Variable *>& variables = embedding.getVariables();
+    for (int i = 0; i < variables.size(); i++) {
+        Variable *variable = variables[i];
+        Pt pt1 = variable->getPosition();
+
+        if (showForces) {
+            std::vector<Pt> forces = variable->getForces();
+
+	        for (int j = 0; j < forces.size(); j++) {
+                Pt pt2(pt1);
+                Pt force(forces[j]);
+                force.multiply(forceScale);
+                pt2.add(force);
+                sprintf(coords,"%g %g %g %g", pt1.x, pt1.y, pt2.x, pt2.y);
+                const char *color = "red";
+                Tcl_VarEval(interp, canvas, " create line ", coords, " -fill ", color, " -tag force", NULL);
+            }
+        }
+
+        if (showSummaForce) {
+            Pt pt2(pt1);
+            Pt force(variable->getForce());
+            force.multiply(forceScale);
+            pt2.add(force);
+            sprintf(coords,"%g %g %g %g", pt1.x, pt1.y, pt2.x, pt2.y);
+            const char *color = "blue";
+            Tcl_VarEval(interp, canvas, " create line ", coords, " -fill ", color, " -tag force", NULL);
         }
     }
 
