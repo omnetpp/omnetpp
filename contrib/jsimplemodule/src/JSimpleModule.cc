@@ -36,7 +36,7 @@ void JSimpleModule::initJVM()
     std::string classpathOption = std::string("-Djava.class.path=")+(classpath ? classpath : "");
     options[n++].optionString = (char *)classpathOption.c_str(); /* user classes */
     options[n++].optionString = "-Djava.library.path=.";   /* set native library path */
-    options[n++].optionString = "-Djava.compiler=NONE";    /* disable JIT */
+    //options[n++].optionString = "-Djava.compiler=NONE";    /* disable JIT */
     //options[n++].optionString = "-verbose:jni";            /* print JNI-related messages */
     //options[n++].optionString = "-verbose:class";          /* print class loading messages */
 

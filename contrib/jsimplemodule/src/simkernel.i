@@ -7,14 +7,14 @@
 
 // for debugging:
 #include <stdio.h>
-//#define LOG_JNI_CALL() (void)0
-#define LOG_JNI_CALL() {printf("DEBUG: entered JNI method %s, jarg1=%lx\n", __FUNCTION__, (long)jarg1);fflush(stdout);}
-jlong jarg1 = -1; //fallback for LOG_JNI_CALL() in JNI functions with no jarg1 arg
+#define LOG_JNI_CALL() (void)0
+//#define LOG_JNI_CALL() {printf("DEBUG: entered JNI method %s, jarg1=%lx\n", __FUNCTION__, (long)jarg1);fflush(stdout);}
+//jlong jarg1 = -1; // fallback for LOG_JNI_CALL() in JNI functions with no jarg1 arg
 %}
 
 %pragma(java) jniclasscode=%{
   static {
-    // get classes for System.out.println() loaded now (needed if we want to log from ProxyObjectMap)
+    // get classes for System.out.println() loaded now (needed if we want to log in startup code)
     System.out.println("Simkernel.jar loaded.");
   }
 %}
@@ -225,8 +225,15 @@ namespace std {
 };
 
 %typemap(javacode) cEnvir %{
-  public void print(String s) {puts(s); System.out.print("--- "+s); /*XXX*/ }
-  public void println(String s) {puts(s); puts("\n"); System.out.println("--- "+s); /*XXX*/ }
+  public void print(String s) {
+    puts(s);
+    //System.out.print("--- "+s);
+  }
+
+  public void println(String s) {
+    puts(s); puts("\n");
+    //System.out.println("--- "+s);
+  }
 %}
 
 class cEnvir
@@ -309,12 +316,10 @@ cSimulation *getSimulation();
   }
 
   private void doHandleMessage() {
-    System.out.print("\n\n--- NEW EVENT ---\n\n");
+    //System.out.print("\n\n--- NEW EVENT ---\n\n");
     cMessage msg = retrieveMsgToBeHandled();
-    System.out.println("*** module "+getName()+" processing "+msg.getName());
-//    System.gc();  //FIXME
+    //System.out.println("*** module "+getName()+" processing "+msg.getName());
     handleMessage(msg);
-//    System.gc();  //FIXME
   }
 
   protected void handleMessage(cMessage msg) {
