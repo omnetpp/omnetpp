@@ -41,7 +41,7 @@
 //
 
 %typemap(javabody) SWIGTYPE %{
-  // @DISOWN-METHOD-ARGS@  -- do not delete this line
+  // @METHODARGS-OWNERSHIP@, @CASTFROM-OWNERSHIP@  -- do not delete this line
   private long swigCPtr;
   protected boolean swigCMemOwn;
 
@@ -79,7 +79,7 @@
 %}
 
 %typemap(javabody_derived) SWIGTYPE %{
-  // @DISOWN-METHOD-ARGS@  -- do not delete this line
+  // @METHODARGS-OWNERSHIP@, @CASTFROM-OWNERSHIP@  -- do not delete this line
   private long swigCPtr;
 
   protected $javaclassname(long cPtr, boolean cMemoryOwn) {
@@ -225,13 +225,7 @@
   }
 %}
 
-%define DERIVEDCLASS(CLASS,BASECLASS)
-%extend CLASS {
-  //static int swigBaseClassOffset() {CLASS *p = (CLASS *)0x10000; return (int)(static_cast<BASECLASS *>(p)) - 0x10000;}
-  static CLASS *castFrom(BASECLASS *obj) {return dynamic_cast<CLASS *>(obj);}
-}
-%enddef
-
+// The following BASECLASS(), DERIVEDCLASS() macros are applied in simkernel.i:
 %define BASECLASS(CLASS)
 %extend CLASS {
   //static int swigBaseClassOffset() {return 0;}
@@ -241,47 +235,21 @@
 }
 %enddef
 
-BASECLASS(cPolymorphic);
-BASECLASS(cDisplayString);
-BASECLASS(cEnvir);
-BASECLASS(cException);
-BASECLASS(cExpression);
-BASECLASS(cSubModIterator);
-BASECLASS(cVisitor);
-BASECLASS(cXMLElement);
-BASECLASS(std::vector<cXMLElement*>);
-//BASECLASS(std::map<std::string,std::string>);
+%define DERIVEDCLASS(CLASS,BASECLASS)
+%extend CLASS {
+  //static int swigBaseClassOffset() {CLASS *p = (CLASS *)0x10000; return (int)(static_cast<BASECLASS *>(p)) - 0x10000;}
+  static CLASS *castFrom(BASECLASS *obj) {return dynamic_cast<CLASS *>(obj);}
+}
+%enddef
+
+
+// ...except this one which has to be here, because the type name contains a comma which confuses the SWIG preprocessor
 %extend std::map<std::string,std::string> {
   //static int swigBaseClassOffset() {return 0;}
   jobject swigProxyObject()              {return 0;}
   void swigSetAsProxyObject(jobject obj) {}
   void swigFinalizeProxyObject()         {}
 }
-DERIVEDCLASS(cArray, cPolymorphic);
-DERIVEDCLASS(cBasicChannel, cPolymorphic);
-DERIVEDCLASS(cChannel, cPolymorphic);
-DERIVEDCLASS(cChannelType, cPolymorphic);
-DERIVEDCLASS(cCompoundModule, cPolymorphic);
-DERIVEDCLASS(cDefaultList, cPolymorphic);
-DERIVEDCLASS(cDoubleExpression, cExpression);
-DERIVEDCLASS(cGate, cPolymorphic);
-DERIVEDCLASS(cMessage, cPolymorphic);
-DERIVEDCLASS(cModule, cPolymorphic);
-DERIVEDCLASS(cModulePar, cPolymorphic);
-DERIVEDCLASS(cModuleType, cPolymorphic);
-DERIVEDCLASS(cNetworkType, cPolymorphic);
-DERIVEDCLASS(cObject, cPolymorphic);
-DERIVEDCLASS(cOutVector, cPolymorphic);
-DERIVEDCLASS(cPar, cPolymorphic);
-DERIVEDCLASS(cPolymorphic, cPolymorphic);
-DERIVEDCLASS(cQueue, cPolymorphic);
-DERIVEDCLASS(cRuntimeError, cException);
-DERIVEDCLASS(cSimpleModule, cPolymorphic);
-DERIVEDCLASS(cSimulation, cPolymorphic);
-DERIVEDCLASS(cStatistic, cPolymorphic);
-DERIVEDCLASS(cStdDev, cPolymorphic);
-DERIVEDCLASS(cWeightedStdDev, cPolymorphic);
-
 
 // memory management (see also patchownership.pl)
 %newobject cMessage::decapsulate;

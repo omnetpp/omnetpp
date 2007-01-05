@@ -294,10 +294,6 @@ cSimulation *getSimulation();
 %ignore JSimpleModule::jenv;
 
 %typemap(javacode) JSimpleModule %{
-  public JSimpleModule(long cPtr) {
-    this(cPtr, false);
-  }
-
   protected int numInitStages() {
     return 1;
   }
@@ -459,6 +455,42 @@ cSimulation *getSimulation();
 %rename cException::moduleClassName getModuleClassName;
 %rename cException::moduleFullPath getModuleFullPath;
 %rename cException::moduleID getModuleID;
+
+// The BASECLASS(), DERIVEDCLASS() macros should come from the memorymgmt_xxx.i file
+BASECLASS(cPolymorphic);
+BASECLASS(cDisplayString);
+BASECLASS(cEnvir);
+BASECLASS(cException);
+BASECLASS(cExpression);
+BASECLASS(cSubModIterator);
+BASECLASS(cVisitor);
+BASECLASS(cXMLElement);
+BASECLASS(std::vector<cXMLElement*>);
+//BASECLASS(std::map<std::string,std::string>);
+DERIVEDCLASS(cArray, cPolymorphic);
+DERIVEDCLASS(cBasicChannel, cPolymorphic);
+DERIVEDCLASS(cChannel, cPolymorphic);
+DERIVEDCLASS(cChannelType, cPolymorphic);
+DERIVEDCLASS(cCompoundModule, cPolymorphic);
+DERIVEDCLASS(cDefaultList, cPolymorphic);
+DERIVEDCLASS(cDoubleExpression, cExpression);
+DERIVEDCLASS(cGate, cPolymorphic);
+DERIVEDCLASS(cMessage, cPolymorphic);
+DERIVEDCLASS(cModule, cPolymorphic);
+DERIVEDCLASS(cModulePar, cPolymorphic);
+DERIVEDCLASS(cModuleType, cPolymorphic);
+DERIVEDCLASS(cNetworkType, cPolymorphic);
+DERIVEDCLASS(cObject, cPolymorphic);
+DERIVEDCLASS(cOutVector, cPolymorphic);
+DERIVEDCLASS(cPar, cPolymorphic);
+DERIVEDCLASS(cPolymorphic, cPolymorphic);
+DERIVEDCLASS(cQueue, cPolymorphic);
+DERIVEDCLASS(cRuntimeError, cException);
+DERIVEDCLASS(cSimpleModule, cPolymorphic);
+DERIVEDCLASS(cSimulation, cPolymorphic);
+DERIVEDCLASS(cStatistic, cPolymorphic);
+DERIVEDCLASS(cStdDev, cPolymorphic);
+DERIVEDCLASS(cWeightedStdDev, cPolymorphic);
 
 
 // now include all header files

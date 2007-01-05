@@ -11,9 +11,11 @@ public class Fifo extends JSimpleModule
 
     protected cOutVector jobsInSys;
 
+/*
     public Fifo(long cptr) {
         super(cptr);
     }
+*/
 
     protected void initialize() {
         queue = new cQueue("queue");
@@ -34,7 +36,7 @@ public class Fifo extends JSimpleModule
     }
 
     protected void handleMessage(cMessage msg) {
-        if (msg==endServiceMsg) {
+        if (msg.sameAs(endServiceMsg)) {
             //
             // Departure
             //

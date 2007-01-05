@@ -13,7 +13,12 @@ foreach $fname (glob("*.java")) {
     print "patching castFrom() in $fname...";
     $content = load_file("$fname");
 
-    if ($content =~ s/(\bcastFrom\b.*?)({.*?})/\1__BODY__/gs) {
+    #
+    # IMPORTANT: Java files are only patched if they contain the @CASTFROM-OWNERSHIP@ string!
+    #
+    if (!($content =~ /\@CASTFROM-OWNERSHIP\@/s)) {
+        print "disabled\n";
+    } elsif ($content =~ s/(\bcastFrom\b.*?)({.*?})/\1__BODY__/gs) {
         $body = $2;
 
         $body =~ s/^.*\@notnull\@.*/    boolean memOwn = obj.swigCMemOwn;\n    obj.swigDisown();/m;
