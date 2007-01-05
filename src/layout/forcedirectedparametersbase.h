@@ -120,6 +120,10 @@ class Variable : public IPositioned {
 		    this->mass += mass;
 	    }
 
+        Pt getForce() {
+            return force;
+        }
+
 	    void addForce(const Pt& vector, double power, bool inspected = false) {
 		    Pt f(vector);
 

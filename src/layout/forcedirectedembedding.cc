@@ -37,9 +37,6 @@ void ForceDirectedEmbedding::setDefaultParameters() {
     electricRepulsionCoefficient = 10000;
 
     frictionCoefficient = 1;
-    minFrictionCoefficient = 0.1;
-    maxFrictionCoefficient = 10;
-    frictionCoefficientMultiplier = 2;
 
     timeStep = 1;
     minTimeStep = 0.01;
@@ -97,10 +94,8 @@ void ForceDirectedEmbedding::reinitialize() {
     updatedMaxAccelerationError = maxAccelerationError;
     updatedMinAccelerationError = minAccelerationError;
 
-    if (frictionCoefficient != 0)
-        updatedFrictionCoefficient = frictionCoefficient;
-    else
-        updatedFrictionCoefficient = getEnergyBasedFrictionCoefficient(maxCalculationTime);
+    if (frictionCoefficient == -1)
+        frictionCoefficient = getEnergyBasedFrictionCoefficient(maxCalculationTime);
 }
 
 /**
@@ -229,24 +224,6 @@ void ForceDirectedEmbedding::embed() {
             writeDebugInformation(std::cout);
         }
 
-        // update friction
-        /*
-        double kineticEnergy = getKineticEnergy();
-        kineticEnergySum += kineticEnergy * updatedTimeStep;
-        double kineticEnergyAvg = (kineticEnergySum / elapsedTime);
-        double kineticEnergyExpected = kineticEnergyAvg * (maxCalculationTime - elapsedCalculationTime) / maxCalculationTime;
-        if (debugLevel >= 3)
-            std::cout << "Current kinetic energy: " << kineticEnergy << " expected: " << kineticEnergyExpected << "\n";
-        if (frictionCoefficient) {
-            if (kineticEnergy <  kineticEnergyExpected && updatedFrictionCoefficient / frictionCoefficientMultiplier > minFrictionCoefficient)
-                updatedFrictionCoefficient /= frictionCoefficientMultiplier;
-            else if (kineticEnergy > kineticEnergyExpected && updatedFrictionCoefficient * frictionCoefficientMultiplier < maxFrictionCoefficient)
-                updatedFrictionCoefficient *= frictionCoefficientMultiplier;
-        }
-        else
-            updatedFrictionCoefficient = getEnergyBasedFrictionCoefficient(std::max(0.0, maxCalculationTime - elapsedCalculationTime));
-        */
-
         // check if relaxed
         lastMaxVelocity = 0;
         lastMaxAcceleration = 0;
@@ -329,5 +306,5 @@ void ForceDirectedEmbedding::a(std::vector<Pt>& an, const std::vector<Pt>& pn, c
 void ForceDirectedEmbedding::writeDebugInformation(std::ostream& ostream)
 {
     if (initialized)
-        ostream << "at real time: " << elapsedCalculationTime << " time: " << elapsedTime << " relaxFactor: " << relaxFactor << " h: " << updatedTimeStep << " friction: " << updatedFrictionCoefficient << " min acceleration error: " << updatedMinAccelerationError << " max acceleration error: " << updatedMaxAccelerationError << " last acceleration error: " << lastAccelerationError << " cycle: " << cycle << " prob cycle: " << probCycle << " last max velocity: " << lastMaxVelocity << " last max acceleration: " << lastMaxAcceleration << "\n";
+        ostream << "at real time: " << elapsedCalculationTime << " time: " << elapsedTime << " relaxFactor: " << relaxFactor << " h: " << updatedTimeStep << " friction: " << frictionCoefficient << " min acceleration error: " << updatedMinAccelerationError << " max acceleration error: " << updatedMaxAccelerationError << " last acceleration error: " << lastAccelerationError << " cycle: " << cycle << " prob cycle: " << probCycle << " last max velocity: " << lastMaxVelocity << " last max acceleration: " << lastMaxAcceleration << "\n";
 }

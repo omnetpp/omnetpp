@@ -531,7 +531,7 @@ class AbstractVelocityBasedForceProvider : public IForceProvider {
 class Friction : public AbstractVelocityBasedForceProvider {
     public:
         virtual double getPower(Variable *variable, double vlen) {
-            return std::max(embedding->updatedFrictionCoefficient * 0.01, vlen / embedding->updatedTimeStep) * variable->getMass();
+            return std::max(embedding->frictionCoefficient * 0.01, vlen / embedding->updatedTimeStep) * variable->getMass();
         }
 
         virtual const char *getClassName() {
@@ -545,7 +545,7 @@ class Friction : public AbstractVelocityBasedForceProvider {
 class Drag : public AbstractVelocityBasedForceProvider {
     public:
         virtual double getPower(Variable *variable, double vlen) {
-            return embedding->updatedFrictionCoefficient * vlen;
+            return embedding->frictionCoefficient * vlen;
         }
 
         virtual const char *getClassName() {

@@ -150,31 +150,8 @@ class ForceDirectedEmbedding
 
         /**
          * Friction reduces the energy of the system. The friction force points in the opposite direction of the current velocity.
-         * Friction is automatically updated during the solution. The current kinetic energy is compared against the average kinetic
-         * energy reduced by the time spent on the calculation and the friction coefficient is updated so that towards the end of the
-         * calculation the kinetic energy of the system converges to zero.
          */
         double frictionCoefficient;
-        
-        /**
-         * This gets updated.
-         */
-        double updatedFrictionCoefficient;
-        
-        /**
-         * Lower limit for friction coefficient.
-         */
-        double minFrictionCoefficient;
-        
-        /**
-         * Higher limit for friction coefficient update.
-         */
-        double maxFrictionCoefficient;
-        
-        /**
-         * Multiplier used to update the friction coefficient.
-         */
-        double frictionCoefficientMultiplier;
 
         /**
          * The default time step when solution starts.
