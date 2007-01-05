@@ -42,9 +42,8 @@ proc cpanel_createControls {} {
     cpanel_addSlider maxTimeStep "Max time step" 10 1 100 1 "mats"
     cpanel_addSlider minAccelerationError "Min acceleration error" 5 0.1 500 0.1 "miae"
     cpanel_addSlider maxAccelerationError "Max acceleration error" 10 0.1 1000 0.1 "maae"
-    cpanel_addSlider minFrictionCoefficient "Min friction coefficient" 0.5 0.005 5 0.005 "mifc"
-    cpanel_addSlider maxFrictionCoefficient "Max friction coefficient" 10 0.1 100 0.1 "mafc"
-    cpanel_addSlider velocityRelaxLimit "Velocity relax limit" 0.5 0.005 5 0.005 "vrl"
+    cpanel_addSlider frictionCoefficient "Friction coefficient" 1 0.01 5 0.01 "fc"
+    cpanel_addSlider velocityRelaxLimit "Velocity relax limit" 0.25 0.005 5 0.005 "vrl"
     cpanel_addSlider springReposeLength "Spring repose length" 50 0 500 1 "srl"
     cpanel_addSlider springCoefficient "Spring coefficient" 0.1 0.001 1 0.001 "sc"
     cpanel_addSlider electricRepulsionCoefficient "Electrical repulsion coefficient" 10000 100 100000 100 "erc"
@@ -52,6 +51,8 @@ proc cpanel_createControls {} {
     cpanel_addCheckButton starTreeEmbedding "Star tree embedding" 1 "ste"
     cpanel_addCheckButton forceDirectedEmbedding "Force directed embedding" 1 "fde"
     cpanel_addCheckButton 3d "3d" 1 "3d"
+    cpanel_addCheckButton showForces "Show forces" 1 "sf"
+    cpanel_addCheckButton showSummaForces "Show summa force" 1 "ssf"
 }
 
 #

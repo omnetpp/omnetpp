@@ -59,6 +59,29 @@ network Anchors
 network Ethernet
 {
     submodules:
+        vec1[1]: Node {
+            parameters:
+                @display("i=pc_s,cyan");
+            gates:
+                in[3];
+                out[3];
+        };
+        seg: Node {
+            parameters:
+                @display("b=400,10,,,blue");
+            gates:
+                in[11];
+                out[11];
+        };
+    connections allowunconnected:
+        for i=0..0 {
+            seg.out[i] --> vec1[i].in[0];
+        };
+}
+
+network EthernetWithRing
+{
+    submodules:
         vec1[10]: Node {
             parameters:
                 @display("i=pc_s,cyan");
