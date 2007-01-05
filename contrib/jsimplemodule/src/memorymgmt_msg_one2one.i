@@ -1,11 +1,4 @@
 //
-// Notes about SWIG:
-//   Every wrapper object contains SEVERAL swigCPtrs, one for each subclass!!!
-//   They may even be different in value, because as C++ casts may numerically
-//   change the pointer value, esp if multiple inheritance is in use.
-//
-
-//
 // PLANNED changes to normal SWIG proxy object behaviour (NOT WORKING YET!):
 //
 //  1. Java object identity. By default, SWIG creates a new Java proxy
@@ -133,54 +126,6 @@
   }
 %}
 
-//
-// CURRENT SOLUTION: no object identity, no polymorphic return types.
-//
-//  - isSameAs(object) method can be used to test for object identity;
-//    BEWARE: it only checks cptrs, and thus can falsely report "true"
-//    if one wrapper object refers to a C++ object which *previously*
-//    existed on the same memory location!
-//
-//  - cMessage.castFrom(object) can be used to cast to subtypes.
-//    castFrom() also does transfer of ownership, so the original
-//    "object" pointer SHOULD NOT be referenced afterwards!
-//
-/*
-%typemap(javabody) SWIGTYPE %{
-  private long swigCPtr;
-  protected boolean swigCMemOwn;
-
-  protected $javaclassname(long cPtr, boolean cMemoryOwn) {
-    swigCMemOwn = cMemoryOwn;
-    swigCPtr = cPtr;
-  }
-
-  public static long getCPtr($javaclassname obj) {
-    return (obj == null) ? 0 : obj.swigCPtr;
-  }
-
-  public long getBaseCPtr() {
-    return swigCPtr;
-  }
-
-  public boolean isSameAs($javaclassname obj) {
-    return getBaseCPtr() == obj.getBaseCPtr();
-  }
-
-  public boolean equals(Object obj) {
-    return (obj instanceof $javaclassname) && isSameAs(($javaclassname)obj);
-  }
-
-  public void swigDisown() {
-    swigCMemOwn = false;
-  }
-
-  @Override
-  public int hashCode() {
-    return (int)swigCPtr;
-  }
-%}
-*/
 
 %extend cMessage {
   jobject swigProxyObject() {
@@ -258,3 +203,12 @@
 %newobject cMessage::removeControlInfo;
 %newobject cQueue::remove;
 %newobject cQueue::pop;
+
+// note: we use %typemape(javafinalize) so that we don't clash with
+// %typemap(javacode) in simkernel.i
+%typemap(javafinalize) JSimpleModule %{
+  public JSimpleModule() {
+    this(0, false);  // and C++ code will call setCPtr() later
+  }
+%}
+
