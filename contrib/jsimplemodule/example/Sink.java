@@ -7,7 +7,7 @@ public class Sink extends JSimpleModule {
     }
 
     public void handleMessage(cMessage msg) {
-        ev().println(msg.getName()+" arrived");
+        ev().println(msg.getName()+" arrived at sink");
         msg.delete();
     }
 

@@ -17,6 +17,23 @@ endnetwork
 
 
 module Net2
+    submodules:
+        src: JSimpleModule;
+            parameters:
+                javaClass = "Src";
+            display: "i=block/source";
+        sink: JSimpleModule;
+            parameters:
+                javaClass = "Sink";
+            display: "i=block/sink";
+    connections:
+        src.out++ --> sink.in++;
+endmodule
+
+network net2 : Net2
+endnetwork
+
+module Net3
     parameters:
         queueNumInitialJobs: numeric const,
         queueServiceTime: numeric;
@@ -38,7 +55,7 @@ module Net2
         fifo.out++ --> sink.in++;
 endmodule
 
-network net2 : Net2
+network net3 : Net3
     parameters:
         queueNumInitialJobs = 5,
         queueServiceTime = exponential(1);
