@@ -1,28 +1,58 @@
 
-PLANNED changes to normal SWIG proxy object behaviour (NOT WORKING YET!):
+Notes about SWIG:
 
-1. Java object identity. By default, SWIG creates a new Java proxy
-   object every time a C++ method returns an object. Here we
-   return the same proxy object every time, from a hashtable that
-   maps a C++ pointer to the Java proxy object. This functionality
-   is provided by the ProxyObjectMap class.
+Every wrapper object contains SEVERAL swigCPtrs, one for each subclass.
+With single inheritance they are all the same values, but with multiple
+inheritance, they may be different (as different base classes may be at
+different offsets in the object).
 
-   *** PROBLEM ***:
-        When we get a C++ object to wrap, we look up cPtr in the hashtable.
-        How do we know it's the same object for which we have the wrapper
-        object in the table, or is it a new object allocated on the same
-        memory address after the original object got deleted???
+By default, SWIG does not provide methods to get the CPtr of the base class;
+here I added getBaseCPtr() for this.
 
-        Two possible solutions:
-          1. C++ destructors (ie cPolymorphic destructor) should remove the
-             cPtr from the Java hashtable. TOO COSTLY? Not if we add a
-             hasJavaProxy flag into the C++ class...
-             REQUIRES MODIFICATION TO OMNET++ (modifying cPolymorphic dtor).
+ISSUES WITH C++/JAVA INTEGRATION:
 
-          2. Add unique IDs to C++ objects to identify them. I.e. into the
-             ctor: id = lastId++. Then, hashtable lookup would also check
-             that object ID matches.
-             REQUIRES MODIFICATION TO OMNET++ (adding ID to cPolymorphic.)
+1. JAVA OBJECT IDENTITY. By default, SWIG creates a new Java wrapper
+   object every time a C++ method returns an object. This has drawbacks:
+    1. one cannot use "==" with wrapper objects, the CPtrs have to be
+       compared instead;
+    2. if finalize() of wrapper objects can delete the C++ objects
+       (swigCMemOwn=true), then sane memory management is very hard.
+       One wrapper object may delete the C++ object while other wrappers
+       with the same CPtr still exist. One must be extremely cautius to
+       prevent CRASH!
+
+   How to guarantee Java object identity (ie at most one Java wrapper per
+   C++ object)? There are several methods, all with some difficulty:
+
+   - store the wrapper object reference (jobject) inside the C++ object.
+     One may use global weak reference (instead of ordinary global reference)
+     to allow the wrapper to be garbage collected.
+     Constructor of the wrapper should set the jobject field of the C++ object,
+     and finalize() should clear it. C++ destructor should set CPtr in the
+     Java wrapper object to zero.
+
+     Drawback: C++ base class has to be modified (extra jobject field, dtor)!
+
+   - use a hashtable that maps a CPtr to the Java proxy object:
+     HashMap<Long,Object> or HashMap<Long,WeakReference> (the latter allows
+     wrappers to be garbage collected.) When we get a C++ object to wrap, we
+     look up cPtr in the hashtable. This promises to get by without
+     modifying the C++ classes.
+
+     Problem: when we find CPtr in the hashtable, how do we know it's the
+     same object, or a new object allocated on the same memory address after
+     the original object got deleted? There are several possible solutions,
+     each involving some modification to the C++ classes though:
+
+     1. C++ destructors (ie cPolymorphic destructor) should remove the
+        cPtr from the Java hashtable. TOO COSTLY? Not if we add a
+        hasJavaProxy flag into the C++ class...
+        REQUIRES MODIFICATION TO OMNET++ (modifying cPolymorphic dtor).
+
+     2. Add unique IDs to C++ objects to identify them. I.e. into the
+        ctor: id = lastId++. Then, hashtable lookup would also check
+        that object ID matches.
+        REQUIRES MODIFICATION TO OMNET++ (adding ID to cPolymorphic.)
 
 2. Polymorphic return types. When a method returns an object, we create
    it into a Java proxy object that corresponds to its actual type,
