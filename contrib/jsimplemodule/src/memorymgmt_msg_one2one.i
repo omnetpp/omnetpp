@@ -7,17 +7,20 @@
 // Java simple modules -- which is OK because contextPointer() is mostly
 // only useful with self-messages that don't get sent across modules.)
 //
-// Also attempts to manage ownership of C++ objects using swigCMemOwn, %newobject,
-// swigDisown() calls etc -- with very moderate success (==CRASHES!!!)
+// Also attempts to manage ownership of C++ objects using swigCMemOwn,
+// %newobject, swigDisown() calls etc. In theory, no explicit delete()
+// is needed for messages. (There's only one wrapper object for any given
+// message, and it's swigCMemOwn flag is [in theory] appropriately managed.)
 //
 // The <classname>.castFrom() static method (e.g. cMessage.castFrom(object))
 // can be used to cast to subtypes. castFrom() also transfers ownership of
-// the C++ object, so the original Java wrapper object SHOULD NOT be
-// referenced afterwards!
+// the C++ object into the new Java wrapper, so the original wrapper object
+// SHOULD NOT be referenced afterwards!
 //
 
+//
 // *** THIS CODE CURRENTLY CRASHES EVEN WITH TRIVIAL MODELS ***
-
+//
 
 %typemap(javabody) SWIGTYPE %{
   // @METHODARGS-OWNERSHIP@, @CASTFROM-OWNERSHIP@  -- do not delete this line
