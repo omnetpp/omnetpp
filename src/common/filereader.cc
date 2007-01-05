@@ -121,14 +121,14 @@ void FileReader::fillBuffer(bool forward)
         if (PRINT_DEBUG_MESSAGES) printf("Reading data at file offset: %ld, length: %ld\n", fileOffset, bytesRead);
 
         if (!hasData()) {
-            dataBegin = bufferBegin;
-            dataEnd = bufferEnd;
+            dataBegin = dataPointer;
+            dataEnd = dataPointer + bytesRead;
         }
         else if (forward) {
             if (currentDataPointer < dataBegin)
                 dataBegin = currentDataPointer;
             else
-                dataEnd = bufferEnd;
+                dataEnd = dataPointer + bytesRead;
         }
         else {
             if (currentDataPointer > dataEnd)
