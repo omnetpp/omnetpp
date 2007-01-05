@@ -1,3 +1,20 @@
+2007-01-05
+----------
+
+Fixes:
+
+   + Content assist and field assist of the filter completed. Content assist can offer 
+     operator, field name, field value completions (when asked at the end of a token)
+     and replacements (when asked inside the token).
+
+   + The 'Refresh automatically' preference option has 'true' as default value.
+
+   + 'Browse vector' view sometimes was not refreshed.
+
+   + When the index file gets created by the indexer, the table of 'Browse Data' page is
+     refreshed.
+
+
 2006-12-15
 ----------
 
