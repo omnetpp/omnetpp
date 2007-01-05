@@ -1,20 +1,22 @@
 import org.omnetpp.simkernel.*;
 
-class Tic extends JSimpleModule {
+class Txc extends JSimpleModule {
 
     protected void initialize() {
-        System.out.println("initialize of "+getFullPath());
-        cMessage msg = new cMessage("TESTMSG-"+getFullName());
-        scheduleAt(simTime() + .9, msg);
+        ev().println("initialize of "+getFullPath());
+        if (getFullName().equals("tic")) {
+            cMessage msg = new cMessage("msg");
+            scheduleAt(simTime() + .9, msg);
+        }
     }
 
     protected void handleMessage(cMessage msg) {
-        System.out.println(msg.getName()+" arrived");
+        ev().println(msg.getName()+" arrived");
         send(msg, "out");
     }
 
     protected void finish() {
-        System.out.println("finish of "+getFullPath());
+        ev().println("finish of "+getFullPath());
     }
 
 };
