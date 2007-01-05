@@ -11,12 +11,54 @@ here I added getBaseCPtr() for this.
 
 ISSUES WITH C++/JAVA INTEGRATION:
 
-1.
+1. MEMORY MANAGEMENT, meaning how to manage the swigCMemOwn flag in Java
+   wrapper objects. SWIG provides %newobject to set swigCMemOwn=true
+   for C++ objects returned from wrapped functions (by default they are
+   returned with swigCMemOwn=false, which assumes that the C++ code will
+   delete them.) However, it provides no straightforward way of giving
+   ownership of object passed as method arguments to the C++ code.
+
+   ....
+
+
+   Another way is going for explicit memory management (i.e. requiring the
+   delete() method of the wrapper to be explicitly called when the C++ object
+   is not needed any more). swigCMemOwn would always be set to false, or could
+   even be removed from generated code. The code is too lengthy to quote here,
+   but it involves several (fairly straightforward) changes to the original
+   java.swg version of the following typemaps:
+
+    %typemap(javabody) SWIGTYPE %{ ... %}
+    %typemap(javabody_derived) SWIGTYPE %{ ... %}
+    %typemap(javaconstruct) SWIGTYPE { ... }
+    %typemap(javafinalize) SWIGTYPE %{ ... %}
+    %typemap(javadestruct, methodname="delete") SWIGTYPE { ... }
+    %typemap(javadestruct_derived, methodname="delete") SWIGTYPE { ... }
+
 
 2. JAVA OBJECT IDENTITY. By default, SWIG creates a new Java wrapper
    object every time a C++ method returns an object. This has drawbacks:
+
     1. one cannot use "==" with wrapper objects, the CPtrs have to be
-       compared instead;
+       compared instead.
+
+          NOTE: the following typemap may be handy here:
+
+             %typemap(javabody) SWIGTYPE %{
+               // <<copy here the original contents of %typemap(javabody)
+               //   from java.swg>>
+
+               public long getBaseCPtr() {
+                 return swigCPtr;
+               }
+
+               public boolean sameAs($javaclassname obj) {
+                 return getBaseCPtr() == obj.getBaseCPtr();
+               }
+             %}
+
+       Then one can write one.sameAs(other).
+
     2. if finalize() methods of wrapper objects are allowed to delete
        their C++ objects (swigCMemOwn=true), then sane memory management
        is very hard. One wrapper object may delete the C++ object while
