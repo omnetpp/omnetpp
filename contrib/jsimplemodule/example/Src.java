@@ -1,6 +1,7 @@
 import org.omnetpp.simkernel.*;
 
 public class Src extends JSimpleModule {
+    private int i = 0;
 
     public Src(long cptr) {
         super(cptr);
@@ -13,8 +14,10 @@ public class Src extends JSimpleModule {
     }
 
     protected void handleMessage(cMessage msg) {
-        ev().println("sending...");
-        send(new cMessage("Hello"), "out");
+        String msgname = "msg-" + i++;
+        ev().println("sending "+msgname);
+        send(new cMessage(msgname), "out");
+        ev().println("scheduling next send");
         scheduleAt(simTime() + Simkernel.exponential(1), msg);
     }
 
