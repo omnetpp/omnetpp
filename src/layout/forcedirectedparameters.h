@@ -176,6 +176,8 @@ class AbstractElectricRepulsion : public IElectricRepulsion {
 
         bool slippery;
 
+        // TODO: add maximum distance parameter and do not process repulsions exceeding that
+
     public:
         AbstractElectricRepulsion(IBody *charge1, IBody *charge2, bool slippery) {
             this->charge1 = charge1;
