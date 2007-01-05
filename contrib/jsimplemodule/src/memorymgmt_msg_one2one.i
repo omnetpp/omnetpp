@@ -1,37 +1,21 @@
 //
-// PLANNED changes to normal SWIG proxy object behaviour (NOT WORKING YET!):
+// Provides Java object identity for cMessages, by storing a global weak
+// reference to the Java proxy (wrapper) object in cMessage's contextPointer().
 //
-//  1. Java object identity. By default, SWIG creates a new Java proxy
-//     object every time a C++ method returns an object. Here we
-//     return the same proxy object every time, from a hashtable that
-//     maps a C++ pointer to the Java proxy object. This functionality
-//     is provided by the ProxyObjectMap class.
+// (When this extension is in use, contextPointer() should not be used
+// within Java simple modules, or with C++ messages that can get sent to
+// Java simple modules -- which is OK because contextPointer() is mostly
+// only useful with self-messages that don't get sent across modules.)
 //
-//     *** PROBLEM ***:
-//          When we get a C++ object to wrap, we look up cPtr in the hashtable.
-//          How do we know it's the same object for which we have the wrapper
-//          object in the table, or is it a new object allocated on the same
-//          memory address after the original object got deleted???
+// Also attempts to manage ownership of C++ objects using swigCMemOwn, %newobject,
+// swigDisown() calls etc -- with very moderate success (==CRASHES!!!)
 //
-//          Two possible solutions:
-//            1. C++ destructors (ie cPolymorphic destructor) should remove the
-//               cPtr from the Java hashtable. TOO COSTLY? Not if we add a
-//               hasJavaProxy flag into the C++ class...
-//               REQUIRES MODIFICATION TO OMNET++ (modifying cPolymorphic dtor).
+// The <classname>.castFrom() static method (e.g. cMessage.castFrom(object))
+// can be used to cast to subtypes. castFrom() also transfers ownership of
+// the C++ object, so the original Java wrapper object SHOULD NOT be
+// referenced afterwards!
 //
-//            2. Add unique IDs to C++ objects to identify them. I.e. into the
-//               ctor: id = lastId++. Then, hashtable lookup would also check
-//               that object ID matches.
-//               REQUIRES MODIFICATION TO OMNET++ (adding ID to cPolymorphic.)
-//
-//  2. Polymorphic return types. When a method returns an object, we create
-//     it into a Java proxy object that corresponds to its actual type,
-//     not the declared return type of the method. We derive the Java class
-//     as "org.omnetpp.simkernel.<cplusplus-classname>".
-//
-//     TOO COSTLY? (Class.forName() each time we return an object!) Java object
-//     identity would help (less frequent need for wrapping).
-//
+
 
 %typemap(javabody) SWIGTYPE %{
   // @METHODARGS-OWNERSHIP@, @CASTFROM-OWNERSHIP@  -- do not delete this line
