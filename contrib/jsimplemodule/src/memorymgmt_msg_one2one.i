@@ -16,6 +16,8 @@
 // referenced afterwards!
 //
 
+// *** THIS CODE CURRENTLY CRASHES EVEN WITH TRIVIAL MODELS ***
+
 
 %typemap(javabody) SWIGTYPE %{
   // @METHODARGS-OWNERSHIP@, @CASTFROM-OWNERSHIP@  -- do not delete this line
