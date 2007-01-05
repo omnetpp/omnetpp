@@ -8,6 +8,9 @@ $verbose = 0;
 $dir = $ARGV[0];
 die "no directory specified" if ($dir eq '');
 
+#
+# IMPORTANT: Java files must contain the @DISOWN-METHOD-ARGS@ string to enable the patching!
+#
 disown("cBasicChannel", "deliver",        "msg");
 disown("cChannel",      "deliver",        "msg");
 disown("cGate",         "deliver",        "msg");
@@ -37,7 +40,9 @@ sub disown()
     print "patching: $fname, $method(), $param...";
     $content = load_file("$fname");
 
-    if ($content =~ s/(public .*\b${method}\b.*)/$1\n    $param.swigDisown();/gm) {
+    if (!($content =~ /\@DISOWN-METHOD-ARGS\@/s)) {
+        print "disabled\n";
+    } elsif ($content =~ s/(public .*\b${method}\b.*)/$1\n    $param.swigDisown();/gm) {
         print "OK\n";
     } else {
         die "ERROR - NOT FOUND!\n";

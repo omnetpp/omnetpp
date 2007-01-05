@@ -41,6 +41,7 @@
 //
 
 %typemap(javabody) SWIGTYPE %{
+  // @DISOWN-METHOD-ARGS@  -- do not delete this line
   private long swigCPtr;
   protected boolean swigCMemOwn;
 
@@ -78,6 +79,7 @@
 %}
 
 %typemap(javabody_derived) SWIGTYPE %{
+  // @DISOWN-METHOD-ARGS@  -- do not delete this line
   private long swigCPtr;
 
   protected $javaclassname(long cPtr, boolean cMemoryOwn) {
