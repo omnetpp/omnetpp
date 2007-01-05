@@ -65,6 +65,15 @@
     return swigCPtr;
   }
 
+  protected void setCPtr(long cPtr) {
+    swigCPtr = cPtr;
+  }
+
+  /** Not needed for cMessages with this memory management scheme, only for other objects */
+  public boolean sameAs($javaclassname obj) {
+    return getBaseCPtr() == obj.getBaseCPtr();
+  }
+
   @Override
   public int hashCode() {
     return (int)swigCPtr;
@@ -88,6 +97,11 @@
 
   public static long getCPtr($javaclassname obj) {
     return (obj == null) ? 0 : obj.swigCPtr;
+  }
+
+  protected void setCPtr(long cPtr) {
+    swigCPtr = cPtr;
+    super.setCPtr(cPtr==0 ? 0 : SimkernelJNI.SWIG$javaclassnameUpcast(cPtr));
   }
 %}
 
@@ -204,11 +218,4 @@
 %newobject cQueue::remove;
 %newobject cQueue::pop;
 
-// note: we use %typemape(javafinalize) so that we don't clash with
-// %typemap(javacode) in simkernel.i
-%typemap(javafinalize) JSimpleModule %{
-  public JSimpleModule() {
-    this(0, false);  // and C++ code will call setCPtr() later
-  }
-%}
 
