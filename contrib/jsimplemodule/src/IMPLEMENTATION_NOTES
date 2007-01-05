@@ -42,22 +42,8 @@ ISSUES WITH C++/JAVA INTEGRATION:
     1. one cannot use "==" with wrapper objects, the CPtrs have to be
        compared instead.
 
-          NOTE: the following typemap may be handy here:
-
-             %typemap(javabody) SWIGTYPE %{
-               // <<copy here the original contents of %typemap(javabody)
-               //   from java.swg>>
-
-               public long getBaseCPtr() {
-                 return swigCPtr;
-               }
-
-               public boolean sameAs($javaclassname obj) {
-                 return getBaseCPtr() == obj.getBaseCPtr();
-               }
-             %}
-
-       Then one can write one.sameAs(other).
+       In OMNeT++ we use the getBaseCPtr() and sameAs() methods, as defined
+       in the custom javabody typemap.
 
     2. if finalize() methods of wrapper objects are allowed to delete
        their C++ objects (swigCMemOwn=true), then sane memory management
@@ -111,14 +97,4 @@ ISSUES WITH C++/JAVA INTEGRATION:
         the C++ destructor still has to be modified to remove invalidate
         the wrapper object and remove it from the hash table.
 
-3. Polymorphic return types. When a method returns an object, we create
-   it into a Java proxy object that corresponds to its actual type,
-   not the declared return type of the method. We derive the Java class
-   as "org.omnetpp.simkernel.<cplusplus-classname>".
 
-   However, doing this for every method may be too costly (JNI call to get
-   the real C++ type, following string manipulation and Class.forName()
-   instead of a plain "new cObject(cPtr, false)" call), especially as most
-   wrappers a probably not used polymorphically in the code afterwards.
-
-   TODO: cMessage.castFrom() example
