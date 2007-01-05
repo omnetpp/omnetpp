@@ -495,8 +495,8 @@ namespace std {
 };
 
 %typemap(javacode) cEnvir %{
-  public void print(String s) {puts(s);}
-  public void println(String s) {puts(s); puts("\n");}
+  public void print(String s) {puts(s); System.out.print("--- "+s); /*XXX*/ }
+  public void println(String s) {puts(s); puts("\n"); System.out.println("--- "+s); /*XXX*/ }
 %}
 
 class cEnvir
@@ -583,7 +583,9 @@ cSimulation *getSimulation();
   }
 
   private void doHandleMessage() {
+    System.out.print("\n\n--- NEW EVENT ---\n\n");
     cMessage msg = retrieveMsgToBeHandled();
+    System.out.println("*** module "+getName()+" processing "+msg.getName());
 //    System.gc();  //FIXME
     handleMessage(msg);
 //    System.gc();  //FIXME
