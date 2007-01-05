@@ -25,6 +25,8 @@ class JMessage : public cMessage
     JMessage& operator=(const JMessage& msg);
     virtual cPolymorphic *dup() const  {return new JMessage(*this);}
     void swigSetJavaPeer(jobject msgObject);
+    jobject swigJavaPeer() {return javaPeer;}
+    static jobject swigJavaPeerOf(cObject *object);
 };
 
 #endif

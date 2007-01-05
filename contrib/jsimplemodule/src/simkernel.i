@@ -328,12 +328,19 @@ cSimulation *getSimulation();
 
 // JMessage
 %typemap(javainterfaces) JMessage "Cloneable";
+%ignore JMessage::swigJavaPeer;
 %javamethodmodifiers JMessage::JMessage "private";
+%javamethodmodifiers JMessage::swigSetJavaPeer "private";
+%javamethodmodifiers JMessage::swigJavaPeerOf "protected";
 
 %typemap(javacode) JMessage %{
   public JMessage() {this(null, 0, 99); swigSetJavaPeer(this); }
   public JMessage(String name) {this(name, 0, 99); swigSetJavaPeer(this); }
   public JMessage(String name, int kind) {this(name, kind, 99); swigSetJavaPeer(this); }
+
+  public static JMessage castFrom(cObject object) {
+    return (JMessage) JMessage.swigJavaPeerOf(object);
+  }
 %}
 
 //

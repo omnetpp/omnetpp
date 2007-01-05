@@ -84,3 +84,9 @@ void JMessage::checkExceptions() const
     }
 }
 
+jobject JMessage::swigJavaPeerOf(cObject *object)
+{
+    JMessage *msg = dynamic_cast<JMessage *>(object);
+    return msg ? msg->swigJavaPeer() : 0;
+}
+
