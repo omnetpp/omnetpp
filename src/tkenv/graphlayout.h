@@ -26,6 +26,7 @@
 
 #include <tk.h> // only for debugDraw
 #include "forcedirectedembedding.h"
+#include "forcedirectedparameters.h"
 #include "graphcomponent.h"
 
 #include "csimplemodule.h"
@@ -283,12 +284,42 @@ class AdvSpringEmbedderLayout : public BasicSpringEmbedderLayout
 class ForceDirectedGraphLayouter : public GraphLayouter
 {
   protected:
+      /**
+       * Time to wait after drawing the actual state of the layouting process.
+       */
+      double debugWaitTime;
+      double springReposeLength;
+
       bool finalized;
+      /**
+       * True means wall bodies representing borders has been already added.
+       */
       bool bordersAdded;
+      /**
+       * True means there is at least one fixed node.
+       */
+      bool hasFixedNode;
+
+      /**
+       * Use star tree embedding to create a initial layout before calling the force directed embedding.
+       */
       bool starTreeEmbedding;
+      /**
+       * Use force directed embedding.
+       */
       bool forceDirectedEmbedding;
+      /**
+       * Use 3d coordinates and return the base plane projection coordinates.
+       */
       bool threeDimensions;
+
+      WallBody *topBorder;
+      WallBody *bottomBorder;
+      WallBody *leftBorder;
+      WallBody *rightBorder;
+
       ForceDirectedEmbedding embedding;
+
       std::map<std::string, Variable *> anchorNameToVariableMap;
       std::map<cModule *, IBody *> moduleToBodyMap;
 
@@ -345,15 +376,16 @@ class ForceDirectedGraphLayouter : public GraphLayouter
     void addBody(cModule *mod, IBody *body);
     IBody *findBody(cModule *mod);
     Variable *ensureAnchorVariable(const char *anchorname);
-    void addElectricalRepeals();
+    void addElectricRepulsions();
     void addBasePlaneSprings();
     void ensureFinalized();
-    void ensureBorders();
     void setRandomPositions();
     void setStarTreePositions(double distance);
+    void ensureBorders();
+    void setBorderPositions();
     Vertex* findVertex(GraphComponent *graphComponent, Variable *variable);
     void normalize();
-    void debugDraw(int step);
+    void debugDraw();
 };
 
 

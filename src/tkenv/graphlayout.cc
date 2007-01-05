@@ -23,7 +23,6 @@
 #include <deque>
 
 #include "graphlayout.h"
-#include "forcedirectedparameters.h"
 #include "startreeembedding.h"
 
 #define MIN(a,b) ((a)<(b) ? (a) : (b))
@@ -898,11 +897,27 @@ ForceDirectedGraphLayouter::ForceDirectedGraphLayouter(const cDisplayString& ds)
 {
     finalized = false;
     bordersAdded = false;
+    hasFixedNode = false;
 
+    topBorder = NULL;
+    bottomBorder = NULL;
+    leftBorder = NULL;
+    rightBorder = NULL;
+
+    debugWaitTime = resolveDoubleDispStrArg(ds.getTagArg("dwt", 0), 0);
+
+    embedding.setDefaultParameters();
     embedding.maxCalculationTime = resolveDoubleDispStrArg(ds.getTagArg("mct", 0), 10000);
-    embedding.springCoefficient = resolveDoubleDispStrArg(ds.getTagArg("sc", 0), 0.1);
-    embedding.electricRepealCoefficient = resolveDoubleDispStrArg(ds.getTagArg("erc", 0), 10000);
+    embedding.minTimeStep = resolveDoubleDispStrArg(ds.getTagArg("mits", 0), 0.01);
+    embedding.maxTimeStep = resolveDoubleDispStrArg(ds.getTagArg("mats", 0), 10);
+    embedding.minAccelerationError = resolveDoubleDispStrArg(ds.getTagArg("miae", 0), 5);
+    embedding.maxAccelerationError = resolveDoubleDispStrArg(ds.getTagArg("maae", 0), 10);
+    embedding.minFrictionCoefficient = resolveDoubleDispStrArg(ds.getTagArg("mifc", 0), 0.5);
+    embedding.maxFrictionCoefficient = resolveDoubleDispStrArg(ds.getTagArg("mafc", 0), 10);
     embedding.velocityRelaxLimit = resolveDoubleDispStrArg(ds.getTagArg("vrl", 0), 0.5);
+    springReposeLength = resolveDoubleDispStrArg(ds.getTagArg("srl", 0), 50);
+    embedding.springCoefficient = resolveDoubleDispStrArg(ds.getTagArg("sc", 0), 0.1);
+    embedding.electricRepulsionCoefficient = resolveDoubleDispStrArg(ds.getTagArg("erc", 0), 10000);
 
     starTreeEmbedding = resolveBoolDispStrArg(ds.getTagArg("ste", 0), true);
     forceDirectedEmbedding = resolveBoolDispStrArg(ds.getTagArg("fde", 0), true);
@@ -933,56 +948,6 @@ Variable *ForceDirectedGraphLayouter::ensureAnchorVariable(const char *anchorNam
         return it->second;
     else
         return anchorNameToVariableMap[anchorName] = new Variable(Pt::getNil());
-}
-
-void ForceDirectedGraphLayouter::ensureBorders()
-{
-    if (starTreeEmbedding)
-        setStarTreePositions(40);
-
-    setRandomPositions();
-
-    // TODO: move this to the embedding, so that it can be called from java
-    if (!bordersAdded) {
-        double coefficient = 0.1;
-        double distance = 100;
-		double top = DBL_MAX, bottom = DBL_MIN;
-		double left = DBL_MAX, right = DBL_MIN;
-
-        const std::vector<IBody *>& bodies = embedding.getBodies();
-		for (int i = 0; i < bodies.size(); i++) {
-			IBody *body = bodies[i];
-			Pt position = body->getPosition();
-			Rs size = body->getSize();
-
-            top = std::min(top, position.y);
-			bottom = std::max(bottom, position.y + size.height);
-			left = std::min(left, position.x);
-			right = std::max(right, position.x + size.width);
-		}
-
-		IBody *topBody = new WallBody(true, top - distance);
-		IBody *bottomBody = new WallBody(true, bottom + distance);
-		IBody *leftBody = new WallBody(false, left - distance);
-		IBody *rightBody = new WallBody(false, right + distance);
-
-		for (int i = 0; i < bodies.size(); i++) {
-			IBody *body = bodies[i];
-			embedding.addForceProvider(new VerticalElectricRepeal(topBody, body));
-			embedding.addForceProvider(new VerticalElectricRepeal(bottomBody, body));
-			embedding.addForceProvider(new HorizontalElectricRepeal(leftBody, body));
-			embedding.addForceProvider(new HorizontalElectricRepeal(rightBody, body));
-		}
-
-		embedding.addBody(topBody);
-		embedding.addBody(bottomBody);
-		embedding.addBody(leftBody);
-		embedding.addBody(rightBody);
-		embedding.addForceProvider(new VerticalSpring(topBody, bottomBody, coefficient, 0));
-		embedding.addForceProvider(new HorizonalSpring(leftBody, rightBody, coefficient, 0));
-
-        bordersAdded = true;
-    }
 }
 
 void ForceDirectedGraphLayouter::setRandomPositions()
@@ -1029,7 +994,6 @@ void ForceDirectedGraphLayouter::setStarTreePositions(double distance) {
 	for (int i = 0; i < forceProviders.size(); i++) {
 		IForceProvider *forceProvider = forceProviders[i];
 		
-        // TODO: exact class match needed!
 		if (!strcmp("Spring", forceProvider->getClassName())) {
 			Spring *spring = (Spring *)forceProvider;
 
@@ -1045,11 +1009,73 @@ void ForceDirectedGraphLayouter::setStarTreePositions(double distance) {
 	
     for (int i = 0; i < graphComponent.getVertexCount(); i++) {
         Vertex *vertex = graphComponent.getVertex(i);
-		((Variable *)vertex->identity)->assignPosition(vertex->pt);
+		Variable *variable = (Variable *)vertex->identity;
+
+        if (!dynamic_cast<PointConstrainedVariable *>(variable))
+            variable->assignPosition(vertex->pt);
     }
 }
 
-void ForceDirectedGraphLayouter::addElectricalRepeals()
+void ForceDirectedGraphLayouter::ensureBorders()
+{
+    // TODO: move this to the embedding, so that it can be called from java
+    if (!bordersAdded) {
+        double coefficient = 0.1;
+
+		topBorder = new WallBody(true, NaN);
+		bottomBorder = new WallBody(true, NaN);
+		leftBorder = new WallBody(false, NaN);
+		rightBorder = new WallBody(false, NaN);
+
+        const std::vector<IBody *>& bodies = embedding.getBodies();
+		for (int i = 0; i < bodies.size(); i++) {
+			IBody *body = bodies[i];
+			embedding.addForceProvider(new VerticalElectricRepulsion(topBorder, body));
+			embedding.addForceProvider(new VerticalElectricRepulsion(bottomBorder, body));
+			embedding.addForceProvider(new HorizontalElectricRepulsion(leftBorder, body));
+			embedding.addForceProvider(new HorizontalElectricRepulsion(rightBorder, body));
+		}
+
+		embedding.addBody(topBorder);
+		embedding.addBody(bottomBorder);
+		embedding.addBody(leftBorder);
+		embedding.addBody(rightBorder);
+		embedding.addForceProvider(new VerticalSpring(topBorder, bottomBorder, coefficient, 0));
+		embedding.addForceProvider(new HorizonalSpring(leftBorder, rightBorder, coefficient, 0));
+
+        bordersAdded = true;
+    }
+}
+
+void ForceDirectedGraphLayouter::setBorderPositions()
+{
+    // TODO: move this to the embedding, so that it can be called from java
+    double distance = 100;
+	double top = DBL_MAX, bottom = DBL_MIN;
+	double left = DBL_MAX, right = DBL_MIN;
+
+    const std::vector<IBody *>& bodies = embedding.getBodies();
+	for (int i = 0; i < bodies.size(); i++) {
+		IBody *body = bodies[i];
+
+        if (!dynamic_cast<WallBody *>(body)) {
+		    Pt position = body->getPosition();
+		    Rs size = body->getSize();
+
+            top = std::min(top, position.y);
+		    bottom = std::max(bottom, position.y + size.height);
+		    left = std::min(left, position.x);
+		    right = std::max(right, position.x + size.width);
+        }
+	}
+
+    topBorder->setPosition(top - distance);
+    bottomBorder->setPosition(bottom + distance);
+    leftBorder->setPosition(left - distance);
+    rightBorder->setPosition(right + distance);
+}
+
+void ForceDirectedGraphLayouter::addElectricRepulsions()
 {
     // TODO: move this to the embedding, so that it can be called from java
     const std::vector<IBody *>& bodies = embedding.getBodies();
@@ -1061,27 +1087,36 @@ void ForceDirectedGraphLayouter::addElectricalRepeals()
 		    if (!dynamic_cast<WallBody *>(body1) &&
 			    !dynamic_cast<WallBody *>(body2) &&
 			    body1->getVariable() != body2->getVariable())
-			    embedding.addForceProvider(new ElectricRepeal(body1, body2));
+			    embedding.addForceProvider(new ElectricRepulsion(body1, body2));
 	    }
 }
 
 void ForceDirectedGraphLayouter::addBasePlaneSprings()
 {
     const std::vector<IBody *>& bodies = embedding.getBodies();
-    for (int i = 0; i < bodies.size(); i++)
-		embedding.addForceProvider(new BasePlaneSpring(bodies[i], 5, 0));
+    for (int i = 0; i < bodies.size(); i++) {
+  		IBody *body = bodies[i];
+
+        if (!dynamic_cast<WallBody *>(body))
+    		embedding.addForceProvider(new BasePlaneSpring(body, 5, 0));
+    }
 }
 
 void ForceDirectedGraphLayouter::ensureFinalized()
 {
     if (!finalized) {
-        addElectricalRepeals();
+        addElectricRepulsions();
 
         if (threeDimensions)
             addBasePlaneSprings();
 
-        // TODO: broken embedding.addForceProvider(new Friction());
+        // TODO: this is broken: embedding.addForceProvider(new Friction());
         embedding.addForceProvider(new Drag());
+
+        setRandomPositions();
+
+        if (bordersAdded)
+            setBorderPositions();
 
         finalized = true;
     }
@@ -1116,9 +1151,9 @@ void ForceDirectedGraphLayouter::addMovableNode(cModule *mod, int width, int hei
 
 void ForceDirectedGraphLayouter::addFixedNode(cModule *mod, int x, int y, int width, int height)
 {
-    IBody *body = new Body(new Variable(Pt(x, y, NaN)), Rs(width, height));
+    hasFixedNode = true;
+    IBody *body = new Body(new PointConstrainedVariable(Pt(x, y, NaN)), Rs(width, height));
     addBody(mod, body);
-    embedding.addForceProvider(new PointConstraint(body, 1, Pt(x, y, 0)));
 }
 
 void ForceDirectedGraphLayouter::addAnchoredNode(cModule *mod, const char *anchorname, int offx, int offy, int width, int height)
@@ -1129,54 +1164,53 @@ void ForceDirectedGraphLayouter::addAnchoredNode(cModule *mod, const char *ancho
 
 void ForceDirectedGraphLayouter::addEdge(cModule *from, cModule *to, int len)
 {
-    embedding.addForceProvider(new Spring(findBody(from), findBody(to), 1, 50));
+    embedding.addForceProvider(new Spring(findBody(from), findBody(to), 1, springReposeLength));
 }
 
 void ForceDirectedGraphLayouter::addEdgeToBorder(cModule *from, int len)
 {
-    // TODO: no positions yet, so no border can be added?!
     ensureBorders();
 
-    // TODO: which border? maybe delay until the prelayout position is available and find closest
-    const std::vector<IBody *>& bodies = embedding.getBodies();
-    for (int i = 0; i < bodies.size(); i++) {
-		IBody *border = dynamic_cast<WallBody *>(bodies[i]);
+    IBody *body = findBody(from);
 
-        if (border) {
+    std::vector<AbstractSpring *> springs;
+    springs.push_back(new VerticalSpring(topBorder, body));
+    springs.push_back(new VerticalSpring(bottomBorder, body));
+    springs.push_back(new HorizonalSpring(leftBorder, body));
+    springs.push_back(new HorizonalSpring(rightBorder, body));
+
+    embedding.addForceProvider(new ShortestSpring(springs));
+    // TODO: which border? maybe delay until the prelayout position is available and find closest
+//    const std::vector<IBody *>& bodies = embedding.getBodies();
+//    for (int i = 0; i < bodies.size(); i++) {
+//		IBody *border = dynamic_cast<WallBody *>(bodies[i]);
+
+//        if (border) {
             // TODO: use vertical or horizontal depending on wall type
-            embedding.addForceProvider(new VerticalSpring(findBody(from), border));
-            break;
-        }
-    }
+//            embedding.addForceProvider(new VerticalSpring(findBody(from), border));
+ //           break;
+  //      }
+   // }
 }
 
 void ForceDirectedGraphLayouter::execute()
 {
-    ensureFinalized();
-
     if (starTreeEmbedding)
         setStarTreePositions(40);
 
-    setRandomPositions();
-    //ensureBorders();
-
-    debugDraw(0);
+    debugDraw();
 
     if (forceDirectedEmbedding) {
-        //embedding.debug = 3;
-	    embedding.minTimeStep = 0.01;
-	    embedding.maxTimeStep = 10;
-	    embedding.minFrictionCoefficient = 0.5;
-	    embedding.maxAccelerationError = 10;
-        embedding.inspected = interp && canvas;
+        ensureFinalized();
 
-	    //embedding.maxFrictionCoefficient = 5;
+        //embedding.debug = 3;
+        embedding.inspected = interp && canvas;
 
         if (embedding.inspected) {
             int step = 0;
             while (!embedding.getFinished()) {
-                debugDraw(step++);
                 embedding.embed();
+                debugDraw();
             }
         }
         else
@@ -1185,14 +1219,16 @@ void ForceDirectedGraphLayouter::execute()
 
     if (interp && canvas)
     {
-        Tcl_VarEval(interp, canvas," delete all\n",
+        Tcl_VarEval(interp, canvas," delete node\n",
+                            canvas," delete edge\n",
                             canvas," config -scrollregion {0 0 1 1}\n",
                             canvas," xview moveto 0\n",
-                            canvas," yview moveto 0\n", NULL);
+                            canvas," yview moveto 0\n",
+                            NULL);
     }
 
-    // TODO: normalize only when there are no fixed nodes!
-    normalize();
+    if (!hasFixedNode)
+        normalize();
 }
 
 void ForceDirectedGraphLayouter::getNodePosition(cModule *mod, int& x, int& y)
@@ -1202,15 +1238,11 @@ void ForceDirectedGraphLayouter::getNodePosition(cModule *mod, int& x, int& y)
     y = pt.y;
 }
 
-void ForceDirectedGraphLayouter::debugDraw(int step)
+void ForceDirectedGraphLayouter::debugDraw()
 {
     if (TCL_ERROR==Tcl_VarEval(interp, canvas, " delete all", NULL)) return;
     const char *colors[] = {"black","red","blue","green","yellow","cyan","purple","darkgreen"};
     char coords[100];
-
-    // TODO:
-    //sprintf(coords,"%lg %lg %lg %lg", box.x1, box.y1, box.x2, box.y2);
-    //Tcl_VarEval(interp, canvas, " create rect ", coords, " -outline black -tag box", NULL);
 
     const std::vector<IBody *>& bodies = embedding.getBodies();
 	for (int i = 0; i < bodies.size(); i++) {
@@ -1233,7 +1265,7 @@ void ForceDirectedGraphLayouter::debugDraw(int step)
 
         sprintf(coords,"%g %g %g %g", pt.x, pt.y, pt.x + rs.width, pt.y + rs.height);
         const char *color = "black";//colors[n.color % (sizeof(colors)/sizeof(char*))];
-        Tcl_VarEval(interp, canvas, " create rect ",coords," -outline ",color," -tag node", NULL);
+        Tcl_VarEval(interp, canvas, " create rect ", coords, " -outline ", color, " -tag node", NULL);
     }
 
     const std::vector<IForceProvider *>& forceProviders = embedding.getForceProviders();
@@ -1245,13 +1277,13 @@ void ForceDirectedGraphLayouter::debugDraw(int step)
             Pt pt2 = spring->getBody2()->getPosition();
             sprintf(coords,"%g %g %g %g", pt1.x, pt1.y, pt2.x, pt2.y);
             const char *color = "black";//colors[e.from->color % (sizeof(colors)/sizeof(char*))];
-            Tcl_VarEval(interp, canvas, " create line ",coords," -fill ",color,NULL);
+            Tcl_VarEval(interp, canvas, " create line ", coords, " -fill ", color, " -tag edge", NULL);
         }
     }
 
     std::stringstream info;
     embedding.writeDebugInformation(info);
     Tcl_VarEval(interp, canvas, " raise node", NULL);
-    Tcl_VarEval(interp, "layouter_debugDraw_finish ", canvas," {after step ",info.str().c_str(),"}", NULL);
-//    _sleep(100);
+    Tcl_VarEval(interp, "layouter_debugDraw_finish ", canvas, " {", info.str().c_str(), "} ", NULL);
+    _sleep(debugWaitTime);
 }
