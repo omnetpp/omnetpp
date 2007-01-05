@@ -18,8 +18,11 @@ ISSUES WITH C++/JAVA INTEGRATION:
     2. if finalize() methods of wrapper objects are allowed to delete
        their C++ objects (swigCMemOwn=true), then sane memory management
        is very hard. One wrapper object may delete the C++ object while
-       other wrappers with the same CPtr still exist. Users of the lib
-       must be extremely cautius to prevent crashes in their apps!
+       other wrappers with the same CPtr still exist. In highly dynamic 
+       applications (where several objects get created, passed around
+       and deleted, possibly by both the C++ and Java code, users
+       must be extremely cautius in writing the Java code to prevent 
+       crashes!
 
    How to guarantee Java object identity (ie at most one Java wrapper per
    C++ object)? There are several methods, all with some difficulty:
