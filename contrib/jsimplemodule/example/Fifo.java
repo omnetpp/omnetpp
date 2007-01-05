@@ -15,12 +15,10 @@ public class Fifo extends JSimpleModule
         queue = new cQueue("queue");
         qlenVector = new cOutVector("queue length");
 
-        // Set up the initial number of jobs in the queue
-        int index = this.getIndex(); // get the index no of this fifo queue
-
+        // add some jobs to the queue
         int n = getParentModule().par("queueNumInitialJobs").longValue();
-        for (int i=0; i<n; ++i) {
-            cMessage msg = new cMessage("job-"+index+"-"+i);
+        for (int i=0; i<n; i++) {
+            cMessage msg = new cMessage("job-"+i);
             msg.setTimestamp();
             scheduleAt(simTime(), msg);
         }

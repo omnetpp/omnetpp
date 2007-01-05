@@ -1,15 +1,15 @@
 
 module Net1
     submodules:
-        a: JSimpleModule;
+        tic: JSimpleModule;
             parameters:
-                javaClass = "Tic";
-        b: JSimpleModule;
+                javaClass = "Txc";
+        toc: JSimpleModule;
             parameters:
-                javaClass = "Tic";
+                javaClass = "Txc";
     connections:
-        a.out++ --> b.in++;
-        a.in++ <-- b.out++;
+        tic.out++ --> toc.in++;
+        tic.in++ <-- toc.out++;
 endmodule
 
 network net1 : Net1
@@ -20,7 +20,7 @@ module Net2
     submodules:
         src: JSimpleModule;
             parameters:
-                javaClass = "Src";
+                javaClass = "Source";
             display: "i=block/source";
         sink: JSimpleModule;
             parameters:
@@ -40,7 +40,7 @@ module Net3
     submodules:
         src: JSimpleModule;
             parameters:
-                javaClass = "Src";
+                javaClass = "Source";
             display: "i=block/source";
         fifo: JSimpleModule;
             parameters:
