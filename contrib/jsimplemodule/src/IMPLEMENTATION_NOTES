@@ -15,11 +15,11 @@ ISSUES WITH C++/JAVA INTEGRATION:
    object every time a C++ method returns an object. This has drawbacks:
     1. one cannot use "==" with wrapper objects, the CPtrs have to be
        compared instead;
-    2. if finalize() of wrapper objects can delete the C++ objects
-       (swigCMemOwn=true), then sane memory management is very hard.
-       One wrapper object may delete the C++ object while other wrappers
-       with the same CPtr still exist. One must be extremely cautius to
-       prevent CRASH!
+    2. if finalize() methods of wrapper objects are allowed to delete
+       their C++ objects (swigCMemOwn=true), then sane memory management
+       is very hard. One wrapper object may delete the C++ object while
+       other wrappers with the same CPtr still exist. Users of the lib
+       must be extremely cautius to prevent crashes in their apps!
 
    How to guarantee Java object identity (ie at most one Java wrapper per
    C++ object)? There are several methods, all with some difficulty:
@@ -54,6 +54,16 @@ ISSUES WITH C++/JAVA INTEGRATION:
         that object ID matches.
         REQUIRES MODIFICATION TO OMNET++ (adding ID to cPolymorphic.)
 
+     3. BEST: we can get by with only ONE BIT in the C++ object: the
+        hasJavaWrapper bit. The constructor of the wrapper has to set
+        it to 1 (at the same time the wrapper is put into the hashtable),
+        and finalize() should clear it. New C++ objects are created with
+        this bit set to false.
+
+        If C++ code can delete the object behind the back of the Java code,
+        the C++ destructor still has to be modified to remove invalidate
+        the wrapper object and remove it from the hash table.
+
 2. Polymorphic return types. When a method returns an object, we create
    it into a Java proxy object that corresponds to its actual type,
    not the declared return type of the method. We derive the Java class
@@ -62,23 +72,7 @@ ISSUES WITH C++/JAVA INTEGRATION:
    TOO COSTLY? (Class.forName() each time we return an object!) Java object
    identity would help (less frequent need for wrapping).
 
-
-Rationale: Implementing one-to-one mapping of C++ objects to Java wrapper
-   objects is not done, because it would not be possible without modifying
-   the C++ base class, and the extension could not be run on an unmodified
-   OMNeT++ installation. (If we accepted modification of the C++ base class,
-   then storing a jobject reference in it would be the best solution. One
-   might think that by introducing a global hash table [to store cptr-to-
-   wrapperobject mapping] we could spare the need for modifying the C++ base
-   class, but that doesn't work in practice. Given a CPtr, we cannot tell if
-   it is still the same object, or a new object allocated on the same memory
-   location after the original object was destroyed. This problem could only
-   be resolved either with help from the C++ destructor (it would remove
-   the entry from the hashtable), or by introducing a unique object ID into
-   C++ objects.)
-
-
-Rationale: immediately creating the wrapper object of the right (dynamic)
+   Immediately creating the wrapper object of the right (dynamic)
    type would cause a high runtime cost in every method that returns an object.
    The code would have to invoke className() on the C++ object to get the
    C++ class name, prefix it with "org.omnetpp.simkernel." to get a fully
