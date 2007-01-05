@@ -116,17 +116,9 @@ ISSUES WITH C++/JAVA INTEGRATION:
    not the declared return type of the method. We derive the Java class
    as "org.omnetpp.simkernel.<cplusplus-classname>".
 
-   TOO COSTLY? (Class.forName() each time we return an object!) Java object
-   identity would help (less frequent need for wrapping).
-
-   Immediately creating the wrapper object of the right (dynamic)
-   type would cause a high runtime cost in every method that returns an object.
-   The code would have to invoke className() on the C++ object to get the
-   C++ class name, prefix it with "org.omnetpp.simkernel." to get a fully
-   qualified Java class name, then invoke Class.forName() and newInstance().
-   This is far more costly than a plain "new cObject(cPtr, false)" call.
-   Caching of the Java Class would alleviate the pain, but would require
-   modification to the underlying C++ classes, i.e. this Java extension would
-   not be able to run on an unmodified OMNeT++ installation.
+   However, doing this for every method may be too costly (JNI call to get
+   the real C++ type, following string manipulation and Class.forName()
+   instead of a plain "new cObject(cPtr, false)" call), especially as most
+   wrappers a probably not used polymorphically in the code afterwards.
 
    TODO: cMessage.castFrom() example
