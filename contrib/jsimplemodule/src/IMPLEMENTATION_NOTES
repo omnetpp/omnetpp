@@ -32,3 +32,28 @@ PLANNED changes to normal SWIG proxy object behaviour (NOT WORKING YET!):
    TOO COSTLY? (Class.forName() each time we return an object!) Java object
    identity would help (less frequent need for wrapping).
 
+
+Rationale: Implementing one-to-one mapping of C++ objects to Java wrapper
+   objects is not done, because it would not be possible without modifying
+   the C++ base class, and the extension could not be run on an unmodified
+   OMNeT++ installation. (If we accepted modification of the C++ base class,
+   then storing a jobject reference in it would be the best solution. One
+   might think that by introducing a global hash table [to store cptr-to-
+   wrapperobject mapping] we could spare the need for modifying the C++ base
+   class, but that doesn't work in practice. Given a CPtr, we cannot tell if
+   it is still the same object, or a new object allocated on the same memory
+   location after the original object was destroyed. This problem could only
+   be resolved either with help from the C++ destructor (it would remove
+   the entry from the hashtable), or by introducing a unique object ID into
+   C++ objects.)
+
+
+Rationale: immediately creating the wrapper object of the right (dynamic)
+   type would cause a high runtime cost in every method that returns an object.
+   The code would have to invoke className() on the C++ object to get the
+   C++ class name, prefix it with "org.omnetpp.simkernel." to get a fully
+   qualified Java class name, then invoke Class.forName() and newInstance().
+   This is far more costly than a plain "new cObject(cPtr, false)" call.
+   Caching of the Java Class would alleviate the pain, but would require
+   modification to the underlying C++ classes, i.e. this Java extension would
+   not be able to run on an unmodified OMNeT++ installation.
