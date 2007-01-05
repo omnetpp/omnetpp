@@ -34,9 +34,7 @@ public class Fifo extends JSimpleModule
     }
 
     protected void handleMessage(cMessage msg) {
-
-        msg.swigDisown(); //XXX
-        if (msg.isSameAs(endServiceMsg)) {
+        if (msg==endServiceMsg) {
             //
             // Departure
             //
@@ -46,7 +44,7 @@ public class Fifo extends JSimpleModule
                 msgServiced = null;
             }
             else {
-                msgServiced = cMessage.convertFrom(queue.pop());
+                msgServiced = cMessage.castFrom(queue.pop());
                 double serviceTime = serviceRequirement(msgServiced);
                 scheduleAt(simTime()+serviceTime, endServiceMsg);
             }

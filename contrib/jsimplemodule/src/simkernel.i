@@ -7,7 +7,8 @@
 // for debugging:
 #include <stdio.h>
 //#define LOG_JNI_CALL() (void)0
-#define LOG_JNI_CALL() {printf("DEBUG: entered JNI method %s\n", __FUNCTION__);fflush(stdout);}
+#define LOG_JNI_CALL() {printf("DEBUG: entered JNI method %s, jarg1=%lx\n", __FUNCTION__, (long)jarg1);fflush(stdout);}
+jlong jarg1 = -1; //fallback for LOG_JNI_CALL() in JNI functions with no jarg1 arg
 %}
 
 %pragma(java) jniclasscode=%{
@@ -120,6 +121,7 @@
 %}
 
 %typemap(javaout) SWIGTYPE, SWIGTYPE&, SWIGTYPE *, SWIGTYPE [], SWIGTYPE (CLASS::*) {
+//    System.gc();  //FIXME
     long cPtr = $jnicall;
     if (cPtr == 0)
       return null;
@@ -582,7 +584,9 @@ cSimulation *getSimulation();
 
   private void doHandleMessage() {
     cMessage msg = retrieveMsgToBeHandled();
+//    System.gc();  //FIXME
     handleMessage(msg);
+//    System.gc();  //FIXME
   }
 
   protected void handleMessage(cMessage msg) {
