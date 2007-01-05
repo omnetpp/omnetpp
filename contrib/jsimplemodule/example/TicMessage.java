@@ -4,7 +4,11 @@ class TicMessage extends JMessage {
 
     protected int counter = 0;
 
-    int getTimesRead() {
+    public TicMessage(String name) {
+        super(name);
+    }
+
+    public int getTimesRead() {
         return counter++;
     }
 
