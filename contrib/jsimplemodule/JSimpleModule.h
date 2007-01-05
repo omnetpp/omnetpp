@@ -11,9 +11,11 @@
  */
 class JSimpleModule : public cSimpleModule
 {
-  protected:
+  public:
     static JavaVM *vm;
     static JNIEnv *jenv;
+
+  protected:
     jobject javaObject;
     jmethodID numInitStagesMethod;
     jmethodID initializeStageMethod;
