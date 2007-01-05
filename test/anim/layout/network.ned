@@ -1050,3 +1050,43 @@ network complex
         chain_comp[chainNodes/2].in++ <-- mesh_node[height*width-1].right;
         mesh_node[0].left <-- hub.out++;
 }
+
+network FixedBox
+{
+    submodules:
+        node0: Node {
+            parameters:
+                @display("p=100,100");
+        };
+        node1: Node {
+            parameters:
+                @display("p=200,100");
+        };
+        node2: Node;
+        node3: Node;
+    connections allowunconnected:
+        node0.in++ <-- node1.out++;
+        node1.in++ <-- node2.out++;
+        node2.in++ <-- node3.out++;
+        node3.in++ <-- node0.out++;
+}
+
+network Border
+{
+    parameters:
+        double numNodes = default(20) @prompt("Number of nodes");
+    gates:
+        input in[1];
+        output out[1];
+    submodules:
+        comp[numNodes]: Node {
+            parameters:
+                @display("i=ball2");
+        };
+    connections allowunconnected:
+        for i=0..numNodes-2 {
+            comp[i].out++ --> comp[i+1].in++;
+        };
+        comp[0].out++ --> out++;
+        comp[numNodes/2].in++ <-- in++;
+}
