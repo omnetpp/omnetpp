@@ -273,7 +273,7 @@ three ways:
 
   a) subclassing JMessage
   b) adding cPar objects to cMessages.
-  c) using C++ messages classes (defined in msg files)
+  c) using C++ message classes (defined in msg files)
 
 We'll look at each.
 
@@ -315,6 +315,13 @@ problem, only it is not very convenient to access its contents from C++
 code using dup(), it will clone Java peer object too, by calling back its
 clone() method via JNI. Thus it is recommended to implement clone() in
 the Java class.
+
+
+CPAR. When a message's contents must be accessed ...
+
+
+
+USING C++ MESSAGE CLASSES. ....
 
 
 
