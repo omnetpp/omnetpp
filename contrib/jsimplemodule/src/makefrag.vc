@@ -21,7 +21,7 @@ DIST_SRC_FILES = \
   JSimpleModule.ned \
   makefrag.vc \
   simkernel.i \
-  memorymgmt_plain.i
+  memorymgmt_plain.i \
   memorymgmt_msg_one2one.i \
   patchcastfrom.pl \
   patchownership.pl \
