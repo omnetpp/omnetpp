@@ -32,8 +32,8 @@
 %include "std_map.i"    // cXMLElement
 %include "std_vector.i" // cXMLElement
 
-//%include "memorymgmt_plain.i"
-%include "memorymgmt_msg_one2one.i"
+%include "memorymgmt_plain.i"
+//%include "memorymgmt_msg_one2one.i"
 
 #pragma SWIG nowarn=516;  // "Overloaded method x ignored. Method y used."
 

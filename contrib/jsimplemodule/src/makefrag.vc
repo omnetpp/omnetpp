@@ -46,6 +46,7 @@ javafiles:
 dist: $(TARGET) javafiles
 	-mkdir $(DISTDIR) >nul 2>nul
 	$(JAR) cvf $(DISTDIR)/simkernel.jar -C bin org
+	$(JAR) cvf $(DISTDIR)/simkernel-src.jar -C java org
 	copy *.cc $(DISTDIR)
 	copy *.h $(DISTDIR)
 	copy JSimpleModule.ned $(DISTDIR)
