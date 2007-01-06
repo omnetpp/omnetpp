@@ -262,9 +262,16 @@ not be touched.
    modification to the underlying C++ classes, i.e. this Java extension would
    not be able to run on an unmodified OMNeT++ installation.
 
-SUBCLASSING MESSAGES.
 
+EXTENDING MESSAGES. In most simulation scenarios, messages need to carry
+extra data in addition to the built-in fields (message kind, length, etc).
+This can be achieved in three ways:
 
+  a) adding cPar objects to cMessages.
+  b) subclassing JMessage
+  c) using C++ messages classes (defined in msg files)
+
+We'll look at each.
 
 
 4. Compiling the Java code and running the simulation
