@@ -1,3 +1,16 @@
+//
+// Simple memory management: 
+//    no object identity, no polymorphic return types, explicit deletion.
+//
+// swigCMemOwn got removed, Java proxy objects never delete anything in 
+// finalize(). All C++ objects have to be explicitly deallocated:
+// msg.delete(), queue.delete().
+//
+// Object identity testing can be done via one.sameAs(other).
+//
+// Casts can be done with the castFrom() method: msg = cMessage.castFrom(obj).
+//
+
 %typemap(javabody) SWIGTYPE %{
   private long swigCPtr;
 
