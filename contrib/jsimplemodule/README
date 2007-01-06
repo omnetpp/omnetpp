@@ -36,7 +36,8 @@ Contents
 1. Building the simulation executable
 2. Writing NED files
 3. Writing Java-based simple modules
-4. Compiling the Java code and running the simulation
+4. Extending messages
+5. Compiling the Java code and running the simulation
 
 
 1. Building the simulation executable
@@ -109,9 +110,9 @@ that will properly solve the issue of adding gates and parameters.
 ---------------------------------
 
 FOR THE IMPATIENT: (1) subclass from JSimpleModule not cSimpleModule;
-(2) subclass from JMessage not cMessage; (3) use msg.sameAs(timeoutMsg)
-instead of msg==timeoutMsg; (4) write cMessage.castFrom(obj) instead of
-(cMessage)obj; (5) objects need to be explicitly deleted with their delete()
+(2) subclass from JMessage not cMessage; (3) usemsg.sameAs(timeoutMsg)
+instead of msg==timeoutMsg; (4) writecMessage.castFrom(obj) instead of
+(cMessage)obj; (5) objects need to beexplicitly deleted with their delete()
 methods.
 
 
@@ -150,7 +151,7 @@ cOutVector, etc. Java classes are just wrappers around the corresponding
 C++ classes. They don't have any data members except for a pointer to the
 underlying C++ object, and delegate method calls into C++. When you write
 
-   cMessage msg = new cMessage();
+  cMessage msg = new cMessage();
 
 in Java, the cMessage Java class will create an underlying cMessage C++
 object via a JNI call, and store its pointer. When you invoke methods on
@@ -177,15 +178,15 @@ delete() method when they are no longer needed.
 
 Messages that are no longer needed should be disposed of:
 
-    msg.delete();
+  msg.delete();
 
 Similarly, a
 
-   cQueue queue = new cQueue();
+  cQueue queue = new cQueue();
 
 line without a corresponding
 
-   queue.delete();
+  queue.delete();
 
 is a memory leak.
 
@@ -210,9 +211,9 @@ are the same, but rather, the underlying C++ pointers have to be compared
 (getBaseCPtr() method). There is also a convenience method, sameAs(), which
 does that.
 
-   if (msg == timeoutMsg) ... // WRONG
-   if (msg.getBaseCPtr() == timoutMsg.getBaseCPtr())) ... // correct
-   if (msg.sameAs(timeoutMsg)) ... // also correct (does the same as above)
+  if (msg == timeoutMsg) ... // WRONG
+  if (msg.getBaseCPtr() == timoutMsg.getBaseCPtr())) ... // correct
+  if (msg.sameAs(timeoutMsg)) ... // also correct (does the same as above)
 
 This requires some attention during coding to avoid bad surprises.
 
@@ -263,18 +264,61 @@ not be touched.
    not be able to run on an unmodified OMNeT++ installation.
 
 
-EXTENDING MESSAGES. In most simulation scenarios, messages need to carry
-extra data in addition to the built-in fields (message kind, length, etc).
-This can be achieved in three ways:
+4. Extending Messages
+---------------------
 
-  a) adding cPar objects to cMessages.
-  b) subclassing JMessage
+In most simulation scenarios, messages need to carry extra data in addition
+to the built-in fields (message kind, length, etc). This can be achieved in
+three ways:
+
+  a) subclassing JMessage
+  b) adding cPar objects to cMessages.
   c) using C++ messages classes (defined in msg files)
 
 We'll look at each.
 
+SUBCLASSING JMESSAGE. Messages whose contents only need to be accessed from
+Java code can be written in Java. However, a naive approach to subclass
+the cMessage Java class is doomed to fail:
 
-4. Compiling the Java code and running the simulation
+  public class cMessageExt extends cMessage {  // WRONG!
+
+By instantiating and filling in the fields of cMessageExt you only add data
+to the particular wrapper object: when the message arrives at another module,
+a different (plain cMessage) wrapper will be created for the C++ object,
+and all data in the original cMessageExt Java object are lost. Clearly, a
+different approach is needed.
+
+JMessage extends the cMessage C++ class with a jobject reference to its
+Java peer object (we can no longer say "wrapper" here). Once a JMessage is
+created in Java, the underlying C++ object will get hold of the Java object
+and not let it go. Thus it cannot be garbage collected, and when the
+message arrives at another module, a reference to the Java object can be
+retrieved from the C++ object. When JMessage gets deleted (in C++ with
+"delete msg", or in Java with "msg.delete()"), the C++ object releases the
+Java reference so the Java peer object can be garbage collected.
+
+JMessage can be subclassed as any Java class:
+
+  public class MyMessage extends JMessage {  // correct
+     ...
+  }
+
+And when a message of that type arrives at a module, its contents can be
+accessed using JMessage.castFrom():
+
+  MyMessage myMsg = (MyMessage) JMessage.castFrom(msg);
+
+Note that a JMessage can travel through C++ simple modules without any
+problem, only it is not very convenient to access its contents from C++
+(that would need JNI). When a JMessage gets duplicated somewhere in the C++
+code using dup(), it will clone Java peer object too, by calling back its
+clone() method via JNI. Thus it is recommended to implement clone() in
+the Java class.
+
+
+
+5. Compiling the Java code and running the simulation
 -----------------------------------------------------
 
 When invoking the Java compiler, make sure that the provided simkernel.jar
