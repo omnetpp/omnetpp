@@ -1,6 +1,7 @@
 
 Notes about SWIG:
 
+Note to "19.4.3 Java proxy classes":
 Every wrapper object contains SEVERAL swigCPtrs, one for each subclass.
 With single inheritance they are all the same values, but with multiple
 inheritance, they may be different (as different base classes may be at
@@ -16,12 +17,12 @@ ISSUES WITH C++/JAVA INTEGRATION:
    for C++ objects returned from wrapped functions (by default they are
    returned with swigCMemOwn=false, which assumes that the C++ code will
    delete them.) However, it provides no straightforward way of giving
-   ownership of object passed as method arguments to the C++ code.
+   ownership of objects passed as method arguments to the C++ code.
 
    ....
 
 
-   Another way is going for explicit memory management (i.e. requiring the
+   Another way is going for EXPLICIT MEMORY MANAGEMENT (i.e. requiring the
    delete() method of the wrapper to be explicitly called when the C++ object
    is not needed any more). swigCMemOwn would always be set to false, or could
    even be removed from generated code. The code is too lengthy to quote here,
