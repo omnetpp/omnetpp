@@ -47,8 +47,8 @@ simkernel_wrap.cc SimkernelJNI_registerNatives.cc : simkernel.i Makefile.vc $(OM
 	$(PERL) -i.bak -pe "s/JNICALL +//g" simkernel_wrap.cc
 	$(PERL) -i.bak -pe "s/jenv;/jenv; LOG_JNI_CALL();/g" simkernel_wrap.cc
 	$(PERL) registernatives.pl $(JAVADIR)/SimkernelJNI.java
-	rem $(PERL) patchownership.pl $(JAVADIR)
-	rem $(PERL) patchcastfrom.pl $(JAVADIR)
+	@rem $(PERL) patchownership.pl $(JAVADIR)
+	@rem $(PERL) patchcastfrom.pl $(JAVADIR)
 
 SimkernelJNI_registerNatives.obj: SimkernelJNI_registerNatives.cc
 	$(CXX) -c $(COPTS) /Tp SimkernelJNI_registerNatives.cc
@@ -57,7 +57,7 @@ simkernel_wrap.obj: simkernel_wrap.cc
 	$(CXX) -c $(COPTS) /Tp simkernel_wrap.cc
 
 javafiles:
-	copy ProxyObjectMap.java.in java\org\omnetpp\simkernel\ProxyObjectMap.java
+	@rem copy ProxyObjectMap.java.in java\org\omnetpp\simkernel\ProxyObjectMap.java
 	dir /b/s java\*.java >listfile.tmp
 	-rd /s/q bin 2>nul
 	mkdir bin >nul

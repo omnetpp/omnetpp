@@ -1,11 +1,14 @@
 @echo off
-: *** developer's copy of the run script ***
 set JAVA_HOME=%TOOLS_DIR%\JDK1.5.0
 PATH=%PATH%;%JAVA_HOME%\jre\bin\client;%JAVA_HOME%\bin
-set CLASSPATH=%CLASSPATH%;..\src\distrib\simkernel.jar;.\classes
+set MODEL_DIR=%~dp0\..\example
+set CLASSPATH=%CLASSPATH%;%~dp0\distrib\simkernel.jar;%MODEL_DIR%\classes
+echo CLASSPATH = %CLASSPATH%
+echo.
 
+cd %MODEL_DIR%
 mkdir classes >nul 2>nul
 del classes\*.class
 javac *.java -d classes || exit 1
 
-..\src\src.exe
+%~dp0\src.exe

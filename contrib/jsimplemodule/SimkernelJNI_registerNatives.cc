@@ -1,3 +1,5 @@
+// generated using registernatives.pl
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <jni.h>
