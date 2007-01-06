@@ -1,3 +1,13 @@
+/*
+    %typemap(javabody) SWIGTYPE %{ ... %}
+    %typemap(javabody_derived) SWIGTYPE %{ ... %}
+    %typemap(javaconstruct) SWIGTYPE { ... }
+    %typemap(javafinalize) SWIGTYPE %{ ... %}
+    %typemap(javadestruct, methodname="delete") SWIGTYPE { ... }
+    %typemap(javadestruct_derived, methodname="delete") SWIGTYPE { ... }
+
+*/
+
 //
 // Provides Java object identity for cMessages, by storing a global weak
 // reference to the Java proxy (wrapper) object in cMessage's contextPointer().
