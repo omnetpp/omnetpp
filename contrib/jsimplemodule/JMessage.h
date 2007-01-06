@@ -27,6 +27,11 @@ class JMessage : public cMessage
     void swigSetJavaPeer(jobject msgObject);
     jobject swigJavaPeer() {return javaPeer;}
     static jobject swigJavaPeerOf(cObject *object);
+
+    int getIntJavaField(const char *fieldName) const;
+    void setIntJavaField(const char *fieldName, int value);
+    ...
+    // info() should return Java's toString()
 };
 
 #endif

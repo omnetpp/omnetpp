@@ -1,0 +1,14 @@
+#!/bin/sh
+#
+# Modify this script file according to your environment
+#
+
+#export JAVA_HOME=$(HOME)/jdk1.6.0
+export PATH=$PATH:$JAVA_HOME/jre/bin/i386/client:$JAVA_HOME/bin
+export CLASSPATH=$CLASSPATH:$JAVA_HOME/jre/lib/rt.jar:../simkernel.jar:./classes
+
+rm -rf classes
+mkdir classes
+javac *.java -d classes || exit 1
+
+./yoursimulation
