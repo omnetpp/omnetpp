@@ -61,6 +61,7 @@ for ($i=0; $i<$n; $i++) {
 
 # write C++ file
 open(OUT, ">$cppfile") || die "cannot open $cppfile";
+print OUT "// generated using registernatives.pl\n\n";
 print OUT "#include <stdio.h>\n";
 print OUT "#include <stdlib.h>\n";
 print OUT "#include <jni.h>\n\n";

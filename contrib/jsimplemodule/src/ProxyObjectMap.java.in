@@ -6,6 +6,8 @@ import java.lang.ref.WeakReference;
 /**
  * Hashtable to help maintain one-to-one relationship of C++ objects and
  * their SWIG-generated Java proxy objects.
+ *
+ * Currently not in use.
  */
 class ProxyObjectMap {
 
