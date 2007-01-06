@@ -20,8 +20,33 @@ ISSUES WITH C++/JAVA INTEGRATION:
    returned with swigCMemOwn=false, which assumes that the C++ code will
    delete them.) However, it provides no straightforward way of giving
    ownership of objects passed as method arguments to the C++ code.
+   So, there is nothing like
 
-   ....
+   %feature("javadisown",args="obj") FooContainer::insert; //not supported
+
+XXXXX
+----------
+Nope. Typemaps will match by the name of the parameter name in addition
+to the type. So if you have:
+
+%typemap(javain) Foo *obj "..."
+void insert(Foo* obj);
+void remove(Foo* object);
+
+the typemap will only apply to types Foo *obj, ie the parameter in the
+insert method. Likewise you can match on the return type, using the
+method name to provide exact matching:
+
+%typemap(javaout) void FooContainer::insert { ... }
+
+struct Queue {
+  void insert(Foo* obj);
+  void remove(Foo* object);
+};
+
+-----------
+
+   %typemap(javaout) void Queue::insert  { obj.disOwn(); $jnicall };
 
 
    Another way is going for EXPLICIT MEMORY MANAGEMENT (i.e. requiring the
