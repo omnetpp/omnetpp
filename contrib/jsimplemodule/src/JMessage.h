@@ -40,6 +40,7 @@ class JMessage : public cMessage
     jlong getLongJavaField(const char *fieldName) const;
     jfloat getFloatJavaField(const char *fieldName) const;
     jdouble getDoubleJavaField(const char *fieldName) const;
+    std::string getStringJavaField(const char *fieldName) const;
 
     void setBooleanJavaField(const char *fieldName, jboolean value);
     void setByteJavaField(const char *fieldName, jbyte value);
@@ -49,6 +50,7 @@ class JMessage : public cMessage
     void setLongJavaField(const char *fieldName, jlong value);
     void setFloatJavaField(const char *fieldName, jfloat value);
     void setDoubleJavaField(const char *fieldName, jdouble value);
+    void setStringJavaField(const char *fieldName, const char *value);
 
     //FIXME info() should return Java's toString()
 

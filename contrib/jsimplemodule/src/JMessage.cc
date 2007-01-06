@@ -133,3 +133,24 @@ GETTER_SETTER(Long,    jlong,    "J")
 GETTER_SETTER(Float,   jfloat,   "F")
 GETTER_SETTER(Double,  jdouble,  "D")
 
+//TODO methods for wrapping/unwrapping strings
+#define JSTRING "Ljava/lang/String;"
+
+/*
+std::string JMessage::getStringJavaField(const char *fieldName) const
+{
+   jmethodID methodID; jfieldID fieldID;
+   getMethodOrField(fieldName, "get", "()" JSTRING, JSTRING, methodID, fieldID);
+   jobject str = checkException(methodID ? JENV->CallObjectMethod(javaPeer, methodID) : JENV->GetObjectField(javaPeer, fieldID));
+   ...
+}
+
+void JMessage::setStringJavaField(const char *fieldName, const char *value)
+{
+   jmethodID methodID; jfieldID fieldID;
+   getMethodOrField(fieldName, "set", "(" JSTRING ")V", JSTRING, methodID, fieldID);
+   jobject str = ...;
+   methodID ? JENV->CallObjectMethod(javaPeer, methodID, str) : JENV->SetObjectField(javaPeer, fieldID, str);
+   checkExceptions();
+}
+*/
