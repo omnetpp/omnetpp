@@ -102,15 +102,22 @@ In practice, this can be resolved by using the parent module's parameters.
 From the Java code they can be accessed as getParentModule().par("hello").
 
 NOTE: OMNeT++ 4.0 will support extending module types via inheritance, and
-      that will properly solve the issue of adding gates and parameters.
+that will properly solve the issue of adding gates and parameters.
 
 
 3. Writing simple modules in Java
 ---------------------------------
 
-Simple module classes need to subclass from JSimpleModule, and redefine
-at least handleMessage() [activity() is not supported] and possibly also
-initialize() and finish():
+FOR THE IMPATIENT: (1) subclass from JSimpleModule not cSimpleModule;
+(2) subclass from JMessage not cMessage; (3) use msg.sameAs(timeoutMsg)
+instead of msg==timeoutMsg; (4) write cMessage.castFrom(obj) instead of
+(cMessage)obj; (5) objects need to be explicitly deleted with their delete()
+methods.
+
+
+Simple module classes need to subclass from JSimpleModule, should have a
+default constructor, and redefine at least handleMessage() [activity() is
+not supported] and possibly also initialize() and finish().
 
   import org.omnetpp.simkernel.*;
 
@@ -124,143 +131,128 @@ initialize() and finish():
       ...
   }
 
-The module class should have a default constructor, and redefine at least
-handleMessage(). The class can make use of cMessage, cQueue, cOutVector
-and other OMNeT++ classes. The same methods and operations are available
-as in C++; the only difference is that accessor ("getter") method names
-have been prefixed with "get" to follow the Java convention, for example,
-name() is available as getName().
+When using multi-stage initialization, the following two methods
+have to be redefined instead of initialize():
 
-The above Java classes are just wrappers around the corresponding C++
-classes. They all hold a pointer to an underlying C++ object, and delegate
-method calls to it.
+      protected int numInitStages() { ... }
+      protected void initialize(int stage) { ... }
 
-When you write
+
+THE SIMULATION LIBRARY. The module class can make use of cMessage, cQueue,
+cOutVector and other OMNeT++ classes. The same methods and operations are
+available as in C++; the only difference is that accessor ("getter") method
+names have been prefixed with "get" to follow the Java convention, for
+example, name() is available as getName().
+
+
+SIMKERNEL JAVA CLASSES ARE WRAPPERS. The cModule, cMessage, cQueue,
+cOutVector, etc. Java classes are just wrappers around the corresponding
+C++ classes. They don't have any data members except for a pointer to the
+underlying C++ object, and delegate method calls into C++. When you write
 
    cMessage msg = new cMessage();
 
-in Java, the org.omnetpp.simkernel.cMessage wrapper object will actually
-create an underlying C++ cMessage object via JNI, and hold on to its pointer.
-When you perform
+in Java, the cMessage Java class will create an underlying cMessage C++
+object via a JNI call, and store its pointer. When you invoke methods on
+the Java object (e.g. msg.setLength(10)), it will be delegated to the C++
+equivalent.
 
-   send(msg, "out");
+Also, when you perform a send(msg, "out") call (which is actually
+this.send(msg, "out"), "this" being the module object), then the underlying
+C++ simple module's and the C++ cMessage object's pointer will be taken
+from the Java objects, and the corresponding module->send(msg, "out") C++
+call will be made. After sending out the message, the msg Java object
+should no longer be referenced, because the C++ message object have been
+deleted meanwhile by the simulation kernel or other modules.
 
-which is actually
-
-   this.send(msg, "out");
-
-then the underlying C++ simple module's and the C++ cMessage object's
-pointer will be taken from the Java objects, and the corresponding
-module->send(msg, "out") C++ call will be made. After sending out a message,
-the corresponding Java object should no longer be referenced.
-
-
-MEMORY MANAGEMENT.
-
-FIXME rewrite:
-Objects must be explicitly deleted: msg.delete(). Garbage collecting
-a Java object never deletes the underlying C++ object.
-
-The above mentioned flag is named swigCMemOwn, and it is
-associated with memory management of the underlying C++ object. swigMemOwn
-is member of every SWIG-generated Java wrapper class. It is automatically
-managed most of the time, but because Java garbage collection and C++
-explicit new/delete are a difficult match, it is useful to know how it
-works.
-
-Most importantly: when swigCMemOwn is set (==true), then garbage collecting
-the Java object will delete the underlying C++ object as well: finalize()
-calls the delete() method, which deallocates the C++ object with a JNI
-call. (Actually, delete() may be invoked explicitly too; after calling it,
-the Java object should be considered zombie, and no method should be called
-on it any more.) When swigCMemOwn is false, finalize() has no effect.
-
-Explicitly creating a Java object will create an underlying C++ object too,
-and will initialize swigCMemOwn to true. Certain methods, such as sending a
-message or inserting it into a cQueue, will cause the Java object to
-"disown" the C++ pointer, i.e. swigCMemOwn set to false.
-
-Methods which return an object (such as parentModule() or cQueue.pop())
-make a JNI call to retrieve a C++ object pointer, then wrap it into a Java
-object. The Java object's swigCMemOwn flag will be initialized to either
-true or false, depending on who owns the C++ object: still the simulation
-library (-->false), or the Java code (-->true). For example, parentModule()
-will return a Java object with swigCMemOwn==false, while cQueue.pop() with
-swigCMemOwn==true.
+Methods which return reference to an object (such as parentModule() or
+cQueue.pop()) make a JNI call to retrieve a C++ object pointer, then wrap
+the C++ pointer into a Java object.
 
 
-There are two other artifacts (as a consequence of the wrapping), that you
-should know about to be able to write correct Java code with this extension:
+EXPLICIT MEMORY MANAGEMENT. The Java wrapper objects NEVER delete the
+underlying C++ object when they are garbage collected; finalize() does
+nothing. The underlying C++ objects must be explicitly deleted with the
+delete() method when they are no longer needed.
 
-NO JAVA OBJECT IDENTITY. If you retrieve the same C++ object twice, it will
-be wrapped into two different Java objects! That is, Java's "==" operator
-is not really useful, for example
+Messages that are no longer needed should be disposed of:
 
-   if (parentModule() == parentModule()) ...    // WRONG!
+    msg.delete();
 
-would yield FALSE! Rather, the underlying C++ pointers have to be compared:
+Similarly, a
 
-   parentModule().getBaseCPtr() == parentModule().getBaseCPtr()
+   cQueue queue = new cQueue();
 
-gives the expected result of true. There is a convenience method for this test,
-sameAs():
+line without a corresponding
 
-   if (parentModule().sameAs(module)) ...
+   queue.delete();
 
-The same holds especially for message objects. In C++ simple modules it is
-a common practice to remember the pointer of self-messages, and in
-handleMessage() to test using pointer comparison if the same message
-arrived. In Java, sameAs() has to be used for this purpose too, because
-the C++ message gets wrapped into a different Java object when
-handleMessage is called:
+is a memory leak.
 
-   if (msg == timoutMsg) ... // WRONG!
+After delete(), the Java wrapper object should be considered zombie, and
+no method should be called on it any more. To emphasize this, the delete()
+call nulls out the stored C++ pointer.
 
-   if (msg.sameAs(timoutMsg)) ... // correct -- it compares the C++ pointers
+  NOTE: if you are familiar with SWIG, you must have noticed that this is not
+  the default behaviour of SWIG-generated classes. Simulations are too dynamic
+  in nature for SWIG's swigCMemOwn approach to work reliably in practice.
+
+
+NO JAVA OBJECT IDENTITY. It was already mentioned that methods which return
+reference to an object (such as parentModule() or cQueue.pop()) will always
+wrap the C++ pointer returned by JNI into a new Java object. Even more
+important, if you have a self-message scheduled periodically, every time it
+arrives in handleMessage() it will be wrapped into a different cMessage
+Java object.
+
+This means that Java's "==" operator cannot be used to test if two objects
+are the same, but rather, the underlying C++ pointers have to be compared
+(getBaseCPtr() method). There is also a convenience method, sameAs(), which
+does that.
+
+   if (msg == timeoutMsg) ... // WRONG
+   if (msg.getBaseCPtr() == timoutMsg.getBaseCPtr())) ... // correct
+   if (msg.sameAs(timeoutMsg)) ... // also correct (does the same as above)
 
 This requires some attention during coding to avoid bad surprises.
 
    Rationale: Implementing one-to-one mapping of C++ objects to Java wrapper
    objects is not done, because it would not be possible without modifying
-   the C++ base class, and the extension could not be run on an unmodified
-   OMNeT++ installation. (If we accepted modification of the C++ base class,
+   the C++ base class. (If we accepted modification of the C++ base class,
    then storing a jobject reference in it would be the best solution. One
    might think that by introducing a global hash table [to store cptr-to-
    wrapperobject mapping] we could spare the need for modifying the C++ base
    class, but that doesn't work in practice. Given a CPtr, we cannot tell if
    it is still the same object, or a new object allocated on the same memory
    location after the original object was destroyed. This problem could only
-   be resolved either with help from the C++ destructor (it would remove
-   the entry from the hashtable), or by introducing a unique object ID into
-   C++ objects.)
+   be resolved by instrumenting the C++ destructor to remove the entry from
+   the hashtable, or some similar trick. However, that would mean that this
+   extension could not be run on an unmodified OMNeT++ installation.)
 
 
-NO POLYMORPHIC RETURN TYPES. When a method returns an object, the C++ object
-object will be wrapped into a Java object of the declared return type of the
-method, and no the actual C++ type. That is, the following code causes
-ClassCastException even if the actual C++ object retrieved from the queue
-is a cMessage:
+NO POLYMORPHIC RETURN TYPES. Another consequence of wrapping: when a method
+returns an object, the C++ object object will be wrapped into a Java object
+of the *declared* return type of the method, and not of the actual C++ type!
+That is, the following code causes ClassCastException:
 
   cQueue queue = new cQueue();
   queue.insert(new cMessage());
   ...
-  cObject obj = queue.pop();
-  cMessage msg = (cMessage)obj; // BANG: ClassCastException!
+  cMessage msg = (cMessage) queue.pop(); // BANG: ClassCastException!
 
-The correct solution is to re-wrap the C++ object into a Java object
-of the correct type:
+cQueue::pop() returns cObject, so the wrapper object will be an instance
+of cObject not cMessage. To access the object as a cMessage, it has to be
+re-wrapped:
 
-  cObject obj = queue.pop();
-  cMessage msg = cMessage.convertFrom(obj); // correct: re-wraps the C++ object
+  cMessage msg = cMessage.castFrom(queue.pop());  // correct
 
-This behaves like C++ dynamic_cast<>, in that the convertFrom() method
-returns null if the conversion cannot be performed. (It actually indeed
-contains a C++ dynamic_cast<> inside the JNI code.) Also, the conversion
-transfers ownership of the C++ object (swigCMemOwn) to new wrapper object,
-that is, the original Java wrapper object (obj above) should be considered
-a zombie afterwards and should not be touched.
+This behaves like C++ dynamic_cast<>, in that the castFrom() method
+returns null if the conversion cannot be performed. (It does actually
+contain a C++ dynamic_cast<> inside the JNI code.) The original Java wrapper
+object (obj above) should be considered a zombie afterwards, and should
+not be touched.
 
-   Rationale: immediately creating the wrapper object of the right (dynamic)
+   Rationale: immediately creating a wrapper object of the right (dynamic)
    type would cause a high runtime cost in every method that returns an object.
    The code would have to invoke className() on the C++ object to get the
    C++ class name, prefix it with "org.omnetpp.simkernel." to get a fully
@@ -269,6 +261,10 @@ a zombie afterwards and should not be touched.
    Caching of the Java Class would alleviate the pain, but would require
    modification to the underlying C++ classes, i.e. this Java extension would
    not be able to run on an unmodified OMNeT++ installation.
+
+SUBCLASSING MESSAGES.
+
+
 
 
 4. Compiling the Java code and running the simulation
