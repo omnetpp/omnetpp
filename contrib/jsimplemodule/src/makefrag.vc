@@ -12,6 +12,23 @@ DISTDIR = distrib
 
 EXTRA_OBJS = SimkernelJNI_registerNatives.obj simkernel_wrap.obj
 
+DIST_SRC_FILES = \
+  IMPLEMENTATION_NOTES \
+  JMessage.cc \
+  JMessage.h \
+  JSimpleModule.cc \
+  JSimpleModule.h \
+  JSimpleModule.ned \
+  makefrag.vc \
+  simkernel.i \
+  memorymgmt_msg_one2one.i \
+  patchcastfrom.pl \
+  patchownership.pl \
+  registernatives.pl \
+  ProxyObjectMap.java.in \
+  m.bat
+
+
 all: $(TARGET) javafiles dist
 
 simkernel_wrap.cc SimkernelJNI_registerNatives.cc : simkernel.i Makefile.vc $(OMNETPP_ROOT)/include/*.h  # and many oher things
@@ -47,6 +64,7 @@ dist: $(TARGET) javafiles
 	-mkdir $(DISTDIR) >nul 2>nul
 	$(JAR) cvf $(DISTDIR)/simkernel.jar -C bin org
 	$(JAR) cvf $(DISTDIR)/simkernel-src.jar -C java org
+	$(JAR) cvf $(DISTDIR)/src.jar $(DIST_SRC_FILES)
 	copy *.cc $(DISTDIR)
 	copy *.h $(DISTDIR)
 	copy JSimpleModule.ned $(DISTDIR)
