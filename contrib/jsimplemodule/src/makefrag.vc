@@ -23,7 +23,8 @@ DIST_SRC_FILES = \
   simkernel.i \
   memorymgmt_plain.i \
   registernatives.pl \
-  m.bat
+  m.bat \
+  r.bat
 
 # the following files are not distributed by default
 EXPERIMENTAL_SRC_FILES = \
