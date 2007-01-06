@@ -78,12 +78,12 @@ public class Fifo extends JSimpleModule
     }
 
     protected double serviceRequirement(cMessage msg) {
-        ev().println("Starting service of "+msg.getName());
+        ev.println("Starting service of "+msg.getName());
         return getParentModule().par("queueServiceTime").doubleValue();
     }
 
     protected void endService(cMessage msg) {
-        ev().println("Completed service of "+msg.getName());
+        ev.println("Completed service of "+msg.getName());
         send(msg, "out");
     }
 }

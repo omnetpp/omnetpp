@@ -101,7 +101,7 @@ have parameters (unless you add them into JSimpleModule.ned itself).
 In practice, this can be resolved by using the parent module's parameters.
 From the Java code they can be accessed as getParentModule().par("hello").
 
-NOTE: OMNeT++ 4.0 will support extending module types via inheritance, and 
+NOTE: OMNeT++ 4.0 will support extending module types via inheritance, and
       that will properly solve the issue of adding gates and parameters.
 
 
@@ -117,15 +117,15 @@ initialize() and finish():
   public class MyModule extends JSimpleModule
   {
       ...
-      public MyModule(long cptr) { super(cptr); }
+      public MyModule() { ... }
       protected void initialize() { ... }
       protected void handleMessage(cMessage msg) { ... }
       protected void finish() { ... }
       ...
   }
 
-The constructor taking (long cptr) is needed by SWIG, and must always be
-present. The module class can make use of cMessage, cQueue, cOutVector
+The module class should have a default constructor, and redefine at least
+handleMessage(). The class can make use of cMessage, cQueue, cOutVector
 and other OMNeT++ classes. The same methods and operations are available
 as in C++; the only difference is that accessor ("getter") method names
 have been prefixed with "get" to follow the Java convention, for example,
@@ -151,14 +151,17 @@ which is actually
 
 then the underlying C++ simple module's and the C++ cMessage object's
 pointer will be taken from the Java objects, and the corresponding
-module->send(msg, "out") C++ call will be made. At the same time, a flag in
-the "msg" Java object will be cleared to indicate that it no longer has
-control over the C++ object. After sending out a message, the corresponding
-Java object should no longer be referenced (i.e. should be allowed to be
-garbage-collected by the VM).
+module->send(msg, "out") C++ call will be made. After sending out a message,
+the corresponding Java object should no longer be referenced.
 
 
-MEMORY MANAGEMENT. The above mentioned flag is named swigCMemOwn, and it is
+MEMORY MANAGEMENT.
+
+FIXME rewrite:
+Objects must be explicitly deleted: msg.delete(). Garbage collecting
+a Java object never deletes the underlying C++ object.
+
+The above mentioned flag is named swigCMemOwn, and it is
 associated with memory management of the underlying C++ object. swigMemOwn
 is member of every SWIG-generated Java wrapper class. It is automatically
 managed most of the time, but because Java garbage collection and C++

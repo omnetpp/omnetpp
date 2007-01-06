@@ -98,11 +98,11 @@
 %ignore cStaticFlag;
 
 %typemap(javacode) cModule %{
-  //public static cEnvir ev = Simkernel.getEv(); -- XXX this has initialization order problems
+  public static cEnvir ev = Simkernel.getEv();
+%};
 
-  public static cEnvir ev() {
-    return Simkernel.getEv();
-  }
+%typemap(javacode) Simkernel %{
+  public static cEnvir ev = getEv();
 %};
 
 %ignore cPolymorphic::getDescriptor;
@@ -227,12 +227,12 @@ namespace std {
 %typemap(javacode) cEnvir %{
   public void print(String s) {
     puts(s);
-    //System.out.print("--- "+s);
+    //System.out.print("*** "+s);
   }
 
   public void println(String s) {
-    puts(s); puts("\n");
-    //System.out.println("--- "+s);
+    puts(s+"\n");
+    //System.out.println("*** "+s);
   }
 %}
 
