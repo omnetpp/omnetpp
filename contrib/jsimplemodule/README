@@ -1,8 +1,6 @@
 JSimpleModule
 =============
 
-FIXME TODO TBD XXX: rewrite MEMORY MGMT part; add tale of JMessage
-
 This is an extension that makes it possible to write OMNeT++ simple modules
 in Java. Java and C++-based simple modules can be freely mixed in
 simulations. Integration is not seamless though, there are limitations as
@@ -34,7 +32,7 @@ body of Java code which you want to reuse as part of a simulation.
 Contents
 --------
 1. Building the simulation executable
-2. Writing NED files
+2. Creating the simulation
 3. Writing Java-based simple modules
 4. Extending messages
 5. Compiling the Java code and running the simulation
@@ -271,9 +269,9 @@ In most simulation scenarios, messages need to carry extra data in addition
 to the built-in fields (message kind, length, etc). This can be achieved in
 three ways:
 
-  a) subclassing JMessage
-  b) adding cPar objects to cMessages.
-  c) using C++ message classes (defined in msg files)
+  a) subclassing JMessage (NOT cMessage!)
+  b) using C++ message classes (defined in msg files)
+  c) adding cPar objects to cMessages.
 
 We'll look at each.
 
@@ -336,15 +334,24 @@ method in the Java object, and if it not found, it will try it as a
    public int counter;
 
 data member. If it is not there either, a runtime error gets thrown.
-Similarly, the setXxxJavaField() methods first look for a setXxx()
-method, then a xxx data member.
+Similarly, a setDoubleJavaField("power", 0.543) call will first try to
+call a setPower(double) method in the Java class, then it it fails
+it tries to set a `power' data member of type double.
 
 
-CPAR. When a message's contents must be accessed ...
+USING C++ MESSAGE CLASSES. If you already have C++ message classes that you
+want to access from Java (i.e. the INET Framework protocol headers and
+control info), then the best way is to wrap them using SWIG. The wrapper
+classes should be consistent with the ones already present in simkernel.jar.
+
+You will probably want to reuse parts of the SWIG interface files (.i)
+provided in the sources of this package.
 
 
-
-USING C++ MESSAGE CLASSES. ....
+ADDING CPAR OBJECTS. A historical way of adding data to messages is to
+attach cPar objects to them. While this method is inferior to both ones
+described above, it is technically quite possible, and sometimes might even
+be a reasonable choice.
 
 
 
