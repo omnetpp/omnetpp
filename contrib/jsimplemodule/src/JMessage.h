@@ -14,7 +14,8 @@ class JMessage : public cMessage
 {
   protected:
     jobject javaPeer;
-    jmethodID cloneMethod;
+    mutable jmethodID toStringMethod;
+    mutable jmethodID cloneMethod;
 
   protected:
     void checkExceptions() const;
@@ -29,6 +30,9 @@ class JMessage : public cMessage
     virtual ~JMessage();
     JMessage& operator=(const JMessage& msg);
     virtual cPolymorphic *dup() const  {return new JMessage(*this);}
+    std::string toString() const;
+    std::string info() const;
+    std::string detailedInfo() const;
     void swigSetJavaPeer(jobject msgObject);
     jobject swigJavaPeer() {return javaPeer;}
     static jobject swigJavaPeerOf(cPolymorphic *object);

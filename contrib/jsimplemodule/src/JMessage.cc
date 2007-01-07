@@ -6,6 +6,16 @@
 
 #define JENV   JSimpleModule::jenv
 
+static std::string fromJavaString(jstring stringObject)
+{
+    if (!stringObject)
+        return "<null>";
+    jboolean isCopy;
+    const char *buf = JENV->GetStringUTFChars(stringObject, &isCopy);
+    std::string str = buf ? buf : "";
+    JENV->ReleaseStringUTFChars(stringObject, buf);
+    return str;
+}
 
 JMessage::JMessage(const char *name, int kind, int) : cMessage(name, kind)
 {
@@ -24,6 +34,35 @@ JMessage::~JMessage()
 {
     if (JENV && javaPeer)
         JENV->DeleteGlobalRef(javaPeer);
+}
+
+std::string JMessage::toString() const
+{
+    if (!toStringMethod)
+    {
+        jclass clazz = JENV->GetObjectClass(javaPeer);
+        toStringMethod = JENV->GetMethodID(clazz, "toString", "()Ljava/lang/String;");
+        checkExceptions();
+    }
+    jstring stringObject = (jstring)JENV->CallObjectMethod(javaPeer, toStringMethod);
+    checkExceptions();
+    return fromJavaString(stringObject);
+}
+
+std::string JMessage::info() const
+{
+    // return the first line of toString()
+    std::string str = toString();
+    const char *s = str.c_str();
+    const char *p = strchr(s, '\n');
+    if (p)
+        str.erase(str.begin()+(p-s), str.end());
+    return str;
+}
+
+std::string JMessage::detailedInfo() const
+{
+    return toString();
 }
 
 JMessage& JMessage::operator=(const JMessage& msg)
@@ -60,17 +99,6 @@ void JMessage::swigSetJavaPeer(jobject msgObject)
 {
     ASSERT(javaPeer==0);
     this->javaPeer = JENV->NewGlobalRef(msgObject);
-}
-
-static std::string fromJavaString(jstring stringObject)
-{
-    if (!stringObject)
-        return "<null>";
-    jboolean isCopy;
-    const char *buf = JENV->GetStringUTFChars(stringObject, &isCopy);
-    std::string str = buf ? buf : "";
-    JENV->ReleaseStringUTFChars(stringObject, buf);
-    return str;
 }
 
 void JMessage::checkExceptions() const
@@ -150,19 +178,19 @@ GETTER_SETTER(Double,  jdouble,  "D")
 
 std::string JMessage::getStringJavaField(const char *fieldName) const
 {
-   jmethodID methodID; jfieldID fieldID;
-   getMethodOrField(fieldName, "get", "()" JSTRING, JSTRING, methodID, fieldID);
-   jstring str = (jstring) checkException(methodID ? JENV->CallObjectMethod(javaPeer, methodID) : JENV->GetObjectField(javaPeer, fieldID));
-   return fromJavaString(str);
+    jmethodID methodID; jfieldID fieldID;
+    getMethodOrField(fieldName, "get", "()" JSTRING, JSTRING, methodID, fieldID);
+    jstring str = (jstring) checkException(methodID ? JENV->CallObjectMethod(javaPeer, methodID) : JENV->GetObjectField(javaPeer, fieldID));
+    return fromJavaString(str);
 }
 
 void JMessage::setStringJavaField(const char *fieldName, const char *value)
 {
-   jmethodID methodID; jfieldID fieldID;
-   getMethodOrField(fieldName, "set", "(" JSTRING ")V", JSTRING, methodID, fieldID);
-   jstring str = JENV->NewStringUTF(value);
-   methodID ? JENV->CallObjectMethod(javaPeer, methodID, str) : JENV->SetObjectField(javaPeer, fieldID, str);
-   checkExceptions();
+    jmethodID methodID; jfieldID fieldID;
+    getMethodOrField(fieldName, "set", "(" JSTRING ")V", JSTRING, methodID, fieldID);
+    jstring str = JENV->NewStringUTF(value);
+    methodID ? JENV->CallObjectMethod(javaPeer, methodID, str) : JENV->SetObjectField(javaPeer, fieldID, str);
+    checkExceptions();
 }
 
 
