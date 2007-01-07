@@ -11,10 +11,6 @@
  */
 class JSimpleModule : public cSimpleModule
 {
-  public:
-    static JavaVM *vm;
-    static JNIEnv *jenv;
-
   protected:
     jobject javaObject;
     jmethodID numInitStagesMethod;
@@ -25,9 +21,6 @@ class JSimpleModule : public cSimpleModule
 
   protected:
     void createJavaObject();
-    void initJVM();
-    void checkExceptions() const;
-    jmethodID findMethod(jclass clazz, const char *clazzName, const char *methodName, const char *methodSig);
 
   public:
     JSimpleModule();

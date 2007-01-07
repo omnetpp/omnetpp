@@ -18,8 +18,6 @@ class JMessage : public cMessage
     mutable jmethodID cloneMethod;
 
   protected:
-    void checkExceptions() const;
-    template<typename T> T checkException(T a) const {checkExceptions(); return a;}
     void getMethodOrField(const char *fieldName, const char *methodPrefix,
                           const char *methodsig, const char *fieldsig,
                           jmethodID& methodID, jfieldID& fieldID) const;

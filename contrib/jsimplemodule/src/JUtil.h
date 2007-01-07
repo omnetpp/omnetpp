@@ -6,12 +6,21 @@
 #include <assert.h>
 #include <omnetpp.h>
 
+/**
+ * Convenience methods for working with JNI.
+ */
+namespace JUtil
+{
+  extern JavaVM *vm;
+  extern JNIEnv *jenv;
 
-std::string fromJavaString(jstring stringObject);
-
-void checkExceptions();
-
-template<typename T> T checkException(T a)  {checkExceptions(); return a;}
+  void initJVM();
+  std::string fromJavaString(jstring stringObject);
+  jmethodID findMethod(jclass clazz, const char *clazzName, const char *methodName,
+                       const char *methodSig);
+  void checkExceptions();
+  template<typename T> T checkException(T a)  {checkExceptions(); return a;}
+};
 
 
 /**
