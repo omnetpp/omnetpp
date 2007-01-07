@@ -1,10 +1,11 @@
 #include "JMessage.h"
-#include "JSimpleModule.h"
+#include "JUtil.h"
+
+using namespace JUtil;  // for jenv, checkExceptions(), findMethod(), etc
+
 
 //#define DEBUGPRINTF printf
 #define DEBUGPRINTF (void)
-
-#define JENV   JSimpleModule::jenv
 
 
 JMessage::JMessage(const char *name, int kind, int) : cMessage(name, kind)
@@ -22,18 +23,34 @@ JMessage::JMessage(const JMessage& msg)
 
 JMessage::~JMessage()
 {
-    if (JENV && javaPeer)
-        JENV->DeleteGlobalRef(javaPeer);
+    if (jenv && javaPeer)
+        jenv->DeleteGlobalRef(javaPeer);
+}
+
+std::string JMessage::info() const
+{
+    // return the first line of toString()
+    std::string str = toString();
+    const char *s = str.c_str();
+    const char *p = strchr(s, '\n');
+    if (p)
+        str.erase(str.begin()+(p-s), str.end());
+    return str;
+}
+
+std::string JMessage::detailedInfo() const
+{
+    return toString();
 }
 
 JMessage& JMessage::operator=(const JMessage& msg)
 {
     cMessage::operator=(msg);
-    if (!JENV)
+    if (!jenv)
         return *this;
 
     if (javaPeer)
-        JENV->DeleteGlobalRef(javaPeer);
+        jenv->DeleteGlobalRef(javaPeer);
     javaPeer = 0;
     cloneMethod = 0;
     if (msg.javaPeer)
@@ -43,50 +60,32 @@ JMessage& JMessage::operator=(const JMessage& msg)
         cloneMethod = msg.cloneMethod;
         if (!cloneMethod)
         {
-            jclass clazz = JENV->GetObjectClass(javaPeer);
-            cloneMethod = JENV->GetMethodID(clazz, "clone", "()Ljava/lang/Object;");
+            jclass clazz = jenv->GetObjectClass(javaPeer);
+            cloneMethod = jenv->GetMethodID(clazz, "clone", "()Ljava/lang/Object;");
             const_cast<JMessage&>(msg).cloneMethod = cloneMethod;
             checkExceptions();
         }
-        javaPeer = JENV->CallObjectMethod(javaPeer, cloneMethod);
+        javaPeer = jenv->CallObjectMethod(javaPeer, cloneMethod);
         checkExceptions();
-        javaPeer = JENV->NewGlobalRef(javaPeer);
+        javaPeer = jenv->NewGlobalRef(javaPeer);
         checkExceptions();
     }
+    JObjectAccess::setObject(javaPeer);
     return *this;
 }
 
 void JMessage::swigSetJavaPeer(jobject msgObject)
 {
     ASSERT(javaPeer==0);
-    this->javaPeer = JENV->NewGlobalRef(msgObject);
+    javaPeer = jenv->NewGlobalRef(msgObject);
+    JObjectAccess::setObject(javaPeer);
 }
 
-void JMessage::checkExceptions() const
-{
-    jthrowable exceptionObject = JENV->ExceptionOccurred();
-    if (exceptionObject)
-    {
-        DEBUGPRINTF("JSimpleModule: exception occurred:\n");
-        JENV->ExceptionDescribe();
-        JENV->ExceptionClear();
-
-        jclass throwableClass = JENV->FindClass("java/lang/Throwable");
-        jmethodID getMessageMethod = JENV->GetMethodID(throwableClass, "getMessage", "()Ljava/lang/String;");
-        jstring messageStringObject = (jstring)JENV->CallObjectMethod(exceptionObject, getMessageMethod);
-        jboolean isCopy;
-        const char *buf = JENV->GetStringUTFChars(messageStringObject, &isCopy);
-        std::string msg = buf ? buf : "";
-        JENV->ReleaseStringUTFChars(messageStringObject, buf);
-
-
-        opp_error("%s", msg.c_str());
-    }
-}
-
-jobject JMessage::swigJavaPeerOf(cObject *object)
+jobject JMessage::swigJavaPeerOf(cPolymorphic *object)
 {
     JMessage *msg = dynamic_cast<JMessage *>(object);
     return msg ? msg->swigJavaPeer() : 0;
 }
+
+
 

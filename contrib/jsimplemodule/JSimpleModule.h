@@ -5,16 +5,19 @@
 #include <stdio.h>
 #include <assert.h>
 #include <omnetpp.h>
+#include "JUtil.h"
 
 /**
- * Implements a Java-based simple module.
+ * Implements a Java-based simple module. It instantiates the Java class
+ * given in the "javaClass" module parameter, and delegates handleMessage()
+ * and other methods to it.
+ *
+ * From JObjectAccess it inherits methods that faciliate accessing data
+ * members of the Java class, should it become necessary: getIntJavaField(),
+ * getLongJavaField(), getStringJavaField(), setIntJavaField(), etc.
  */
-class JSimpleModule : public cSimpleModule
+class JSimpleModule : public cSimpleModule, public JObjectAccess
 {
-  public:
-    static JavaVM *vm;
-    static JNIEnv *jenv;
-
   protected:
     jobject javaObject;
     jmethodID numInitStagesMethod;
@@ -24,10 +27,7 @@ class JSimpleModule : public cSimpleModule
     cMessage *msgToBeHandled;
 
   protected:
-    void createJavaObject();
-    void initJVM();
-    void checkExceptions() const;
-    jmethodID findMethod(jclass clazz, const char *clazzName, const char *methodName, const char *methodSig);
+    void createJavaModuleObject();
 
   public:
     JSimpleModule();

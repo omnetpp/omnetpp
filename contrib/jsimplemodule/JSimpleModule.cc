@@ -1,16 +1,15 @@
 #include <assert.h>
 #include "JSimpleModule.h"
+#include "JUtil.h"
+
+using namespace JUtil;  // for jenv, checkExceptions(), findMethod(), etc
+
 
 //#define DEBUGPRINTF printf
 #define DEBUGPRINTF (void)
 
 Define_Module(JSimpleModule);
 
-// This will come from the generated SimkernelJNI_registerNatives.cc
-void SimkernelJNI_registerNatives(JNIEnv *jenv);
-
-JavaVM *JSimpleModule::vm;
-JNIEnv *JSimpleModule::jenv;
 
 JSimpleModule::JSimpleModule()
 {
@@ -21,37 +20,6 @@ JSimpleModule::~JSimpleModule()
 {
     if (javaObject && finishMethod)
         jenv->DeleteGlobalRef(javaObject);
-}
-
-void JSimpleModule::initJVM()
-{
-    DEBUGPRINTF("Starting JVM...\n");
-    JavaVMInitArgs vm_args;
-    JavaVMOption options[10];
-
-    int n = 0;
-    const char *classpath = getenv("CLASSPATH");
-    if (!classpath)
-        opp_error("CLASSPATH environment variable is not set");
-    std::string classpathOption = std::string("-Djava.class.path=")+(classpath ? classpath : "");
-    options[n++].optionString = (char *)classpathOption.c_str(); /* user classes */
-    options[n++].optionString = "-Djava.library.path=.";   /* set native library path */
-    //options[n++].optionString = "-Djava.compiler=NONE";    /* disable JIT */
-    //options[n++].optionString = "-verbose:jni";            /* print JNI-related messages */
-    //options[n++].optionString = "-verbose:class";          /* print class loading messages */
-
-    vm_args.version = JNI_VERSION_1_2;
-    vm_args.options = options;
-    vm_args.nOptions = n;
-    vm_args.ignoreUnrecognized = true;
-
-    int res = JNI_CreateJavaVM(&vm, (void **)&jenv, &vm_args);
-    if (res<0)
-        opp_error("Could not create Java VM: JNI_CreateJavaVM returned %d", res);
-
-    DEBUGPRINTF("Registering native methods...\n");
-    SimkernelJNI_registerNatives(jenv);
-    DEBUGPRINTF("Done.\n");
 }
 
 int JSimpleModule::numInitStages() const
@@ -67,14 +35,14 @@ int JSimpleModule::numInitStages() const
 void JSimpleModule::initialize(int stage)
 {
     if (stage==0)
-        createJavaObject();
+        createJavaModuleObject();
 
     DEBUGPRINTF("Invoking initialize(%d) on new instance...\n", stage);
     jenv->CallVoidMethod(javaObject, initializeStageMethod, stage);
     checkExceptions();
 }
 
-void JSimpleModule::createJavaObject()
+void JSimpleModule::createJavaModuleObject()
 {
     // create VM if needed
     if (!jenv)
@@ -112,15 +80,7 @@ void JSimpleModule::createJavaObject()
     }
     javaObject = jenv->NewGlobalRef(javaObject);
     checkExceptions();
-}
-
-jmethodID JSimpleModule::findMethod(jclass clazz, const char *clazzName, const char *methodName, const char *methodSig)
-{
-    jmethodID ret = jenv->GetMethodID(clazz, methodName, methodSig);
-    jenv->ExceptionClear();
-    if (!ret)
-        opp_error("No `%s' %s method in Java class `%s'", methodName, methodSig, clazzName);
-    return ret;
+    JObjectAccess::setObject(javaObject);
 }
 
 void JSimpleModule::handleMessage(cMessage *msg)
@@ -136,25 +96,4 @@ void JSimpleModule::finish()
     checkExceptions();
 }
 
-void JSimpleModule::checkExceptions() const
-{
-    jthrowable exceptionObject = jenv->ExceptionOccurred();
-    if (exceptionObject)
-    {
-        DEBUGPRINTF("JSimpleModule: exception occurred:\n");
-        jenv->ExceptionDescribe();
-        jenv->ExceptionClear();
-
-        jclass throwableClass = jenv->FindClass("java/lang/Throwable");
-        jmethodID getMessageMethod = jenv->GetMethodID(throwableClass, "getMessage", "()Ljava/lang/String;");
-        jstring messageStringObject = (jstring)jenv->CallObjectMethod(exceptionObject, getMessageMethod);
-        jboolean isCopy;
-        const char *buf = jenv->GetStringUTFChars(messageStringObject, &isCopy);
-        std::string msg = buf ? buf : "";
-        jenv->ReleaseStringUTFChars(messageStringObject, buf);
-
-
-        opp_error("%s", msg.c_str());
-    }
-}
 
