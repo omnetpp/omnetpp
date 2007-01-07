@@ -64,6 +64,8 @@ void JMessage::swigSetJavaPeer(jobject msgObject)
 
 static std::string fromJavaString(jstring stringObject)
 {
+    if (!stringObject)
+        return "<null>";
     jboolean isCopy;
     const char *buf = JENV->GetStringUTFChars(stringObject, &isCopy);
     std::string str = buf ? buf : "";
@@ -71,21 +73,16 @@ static std::string fromJavaString(jstring stringObject)
     return str;
 }
 
-static jstring toJavaString(const char *s)
-{
-    return JENV->NewStringUTF(s);
-}
-
 void JMessage::checkExceptions() const
 {
     jthrowable exceptionObject = JENV->ExceptionOccurred();
     if (exceptionObject)
     {
-        DEBUGPRINTF("JSimpleModule: exception occurred:\n");
+        DEBUGPRINTF("JMessage: exception occurred:\n");
         JENV->ExceptionDescribe();
         JENV->ExceptionClear();
 
-        jclass throwableClass = JENV->FindClass("java/lang/Throwable");
+        jclass throwableClass = JENV->GetObjectClass(exceptionObject);
         jmethodID getMessageMethod = JENV->GetMethodID(throwableClass, "getMessage", "()Ljava/lang/String;");
         jstring msg = (jstring)JENV->CallObjectMethod(exceptionObject, getMessageMethod);
         opp_error("%s", fromJavaString(msg).c_str());

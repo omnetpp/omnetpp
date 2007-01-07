@@ -352,6 +352,27 @@ cSimulation *getSimulation();
   }
 %}
 
+%ignore JMessage::getBooleanJavaField;
+%ignore JMessage::getByteJavaField;
+%ignore JMessage::getCharJavaField;
+%ignore JMessage::getShortJavaField;
+%ignore JMessage::getIntJavaField;
+%ignore JMessage::getLongJavaField;
+%ignore JMessage::getFloatJavaField;
+%ignore JMessage::getDoubleJavaField;
+%ignore JMessage::getStringJavaField;
+
+%ignore JMessage::setBooleanJavaField;
+%ignore JMessage::setByteJavaField;
+%ignore JMessage::setCharJavaField;
+%ignore JMessage::setShortJavaField;
+%ignore JMessage::setIntJavaField;
+%ignore JMessage::setLongJavaField;
+%ignore JMessage::setFloatJavaField;
+%ignore JMessage::setDoubleJavaField;
+%ignore JMessage::setStringJavaField;
+
+
 //
 // Map C++ dup() to Java's clone()
 //

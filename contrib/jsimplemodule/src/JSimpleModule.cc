@@ -136,6 +136,17 @@ void JSimpleModule::finish()
     checkExceptions();
 }
 
+static std::string fromJavaString(jstring stringObject)
+{
+    if (!stringObject)
+        return "<null>";
+    jboolean isCopy;
+    const char *buf = JSimpleModule::jenv->GetStringUTFChars(stringObject, &isCopy);
+    std::string str = buf ? buf : "";
+    JSimpleModule::jenv->ReleaseStringUTFChars(stringObject, buf);
+    return str;
+}
+
 void JSimpleModule::checkExceptions() const
 {
     jthrowable exceptionObject = jenv->ExceptionOccurred();
@@ -145,16 +156,11 @@ void JSimpleModule::checkExceptions() const
         jenv->ExceptionDescribe();
         jenv->ExceptionClear();
 
-        jclass throwableClass = jenv->FindClass("java/lang/Throwable");
+        jclass throwableClass = jenv->GetObjectClass(exceptionObject);
         jmethodID getMessageMethod = jenv->GetMethodID(throwableClass, "getMessage", "()Ljava/lang/String;");
-        jstring messageStringObject = (jstring)jenv->CallObjectMethod(exceptionObject, getMessageMethod);
-        jboolean isCopy;
-        const char *buf = jenv->GetStringUTFChars(messageStringObject, &isCopy);
-        std::string msg = buf ? buf : "";
-        jenv->ReleaseStringUTFChars(messageStringObject, buf);
-
-
-        opp_error("%s", msg.c_str());
+        jstring msg = (jstring)jenv->CallObjectMethod(exceptionObject, getMessageMethod);
+        opp_error("%s", fromJavaString(msg).c_str());
     }
 }
+
 
