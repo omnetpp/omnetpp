@@ -339,6 +339,7 @@ data member. If it is not there either, a runtime error gets thrown.
 Similarly, the setXxxJavaField() methods first look for a setXxx()
 method, then a xxx data member.
 
+
 CPAR. When a message's contents must be accessed ...
 
 

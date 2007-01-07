@@ -21,12 +21,14 @@ JMessage::JMessage(const char *name, int kind, int) : cMessage(name, kind)
 {
     javaPeer = 0;
     cloneMethod = 0;
+    toStringMethod = 0;
 }
 
 JMessage::JMessage(const JMessage& msg)
 {
     javaPeer = 0;
     cloneMethod = 0;
+    toStringMethod = 0;
     operator=(msg);
 }
 
@@ -75,11 +77,13 @@ JMessage& JMessage::operator=(const JMessage& msg)
         JENV->DeleteGlobalRef(javaPeer);
     javaPeer = 0;
     cloneMethod = 0;
+    toStringMethod = 0;
     if (msg.javaPeer)
     {
         // must clone() the other Java object
         javaPeer = msg.javaPeer;  // then we'll clone it
         cloneMethod = msg.cloneMethod;
+        toStringMethod = msg.toStringMethod;
         if (!cloneMethod)
         {
             jclass clazz = JENV->GetObjectClass(javaPeer);

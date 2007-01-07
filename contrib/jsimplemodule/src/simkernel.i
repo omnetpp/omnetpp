@@ -336,7 +336,6 @@ cSimulation *getSimulation();
 %}
 
 // JMessage
-%ignore JMessage::swigJavaPeer;
 %javamethodmodifiers JMessage::JMessage "private";
 %javamethodmodifiers JMessage::swigSetJavaPeer "private";
 %javamethodmodifiers JMessage::swigJavaPeerOf "protected";
@@ -350,6 +349,9 @@ cSimulation *getSimulation();
     return (JMessage) JMessage.swigJavaPeerOf(object);
   }
 %}
+
+%ignore JMessage::swigJavaPeer;
+%ignore JMessage::toString; // otherwise we have infinite recursion between Java and C++
 
 %ignore JMessage::getBooleanJavaField;
 %ignore JMessage::getByteJavaField;

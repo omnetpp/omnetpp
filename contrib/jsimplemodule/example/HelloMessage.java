@@ -24,6 +24,10 @@ class HelloMessage extends JMessage implements Cloneable {
     public static HelloMessage castFrom(cPolymorphic o) {
         return (HelloMessage)JMessage.castFrom(o);
     }
+
+    public String toString() {
+        return "text=\"" + text + "\"  counter=" + counter;
+    }
 };
 
 
