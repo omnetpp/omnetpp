@@ -62,6 +62,20 @@ void JMessage::swigSetJavaPeer(jobject msgObject)
     this->javaPeer = JENV->NewGlobalRef(msgObject);
 }
 
+static std::string fromJavaString(jstring stringObject)
+{
+    jboolean isCopy;
+    const char *buf = JENV->GetStringUTFChars(stringObject, &isCopy);
+    std::string str = buf ? buf : "";
+    JENV->ReleaseStringUTFChars(stringObject, buf);
+    return str;
+}
+
+static jstring toJavaString(const char *s)
+{
+    return JENV->NewStringUTF(s);
+}
+
 void JMessage::checkExceptions() const
 {
     jthrowable exceptionObject = JENV->ExceptionOccurred();
@@ -73,13 +87,8 @@ void JMessage::checkExceptions() const
 
         jclass throwableClass = JENV->FindClass("java/lang/Throwable");
         jmethodID getMessageMethod = JENV->GetMethodID(throwableClass, "getMessage", "()Ljava/lang/String;");
-        jstring messageStringObject = (jstring)JENV->CallObjectMethod(exceptionObject, getMessageMethod);
-        jboolean isCopy;
-        const char *buf = JENV->GetStringUTFChars(messageStringObject, &isCopy);
-        std::string msg = buf ? buf : "";
-        JENV->ReleaseStringUTFChars(messageStringObject, buf);
-
-        opp_error("%s", msg.c_str());
+        jstring msg = (jstring)JENV->CallObjectMethod(exceptionObject, getMessageMethod);
+        opp_error("%s", fromJavaString(msg).c_str());
     }
 }
 
@@ -136,21 +145,23 @@ GETTER_SETTER(Double,  jdouble,  "D")
 //TODO methods for wrapping/unwrapping strings
 #define JSTRING "Ljava/lang/String;"
 
-/*
+
 std::string JMessage::getStringJavaField(const char *fieldName) const
 {
    jmethodID methodID; jfieldID fieldID;
    getMethodOrField(fieldName, "get", "()" JSTRING, JSTRING, methodID, fieldID);
-   jobject str = checkException(methodID ? JENV->CallObjectMethod(javaPeer, methodID) : JENV->GetObjectField(javaPeer, fieldID));
-   ...
+   jstring str = (jstring) checkException(methodID ? JENV->CallObjectMethod(javaPeer, methodID) : JENV->GetObjectField(javaPeer, fieldID));
+   return fromJavaString(str);
 }
 
 void JMessage::setStringJavaField(const char *fieldName, const char *value)
 {
    jmethodID methodID; jfieldID fieldID;
    getMethodOrField(fieldName, "set", "(" JSTRING ")V", JSTRING, methodID, fieldID);
-   jobject str = ...;
+   jstring str = JENV->NewStringUTF(value);
    methodID ? JENV->CallObjectMethod(javaPeer, methodID, str) : JENV->SetObjectField(javaPeer, fieldID, str);
    checkExceptions();
 }
-*/
+
+
+
