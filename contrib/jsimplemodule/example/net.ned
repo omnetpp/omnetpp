@@ -62,3 +62,48 @@ network net3 : Net3
         queueNumInitialJobs = 5,
         queueServiceTime = exponential(1);
 endnetwork
+
+module Net4
+    parameters:
+        numQueues: numeric const,
+        queueNumInitialJobs: numeric const,
+        queueServiceTime: numeric;
+    submodules:
+        src: JSimpleModule;
+            parameters:
+                javaClass = "Source";
+            display: "i=block/source";
+        fork: JSimpleModule;
+            parameters:
+                javaClass = "Fork";
+            display: "i=block/fork";
+        fifo: JSimpleModule[numQueues];
+            parameters:
+                javaClass = "Fifo";
+            display: "i=block/queue;q=queue;p=,,column";
+        join: JSimpleModule;
+            parameters:
+                javaClass = "Join";
+            display: "i=block/join";
+        sink: JSimpleModule;
+            parameters:
+                javaClass = "Sink";
+            display: "i=block/sink";
+    connections:
+        src.out++ --> fork.in++;
+
+        for i=0..numQueues-1 do
+            fork.out++ --> fifo[i].in++;
+            fifo[i].out++ --> join.in++;
+        endfor;
+
+        join.out++ --> sink.in++;
+endmodule
+
+network net4 : Net4
+    parameters:
+        numQueues = 3,
+        queueNumInitialJobs = 0,
+        queueServiceTime = exponential(1);
+endnetwork
+
