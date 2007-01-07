@@ -21,7 +21,7 @@ class JSimpleModule : public cSimpleModule, public JObjectAccess
     cMessage *msgToBeHandled;
 
   protected:
-    void createJavaObject();
+    void createJavaModuleObject();
 
   public:
     JSimpleModule();

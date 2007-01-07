@@ -1,10 +1,11 @@
 #include "JMessage.h"
 #include "JUtil.h"
 
+using namespace JUtil;  // for jenv, checkExceptions(), findMethod(), etc
+
+
 //#define DEBUGPRINTF printf
 #define DEBUGPRINTF (void)
-
-using namespace JUtil;
 
 
 JMessage::JMessage(const char *name, int kind, int) : cMessage(name, kind)

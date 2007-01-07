@@ -2,11 +2,11 @@
 #include "JSimpleModule.h"
 #include "JUtil.h"
 
+using namespace JUtil;  // for jenv, checkExceptions(), findMethod(), etc
+
+
 //#define DEBUGPRINTF printf
 #define DEBUGPRINTF (void)
-
-using namespace JUtil;
-
 
 Define_Module(JSimpleModule);
 
@@ -35,14 +35,14 @@ int JSimpleModule::numInitStages() const
 void JSimpleModule::initialize(int stage)
 {
     if (stage==0)
-        createJavaObject();
+        createJavaModuleObject();
 
     DEBUGPRINTF("Invoking initialize(%d) on new instance...\n", stage);
     jenv->CallVoidMethod(javaObject, initializeStageMethod, stage);
     checkExceptions();
 }
 
-void JSimpleModule::createJavaObject()
+void JSimpleModule::createJavaModuleObject()
 {
     // create VM if needed
     if (!jenv)
