@@ -13,7 +13,6 @@ DISTDIR = distrib
 EXTRA_OBJS = SimkernelJNI_registerNatives.obj simkernel_wrap.obj
 
 DIST_SRC_FILES = \
-  IMPLEMENTATION_NOTES \
   JMessage.cc \
   JMessage.h \
   JSimpleModule.cc \
