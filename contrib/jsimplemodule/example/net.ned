@@ -72,23 +72,23 @@ module Net4
         src: JSimpleModule;
             parameters:
                 javaClass = "Source";
-            display: "i=block/source";
+            display: "p=50,176;i=block/source";
         fork: JSimpleModule;
             parameters:
                 javaClass = "Fork";
-            display: "i=block/fork";
+            display: "p=148,176;i=block/fork";
         fifo: JSimpleModule[numQueues];
             parameters:
                 javaClass = "Fifo";
-            display: "i=block/queue;q=queue;p=,,column";
+            display: "i=block/queue;q=queue;p=247,104,column";
         join: JSimpleModule;
             parameters:
                 javaClass = "Join";
-            display: "i=block/join";
+            display: "p=350,176;i=block/join";
         sink: JSimpleModule;
             parameters:
                 javaClass = "Sink";
-            display: "i=block/sink";
+            display: "p=441,176;i=block/sink";
     connections:
         src.out++ --> fork.in++;
 
