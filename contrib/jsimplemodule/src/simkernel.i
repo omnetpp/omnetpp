@@ -351,27 +351,31 @@ cSimulation *getSimulation();
 %}
 
 %ignore JMessage::swigJavaPeer;
-%ignore JMessage::toString; // otherwise we have infinite recursion between Java and C++
 
-%ignore JMessage::getBooleanJavaField;
-%ignore JMessage::getByteJavaField;
-%ignore JMessage::getCharJavaField;
-%ignore JMessage::getShortJavaField;
-%ignore JMessage::getIntJavaField;
-%ignore JMessage::getLongJavaField;
-%ignore JMessage::getFloatJavaField;
-%ignore JMessage::getDoubleJavaField;
-%ignore JMessage::getStringJavaField;
+// hide toString() C++ methods which call back into Java: we don't want to
+// create infinite mutual recursion between them
+%ignore JMessage::toString;
+%ignore JSimpleModule::toString;
 
-%ignore JMessage::setBooleanJavaField;
-%ignore JMessage::setByteJavaField;
-%ignore JMessage::setCharJavaField;
-%ignore JMessage::setShortJavaField;
-%ignore JMessage::setIntJavaField;
-%ignore JMessage::setLongJavaField;
-%ignore JMessage::setFloatJavaField;
-%ignore JMessage::setDoubleJavaField;
-%ignore JMessage::setStringJavaField;
+// hide the following JObjectAccess methods (from JMessage and JSimpleModule too)
+%ignore getBooleanJavaField;
+%ignore getByteJavaField;
+%ignore getCharJavaField;
+%ignore getShortJavaField;
+%ignore getIntJavaField;
+%ignore getLongJavaField;
+%ignore getFloatJavaField;
+%ignore getDoubleJavaField;
+%ignore getStringJavaField;
+%ignore setBooleanJavaField;
+%ignore setByteJavaField;
+%ignore setCharJavaField;
+%ignore setShortJavaField;
+%ignore setIntJavaField;
+%ignore setLongJavaField;
+%ignore setFloatJavaField;
+%ignore setDoubleJavaField;
+%ignore setStringJavaField;
 
 
 // Note: we MUST NOT rename dup() to clone(), because then JMessage's dup()
