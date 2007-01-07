@@ -343,9 +343,12 @@ USING C++ MESSAGE CLASSES. If you already have C++ message classes that you
 want to access from Java (i.e. the INET Framework protocol headers and
 control info), then the best way is to wrap them using SWIG. The wrapper
 classes should be consistent with the ones already present in simkernel.jar.
-
 You will probably want to reuse parts of the SWIG interface files (.i)
 provided in the sources of this package.
+
+Without SWIG wrappers, an intermediary solution can be to stick C++-based
+"glue" simple modules between Java and C++ modules, which would convert
+between JMessage-based messages and C++ messages.
 
 
 ADDING CPAR OBJECTS. A historical way of adding data to messages is to
