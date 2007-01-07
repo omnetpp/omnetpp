@@ -1,11 +1,11 @@
 import org.omnetpp.simkernel.*;
 
-class TicMessage extends JMessage implements Cloneable {
+class HelloMessage extends JMessage implements Cloneable {
 
     protected int counter = 0;
     protected String text = "Hello";
 
-    public TicMessage(String name) {
+    public HelloMessage(String name) {
         super(name);
     }
 
@@ -21,6 +21,9 @@ class TicMessage extends JMessage implements Cloneable {
         text = value;
     }
 
+    public static HelloMessage castFrom(cPolymorphic o) {
+        return (HelloMessage)JMessage.castFrom(o);
+    }
 };
 
 

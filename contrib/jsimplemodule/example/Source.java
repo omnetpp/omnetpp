@@ -13,9 +13,11 @@ public class Source extends JSimpleModule {
     }
 
     protected void handleMessage(cMessage msg) {
-        String msgname = "msg-" + counter++;
-        ev.println("sending "+msgname);
-        send(new cMessage(msgname), "out");
+        ev.println("send #" + ++counter);
+
+        HelloMessage hello = new HelloMessage("msg-" + counter);
+        hello.setText("I am #" + counter);
+        send(hello, "out");
 
         ev.println("scheduling next send");
         scheduleAt(simTime() + Simkernel.exponential(1), msg);

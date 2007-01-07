@@ -85,10 +85,14 @@ module Net4
             parameters:
                 javaClass = "Join";
             display: "p=350,176;i=block/join";
+        count: JSimpleModule;
+            parameters:
+                javaClass = "CountHellos";
+            display: "p=441,176;i=block/star";
         sink: JSimpleModule;
             parameters:
                 javaClass = "Sink";
-            display: "p=441,176;i=block/sink";
+            display: "p=530,176;i=block/sink";
     connections:
         src.out++ --> fork.in++;
 
@@ -97,7 +101,8 @@ module Net4
             fifo[i].out++ --> join.in++;
         endfor;
 
-        join.out++ --> sink.in++;
+        join.out++ --> count.in++;
+        count.out++ --> sink.in++;
 endmodule
 
 network net4 : Net4

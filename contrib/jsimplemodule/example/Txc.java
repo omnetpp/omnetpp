@@ -8,7 +8,7 @@ class Txc extends JSimpleModule {
     protected void initialize() {
         ev.println("initialize of "+getFullPath());
         if (getFullName().equals("tic")) {
-            cMessage msg = new TicMessage("msg");
+            cMessage msg = new HelloMessage("msg");
             send(msg, "out");
         }
     }
@@ -16,8 +16,8 @@ class Txc extends JSimpleModule {
     protected void handleMessage(cMessage msg) {
         ev.println(msg.getName()+" arrived");
 
-        TicMessage ticMsg = (TicMessage)TicMessage.castFrom(msg);
-        ev.println("counter read "+ticMsg.getTimesRead()+" times");
+        HelloMessage helloMsg = HelloMessage.castFrom(msg);
+        ev.println("counter read " + helloMsg.getTimesRead() + " times");
 
         send(msg, "out");
     }
