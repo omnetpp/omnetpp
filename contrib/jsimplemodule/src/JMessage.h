@@ -31,7 +31,7 @@ class JMessage : public cMessage
     virtual cPolymorphic *dup() const  {return new JMessage(*this);}
     void swigSetJavaPeer(jobject msgObject);
     jobject swigJavaPeer() {return javaPeer;}
-    static jobject swigJavaPeerOf(cObject *object);
+    static jobject swigJavaPeerOf(cPolymorphic *object);
 
     jboolean getBooleanJavaField(const char *fieldName) const;
     jbyte getByteJavaField(const char *fieldName) const;

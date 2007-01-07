@@ -1,6 +1,6 @@
 import org.omnetpp.simkernel.*;
 
-class TicMessage extends JMessage {
+class TicMessage extends JMessage implements Cloneable {
 
     protected int counter = 0;
     protected String text = "Hello";

@@ -83,13 +83,13 @@ void JMessage::checkExceptions() const
         JENV->ExceptionClear();
 
         jclass throwableClass = JENV->GetObjectClass(exceptionObject);
-        jmethodID getMessageMethod = JENV->GetMethodID(throwableClass, "getMessage", "()Ljava/lang/String;");
+        jmethodID getMessageMethod = JENV->GetMethodID(throwableClass, "toString", "()Ljava/lang/String;");
         jstring msg = (jstring)JENV->CallObjectMethod(exceptionObject, getMessageMethod);
-        opp_error("%s", fromJavaString(msg).c_str());
+        opp_error(eCUSTOM, fromJavaString(msg).c_str());
     }
 }
 
-jobject JMessage::swigJavaPeerOf(cObject *object)
+jobject JMessage::swigJavaPeerOf(cPolymorphic *object)
 {
     JMessage *msg = dynamic_cast<JMessage *>(object);
     return msg ? msg->swigJavaPeer() : 0;

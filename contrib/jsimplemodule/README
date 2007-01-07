@@ -277,9 +277,10 @@ three ways:
 
 We'll look at each.
 
-SUBCLASSING JMESSAGE. Messages whose contents only need to be accessed from
-Java code can be written in Java. However, a naive approach to subclass
-the cMessage Java class is doomed to fail:
+SUBCLASSING JMESSAGE. You can add data to messages by subclassing them in
+Java, the only disadvantage being that their contents will not be that easily
+accessible from C++. However, a naive approach to subclass the cMessage Java
+class is doomed to fail:
 
   public class cMessageExt extends cMessage {  // WRONG!
 
@@ -300,7 +301,7 @@ Java reference so the Java peer object can be garbage collected.
 
 JMessage can be subclassed as any Java class:
 
-  public class MyMessage extends JMessage {  // correct
+  public class MyMessage extends JMessage implements Cloneable {  // correct
      ...
   }
 
@@ -309,13 +310,34 @@ accessed using JMessage.castFrom():
 
   MyMessage myMsg = (MyMessage) JMessage.castFrom(msg);
 
-Note that a JMessage can travel through C++ simple modules without any
-problem, only it is not very convenient to access its contents from C++
-(that would need JNI). When a JMessage gets duplicated somewhere in the C++
-code using dup(), it will clone Java peer object too, by calling back its
-clone() method via JNI. Thus it is recommended to implement clone() in
-the Java class.
+When a JMessage gets duplicated somewhere in the C++ code using dup(), it
+will clone Java peer object too, by calling back its clone() method via
+JNI. So it is recommended to implement the java.lang.Cloneable interface
+(to prevent CloneNotSupportedException), and write a clone() method in the
+Java class.
 
+Note that a JMessage can travel through C++ simple modules without any
+problem. Even its contents can be manipulated from C++ by convenience
+methods declared on the JMessage C++ class: getIntJavaField(),
+getDoubleJavaField(), getStringJavaField(), setIntJavaField(),
+setDoubleJavaField(), setStringJavaField(), etc. The fields must be identified
+with a their name (a string), and the JMessage class will read/write them
+via JNI. An example C++ code:
+
+   JMessage *jmsg = check_and_cast<JMessage *>(msg);
+   ev << "counter=" << jmsg->getIntJavaField("counter") << endl;
+
+The getIntJavaField() method in the above example will first look for a
+
+   public int getCounter() {...}
+
+method in the Java object, and if it not found, it will try it as a
+
+   public int counter;
+
+data member. If it is not there either, a runtime error gets thrown.
+Similarly, the setXxxJavaField() methods first look for a setXxx()
+method, then a xxx data member.
 
 CPAR. When a message's contents must be accessed ...
 

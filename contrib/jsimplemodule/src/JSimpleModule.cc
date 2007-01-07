@@ -157,9 +157,9 @@ void JSimpleModule::checkExceptions() const
         jenv->ExceptionClear();
 
         jclass throwableClass = jenv->GetObjectClass(exceptionObject);
-        jmethodID getMessageMethod = jenv->GetMethodID(throwableClass, "getMessage", "()Ljava/lang/String;");
+        jmethodID getMessageMethod = jenv->GetMethodID(throwableClass, "toString", "()Ljava/lang/String;");
         jstring msg = (jstring)jenv->CallObjectMethod(exceptionObject, getMessageMethod);
-        opp_error("%s", fromJavaString(msg).c_str());
+        opp_error(eCUSTOM, fromJavaString(msg).c_str());
     }
 }
 

@@ -336,7 +336,6 @@ cSimulation *getSimulation();
 %}
 
 // JMessage
-%typemap(javainterfaces) JMessage "Cloneable";
 %ignore JMessage::swigJavaPeer;
 %javamethodmodifiers JMessage::JMessage "private";
 %javamethodmodifiers JMessage::swigSetJavaPeer "private";
@@ -347,7 +346,7 @@ cSimulation *getSimulation();
   public JMessage(String name) {this(name, 0, 99); swigSetJavaPeer(this); }
   public JMessage(String name, int kind) {this(name, kind, 99); swigSetJavaPeer(this); }
 
-  public static JMessage castFrom(cObject object) {
+  public static JMessage castFrom(cPolymorphic object) {
     return (JMessage) JMessage.swigJavaPeerOf(object);
   }
 %}
@@ -373,10 +372,9 @@ cSimulation *getSimulation();
 %ignore JMessage::setStringJavaField;
 
 
-//
-// Map C++ dup() to Java's clone()
-//
-%rename dup clone;
+// Note: we MUST NOT rename dup() to clone(), because then JMessage's dup()
+// would go into infinite mutual recursion between Java clone() and C++ dup()!
+//%rename dup clone;
 
 
 //
