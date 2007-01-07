@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <omnetpp.h>
 
+
 /**
  * Implements a message class that can be extended in Java
  */

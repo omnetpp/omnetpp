@@ -102,11 +102,18 @@ void JMessage::getMethodOrField(const char *fieldName, const char *methodPrefix,
                                 const char *methodsig, const char *fieldsig,
                                 jmethodID& methodID, jfieldID& fieldID) const
 {
+    if (!fieldName || !fieldName[0] || strlen(fieldName)>80)
+        opp_error("field name empty or too long: `%s'", fieldName);
+    char methodName[100];
+    strcpy(methodName, methodPrefix);
+    char *p = methodName + strlen(methodName);
+    *p = toupper(fieldName[0]);
+    strcpy(p+1, fieldName+1);
+
     jclass clazz = JENV->GetObjectClass(javaPeer);
     checkExceptions();
     fieldID = 0;
-    std::string methodName = std::string(methodPrefix)+fieldName; //XXX toupper first char!
-    methodID = JENV->GetMethodID(clazz, methodName.c_str(), methodsig);
+    methodID = JENV->GetMethodID(clazz, methodName, methodsig);
     if (methodID)
         return;
     JENV->ExceptionClear();
@@ -114,8 +121,8 @@ void JMessage::getMethodOrField(const char *fieldName, const char *methodPrefix,
     if (fieldID)
         return;
     JENV->ExceptionClear();
-    opp_error("(%s)%s: neither method `%s' nor field `%s' found in the Java object",
-              className(), fullName(), methodName.c_str(), fieldName);
+    opp_error("(%s)%s: Java object has neither method `%s' nor field `%s' with the given type",
+              className(), fullName(), methodName, fieldName);
 }
 
 #define GETTER_SETTER(Type, jtype, CODE)  \
@@ -142,9 +149,7 @@ GETTER_SETTER(Long,    jlong,    "J")
 GETTER_SETTER(Float,   jfloat,   "F")
 GETTER_SETTER(Double,  jdouble,  "D")
 
-//TODO methods for wrapping/unwrapping strings
 #define JSTRING "Ljava/lang/String;"
-
 
 std::string JMessage::getStringJavaField(const char *fieldName) const
 {
