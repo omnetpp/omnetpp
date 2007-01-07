@@ -88,6 +88,12 @@ JObjectAccess::JObjectAccess(jobject object)
     toStringMethod = 0;
 }
 
+void JObjectAccess::setObject(jobject object)
+{
+    javaPeer = object;
+    toStringMethod = 0;
+}
+
 std::string JObjectAccess::toString() const
 {
     if (!toStringMethod)

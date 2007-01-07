@@ -5,16 +5,16 @@
 #include <stdio.h>
 #include <assert.h>
 #include <omnetpp.h>
+#include "JUtil.h"
 
 
 /**
  * Implements a message class that can be extended in Java
  */
-class JMessage : public cMessage
+class JMessage : public cMessage, public JObjectAccess
 {
   protected:
     jobject javaPeer;
-    mutable jmethodID toStringMethod;
     mutable jmethodID cloneMethod;
 
   protected:
@@ -28,35 +28,11 @@ class JMessage : public cMessage
     virtual ~JMessage();
     JMessage& operator=(const JMessage& msg);
     virtual cPolymorphic *dup() const  {return new JMessage(*this);}
-    std::string toString() const;
     std::string info() const;
     std::string detailedInfo() const;
     void swigSetJavaPeer(jobject msgObject);
     jobject swigJavaPeer() {return javaPeer;}
     static jobject swigJavaPeerOf(cPolymorphic *object);
-
-    jboolean getBooleanJavaField(const char *fieldName) const;
-    jbyte getByteJavaField(const char *fieldName) const;
-    jchar getCharJavaField(const char *fieldName) const;
-    jshort getShortJavaField(const char *fieldName) const;
-    jint getIntJavaField(const char *fieldName) const;
-    jlong getLongJavaField(const char *fieldName) const;
-    jfloat getFloatJavaField(const char *fieldName) const;
-    jdouble getDoubleJavaField(const char *fieldName) const;
-    std::string getStringJavaField(const char *fieldName) const;
-
-    void setBooleanJavaField(const char *fieldName, jboolean value);
-    void setByteJavaField(const char *fieldName, jbyte value);
-    void setCharJavaField(const char *fieldName, jchar value);
-    void setShortJavaField(const char *fieldName, jshort value);
-    void setIntJavaField(const char *fieldName, jint value);
-    void setLongJavaField(const char *fieldName, jlong value);
-    void setFloatJavaField(const char *fieldName, jfloat value);
-    void setDoubleJavaField(const char *fieldName, jdouble value);
-    void setStringJavaField(const char *fieldName, const char *value);
-
-    //FIXME info() should return Java's toString()
-
 };
 
 #endif

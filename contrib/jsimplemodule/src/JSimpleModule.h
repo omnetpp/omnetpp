@@ -5,11 +5,12 @@
 #include <stdio.h>
 #include <assert.h>
 #include <omnetpp.h>
+#include "JUtil.h"
 
 /**
  * Implements a Java-based simple module.
  */
-class JSimpleModule : public cSimpleModule
+class JSimpleModule : public cSimpleModule, public JObjectAccess
 {
   protected:
     jobject javaObject;

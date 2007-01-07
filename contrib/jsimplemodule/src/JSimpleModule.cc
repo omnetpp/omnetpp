@@ -80,6 +80,7 @@ void JSimpleModule::createJavaObject()
     }
     javaObject = jenv->NewGlobalRef(javaObject);
     checkExceptions();
+    JObjectAccess::setObject(javaObject);
 }
 
 void JSimpleModule::handleMessage(cMessage *msg)

@@ -39,6 +39,7 @@ class JObjectAccess
 
   public:
     explicit JObjectAccess(jobject object=0);
+    void setObject(jobject object);
     std::string toString() const;
 
     jboolean getBooleanJavaField(const char *fieldName) const;
