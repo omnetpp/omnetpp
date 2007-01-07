@@ -35,6 +35,8 @@
 %include "memorymgmt_plain.i"
 //%include "memorymgmt_msg_one2one.i"
 
+%include "reflect.i"
+
 #pragma SWIG nowarn=516;  // "Overloaded method x ignored. Method y used."
 
 // SWIG doesn't understand nested classes, turn off corresponding warnings
