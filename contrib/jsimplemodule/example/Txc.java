@@ -1,5 +1,8 @@
 import org.omnetpp.simkernel.*;
 
+/**
+ * Tic-Toc component.
+ */
 class Txc extends JSimpleModule {
 
     protected void initialize() {

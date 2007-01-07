@@ -1,5 +1,8 @@
 import org.omnetpp.simkernel.*;
 
+/**
+ * Just discards messages.
+ */
 public class Sink extends JSimpleModule {
 
     public void handleMessage(cMessage msg) {

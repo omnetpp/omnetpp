@@ -1,5 +1,8 @@
 import org.omnetpp.simkernel.*;
 
+/**
+ * Duplicated messages on all outputs.
+ */
 public class Fork extends JSimpleModule {
 
     protected long counter = 0;

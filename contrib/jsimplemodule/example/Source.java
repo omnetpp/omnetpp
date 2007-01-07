@@ -1,7 +1,10 @@
 import org.omnetpp.simkernel.*;
 
+/**
+ * Sends a message periodically.
+ */
 public class Source extends JSimpleModule {
-    private int i = 0;
+    private int counter = 0;
 
     protected void initialize() {
         ev.println("initialize of "+getFullPath());
@@ -10,9 +13,10 @@ public class Source extends JSimpleModule {
     }
 
     protected void handleMessage(cMessage msg) {
-        String msgname = "msg-" + i++;
+        String msgname = "msg-" + counter++;
         ev.println("sending "+msgname);
         send(new cMessage(msgname), "out");
+
         ev.println("scheduling next send");
         scheduleAt(simTime() + Simkernel.exponential(1), msg);
     }
