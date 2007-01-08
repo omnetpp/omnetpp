@@ -347,7 +347,7 @@ cSimulation *getSimulation();
   public JMessage(String name) {this(name, 0, 99); swigSetJavaPeer(this); }
   public JMessage(String name, int kind) {this(name, kind, 99); swigSetJavaPeer(this); }
 
-  public static JMessage castFrom(cPolymorphic object) {
+  public static JMessage cast(cPolymorphic object) {
     return (JMessage) JMessage.swigJavaPeerOf(object);
   }
 %}

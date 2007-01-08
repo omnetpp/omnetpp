@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# Implement transfer of ownership into castFrom()
+# Implement transfer of ownership into cast()
 #
 
 $verbose = 0;
@@ -10,7 +10,7 @@ die "no directory specified" if ($dir eq '');
 
 chdir $dir || die "cannot cd to $dir";
 foreach $fname (glob("*.java")) {
-    print "patching castFrom() in $fname...";
+    print "patching cast() in $fname...";
     $content = load_file("$fname");
 
     #

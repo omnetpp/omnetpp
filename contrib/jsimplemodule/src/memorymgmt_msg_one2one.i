@@ -12,8 +12,8 @@
 // is needed for messages. (There's only one wrapper object for any given
 // message, and it's swigCMemOwn flag is [in theory] appropriately managed.)
 //
-// The <classname>.castFrom() static method (e.g. cMessage.castFrom(object))
-// can be used to cast to subtypes. castFrom() also transfers ownership of
+// The <classname>.cast() static method (e.g. cMessage.cast(object))
+// can be used to cast to subtypes. cast() also transfers ownership of
 // the C++ object into the new Java wrapper, so the original wrapper object
 // SHOULD NOT be referenced afterwards!
 //
@@ -186,7 +186,7 @@
 %define DERIVEDCLASS(CLASS,BASECLASS)
 %extend CLASS {
   //static int swigBaseClassOffset() {CLASS *p = (CLASS *)0x10000; return (int)(static_cast<BASECLASS *>(p)) - 0x10000;}
-  static CLASS *castFrom(BASECLASS *obj) {return dynamic_cast<CLASS *>(obj);}
+  static CLASS *cast(BASECLASS *obj) {return dynamic_cast<CLASS *>(obj);}
 }
 %enddef
 
