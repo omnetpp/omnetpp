@@ -920,108 +920,13 @@ jint Java_org_omnetpp_simkernel_SimkernelJNI_get_1OMNETPP_1VERSION(JNIEnv *jenv,
     (void)jcls;
     {
         try {
-            result = (int) 0x0304;
+            result = (int) 0x0303;
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
         }
     }
     jresult = (jint)result; 
-    return jresult;
-}
-
-
-jint Java_org_omnetpp_simkernel_SimkernelJNI_get_1MAX_1CLASSNAME(JNIEnv *jenv, jclass jcls) {
-    jint jresult = 0 ;
-    int result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    {
-        try {
-            result = (int) 100;
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    jresult = (jint)result; 
-    return jresult;
-}
-
-
-jint Java_org_omnetpp_simkernel_SimkernelJNI_get_1MAX_1OBJECTFULLPATH(JNIEnv *jenv, jclass jcls) {
-    jint jresult = 0 ;
-    int result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    {
-        try {
-            result = (int) 1024;
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    jresult = (jint)result; 
-    return jresult;
-}
-
-
-jint Java_org_omnetpp_simkernel_SimkernelJNI_get_1MAX_1OBJECTINFO(JNIEnv *jenv, jclass jcls) {
-    jint jresult = 0 ;
-    int result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    {
-        try {
-            result = (int) 500;
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    jresult = (jint)result; 
-    return jresult;
-}
-
-
-jint Java_org_omnetpp_simkernel_SimkernelJNI_get_1FULLPATHBUF_1SIZE(JNIEnv *jenv, jclass jcls) {
-    jint jresult = 0 ;
-    int result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    {
-        try {
-            result = (int) 1024;
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    jresult = (jint)result; 
-    return jresult;
-}
-
-
-jdouble Java_org_omnetpp_simkernel_SimkernelJNI_get_1PI(JNIEnv *jenv, jclass jcls) {
-    jdouble jresult = 0 ;
-    double result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    {
-        try {
-            result = (double) 3.141592653589793;
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    jresult = (jdouble)result; 
     return jresult;
 }
 
@@ -1129,7 +1034,7 @@ jstring Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1getFullPath(JNIEnv
 }
 
 
-jstring Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1getInfo_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jstring Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1getInfo(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jstring jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
     std::string result;
@@ -1147,34 +1052,6 @@ jstring Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1getInfo_1_1SWIG_10
     }
     jresult = jenv->NewStringUTF((&result)->c_str()); 
     return jresult;
-}
-
-
-void Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1getInfo_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
-    cPolymorphic *arg1 = (cPolymorphic *) 0 ;
-    char *arg2 = (char *) 0 ;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cPolymorphic **)(void *)&jarg1; 
-    {
-        arg2 = 0;
-        if (jarg2) {
-            arg2 = (char *)jenv->GetStringUTFChars(jarg2, 0);
-            if (!arg2) return ;
-        }
-    }
-    {
-        try {
-            (arg1)->info(arg2);
-            
-        } catch (cException *e) {
-            SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    {
-        if (arg2) jenv->ReleaseStringUTFChars(jarg2, arg2); 
-    }
 }
 
 
@@ -1483,68 +1360,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1cast(JNIEnv *jenv, j
 }
 
 
-jint Java_org_omnetpp_simkernel_SimkernelJNI_get_1MAX_1INTERNAL_1NAME(JNIEnv *jenv, jclass jcls) {
-    jint jresult = 0 ;
-    int result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    {
-        try {
-            result = (int) 11;
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    jresult = (jint)result; 
-    return jresult;
-}
-
-
-void Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1setDefaultOwner(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    cDefaultList *arg1 = (cDefaultList *) 0 ;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cDefaultList **)(void *)&jarg1; 
-    {
-        try {
-            cObject::setDefaultOwner(arg1);
-            
-        } catch (cException *e) {
-            SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cObject_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jlong jresult = 0 ;
-    cObject *arg1 = 0 ;
-    cObject *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cObject **)(void *)&jarg1;
-    if(!arg1) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cObject const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            result = (cObject *)new cObject((cObject const &)*arg1);
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cObject **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cObject_1_1SWIG_11(JNIEnv *jenv, jclass jcls) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cObject_1_1SWIG_10(JNIEnv *jenv, jclass jcls) {
     jlong jresult = 0 ;
     cObject *result;
     
@@ -1563,7 +1379,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cObject_1_1SWIG_11(JNIEnv *je
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cObject_1_1SWIG_12(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cObject_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jstring jarg1) {
     jlong jresult = 0 ;
     char *arg1 = (char *) 0 ;
     cObject *result;
@@ -1627,36 +1443,6 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1dup(JNIEnv *jenv, jclass 
         }
     }
     *(cPolymorphic **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1assign(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
-    jlong jresult = 0 ;
-    cObject *arg1 = (cObject *) 0 ;
-    cObject *arg2 = 0 ;
-    cObject *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cObject **)(void *)&jarg1; 
-    arg2 = *(cObject **)(void *)&jarg2;
-    if(!arg2) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cObject const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            {
-                cObject &_result_ref = (arg1)->operator =((cObject const &)*arg2);
-                result = (cObject *) &_result_ref;
-            }
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cObject **)(void *)&jresult = result; 
     return jresult;
 }
 
@@ -3529,32 +3315,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cDefaultList_1takeAllObjectsFrom(JN
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cDefaultList_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jlong jresult = 0 ;
-    cDefaultList *arg1 = 0 ;
-    cDefaultList *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cDefaultList **)(void *)&jarg1;
-    if(!arg1) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cDefaultList const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            result = (cDefaultList *)new cDefaultList((cDefaultList const &)*arg1);
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cDefaultList **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cDefaultList_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cDefaultList_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jstring jarg1) {
     jlong jresult = 0 ;
     char *arg1 = (char *) 0 ;
     cDefaultList *result;
@@ -3584,7 +3345,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cDefaultList_1_1SWIG_11(JNIEn
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cDefaultList_1_1SWIG_12(JNIEnv *jenv, jclass jcls) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cDefaultList_1_1SWIG_11(JNIEnv *jenv, jclass jcls) {
     jlong jresult = 0 ;
     cDefaultList *result;
     
@@ -3617,36 +3378,6 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cDefaultList(JNIEnv *jenv, 
             SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
         }
     }
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cDefaultList_1assign(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
-    jlong jresult = 0 ;
-    cDefaultList *arg1 = (cDefaultList *) 0 ;
-    cDefaultList *arg2 = 0 ;
-    cDefaultList *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cDefaultList **)(void *)&jarg1; 
-    arg2 = *(cDefaultList **)(void *)&jarg2;
-    if(!arg2) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cDefaultList const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            {
-                cDefaultList &_result_ref = (arg1)->operator =((cDefaultList const &)*arg2);
-                result = (cDefaultList *) &_result_ref;
-            }
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cDefaultList **)(void *)&jresult = result; 
-    return jresult;
 }
 
 
@@ -3820,32 +3551,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cDefaultList_1cast(JNIEnv *jenv, j
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cSimulation_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jlong jresult = 0 ;
-    cSimulation *arg1 = 0 ;
-    cSimulation *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cSimulation **)(void *)&jarg1;
-    if(!arg1) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cSimulation const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            result = (cSimulation *)new cSimulation((cSimulation const &)*arg1);
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cSimulation **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cSimulation_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cSimulation(JNIEnv *jenv, jclass jcls, jstring jarg1) {
     jlong jresult = 0 ;
     char *arg1 = (char *) 0 ;
     cSimulation *result;
@@ -4326,36 +4032,6 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cModuleType(JNIEnv *jenv, j
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cModuleType_1assign(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
-    jlong jresult = 0 ;
-    cModuleType *arg1 = (cModuleType *) 0 ;
-    cModuleType *arg2 = 0 ;
-    cModuleType *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cModuleType **)(void *)&jarg1; 
-    arg2 = *(cModuleType **)(void *)&jarg2;
-    if(!arg2) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cModuleType const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            {
-                cModuleType &_result_ref = (arg1)->operator =((cModuleType const &)*arg2);
-                result = (cModuleType *) &_result_ref;
-            }
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cModuleType **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
 jlong Java_org_omnetpp_simkernel_SimkernelJNI_cModuleType_1dup(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cModuleType *arg1 = (cModuleType *) 0 ;
@@ -4540,36 +4216,6 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cChannelType(JNIEnv *jenv, 
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cChannelType_1assign(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
-    jlong jresult = 0 ;
-    cChannelType *arg1 = (cChannelType *) 0 ;
-    cChannelType *arg2 = 0 ;
-    cChannelType *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cChannelType **)(void *)&jarg1; 
-    arg2 = *(cChannelType **)(void *)&jarg2;
-    if(!arg2) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cChannelType const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            {
-                cChannelType &_result_ref = (arg1)->operator =((cChannelType const &)*arg2);
-                result = (cChannelType *) &_result_ref;
-            }
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cChannelType **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
 jlong Java_org_omnetpp_simkernel_SimkernelJNI_cChannelType_1create(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
     jlong jresult = 0 ;
     cChannelType *arg1 = (cChannelType *) 0 ;
@@ -4637,36 +4283,6 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cNetworkType(JNIEnv *jenv, 
             SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
         }
     }
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cNetworkType_1assign(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
-    jlong jresult = 0 ;
-    cNetworkType *arg1 = (cNetworkType *) 0 ;
-    cNetworkType *arg2 = 0 ;
-    cNetworkType *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cNetworkType **)(void *)&jarg1; 
-    arg2 = *(cNetworkType **)(void *)&jarg2;
-    if(!arg2) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cNetworkType const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            {
-                cNetworkType &_result_ref = (arg1)->operator =((cNetworkType const &)*arg2);
-                result = (cNetworkType *) &_result_ref;
-            }
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cNetworkType **)(void *)&jresult = result; 
-    return jresult;
 }
 
 
@@ -4768,32 +4384,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_createOneIfClassIsKnown(JNIEnv *je
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cArray_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jlong jresult = 0 ;
-    cArray *arg1 = 0 ;
-    cArray *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cArray **)(void *)&jarg1;
-    if(!arg1) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cArray const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            result = (cArray *)new cArray((cArray const &)*arg1);
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cArray **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cArray_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jstring jarg1, jint jarg2, jint jarg3) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cArray_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jstring jarg1, jint jarg2, jint jarg3) {
     jlong jresult = 0 ;
     char *arg1 = (char *) 0 ;
     int arg2 ;
@@ -4827,7 +4418,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cArray_1_1SWIG_11(JNIEnv *jen
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cArray_1_1SWIG_12(JNIEnv *jenv, jclass jcls, jstring jarg1, jint jarg2) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cArray_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jstring jarg1, jint jarg2) {
     jlong jresult = 0 ;
     char *arg1 = (char *) 0 ;
     int arg2 ;
@@ -4859,7 +4450,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cArray_1_1SWIG_12(JNIEnv *jen
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cArray_1_1SWIG_13(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cArray_1_1SWIG_12(JNIEnv *jenv, jclass jcls, jstring jarg1) {
     jlong jresult = 0 ;
     char *arg1 = (char *) 0 ;
     cArray *result;
@@ -4889,7 +4480,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cArray_1_1SWIG_13(JNIEnv *jen
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cArray_1_1SWIG_14(JNIEnv *jenv, jclass jcls) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cArray_1_1SWIG_13(JNIEnv *jenv, jclass jcls) {
     jlong jresult = 0 ;
     cArray *result;
     
@@ -4922,36 +4513,6 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cArray(JNIEnv *jenv, jclass
             SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
         }
     }
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cArray_1assign(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
-    jlong jresult = 0 ;
-    cArray *arg1 = (cArray *) 0 ;
-    cArray *arg2 = 0 ;
-    cArray *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cArray **)(void *)&jarg1; 
-    arg2 = *(cArray **)(void *)&jarg2;
-    if(!arg2) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cArray const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            {
-                cArray &_result_ref = (arg1)->operator =((cArray const &)*arg2);
-                result = (cArray *) &_result_ref;
-            }
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cArray **)(void *)&jresult = result; 
-    return jresult;
 }
 
 
@@ -5429,32 +4990,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cArray_1cast(JNIEnv *jenv, jclass 
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cQueue_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jlong jresult = 0 ;
-    cQueue *arg1 = 0 ;
-    cQueue *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cQueue **)(void *)&jarg1;
-    if(!arg1) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cQueue const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            result = (cQueue *)new cQueue((cQueue const &)*arg1);
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cQueue **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cQueue_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cQueue_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jstring jarg1) {
     jlong jresult = 0 ;
     char *arg1 = (char *) 0 ;
     cQueue *result;
@@ -5484,7 +5020,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cQueue_1_1SWIG_11(JNIEnv *jen
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cQueue_1_1SWIG_12(JNIEnv *jenv, jclass jcls) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cQueue_1_1SWIG_11(JNIEnv *jenv, jclass jcls) {
     jlong jresult = 0 ;
     cQueue *result;
     
@@ -5517,36 +5053,6 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cQueue(JNIEnv *jenv, jclass
             SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
         }
     }
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cQueue_1assign(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
-    jlong jresult = 0 ;
-    cQueue *arg1 = (cQueue *) 0 ;
-    cQueue *arg2 = 0 ;
-    cQueue *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cQueue **)(void *)&jarg1; 
-    arg2 = *(cQueue **)(void *)&jarg2;
-    if(!arg2) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cQueue const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            {
-                cQueue &_result_ref = (arg1)->operator =((cQueue const &)*arg2);
-                result = (cQueue *) &_result_ref;
-            }
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cQueue **)(void *)&jresult = result; 
-    return jresult;
 }
 
 
@@ -5716,27 +5222,6 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cQueue_1pop(JNIEnv *jenv, jclass j
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cQueue_1getTail(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jlong jresult = 0 ;
-    cQueue *arg1 = (cQueue *) 0 ;
-    cObject *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cQueue **)(void *)&jarg1; 
-    {
-        try {
-            result = (cObject *)(arg1)->getTail();
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cObject **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
 void Java_org_omnetpp_simkernel_SimkernelJNI_cQueue_1clear(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     cQueue *arg1 = (cQueue *) 0 ;
     
@@ -5834,29 +5319,6 @@ jboolean Java_org_omnetpp_simkernel_SimkernelJNI_cQueue_1isEmpty(JNIEnv *jenv, j
         }
     }
     jresult = (jboolean)result; 
-    return jresult;
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cQueue_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jint jarg2) {
-    jlong jresult = 0 ;
-    cQueue *arg1 = (cQueue *) 0 ;
-    int arg2 ;
-    cObject *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cQueue **)(void *)&jarg1; 
-    arg2 = (int)jarg2; 
-    {
-        try {
-            result = (cObject *)((cQueue const *)arg1)->get(arg2);
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cObject **)(void *)&jresult = result; 
     return jresult;
 }
 
@@ -6031,25 +5493,6 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_findChannelType(JNIEnv *jenv, jcla
     {
         if (arg1) jenv->ReleaseStringUTFChars(jarg1, arg1); 
     }
-    return jresult;
-}
-
-
-jint Java_org_omnetpp_simkernel_SimkernelJNI_get_1SHORTSTR(JNIEnv *jenv, jclass jcls) {
-    jint jresult = 0 ;
-    int result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    {
-        try {
-            result = (int) 27;
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    jresult = (jint)result; 
     return jresult;
 }
 
@@ -6257,32 +5700,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cDoubleExpression(JNIEnv *j
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cPar_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jlong jresult = 0 ;
-    cPar *arg1 = 0 ;
-    cPar *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cPar **)(void *)&jarg1;
-    if(!arg1) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cPar const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            result = (cPar *)new cPar((cPar const &)*arg1);
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cPar **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cPar_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cPar_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jstring jarg1) {
     jlong jresult = 0 ;
     char *arg1 = (char *) 0 ;
     cPar *result;
@@ -6312,7 +5730,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cPar_1_1SWIG_11(JNIEnv *jenv,
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cPar_1_1SWIG_12(JNIEnv *jenv, jclass jcls) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cPar_1_1SWIG_11(JNIEnv *jenv, jclass jcls) {
     jlong jresult = 0 ;
     cPar *result;
     
@@ -6331,7 +5749,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cPar_1_1SWIG_12(JNIEnv *jenv,
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cPar_1_1SWIG_13(JNIEnv *jenv, jclass jcls, jstring jarg1, jlong jarg2) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cPar_1_1SWIG_12(JNIEnv *jenv, jclass jcls, jstring jarg1, jlong jarg2) {
     jlong jresult = 0 ;
     char *arg1 = (char *) 0 ;
     cPar *arg2 = 0 ;
@@ -6384,36 +5802,6 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cPar(JNIEnv *jenv, jclass j
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
-    jlong jresult = 0 ;
-    cPar *arg1 = (cPar *) 0 ;
-    cPar *arg2 = 0 ;
-    cPar *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cPar **)(void *)&jarg1; 
-    arg2 = *(cPar **)(void *)&jarg2;
-    if(!arg2) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cPar const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            {
-                cPar &_result_ref = (arg1)->operator =((cPar const &)*arg2);
-                result = (cPar *) &_result_ref;
-            }
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cPar **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
 jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1dup(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPar *arg1 = (cPar *) 0 ;
@@ -6446,27 +5834,6 @@ jstring Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1getInfo(JNIEnv *jenv, jcla
     {
         try {
             result = ((cPar const *)arg1)->info();
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    jresult = jenv->NewStringUTF((&result)->c_str()); 
-    return jresult;
-}
-
-
-jstring Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1getDetailedInfo(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jstring jresult = 0 ;
-    cPar *arg1 = (cPar *) 0 ;
-    std::string result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cPar **)(void *)&jarg1; 
-    {
-        try {
-            result = ((cPar const *)arg1)->detailedInfo();
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -7266,7 +6633,7 @@ jboolean Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1setFromText_1_1SWIG_11(JN
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jboolean jarg2) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1set_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1, jboolean jarg2) {
     jlong jresult = 0 ;
     cPar *arg1 = (cPar *) 0 ;
     bool arg2 ;
@@ -7292,7 +6659,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_11(JNIEnv *je
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_12(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1set_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
     jlong jresult = 0 ;
     cPar *arg1 = (cPar *) 0 ;
     char *arg2 = (char *) 0 ;
@@ -7327,7 +6694,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_12(JNIEnv *je
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_13(JNIEnv *jenv, jclass jcls, jlong jarg1, jchar jarg2) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1set_1_1SWIG_12(JNIEnv *jenv, jclass jcls, jlong jarg1, jchar jarg2) {
     jlong jresult = 0 ;
     cPar *arg1 = (cPar *) 0 ;
     char arg2 ;
@@ -7353,7 +6720,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_13(JNIEnv *je
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_14(JNIEnv *jenv, jclass jcls, jlong jarg1, jshort jarg2) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1set_1_1SWIG_13(JNIEnv *jenv, jclass jcls, jlong jarg1, jshort jarg2) {
     jlong jresult = 0 ;
     cPar *arg1 = (cPar *) 0 ;
     unsigned char arg2 ;
@@ -7379,7 +6746,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_14(JNIEnv *je
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_15(JNIEnv *jenv, jclass jcls, jlong jarg1, jint jarg2) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1set_1_1SWIG_14(JNIEnv *jenv, jclass jcls, jlong jarg1, jint jarg2) {
     jlong jresult = 0 ;
     cPar *arg1 = (cPar *) 0 ;
     int arg2 ;
@@ -7405,7 +6772,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_15(JNIEnv *je
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_16(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1set_1_1SWIG_15(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
     jlong jresult = 0 ;
     cPar *arg1 = (cPar *) 0 ;
     unsigned int arg2 ;
@@ -7431,7 +6798,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_16(JNIEnv *je
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_111(JNIEnv *jenv, jclass jcls, jlong jarg1, jdouble jarg2) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1set_1_1SWIG_110(JNIEnv *jenv, jclass jcls, jlong jarg1, jdouble jarg2) {
     jlong jresult = 0 ;
     cPar *arg1 = (cPar *) 0 ;
     double arg2 ;
@@ -7457,7 +6824,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_111(JNIEnv *j
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_112(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1set_1_1SWIG_111(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
     jlong jresult = 0 ;
     cPar *arg1 = (cPar *) 0 ;
     cObject *arg2 = (cObject *) 0 ;
@@ -7483,7 +6850,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_112(JNIEnv *j
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_113(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1set_1_1SWIG_112(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
     jlong jresult = 0 ;
     cPar *arg1 = (cPar *) 0 ;
     cXMLElement *arg2 = (cXMLElement *) 0 ;
@@ -7654,36 +7021,6 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cModulePar(JNIEnv *jenv, jc
             SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
         }
     }
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cModulePar_1assign(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
-    jlong jresult = 0 ;
-    cModulePar *arg1 = (cModulePar *) 0 ;
-    cModulePar *arg2 = 0 ;
-    cModulePar *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cModulePar **)(void *)&jarg1; 
-    arg2 = *(cModulePar **)(void *)&jarg2;
-    if(!arg2) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cModulePar const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            {
-                cModulePar &_result_ref = (arg1)->operator =((cModulePar const &)*arg2);
-                result = (cModulePar *) &_result_ref;
-            }
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cModulePar **)(void *)&jresult = result; 
-    return jresult;
 }
 
 
@@ -7864,70 +7201,7 @@ jboolean Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1hasDisplayString(JNIEnv 
 }
 
 
-void Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1_1setTo(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
-    cGate *arg1 = (cGate *) 0 ;
-    cGate *arg2 = (cGate *) 0 ;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cGate **)(void *)&jarg1; 
-    arg2 = *(cGate **)(void *)&jarg2; 
-    {
-        try {
-            (arg1)->_setTo(arg2);
-            
-        } catch (cException *e) {
-            SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-}
-
-
-void Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1_1setFrom(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
-    cGate *arg1 = (cGate *) 0 ;
-    cGate *arg2 = (cGate *) 0 ;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cGate **)(void *)&jarg1; 
-    arg2 = *(cGate **)(void *)&jarg2; 
-    {
-        try {
-            (arg1)->_setFrom(arg2);
-            
-        } catch (cException *e) {
-            SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cGate_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jlong jresult = 0 ;
-    cGate *arg1 = 0 ;
-    cGate *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cGate **)(void *)&jarg1;
-    if(!arg1) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cGate const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            result = (cGate *)new cGate((cGate const &)*arg1);
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cGate **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cGate_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jstring jarg1, jchar jarg2) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cGate(JNIEnv *jenv, jclass jcls, jstring jarg1, jchar jarg2) {
     jlong jresult = 0 ;
     char *arg1 = (char *) 0 ;
     char arg2 ;
@@ -7973,36 +7247,6 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cGate(JNIEnv *jenv, jclass 
             SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
         }
     }
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1assign(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
-    jlong jresult = 0 ;
-    cGate *arg1 = (cGate *) 0 ;
-    cGate *arg2 = 0 ;
-    cGate *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cGate **)(void *)&jarg1; 
-    arg2 = *(cGate **)(void *)&jarg2;
-    if(!arg2) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cGate const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            {
-                cGate &_result_ref = (arg1)->operator =((cGate const &)*arg2);
-                result = (cGate *) &_result_ref;
-            }
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cGate **)(void *)&jresult = result; 
-    return jresult;
 }
 
 
@@ -9005,32 +8249,7 @@ jint Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1getShareCount(JNIEnv *jen
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cMessage_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jlong jresult = 0 ;
-    cMessage *arg1 = 0 ;
-    cMessage *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cMessage **)(void *)&jarg1;
-    if(!arg1) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cMessage const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            result = (cMessage *)new cMessage((cMessage const &)*arg1);
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cMessage **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cMessage_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jstring jarg1, jint jarg2, jint jarg3, jint jarg4, jboolean jarg5) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cMessage_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jstring jarg1, jint jarg2, jint jarg3, jint jarg4, jboolean jarg5) {
     jlong jresult = 0 ;
     char *arg1 = (char *) 0 ;
     int arg2 ;
@@ -9068,7 +8287,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cMessage_1_1SWIG_11(JNIEnv *j
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cMessage_1_1SWIG_12(JNIEnv *jenv, jclass jcls, jstring jarg1, jint jarg2, jint jarg3, jint jarg4) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cMessage_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jstring jarg1, jint jarg2, jint jarg3, jint jarg4) {
     jlong jresult = 0 ;
     char *arg1 = (char *) 0 ;
     int arg2 ;
@@ -9104,7 +8323,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cMessage_1_1SWIG_12(JNIEnv *j
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cMessage_1_1SWIG_13(JNIEnv *jenv, jclass jcls, jstring jarg1, jint jarg2, jint jarg3) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cMessage_1_1SWIG_12(JNIEnv *jenv, jclass jcls, jstring jarg1, jint jarg2, jint jarg3) {
     jlong jresult = 0 ;
     char *arg1 = (char *) 0 ;
     int arg2 ;
@@ -9138,7 +8357,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cMessage_1_1SWIG_13(JNIEnv *j
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cMessage_1_1SWIG_14(JNIEnv *jenv, jclass jcls, jstring jarg1, jint jarg2) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cMessage_1_1SWIG_13(JNIEnv *jenv, jclass jcls, jstring jarg1, jint jarg2) {
     jlong jresult = 0 ;
     char *arg1 = (char *) 0 ;
     int arg2 ;
@@ -9170,7 +8389,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cMessage_1_1SWIG_14(JNIEnv *j
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cMessage_1_1SWIG_15(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cMessage_1_1SWIG_14(JNIEnv *jenv, jclass jcls, jstring jarg1) {
     jlong jresult = 0 ;
     char *arg1 = (char *) 0 ;
     cMessage *result;
@@ -9200,7 +8419,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cMessage_1_1SWIG_15(JNIEnv *j
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cMessage_1_1SWIG_16(JNIEnv *jenv, jclass jcls) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cMessage_1_1SWIG_15(JNIEnv *jenv, jclass jcls) {
     jlong jresult = 0 ;
     cMessage *result;
     
@@ -9233,36 +8452,6 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cMessage(JNIEnv *jenv, jcla
             SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
         }
     }
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1assign(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
-    jlong jresult = 0 ;
-    cMessage *arg1 = (cMessage *) 0 ;
-    cMessage *arg2 = 0 ;
-    cMessage *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cMessage **)(void *)&jarg1; 
-    arg2 = *(cMessage **)(void *)&jarg2;
-    if(!arg2) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cMessage const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            {
-                cMessage &_result_ref = (arg1)->operator =((cMessage const &)*arg2);
-                result = (cMessage *) &_result_ref;
-            }
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cMessage **)(void *)&jresult = result; 
-    return jresult;
 }
 
 
@@ -10180,27 +9369,6 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1getSenderGate(JNIEnv *je
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1getArrivalModule(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jlong jresult = 0 ;
-    cMessage *arg1 = (cMessage *) 0 ;
-    cModule *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cMessage **)(void *)&jarg1; 
-    {
-        try {
-            result = (cModule *)((cMessage const *)arg1)->arrivalModule();
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cModule **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
 jlong Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1getArrivalGate(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cMessage *arg1 = (cMessage *) 0 ;
@@ -10645,20 +9813,6 @@ jint Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1getLiveMessageCount(JNIEn
 }
 
 
-void Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1resetMessageCounters(JNIEnv *jenv, jclass jcls) {
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    {
-        try {
-            cMessage::resetMessageCounters();
-            
-        } catch (cException *e) {
-            SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-}
-
-
 jlong Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
@@ -10676,44 +9830,6 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1cast(JNIEnv *jenv, jclas
         }
     }
     *(cMessage **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
-jint Java_org_omnetpp_simkernel_SimkernelJNI_get_1sENDED(JNIEnv *jenv, jclass jcls) {
-    jint jresult = 0 ;
-    int result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    {
-        try {
-            result = (int)sENDED;
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    jresult = (jint)result; 
-    return jresult;
-}
-
-
-jint Java_org_omnetpp_simkernel_SimkernelJNI_get_1sREADY(JNIEnv *jenv, jclass jcls) {
-    jint jresult = 0 ;
-    int result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    {
-        try {
-            result = (int)sREADY;
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    jresult = (jint)result; 
     return jresult;
 }
 
@@ -10871,36 +9987,6 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cModule(JNIEnv *jenv, jclas
             SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
         }
     }
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cModule_1assign(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
-    jlong jresult = 0 ;
-    cModule *arg1 = (cModule *) 0 ;
-    cModule *arg2 = 0 ;
-    cModule *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cModule **)(void *)&jarg1; 
-    arg2 = *(cModule **)(void *)&jarg2;
-    if(!arg2) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cModule const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            {
-                cModule &_result_ref = (arg1)->operator =((cModule const &)*arg2);
-                result = (cModule *) &_result_ref;
-            }
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cModule **)(void *)&jresult = result; 
-    return jresult;
 }
 
 
@@ -12387,32 +11473,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cModule_1cast(JNIEnv *jenv, jclass
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cCompoundModule_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jlong jresult = 0 ;
-    cCompoundModule *arg1 = 0 ;
-    cCompoundModule *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cCompoundModule **)(void *)&jarg1;
-    if(!arg1) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cCompoundModule const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            result = (cCompoundModule *)new cCompoundModule((cCompoundModule const &)*arg1);
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cCompoundModule **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cCompoundModule_1_1SWIG_11(JNIEnv *jenv, jclass jcls) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cCompoundModule(JNIEnv *jenv, jclass jcls) {
     jlong jresult = 0 ;
     cCompoundModule *result;
     
@@ -12445,36 +11506,6 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cCompoundModule(JNIEnv *jen
             SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
         }
     }
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cCompoundModule_1assign(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
-    jlong jresult = 0 ;
-    cCompoundModule *arg1 = (cCompoundModule *) 0 ;
-    cCompoundModule *arg2 = 0 ;
-    cCompoundModule *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cCompoundModule **)(void *)&jarg1; 
-    arg2 = *(cCompoundModule **)(void *)&jarg2;
-    if(!arg2) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cCompoundModule const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            {
-                cCompoundModule &_result_ref = (arg1)->operator =((cCompoundModule const &)*arg2);
-                result = (cCompoundModule *) &_result_ref;
-            }
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cCompoundModule **)(void *)&jresult = result; 
-    return jresult;
 }
 
 
@@ -12629,7 +11660,7 @@ jboolean Java_org_omnetpp_simkernel_SimkernelJNI_cSubModIterator_1end(JNIEnv *je
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cSubModIterator_1increment(JNIEnv *jenv, jclass jcls, jlong jarg1, jint jarg2) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cSubModIterator_1incr(JNIEnv *jenv, jclass jcls, jlong jarg1, jint jarg2) {
     jlong jresult = 0 ;
     cSubModIterator *arg1 = (cSubModIterator *) 0 ;
     int arg2 ;
@@ -12671,31 +11702,6 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cSubModIterator(JNIEnv *jen
 
 jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cSimpleModule_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
-    cSimpleModule *arg1 = 0 ;
-    cSimpleModule *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cSimpleModule **)(void *)&jarg1;
-    if(!arg1) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cSimpleModule const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            result = (cSimpleModule *)new cSimpleModule((cSimpleModule const &)*arg1);
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cSimpleModule **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cSimpleModule_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jlong jresult = 0 ;
     unsigned int arg1 ;
     cSimpleModule *result;
     
@@ -12715,7 +11721,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cSimpleModule_1_1SWIG_11(JNIE
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cSimpleModule_1_1SWIG_12(JNIEnv *jenv, jclass jcls) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cSimpleModule_1_1SWIG_11(JNIEnv *jenv, jclass jcls) {
     jlong jresult = 0 ;
     cSimpleModule *result;
     
@@ -12734,7 +11740,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cSimpleModule_1_1SWIG_12(JNIE
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cSimpleModule_1_1SWIG_13(JNIEnv *jenv, jclass jcls, jstring jarg1, jlong jarg2, jlong jarg3) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cSimpleModule_1_1SWIG_12(JNIEnv *jenv, jclass jcls, jstring jarg1, jlong jarg2, jlong jarg3) {
     jlong jresult = 0 ;
     char *arg1 = (char *) 0 ;
     cModule *arg2 = (cModule *) 0 ;
@@ -12782,36 +11788,6 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cSimpleModule(JNIEnv *jenv,
             SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
         }
     }
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cSimpleModule_1assign(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
-    jlong jresult = 0 ;
-    cSimpleModule *arg1 = (cSimpleModule *) 0 ;
-    cSimpleModule *arg2 = 0 ;
-    cSimpleModule *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cSimpleModule **)(void *)&jarg1; 
-    arg2 = *(cSimpleModule **)(void *)&jarg2;
-    if(!arg2) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cSimpleModule const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            {
-                cSimpleModule &_result_ref = (arg1)->operator =((cSimpleModule const &)*arg2);
-                result = (cSimpleModule *) &_result_ref;
-            }
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cSimpleModule **)(void *)&jresult = result; 
-    return jresult;
 }
 
 
@@ -13736,36 +12712,6 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cStatistic(JNIEnv *jenv, jc
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cStatistic_1assign(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
-    jlong jresult = 0 ;
-    cStatistic *arg1 = (cStatistic *) 0 ;
-    cStatistic *arg2 = 0 ;
-    cStatistic *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cStatistic **)(void *)&jarg1; 
-    arg2 = *(cStatistic **)(void *)&jarg2;
-    if(!arg2) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cStatistic const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            {
-                cStatistic &_result_ref = (arg1)->operator =((cStatistic const &)*arg2);
-                result = (cStatistic *) &_result_ref;
-            }
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cStatistic **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
 void Java_org_omnetpp_simkernel_SimkernelJNI_cStatistic_1collect(JNIEnv *jenv, jclass jcls, jlong jarg1, jdouble jarg2) {
     cStatistic *arg1 = (cStatistic *) 0 ;
     double arg2 ;
@@ -14118,32 +13064,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cStatistic_1cast(JNIEnv *jenv, jcl
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cStdDev_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jlong jresult = 0 ;
-    cStdDev *arg1 = 0 ;
-    cStdDev *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cStdDev **)(void *)&jarg1;
-    if(!arg1) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cStdDev const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            result = (cStdDev *)new cStdDev((cStdDev const &)*arg1);
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cStdDev **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cStdDev_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cStdDev_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jstring jarg1) {
     jlong jresult = 0 ;
     char *arg1 = (char *) 0 ;
     cStdDev *result;
@@ -14173,7 +13094,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cStdDev_1_1SWIG_11(JNIEnv *je
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cStdDev_1_1SWIG_12(JNIEnv *jenv, jclass jcls) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cStdDev_1_1SWIG_11(JNIEnv *jenv, jclass jcls) {
     jlong jresult = 0 ;
     cStdDev *result;
     
@@ -14206,36 +13127,6 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cStdDev(JNIEnv *jenv, jclas
             SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
         }
     }
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cStdDev_1assign(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
-    jlong jresult = 0 ;
-    cStdDev *arg1 = (cStdDev *) 0 ;
-    cStdDev *arg2 = 0 ;
-    cStdDev *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cStdDev **)(void *)&jarg1; 
-    arg2 = *(cStdDev **)(void *)&jarg2;
-    if(!arg2) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cStdDev const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            {
-                cStdDev &_result_ref = (arg1)->operator =((cStdDev const &)*arg2);
-                result = (cStdDev *) &_result_ref;
-            }
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cStdDev **)(void *)&jresult = result; 
-    return jresult;
 }
 
 
@@ -14548,32 +13439,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cStdDev_1cast(JNIEnv *jenv, jclass
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cWeightedStdDev_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jlong jresult = 0 ;
-    cWeightedStdDev *arg1 = 0 ;
-    cWeightedStdDev *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cWeightedStdDev **)(void *)&jarg1;
-    if(!arg1) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cWeightedStdDev const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            result = (cWeightedStdDev *)new cWeightedStdDev((cWeightedStdDev const &)*arg1);
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cWeightedStdDev **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cWeightedStdDev_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cWeightedStdDev_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jstring jarg1) {
     jlong jresult = 0 ;
     char *arg1 = (char *) 0 ;
     cWeightedStdDev *result;
@@ -14603,7 +13469,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cWeightedStdDev_1_1SWIG_11(JN
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cWeightedStdDev_1_1SWIG_12(JNIEnv *jenv, jclass jcls) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cWeightedStdDev_1_1SWIG_11(JNIEnv *jenv, jclass jcls) {
     jlong jresult = 0 ;
     cWeightedStdDev *result;
     
@@ -14636,36 +13502,6 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cWeightedStdDev(JNIEnv *jen
             SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
         }
     }
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cWeightedStdDev_1assign(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
-    jlong jresult = 0 ;
-    cWeightedStdDev *arg1 = (cWeightedStdDev *) 0 ;
-    cWeightedStdDev *arg2 = 0 ;
-    cWeightedStdDev *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cWeightedStdDev **)(void *)&jarg1; 
-    arg2 = *(cWeightedStdDev **)(void *)&jarg2;
-    if(!arg2) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cWeightedStdDev const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            {
-                cWeightedStdDev &_result_ref = (arg1)->operator =((cWeightedStdDev const &)*arg2);
-                result = (cWeightedStdDev *) &_result_ref;
-            }
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cWeightedStdDev **)(void *)&jresult = result; 
-    return jresult;
 }
 
 
@@ -14912,31 +13748,6 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cOutVector_1_1SWIG_12(JNIEnv 
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cOutVector_1_1SWIG_13(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jlong jresult = 0 ;
-    cOutVector *arg1 = 0 ;
-    cOutVector *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cOutVector **)(void *)&jarg1;
-    if(!arg1) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cOutVector const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            result = (cOutVector *)new cOutVector((cOutVector const &)*arg1);
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cOutVector **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
 void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cOutVector(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     cOutVector *arg1 = (cOutVector *) 0 ;
     
@@ -14951,36 +13762,6 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cOutVector(JNIEnv *jenv, jc
             SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
         }
     }
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1assign(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
-    jlong jresult = 0 ;
-    cOutVector *arg1 = (cOutVector *) 0 ;
-    cOutVector *arg2 = 0 ;
-    cOutVector *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cOutVector **)(void *)&jarg1; 
-    arg2 = *(cOutVector **)(void *)&jarg2;
-    if(!arg2) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cOutVector const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            {
-                cOutVector &_result_ref = (arg1)->operator =((cOutVector const &)*arg2);
-                result = (cOutVector *) &_result_ref;
-            }
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cOutVector **)(void *)&jresult = result; 
-    return jresult;
 }
 
 
@@ -15188,46 +13969,6 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1disable(JNIEnv *jenv, j
 }
 
 
-void Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1setEnabled(JNIEnv *jenv, jclass jcls, jlong jarg1, jboolean jarg2) {
-    cOutVector *arg1 = (cOutVector *) 0 ;
-    bool arg2 ;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cOutVector **)(void *)&jarg1; 
-    arg2 = jarg2 ? true : false; 
-    {
-        try {
-            (arg1)->setEnabled(arg2);
-            
-        } catch (cException *e) {
-            SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-}
-
-
-jboolean Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1isEnabled(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jboolean jresult = 0 ;
-    cOutVector *arg1 = (cOutVector *) 0 ;
-    bool result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cOutVector **)(void *)&jarg1; 
-    {
-        try {
-            result = (bool)((cOutVector const *)arg1)->isEnabled();
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    jresult = (jboolean)result; 
-    return jresult;
-}
-
-
 jint Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1getValuesReceived(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jint jresult = 0 ;
     cOutVector *arg1 = (cOutVector *) 0 ;
@@ -15238,7 +13979,7 @@ jint Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1getValuesReceived(JNIEn
     arg1 = *(cOutVector **)(void *)&jarg1; 
     {
         try {
-            result = (long)((cOutVector const *)arg1)->valuesReceived();
+            result = (long)(arg1)->valuesReceived();
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -15259,7 +14000,7 @@ jint Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1getValuesStored(JNIEnv 
     arg1 = *(cOutVector **)(void *)&jarg1; 
     {
         try {
-            result = (long)((cOutVector const *)arg1)->valuesStored();
+            result = (long)(arg1)->valuesStored();
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -15312,32 +14053,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1cast(JNIEnv *jenv, jcl
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cChannel_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jlong jresult = 0 ;
-    cChannel *arg1 = 0 ;
-    cChannel *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cChannel **)(void *)&jarg1;
-    if(!arg1) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cChannel const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            result = (cChannel *)new cChannel((cChannel const &)*arg1);
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cChannel **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cChannel_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cChannel_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jstring jarg1) {
     jlong jresult = 0 ;
     char *arg1 = (char *) 0 ;
     cChannel *result;
@@ -15367,7 +14083,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cChannel_1_1SWIG_11(JNIEnv *j
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cChannel_1_1SWIG_12(JNIEnv *jenv, jclass jcls) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cChannel_1_1SWIG_11(JNIEnv *jenv, jclass jcls) {
     jlong jresult = 0 ;
     cChannel *result;
     
@@ -15400,36 +14116,6 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cChannel(JNIEnv *jenv, jcla
             SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
         }
     }
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cChannel_1assign(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
-    jlong jresult = 0 ;
-    cChannel *arg1 = (cChannel *) 0 ;
-    cChannel *arg2 = 0 ;
-    cChannel *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cChannel **)(void *)&jarg1; 
-    arg2 = *(cChannel **)(void *)&jarg2;
-    if(!arg2) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cChannel const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            {
-                cChannel &_result_ref = (arg1)->operator =((cChannel const &)*arg2);
-                result = (cChannel *) &_result_ref;
-            }
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cChannel **)(void *)&jresult = result; 
-    return jresult;
 }
 
 
@@ -15511,27 +14197,6 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cChannel_1getFromGate(JNIEnv *jenv
         }
     }
     *(cGate **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
-jint Java_org_omnetpp_simkernel_SimkernelJNI_cChannel_1params(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jint jresult = 0 ;
-    cChannel *arg1 = (cChannel *) 0 ;
-    int result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cChannel **)(void *)&jarg1; 
-    {
-        try {
-            result = (int)((cChannel const *)arg1)->params();
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    jresult = (jint)result; 
     return jresult;
 }
 
@@ -15841,31 +14506,6 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cBasicChannel_1_1SWIG_11(JNIE
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cBasicChannel_1_1SWIG_12(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jlong jresult = 0 ;
-    cBasicChannel *arg1 = 0 ;
-    cBasicChannel *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cBasicChannel **)(void *)&jarg1;
-    if(!arg1) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cBasicChannel const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            result = (cBasicChannel *)new cBasicChannel((cBasicChannel const &)*arg1);
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cBasicChannel **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
 void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cBasicChannel(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     cBasicChannel *arg1 = (cBasicChannel *) 0 ;
     
@@ -15880,36 +14520,6 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cBasicChannel(JNIEnv *jenv,
             SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
         }
     }
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cBasicChannel_1assign(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
-    jlong jresult = 0 ;
-    cBasicChannel *arg1 = (cBasicChannel *) 0 ;
-    cBasicChannel *arg2 = 0 ;
-    cBasicChannel *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cBasicChannel **)(void *)&jarg1; 
-    arg2 = *(cBasicChannel **)(void *)&jarg2;
-    if(!arg2) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cBasicChannel const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            {
-                cBasicChannel &_result_ref = (arg1)->operator =((cBasicChannel const &)*arg2);
-                result = (cBasicChannel *) &_result_ref;
-            }
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cBasicChannel **)(void *)&jresult = result; 
-    return jresult;
 }
 
 
@@ -16340,25 +14950,6 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cBasicChannel_1cast(JNIEnv *jenv, 
 }
 
 
-jint Java_org_omnetpp_simkernel_SimkernelJNI_get_1MAXARGS(JNIEnv *jenv, jclass jcls) {
-    jint jresult = 0 ;
-    int result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    {
-        try {
-            result = (int) 16;
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    jresult = (jint)result; 
-    return jresult;
-}
-
-
 jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cDisplayString_1_1SWIG_10(JNIEnv *jenv, jclass jcls) {
     jlong jresult = 0 ;
     cDisplayString *result;
@@ -16408,31 +14999,6 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cDisplayString_1_1SWIG_11(JNI
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cDisplayString_1_1SWIG_12(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jlong jresult = 0 ;
-    cDisplayString *arg1 = 0 ;
-    cDisplayString *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cDisplayString **)(void *)&jarg1;
-    if(!arg1) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cDisplayString const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            result = (cDisplayString *)new cDisplayString((cDisplayString const &)*arg1);
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cDisplayString **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
 void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cDisplayString(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     cDisplayString *arg1 = (cDisplayString *) 0 ;
     
@@ -16450,37 +15016,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cDisplayString(JNIEnv *jenv
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cDisplayString_1assign_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
-    jlong jresult = 0 ;
-    cDisplayString *arg1 = (cDisplayString *) 0 ;
-    cDisplayString *arg2 = 0 ;
-    cDisplayString *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cDisplayString **)(void *)&jarg1; 
-    arg2 = *(cDisplayString **)(void *)&jarg2;
-    if(!arg2) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "cDisplayString const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            {
-                cDisplayString &_result_ref = (arg1)->operator =((cDisplayString const &)*arg2);
-                result = (cDisplayString *) &_result_ref;
-            }
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(cDisplayString **)(void *)&jresult = result; 
-    return jresult;
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cDisplayString_1assign_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cDisplayString_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
     jlong jresult = 0 ;
     cDisplayString *arg1 = (cDisplayString *) 0 ;
     char *arg2 = (char *) 0 ;
@@ -17226,29 +15762,6 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cXMLElement_1removeChild(JNIEnv *j
 }
 
 
-jstring Java_org_omnetpp_simkernel_SimkernelJNI_cXMLElement_1tostr(JNIEnv *jenv, jclass jcls, jlong jarg1, jint jarg2) {
-    jstring jresult = 0 ;
-    cXMLElement *arg1 = (cXMLElement *) 0 ;
-    int arg2 ;
-    std::string result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cXMLElement **)(void *)&jarg1; 
-    arg2 = (int)jarg2; 
-    {
-        try {
-            result = ((cXMLElement const *)arg1)->tostr(arg2);
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    jresult = jenv->NewStringUTF((&result)->c_str()); 
-    return jresult;
-}
-
-
 jstring Java_org_omnetpp_simkernel_SimkernelJNI_cXMLElement_1getTagName(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jstring jresult = 0 ;
     cXMLElement *arg1 = (cXMLElement *) 0 ;
@@ -17801,7 +16314,26 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cXMLElement_1getElementById(JNIEnv
 }
 
 
-void Java_org_omnetpp_simkernel_SimkernelJNI_cXMLElement_1debugDump(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+void Java_org_omnetpp_simkernel_SimkernelJNI_cXMLElement_1debugDump_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1, jint jarg2) {
+    cXMLElement *arg1 = (cXMLElement *) 0 ;
+    int arg2 ;
+    
+    (void)jenv; LOG_JNI_CALL();
+    (void)jcls;
+    arg1 = *(cXMLElement **)(void *)&jarg1; 
+    arg2 = (int)jarg2; 
+    {
+        try {
+            ((cXMLElement const *)arg1)->debugDump(arg2);
+            
+        } catch (cException *e) {
+            SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
+        }
+    }
+}
+
+
+void Java_org_omnetpp_simkernel_SimkernelJNI_cXMLElement_1debugDump_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     cXMLElement *arg1 = (cXMLElement *) 0 ;
     
     (void)jenv; LOG_JNI_CALL();
@@ -17815,27 +16347,6 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cXMLElement_1debugDump(JNIEnv *jenv
             SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
         }
     }
-}
-
-
-jstring Java_org_omnetpp_simkernel_SimkernelJNI_cXMLElement_1detailedInfo(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jstring jresult = 0 ;
-    cXMLElement *arg1 = (cXMLElement *) 0 ;
-    std::string result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cXMLElement **)(void *)&jarg1; 
-    {
-        try {
-            result = ((cXMLElement const *)arg1)->detailedInfo();
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    jresult = jenv->NewStringUTF((&result)->c_str()); 
-    return jresult;
 }
 
 
@@ -17877,7 +16388,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_JSimpleModule_1retrieveMsgToBeHand
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1JMessage_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jstring jarg1, jint jarg2, jint jarg3) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1JMessage(JNIEnv *jenv, jclass jcls, jstring jarg1, jint jarg2, jint jarg3) {
     jlong jresult = 0 ;
     char *arg1 = (char *) 0 ;
     int arg2 ;
@@ -17907,31 +16418,6 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1JMessage_1_1SWIG_10(JNIEnv *j
     {
         if (arg1) jenv->ReleaseStringUTFChars(jarg1, arg1); 
     }
-    return jresult;
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1JMessage_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jlong jresult = 0 ;
-    JMessage *arg1 = 0 ;
-    JMessage *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(JMessage **)(void *)&jarg1;
-    if(!arg1) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "JMessage const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            result = (JMessage *)new JMessage((JMessage const &)*arg1);
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(JMessage **)(void *)&jresult = result; 
     return jresult;
 }
 
@@ -18012,36 +16498,6 @@ jstring Java_org_omnetpp_simkernel_SimkernelJNI_JMessage_1getDetailedInfo(JNIEnv
         }
     }
     jresult = jenv->NewStringUTF((&result)->c_str()); 
-    return jresult;
-}
-
-
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_JMessage_1assign(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
-    jlong jresult = 0 ;
-    JMessage *arg1 = (JMessage *) 0 ;
-    JMessage *arg2 = 0 ;
-    JMessage *result;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(JMessage **)(void *)&jarg1; 
-    arg2 = *(JMessage **)(void *)&jarg2;
-    if(!arg2) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "JMessage const & reference is null");
-        return 0;
-    } 
-    {
-        try {
-            {
-                JMessage &_result_ref = (arg1)->operator =((JMessage const &)*arg2);
-                result = (JMessage *) &_result_ref;
-            }
-            
-        } catch (cException *e) {
-            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-    *(JMessage **)(void *)&jresult = result; 
     return jresult;
 }
 
