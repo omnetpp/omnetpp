@@ -66,6 +66,19 @@
       desc->setFieldAsString(self, fieldId, index, value); //XXX check out of bounds!!!
   }
 
+  bool isFieldArray(const char *fieldName)
+  {
+      cClassDescriptor *desc = findDescriptor(self);
+      int fieldId = getFieldID(desc, self, fieldName);
+      return desc->getFieldIsArray(self, fieldId);
+  }
+
+  bool isFieldCompound(const char *fieldName)
+  {
+      cClassDescriptor *desc = findDescriptor(self);
+      int fieldId = getFieldID(desc, self, fieldName);
+      return desc->getFieldIsCompound(self, fieldId);
+  }
 }
 
 
