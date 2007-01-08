@@ -44,8 +44,8 @@
 //%warnfilter(312) cTopology; -- nor this
 
 // ignore/rename some operators (some have method equivalents)
-%rename(assign) operator=;
-%rename(increment) operator++;
+%rename(set) operator=;
+%rename(incr) operator++;
 %ignore operator +=;
 %ignore operator [];
 %ignore operator <<;
@@ -108,9 +108,12 @@
 %};
 
 %ignore cPolymorphic::getDescriptor;
+%ignore cPolymorphic::createDescriptor;
+%ignore cPolymorphic::info(char *buf);
 
 %ignore cObject::cmpbyname;
 %ignore cObject::removeFromOwnershipTree;
+%ignore cObject::setDefaultOwner;
 
 %ignore cPar::setDoubleValue(ExprElem *, int);
 %ignore cPar::setDoubleValue(cStatistic *);
@@ -210,6 +213,7 @@
 %ignore cObject::totalObjectCount;
 %ignore cObject::liveObjectCount;
 %ignore cObject::resetObjectCounters;
+%ignore cObject::resetMessageCounters;
 %ignore cQueue::get;
 %ignore cGate::_setTo;
 %ignore cGate::_setFrom;
@@ -242,12 +246,10 @@ namespace std {
 %typemap(javacode) cEnvir %{
   public void print(String s) {
     puts(s);
-    //System.out.print("*** "+s);
   }
 
   public void println(String s) {
     puts(s+"\n");
-    //System.out.println("*** "+s);
   }
 %}
 
@@ -261,6 +263,19 @@ class cEnvir
 
 cEnvir *getEv();
 %{ inline cEnvir *getEv() {return &ev;} %}
+
+// ignore some defines
+%ignore MAX_CLASSNAME;
+%ignore MAX_OBJECTFULLPATH;
+%ignore MAX_OBJECTINFO;
+%ignore FULLPATHBUF_SIZE;
+%ignore PI;
+%ignore MAX_INTERNAL_NAME;
+%ignore SHORTSTR;
+%ignore sENDED;
+%ignore sREADY;
+%ignore MAXARGS;
+
 
 // ignore global vars
 %ignore ::defaultList;
@@ -562,6 +577,9 @@ DERIVEDCLASS(cSimulation, cPolymorphic);
 DERIVEDCLASS(cStatistic, cPolymorphic);
 DERIVEDCLASS(cStdDev, cPolymorphic);
 DERIVEDCLASS(cWeightedStdDev, cPolymorphic);
+
+%ignore JMessage::JMessage(const JMessage&);
+%ignore JMessage::operator=(const JMessage&);
 
 
 // now include all header files

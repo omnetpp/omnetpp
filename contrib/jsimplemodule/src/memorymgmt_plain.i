@@ -85,9 +85,13 @@
 
 // The following BASECLASS(), DERIVEDCLASS() macros are applied in simkernel.i:
 %define BASECLASS(CLASS)
+%ignore CLASS::CLASS(const CLASS&);
+%ignore CLASS::operator=(const CLASS&);
 %enddef
 
 %define DERIVEDCLASS(CLASS,BASECLASS)
+%ignore CLASS::CLASS(const CLASS&);
+%ignore CLASS::operator=(const CLASS&);
 %extend CLASS {
   static CLASS *cast(BASECLASS *obj) {return dynamic_cast<CLASS *>(obj);}
 }
