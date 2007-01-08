@@ -350,9 +350,7 @@ cSimulation *getSimulation();
   }
 
   private void doHandleMessage() {
-    //System.out.print("\n\n--- NEW EVENT ---\n\n");
     cMessage msg = retrieveMsgToBeHandled();
-    //System.out.println("*** module "+getName()+" processing "+msg.getName());
     handleMessage(msg);
   }
 
