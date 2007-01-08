@@ -17,7 +17,7 @@ class Node extends JSimpleModule {
         }
         msg.delete();
 
-        cMessage pk = cMessage.castFrom(Simkernel.createOne("IPHeader"));
+        cMessage pk = cMessage.cast(Simkernel.createOne("IPHeader"));
         pk.setField("source", "1");
         pk.setField("destination", "2");
         pk.setField("extrainfo", "bla");

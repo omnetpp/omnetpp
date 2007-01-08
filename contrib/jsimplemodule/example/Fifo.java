@@ -38,7 +38,7 @@ public class Fifo extends JSimpleModule
                 msgServiced = null;
             }
             else {
-                msgServiced = cMessage.castFrom(queue.pop());
+                msgServiced = cMessage.cast(queue.pop());
                 double serviceTime = serviceRequirement(msgServiced);
                 scheduleAt(simTime()+serviceTime, endServiceMsg);
             }

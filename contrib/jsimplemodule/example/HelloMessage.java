@@ -21,8 +21,8 @@ class HelloMessage extends JMessage implements Cloneable {
         text = value;
     }
 
-    public static HelloMessage castFrom(cPolymorphic o) {
-        return (HelloMessage)JMessage.castFrom(o);
+    public static HelloMessage cast(cPolymorphic o) {
+        return (HelloMessage)JMessage.cast(o);
     }
 
     public String toString() {

@@ -13,7 +13,7 @@ public class Fork extends JSimpleModule {
 
         int n = gateSize("out");
         for (int i=0; i<n; i++)
-            send(cMessage.castFrom(msg.dup()), "out", i);
+            send(cMessage.cast(msg.dup()), "out", i);
         msg.delete();
     }
 

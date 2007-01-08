@@ -109,7 +109,7 @@ that will properly solve the issue of adding gates and parameters.
 
 FOR THE IMPATIENT: (1) subclass from JSimpleModule not cSimpleModule;
 (2) subclass from JMessage not cMessage; (3) usemsg.sameAs(timeoutMsg)
-instead of msg==timeoutMsg; (4) writecMessage.castFrom(obj) instead of
+instead of msg==timeoutMsg; (4) writecMessage.cast(obj) instead of
 (cMessage)obj; (5) objects need to beexplicitly deleted with their delete()
 methods.
 
@@ -243,9 +243,9 @@ cQueue::pop() returns cObject, so the wrapper object will be an instance
 of cObject not cMessage. To access the object as a cMessage, it has to be
 re-wrapped:
 
-  cMessage msg = cMessage.castFrom(queue.pop());  // correct
+  cMessage msg = cMessage.cast(queue.pop());  // correct
 
-This behaves like C++ dynamic_cast<>, in that the castFrom() method
+This behaves like C++ dynamic_cast<>, in that the cast() method
 returns null if the conversion cannot be performed. (It does actually
 contain a C++ dynamic_cast<> inside the JNI code.) The original Java wrapper
 object (obj above) should be considered a zombie afterwards, and should
@@ -304,9 +304,9 @@ JMessage can be subclassed as any Java class:
   }
 
 And when a message of that type arrives at a module, its contents can be
-accessed using JMessage.castFrom():
+accessed using JMessage.cast():
 
-  MyMessage myMsg = (MyMessage) JMessage.castFrom(msg);
+  MyMessage myMsg = (MyMessage) JMessage.cast(msg);
 
 When a JMessage gets duplicated somewhere in the C++ code using dup(), it
 will clone Java peer object too, by calling back its clone() method via

@@ -16,7 +16,7 @@ class Txc extends JSimpleModule {
     protected void handleMessage(cMessage msg) {
         ev.println(msg.getName()+" arrived");
 
-        HelloMessage helloMsg = HelloMessage.castFrom(msg);
+        HelloMessage helloMsg = HelloMessage.cast(msg);
         ev.println("counter read " + helloMsg.getTimesRead() + " times");
 
         send(msg, "out");
