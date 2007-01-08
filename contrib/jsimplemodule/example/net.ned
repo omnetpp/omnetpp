@@ -112,3 +112,21 @@ network net4 : Net4
         queueServiceTime = exponential(1);
 endnetwork
 
+module Net5
+    submodules:
+        node1: JSimpleModule;
+            parameters:
+                javaClass = "Node";
+            display: "i=misc/square_s,blue";
+        node2: JSimpleModule;
+            parameters:
+                javaClass = "Node";
+            display: "i=misc/square_s,yellow";
+    connections:
+        node1.out++ --> node2.in++;
+        node1.in++ <-- node2.out++;
+endmodule
+
+network net5 : Net5
+endnetwork
+
