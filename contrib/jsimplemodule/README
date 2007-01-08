@@ -109,10 +109,9 @@ that will properly solve the issue of adding gates and parameters.
 ---------------------------------
 
 FOR THE IMPATIENT: (1) subclass from JSimpleModule not cSimpleModule;
-(2) subclass from JMessage not cMessage; (3) usemsg.sameAs(timeoutMsg)
-instead of msg==timeoutMsg; (4) writecMessage.cast(obj) instead of
-(cMessage)obj; (5) objects need to beexplicitly deleted with their delete()
-methods.
+(2) usemsg.sameAs(timeoutMsg) instead of msg==timeoutMsg; (3) write
+cMessage.cast(obj) instead of (cMessage)obj; (4) objects need to be
+explicitly deleted with their delete() methods.
 
 
 Simple module classes need to subclass from JSimpleModule, should have a
