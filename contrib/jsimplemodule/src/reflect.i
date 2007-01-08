@@ -6,13 +6,16 @@
 # define getDescriptor()   createDescriptor()
 # define NEWARG(x)
 # define NEWARG2(x)
-# define AUTOPTR(x)        auto_ptr<cStructDescriptor *> _x(x)
+# define AUTOPTR(x)        std::auto_ptr<cStructDescriptor> _x(x)
 # define RETURN_FIELD_IS_ARRAY(fieldName) \
       int type = desc->getFieldType(fieldId); \
-      return type==FT_BASIC_ARRAY || type==FT_SPECIAL_ARRAY || type==FT_STRUCT_ARRAY
+      return type==cStructDescriptor::FT_BASIC_ARRAY || \
+             type==cStructDescriptor::FT_SPECIAL_ARRAY || \
+             type==cStructDescriptor::FT_STRUCT_ARRAY
 # define RETURN_FIELD_IS_COMPOUND(fieldName) \
       int type = desc->getFieldType(fieldId); \
-      return type==FT_STRUCT || type==FT_STRUCT_ARRAY
+      return type==cStructDescriptor::FT_STRUCT || \
+             type==cStructDescriptor::FT_STRUCT_ARRAY
 #else
 # define NEWARG(x)         x,
 # define NEWARG2(x)        x
