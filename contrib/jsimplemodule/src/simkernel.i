@@ -111,9 +111,6 @@
 
 %ignore cObject::cmpbyname;
 %ignore cObject::removeFromOwnershipTree;
-%ignore cObject::totalObjectCount;
-%ignore cObject::liveObjectCount;
-%ignore cObject::resetObjectCounters;
 
 %ignore cPar::setDoubleValue(ExprElem *, int);
 %ignore cPar::setDoubleValue(cStatistic *);
@@ -195,7 +192,6 @@
 %ignore cSimulation::setContextModule;
 %ignore cSimulation::setContextType;
 
-
 %ignore cStatistic::td;
 %ignore cStatistic::ra;
 %ignore cStatistic::addTransientDetection;
@@ -209,6 +205,23 @@
 
 %ignore cXMLElement::getDocumentElementByPath;
 %ignore cXMLElement::getElementByPath;
+
+// for 3.3 compatibility, ignore methods introduced in 3.4
+%ignore cObject::totalObjectCount;
+%ignore cObject::liveObjectCount;
+%ignore cObject::resetObjectCounters;
+%ignore cQueue::get;
+%ignore cGate::_setTo;
+%ignore cGate::_setFrom;
+%ignore cMessage::arrivalModule;
+%ignore cOutVector::setEnabled;
+%ignore cOutVector::isEnabled;
+%ignore cOutVector::valuesReceived;
+%ignore cOutVector::valuesStored;
+%ignore cChannel::params;
+%ignore cXMLElement::tostr;
+%ignore cXMLElement::detailedInfo;
+
 
 namespace std {
    specialize_std_map_on_both(std::string,,,,std::string,,,);
