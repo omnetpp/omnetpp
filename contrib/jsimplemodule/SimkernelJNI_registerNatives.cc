@@ -676,8 +676,6 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cXMLElement_1getElementsByTagName(J
 void Java_org_omnetpp_simkernel_SimkernelJNI_cXMLElement_1getFirstChildWithAttribute_1_1SWIG_10(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cXMLElement_1getFirstChildWithAttribute_1_1SWIG_11(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cXMLElement_1getElementById(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cXMLElement_1debugDump_1_1SWIG_10(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cXMLElement_1debugDump_1_1SWIG_11(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1JSimpleModule(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_JSimpleModule_1retrieveMsgToBeHandled(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1JMessage(JNIEnv *jenv, jclass jcls,...);
@@ -1386,8 +1384,6 @@ static JNINativeMethod SimkernelJNI_methods[] = {
     { "cXMLElement_getFirstChildWithAttribute__SWIG_0", "(JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cXMLElement_1getFirstChildWithAttribute_1_1SWIG_10 },
     { "cXMLElement_getFirstChildWithAttribute__SWIG_1", "(JLjava/lang/String;Ljava/lang/String;)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cXMLElement_1getFirstChildWithAttribute_1_1SWIG_11 },
     { "cXMLElement_getElementById", "(JLjava/lang/String;)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cXMLElement_1getElementById },
-    { "cXMLElement_debugDump__SWIG_0", "(JI)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cXMLElement_1debugDump_1_1SWIG_10 },
-    { "cXMLElement_debugDump__SWIG_1", "(J)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cXMLElement_1debugDump_1_1SWIG_11 },
     { "delete_JSimpleModule", "(J)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_delete_1JSimpleModule },
     { "JSimpleModule_retrieveMsgToBeHandled", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_JSimpleModule_1retrieveMsgToBeHandled },
     { "new_JMessage", "(Ljava/lang/String;II)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1JMessage },
@@ -1431,7 +1427,7 @@ void SimkernelJNI_registerNatives(JNIEnv *jenv)
         fprintf(stderr, "ERROR: Cannot find SimkernelJNI class\n");
         exit(1);
     }
-    int ret = jenv->RegisterNatives(clazz, SimkernelJNI_methods, 707);
+    int ret = jenv->RegisterNatives(clazz, SimkernelJNI_methods, 705);
     if (ret!=0) {
         fprintf(stderr, "ERROR: Cannot register native methods for SimkernelJNI: RegisterNatives() returned %d\n", ret);
         exit(1);

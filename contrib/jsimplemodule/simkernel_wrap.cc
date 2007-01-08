@@ -16314,42 +16314,6 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cXMLElement_1getElementById(JNIEnv
 }
 
 
-void Java_org_omnetpp_simkernel_SimkernelJNI_cXMLElement_1debugDump_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1, jint jarg2) {
-    cXMLElement *arg1 = (cXMLElement *) 0 ;
-    int arg2 ;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cXMLElement **)(void *)&jarg1; 
-    arg2 = (int)jarg2; 
-    {
-        try {
-            ((cXMLElement const *)arg1)->debugDump(arg2);
-            
-        } catch (cException *e) {
-            SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-}
-
-
-void Java_org_omnetpp_simkernel_SimkernelJNI_cXMLElement_1debugDump_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    cXMLElement *arg1 = (cXMLElement *) 0 ;
-    
-    (void)jenv; LOG_JNI_CALL();
-    (void)jcls;
-    arg1 = *(cXMLElement **)(void *)&jarg1; 
-    {
-        try {
-            ((cXMLElement const *)arg1)->debugDump();
-            
-        } catch (cException *e) {
-            SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
-        }
-    }
-}
-
-
 void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1JSimpleModule(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     JSimpleModule *arg1 = (JSimpleModule *) 0 ;
     

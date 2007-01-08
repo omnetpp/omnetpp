@@ -225,7 +225,7 @@
 %ignore cChannel::params;
 %ignore cXMLElement::tostr;
 %ignore cXMLElement::detailedInfo;
-
+%ignore cXMLElement::debugDump;
 
 namespace std {
    specialize_std_map_on_both(std::string,,,,std::string,,,);
