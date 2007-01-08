@@ -5,10 +5,20 @@
 # define cClassDescriptor  cStructDescriptor
 # define getDescriptor()   createDescriptor()
 # define NEWARG(x)
+# define NEWARG2(x)
 # define AUTOPTR(x)        auto_ptr<cStructDescriptor *> _x(x)
+# define RETURN_FIELD_IS_ARRAY(fieldName) \
+      int type = desc->getFieldType(fieldId); \
+      return type==FT_BASIC_ARRAY || type==FT_SPECIAL_ARRAY || type==FT_STRUCT_ARRAY
+# define RETURN_FIELD_IS_COMPOUND(fieldName) \
+      int type = desc->getFieldType(fieldId); \
+      return type==FT_STRUCT || type==FT_STRUCT_ARRAY
 #else
 # define NEWARG(x)         x,
+# define NEWARG2(x)        x
 # define AUTOPTR(x)        (void)0
+# define RETURN_FIELD_IS_ARRAY(fieldName)    return desc->getFieldIsArray(self, fieldId)
+# define RETURN_FIELD_IS_COMPOUND(fieldName) return desc->getFieldIsCompound(self, fieldId)
 #endif
 
   static cClassDescriptor *findDescriptor(cPolymorphic *p)
@@ -21,7 +31,7 @@
 
   static int findField(cClassDescriptor *desc, void *object, const char *fieldName)
   {
-      int n = desc->getFieldCount(NEWARG(object));
+      int n = desc->getFieldCount(NEWARG2(object));
       for (int i=0; i<n; i++)
           if (!strcmp(desc->getFieldName(NEWARG(object) i), fieldName))
               return i;
@@ -87,12 +97,7 @@
       cClassDescriptor *desc = findDescriptor(self);
       AUTOPTR(desc);
       int fieldId = getFieldID(desc, self, fieldName);
-#if (OMNETPP_VERSION <= 0x0303)
-      int type = desc->getFieldType(fieldId);
-      return type==FT_BASIC_ARRAY || type==FT_SPECIAL_ARRAY || type==FT_STRUCT_ARRAY;
-#else
-      return desc->getFieldIsArray(NEWARG(self) fieldId);
-#endif
+      RETURN_FIELD_IS_ARRAY(fieldName);
   }
 
   bool isFieldCompound(const char *fieldName)
@@ -100,12 +105,7 @@
       cClassDescriptor *desc = findDescriptor(self);
       AUTOPTR(desc);
       int fieldId = getFieldID(desc, self, fieldName);
-#if (OMNETPP_VERSION <= 0x0303)
-      int type = desc->getFieldType(fieldId);
-      return type==FT_STRUCT || type==FT_STRUCT_ARRAY;
-#else
-      return desc->getFieldIsCompound(NEWARG(self) fieldId);
-#endif
+      RETURN_FIELD_IS_COMPOUND(fieldName);
   }
 }
 
