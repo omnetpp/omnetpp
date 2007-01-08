@@ -232,6 +232,56 @@ SWIGINTERN void SWIG_JavaException(JNIEnv *jenv, int code, const char *msg) {
 #include <algorithm>
 #include <stdexcept>
 
+
+#if (OMNETPP_VERSION <= 0x0303)
+# include <memory>
+# define cClassDescriptor  cStructDescriptor
+# define getDescriptor()   createDescriptor()
+# define NEWARG(x)
+# define NEWARG2(x)
+# define AUTOPTR(x)        std::auto_ptr<cStructDescriptor> _x(x)
+# define RETURN_FIELD_IS_ARRAY(fieldName) \
+      int type = desc->getFieldType(fieldId); \
+      return type==cStructDescriptor::FT_BASIC_ARRAY || \
+             type==cStructDescriptor::FT_SPECIAL_ARRAY || \
+             type==cStructDescriptor::FT_STRUCT_ARRAY
+# define RETURN_FIELD_IS_COMPOUND(fieldName) \
+      int type = desc->getFieldType(fieldId); \
+      return type==cStructDescriptor::FT_STRUCT || \
+             type==cStructDescriptor::FT_STRUCT_ARRAY
+#else
+# define NEWARG(x)         x,
+# define NEWARG2(x)        x
+# define AUTOPTR(x)        (void)0
+# define RETURN_FIELD_IS_ARRAY(fieldName)    return desc->getFieldIsArray(self, fieldId)
+# define RETURN_FIELD_IS_COMPOUND(fieldName) return desc->getFieldIsCompound(self, fieldId)
+#endif
+
+  static cClassDescriptor *findDescriptor(cPolymorphic *p)
+  {
+      cClassDescriptor *desc = p->getDescriptor();
+      if (!desc)
+          opp_error("no descriptor for class %s", p->className());
+      return desc;
+  }
+
+  static int findField(cClassDescriptor *desc, void *object, const char *fieldName)
+  {
+      int n = desc->getFieldCount(NEWARG2(object));
+      for (int i=0; i<n; i++)
+          if (!strcmp(desc->getFieldName(NEWARG(object) i), fieldName))
+              return i;
+      return -1;
+  }
+
+  static int getFieldID(cClassDescriptor *desc, void *object, const char *fieldName)
+  {
+      int id = findField(desc, object, fieldName);
+      if (id==-1)
+          opp_error("no `%s' field in class %s", fieldName, desc->name());
+      return id;
+  }
+
 static std::string std_map_Sl_std_string_Sc_std_string_Sg__get(std::map<std::string,std::string > *self,std::string key){
                 std::map<std::string,std::string >::iterator i = self->find(key);
                 if (i != self->end())
@@ -262,30 +312,75 @@ static cXMLElement *std_vector_Sl_cXMLElement_Sm__Sg__get(std::vector<cXMLElemen
             }
  inline cEnvir *getEv() {return &ev;} 
  inline cSimulation *getSimulation() {return &simulation;} 
-static cPolymorphic *cPolymorphic_castFrom(cPolymorphic *obj){return dynamic_cast<cPolymorphic *>(obj);}
-static cObject *cObject_castFrom(cPolymorphic *obj){return dynamic_cast<cObject *>(obj);}
-static cRuntimeError *cRuntimeError_castFrom(cException *obj){return dynamic_cast<cRuntimeError *>(obj);}
-static cDefaultList *cDefaultList_castFrom(cPolymorphic *obj){return dynamic_cast<cDefaultList *>(obj);}
-static cSimulation *cSimulation_castFrom(cPolymorphic *obj){return dynamic_cast<cSimulation *>(obj);}
-static cModuleType *cModuleType_castFrom(cPolymorphic *obj){return dynamic_cast<cModuleType *>(obj);}
-static cChannelType *cChannelType_castFrom(cPolymorphic *obj){return dynamic_cast<cChannelType *>(obj);}
-static cNetworkType *cNetworkType_castFrom(cPolymorphic *obj){return dynamic_cast<cNetworkType *>(obj);}
-static cArray *cArray_castFrom(cPolymorphic *obj){return dynamic_cast<cArray *>(obj);}
-static cQueue *cQueue_castFrom(cPolymorphic *obj){return dynamic_cast<cQueue *>(obj);}
-static cDoubleExpression *cDoubleExpression_castFrom(cExpression *obj){return dynamic_cast<cDoubleExpression *>(obj);}
-static cPar *cPar_castFrom(cPolymorphic *obj){return dynamic_cast<cPar *>(obj);}
-static cModulePar *cModulePar_castFrom(cPolymorphic *obj){return dynamic_cast<cModulePar *>(obj);}
-static cGate *cGate_castFrom(cPolymorphic *obj){return dynamic_cast<cGate *>(obj);}
-static cMessage *cMessage_castFrom(cPolymorphic *obj){return dynamic_cast<cMessage *>(obj);}
-static cModule *cModule_castFrom(cPolymorphic *obj){return dynamic_cast<cModule *>(obj);}
-static cCompoundModule *cCompoundModule_castFrom(cPolymorphic *obj){return dynamic_cast<cCompoundModule *>(obj);}
-static cSimpleModule *cSimpleModule_castFrom(cPolymorphic *obj){return dynamic_cast<cSimpleModule *>(obj);}
-static cStatistic *cStatistic_castFrom(cPolymorphic *obj){return dynamic_cast<cStatistic *>(obj);}
-static cStdDev *cStdDev_castFrom(cPolymorphic *obj){return dynamic_cast<cStdDev *>(obj);}
-static cWeightedStdDev *cWeightedStdDev_castFrom(cPolymorphic *obj){return dynamic_cast<cWeightedStdDev *>(obj);}
-static cOutVector *cOutVector_castFrom(cPolymorphic *obj){return dynamic_cast<cOutVector *>(obj);}
-static cChannel *cChannel_castFrom(cPolymorphic *obj){return dynamic_cast<cChannel *>(obj);}
-static cBasicChannel *cBasicChannel_castFrom(cPolymorphic *obj){return dynamic_cast<cBasicChannel *>(obj);}
+static bool cPolymorphic_hasField(cPolymorphic *self,char const *fieldName){
+      cClassDescriptor *desc = findDescriptor(self);
+      AUTOPTR(desc);
+      return findField(desc, self, fieldName)!=-1;
+  }
+static std::string cPolymorphic_getField(cPolymorphic *self,char const *fieldName){
+      cClassDescriptor *desc = findDescriptor(self);
+      AUTOPTR(desc);
+      int fieldId = getFieldID(desc, self, fieldName);
+      char buf[200];
+      desc->getFieldAsString(NEWARG(self) fieldId, 0, buf, 200);
+      return buf;
+  }
+static std::string cPolymorphic_getArrayField(cPolymorphic *self,char const *fieldName,int index){
+      cClassDescriptor *desc = findDescriptor(self);
+      AUTOPTR(desc);
+      int fieldId = getFieldID(desc, self, fieldName);
+      char buf[200];
+      desc->getFieldAsString(NEWARG(self) fieldId, index, buf, 200); //XXX check out of bounds!!!
+      return buf;
+  }
+static void cPolymorphic_setField(cPolymorphic *self,char const *fieldName,char const *value){
+      cClassDescriptor *desc = findDescriptor(self);
+      AUTOPTR(desc);
+      int fieldId = getFieldID(desc, self, fieldName);
+      desc->setFieldAsString(NEWARG(self) fieldId, 0, value);
+  }
+static void cPolymorphic_setArrayField(cPolymorphic *self,char const *fieldName,int index,char const *value){
+      cClassDescriptor *desc = findDescriptor(self);
+      AUTOPTR(desc);
+      int fieldId = getFieldID(desc, self, fieldName);
+      desc->setFieldAsString(NEWARG(self) fieldId, index, value); //XXX check out of bounds!!!
+  }
+static bool cPolymorphic_isFieldArray(cPolymorphic *self,char const *fieldName){
+      cClassDescriptor *desc = findDescriptor(self);
+      AUTOPTR(desc);
+      int fieldId = getFieldID(desc, self, fieldName);
+      RETURN_FIELD_IS_ARRAY(fieldName);
+  }
+static bool cPolymorphic_isFieldCompound(cPolymorphic *self,char const *fieldName){
+      cClassDescriptor *desc = findDescriptor(self);
+      AUTOPTR(desc);
+      int fieldId = getFieldID(desc, self, fieldName);
+      RETURN_FIELD_IS_COMPOUND(fieldName);
+  }
+static cPolymorphic *cPolymorphic_cast(cPolymorphic *obj){return dynamic_cast<cPolymorphic *>(obj);}
+static cObject *cObject_cast(cPolymorphic *obj){return dynamic_cast<cObject *>(obj);}
+static cRuntimeError *cRuntimeError_cast(cException *obj){return dynamic_cast<cRuntimeError *>(obj);}
+static cDefaultList *cDefaultList_cast(cPolymorphic *obj){return dynamic_cast<cDefaultList *>(obj);}
+static cSimulation *cSimulation_cast(cPolymorphic *obj){return dynamic_cast<cSimulation *>(obj);}
+static cModuleType *cModuleType_cast(cPolymorphic *obj){return dynamic_cast<cModuleType *>(obj);}
+static cChannelType *cChannelType_cast(cPolymorphic *obj){return dynamic_cast<cChannelType *>(obj);}
+static cNetworkType *cNetworkType_cast(cPolymorphic *obj){return dynamic_cast<cNetworkType *>(obj);}
+static cArray *cArray_cast(cPolymorphic *obj){return dynamic_cast<cArray *>(obj);}
+static cQueue *cQueue_cast(cPolymorphic *obj){return dynamic_cast<cQueue *>(obj);}
+static cDoubleExpression *cDoubleExpression_cast(cExpression *obj){return dynamic_cast<cDoubleExpression *>(obj);}
+static cPar *cPar_cast(cPolymorphic *obj){return dynamic_cast<cPar *>(obj);}
+static cModulePar *cModulePar_cast(cPolymorphic *obj){return dynamic_cast<cModulePar *>(obj);}
+static cGate *cGate_cast(cPolymorphic *obj){return dynamic_cast<cGate *>(obj);}
+static cMessage *cMessage_cast(cPolymorphic *obj){return dynamic_cast<cMessage *>(obj);}
+static cModule *cModule_cast(cPolymorphic *obj){return dynamic_cast<cModule *>(obj);}
+static cCompoundModule *cCompoundModule_cast(cPolymorphic *obj){return dynamic_cast<cCompoundModule *>(obj);}
+static cSimpleModule *cSimpleModule_cast(cPolymorphic *obj){return dynamic_cast<cSimpleModule *>(obj);}
+static cStatistic *cStatistic_cast(cPolymorphic *obj){return dynamic_cast<cStatistic *>(obj);}
+static cStdDev *cStdDev_cast(cPolymorphic *obj){return dynamic_cast<cStdDev *>(obj);}
+static cWeightedStdDev *cWeightedStdDev_cast(cPolymorphic *obj){return dynamic_cast<cWeightedStdDev *>(obj);}
+static cOutVector *cOutVector_cast(cPolymorphic *obj){return dynamic_cast<cOutVector *>(obj);}
+static cChannel *cChannel_cast(cPolymorphic *obj){return dynamic_cast<cChannel *>(obj);}
+static cBasicChannel *cBasicChannel_cast(cPolymorphic *obj){return dynamic_cast<cBasicChannel *>(obj);}
 
 #ifdef __cplusplus
 extern "C" {
@@ -1125,7 +1220,249 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1dup(JNIEnv *jenv, jc
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1castFrom(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jboolean Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1hasField(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
+    jboolean jresult = 0 ;
+    cPolymorphic *arg1 = (cPolymorphic *) 0 ;
+    char *arg2 = (char *) 0 ;
+    bool result;
+    
+    (void)jenv; LOG_JNI_CALL();
+    (void)jcls;
+    arg1 = *(cPolymorphic **)(void *)&jarg1; 
+    {
+        arg2 = 0;
+        if (jarg2) {
+            arg2 = (char *)jenv->GetStringUTFChars(jarg2, 0);
+            if (!arg2) return 0;
+        }
+    }
+    {
+        try {
+            result = (bool)cPolymorphic_hasField(arg1,(char const *)arg2);
+            
+        } catch (cException *e) {
+            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
+        }
+    }
+    jresult = (jboolean)result; 
+    {
+        if (arg2) jenv->ReleaseStringUTFChars(jarg2, arg2); 
+    }
+    return jresult;
+}
+
+
+jstring Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1getField(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
+    jstring jresult = 0 ;
+    cPolymorphic *arg1 = (cPolymorphic *) 0 ;
+    char *arg2 = (char *) 0 ;
+    std::string result;
+    
+    (void)jenv; LOG_JNI_CALL();
+    (void)jcls;
+    arg1 = *(cPolymorphic **)(void *)&jarg1; 
+    {
+        arg2 = 0;
+        if (jarg2) {
+            arg2 = (char *)jenv->GetStringUTFChars(jarg2, 0);
+            if (!arg2) return 0;
+        }
+    }
+    {
+        try {
+            result = cPolymorphic_getField(arg1,(char const *)arg2);
+            
+        } catch (cException *e) {
+            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
+        }
+    }
+    jresult = jenv->NewStringUTF((&result)->c_str()); 
+    {
+        if (arg2) jenv->ReleaseStringUTFChars(jarg2, arg2); 
+    }
+    return jresult;
+}
+
+
+jstring Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1getArrayField(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jint jarg3) {
+    jstring jresult = 0 ;
+    cPolymorphic *arg1 = (cPolymorphic *) 0 ;
+    char *arg2 = (char *) 0 ;
+    int arg3 ;
+    std::string result;
+    
+    (void)jenv; LOG_JNI_CALL();
+    (void)jcls;
+    arg1 = *(cPolymorphic **)(void *)&jarg1; 
+    {
+        arg2 = 0;
+        if (jarg2) {
+            arg2 = (char *)jenv->GetStringUTFChars(jarg2, 0);
+            if (!arg2) return 0;
+        }
+    }
+    arg3 = (int)jarg3; 
+    {
+        try {
+            result = cPolymorphic_getArrayField(arg1,(char const *)arg2,arg3);
+            
+        } catch (cException *e) {
+            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
+        }
+    }
+    jresult = jenv->NewStringUTF((&result)->c_str()); 
+    {
+        if (arg2) jenv->ReleaseStringUTFChars(jarg2, arg2); 
+    }
+    return jresult;
+}
+
+
+void Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1setField(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3) {
+    cPolymorphic *arg1 = (cPolymorphic *) 0 ;
+    char *arg2 = (char *) 0 ;
+    char *arg3 = (char *) 0 ;
+    
+    (void)jenv; LOG_JNI_CALL();
+    (void)jcls;
+    arg1 = *(cPolymorphic **)(void *)&jarg1; 
+    {
+        arg2 = 0;
+        if (jarg2) {
+            arg2 = (char *)jenv->GetStringUTFChars(jarg2, 0);
+            if (!arg2) return ;
+        }
+    }
+    {
+        arg3 = 0;
+        if (jarg3) {
+            arg3 = (char *)jenv->GetStringUTFChars(jarg3, 0);
+            if (!arg3) return ;
+        }
+    }
+    {
+        try {
+            cPolymorphic_setField(arg1,(char const *)arg2,(char const *)arg3);
+            
+        } catch (cException *e) {
+            SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
+        }
+    }
+    {
+        if (arg2) jenv->ReleaseStringUTFChars(jarg2, arg2); 
+    }
+    {
+        if (arg3) jenv->ReleaseStringUTFChars(jarg3, arg3); 
+    }
+}
+
+
+void Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1setArrayField(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jint jarg3, jstring jarg4) {
+    cPolymorphic *arg1 = (cPolymorphic *) 0 ;
+    char *arg2 = (char *) 0 ;
+    int arg3 ;
+    char *arg4 = (char *) 0 ;
+    
+    (void)jenv; LOG_JNI_CALL();
+    (void)jcls;
+    arg1 = *(cPolymorphic **)(void *)&jarg1; 
+    {
+        arg2 = 0;
+        if (jarg2) {
+            arg2 = (char *)jenv->GetStringUTFChars(jarg2, 0);
+            if (!arg2) return ;
+        }
+    }
+    arg3 = (int)jarg3; 
+    {
+        arg4 = 0;
+        if (jarg4) {
+            arg4 = (char *)jenv->GetStringUTFChars(jarg4, 0);
+            if (!arg4) return ;
+        }
+    }
+    {
+        try {
+            cPolymorphic_setArrayField(arg1,(char const *)arg2,arg3,(char const *)arg4);
+            
+        } catch (cException *e) {
+            SWIG_exception(, SWIG_RuntimeError,const_cast<char*>(e->message()));
+        }
+    }
+    {
+        if (arg2) jenv->ReleaseStringUTFChars(jarg2, arg2); 
+    }
+    {
+        if (arg4) jenv->ReleaseStringUTFChars(jarg4, arg4); 
+    }
+}
+
+
+jboolean Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1isFieldArray(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
+    jboolean jresult = 0 ;
+    cPolymorphic *arg1 = (cPolymorphic *) 0 ;
+    char *arg2 = (char *) 0 ;
+    bool result;
+    
+    (void)jenv; LOG_JNI_CALL();
+    (void)jcls;
+    arg1 = *(cPolymorphic **)(void *)&jarg1; 
+    {
+        arg2 = 0;
+        if (jarg2) {
+            arg2 = (char *)jenv->GetStringUTFChars(jarg2, 0);
+            if (!arg2) return 0;
+        }
+    }
+    {
+        try {
+            result = (bool)cPolymorphic_isFieldArray(arg1,(char const *)arg2);
+            
+        } catch (cException *e) {
+            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
+        }
+    }
+    jresult = (jboolean)result; 
+    {
+        if (arg2) jenv->ReleaseStringUTFChars(jarg2, arg2); 
+    }
+    return jresult;
+}
+
+
+jboolean Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1isFieldCompound(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
+    jboolean jresult = 0 ;
+    cPolymorphic *arg1 = (cPolymorphic *) 0 ;
+    char *arg2 = (char *) 0 ;
+    bool result;
+    
+    (void)jenv; LOG_JNI_CALL();
+    (void)jcls;
+    arg1 = *(cPolymorphic **)(void *)&jarg1; 
+    {
+        arg2 = 0;
+        if (jarg2) {
+            arg2 = (char *)jenv->GetStringUTFChars(jarg2, 0);
+            if (!arg2) return 0;
+        }
+    }
+    {
+        try {
+            result = (bool)cPolymorphic_isFieldCompound(arg1,(char const *)arg2);
+            
+        } catch (cException *e) {
+            SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
+        }
+    }
+    jresult = (jboolean)result; 
+    {
+        if (arg2) jenv->ReleaseStringUTFChars(jarg2, arg2); 
+    }
+    return jresult;
+}
+
+
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
     cPolymorphic *result;
@@ -1135,7 +1472,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1castFrom(JNIEnv *jen
     arg1 = *(cPolymorphic **)(void *)&jarg1; 
     {
         try {
-            result = (cPolymorphic *)cPolymorphic_castFrom(arg1);
+            result = (cPolymorphic *)cPolymorphic_cast(arg1);
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -1633,7 +1970,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1findObject_1_1SWIG_11(JNI
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1castFrom(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
     cObject *result;
@@ -1643,7 +1980,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1castFrom(JNIEnv *jenv, jc
     arg1 = *(cPolymorphic **)(void *)&jarg1; 
     {
         try {
-            result = (cObject *)cObject_castFrom(arg1);
+            result = (cObject *)cObject_cast(arg1);
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -3131,7 +3468,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_new_1cRuntimeError_1_1SWIG_13(JNIE
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cRuntimeError_1castFrom(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cRuntimeError_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cException *arg1 = (cException *) 0 ;
     cRuntimeError *result;
@@ -3141,7 +3478,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cRuntimeError_1castFrom(JNIEnv *je
     arg1 = *(cException **)(void *)&jarg1; 
     {
         try {
-            result = (cRuntimeError *)cRuntimeError_castFrom(arg1);
+            result = (cRuntimeError *)cRuntimeError_cast(arg1);
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -3462,7 +3799,7 @@ jboolean Java_org_omnetpp_simkernel_SimkernelJNI_cDefaultList_1defaultListContai
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cDefaultList_1castFrom(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cDefaultList_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
     cDefaultList *result;
@@ -3472,7 +3809,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cDefaultList_1castFrom(JNIEnv *jen
     arg1 = *(cPolymorphic **)(void *)&jarg1; 
     {
         try {
-            result = (cDefaultList *)cDefaultList_castFrom(arg1);
+            result = (cDefaultList *)cDefaultList_cast(arg1);
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -3951,7 +4288,7 @@ jboolean Java_org_omnetpp_simkernel_SimkernelJNI_cSimulation_1snapshot(JNIEnv *j
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cSimulation_1castFrom(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cSimulation_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
     cSimulation *result;
@@ -3961,7 +4298,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cSimulation_1castFrom(JNIEnv *jenv
     arg1 = *(cPolymorphic **)(void *)&jarg1; 
     {
         try {
-            result = (cSimulation *)cSimulation_castFrom(arg1);
+            result = (cSimulation *)cSimulation_cast(arg1);
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -4165,7 +4502,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cModuleType_1createScheduleInit(JN
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cModuleType_1castFrom(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cModuleType_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
     cModuleType *result;
@@ -4175,7 +4512,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cModuleType_1castFrom(JNIEnv *jenv
     arg1 = *(cPolymorphic **)(void *)&jarg1; 
     {
         try {
-            result = (cModuleType *)cModuleType_castFrom(arg1);
+            result = (cModuleType *)cModuleType_cast(arg1);
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -4265,7 +4602,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cChannelType_1create(JNIEnv *jenv,
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cChannelType_1castFrom(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cChannelType_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
     cChannelType *result;
@@ -4275,7 +4612,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cChannelType_1castFrom(JNIEnv *jen
     arg1 = *(cPolymorphic **)(void *)&jarg1; 
     {
         try {
-            result = (cChannelType *)cChannelType_castFrom(arg1);
+            result = (cChannelType *)cChannelType_cast(arg1);
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -4350,7 +4687,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cNetworkType_1setupNetwork(JNIEnv *
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cNetworkType_1castFrom(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cNetworkType_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
     cNetworkType *result;
@@ -4360,7 +4697,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cNetworkType_1castFrom(JNIEnv *jen
     arg1 = *(cPolymorphic **)(void *)&jarg1; 
     {
         try {
-            result = (cNetworkType *)cNetworkType_castFrom(arg1);
+            result = (cNetworkType *)cNetworkType_cast(arg1);
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -5071,7 +5408,7 @@ jboolean Java_org_omnetpp_simkernel_SimkernelJNI_cArray_1takeOwnership_1_1SWIG_1
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cArray_1castFrom(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cArray_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
     cArray *result;
@@ -5081,7 +5418,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cArray_1castFrom(JNIEnv *jenv, jcl
     arg1 = *(cPolymorphic **)(void *)&jarg1; 
     {
         try {
-            result = (cArray *)cArray_castFrom(arg1);
+            result = (cArray *)cArray_cast(arg1);
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -5587,7 +5924,7 @@ jboolean Java_org_omnetpp_simkernel_SimkernelJNI_cQueue_1takeOwnership_1_1SWIG_1
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cQueue_1castFrom(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cQueue_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
     cQueue *result;
@@ -5597,7 +5934,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cQueue_1castFrom(JNIEnv *jenv, jcl
     arg1 = *(cPolymorphic **)(void *)&jarg1; 
     {
         try {
-            result = (cQueue *)cQueue_castFrom(arg1);
+            result = (cQueue *)cQueue_cast(arg1);
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -5882,7 +6219,7 @@ jdouble Java_org_omnetpp_simkernel_SimkernelJNI_cDoubleExpression_1evaluate(JNIE
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cDoubleExpression_1castFrom(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cDoubleExpression_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cExpression *arg1 = (cExpression *) 0 ;
     cDoubleExpression *result;
@@ -5892,7 +6229,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cDoubleExpression_1castFrom(JNIEnv
     arg1 = *(cExpression **)(void *)&jarg1; 
     {
         try {
-            result = (cDoubleExpression *)cDoubleExpression_castFrom(arg1);
+            result = (cDoubleExpression *)cDoubleExpression_cast(arg1);
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -7172,7 +7509,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_113(JNIEnv *j
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1castFrom(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
     cPar *result;
@@ -7182,7 +7519,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1castFrom(JNIEnv *jenv, jclas
     arg1 = *(cPolymorphic **)(void *)&jarg1; 
     {
         try {
-            result = (cPar *)cPar_castFrom(arg1);
+            result = (cPar *)cPar_cast(arg1);
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -7485,7 +7822,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cModulePar_1getOwnerModule(JNIEnv 
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cModulePar_1castFrom(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cModulePar_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
     cModulePar *result;
@@ -7495,7 +7832,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cModulePar_1castFrom(JNIEnv *jenv,
     arg1 = *(cPolymorphic **)(void *)&jarg1; 
     {
         try {
-            result = (cModulePar *)cModulePar_castFrom(arg1);
+            result = (cModulePar *)cModulePar_cast(arg1);
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -8626,7 +8963,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1setDisplayString_1_1SWIG_11(
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1castFrom(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
     cGate *result;
@@ -8636,7 +8973,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1castFrom(JNIEnv *jenv, jcla
     arg1 = *(cPolymorphic **)(void *)&jarg1; 
     {
         try {
-            result = (cGate *)cGate_castFrom(arg1);
+            result = (cGate *)cGate_cast(arg1);
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -10322,7 +10659,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1resetMessageCounters(JNIE
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1castFrom(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
     cMessage *result;
@@ -10332,7 +10669,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1castFrom(JNIEnv *jenv, j
     arg1 = *(cPolymorphic **)(void *)&jarg1; 
     {
         try {
-            result = (cMessage *)cMessage_castFrom(arg1);
+            result = (cMessage *)cMessage_cast(arg1);
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -12029,7 +12366,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cModule_1bubble(JNIEnv *jenv, jclas
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cModule_1castFrom(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cModule_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
     cModule *result;
@@ -12039,7 +12376,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cModule_1castFrom(JNIEnv *jenv, jc
     arg1 = *(cPolymorphic **)(void *)&jarg1; 
     {
         try {
-            result = (cModule *)cModule_castFrom(arg1);
+            result = (cModule *)cModule_cast(arg1);
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -12202,7 +12539,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cCompoundModule_1scheduleStart(JNIE
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cCompoundModule_1castFrom(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cCompoundModule_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
     cCompoundModule *result;
@@ -12212,7 +12549,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cCompoundModule_1castFrom(JNIEnv *
     arg1 = *(cPolymorphic **)(void *)&jarg1; 
     {
         try {
-            result = (cCompoundModule *)cCompoundModule_castFrom(arg1);
+            result = (cCompoundModule *)cCompoundModule_cast(arg1);
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -13333,7 +13670,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cSimpleModule_1recordScalar(JNIEnv 
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cSimpleModule_1castFrom(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cSimpleModule_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
     cSimpleModule *result;
@@ -13343,7 +13680,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cSimpleModule_1castFrom(JNIEnv *je
     arg1 = *(cPolymorphic **)(void *)&jarg1; 
     {
         try {
-            result = (cSimpleModule *)cSimpleModule_castFrom(arg1);
+            result = (cSimpleModule *)cSimpleModule_cast(arg1);
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -13760,7 +14097,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cStatistic_1recordScalar_1_1SWIG_11
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cStatistic_1castFrom(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cStatistic_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
     cStatistic *result;
@@ -13770,7 +14107,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cStatistic_1castFrom(JNIEnv *jenv,
     arg1 = *(cPolymorphic **)(void *)&jarg1; 
     {
         try {
-            result = (cStatistic *)cStatistic_castFrom(arg1);
+            result = (cStatistic *)cStatistic_cast(arg1);
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -14190,7 +14527,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cStdDev_1clearResult(JNIEnv *jenv, 
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cStdDev_1castFrom(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cStdDev_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
     cStdDev *result;
@@ -14200,7 +14537,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cStdDev_1castFrom(JNIEnv *jenv, jc
     arg1 = *(cPolymorphic **)(void *)&jarg1; 
     {
         try {
-            result = (cStdDev *)cStdDev_castFrom(arg1);
+            result = (cStdDev *)cStdDev_cast(arg1);
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -14473,7 +14810,7 @@ jdouble Java_org_omnetpp_simkernel_SimkernelJNI_cWeightedStdDev_1getVariance(JNI
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cWeightedStdDev_1castFrom(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cWeightedStdDev_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
     cWeightedStdDev *result;
@@ -14483,7 +14820,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cWeightedStdDev_1castFrom(JNIEnv *
     arg1 = *(cPolymorphic **)(void *)&jarg1; 
     {
         try {
-            result = (cWeightedStdDev *)cWeightedStdDev_castFrom(arg1);
+            result = (cWeightedStdDev *)cWeightedStdDev_cast(arg1);
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -14954,7 +15291,7 @@ jint Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1getTuple(JNIEnv *jenv, 
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1castFrom(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
     cOutVector *result;
@@ -14964,7 +15301,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1castFrom(JNIEnv *jenv,
     arg1 = *(cPolymorphic **)(void *)&jarg1; 
     {
         try {
-            result = (cOutVector *)cOutVector_castFrom(arg1);
+            result = (cOutVector *)cOutVector_cast(arg1);
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -15434,7 +15771,7 @@ jboolean Java_org_omnetpp_simkernel_SimkernelJNI_cChannel_1deliver(JNIEnv *jenv,
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cChannel_1castFrom(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cChannel_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
     cChannel *result;
@@ -15444,7 +15781,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cChannel_1castFrom(JNIEnv *jenv, j
     arg1 = *(cPolymorphic **)(void *)&jarg1; 
     {
         try {
-            result = (cChannel *)cChannel_castFrom(arg1);
+            result = (cChannel *)cChannel_cast(arg1);
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));
@@ -15982,7 +16319,7 @@ jboolean Java_org_omnetpp_simkernel_SimkernelJNI_cBasicChannel_1deliver(JNIEnv *
 }
 
 
-jlong Java_org_omnetpp_simkernel_SimkernelJNI_cBasicChannel_1castFrom(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+jlong Java_org_omnetpp_simkernel_SimkernelJNI_cBasicChannel_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong jresult = 0 ;
     cPolymorphic *arg1 = (cPolymorphic *) 0 ;
     cBasicChannel *result;
@@ -15992,7 +16329,7 @@ jlong Java_org_omnetpp_simkernel_SimkernelJNI_cBasicChannel_1castFrom(JNIEnv *je
     arg1 = *(cPolymorphic **)(void *)&jarg1; 
     {
         try {
-            result = (cBasicChannel *)cBasicChannel_castFrom(arg1);
+            result = (cBasicChannel *)cBasicChannel_cast(arg1);
             
         } catch (cException *e) {
             SWIG_exception(0, SWIG_RuntimeError,const_cast<char*>(e->message()));

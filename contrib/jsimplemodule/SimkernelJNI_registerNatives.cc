@@ -44,7 +44,14 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1getInfo_1_1SWIG_10(JN
 void Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1getInfo_1_1SWIG_11(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1getDetailedInfo(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1dup(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1castFrom(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1hasField(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1getField(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1getArrayField(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1setField(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1setArrayField(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1isFieldArray(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1isFieldCompound(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1cast(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_get_1MAX_1INTERNAL_1NAME(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1setDefaultOwner(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cObject_1_1SWIG_10(JNIEnv *jenv, jclass jcls,...);
@@ -65,7 +72,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1defaultOwner(JNIEnv *jenv,
 void Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1forEachChild(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1findObject_1_1SWIG_10(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1findObject_1_1SWIG_11(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1castFrom(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1cast(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cVisitor(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cVisitor_1process(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cVisitor_1processChildrenOf(JNIEnv *jenv, jclass jcls,...);
@@ -129,7 +136,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cRuntimeError_1_1SWIG_10(JNIEn
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cRuntimeError_1_1SWIG_11(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cRuntimeError_1_1SWIG_12(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cRuntimeError_1_1SWIG_13(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cRuntimeError_1castFrom(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cRuntimeError_1cast(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cRuntimeError(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cDefaultList_1takeAllObjectsFrom(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cDefaultList_1_1SWIG_10(JNIEnv *jenv, jclass jcls,...);
@@ -144,7 +151,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cDefaultList_1forEachChild(JNIEnv *
 void Java_org_omnetpp_simkernel_SimkernelJNI_cDefaultList_1defaultListItems(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cDefaultList_1defaultListGet(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cDefaultList_1defaultListContains(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cDefaultList_1castFrom(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cDefaultList_1cast(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cSimulation_1_1SWIG_10(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cSimulation_1_1SWIG_11(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cSimulation(JNIEnv *jenv, jclass jcls,...);
@@ -165,7 +172,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cSimulation_1getContextType(JNIEnv 
 void Java_org_omnetpp_simkernel_SimkernelJNI_cSimulation_1getContextSimpleModule(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cSimulation_1getUniqueNumber(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cSimulation_1snapshot(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cSimulation_1castFrom(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cSimulation_1cast(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cModuleType(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cModuleType_1assign(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cModuleType_1dup(JNIEnv *jenv, jclass jcls,...);
@@ -173,15 +180,15 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cModuleType_1create_1_1SWIG_10(JNIE
 void Java_org_omnetpp_simkernel_SimkernelJNI_cModuleType_1create_1_1SWIG_11(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cModuleType_1buildInside(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cModuleType_1createScheduleInit(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cModuleType_1castFrom(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cModuleType_1cast(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cChannelType(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cChannelType_1assign(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cChannelType_1create(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cChannelType_1castFrom(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cChannelType_1cast(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cNetworkType(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cNetworkType_1assign(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cNetworkType_1setupNetwork(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cNetworkType_1castFrom(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cNetworkType_1cast(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_createOne(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_createOneIfClassIsKnown(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cArray_1_1SWIG_10(JNIEnv *jenv, jclass jcls,...);
@@ -210,7 +217,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cArray_1remove_1_1SWIG_11(JNIEnv *j
 void Java_org_omnetpp_simkernel_SimkernelJNI_cArray_1remove_1_1SWIG_12(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cArray_1takeOwnership_1_1SWIG_10(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cArray_1takeOwnership_1_1SWIG_11(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cArray_1castFrom(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cArray_1cast(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cQueue_1_1SWIG_10(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cQueue_1_1SWIG_11(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cQueue_1_1SWIG_12(JNIEnv *jenv, jclass jcls,...);
@@ -234,7 +241,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cQueue_1get(JNIEnv *jenv, jclass jc
 void Java_org_omnetpp_simkernel_SimkernelJNI_cQueue_1contains(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cQueue_1takeOwnership_1_1SWIG_10(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cQueue_1takeOwnership_1_1SWIG_11(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cQueue_1castFrom(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cQueue_1cast(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_findNetwork(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_findModuleType(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_findChannelType(JNIEnv *jenv, jclass jcls,...);
@@ -246,7 +253,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cExpression_1dup(JNIEnv *jenv, jcla
 void Java_org_omnetpp_simkernel_SimkernelJNI_cDoubleExpression_1getAsText(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cDoubleExpression_1parseText(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cDoubleExpression_1evaluate(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cDoubleExpression_1castFrom(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cDoubleExpression_1cast(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cDoubleExpression(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cPar_1_1SWIG_10(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cPar_1_1SWIG_11(JNIEnv *jenv, jclass jcls,...);
@@ -300,7 +307,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_16(JNIEnv *jen
 void Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_111(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_112(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_113(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1castFrom(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1cast(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cModulePar_1_1SWIG_10(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cModulePar_1_1SWIG_11(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cModulePar_1_1SWIG_12(JNIEnv *jenv, jclass jcls,...);
@@ -313,7 +320,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cModulePar_1getFullPath_1_1SWIG_11(
 void Java_org_omnetpp_simkernel_SimkernelJNI_cModulePar_1afterChange(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cModulePar_1setOwnerModule(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cModulePar_1getOwnerModule(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cModulePar_1castFrom(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cModulePar_1cast(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1hasDisplayString(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1_1setTo(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1_1setFrom(JNIEnv *jenv, jclass jcls,...);
@@ -365,7 +372,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1isRouteOK(JNIEnv *jenv, jcla
 void Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1getDisplayString(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1setDisplayString_1_1SWIG_10(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1setDisplayString_1_1SWIG_11(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1castFrom(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1cast(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1getShareCount(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cMessage_1_1SWIG_10(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cMessage_1_1SWIG_11(JNIEnv *jenv, jclass jcls,...);
@@ -438,7 +445,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1getDisplayString(JNIEnv *
 void Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1getTotalMessageCount(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1getLiveMessageCount(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1resetMessageCounters(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1castFrom(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1cast(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_get_1sENDED(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_get_1sREADY(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_get_1dispSUBMOD(JNIEnv *jenv, jclass jcls,...);
@@ -504,7 +511,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cModule_1getDisplayString_1_1SWIG_1
 void Java_org_omnetpp_simkernel_SimkernelJNI_cModule_1setDisplayString_1_1SWIG_12(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cModule_1setDisplayString_1_1SWIG_13(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cModule_1bubble(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cModule_1castFrom(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cModule_1cast(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cCompoundModule_1_1SWIG_10(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cCompoundModule_1_1SWIG_11(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cCompoundModule(JNIEnv *jenv, jclass jcls,...);
@@ -512,7 +519,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cCompoundModule_1assign(JNIEnv *jen
 void Java_org_omnetpp_simkernel_SimkernelJNI_cCompoundModule_1dup(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cCompoundModule_1getInfo(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cCompoundModule_1scheduleStart(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cCompoundModule_1castFrom(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cCompoundModule_1cast(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cSubModIterator(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cSubModIterator_1init(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cSubModIterator_1end(JNIEnv *jenv, jclass jcls,...);
@@ -557,7 +564,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cSimpleModule_1end(JNIEnv *jenv, jc
 void Java_org_omnetpp_simkernel_SimkernelJNI_cSimpleModule_1endSimulation(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cSimpleModule_1error(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cSimpleModule_1recordScalar(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cSimpleModule_1castFrom(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cSimpleModule_1cast(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_set_1cStatistic_1genk(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_get_1cStatistic_1genk(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cStatistic(JNIEnv *jenv, jclass jcls,...);
@@ -578,7 +585,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cStatistic_1setGenK(JNIEnv *jenv, j
 void Java_org_omnetpp_simkernel_SimkernelJNI_cStatistic_1getRandom(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cStatistic_1recordScalar_1_1SWIG_10(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cStatistic_1recordScalar_1_1SWIG_11(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cStatistic_1castFrom(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cStatistic_1cast(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cStdDev_1_1SWIG_10(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cStdDev_1_1SWIG_11(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cStdDev_1_1SWIG_12(JNIEnv *jenv, jclass jcls,...);
@@ -598,7 +605,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cStdDev_1getStddev(JNIEnv *jenv, jc
 void Java_org_omnetpp_simkernel_SimkernelJNI_cStdDev_1getVariance(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cStdDev_1getRandom(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cStdDev_1clearResult(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cStdDev_1castFrom(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cStdDev_1cast(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cWeightedStdDev_1_1SWIG_10(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cWeightedStdDev_1_1SWIG_11(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cWeightedStdDev_1_1SWIG_12(JNIEnv *jenv, jclass jcls,...);
@@ -611,7 +618,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cWeightedStdDev_1clearResult(JNIEnv
 void Java_org_omnetpp_simkernel_SimkernelJNI_cWeightedStdDev_1getWeights(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cWeightedStdDev_1getMean(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cWeightedStdDev_1getVariance(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cWeightedStdDev_1castFrom(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cWeightedStdDev_1cast(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cOutVector_1_1SWIG_10(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cOutVector_1_1SWIG_11(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cOutVector_1_1SWIG_12(JNIEnv *jenv, jclass jcls,...);
@@ -632,7 +639,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1isEnabled(JNIEnv *jenv,
 void Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1getValuesReceived(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1getValuesStored(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1getTuple(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1castFrom(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1cast(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cChannel_1_1SWIG_10(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cChannel_1_1SWIG_11(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cChannel_1_1SWIG_12(JNIEnv *jenv, jclass jcls,...);
@@ -651,7 +658,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cChannel_1findPar(JNIEnv *jenv, jcl
 void Java_org_omnetpp_simkernel_SimkernelJNI_cChannel_1hasPar(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cChannel_1parList(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cChannel_1deliver(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cChannel_1castFrom(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cChannel_1cast(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cBasicChannel_1_1SWIG_10(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cBasicChannel_1_1SWIG_11(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cBasicChannel_1_1SWIG_12(JNIEnv *jenv, jclass jcls,...);
@@ -676,7 +683,7 @@ void Java_org_omnetpp_simkernel_SimkernelJNI_cBasicChannel_1addPar_1_1SWIG_11(JN
 void Java_org_omnetpp_simkernel_SimkernelJNI_cBasicChannel_1isBusy(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cBasicChannel_1getTransmissionFinishes(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_cBasicChannel_1deliver(JNIEnv *jenv, jclass jcls,...);
-void Java_org_omnetpp_simkernel_SimkernelJNI_cBasicChannel_1castFrom(JNIEnv *jenv, jclass jcls,...);
+void Java_org_omnetpp_simkernel_SimkernelJNI_cBasicChannel_1cast(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_get_1MAXARGS(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cDisplayString_1_1SWIG_10(JNIEnv *jenv, jclass jcls,...);
 void Java_org_omnetpp_simkernel_SimkernelJNI_new_1cDisplayString_1_1SWIG_11(JNIEnv *jenv, jclass jcls,...);
@@ -809,7 +816,14 @@ static JNINativeMethod SimkernelJNI_methods[] = {
     { "cPolymorphic_getInfo__SWIG_1", "(JLjava/lang/String;)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1getInfo_1_1SWIG_11 },
     { "cPolymorphic_getDetailedInfo", "(J)Ljava/lang/String;", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1getDetailedInfo },
     { "cPolymorphic_dup", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1dup },
-    { "cPolymorphic_castFrom", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1castFrom },
+    { "cPolymorphic_hasField", "(JLjava/lang/String;)Z", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1hasField },
+    { "cPolymorphic_getField", "(JLjava/lang/String;)Ljava/lang/String;", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1getField },
+    { "cPolymorphic_getArrayField", "(JLjava/lang/String;I)Ljava/lang/String;", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1getArrayField },
+    { "cPolymorphic_setField", "(JLjava/lang/String;Ljava/lang/String;)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1setField },
+    { "cPolymorphic_setArrayField", "(JLjava/lang/String;ILjava/lang/String;)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1setArrayField },
+    { "cPolymorphic_isFieldArray", "(JLjava/lang/String;)Z", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1isFieldArray },
+    { "cPolymorphic_isFieldCompound", "(JLjava/lang/String;)Z", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1isFieldCompound },
+    { "cPolymorphic_cast", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cPolymorphic_1cast },
     { "get_MAX_INTERNAL_NAME", "()I", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_get_1MAX_1INTERNAL_1NAME },
     { "cObject_setDefaultOwner", "(J)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1setDefaultOwner },
     { "new_cObject__SWIG_0", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cObject_1_1SWIG_10 },
@@ -830,7 +844,7 @@ static JNINativeMethod SimkernelJNI_methods[] = {
     { "cObject_forEachChild", "(JJ)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1forEachChild },
     { "cObject_findObject__SWIG_0", "(JLjava/lang/String;Z)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1findObject_1_1SWIG_10 },
     { "cObject_findObject__SWIG_1", "(JLjava/lang/String;)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1findObject_1_1SWIG_11 },
-    { "cObject_castFrom", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1castFrom },
+    { "cObject_cast", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cObject_1cast },
     { "delete_cVisitor", "(J)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cVisitor },
     { "cVisitor_process", "(JJ)Z", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cVisitor_1process },
     { "cVisitor_processChildrenOf", "(JJ)Z", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cVisitor_1processChildrenOf },
@@ -894,7 +908,7 @@ static JNINativeMethod SimkernelJNI_methods[] = {
     { "new_cRuntimeError__SWIG_1", "(Ljava/lang/String;)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cRuntimeError_1_1SWIG_11 },
     { "new_cRuntimeError__SWIG_2", "(JI)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cRuntimeError_1_1SWIG_12 },
     { "new_cRuntimeError__SWIG_3", "(JLjava/lang/String;)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cRuntimeError_1_1SWIG_13 },
-    { "cRuntimeError_castFrom", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cRuntimeError_1castFrom },
+    { "cRuntimeError_cast", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cRuntimeError_1cast },
     { "delete_cRuntimeError", "(J)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cRuntimeError },
     { "cDefaultList_takeAllObjectsFrom", "(JJ)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cDefaultList_1takeAllObjectsFrom },
     { "new_cDefaultList__SWIG_0", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cDefaultList_1_1SWIG_10 },
@@ -909,7 +923,7 @@ static JNINativeMethod SimkernelJNI_methods[] = {
     { "cDefaultList_defaultListItems", "(J)I", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cDefaultList_1defaultListItems },
     { "cDefaultList_defaultListGet", "(JI)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cDefaultList_1defaultListGet },
     { "cDefaultList_defaultListContains", "(JJ)Z", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cDefaultList_1defaultListContains },
-    { "cDefaultList_castFrom", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cDefaultList_1castFrom },
+    { "cDefaultList_cast", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cDefaultList_1cast },
     { "new_cSimulation__SWIG_0", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cSimulation_1_1SWIG_10 },
     { "new_cSimulation__SWIG_1", "(Ljava/lang/String;)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cSimulation_1_1SWIG_11 },
     { "delete_cSimulation", "(J)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cSimulation },
@@ -930,7 +944,7 @@ static JNINativeMethod SimkernelJNI_methods[] = {
     { "cSimulation_getContextSimpleModule", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cSimulation_1getContextSimpleModule },
     { "cSimulation_getUniqueNumber", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cSimulation_1getUniqueNumber },
     { "cSimulation_snapshot", "(JJLjava/lang/String;)Z", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cSimulation_1snapshot },
-    { "cSimulation_castFrom", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cSimulation_1castFrom },
+    { "cSimulation_cast", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cSimulation_1cast },
     { "delete_cModuleType", "(J)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cModuleType },
     { "cModuleType_assign", "(JJ)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cModuleType_1assign },
     { "cModuleType_dup", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cModuleType_1dup },
@@ -938,15 +952,15 @@ static JNINativeMethod SimkernelJNI_methods[] = {
     { "cModuleType_create__SWIG_1", "(JLjava/lang/String;JII)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cModuleType_1create_1_1SWIG_11 },
     { "cModuleType_buildInside", "(JJ)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cModuleType_1buildInside },
     { "cModuleType_createScheduleInit", "(JLjava/lang/String;J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cModuleType_1createScheduleInit },
-    { "cModuleType_castFrom", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cModuleType_1castFrom },
+    { "cModuleType_cast", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cModuleType_1cast },
     { "delete_cChannelType", "(J)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cChannelType },
     { "cChannelType_assign", "(JJ)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cChannelType_1assign },
     { "cChannelType_create", "(JLjava/lang/String;)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cChannelType_1create },
-    { "cChannelType_castFrom", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cChannelType_1castFrom },
+    { "cChannelType_cast", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cChannelType_1cast },
     { "delete_cNetworkType", "(J)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cNetworkType },
     { "cNetworkType_assign", "(JJ)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cNetworkType_1assign },
     { "cNetworkType_setupNetwork", "(J)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cNetworkType_1setupNetwork },
-    { "cNetworkType_castFrom", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cNetworkType_1castFrom },
+    { "cNetworkType_cast", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cNetworkType_1cast },
     { "createOne", "(Ljava/lang/String;)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_createOne },
     { "createOneIfClassIsKnown", "(Ljava/lang/String;)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_createOneIfClassIsKnown },
     { "new_cArray__SWIG_0", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cArray_1_1SWIG_10 },
@@ -975,7 +989,7 @@ static JNINativeMethod SimkernelJNI_methods[] = {
     { "cArray_remove__SWIG_2", "(JJ)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cArray_1remove_1_1SWIG_12 },
     { "cArray_takeOwnership__SWIG_0", "(JZ)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cArray_1takeOwnership_1_1SWIG_10 },
     { "cArray_takeOwnership__SWIG_1", "(J)Z", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cArray_1takeOwnership_1_1SWIG_11 },
-    { "cArray_castFrom", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cArray_1castFrom },
+    { "cArray_cast", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cArray_1cast },
     { "new_cQueue__SWIG_0", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cQueue_1_1SWIG_10 },
     { "new_cQueue__SWIG_1", "(Ljava/lang/String;)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cQueue_1_1SWIG_11 },
     { "new_cQueue__SWIG_2", "()J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cQueue_1_1SWIG_12 },
@@ -999,7 +1013,7 @@ static JNINativeMethod SimkernelJNI_methods[] = {
     { "cQueue_contains", "(JJ)Z", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cQueue_1contains },
     { "cQueue_takeOwnership__SWIG_0", "(JZ)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cQueue_1takeOwnership_1_1SWIG_10 },
     { "cQueue_takeOwnership__SWIG_1", "(J)Z", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cQueue_1takeOwnership_1_1SWIG_11 },
-    { "cQueue_castFrom", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cQueue_1castFrom },
+    { "cQueue_cast", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cQueue_1cast },
     { "findNetwork", "(Ljava/lang/String;)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_findNetwork },
     { "findModuleType", "(Ljava/lang/String;)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_findModuleType },
     { "findChannelType", "(Ljava/lang/String;)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_findChannelType },
@@ -1011,7 +1025,7 @@ static JNINativeMethod SimkernelJNI_methods[] = {
     { "cDoubleExpression_getAsText", "(J)Ljava/lang/String;", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cDoubleExpression_1getAsText },
     { "cDoubleExpression_parseText", "(JLjava/lang/String;)Z", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cDoubleExpression_1parseText },
     { "cDoubleExpression_evaluate", "(J)D", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cDoubleExpression_1evaluate },
-    { "cDoubleExpression_castFrom", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cDoubleExpression_1castFrom },
+    { "cDoubleExpression_cast", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cDoubleExpression_1cast },
     { "delete_cDoubleExpression", "(J)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cDoubleExpression },
     { "new_cPar__SWIG_0", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cPar_1_1SWIG_10 },
     { "new_cPar__SWIG_1", "(Ljava/lang/String;)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cPar_1_1SWIG_11 },
@@ -1065,7 +1079,7 @@ static JNINativeMethod SimkernelJNI_methods[] = {
     { "cPar_assign__SWIG_11", "(JD)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_111 },
     { "cPar_assign__SWIG_12", "(JJ)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_112 },
     { "cPar_assign__SWIG_13", "(JJ)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1assign_1_1SWIG_113 },
-    { "cPar_castFrom", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1castFrom },
+    { "cPar_cast", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cPar_1cast },
     { "new_cModulePar__SWIG_0", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cModulePar_1_1SWIG_10 },
     { "new_cModulePar__SWIG_1", "(Ljava/lang/String;)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cModulePar_1_1SWIG_11 },
     { "new_cModulePar__SWIG_2", "()J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cModulePar_1_1SWIG_12 },
@@ -1078,7 +1092,7 @@ static JNINativeMethod SimkernelJNI_methods[] = {
     { "cModulePar_afterChange", "(J)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cModulePar_1afterChange },
     { "cModulePar_setOwnerModule", "(JJ)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cModulePar_1setOwnerModule },
     { "cModulePar_getOwnerModule", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cModulePar_1getOwnerModule },
-    { "cModulePar_castFrom", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cModulePar_1castFrom },
+    { "cModulePar_cast", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cModulePar_1cast },
     { "cGate_hasDisplayString", "(J)Z", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1hasDisplayString },
     { "cGate__setTo", "(JJ)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1_1setTo },
     { "cGate__setFrom", "(JJ)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1_1setFrom },
@@ -1130,7 +1144,7 @@ static JNINativeMethod SimkernelJNI_methods[] = {
     { "cGate_getDisplayString", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1getDisplayString },
     { "cGate_setDisplayString__SWIG_0", "(JLjava/lang/String;Z)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1setDisplayString_1_1SWIG_10 },
     { "cGate_setDisplayString__SWIG_1", "(JLjava/lang/String;)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1setDisplayString_1_1SWIG_11 },
-    { "cGate_castFrom", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1castFrom },
+    { "cGate_cast", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cGate_1cast },
     { "cMessage_getShareCount", "(J)I", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1getShareCount },
     { "new_cMessage__SWIG_0", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cMessage_1_1SWIG_10 },
     { "new_cMessage__SWIG_1", "(Ljava/lang/String;IIIZ)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cMessage_1_1SWIG_11 },
@@ -1203,7 +1217,7 @@ static JNINativeMethod SimkernelJNI_methods[] = {
     { "cMessage_getTotalMessageCount", "()I", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1getTotalMessageCount },
     { "cMessage_getLiveMessageCount", "()I", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1getLiveMessageCount },
     { "cMessage_resetMessageCounters", "()V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1resetMessageCounters },
-    { "cMessage_castFrom", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1castFrom },
+    { "cMessage_cast", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cMessage_1cast },
     { "get_sENDED", "()I", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_get_1sENDED },
     { "get_sREADY", "()I", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_get_1sREADY },
     { "get_dispSUBMOD", "()I", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_get_1dispSUBMOD },
@@ -1269,7 +1283,7 @@ static JNINativeMethod SimkernelJNI_methods[] = {
     { "cModule_setDisplayString__SWIG_2", "(JILjava/lang/String;Z)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cModule_1setDisplayString_1_1SWIG_12 },
     { "cModule_setDisplayString__SWIG_3", "(JILjava/lang/String;)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cModule_1setDisplayString_1_1SWIG_13 },
     { "cModule_bubble", "(JLjava/lang/String;)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cModule_1bubble },
-    { "cModule_castFrom", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cModule_1castFrom },
+    { "cModule_cast", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cModule_1cast },
     { "new_cCompoundModule__SWIG_0", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cCompoundModule_1_1SWIG_10 },
     { "new_cCompoundModule__SWIG_1", "()J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cCompoundModule_1_1SWIG_11 },
     { "delete_cCompoundModule", "(J)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cCompoundModule },
@@ -1277,7 +1291,7 @@ static JNINativeMethod SimkernelJNI_methods[] = {
     { "cCompoundModule_dup", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cCompoundModule_1dup },
     { "cCompoundModule_getInfo", "(J)Ljava/lang/String;", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cCompoundModule_1getInfo },
     { "cCompoundModule_scheduleStart", "(JD)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cCompoundModule_1scheduleStart },
-    { "cCompoundModule_castFrom", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cCompoundModule_1castFrom },
+    { "cCompoundModule_cast", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cCompoundModule_1cast },
     { "new_cSubModIterator", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cSubModIterator },
     { "cSubModIterator_init", "(JJ)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cSubModIterator_1init },
     { "cSubModIterator_end", "(J)Z", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cSubModIterator_1end },
@@ -1322,7 +1336,7 @@ static JNINativeMethod SimkernelJNI_methods[] = {
     { "cSimpleModule_endSimulation", "(J)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cSimpleModule_1endSimulation },
     { "cSimpleModule_error", "(JLjava/lang/String;)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cSimpleModule_1error },
     { "cSimpleModule_recordScalar", "(JLjava/lang/String;D)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cSimpleModule_1recordScalar },
-    { "cSimpleModule_castFrom", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cSimpleModule_1castFrom },
+    { "cSimpleModule_cast", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cSimpleModule_1cast },
     { "set_cStatistic_genk", "(JI)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_set_1cStatistic_1genk },
     { "get_cStatistic_genk", "(J)I", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_get_1cStatistic_1genk },
     { "delete_cStatistic", "(J)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_delete_1cStatistic },
@@ -1343,7 +1357,7 @@ static JNINativeMethod SimkernelJNI_methods[] = {
     { "cStatistic_getRandom", "(J)D", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cStatistic_1getRandom },
     { "cStatistic_recordScalar__SWIG_0", "(JLjava/lang/String;)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cStatistic_1recordScalar_1_1SWIG_10 },
     { "cStatistic_recordScalar__SWIG_1", "(J)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cStatistic_1recordScalar_1_1SWIG_11 },
-    { "cStatistic_castFrom", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cStatistic_1castFrom },
+    { "cStatistic_cast", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cStatistic_1cast },
     { "new_cStdDev__SWIG_0", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cStdDev_1_1SWIG_10 },
     { "new_cStdDev__SWIG_1", "(Ljava/lang/String;)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cStdDev_1_1SWIG_11 },
     { "new_cStdDev__SWIG_2", "()J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cStdDev_1_1SWIG_12 },
@@ -1363,7 +1377,7 @@ static JNINativeMethod SimkernelJNI_methods[] = {
     { "cStdDev_getVariance", "(J)D", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cStdDev_1getVariance },
     { "cStdDev_getRandom", "(J)D", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cStdDev_1getRandom },
     { "cStdDev_clearResult", "(J)V", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cStdDev_1clearResult },
-    { "cStdDev_castFrom", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cStdDev_1castFrom },
+    { "cStdDev_cast", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cStdDev_1cast },
     { "new_cWeightedStdDev__SWIG_0", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cWeightedStdDev_1_1SWIG_10 },
     { "new_cWeightedStdDev__SWIG_1", "(Ljava/lang/String;)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cWeightedStdDev_1_1SWIG_11 },
     { "new_cWeightedStdDev__SWIG_2", "()J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cWeightedStdDev_1_1SWIG_12 },
@@ -1376,7 +1390,7 @@ static JNINativeMethod SimkernelJNI_methods[] = {
     { "cWeightedStdDev_getWeights", "(J)D", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cWeightedStdDev_1getWeights },
     { "cWeightedStdDev_getMean", "(J)D", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cWeightedStdDev_1getMean },
     { "cWeightedStdDev_getVariance", "(J)D", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cWeightedStdDev_1getVariance },
-    { "cWeightedStdDev_castFrom", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cWeightedStdDev_1castFrom },
+    { "cWeightedStdDev_cast", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cWeightedStdDev_1cast },
     { "new_cOutVector__SWIG_0", "(Ljava/lang/String;I)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cOutVector_1_1SWIG_10 },
     { "new_cOutVector__SWIG_1", "(Ljava/lang/String;)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cOutVector_1_1SWIG_11 },
     { "new_cOutVector__SWIG_2", "()J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cOutVector_1_1SWIG_12 },
@@ -1397,7 +1411,7 @@ static JNINativeMethod SimkernelJNI_methods[] = {
     { "cOutVector_getValuesReceived", "(J)I", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1getValuesReceived },
     { "cOutVector_getValuesStored", "(J)I", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1getValuesStored },
     { "cOutVector_getTuple", "(J)I", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1getTuple },
-    { "cOutVector_castFrom", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1castFrom },
+    { "cOutVector_cast", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cOutVector_1cast },
     { "new_cChannel__SWIG_0", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cChannel_1_1SWIG_10 },
     { "new_cChannel__SWIG_1", "(Ljava/lang/String;)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cChannel_1_1SWIG_11 },
     { "new_cChannel__SWIG_2", "()J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cChannel_1_1SWIG_12 },
@@ -1416,7 +1430,7 @@ static JNINativeMethod SimkernelJNI_methods[] = {
     { "cChannel_hasPar", "(JLjava/lang/String;)Z", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cChannel_1hasPar },
     { "cChannel_parList", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cChannel_1parList },
     { "cChannel_deliver", "(JJD)Z", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cChannel_1deliver },
-    { "cChannel_castFrom", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cChannel_1castFrom },
+    { "cChannel_cast", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cChannel_1cast },
     { "new_cBasicChannel__SWIG_0", "(Ljava/lang/String;)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cBasicChannel_1_1SWIG_10 },
     { "new_cBasicChannel__SWIG_1", "()J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cBasicChannel_1_1SWIG_11 },
     { "new_cBasicChannel__SWIG_2", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cBasicChannel_1_1SWIG_12 },
@@ -1441,7 +1455,7 @@ static JNINativeMethod SimkernelJNI_methods[] = {
     { "cBasicChannel_isBusy", "(J)Z", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cBasicChannel_1isBusy },
     { "cBasicChannel_getTransmissionFinishes", "(J)D", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cBasicChannel_1getTransmissionFinishes },
     { "cBasicChannel_deliver", "(JJD)Z", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cBasicChannel_1deliver },
-    { "cBasicChannel_castFrom", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cBasicChannel_1castFrom },
+    { "cBasicChannel_cast", "(J)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_cBasicChannel_1cast },
     { "get_MAXARGS", "()I", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_get_1MAXARGS },
     { "new_cDisplayString__SWIG_0", "()J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cDisplayString_1_1SWIG_10 },
     { "new_cDisplayString__SWIG_1", "(Ljava/lang/String;)J", (void *)Java_org_omnetpp_simkernel_SimkernelJNI_new_1cDisplayString_1_1SWIG_11 },
@@ -1541,7 +1555,7 @@ void SimkernelJNI_registerNatives(JNIEnv *jenv)
         fprintf(stderr, "ERROR: Cannot find SimkernelJNI class\n");
         exit(1);
     }
-    int ret = jenv->RegisterNatives(clazz, SimkernelJNI_methods, 762);
+    int ret = jenv->RegisterNatives(clazz, SimkernelJNI_methods, 769);
     if (ret!=0) {
         fprintf(stderr, "ERROR: Cannot register native methods for SimkernelJNI: RegisterNatives() returned %d\n", ret);
         exit(1);
