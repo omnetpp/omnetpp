@@ -22,6 +22,7 @@ DIST_SRC_FILES = \
   JUtil.h \
   makefrag.vc \
   simkernel.i \
+  reflect.i \
   memorymgmt_plain.i \
   registernatives.pl \
   m.bat \
