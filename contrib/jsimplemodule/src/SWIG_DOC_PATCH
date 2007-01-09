@@ -1,9 +1,6 @@
-IMPLEMENTATION NOTES, and notes to the SWIG manual
---------------------------------------------------
 
-Notes about SWIG:
+To "19.4.3 Java proxy classes":
 
-Note to "19.4.3 Java proxy classes":
 Every wrapper object contains SEVERAL swigCPtrs, one for each subclass.
 With single inheritance they are all the same values, but with multiple
 inheritance, they may be different (as different base classes may be at
@@ -12,22 +9,22 @@ different offsets in the object).
 By default, SWIG does not provide methods to get the CPtr of the base class;
 here I added getBaseCPtr() for this.
 
-ISSUES WITH C++/JAVA INTEGRATION:
+------
 
-1. MEMORY MANAGEMENT, meaning how to manage the swigCMemOwn flag in Java
-   wrapper objects. SWIG provides %newobject to set swigCMemOwn=true
-   for C++ objects returned from wrapped functions (by default they are
-   returned with swigCMemOwn=false, which assumes that the C++ code will
-   delete them.) However, it provides no straightforward way of giving
-   ownership of objects passed as method arguments to the C++ code.
-   So, there is nothing like
+To: "19.4.3.1 Memory management"
 
-   %feature("javadisown",args="obj") FooContainer::insert; //not supported
+%newobject exists to set swigCMemOwn=true for C++ objects returned from
+wrapped functions. However, there reverse is missing: there is currently
+no "official" way to set swigCMemOwn=false for objects passed into
+methods that take ownership the object (as it is typical with "insert"
+methods of containers). So, there is nothing like
 
-   There are two workarounds, however. javain typemaps will match by the
-   name of the parameter name in addition to the type. So if you name
-   the parameters to be "disowned" differently in the C++ declaration,
-   you can write a typemap for them:
+   %feature("javadisown",args="obj") Queue::insert; //not supported
+
+There are two workarounds, however. javain typemaps will match by the
+name of the parameter name in addition to the type. So if you name
+the parameters to be "disowned" differently in the C++ declaration,
+you can write a typemap for them:
 
    %typemap(javain) Foo *objDISOWN "...code with objDISOWN.swigCMemOwn=false..."
 
@@ -37,9 +34,9 @@ ISSUES WITH C++/JAVA INTEGRATION:
        bool contains(Foo *obj);      // typemap does not apply
    };
 
-   Alternatively, you can utilize the javaout typemap. It can be given a
-   method name to match, so it can be used to inject "disown" code into
-   selected methods:
+Alternatively, you can utilize the javaout typemap. It can be given a
+method name to match, so it can be used to inject "disown" code into
+selected methods:
 
      %typemap(javaout) void Queue::insert { objDISOWN.swigCMemOwn=false; $jnicall }
 
@@ -50,12 +47,18 @@ ISSUES WITH C++/JAVA INTEGRATION:
      };
 
 
-   Another way is going for EXPLICIT MEMORY MANAGEMENT (i.e. requiring the
-   delete() method of the wrapper to be explicitly called when the C++ object
-   is not needed any more). swigCMemOwn would always be set to false, or could
-   even be removed from generated code. The code is too lengthy to quote here,
-   but it involves several (fairly straightforward) changes to the original
-   java.swg version of the following typemaps:
+
+ALTERNATIVE WAYS OF MEMORY MANAGEMENT.
+
+In highly dynamic applications
+
+
+Another way is going for EXPLICIT MEMORY MANAGEMENT (i.e. requiring the
+delete() method of the wrapper to be explicitly called when the C++ object
+is not needed any more). swigCMemOwn would always be set to false, or could
+even be removed from generated code. The code is too lengthy to quote here,
+but it involves several (fairly straightforward) changes to the original
+java.swg version of the following typemaps:
 
     %typemap(javabody) SWIGTYPE %{ ... %}
     %typemap(javabody_derived) SWIGTYPE %{ ... %}
@@ -65,8 +68,11 @@ ISSUES WITH C++/JAVA INTEGRATION:
     %typemap(javadestruct_derived, methodname="delete") SWIGTYPE { ... }
 
 
-2. JAVA OBJECT IDENTITY. By default, SWIG creates a new Java wrapper
-   object every time a C++ method returns an object. This has drawbacks:
+
+JAVA OBJECT IDENTITY.
+
+By default, SWIG creates a new Java wrapper object every time a C++ method
+returns an object. This has drawbacks:
 
     1. one cannot use "==" with wrapper objects, the CPtrs have to be
        compared instead.
@@ -83,8 +89,8 @@ ISSUES WITH C++/JAVA INTEGRATION:
        must be extremely cautius in writing the Java code to prevent
        crashes!
 
-   How to guarantee Java object identity (ie at most one Java wrapper per
-   C++ object)? There are several methods, all with some difficulty:
+How to guarantee Java object identity (ie at most one Java wrapper per
+C++ object)? There are several methods, all with some difficulty:
 
    - store the wrapper object reference (jobject) inside the C++ object.
      One may use global weak reference (instead of ordinary global reference)

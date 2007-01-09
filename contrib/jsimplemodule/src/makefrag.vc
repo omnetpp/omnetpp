@@ -43,9 +43,7 @@ simkernel_wrap.cc SimkernelJNI_registerNatives.cc : simkernel.i Makefile.vc $(OM
 	-mkdir java\org\omnetpp >nul 2>nul
 	-mkdir java\org\omnetpp\simkernel >nul 2>nul
 	-del $(JAVADIR)\*.java >nul
-	$(SWIG) -c++ -java -package $(JAVAPKG) -I$(OMNETPP_ROOT)/include -I$(OMNETPP_ROOT)/src/envir -I$(OMNETPP_ROOT) -outdir $(JAVADIR) simkernel.i
-	-del simkernel_wrap.cc >nul
-	ren simkernel_wrap.cxx simkernel_wrap.cc
+	$(SWIG) -c++ -java -package $(JAVAPKG) -I$(OMNETPP_ROOT)/include -I$(OMNETPP_ROOT)/src/envir -I$(OMNETPP_ROOT) -outdir $(JAVADIR) -o simkernel_wrap.cc simkernel.i
 	$(PERL) -i.bak -pe "s/JNIEXPORT +//g" simkernel_wrap.cc
 	$(PERL) -i.bak -pe "s/JNICALL +//g" simkernel_wrap.cc
 	$(PERL) -i.bak -pe "s/jenv;/jenv; LOG_JNI_CALL();/g" simkernel_wrap.cc
