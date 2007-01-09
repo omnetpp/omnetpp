@@ -134,6 +134,8 @@ void *cIndexedFileOutputVectorManager::registerVector(const char *modulename, co
     vp->vectorname = vectorname;
 
     // TODO: add "output-vector-block-size" to getOutVectorConfig()
+    //   ^^^^^ we probably don't need that. getOutVectorConfig() is per-vector, and probably there isn't that
+    //         much benefit in being able to set the block size individually for different vectors...   --Andras
     char section[16];
     sprintf(section,"Run %d",simulation.runNumber());
     int buffer_size = (int)ev.config()->getAsInt2(section,"General","output-vector-block-size",DEFAULT_BUFFER_SIZE);

@@ -195,6 +195,7 @@ filemgrs.obj: filemgrs.cc \
   ../../include/cstat.h \
   filemgrs.h \
   ../../include/ccomponenttype.h \
+  ivfilemgr.h \
   ../../include/carray.h \
   ../../include/globals.h \
   ../../include/cexception.h \
@@ -231,6 +232,42 @@ fsutils.obj: fsutils.cc \
   ../../include/opp_string.h \
   ../../include/defs.h \
   ../../include/errmsg.h
+ivfilemgr.obj: ivfilemgr.cc \
+  ../../include/defs.h \
+  ../../include/platdep/timeutil.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/cenvir.h \
+  omnetapp.h \
+  ../../include/csimulation.h \
+  ../../include/regmacros.h \
+  ../../include/cmodule.h \
+  ../../include/cstat.h \
+  ivfilemgr.h \
+  ../../include/carray.h \
+  ../../include/globals.h \
+  ../../include/cexception.h \
+  args.h \
+  envdefs.h \
+  ../../include/envirext.h \
+  ../../include/cconfig.h \
+  ../../include/cownedobject.h \
+  ../../include/util.h \
+  ../../include/cnamedobject.h \
+  ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/onstartup.h \
+  ../../include/cclassfactory.h \
+  ../../include/opp_string.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/ccomponent.h \
+  ../../include/cgate.h \
+  ../../include/cpar.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cexpression.h \
+  filemgrs.h
 main.obj: main.cc \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
