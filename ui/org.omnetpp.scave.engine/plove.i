@@ -5,7 +5,8 @@
 #include "nodetyperegistry.h"
 #include "arraybuilder.h"
 #include "xyarray.h"
-#include "ivectorfilereader.h"
+//#include "ivectorfilereader.h"
+#include "indexedvectorfile.h"
 #include "vectorfileindexer.h"
 %}
 
@@ -98,5 +99,6 @@ class IndexedVectorFileReader
 %include "xyarray.h"
 %include "vectorfileindexer.h"
 // %include "ivectorfilereader.h"
+//%include "indexedvectorfile.h"  XXX commented out for now, wrap.cc didn't compile (Andras)
 
 

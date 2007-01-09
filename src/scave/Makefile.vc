@@ -147,21 +147,26 @@ idlist.obj: idlist.cc \
   scavedefs.h \
   ../common/exception.h \
   ../common/util.h
-ivectorfilereader.obj: ivectorfilereader.cc \
+indexedvectorfile.obj: indexedvectorfile.cc \
   ../common/exception.h \
   ../common/linetokenizer.h \
-  ivectorfilereader.h \
-  ../common/filereader.h
-ivectorfilewriter.obj: ivectorfilewriter.cc \
   channel.h \
-  ivectorfilewriter.h \
   ../common/stringutil.h \
+  indexedvectorfile.h \
   ../common/util.h \
   node.h \
-  ../common/exception.h \
   scavedefs.h \
+  ../common/filereader.h \
+  indexfile.h \
   nodetype.h \
   dataflowmanager.h
+indexfile.obj: indexfile.cc \
+  ../common/exception.h \
+  ../common/filereader.h \
+  ../common/linetokenizer.h \
+  ../common/stringutil.h \
+  indexfile.h \
+  ../common/util.h
 mergernodes.obj: mergernodes.cc \
   channel.h \
   mergernodes.h \
@@ -187,7 +192,7 @@ nodetyperegistry.obj: nodetyperegistry.cc \
   arraybuilder.h \
   vectorfilereader.h \
   vectorfilewriter.h \
-  ivectorfilewriter.h \
+  indexedvectorfile.h \
   filewriter.h \
   windowavg.h \
   slidingwinavg.h \
@@ -204,7 +209,9 @@ nodetyperegistry.obj: nodetyperegistry.cc \
   channel.h \
   commonnodes.h \
   xyarray.h \
-  ../common/filetokenizer.h
+  ../common/filetokenizer.h \
+  ../common/filereader.h \
+  indexfile.h
 octaveexport.obj: octaveexport.cc \
   octaveexport.h \
   scavedefs.h \
@@ -214,9 +221,10 @@ resultfilemanager.obj: resultfilemanager.cc \
   ../common/matchexpression.h \
   ../common/patternmatcher.h \
   resultfilemanager.h \
-  ../common/filetokenizer.h \
-  ../common/stringtokenizer.h \
   ../common/filereader.h \
+  ../common/linetokenizer.h \
+  ../common/stringtokenizer.h \
+  indexfile.h \
   ../common/exception.h \
   idlist.h \
   ../common/util.h \
@@ -271,7 +279,8 @@ vectorfileindexer.obj: vectorfileindexer.cc \
   nodetyperegistry.h \
   dataflowmanager.h \
   vectorfilereader.h \
-  ivectorfilewriter.h \
+  indexedvectorfile.h \
+  indexfile.h \
   vectorfileindexer.h \
   idlist.h \
   ../common/exception.h \
@@ -279,7 +288,8 @@ vectorfileindexer.obj: vectorfileindexer.cc \
   scavedefs.h \
   node.h \
   channel.h \
-  ../common/filetokenizer.h
+  ../common/filetokenizer.h \
+  ../common/filereader.h
 vectorfilereader.obj: vectorfilereader.cc \
   channel.h \
   vectorfilereader.h \

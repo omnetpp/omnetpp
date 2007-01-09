@@ -1124,7 +1124,6 @@ cparvalue.obj: cparvalue.cc \
   ../../include/cdefaultlist.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h
-cpolymorphic.obj: cpolymorphic.cc
 cproperties.obj: cproperties.cc \
   ../../include/cproperties.h \
   ../../include/cproperty.h \
