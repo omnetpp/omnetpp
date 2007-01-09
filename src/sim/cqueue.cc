@@ -263,7 +263,7 @@ cOwnedObject *cQueue::remove(cOwnedObject *obj)
 {
     if (!obj)
         return NULL;
-
+    //FIXME: handle special cases faster: if obj==front() or ==back(), don't invoke find_qelem()
     QElem *p = find_qelem(obj);
     if (!p)
         return NULL;
