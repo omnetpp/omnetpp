@@ -1,0 +1,29 @@
+
+In response to:
+William S Fulton  | 16 Oct 22:29
+Re: swig wrapped files + doxygen
+---
+
+Hi William, 
+
+A while ago you wrote:
+
+> For Java, there is a suggestion on how to add in javadoc comments in the
+> Java chapter (Java.html). Converting C++ comments / doxygen comments
+> into documentation was discussed a few years ago and is on the todo
+> list, but no-one has rushed into implementing it, to put it mildly.
+
+I would give it a try, if I get some help. I wish SWIG had an option to add comments into the Java files with C++ file/line info:
+
+  // @from cmodule.h:342
+  public void scheduleStart(double t) {
+    SimkernelJNI.cModule_scheduleStart(swigCPtr, t);
+  }
+
+Then it would be trivial to write a Perl script (or whatever other tool) to grab the comments from the C++ headers, and paste them over into the Java files. The rest is cosmetics.
+
+Would it be possible to extend SWIG with such an option? I guess when SWIG generates code, it knows where in the C++ files those classes and methods came from, because it itself parsed it? 
+
+Regards,
+Andras
+
