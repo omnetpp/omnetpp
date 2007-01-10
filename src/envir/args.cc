@@ -26,7 +26,7 @@ ArgList::ArgList(int ac, char *av[])
     argv = av;
 }
 
-bool ArgList::argGiven(char c)
+bool ArgList::optionGiven(char c)
 {
     int i;
     for(i=1; i<argc; i++)
@@ -35,7 +35,7 @@ bool ArgList::argGiven(char c)
     return false;
 }
 
-char *ArgList::argValue(char c, int k)
+char *ArgList::optionValue(char c, int k)
 {
     int i;
     for(i=1; i<argc; i++)

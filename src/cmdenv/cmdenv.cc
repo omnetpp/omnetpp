@@ -135,7 +135,7 @@ void TCmdenvApp::setup()
         return;
 
     // '-r' option: specifies runs to execute; overrides ini file setting
-    char *r = args->argValue( 'r' );
+    char *r = args->optionValue( 'r' );
     if (r)
        opt_runstoexec = r;
 

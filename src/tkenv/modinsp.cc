@@ -370,8 +370,8 @@ void TGraphicalModWindow::refreshLayout()
     const cDisplayString& ds = parentmodule->hasDisplayString() ? parentmodule->displayString() : blank;
 
     // create and configure layouter object
-    //BasicSpringEmbedderLayout layouter;
-    ForceDirectedGraphLayouter layouter(ds);
+    BasicSpringEmbedderLayout layouter;
+    //XXX ForceDirectedGraphLayouter layouter(ds);
     layouter.setSeed(random_seed);
 
     // enable graphics only if full re-layouting (no cached coordinates in submodPosMap)

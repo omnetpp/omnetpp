@@ -1002,7 +1002,7 @@ void TOmnetTkApp::readOptions()
 
     opt_extrastack_kb = cfg->getAsInt("Tkenv", "extra-stack-kb", TKENV_EXTRASTACK_KB);
 
-    char *r = args->argValue('r');
+    char *r = args->optionValue('r');
     if (r)
         opt_default_run = atoi(r);
     else

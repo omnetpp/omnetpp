@@ -119,7 +119,7 @@ void cEnvir::setup(int argc, char *argv[])
         // First, load the ini file. It might contain the name of the user interface
         // to instantiate.
         //
-        const char *fname = args->argValue('f',0);  // 1st '-f filename' option
+        const char *fname = args->optionValue('f',0);  // 1st '-f filename' option
         if (!fname) fname="omnetpp.ini";   // or default filename
 
         inifile = new cIniFile();
@@ -127,7 +127,7 @@ void cEnvir::setup(int argc, char *argv[])
 
         // process additional '-f filename' options if there are any
         int k;
-        for (k=1; (fname=args->argValue('f',k))!=NULL; k++)
+        for (k=1; (fname=args->optionValue('f',k))!=NULL; k++)
             inifile->readFile( fname );
 
         //
@@ -137,7 +137,7 @@ void cEnvir::setup(int argc, char *argv[])
 
         // load shared libraries given with '-l' option(s)
         const char *libname;
-        for (k=0; (libname=args->argValue('l',k))!=NULL; k++)
+        for (k=0; (libname=args->optionValue('l',k))!=NULL; k++)
             loadExtensionLibrary(libname);
 
         // load shared libs given in [General]/load-libs=
@@ -173,7 +173,7 @@ void cEnvir::setup(int argc, char *argv[])
         //
 
         // was it specified explicitly which one to use?
-        const char *appname = args->argValue('u',0);  // 1st '-u name' option
+        const char *appname = args->optionValue('u',0);  // 1st '-u name' option
         if (!appname)
             appname = configobject->getAsString("General", "user-interface", NULL);
 

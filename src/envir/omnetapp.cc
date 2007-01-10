@@ -132,7 +132,7 @@ TOmnetApp::~TOmnetApp()
 void TOmnetApp::setup()
 {
      // handle -h command-line option
-     if (args->argGiven('h'))
+     if (args->optionGiven('h'))
      {
          printHelp();
          return;  // don't set initialized to true
@@ -378,6 +378,7 @@ void TOmnetApp::readParameter(cPar *par)
     // get it from ini file
     std::string parfullpath = par->fullPath();
     std::string str = getParameter(simulation.runNumber(), parfullpath.c_str());
+__asm int 3;
     if (!str.empty())
     {
         par->parse(str.c_str());

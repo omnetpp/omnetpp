@@ -266,7 +266,7 @@ void cPar::read()
     if (p->isInput())
     {
         ev.readParameter(this);
-        p->setIsInput(false); // clear flag to avoid accidental rereads
+        //XXX WRONG: p MIGHT BE SHARED!!! p->setIsInput(false); // clear flag to avoid accidental rereads
     }
 
     // convert non-volatile expressions to constant

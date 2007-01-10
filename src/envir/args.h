@@ -28,8 +28,8 @@ class ENVIR_API ArgList
     ArgList(int argc, char *argv[]);
 
     // functions to handle one-character command-line options
-    bool argGiven(char c);
-    char *argValue(char c, int k=0);
+    bool optionGiven(char c);
+    char *optionValue(char c, int k=0);
 
     int argCount()      {return argc;}
     char **argVector()  {return argv;}
