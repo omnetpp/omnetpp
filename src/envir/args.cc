@@ -47,8 +47,10 @@ bool ArgList::getOpt(char c, int k, const char *&value)
     for (i=1; i<argc; i++)
     {
         const char *argstr = argv[i];
-        if (argstr[0]!='-' || !argstr[1] || strcmp(argstr, "--")==0)
+        if (argstr[0]!='-' || !argstr[1])
             break;  // end of options
+        if (strcmp(argstr, "--")==0)
+            {++i; break;}  // end of options
 
         if (c && argstr[1] == c)
             if (k-- == 0)
