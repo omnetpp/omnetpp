@@ -113,7 +113,7 @@ void cEnvir::setup(int argc, char *argv[])
         ExecuteOnStartup::executeAll();
 
         // args
-        args = new ArgList(argc,argv);
+        args = new ArgList(argc, argv, "hf:u:l:r:p:");
 
         //
         // First, load the ini file. It might contain the name of the user interface
@@ -128,7 +128,7 @@ void cEnvir::setup(int argc, char *argv[])
         // process additional '-f filename' options if there are any
         int k;
         for (k=1; (fname=args->optionValue('f',k))!=NULL; k++)
-            inifile->readFile( fname );
+            inifile->readFile(fname);
 
         //
         // Load all libraries specified on the command line or in the ini file.
