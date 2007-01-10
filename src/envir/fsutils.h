@@ -22,6 +22,7 @@
 #include "util.h"
 #include "opp_string.h"
 
+//FIXME move to "common" lib
 
 /**
  * Utility class for temporary change of directory. Changes back to
