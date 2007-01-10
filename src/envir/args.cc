@@ -44,13 +44,14 @@ bool ArgList::getOpt(char c, int k, const char *&value)
 
     // loop through the options
     int i;
+    bool inoptions = true;
     for (i=1; i<argc; i++)
     {
         const char *argstr = argv[i];
         if (argstr[0]!='-' || !argstr[1])
-            break;  // end of options
+            {inoptions=false; break;}  // end of options
         if (strcmp(argstr, "--")==0)
-            {++i; break;}  // end of options
+            {inoptions=false; ++i; break;}  // end of options
 
         if (c && argstr[1] == c)
             if (k-- == 0)
@@ -65,6 +66,9 @@ bool ArgList::getOpt(char c, int k, const char *&value)
     // finished scanning options; if we looked for one, we can return it
     if (c)
     {
+        if (!inoptions)
+            return false; // option not found
+
         // store value if it has one
         if (hasArg(c))
         {
@@ -95,6 +99,7 @@ const char *ArgList::optionValue(char c, int k)
 {
     const char *value;
     getOpt(c, k, value);
+    //printf("DBG: -%c option #%d = `%s'\n", c, k, value);
     return value;
 }
 
@@ -102,6 +107,7 @@ const char *ArgList::argument(int k)
 {
     const char *value;
     getOpt(0, k, value);
+    //printf("DBG: arg #%d = `%s'\n", k, value);
     return value;
 }
 

@@ -1,3 +1,7 @@
+args.cc/h rewritten ("--" can be used to mark end of options, etc...)
+"-f" is now optional when specifying an inifile (ie. both "runsim omnetpp.ini" and "runsim -f omnetpp.ini" are accepted)
+
+
 2006-09-30  Andras Varga
 
 	* filemgrs.cc: default precision changed to 14
