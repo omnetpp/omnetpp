@@ -120,14 +120,16 @@ void cEnvir::setup(int argc, char *argv[])
         // to instantiate.
         //
         const char *fname = args->optionValue('f',0);  // 1st '-f filename' option
-        if (!fname) fname="omnetpp.ini";   // or default filename
+        if (!fname) fname = args->argument(0);   // first argument
+        if (!fname) fname = "omnetpp.ini";   // or default filename
 
         inifile = new cIniFile();
         inifile->readFile(fname);
 
-        // process additional '-f filename' options if there are any
-        int k;
-        for (k=1; (fname=args->optionValue('f',k))!=NULL; k++)
+        // process additional '-f filename' options or arguments if there are any
+        for (int k=1; (fname=args->optionValue('f',k))!=NULL; k++)
+            inifile->readFile(fname);
+        for (int k=(args->optionValue('f',0) ? 0 : 1); (fname=args->argument(k))!=NULL; k++)
             inifile->readFile(fname);
 
         //
