@@ -295,7 +295,26 @@ class SIM_API cModule : public cComponent //noncopyable
     int setGateSize(const char *s, int size);
 
     /**
-     * In compound modules, this method can be called to build submodules
+     * Redefined from cComponent. This method must be called as part of the module
+     * creation process, after moduleType->create() and before mod->buildInside().
+     * It finalizes parameter values (e.g. reads the missing ones from omnetpp.ini),
+     * and adds gates and gate vectors (whose size may depend on parameter values)
+     * to the module.
+     *
+     * So the sequence of setting up a module is:
+     *  1. modType->create()
+     *  2. set parameter values
+     *  3. mod->finalizeParameters() -- this creates gates too
+     *  4. connect gates (possibly adding new gates via gate++ operations)
+     *  5. mod->buildInside()
+     *
+     * The above sequence also explains why finalizeParameters() cannot by merged
+     * into either create() or buildInside().
+     */
+    virtual void finalizeParameters();
+
+    /**
+     * In compound modules, this method should be called to build submodules
      * and internal connections after module creation. This method is a
      * wrapper around doBuildInside().
      *

@@ -61,9 +61,6 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     //XXX consider locking against addPar() during runtime
     virtual void addPar(cParValue *value);
 
-    // internal: invokes the read() method on all unset parameters
-    virtual void readParams();
-
     // internal: reallocates paramv (size must be >= numparams)
     void reallocParamv(int size);
 
@@ -168,6 +165,15 @@ class SIM_API cComponent : public cDefaultList // noncopyable
      */
     virtual void forEachChild(cVisitor *v);
     //@}
+
+    /**
+     * Must be called after the component was created, and (with modules)
+     * before buildInside(). It reads input parameters from omnetpp.ini,
+     * and cModule extends this method to add gates to the module too
+     * (as this is the earliest time parameter values are available,
+     * and gate vector sizes may depend on parameters).
+     */
+    virtual void finalizeParameters();
 
     /** @name Misc. */
     //@{

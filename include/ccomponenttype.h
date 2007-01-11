@@ -114,10 +114,18 @@ class SIM_API cModuleType : public cComponentType
     virtual cModule *createModuleObject() = 0;
 
     /**
-     * Adds parameters and gates to a newly created module object.
+     * Adds parameters to a newly created module object.
      * To be defined in subclasses.
      */
-    virtual void addParametersGatesTo(cModule *mod) = 0;
+    virtual void addParametersTo(cModule *mod) = 0;
+
+    /**
+     * Must be invoked before connecting the gates and calling mod->buildInside().
+     * The parameter values must have been finalized (read from omnetpp.ini etc)
+     * at this point. This method adds gates and gate vectors (whose size may
+     * depend on parameter values).
+     */
+    virtual void addGatesTo(cModule *mod) = 0;
 
     /**
      * Creates and connects submodules of a newly created module object.
