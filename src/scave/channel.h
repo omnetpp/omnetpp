@@ -16,7 +16,7 @@
 #ifndef _CHANNEL_H_
 #define _CHANNEL_H_
 
-#include "util.h"
+#include "commonutil.h"
 #include <deque>
 #include "node.h"
 

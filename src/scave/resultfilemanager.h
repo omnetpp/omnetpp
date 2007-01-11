@@ -25,7 +25,7 @@
 
 #include "idlist.h"
 #include "exception.h"
-#include "util.h"
+#include "commonutil.h"
 
 class Run;
 class ResultFile;

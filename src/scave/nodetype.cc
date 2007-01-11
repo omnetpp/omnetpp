@@ -16,7 +16,7 @@
 #pragma warning(disable:4786)
 #endif
 
-#include "util.h"
+#include "commonutil.h"
 #include "nodetype.h"
 
 

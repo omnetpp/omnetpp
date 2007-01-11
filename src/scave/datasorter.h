@@ -27,7 +27,7 @@
 #include <string.h>
 #include <assert.h>
 #include "resultfilemanager.h"
-#include "util.h"
+#include "commonutil.h"
 #include "patternmatcher.h"
 
 

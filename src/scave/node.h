@@ -16,7 +16,7 @@
 #define _NODE_H_
 
 #include "scavedefs.h"
-#include "util.h"
+#include "commonutil.h"
 
 
 class Node;
