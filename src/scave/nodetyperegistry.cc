@@ -75,6 +75,7 @@ NodeTypeRegistry::NodeTypeRegistry()
     add(new DividerNodeType());
     add(new ModuloNodeType());
     add(new DifferenceNodeType());
+    add(new TimeDiffNodeType());
     add(new SumNodeType());
     add(new TimeShiftNodeType());
     add(new LinearTrendNodeType());

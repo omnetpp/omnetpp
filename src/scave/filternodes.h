@@ -171,6 +171,32 @@ class DifferenceNodeType : public FilterNodeType
 //----
 
 /**
+ * Processing node which substracts the previous value from every value
+ */
+class TimeDiffNode : public FilterNode
+{
+    protected:
+        double prevx;
+    public:
+        TimeDiffNode()  {prevx = 0;}
+        virtual ~TimeDiffNode() {}
+        virtual bool isReady() const;
+        virtual void process();
+};
+
+class TimeDiffNodeType : public FilterNodeType
+{
+    public:
+        virtual const char *name() const {return "timediff";}
+        virtual const char *description() const;
+        virtual void getAttributes(StringMap& attrs) const;
+        virtual void getAttrDefaults(StringMap& attrs) const;
+        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+};
+
+//----
+
+/**
  * Processing node which calculates moving average
  */
 class MovingAverageNode : public FilterNode
@@ -199,7 +225,7 @@ class MovingAverageNodeType : public FilterNodeType
 //----
 
 /**
- * Processing node which substracts the previous value from every value
+ * Processing node which sums up values
  */
 class SumNode : public FilterNode
 {

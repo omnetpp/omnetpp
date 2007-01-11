@@ -294,6 +294,54 @@ Node *DifferenceNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 }
 
 //-----
+
+bool TimeDiffNode::isReady() const
+{
+    return in()->length()>0;
+}
+
+void TimeDiffNode::process()
+{
+    int n = in()->length();
+    for (int i=0; i<n; i++)
+    {
+        Datum d;
+        in()->read(&d,1);
+
+        d.y -= d.x - prevx;
+        prevx = d.x;
+
+        out()->write(&d,1);
+    }
+}
+
+//--
+
+const char *TimeDiffNodeType::description() const
+{
+    return "Returns the difference in time between this and the previous value: y[k] = x[k] - x[k-1]";
+}
+
+void TimeDiffNodeType::getAttributes(StringMap& attrs) const
+{
+}
+
+void TimeDiffNodeType::getAttrDefaults(StringMap& attrs) const
+{
+}
+
+Node *TimeDiffNodeType::create(DataflowManager *mgr, StringMap& attrs) const
+{
+    checkAttrNames(attrs);
+
+    Node *node = new TimeDiffNode();
+    node->setNodeType(this);
+    mgr->addNode(node);
+    return node;
+}
+
+//-----
+
 MovingAverageNode::MovingAverageNode(double alph)
 {
     firstRead = true;
