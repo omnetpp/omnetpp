@@ -32,7 +32,7 @@ void HCRouter::activity()
 {
    int my_address = par("address");
    int dim = par("dim");
-   int fromUserGateId = gate("from_gen")->id();
+   int fromUserGateId = gate("fromGen")->id();
    long total_usr = 0, discarded_usr = 0;
 
    cMessage *endOfSlot = new cMessage("endOfSlot");
@@ -57,7 +57,7 @@ void HCRouter::activity()
             if (pkt->getDestAddress()!=my_address)
                rte_cell[num_rte++] = pkt;
             else
-               send(pkt,"to_sink");
+               send(pkt,"toSink");
          }
          else
          {

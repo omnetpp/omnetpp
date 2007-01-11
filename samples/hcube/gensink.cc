@@ -25,14 +25,14 @@ Define_Module( HCGenerator );
 //
 void HCGenerator::activity()
 {
-    int num_stations = par("num_stations");
+    int numStations = par("numStations");
     int my_address = par("address");
-    cPar& ia_time = par("ia_time"); // take by ref since it can be random
+    cPar& iaTime = par("iaTime"); // take by ref since it can be random
 
     for (int i=0;;i++)
     {
         // select destination randomly (but not the local station)
-        int dest = intrand(num_stations-1);
+        int dest = intrand(numStations-1);
         if (dest>=my_address) dest++;
 
         // create packet
@@ -52,10 +52,10 @@ void HCGenerator::activity()
 
         // wait between messages
         //
-        // Note that ia_time is a reference to the module parameter "ia_time"
+        // Note that iaTime is a reference to the module parameter "iaTime"
         // that will be evaluated here. The module parameter can also take
         // a random value (for example: truncnormal(0.5,0.1) ).
-        wait( ia_time );
+        wait( iaTime );
     }
 }
 
