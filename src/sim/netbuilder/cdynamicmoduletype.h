@@ -32,7 +32,10 @@ class cDynamicModuleType : public cModuleType
     virtual cModule *createModuleObject();
 
     /** Redefined from cModuleType */
-    virtual void addParametersGatesTo(cModule *module);
+    virtual void addParametersTo(cModule *module);
+
+    /** Redefined from cModuleType */
+    virtual void addGatesTo(cModule *module);
 
     /** Redefined from cModuleType */
     virtual void buildInside(cModule *module);

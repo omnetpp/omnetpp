@@ -473,6 +473,18 @@ cPar& cModule::ancestorPar(const char *name)
     return pmod->par(k);
 }
 
+void cModule::finalizeParameters()
+{
+    cComponent::finalizeParameters(); // this will read input parameters
+
+    // temporarily switch context
+    cContextSwitcher tmp(this);
+    cContextTypeSwitcher tmp2(CTX_BUILD);
+
+    // set up gate vectors (their sizes may depend on the parameter settings)
+    moduleType()->addGatesTo(this);
+}
+
 int cModule::buildInside()
 {
     // temporarily switch context

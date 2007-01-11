@@ -135,9 +135,13 @@ int cComponent::findPar(const char *parname) const
     return -1;
 }
 
-void cComponent::readParams()
+void cComponent::finalizeParameters()
 {
-    //XXX printf("  readParams of %s:\n", fullPath().c_str());//XXX
+    // temporarily switch context
+    cContextSwitcher tmp(this);
+    cContextTypeSwitcher tmp2(CTX_BUILD);
+
+    // read input parameters
     int n = params();
     for (int i=0; i<n; i++)
         par(i).read();

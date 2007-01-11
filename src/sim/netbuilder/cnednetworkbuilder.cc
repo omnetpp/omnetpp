@@ -44,6 +44,7 @@
 #include "cnedloader.h"
 #include "cexpressionbuilder.h"
 #include "nedsupport.h"
+#include "commonutil.h"  // TRACE()
 
 /*
   FIXME FIXME FIXME
@@ -70,16 +71,16 @@ static void dump(NEDElement *node)
     std::cout.flush();
 }
 
-void cNEDNetworkBuilder::addParams(cComponent *component, cNEDDeclaration *decl)
+void cNEDNetworkBuilder::addParametersTo(cComponent *component, cNEDDeclaration *decl)
 {
-    //XXX printf("adding params of %s to %s\n", decl->name(), component->fullPath().c_str()); //XXX
+    TRACE("addParametersTo(%s), decl=%s", component->fullPath().c_str(), decl->name()); //XXX
 
     // recursively add and assign super types' parameters
     if (decl->numExtendsNames() > 0)
     {
         const char *superName = decl->extendsName(0);
         cNEDDeclaration *superDecl = cNEDLoader::instance()->getDecl(superName);
-        addParams(component, superDecl);
+        addParametersTo(component, superDecl);
     }
 
     // add this decl parameters / assignments
@@ -88,25 +89,6 @@ void cNEDNetworkBuilder::addParams(cComponent *component, cNEDDeclaration *decl)
     {
         currentDecl = decl; // switch "context"
         doParams(component, paramsNode, false);
-    }
-}
-
-void cNEDNetworkBuilder::addGates(cModule *module, cNEDDeclaration *decl)
-{
-    // recursively add and assign super types' gates
-    if (decl->numExtendsNames() > 0)
-    {
-        const char *superName = decl->extendsName(0);
-        cNEDDeclaration *superDecl = cNEDLoader::instance()->getDecl(superName);
-        addGates(module, superDecl);
-    }
-
-    // add this decl gates / gatesizes
-    GatesNode *gatesNode = decl->getGatesNode();
-    if (gatesNode)
-    {
-        currentDecl = decl; // switch "context"
-        doGates(module, gatesNode, false);
     }
 }
 
@@ -238,9 +220,30 @@ cModule *cNEDNetworkBuilder::_submodule(cModule *, const char *submodname, int i
         return ((unsigned)idx>=v.size()) ? NULL : v[idx];
 }
 
+void cNEDNetworkBuilder::addGatesTo(cModule *module, cNEDDeclaration *decl)
+{
+    TRACE("addGatesTo(%s), decl=%s", module->fullPath().c_str(), decl->name()); //XXX
+
+    // recursively add and assign super types' gates
+    if (decl->numExtendsNames() > 0)
+    {
+        const char *superName = decl->extendsName(0);
+        cNEDDeclaration *superDecl = cNEDLoader::instance()->getDecl(superName);
+        addGatesTo(module, superDecl);
+    }
+
+    // add this decl gates / gatesizes
+    GatesNode *gatesNode = decl->getGatesNode();
+    if (gatesNode)
+    {
+        currentDecl = decl; // switch "context"
+        doGates(module, gatesNode, false);
+    }
+}
+
 void cNEDNetworkBuilder::buildInside(cModule *modp, cNEDDeclaration *decl)
 {
-    //XXX printf("started buildinside of %s\n", modp->fullPath().c_str());
+    TRACE("buildinside(%s), decl=%s", modp->fullPath().c_str(), decl->name());  //XXX
 
     // add submodules and connections. Submodules and connections are inherited:
     // we need to start start with the the base classes, and do this compound
@@ -255,7 +258,6 @@ void cNEDNetworkBuilder::buildInside(cModule *modp, cNEDDeclaration *decl)
        cModule *m = submod();
        m->buildInside();
     }
-    //XXX printf("done buildinside of %s\n", modp->fullPath().c_str()); //XXX
 }
 
 void cNEDNetworkBuilder::buildRecursively(cModule *modp, cNEDDeclaration *decl)
@@ -274,7 +276,7 @@ void cNEDNetworkBuilder::buildRecursively(cModule *modp, cNEDDeclaration *decl)
 
 void cNEDNetworkBuilder::addSubmodulesAndConnections(cModule *modp)
 {
-    //XXX printf("  adding submodules and connections of decl %s to %s\n", currentDecl->name(), modp->fullPath().c_str()); //XXX
+    TRACE("addSubmodulesAndConnections(%s), decl=%s", modp->fullPath().c_str(), currentDecl->name()); //XXX
     //dump(currentDecl->getTree()); XXX
 
     SubmodulesNode *submods = currentDecl->getSubmodulesNode();
@@ -300,8 +302,6 @@ void cNEDNetworkBuilder::addSubmodulesAndConnections(cModule *modp)
     // check if there are unconnected gates left -- unless unconnected gates were already permitted in the super type
     if ((!conns || !conns->getAllowUnconnected()) && !superTypeAllowsUnconnected())
         modp->checkInternalConnections();
-
-    //XXX printf("  done adding submodules and connections of decl %s to %s\n", currentDecl->name(), modp->fullPath().c_str()); //XXX
 }
 
 bool cNEDNetworkBuilder::superTypeAllowsUnconnected() const
@@ -370,7 +370,8 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
         cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
         setDisplayString(submodp);
         assignSubcomponentParams(submodp, submod);
-        submodp->readParams();
+        //submodp->readParams(); //FIXME remove
+        submodp->finalizeParameters(); // also sets up type's gates
         setupGateVectors(submodp, submod);
     }
     else
@@ -388,7 +389,8 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
             cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
             setDisplayString(submodp);
             assignSubcomponentParams(submodp, submod);
-            submodp->readParams();
+            //submodp->readParams(); //FIXME remove
+            submodp->finalizeParameters(); // also sets up type's gates
             setupGateVectors(submodp, submod);
         }
     }
@@ -558,7 +560,7 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionNode *conn)
                                      conn->getDestGate(), findExpression(conn, "dest-gate-index"),
                                      conn->getDestGatePlusplus());
 
-    //XXX printf("    creating connection: %s --> %s\n", srcg->fullPath().c_str(), destg->fullPath().c_str());
+    TRACE("doAddConnection(): %s --> %s", srcg->fullPath().c_str(), destg->fullPath().c_str());
 
     // check directions
     cGate *errg = NULL;
@@ -582,7 +584,7 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionNode *conn)
         cChannel *channel = createChannel(channelspec, modp);
         srcg->connectTo(destg, channel);
         assignSubcomponentParams(channel, channelspec);
-        channel->readParams();
+        channel->finalizeParameters();
 
         //XXX display string
     }

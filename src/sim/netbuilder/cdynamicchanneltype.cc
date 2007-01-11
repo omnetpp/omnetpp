@@ -54,6 +54,6 @@ cChannel *cDynamicChannelType::createChannelObject()
 void cDynamicChannelType::addParametersTo(cChannel *channel)
 {
     cNEDDeclaration *decl = getDecl();
-    cNEDNetworkBuilder().addParams(channel, decl);
+    cNEDNetworkBuilder().addParametersTo(channel, decl);
 }
 

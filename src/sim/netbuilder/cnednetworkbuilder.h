@@ -93,13 +93,15 @@ class cNEDNetworkBuilder
     /**
      * Adds parameters from the given NED declaration. Invoked from cDynamicModule.
      */
-    void addParams(cComponent *component, cNEDDeclaration *decl);
+    void addParametersTo(cComponent *component, cNEDDeclaration *decl);
 
     /**
-     * Adds gates to the module from the given NED declaration.
+     * Adds gates to the module from the given NED declaration. This should be
+     * called AFTER all parameters have been set, because gate vector sizes
+     * may depend on parameter values.
      * Invoked from cDynamicModule.
      */
-    void addGates(cModule *module, cNEDDeclaration *decl);
+    void addGatesTo(cModule *module, cNEDDeclaration *decl);
 
     /**
      * Builds submodules and internal connections, based on the info in the
