@@ -1,3 +1,5 @@
+opp_(n)makemake: dropped -N option, and made dynamic NED loading the default
+
 2006-10-21  ------ omnetpp-3.3 released ------
 
 2006-10-19  Andras Varga

@@ -33,7 +33,7 @@ cfgfile=""
 basedir=""
 generatecfgfile=""
 linkwithobjects=n
-ignorened=n
+ignorened=y
 force=n
 tstamp=y
 tstampdirs=""
@@ -117,9 +117,6 @@ opp_makemake [-h] [-f] [-m] [-o make-target] [-r] [-n] [-s] [-u userinterface]
         [-i makefile-fragment-file] [directories, library and object files]...
     -h, --help            This help text
     -f, --force           Force overwriting existing Makefile (or config file)
-    -N, --ignore-ned      Leave out .ned files from the makefile. Useful when
-                          you want to load all .ned files dynamically (see
-                          preload-ned-files omnetpp.ini option).
     -m, --makefile-in     Create Makefile.in instead of Makefile
     -c cfgfile, --configfile cfgfile
                           Omit variable definitions from generated Makefile,
@@ -201,6 +198,7 @@ EOT
         ;;
 
         -N | --ignore-ned)
+        echo "opp_makemake: $1: obsolete option, please remove (dynamic NED loading is now the default)" >2
         ignorened=y
         ;;
 
