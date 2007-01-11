@@ -1,5 +1,5 @@
 //=========================================================================
-//  UTIL.H - part of
+//  COMMONUTIL.H - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -12,8 +12,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _UTIL_H_
-#define _UTIL_H_
+#ifndef _COMMONUTIL_H_
+#define _COMMONUTIL_H_
 
 #include <assert.h>
 #include "exception.h"
@@ -33,6 +33,19 @@
 #define vsnprintf _vsnprintf
 #endif
 #endif
+
+//XXX docu
+class DebugCall
+{
+  private:
+    static int depth;
+    std::string funcname;
+  public:
+    DebugCall(const char *fmt,...);
+    ~DebugCall();
+};
+
+#define TRACE  DebugCall __x
 
 #endif
 

@@ -16,7 +16,7 @@
 #define _STRINGUTIL_H_
 
 #include <string>
-#include "util.h"
+#include "commonutil.h"
 
 
 /**

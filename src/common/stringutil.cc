@@ -15,7 +15,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include "util.h"
+#include "commonutil.h"
 #include "stringutil.h"
 
 

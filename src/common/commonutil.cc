@@ -1,5 +1,5 @@
 //=========================================================================
-//  UTIL.CC - part of
+//  COMMONUTIL.CC - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -12,8 +12,28 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "util.h"
+#include <stdio.h>
+#include <stdarg.h>
+#include "commonutil.h"
 
-//
-// nothing here for now
-//
+
+int DebugCall::depth;
+
+DebugCall::DebugCall(const char *fmt,...)
+{
+    va_list va;
+    va_start(va, fmt);
+    char buf[1024];
+    vsprintf(buf,fmt,va);
+    va_end(va);
+
+    funcname = buf;
+    printf("%*sentering %s\n", depth++*2, "", funcname.c_str());
+}
+
+DebugCall::~DebugCall()
+{
+    printf("%*sleaving %s\n", --depth*2, "", funcname.c_str());
+}
+
+
