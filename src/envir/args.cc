@@ -54,20 +54,24 @@ bool ArgList::getOpt(char c, int k, const char *&value, bool validate)
     bool inoptions = true;
     for (i=1; i<argc; i++)
     {
+        // break if we reached the end of the options, hitting either a
+        // non-option argument (no leading '-') or '--'.
         const char *argstr = argv[i];
         if (argstr[0]!='-' || !argstr[1])
             {inoptions=false; break;}  // end of options
         if (strcmp(argstr, "--")==0)
             {inoptions=false; ++i; break;}  // end of options
 
+        // check if this option is a valid one, and if this is the one we're searching for
         if (validate && !isValidOption(argstr[1]))
             throw opp_runtime_error("invalid command-line option %s, try -h for help", argstr);
-        if (c && argstr[1] == c)
+        if (c && argstr[1]==c)
             if (k-- == 0)
                 break; // found the kth 'c' option
 
+        // skip value of this option in argv if it has one
         if (hasArg(argstr[1]) && !argstr[2])
-            i++;  // arg with value: skip value
+            i++;
         if (validate && i>=argc)
             throw opp_runtime_error("command-line option -%c is missing required argument", argstr[1]);
 
