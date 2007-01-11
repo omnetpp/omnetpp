@@ -114,6 +114,7 @@ void cEnvir::setup(int argc, char *argv[])
 
         // args
         args = new ArgList(argc, argv, "hf:u:l:r:p:");
+        args->checkArgs();
 
         //
         // First, load the ini file. It might contain the name of the user interface

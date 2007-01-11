@@ -18,6 +18,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "args.h"
+#include "exception.h"
 
 
 ArgList::ArgList(int ac, char *av[], const char *sp)
@@ -29,7 +30,13 @@ ArgList::ArgList(int ac, char *av[], const char *sp)
 
 void ArgList::checkArgs()
 {
-    //FIXME todo
+    const char *dummy;
+    getOpt(0, 0, dummy, true);
+}
+
+bool ArgList::isValidOption(char c)
+{
+    return strchr(spec.c_str(), c) != NULL;
 }
 
 bool ArgList::hasArg(char c)
@@ -38,7 +45,7 @@ bool ArgList::hasArg(char c)
     return p && *(p+1)==':';
 }
 
-bool ArgList::getOpt(char c, int k, const char *&value)
+bool ArgList::getOpt(char c, int k, const char *&value, bool validate)
 {
     value = NULL;
 
@@ -53,12 +60,17 @@ bool ArgList::getOpt(char c, int k, const char *&value)
         if (strcmp(argstr, "--")==0)
             {inoptions=false; ++i; break;}  // end of options
 
+        if (validate && !isValidOption(argstr[1]))
+            throw opp_runtime_error("invalid command-line option %s, try -h for help", argstr);
         if (c && argstr[1] == c)
             if (k-- == 0)
                 break; // found the kth 'c' option
 
         if (hasArg(argstr[1]) && !argstr[2])
             i++;  // arg with value: skip value
+        if (validate && i>=argc)
+            throw opp_runtime_error("command-line option -%c is missing required argument", argstr[1]);
+
     }
     if (i>=argc)
         return false; // no such option or argument
@@ -92,13 +104,13 @@ bool ArgList::getOpt(char c, int k, const char *&value)
 bool ArgList::optionGiven(char c)
 {
     const char *dummy;
-    return getOpt(c, 0, dummy);
+    return getOpt(c, 0, dummy, false);
 }
 
 const char *ArgList::optionValue(char c, int k)
 {
     const char *value;
-    getOpt(c, k, value);
+    getOpt(c, k, value, false);
     //printf("DBG: -%c option #%d = `%s'\n", c, k, value);
     return value;
 }
@@ -106,7 +118,7 @@ const char *ArgList::optionValue(char c, int k)
 const char *ArgList::argument(int k)
 {
     const char *value;
-    getOpt(0, k, value);
+    getOpt(0, k, value, false);
     //printf("DBG: arg #%d = `%s'\n", k, value);
     return value;
 }

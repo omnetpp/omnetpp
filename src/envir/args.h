@@ -32,11 +32,14 @@ class ENVIR_API ArgList
     std::string spec;
 
   private:
-    // looks up spec for the given option, anr returns true if it has arg
+    // looks up spec for the given option
+    bool isValidOption(char c);
+
+    // looks up spec for the given option, and returns true if it has arg
     bool hasArg(char c);
 
     // if char c == 0, returns kth argument not kth option
-    bool getOpt(char c, int k, const char *&value);
+    bool getOpt(char c, int k, const char *&value, bool validate);
 
   public:
     /**
