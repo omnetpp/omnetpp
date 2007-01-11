@@ -378,7 +378,7 @@ void TOmnetApp::readParameter(cPar *par)
     // get it from ini file
     std::string parfullpath = par->fullPath();
     std::string str = getParameter(simulation.runNumber(), parfullpath.c_str());
-__asm int 3;
+
     if (!str.empty())
     {
         par->parse(str.c_str());

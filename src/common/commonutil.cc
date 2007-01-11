@@ -28,12 +28,12 @@ DebugCall::DebugCall(const char *fmt,...)
     va_end(va);
 
     funcname = buf;
-    printf("%*sentering %s\n", depth++*2, "", funcname.c_str());
+    printf("%*s ++ %s\n", depth++*2, "", funcname.c_str());
 }
 
 DebugCall::~DebugCall()
 {
-    printf("%*sleaving %s\n", --depth*2, "", funcname.c_str());
+    printf("%*s -- %s\n", --depth*2, "", funcname.c_str());
 }
 
 
