@@ -52,8 +52,8 @@
   a toplevel modulra nem hivodnak meg a kovetkezok:
 
         setDisplayString(submodp);
-        assignSubcomponentParams(submodp, submod);
-        submodp->readParams();
+        assignSubcomponentParams(submodp, submod);  --> ez kell?
+        submodp->readParams();  --> ez most mar OK, finalizeParameters()-ben van
 
   mivel ezek az addSubmodule()-ban vannak!
 
@@ -73,7 +73,7 @@ static void dump(NEDElement *node)
 
 void cNEDNetworkBuilder::addParametersTo(cComponent *component, cNEDDeclaration *decl)
 {
-    TRACE("addParametersTo(%s), decl=%s", component->fullPath().c_str(), decl->name()); //XXX
+    //TRACE("addParametersTo(%s), decl=%s", component->fullPath().c_str(), decl->name()); //XXX
 
     // recursively add and assign super types' parameters
     if (decl->numExtendsNames() > 0)
@@ -222,7 +222,7 @@ cModule *cNEDNetworkBuilder::_submodule(cModule *, const char *submodname, int i
 
 void cNEDNetworkBuilder::addGatesTo(cModule *module, cNEDDeclaration *decl)
 {
-    TRACE("addGatesTo(%s), decl=%s", module->fullPath().c_str(), decl->name()); //XXX
+    //TRACE("addGatesTo(%s), decl=%s", module->fullPath().c_str(), decl->name()); //XXX
 
     // recursively add and assign super types' gates
     if (decl->numExtendsNames() > 0)
@@ -243,7 +243,7 @@ void cNEDNetworkBuilder::addGatesTo(cModule *module, cNEDDeclaration *decl)
 
 void cNEDNetworkBuilder::buildInside(cModule *modp, cNEDDeclaration *decl)
 {
-    TRACE("buildinside(%s), decl=%s", modp->fullPath().c_str(), decl->name());  //XXX
+    //TRACE("buildinside(%s), decl=%s", modp->fullPath().c_str(), decl->name());  //XXX
 
     // add submodules and connections. Submodules and connections are inherited:
     // we need to start start with the the base classes, and do this compound
@@ -276,7 +276,7 @@ void cNEDNetworkBuilder::buildRecursively(cModule *modp, cNEDDeclaration *decl)
 
 void cNEDNetworkBuilder::addSubmodulesAndConnections(cModule *modp)
 {
-    TRACE("addSubmodulesAndConnections(%s), decl=%s", modp->fullPath().c_str(), currentDecl->name()); //XXX
+    //TRACE("addSubmodulesAndConnections(%s), decl=%s", modp->fullPath().c_str(), currentDecl->name()); //XXX
     //dump(currentDecl->getTree()); XXX
 
     SubmodulesNode *submods = currentDecl->getSubmodulesNode();
@@ -560,7 +560,7 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionNode *conn)
                                      conn->getDestGate(), findExpression(conn, "dest-gate-index"),
                                      conn->getDestGatePlusplus());
 
-    TRACE("doAddConnection(): %s --> %s", srcg->fullPath().c_str(), destg->fullPath().c_str());
+    //TRACE("doAddConnection(): %s --> %s", srcg->fullPath().c_str(), destg->fullPath().c_str());
 
     // check directions
     cGate *errg = NULL;

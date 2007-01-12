@@ -23,6 +23,7 @@
 #include "ccomponenttype.h"
 #include "csimulation.h"
 #include "unitconversion.h"
+#include "commonutil.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -262,11 +263,14 @@ void cPar::afterChange()
 
 void cPar::read()
 {
+    //TRACE("read() of par=%s", fullPath().c_str());
+
     // obtain value if parameter is not set yet
     if (p->isInput())
     {
+        //XXX printf("           before ev.readParameter(), p=%p shared=%d input=%d\n", p, p->isShared(), p->isInput());
         ev.readParameter(this);
-        //XXX WRONG: p MIGHT BE SHARED!!! p->setIsInput(false); // clear flag to avoid accidental rereads
+        //XXX printf("           after ev.readParameter(), p=%p shared=%d input=%d\n", p, p->isShared(), p->isInput());
     }
 
     // convert non-volatile expressions to constant
@@ -294,6 +298,28 @@ void cPar::read()
     }
 }
 
+void cPar::acceptDefault()
+{
+    // basically we only need to set the isInput flag to false, but only
+    // for ourselves, without affecting the shared parameter prototype.
+    if (p->isInput())
+    {
+        // try to look up the value in the value cache (temporarily setting isInput=false)
+        p->setIsInput(false);
+        cComponentType *componentType = ownercomponent->componentType();
+        cParValue *cachedValue = componentType->parValueCache2()->get(p);
+        p->setIsInput(true);
+
+        // use the cached value, or create a value and put it into the cache
+        if (cachedValue)
+            reassign(cachedValue);
+        else {
+            copyIfShared();
+            p->setIsInput(false);
+            componentType->parValueCache2()->put(p);
+        }
+    }
+}
 
 void cPar::convertToConst()
 {
@@ -337,6 +363,7 @@ void cPar::parse(const char *text)
     {
         // not found: clone existing parameter, then parse text into it
         cParValue *tmp = p->dup();
+        tmp->setIsInput(false);
         try
         {
             tmp->parse(text);
