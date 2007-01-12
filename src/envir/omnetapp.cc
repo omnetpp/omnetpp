@@ -387,7 +387,10 @@ void TOmnetApp::readParameter(cPar *par)
 
     // maybe we should use default value
     if (par->hasValue() && getParameterUseDefault(simulation.runNumber(), parfullpath.c_str()))
+    {
+        par->acceptDefault();
         return;
+    }
 
     // otherwise, we have to ask the user
     bool success = false;
