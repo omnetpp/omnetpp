@@ -335,6 +335,17 @@ void cStdDev::loadFromFile(FILE *f)
 
 //----
 
+std::string cWeightedStdDev::info() const
+{
+    std::stringstream out;
+    out << "n=" << samples()
+        << " mean=" << mean()
+        << " stddev=" << "N/A"
+        << " min=" << min()
+        << " max=" << max();
+    return out.str();
+}
+
 void cWeightedStdDev::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
