@@ -26,17 +26,18 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
 
     private static String[] NEDFILE_TEMPLATES = {
         "//\n// NED file\n//\n\n",
-        "//\n// NED file\n//\n\nsimple #NAME# {\n  parameters:\n  gates:\n}\n",
-        "//\n// NED file\n//\n\nmodule #NAME# {\n  parameters:\n  gates:\n  submodules:\n connections:\n}\n"
+        "//\n// TODO Place comment here\n//\n\nsimple #NAME# {\n  parameters:\n  gates:\n}\n",
+        "//\n// TODO Place comment here\n//\n\nmodule #NAME# {\n  parameters:\n  gates:\n  submodules:\n connections:\n}\n",
+        "//\n// TODO Place comment here\n//\n\nnetwork #NAME# {\n  parameters:\n  submodules:\n connections:\n}\n"
     };
     
 	private IWorkbench workbench;
 	private static int exampleCount = 1;
 
-	//FIXME FIXME FIXME factor out UI controls to another page!!!!! --Andras
 	private Button emptyButton = null;
     private Button simpleButton = null;
     private Button compoundButton = null;
+    private Button networkButton = null;
 	private int modelSelected = 0;
 
 	public NewNEDFileWizardPage1(IWorkbench aWorkbench,
@@ -71,13 +72,15 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
 					modelSelected = 1;
 				} else if (e.getSource() == compoundButton) {
                     modelSelected = 2;
+                } else if (e.getSource() == networkButton) {
+                    modelSelected = 3;
                 }
 			}
 		};
 
 		// sample section generation checkboxes
 		emptyButton = new Button(group, SWT.RADIO);
-		emptyButton.setText("Empty file");
+		emptyButton.setText("Empty Network Definition (NED) file");
 		emptyButton.addSelectionListener(listener);
 		emptyButton.setSelection(true);
 
@@ -89,28 +92,39 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
         compoundButton.setText("A new Compound Module");
         compoundButton.addSelectionListener(listener);
 
-		new Label(composite, SWT.NONE);
+        networkButton = new Button(group, SWT.RADIO);
+        networkButton.setText("A new toplevel Network");
+        networkButton.addSelectionListener(listener);
+
+        new Label(composite, SWT.NONE);
 
 		setPageComplete(validatePage());
 	}
 
 	@Override
     protected InputStream getInitialContents() {
-        if (getFileName() == null)
+        String name = getFileName();
+        if (name == null || "".equals(name))
             return null;
         
-        String name = getFileName().substring(0, getFileName().lastIndexOf('.'));
+        name = name.substring(0, name.lastIndexOf('.'));
+        
 		String contents = NEDFILE_TEMPLATES[modelSelected].replaceAll("#NAME#", name);
 		return new ByteArrayInputStream(contents.getBytes());
 	}
-
+    
 	public boolean finish() {
-		IFile newFile = createNewFile();
+        // add an extension if missing
+        String name = getFileName();
+        if (name.lastIndexOf('.') < 0) 
+            setFileName(name+".ned");
+
+        IFile newFile = createNewFile();
 		if (newFile == null)
 			return false; // ie.- creation was unsuccessful
 
 		// Since the file resource was created fine, open it for editing
-		// iff requested by the user
+		// if requested by the user
 		try {
 			IWorkbenchWindow dwindow = workbench.getActiveWorkbenchWindow();
 			IWorkbenchPage page = dwindow.getActivePage();
@@ -124,9 +138,4 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
 		return true;
 	}
 
-	/**
-	 * Empty method
-	 */
-	public void widgetDefaultSelected(SelectionEvent e) {
-	}
 }
