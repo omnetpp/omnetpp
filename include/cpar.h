@@ -64,12 +64,12 @@ class SIM_API cPar : public cObject
     void copyIfShared();
     // internal: called each time after the value of this object changes.
     void afterChange();
-    // internal: called as part of read(): gets the value from omnetpp.ini or from the user.
-    void doReadValue();
 
   public:
     // internal, called from network building code
     void reassign(cParValue *p);
+    // internal: clears the isInput flag; called from network building code
+    void acceptDefault();
 
   public:
     /**
