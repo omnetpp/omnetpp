@@ -16,8 +16,8 @@ import "ppif";
 channel C extends cBasicChannel
 {
     parameters:
-        datarate = 1000000;
-        delay = 0.01;
+        datarate = 1Mbps;
+        delay = 10ms;
 }
 
 //
