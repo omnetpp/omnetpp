@@ -73,24 +73,34 @@ void cChannel::netUnpack(cCommBuffer *buffer)
 
 void cChannel::callInitialize()
 {
-    cComponent::callInitialize();
+    cContextTypeSwitcher tmp(CTX_INITIALIZE);
+    int stage = 0;
+    while (initializeChannel(stage))
+        ++stage;
 }
 
-bool cChannel::callInitialize(int stage)
+bool cChannel::initializeChannel(int stage)
 {
-    // This is the interface for calling initialize(). Channels don't contain further
-    // subcomponents, so just we just invoke initialize() in the right context here.
+    // channels don't contain further subcomponents, so just we just invoke
+    // initialize(stage) in the right context here.
+    if (simulation.contextType()!=CTX_INITIALIZE)
+        throw cRuntimeError("internal function initializeChannel() may only be called via callInitialize()");
+
     int numStages = numInitStages();
     if (stage < numStages)
     {
-        // temporarily switch context for the duration of the call
+        {
+            cContextSwitcher tmp(NULL); //XXX only to make text green. needed?
+            ev << "Initializing channel " << fullPath() << ", stage " << stage << "\n";
+        }
+
+        // switch context for the duration of the call
         cContextSwitcher tmp(this);
-        cContextTypeSwitcher tmp2(CTX_INITIALIZE);
         initialize(stage);
     }
 
     bool moreStages = stage < numStages-1;
-    return moreStages; // return true if there's more stages to do
+    return moreStages;
 }
 
 void cChannel::callFinish()

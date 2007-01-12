@@ -46,6 +46,9 @@ config timeline-msgclassnamepattern	{*}
 config timeline-msgnamepattern	{*}
 config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
+inspector "FF.a" "Node" "1" "460x312+331+298"
+inspector "FF" "FF" "2" "367x207+357+123"
+inspector "FF.b" "Node" "1" "460x312+24+31"
 inspector "fifonet" "fifonet" "2" "443x277+96+124"
 inspector "fifonet.fifo.queue" "cQueue" "1" "460x312+424+334"
 inspector "fifonet.fifo.queue.job" "cMessage" "1" "460x312+24+31"

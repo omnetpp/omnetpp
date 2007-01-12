@@ -77,13 +77,6 @@ void cComponent::handleParameterChange(const char *)
     // Can be redefined by the user.
 }
 
-void cComponent::callInitialize()
-{
-    int stage = 0;
-    while (callInitialize(stage))
-        ++stage;
-}
-
 cProperties *cComponent::properties()
 {
     return cComponentType::getPropertiesFor(this);

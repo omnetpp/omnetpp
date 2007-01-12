@@ -29,6 +29,7 @@ void cPlaceHolderModule::arrived(cMessage *msg, int n, simtime_t t)
     throw cRuntimeError(this, "internal error: arrived() called");
 }
 
+/*XXX needed? probably not. Base class version is OK too
 bool cPlaceHolderModule::callInitialize(int stage)
 {
     // do nothing
@@ -39,6 +40,7 @@ void cPlaceHolderModule::callFinish()
 {
     // do nothing
 }
+*/
 
 void cPlaceHolderModule::scheduleStart(simtime_t t)
 {

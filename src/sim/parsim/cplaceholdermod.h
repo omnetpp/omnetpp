@@ -58,16 +58,17 @@ class SIM_API cPlaceHolderModule : public cModule // so, noncopyable
     /**
      * Does nothing.
      */
-    virtual bool callInitialize(int stage);
+//XXX out!    virtual bool callInitialize(int stage);
 
     /**
      * Does nothing.
      */
-    virtual void callFinish();
+//XXX out!    virtual void callFinish();
 
     /**
      * Does nothing.
      */
+//XXX needed?
     virtual void scheduleStart(simtime_t t);
     //@}
 };

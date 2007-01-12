@@ -113,6 +113,7 @@ class SIM_API cModule : public cComponent //noncopyable
      * Walks along the channels attached to the gates of a module.
      * Note: these are *not* the same channels whose parentModule() returns
      * the iterated module.
+FIXME but it should be!!!!!
      */
     class ChannelIterator
     {
@@ -182,6 +183,14 @@ class SIM_API cModule : public cComponent //noncopyable
     bool hasDisplayString() {return dispstr!=NULL;}
 
   protected:
+    // internal: called from callInitialize(). Does one stage for this submodule
+    // tree, and returns true if there's more stages to do
+    virtual bool initializeModules(int stage);
+
+    // internal: called from callInitialize(). Does one stage for channels in this
+    // submodule tree, and returns true if there's more stages to do
+    virtual bool initializeChannels(int stage);
+
     // internal: called when a message arrives at a gate which is no further
     // connected (that is, toGate() is NULL)
     virtual void arrived(cMessage *msg,int n,simtime_t t) = 0;
@@ -499,11 +508,6 @@ class SIM_API cModule : public cComponent //noncopyable
      * Interface for calling initialize() from outside.
      */
     virtual void callInitialize();
-
-    /**
-     * Interface for calling initialize() from outside.
-     */
-    virtual bool callInitialize(int stage);
 
     /**
      * Interface for calling finish() from outside.

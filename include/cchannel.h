@@ -41,6 +41,10 @@ class SIM_API cChannel : public cComponent //noncopyable
     // internal: called from cGate
     void setFromGate(cGate *g) {fromgatep=g;}
 
+    // internal: called from callInitialize(). Does one stage for this
+    // channel, and returns true if there's more stages to do
+    virtual bool initializeChannel(int stage);
+
   public:
     /** @name Constructors, destructor */
     //@{
@@ -87,14 +91,10 @@ class SIM_API cChannel : public cComponent //noncopyable
      */
     //@{
     /**
-     * Interface for calling initialize() from outside.
+     * Interface for calling initialize() from outside. Implementation
+     * performs multi-stage initialization for this channel object.
      */
     virtual void callInitialize();
-
-    /**
-     * Interface for calling initialize() from outside.
-     */
-    virtual bool callInitialize(int stage);
 
     /**
      * Interface for calling finish() from outside.

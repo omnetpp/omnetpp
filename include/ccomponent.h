@@ -215,17 +215,8 @@ class SIM_API cComponent : public cDefaultList // noncopyable
 
     /**
      * Interface for calling initialize() from outside.
-     * Implements full multi-stage init for this module and its submodules.
      */
-    virtual void callInitialize();
-
-    /**
-     * Interface for calling initialize() from outside.  This method includes
-     * calling initialize() of contained components (submodules, channels) as well.
-     * It does a single stage of initialization, and returns <tt>true</tt>
-     * if more stages are required.
-     */
-    virtual bool callInitialize(int stage) = 0;
+    virtual void callInitialize() = 0;
 
     /**
      * Interface for calling finish() from outside. This method includes

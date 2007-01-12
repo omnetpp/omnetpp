@@ -544,35 +544,70 @@ void cModule::changeParentTo(cModule *mod)
 
 void cModule::callInitialize()
 {
-    cComponent::callInitialize();
+    // Perform stage==0 for channels, then stage==0 for submodules, then
+    // stage==1 for channels, stage==1 for modules, etc.
+    //
+    // Rationale: modules sometimes want to send messages already in stage==0,
+    // and channels must be ready for that at that time, i.e. passed at least
+    // stage==0.
+    //
+    cContextTypeSwitcher tmp(CTX_INITIALIZE);
+    int stage = 0;
+    bool moreChannelStages = true, moreModuleStages = true;
+    while (moreChannelStages || moreModuleStages)
+    {
+        if (moreChannelStages)
+            moreChannelStages = initializeChannels(stage);
+        if (moreModuleStages)
+            moreModuleStages = initializeModules(stage);
+        ++stage;
+    }
 }
 
-bool cModule::callInitialize(int stage)
+bool cModule::initializeChannels(int stage)
 {
-    // This is the interface for calling initialize().
-    ev << "Initializing " << fullPath() << ", stage " << stage << "\n";
+    if (simulation.contextType()!=CTX_INITIALIZE)
+        throw cRuntimeError("internal function initializeChannels() may only be called via callInitialize()");
 
-    // first call it for this module...
+    // initialize channels directly under this module
+    bool moreStages = false;
+    for (ChannelIterator chan(this); !chan.end(); chan++)
+        if (chan()->initializeChannel(stage))
+            moreStages = true;
+
+    // then recursively initialize channels within our submodules too
+    for (SubmoduleIterator submod(this); !submod.end(); submod++)
+        if (submod()->initializeChannels(stage))
+            moreStages = true;
+
+    return moreStages;
+}
+
+bool cModule::initializeModules(int stage)
+{
+    if (simulation.contextType()!=CTX_INITIALIZE)
+        throw cRuntimeError("internal function initializeModules() may only be called via callInitialize()");
+
+    // first call initialize(stage) for this module...
     int numStages = numInitStages();
     if (stage < numStages)
     {
-        // temporarily switch context for the duration of the call
+        {
+            cContextSwitcher tmp(NULL); //XXX only to make text green. needed?
+            ev << "Initializing module " << fullPath() << ", stage " << stage << "\n";
+        }
+        // switch context for the duration of the call
         cContextSwitcher tmp(this);
-        cContextTypeSwitcher tmp2(CTX_INITIALIZE);
         initialize(stage);
     }
 
-    // ...then for submodules and channels (meanwhile determine if more stages are needed)
+    // then recursively initialize submodules
     bool moreStages = stage < numStages-1;
-    for (ChannelIterator chan(this); !chan.end(); chan++)
-        if (chan()->callInitialize(stage))
-            moreStages = true;
-
     for (SubmoduleIterator submod(this); !submod.end(); submod++)
-        if (submod()->callInitialize(stage))
+        if (submod()->initializeModules(stage))
             moreStages = true;
 
-    return moreStages; // return true if there's more stages to do
+    return moreStages;
 }
 
 void cModule::callFinish()
