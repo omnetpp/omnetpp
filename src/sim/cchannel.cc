@@ -89,10 +89,7 @@ bool cChannel::initializeChannel(int stage)
     int numStages = numInitStages();
     if (stage < numStages)
     {
-        {
-            cContextSwitcher tmp(NULL); //XXX only to make text green. needed?
-            ev << "Initializing channel " << fullPath() << ", stage " << stage << "\n";
-        }
+        ev << "Initializing channel " << fullPath() << ", stage " << stage << "\n";
 
         // switch context for the duration of the call
         cContextSwitcher tmp(this);

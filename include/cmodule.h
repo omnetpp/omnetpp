@@ -110,47 +110,45 @@ class SIM_API cModule : public cComponent //noncopyable
     };
 
     /**
-     * Walks along the channels attached to the gates of a module.
-     * Note: these are *not* the same channels whose parentModule() returns
-     * the iterated module.
-FIXME but it should be!!!!!
+     * Walks along the channels inside a module, that is, the channels
+     * among the module and its submodules. This is the same set of channels
+     * whose parentModule() would return the iterated module.
      */
     class ChannelIterator
     {
       private:
-        const cModule *module;
+        std::vector<cChannel *> channels;
         int k;
 
       public:
         /**
          * Constructor. The iterator will walk on the module passed as argument.
          */
-        ChannelIterator(const cModule *m)  {init(m);}
+        ChannelIterator(const cModule *parentmodule) {init(parentmodule);}
 
         /**
          * Reinitializes the iterator object.
          */
-        void init(const cModule *m);
+        void init(const cModule *parentmodule);
 
         /**
          * Returns the current object, or NULL if the iterator is not
          * at a valid position.
          */
-        cChannel *operator()()  {return module->gate(k)->channel();}
+        cChannel *operator()() {return k<channels.size() ? channels[k] : NULL;}
 
         /**
-         * Returns true if the iterator has reached the end of the module's gates.
+         * Returns true if the iterator has reached the end.
          */
-        bool end() const   {return k>=module->gates();}
+        bool end() const {return k==channels.size();}
 
         /**
          * Returns the current object, then moves the iterator to the next item.
-         * If the iterator has reached end of the module, nothing happens;
-         * you have to call init() again to restart iterating.
-         * If gates or channels are added or removed during interation, the behaviour
-         * is undefined.
+         * If the iterator has reached end, nothing happens; you have to call
+         * init() again to restart iterating. If modules, gates or channels
+         * are added or removed during interation, the behaviour is undefined.
          */
-        cChannel *operator++(int);
+        cChannel *operator++(int) {return end() ? NULL : channels[k++];}
     };
 
   public:

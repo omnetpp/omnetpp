@@ -177,7 +177,9 @@ class SIM_API cGate : public cNoncopyableOwnedObject  //FIXME make it cNamedObje
     void setChannel(cChannel *ch);
 
     /**
-     * Returns the channel object attached to this gate, or NULL if there's no channel.
+     * Returns the channel object attached to this gate, or NULL if there's 
+     * no channel. This is the channel between this gate and this->toGate(),
+     * that is, channels are stored on the "from" side of the connections.
      */
     cChannel *channel() const {return channelp;}
     //@}

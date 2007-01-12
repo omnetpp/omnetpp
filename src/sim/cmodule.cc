@@ -592,10 +592,8 @@ bool cModule::initializeModules(int stage)
     int numStages = numInitStages();
     if (stage < numStages)
     {
-        {
-            cContextSwitcher tmp(NULL); //XXX only to make text green. needed?
-            ev << "Initializing module " << fullPath() << ", stage " << stage << "\n";
-        }
+        ev << "Initializing module " << fullPath() << ", stage " << stage << "\n";
+
         // switch context for the duration of the call
         cContextSwitcher tmp(this);
         initialize(stage);
@@ -650,26 +648,28 @@ void cModule::bubble(const char *text)
 
 //----
 
-void cModule::ChannelIterator::init(const cModule *m)
+void cModule::ChannelIterator::init(const cModule *parentmodule)
 {
-    module = m;
+    // loop through the gates of parentmodule and its submodules
+    // to fill in the channels[] vector
+    bool parent = false;
+    channels.clear();
+    for (cSubModIterator it(*parentmodule); !parent; it++)
+    {
+        const cModule *mod = !it.end() ? it() : (parent=true,parentmodule);
+
+        int n = mod->gates();
+        for (int i=0; i<n; i++)
+        {
+            const cGate *gate = mod->gate(i);
+            cGate::Type wantedGateType = parent ? cGate::INPUT : cGate::OUTPUT;
+            if (gate && gate->channel() && gate->type()==wantedGateType)
+                channels.push_back(gate->channel());
+        }
+    }
+
+    // reset iterator position too
     k = 0;
-
-    // fast-forward to first non-empty slot
-    while (k<module->gates() && (!module->gate(k) || !module->gate(k)->channel()))
-        k++;
 }
 
-cChannel *cModule::ChannelIterator::operator++(int)
-{
-    if (k>=module->gates())
-        return NULL;
-
-    cChannel *obj = module->gate(k)->channel();
-
-    k++;
-    while (k<module->gates() && (!module->gate(k) || !module->gate(k)->channel()))
-        k++;
-    return obj;
-}
 
