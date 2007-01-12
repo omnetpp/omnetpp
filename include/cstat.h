@@ -454,6 +454,12 @@ class SIM_API cWeightedStdDev : public cStdDev
     virtual cWeightedStdDev *dup() const  {return new cWeightedStdDev(*this);}
 
     /**
+     * Produces a one-line description of object contents.
+     * See cObject for more details.
+     */
+    virtual std::string info() const;
+
+    /**
      * Serializes the object into an MPI send buffer.
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
