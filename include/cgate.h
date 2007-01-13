@@ -19,7 +19,7 @@
 #ifndef __CGATE_H
 #define __CGATE_H
 
-#include "cownedobject.h"
+#include "cobject.h"
 
 class  cGate;
 class  cModule;
@@ -37,31 +37,36 @@ class  cDisplayString;
  *
  * @ingroup SimCore
  */
-class SIM_API cGate : public cNoncopyableOwnedObject  //FIXME make it cNamedObject
+class SIM_API cGate : public cObject, noncopyable
 {
     friend class cModule;
-
   public:
     // gate type
     enum Type {
+        NONE = 0,
         INPUT = 'I',
         OUTPUT = 'O',
         INOUT = 'B'
     };
 
   protected:
-    mutable char *fullname; // buffer to store full name of object   FIXME stringpool it!!
+    // internal: describes a gate vector or a non-vector gate
+    // note: gate type is implicitly stored in inGateId/outGateId
+    struct Desc
+    {
+        const char *namep;  // stringpooled
+        cModule *ownerp;
+        int size;       // gate vector size; 0 if zero size vector, -1 if not vector
+        int inGateId;   // id of first input gate; -1 if gate is not INPUT/INOUT
+        int outGateId;  // id of first output gate; -1 if gate is not OUTPUT/INOUT
+        Desc() {namep=NULL; ownerp=NULL; size=0; inGateId=outGateId=-1;}
+    };
 
-    // gate type is stored in the "short unused" field of cOwnedObject
-    char& gatetype() const  {return *(char*)&unused;}
-
-    int  serno;         // index if gate vector, 0 otherwise
-    int  vectsize;      // gate vector size (-1 if not vector, 0 if zero-sized gate vector)
+    Desc *desc;  // descriptor of gate/gate vector, stored in cModule
+    int gateId;  // index within the module's gatev[]
+    mutable char *fullname; // buffer to store full name of object   FIXME stringpool it!! needed?
 
     cChannel *channelp; // channel object (if exists)  FIXME move display string here?
-
-    int gateid;         // gate number within the module
-
     cGate *fromgatep;   // previous and next gate
     cGate *togatep;     //   in the route
 
@@ -72,22 +77,32 @@ class SIM_API cGate : public cNoncopyableOwnedObject  //FIXME make it cNamedObje
     // displayString() would create the object immediately which we want to avoid.
     bool hasDisplayString() {return dispstr!=NULL;}
 
-  public:
-    /** @name Constructors, destructor, assignment. */
-    //@{
-    /**
-     * Constructor. Type is one of cGate::INPUT, cGate::OUTPUT and cGate::INOUT.
-     */
-    explicit cGate(const char *name, char type);
-
-    /**
-     * Destructor.
-     */
+  protected:
+    // internal: constructor is protected because only cModule is allowed to create instances
+    explicit cGate(Desc *desc);
+    // also protected: only cModule is allowed to delete gates
     virtual ~cGate();
-    //@}
+    // internal: tells the gate its id (position in the module's gatev[] array)
+    void setGateId(int id);
 
+    void take(cChannel *channelp); //XXX maybe this: {desc->ownerp->take(channelp);}
+    void dropAndDelete(cChannel *channelp); //XXX maybe this: {desc->ownerp->dropAndDelete(channelp);}
+
+  public:
     /** @name Redefined cObject member functions */
     //@{
+    /**
+     * Returns the name of the the gate without the gate index in brackets.
+     */
+    virtual const char *name() const;
+
+    /**
+     * Returns the full name of the gate, which is name() plus the
+     * index in square brackets (e.g. "out[4]"). Redefined to add the
+     * index.
+     */
+    virtual const char *fullName() const;
+
     /**
      * Calls v->visit(this) for each contained object.
      * See cObject for more details.
@@ -99,18 +114,6 @@ class SIM_API cGate : public cNoncopyableOwnedObject  //FIXME make it cNamedObje
      * See cObject for more details.
      */
     virtual std::string info() const;
-
-    /**
-     * Returns the full name of the gate, which is name() plus the
-     * index in square brackets (e.g. "out[4]"). Redefined to add the
-     * index.
-     */
-    virtual const char *fullName() const;
-
-    /**
-     * Sets object's name. Redefined to update the cached fullName string.
-     */
-    virtual void setName(const char *s);
     //@}
 
     /**
@@ -121,23 +124,6 @@ class SIM_API cGate : public cNoncopyableOwnedObject  //FIXME make it cNamedObje
      * messages leaving the partition.)
      */
     virtual bool deliver(cMessage *msg, simtime_t at);
-
-    /** @name Setting up the gate. */
-    //@{
-
-    /**
-     * Specifies the gate's owner module m, and id within the gates of that
-     * module. This function should not be directly called by the user.
-     */
-    void setOwnerModule(cModule *m, int id);
-
-    /**
-     * Specifies that the gate is at index sn in a gate array
-     * of size vs. This function should not be directly called
-     * by the user.
-     */
-    void setIndex(int sn, int vs);
-    //@}
 
     /** @name Connecting the gate. */
     //@{
@@ -177,7 +163,7 @@ class SIM_API cGate : public cNoncopyableOwnedObject  //FIXME make it cNamedObje
     void setChannel(cChannel *ch);
 
     /**
-     * Returns the channel object attached to this gate, or NULL if there's 
+     * Returns the channel object attached to this gate, or NULL if there's
      * no channel. This is the channel between this gate and this->toGate(),
      * that is, channels are stored on the "from" side of the connections.
      */
@@ -195,29 +181,32 @@ class SIM_API cGate : public cNoncopyableOwnedObject  //FIXME make it cNamedObje
     /**
      * Returns the gate's type, one of cGate::INPUT, cGate::OUTPUT and cGate::INOUT.
      */
-    char type() const      {return gatetype();}
+    Type type() const {
+        return desc->inGateId<0 ? (desc->outGateId<0 ? cGate::NONE : cGate::OUTPUT)
+                                : (desc->outGateId<0 ? cGate::INPUT : cGate::INOUT);
+    }
 
     /**
      * Returns a pointer to the owner module of the gate.
      */
-    cModule *ownerModule() const {return (cModule *)owner();}
+    cModule *ownerModule() const  {return desc->ownerp;}
 
     /**
      * Returns gate ID, the position of the gate in the array of all gates of
      * the module.
      */
-    int id() const         {return gateid;}
+    int id() const  {return gateId;}
 
     /**
      * Returns true if the gate is part of a gate vector.
      */
-    bool isVector() const  {return vectsize>=0;}
+    bool isVector() const  {return desc->size>=0;}
 
     /**
      * If the gate is part of a gate vector, returns the gate's index in the vector.
      * Otherwise, it returns 0.
      */
-    int index() const      {return serno;}
+    int index() const;
 
     /**
      * If the gate is part of a gate vector, returns the size of the vector.
@@ -226,7 +215,7 @@ class SIM_API cGate : public cNoncopyableOwnedObject  //FIXME make it cNamedObje
      *
      * The gate vector size can also be obtained by calling the cModule::gateSize().
      */
-    int size()  const      {return vectsize<0?1:vectsize;}
+    int size()  const  {return desc->size<0 ? 1 : desc->size;}
     //@}
 
     /** @name Transmission state. */

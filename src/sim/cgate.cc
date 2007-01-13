@@ -37,19 +37,14 @@
 using std::ostream;
 
 
-cGate::cGate(const char *s, char tp) : cNoncopyableOwnedObject(s)
+cGate::cGate(Desc *d)
 {
+    desc = d;
+    gateId = -1; // to be set later
     fullname = NULL;
 
     fromgatep = togatep = NULL;
-    gatetype() = tp;
-
-    serno = 0;
-    vectsize = -1;  // not a vector
-
-    gateid = -1; // to be set later
     channelp = NULL;
-
     dispstr = NULL;
 }
 
@@ -66,16 +61,9 @@ void cGate::forEachChild(cVisitor *v)
         v->visit(channelp);
 }
 
-void cGate::setName(const char *s)
+const char *cGate::name() const
 {
-    cOwnedObject::setName(s);
-
-    // invalidate fullname (it'll be recreated on demand)
-    if (fullname)
-    {
-        delete [] fullname;
-        fullname = NULL;
-    }
+    return desc->namep;  //FIXME somehow add $i or $o for members of an inout gate...
 }
 
 const char *cGate::fullName() const
@@ -100,15 +88,15 @@ std::string cGate::info() const
     cGate const *g;
     cGate const *conng;
 
-    if (gatetype()==OUTPUT)
+    if (type()==OUTPUT)
         {arrow = "--> "; g = togatep; conng = this;}
-    else if (gatetype()==INPUT)
+    else if (type()==INPUT)
         {arrow = "<-- "; g = fromgatep; conng = fromgatep;}
     else // INOUT
         {arrow = "<--> "; g = fromgatep; conng = fromgatep;}
 
     // append useful info to buf
-    if (vectsize==0)
+    if (desc->size==0)
         return std::string("(placeholder for zero-size vector)");
     if (!g)
         return std::string("not connected");
@@ -124,23 +112,29 @@ std::string cGate::info() const
     return out.str();
 }
 
-void cGate::setOwnerModule(cModule *m, int id)
+void cGate::setGateId(int id)
 {
-    ASSERT(m==owner()); // must be already owned by that module
-    gateid = id;
-}
+    gateId = id;
 
-void cGate::setIndex(int sn, int vs)
-{
-    serno = sn;
-    vectsize = vs;
-
-    // invalidate fullname (it'll be recreated on demand)
+    // invalidate fullname, as it may have changed (it'll be recreated on demand)
     if (fullname)
     {
         delete [] fullname;
         fullname = NULL;
     }
+}
+
+int cGate::index() const
+{
+    // if not vector, return 0
+    if (desc->size < 0)
+        return 0;
+    // otherwise see which gate id range in desc contains this gate's id
+    if (desc->inGateId>=0 && gateId >= desc->inGateId && gateId < desc->inGateId + desc->size)
+        return gateId - desc->inGateId;
+    if (desc->outGateId>=0 && gateId >= desc->outGateId && gateId < desc->outGateId + desc->size)
+        return gateId - desc->outGateId;
+    throw cRuntimeError(this, "internal data structure inconsistency");
 }
 
 cProperties *cGate::properties() const
@@ -150,13 +144,13 @@ cProperties *cGate::properties() const
 
 void cGate::connectTo(cGate *g, cChannel *chan)
 {
-    if (vectsize==0)
+    if (desc->size==0)
         throw cRuntimeError(this, "connectTo(): gate vector size is zero");
     if (togatep)
         throw cRuntimeError(this, "connectTo(): gate already connected");
     if (!g)
         throw cRuntimeError(this, "connectTo(): destination gate cannot be NULL pointer");
-    if (g->vectsize==0)
+    if (g->desc->size==0)
         throw cRuntimeError(this, "connectTo(): destination gate vector size is zero");
     if (g->fromgatep)
         throw cRuntimeError(this, "connectTo(): destination gate already connected");

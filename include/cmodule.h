@@ -166,7 +166,9 @@ class SIM_API cModule : public cComponent //noncopyable
     cModule *firstsubmodp;  // pointer to first submodule
     cModule *lastsubmodp;   // pointer to last submodule (needed for efficient append operation)
 
-    std::vector<cGate*> gatev;  // stores the gates of this module
+  protected:
+    std::vector<cGate::Desc> gatedescv; // stores info about the gates of this module
+    std::vector<cGate*> gatev;  // stores the gates themselves
 
   protected:
     int idx;               // index if module vector, 0 otherwise
@@ -208,7 +210,14 @@ class SIM_API cModule : public cComponent //noncopyable
 
     // internal: "virtual ctor" for cGate, because in cPlaceHolderModule
     // we'll need different gate objects
-    virtual cGate *createGateObject(const char *gname, char tp);
+    virtual cGate *createGateObject(cGate::Desc *desc);
+
+    // internal: finds a gate descriptor with the given name in gatedescv[];
+    // ignores (but gives back) potential "$i"/"$o" suffix in gatename
+    int findGateDesc(const char *gatename, char& suffix) const;
+
+    // internal: like findGateDesc(), but throws an error if the gate does not exist
+    const cGate::Desc& gateDesc(const char *gatename, char& suffix) const;
 
   protected:
     /** @name Initialization and finish hooks, redefined from cComponent. */  //XXX comment??
@@ -277,12 +286,11 @@ class SIM_API cModule : public cComponent //noncopyable
     //@{
 
     /**
-     * Adds a gate. The type character tp can be <tt>'I'</tt> or <tt>'O'</tt> for input
-     * and output, respectively.
+     * Adds a gate.
      */
 //FIXME MUST BE ENFORCED THAT NAME IS UNIQUE!!!!! NOT THE SAME AS ANY SUBMODULE,PARAMETER OR GATE!!! OTHERWISE properties() WILL MESS UP!!!!!!!
 //FIXME THE SAME MUST BE ENFORCED WITH SUBMODULE CREATION!!!!
-    cGate *addGate(const char *s, char tp, bool isvector=false);
+    void addGate(const char *gatename, cGate::Type type, bool isvector=false);
 
     /**
      * Sets gate vector size. If the vector size is increased, Ids of existing
@@ -299,7 +307,7 @@ class SIM_API cModule : public cComponent //noncopyable
      * as Ids, thus if the vector would expand to already issued gate Ids, the
      * whole vector must be moved to a different Id range.)
      */
-    int setGateSize(const char *s, int size);
+    int setGateSize(const char *gatename, int size);
 
     /**
      * Redefined from cComponent. This method must be called as part of the module
@@ -425,6 +433,7 @@ class SIM_API cModule : public cComponent //noncopyable
     /** @name Gates. */
     //@{
 //XXX make these methods virtual?
+//XXX add to doc which one can be called with inout gates
     /**
      * Returns the total size of the gate array. Since the array may contain
      * unused elements, the number of actual gates used might be less.
@@ -455,6 +464,25 @@ class SIM_API cModule : public cComponent //noncopyable
      */
     const cGate *gate(const char *gatename, int index=-1) const {return const_cast<cModule *>(this)->gate(gatename, index);}
 
+//FIXME revise comments from here on
+    /**
+     * Checks if a gate exists. When invoked without index, it returns whether
+     * gate "gatename" or  "gatename[]" exists (no matter if the gate vector size
+     * is currently zero). When invoked with an index, it returns whether the
+     * concrete "gatename[index]" gate exists (gatename being a vector gate).
+     */
+    virtual bool hasGate(const char *gatename, int index=-1) const;
+
+    /**
+     * Returns the type of the gate (gate vector) with the given name.
+     */
+    virtual cGate::Type gateType(const char *gatename) const;
+
+    /**
+     * Returns whether the given gate is vector.
+     */
+    virtual bool isGateVector(const char *gatename) const;
+
     /**
      * Returns the size of the gate vector with the given name. It returns 1 for
      * non-vector gates, and 0 if the gate doesn't exist or the vector has size 0.
@@ -471,12 +499,6 @@ class SIM_API cModule : public cComponent //noncopyable
      * FIXME clarify what if it's vector and index is not given, and vica versa
      */
     virtual int findGate(const char *gatename, int index=-1) const;
-
-    /**
-     * Checks if a gate exists.
-     * FIXME clarify what if it's vector and index is not given, and vica versa
-     */
-    bool hasGate(const char *gatename, int index=-1) const {return findGate(gatename,index)>=0;}
 
     /**
      * For compound modules, it checks if all gates are connected inside

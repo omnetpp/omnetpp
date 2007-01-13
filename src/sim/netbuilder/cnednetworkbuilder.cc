@@ -374,7 +374,6 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
         cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
         setDisplayString(submodp);
         assignSubcomponentParams(submodp, submod);
-        //submodp->readParams(); //FIXME remove
         submodp->finalizeParameters(); // also sets up type's gates
         setupGateVectors(submodp, submod);
     }
@@ -393,7 +392,6 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
             cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
             setDisplayString(submodp);
             assignSubcomponentParams(submodp, submod);
-            //submodp->readParams(); //FIXME remove
             submodp->finalizeParameters(); // also sets up type's gates
             setupGateVectors(submodp, submod);
         }

@@ -210,41 +210,111 @@ bool cModule::isSimple() const
     return dynamic_cast<const cSimpleModule *>(this) != NULL;
 }
 
-cGate *cModule::createGateObject(const char *gname, char tp)
+cGate *cModule::createGateObject(cGate::Desc *desc)
 {
-    return new cGate(gname,tp);
+    return new cGate(desc);
 }
 
-cGate *cModule::addGate(const char *gname, char tp, bool isvector)
+int cModule::findGateDesc(const char *gatename, char& suffix) const
 {
-    if (findGate(gname)>=0)
-       throw cRuntimeError(this, "addGate(): Gate %s.%s already present", fullPath().c_str(), gname);
+    // determine whether gatename contains "$i"/"$o" suffix
+    int len = strlen(gatename);
+    suffix = (len>2 && gatename[len-2]=='$') ? gatename[len-1] : 0;
 
-    cGate *newgate = createGateObject(gname, tp);
-    take(newgate);
-    newgate->setOwnerModule(this, gatev.size());
-    gatev.push_back(newgate);
-    if (isvector)
-        newgate->setIndex(0,0);
-    return newgate;
+    // and search accordingly
+    if (!suffix)
+    {
+        int n = gatedescv.size();
+        for (int i=0; i<n; i++)
+        {
+            const cGate::Desc& desc = gatedescv[i];
+            if (desc.namep && desc.namep[0]==gatename[0] && strcmp(desc.namep, gatename)==0)
+                return i;
+        }
+    }
+    else
+    {
+        if (suffix!='i' && suffix!='o')
+            return -1;  // invalid suffix ==> no such gate
+
+        // ignore suffix during search
+        int n = gatedescv.size();
+        for (int i=0; i<n; i++)
+        {
+            const cGate::Desc& desc = gatedescv[i];
+            if (desc.namep && desc.namep[0]==gatename[0] && strncmp(desc.namep, gatename, len-2)==0 && strlen(desc.namep)==len-2)
+            {
+                if (desc.inGateId<0 || desc.outGateId<0)
+                    return -1;  // this is not an inout gate
+                return i;
+            }
+        }
+    }
+    return -1;
 }
 
-int cModule::setGateSize(const char *gname, int newsize)
+const cGate::Desc& cModule::gateDesc(const char *gatename, char& suffix) const
 {
-    int oldpos = findGate(gname,-1);
+    int descId = findGateDesc(gatename, suffix);
+    if (descId<0)
+        throw cRuntimeError(this, "no `%s' or `%s[]' gate", gatename, gatename);
+    return gatedescv[descId];
+}
+
+void cModule::addGate(const char *gatename, cGate::Type type, bool isvector)
+{
+    char suffix;
+    if (findGateDesc(gatename, suffix)>=0)
+        throw cRuntimeError(this, "addGate(): Gate %s.%s already present", fullPath().c_str(), gatename);
+    if (suffix)
+        throw cRuntimeError(this, "addGate(): Wrong gate name `%s', must be without `$i'/`$o' suffix", gatename);
+
+    // create desc for new gate (or gate vector)
+    gatedescv.push_back(cGate::Desc());  //FIXME f*ck! this will reallocate and I can screw all desc ptrs in cGates!
+    cGate::Desc& desc = gatedescv.back();
+    desc.namep = gatename;  // FIXME stringpool!
+    desc.ownerp = this;
+    desc.size = isvector ? 0 : -1;
+
+    // now: create gate object, maybe two (name$i and name$o)
+    if (type==cGate::INPUT || type==cGate::INOUT)
+    {
+        if (isvector)
+            desc.inGateId = 0;  // must be >=0 to store type=INPUT/INOUT
+        else {
+            cGate *newgate = createGateObject(&desc);
+            newgate->setGateId(desc.inGateId = gatev.size());
+            gatev.push_back(newgate);
+        }
+    }
+    if (type==cGate::OUTPUT || type==cGate::INOUT)
+    {
+        if (isvector)
+            desc.outGateId = 0;  // must be >=0 to store type=OUTPUT/INOUT
+        else {
+            cGate *newgate = createGateObject(&desc);
+            newgate->setGateId(desc.outGateId = gatev.size());
+            gatev.push_back(newgate);
+        }
+    }
+}
+
+int cModule::setGateSize(const char *gatename, int newsize)
+{
+    int oldpos = findGate(gatename,-1);
     if (oldpos<0)
-       oldpos = findGate(gname,0);
+        oldpos = findGate(gatename,0);
     if (oldpos<0)
-        throw cRuntimeError(this,"setGateSize(): Gate %s[] not found", gname);
+        throw cRuntimeError(this,"setGateSize(): Gate %s[] not found", gatename);
     if (newsize<0)
-        throw cRuntimeError(this,"setGateSize(): negative vector size (%d) requested for gate %s[]", newsize, gname);
+        throw cRuntimeError(this,"setGateSize(): negative vector size (%d) requested for gate %s[]", newsize, gatename);
 
     char tp = gate(oldpos)->type();
     int oldsize = gate(oldpos)->size();
     if (oldsize==newsize)
         return oldpos;
-    if (oldsize==0)
-        oldsize = 1;  // a zero-size vector is actually a single gate with vecsize=0
+//    if (oldsize==0)
+//        oldsize = 1;  // a zero-size vector is actually a single gate with vecsize=0
 
     // first see if gate vector has to be shrunk
     int i;
@@ -321,7 +391,7 @@ int cModule::setGateSize(const char *gname, int newsize)
     // and create additional gates
     for (i=oldsize; i<newsize; i++)
     {
-        cGate *gate = createGateObject(gname, tp);
+        cGate *gate = createGateObject(gatename, tp);
         take(gate);
         gatev[newpos+i] = gate;
     }
@@ -410,37 +480,40 @@ cModule *cModule::moduleByRelativePath(const char *path)
     return modp;  // NULL if not found
 }
 
-int cModule::findGate(const char *s, int index) const
+int cModule::findGate(const char *gatename, int index) const
 {
-    const cGate *g = 0; // initialize g to prevent compiler warnings
-    int i = 0, n = gates();
-    while (i<n)
-    {
-       g = gate(i);
-       if (!g)
-          i++;
-       else if (!g->isName(s))
-          i += g->size()==0 ? 1 : g->size();
-       else
-          break;
-    }
+    char suffix;
+    int descId = findGateDesc(gatename, suffix);
+    if (descId<0)
+        return -1;  // gatename not found
 
-    if (i>=n)
-       return -1;
-    else if (index<0)
-       // for index=-1, we return the 0th gate. This is not very clean but
-       // necessary for code like n=gate("out_vector")->size() to work.
-       return i;
-    else if (index<g->size())
-       // assert may be removed later
-       {ASSERT( gate(i+index)->index()==index ); return i+index;}
+    const cGate::Desc& desc = gatedescv[descId];
+    if (desc.inGateId>=0 && desc.outGateId>=0 && !suffix)
+        return -1;  // inout gate cannot be referenced without "$i" or "$o" suffix
+
+    if (desc.size==-1)
+    {
+        // gate is scalar
+        if (index!=-1)
+            return -1;  // wrong: scalar gate referenced with index
+        if (suffix)
+            return suffix=='i' ? desc.inGateId : desc.outGateId;
+        return desc.inGateId>=0 ? desc.inGateId : desc.outGateId;
+    }
     else
-       return -1;
+    {
+        // gate is vector
+        if (index<0 || index>=desc.size)
+            return -1;  // index not specified (-1) or out of range
+        if (suffix)
+            return suffix=='i' ? desc.inGateId+index : desc.outGateId+index;
+        return desc.inGateId>=0 ? desc.inGateId+index : desc.outGateId+index;
+    }
 }
 
-cGate *cModule::gate(const char *s, int index)
+cGate *cModule::gate(const char *gatename, int index)
 {
-    int i = findGate(s,index);
+    int i = findGate(gatename, index);
     if (i==-1)
         return NULL;
     return gate(i);
@@ -453,12 +526,38 @@ cGate *cModule::gate(int k)
     return gatev[k];
 }
 
+bool cModule::hasGate(const char *gatename, int index) const
+{
+    char suffix;
+    int descId = findGateDesc(gatename, suffix);
+    if (descId<0)
+        return false;
+    const cGate::Desc& desc = gatedescv[descId];
+    return index==-1 ? true : (index>=0 && index<desc.size);
+}
+
+cGate::Type cModule::gateType(const char *gatename) const
+{
+    char suffix;
+    const cGate::Desc& desc = gateDesc(gatename, suffix);
+    if (suffix)
+        return suffix=='i' ? cGate::INPUT : cGate::OUTPUT;
+    return desc.inGateId<0 ? (desc.outGateId<0 ? cGate::NONE : cGate::OUTPUT)
+                           : (desc.outGateId<0 ? cGate::INPUT : cGate::INOUT);
+}
+
+bool cModule::isGateVector(const char *gatename) const
+{
+    char suffix;
+    const cGate::Desc& desc = gateDesc(gatename, suffix);
+    return desc.size!=-1;
+}
+
 int cModule::gateSize(const char *gatename) const
 {
-    int i = findGate(gatename);
-    if (i==-1)
-        return 0;
-    return gate(i)->size();
+    char suffix;
+    const cGate::Desc& desc = gateDesc(gatename, suffix);
+    return desc.size==-1 ? 1 : desc.size;
 }
 
 cPar& cModule::ancestorPar(const char *name)
