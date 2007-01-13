@@ -120,7 +120,7 @@ void cNEDLoader::addComponent(const char *name, NEDElement *node)
     cNEDDeclaration *decl = buildNEDDeclaration(node);
     components[name] = decl;
 
-    //XXX printf("DBG: registered %s\n",name);
+    //printf("DBG: registered %s\n",name);
 
     // if module or channel, register corresponding object which can be used to instantiate it
     cComponentType *type = NULL;
@@ -250,7 +250,8 @@ void cNEDLoader::done()
     for (int i=0; i<pendingList.size(); i++)
     {
         NEDElement *tree = pendingList[i];
-        //FIXME if not resolved, print error...
+        ev.printfmsg("WARNING: Type `%s' at %s could not be fully resolved, dropped (base type or interface missing)",
+                     tree->getAttribute("name"), tree->getSourceLocation()); // FIXME create an ev.warning() or something...
         delete tree;
     }
 }

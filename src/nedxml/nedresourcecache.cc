@@ -80,7 +80,7 @@ void NEDResourceCache::collectComponents(NEDElement *node, const std::string& na
 
             NEDElement *types = child->getFirstChildWithTag(NED_TYPES);
             if (types)
-                collectComponents(types, name+".");
+                collectComponents(types, name+"::");
         }
     }
 }
