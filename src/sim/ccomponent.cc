@@ -107,7 +107,7 @@ void cComponent::addPar(cParValue *value)
 cPar& cComponent::par(int k)
 {
     if (k<0 || k>=numparams)
-        throw cRuntimeError(this, "parameter index %d out of range", k);
+        throw cRuntimeError(this, "parameter id %d out of range", k);
     return paramv[k];
 }
 
@@ -115,7 +115,7 @@ cPar& cComponent::par(const char *parname)
 {
     int k = findPar(parname);
     if (k<0)
-        throw cRuntimeError(this, "has no parameter called `%s'", parname);
+        throw cRuntimeError(this, "has no parameter named `%s'", parname);
     return paramv[k];
 }
 

@@ -219,6 +219,9 @@ class SIM_API cModule : public cComponent //noncopyable
     // internal: like findGateDesc(), but throws an error if the gate does not exist
     const cGate::Desc& gateDesc(const char *gatename, char& suffix) const;
 
+    // internal: resize a gate vector, possibly moving it in gatev[]. Returns newpos.
+    int moveGates(int oldpos, int oldsize, int newsize, cGate::Desc *desc);
+
   protected:
     /** @name Initialization and finish hooks, redefined from cComponent. */  //XXX comment??
     //@{
@@ -294,8 +297,7 @@ class SIM_API cModule : public cComponent //noncopyable
 
     /**
      * Sets gate vector size. If the vector size is increased, Ids of existing
-     * gates in the vector may change. The function returns the new Id of the
-     * first gate in the vector.
+     * gates in the vector may change.
      *
      * Note: setGateSize() should not be called when Id change can cause problems:
      * after initialize() of this module has been invoked, or when messages have
@@ -307,7 +309,7 @@ class SIM_API cModule : public cComponent //noncopyable
      * as Ids, thus if the vector would expand to already issued gate Ids, the
      * whole vector must be moved to a different Id range.)
      */
-    int setGateSize(const char *gatename, int size);
+    void setGateSize(const char *gatename, int size);
 
     /**
      * Redefined from cComponent. This method must be called as part of the module

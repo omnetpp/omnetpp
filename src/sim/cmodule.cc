@@ -46,6 +46,8 @@ cModule::cModule()
 
     prevp = nextp = firstsubmodp = lastsubmodp = NULL;
 
+    gatedescv.reserve(10); //FIXME just temporary!!!!!
+
     // gates and parameter will be added by cModuleType
 }
 
@@ -299,23 +301,24 @@ void cModule::addGate(const char *gatename, cGate::Type type, bool isvector)
     }
 }
 
-int cModule::setGateSize(const char *gatename, int newsize)
+void cModule::setGateSize(const char *gatename, int newsize)
 {
-    int oldpos = findGate(gatename,-1);
-    if (oldpos<0)
-        oldpos = findGate(gatename,0);
-    if (oldpos<0)
-        throw cRuntimeError(this,"setGateSize(): Gate %s[] not found", gatename);
+    char suffix;
+    cGate::Desc& desc = const_cast<cGate::Desc&>(gateDesc(gatename, suffix));
+    if (suffix)
+        throw cRuntimeError(this, "setGateSize(): wrong gate name `%s', suffix `$i'/`$o' not accepted here", gatename);
     if (newsize<0)
-        throw cRuntimeError(this,"setGateSize(): negative vector size (%d) requested for gate %s[]", newsize, gatename);
+        throw cRuntimeError(this, "setGateSize(): negative vector size (%d) requested for gate %s[]", newsize, gatename);
 
-    char tp = gate(oldpos)->type();
-    int oldsize = gate(oldpos)->size();
-    if (oldsize==newsize)
-        return oldpos;
-//    if (oldsize==0)
-//        oldsize = 1;  // a zero-size vector is actually a single gate with vecsize=0
+    if (desc.inGateId>=0)
+        desc.inGateId = moveGates(desc.inGateId, desc.size, newsize, &desc);
+    if (desc.outGateId>=0)
+        desc.outGateId = moveGates(desc.outGateId, desc.size, newsize, &desc);
+    desc.size = newsize;
+}
 
+int cModule::moveGates(int oldpos, int oldsize, int newsize, cGate::Desc *desc)
+{
     // first see if gate vector has to be shrunk
     int i;
     if (newsize<=oldsize)
@@ -341,12 +344,6 @@ int cModule::setGateSize(const char *gatename, int newsize)
         if (oldpos+newsize > gatev.size())
             gatev.resize(oldpos+newsize);
 
-        // and tell remaining gates the new vector size
-        for (i=0; i<newsize; i++)
-        {
-            cGate *gate = gatev[oldpos+i];
-            gate->setIndex(i, zerosize ? 0 : newsize);
-        }
         return oldpos;
     }
 
@@ -391,17 +388,14 @@ int cModule::setGateSize(const char *gatename, int newsize)
     // and create additional gates
     for (i=oldsize; i<newsize; i++)
     {
-        cGate *gate = createGateObject(gatename, tp);
-        take(gate);
-        gatev[newpos+i] = gate;
+        gatev[newpos+i] = createGateObject(desc);
     }
 
     // let all gates know who they are again
     for (i=0; i<newsize; i++)
     {
         cGate *gate = gatev[newpos+i];
-        gate->setOwnerModule(this, newpos+i);
-        gate->setIndex(i, newsize);
+        gate->setGateId(newpos+i);
     }
     return newpos;
 }
@@ -515,7 +509,22 @@ cGate *cModule::gate(const char *gatename, int index)
 {
     int i = findGate(gatename, index);
     if (i==-1)
-        return NULL;
+    {
+        // no such gate -- do some extra effort to issue a helpful error message
+        std::string fullgatename = index<0 ? gatename : opp_mkindexedname(NULL, gatename, index);
+        char suffix;
+        int descId = findGateDesc(gatename, suffix);
+        if (descId<0)
+            throw cRuntimeError(this, "has no gate named `%s'", fullgatename.c_str());
+        const cGate::Desc& desc = gatedescv[descId];
+        if (index==-1 && desc.size!=-1)
+            throw cRuntimeError(this, "has no gate named `%s' -- use gate(\"%s\", 0) to refer to first gate of gate vector `%s[]'",
+                                gatename, gatename, gatename);
+        if (index!=-1 && desc.size==-1)
+            throw cRuntimeError(this, "has no gate named `%s' -- use gate(\"%s\") to refer to scalar gate `%s[]'",
+                                fullgatename.c_str(), gatename, gatename);
+        throw cRuntimeError(this, "has no gate named `%s' -- vector index out of bounds", fullgatename.c_str());
+    }
     return gate(i);
 }
 

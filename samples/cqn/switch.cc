@@ -27,7 +27,7 @@ Define_Module(Switch);
 
 void Switch::initialize()
 {
-    numGates = gate("out")->size();
+    numGates = gateSize("out");
 }
 
 void Switch::handleMessage(cMessage *msg)

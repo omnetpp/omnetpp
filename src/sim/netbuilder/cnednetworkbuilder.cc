@@ -462,8 +462,10 @@ cGate *cNEDNetworkBuilder::getFirstUnusedSubmodGate(cModule *modp, const char *g
     for (int i=0; i<n; i++)
         if (!modp->gate(baseId+i)->isConnectedOutside())
             return modp->gate(baseId+i);
-    int newBaseId = modp->setGateSize(gatename,n+1);
-    return modp->gate(newBaseId+n);
+    //int newBaseId = modp->setGateSize(gatename, n+1);
+    //return modp->gate(newBaseId+n);
+    modp->setGateSize(gatename, n+1);   //FIXME could be more optimal?
+    return modp->gate(gatename, n);
 }
 
 void cNEDNetworkBuilder::addConnectionOrConnectionGroup(cModule *modp, NEDElement *connOrConnGroup)

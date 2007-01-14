@@ -114,7 +114,7 @@ void cFileOutputVectorManager::writeHeader()
             std::vector<opp_string> entries = config->getEntriesWithPrefix(sectionName, "", "");
             for (int j=0; j<entries.size()-1; j+=2)
             {
-                const char *name = entries[j].c_str();
+                const char *name = entries[j].c_str();  //FIXME this crashes HCube!!!
                 const char *value = entries[j+1].c_str();
 
                 if (isCurrentRunSection || !config->exists(section, name))

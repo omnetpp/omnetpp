@@ -142,6 +142,16 @@ cProperties *cGate::properties() const
     return cComponentType::getPropertiesFor(this);
 }
 
+void cGate::take(cChannel *channelp)
+{
+    desc->ownerp->take(channelp);  //FIXME or maybe nothing? or maybe give it to the compound module in which the connection is?
+}
+
+void cGate::dropAndDelete(cChannel *channelp)
+{
+    desc->ownerp->dropAndDelete(channelp); //FIXME
+}
+
 void cGate::connectTo(cGate *g, cChannel *chan)
 {
     if (desc->size==0)
