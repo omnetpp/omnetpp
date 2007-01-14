@@ -64,7 +64,7 @@ void cGate::forEachChild(cVisitor *v)
 
 const char *cGate::name() const
 {
-    if (desc->inGateId==-1 || desc->outGateId==-1)
+    if (!desc->isInout())
         return desc->namep;
     else {
         // this is one half of an inout gate, append "$i" or "$o"
@@ -133,15 +133,15 @@ void cGate::setGateId(int id)
 
 cGate::Type cGate::type() const
 {
-    if (desc->inGateId==-1 || desc->outGateId==-1)
-        return desc->inGateId>=0 ? INPUT : OUTPUT;
+    if (!desc->isInout())
+        return desc->isInput() ? INPUT : OUTPUT;
 
     // otherwise see which gate id range in desc contains this gate's id
-    if (desc->size==-1)
+    if (desc->isScalar())
         return gateId==desc->inGateId ? INPUT : OUTPUT;
-    if (gateId >= desc->inGateId && gateId < desc->inGateId + desc->size)
+    if (desc->isInInputIdRange(gateId))
         return INPUT;
-    if (gateId >= desc->outGateId && gateId < desc->outGateId + desc->size)
+    if (desc->isInOutputIdRange(gateId))
         return OUTPUT;
     throw cRuntimeError(this, "internal data structure inconsistency");
 }
@@ -149,12 +149,13 @@ cGate::Type cGate::type() const
 int cGate::index() const
 {
     // if not vector, return 0
-    if (desc->size < 0)
+    if (desc->isScalar())
         return 0;
+
     // otherwise see which gate id range in desc contains this gate's id
-    if (desc->inGateId>=0 && gateId >= desc->inGateId && gateId < desc->inGateId + desc->size)
+    if (desc->isInput() && desc->isInInputIdRange(gateId))
         return gateId - desc->inGateId;
-    if (desc->outGateId>=0 && gateId >= desc->outGateId && gateId < desc->outGateId + desc->size)
+    if (desc->isOutput() && desc->isInOutputIdRange(gateId))
         return gateId - desc->outGateId;
     throw cRuntimeError(this, "internal data structure inconsistency");
 }
@@ -176,14 +177,10 @@ void cGate::dropAndDelete(cChannel *channelp)
 
 void cGate::connectTo(cGate *g, cChannel *chan)
 {
-    if (desc->size==0)
-        throw cRuntimeError(this, "connectTo(): gate vector size is zero");
     if (togatep)
         throw cRuntimeError(this, "connectTo(): gate already connected");
     if (!g)
         throw cRuntimeError(this, "connectTo(): destination gate cannot be NULL pointer");
-    if (g->desc->size==0)
-        throw cRuntimeError(this, "connectTo(): destination gate vector size is zero");
     if (g->fromgatep)
         throw cRuntimeError(this, "connectTo(): destination gate already connected");
 

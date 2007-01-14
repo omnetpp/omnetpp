@@ -97,7 +97,7 @@ cModule::~cModule()
     {
         cGate::Desc& desc = gatedescv[i];
         cGate::stringPool.release(desc.namep);
-        if (desc.inGateId!=-1 && desc.outGateId!=-1)  // inout gate
+        if (desc.isInout())
         {
             std::string gatename = gatedescv[i].namep;
             cGate::stringPool.release(cGate::stringPool.peek((gatename+"$i").c_str()));  //FIXME use opp_concat?
@@ -261,8 +261,8 @@ int cModule::findGateDesc(const char *gatename, char& suffix) const
             const cGate::Desc& desc = gatedescv[i];
             if (desc.namep && desc.namep[0]==gatename[0] && strncmp(desc.namep, gatename, len-2)==0 && strlen(desc.namep)==len-2)
             {
-                if (desc.inGateId<0 || desc.outGateId<0)
-                    return -1;  // this is not an inout gate
+                if (!desc.isInout())
+                    return -1;  // looking for a "foo$i"/"foo$o" gate, but found a non-inout "foo" gate
                 return i;
             }
         }
@@ -329,14 +329,14 @@ void cModule::setGateSize(const char *gatename, int newsize)
     cGate::Desc& desc = const_cast<cGate::Desc&>(gateDesc(gatename, suffix));
     if (suffix)
         throw cRuntimeError(this, "setGateSize(): wrong gate name `%s', suffix `$i'/`$o' not accepted here", gatename);
-    if (desc.size==-1)
+    if (desc.isScalar())
         throw cRuntimeError(this, "setGateSize(): gate `%s' is not a vector gate", gatename);
     if (newsize<0)
         throw cRuntimeError(this, "setGateSize(): negative vector size (%d) requested for gate %s[]", newsize, gatename);
 
-    if (desc.inGateId>=0)
+    if (desc.isInput())
         desc.inGateId = moveGates(desc.inGateId, desc.size, newsize, &desc);
-    if (desc.outGateId>=0)
+    if (desc.isOutput())
         desc.outGateId = moveGates(desc.outGateId, desc.size, newsize, &desc);
     desc.size = newsize;
 }
@@ -506,10 +506,10 @@ int cModule::findGate(const char *gatename, int index) const
         return -1;  // gatename not found
 
     const cGate::Desc& desc = gatedescv[descId];
-    if (desc.inGateId>=0 && desc.outGateId>=0 && !suffix)
+    if (desc.isInout() && !suffix)
         return -1;  // inout gate cannot be referenced without "$i" or "$o" suffix
 
-    if (desc.size==-1)
+    if (desc.isScalar())
     {
         // gate is scalar
         if (index!=-1)
@@ -525,7 +525,7 @@ int cModule::findGate(const char *gatename, int index) const
             return -1;  // index not specified (-1) or out of range
         if (suffix)
             return suffix=='i' ? desc.inGateId+index : desc.outGateId+index;
-        return desc.inGateId>=0 ? desc.inGateId+index : desc.outGateId+index;
+        return desc.isInput() ? desc.inGateId+index : desc.outGateId+index;
     }
 }
 
@@ -541,20 +541,20 @@ cGate *cModule::gate(const char *gatename, int index)
         if (descId<0)
             throw cRuntimeError(this, "has no gate named `%s' -- name not found", fullgatename.c_str());
         const cGate::Desc& desc = gatedescv[descId];
-        if (index==-1 && desc.size!=-1)
+        if (index==-1 && desc.isVector())
             throw cRuntimeError(this, "has no gate named `%s' -- "
                 "use gate(\"%s\", 0) to refer to first gate of gate vector `%s[]', and "
                 "occurrences of gate(\"%s\")->size() should be replaced with gateSize(\"%s\")",
                 gatename, gatename, gatename, gatename, gatename);
-        if (index!=-1 && desc.size==-1)
+        if (index!=-1 && desc.isScalar())
             throw cRuntimeError(this, "has no gate named `%s' -- use gate(\"%s\") to refer to scalar gate `%s'",
                                 fullgatename.c_str(), gatename, gatename);
-        if (!suffix && desc.inGateId>=0 && desc.outGateId>=0)
+        if (!suffix && desc.isInout())
             throw cRuntimeError(this, "has no gate named `%s' -- "
                 "one cannot reference an inout gate as a whole, only its input or output "
                 "component, by appending \"$i\" or \"$o\" to the gate name",
                 fullgatename.c_str());
-        if (desc.size!=-1 && (index<0 || index>=desc.size))
+        if (desc.isVector() && (index<0 || index>=desc.size))
             throw cRuntimeError(this, "has no gate named `%s' -- vector index out of bounds", fullgatename.c_str());
         // whatever else -- we should never get here
         throw cRuntimeError(this, "has no gate named `%s'", fullgatename.c_str());
@@ -591,22 +591,22 @@ cGate::Type cModule::gateType(const char *gatename) const
     const cGate::Desc& desc = gateDesc(gatename, suffix);
     if (suffix)
         return suffix=='i' ? cGate::INPUT : cGate::OUTPUT;
-    return desc.inGateId<0 ? (desc.outGateId<0 ? cGate::NONE : cGate::OUTPUT)
-                           : (desc.outGateId<0 ? cGate::INPUT : cGate::INOUT);
+    return desc.isInput() ? (desc.isOutput() ? cGate::INOUT : cGate::INPUT)
+                          : (desc.isOutput() ? cGate::OUTPUT : cGate::NONE);
 }
 
 bool cModule::isGateVector(const char *gatename) const
 {
     char suffix;
     const cGate::Desc& desc = gateDesc(gatename, suffix);
-    return desc.size!=-1;
+    return desc.isVector();
 }
 
 int cModule::gateSize(const char *gatename) const
 {
     char suffix;
     const cGate::Desc& desc = gateDesc(gatename, suffix);
-    return desc.size==-1 ? 1 : desc.size;
+    return desc.isScalar() ? 1 : desc.size;
 }
 
 cPar& cModule::ancestorPar(const char *name)

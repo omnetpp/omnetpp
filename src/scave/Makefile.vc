@@ -82,17 +82,17 @@ commonnodes.obj: commonnodes.cc \
   ../common/exception.h \
   dataflowmanager.h
 compoundfilter.obj: compoundfilter.cc \
+  ../common/commonutil.h \
   compoundfilter.h \
   filternodes.h \
   nodetyperegistry.h \
+  ../common/exception.h \
   nodetype.h \
   commonnodes.h \
   dataflowmanager.h \
   node.h \
   channel.h \
-  scavedefs.h \
-  ../common/commonutil.h \
-  ../common/exception.h
+  scavedefs.h
 dataflowmanager.obj: dataflowmanager.cc \
   channel.h \
   nodetype.h \

@@ -60,7 +60,15 @@ class SIM_API cGate : public cObject, noncopyable
         int size;       // gate vector size; 0 if zero size vector, -1 if not vector
         int inGateId;   // id of first input gate; -1 if gate is not INPUT/INOUT
         int outGateId;  // id of first output gate; -1 if gate is not OUTPUT/INOUT
+
         Desc() {namep=NULL; ownerp=NULL; size=0; inGateId=outGateId=-1;}
+        bool isVector() const {return size!=-1;}
+        bool isScalar() const {return size==-1;}
+        bool isInput() const  {return inGateId!=-1;}
+        bool isOutput() const {return outGateId!=-1;}
+        bool isInout() const  {return inGateId!=-1 && outGateId!=-1;}
+        bool isInInputIdRange(int id) const  {return id>=inGateId && id<inGateId+size;}
+        bool isInOutputIdRange(int id) const {return id>=outGateId && id<outGateId+size;}
     };
     static cStringPool stringPool;
 
