@@ -48,6 +48,16 @@ const char *cStringPool::get(const char *s)
     }
 }
 
+const char *cStringPool::peek(const char *s)
+{
+    ASSERT(cStaticFlag::isSet()); // don't use stringpool on global objects
+    if (!s)
+        return NULL;
+
+    StringIntMap::iterator it = pool.find(const_cast<char *>(s));
+    return it==pool.end() ? NULL : it->first;
+}
+
 void cStringPool::release(const char *s)
 {
     if (!s)

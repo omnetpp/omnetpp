@@ -36,6 +36,7 @@
 
 using std::ostream;
 
+cStringPool cGate::stringPool;
 
 cGate::cGate(Desc *d)
 {
@@ -63,7 +64,13 @@ void cGate::forEachChild(cVisitor *v)
 
 const char *cGate::name() const
 {
-    return desc->namep;  //FIXME somehow add $i or $o for members of an inout gate...
+    if (desc->inGateId==-1 || desc->outGateId==-1)
+        return desc->namep;
+    else {
+        // this is one half of an inout gate, append "$i" or "$o"
+        const char *suffix = type()==INPUT ? "$i" : "$o";
+        return stringPool.peek((std::string(desc->namep)+suffix).c_str()); //FIXME use opp_concat?
+    }
 }
 
 const char *cGate::fullName() const
@@ -122,6 +129,21 @@ void cGate::setGateId(int id)
         delete [] fullname;
         fullname = NULL;
     }
+}
+
+cGate::Type cGate::type() const
+{
+    if (desc->inGateId==-1 || desc->outGateId==-1)
+        return desc->inGateId>=0 ? INPUT : OUTPUT;
+
+    // otherwise see which gate id range in desc contains this gate's id
+    if (desc->size==-1)
+        return gateId==desc->inGateId ? INPUT : OUTPUT;
+    if (gateId >= desc->inGateId && gateId < desc->inGateId + desc->size)
+        return INPUT;
+    if (gateId >= desc->outGateId && gateId < desc->outGateId + desc->size)
+        return OUTPUT;
+    throw cRuntimeError(this, "internal data structure inconsistency");
 }
 
 int cGate::index() const

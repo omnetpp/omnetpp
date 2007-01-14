@@ -77,7 +77,8 @@ cModule::~cModule()
     }
 
     // adjust gates that were directed here
-    for (int i=0; i<gates(); i++)
+    int numgates = gates();
+    for (int i=0; i<numgates; i++)
     {
         cGate *g = gate(i);
         if (g && g->toGate() && g->toGate()->fromGate()==g)
@@ -87,8 +88,22 @@ cModule::~cModule()
     }
 
     // delete all gates
-    for (int i=0; i<gates(); i++)
+    for (int i=0; i<numgates; i++)
         delete gatev[i];
+
+    // release gatedescs
+    int numgatedescs = gatedescv.size();
+    for (int i=0; i<numgatedescs; i++)
+    {
+        cGate::Desc& desc = gatedescv[i];
+        cGate::stringPool.release(desc.namep);
+        if (desc.inGateId!=-1 && desc.outGateId!=-1)  // inout gate
+        {
+            std::string gatename = gatedescv[i].namep;
+            cGate::stringPool.release(cGate::stringPool.peek((gatename+"$i").c_str()));  //FIXME use opp_concat?
+            cGate::stringPool.release(cGate::stringPool.peek((gatename+"$o").c_str()));
+        }
+    }
 
     // deregister ourselves
     if (mod_id!=-1)
@@ -274,9 +289,16 @@ void cModule::addGate(const char *gatename, cGate::Type type, bool isvector)
     // create desc for new gate (or gate vector)
     gatedescv.push_back(cGate::Desc());  //FIXME f*ck! this will reallocate and I can screw all desc ptrs in cGates!
     cGate::Desc& desc = gatedescv.back();
-    desc.namep = gatename;  // FIXME stringpool!
+    desc.namep = cGate::stringPool.get(gatename);
     desc.ownerp = this;
     desc.size = isvector ? 0 : -1;
+
+    // allocate two other strings as well, for cGate::name
+    if (type==cGate::INOUT)
+    {
+        cGate::stringPool.get((std::string(gatename)+"$i").c_str()); //FIXME use opp_concat?
+        cGate::stringPool.get((std::string(gatename)+"$o").c_str());
+    }
 
     // now: create gate object, maybe two (name$i and name$o)
     if (type==cGate::INPUT || type==cGate::INOUT)

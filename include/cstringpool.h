@@ -51,6 +51,12 @@ class cStringPool
     const char *get(const char *s);
 
     /**
+     * Returns pointer to the pooled copy of the given string, or NULL.
+     * Reference count is not incremented. Passing NULL is OK.
+     */
+    const char *peek(const char *s);
+
+    /**
      * The parameter must a pointer returned by get(). It decrements the
      * reference count and frees the pooled string if it reaches zero.
      * Passing NULL is OK.

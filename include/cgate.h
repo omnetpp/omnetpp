@@ -20,6 +20,7 @@
 #define __CGATE_H
 
 #include "cobject.h"
+#include "cstringpool.h"
 
 class  cGate;
 class  cModule;
@@ -61,6 +62,7 @@ class SIM_API cGate : public cObject, noncopyable
         int outGateId;  // id of first output gate; -1 if gate is not OUTPUT/INOUT
         Desc() {namep=NULL; ownerp=NULL; size=0; inGateId=outGateId=-1;}
     };
+    static cStringPool stringPool;
 
     Desc *desc;  // descriptor of gate/gate vector, stored in cModule
     int gateId;  // index within the module's gatev[]
@@ -179,12 +181,11 @@ class SIM_API cGate : public cObject, noncopyable
     cProperties *properties() const;
 
     /**
-     * Returns the gate's type, one of cGate::INPUT, cGate::OUTPUT and cGate::INOUT.
+     * Returns the gate's type, cGate::INPUT or cGate::OUTPUT. (It never returns
+     * cGate::INOUT, because a cGate object is always either the input or
+     * the output half of an inout gate ("name$i" or "name$o").
      */
-    Type type() const {
-        return desc->inGateId<0 ? (desc->outGateId<0 ? cGate::NONE : cGate::OUTPUT)
-                                : (desc->outGateId<0 ? cGate::INPUT : cGate::INOUT);
-    }
+    Type type() const;
 
     /**
      * Returns a pointer to the owner module of the gate.
