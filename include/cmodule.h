@@ -289,7 +289,11 @@ class SIM_API cModule : public cComponent //implies noncopyable
     //@{
 
     /**
-     * Adds a gate.
+     * Adds a gate or gate vector to the module. Gate vectors are created with
+     * zero size. When the creation of a (scalar) gate of type cGate::INOUT is
+     * requested, actually two gate objects will be created, "gatename$i" and
+     * "gatename$o". The specified gatename must not contain a "$i" or "$o"
+     * suffix itself.
      */
 //FIXME MUST BE ENFORCED THAT NAME IS UNIQUE!!!!! NOT THE SAME AS ANY SUBMODULE,PARAMETER OR GATE!!! OTHERWISE properties() WILL MESS UP!!!!!!!
 //FIXME THE SAME MUST BE ENFORCED WITH SUBMODULE CREATION!!!!
@@ -297,7 +301,9 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     /**
      * Sets gate vector size. If the vector size is increased, Ids of existing
-     * gates in the vector may change.
+     * gates in the vector may change. The specified gatename must not contain
+     * a "$i" or "$o" suffix: it is not possible to set different vector size
+     * for the "$i" or "$o" parts of an inout gate.
      *
      * Note: setGateSize() should not be called when Id change can cause problems:
      * after initialize() of this module has been invoked, or when messages have
@@ -434,11 +440,11 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     /** @name Gates. */
     //@{
-//XXX make these methods virtual?
-//XXX add to doc which one can be called with inout gates
     /**
      * Returns the total size of the gate array. Since the array may contain
      * unused elements, the number of actual gates used might be less.
+     * Gate IDs are an index into this array. Inout gates are represented
+     * by two cGate objects.
      */
     virtual int gates() const {return gatev.size();}   //XXX rename to numGates
 
@@ -457,16 +463,16 @@ class SIM_API cModule : public cComponent //implies noncopyable
     const cGate *gate(int g) const {return const_cast<cModule *>(this)->gate(g);}
 
     /**
-     * Looks up a gate by its name and index. Gate names with "$i" or "$o" suffix
-     * are also accepted. Throws an error if the gate does not exist.
+     * Looks up a gate by its name and index. Gate names with the "$i" or "$o"
+     * suffix are also accepted. Throws an error if the gate does not exist.
      * The presence of the index parameter decides whether a vector or a scalar
      * gate will be looked for.
      */
     virtual cGate *gate(const char *gatename, int index=-1);
 
     /**
-     * Looks up a gate by its name and index. Gate names with "$i" or "$o" suffix
-     * are also accepted. Throws an error if the gate does not exist.
+     * Looks up a gate by its name and index. Gate names with the "$i" or "$o"
+     * suffix are also accepted. Throws an error if the gate does not exist.
      * The presence of the index parameter decides whether a vector or a scalar
      * gate will be looked for.
      */
@@ -494,27 +500,26 @@ class SIM_API cModule : public cComponent //implies noncopyable
         return const_cast<cModule *>(this)->gateHalf(gatename, type, index);
     }
 
-//FIXME revise comments from here on
     /**
      * Checks if a gate exists. When invoked without index, it returns whether
-     * gate "gatename" or  "gatename[]" exists (no matter if the gate vector size
+     * gate "gatename" or "gatename[]" exists (no matter if the gate vector size
      * is currently zero). When invoked with an index, it returns whether the
      * concrete "gatename[index]" gate exists (gatename being a vector gate).
-     * Gate names with "$i" or "$o" suffix are also accepted. The presence of
-     * the index parameter decides whether a vector or a scalar gate will be
+     * Gate names with the "$i" or "$o" suffix are also accepted. The presence
+     * of the index parameter decides whether a vector or a scalar gate will be
      * looked for.
      */
     virtual bool hasGate(const char *gatename, int index=-1) const;
 
     /**
      * Returns the type of the gate (or gate vector) with the given name.
-     * Gate names with "$i" or "$o" suffix are also accepted. Throws
+     * Gate names with the "$i" or "$o" suffix are also accepted. Throws
      * an error if there is no such gate or gate vector.
      */
     virtual cGate::Type gateType(const char *gatename) const;
 
     /**
-     * Returns whether the given gate is a gate vector. Gate names with "$i"
+     * Returns whether the given gate is a gate vector. Gate names with the "$i"
      * or "$o" suffix are also accepted.  Throws an error if there is no
      * such gate or gate vector.
      */
@@ -524,7 +529,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * Returns the size of the gate vector with the given name. It returns 1 for
      * non-vector gates, and 0 if the gate doesn't exist or the vector has size 0.
      * (Zero-size vectors are represented by a single gate whose size() returns 0.)
-     * Gate names with "$i" or "$o" suffix are also accepted.  Throws an error if
+     * Gate names with the "$i" or "$o" suffix are also accepted.  Throws an error if
      * there is no such gate or gate vector.
      *
      * Note: The gate vector size can also be obtained by calling the cGate::size()
@@ -534,8 +539,8 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     /**
      * Returns the ID of the gate specified by name and index. Inout gates
-     * cannot be specified (since they are actually two gate object, not one),
-     * only with the "$i" or "$o" suffix. Returns -1 if the gate doesn't exist.
+     * cannot be specified (since they are actually two gate objects, not one),
+     * only with a "$i" or "$o" suffix. Returns -1 if the gate doesn't exist.
      * The presence of the index parameter decides whether a vector or a scalar
      * gate will be looked for.
      */

@@ -95,8 +95,8 @@ class SIM_API cGate : public cObject, noncopyable
     // internal: tells the gate its id (position in the module's gatev[] array)
     void setGateId(int id);
 
-    void take(cChannel *channelp); //XXX maybe this: {desc->ownerp->take(channelp);}
-    void dropAndDelete(cChannel *channelp); //XXX maybe this: {desc->ownerp->dropAndDelete(channelp);}
+    void take(cChannel *channelp);
+    void dropAndDelete(cChannel *channelp);
 
   public:
     /** @name Redefined cObject member functions */
