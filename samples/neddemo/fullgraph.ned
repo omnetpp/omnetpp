@@ -11,8 +11,7 @@
 simple FullGraphNode extends Node
 {
     gates:
-        input in[];
-        output out[];
+        inout g[];
 }
 
 
@@ -25,12 +24,11 @@ network FullGraph
             parameters:
                 @display("p=,,ring");
             gates:
-                in[n];
-                out[n];
+                g[n];
         };
     connections allowunconnected:
-        for i=0..n-1, for j=0..n-1 {
-            node[i].out[j] --> node[j].in[i] if i!=j;
+        for i=0..(n-2), for j=(i+1)..(n-1) {
+            node[i].g[j] <--> node[j].g[i];
         };
 }
 

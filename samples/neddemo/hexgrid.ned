@@ -11,12 +11,12 @@
 simple HexGridNode extends Node
 {
     gates:
-        input n;
-        input nw;
-        input sw;
-        output s;
-        output se;
-        output ne;
+        inout n;
+        inout nw;
+        inout sw;
+        inout s;
+        inout se;
+        inout ne;
 }
 
 
@@ -29,9 +29,9 @@ network HexGrid
         node[rows*cols]: HexGridNode {};
     connections allowunconnected:
         for i=0..rows*cols-1 {
-            node[i].n <-- node[i-2*cols].s if i+1>2*cols;
-            node[i].nw <-- node[(i-cols)-(i/cols+1)%2].se if i%(2*cols)!=0 && i+1>cols;
-            node[i].sw <-- node[((i+cols)-1)+(i/cols)%2].ne if i%(2*cols)!=0 && i<rows*cols-cols;
+            node[i].n <--> node[i-2*cols].s if i+1>2*cols;
+            node[i].nw <--> node[(i-cols)-(i/cols+1)%2].se if i%(2*cols)!=0 && i+1>cols;
+            node[i].sw <--> node[((i+cols)-1)+(i/cols)%2].ne if i%(2*cols)!=0 && i<rows*cols-cols;
         };
 }
 

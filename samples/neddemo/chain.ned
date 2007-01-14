@@ -26,7 +26,7 @@ network Chain
         node[n]: ChainNode {};
     connections allowunconnected:
         for i=0..n-2 {
-            node[i].right --> node[i+1].left;
+            node[i].right <--> node[i+1].left;
         };
 }
 

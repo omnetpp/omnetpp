@@ -11,10 +11,10 @@
 simple MeshNode extends Node
 {
     gates:
-        input up;
-        input left;
-        output down;
-        output right;
+        inout up;
+        inout left;
+        inout down;
+        inout right;
 }
 
 
@@ -30,8 +30,8 @@ network Mesh
         };
     connections allowunconnected:
         for i=0..height-1, for j=0..width-1 {
-            node[i*width+j].down --> node[(i+1)*width+j].up if i!=height-1;
-            node[i*width+j].right --> node[(i*width+j)+1].left if j!=width-1;
+            node[i*width+j].down <--> node[(i+1)*width+j].up if i!=height-1;
+            node[i*width+j].right <--> node[(i*width+j)+1].left if j!=width-1;
         };
 }
 

@@ -525,6 +525,7 @@ void cNEDNetworkBuilder::doAddConnOrConnGroup(cModule *modp, NEDElement *connOrC
 
 void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionNode *conn)
 {
+//FIXME spurious error message comes when trying to connect INOUT gate with "-->"
     if (conn->getArrowDirection()!=NED_ARROWDIR_BIDIR)
     {
         // find gates and create connection
@@ -552,8 +553,6 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionNode *conn)
     }
     else
     {
-        TRACE("doAddConnection(): creating bidir connection");
-
         // find gates and create connection in both ways
         cGate *srcgi, *srcgo, *destgi, *destgo;
         resolveInoutGate(modp, conn->getSrcModule(), findExpression(conn, "src-module-index"),

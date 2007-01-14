@@ -13,7 +13,7 @@ simple StarNode extends Node
     parameters:
         @display("i=device/pc2_s");
     gates:
-        input in;
+        inout g;
 }
 
 
@@ -22,7 +22,7 @@ simple HubNode extends Node
     parameters:
         @display("i=device/switch");
     gates:
-        output out[];
+        inout g[];
 }
 
 
@@ -39,11 +39,11 @@ network Star
             parameters:
                 @display("p=200,200");
             gates:
-                out[n];
+                g[n];
         };
     connections allowunconnected:
         for i=0..n-1 {
-            hub.out[i] --> node[i].in;
+            hub.g[i] <--> node[i].g;
         };
 }
 
