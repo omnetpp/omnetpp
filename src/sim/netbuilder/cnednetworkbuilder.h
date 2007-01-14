@@ -67,18 +67,23 @@ class cNEDNetworkBuilder
     void doGates(cModule *component, GatesNode *gatesNode, bool isSubcomponent);
     void assignSubcomponentParams(cComponent *subcomponent, NEDElement *subcomponentNode);
     void setupGateVectors(cModule *submodule, NEDElement *submoduleNode);
-    cGate *getFirstUnusedParentModGate(cModule *mod, const char *gatename);
-    cGate *getFirstUnusedSubmodGate(cModule *mod, const char *gatename);
 
     void addConnectionOrConnectionGroup(cModule *modp, NEDElement *connOrConnGroup);
     void doConnOrConnGroupBody(cModule *modp, NEDElement *connOrConnGroup, NEDElement *loopOrCondition);
     void doLoopOrCondition(cModule *modp, NEDElement *loopOrCondition);
     void doAddConnOrConnGroup(cModule *modp, NEDElement *connOrConnGroup);
     void doAddConnection(cModule *modp, ConnectionNode *conn);
-
-    cGate *resolveGate(cModule *modp, const char *modname, ExpressionNode *modindex,
-                       const char *gatename, ExpressionNode *gateindex, bool isplusplus);
+    void doConnectGates(cModule *modp, cGate *srcg, cGate *destg, ConnectionNode *conn);
+    cGate *resolveGate(cModule *parentmodp, const char *modname, ExpressionNode *modindexp,
+                       const char *gatename, ExpressionNode *gateindexp, bool isplusplus);
+    void resolveInoutGate(cModule *parentmodp, const char *modname, ExpressionNode *modindexp,
+                       const char *gatename, ExpressionNode *gateindexp, bool isplusplus,
+                       cGate *&gatein, cGate *&gateout);
+    cModule *resolveModuleForConnection(cModule *parentmodp, const char *modname, ExpressionNode *modindexp);
+    cGate *getFirstUnusedParentModGate(cModule *mod, const char *gatename);
+    cGate *getFirstUnusedSubmodGate(cModule *mod, const char *gatename);
     cChannel *createChannel(ChannelSpecNode *channelspec, cModule *parentmodp);
+
     cChannelType *findAndCheckChannelType(const char *channeltypename);
     ExpressionNode *findExpression(NEDElement *node, const char *exprname);
     cParValue *getOrCreateExpression(ExpressionNode *exprNode, cPar::Type type, bool inSubcomponentScope);

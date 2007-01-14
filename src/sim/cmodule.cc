@@ -540,6 +540,12 @@ cGate *cModule::gate(const char *gatename, int index)
     return gate(i);
 }
 
+cGate *cModule::gateHalf(const char *gatename, cGate::Type type, int index)
+{
+    std::string tmp = std::string(gatename) + (type==cGate::INPUT ? "$i" : "$o");
+    return gate(tmp.c_str(), index); //FIXME give a more efficient impl, without string operations
+}
+
 cGate *cModule::gate(int k)
 {
     if (k<0 || k>=gatev.size())

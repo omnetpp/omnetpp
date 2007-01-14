@@ -1247,6 +1247,7 @@ connection
                 }
         ;
 
+/* FIXME subgate has wrong syntax: $i/$o should be part of the gate name, not appended after the index or ++! */
 leftgatespec
         : leftmod '.' leftgate opt_subgate
                 { ps.conn->setSrcGateSubg(ps.subgate); }

@@ -409,6 +409,10 @@ module Host0
         app[i].toTcp$o --> { @display(c="red"); delay=0; } --> tcp.toApp$i;
         app[i].toTcp$i <-- { @display(c="red"); delay=0; } <-- tcp.toApp$o;
 
+        // the right syntax with $i/$o:
+        node1.port$o++ --> node2.port$i++;  //XXX and not node1.port++$o
+        node1.port$o[i] --> node2.port$i[i];
+
         tcp.toNetw <--> ip.toTcp;
 
         // IP to network interfaces
