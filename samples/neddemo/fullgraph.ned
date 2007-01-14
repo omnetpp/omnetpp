@@ -8,10 +8,8 @@
 //
 
 
-simple FullGraphNode
+simple FullGraphNode extends Node
 {
-    parameters:
-        @display("i=misc/node_vs");
     gates:
         input in[];
         output out[];

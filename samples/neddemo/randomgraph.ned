@@ -8,27 +8,22 @@
 //
 
 
-
-simple RndNode
+simple RandomGraphNode extends Node
 {
-    parameters:
-        @display("i=misc/node_vs");
     gates:
-        input in[];
-        output out[];
+        inout g[];
 }
-
 
 network RandomGraph
 {
     parameters:
         int n;
-        volatile double connectedness; // 0.0<x<1.0
+        volatile double connectedness = default(0.15); // 0.0<x<1.0
     submodules:
-        node[n]: RndNode {};
-    connections allowunconnected:
+        node[n]: RandomGraphNode {};
+    connections:
         for i=0..n-1, for j=0..n-1 {
-            node[i].out++ --> node[j].in++ if i!=j && uniform(0, 1)<connectedness;
+            node[i].g++ <--> node[j].g++ if i!=j && uniform(0, 1)<connectedness;
         };
 }
 

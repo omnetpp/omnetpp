@@ -8,7 +8,7 @@
 //
 
 
-simple StarNode
+simple StarNode extends Node
 {
     parameters:
         @display("i=device/pc2_s");
@@ -17,7 +17,7 @@ simple StarNode
 }
 
 
-simple HubNode
+simple HubNode extends Node
 {
     parameters:
         @display("i=device/switch");

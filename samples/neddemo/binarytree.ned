@@ -8,14 +8,14 @@
 //
 
 
-simple BinaryTreeNode
+simple BinaryTreeNode extends Node
 {
     parameters:
-        @display("i=misc/node_vs");
+        @display("i=misc/node2_vs");
     gates:
-        input fromupper;
-        output downleft;
-        output downright;
+        input fromUpper;
+        output downLeft;
+        output downRight;
 }
 
 
@@ -27,8 +27,8 @@ network BinaryTree1
         node[2^height-1]: BinaryTreeNode {};
     connections allowunconnected:
         for i=0..2^height-2, for j=0..2^height-2 {
-            node[i].downleft --> node[j].fromupper if j==2*i+1;
-            node[i].downright --> node[j].fromupper if j==2*i+2;
+            node[i].downLeft --> node[j].fromUpper if j==2*i+1;
+            node[i].downRight --> node[j].fromUpper if j==2*i+2;
         };
 }
 
@@ -41,8 +41,8 @@ network BinaryTree2
         node[2^height-1]: BinaryTreeNode {};
     connections allowunconnected:
         for i=0..2^(height-1)-2 {
-            node[i].downleft --> node[2*i+1].fromupper;
-            node[i].downright --> node[2*i+2].fromupper;
+            node[i].downLeft --> node[2*i+1].fromUpper;
+            node[i].downRight --> node[2*i+2].fromUpper;
         };
 }
 

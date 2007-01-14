@@ -8,10 +8,8 @@
 //
 
 
-simple MeshNode
+simple MeshNode extends Node
 {
-    parameters:
-        @display("i=misc/node_s");
     gates:
         input up;
         input left;

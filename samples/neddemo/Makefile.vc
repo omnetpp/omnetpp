@@ -59,7 +59,7 @@ MSGCOPTS= $(INCLUDE_PATH)
 
 #------------------------------------------------------------------------------
 # object files in this directory
-OBJS= node.obj
+OBJS= nop.obj
 
 # header files generated (from msg files)
 GENERATEDHEADERS= 
@@ -79,8 +79,8 @@ $(OBJS) : $(GENERATEDHEADERS)
 
 subdirs: $(SUBDIR_TARGETS)
 
-node.obj: node.cc
-	$(CXX) -c $(COPTS) /Tp node.cc
+nop.obj: nop.cc
+	$(CXX) -c $(COPTS) /Tp nop.cc
 
 
 #doc: neddoc doxy
@@ -112,4 +112,4 @@ makefiles:
 re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-node.obj: node.cc
+nop.obj: nop.cc

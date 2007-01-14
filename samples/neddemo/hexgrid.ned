@@ -8,10 +8,8 @@
 //
 
 
-simple HexGridNode
+simple HexGridNode extends Node
 {
-    parameters:
-        @display("i=misc/node_vs");
     gates:
         input n;
         input nw;

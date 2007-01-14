@@ -107,7 +107,7 @@ void cNEDLoader::registerBuiltinDeclarations()
     }
 }
 
-void cNEDLoader::addComponent(const char *name, NEDElement *node)
+void cNEDLoader::addComponent(const char *name, NEDElement *node) //FIXME accept a "prefix" instead of a "name"
 {
     if (!areDependenciesResolved(node))
     {
@@ -229,7 +229,8 @@ void cNEDLoader::tryResolvePendingDeclarations()
             NEDElement *node = pendingList[i];
             if (areDependenciesResolved(node))
             {
-                buildNEDDeclaration(node);
+                addComponent(node->getAttribute("name"), node);
+                pendingList.erase(pendingList.begin() + i--);
                 again = true;
             }
         }

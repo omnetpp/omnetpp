@@ -8,14 +8,13 @@
 //
 
 
-
-simple ChainNode
+simple ChainNode extends Node
 {
     parameters:
-        @display("i=misc/node_s");
+        @display("i=misc/square_vs");
     gates:
-        input left;
-        output right;
+        inout left;
+        inout right;
 }
 
 
