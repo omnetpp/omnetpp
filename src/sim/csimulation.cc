@@ -436,6 +436,8 @@ void cSimulation::deleteNetwork()
 
     networktype = NULL;
 
+    //FIXME todo delete cParValue caches too (cParValueCache, cParValueCache2)
+
     // clear remaining messages (module dtors may have cancelled & deleted some of them)
     msgQueue.clear();
 

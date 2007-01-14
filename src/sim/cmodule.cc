@@ -307,6 +307,8 @@ void cModule::setGateSize(const char *gatename, int newsize)
     cGate::Desc& desc = const_cast<cGate::Desc&>(gateDesc(gatename, suffix));
     if (suffix)
         throw cRuntimeError(this, "setGateSize(): wrong gate name `%s', suffix `$i'/`$o' not accepted here", gatename);
+    if (desc.size==-1)
+        throw cRuntimeError(this, "setGateSize(): gate `%s' is not a vector gate", gatename);
     if (newsize<0)
         throw cRuntimeError(this, "setGateSize(): negative vector size (%d) requested for gate %s[]", newsize, gatename);
 
@@ -515,15 +517,25 @@ cGate *cModule::gate(const char *gatename, int index)
         char suffix;
         int descId = findGateDesc(gatename, suffix);
         if (descId<0)
-            throw cRuntimeError(this, "has no gate named `%s'", fullgatename.c_str());
+            throw cRuntimeError(this, "has no gate named `%s' -- name not found", fullgatename.c_str());
         const cGate::Desc& desc = gatedescv[descId];
         if (index==-1 && desc.size!=-1)
-            throw cRuntimeError(this, "has no gate named `%s' -- use gate(\"%s\", 0) to refer to first gate of gate vector `%s[]'",
-                                gatename, gatename, gatename);
+            throw cRuntimeError(this, "has no gate named `%s' -- "
+                "use gate(\"%s\", 0) to refer to first gate of gate vector `%s[]', and "
+                "occurrences of gate(\"%s\")->size() should be replaced with gateSize(\"%s\")",
+                gatename, gatename, gatename, gatename, gatename);
         if (index!=-1 && desc.size==-1)
-            throw cRuntimeError(this, "has no gate named `%s' -- use gate(\"%s\") to refer to scalar gate `%s[]'",
+            throw cRuntimeError(this, "has no gate named `%s' -- use gate(\"%s\") to refer to scalar gate `%s'",
                                 fullgatename.c_str(), gatename, gatename);
-        throw cRuntimeError(this, "has no gate named `%s' -- vector index out of bounds", fullgatename.c_str());
+        if (!suffix && desc.inGateId>=0 && desc.outGateId>=0)
+            throw cRuntimeError(this, "has no gate named `%s' -- "
+                "one cannot reference an inout gate as a whole, only its input or output "
+                "component, by appending \"$i\" or \"$o\" to the gate name",
+                fullgatename.c_str());
+        if (desc.size!=-1 && (index<0 || index>=desc.size))
+            throw cRuntimeError(this, "has no gate named `%s' -- vector index out of bounds", fullgatename.c_str());
+        // whatever else -- we should never get here
+        throw cRuntimeError(this, "has no gate named `%s'", fullgatename.c_str());
     }
     return gate(i);
 }
