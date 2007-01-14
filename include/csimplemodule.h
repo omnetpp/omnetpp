@@ -56,7 +56,7 @@ class cQueue;
  *
  * @ingroup SimCore
  */
-class SIM_API cSimpleModule : public cModule //noncopyable
+class SIM_API cSimpleModule : public cModule //implies noncopyable
 {
     friend class cModule;
     friend class cSimulation;

@@ -31,7 +31,7 @@ class cRNG;
  *
  * @ingroup SimCore
  */
-class SIM_API cComponent : public cDefaultList // noncopyable
+class SIM_API cComponent : public cDefaultList //implies noncopyable
 {
     friend class cPar; // needs to call handleParameterChange()
   protected:

@@ -31,7 +31,7 @@ class cMessage;
  *
  * @ingroup SimCore
  */
-class SIM_API cChannel : public cComponent //noncopyable
+class SIM_API cChannel : public cComponent //implies noncopyable
 {
   protected:
     cGate *fromgatep;  // gate the channel is attached to

@@ -53,7 +53,7 @@ typedef void (*DisplayStringNotifyFunc)(cModule*,bool,void*);
  *
  * @ingroup SimCore
  */
-class SIM_API cModule : public cComponent //noncopyable
+class SIM_API cModule : public cComponent //implies noncopyable
 {
     friend class cGate;
     friend class cSimulation;

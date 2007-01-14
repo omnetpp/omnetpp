@@ -23,7 +23,7 @@
  *
  * @ingroup SimCore
  */
-class SIM_API cCompoundModule : public cModule // noncopyable
+class SIM_API cCompoundModule : public cModule //implies noncopyable
 {
     friend class TCompoundModInspector;
 
