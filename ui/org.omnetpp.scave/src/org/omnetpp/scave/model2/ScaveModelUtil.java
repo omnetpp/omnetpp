@@ -312,6 +312,7 @@ public class ScaveModelUtil {
 	
 	public static IDList filterIDList(IDList idlist, Filter params, ResultFileManager manager) {
 		if (params.getFilterPattern() != null) {
+			// TODO: pattern may be malformed, catch exceptions and report error
 			return manager.filterIDList(idlist, params.getFilterPattern());
 		}
 		else {

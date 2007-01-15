@@ -3,6 +3,7 @@ package org.omnetpp.scave.model2;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.model.SetOperation;
 import org.omnetpp.scave.model2.FilterSyntax.INodeVisitor;
 import org.omnetpp.scave.model2.FilterSyntax.Node;
@@ -115,7 +116,18 @@ public class Filter {
 		if (attrPattern != null && attrPattern.length() > 0) {
 			if (sb.length() > 0)
 				sb.append(" AND ");
-			sb.append(attrName).append("(").append(attrPattern).append(")");
+			sb.append(quote(attrName)).append("(").append(quote(attrPattern)).append(")");
+		}
+	}
+	
+	private String quote(String str) {
+		if (StringUtils.containsNone(str, " \t\n()"))
+			return str;
+		else
+		{
+			StringBuffer sb = new StringBuffer(str.length()+2);
+			sb.append('"').append(str).append('"');
+			return sb.toString();
 		}
 	}
 	
