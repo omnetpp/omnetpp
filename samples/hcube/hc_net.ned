@@ -23,8 +23,7 @@ module HypercubeNode like HCNode
         int address;
         int dim;
     gates:
-        input in[];
-        output out[];
+        inout port[dim];
     submodules:
         gen: HCGenerator {
             parameters:
@@ -51,8 +50,8 @@ module HypercubeNode like HCNode
         gen.out --> rte.fromGen;
         sink.in <-- rte.toSink;
         for i=0..dim-1 {
-            in[i] --> rte.in[i];
-            out[i] <-- rte.out[i];
+            port$i[i] --> rte.in[i];
+            port$o[i] <-- rte.out[i];
         };
 }
 

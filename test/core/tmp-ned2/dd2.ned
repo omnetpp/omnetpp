@@ -23,8 +23,10 @@ network DD2 {
                 };
             connections:
                 p <--> c.p;
-                for i=0..sizeof(port)-1 {
+                for i=0..sizeof(pv1)-1 {
                     c.pv1[i] <--> pv1[i];
+                }
+                for i=0..sizeof(pv2)-1 {
                     c.pv2++ <--> pv2++;
                 };
         }

@@ -75,7 +75,7 @@ class cNEDNetworkBuilder
     void doAddConnection(cModule *modp, ConnectionNode *conn);
     void doConnectGates(cModule *modp, cGate *srcg, cGate *destg, ConnectionNode *conn);
     cGate *resolveGate(cModule *parentmodp, const char *modname, ExpressionNode *modindexp,
-                       const char *gatename, ExpressionNode *gateindexp, bool isplusplus);
+                       const char *gatename, ExpressionNode *gateindexp, int subg, bool isplusplus);
     void resolveInoutGate(cModule *parentmodp, const char *modname, ExpressionNode *modindexp,
                        const char *gatename, ExpressionNode *gateindexp, bool isplusplus,
                        cGate *&gatein, cGate *&gateout);

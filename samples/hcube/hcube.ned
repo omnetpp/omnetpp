@@ -18,8 +18,7 @@ interface HCNode
         int address;
         int dim;
     gates:
-        output out[];
-        input in[];
+        inout port[dim];
 }
 
 
@@ -44,13 +43,13 @@ module Hypercube
             parameters:
                 address = index; // module's position in (2^dim)-size vector
                 dim = dim;
-            gates:
-                out[dim];
-                in[dim];
         };
     connections:
         for i=0..2^dim-1, for j=0..dim-1 {
-            node[i].out[j] --> node[i#1<<j].in[j]; // # is bitwise xor
+            // connect node i to the node whose index differs only in the
+            // jth bit (# stands for bitwise XOR); plus we need an "if" so that
+            // we don't try to connect a gate from both directions.
+            node[i].port[j] <--> node[i#(1<<j)].port[j] if (i < i#(1<<j));
         };
 }
 

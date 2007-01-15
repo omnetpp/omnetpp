@@ -531,10 +531,10 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionNode *conn)
         // find gates and create connection
         cGate *srcg = resolveGate(modp, conn->getSrcModule(), findExpression(conn, "src-module-index"),
                                         conn->getSrcGate(), findExpression(conn, "src-gate-index"),
-                                        conn->getSrcGatePlusplus());
+                                        conn->getSrcGateSubg(), conn->getSrcGatePlusplus());
         cGate *destg = resolveGate(modp, conn->getDestModule(), findExpression(conn, "dest-module-index"),
                                          conn->getDestGate(), findExpression(conn, "dest-gate-index"),
-                                         conn->getDestGatePlusplus());
+                                         conn->getDestGateSubg(), conn->getDestGatePlusplus());
 
         //TRACE("doAddConnection(): %s --> %s", srcg->fullPath().c_str(), destg->fullPath().c_str());
 
@@ -554,6 +554,11 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionNode *conn)
     else
     {
         // find gates and create connection in both ways
+        if (conn->getSrcGateSubg()!=NED_SUBGATE_NONE || conn->getDestGateSubg()!=NED_SUBGATE_NONE)
+            throw cRuntimeError("dynamic module builder: error is module (%s)%s: gate$i or gate$o syntax "
+                                "cannot be used with bidirectional connections",
+                                modp->className(), modp->fullPath().c_str());
+
         cGate *srcgi, *srcgo, *destgi, *destgo;
         resolveInoutGate(modp, conn->getSrcModule(), findExpression(conn, "src-module-index"),
                          conn->getSrcGate(), findExpression(conn, "src-gate-index"),
@@ -591,29 +596,41 @@ void cNEDNetworkBuilder::doConnectGates(cModule *modp, cGate *srcg, cGate *destg
 cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
                                        const char *modname, ExpressionNode *modindexp,
                                        const char *gatename, ExpressionNode *gateindexp,
-                                       bool isplusplus)
+                                       int subg, bool isplusplus)
 {
     if (isplusplus && gateindexp)
         throw cRuntimeError("dynamic module builder: \"++\" and gate index expression cannot exist together");
 
     cModule *modp = resolveModuleForConnection(parentmodp, modname, modindexp);
 
+    // add "$i" or "$o" suffix to gate name if needed
+    std::string tmp;
+    const char *gatename2 = gatename;
+    if (subg!=NED_SUBGATE_NONE)
+    {
+        const char *suffix = subg==NED_SUBGATE_I ? "$i" : "$o";
+        tmp = gatename;
+        tmp += suffix;
+        gatename2 = tmp.c_str();
+    }
+
+    // look up gate
     cGate *gatep = NULL;
     if (!gateindexp && !isplusplus)
     {
-        gatep = modp->gate(gatename);
+        gatep = modp->gate(gatename2);
     }
     else if (isplusplus)
     {
         if (modp == parentmodp)
-            gatep = getFirstUnusedParentModGate(modp, gatename);
+            gatep = getFirstUnusedParentModGate(modp, gatename2);
         else
-            gatep = getFirstUnusedSubmodGate(modp, gatename);
+            gatep = getFirstUnusedSubmodGate(modp, gatename2);
     }
     else // (gateindexp)
     {
         int gateindex = (int) evaluateAsLong(gateindexp, parentmodp, false);
-        gatep = modp->gate(gatename, gateindex);
+        gatep = modp->gate(gatename2, gateindex);
     }
     return gatep;
 }
