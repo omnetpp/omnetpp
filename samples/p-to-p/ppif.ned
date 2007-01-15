@@ -18,13 +18,12 @@
 simple PointToPointIF
 {
     parameters:
-        int frameCapacity; // max number of frames; 0 means no limit
+        int frameCapacity = default(0); // max number of frames; 0 means no limit
         @display("i=block/queue;q=queue");
     gates:
         input in;
-        input lineIn;
         output out;
-        output lineOut;
+        inout line;
 }
 
 

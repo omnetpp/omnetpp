@@ -62,10 +62,10 @@ void PointToPointIF::initialize()
 
     frameCapacity = par("frameCapacity");
 
-    gateToWatch = gate("lineOut");
+    gateToWatch = gate("line$o");
 
     // check that we're really connected to a gate with data rate
-    cBasicChannel *chan = check_and_cast<cBasicChannel*>(gate("lineOut")->channel());
+    cBasicChannel *chan = check_and_cast<cBasicChannel*>(gate("line$o")->channel());
     if (!chan->datarate())
         error("must be connected to a link with data rate");
 }
@@ -75,7 +75,7 @@ void PointToPointIF::startTransmitting(cMessage *msg)
     if (ev.isGUI()) displayStatus(true);
 
     ev << "Starting transmission of " << msg << endl;
-    send(msg, "lineOut");
+    send(msg, "line$o");
 
     // The schedule an event for the time when last bit will leave the gate.
     simtime_t endTransmission = gateToWatch->transmissionFinishes();
@@ -95,7 +95,7 @@ void PointToPointIF::handleMessage(cMessage *msg)
             startTransmitting(msg);
         }
     }
-    else if (msg->arrivedOn("lineIn"))
+    else if (msg->arrivedOn("line$i"))
     {
         // pass up
         send(msg,"out");

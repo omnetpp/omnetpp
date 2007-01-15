@@ -13,12 +13,6 @@ import "ppsink";
 import "ppif";
 
 
-channel C extends cBasicChannel
-{
-    parameters:
-        datarate = 1Mbps;
-        delay = 10ms;
-}
 
 //
 // Transmission of packets on a line with finite bandwidth. Uses a pair of
@@ -26,6 +20,14 @@ channel C extends cBasicChannel
 //
 network PointToPointNet
 {
+    types:
+        channel C extends cBasicChannel
+        {
+            parameters:
+                datarate = 1Mbps;
+                delay = 10ms;
+                @display("o=,3");
+        }
     submodules:
         burstySrc: PPSource {
             parameters:
@@ -45,8 +47,8 @@ network PointToPointNet
         };
     connections allowunconnected:
         burstySrc.out --> ppIF1.in;
-        ppIF1.lineOut --> C { @display("o=,3"); } --> ppIF2.lineIn;
-        ppIF1.lineIn <-- C { @display("o=,3"); } <-- ppIF2.lineOut;
         ppIF2.out --> sink.in;
+
+        ppIF1.line <--> C <--> ppIF2.line;
 }
 
