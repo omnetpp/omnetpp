@@ -297,7 +297,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      */
 //FIXME MUST BE ENFORCED THAT NAME IS UNIQUE!!!!! NOT THE SAME AS ANY SUBMODULE,PARAMETER OR GATE!!! OTHERWISE properties() WILL MESS UP!!!!!!!
 //FIXME THE SAME MUST BE ENFORCED WITH SUBMODULE CREATION!!!!
-    void addGate(const char *gatename, cGate::Type type, bool isvector=false);
+    virtual void addGate(const char *gatename, cGate::Type type, bool isvector=false);
 
     /**
      * Sets gate vector size. If the vector size is increased, Ids of existing
@@ -315,7 +315,32 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * as Ids, thus if the vector would expand to already issued gate Ids, the
      * whole vector must be moved to a different Id range.)
      */
-    void setGateSize(const char *gatename, int size);
+    virtual void setGateSize(const char *gatename, int size);
+
+    /**
+     * Helper function to implement NED's "gate++" syntax.
+     * Returns the next unconnected gate from an input or output gate vector,
+     * or input/output half of an inout vector. When gatename names an inout gate
+     * vector, the suffix parameter should be set to 'i' or 'o' to select
+     * "gatename$i" or "gatename$o"; otherwise suffix should be zero.
+     * The inside parameter selects whether to use isConnectedInside() or
+     * isConnectedOutside() to test if the gate is connected. The expand
+     * parameter tells whether the gate vector should be expanded if all its
+     * gates are used up (==connected).
+     */
+    virtual cGate *getOrCreateFirstUnconnectedGate(const char *gatename, char suffix,
+                                                   bool inside, bool expand);
+
+    /**
+     * Helper function to implement NED's "gate++" syntax. This variant accepts
+     * inout gates only, and the result is returned in the gatein and gateout
+     * parameters. The meaning of the inside and expand parameters is the same as
+     * with getOrCreateFirstUnconnectedGate().
+     */
+    virtual void getOrCreateFirstUnconnectedGatePair(const char *gatename,
+                                                     bool inside, bool expand,
+                                                     cGate *&gatein, cGate *&gateout);
+//FIXME check if these functions are needed ^^^^^
 
     /**
      * Redefined from cComponent. This method must be called as part of the module
