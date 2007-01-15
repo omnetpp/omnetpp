@@ -94,6 +94,16 @@ void cFileOutputVectorManager::openFile()
         throw cRuntimeError("Cannot open output file `%s'",fname.c_str());
 }
 
+/**
+ * Writes the header of the vector file.
+ * The header contains:
+ * - the run id
+ * - run attributes
+ * - module parameters specified in the ini file
+ *
+ * Keys for module parameters should contain an '.' and must not contain '-',
+ * otherwise they are handled as run attributes.
+ */
 void cFileOutputVectorManager::writeHeader()
 {
     cConfiguration *config = ev.config();
@@ -112,9 +122,17 @@ void cFileOutputVectorManager::writeHeader()
         if (isCurrentRunSection || !isRunSection) // skip other run sections
         {
             std::vector<opp_string> entries = config->getEntriesWithPrefix(sectionName, "", "");
-            for (int j=0; j<entries.size()-1; j+=2)
+            std::vector<opp_string>::size_type size = entries.size();
+            
+            if (size % 2 != 0)
+                fprintf(stderr, "WARNING: getEntriesWithPrefix(\"%s\", \"\", \"\") returned odd number of strings. Section will be skipped.", sectionName);
+
+            if (size == 0 || size % 2 != 0)
+                continue;
+            
+            for (std::vector<opp_string>::size_type j=0; j<size-1; j+=2)
             {
-                const char *name = entries[j].c_str();  //FIXME this crashes HCube!!!
+                const char *name = entries[j].c_str();
                 const char *value = entries[j+1].c_str();
 
                 if (isCurrentRunSection || !config->exists(section, name))
