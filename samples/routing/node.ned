@@ -48,8 +48,7 @@ module Node
         int address;
         @display("i=misc/node_vs,gold");
     gates:
-        input in[];
-        output out[];
+        inout port[];
     submodules:
         app: App {
             parameters:
@@ -59,15 +58,15 @@ module Node
             parameters:
                 @display("p=90,132");
             gates:
-                in[sizeof(in)];
-                out[sizeof(out)];
+                in[sizeof(port)];
+                out[sizeof(port)];
         };
     connections:
         routing.localOut --> app.in;
         routing.localIn <-- app.out;
-        for i=0..sizeof(in)-1 {
-            routing.out[i] --> out[i];
-            routing.in[i] <-- in[i];
+        for i=0..sizeof(port)-1 {
+            routing.out[i] --> port[i]$o;
+            routing.in[i] <-- port[i]$i;
         };
 }
 

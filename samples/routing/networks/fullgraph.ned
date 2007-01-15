@@ -19,12 +19,11 @@ network FullGraph
                 address = index;
                 @display("p=,,ring");
             gates:
-                in[n];
-                out[n];
+                port[n];
         };
-    connections allowunconnected:
-        for i=0..n-1, for j=0..n-1 {
-            node[i].out[j] --> node[j].in[i] if i!=j;
+    connections:
+        for i=0..(n-2), for j=(i+1)..(n-1) {
+            node[i].port[j] <--> node[j].port[i];
         };
 }
 

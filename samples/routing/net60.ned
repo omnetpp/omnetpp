@@ -9,259 +9,103 @@
 
 import "node";
 
-
 //
 // A network topology commonly known as the "NTT backbone".
 //
 network Net60
 {
+    types:
+        channel C extends cBasicChannel {
+            parameters:
+                delay = 0.1ms;
+                datarate = 1Gbps;
+        }
     submodules:
         rte[57]: Node {
             parameters:
                 address = index;
         };
     connections allowunconnected:
-        rte[0].out++ --> rte[1].in++;
-        rte[0].in++ <-- rte[1].out++;
-
-        rte[1].out++ --> rte[2].in++;
-        rte[1].in++ <-- rte[2].out++;
-
-        rte[1].out++ --> rte[4].in++;
-        rte[1].in++ <-- rte[4].out++;
-
-        rte[3].out++ --> rte[4].in++;
-        rte[3].in++ <-- rte[4].out++;
-
-        rte[4].out++ --> rte[5].in++;
-        rte[4].in++ <-- rte[5].out++;
-
-        rte[4].out++ --> rte[7].in++;
-        rte[4].in++ <-- rte[7].out++;
-
-        rte[5].out++ --> rte[6].in++;
-        rte[5].in++ <-- rte[6].out++;
-
-        rte[5].out++ --> rte[10].in++;
-        rte[5].in++ <-- rte[10].out++;
-
-        rte[6].out++ --> rte[7].in++;
-        rte[6].in++ <-- rte[7].out++;
-
-        rte[6].out++ --> rte[9].in++;
-        rte[6].in++ <-- rte[9].out++;
-
-        rte[7].out++ --> rte[8].in++;
-        rte[7].in++ <-- rte[8].out++;
-
-        rte[7].out++ --> rte[12].in++;
-        rte[7].in++ <-- rte[12].out++;
-
-        rte[9].out++ --> rte[11].in++;
-        rte[9].in++ <-- rte[11].out++;
-
-        rte[10].out++ --> rte[11].in++;
-        rte[10].in++ <-- rte[11].out++;
-
-        rte[10].out++ --> rte[13].in++;
-        rte[10].in++ <-- rte[13].out++;
-
-        rte[11].out++ --> rte[12].in++;
-        rte[11].in++ <-- rte[12].out++;
-
-        rte[11].out++ --> rte[14].in++;
-        rte[11].in++ <-- rte[14].out++;
-
-        rte[12].out++ --> rte[15].in++;
-        rte[12].in++ <-- rte[15].out++;
-
-        rte[13].out++ --> rte[18].in++;
-        rte[13].in++ <-- rte[18].out++;
-
-        rte[14].out++ --> rte[15].in++;
-        rte[14].in++ <-- rte[15].out++;
-
-        rte[14].out++ --> rte[22].in++;
-        rte[14].in++ <-- rte[22].out++;
-
-        rte[15].out++ --> rte[16].in++;
-        rte[15].in++ <-- rte[16].out++;
-
-        rte[16].out++ --> rte[17].in++;
-        rte[16].in++ <-- rte[17].out++;
-
-        rte[16].out++ --> rte[23].in++;
-        rte[16].in++ <-- rte[23].out++;
-
-        rte[18].out++ --> rte[19].in++;
-        rte[18].in++ <-- rte[19].out++;
-
-        rte[18].out++ --> rte[21].in++;
-        rte[18].in++ <-- rte[21].out++;
-
-        rte[19].out++ --> rte[20].in++;
-        rte[19].in++ <-- rte[20].out++;
-
-        rte[19].out++ --> rte[26].in++;
-        rte[19].in++ <-- rte[26].out++;
-
-        rte[20].out++ --> rte[21].in++;
-        rte[20].in++ <-- rte[21].out++;
-
-        rte[20].out++ --> rte[24].in++;
-        rte[20].in++ <-- rte[24].out++;
-
-        rte[20].out++ --> rte[25].in++;
-        rte[20].in++ <-- rte[25].out++;
-
-        rte[21].out++ --> rte[22].in++;
-        rte[21].in++ <-- rte[22].out++;
-
-        rte[21].out++ --> rte[23].in++;
-        rte[21].in++ <-- rte[23].out++;
-
-        rte[21].out++ --> rte[24].in++;
-        rte[21].in++ <-- rte[24].out++;
-
-        rte[23].out++ --> rte[24].in++;
-        rte[23].in++ <-- rte[24].out++;
-
-        rte[24].out++ --> rte[28].in++;
-        rte[24].in++ <-- rte[28].out++;
-
-        rte[25].out++ --> rte[27].in++;
-        rte[25].in++ <-- rte[27].out++;
-
-        rte[26].out++ --> rte[32].in++;
-        rte[26].in++ <-- rte[32].out++;
-
-        rte[27].out++ --> rte[29].in++;
-        rte[27].in++ <-- rte[29].out++;
-
-        rte[27].out++ --> rte[30].in++;
-        rte[27].in++ <-- rte[30].out++;
-
-        rte[27].out++ --> rte[32].in++;
-        rte[27].in++ <-- rte[32].out++;
-
-        rte[28].out++ --> rte[29].in++;
-        rte[28].in++ <-- rte[29].out++;
-
-        rte[28].out++ --> rte[31].in++;
-        rte[28].in++ <-- rte[31].out++;
-
-        rte[29].out++ --> rte[31].in++;
-        rte[29].in++ <-- rte[31].out++;
-
-        rte[30].out++ --> rte[36].in++;
-        rte[30].in++ <-- rte[36].out++;
-
-        rte[31].out++ --> rte[33].in++;
-        rte[31].in++ <-- rte[33].out++;
-
-        rte[32].out++ --> rte[34].in++;
-        rte[32].in++ <-- rte[34].out++;
-
-        rte[33].out++ --> rte[37].in++;
-        rte[33].in++ <-- rte[37].out++;
-
-        rte[34].out++ --> rte[35].in++;
-        rte[34].in++ <-- rte[35].out++;
-
-        rte[34].out++ --> rte[40].in++;
-        rte[34].in++ <-- rte[40].out++;
-
-        rte[35].out++ --> rte[36].in++;
-        rte[35].in++ <-- rte[36].out++;
-
-        rte[35].out++ --> rte[39].in++;
-        rte[35].in++ <-- rte[39].out++;
-
-        rte[36].out++ --> rte[37].in++;
-        rte[36].in++ <-- rte[37].out++;
-
-        rte[37].out++ --> rte[38].in++;
-        rte[37].in++ <-- rte[38].out++;
-
-        rte[38].out++ --> rte[39].in++;
-        rte[38].in++ <-- rte[39].out++;
-
-        rte[38].out++ --> rte[42].in++;
-        rte[38].in++ <-- rte[42].out++;
-
-        rte[39].out++ --> rte[40].in++;
-        rte[39].in++ <-- rte[40].out++;
-
-        rte[39].out++ --> rte[41].in++;
-        rte[39].in++ <-- rte[41].out++;
-
-        rte[40].out++ --> rte[43].in++;
-        rte[40].in++ <-- rte[43].out++;
-
-        rte[40].out++ --> rte[44].in++;
-        rte[40].in++ <-- rte[44].out++;
-
-        rte[40].out++ --> rte[52].in++;
-        rte[40].in++ <-- rte[52].out++;
-
-        rte[41].out++ --> rte[42].in++;
-        rte[41].in++ <-- rte[42].out++;
-
-        rte[41].out++ --> rte[43].in++;
-        rte[41].in++ <-- rte[43].out++;
-
-        rte[42].out++ --> rte[43].in++;
-        rte[42].in++ <-- rte[43].out++;
-
-        rte[43].out++ --> rte[46].in++;
-        rte[43].in++ <-- rte[46].out++;
-
-        rte[44].out++ --> rte[45].in++;
-        rte[44].in++ <-- rte[45].out++;
-
-        rte[44].out++ --> rte[47].in++;
-        rte[44].in++ <-- rte[47].out++;
-
-        rte[45].out++ --> rte[46].in++;
-        rte[45].in++ <-- rte[46].out++;
-
-        rte[46].out++ --> rte[49].in++;
-        rte[46].in++ <-- rte[49].out++;
-
-        rte[47].out++ --> rte[48].in++;
-        rte[47].in++ <-- rte[48].out++;
-
-        rte[48].out++ --> rte[50].in++;
-        rte[48].in++ <-- rte[50].out++;
-
-        rte[48].out++ --> rte[51].in++;
-        rte[48].in++ <-- rte[51].out++;
-
-        rte[49].out++ --> rte[50].in++;
-        rte[49].in++ <-- rte[50].out++;
-
-        rte[50].out++ --> rte[53].in++;
-        rte[50].in++ <-- rte[53].out++;
-
-        rte[51].out++ --> rte[52].in++;
-        rte[51].in++ <-- rte[52].out++;
-
-        rte[51].out++ --> rte[53].in++;
-        rte[51].in++ <-- rte[53].out++;
-
-        rte[52].out++ --> rte[53].in++;
-        rte[52].in++ <-- rte[53].out++;
-
-        rte[52].out++ --> rte[54].in++;
-        rte[52].in++ <-- rte[54].out++;
-
-        rte[53].out++ --> rte[56].in++;
-        rte[53].in++ <-- rte[56].out++;
-
-        rte[54].out++ --> rte[55].in++;
-        rte[54].in++ <-- rte[55].out++;
-
-        rte[55].out++ --> rte[56].in++;
-        rte[55].in++ <-- rte[56].out++;
+        rte[0].port++ <--> C <--> rte[1].port++;
+        rte[1].port++ <--> C <--> rte[2].port++;
+        rte[1].port++ <--> C <--> rte[4].port++;
+        rte[3].port++ <--> C <--> rte[4].port++;
+        rte[4].port++ <--> C <--> rte[5].port++;
+        rte[4].port++ <--> C <--> rte[7].port++;
+        rte[5].port++ <--> C <--> rte[6].port++;
+        rte[5].port++ <--> C <--> rte[10].port++;
+        rte[6].port++ <--> C <--> rte[7].port++;
+        rte[6].port++ <--> C <--> rte[9].port++;
+        rte[7].port++ <--> C <--> rte[8].port++;
+        rte[7].port++ <--> C <--> rte[12].port++;
+        rte[9].port++ <--> C <--> rte[11].port++;
+        rte[10].port++ <--> C <--> rte[11].port++;
+        rte[10].port++ <--> C <--> rte[13].port++;
+        rte[11].port++ <--> C <--> rte[12].port++;
+        rte[11].port++ <--> C <--> rte[14].port++;
+        rte[12].port++ <--> C <--> rte[15].port++;
+        rte[13].port++ <--> C <--> rte[18].port++;
+        rte[14].port++ <--> C <--> rte[15].port++;
+        rte[14].port++ <--> C <--> rte[22].port++;
+        rte[15].port++ <--> C <--> rte[16].port++;
+        rte[16].port++ <--> C <--> rte[17].port++;
+        rte[16].port++ <--> C <--> rte[23].port++;
+        rte[18].port++ <--> C <--> rte[19].port++;
+        rte[18].port++ <--> C <--> rte[21].port++;
+        rte[19].port++ <--> C <--> rte[20].port++;
+        rte[19].port++ <--> C <--> rte[26].port++;
+        rte[20].port++ <--> C <--> rte[21].port++;
+        rte[20].port++ <--> C <--> rte[24].port++;
+        rte[20].port++ <--> C <--> rte[25].port++;
+        rte[21].port++ <--> C <--> rte[22].port++;
+        rte[21].port++ <--> C <--> rte[23].port++;
+        rte[21].port++ <--> C <--> rte[24].port++;
+        rte[23].port++ <--> C <--> rte[24].port++;
+        rte[24].port++ <--> C <--> rte[28].port++;
+        rte[25].port++ <--> C <--> rte[27].port++;
+        rte[26].port++ <--> C <--> rte[32].port++;
+        rte[27].port++ <--> C <--> rte[29].port++;
+        rte[27].port++ <--> C <--> rte[30].port++;
+        rte[27].port++ <--> C <--> rte[32].port++;
+        rte[28].port++ <--> C <--> rte[29].port++;
+        rte[28].port++ <--> C <--> rte[31].port++;
+        rte[29].port++ <--> C <--> rte[31].port++;
+        rte[30].port++ <--> C <--> rte[36].port++;
+        rte[31].port++ <--> C <--> rte[33].port++;
+        rte[32].port++ <--> C <--> rte[34].port++;
+        rte[33].port++ <--> C <--> rte[37].port++;
+        rte[34].port++ <--> C <--> rte[35].port++;
+        rte[34].port++ <--> C <--> rte[40].port++;
+        rte[35].port++ <--> C <--> rte[36].port++;
+        rte[35].port++ <--> C <--> rte[39].port++;
+        rte[36].port++ <--> C <--> rte[37].port++;
+        rte[37].port++ <--> C <--> rte[38].port++;
+        rte[38].port++ <--> C <--> rte[39].port++;
+        rte[38].port++ <--> C <--> rte[42].port++;
+        rte[39].port++ <--> C <--> rte[40].port++;
+        rte[39].port++ <--> C <--> rte[41].port++;
+        rte[40].port++ <--> C <--> rte[43].port++;
+        rte[40].port++ <--> C <--> rte[44].port++;
+        rte[40].port++ <--> C <--> rte[52].port++;
+        rte[41].port++ <--> C <--> rte[42].port++;
+        rte[41].port++ <--> C <--> rte[43].port++;
+        rte[42].port++ <--> C <--> rte[43].port++;
+        rte[43].port++ <--> C <--> rte[46].port++;
+        rte[44].port++ <--> C <--> rte[45].port++;
+        rte[44].port++ <--> C <--> rte[47].port++;
+        rte[45].port++ <--> C <--> rte[46].port++;
+        rte[46].port++ <--> C <--> rte[49].port++;
+        rte[47].port++ <--> C <--> rte[48].port++;
+        rte[48].port++ <--> C <--> rte[50].port++;
+        rte[48].port++ <--> C <--> rte[51].port++;
+        rte[49].port++ <--> C <--> rte[50].port++;
+        rte[50].port++ <--> C <--> rte[53].port++;
+        rte[51].port++ <--> C <--> rte[52].port++;
+        rte[51].port++ <--> C <--> rte[53].port++;
+        rte[52].port++ <--> C <--> rte[53].port++;
+        rte[52].port++ <--> C <--> rte[54].port++;
+        rte[53].port++ <--> C <--> rte[56].port++;
+        rte[54].port++ <--> C <--> rte[55].port++;
+        rte[55].port++ <--> C <--> rte[56].port++;
 }
 

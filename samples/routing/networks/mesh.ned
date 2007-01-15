@@ -19,10 +19,10 @@ network Mesh
                 address = index;
                 @display("p=,,m,$width,40,40");
             gates:
-                in[4];
-                out[4];
+                port[4];
         };
     connections allowunconnected:
+        //FIXME this has to be rewritten to use port[] instead of in[] / out[]
         for i=0..height-1, for j=0..width-1 {
             node[i*width+j].out[0] --> node[(i+1)*width+j].in[1] if i!=height-1;
             node[i*width+j].in[0] <-- node[(i+1)*width+j].out[1] if i!=height-1;
