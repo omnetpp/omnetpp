@@ -20,9 +20,13 @@
 #include <deque>
 #include "geometry.h"
 
+class Edge;
+
 class Vertex {
     public:
         std::vector<Vertex *> neighbours;
+
+        std::vector<Edge *> edges;
 
 	    Pt pt;
 
@@ -63,6 +67,8 @@ class Edge {
 	
 	    void *identity;
 
+        int color;
+
     public:
 	    Edge(Vertex *source, Vertex *target, void *identity = NULL);};
 
@@ -71,6 +77,8 @@ class Edge {
  */
 class GraphComponent {
     private:
+        bool owner;
+
         std::vector<Vertex *> vertices;
 
         std::vector<Edge *> edges;
@@ -83,6 +91,8 @@ class GraphComponent {
          */
         std::vector<Vertex *> spanningTreeVertices;
 
+        std::vector<GraphComponent *> coherentSubComponents;
+
     public:
 	    GraphComponent();
         ~GraphComponent();    	
@@ -93,6 +103,8 @@ class GraphComponent {
 
 	    void calculateSpanningTree();
 	    void calculateSpanningTree(Vertex *rootVertex);
+
+        void calculateCoherentSubComponents();
 
         bool isEmpty() {
 		    return vertices.size() == 0;
@@ -123,6 +135,8 @@ class GraphComponent {
 	    }
 
     private:
-	    void addToSpanningTreeParent(Vertex *parentVertex, Vertex *vertex);};
+	    void addToSpanningTreeParent(Vertex *parentVertex, Vertex *vertex);
+        void colorizeCoherentSubComponent(GraphComponent *childComponent, Vertex *vertex, int color);
+};
 
 #endif

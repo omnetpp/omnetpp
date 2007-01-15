@@ -58,7 +58,6 @@ void HeapEmbedding::embed()
                 pts.erase(pts.begin() + j--);
         }
 
-        // TODO: factor this into a function
         pushPtUnlessCirclesContains(pts, circles, cc.getCenterTop());
         pushPtUnlessCirclesContains(pts, circles, cc.getCenterBottom());
         pushPtUnlessCirclesContains(pts, circles, cc.getLeftCenter());

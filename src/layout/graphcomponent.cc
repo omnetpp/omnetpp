@@ -19,6 +19,7 @@ Vertex::Vertex(Pt pt, Rs rc, void *identity) {
     this->rs = rc;
     this->identity = identity;
 
+    color = 0;
     spanningTreeParent = NULL;
     starTreeCenter = Pt::getNil();
     starTreeCircleCenter = Pt::getNil();
@@ -29,18 +30,26 @@ Edge::Edge(Vertex *source, Vertex *target, void *identity) {
     this->source = source;
     this->target = target;
     this->identity = identity;
+
+    color = 0;
 }
 
 GraphComponent::GraphComponent() {
+    owner = true;
     spanningTreeRoot = NULL;
 }
 
 GraphComponent::~GraphComponent() {
-    for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); it++)
-        delete *it;
+    if (owner) {
+        for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); it++)
+            delete *it;
 
-    for (std::vector<Edge *>::iterator it = edges.begin(); it != edges.end(); it++)
-        delete *it;
+        for (std::vector<Edge *>::iterator it = edges.begin(); it != edges.end(); it++)
+            delete *it;
+
+        for (std::vector<GraphComponent *>::iterator it = coherentSubComponents.begin(); it != coherentSubComponents.end(); it++)
+            delete *it;
+    }
 }
 
 int GraphComponent::addVertex(Vertex *vertex) {
@@ -50,6 +59,8 @@ int GraphComponent::addVertex(Vertex *vertex) {
 
 int GraphComponent::addEdge(Edge *edge) {
     edges.push_back(edge);
+    edge->source->edges.push_back(edge);
+    edge->target->edges.push_back(edge);
     edge->source->neighbours.push_back(edge->target);
     edge->target->neighbours.push_back(edge->source);
     return edges.size() - 1;
@@ -118,4 +129,53 @@ void GraphComponent::addToSpanningTreeParent(Vertex *parentVertex, Vertex *verte
 	
     if (parentVertex)
 	    parentVertex->spanningTreeChildren.push_back(vertex);
+}
+
+void GraphComponent::calculateCoherentSubComponents() {
+    coherentSubComponents.clear();
+
+    for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); it++) {
+        Vertex *vertex = *it;
+        vertex->color = 0;
+    }
+
+    for (std::vector<Edge *>::iterator it = edges.begin(); it != edges.end(); it++) {
+        Edge *edge = *it;
+        edge->color = 0;
+    }
+
+    int color = 1;
+
+    for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); it++) {
+        Vertex *vertex = *it;
+
+        if (!vertex->color) {
+            GraphComponent *childComponent = new GraphComponent();
+            childComponent->owner = false;
+            coherentSubComponents.push_back(childComponent);
+
+            colorizeCoherentSubComponent(childComponent, vertex, color++);
+        }
+    }
+}
+
+void GraphComponent::colorizeCoherentSubComponent(GraphComponent *childComponent, Vertex *vertex, int color) {
+    vertex->color = color;
+    childComponent->vertices.push_back(vertex);
+
+    for (std::vector<Edge *>::iterator it = vertex->edges.begin(); it != vertex->edges.end(); it++) {
+        Edge *edge = *it;
+
+        if (!edge->color) {
+            edge->color = color;
+            childComponent->edges.push_back(edge);
+        }
+    }
+
+    for (std::vector<Vertex *>::iterator it = vertex->neighbours.begin(); it != vertex->neighbours.end(); it++) {
+        Vertex *neighbour = *it;
+
+        if (!neighbour->color)
+            colorizeCoherentSubComponent(childComponent, neighbour, color);
+    }
 }
