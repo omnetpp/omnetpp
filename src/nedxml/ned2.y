@@ -1339,7 +1339,7 @@ rightgate
                 {
                   ps.conn->setDestGate( toString( @1) );
                   ps.conn->setDestGateSubg(ps.subgate);
-                  addVector(ps.conn, "dest-gate-index",@2,$2);
+                  addVector(ps.conn, "dest-gate-index",@3,$3);
                 }
         | NAME opt_subgate PLUSPLUS
                 {
@@ -1359,7 +1359,7 @@ parentrightgate
                 {
                   ps.conn->setDestGate( toString( @1) );
                   ps.conn->setDestGateSubg(ps.subgate);
-                  addVector(ps.conn, "dest-gate-index",@2,$2);
+                  addVector(ps.conn, "dest-gate-index",@3,$3);
                 }
         | NAME opt_subgate PLUSPLUS
                 {
