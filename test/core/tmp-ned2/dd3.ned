@@ -1,3 +1,13 @@
+        module Core   //FIXME just temp def, remove!
+        {
+            gates:
+                inout p;
+                inout pv1[];
+                inout pv2[];
+            connections allowunconnected:
+        }
+
+
 // connecting $o/$i to parent, with scalar gate, gate indexing and gate++
 network DD3 {
     types:
@@ -22,14 +32,17 @@ network DD3 {
                         pv1[sizeof(pv2)];
                 };
             connections:
-                p$o --> c.p$i;
-                p$i <-- c.p$o;
-                for i=0..sizeof(port)-1 {
-                    c.pv1$o[i] --> pv1$i[i];
-                    c.pv1$i[i] <-- pv1$o[i];
-                    c.pv2$o++ --> pv2$i++;
-                    c.pv2$i++ <-- pv2$o++;
-                };
+                c.p$o --> p$o;
+                c.p$i <-- p$i;
+                for i=0..sizeof(pv1)-1 {
+                    c.pv1$o[i] --> pv1$o[i];
+                    c.pv1$i[i] <-- pv1$i[i];
+                }
+                //FIXME uncomment!
+                //for i=0..sizeof(pv2)-1 {
+                //    c.pv2$o++ --> pv2$o++;
+                //    c.pv2$i++ <-- pv2$i++;
+                //};
         }
 
     submodules:
