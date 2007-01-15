@@ -21,8 +21,7 @@
 
 
 VectorFileReaderNode::VectorFileReaderNode(const char *fileName, size_t bufferSize) :
-  ftok(fileName, bufferSize)
-
+  reader(fileName, bufferSize), tokenizer(), fFinished(false)
 {
 }
 
@@ -64,17 +63,23 @@ static bool parseDouble(char *s, double& dest)
 
 void VectorFileReaderNode::process()
 {
-    for (int k=0; k<1000 && ftok.readLine(); k++)
+    char *line;
+    int length;
+
+    for (int k=0; k<1000 && (line=reader.readNextLine())!=NULL; k++)
     {
-        int numtokens = ftok.numTokens();
-        char **vec = ftok.tokens();
+        int length = reader.getLastLineLength();
+        tokenizer.tokenize(line, length);
+
+        int numtokens = tokenizer.numTokens();
+        char **vec = tokenizer.tokens();
         if (numtokens>=3 && isdigit(vec[0][0]))  // silently ignore incomplete lines
         {
             // extract vector id
             char *e;
             int vectorId = (int) strtol(vec[0],&e,10);
             if (*e)
-                throw opp_runtime_error("invalid vector file syntax: invalid vector id column, line %d", ftok.lineNum());
+                throw opp_runtime_error("invalid vector file syntax: invalid vector id column, line %d", (int)reader.getNumReadLines());
 
             Portmap::iterator portvec = ports.find(vectorId);
             if (portvec!=ports.end())
@@ -82,7 +87,7 @@ void VectorFileReaderNode::process()
                 // parse time and value
                 Datum a;
                 if (!parseDouble(vec[1],a.x) || !parseDouble(vec[2],a.y))
-                    throw opp_runtime_error("invalid vector file syntax: invalid time or value column, line %d", ftok.lineNum());
+                    throw opp_runtime_error("invalid vector file syntax: invalid time or value column, line %d", (int)reader.getNumReadLines());
 
                 // write to port(s)
                 for (PortVector::iterator p=portvec->second.begin(); p!=portvec->second.end(); ++p)
@@ -93,15 +98,14 @@ void VectorFileReaderNode::process()
         }
     }
 
-    // ignore "incomplete last line" error, because we might be reading
-    // a vec file currently being written by a simulation
-    if (!ftok.ok() && !ftok.eof() && ftok.errorCode()!=FileTokenizer::INCOMPLETELINE)
-        throw opp_runtime_error(ftok.errorMsg().c_str());
+    if (line == NULL) {
+        fFinished = true;
+    }
 }
 
 bool VectorFileReaderNode::finished() const
 {
-    return !ftok.ok();
+    return fFinished;
 }
 
 //-----
