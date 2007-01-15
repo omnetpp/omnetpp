@@ -112,11 +112,12 @@ std::string cGate::info() const
     std::stringstream out;
     out << arrow;
 
-    if (chan)
-        out << chan->info() << arrow;
-
     out << (g->ownerModule()==ownerModule()->parentModule() ? "<parent>" : g->ownerModule()->fullName());
     out << "." << g->fullName();
+
+    if (chan)
+        out << ", channel: " << chan->info();
+
     return out.str();
 }
 
