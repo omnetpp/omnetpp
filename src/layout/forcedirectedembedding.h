@@ -198,6 +198,7 @@ class ForceDirectedEmbedding
         void addBody(IBody *body) {
             bodies.push_back(body);
             body->setForceDirectedEmbedding(this);
+            body->getVariable()->addMass(body->getMass());
             
             if (std::find(variables.begin(), variables.end(), body->getVariable()) == variables.end())
                 variables.push_back(body->getVariable());
@@ -207,7 +208,7 @@ class ForceDirectedEmbedding
             return finished;
         }
 
-        int getNumberOfDefaultParameters() { return 2; }
+        int getNumberOfDefaultParameters() { return 1; }
 
         /**
          * Sets the default parameters.

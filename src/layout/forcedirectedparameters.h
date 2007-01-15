@@ -42,8 +42,6 @@ class Body : public IBody {
             this->mass = mass;
             this->charge = charge;
             this->size = size;
-
-            variable->addMass(mass);
         }
 
     public:
@@ -168,9 +166,28 @@ class AbstractForceProvider : public IForceProvider {
     protected:
         double maxForce;
 
+        int slippery;
+
+        int modifiedDistance;
+
+    private:
+        void constructor(double maxForce, int modifiedDistance, int slippery) {
+            this->maxForce = maxForce;
+            this->modifiedDistance = modifiedDistance;
+            this->slippery = slippery;
+        }
+
     public:
         AbstractForceProvider() {
-            maxForce = -1;
+            constructor(-1, false, false);
+        }
+
+        AbstractForceProvider(int slippery) {
+            constructor(-1, false, slippery);
+        }
+
+        AbstractForceProvider(double maxForce, int slippery) {
+            constructor(maxForce, false, slippery);
         }
 
         virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
@@ -178,6 +195,12 @@ class AbstractForceProvider : public IForceProvider {
 
             if (maxForce == -1)
                 maxForce = embedding->parameters.defaultMaxForce;
+
+            if (slippery == -1)
+                slippery = embedding->parameters.defaultSlippery;
+
+            if (modifiedDistance == -1)
+                modifiedDistance = embedding->parameters.defaultModifiedDistance;
         }
 
 	    double getMaxForce() {
@@ -196,14 +219,22 @@ class AbstractForceProvider : public IForceProvider {
                 return getValidForce(fabs(force));
 	    }
 
+        Pt getDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
+            if (slippery)
+                return getSlipperyDistanceAndVector(body1, body2, distance);
+            else
+                return getStandardDistanceAndVector(body1, body2, distance);
+        }
+
         Pt getStandardDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
             Pt vector = Pt(body1->getPosition()).subtract(body2->getPosition());
             // TODO: subtract body sizes (intersected along the vector) to avoid overlapping huge bodies
+            // if (modifiedDistance)
             distance = vector.getLength();
             return vector;
         }
 
-        // TODO: allow infinite sizes and calculate distance by that?
+        // TODO: allow infinite sizes in standard version and calculate distance by using that function?
         Pt getStandardHorizontalDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
             Pt vector = Pt(body1->getPosition()).subtract(body2->getPosition());
             vector.y = 0;
@@ -233,32 +264,43 @@ class AbstractForceProvider : public IForceProvider {
 
 /**
  * A repulsive force which decreases in a quadratic way propoportional to the distance of the bodies.
- */
-class IElectricRepulsion : public AbstractForceProvider {
-    public:
-        virtual IBody *getCharge1() = 0;
-    
-        virtual IBody *getCharge2() = 0;
-};
-
-/**
  * Abstract base class for electric repulsive forces.
  */
-class AbstractElectricRepulsion : public IElectricRepulsion {
+class AbstractElectricRepulsion : public AbstractForceProvider {
     protected:
         IBody *charge1;
     
         IBody *charge2;
 
-        bool slippery;
+        double linearityDistance;
 
-        // TODO: add maximum distance parameter and do not process repulsions exceeding that
+        double maxDistance;
 
-    public:
-        AbstractElectricRepulsion(IBody *charge1, IBody *charge2, bool slippery) {
+    private:
+        void constructor(IBody *charge1, IBody *charge2, double linearityDistance, double maxDistance) {
             this->charge1 = charge1;
             this->charge2 = charge2;
-            this->slippery = slippery;
+            this->linearityDistance = linearityDistance;
+            this->maxDistance = maxDistance;
+        }
+
+    public:
+        AbstractElectricRepulsion(IBody *charge1, IBody *charge2) : AbstractForceProvider(false) {
+            constructor(charge1, charge2, -1, -1);
+        }
+
+        AbstractElectricRepulsion(IBody *charge1, IBody *charge2, double linearityDistance, double maxDistance, int slippery) : AbstractForceProvider(slippery) {
+            constructor(charge1, charge2, linearityDistance, maxDistance);
+        }
+
+        virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
+            AbstractForceProvider::setForceDirectedEmbedding(embedding);
+
+            if (linearityDistance == -1)
+                linearityDistance = embedding->parameters.defaultElectricRepulsionLinearityDistance;
+
+            if (maxDistance == -1)
+                maxDistance = embedding->parameters.defaultElectricRepulsionMaxDistance;
         }
 
         virtual IBody *getCharge1() {
@@ -282,14 +324,14 @@ class AbstractElectricRepulsion : public IElectricRepulsion {
             Pt vector = getDistanceAndVector(distance);
             ASSERT(distance >= 0);
 
-            // TODO: linearly decrease power from maxDistance1 to maxDistance2 (set both to POSITIVE_INFINITY by default)
-            // TODO: this will make unconnected components look better
-
             double power;
             if (distance == 0)
                 power = maxForce;
             else
                 power = getValidForce(embedding->parameters.electricRepulsionCoefficient * charge1->getCharge() * charge2->getCharge() / distance / distance);
+
+            if (linearityDistance != -1 && distance > linearityDistance)
+                power *= 1 - std::min(1.0, (distance - linearityDistance) / (maxDistance - linearityDistance));
 
             charge1->getVariable()->addForce(vector, +power, embedding->inspected);
             charge2->getVariable()->addForce(vector, -power, embedding->inspected);
@@ -306,14 +348,11 @@ class AbstractElectricRepulsion : public IElectricRepulsion {
  */
 class ElectricRepulsion : public AbstractElectricRepulsion {
     public:
-        ElectricRepulsion(IBody *charge1, IBody *charge2, bool slippery = false) : AbstractElectricRepulsion(charge1, charge2, slippery) {
+        ElectricRepulsion(IBody *charge1, IBody *charge2, double linearityDistance = -1, double maxDistance = -1, int slippery = -1) : AbstractElectricRepulsion(charge1, charge2, linearityDistance, maxDistance, slippery) {
         }
 
         virtual Pt getDistanceAndVector(double &distance) {
-            if (slippery)
-                return getSlipperyDistanceAndVector(charge1, charge2, distance);
-            else
-                return getStandardDistanceAndVector(charge1, charge2, distance);
+            return AbstractForceProvider::getDistanceAndVector(charge1, charge2, distance);
         }
 
         virtual const char *getClassName() {
@@ -323,12 +362,12 @@ class ElectricRepulsion : public AbstractElectricRepulsion {
 
 class VerticalElectricRepulsion : public AbstractElectricRepulsion {
     public:
-        VerticalElectricRepulsion(IBody *charge1, IBody *charge2) : AbstractElectricRepulsion(charge1, charge2, false) {
+        VerticalElectricRepulsion(IBody *charge1, IBody *charge2) : AbstractElectricRepulsion(charge1, charge2) {
         }
 
         virtual Pt getDistanceAndVector(double &distance) {
             return getStandardVerticalDistanceAndVector(charge1, charge2, distance);
-       }
+        }
 
         virtual const char *getClassName() {
             return "VerticalElectricRepulsion";
@@ -337,7 +376,7 @@ class VerticalElectricRepulsion : public AbstractElectricRepulsion {
 
 class HorizontalElectricRepulsion : public AbstractElectricRepulsion {
     public:
-        HorizontalElectricRepulsion(IBody *charge1, IBody *charge2) : AbstractElectricRepulsion(charge1, charge2, false) {
+        HorizontalElectricRepulsion(IBody *charge1, IBody *charge2) : AbstractElectricRepulsion(charge1, charge2) {
         }
 
         virtual Pt getDistanceAndVector(double &distance) {
@@ -351,22 +390,9 @@ class HorizontalElectricRepulsion : public AbstractElectricRepulsion {
 
 /**
  * An attractive force which increases in a linear way proportional to the distance of the bodies.
- */
-class ISpring : public AbstractForceProvider {
-    public:
-        virtual double getSpringCoefficient() = 0;
-        
-        virtual double getReposeLength() = 0;
-        
-        virtual IBody *getBody1() = 0;
-        
-        virtual IBody *getBody2() = 0;
-};
-
-/**
  * Abstract base class for spring attractive forces.
  */
-class AbstractSpring : public ISpring {
+class AbstractSpring : public AbstractForceProvider {
     protected:
         IBody *body1;
         
@@ -376,24 +402,21 @@ class AbstractSpring : public ISpring {
 
         double reposeLength;
 
-        bool slippery;
-
     private:
-        void constructor(IBody *body1, IBody *body2, double springCoefficient, double reposeLength, bool slippery) {
+        void constructor(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) {
             this->body1 = body1;
             this->body2 = body2;
             this->springCoefficient = springCoefficient;
             this->reposeLength = reposeLength;
-            this->slippery = slippery;
         }
 
     public:
-        AbstractSpring(IBody *body1, IBody *body2) {
-            constructor(body1, body2, -1, -1, false);
+        AbstractSpring(IBody *body1, IBody *body2)  : AbstractForceProvider(false) {
+            constructor(body1, body2, -1, -1);
         }
         
-        AbstractSpring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength, bool slippery) {
-            constructor(body1, body2, springCoefficient, reposeLength, slippery);
+        AbstractSpring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength, int slippery) : AbstractForceProvider(slippery) {
+            constructor(body1, body2, springCoefficient, reposeLength);
         }
 
         virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
@@ -459,14 +482,12 @@ class Spring : public AbstractSpring {
         Spring(IBody *body1, IBody *body2) : AbstractSpring(body1, body2) {
         }
         
-        Spring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength, bool slippery = false) : AbstractSpring(body1, body2, springCoefficient, reposeLength, slippery) {
+        Spring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength, int slippery = -1)
+            : AbstractSpring(body1, body2, springCoefficient, reposeLength, slippery) {
         }
 
         virtual Pt getDistanceAndVector(double &distance) {
-            if (slippery)
-                return getSlipperyDistanceAndVector(body1, body2, distance);
-            else
-                return getStandardDistanceAndVector(body1, body2, distance);
+            return AbstractForceProvider::getDistanceAndVector(body1, body2, distance);
         }
 
         virtual const char *getClassName() {
@@ -531,7 +552,7 @@ class ShortestSpring : public AbstractForceProvider {
             }
         }
 
-        virtual void applyForces() {
+        AbstractSpring *findShortestSpring() {
             AbstractSpring *shortestSpring;
             double shortestExpansion = POSITIVE_INFINITY;
 
@@ -547,12 +568,15 @@ class ShortestSpring : public AbstractForceProvider {
                 }
             }
 
-            shortestSpring->applyForces();
+            return shortestSpring;
+        }
+
+        virtual void applyForces() {
+            findShortestSpring()->applyForces();
         }
 
         virtual double getPotentialEnergy() {
-            // TODO:
-            return 0;
+            return findShortestSpring()->getPotentialEnergy();
         }
 
         virtual const char *getClassName() {
@@ -665,10 +689,7 @@ class BodyConstraint : public AbstractForceProvider {
 
         virtual void applyForces() = 0;
 
-        virtual double getPotentialEnergy() {
-            // TODO:
-            return 0;
-        }
+        virtual double getPotentialEnergy() = 0;
 };
 
 /**

@@ -56,9 +56,29 @@ struct ForceDirectedParameters
     double electricRepulsionCoefficient;
 
     /**
+     * For electric repulsions not initialized with a linearity distance.
+     */
+    double defaultElectricRepulsionLinearityDistance;
+
+    /**
+     * For electric repulsions not initialized with a particular max distance.
+     */
+    double defaultElectricRepulsionMaxDistance;
+
+    /**
      * Friction reduces the energy of the system. The friction force points in the opposite direction of the current velocity.
      */
     double frictionCoefficient;
+
+    /**
+     * For force providers not initialized with a particular slippery flag.
+     */
+    bool defaultSlippery;
+
+    /**
+     * For force providers not initialized with a particular modified distance flag.
+     */
+    bool defaultModifiedDistance;
 
     /**
      * The default time step when solution starts.

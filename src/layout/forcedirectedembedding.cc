@@ -40,7 +40,6 @@ ForceDirectedParameters ForceDirectedEmbedding::getDefaultParameters(int index) 
     switch (index) {
         case 0:
         default:
-            // TODO: slippery
             parameters.defaultBodySize = Rs(10, 10);
             parameters.defaultBodyMass = 10;
             parameters.defaultBodyCharge = 1;
@@ -48,7 +47,11 @@ ForceDirectedParameters ForceDirectedEmbedding::getDefaultParameters(int index) 
             parameters.defaultSpringCoefficient = 0.1;
             parameters.defaultSpringReposeLength = 50;
             parameters.electricRepulsionCoefficient = 10000;
+            parameters.defaultElectricRepulsionLinearityDistance = -1;
+            parameters.defaultElectricRepulsionMaxDistance = -1;
             parameters.frictionCoefficient = 1;
+            parameters.defaultSlippery = false;
+            parameters.defaultModifiedDistance = true;
 
             parameters.timeStep = 1;
             parameters.minTimeStep = 0.01;
