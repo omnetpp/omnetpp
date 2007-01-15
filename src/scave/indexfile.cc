@@ -41,6 +41,7 @@ VectorData *VectorFileIndex::getVector(int vectorId)
         if (it->vectorId == vectorId)
             return &(*it);
     }
+    return NULL;
 }
 
 //=========================================================================
@@ -217,7 +218,7 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
 
 //=========================================================================
 IndexFileWriter::IndexFileWriter(const char *filename, int precision)
-    : filename(filename), precision(precision)
+    : filename(filename), precision(precision), file(NULL)
 {
 }
 
@@ -267,7 +268,7 @@ void IndexFileWriter::writeVector(VectorData &vector)
 
 void IndexFileWriter::writeVectorDeclaration(VectorData &vector)
 {
-    fprintf(file, "vector %ld  %s  %s  %d  %d  %d  %.*g  %.*g  %.*g  %.*g\n",
+    fprintf(file, "vector %d  %s  %s  %d  %ld  %ld  %.*g  %.*g  %.*g  %.*g\n",
         vector.vectorId, QUOTE(vector.moduleName.c_str()), QUOTE(vector.name.c_str()), 1/*tuple*/,
         vector.blockSize, vector.count, precision, vector.min, precision, vector.max,
         precision, vector.sum, precision, vector.sumSqr);

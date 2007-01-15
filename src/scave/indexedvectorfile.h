@@ -85,7 +85,7 @@ class IndexedVectorFileWriterNode : public Node
             int bufferNumOfRecords; //
 
             VectorInputPort(int id, std::string moduleName, std::string name, int bufferSize, Node *owner)
-                : vector(id, moduleName, name), Port(owner)
+                : vector(id, moduleName, name, bufferSize), Port(owner)
                 { this->allocateBuffer(bufferSize); }
             ~VectorInputPort() { if (buffer) delete[] buffer; }
 
@@ -112,6 +112,7 @@ class IndexedVectorFileWriterNode : public Node
 
         Port *addVector(int vectorId, std::string moduleName, std::string name);
         void setPrecision(int prec) {this->prec = prec;}
+        void setHeader(const std::string &header) { fileHeader = header; }
         std::string filename() const {return fileName;}
 
         virtual bool isReady() const;

@@ -15,10 +15,15 @@
 #ifndef _IVECTORFILEINDEXER_H_
 #define _IVECTORFILEINDEXER_H_
 
+#include <string>
+#include "resultfilemanager.h"
+
 class VectorFileIndexer
 {
     public:
         void generateIndex(const char *filename);
+    protected:
+        std::string generateHeader(Run *runRef);
 };
 
 #endif

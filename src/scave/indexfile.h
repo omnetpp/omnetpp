@@ -43,7 +43,7 @@ struct VectorData {
     Blocks blocks;
 
     VectorData() {}
-    VectorData(int vectorId, std::string moduleName, std::string name)
+    VectorData(int vectorId, std::string moduleName, std::string name, long blockSize)
         : vectorId(vectorId), moduleName(moduleName), name(name), blockSize(blockSize),
         count(0), min(DBL_MAX), max(DBL_MIN), sum(0.0), sumSqr(0.0) {}
 

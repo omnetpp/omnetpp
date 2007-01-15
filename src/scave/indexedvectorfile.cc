@@ -189,7 +189,7 @@ void IndexedVectorFileWriterNode::process()
     {
         f = openFile(fileName);
         // print file header and vector declarations
-        CHECK(fprintf(f,"%s\n\n", fileHeader.c_str()));
+        CHECK(fprintf(f,"%s\n", fileHeader.c_str()));
         for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
         {
             VectorInputPort *port = *it;
@@ -286,8 +286,11 @@ Node *IndexedVectorFileWriterNodeType::create(DataflowManager *mgr, StringMap& a
     const char *fileName = attrs["filename"].c_str();
     const char *indexFileName = attrs["indexfilename"].c_str();
     int blockSize = atoi(attrs["blocksize"].c_str());
+    std::string header = attrs["fileheader"];
 
-    Node *node = new IndexedVectorFileWriterNode(fileName, indexFileName, blockSize);
+
+    IndexedVectorFileWriterNode *node = new IndexedVectorFileWriterNode(fileName, indexFileName, blockSize);
+    node->setHeader(header);
     node->setNodeType(this);
     mgr->addNode(node);
     return node;
