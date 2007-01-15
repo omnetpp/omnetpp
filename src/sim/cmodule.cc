@@ -118,7 +118,14 @@ cModule::~cModule()
 
 void cModule::forEachChild(cVisitor *v)
 {
-    cComponent::forEachChild(v);
+    for (int i=0; i<numparams; i++)
+        v->visit(&paramv[i]);
+
+    int numgates = gatev.size();
+    for (int i=0; i<numgates; i++)
+        v->visit(gatev[i]);
+
+    cDefaultList::forEachChild(v);
 }
 
 void cModule::setId(int n)

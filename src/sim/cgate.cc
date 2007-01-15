@@ -94,13 +94,14 @@ std::string cGate::info() const
     const char *arrow;
     cGate const *g;
     cGate const *conng;
+    cChannel const *chan;
 
     if (type()==OUTPUT)
-        {arrow = "--> "; g = togatep; conng = this;}
+        {arrow = "--> "; g = togatep; conng = this; chan = channelp; }
     else if (type()==INPUT)
-        {arrow = "<-- "; g = fromgatep; conng = fromgatep;}
-    else // INOUT
-        {arrow = "<--> "; g = fromgatep; conng = fromgatep;}
+        {arrow = "<-- "; g = fromgatep; conng = fromgatep; chan = fromgatep ? fromgatep->channelp : NULL;}
+    else
+        ASSERT(0);  // a cGate is never INOUT
 
     // append useful info to buf
     if (desc->size==0)
@@ -111,8 +112,8 @@ std::string cGate::info() const
     std::stringstream out;
     out << arrow;
 
-    if (channelp)
-        out << channelp->info() << arrow;
+    if (chan)
+        out << chan->info() << arrow;
 
     out << (g->ownerModule()==ownerModule()->parentModule() ? "<parent>" : g->ownerModule()->fullName());
     out << "." << g->fullName();
