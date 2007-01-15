@@ -1247,12 +1247,9 @@ connection
                 }
         ;
 
-/* FIXME subgate has wrong syntax: $i/$o should be part of the gate name, not appended after the index or ++! */
 leftgatespec
-        : leftmod '.' leftgate opt_subgate
-                { ps.conn->setSrcGateSubg(ps.subgate); }
-        | parentleftgate opt_subgate
-                { ps.conn->setSrcGateSubg(ps.subgate); }
+        : leftmod '.' leftgate
+        | parentleftgate
         ;
 
 leftmod
@@ -1270,50 +1267,54 @@ leftmod
         ;
 
 leftgate
-        : NAME
+        : NAME opt_subgate
                 {
                   ps.conn->setSrcGate( toString( @1) );
+                  ps.conn->setSrcGateSubg(ps.subgate);
                 }
-        | NAME vector
+        | NAME opt_subgate vector
                 {
                   ps.conn->setSrcGate( toString( @1) );
-                  addVector(ps.conn, "src-gate-index",@2,$2);
+                  ps.conn->setSrcGateSubg(ps.subgate);
+                  addVector(ps.conn, "src-gate-index",@3,$3);
                 }
-        | NAME PLUSPLUS
+        | NAME opt_subgate PLUSPLUS
                 {
                   ps.conn->setSrcGate( toString( @1) );
+                  ps.conn->setSrcGateSubg(ps.subgate);
                   ps.conn->setSrcGatePlusplus(true);
                 }
         ;
 
 parentleftgate
-        : NAME
+        : NAME opt_subgate
                 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inConnGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
+                  ps.conn->setSrcGateSubg(ps.subgate);
                 }
-        | NAME vector
+        | NAME opt_subgate vector
                 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inConnGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
-                  addVector(ps.conn, "src-gate-index",@2,$2);
+                  ps.conn->setSrcGateSubg(ps.subgate);
+                  addVector(ps.conn, "src-gate-index",@3,$3);
                 }
-        | NAME PLUSPLUS
+        | NAME opt_subgate PLUSPLUS
                 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inConnGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
+                  ps.conn->setSrcGateSubg(ps.subgate);
                   ps.conn->setSrcGatePlusplus(true);
                 }
         ;
 
 rightgatespec
-        : rightmod '.' rightgate opt_subgate
-                { ps.conn->setDestGateSubg(ps.subgate); }
-        | parentrightgate opt_subgate
-                { ps.conn->setDestGateSubg(ps.subgate); }
+        : rightmod '.' rightgate
+        | parentrightgate
         ;
 
 rightmod
@@ -1329,35 +1330,41 @@ rightmod
         ;
 
 rightgate
-        : NAME
+        : NAME opt_subgate
                 {
                   ps.conn->setDestGate( toString( @1) );
+                  ps.conn->setDestGateSubg(ps.subgate);
                 }
-        | NAME vector
+        | NAME opt_subgate vector
                 {
                   ps.conn->setDestGate( toString( @1) );
+                  ps.conn->setDestGateSubg(ps.subgate);
                   addVector(ps.conn, "dest-gate-index",@2,$2);
                 }
-        | NAME PLUSPLUS
+        | NAME opt_subgate PLUSPLUS
                 {
                   ps.conn->setDestGate( toString( @1) );
+                  ps.conn->setDestGateSubg(ps.subgate);
                   ps.conn->setDestGatePlusplus(true);
                 }
         ;
 
 parentrightgate
-        : NAME
+        : NAME opt_subgate
                 {
                   ps.conn->setDestGate( toString( @1) );
+                  ps.conn->setDestGateSubg(ps.subgate);
                 }
-        | NAME vector
+        | NAME opt_subgate vector
                 {
                   ps.conn->setDestGate( toString( @1) );
+                  ps.conn->setDestGateSubg(ps.subgate);
                   addVector(ps.conn, "dest-gate-index",@2,$2);
                 }
-        | NAME PLUSPLUS
+        | NAME opt_subgate PLUSPLUS
                 {
                   ps.conn->setDestGate( toString( @1) );
+                  ps.conn->setDestGateSubg(ps.subgate);
                   ps.conn->setDestGatePlusplus(true);
                 }
         ;
