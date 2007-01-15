@@ -1,5 +1,5 @@
 //=========================================================================
-//  STARTREEEMBEDDING.H - part of
+//  HEAPEMBEDDING.H - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -12,14 +12,14 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __STARTREEEMBEDDING_H_
-#define __STARTREEEMBEDDING_H_
+#ifndef __HEAPEMBEDDING_H_
+#define __HEAPEMBEDDING_H_
 
 #include "vector"
 #include "geometry.h"
 #include "graphcomponent.h"
 
-class StarTreeEmbedding
+class HeapEmbedding
 {
     public:
 	    double nodeSpacing;
@@ -28,16 +28,11 @@ class StarTreeEmbedding
         GraphComponent *graphComponent;
 
     public:
-	    StarTreeEmbedding(GraphComponent *graphComponent, double nodeSpacing);
+	    HeapEmbedding(GraphComponent *graphComponent, double nodeSpacing);
 	    void embed();
 
     private:
-	    void calculateCenter();
-	    void calculateCenterRecursive(Vertex *vertex);
-	    void rotateCenter();
-	    void rotateCenterRecursive(Vertex *vertex);
-	    void calculatePosition();
-	    void calculatePositionRecursive(Vertex *vertex, Pt pt);
+        void pushPtUnlessCirclesContains(std::vector<Pt>& pts, std::vector<Cc>& circles, Pt& pt);
 };
 
 #endif

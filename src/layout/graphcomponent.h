@@ -52,16 +52,7 @@ class Vertex {
 	    double starTreeRadius;
 
     public:
-	    Vertex(Pt pt, Rs rc, void *identity = NULL) {
-		    this->pt = pt;
-		    this->rs = rc;
-		    this->identity = identity;
-    	
-	        spanningTreeParent = NULL;
-            starTreeCenter = Pt::getNil();
-	        starTreeCircleCenter = Pt::getNil();
-	        starTreeRadius = -1;
-	    }
+	    Vertex(Pt pt, Rs rc, void *identity = NULL);
 };
 
 class Edge {
@@ -73,12 +64,7 @@ class Edge {
 	    void *identity;
 
     public:
-	    Edge(Vertex *source, Vertex *target, void *identity = NULL) {
-		    this->source = source;
-		    this->target = target;
-		    this->identity = identity;
-	    }
-};
+	    Edge(Vertex *source, Vertex *target, void *identity = NULL);};
 
 /**
  * A coherent component of a graph.
@@ -92,46 +78,28 @@ class GraphComponent {
     public:
 	    Vertex *spanningTreeRoot;
 
+        /**
+         * Contains all vertices in the order of the spanning tree traversal.
+         */
+        std::vector<Vertex *> spanningTreeVertices;
+
     public:
-	    GraphComponent() {
-            spanningTreeRoot = NULL;
-	    }
+	    GraphComponent();
+        ~GraphComponent();    	
 
-        ~GraphComponent() {
-            for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); it++)
-                delete *it;
+	    int addVertex(Vertex *vertex);
+	    int addEdge(Edge *edge);
+	    int indexOfVertex(Vertex *vertex);
 
-            for (std::vector<Edge *>::iterator it = edges.begin(); it != edges.end(); it++)
-                delete *it;
-        }
-    	
-	    bool isEmpty() {
+	    void calculateSpanningTree();
+	    void calculateSpanningTree(Vertex *rootVertex);
+
+        bool isEmpty() {
 		    return vertices.size() == 0;
-	    }
-
-	    int addVertex(Vertex *vertex) {
-		    vertices.push_back(vertex);
-		    return vertices.size() - 1;
-	    }
-
-	    int addEdge(Edge *edge) {
-		    edges.push_back(edge);
-            edge->source->neighbours.push_back(edge->target);
-            edge->target->neighbours.push_back(edge->source);
-		    return edges.size() - 1;
 	    }
 
 	    int getVertexCount() {
 		    return vertices.size();
-	    }
-
-	    int indexOfVertex(Vertex *vertex) {
-            std::vector<Vertex *>::iterator it = find(vertices.begin(), vertices.end(), vertex);
-
-            if (it == vertices.end())
-                return -1;
-            else
-                return it - vertices.begin();
 	    }
 
 	    std::vector<Vertex *>& getVertices() {
@@ -154,59 +122,7 @@ class GraphComponent {
 		    return edges[index];
 	    }
 
-	    void calculateSpanningTree() {
-		    Vertex *rootVertex = NULL;
-
-            for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); it++) {
-                Vertex *vertex = *it;
-
-                if (rootVertex == NULL || rootVertex->neighbours.size() < vertex->neighbours.size())
-                    rootVertex = vertex;
-            }
-
-		    if (vertices.size() != 0)
-			    calculateSpanningTree(rootVertex);
-	    }
-
-	    void calculateSpanningTree(Vertex *rootVertex) {
-		    spanningTreeRoot = rootVertex;
-
-            for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); it++) {
-                Vertex *vertex = *it;
-			    vertex->spanningTreeChildren.clear();
-			    vertex->spanningTreeParent = NULL;
-                vertex->color = 0;
-		    }
-
-		    addToSpanningTreeParent(NULL, rootVertex);
-            std::deque<Vertex *> vertices;
-		    vertices.push_back(rootVertex);
-    		
-		    while (vertices.size() != 0) {
-			    Vertex *vertex = vertices[0];
-                vertices.pop_front();
-
-                for (std::vector<Vertex *>::iterator it = vertex->neighbours.begin(); it != vertex->neighbours.end(); it++) {
-                    Vertex *neighbour = *it;
-
-                    if (!neighbour->color) {
-					    addToSpanningTreeParent(vertex, neighbour);
-    					
-					    // breadth search
-					    vertices.push_back(neighbour);
-				    }
-                }
-		    }
-	    }
-
     private:
-	    void addToSpanningTreeParent(Vertex *parentVertex, Vertex *vertex) {
-            vertex->color = 1;
-		    vertex->spanningTreeParent = parentVertex;
-    		
-		    if (parentVertex)
-			    parentVertex->spanningTreeChildren.push_back(vertex);
-	    }
-};
+	    void addToSpanningTreeParent(Vertex *parentVertex, Vertex *vertex);};
 
 #endif

@@ -12,7 +12,7 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 #
 COPTS=$(CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR) /Fd"layout.pdb"
 
-OBJS= geometry.obj graphcomponent.obj startreeembedding.obj forcedirectedembedding.obj forcedirectedparametersbase.obj forcedirectedparameters.obj
+OBJS= geometry.obj graphcomponent.obj heapembedding.obj startreeembedding.obj forcedirectedembedding.obj forcedirectedparametersbase.obj forcedirectedparameters.obj
 LIBS= layout.lib ../common/common.lib
 
 #

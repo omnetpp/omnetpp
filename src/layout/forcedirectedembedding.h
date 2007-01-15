@@ -119,6 +119,11 @@ class ForceDirectedEmbedding
 
     public:
         /**
+         * Algorithm parameters.
+         */
+        ForceDirectedParameters parameters;
+
+        /**
          * Valid debug levels are: 0, 1, 2, 3, 4.
          * Higher debug level will print more debug messages to the standard output during embedding.
          * Debug level 0 means embedding will not print anything.
@@ -139,103 +144,28 @@ class ForceDirectedEmbedding
         double relaxFactor;
 
         /**
-         * Spring force coefficient.
+         * The total time spent on calculation since the last reinitialize call.
          */
-        double springCoefficient;
-
+        double elapsedCalculationTime;
+        
         /**
-         * Electric repulsion force coefficient.
-         */
-        double electricRepulsionCoefficient;
-
-        /**
-         * Friction reduces the energy of the system. The friction force points in the opposite direction of the current velocity.
-         */
-        double frictionCoefficient;
-
-        /**
-         * The default time step when solution starts.
          * Time step is automatically updated during the solution. It will always have the highest value so that the acceleration error
          * is less than the max acceleration error. The time step is either multiplied or divided by the time step multiplier according to
          * the current acceleration error.
          */
-        double timeStep;
-        
-        /**
-         * This gets updated.
-         */
         double updatedTimeStep;
-
-        /**
-         * Lower limit for time step update.
-         */
-        double minTimeStep;
-
-        /**
-         * Lower limit for time step update.
-         */
-        double maxTimeStep;
-
-        /**
-         * Multiplier used to update the time step.
-         */
-        double timeStepMultiplier;
-
-        /**
-         * Maximum time to be spent on the calculation in milliseconds.
-         * The algorithm will return after this time has been elapsed.
-         */
-        double maxCalculationTime;
-
-        /**
-         * The total time spent on calculation since the last reinitialize call.
-         */
-        double elapsedCalculationTime;
-
-        /**
-         * Lower limit of acceleration approximation difference (between a1, a2, a3 and a4 in RK-4).
-         * During updating the time step this is the lower limit to accept the current time step.
-         */
-        double minAccelerationError;
-
-        /**
-         * Upper limit of acceleration approximation difference (between a1, a2, a3 and a4 in RK-4).
-         * Acceleration error limit is updated automatically during the solution. It decreases towards zero proportional to the
-         * time spent on the calculation.
-         */
-        double maxAccelerationError;
         
         /**
-         * This gets updated.
+         * Acceleration error limit is updated automatically during the solution.
+         * It decreases towards zero proportional to the relax factor.
          */
         double updatedMinAccelerationError;
         
         /**
-         * This gets updated.
+         * Acceleration error limit is updated automatically during the solution.
+         * It decreases towards zero proportional to the relax factor.
          */
         double updatedMaxAccelerationError;
-
-        /**
-         * Acceleration limit during the solution.
-         * When all bodies has lower acceleration than this limit then the algorithm may be stopped.
-         */
-        double accelerationRelaxLimit;
-
-        /**
-         * Velocity limit during the solution.
-         * When all bodies has lower velocity than this limit then the algorithm may be stopped.
-         */
-        double velocityRelaxLimit;
-
-        /**
-         * Maximim velocity that a body may have.
-         */
-        double maxVelocity;
-
-        /**
-         * Maximum number of calculation cycles to run.
-         */
-        int maxCycle;
 
     public:
         ForceDirectedEmbedding();
@@ -276,10 +206,12 @@ class ForceDirectedEmbedding
             return finished;
         }
 
+        int getNumberOfDefaultParameters() { return 2; }
+
         /**
          * Sets the default parameters.
          */
-        void setDefaultParameters();
+        ForceDirectedParameters getDefaultParameters(int index = 0);
 
         /**
          * Clears all results from previous calculations and sets initial values.
@@ -309,7 +241,7 @@ class ForceDirectedEmbedding
         }
 
         double getEnergyBasedFrictionCoefficient(double time) {
-            return 3 * massSum / time * log((getPotentialEnergy() + getKineticEnergy()) / velocityRelaxLimit);
+            return 3 * massSum / time * log((getPotentialEnergy() + getKineticEnergy()) / parameters.velocityRelaxLimit);
         }
 
         /**

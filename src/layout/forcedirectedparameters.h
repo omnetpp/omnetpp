@@ -37,10 +37,6 @@ class Body : public IBody {
         Rs size;
 
     private:
-        void constructor(Variable *variable, Rs& size) {
-            constructor(variable, 10, 1, size);
-        }
-
         void constructor(Variable *variable, double mass, double charge, Rs& size) {
             this->variable = variable;
             this->mass = mass;
@@ -52,15 +48,28 @@ class Body : public IBody {
 
     public:
         Body(Variable *variable) {
-            constructor(variable, Rs(10, 10));
+            constructor(variable, -1, -1, Rs::getNil());
         }
 
         Body(Variable *variable, Rs& size) {
-            constructor(variable, size);
+            constructor(variable, -1, -1, size);
         }
 
         Body(Variable *variable, double mass, double charge, Rs& size) {
             constructor(variable, mass, charge, size);
+        }
+
+        virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
+            IBody::setForceDirectedEmbedding(embedding);
+
+            if (mass == -1)
+                mass = embedding->parameters.defaultBodyMass;
+
+            if (charge == -1)
+                charge = embedding->parameters.defaultBodyCharge;
+
+            if (size.isNil())
+                size = embedding->parameters.defaultBodySize;
         }
 
         virtual const char *getClassName() {
@@ -206,18 +215,21 @@ class AbstractElectricRepulsion : public IElectricRepulsion {
             Pt vector = getDistanceAndVector(distance);
             ASSERT(distance >= 0);
 
+            // TODO: linearly decrease power from maxDistance1 to maxDistance2 (set both to POSITIVE_INFINITY by default)
+            // TODO: this will make unconnected components look better
+
             double power;
             if (distance == 0)
                 power = maxForce;
             else
-                power = getValidForce(embedding->electricRepulsionCoefficient * charge1->getCharge() * charge2->getCharge() / distance / distance);
+                power = getValidForce(embedding->parameters.electricRepulsionCoefficient * charge1->getCharge() * charge2->getCharge() / distance / distance);
 
             charge1->getVariable()->addForce(vector, +power, embedding->inspected);
             charge2->getVariable()->addForce(vector, -power, embedding->inspected);
         }
 
         virtual double getPotentialEnergy() {
-            return embedding->electricRepulsionCoefficient * charge1->getCharge() * charge2->getCharge() / getDistance();
+            return embedding->parameters.electricRepulsionCoefficient * charge1->getCharge() * charge2->getCharge() / getDistance();
         }
 };
 
@@ -310,11 +322,21 @@ class AbstractSpring : public ISpring {
 
     public:
         AbstractSpring(IBody *body1, IBody *body2) {
-            constructor(body1, body2, 1, 0, false);
+            constructor(body1, body2, -1, -1, false);
         }
         
         AbstractSpring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength, bool slippery) {
             constructor(body1, body2, springCoefficient, reposeLength, slippery);
+        }
+
+        virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
+            IForceProvider::setForceDirectedEmbedding(embedding);
+
+            if (springCoefficient == -1)
+                springCoefficient = embedding->parameters.defaultSpringCoefficient;
+
+            if (reposeLength == -1)
+                reposeLength = embedding->parameters.defaultSpringReposeLength;
         }
 
         virtual double getSpringCoefficient() {
@@ -346,7 +368,7 @@ class AbstractSpring : public ISpring {
             Pt vector = getDistanceAndVector(distance);
             ASSERT(distance >= 0);
             double expansion = distance - reposeLength;
-            double power = getValidSignedForce(embedding->springCoefficient * getSpringCoefficient() * expansion);
+            double power = getValidSignedForce(getSpringCoefficient() * expansion);
 
             if (body1)
                 body1->getVariable()->addForce(vector, -power, embedding->inspected);
@@ -357,7 +379,7 @@ class AbstractSpring : public ISpring {
 
         virtual double getPotentialEnergy() {
             double expansion = getDistance() - reposeLength;
-            return embedding->springCoefficient * getSpringCoefficient() * expansion * expansion / 2; 
+            return getSpringCoefficient() * expansion * expansion / 2; 
         }
 };
 
@@ -533,7 +555,7 @@ class AbstractVelocityBasedForceProvider : public IForceProvider {
 class Friction : public AbstractVelocityBasedForceProvider {
     public:
         virtual double getPower(Variable *variable, double vlen) {
-            return std::max(embedding->frictionCoefficient * 0.01, vlen / embedding->updatedTimeStep) * variable->getMass();
+            return std::max(embedding->parameters.frictionCoefficient * 0.01, vlen / embedding->updatedTimeStep) * variable->getMass();
         }
 
         virtual const char *getClassName() {
@@ -547,7 +569,7 @@ class Friction : public AbstractVelocityBasedForceProvider {
 class Drag : public AbstractVelocityBasedForceProvider {
     public:
         virtual double getPower(Variable *variable, double vlen) {
-            return embedding->frictionCoefficient * vlen;
+            return embedding->parameters.frictionCoefficient * vlen;
         }
 
         virtual const char *getClassName() {

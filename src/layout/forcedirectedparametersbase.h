@@ -21,6 +21,111 @@
 class ForceDirectedEmbedding;
 
 /**
+ * Various parameters driving the algorithm.
+ */
+struct ForceDirectedParameters
+{
+    /**
+     * For bodies not initialized with a particular size.
+     */
+    Rs defaultBodySize;
+
+    /**
+     * For bodies not initialized with a particular mass.
+     */
+    double defaultBodyMass;
+
+    /**
+     * For bodies not initialized with a particular charge.
+     */
+    double defaultBodyCharge;
+
+    /**
+     * For springs not initialized with a particular coefficient.
+     */
+    double defaultSpringCoefficient;
+
+    /**
+     * Default spring repose length.
+     */
+    double defaultSpringReposeLength;
+
+    /**
+     * Electric repulsion force coefficient.
+     */
+    double electricRepulsionCoefficient;
+
+    /**
+     * Friction reduces the energy of the system. The friction force points in the opposite direction of the current velocity.
+     */
+    double frictionCoefficient;
+
+    /**
+     * The default time step when solution starts.
+     */
+    double timeStep;
+
+    /**
+     * Lower limit for time step update.
+     */
+    double minTimeStep;
+
+    /**
+     * Lower limit for time step update.
+     */
+    double maxTimeStep;
+
+    /**
+     * Multiplier used to update the time step.
+     */
+    double timeStepMultiplier;    
+
+    /**
+     * Lower limit of acceleration approximation difference (between a1, a2, a3 and a4 in RK-4).
+     * During updating the time step this is the lower limit to accept the current time step.
+     */
+    double minAccelerationError;
+
+    /**
+     * Upper limit of acceleration approximation difference (between a1, a2, a3 and a4 in RK-4).
+     */
+    double maxAccelerationError;
+
+    /**
+     * Velocity limit during the solution.
+     * When all bodies has lower velocity than this limit then the algorithm may be stopped.
+     */
+    double velocityRelaxLimit;
+
+    /**
+     * Acceleration limit during the solution.
+     * When all bodies has lower acceleration than this limit then the algorithm may be stopped.
+     */
+    double accelerationRelaxLimit;
+
+    /**
+     * For force providers not initialized with a particular maximum force.
+     */
+    double defaultMaxForce;
+
+    /**
+     * Maximim velocity that a body may have.
+     */
+    double maxVelocity;
+
+    /**
+     * Maximum number of calculation cycles to run.
+     */
+    int maxCycle;
+
+    /**
+     * Maximum time to be spent on the calculation in milliseconds.
+     * The algorithm will return after this time has been elapsed.
+     */
+    double maxCalculationTime;
+};
+
+/**
  * Base class for things that have position.
  */
 class IPositioned {
@@ -170,7 +275,14 @@ class PointConstrainedVariable : public Variable {
  * Interface class for bodies.
  */
 class IBody : public IPositioned {
+    protected:
+        ForceDirectedEmbedding *embedding;
+
     public:
+        virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
+            this->embedding = embedding;
+        }
+
         virtual const char *getClassName() = 0;
 
         virtual Rs& getSize() = 0;
@@ -193,11 +305,15 @@ class IForceProvider {
 
     public:
         IForceProvider() {
-            maxForce = 1000;
+            maxForce = -1;
         }
 
         virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
             this->embedding = embedding;
+
+// TODO:
+            //if (maxForce == -1)
+            //    maxForce = embedding->parameters.defaultMaxForce;
         }
 
 	    double getMaxForce() {
@@ -218,6 +334,7 @@ class IForceProvider {
 
         Pt getStandardDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
             Pt vector = Pt(body1->getPosition()).subtract(body2->getPosition());
+            // TODO: subtract body sizes (intersected along the vector) to avoid overlapping huge bodies
             distance = vector.getLength();
             return vector;
         }

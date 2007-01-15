@@ -35,7 +35,8 @@ void main()
     embedding.addForceProvider(new Drag());
 
     embedding.debugLevel = 4;
-    embedding.maxCycle = 100;
+    embedding.parameters = embedding.getDefaultParameters();
+    embedding.parameters.maxCycle = 100;
 
     for (int i = 0; i < 100; i++) {
         embedding.embed();

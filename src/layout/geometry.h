@@ -340,6 +340,10 @@ class Rs {
             return isNaN(width) && isNaN(height);
         }
 
+        bool isFullySpecified() const {
+            return !isNaN(width) && !isNaN(height);
+        }
+
         double getDiagonalLength() const {
             return sqrt(width * width + height * height);
         }
@@ -534,8 +538,9 @@ class Cc {
             return Cc(Pt(origin.x, origin.y, 0), radius);
         }
 
-        bool basePlaneProjectionContains(Pt& pt) const {
-            return origin.getBasePlaneProjectionDistance(pt) <= radius;
+        bool basePlaneProjectionContains(Pt& pt, bool strictly = false) const {
+            double distance = origin.getBasePlaneProjectionDistance(pt);
+            return distance < radius || (!strictly && distance == radius);
         }
 
         std::vector<Pt> basePlaneProjectionIntersect(const Cc& other) const {
