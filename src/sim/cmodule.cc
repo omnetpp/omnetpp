@@ -123,7 +123,8 @@ void cModule::forEachChild(cVisitor *v)
 
     int numgates = gatev.size();
     for (int i=0; i<numgates; i++)
-        v->visit(gatev[i]);
+        if (gatev[i])
+            v->visit(gatev[i]);
 
     cDefaultList::forEachChild(v);
 }
