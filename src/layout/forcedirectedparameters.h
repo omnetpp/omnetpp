@@ -164,10 +164,77 @@ class WallBody : public Body {
         }
 };
 
+class AbstractForceProvider : public IForceProvider {
+    protected:
+        double maxForce;
+
+    public:
+        AbstractForceProvider() {
+            maxForce = -1;
+        }
+
+        virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
+            IForceProvider::setForceDirectedEmbedding(embedding);
+
+            if (maxForce == -1)
+                maxForce = embedding->parameters.defaultMaxForce;
+        }
+
+	    double getMaxForce() {
+		    return maxForce;
+	    }
+    	
+	    double getValidForce(double force) {
+		    ASSERT(force >= 0);
+            return std::min(maxForce, force);
+	    }
+    	
+	    double getValidSignedForce(double force) {
+            if (force < 0)
+                return -getValidForce(fabs(force));
+            else
+                return getValidForce(fabs(force));
+	    }
+
+        Pt getStandardDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
+            Pt vector = Pt(body1->getPosition()).subtract(body2->getPosition());
+            // TODO: subtract body sizes (intersected along the vector) to avoid overlapping huge bodies
+            distance = vector.getLength();
+            return vector;
+        }
+
+        // TODO: allow infinite sizes and calculate distance by that?
+        Pt getStandardHorizontalDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
+            Pt vector = Pt(body1->getPosition()).subtract(body2->getPosition());
+            vector.y = 0;
+            vector.z = 0;
+            distance = vector.getLength();
+            return vector;
+        }
+
+        Pt getStandardVerticalDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
+            Pt vector = Pt(body1->getPosition()).subtract(body2->getPosition());
+            vector.x = 0;
+            vector.z = 0;
+            distance = vector.getLength();
+            return vector;
+        }
+
+        Pt getSlipperyDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
+            Rc rc1 = Rc::getRcFromCenterSize(body1->getPosition(), body1->getSize());
+            Rc rc2 = Rc::getRcFromCenterSize(body2->getPosition(), body2->getSize());
+            Ln ln = rc1.getBasePlaneProjectionDistance(rc2, distance);
+            Pt vector = ln.begin;
+            vector.subtract(ln.end);
+            vector.setNaNToZero();
+            return vector;
+        }
+};
+
 /**
  * A repulsive force which decreases in a quadratic way propoportional to the distance of the bodies.
  */
-class IElectricRepulsion : public IForceProvider {
+class IElectricRepulsion : public AbstractForceProvider {
     public:
         virtual IBody *getCharge1() = 0;
     
@@ -285,7 +352,7 @@ class HorizontalElectricRepulsion : public AbstractElectricRepulsion {
 /**
  * An attractive force which increases in a linear way proportional to the distance of the bodies.
  */
-class ISpring : public IForceProvider {
+class ISpring : public AbstractForceProvider {
     public:
         virtual double getSpringCoefficient() = 0;
         
@@ -330,7 +397,7 @@ class AbstractSpring : public ISpring {
         }
 
         virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
-            IForceProvider::setForceDirectedEmbedding(embedding);
+            AbstractForceProvider::setForceDirectedEmbedding(embedding);
 
             if (springCoefficient == -1)
                 springCoefficient = embedding->parameters.defaultSpringCoefficient;
@@ -441,7 +508,7 @@ class HorizonalSpring : public AbstractSpring {
         }
 };
 
-class ShortestSpring : public IForceProvider {
+class ShortestSpring : public AbstractForceProvider {
     private:
         std::vector<AbstractSpring *> springs;
 
@@ -456,7 +523,8 @@ class ShortestSpring : public IForceProvider {
         }
 
         virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
-            IForceProvider::setForceDirectedEmbedding(embedding);
+            AbstractForceProvider::setForceDirectedEmbedding(embedding);
+
             for (std::vector<AbstractSpring *>::iterator it = springs.begin(); it != springs.end(); it++) {
                 AbstractSpring *spring = *it;
                 spring->setForceDirectedEmbedding(embedding);
@@ -526,7 +594,7 @@ class BasePlaneSpring : public AbstractSpring {
 /**
  * Base class for velocity based kinetic energy reducers.
  */
-class AbstractVelocityBasedForceProvider : public IForceProvider {
+class AbstractVelocityBasedForceProvider : public AbstractForceProvider {
     public:
         virtual double getPower(Variable *variable, double vlen) = 0;
 
@@ -582,7 +650,7 @@ class Drag : public AbstractVelocityBasedForceProvider {
  * more expensive to calculate with than the constrained variables and the final position will not
  * exactly satisfy the constraint.
  */
-class BodyConstraint : public IForceProvider {
+class BodyConstraint : public AbstractForceProvider {
     protected:
         IBody *body;
 

@@ -301,69 +301,9 @@ class IForceProvider {
     protected:
         ForceDirectedEmbedding *embedding;
 
-        double maxForce;
-
     public:
-        IForceProvider() {
-            maxForce = -1;
-        }
-
         virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
             this->embedding = embedding;
-
-// TODO:
-            //if (maxForce == -1)
-            //    maxForce = embedding->parameters.defaultMaxForce;
-        }
-
-	    double getMaxForce() {
-		    return maxForce;
-	    }
-    	
-	    double getValidForce(double force) {
-		    ASSERT(force >= 0);
-            return std::min(maxForce, force);
-	    }
-    	
-	    double getValidSignedForce(double force) {
-            if (force < 0)
-                return -getValidForce(fabs(force));
-            else
-                return getValidForce(fabs(force));
-	    }
-
-        Pt getStandardDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
-            Pt vector = Pt(body1->getPosition()).subtract(body2->getPosition());
-            // TODO: subtract body sizes (intersected along the vector) to avoid overlapping huge bodies
-            distance = vector.getLength();
-            return vector;
-        }
-
-        // TODO: allow infinite sizes and calculate distance by that?
-        Pt getStandardHorizontalDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
-            Pt vector = Pt(body1->getPosition()).subtract(body2->getPosition());
-            vector.y = 0;
-            vector.z = 0;
-            distance = vector.getLength();
-            return vector;
-        }
-
-        Pt getStandardVerticalDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
-            Pt vector = Pt(body1->getPosition()).subtract(body2->getPosition());
-            vector.x = 0;
-            vector.z = 0;
-            distance = vector.getLength();
-            return vector;
-        }
-
-        Pt getSlipperyDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
-            Rc rc1 = Rc::getRcFromCenterSize(body1->getPosition(), body1->getSize());
-            Rc rc2 = Rc::getRcFromCenterSize(body2->getPosition(), body2->getSize());
-            Ln ln = rc1.getBasePlaneProjectionDistance(rc2, distance);
-            Pt vector = ln.begin;
-            vector.subtract(ln.end);
-            vector.setNaNToZero();
-            return vector;
         }
 
         virtual const char *getClassName() = 0;
