@@ -124,6 +124,11 @@ class SIM_API cGate : public cObject, noncopyable
      * See cObject for more details.
      */
     virtual std::string info() const;
+
+    /**
+     * Returns the owner module of this gate.
+     */
+    virtual cObject *owner() const;
     //@}
 
     /**

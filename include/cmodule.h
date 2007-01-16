@@ -476,14 +476,14 @@ class SIM_API cModule : public cComponent //implies noncopyable
     /**
      * Returns a gate by its ID. Note that the gate array may contain "holes",
      * that is, this function can return NULL for some IDs in the 0..gates()-1
-     * range. NULL is returned for IDs out of range as well.
+     * range. If the ID is out of range, an error is thrown.
      */
     virtual cGate *gate(int g);
 
     /**
      * Returns a gate by its ID. Note that the gate array may contain "holes",
      * that is, this function can return NULL for some IDs in the 0..gates()-1
-     * range. NULL is returned for IDs out of range as well.
+     * range. If the ID is out of range, an error is thrown.
      */
     const cGate *gate(int g) const {return const_cast<cModule *>(this)->gate(g);}
 
