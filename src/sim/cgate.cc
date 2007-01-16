@@ -104,8 +104,6 @@ std::string cGate::info() const
         ASSERT(0);  // a cGate is never INOUT
 
     // append useful info to buf
-    if (desc->size==0)
-        return std::string("(placeholder for zero-size vector)");
     if (!g)
         return std::string("not connected");
 
@@ -119,6 +117,12 @@ std::string cGate::info() const
         out << ", channel: " << chan->info();
 
     return out.str();
+}
+
+cObject *cGate::owner() const
+{
+    // note: this function cannot go inline because of circular dependencies
+    return desc->ownerp;
 }
 
 void cGate::setGateId(int id)

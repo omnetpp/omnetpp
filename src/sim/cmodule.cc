@@ -456,7 +456,7 @@ cGate *cModule::getOrCreateFirstUnconnectedGate(const char *gatename, char suffi
     {
         if (suffix!='i' && suffix!='o')
             throw cRuntimeError(this,"getOrCreateFirstUnconnectedGate(): wrong gate name suffix `%c'", suffix);
-        inputside = suffix!='i';
+        inputside = suffix=='i';
     }
 
     // find first unconnected gate
