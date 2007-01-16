@@ -80,12 +80,6 @@ class cNEDNetworkBuilder
                        const char *gatename, ExpressionNode *gateindexp, bool isplusplus,
                        cGate *&gatein, cGate *&gateout);
     cModule *resolveModuleForConnection(cModule *parentmodp, const char *modname, ExpressionNode *modindexp);
-    cGate *getFirstUnusedParentModGate(cModule *mod, const char *gatename);
-    cGate *getFirstUnusedSubmodGate(cModule *mod, const char *gatename);
-    void getFirstUnusedParentModInoutGate(cModule *modp, const char *gatename,
-                                          cGate *&gatein, cGate *&gateout);
-    void getFirstUnusedSubmodInoutGate(cModule *modp, const char *gatename,
-                                       cGate *&gatein, cGate *&gateout);
     cChannel *createChannel(ChannelSpecNode *channelspec, cModule *parentmodp);
 
     cChannelType *findAndCheckChannelType(const char *channeltypename);

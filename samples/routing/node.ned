@@ -65,8 +65,8 @@ module Node
         routing.localOut --> app.in;
         routing.localIn <-- app.out;
         for i=0..sizeof(port)-1 {
-            routing.out[i] --> port[i]$o;
-            routing.in[i] <-- port[i]$i;
+            routing.out[i] --> port$o[i];
+            routing.in[i] <-- port$i[i];
         };
 }
 

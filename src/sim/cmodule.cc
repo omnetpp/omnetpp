@@ -432,6 +432,110 @@ int cModule::moveGates(int oldpos, int oldsize, int newsize, cGate::Desc *desc)
     return newpos;
 }
 
+cGate *cModule::getOrCreateFirstUnconnectedGate(const char *gatename, char suffix,
+                                                bool inside, bool expand)
+{
+    // look up gate
+    char suffix1;
+    cGate::Desc& desc = const_cast<cGate::Desc&>(gateDesc(gatename, suffix1));
+    if (!desc.isVector())
+        throw cRuntimeError(this,"getOrCreateFirstUnconnectedGate(): gate `%s' is not a vector gate", gatename);
+    if (suffix1 && suffix)
+        throw cRuntimeError(this,"getOrCreateFirstUnconnectedGate(): gate `%s' AND suffix `%c' given", gatename, suffix);
+    suffix = suffix | suffix1;
+
+    // determine whether input or output gates to check
+    bool inputside;
+    if (!suffix)
+    {
+        if (desc.isInout())
+            throw cRuntimeError(this,"getOrCreateFirstUnconnectedGate(): inout gate specified but no suffix");
+        inputside = desc.isInput();
+    }
+    else
+    {
+        if (suffix!='i' && suffix!='o')
+            throw cRuntimeError(this,"getOrCreateFirstUnconnectedGate(): wrong gate name suffix `%c'", suffix);
+        inputside = suffix!='i';
+    }
+
+    // find first unconnected gate
+    int baseId = inputside ? desc.inGateId : desc.outGateId;
+    int oldsize = desc.size;
+    if (inside)
+    {
+        for (int i=baseId; i<baseId+oldsize; i++)
+           if (!gatev[i]->isConnectedInside())
+               return gatev[i];
+    }
+    else
+    {
+        for (int i=baseId; i<baseId+oldsize; i++)
+           if (!gatev[i]->isConnectedOutside())
+               return gatev[i];
+    }
+
+    // no unconnected gate: expand gate vector
+    if (expand)
+    {
+        // expand gatesize by one (code from setGateSize())
+        int newsize = oldsize + 1;
+        if (desc.isInput())
+            desc.inGateId = moveGates(desc.inGateId, desc.size, newsize, &desc);
+        if (desc.isOutput())
+            desc.outGateId = moveGates(desc.outGateId, desc.size, newsize, &desc);
+        desc.size = newsize;
+        int newBaseId = inputside ? desc.inGateId : desc.outGateId;
+        return gatev[newBaseId + oldsize];
+    }
+
+    return NULL;
+}
+
+void cModule::getOrCreateFirstUnconnectedGatePair(const char *gatename,
+                                                  bool inside, bool expand,
+                                                  cGate *&gatein, cGate *&gateout)
+{
+    // look up gate
+    char suffix;
+    cGate::Desc& desc = const_cast<cGate::Desc&>(gateDesc(gatename, suffix));
+    if (!desc.isVector())
+        throw cRuntimeError(this,"getOrCreateFirstUnconnectedGatePair(): gate `%s' is not a vector gate", gatename);
+    if (suffix)
+        throw cRuntimeError(this,"getOrCreateFirstUnconnectedGatePair(): inout gate expected, without `$i'/`$o' suffix");
+
+    // find first unconnected gate
+    int oldsize = desc.size;
+    if (inside)
+    {
+        for (int i=0; i<oldsize; i++)
+           if (!gatev[desc.inGateId+i]->isConnectedInside() && !gatev[desc.outGateId+i]->isConnectedInside())
+               {gatein = gatev[desc.inGateId+i]; gateout = gatev[desc.outGateId+i]; return;}
+    }
+    else
+    {
+        for (int i=0; i<oldsize; i++)
+           if (!gatev[desc.inGateId+i]->isConnectedOutside() && !gatev[desc.outGateId+i]->isConnectedOutside())
+               {gatein = gatev[desc.inGateId+i]; gateout = gatev[desc.outGateId+i]; return;}
+    }
+
+    // no unconnected gate: expand gate vector
+    if (expand)
+    {
+        // expand gatesize by one (code from setGateSize())
+        int newsize = oldsize + 1;
+        desc.inGateId = moveGates(desc.inGateId, desc.size, newsize, &desc);
+        desc.outGateId = moveGates(desc.outGateId, desc.size, newsize, &desc);
+        desc.size = newsize;
+
+        gatein = gatev[desc.inGateId+oldsize];
+        gateout = gatev[desc.outGateId+oldsize];
+        return;
+    }
+
+    gatein = gateout = NULL;
+}
+
 bool cModule::checkInternalConnections() const
 {
     int j;

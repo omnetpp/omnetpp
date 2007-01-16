@@ -623,9 +623,16 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
     else if (isplusplus)
     {
         if (modp == parentmodp)
-            gatep = getFirstUnusedParentModGate(modp, gatename2);
+        {
+            gatep = modp->getOrCreateFirstUnconnectedGate(gatename2, 0, true, false); // inside, don't expand
+            if (gatep)
+                throw cRuntimeError("%s[] gates are all connected, no gate left for `++' operator",modp->fullPath().c_str(), gatename);
+        }
         else
-            gatep = getFirstUnusedSubmodGate(modp, gatename2);
+        {
+            gatep = modp->getOrCreateFirstUnconnectedGate(gatename2, 0, false, true); // outside, expand
+            ASSERT(gatep!=NULL);
+        }
     }
     else // (gateindexp)
     {
@@ -649,18 +656,27 @@ void cNEDNetworkBuilder::resolveInoutGate(cModule *parentmodp,
     gatein = gateout = NULL;
     if (!gateindexp && !isplusplus)
     {
+        // optimization possiblity: add gatePair() method to cModule to spare one lookup
         gatein = modp->gateHalf(gatename, cGate::INPUT);
         gateout = modp->gateHalf(gatename, cGate::OUTPUT);
     }
     else if (isplusplus)
     {
         if (modp == parentmodp)
-            getFirstUnusedParentModInoutGate(modp, gatename, gatein, gateout);
+        {
+            modp->getOrCreateFirstUnconnectedGatePair(gatename, true, false, gatein, gateout); // inside, don't expand
+            if (!gatein || !gateout)
+                throw cRuntimeError("%s[] gates are all connected, no gate left for `++' operator",modp->fullPath().c_str(), gatename);
+        }
         else
-            getFirstUnusedSubmodInoutGate(modp, gatename, gatein, gateout);
+        {
+            modp->getOrCreateFirstUnconnectedGatePair(gatename, false, true, gatein, gateout); // outside, expand
+            ASSERT(gatein && gateout);
+        }
     }
     else // (gateindexp)
     {
+        // optimization possiblity: add gatePair() method to cModule to spare one lookup
         int gateindex = (int) evaluateAsLong(gateindexp, parentmodp, false);
         gatein = modp->gateHalf(gatename, cGate::INPUT, gateindex);
         gateout = modp->gateHalf(gatename, cGate::OUTPUT, gateindex);
@@ -688,76 +704,6 @@ cModule *cNEDNetworkBuilder::resolveModuleForConnection(cModule *parentmodp, con
         }
         return modp;
     }
-}
-
-cGate *cNEDNetworkBuilder::getFirstUnusedParentModGate(cModule *modp, const char *gatename)
-{
-    //FIXME revise! probably won't work
-    int baseId = modp->findGate(gatename);
-    if (baseId<0)
-        throw cRuntimeError("dynamic module builder: %s has no %s[] gate",modp->fullPath().c_str(), gatename);
-    int n = modp->gate(baseId)->size();
-    for (int i=0; i<n; i++)
-        if (!modp->gate(baseId+i)->isConnectedInside())
-            return modp->gate(baseId+i);
-    throw cRuntimeError("%s[] gates are all connected, no gate left for `++' operator",modp->fullPath().c_str(), gatename);
-}
-
-cGate *cNEDNetworkBuilder::getFirstUnusedSubmodGate(cModule *modp, const char *gatename)
-{
-    int oldsize = modp->gateSize(gatename);
-    if (oldsize>0)
-    {
-        int baseId = modp->findGate(gatename, 0);
-        for (int i=0; i<oldsize; i++)
-            if (!modp->gate(baseId+i)->isConnectedOutside())
-                return modp->gate(baseId+i);
-    }
-    //FIXME old, more efficient code:
-    // int newBaseId = modp->setGateSize(gatename, n+1);
-    // return modp->gate(newBaseId+n);
-    modp->setGateSize(gatename, oldsize+1);   //FIXME could be more optimal?
-    return modp->gate(gatename, oldsize);
-}
-
-void cNEDNetworkBuilder::getFirstUnusedParentModInoutGate(cModule *modp, const char *gatename,
-                                                          cGate *&gatein, cGate *&gateout)
-{
-__asm int 3; //FIXME to be implemented
-/*
-    int baseId = modp->findGate(gatename);
-    if (baseId<0)
-        throw cRuntimeError("dynamic module builder: %s has no %s[] gate",modp->fullPath().c_str(), gatename);
-    int n = modp->gate(baseId)->size();
-    for (int i=0; i<n; i++)
-        if (!modp->gate(baseId+i)->isConnectedInside())
-            return modp->gate(baseId+i);
-    throw cRuntimeError("%s[] gates are all connected, no gate left for `++' operator",modp->fullPath().c_str(), gatename);
-*/
-}
-
-//FIXME these four functions sholud probably be moved into cModule. Could be a lot more efficient
-void cNEDNetworkBuilder::getFirstUnusedSubmodInoutGate(cModule *modp, const char *gatename,
-                                                       cGate *&gatein, cGate *&gateout)
-{
-    int oldsize = modp->gateSize(gatename);
-    if (oldsize>0)
-    {
-        int iBaseId = modp->gateHalf(gatename, cGate::INPUT, 0)->id();  //FIXME make better API to get these two in one step!
-        int oBaseId = modp->gateHalf(gatename, cGate::OUTPUT, 0)->id();
-        for (int i=0; i<oldsize; i++)
-        {
-            if (!modp->gate(iBaseId+i)->isConnectedOutside() && !modp->gate(oBaseId+i)->isConnectedOutside())
-            {
-                gatein = modp->gate(iBaseId+i);
-                gateout = modp->gate(oBaseId+i);
-                return;
-            }
-        }
-    }
-    modp->setGateSize(gatename, oldsize+1);   //FIXME could be more optimal? (don't look up name again)
-    gatein = modp->gateHalf(gatename, cGate::INPUT, oldsize);
-    gateout = modp->gateHalf(gatename, cGate::OUTPUT, oldsize);
 }
 
 cChannel *cNEDNetworkBuilder::createChannel(ChannelSpecNode *channelspec, cModule *parentmodp)
