@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <iostream>
+#include <algorithm>
 
 #include "cmodule.h"
 #include "cgate.h"
@@ -536,7 +537,7 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionNode *conn)
                                          conn->getDestGate(), findExpression(conn, "dest-gate-index"),
                                          conn->getDestGateSubg(), conn->getDestGatePlusplus());
 
-        //TRACE("doAddConnection(): %s --> %s", srcg->fullPath().c_str(), destg->fullPath().c_str());
+        //printf("creating connection: %s --> %s\n", srcg->fullPath().c_str(), destg->fullPath().c_str());
 
         // check directions
         cGate *errg = NULL;
@@ -559,18 +560,23 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionNode *conn)
                                 "cannot be used with bidirectional connections",
                                 modp->className(), modp->fullPath().c_str());
 
-        cGate *srcgi, *srcgo, *destgi, *destgo;
+        // now: 1 is input, 2 is output, except for parent module gates where it is the other way round
+        // (because we connect xx.out --> yy.in, but xx.out --> out!)
+        cGate *srcg1, *srcg2, *destg1, *destg2;
         resolveInoutGate(modp, conn->getSrcModule(), findExpression(conn, "src-module-index"),
                          conn->getSrcGate(), findExpression(conn, "src-gate-index"),
                          conn->getSrcGatePlusplus(),
-                         srcgi, srcgo);
+                         srcg1, srcg2);
         resolveInoutGate(modp, conn->getDestModule(), findExpression(conn, "dest-module-index"),
                          conn->getDestGate(), findExpression(conn, "dest-gate-index"),
                          conn->getDestGatePlusplus(),
-                         destgi, destgo);
+                         destg1, destg2);
 
-        doConnectGates(modp, srcgo, destgi, conn);
-        doConnectGates(modp, destgo, srcgi, conn);
+        //printf("Creating bidir conn: %s --> %s\n", srcg2->fullPath().c_str(), destg1->fullPath().c_str());
+        //printf("                and: %s <-- %s\n", srcg1->fullPath().c_str(), destg2->fullPath().c_str());
+
+        doConnectGates(modp, srcg2, destg1, conn);
+        doConnectGates(modp, destg2, srcg1, conn);
     }
 }
 
@@ -625,8 +631,8 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
         if (modp == parentmodp)
         {
             gatep = modp->getOrCreateFirstUnconnectedGate(gatename2, 0, true, false); // inside, don't expand
-            if (gatep)
-                throw cRuntimeError("%s[] gates are all connected, no gate left for `++' operator",modp->fullPath().c_str(), gatename);
+            if (!gatep)
+                throw cRuntimeError("%s.%s[] gates are all connected, no gate left for `++' operator", modp->fullPath().c_str(), gatename);
         }
         else
         {
@@ -646,40 +652,45 @@ void cNEDNetworkBuilder::resolveInoutGate(cModule *parentmodp,
                                           const char *modname, ExpressionNode *modindexp,
                                           const char *gatename, ExpressionNode *gateindexp,
                                           bool isplusplus,
-                                          cGate *&gatein, cGate *&gateout)
+                                          cGate *&gate1, cGate *&gate2)
 {
     if (isplusplus && gateindexp)
         throw cRuntimeError("dynamic module builder: \"++\" and gate index expression cannot exist together");
 
     cModule *modp = resolveModuleForConnection(parentmodp, modname, modindexp);
 
-    gatein = gateout = NULL;
+    gate1 = gate2 = NULL;
     if (!gateindexp && !isplusplus)
     {
         // optimization possiblity: add gatePair() method to cModule to spare one lookup
-        gatein = modp->gateHalf(gatename, cGate::INPUT);
-        gateout = modp->gateHalf(gatename, cGate::OUTPUT);
+        gate1 = modp->gateHalf(gatename, cGate::INPUT);
+        gate2 = modp->gateHalf(gatename, cGate::OUTPUT);
     }
     else if (isplusplus)
     {
         if (modp == parentmodp)
         {
-            modp->getOrCreateFirstUnconnectedGatePair(gatename, true, false, gatein, gateout); // inside, don't expand
-            if (!gatein || !gateout)
-                throw cRuntimeError("%s[] gates are all connected, no gate left for `++' operator",modp->fullPath().c_str(), gatename);
+            modp->getOrCreateFirstUnconnectedGatePair(gatename, true, false, gate1, gate2); // inside, don't expand
+            if (!gate1 || !gate2)
+                throw cRuntimeError("%s.%s[] gates are all connected, no gate left for `++' operator", modp->fullPath().c_str(), gatename);
         }
         else
         {
-            modp->getOrCreateFirstUnconnectedGatePair(gatename, false, true, gatein, gateout); // outside, expand
-            ASSERT(gatein && gateout);
+            modp->getOrCreateFirstUnconnectedGatePair(gatename, false, true, gate1, gate2); // outside, expand
+            ASSERT(gate1 && gate2);
         }
     }
     else // (gateindexp)
     {
         // optimization possiblity: add gatePair() method to cModule to spare one lookup
         int gateindex = (int) evaluateAsLong(gateindexp, parentmodp, false);
-        gatein = modp->gateHalf(gatename, cGate::INPUT, gateindex);
-        gateout = modp->gateHalf(gatename, cGate::OUTPUT, gateindex);
+        gate1 = modp->gateHalf(gatename, cGate::INPUT, gateindex);
+        gate2 = modp->gateHalf(gatename, cGate::OUTPUT, gateindex);
+    }
+
+    if (modp==parentmodp)
+    {
+        std::swap(gate1, gate2);
     }
 }
 

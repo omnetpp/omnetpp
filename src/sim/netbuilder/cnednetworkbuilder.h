@@ -78,7 +78,7 @@ class cNEDNetworkBuilder
                        const char *gatename, ExpressionNode *gateindexp, int subg, bool isplusplus);
     void resolveInoutGate(cModule *parentmodp, const char *modname, ExpressionNode *modindexp,
                        const char *gatename, ExpressionNode *gateindexp, bool isplusplus,
-                       cGate *&gatein, cGate *&gateout);
+                       cGate *&gate1, cGate *&gate2);
     cModule *resolveModuleForConnection(cModule *parentmodp, const char *modname, ExpressionNode *modindexp);
     cChannel *createChannel(ChannelSpecNode *channelspec, cModule *parentmodp);
 
