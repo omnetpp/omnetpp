@@ -38,11 +38,10 @@ network DD3 {
                     c.pv1$o[i] --> pv1$o[i];
                     c.pv1$i[i] <-- pv1$i[i];
                 }
-                //FIXME uncomment!
-                //for i=0..sizeof(pv2)-1 {
-                //    c.pv2$o++ --> pv2$o++;
-                //    c.pv2$i++ <-- pv2$i++;
-                //};
+                for i=0..sizeof(pv2)-1 {
+                    c.pv2$o++ --> pv2$o++;
+                    c.pv2$i++ <-- pv2$i++;
+                };
         }
 
     submodules:

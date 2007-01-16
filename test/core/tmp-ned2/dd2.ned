@@ -1,3 +1,14 @@
+        module Core  //FIXME just temp, remove!
+        {
+            gates:
+                inout p;
+                inout pv1[];
+                inout pv2[];
+            connections allowunconnected:
+        }
+
+
+
 // bidirectional connection to parent, with scalar gate, gate indexing and gate++
 network DD2 {
     types:
@@ -19,7 +30,7 @@ network DD2 {
             submodules:
                 c: Core {
                     gates:
-                        pv1[sizeof(pv2)];
+                        pv1[sizeof(pv1)];
                 };
             connections:
                 p <--> c.p;
