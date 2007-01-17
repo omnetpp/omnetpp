@@ -161,7 +161,10 @@ IndexedVectorFileWriterNode::~IndexedVectorFileWriterNode()
     if (f != NULL)
         fclose(f);
     if (indexWriter != NULL)
+    {
+        indexWriter->writeFingerprint(fileName);
         delete indexWriter;
+    }
 }
 
 Port *IndexedVectorFileWriterNode::addVector(int vectorId, std::string moduleName, std::string name)

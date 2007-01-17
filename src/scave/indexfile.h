@@ -68,6 +68,7 @@ struct VectorData {
 typedef std::vector<VectorData> Vectors;
 
 struct VectorFileIndex {
+    std::string vectorFileName;
     long vectorFileLastModified;
     long vectorFileSize;
     Vectors vectors;
@@ -116,6 +117,7 @@ class IndexFileWriter
         IndexFileWriter(const char *filename, int precision=14);
         ~IndexFileWriter();
         void writeAll(VectorFileIndex &index);
+        void writeFingerprint(std::string vectorFileName);
         void writeVector(VectorData &vector);
         void writeVectorDeclaration(VectorData &vector);
         void writeBlock(Block &block);

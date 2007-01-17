@@ -45,6 +45,14 @@ VectorData *VectorFileIndex::getVector(int vectorId)
 }
 
 //=========================================================================
+static bool isFileReadable(const char *filename)
+{
+    FILE *f = fopen(filename, "r");
+    if (f != NULL)
+        fclose(f);
+    return f != NULL;
+}
+
 bool IndexFile::isIndexFile(const char *filename)
 {
     int len = strlen(filename);
@@ -95,7 +103,10 @@ bool IndexFile::isIndexFileUpToDate(const char *filename)
         vectorFileName = std::string(filename);
     }
 
-    IndexFileReader reader(filename);
+    if (!isFileReadable(indexFileName.c_str()))
+        return false;
+
+    IndexFileReader reader(indexFileName.c_str());
     VectorFileIndex *index = reader.readHeader();
 
     struct stat s;
@@ -158,7 +169,7 @@ VectorFileIndex *IndexFileReader::readHeader()
 
         if (numTokens == 0 || tokens[0][0] == '#')
             continue;
-        else if (tokens[0][0] == 'f' && strcmp(tokens[0], "file"))
+        else if (tokens[0][0] == 'f' && strcmp(tokens[0], "file") == 0)
         {
             long dummy=0;
             index = new VectorFileIndex();
@@ -266,8 +277,7 @@ IndexFileWriter::~IndexFileWriter()
 void IndexFileWriter::writeAll(VectorFileIndex &index)
 {
     openFile();
-    
-    // write header
+    writeFingerprint(index.vectorFileName);
 
     for (Vectors::iterator vectorRef = index.vectors.begin(); vectorRef != index.vectors.end(); ++vectorRef)
     {
@@ -275,6 +285,21 @@ void IndexFileWriter::writeAll(VectorFileIndex &index)
     }
 
     closeFile();
+}
+
+void IndexFileWriter::writeFingerprint(std::string vectorFileName)
+{
+    if (file == NULL)
+        openFile();
+    
+    struct stat s;
+    if (stat(vectorFileName.c_str(), &s) != 0)
+        throw opp_runtime_error("vector file %s does not exists", vectorFileName.c_str());
+
+    long saveOffset = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    fprintf(file, "file %ld %ld", (long)s.st_size, (long)s.st_mtime);
+    fseek(file,saveOffset, SEEK_SET);
 }
 
 void IndexFileWriter::writeVector(VectorData &vector)
@@ -318,6 +343,9 @@ void IndexFileWriter::openFile()
     file = fopen(filename.c_str(), "w");
     if (file == NULL)
         throw opp_runtime_error("");
+
+    // space for header
+    fprintf(file, "%64s\n", "");
 }
 
 void IndexFileWriter::closeFile()

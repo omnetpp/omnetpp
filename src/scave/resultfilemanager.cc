@@ -835,7 +835,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
         const char *vectorName = vec[3];
         vecdata.moduleNameRef = stringSetFindOrInsert(moduleNames, std::string(moduleName));
         vecdata.nameRef = stringSetFindOrInsert(names, std::string(vectorName));
-        vecdata.count = 0;
+        vecdata.count = -1;
         vecdata.min = NaN;
         vecdata.max = NaN;
         vecdata.sum = NaN;
