@@ -72,6 +72,7 @@ struct VectorFileIndex {
     long vectorFileSize;
     Vectors vectors;
 
+    VectorFileIndex() : vectorFileLastModified(0), vectorFileSize(0), vectors() {}
     int getNumberOfVectors() { return vectors.size(); };
     VectorData *getVectorAt(int index) { return &vectors[index]; };
     VectorData *getVector(int vectorId);
@@ -84,6 +85,12 @@ class IndexFile
         static bool isVectorFile(const char *vectorFileName);
         static std::string getIndexFileName(const char *vectorFileName);
         static std::string getVectorFileName(const char *indexFileName);
+        /**
+         * Checks if the index file is up-to-date.
+         * The fileName is either the name of the index file or the vector file.
+         * The index file is up-to-date if the size and modification date stored in the index file
+         * is equal to the size and date of the vector file.
+         */
         static bool isIndexFileUpToDate(const char *fileName);
 };
 
@@ -94,6 +101,7 @@ class IndexFileReader
     public:
         IndexFileReader(const char *filename);
         VectorFileIndex *readAll();
+        VectorFileIndex *readHeader();
     protected:
         void parseLine(char **tokens, int numTokens, VectorFileIndex *index, long &numOfEntries, int lineNum);
 };

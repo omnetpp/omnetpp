@@ -21,12 +21,13 @@
 
 #include <stdio.h>
 #include <float.h>
+#include <deque>
 #include "envirext.h"
 #include "util.h"
 #include "filemgrs.h"
 
-#define MIN_BUFFER_SIZE 512
-#define DEFAULT_BUFFER_SIZE 65536
+#define MIN_BUFFER_MEMORY 1024*1024
+#define DEFAULT_MEMORY_LIMIT "16MB"
 
 /**
  * cFileOutputManager that writes vector data in chunks and
@@ -39,39 +40,52 @@ class cIndexedFileOutputVectorManager : public cFileOutputVectorManager
   protected:
     struct sBlock {
       long offset;
-      long num_samples;
-      sBlock(long offset, long num_samples) : offset(offset), num_samples(num_samples) {}
+      long count;
+      sBlock(long offset, long count) : offset(offset), count(count) {}
     };
 
-    struct sVectorDataExt : sVectorData {
-      char* buffer;            // buffer holding recorded data
-      int buffer_size;         // size of the allocated buffer
-      char* buffer_ptr;        // pointer to the current position in the buffer
-      int buffer_num_samples;  // number of samples written into the buffer
-      int num_samples;         // number of samples written into the vector
+    typedef std::vector<sBlock> Blocks;
+
+    struct sSample {
+        double symtime;
+        double value;
+
+        sSample(double t, double val) : symtime(t), value(val) {}
+    };
+
+    typedef std::vector<sSample> Samples;
+
+    struct sVector : sVectorData {
+      std::vector<sSample> buffer; // buffer holding recorded data not yet written to the file
+      long maxBufferedSamples; // maximum number of samples gathered in the buffer
+      long count;              // number of samples written into the vector
       double min;              // minimum of samples written into the vector
       double max;              // maximum of samples written into the vector
       double sum;              // sum of samples written into the vector
       double sumsqr;           // sum of squares of samples written into the vector
+      long maxBlockSize;       // maximum size of the blocks in bytes
       std::vector<sBlock> blocks; // attributes of the chunks written into the file
 
-      sVectorDataExt() { buffer=buffer_ptr=NULL; buffer_size=0; num_samples=0; min=DBL_MAX; max=DBL_MIN; sum=sumsqr=0.0; }
-      ~sVectorDataExt() { if (buffer) delete[] buffer; }
-      void allocate_buffer(int size) { buffer=new char[size]; buffer_size=size; clear_buffer(); }
-      void clear_buffer() { buffer_ptr = buffer; buffer_num_samples=0; if (buffer) buffer[0] = '\0';}
-      bool dirty() { return buffer_ptr!=buffer; }
+      sVector() : buffer(), maxBufferedSamples(0), count(0), min(DBL_MAX), max(DBL_MIN), sum(0.0), sumsqr(0.0), maxBlockSize(0), blocks() {}
+      void allocateBuffer(long count) { buffer.reserve(count); }
     };
+
+    typedef std::vector<sVector*> Vectors;
+
     opp_string ifname;  // index file name
     FILE *fi;           // file ptr of index file
-    std::vector<sVectorDataExt*> vectors; // registered output vectors
+    size_t maxMemoryUsed;
+    size_t memoryUsed;
+    Vectors vectors; // registered output vectors
 
   protected:
     virtual sVectorData *createVectorData();
     void openIndexFile();
     void closeIndexFile();
-    virtual void finalizeVector(sVectorDataExt *vector);
-    virtual void writeRecords(sVectorDataExt *vector);
-    virtual void writeIndex(sVectorDataExt *vector);
+    virtual void finalizeVector(sVector *vector);
+    virtual void writeRecords();
+    virtual void writeRecords(sVector *vector);
+    virtual void writeIndex(sVector *vector);
   public:
     /** @name Constructors, destructor */
     //@{

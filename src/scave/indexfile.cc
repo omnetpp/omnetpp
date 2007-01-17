@@ -80,28 +80,6 @@ std::string IndexFile::getIndexFileName(const char *filename)
     return indexFileName;
 }
 
-static bool isFileReadable(std::string fileName)
-{
-    FILE *f = fopen(fileName.c_str(), "r");
-    if (f!=NULL)
-    {
-        fclose(f);
-        return true;
-    }
-    else
-        return false;
-}
-
-static bool isFileNewer(std::string newer, std::string older)
-{
-    struct stat s;
-    stat(newer.c_str(), &s);
-    time_t newerTime = s.st_mtime;
-    stat(older.c_str(), &s);
-    time_t olderTime = s.st_mtime;
-    return newerTime > olderTime;
-}
-
 bool IndexFile::isIndexFileUpToDate(const char *filename)
 {
     std::string indexFileName, vectorFileName;
@@ -117,15 +95,18 @@ bool IndexFile::isIndexFileUpToDate(const char *filename)
         vectorFileName = std::string(filename);
     }
 
-    if (!isFileReadable(indexFileName) || !isFileReadable(vectorFileName))
-        return false;
+    IndexFileReader reader(filename);
+    VectorFileIndex *index = reader.readHeader();
 
-    if (isFileNewer(vectorFileName, indexFileName))
-        return false;
+    struct stat s;
+    bool uptodate = false;
+    if (stat(vectorFileName.c_str(), &s) == 0)
+    {
+        uptodate = (s.st_mtime == index->vectorFileLastModified) && (s.st_size == index->vectorFileSize);
+    }
 
-    // TODO: check file length
-
-    return true;
+    delete index;
+    return uptodate;
 }
 
 //=========================================================================
@@ -160,10 +141,46 @@ VectorFileIndex *IndexFileReader::readAll()
     return index;
 }
 
+VectorFileIndex *IndexFileReader::readHeader()
+{
+    FileReader reader(filename.c_str());
+    LineTokenizer tokenizer(1024);
+    int numTokens;
+    char *line, **tokens;
+
+    VectorFileIndex *index = NULL;
+    while ((line=reader.readNextLine())!=NULL)
+    {
+        int lineNum = reader.getNumReadLines();
+        int len = reader.getLastLineLength();
+        numTokens = tokenizer.tokenize(line,len);
+        tokens = tokenizer.tokens();
+
+        if (numTokens == 0 || tokens[0][0] == '#')
+            continue;
+        else if (tokens[0][0] == 'f' && strcmp(tokens[0], "file"))
+        {
+            long dummy=0;
+            index = new VectorFileIndex();
+            parseLine(tokens, numTokens, index, dummy, lineNum);
+        }
+        else
+            break;
+    }
+
+    if (index == NULL)
+        throw opp_runtime_error("invalid index file syntax: missing header, file %s", filename.c_str());
+
+    return index;
+}
+
+
 void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *index, long &numOfEntries, int lineNum)
 {
     if (numTokens == 0 || tokens[0][0] == '#')
         return;
+
+    char *endPtr;
 
     if (tokens[0][0] == 'v' && strcmp(tokens[0], "vector") == 0)
     {
@@ -188,6 +205,22 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
 
         index->vectors.push_back(vector);
         numOfEntries = 0;
+    }
+    else if (tokens[0][0] == 'f' && strcmp(tokens[0], "file") == 0)
+    {
+        if (numTokens < 3)
+            throw opp_runtime_error("invalid index file syntax: missing file attributes, file %s, line %d", filename.c_str(), lineNum);
+
+        long fileSize = strtol(tokens[1], &endPtr, 10);
+        if (*endPtr)
+            throw opp_runtime_error("invalid index file syntax: file size is not a number, file %s, line %d", filename.c_str(), lineNum);
+            
+        long lastModified = strtol(tokens[2], &endPtr, 10);
+        if (*endPtr)
+            throw opp_runtime_error("invalid index file syntax: modification date is not a number, file %s, line %d", filename.c_str(), lineNum);
+
+        index->vectorFileSize = fileSize;
+        index->vectorFileLastModified = lastModified;
     }
     else
     {

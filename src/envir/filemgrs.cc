@@ -48,7 +48,7 @@ Register_Class(cFileOutputVectorManager);
 #define CHECK(fprintf)    if (fprintf<0) throw cRuntimeError("Cannot write output vector file `%s'", fname.c_str())
 
 // helper functions
-static const char *getRunSectionName(int runNumber)
+const char *getRunSectionName(int runNumber)
 {
     static int lastRunNumber = -1;
     static char section[16];
