@@ -140,7 +140,7 @@ void cEnvir::setup(int argc, char *argv[])
 
         // load shared libraries given with '-l' option(s)
         const char *libname;
-        for (k=0; (libname=args->optionValue('l',k))!=NULL; k++)
+        for (int k=0; (libname=args->optionValue('l',k))!=NULL; k++)
             loadExtensionLibrary(libname);
 
         // load shared libs given in [General]/load-libs=

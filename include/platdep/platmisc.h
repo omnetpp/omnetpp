@@ -43,6 +43,9 @@
 #include <exception>
 #include <stdexcept>
 
+#ifdef HAVE_DLOPEN
+#include <dlfcn.h>
+#endif
 
 //
 // Getting Windows error strings

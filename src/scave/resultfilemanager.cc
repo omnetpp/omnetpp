@@ -14,6 +14,7 @@
 
 #ifdef _MSC_VER
 #pragma warning(disable:4786)
+#define strcasecmp stricmp
 #endif
 
 #include <stdlib.h>
@@ -521,13 +522,13 @@ const char *MatchableResultItem::getDefaultAttribute() const
 
 const char *MatchableResultItem::getAttribute(const char *name) const
 {
-    if (stricmp("name", name) == 0)
+    if (strcasecmp("name", name) == 0)
         return getName();
-    else if (stricmp("module", name) == 0)
+    else if (strcasecmp("module", name) == 0)
         return getModuleName();
-    else if (stricmp("file", name) == 0)
+    else if (strcasecmp("file", name) == 0)
         return getFileName();
-    else if (stricmp("run", name) == 0)
+    else if (strcasecmp("run", name) == 0)
         return getRunName();
     else
         return getRunAttribute(name);

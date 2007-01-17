@@ -37,9 +37,14 @@ class opp_runtime_error : public std::runtime_error
     opp_runtime_error(const char *msg,...);
 
     /**
+     * Destructor with throw clause required by gcc.
+     */
+    virtual opp_runtime_error::~opp_runtime_error() throw() {};
+
+    /**
      * Returns the text of the error. Redefined from std::exception.
      */
-    virtual const char *what() const {return errormsg.c_str();}
+    virtual const char *what() const throw() {return errormsg.c_str();}
 };
 
 #endif

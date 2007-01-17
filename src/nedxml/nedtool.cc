@@ -630,7 +630,7 @@ int main(int argc, char **argv)
             }
 
 #if SHELL_EXPANDS_WILDCARDS
-            if (!processFile(argv[i]))
+            if (!processFile(argv[i], errors))
                 return 1;
 #else
             // we have to expand wildcards ourselves

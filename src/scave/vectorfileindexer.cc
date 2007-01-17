@@ -39,8 +39,9 @@ static std::string createTempFileName(const std::string baseFileName)
     std::string tmpFileName = prefix;
     int serial = 0;
     char buffer[11];
+
     while (existsFile(tmpFileName))
-        tmpFileName = prefix+itoa(serial++, buffer, 10);
+        tmpFileName = opp_stringf("%s%d", prefix.c_str(), serial++);
     return tmpFileName;
 }
 

@@ -72,13 +72,26 @@ clean:
 	rm -f *.o libcommon$(A_LIB_SUFFIX) libcommon$(SO_LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+commonutil.o: commonutil.cc \
+  commonutil.h \
+  exception.h
+displaystring.o: displaystring.cc \
+  displaystring.h
 exception.o: exception.cc \
   exception.h
+fileglobber.o: fileglobber.cc \
+  fileglobber.h
 filereader.o: filereader.cc \
   filereader.h \
   exception.h
 filetokenizer.o: filetokenizer.cc \
   filetokenizer.h
+fileutil.o: fileutil.cc \
+  fileutil.h
+fnamelisttokenizer.o: fnamelisttokenizer.cc \
+  fnamelisttokenizer.h \
+  commonutil.h \
+  exception.h
 lex.matchexpressionyy.o: lex.matchexpressionyy.cc \
   matchexpression.tab.h
 linetokenizer.o: linetokenizer.cc \
@@ -94,9 +107,15 @@ matchexpression.tab.o: matchexpression.tab.cc \
   exception.h
 patternmatcher.o: patternmatcher.cc \
   patternmatcher.h \
-  exception.h
+  stringutil.h \
+  exception.h \
+  commonutil.h
 stringtokenizer.o: stringtokenizer.cc \
   stringtokenizer.h
-util.o: util.cc \
-  util.h \
+stringutil.o: stringutil.cc \
+  commonutil.h \
+  stringutil.h \
+  exception.h
+unitconversion.o: unitconversion.cc \
+  unitconversion.h \
   exception.h

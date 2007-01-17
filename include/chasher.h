@@ -23,9 +23,15 @@
 #include "cobject.h"
 #include "cexception.h"
 
+#ifdef _MSC_VER
 typedef __int64 int64;
 typedef unsigned __int64 uint64;
 typedef unsigned int uint32;   //FIXME into defs.h or something???
+#else
+typedef long long int64;
+typedef unsigned long long uint64;
+typedef unsigned int uint32;
+#endif
 
 /**
  * Utility class to calculate the "fingerprint" of a simulation.

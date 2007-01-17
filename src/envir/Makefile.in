@@ -91,7 +91,7 @@ akoutvectormgr.o: akoutvectormgr.cc \
   envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfig.h \
-  ../../include/platdep/time.h \
+  ../../include/platdep/timeutil.h \
   ../../include/cownedobject.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
@@ -125,7 +125,6 @@ cenvir.o: cenvir.cc \
   appreg.h \
   ../../include/cmodule.h \
   fsutils.h \
-  cstrtokenizer2.h \
   speedmtr.h \
   filemgrs.h \
   akaroarng.h \
@@ -153,7 +152,7 @@ cenvir.o: cenvir.cc \
   ../../include/opp_string.h \
   ../../include/cconfig.h \
   ../../include/envirext.h \
-  ../../include/platdep/time.h \
+  ../../include/platdep/timeutil.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cpar.h \
@@ -165,7 +164,6 @@ cinifile.o: cinifile.cc \
   cinifile.h \
   ../../include/cexception.h \
   fsutils.h \
-  ../../include/platdep/fileutil.h \
   ../../include/cstrtokenizer.h \
   ../../include/defs.h \
   ../../include/errmsg.h \
@@ -176,9 +174,6 @@ cinifile.o: cinifile.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h
-cstrtokenizer2.o: cstrtokenizer2.cc \
-  cstrtokenizer2.h \
-  ../../include/defs.h
 cxmldoccache.o: cxmldoccache.cc \
   ../../include/cobject.h \
   cxmldoccache.h \
@@ -196,8 +191,8 @@ cxmldoccache.o: cxmldoccache.cc \
   ../../include/opp_string.h
 filemgrs.o: filemgrs.cc \
   ../../include/defs.h \
-  ../../include/platdep/time.h \
-  ../../include/platdep/misc.h \
+  ../../include/platdep/timeutil.h \
+  ../../include/platdep/platmisc.h \
   ../../include/cenvir.h \
   omnetapp.h \
   ../../include/csimulation.h \
@@ -205,6 +200,7 @@ filemgrs.o: filemgrs.cc \
   ../../include/cstat.h \
   filemgrs.h \
   ../../include/ccomponenttype.h \
+  ivfilemgr.h \
   ../../include/carray.h \
   ../../include/globals.h \
   ../../include/cexception.h \
@@ -234,14 +230,49 @@ filemgrs.o: filemgrs.cc \
   ../../include/cparvalue.h
 fsutils.o: fsutils.cc \
   fsutils.h \
-  ../../include/platdep/misc.h \
-  ../../include/platdep/loadlib.h \
+  ../../include/platdep/platmisc.h \
   ../../include/onstartup.h \
   ../../include/cexception.h \
   ../../include/util.h \
   ../../include/opp_string.h \
   ../../include/defs.h \
   ../../include/errmsg.h
+ivfilemgr.o: ivfilemgr.cc \
+  ../../include/defs.h \
+  ../../include/platdep/timeutil.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/cenvir.h \
+  omnetapp.h \
+  ../../include/csimulation.h \
+  ../../include/regmacros.h \
+  ../../include/cmodule.h \
+  ../../include/cstat.h \
+  ivfilemgr.h \
+  ../../include/carray.h \
+  ../../include/globals.h \
+  ../../include/cexception.h \
+  args.h \
+  envdefs.h \
+  ../../include/envirext.h \
+  ../../include/cconfig.h \
+  ../../include/cownedobject.h \
+  ../../include/util.h \
+  ../../include/cnamedobject.h \
+  ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/onstartup.h \
+  ../../include/cclassfactory.h \
+  ../../include/opp_string.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/ccomponent.h \
+  ../../include/cgate.h \
+  ../../include/cpar.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cexpression.h \
+  filemgrs.h
 main.o: main.cc \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
@@ -281,18 +312,17 @@ omnetapp.o: omnetapp.cc \
   ../../include/csimulation.h \
   ../../include/cscheduler.h \
   ../../include/cpar.h \
+  ../../include/cproperties.h \
+  ../../include/cproperty.h \
   ../../include/random.h \
   ../../include/crng.h \
   ../../include/cmodule.h \
   ../../include/cxmlelement.h \
   cxmldoccache.h \
-  cstrtokenizer2.h \
+  ../../include/chasher.h \
   ../../include/cparsimcomm.h \
-  ../../include/platdep/time.h \
-  ../../include/platdep/misc.h \
-  ../../include/platdep/fileutil.h \
-  ../../include/platdep/fileglobber.h \
-  ../../include/platdep/fileglobber.c \
+  ../../include/platdep/timeutil.h \
+  ../../include/platdep/platmisc.h \
   envdefs.h \
   ../../include/defs.h \
   ../../include/carray.h \
@@ -314,6 +344,7 @@ omnetapp.o: omnetapp.cc \
   ../../include/opp_string.h \
   ../../include/cmsgheap.h \
   ../../include/cexpression.h \
+  ../../include/stlwrap.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h
@@ -321,4 +352,4 @@ speedmtr.o: speedmtr.cc \
   speedmtr.h \
   ../../include/defs.h \
   envdefs.h \
-  ../../include/platdep/time.h
+  ../../include/platdep/timeutil.h

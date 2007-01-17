@@ -34,14 +34,14 @@ static char buffer[BUFLEN];
 static char buffer2[BUFLEN];
 
 
-cException::cException() : std::exception("")
+cException::cException() : std::exception()
 {
     errorcode = eCUSTOM;
     storeCtx();
     msg = "n/a";
 }
 
-cException::cException(ErrorCode errorcode...) : std::exception("")
+cException::cException(ErrorCode errorcode...) : std::exception()
 {
     va_list va;
     va_start(va, errorcode);
@@ -49,7 +49,7 @@ cException::cException(ErrorCode errorcode...) : std::exception("")
     va_end(va);
 }
 
-cException::cException(const char *msgformat...) : std::exception("")
+cException::cException(const char *msgformat...) : std::exception()
 {
     va_list va;
     va_start(va, msgformat);
@@ -57,7 +57,7 @@ cException::cException(const char *msgformat...) : std::exception("")
     va_end(va);
 }
 
-cException::cException(const cObject *where, ErrorCode errorcode...) : std::exception("")
+cException::cException(const cObject *where, ErrorCode errorcode...) : std::exception()
 {
     va_list va;
     va_start(va, errorcode);
@@ -65,7 +65,7 @@ cException::cException(const cObject *where, ErrorCode errorcode...) : std::exce
     va_end(va);
 }
 
-cException::cException(const cObject *where, const char *msgformat...) : std::exception("")
+cException::cException(const cObject *where, const char *msgformat...) : std::exception()
 {
     va_list va;
     va_start(va, msgformat);

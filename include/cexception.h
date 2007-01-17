@@ -114,7 +114,7 @@ class SIM_API cException : public std::exception
     /**
      * Destructor.
      */
-    virtual ~cException() {}
+    virtual ~cException() throw() {}
     //@}
 
     /** @name Getting exception info */
@@ -128,7 +128,7 @@ class SIM_API cException : public std::exception
     /**
      * Returns the text of the error. Redefined from std::exception.
      */
-    virtual const char *what() const {return msg.c_str();}
+    virtual const char *what() const throw() {return msg.c_str();}
 
     /**
      * Returns true if the exception has "context info", that is, it occurred
