@@ -341,16 +341,26 @@ public class DataTable extends Table {
 			}
 			else if (type == TYPE_VECTOR) {
 				VectorResult vector = (VectorResult)result;
-				if (COL_COUNT.equals(column))
-					item.setText(i, String.valueOf(vector.getCount()));
-				else if (COL_MEAN.equals(column))
-					item.setText(i, String.valueOf(vector.mean()));
-				else if (COL_STDDEV.equals(column))
-					item.setText(i, String.valueOf(vector.stddev()));
-				else if (COL_MIN.equals(column))
-					item.setText(i, String.valueOf(vector.getMin()));
-				else if (COL_MAX.equals(column))
-					item.setText(i, String.valueOf(vector.getMax()));
+				if (COL_COUNT.equals(column)) {
+					int count = vector.getCount();
+					item.setText(i, count >= 0 ? String.valueOf(count) : "n.a.");
+				}
+				else if (COL_MEAN.equals(column)) {
+					double mean = vector.mean();
+					item.setText(i, Double.isNaN(mean) ? "n.a." : String.valueOf(mean));
+				}
+				else if (COL_STDDEV.equals(column)) {
+					double stddev = vector.stddev();
+					item.setText(i, Double.isNaN(stddev) ? "n.a." : String.valueOf(stddev));
+				}
+				else if (COL_MIN.equals(column)) {
+					double min = vector.getMin();
+					item.setText(i, Double.isNaN(min) ? "n.a." : String.valueOf(min));
+				}
+				else if (COL_MAX.equals(column)) {
+					double max = vector.getMax();
+					item.setText(i, Double.isNaN(max) ? "n.a." : String.valueOf(max));
+				}
 			}
 			else if (type == TYPE_HISTOGRAM) {
 				// TODO
