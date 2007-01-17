@@ -38,14 +38,15 @@
 #include <sys/types.h>
 #include <unistd.h>  // getpid(), getcwd(), etc
 
+#ifdef HAVE_DLOPEN
+#include <dlfcn.h>
+#endif
+
 #endif
 
 #include <exception>
 #include <stdexcept>
 
-#ifdef HAVE_DLOPEN
-#include <dlfcn.h>
-#endif
 
 //
 // Getting Windows error strings
