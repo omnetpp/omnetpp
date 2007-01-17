@@ -288,7 +288,6 @@ class ForceDirectedGraphLayouter : public GraphLayouter
        * Time to wait after drawing the actual state of the layouting process.
        */
       double debugWaitTime;
-      double springReposeLength;
 
       bool showForces;
       bool showSummaForce;
@@ -304,23 +303,26 @@ class ForceDirectedGraphLayouter : public GraphLayouter
       bool hasFixedNode;
 
       /**
-       * Use star tree embedding to create a initial layout before calling the force directed embedding.
+       * Use pre embedding to create a initial layout before calling the force directed embedding.
        */
-      bool starTreeEmbedding;
+      bool preEmbedding;
       /**
        * Use force directed embedding.
        */
       bool forceDirectedEmbedding;
       /**
        * Use 3d coordinates and return the base plane projection coordinates.
+       * Add springs connected to the base plane.
+       * 0 means don't use 3d coordinates. Higher value means bigger initial 3d coordinates.
        */
-      bool threeDimensions;
+      double threeDFactor;
 
       WallBody *topBorder;
       WallBody *bottomBorder;
       WallBody *leftBorder;
       WallBody *rightBorder;
 
+      GraphComponent graphComponent;
       ForceDirectedEmbedding embedding;
 
       std::map<std::string, Variable *> anchorNameToVariableMap;
@@ -382,14 +384,12 @@ class ForceDirectedGraphLayouter : public GraphLayouter
     void addElectricRepulsions();
     void addBasePlaneSprings();
     void ensureFinalized();
-    void setRandomPositions();
-    void setStarTreePositions(double distance);
+    void setRandomPositions(double size = -1);
+    void setInitialPositions(double distance);
     void ensureBorders();
     void setBorderPositions();
-    Vertex* findVertex(GraphComponent *graphComponent, Variable *variable);
     void normalize();
     void debugDraw();
 };
-
 
 #endif

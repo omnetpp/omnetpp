@@ -24,6 +24,7 @@
 
 #include "graphlayout.h"
 #include "startreeembedding.h"
+#include "heapembedding.h"
 
 #define MIN(a,b) ((a)<(b) ? (a) : (b))
 #define MAX(a,b) ((a)<(b) ? (b) : (a))
@@ -893,6 +894,7 @@ static bool resolveBoolDispStrArg(const char *s, bool defaultval)
    return !strcmpi("1", s) || !strcmpi("true", s);
 }
 
+// TODO: turn on/off flags update parameters based on rndseed
 ForceDirectedGraphLayouter::ForceDirectedGraphLayouter(const cDisplayString& ds)
 {
     finalized = false;
@@ -904,26 +906,30 @@ ForceDirectedGraphLayouter::ForceDirectedGraphLayouter(const cDisplayString& ds)
     leftBorder = NULL;
     rightBorder = NULL;
 
+
+    // TODO: this whole stuff is wrong, because setSeed is called after construction
     debugWaitTime = resolveDoubleDispStrArg(ds.getTagArg("dwt", 0), 0);
 
-    embedding.setDefaultParameters();
-    embedding.maxCalculationTime = resolveDoubleDispStrArg(ds.getTagArg("mct", 0), 10000);
-    embedding.minTimeStep = resolveDoubleDispStrArg(ds.getTagArg("mits", 0), 0.01);
-    embedding.maxTimeStep = resolveDoubleDispStrArg(ds.getTagArg("mats", 0), 10);
-    embedding.minAccelerationError = resolveDoubleDispStrArg(ds.getTagArg("miae", 0), 5);
-    embedding.maxAccelerationError = resolveDoubleDispStrArg(ds.getTagArg("maae", 0), 10);
-    embedding.frictionCoefficient = resolveDoubleDispStrArg(ds.getTagArg("fc", 0), 1);
-    embedding.velocityRelaxLimit = resolveDoubleDispStrArg(ds.getTagArg("vrl", 0), 0.25);
-    springReposeLength = resolveDoubleDispStrArg(ds.getTagArg("srl", 0), 50);
-    embedding.springCoefficient = resolveDoubleDispStrArg(ds.getTagArg("sc", 0), 0.1);
-    embedding.electricRepulsionCoefficient = resolveDoubleDispStrArg(ds.getTagArg("erc", 0), 10000);
+    embedding.parameters = embedding.getDefaultParameters(rndseed);
+    embedding.parameters.defaultPointLikeDistance = resolveBoolDispStrArg(ds.getTagArg("pld", 0), embedding.parameters.defaultPointLikeDistance);
+    embedding.parameters.defaultSpringCoefficient = resolveDoubleDispStrArg(ds.getTagArg("sc", 0), embedding.parameters.defaultSpringCoefficient);
+    embedding.parameters.defaultSpringReposeLength = resolveDoubleDispStrArg(ds.getTagArg("srl", 0), embedding.parameters.defaultSpringReposeLength);
+    embedding.parameters.electricRepulsionCoefficient = resolveDoubleDispStrArg(ds.getTagArg("erc", 0), embedding.parameters.electricRepulsionCoefficient);
+    embedding.parameters.frictionCoefficient = resolveDoubleDispStrArg(ds.getTagArg("fc", 0), embedding.parameters.frictionCoefficient);
+    embedding.parameters.minTimeStep = resolveDoubleDispStrArg(ds.getTagArg("mits", 0), embedding.parameters.minTimeStep);
+    embedding.parameters.maxTimeStep = resolveDoubleDispStrArg(ds.getTagArg("mats", 0), embedding.parameters.maxTimeStep);
+    embedding.parameters.minAccelerationError = resolveDoubleDispStrArg(ds.getTagArg("miae", 0), embedding.parameters.minAccelerationError);
+    embedding.parameters.maxAccelerationError = resolveDoubleDispStrArg(ds.getTagArg("maae", 0), embedding.parameters.maxAccelerationError);
+    embedding.parameters.velocityRelaxLimit = resolveDoubleDispStrArg(ds.getTagArg("vrl", 0), embedding.parameters.velocityRelaxLimit);
+    embedding.parameters.maxCalculationTime = resolveDoubleDispStrArg(ds.getTagArg("mct", 0), embedding.parameters.maxCalculationTime);
+
+    threeDFactor = resolveDoubleDispStrArg(ds.getTagArg("3d", 0), 0.1);
 
     showForces = resolveBoolDispStrArg(ds.getTagArg("sf", 0), false);
     showSummaForce = resolveBoolDispStrArg(ds.getTagArg("ssf", 0), false);
 
-    starTreeEmbedding = resolveBoolDispStrArg(ds.getTagArg("ste", 0), true);
+    preEmbedding = resolveBoolDispStrArg(ds.getTagArg("pe", 0), rndseed % 2);
     forceDirectedEmbedding = resolveBoolDispStrArg(ds.getTagArg("fde", 0), true);
-    threeDimensions = resolveBoolDispStrArg(ds.getTagArg("3d", 0), true);
 }
 
 void ForceDirectedGraphLayouter::addBody(cModule *mod, IBody *body)
@@ -952,69 +958,84 @@ Variable *ForceDirectedGraphLayouter::ensureAnchorVariable(const char *anchorNam
         return anchorNameToVariableMap[anchorName] = new Variable(Pt::getNil());
 }
 
-void ForceDirectedGraphLayouter::setRandomPositions()
+void ForceDirectedGraphLayouter::setRandomPositions(double size)
 {
+    const std::vector<IBody *>& bodies = embedding.getBodies();
+
+    if (size == -1) {
+        size = pow(embedding.parameters.defaultSpringReposeLength, 2) * bodies.size();
+
+	    for (int i = 0; i < bodies.size(); i++) {
+		    IBody *body = bodies[i];
+
+            if (!dynamic_cast<WallBody *>(body))
+                size += 10 * body->getSize().getArea();
+        }
+
+        size = sqrt(size);
+    }
+
+    ASSERT(!isNaN(size));
+
     const std::vector<Variable *>& variables = embedding.getVariables();
 	for (int i = 0; i < variables.size(); i++) {
         Pt pt = variables[i]->getPosition();
 
         if (isNaN(pt.x))
-            pt.x = privRand01() * 500;
+            pt.x = privRand01() * size;
 
         if (isNaN(pt.y))
-            pt.y = privRand01() * 500;
+            pt.y = privRand01() * size;
 
         if (isNaN(pt.z))
-            pt.z = threeDimensions ? privRand01() * 500 : 0;
+            pt.z = (privRand01() - 0.5) * size * threeDFactor;
 
         variables[i]->assignPosition(pt);
     }
 }
 
-Vertex* ForceDirectedGraphLayouter::findVertex(GraphComponent *graphComponent, Variable *variable) {
-    for (int i = 0; i < graphComponent->getVertexCount(); i++) {
-        Vertex *vertex = graphComponent->getVertex(i);
+void ForceDirectedGraphLayouter::setInitialPositions(double distance) {
+    GraphComponent childrenComponentsStar;
+    Vertex *childrenComponentsStarRoot = NULL;
+    graphComponent.calculateCoherentSubComponents();
 
-        if (vertex->identity == variable)
-			return vertex;
+    for (std::vector<GraphComponent *>::iterator it = graphComponent.coherentSubComponents.begin(); it != graphComponent.coherentSubComponents.end(); it++) {
+	    GraphComponent *childComponent = *it;
+        childComponent->calculateSpanningTree();
+
+        if (childComponent->getEdgeCount() == childComponent->getVertexCount() - 1) {
+            StarTreeEmbedding starTreeEmbedding(childComponent, distance);
+            starTreeEmbedding.embed();
+        }
+        else {
+            HeapEmbedding heapEmbedding(childComponent, distance);
+            heapEmbedding.embed();
+        }
+
+        Vertex *childComponentVertex = new Vertex(Pt::getNil(), childComponent->getSize(), NULL);
+        if (!childrenComponentsStarRoot)
+            childrenComponentsStarRoot = childComponentVertex;
+
+        childrenComponentsStar.addVertex(childComponentVertex);
+        childrenComponentsStar.addEdge(new Edge(childrenComponentsStarRoot, childComponentVertex));
     }
-	
-	return NULL;
-}
 
-void ForceDirectedGraphLayouter::setStarTreePositions(double distance) {
-	GraphComponent graphComponent;
+    childrenComponentsStar.calculateSpanningTree();
+    HeapEmbedding heapEmbedding(&childrenComponentsStar, distance);
+    heapEmbedding.embed();
 
-    const std::vector<Variable *>& variables = embedding.getVariables();
-	for (int i = 0; i < variables.size(); i++) {
-		Variable *variable = variables[i];
-		// TODO: calculate size?!
-        graphComponent.addVertex(new Vertex(Pt::getNil(), Rs(10, 10), variable));
-	}
-	
-    const std::vector<IForceProvider *>& forceProviders = embedding.getForceProviders();
-	for (int i = 0; i < forceProviders.size(); i++) {
-		IForceProvider *forceProvider = forceProviders[i];
-		
-		if (!strcmp("Spring", forceProvider->getClassName())) {
-			Spring *spring = (Spring *)forceProvider;
+    for (int i = 0; i < graphComponent.coherentSubComponents.size(); i++) {
+        Vertex *childComponentVertex = childrenComponentsStar.getVertex(i);
+	    GraphComponent *childComponent = graphComponent.coherentSubComponents[i];
 
-            graphComponent.addEdge(new Edge(
-					findVertex(&graphComponent, spring->getBody1()->getVariable()),
-					findVertex(&graphComponent, spring->getBody2()->getVariable())));
-		}
-	}
-
-	graphComponent.calculateSpanningTree();
-	StarTreeEmbedding starTreeEmbedding(&graphComponent, distance);
-    starTreeEmbedding.embed();
-	
-    for (int i = 0; i < graphComponent.getVertexCount(); i++) {
-        Vertex *vertex = graphComponent.getVertex(i);
-		Variable *variable = (Variable *)vertex->identity;
-
-        if (!dynamic_cast<PointConstrainedVariable *>(variable))
-            variable->assignPosition(vertex->pt);
+        for (int i = 0; i < childComponent->getVertexCount(); i++) {
+            Vertex *vertex = childComponent->getVertex(i);
+		    Variable *variable = (Variable *)vertex->identity;
+            Pt pt = vertex->rc.getCenterCenter();
+            pt.add(childComponentVertex->rc.pt);
+            pt.z = NaN;
+            variable->assignPosition(pt);
+        }
     }
 }
 
@@ -1061,13 +1082,10 @@ void ForceDirectedGraphLayouter::setBorderPositions()
 		IBody *body = bodies[i];
 
         if (!dynamic_cast<WallBody *>(body)) {
-		    Pt position = body->getPosition();
-		    Rs size = body->getSize();
-
-            top = std::min(top, position.y);
-		    bottom = std::max(bottom, position.y + size.height);
-		    left = std::min(left, position.x);
-		    right = std::max(right, position.x + size.width);
+            top = std::min(top, body->getTop());
+		    bottom = std::max(bottom, body->getBottom());
+		    left = std::min(left, body->getLeft());
+		    right = std::max(right, body->getRight());
         }
 	}
 
@@ -1085,11 +1103,24 @@ void ForceDirectedGraphLayouter::addElectricRepulsions()
 	    for (int j = i + 1; j < bodies.size(); j++) {
     		IBody *body1 = bodies[i];
 	    	IBody *body2 = bodies[j];
+            Variable *variable1 = body1->getVariable();
+            Variable *variable2 = body2->getVariable();
 
 		    if (!dynamic_cast<WallBody *>(body1) &&
-			    !dynamic_cast<WallBody *>(body2) &&
-			    body1->getVariable() != body2->getVariable())
-			    embedding.addForceProvider(new ElectricRepulsion(body1, body2));
+                !dynamic_cast<WallBody *>(body2) &&
+			    variable1 != variable2)
+            {
+                Vertex *vertex1 = graphComponent.findVertex(variable1);
+                Vertex *vertex2 = graphComponent.findVertex(variable2);
+
+                ASSERT(vertex1);
+                ASSERT(vertex2);
+
+                if (vertex1->coherentSubComponent != vertex2->coherentSubComponent)
+	    		    embedding.addForceProvider(new ElectricRepulsion(body1, body2, 100, 200));
+                else
+    			    embedding.addForceProvider(new ElectricRepulsion(body1, body2));
+            }
 	    }
 }
 
@@ -1109,10 +1140,9 @@ void ForceDirectedGraphLayouter::ensureFinalized()
     if (!finalized) {
         addElectricRepulsions();
 
-        if (threeDimensions)
+        if (threeDFactor > 0)
             addBasePlaneSprings();
 
-        // TODO: this is broken: embedding.addForceProvider(new Friction());
         embedding.addForceProvider(new Drag());
 
         setRandomPositions();
@@ -1132,11 +1162,10 @@ void ForceDirectedGraphLayouter::normalize()
     const std::vector<IBody *>& bodies = embedding.getBodies();
 	for (int i = 0; i < bodies.size(); i++) {
 		IBody *body = bodies[i];
-		Pt position = body->getPosition();
 
         if (!dynamic_cast<WallBody *>(body)) {
-            top = std::min(top, position.y);
-		    left = std::min(left, position.x);
+            top = std::min(top, body->getTop());
+		    left = std::min(left, body->getLeft());
         }
 	}
 
@@ -1148,25 +1177,44 @@ void ForceDirectedGraphLayouter::normalize()
 
 void ForceDirectedGraphLayouter::addMovableNode(cModule *mod, int width, int height)
 {
-    addBody(mod, new Body(new Variable(Pt::getNil()), Rs(width, height)));
+    Variable *variable = new Variable(Pt::getNil());
+    addBody(mod, new Body(variable, Rs(width, height)));
+
+    graphComponent.addVertex(new Vertex(Pt::getNil(), Rs(width, height), variable));
 }
 
 void ForceDirectedGraphLayouter::addFixedNode(cModule *mod, int x, int y, int width, int height)
 {
     hasFixedNode = true;
-    IBody *body = new Body(new PointConstrainedVariable(Pt(x, y, NaN)), Rs(width, height));
+
+    Variable *variable = new PointConstrainedVariable(Pt(x + width / 2, y + height / 2, NaN));
+    IBody *body = new Body(variable, Rs(width, height));
     addBody(mod, body);
+
+    graphComponent.addVertex(new Vertex(Pt(x, y, NaN), Rs(width, height), variable));
 }
 
 void ForceDirectedGraphLayouter::addAnchoredNode(cModule *mod, const char *anchorname, int offx, int offy, int width, int height)
 {
     Variable *variable = ensureAnchorVariable(anchorname);
     addBody(mod, new RelativelyPositionedBody(variable, Pt(offx, offy, 0), Rs(width, height)));
+
+    Vertex *vertex = graphComponent.findVertex(variable);
+    if (!vertex)
+        graphComponent.addVertex(new Vertex(Pt::getNil(), Rs(offx + width, offy + height), variable));
+    else {
+        Rs rs = vertex->rc.rs;
+        vertex->rc.rs = Rs(std::max(rs.width, (double)(offx + width)), std::max(rs.height, (double)(offy + height)));
+    }
 }
 
 void ForceDirectedGraphLayouter::addEdge(cModule *from, cModule *to, int len)
 {
-    embedding.addForceProvider(new Spring(findBody(from), findBody(to), 1, springReposeLength));
+    Spring *spring = new Spring(findBody(from), findBody(to));
+    embedding.addForceProvider(spring);
+    graphComponent.addEdge(new Edge(
+			graphComponent.findVertex(spring->getBody1()->getVariable()),
+			graphComponent.findVertex(spring->getBody2()->getVariable())));
 }
 
 void ForceDirectedGraphLayouter::addEdgeToBorder(cModule *from, int len)
@@ -1186,8 +1234,8 @@ void ForceDirectedGraphLayouter::addEdgeToBorder(cModule *from, int len)
 
 void ForceDirectedGraphLayouter::execute()
 {
-    if (starTreeEmbedding)
-        setStarTreePositions(40);
+    if (preEmbedding)
+        setInitialPositions(40);
 
     debugDraw();
 
@@ -1225,7 +1273,8 @@ void ForceDirectedGraphLayouter::execute()
 
 void ForceDirectedGraphLayouter::getNodePosition(cModule *mod, int& x, int& y)
 {
-    Pt pt = findBody(mod)->getPosition();
+    IBody *body = findBody(mod);
+    Pt pt = body->getPosition();
     x = pt.x;
     y = pt.y;
 }
@@ -1258,6 +1307,10 @@ void ForceDirectedGraphLayouter::debugDraw()
         sprintf(coords,"%g %g %g %g", pt.x, pt.y, pt.x + rs.width, pt.y + rs.height);
         const char *color = "black";
         Tcl_VarEval(interp, canvas, " create rect ", coords, " -outline ", color, " -tag {node bbox}", NULL);
+        sprintf(coords,"%g %g", pt.x, pt.y);
+        char text[100];
+        sprintf(text,"%g", pt.z);
+        Tcl_VarEval(interp, canvas, " create text ", coords, " -text ", text, " -tag {node bbox}", NULL);
     }
 
     const std::vector<IForceProvider *>& forceProviders = embedding.getForceProviders();
