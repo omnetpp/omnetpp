@@ -47,10 +47,11 @@ proc cpanel_createControls {} {
     cpanel_addSlider springReposeLength "Spring repose length" 50 0 500 1 "srl"
     cpanel_addSlider springCoefficient "Spring coefficient" 0.1 0.001 1 0.001 "sc"
     cpanel_addSlider electricRepulsionCoefficient "Electrical repulsion coefficient" 10000 100 100000 100 "erc"
+    cpanel_addSlider 3dFactor "3d factor" 0.1 0 1 0.01 "3d"
 
-    cpanel_addCheckButton starTreeEmbedding "Star tree embedding" 1 "ste"
+    cpanel_addCheckButton preEmbedding "Pre embedding" 1 "pe"
     cpanel_addCheckButton forceDirectedEmbedding "Force directed embedding" 1 "fde"
-    cpanel_addCheckButton 3d "3d" 1 "3d"
+    cpanel_addCheckButton pointLikeDistance "Point like distance" 0 "pld"
     cpanel_addCheckButton showForces "Show forces" 0 "sf"
     cpanel_addCheckButton showSummaForces "Show summa force" 0 "ssf"
 }

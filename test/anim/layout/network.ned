@@ -1016,12 +1016,8 @@ network Star
         int n = default(11) @prompt("Number of stations");
     submodules:
         node[n]: StarNode {
-            parameters:
-                @display("p=,,,150,150");
         };
         hub: HubNode {
-            parameters:
-                @display("p=200,200");
             gates:
                 out[n];
         };
