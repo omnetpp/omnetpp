@@ -74,6 +74,9 @@ class Body : public IBody {
             return "Body";
         }
 
+        /**
+         * Center of the body.
+         */
         virtual Pt getPosition() {
             return variable->getPosition();
         }
@@ -127,6 +130,9 @@ class RelativelyPositionedBody : public Body {
             return "RelativelyPositionedBody";
         }
 
+        /**
+         * Center of the body.
+         */
         virtual Pt getPosition() {
             return Pt(anchor->getPosition()).add(relativePosition);
         }
@@ -168,26 +174,26 @@ class AbstractForceProvider : public IForceProvider {
 
         int slippery;
 
-        int modifiedDistance;
+        int pointLikeDistance;
 
     private:
-        void constructor(double maxForce, int modifiedDistance, int slippery) {
+        void constructor(double maxForce, int pointLikeDistance, int slippery) {
             this->maxForce = maxForce;
-            this->modifiedDistance = modifiedDistance;
+            this->pointLikeDistance = pointLikeDistance;
             this->slippery = slippery;
         }
 
     public:
         AbstractForceProvider() {
-            constructor(-1, false, false);
+            constructor(-1, -1, -1);
         }
 
         AbstractForceProvider(int slippery) {
-            constructor(-1, false, slippery);
+            constructor(-1, -1, slippery);
         }
 
         AbstractForceProvider(double maxForce, int slippery) {
-            constructor(maxForce, false, slippery);
+            constructor(maxForce, -1, slippery);
         }
 
         virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
@@ -199,8 +205,8 @@ class AbstractForceProvider : public IForceProvider {
             if (slippery == -1)
                 slippery = embedding->parameters.defaultSlippery;
 
-            if (modifiedDistance == -1)
-                modifiedDistance = embedding->parameters.defaultModifiedDistance;
+            if (pointLikeDistance == -1)
+                pointLikeDistance = embedding->parameters.defaultPointLikeDistance;
         }
 
 	    double getMaxForce() {
@@ -227,10 +233,23 @@ class AbstractForceProvider : public IForceProvider {
         }
 
         Pt getStandardDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
-            Pt vector = Pt(body1->getPosition()).subtract(body2->getPosition());
-            // TODO: subtract body sizes (intersected along the vector) to avoid overlapping huge bodies
-            // if (modifiedDistance)
+            Pt pt1 = body1->getPosition();
+            Pt pt2 = body2->getPosition();
+            Pt vector = Pt(pt1).subtract(pt2);
             distance = vector.getLength();
+
+            if (!pointLikeDistance) {
+                Rs rs1 = body1->getSize();
+                Rs rs2 = body2->getSize();
+                double dx = abs(pt1.x - pt2.x);
+                double dy = abs(pt1.y - pt2.y);
+                double dHalf = distance / 2;
+                double d1 = dHalf * std::min(rs1.width / dx, rs1.height / dy);
+                double d2 = dHalf * std::min(rs2.width / dx, rs2.height / dy);
+
+                distance = std::max(0.0, distance - d1 - d2);
+            }
+
             return vector;
         }
 
@@ -240,14 +259,23 @@ class AbstractForceProvider : public IForceProvider {
             vector.y = 0;
             vector.z = 0;
             distance = vector.getLength();
+
+            if (!pointLikeDistance)
+                distance = std::max(0.0, distance - body1->getSize().width - body2->getSize().width);
+
             return vector;
         }
 
+        // TODO: allow infinite sizes in standard version and calculate distance by using that function?
         Pt getStandardVerticalDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
             Pt vector = Pt(body1->getPosition()).subtract(body2->getPosition());
             vector.x = 0;
             vector.z = 0;
             distance = vector.getLength();
+
+            if (!pointLikeDistance)
+                distance = std::max(0.0, distance - body1->getSize().height - body2->getSize().height);
+
             return vector;
         }
 
@@ -285,11 +313,11 @@ class AbstractElectricRepulsion : public AbstractForceProvider {
         }
 
     public:
-        AbstractElectricRepulsion(IBody *charge1, IBody *charge2) : AbstractForceProvider(false) {
+        AbstractElectricRepulsion(IBody *charge1, IBody *charge2) : AbstractForceProvider(-1) {
             constructor(charge1, charge2, -1, -1);
         }
 
-        AbstractElectricRepulsion(IBody *charge1, IBody *charge2, double linearityDistance, double maxDistance, int slippery) : AbstractForceProvider(slippery) {
+        AbstractElectricRepulsion(IBody *charge1, IBody *charge2, double linearityDistance, double maxDistance, int slippery = -1) : AbstractForceProvider(slippery) {
             constructor(charge1, charge2, linearityDistance, maxDistance);
         }
 
@@ -411,7 +439,7 @@ class AbstractSpring : public AbstractForceProvider {
         }
 
     public:
-        AbstractSpring(IBody *body1, IBody *body2)  : AbstractForceProvider(false) {
+        AbstractSpring(IBody *body1, IBody *body2)  : AbstractForceProvider(-1) {
             constructor(body1, body2, -1, -1);
         }
         
@@ -500,7 +528,7 @@ class VerticalSpring : public AbstractSpring {
         VerticalSpring(IBody *body1, IBody *body2) : AbstractSpring(body1, body2) {
         }
         
-        VerticalSpring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) : AbstractSpring(body1, body2, springCoefficient, reposeLength, false){
+        VerticalSpring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) : AbstractSpring(body1, body2, springCoefficient, reposeLength, -1){
         }
 
         virtual Pt getDistanceAndVector(double &distance) {
@@ -517,7 +545,7 @@ class HorizonalSpring : public AbstractSpring {
         HorizonalSpring(IBody *body1, IBody *body2) : AbstractSpring(body1, body2) {
         }
         
-        HorizonalSpring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) : AbstractSpring(body1, body2, springCoefficient, reposeLength, false) {
+        HorizonalSpring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) : AbstractSpring(body1, body2, springCoefficient, reposeLength, -1) {
         }
 
         virtual Pt getDistanceAndVector(double &distance) {
@@ -595,7 +623,7 @@ class BasePlaneSpring : public AbstractSpring {
         BasePlaneSpring(IBody *body) : AbstractSpring(body, NULL) {
         }
         
-        BasePlaneSpring(IBody *body, double springCoefficient, double reposeLength) : AbstractSpring(body, NULL, springCoefficient, reposeLength, false) {
+        BasePlaneSpring(IBody *body, double springCoefficient, double reposeLength) : AbstractSpring(body, NULL, springCoefficient, reposeLength, -1) {
         }
 
         virtual double getSpringCoefficient() {

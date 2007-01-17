@@ -382,16 +382,19 @@ class Rc {
             return *this;
         }
 
-        bool basePlaneProjectionIntersects(Rc rc2) const {
+        bool basePlaneProjectionIntersects(Rc rc2, bool strictly = false) const {
             return
-                rc2.basePlaneProjectionContains(getTopLeft()) ||
-                rc2.basePlaneProjectionContains(getTopRight()) ||
-                rc2.basePlaneProjectionContains(getBottomLeft()) ||
-                rc2.basePlaneProjectionContains(getBottomRight());
+                rc2.basePlaneProjectionContains(getLeftTop(), strictly) ||
+                rc2.basePlaneProjectionContains(getRightTop(), strictly) ||
+                rc2.basePlaneProjectionContains(getLeftBottom(), strictly) ||
+                rc2.basePlaneProjectionContains(getRightBottom(), strictly);
         }
 
-        bool basePlaneProjectionContains(Pt& p) const {
-            return pt.x <= p.x && p.x <= pt.x + rs.width && pt.y <= p.y && p.y <= pt.y + rs.height;
+        bool basePlaneProjectionContains(Pt& p, bool strictly = false) const {
+            if (strictly)
+                return pt.x < p.x && p.x < pt.x + rs.width && pt.y < p.y && p.y < pt.y + rs.height;
+            else
+                return pt.x <= p.x && p.x <= pt.x + rs.width && pt.y <= p.y && p.y <= pt.y + rs.height;
         }
 
         double getLeft() const {
@@ -410,19 +413,39 @@ class Rc {
             return pt.y + rs.height;
         }
 
-        Pt getTopLeft() const {
+        Pt getLeftTop() const {
             return Pt(pt.x, pt.y, pt.z);
         }
 
-        Pt getTopRight() const {
+        Pt getCenterTop() const {
+            return Pt(pt.x + rs.width / 2, pt.y, pt.z);
+        }
+
+        Pt getRightTop() const {
             return Pt(pt.x + rs.width, pt.y, pt.z);
         }
 
-        Pt getBottomLeft() const {
+        Pt getLeftCenter() const {
+            return Pt(pt.x, pt.y + rs.height / 2, pt.z);
+        }
+
+        Pt getCenterCenter() const {
+            return Pt(pt.x + rs.width / 2, pt.y + rs.height / 2, pt.z);
+        }
+
+        Pt getRightCenter() const {
+            return Pt(pt.x + rs.width, pt.y + rs.height / 2, pt.z);
+        }
+
+        Pt getLeftBottom() const {
             return Pt(pt.x, pt.y + rs.height, pt.z);
         }
 
-        Pt getBottomRight() const {
+        Pt getCenterBottom() const {
+            return Pt(pt.x + rs.width / 2, pt.y + rs.height, pt.z);
+        }
+
+        Pt getRightBottom() const {
             return Pt(pt.x + rs.width, pt.y + rs.height, pt.z);
         }
 

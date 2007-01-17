@@ -36,7 +36,7 @@ void StarTreeEmbedding::calculateCenterRecursive(Vertex *vertex)
 {
     if (vertex->spanningTreeChildren.size() == 0)
     {
-	    vertex->starTreeRadius = vertex->rs.getDiagonalLength() / 2;
+	    vertex->starTreeRadius = vertex->rc.rs.getDiagonalLength() / 2;
         vertex->starTreeCenter = Pt::getZero();
         vertex->starTreeCircleCenter = Pt::getZero();
     }
@@ -55,7 +55,7 @@ void StarTreeEmbedding::calculateCenterRecursive(Vertex *vertex)
 		    pts.clear();
 		    circles.clear();
 
-            circles.push_back(Cc(Pt::getZero(), vertex->rs.getDiagonalLength() / 2 + nodeSpacing + vertexChild->starTreeRadius));
+            circles.push_back(Cc(Pt::getZero(), vertex->rc.rs.getDiagonalLength() / 2 + nodeSpacing + vertexChild->starTreeRadius));
 
             for (std::vector<Vertex *>::iterator jt = vertex->spanningTreeChildren.begin(); jt != vertex->spanningTreeChildren.end(); jt++) {
                 Vertex *vertexPositioned = *jt;
@@ -119,7 +119,7 @@ void StarTreeEmbedding::calculateCenterRecursive(Vertex *vertex)
 
 	    // Find minimum covering circle
 	    circles.clear();
-        circles.push_back(Cc(Pt::getZero(), vertex->rs.getDiagonalLength() / 2));
+        circles.push_back(Cc(Pt::getZero(), vertex->rc.rs.getDiagonalLength() / 2));
 
         for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); it++) {
             Vertex *vertexChild = *it;
@@ -153,8 +153,8 @@ void StarTreeEmbedding::rotateCenterRecursive(Vertex *vertex)
 
             for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); it++) {
                 Vertex *vertexChild = *it;
-			    area += vertexChild->rs.getArea();
-			    weightPoint.add(vertexChild->starTreeCenter.copy().add(vertex->starTreeCircleCenter).multiply(vertexChild->rs.getArea()));
+			    area += vertexChild->rc.rs.getArea();
+			    weightPoint.add(vertexChild->starTreeCenter.copy().add(vertex->starTreeCircleCenter).multiply(vertexChild->rc.rs.getArea()));
 		    }
 
 		    weightPoint.divide(area);
@@ -197,7 +197,7 @@ void StarTreeEmbedding::calculatePosition()
 
 void StarTreeEmbedding::calculatePositionRecursive(Vertex *vertex, Pt pt)
 {
-    vertex->pt = Pt(pt.x - vertex->rs.width / 2, pt.y  - vertex->rs.height / 2, pt.z);
+    vertex->rc.pt = Pt(pt.x - vertex->rc.rs.width / 2, pt.y  - vertex->rc.rs.height / 2, pt.z);
 
     if (vertex->spanningTreeParent)
 	    vertex->starTreeCircleCenter.add(pt);

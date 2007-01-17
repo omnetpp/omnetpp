@@ -76,22 +76,22 @@ struct ForceDirectedParameters
     bool defaultSlippery;
 
     /**
-     * For force providers not initialized with a particular modified distance flag.
+     * For force providers not initialized with a particular point like distance flag.
      */
-    bool defaultModifiedDistance;
+    bool defaultPointLikeDistance;
 
     /**
-     * The default time step when solution starts.
+     * The default time step used when solution starts.
      */
     double timeStep;
 
     /**
-     * Lower limit for time step update.
+     * Lower limit for the updated time step.
      */
     double minTimeStep;
 
     /**
-     * Lower limit for time step update.
+     * Lower limit for the updated time step.
      */
     double maxTimeStep;
 
@@ -312,6 +312,26 @@ class IBody : public IPositioned {
         virtual double getCharge() = 0;
 
         virtual Variable *getVariable() = 0;
+
+        Pt getLeftTop() {
+            return Pt(getLeft(), getTop(), getPosition().z);
+        }
+
+        double getLeft() {
+            return getPosition().x - getSize().width / 2;
+        }
+
+        double getRight() {
+            return getPosition().x + getSize().width / 2;
+        }
+
+        double getTop() {
+            return getPosition().y - getSize().height / 2;
+        }
+
+        double getBottom() {
+            return getPosition().y + getSize().height / 2;
+        }
 };
 
 /**

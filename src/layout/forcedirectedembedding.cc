@@ -34,10 +34,10 @@ ForceDirectedEmbedding::~ForceDirectedEmbedding() {
         delete *it;
 }
 
-ForceDirectedParameters ForceDirectedEmbedding::getDefaultParameters(int index) {
+ForceDirectedParameters ForceDirectedEmbedding::getDefaultParameters(unsigned long seed) {
     ForceDirectedParameters parameters;
 
-    switch (index) {
+    switch (seed % 1) {
         case 0:
         default:
             parameters.defaultBodySize = Rs(10, 10);
@@ -51,7 +51,7 @@ ForceDirectedParameters ForceDirectedEmbedding::getDefaultParameters(int index) 
             parameters.defaultElectricRepulsionMaxDistance = -1;
             parameters.frictionCoefficient = 1;
             parameters.defaultSlippery = false;
-            parameters.defaultModifiedDistance = true;
+            parameters.defaultPointLikeDistance = false;
 
             parameters.timeStep = 1;
             parameters.minTimeStep = 0.01;
@@ -69,8 +69,6 @@ ForceDirectedParameters ForceDirectedEmbedding::getDefaultParameters(int index) 
 
             parameters.maxCycle = INT_MAX;
             parameters.maxCalculationTime = 1000;
-            break;
-        case 1:
             break;
     }
 

@@ -21,6 +21,7 @@
 #include "geometry.h"
 
 class Edge;
+class GraphComponent;
 
 class Vertex {
     public:
@@ -28,15 +29,15 @@ class Vertex {
 
         std::vector<Edge *> edges;
 
-	    Pt pt;
-
-	    Rs rs;
+        Rc rc;
 
 	    void *identity;
     	
 	    Vertex *spanningTreeParent;
     	
         std::vector<Vertex *> spanningTreeChildren;
+
+        GraphComponent *coherentSubComponent;
 
         int color;
 
@@ -66,6 +67,8 @@ class Edge {
 	    Vertex *target;
 	
 	    void *identity;
+
+        GraphComponent *coherentSubComponent;
 
         int color;
 
@@ -100,6 +103,8 @@ class GraphComponent {
 	    int addVertex(Vertex *vertex);
 	    int addEdge(Edge *edge);
 	    int indexOfVertex(Vertex *vertex);
+        Vertex *findVertex(void *identity);
+        Rs getSize();
 
 	    void calculateSpanningTree();
 	    void calculateSpanningTree(Vertex *rootVertex);

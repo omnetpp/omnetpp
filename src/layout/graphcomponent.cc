@@ -13,13 +13,14 @@
 *--------------------------------------------------------------*/
 
 #include "graphcomponent.h"
+#include <float.h>
 
-Vertex::Vertex(Pt pt, Rs rc, void *identity) {
-    this->pt = pt;
-    this->rs = rc;
+Vertex::Vertex(Pt pt, Rs rs, void *identity) {
+    this->rc = Rc(pt, rs);
     this->identity = identity;
 
     color = 0;
+    coherentSubComponent = NULL;
     spanningTreeParent = NULL;
     starTreeCenter = Pt::getNil();
     starTreeCircleCenter = Pt::getNil();
@@ -32,6 +33,7 @@ Edge::Edge(Vertex *source, Vertex *target, void *identity) {
     this->identity = identity;
 
     color = 0;
+    coherentSubComponent = NULL;
 }
 
 GraphComponent::GraphComponent() {
@@ -73,6 +75,37 @@ int GraphComponent::indexOfVertex(Vertex *vertex) {
         return -1;
     else
         return it - vertices.begin();
+}
+
+Vertex *GraphComponent::findVertex(void *identity)
+{
+    for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); it++) {
+        Vertex *vertex = *it;
+
+        if (vertex->identity == identity)
+            return vertex;
+    }
+
+    return NULL;
+}
+
+Rs GraphComponent::getSize() {
+	double top = DBL_MAX, bottom = DBL_MIN;
+	double left = DBL_MAX, right = DBL_MIN;
+
+    for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); it++) {
+        Vertex *vertex = *it;
+
+	    Pt pt = vertex->rc.pt;
+	    Rs rs = vertex->rc.rs;
+
+        top = std::min(top, pt.y);
+	    bottom = std::max(bottom, pt.y + rs.height);
+	    left = std::min(left, pt.x);
+	    right = std::max(right, pt.x + rs.width);
+	}
+
+    return Rs(right - left, bottom - top);
 }
 
 void GraphComponent::calculateSpanningTree() {
@@ -161,6 +194,7 @@ void GraphComponent::calculateCoherentSubComponents() {
 
 void GraphComponent::colorizeCoherentSubComponent(GraphComponent *childComponent, Vertex *vertex, int color) {
     vertex->color = color;
+    vertex->coherentSubComponent = childComponent;
     childComponent->vertices.push_back(vertex);
 
     for (std::vector<Edge *>::iterator it = vertex->edges.begin(); it != vertex->edges.end(); it++) {
@@ -168,6 +202,7 @@ void GraphComponent::colorizeCoherentSubComponent(GraphComponent *childComponent
 
         if (!edge->color) {
             edge->color = color;
+            edge->coherentSubComponent = childComponent;
             childComponent->edges.push_back(edge);
         }
     }

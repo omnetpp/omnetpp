@@ -208,12 +208,10 @@ class ForceDirectedEmbedding
             return finished;
         }
 
-        int getNumberOfDefaultParameters() { return 1; }
-
         /**
          * Sets the default parameters.
          */
-        ForceDirectedParameters getDefaultParameters(int index = 0);
+        ForceDirectedParameters getDefaultParameters(unsigned long seed = 0);
 
         /**
          * Clears all results from previous calculations and sets initial values.
