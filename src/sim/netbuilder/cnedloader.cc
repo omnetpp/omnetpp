@@ -107,7 +107,7 @@ void cNEDLoader::registerBuiltinDeclarations()
     }
 }
 
-void cNEDLoader::addComponent(const char *name, NEDElement *node) //FIXME accept a "prefix" instead of a "name"
+void cNEDLoader::addComponent(const char *qname, NEDElement *node)
 {
     if (!areDependenciesResolved(node))
     {
@@ -117,31 +117,31 @@ void cNEDLoader::addComponent(const char *name, NEDElement *node) //FIXME accept
     }
 
     // Note: base class (nedxml's NEDResourceCache) has already checked for duplicates, no need here
-    cNEDDeclaration *decl = buildNEDDeclaration(node);
-    components[name] = decl;
+    cNEDDeclaration *decl = buildNEDDeclaration(qname, node);
+    components[qname] = decl;
 
     //printf("DBG: registered %s\n",name);
 
     // if module or channel, register corresponding object which can be used to instantiate it
     cComponentType *type = NULL;
     if (node->getTagCode()==NED_SIMPLE_MODULE || node->getTagCode()==NED_COMPOUND_MODULE)
-        type = new cDynamicModuleType(name);
+        type = new cDynamicModuleType(qname);
     else if (node->getTagCode()==NED_CHANNEL)
-        type = new cDynamicChannelType(name);
+        type = new cDynamicChannelType(qname);
     if (type)
         componentTypes.instance()->add(type);
 }
 
-cNEDDeclaration *cNEDLoader::lookup2(const char *name) const
+cNEDDeclaration *cNEDLoader::lookup2(const char *qname) const
 {
-    return dynamic_cast<cNEDDeclaration *>(NEDResourceCache::lookup(name));
+    return dynamic_cast<cNEDDeclaration *>(NEDResourceCache::lookup(qname));
 }
 
-cNEDDeclaration *cNEDLoader::getDecl(const char *name) const
+cNEDDeclaration *cNEDLoader::getDecl(const char *qname) const
 {
-    cNEDDeclaration *decl = cNEDLoader::instance()->lookup2(name);
+    cNEDDeclaration *decl = cNEDLoader::instance()->lookup2(qname);
     if (!decl)
-        throw cRuntimeError("NED declaration '%s' not found", name);
+        throw cRuntimeError("NED declaration '%s' not found", qname);
     return decl;
 }
 
@@ -229,7 +229,7 @@ void cNEDLoader::tryResolvePendingDeclarations()
             NEDElement *node = pendingList[i];
             if (areDependenciesResolved(node))
             {
-                addComponent(node->getAttribute("name"), node);
+                addComponent(node->getAttribute("name"), node); //FIXME we have to use QUALIFIED name here!!!!
                 pendingList.erase(pendingList.begin() + i--);
                 again = true;
             }
@@ -237,10 +237,9 @@ void cNEDLoader::tryResolvePendingDeclarations()
     }
 }
 
-cNEDDeclaration *cNEDLoader::buildNEDDeclaration(NEDElement *node)
+cNEDDeclaration *cNEDLoader::buildNEDDeclaration(const char *qname, NEDElement *node)
 {
-    const char *name = node->getAttribute("name");
-    return new cNEDDeclaration(name, node);
+    return new cNEDDeclaration(qname, node);
 }
 
 void cNEDLoader::done()

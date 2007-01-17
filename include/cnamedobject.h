@@ -19,7 +19,6 @@
 
 #include <typeinfo>
 #include <iostream>
-#include "cenvir.h"
 #include "defs.h"
 #include "util.h"
 #include "cobject.h"

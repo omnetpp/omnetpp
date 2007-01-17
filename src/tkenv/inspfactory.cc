@@ -34,9 +34,10 @@ cInspectorFactory *findInspectorFactoryFor(cObject *obj, int type)
 {
     cInspectorFactory *best=NULL;
     double bestweight=0;
-    for (cArray::Iterator it(*inspectorfactories.instance()); !it.end(); it++)
+    cSymTable *a = inspectorfactories.instance();
+    for (int i=0; i<a->size(); i++)
     {
-        cInspectorFactory *ifc = static_cast<cInspectorFactory *>(it());
+        cInspectorFactory *ifc = static_cast<cInspectorFactory *>(a->get(i));
         if (ifc->supportsObject(obj) &&
             (type==INSP_DEFAULT || ifc->inspectorType()==type) &&
             ifc->qualityAsDefault(obj)>bestweight

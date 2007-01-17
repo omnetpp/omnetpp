@@ -187,7 +187,7 @@ const char *cClassDescriptor::getFieldDeclaredOn(void *object, int field)
 
 cClassDescriptor *cClassDescriptor::getDescriptorFor(const char *classname)
 {
-    return dynamic_cast<cClassDescriptor *>(classDescriptors.instance()->get(classname));
+    return dynamic_cast<cClassDescriptor *>(classDescriptors.instance()->lookup(classname));
 }
 
 cClassDescriptor *cClassDescriptor::getDescriptorFor(cObject *object)
@@ -201,8 +201,8 @@ cClassDescriptor *cClassDescriptor::getDescriptorFor(cObject *object)
     //XXX we could even cache the result in a {classname->descriptor} hashtable.
     cClassDescriptor *bestDesc = NULL;
     int bestInheritanceChainLength = -1;
-    cArray *array = classDescriptors.instance();
-    for (int i=0; i<array->items(); i++)
+    cSymTable *array = classDescriptors.instance();
+    for (int i=0; i<array->size(); i++)
     {
         cClassDescriptor *desc = dynamic_cast<cClassDescriptor *>(array->get(i));
         if (!desc || !desc->doesSupport(object))

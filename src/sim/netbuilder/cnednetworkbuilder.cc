@@ -327,10 +327,7 @@ bool cNEDNetworkBuilder::superTypeAllowsUnconnected() const
 cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modtypename, cModule *modp, const char *submodname)
 {
     // try first in local scope, then in global scope
-    std::string localTypeName = std::string(currentDecl->name())+"::"+modtypename;
-    cModuleType *modtype = cModuleType::find(localTypeName.c_str());
-    if (!modtype)
-        modtype = cModuleType::find(modtypename);
+    cModuleType *modtype = cModuleType::find(modtypename, currentDecl->fullName());
     if (!modtype)
         throw cRuntimeError("dynamic module builder: module type definition `%s' for submodule %s "
                             "in (%s)%s not found (not in the loaded NED files?)",
@@ -751,10 +748,7 @@ cChannel *cNEDNetworkBuilder::createChannel(ChannelSpecNode *channelspec, cModul
 cChannelType *cNEDNetworkBuilder::findAndCheckChannelType(const char *channeltypename)
 {
     // try first in local scope, then in global scope
-    std::string localTypeName = std::string(currentDecl->name())+"::"+channeltypename;
-    cChannelType *channeltype = cChannelType::find(localTypeName.c_str());
-    if (!channeltype)
-        channeltype = cChannelType::find(channeltypename);
+    cChannelType *channeltype = cChannelType::find(channeltypename, currentDecl->fullName());
     if (!channeltype)
         throw cRuntimeError("dynamic network builder: channel type definition `%s' not found "
                             "(not in the loaded NED files?)", channeltypename);

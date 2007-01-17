@@ -62,8 +62,8 @@ std::string cNEDFunction::info() const
 
 cNEDFunction *cNEDFunction::find(const char *name, int argcount)
 {
-    cArray *a = nedFunctions.instance();
-    for (int i=0; i<a->items(); i++)
+    cSymTable *a = nedFunctions.instance();
+    for (int i=0; i<a->size(); i++)
     {
         cNEDFunction *f = dynamic_cast<cNEDFunction *>(a->get(i));
         if (f && f->isName(name) && f->numArgs()==argcount)
@@ -74,8 +74,8 @@ cNEDFunction *cNEDFunction::find(const char *name, int argcount)
 
 cNEDFunction *cNEDFunction::findByPointer(NEDFunction f)
 {
-    cArray *a = nedFunctions.instance();
-    for (int i=0; i<a->items(); i++)
+    cSymTable *a = nedFunctions.instance();
+    for (int i=0; i<a->size(); i++)
     {
         cNEDFunction *ff = dynamic_cast<cNEDFunction *>(a->get(i));
         if (ff && ff->functionPointer() == f)

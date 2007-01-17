@@ -151,8 +151,8 @@ MathFunc4Args cMathFunction::mathFunc4Args()
 
 cMathFunction *cMathFunction::find(const char *name, int argcount)
 {
-    cArray *a = nedFunctions.instance();
-    for (int i=0; i<a->items(); i++)
+    cSymTable *a = nedFunctions.instance();
+    for (int i=0; i<a->size(); i++)
     {
         cMathFunction *f = dynamic_cast<cMathFunction *>(a->get(i));
         if (f && f->isName(name) && f->numArgs()==argcount)
@@ -163,8 +163,8 @@ cMathFunction *cMathFunction::find(const char *name, int argcount)
 
 cMathFunction *cMathFunction::findByPointer(MathFunc f)
 {
-    cArray *a = nedFunctions.instance();
-    for (int i=0; i<a->items(); i++)
+    cSymTable *a = nedFunctions.instance();
+    for (int i=0; i<a->size(); i++)
     {
         cMathFunction *ff = dynamic_cast<cMathFunction *>(a->get(i));
         if (ff && ff->mathFunc() == f)

@@ -44,9 +44,9 @@ class SIM_API cNEDDeclarationBase : public cNamedObject, noncopyable
     //@{
 
     /**
-     * Constructor.
+     * Constructor. Takes the fully qualified name.
      */
-    cNEDDeclarationBase(const char *name) : cNamedObject(name) {}
+    cNEDDeclarationBase(const char *qname) : cNamedObject(qname) {}
 
     /**
      * Destructor.

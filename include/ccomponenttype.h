@@ -49,9 +49,10 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     /** @name Constructors, destructor, assignment */
     //@{
     /**
-     * Constructor.
+     * Constructor. Takes the fully qualified component name plus an optional
+     * description string.
      */
-    cComponentType(const char *name=NULL, const char *description=NULL);
+    cComponentType(const char *qname=NULL, const char *description=NULL);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -89,9 +90,16 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     static cProperties *getPropertiesFor(const cGate *gate);
 
     /**
-     * Find a component type object by name.
+     * Find a component type by fully qualified name.
      */
-    static cComponentType *find(const char *name);
+    static cComponentType *find(const char *qname);
+
+    /**
+     * Performs lookup of a name that occurs in a context. First looks into the
+     * context namespace, then searches up by discarding the last elements of
+     * the context one by one.
+     */
+    static cComponentType *find(const char *name, const char *contextNamespace);
 };
 
 
@@ -195,9 +203,16 @@ class SIM_API cModuleType : public cComponentType
     //@}
 
     /**
-     * Find a component type object by name.
+     * Find a component type by fully qualified name.
      */
-    static cModuleType *find(const char *name);
+    static cModuleType *find(const char *qname);
+
+    /**
+     * Performs lookup of a name that occurs in a context. First looks into the
+     * context namespace, then searches up by discarding the last elements of
+     * the context one by one.
+     */
+    static cModuleType *find(const char *name, const char *contextNamespace);
 };
 
 
@@ -248,9 +263,16 @@ class SIM_API cChannelType : public cComponentType
     //@}
 
     /**
-     * Find a component type object by name.
+     * Find a component type by fully qualified name.
      */
-    static cChannelType *find(const char *name);
+    static cChannelType *find(const char *qname);
+
+    /**
+     * Performs lookup of a name that occurs in a context. First looks into the
+     * context namespace, then searches up by discarding the last elements of
+     * the context one by one.
+     */
+    static cChannelType *find(const char *name, const char *contextNamespace);
 };
 
 #endif

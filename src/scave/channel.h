@@ -32,7 +32,7 @@ class Channel
         // note: a Channel should *never* hold a pointer back to its Ports
         // because ports may be copied after having been assigned to channels
         // (e.g. in VectorFileReader which uses std::vector). Node ptrs are OK.
-        std::deque<Datum> buffer;
+        std::deque<Datum> buffer;  //XXX deque has very poor performance under VC++ (pagesize==1!), consider using std::vector here instead
         Node *producernode;
         Node *consumernode;
         bool producerfinished;

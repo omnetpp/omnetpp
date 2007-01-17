@@ -1,14 +1,3 @@
-        module Core  //FIXME just temp, remove!
-        {
-            gates:
-                inout p;
-                inout pv1[];
-                inout pv2[];
-            connections allowunconnected:
-        }
-
-
-
 // bidirectional connection to parent, with scalar gate, gate indexing and gate++
 network DD2 {
     types:

@@ -919,9 +919,9 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
 
 int getNetworkTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   cArray *types = componentTypes.instance();
+   cSymTable *types = componentTypes.instance();
    Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
-   for (int i=0; i<types->items(); i++)
+   for (int i=0; i<types->size(); i++)
    {
        cModuleType *t = dynamic_cast<cModuleType *>(types->get(i));
        if (t && t->isNetwork())
@@ -1288,9 +1288,10 @@ int supportedInspTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    // collect supported inspector types
    int insp_types[20];
    int n=0;
-   for (cArray::Iterator it(*inspectorfactories.instance()); !it.end(); it++)
+   cSymTable *a = inspectorfactories.instance();
+   for (int i=0; i<a->size(); i++)
    {
-      cInspectorFactory *ifc = static_cast<cInspectorFactory *>(it());
+      cInspectorFactory *ifc = static_cast<cInspectorFactory *>(a->get(i));
       if (ifc->supportsObject(object))
       {
           int k;

@@ -1,13 +1,3 @@
-        module Core   //FIXME just temp def, remove!
-        {
-            gates:
-                inout p;
-                inout pv1[];
-                inout pv2[];
-            connections allowunconnected:
-        }
-
-
 // connecting $o/$i to parent, with scalar gate, gate indexing and gate++
 network DD3 {
     types:

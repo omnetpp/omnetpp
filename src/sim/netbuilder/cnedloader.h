@@ -49,7 +49,7 @@ class SIM_API cNEDLoader : public NEDResourceCache
 
   protected:
     /** Redefined to return a cNEDDeclaration. */
-    virtual void addComponent(const char *name, NEDElement *node);
+    virtual void addComponent(const char *qname, NEDElement *node);
 
   protected:
     // utility functions
@@ -57,7 +57,7 @@ class SIM_API cNEDLoader : public NEDResourceCache
     NEDElement *parseAndValidateNedFile(const char *nedfname, bool isXML);
     bool areDependenciesResolved(NEDElement *node);
     void tryResolvePendingDeclarations();
-    cNEDDeclaration *buildNEDDeclaration(NEDElement *node);
+    cNEDDeclaration *buildNEDDeclaration(const char *qname, NEDElement *node);
 
     // constructor is protected, because we want only one instance
     cNEDLoader();
@@ -74,13 +74,13 @@ class SIM_API cNEDLoader : public NEDResourceCache
      * override lookup() with covariant return types, because VC 7.1 is buggy and
      * cannot handle it properly.
      */
-    virtual cNEDDeclaration *lookup2(const char *name) const;
+    virtual cNEDDeclaration *lookup2(const char *qname) const;
 
     /**
      * Like lookup2(), but throws an error if the declaration is not found,
      * so it never returns NULL.
      */
-    virtual cNEDDeclaration *getDecl(const char *name) const;
+    virtual cNEDDeclaration *getDecl(const char *qname) const;
 
     /**
      * Parses the given NED file, and converts modules/channels/interfaces to

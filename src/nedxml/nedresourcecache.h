@@ -41,7 +41,8 @@ class NEDResourceCache
     // table of loaded NED files; maps file name to NED element.
     NEDFileMap files;
 
-    // table of component declarations; elements point into the files map
+    // table of component declarations; key is fully qualified name, and
+    // elements point into the files map
     NEDComponentMap components;
 
   protected:
@@ -51,7 +52,7 @@ class NEDResourceCache
      * Wrap the given NEDElement into a NEDComponent and add it to the table.
      * Redefine it if you want to subclass NEDComponent.
      */
-    virtual void addComponent(const char *name, NEDElement *node);
+    virtual void addComponent(const char *qname, NEDElement *node);
 
   public:
     /** Constructor */
@@ -70,8 +71,8 @@ class NEDResourceCache
     /** Get a file (represented as object tree) from the cache */
     virtual NEDElement *getFile(const char *name);
 
-    /** Get a component from the cache */
-    virtual NEDComponent *lookup(const char *name) const;
+    /** Get a component by fully qualified name from the cache */
+    virtual NEDComponent *lookup(const char *qname) const;
 };
 
 #endif

@@ -64,8 +64,8 @@ cOmnetAppRegistration *chooseBestOmnetApp()
     cOmnetAppRegistration *best_appreg = NULL;
 
     // choose the one with highest score.
-    cArray *a = omnetapps.instance();
-    for (int i=0; i<a->items(); i++)
+    cSymTable *a = omnetapps.instance();
+    for (int i=0; i<a->size(); i++)
     {
         cOmnetAppRegistration *appreg = static_cast<cOmnetAppRegistration *>(a->get(i));
         if (!best_appreg || appreg->score()>best_appreg->score())
@@ -185,14 +185,15 @@ void cEnvir::setup(int argc, char *argv[])
         {
             // try to look up specified user interface; if we don't have it already,
             // try to load dynamically...
-            appreg = static_cast<cOmnetAppRegistration *>(omnetapps.instance()->get(appname));
+            appreg = static_cast<cOmnetAppRegistration *>(omnetapps.instance()->lookup(appname));
             if (!appreg)
             {
                 ::printf("\n"
                          "User interface '%s' not found (not linked in or loaded dynamically).\n"
                          "Available ones are:\n", appname);
-                for (cArray::Iterator iter(*omnetapps.instance()); iter(); iter++)
-                    ::printf("  %s : %s\n", iter()->name(), iter()->info().c_str());
+                cSymTable *a = omnetapps.instance();
+                for (int i=0; i<a->size(); i++)
+                    ::printf("  %s : %s\n", a->get(i)->name(), a->get(i)->info().c_str());
 
                 throw cRuntimeError("Could not start user interface '%s'",appname);
             }

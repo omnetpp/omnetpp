@@ -50,17 +50,17 @@ NEDElement *NEDResourceCache::getFile(const char *name)
     return i==files.end() ? NULL : i->second;
 }
 
-NEDComponent *NEDResourceCache::lookup(const char *name) const
+NEDComponent *NEDResourceCache::lookup(const char *qname) const
 {
     // hash table lookup
-    NEDComponentMap::const_iterator i = components.find(name);
+    NEDComponentMap::const_iterator i = components.find(qname);
     return i==components.end() ? NULL : i->second;
 }
 
-void NEDResourceCache::addComponent(const char *name, NEDElement *node)
+void NEDResourceCache::addComponent(const char *qname, NEDElement *node)
 {
     NEDComponent *component = new NEDComponent(node);
-    components[name] = component;
+    components[qname] = component;
 }
 
 void NEDResourceCache::collectComponents(NEDElement *node, const std::string& namespaceprefix)

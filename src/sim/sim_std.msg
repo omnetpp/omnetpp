@@ -193,6 +193,13 @@ class cChannelType extends cComponentType
 {
 }
 
+class cSymTable extends cNamedObject
+{
+    fields:
+        @omitGetVerb(true);
+        cObject *contents[] @getter(get) @sizeGetter(size) @hint(contained objects);
+}
+
 //----
 
 class cGate extends cNoncopyableOwnedObject

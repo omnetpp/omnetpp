@@ -16,7 +16,7 @@
 #define __REGMACROS_H
 
 #include "defs.h"
-#include "onstartup.h"
+//XXX #include "onstartup.h"
 
 
 // Note: this header file is included from "defs.h" directly

@@ -243,11 +243,11 @@ void TOmnetApp::printHelp()
 
     ev << "The following components are available:\n";
 
-    if (componentTypes.instance()->items()>0)
+    if (componentTypes.instance()->size()>0)
     {
-        cArray::Iterator iter(*componentTypes.instance());
-        for (; iter(); iter++)
-            ev << "    " << iter()->name() << '\n';
+        cSymTable *a = componentTypes.instance();
+        for (int i=0; i<a->size(); i++)
+            ev << "    " << a->get(i)->fullName() << '\n';
         ev << "\n";
     }
 }

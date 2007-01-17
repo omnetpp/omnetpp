@@ -26,14 +26,9 @@
 #include "parsim/cplaceholdermod.h"
 #endif
 
-cComponentType::cComponentType(const char *name, const char *description) : cNoncopyableOwnedObject(name,false)
+cComponentType::cComponentType(const char *qname, const char *description) : cNoncopyableOwnedObject(qname,false)
 {
     setDescription(description);
-}
-
-cComponentType *cComponentType::find(const char *name)
-{
-    return dynamic_cast<cComponentType *>(componentTypes.instance()->get(name));
 }
 
 std::string cComponentType::info() const
@@ -77,6 +72,16 @@ cProperties *cComponentType::getPropertiesFor(const cGate *gate)
     else
         props = component->componentType()->declaration()->gateProperties(gate->name());
     return props;
+}
+
+cComponentType *cComponentType::find(const char *qname)
+{
+    return dynamic_cast<cComponentType *>(componentTypes.instance()->lookup(qname));
+}
+
+cComponentType *cComponentType::find(const char *name, const char *contextNamespace)
+{
+    return dynamic_cast<cComponentType *>(componentTypes.instance()->lookup(name, contextNamespace));
 }
 
 //----
@@ -167,9 +172,14 @@ cModule *cModuleType::createScheduleInit(char *modname, cModule *parentmod)
     return mod;
 }
 
-cModuleType *cModuleType::find(const char *name)
+cModuleType *cModuleType::find(const char *qname)
 {
-    return dynamic_cast<cModuleType *>(componentTypes.instance()->get(name));
+    return dynamic_cast<cModuleType *>(componentTypes.instance()->lookup(qname));
+}
+
+cModuleType *cModuleType::find(const char *name, const char *contextNamespace)
+{
+    return dynamic_cast<cModuleType *>(componentTypes.instance()->lookup(name, contextNamespace));
 }
 
 //----
@@ -223,8 +233,13 @@ cChannel *cChannelType::create(const char *name, cModule *parentmod)
     return channel;
 }
 
-cChannelType *cChannelType::find(const char *name)
+cChannelType *cChannelType::find(const char *qname)
 {
-    return dynamic_cast<cChannelType *>(componentTypes.instance()->get(name));
+    return dynamic_cast<cChannelType *>(componentTypes.instance()->lookup(qname));
+}
+
+cChannelType *cChannelType::find(const char *name, const char *contextNamespace)
+{
+    return dynamic_cast<cChannelType *>(componentTypes.instance()->lookup(name, contextNamespace));
 }
 
