@@ -338,23 +338,24 @@ void TGraphicalModWindow::refreshLayout()
     const cDisplayString& ds = parentmodule->hasDisplayString() ? parentmodule->displayString() : blank;
 
     // create and configure layouter object
-    //BasicSpringEmbedderLayout layouter;
-    ForceDirectedGraphLayouter layouter;
+    GraphLayouter *layouter = getTkApplication()->opt_usenewlayouter ?
+                                    (GraphLayouter *) new ForceDirectedGraphLayouter() :
+                                    (GraphLayouter *) new BasicSpringEmbedderLayout();
 
     int32 seed = resolveLongDispStrArg(ds.getTagArg("bgl",4), parentmodule, random_seed);
-    layouter.setSeed(seed);
+    layouter->setSeed(seed);
 
     // set layouter specific display string arguments
-    layouter.setDisplayString(ds, parentmodule);
+    layouter->setDisplayString(ds, parentmodule);
 
     // enable graphics only if full re-layouting (no cached coordinates in submodPosMap)
     if (submodPosMap.empty() && getTkApplication()->opt_showlayouting)
-        layouter.setCanvas(getTkApplication()->getInterp(), canvas);
+        layouter->setCanvas(getTkApplication()->getInterp(), canvas);
 
     // size
     int sx = resolveLongDispStrArg(ds.getTagArg("bgb",0), parentmodule, 740);
     int sy = resolveLongDispStrArg(ds.getTagArg("bgb",1), parentmodule, 500);
-    layouter.setScaleToArea(sx,sy,50); // FIXME position "bgp" is ignored here...
+    layouter->setScaleToArea(sx,sy,50); // FIXME position "bgp" is ignored here...
 
     cSubModIterator it(*parentmodule);
     bool parent;
@@ -372,23 +373,23 @@ void TGraphicalModWindow::refreshLayout()
         if (explicitcoords)
         {
             // e.g. "p=120,70" or "p=140,30,ring"
-            layouter.addFixedNode(submod, x, y, sx, sy);
+            layouter->addFixedNode(submod, x, y, sx, sy);
         }
         else if (submodPosMap.find(submod)!=submodPosMap.end())
         {
             // reuse coordinates from previous layout
             Point pos = submodPosMap[submod];
-            layouter.addFixedNode(submod, pos.x, pos.y, sx, sy);
+            layouter->addFixedNode(submod, pos.x, pos.y, sx, sy);
         }
         else if (obeyslayout)
         {
             // all modules are anchored to the anchor point with the vector's name
             // e.g. "p=,,ring"
-            layouter.addAnchoredNode(submod, submod->name(), x, y, sx, sy);
+            layouter->addAnchoredNode(submod, submod->name(), x, y, sx, sy);
         }
         else
         {
-            layouter.addMovableNode(submod, sx, sy);
+            layouter->addMovableNode(submod, sx, sy);
         }
     }
 
@@ -411,18 +412,18 @@ void TGraphicalModWindow::refreshLayout()
                 if (mod==parentmodule && destmod==parentmodule) {
                     // nop
                 } else if (mod==parentmodule) {
-                    layouter.addEdgeToBorder(destmod);
+                    layouter->addEdgeToBorder(destmod);
                 } else if (destmod==parentmodule) {
-                    layouter.addEdgeToBorder(mod);
+                    layouter->addEdgeToBorder(mod);
                 } else {
-                    layouter.addEdge(mod,destmod);
+                    layouter->addEdge(mod,destmod);
                 }
             }
         }
     }
 
     // layout the graph -- should be VERY fast if most nodes are fixed!
-    layouter.execute();
+    layouter->execute();
 
     // fill the map with the results
     submodPosMap.clear();
@@ -431,9 +432,11 @@ void TGraphicalModWindow::refreshLayout()
         cModule *submod = it();
 
         Point pos;
-        layouter.getNodePosition(submod, pos.x, pos.y);
+        layouter->getNodePosition(submod, pos.x, pos.y);
         submodPosMap[submod] = pos;
     }
+
+    delete layouter;
 }
 
 // requires either recalculateLayout() or refreshLayout() called before!

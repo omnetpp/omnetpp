@@ -40,6 +40,7 @@ proc save_tkenvrc {{fname ".tkenvrc"}} {
             animation_msgcolors
             penguin_mode
             showlayouting
+            usenewlayouter
             bubbles
             animation_speed
             bkpts_enabled

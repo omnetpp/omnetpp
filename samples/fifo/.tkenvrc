@@ -14,6 +14,7 @@ option animation_msgclassnames	{1}
 option animation_msgcolors	{1}
 option penguin_mode	{0}
 option showlayouting	{0}
+option usenewlayouter	{0}
 option bubbles	{1}
 option animation_speed	{1.5}
 option bkpts_enabled	{1}

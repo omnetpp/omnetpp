@@ -191,6 +191,7 @@ proc options_dialog {{defaultpage "g"}} {
     commentlabel $nb.g.f2.c1 {Applies to main window and module log windows. Leave blank for unlimited. Minimum value is 500 lines.}
     checkbutton $nb.g.f2.bkpts -text {Stop on breakpoint() calls} -variable opp(bkpts)
     checkbutton $nb.g.f2.layouting -text {Show layouting process} -variable opp(layouting)
+    checkbutton $nb.g.f2.newlayouter -text {Use new layouting algorithms} -variable opp(newlayouter)
     checkbutton $nb.g.f2.confirmexit -text {Confirm exit when simulation is in progress} -variable opp(confirmexit)
     $nb.g.f2.numlines.l config -width 0
     pack $nb.g.f2.usemainwin -anchor w
@@ -199,6 +200,7 @@ proc options_dialog {{defaultpage "g"}} {
     pack $nb.g.f2.c1 -anchor w
     pack $nb.g.f2.bkpts -anchor w
     pack $nb.g.f2.layouting -anchor w
+    pack $nb.g.f2.newlayouter -anchor w
     pack $nb.g.f2.confirmexit -anchor w
 
     #frame $nb.t -relief groove -borderwidth 2
@@ -269,6 +271,7 @@ proc options_dialog {{defaultpage "g"}} {
     set opp(msgcol)     [opp_getsimoption animation_msgcolors]
     set opp(penguin)    [opp_getsimoption penguin_mode]
     set opp(layouting)  [opp_getsimoption showlayouting]
+    set opp(newlayouter) [opp_getsimoption usenewlayouter]
     set opp(bubbles)    [opp_getsimoption bubbles]
     set opp(speed)      [opp_getsimoption animation_speed]
     set opp(bkpts)      [opp_getsimoption bkpts_enabled]
@@ -302,6 +305,7 @@ proc options_dialog {{defaultpage "g"}} {
         opp_setsimoption animation_msgcolors $opp(msgcol)
         opp_setsimoption penguin_mode        $opp(penguin)
         opp_setsimoption showlayouting       $opp(layouting)
+        opp_setsimoption usenewlayouter      $opp(newlayouter)
         opp_setsimoption bubbles             $opp(bubbles)
         opp_setsimoption animation_speed     $opp(speed)
         opp_setsimoption bkpts_enabled       $opp(bkpts)

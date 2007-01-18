@@ -1023,6 +1023,7 @@ void TOmnetTkApp::readOptions()
     opt_animation_msgcolors = cfg->getAsBool( "Tkenv", "animation-msgcolors", true );
     opt_penguin_mode = cfg->getAsBool( "Tkenv", "penguin-mode", false );
     opt_showlayouting = cfg->getAsBool( "Tkenv", "show-layouting", false);
+    opt_usenewlayouter = cfg->getAsBool( "Tkenv", "use-new-layouter", false);
     opt_bubbles = cfg->getAsBool( "Tkenv", "show-bubbles", true );
     opt_animation_speed = cfg->getAsDouble( "Tkenv", "animation-speed", 1.5);
     if (opt_animation_speed<0) opt_animation_speed=0;
