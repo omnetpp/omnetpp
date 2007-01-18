@@ -41,11 +41,56 @@ double GraphLayouter::privRand01()
     return rndseed/(double)(GLRAND_MAX+1);
 }
 
+// TODO: shall we move to this into a separate file?
+bool resolveBoolDispStrArg(const char *s, bool defaultval)
+{
+   if (!s || !*s)
+       return defaultval;
+   return !strcmpi("1", s) || !strcmpi("true", s);
+}
+
+long resolveLongDispStrArg(const char *s, cModule *mod, int defaultval)
+{
+   if (!s || !*s)
+       return defaultval;
+   if (*s=='$')
+       return displayStringPar(s+1, mod, true)->longValue();
+   return (long) atol(s);
+}
+
+double resolveDoubleDispStrArg(const char *s, double defaultval)
+{
+   if (!s || !*s)
+       return defaultval;
+   return atof(s);
+}
+
+cPar *displayStringPar(const char *parname, cModule *mod, bool searchparent)
+{
+   cPar *par = NULL;
+   int k = mod->findPar(parname);
+   if (k>=0)
+      par = &(mod->par(k));
+
+   if (!par && searchparent && mod->parentModule())
+   {
+      k = mod->parentModule()->findPar( parname );
+      if (k>=0)
+         par = &(mod->parentModule()->par(k));
+   }
+   if (!par)
+   {
+      if (!searchparent)
+          throw cRuntimeError("module `%s' has no parameter `%s'", mod->fullPath().c_str(), parname);
+      else
+          throw cRuntimeError("module `%s' and its parent have no parameter `%s'", mod->fullPath().c_str(), parname);
+   }
+   return par;
+}
 
 GraphLayouter::GraphLayouter()
 {
     rndseed = 1;
-    defaultEdgeLen = 40;
 
     width = height = border = 0;
     sizingMode = Free;
@@ -80,6 +125,7 @@ BasicSpringEmbedderLayout::BasicSpringEmbedderLayout()
     haveAnchoredNode = false;
     allNodesAreFixed = true; // unless later it proves otherwise
 
+    defaultEdgeLen = 40;
     maxIterations = 500;
     //repulsiveForce = 8;
     repulsiveForce = 50;
@@ -92,6 +138,27 @@ BasicSpringEmbedderLayout::~BasicSpringEmbedderLayout()
         delete (*i);
     for (NodeList::iterator j = nodes.begin(); j!=nodes.end(); ++j)
         delete (*j);
+}
+
+void BasicSpringEmbedderLayout::setDisplayString(const cDisplayString& ds, cModule *parentmodule)
+{
+    int repf = resolveLongDispStrArg(ds.getTagArg("bgl",0), parentmodule, -1);
+    if (repf>0) repulsiveForce = repf;
+
+    int attf = resolveLongDispStrArg(ds.getTagArg("bgl",1), parentmodule, -1);
+    if (attf>0) attractionForce = attf;
+
+    int edgelen = resolveLongDispStrArg(ds.getTagArg("bgl",2), parentmodule, -1);
+    if (edgelen>0) defaultEdgeLen = edgelen; // this should come before adding edges
+
+    int maxiter = resolveLongDispStrArg(ds.getTagArg("bgl",3), parentmodule, -1);
+    if (maxiter>0) maxIterations = maxiter;
+
+#ifdef USE_CONTRACTING_BOX
+    boxContractionForce = resolveNumericDispStrArg(ds.getTagArg("bpars",0), parentmodule, 100);
+    boxRepulsiveForce = resolveNumericDispStrArg(ds.getTagArg("bpars",1), parentmodule, 100);
+    boxRepForceRatio = resolveNumericDispStrArg(ds.getTagArg("bpars",2), parentmodule, 1);
+#endif
 }
 
 BasicSpringEmbedderLayout::Node *BasicSpringEmbedderLayout::findNode(cModule *mod)
@@ -880,34 +947,22 @@ double AdvSpringEmbedderLayout::relax()
 
 /*******************************************************/
 
-static double resolveDoubleDispStrArg(const char *s, double defaultval)
-{
-   if (!s || !*s)
-       return defaultval;
-   return atof(s);
-}
-
-static bool resolveBoolDispStrArg(const char *s, bool defaultval)
-{
-   if (!s || !*s)
-       return defaultval;
-   return !strcmpi("1", s) || !strcmpi("true", s);
-}
-
-// TODO: turn on/off flags update parameters based on rndseed
-ForceDirectedGraphLayouter::ForceDirectedGraphLayouter(const cDisplayString& ds)
+ForceDirectedGraphLayouter::ForceDirectedGraphLayouter()
 {
     finalized = false;
     bordersAdded = false;
     hasFixedNode = false;
+    hasMovableNode = false;
 
     topBorder = NULL;
     bottomBorder = NULL;
     leftBorder = NULL;
     rightBorder = NULL;
+}
 
-
-    // TODO: this whole stuff is wrong, because setSeed is called after construction
+void ForceDirectedGraphLayouter::setDisplayString(const cDisplayString& ds, cModule *parentmodule)
+{
+    // TODO: turn on/off flags update parameters based on rndseed
     debugWaitTime = resolveDoubleDispStrArg(ds.getTagArg("dwt", 0), 0);
 
     embedding.parameters = embedding.getDefaultParameters(rndseed);
@@ -928,7 +983,7 @@ ForceDirectedGraphLayouter::ForceDirectedGraphLayouter(const cDisplayString& ds)
     showForces = resolveBoolDispStrArg(ds.getTagArg("sf", 0), false);
     showSummaForce = resolveBoolDispStrArg(ds.getTagArg("ssf", 0), false);
 
-    preEmbedding = resolveBoolDispStrArg(ds.getTagArg("pe", 0), rndseed % 2);
+    preEmbedding = resolveBoolDispStrArg(ds.getTagArg("pe", 0), true);
     forceDirectedEmbedding = resolveBoolDispStrArg(ds.getTagArg("fde", 0), true);
 }
 
@@ -1177,6 +1232,8 @@ void ForceDirectedGraphLayouter::normalize()
 
 void ForceDirectedGraphLayouter::addMovableNode(cModule *mod, int width, int height)
 {
+    hasMovableNode = true;
+
     Variable *variable = new Variable(Pt::getNil());
     addBody(mod, new Body(variable, Rs(width, height)));
 
@@ -1210,7 +1267,7 @@ void ForceDirectedGraphLayouter::addAnchoredNode(cModule *mod, const char *ancho
 
 void ForceDirectedGraphLayouter::addEdge(cModule *from, cModule *to, int len)
 {
-    Spring *spring = new Spring(findBody(from), findBody(to));
+    Spring *spring = new Spring(findBody(from), findBody(to), -1, !len ? -1 : len);
     embedding.addForceProvider(spring);
     graphComponent.addEdge(new Edge(
 			graphComponent.findVertex(spring->getBody1()->getVariable()),
@@ -1224,26 +1281,30 @@ void ForceDirectedGraphLayouter::addEdgeToBorder(cModule *from, int len)
     IBody *body = findBody(from);
 
     std::vector<AbstractSpring *> springs;
-    springs.push_back(new VerticalSpring(topBorder, body));
-    springs.push_back(new VerticalSpring(bottomBorder, body));
-    springs.push_back(new HorizonalSpring(leftBorder, body));
-    springs.push_back(new HorizonalSpring(rightBorder, body));
+    springs.push_back(new VerticalSpring(topBorder, body, -1, !len ? -1 : len));
+    springs.push_back(new VerticalSpring(bottomBorder, body, -1, !len ? -1 : len));
+    springs.push_back(new HorizonalSpring(leftBorder, body, -1, !len ? -1 : len));
+    springs.push_back(new HorizonalSpring(rightBorder, body, -1, !len ? -1 : len));
 
-    embedding.addForceProvider(new ShortestSpring(springs));
+    embedding.addForceProvider(new LeastExpandedSpring(springs));
 }
 
 void ForceDirectedGraphLayouter::execute()
 {
-    if (preEmbedding)
-        setInitialPositions(40);
+    bool inspected = interp && canvas;
 
-    debugDraw();
+    if (hasMovableNode && preEmbedding)
+        setInitialPositions(std::min(40.0, embedding.parameters.defaultSpringReposeLength));
 
-    if (forceDirectedEmbedding) {
+    if (inspected)
+        debugDraw();
+
+    if (hasMovableNode && forceDirectedEmbedding) {
         ensureFinalized();
 
         //embedding.debug = 3;
-        embedding.inspected = interp && canvas;
+        embedding.inspected = inspected;
+        embedding.reinitialize();
 
         if (embedding.inspected) {
             int step = 0;
@@ -1256,7 +1317,7 @@ void ForceDirectedGraphLayouter::execute()
             embedding.embed();
     }
 
-    if (interp && canvas)
+    if (inspected)
     {
         Tcl_VarEval(interp, canvas," delete node\n",
                             canvas," delete edge\n",

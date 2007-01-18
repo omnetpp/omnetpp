@@ -25,6 +25,9 @@
 #include <string>
 
 #include <tk.h> // only for debugDraw
+
+#include "platdep/inttypes.h"
+
 #include "forcedirectedembedding.h"
 #include "forcedirectedparameters.h"
 #include "graphcomponent.h"
@@ -40,9 +43,13 @@
 // currently it works fine without boxing the graph
 //#define USE_CONTRACTING_BOX
 
-
 class cModule;
 
+// TODO: shall we move to this into a separate file?
+extern bool resolveBoolDispStrArg(const char *s, bool defaultval);
+extern long resolveLongDispStrArg(const char *s, cModule *mod, int defaultval);
+extern double resolveDoubleDispStrArg(const char *s, double defaultval);
+extern cPar *displayStringPar(const char *parname, cModule *mod, bool searchparent);
 
 /**
  * Abstract base class for graph layouting algorithms.
@@ -50,8 +57,6 @@ class cModule;
 class GraphLayouter
 {
   protected:
-    int defaultEdgeLen;
-
     int width, height, border;
     enum {Free, Confine, Scale} sizingMode;
 
@@ -59,7 +64,7 @@ class GraphLayouter
     const char *canvas;
 
     // internal: our RNG on [0,1) -- C's rand() is not to be trusted
-    long rndseed;
+    int32 rndseed;
     double privRand01();
 
   public:
@@ -105,8 +110,8 @@ class GraphLayouter
      * Set parameters
      */
     //@{
-    void setSeed(unsigned long seed) {rndseed = seed;}
-    void setDefaultEdgeLength(int len) {defaultEdgeLen = len;}
+    void setSeed(int32 seed) {rndseed = seed;}
+    virtual void setDisplayString(const cDisplayString& ds, cModule *parentmodule) = 0;
     void setConfineToArea(int width, int height, int border); // TBD currently ignored
     void setScaleToArea(int width, int height, int border);
 
@@ -194,6 +199,8 @@ class BasicSpringEmbedderLayout : public GraphLayouter
     Box box;
 #endif
 
+    int defaultEdgeLen;
+
     bool haveFixedNode;
     bool haveAnchoredNode;
     bool allNodesAreFixed;
@@ -244,20 +251,7 @@ class BasicSpringEmbedderLayout : public GraphLayouter
     void getNodePosition(cModule *mod, int& x, int& y);
     //@}
 
-    /**
-     * Set repulsive force
-     */
-    void setRepulsiveForce(double f) {repulsiveForce = f;}
-
-    /**
-     * Set attraction force
-     */
-    void setAttractionForce(double f) {attractionForce = f;}
-
-    /**
-     * Set max number of iterations
-     */
-    void setMaxIterations(int n) {maxIterations = n;}
+    virtual void setDisplayString(const cDisplayString& ds, cModule *parentmodule);
 };
 
 
@@ -289,27 +283,46 @@ class ForceDirectedGraphLayouter : public GraphLayouter
        */
       double debugWaitTime;
 
+      /**
+       * True means all forces will be shown in debug window.
+       */
       bool showForces;
+
+      /**
+       * True means summa force will be shown in debug window.
+       */
       bool showSummaForce;
 
+      /**
+       * True means the force directed embedding has been finalized and ready to use.
+       */
       bool finalized;
+
       /**
        * True means wall bodies representing borders has been already added.
        */
       bool bordersAdded;
+
+      /**
+       * True means there is at least one movable node.
+       */
+      bool hasMovableNode;
+
       /**
        * True means there is at least one fixed node.
        */
       bool hasFixedNode;
 
       /**
-       * Use pre embedding to create a initial layout before calling the force directed embedding.
+       * Use pre embedding to create an initial layout before calling the force directed embedding.
        */
       bool preEmbedding;
+
       /**
        * Use force directed embedding.
        */
       bool forceDirectedEmbedding;
+
       /**
        * Use 3d coordinates and return the base plane projection coordinates.
        * Add springs connected to the base plane.
@@ -317,6 +330,7 @@ class ForceDirectedGraphLayouter : public GraphLayouter
        */
       double threeDFactor;
 
+      // border bodies added only if there are edges connected to the border
       WallBody *topBorder;
       WallBody *bottomBorder;
       WallBody *leftBorder;
@@ -333,9 +347,14 @@ class ForceDirectedGraphLayouter : public GraphLayouter
      * Ctor, dtor
      */
     //@{
-    ForceDirectedGraphLayouter(const cDisplayString& ds);
+    ForceDirectedGraphLayouter();
     virtual ~ForceDirectedGraphLayouter() {}
     //@}
+
+    /**
+     * Override base class.
+     */
+    virtual void setDisplayString(const cDisplayString& ds, cModule *parentmodule);
 
     /**
      * Add node that can be moved.

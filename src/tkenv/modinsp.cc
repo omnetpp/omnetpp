@@ -163,38 +163,6 @@ void TGraphicalModWindow::update()
    }
 }
 
-static cPar *displayStringPar(const char *parname, cModule *mod, bool searchparent)
-{
-   cPar *par = NULL;
-   int k = mod->findPar(parname);
-   if (k>=0)
-      par = &(mod->par(k));
-
-   if (!par && searchparent && mod->parentModule())
-   {
-      k = mod->parentModule()->findPar( parname );
-      if (k>=0)
-         par = &(mod->parentModule()->par(k));
-   }
-   if (!par)
-   {
-      if (!searchparent)
-          throw cRuntimeError("module `%s' has no parameter `%s'", mod->fullPath().c_str(), parname);
-      else
-          throw cRuntimeError("module `%s' and its parent have no parameter `%s'", mod->fullPath().c_str(), parname);
-   }
-   return par;
-}
-
-static long resolveNumericDispStrArg(const char *s, cModule *mod, int defaultval)
-{
-   if (!s || !*s)
-       return defaultval;
-   if (*s=='$')
-       return displayStringPar(s+1, mod, true)->longValue();
-   return (long) atol(s);
-}
-
 void TGraphicalModWindow::relayoutAndRedrawAll()
 {
    int submodcount = 0;
@@ -256,8 +224,8 @@ void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoor
     int boxsx=0, boxsy=0, iconsx=0, iconsy=0;
     if (ds.existsTag("b") || !ds.existsTag("i"))
     {
-        boxsx = resolveNumericDispStrArg(ds.getTagArg("b",0), submod, 40);
-        boxsy = resolveNumericDispStrArg(ds.getTagArg("b",1), submod, 24);
+        boxsx = resolveLongDispStrArg(ds.getTagArg("b",0), submod, 40);
+        boxsy = resolveLongDispStrArg(ds.getTagArg("b",1), submod, 24);
     }
     if (ds.existsTag("i"))
     {
@@ -289,8 +257,8 @@ void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoor
     sy = (boxsy>iconsy) ? boxsy : iconsy;
 
     // first, see if there's an explicit position ("p=" tag) given
-    x = resolveNumericDispStrArg(ds.getTagArg("p",0), submod, -1);
-    y = resolveNumericDispStrArg(ds.getTagArg("p",1), submod, -1);
+    x = resolveLongDispStrArg(ds.getTagArg("p",0), submod, -1);
+    y = resolveLongDispStrArg(ds.getTagArg("p",1), submod, -1);
     explicitcoords = x!=-1 && y!=-1;
 
     // set missing coordinates to zero
@@ -307,36 +275,36 @@ void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoor
     }
     else if (!strcmp(layout,"e") || !strcmp(layout,"x") || !strcmp(layout,"exact"))
     {
-        int dx = resolveNumericDispStrArg(ds.getTagArg("p",3), submod, 0);
-        int dy = resolveNumericDispStrArg(ds.getTagArg("p",4), submod, 0);
+        int dx = resolveLongDispStrArg(ds.getTagArg("p",3), submod, 0);
+        int dy = resolveLongDispStrArg(ds.getTagArg("p",4), submod, 0);
         x += dx;
         y += dy;
     }
     else if (!strcmp(layout,"r") || !strcmp(layout,"row"))
     {
         // perhaps we should use the size of the 1st element in the vector?
-        int dx = resolveNumericDispStrArg(ds.getTagArg("p",3), submod, 2*sx);
+        int dx = resolveLongDispStrArg(ds.getTagArg("p",3), submod, 2*sx);
         x += submod->index()*dx;
     }
     else if (!strcmp(layout,"c") || !strcmp(layout,"col") || !strcmp(layout,"column"))
     {
-        int dy = resolveNumericDispStrArg(ds.getTagArg("p",3), submod, 2*sy);
+        int dy = resolveLongDispStrArg(ds.getTagArg("p",3), submod, 2*sy);
         y += submod->index()*dy;
     }
     else if (!strcmp(layout,"m") || !strcmp(layout,"matrix"))
     {
         // perhaps we should use the size of the 1st element in the vector?
-        int columns = resolveNumericDispStrArg(ds.getTagArg("p",3), submod, 5);
-        int dx = resolveNumericDispStrArg(ds.getTagArg("p",4), submod, 2*sx);
-        int dy = resolveNumericDispStrArg(ds.getTagArg("p",5), submod, 2*sy);
+        int columns = resolveLongDispStrArg(ds.getTagArg("p",3), submod, 5);
+        int dx = resolveLongDispStrArg(ds.getTagArg("p",4), submod, 2*sx);
+        int dy = resolveLongDispStrArg(ds.getTagArg("p",5), submod, 2*sy);
         x += (submod->index() % columns)*dx;
         y += (submod->index() / columns)*dy;
     }
     else if (!strcmp(layout,"i") || !strcmp(layout,"ri") || !strcmp(layout,"ring"))
     {
         // perhaps we should use the size of the 1st element in the vector?
-        int rx = resolveNumericDispStrArg(ds.getTagArg("p",3), submod, (sx+sy)*submod->size()/4);
-        int ry = resolveNumericDispStrArg(ds.getTagArg("p",4), submod, rx);
+        int rx = resolveLongDispStrArg(ds.getTagArg("p",3), submod, (sx+sy)*submod->size()/4);
+        int ry = resolveLongDispStrArg(ds.getTagArg("p",4), submod, rx);
 
         x += (int) floor(rx - rx*sin(submod->index()*2*PI/submod->size()));
         y += (int) floor(ry - ry*cos(submod->index()*2*PI/submod->size()));
@@ -370,41 +338,23 @@ void TGraphicalModWindow::refreshLayout()
     const cDisplayString& ds = parentmodule->hasDisplayString() ? parentmodule->displayString() : blank;
 
     // create and configure layouter object
-    BasicSpringEmbedderLayout layouter;
-    //XXX ForceDirectedGraphLayouter layouter(ds);
-    layouter.setSeed(random_seed);
+    //BasicSpringEmbedderLayout layouter;
+    ForceDirectedGraphLayouter layouter;
+
+    int32 seed = resolveLongDispStrArg(ds.getTagArg("bgl",4), parentmodule, random_seed);
+    layouter.setSeed(seed);
+
+    // set layouter specific display string arguments
+    layouter.setDisplayString(ds, parentmodule);
 
     // enable graphics only if full re-layouting (no cached coordinates in submodPosMap)
     if (submodPosMap.empty() && getTkApplication()->opt_showlayouting)
         layouter.setCanvas(getTkApplication()->getInterp(), canvas);
 
     // size
-    int sx = resolveNumericDispStrArg(ds.getTagArg("bgb",0), parentmodule, 740);
-    int sy = resolveNumericDispStrArg(ds.getTagArg("bgb",1), parentmodule, 500);
+    int sx = resolveLongDispStrArg(ds.getTagArg("bgb",0), parentmodule, 740);
+    int sy = resolveLongDispStrArg(ds.getTagArg("bgb",1), parentmodule, 500);
     layouter.setScaleToArea(sx,sy,50); // FIXME position "bgp" is ignored here...
-
-/*
-    int repf = resolveNumericDispStrArg(ds.getTagArg("bgl",0), parentmodule, -1);
-    if (repf>0) layouter.setRepulsiveForce(repf);
-
-    int attf = resolveNumericDispStrArg(ds.getTagArg("bgl",1), parentmodule, -1);
-    if (attf>0) layouter.setAttractionForce(attf);
-
-    int edgelen = resolveNumericDispStrArg(ds.getTagArg("bgl",2), parentmodule, -1);
-    if (edgelen>0) layouter.setDefaultEdgeLength(edgelen); // this should come before adding edges
-
-    int maxiter = resolveNumericDispStrArg(ds.getTagArg("bgl",3), parentmodule, -1);
-    if (maxiter>0) layouter.setMaxIterations(maxiter);
-*/
-
-    int seed = resolveNumericDispStrArg(ds.getTagArg("bgl",4), parentmodule, -1);
-    if (seed>0) layouter.setSeed(seed);
-
-#ifdef USE_CONTRACTING_BOX
-    layouter.boxContractionForce = resolveNumericDispStrArg(ds.getTagArg("bpars",0), parentmodule, 100);
-    layouter.boxRepulsiveForce = resolveNumericDispStrArg(ds.getTagArg("bpars",1), parentmodule, 100);
-    layouter.boxRepForceRatio = resolveNumericDispStrArg(ds.getTagArg("bpars",2), parentmodule, 1);
-#endif
 
     cSubModIterator it(*parentmodule);
     bool parent;

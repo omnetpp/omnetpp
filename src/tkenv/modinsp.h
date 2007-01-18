@@ -23,6 +23,8 @@
 #include <map>
 
 #include <tk.h>
+
+#include "platdep/inttypes.h"
 #include "inspector.h"
 #include "omnetapp.h"
 
@@ -41,7 +43,7 @@ class TGraphicalModWindow : public TInspector
    protected:
       char canvas[128];
       bool needs_redraw;
-      int random_seed;
+      int32 random_seed;
       bool not_drawn;
 
       struct Point {int x,y;};
