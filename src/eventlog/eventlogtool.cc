@@ -180,7 +180,7 @@ void readLines(Options options)
 
     long begin = clock();
 
-    while (line = fileReader.readNextLine())
+    while ((line = fileReader.readNextLine())!=NULL)
         tokenizer.tokenize(line, fileReader.getLastLineLength());
 
     long end = clock();
@@ -237,7 +237,7 @@ void offsets(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Printing offsets for %ld events while reading %lld lines and %lld bytes form log file %s completed in %g seconds\n", options.eventNumbers.size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Printing offsets for %d events while reading %lld lines and %lld bytes form log file %s completed in %g seconds\n", (int)options.eventNumbers.size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
 void events(Options options)
@@ -264,7 +264,7 @@ void events(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Printing events for %ld offsets while reading %lld lines and %lld bytes form log file %s completed in %g seconds\n", options.fileOffsets.size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Printing events for %d offsets while reading %lld lines and %lld bytes form log file %s completed in %g seconds\n", (int)options.fileOffsets.size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
 void ranges(Options options)
@@ -294,7 +294,7 @@ void ranges(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Printing ranges while reading %lld lines and %lld bytes form log file %s completed in %g seconds\n", options.fileOffsets.size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Printing ranges while reading %lld lines and %lld bytes form log file %s completed in %g seconds\n", fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
 void echo(Options options)
