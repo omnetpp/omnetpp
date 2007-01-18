@@ -32,7 +32,7 @@ class HeapEmbedding
 	    void embed();
 
     private:
-        void pushPtUnlessRcsContains(std::vector<Pt>& pts, std::vector<Rc>& circles, Pt& pt);
+        void pushPtUnlessRcsContains(std::vector<Pt>& pts, const std::vector<Rc>& circles, const Pt& pt);
 };
 
 #endif

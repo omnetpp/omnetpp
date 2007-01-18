@@ -75,8 +75,7 @@ akaroarng.o: akaroarng.cc \
   ../../include/cconfig.h \
   ../../include/cobject.h \
   ../../include/cvisitor.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h
+  ../../include/regmacros.h
 akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/cenvir.h \
   omnetapp.h \
@@ -91,7 +90,6 @@ akoutvectormgr.o: akoutvectormgr.cc \
   envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfig.h \
-  ../../include/platdep/timeutil.h \
   ../../include/cownedobject.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
@@ -152,7 +150,6 @@ cenvir.o: cenvir.cc \
   ../../include/opp_string.h \
   ../../include/cconfig.h \
   ../../include/envirext.h \
-  ../../include/platdep/timeutil.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cpar.h \
@@ -172,8 +169,7 @@ cinifile.o: cinifile.cc \
   ../../include/opp_string.h \
   ../../include/cobject.h \
   ../../include/cvisitor.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h
+  ../../include/regmacros.h
 cxmldoccache.o: cxmldoccache.cc \
   ../../include/cobject.h \
   cxmldoccache.h \
@@ -185,14 +181,11 @@ cxmldoccache.o: cxmldoccache.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
-  ../../include/onstartup.h \
   envdefs.h \
   ../../include/cenvir.h \
   ../../include/opp_string.h
 filemgrs.o: filemgrs.cc \
   ../../include/defs.h \
-  ../../include/platdep/timeutil.h \
-  ../../include/platdep/platmisc.h \
   ../../include/cenvir.h \
   omnetapp.h \
   ../../include/csimulation.h \
@@ -230,17 +223,21 @@ filemgrs.o: filemgrs.cc \
   ../../include/cparvalue.h
 fsutils.o: fsutils.cc \
   fsutils.h \
-  ../../include/platdep/platmisc.h \
   ../../include/onstartup.h \
   ../../include/cexception.h \
   ../../include/util.h \
   ../../include/opp_string.h \
   ../../include/defs.h \
-  ../../include/errmsg.h
+  ../../include/errmsg.h \
+  ../../include/cownedobject.h \
+  ../../include/cenvir.h \
+  ../../include/cnamedobject.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h
 ivfilemgr.o: ivfilemgr.cc \
   ../../include/defs.h \
-  ../../include/platdep/timeutil.h \
-  ../../include/platdep/platmisc.h \
   ../../include/cenvir.h \
   omnetapp.h \
   ../../include/csimulation.h \
@@ -286,7 +283,6 @@ main.o: main.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/onstartup.h \
   ../../include/opp_string.h
 matchableobject.o: matchableobject.cc \
   matchableobject.h \
@@ -297,7 +293,6 @@ matchableobject.o: matchableobject.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
-  ../../include/onstartup.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/cnamedobject.h \
@@ -321,8 +316,6 @@ omnetapp.o: omnetapp.cc \
   cxmldoccache.h \
   ../../include/chasher.h \
   ../../include/cparsimcomm.h \
-  ../../include/platdep/timeutil.h \
-  ../../include/platdep/platmisc.h \
   envdefs.h \
   ../../include/defs.h \
   ../../include/carray.h \
@@ -343,13 +336,14 @@ omnetapp.o: omnetapp.cc \
   ../../include/cclassfactory.h \
   ../../include/opp_string.h \
   ../../include/cmsgheap.h \
+  ../../include/platdep/timeutil.h \
   ../../include/cexpression.h \
   ../../include/stlwrap.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
-  ../../include/cdefaultlist.h
+  ../../include/cdefaultlist.h \
+  ../../include/platdep/inttypes.h
 speedmtr.o: speedmtr.cc \
   speedmtr.h \
   ../../include/defs.h \
-  envdefs.h \
-  ../../include/platdep/timeutil.h
+  envdefs.h

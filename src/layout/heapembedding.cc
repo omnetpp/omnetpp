@@ -124,7 +124,7 @@ void HeapEmbedding::embed()
     }
 }
 
-void HeapEmbedding::pushPtUnlessRcsContains(std::vector<Pt>& pts, std::vector<Rc>& rcs, Pt& pt)
+void HeapEmbedding::pushPtUnlessRcsContains(std::vector<Pt>& pts, const std::vector<Rc>& rcs, const Pt& pt)
 {
     for (int j = 0; j < rcs.size(); j++) {
         Rc rc = rcs[j];

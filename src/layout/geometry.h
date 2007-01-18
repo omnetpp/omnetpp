@@ -382,7 +382,7 @@ class Rc {
                 rc2.basePlaneProjectionContains(getRightBottom(), strictly);
         }
 
-        bool basePlaneProjectionContains(Pt& p, bool strictly = false) const {
+        bool basePlaneProjectionContains(const Pt& p, bool strictly = false) const {
             if (strictly)
                 return pt.x < p.x && p.x < pt.x + rs.width && pt.y < p.y && p.y < pt.y + rs.height;
             else

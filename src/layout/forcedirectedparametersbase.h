@@ -98,7 +98,7 @@ struct ForceDirectedParameters
     /**
      * Multiplier used to update the time step.
      */
-    double timeStepMultiplier;    
+    double timeStepMultiplier;
 
     /**
      * Lower limit of acceleration approximation difference (between a1, a2, a3 and a4 in RK-4).
@@ -150,6 +150,8 @@ struct ForceDirectedParameters
  */
 class IPositioned {
     public:
+        virtual ~IPositioned() {}
+
         virtual Pt getPosition() = 0;
 };
 
@@ -198,7 +200,7 @@ class Variable : public IPositioned {
             mass = 0;
             force = Pt::getZero();
         }
-	
+
     public:
 	    Variable(const Pt& position) {
             constructor(position, Pt::getZero());
@@ -240,7 +242,7 @@ class Variable : public IPositioned {
 	    double getMass() {
 		    return mass;
 	    }
-    	
+
 	    void addMass(double mass) {
 		    this->mass += mass;
 	    }
@@ -264,7 +266,7 @@ class Variable : public IPositioned {
 	    void resetForces() {
 		    forces.clear();
 	    }
-    	
+
 	    const std::vector<Pt>& getForces() {
 		    return forces;
 	    }
@@ -342,6 +344,8 @@ class IForceProvider {
         ForceDirectedEmbedding *embedding;
 
     public:
+        virtual ~IForceProvider() {}
+
         virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
             this->embedding = embedding;
         }

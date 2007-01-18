@@ -31,13 +31,13 @@ class Body : public IBody {
         Variable *variable;
 
         double mass;
-    
+
         double charge;
-    
+
         Rs size;
 
     private:
-        void constructor(Variable *variable, double mass, double charge, Rs& size) {
+        void constructor(Variable *variable, double mass, double charge, const Rs& size) {
             this->variable = variable;
             this->mass = mass;
             this->charge = charge;
@@ -49,11 +49,11 @@ class Body : public IBody {
             constructor(variable, -1, -1, Rs::getNil());
         }
 
-        Body(Variable *variable, Rs& size) {
+        Body(Variable *variable, const Rs& size) {
             constructor(variable, -1, -1, size);
         }
 
-        Body(Variable *variable, double mass, double charge, Rs& size) {
+        Body(Variable *variable, double mass, double charge, const Rs& size) {
             constructor(variable, mass, charge, size);
         }
 
@@ -88,7 +88,7 @@ class Body : public IBody {
         virtual double getMass() {
             return mass;
         }
-        
+
         virtual double getCharge() {
             return charge;
         }
@@ -212,12 +212,12 @@ class AbstractForceProvider : public IForceProvider {
 	    double getMaxForce() {
 		    return maxForce;
 	    }
-    	
+
 	    double getValidForce(double force) {
 		    ASSERT(force >= 0);
             return std::min(maxForce, force);
 	    }
-    	
+
 	    double getValidSignedForce(double force) {
             if (force < 0)
                 return -getValidForce(fabs(force));
@@ -241,8 +241,8 @@ class AbstractForceProvider : public IForceProvider {
             if (!pointLikeDistance) {
                 Rs rs1 = body1->getSize();
                 Rs rs2 = body2->getSize();
-                double dx = abs(pt1.x - pt2.x);
-                double dy = abs(pt1.y - pt2.y);
+                double dx = fabs(pt1.x - pt2.x);
+                double dy = fabs(pt1.y - pt2.y);
                 double dHalf = distance / 2;
                 double d1 = dHalf * std::min(rs1.width / dx, rs1.height / dy);
                 double d2 = dHalf * std::min(rs2.width / dx, rs2.height / dy);
@@ -295,7 +295,7 @@ class AbstractForceProvider : public IForceProvider {
 class AbstractElectricRepulsion : public AbstractForceProvider {
     protected:
         IBody *charge1;
-    
+
         IBody *charge2;
 
         double linearityDistance;
@@ -332,11 +332,11 @@ class AbstractElectricRepulsion : public AbstractForceProvider {
         virtual IBody *getCharge1() {
             return charge1;
         }
-        
+
         virtual IBody *getCharge2() {
             return charge2;
         }
-        
+
         virtual Pt getDistanceAndVector(double &distance) = 0;
 
         virtual double getDistance() {
@@ -421,7 +421,7 @@ class HorizontalElectricRepulsion : public AbstractElectricRepulsion {
 class AbstractSpring : public AbstractForceProvider {
     protected:
         IBody *body1;
-        
+
         IBody *body2;
 
         double springCoefficient;
@@ -440,7 +440,7 @@ class AbstractSpring : public AbstractForceProvider {
         AbstractSpring(IBody *body1, IBody *body2)  : AbstractForceProvider(-1) {
             constructor(body1, body2, -1, -1);
         }
-        
+
         AbstractSpring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength, int slippery) : AbstractForceProvider(slippery) {
             constructor(body1, body2, springCoefficient, reposeLength);
         }
@@ -470,7 +470,7 @@ class AbstractSpring : public AbstractForceProvider {
         virtual IBody *getBody2() {
             return body2;
         }
-        
+
         virtual Pt getDistanceAndVector(double &distance) = 0;
 
         virtual double getDistance() {
@@ -495,7 +495,7 @@ class AbstractSpring : public AbstractForceProvider {
 
         virtual double getPotentialEnergy() {
             double expansion = getDistance() - reposeLength;
-            return getSpringCoefficient() * expansion * expansion / 2; 
+            return getSpringCoefficient() * expansion * expansion / 2;
         }
 };
 
@@ -507,7 +507,7 @@ class Spring : public AbstractSpring {
     public:
         Spring(IBody *body1, IBody *body2) : AbstractSpring(body1, body2) {
         }
-        
+
         Spring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength, int slippery = -1)
             : AbstractSpring(body1, body2, springCoefficient, reposeLength, slippery) {
         }
@@ -525,7 +525,7 @@ class VerticalSpring : public AbstractSpring {
     public:
         VerticalSpring(IBody *body1, IBody *body2) : AbstractSpring(body1, body2) {
         }
-        
+
         VerticalSpring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) : AbstractSpring(body1, body2, springCoefficient, reposeLength, -1){
         }
 
@@ -542,7 +542,7 @@ class HorizonalSpring : public AbstractSpring {
     public:
         HorizonalSpring(IBody *body1, IBody *body2) : AbstractSpring(body1, body2) {
         }
-        
+
         HorizonalSpring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) : AbstractSpring(body1, body2, springCoefficient, reposeLength, -1) {
         }
 
@@ -586,7 +586,7 @@ class LeastExpandedSpring : public AbstractForceProvider {
                 AbstractSpring *spring = *it;
                 double distance;
                 Pt vector = spring->getDistanceAndVector(distance);
-                double expansion = abs(distance - spring->getReposeLength());
+                double expansion = fabs(distance - spring->getReposeLength());
 
                 if (expansion < leastExpansion) {
                     leastExpansion = expansion;
@@ -614,13 +614,13 @@ class LeastExpandedSpring : public AbstractForceProvider {
  * This constraint is like a spring between a body and the base plane (z = 0).
  * The spring coefficient increases by time proportional to the relax factor.
  * This allows nodes to move in the third dimension in the beginning of the calculation
- * while it forces to them to move to the base plane as time goes by. 
+ * while it forces to them to move to the base plane as time goes by.
  */
 class BasePlaneSpring : public AbstractSpring {
     public:
         BasePlaneSpring(IBody *body) : AbstractSpring(body, NULL) {
         }
-        
+
         BasePlaneSpring(IBody *body, double springCoefficient, double reposeLength) : AbstractSpring(body, NULL, springCoefficient, reposeLength, -1) {
         }
 
@@ -632,7 +632,7 @@ class BasePlaneSpring : public AbstractSpring {
             Pt vector = body1->getPosition();
             vector.x = 0;
             vector.y = 0;
-            distance = std::abs(vector.z);
+            distance = fabs(vector.z);
             return vector;
         }
 
@@ -724,9 +724,9 @@ class BodyConstraint : public AbstractForceProvider {
 class PointConstraint : public BodyConstraint {
     protected:
         Pt constraint;
-    
+
         double coefficient;
-    
+
     public:
         PointConstraint(IBody *body, double coefficient, Pt constraint) : BodyConstraint(body) {
             this->coefficient = coefficient;
@@ -781,10 +781,10 @@ class LineConstraint : public BodyConstraint {
 class CircleConstraint : public BodyConstraint {
     protected:
         Cc constraint;
-    
+
     protected:
         double coefficient;
-    
+
     public:
         CircleConstraint(IBody *body, double coefficient, Cc constraint) : BodyConstraint(body) {
             this->coefficient = coefficient;

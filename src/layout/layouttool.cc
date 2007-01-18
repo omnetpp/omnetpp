@@ -2,7 +2,7 @@
 #include "forcedirectedparameters.h"
 #include "forcedirectedembedding.h"
 
-void main()
+int main(int, char **)
 {
     ForceDirectedEmbedding embedding;
 
@@ -14,7 +14,7 @@ void main()
 	for (int i = 0; i < count; i++) {
         IBody *body = new Body(new Variable(Pt(500.0 * (double)rand() / RAND_MAX, 500.0 * (double)rand() / RAND_MAX, 0)));
 		embedding.addBody(body);
-		
+
 		if (previous)
 			embedding.addForceProvider(new Spring(previous, body));
 
@@ -45,3 +45,5 @@ void main()
         printf("%g %g\n", bodies[i]->getPosition().x, bodies[i]->getPosition().y);
     }
 }
+
+

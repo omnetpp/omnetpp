@@ -47,13 +47,14 @@ liblayout$(A_LIB_SUFFIX) : $(OBJS)
 	$(AR) liblayout$(A_LIB_SUFFIX) $(OBJS)
 	$(RANLIB) liblayout$(A_LIB_SUFFIX)
 	../utils/install-lib liblayout$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) liblayout$(A_LIB_SUFFIX)
+
 liblayout$(SO_LIB_SUFFIX) : $(OBJS)
 	$(SHLIB_LD) -o liblayout$(SO_LIB_SUFFIX) $(OBJS)
 	../utils/install-lib liblayout$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) liblayout$(SO_LIB_SUFFIX)
 
-layouttool : layouttool.o libeventlog$(LIB_SUFFIX)
+layouttool : layouttool.o liblayout$(LIB_SUFFIX)
 	$(CXX) $(LDFLAGS) -o layouttool layouttool.o -L$(OMNETPP_LIB_DIR) $(LIBS)
-	../utils/install-prog layouttool $(OMNETPP_BIN_DIR)
+	#../utils/install-prog layouttool $(OMNETPP_BIN_DIR)
 
 depend:
 	$(MAKEDEPEND) -I. -I../common -- *.cc
@@ -63,189 +64,50 @@ clean:
 	rm -f *.o liblayout$(A_LIB_SUFFIX) liblayout$(SO_LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-event.o: event.cc \
-  ../common/filereader.h \
-  event.h \
-  eventlog.h \
-  eventlogentry.h \
-  ievent.h \
-  eventlogentries.h \
-  messagedependency.h \
-  stringpool.h \
-  ieventlog.h \
-  eventlogindex.h \
-  eventlogdefs.h \
-  ../common/exception.h \
-  ../common/linetokenizer.h
-eventlog.o: eventlog.cc \
-  ../common/filereader.h \
-  stringpool.h \
-  eventlog.h \
-  eventlogdefs.h \
-  ../common/exception.h \
-  event.h \
-  ieventlog.h \
-  eventlogindex.h \
-  ievent.h \
-  eventlogentry.h \
-  eventlogentries.h \
-  messagedependency.h \
-  ../common/linetokenizer.h
-eventlogentries.o: eventlogentries.cc \
-  event.h \
-  eventlogentries.h \
-  ievent.h \
-  ../common/filereader.h \
-  eventlogentry.h \
-  messagedependency.h \
-  ../common/linetokenizer.h
-eventlogentry.o: eventlogentry.cc \
-  eventlog.h \
-  eventlogentry.h \
-  eventlogentryfactory.h \
-  stringpool.h \
-  ../common/filereader.h \
-  event.h \
-  ieventlog.h \
-  eventlogindex.h \
-  eventlogdefs.h \
-  ../common/exception.h \
-  ievent.h \
-  eventlogentries.h \
-  messagedependency.h \
-  ../common/linetokenizer.h
-eventlogentryfactory.o: eventlogentryfactory.cc \
-  event.h \
-  eventlogentryfactory.h \
-  ievent.h \
-  ../common/filereader.h \
-  eventlogentry.h \
-  eventlogentries.h \
-  messagedependency.h \
-  ../common/linetokenizer.h
-eventlogfacade.o: eventlogfacade.cc \
-  ievent.h \
-  ieventlog.h \
-  event.h \
-  eventlogfacade.h \
-  eventlogentry.h \
-  messagedependency.h \
-  ../common/linetokenizer.h \
-  ../common/filereader.h \
-  eventlogentries.h \
-  eventlogdefs.h \
+forcedirectedembedding.o: forcedirectedembedding.cc \
+  forcedirectedembedding.h \
+  ../common/lcgrandom.h \
+  geometry.h \
+  forcedirectedparametersbase.h \
+  ../common/commonutil.h \
   ../common/exception.h
-eventlogindex.o: eventlogindex.cc \
-  eventlogindex.h \
-  ../common/exception.h \
-  eventlogdefs.h \
-  ../common/filereader.h \
-  ../common/linetokenizer.h
-eventlogtablefacade.o: eventlogtablefacade.cc \
-  ievent.h \
-  ieventlog.h \
-  event.h \
-  eventlogtablefacade.h \
-  eventlogentry.h \
-  messagedependency.h \
-  ../common/linetokenizer.h \
-  ../common/filereader.h \
-  eventlogentries.h \
-  eventlogdefs.h \
-  ../common/exception.h \
-  eventlogfacade.h
-eventlogtool.o: eventlogtool.cc \
-  ../common/filereader.h \
-  ../common/linetokenizer.h \
-  eventlogindex.h \
-  eventlog.h \
-  filteredeventlog.h \
-  ../common/exception.h \
-  eventlogdefs.h \
-  stringpool.h \
-  event.h \
-  ieventlog.h \
-  ievent.h \
-  eventlogentry.h \
-  eventlogentries.h \
-  messagedependency.h \
-  ../common/patternmatcher.h \
-  filteredevent.h
-filteredevent.o: filteredevent.cc \
-  event.h \
-  filteredevent.h \
-  filteredeventlog.h \
-  ievent.h \
-  ../common/filereader.h \
-  eventlogentry.h \
-  eventlogentries.h \
-  messagedependency.h \
-  ../common/linetokenizer.h \
-  eventlogdefs.h \
-  ../common/exception.h \
-  ../common/patternmatcher.h \
-  ieventlog.h \
-  eventlog.h \
-  stringpool.h \
-  eventlogindex.h
-filteredeventlog.o: filteredeventlog.cc \
-  filteredeventlog.h \
-  ../common/patternmatcher.h \
-  eventlogdefs.h \
-  ieventlog.h \
-  eventlog.h \
-  filteredevent.h \
-  ../common/exception.h \
-  ievent.h \
-  eventlogentry.h \
-  messagedependency.h \
-  ../common/linetokenizer.h \
-  ../common/filereader.h \
-  eventlogentries.h \
-  stringpool.h \
-  event.h \
-  eventlogindex.h
-ievent.o: ievent.cc \
-  ievent.h \
-  eventlogentry.h \
-  messagedependency.h \
-  ../common/linetokenizer.h \
-  ../common/filereader.h \
-  eventlogentries.h
-ieventlog.o: ieventlog.cc \
-  ieventlog.h \
-  eventlogdefs.h \
-  ievent.h \
-  ../common/exception.h \
-  eventlogentry.h \
-  messagedependency.h \
-  ../common/linetokenizer.h \
-  ../common/filereader.h \
-  eventlogentries.h
-messagedependency.o: messagedependency.cc \
-  eventlogdefs.h \
-  ievent.h \
-  ieventlog.h \
-  eventlogentry.h \
-  messagedependency.h \
-  ../common/exception.h \
-  ../common/linetokenizer.h \
-  ../common/filereader.h \
-  eventlogentries.h
-sequencechartfacade.o: sequencechartfacade.cc \
-  ievent.h \
-  ieventlog.h \
-  event.h \
-  messagedependency.h \
-  sequencechartfacade.h \
-  eventlogentry.h \
-  ../common/linetokenizer.h \
-  eventlogdefs.h \
-  ../common/exception.h \
-  ../common/filereader.h \
-  eventlogentries.h \
-  eventlogfacade.h
-stringpool.o: stringpool.cc \
-  stringpool.h \
-  eventlogdefs.h \
+forcedirectedparametersbase.o: forcedirectedparametersbase.cc \
+  forcedirectedparametersbase.h \
+  geometry.h \
+  ../common/commonutil.h \
+  ../common/exception.h
+forcedirectedparameters.o: forcedirectedparameters.cc \
+  forcedirectedparameters.h \
+  geometry.h \
+  forcedirectedparametersbase.h \
+  forcedirectedembedding.h \
+  ../common/commonutil.h \
+  ../common/exception.h
+geometry.o: geometry.cc \
+  geometry.h \
+  ../common/commonutil.h \
+  ../common/exception.h
+graphcomponent.o: graphcomponent.cc \
+  graphcomponent.h \
+  geometry.h \
+  ../common/commonutil.h \
+  ../common/exception.h
+heapembedding.o: heapembedding.cc \
+  heapembedding.h \
+  geometry.h \
+  graphcomponent.h \
+  ../common/commonutil.h \
+  ../common/exception.h
+layouttool.o: layouttool.cc \
+  forcedirectedparameters.h \
+  forcedirectedembedding.h \
+  geometry.h \
+  forcedirectedparametersbase.h \
+  ../common/commonutil.h \
+  ../common/exception.h
+startreeembedding.o: startreeembedding.cc \
+  startreeembedding.h \
+  geometry.h \
+  graphcomponent.h \
+  ../common/commonutil.h \
   ../common/exception.h

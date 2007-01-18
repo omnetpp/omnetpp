@@ -68,7 +68,6 @@ cmdenv.o: cmdenv.cc \
   ../../include/cmessage.h \
   ../envir/args.h \
   ../envir/speedmtr.h \
-  ../../include/platdep/time.h \
   ../../include/defs.h \
   ../../include/csimulation.h \
   ../envir/omnetapp.h \
@@ -100,7 +99,7 @@ cmdenv.o: cmdenv.cc \
   ../../include/cexpression.h \
   ../../include/cneddeclarationbase.h \
   ../../include/cparvalue.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/cfunction.h
 enumstr.o: enumstr.cc \
   enumstr.h

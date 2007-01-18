@@ -267,7 +267,6 @@ nedtool.o: nedtool.cc \
   ned1generator.h \
   xmlgenerator.h \
   nedtools.h \
-  ../../include/platdep/platmisc.h \
   ../utils/ver.h \
   nedelement.h \
   nedyydefs.h \

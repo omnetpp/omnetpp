@@ -92,6 +92,8 @@ fnamelisttokenizer.o: fnamelisttokenizer.cc \
   fnamelisttokenizer.h \
   commonutil.h \
   exception.h
+lcgrandom.o: lcgrandom.cc \
+  lcgrandom.h
 lex.matchexpressionyy.o: lex.matchexpressionyy.cc \
   matchexpression.tab.h
 linetokenizer.o: linetokenizer.cc \
