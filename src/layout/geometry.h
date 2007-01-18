@@ -17,16 +17,8 @@
 
 #include <math.h>
 #include <vector>
+#include "commonutil.h"
 #include "exception.h"
-
-#ifndef NDEBUG
-#define ASSERT(expr)  \
-  ((void) ((expr) ? 0 : \
-           (throw opp_runtime_error("ASSERT: condition %s false, %s line %d", \
-                             #expr, __FILE__, __LINE__), 0)))
-#else
-#define ASSERT(expr)  ((void)0)
-#endif
 
 extern double NaN;
 extern double POSITIVE_INFINITY;

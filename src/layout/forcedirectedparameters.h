@@ -253,7 +253,6 @@ class AbstractForceProvider : public IForceProvider {
             return vector;
         }
 
-        // TODO: allow infinite sizes in standard version and calculate distance by using that function?
         Pt getStandardHorizontalDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
             Pt vector = Pt(body1->getPosition()).subtract(body2->getPosition());
             vector.y = 0;
@@ -266,7 +265,6 @@ class AbstractForceProvider : public IForceProvider {
             return vector;
         }
 
-        // TODO: allow infinite sizes in standard version and calculate distance by using that function?
         Pt getStandardVerticalDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
             Pt vector = Pt(body1->getPosition()).subtract(body2->getPosition());
             vector.x = 0;
@@ -557,16 +555,16 @@ class HorizonalSpring : public AbstractSpring {
         }
 };
 
-class ShortestSpring : public AbstractForceProvider {
+class LeastExpandedSpring : public AbstractForceProvider {
     private:
         std::vector<AbstractSpring *> springs;
 
     public:
-        ShortestSpring(std::vector<AbstractSpring *> springs) {
+        LeastExpandedSpring(std::vector<AbstractSpring *> springs) {
             this->springs = springs;
         }
 
-        ~ShortestSpring() {
+        ~LeastExpandedSpring() {
             for (std::vector<AbstractSpring *>::iterator it = springs.begin(); it != springs.end(); it++)
                 delete *it;
         }
@@ -580,9 +578,9 @@ class ShortestSpring : public AbstractForceProvider {
             }
         }
 
-        AbstractSpring *findShortestSpring() {
-            AbstractSpring *shortestSpring;
-            double shortestExpansion = POSITIVE_INFINITY;
+        AbstractSpring *findLeastExpandedSpring() {
+            AbstractSpring *leastExpandedSpring;
+            double leastExpansion = POSITIVE_INFINITY;
 
             for (std::vector<AbstractSpring *>::iterator it = springs.begin(); it != springs.end(); it++) {
                 AbstractSpring *spring = *it;
@@ -590,25 +588,25 @@ class ShortestSpring : public AbstractForceProvider {
                 Pt vector = spring->getDistanceAndVector(distance);
                 double expansion = abs(distance - spring->getReposeLength());
 
-                if (expansion < shortestExpansion) {
-                    shortestExpansion = expansion;
-                    shortestSpring = spring;
+                if (expansion < leastExpansion) {
+                    leastExpansion = expansion;
+                    leastExpandedSpring = spring;
                 }
             }
 
-            return shortestSpring;
+            return leastExpandedSpring;
         }
 
         virtual void applyForces() {
-            findShortestSpring()->applyForces();
+            findLeastExpandedSpring()->applyForces();
         }
 
         virtual double getPotentialEnergy() {
-            return findShortestSpring()->getPotentialEnergy();
+            return findLeastExpandedSpring()->getPotentialEnergy();
         }
 
         virtual const char *getClassName() {
-            return "ShortestSpring";
+            return "LeastExpandedSpring";
         }
 };
 

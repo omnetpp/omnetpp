@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <time.h>
 #include <iostream>
+#include "platdep/inttypes.h"
 #include "geometry.h"
 #include "forcedirectedparametersbase.h"
 
@@ -211,7 +212,7 @@ class ForceDirectedEmbedding
         /**
          * Sets the default parameters.
          */
-        ForceDirectedParameters getDefaultParameters(unsigned long seed = 0);
+        ForceDirectedParameters getDefaultParameters(int32 seed = 0);
 
         /**
          * Clears all results from previous calculations and sets initial values.

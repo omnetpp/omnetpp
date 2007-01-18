@@ -34,41 +34,45 @@ ForceDirectedEmbedding::~ForceDirectedEmbedding() {
         delete *it;
 }
 
-ForceDirectedParameters ForceDirectedEmbedding::getDefaultParameters(unsigned long seed) {
+ForceDirectedParameters ForceDirectedEmbedding::getDefaultParameters(int32 seed) {
     ForceDirectedParameters parameters;
+
+    parameters.defaultBodySize = Rs(10, 10);
+    parameters.defaultBodyMass = 10;
+    parameters.defaultBodyCharge = 1;
+
+    parameters.defaultSpringCoefficient = 0.1;
+    parameters.defaultSpringReposeLength = 50;
+
+    parameters.electricRepulsionCoefficient = 10000;
+    parameters.defaultElectricRepulsionLinearityDistance = -1;
+    parameters.defaultElectricRepulsionMaxDistance = -1;
+
+    parameters.frictionCoefficient = 1;
+
+    parameters.defaultSlippery = false;
+    parameters.defaultPointLikeDistance = false;
+
+    parameters.timeStep = 1;
+    parameters.minTimeStep = 0.01;
+    parameters.maxTimeStep = 10;
+    parameters.timeStepMultiplier = 2;
+
+    parameters.minAccelerationError = 5;
+    parameters.maxAccelerationError = 10;
+
+    parameters.defaultMaxForce = 1000;
+    parameters.maxVelocity = 1000;
+
+    parameters.velocityRelaxLimit = 0.25;
+    parameters.accelerationRelaxLimit = 1;
+
+    parameters.maxCycle = INT_MAX;
+    parameters.maxCalculationTime = 1000;
 
     switch (seed % 1) {
         case 0:
         default:
-            parameters.defaultBodySize = Rs(10, 10);
-            parameters.defaultBodyMass = 10;
-            parameters.defaultBodyCharge = 1;
-
-            parameters.defaultSpringCoefficient = 0.1;
-            parameters.defaultSpringReposeLength = 50;
-            parameters.electricRepulsionCoefficient = 10000;
-            parameters.defaultElectricRepulsionLinearityDistance = -1;
-            parameters.defaultElectricRepulsionMaxDistance = -1;
-            parameters.frictionCoefficient = 1;
-            parameters.defaultSlippery = false;
-            parameters.defaultPointLikeDistance = false;
-
-            parameters.timeStep = 1;
-            parameters.minTimeStep = 0.01;
-            parameters.maxTimeStep = 10;
-            parameters.timeStepMultiplier = 2;
-
-            parameters.minAccelerationError = 5;
-            parameters.maxAccelerationError = 10;
-
-            parameters.velocityRelaxLimit = 0.25;
-            parameters.accelerationRelaxLimit = 1;
-
-            parameters.defaultMaxForce = 1000;
-            parameters.maxVelocity = 100;
-
-            parameters.maxCycle = INT_MAX;
-            parameters.maxCalculationTime = 1000;
             break;
     }
 
