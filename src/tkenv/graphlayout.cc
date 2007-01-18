@@ -29,18 +29,6 @@
 #define MIN(a,b) ((a)<(b) ? (a) : (b))
 #define MAX(a,b) ((a)<(b) ? (b) : (a))
 
-
-#define GLRAND_MAX  0x7ffffffeL  /* = 2**31-2 */
-
-double GraphLayouter::privRand01()
-{
-    const long int a=16807, q=127773, r=2836;
-    rndseed=a*(rndseed%q) - r*(rndseed/q);
-    if (rndseed<=0) rndseed+=GLRAND_MAX+1;
-
-    return rndseed/(double)(GLRAND_MAX+1);
-}
-
 // TODO: shall we move to this into a separate file?
 bool resolveBoolDispStrArg(const char *s, bool defaultval)
 {
@@ -90,8 +78,6 @@ cPar *displayStringPar(const char *parname, cModule *mod, bool searchparent)
 
 GraphLayouter::GraphLayouter()
 {
-    rndseed = 1;
-
     width = height = border = 0;
     sizingMode = Free;
 
@@ -275,11 +261,6 @@ void BasicSpringEmbedderLayout::execute()
 {
     if (nodes.empty() || allNodesAreFixed)
         return;
-
-    // consume a some values (manually given seeds are usually small!)
-    privRand01();
-    privRand01();
-    privRand01();
 
     // initialize variables (also randomize start positions)
     for (AnchorList::iterator l=anchors.begin(); l!=anchors.end(); ++l)
@@ -962,10 +943,7 @@ ForceDirectedGraphLayouter::ForceDirectedGraphLayouter()
 
 void ForceDirectedGraphLayouter::setDisplayString(const cDisplayString& ds, cModule *parentmodule)
 {
-    // TODO: turn on/off flags update parameters based on rndseed
-    debugWaitTime = resolveDoubleDispStrArg(ds.getTagArg("dwt", 0), 0);
-
-    embedding.parameters = embedding.getDefaultParameters(rndseed);
+    embedding.parameters = embedding.getParameters(lcgRandom.getSeed());
     embedding.parameters.defaultPointLikeDistance = resolveBoolDispStrArg(ds.getTagArg("pld", 0), embedding.parameters.defaultPointLikeDistance);
     embedding.parameters.defaultSpringCoefficient = resolveDoubleDispStrArg(ds.getTagArg("sc", 0), embedding.parameters.defaultSpringCoefficient);
     embedding.parameters.defaultSpringReposeLength = resolveDoubleDispStrArg(ds.getTagArg("srl", 0), embedding.parameters.defaultSpringReposeLength);
@@ -978,13 +956,15 @@ void ForceDirectedGraphLayouter::setDisplayString(const cDisplayString& ds, cMod
     embedding.parameters.velocityRelaxLimit = resolveDoubleDispStrArg(ds.getTagArg("vrl", 0), embedding.parameters.velocityRelaxLimit);
     embedding.parameters.maxCalculationTime = resolveDoubleDispStrArg(ds.getTagArg("mct", 0), embedding.parameters.maxCalculationTime);
 
-    threeDFactor = resolveDoubleDispStrArg(ds.getTagArg("3d", 0), 0.1);
+    threeDFactor = resolveDoubleDispStrArg(ds.getTagArg("3d", 0), std::max(0.0, privRand01() - 0.5)); // default: 0.1
 
+    preEmbedding = resolveBoolDispStrArg(ds.getTagArg("pe", 0), privRand01() > 0.5); // default: true
+    forceDirectedEmbedding = resolveBoolDispStrArg(ds.getTagArg("fde", 0), true);
+
+    // debug parameters
+    debugWaitTime = resolveDoubleDispStrArg(ds.getTagArg("dwt", 0), 0);
     showForces = resolveBoolDispStrArg(ds.getTagArg("sf", 0), false);
     showSummaForce = resolveBoolDispStrArg(ds.getTagArg("ssf", 0), false);
-
-    preEmbedding = resolveBoolDispStrArg(ds.getTagArg("pe", 0), true);
-    forceDirectedEmbedding = resolveBoolDispStrArg(ds.getTagArg("fde", 0), true);
 }
 
 void ForceDirectedGraphLayouter::addBody(cModule *mod, IBody *body)
@@ -1052,7 +1032,6 @@ void ForceDirectedGraphLayouter::setRandomPositions(double size)
 void ForceDirectedGraphLayouter::setInitialPositions(double distance) {
     GraphComponent childrenComponentsStar;
     Vertex *childrenComponentsStarRoot = NULL;
-    graphComponent.calculateCoherentSubComponents();
 
     for (std::vector<GraphComponent *>::iterator it = graphComponent.coherentSubComponents.begin(); it != graphComponent.coherentSubComponents.end(); it++) {
 	    GraphComponent *childComponent = *it;
@@ -1293,12 +1272,15 @@ void ForceDirectedGraphLayouter::execute()
 {
     bool inspected = interp && canvas;
 
+    // call pre embedding if requested
+    graphComponent.calculateCoherentSubComponents();
     if (hasMovableNode && preEmbedding)
         setInitialPositions(std::min(40.0, embedding.parameters.defaultSpringReposeLength));
 
     if (inspected)
         debugDraw();
 
+    // call force directed embedding if requested
     if (hasMovableNode && forceDirectedEmbedding) {
         ensureFinalized();
 
@@ -1316,6 +1298,10 @@ void ForceDirectedGraphLayouter::execute()
         else
             embedding.embed();
     }
+
+    // set random positions if no embedding was used
+    if (!preEmbedding && !forceDirectedEmbedding)
+        setRandomPositions();
 
     if (inspected)
     {

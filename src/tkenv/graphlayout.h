@@ -26,7 +26,8 @@
 
 #include <tk.h> // only for debugDraw
 
-#include "platdep/inttypes.h"
+#include "inttypes.h"
+#include "lcgrandom.h"
 
 #include "forcedirectedembedding.h"
 #include "forcedirectedparameters.h"
@@ -57,15 +58,15 @@ extern cPar *displayStringPar(const char *parname, cModule *mod, bool searchpare
 class GraphLayouter
 {
   protected:
+    LCGRandom lcgRandom;
+
     int width, height, border;
     enum {Free, Confine, Scale} sizingMode;
 
     Tcl_Interp *interp;
     const char *canvas;
 
-    // internal: our RNG on [0,1) -- C's rand() is not to be trusted
-    int32 rndseed;
-    double privRand01();
+    double privRand01() { return lcgRandom.next01(); }
 
   public:
     /**
@@ -110,7 +111,7 @@ class GraphLayouter
      * Set parameters
      */
     //@{
-    void setSeed(int32 seed) {rndseed = seed;}
+    void setSeed(int32 seed) { lcgRandom.setSeed(seed);}
     virtual void setDisplayString(const cDisplayString& ds, cModule *parentmodule) = 0;
     void setConfineToArea(int width, int height, int border); // TBD currently ignored
     void setScaleToArea(int width, int height, int border);
