@@ -10,7 +10,7 @@ CFLAGS=$(CFLAGS) -DWIN32_DLL
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) $(XML_CFLAGS) -I. -I../common /Fd"nedxml.pdb"
+COPTS=$(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"nedxml.pdb"
 
 #OBJS= nedelements.obj nedelement.obj nederror.obj \
 #      nedvalidator.obj neddtdvalidator.obj neddtdvalidatorbase.obj \

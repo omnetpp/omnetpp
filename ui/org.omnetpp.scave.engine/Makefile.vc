@@ -15,7 +15,7 @@ SCAVE_ENGINE=$(OMNETPP_ROOT)\src\scave
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 -I$(SCAVE_ENGINE) -I$(COMMON)
+COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 -I$(SCAVE_ENGINE) -I$(COMMON) -I$(OMNETPP_INCL_DIR)/platdep
 
 OBJS = engine_wrap.obj
 HEADERS = $(SCAVE_ENGINE)\*.h $(COMMON)\*.h

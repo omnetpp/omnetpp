@@ -10,7 +10,8 @@ CFLAGS=$(CFLAGS) -DWIN32_DLL
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) $(XML_CFLAGS) -I. -I../common /Fd"scave.pdb"
+COPTS=$(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"scave.pdb"
+
 OBJS= arraybuilder.obj channel.obj commonnodes.obj compoundfilter.obj \
       dataflowmanager.obj datasorter.obj diffquot.obj \
       filewriter.obj filternodes.obj stddev.obj \
@@ -209,8 +210,8 @@ nodetyperegistry.obj: nodetyperegistry.cc \
   channel.h \
   commonnodes.h \
   xyarray.h \
-  ../common/filetokenizer.h \
   ../common/filereader.h \
+  ../common/linetokenizer.h \
   indexfile.h
 octaveexport.obj: octaveexport.cc \
   octaveexport.h \
@@ -249,7 +250,8 @@ scavetool.obj: scavetool.cc \
   scavedefs.h \
   node.h \
   channel.h \
-  ../common/filetokenizer.h \
+  ../common/filereader.h \
+  ../common/linetokenizer.h \
   commonnodes.h \
   xyarray.h
 slidingwinavg.obj: slidingwinavg.cc \
@@ -274,6 +276,7 @@ stddev.obj: stddev.cc \
   nodetype.h \
   dataflowmanager.h
 vectorfileindexer.obj: vectorfileindexer.cc \
+  ../common/stringutil.h \
   resultfilemanager.h \
   nodetype.h \
   nodetyperegistry.h \
@@ -282,14 +285,14 @@ vectorfileindexer.obj: vectorfileindexer.cc \
   indexedvectorfile.h \
   indexfile.h \
   vectorfileindexer.h \
-  idlist.h \
-  ../common/exception.h \
   ../common/commonutil.h \
+  ../common/exception.h \
+  idlist.h \
   scavedefs.h \
   node.h \
   channel.h \
-  ../common/filetokenizer.h \
-  ../common/filereader.h
+  ../common/filereader.h \
+  ../common/linetokenizer.h
 vectorfilereader.obj: vectorfilereader.cc \
   channel.h \
   vectorfilereader.h \
@@ -298,7 +301,8 @@ vectorfilereader.obj: vectorfilereader.cc \
   ../common/exception.h \
   scavedefs.h \
   nodetype.h \
-  ../common/filetokenizer.h \
+  ../common/filereader.h \
+  ../common/linetokenizer.h \
   dataflowmanager.h
 vectorfilewriter.obj: vectorfilewriter.cc \
   channel.h \

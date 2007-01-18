@@ -15,7 +15,7 @@ LAYOUT=$(OMNETPP_ROOT)\src\layout
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 -I$(COMMON) -I$(LAYOUT) -I$(OMNETPP_INCL_DIR)
+COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 -I$(COMMON) -I$(LAYOUT) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep
 
 OBJS = engine_wrap.obj
 HEADERS = $(COMMON)\*.h  $(LAYOUT)\*.h

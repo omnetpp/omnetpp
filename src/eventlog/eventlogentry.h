@@ -16,7 +16,7 @@
 #define __EVENTLOGENTRY_H_
 
 #include <sstream>
-#include "defs.h"
+#include "eventlogdefs.h"
 #include "linetokenizer.h"
 
 class Event;

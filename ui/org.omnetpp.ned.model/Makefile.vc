@@ -15,7 +15,7 @@ COMMON=$(OMNETPP_ROOT)\src\common
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 -I$(NEDXML)
+COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 -I$(NEDXML) -I$(OMNETPP_INCL_DIR)/platdep
 
 OBJS = nedxml_wrap.obj
 HEADERS = $(NEDXML)\*.h

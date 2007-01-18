@@ -14,6 +14,7 @@
 
 #include <algorithm>
 #include <set>
+#include <math.h>
 #include "ievent.h"
 #include "ieventlog.h"
 #include "event.h"

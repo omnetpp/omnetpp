@@ -10,7 +10,7 @@ CFLAGS=$(CFLAGS) -DWIN32_DLL
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I. -I$(OMNETPP_INCL_DIR)/platdep /Fd"common.pdb"
+COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)/platdep" -I. /Fd"common.pdb"
 
 OBJS= random.obj filetokenizer.obj filereader.obj linetokenizer.obj \
       stringtokenizer.obj fnamelisttokenizer.obj \
@@ -75,7 +75,6 @@ filereader.obj: filereader.cc \
 filetokenizer.obj: filetokenizer.cc \
   filetokenizer.h
 fileutil.obj: fileutil.cc \
-  ./unistd.h \
   fileutil.h
 fnamelisttokenizer.obj: fnamelisttokenizer.cc \
   fnamelisttokenizer.h \

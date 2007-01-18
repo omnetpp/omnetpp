@@ -19,7 +19,7 @@
 #include <list>
 #include <vector>
 #include <map>
-#include "defs.h"
+#include "eventlogdefs.h"
 #include "exception.h"
 #include "eventlogdefs.h"
 #include "filereader.h"

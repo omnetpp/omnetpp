@@ -36,7 +36,7 @@
 #include "akaroarng.h"      // env_dummy_function()
 #include "akoutvectormgr.h" // env_dummy_function()
 
-#include "platdep/inttypes.h"
+#include "inttypes.h"
 
 using std::ostream;
 
@@ -106,7 +106,7 @@ static void loadLibs(const char *libs)
 
 static void verifyIntTypes()
 {
-#define VERIFY(t,size) if (sizeof(t)!=size) {printf("INTERNAL ERROR: sizeof(%s)!=%s, please check typedefs in include/platdep/inttypes.h, and report this bug!", #t, size); exit(1);}
+#define VERIFY(t,size) if (sizeof(t)!=size) {printf("INTERNAL ERROR: sizeof(%s)!=%s, please check typedefs in include/inttypes.h, and report this bug!", #t, size); exit(1);}
     VERIFY(int8,  1);
     VERIFY(int16, 2);
     VERIFY(int32, 4);

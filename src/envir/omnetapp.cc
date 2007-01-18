@@ -52,8 +52,8 @@
 
 #include "fileglobber.h"
 
-#include "platdep/timeutil.h"
-#include "platdep/platmisc.h"
+#include "timeutil.h"
+#include "platmisc.h"
 #include "fileutil.h"  // splitFileName
 
 

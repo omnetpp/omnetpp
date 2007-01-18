@@ -18,7 +18,7 @@
 #include <algorithm>
 #include <time.h>
 #include <iostream>
-#include "platdep/inttypes.h"
+#include "inttypes.h"
 #include "geometry.h"
 #include "forcedirectedparametersbase.h"
 

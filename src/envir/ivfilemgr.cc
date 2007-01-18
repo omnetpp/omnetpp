@@ -23,8 +23,8 @@
 #include <errno.h> // SGI
 #include <algorithm>
 #include <sys/stat.h>
-#include "platdep/timeutil.h"
-#include "platdep/platmisc.h"
+#include "timeutil.h"
+#include "platmisc.h"
 #include "cenvir.h"
 #include "omnetapp.h"
 #include "csimulation.h"
@@ -121,7 +121,7 @@ static opp_string createIndexFileName(const opp_string fname)
 void cIndexedFileOutputVectorManager::startRun()
 {
     cFileOutputVectorManager::startRun();
-    
+
     closeIndexFile();
     ifname = createIndexFileName(fname);
     removeFile(ifname.c_str(), "old index file");
@@ -203,7 +203,7 @@ bool cIndexedFileOutputVectorManager::record(void *vectorhandle, simtime_t t, do
         vp->sumsqr += value*value;
 
         memoryUsed += sizeof(sSample);
-        
+
         if (vp->maxBufferedSamples > 0 && vp->buffer.size() >= vp->maxBufferedSamples)
             writeRecords(vp);
         else if (memoryUsed >= maxMemoryUsed)
@@ -240,9 +240,9 @@ void cIndexedFileOutputVectorManager::writeRecords(sVector *vp)
     }
     long endOffset = ftell(f);
 
-    vp->maxBlockSize = max(vp->maxBlockSize, endOffset - startOffset); 
+    vp->maxBlockSize = max(vp->maxBlockSize, endOffset - startOffset);
     vp->blocks.push_back(sBlock(startOffset, vp->buffer.size()));
-    memoryUsed -= vp->buffer.size()*sizeof(sSample); 
+    memoryUsed -= vp->buffer.size()*sizeof(sSample);
     vp->buffer.clear();
 }
 

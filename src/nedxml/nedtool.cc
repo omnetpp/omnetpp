@@ -37,7 +37,7 @@
 //XXX #include "nedcompiler.h"
 #include "fileglobber.h"
 #include "fileutil.h"
-#include "platdep/platmisc.h"   // getcwd, chdir
+#include "platmisc.h"   // getcwd, chdir
 #include "../utils/ver.h"
 
 using std::ofstream;

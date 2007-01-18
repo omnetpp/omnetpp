@@ -19,7 +19,7 @@ CFLAGS=$(CFLAGS) -DWIN32_DLL
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I../envir -I../common -I../layout $(TK_CFLAGS) -DBUILDING_TKENV /Fd"tkenv.pdb"
+COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../envir -I../common -I../layout $(TK_CFLAGS) -DBUILDING_TKENV /Fd"tkenv.pdb"
 
 OBJS = tkapp$(TKENV_EMBED_SUFFIX).obj tkcmd.obj tklib.obj inspector.obj \
        inspfactory.obj objinsp.obj modinsp.obj statinsp.obj \
@@ -75,6 +75,7 @@ arrow.obj: arrow.cc \
   arrow.h
 graphlayout.obj: graphlayout.cc \
   graphlayout.h \
+  ../../include/platdep/inttypes.h \
   ../../include/csimplemodule.h \
   ../../include/cchannel.h \
   ../../include/cgate.h \
@@ -98,8 +99,8 @@ graphlayout.obj: graphlayout.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
@@ -197,6 +198,7 @@ inspector.obj: inspector.cc \
   ../../include/util.h \
   ../../include/nedsupport.h \
   ../../include/compat.h \
+  ../../include/platdep/inttypes.h \
   ../../include/platdep/timeutil.h \
   tkutil.h \
   tkdefs.h
@@ -287,6 +289,7 @@ inspfactory.obj: inspfactory.cc \
   ../../include/util.h \
   ../../include/nedsupport.h \
   ../../include/compat.h \
+  ../../include/platdep/inttypes.h \
   ../../include/platdep/timeutil.h \
   tkutil.h \
   tkdefs.h
@@ -326,8 +329,8 @@ modinsp.obj: modinsp.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/onstartup.h \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
@@ -337,6 +340,7 @@ modinsp.obj: modinsp.cc \
   ../../include/cexpression.h \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h \
+  ../../include/platdep/inttypes.h \
   inspector.h \
   tkutil.h \
   tkdefs.h
@@ -427,6 +431,7 @@ objinsp.obj: objinsp.cc \
   ../../include/util.h \
   ../../include/nedsupport.h \
   ../../include/compat.h \
+  ../../include/platdep/inttypes.h \
   ../../include/platdep/timeutil.h \
   inspector.h \
   tkutil.h \
@@ -459,8 +464,8 @@ statinsp.obj: statinsp.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/onstartup.h \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
@@ -483,7 +488,6 @@ tkapp.obj: tkapp.cc \
   inspector.h \
   inspfactory.h \
   modinsp.h \
-  ../../include/platdep/timeutil.h \
   ../utils/ver.h \
   ../../include/defs.h \
   ../../include/cmodule.h \
@@ -501,18 +505,20 @@ tkapp.obj: tkapp.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/onstartup.h \
   ../../include/opp_string.h \
   ../../include/cexpression.h \
+  ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h \
+  ../../include/platdep/timeutil.h \
   ../../include/cneddeclarationbase.h \
   ../../include/cparvalue.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
-  tkutil.h
+  tkutil.h \
+  ../../include/platdep/inttypes.h
 tkcmd.obj: tkcmd.cc \
   ../../include/cenvir.h \
   ../../include/carray.h \
@@ -545,11 +551,11 @@ tkcmd.obj: tkcmd.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/onstartup.h \
   ../../include/opp_string.h \
   ../../include/globals.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
+  ../../include/onstartup.h \
   ../../include/cclassfactory.h \
   ../../include/cmodule.h \
   ../../include/ccomponent.h \
@@ -582,7 +588,6 @@ tkutil.obj: tkutil.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/onstartup.h \
   ../../include/opp_string.h \
   ../../include/ccomponent.h \
   ../../include/globals.h \
@@ -590,6 +595,7 @@ tkutil.obj: tkutil.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
+  ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
@@ -614,7 +620,6 @@ visitor.obj: visitor.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
-  ../../include/onstartup.h \
   ../../include/ccomponent.h \
   ../../include/globals.h \
   ../../include/csimulation.h \
@@ -624,6 +629,7 @@ visitor.obj: visitor.cc \
   ../../include/cexception.h \
   ../../include/cstringpool.h \
   ../../include/opp_string.h \
+  ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \

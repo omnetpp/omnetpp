@@ -100,7 +100,7 @@ print ENTRIES_H_FILE "\
 #ifndef __EVENTLOGENTRIES_H_
 #define __EVENTLOGENTRIES_H_
 
-#include \"defs.h\"
+#include \"eventlogdefs.h\"
 #include \"eventlogentry.h\"
 
 class Event;

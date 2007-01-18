@@ -30,7 +30,7 @@
 #include "cmessage.h"
 #include "args.h"
 #include "speedmtr.h"
-#include "platdep/timeutil.h"
+#include "timeutil.h"
 
 
 static char buffer[1024];

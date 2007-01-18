@@ -31,7 +31,7 @@ XMLPARSER=@XMLPARSER@
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) $(XML_CFLAGS) -I. -I../common
+COPTS=$(CFLAGS) $(XML_CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR)/platdep
 
 OBJS= arraybuilder.o channel.o commonnodes.o compoundfilter.o \
       dataflowmanager.o datasorter.o diffquot.o \

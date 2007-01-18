@@ -15,7 +15,7 @@
 #ifndef _SCAVEDEFS_H_
 #define _SCAVEDEFS_H_
 
-#include "platdep/inttypes.h" // for int64, our equivalent of Java's "long" type
+#include "inttypes.h" // for int64, our equivalent of Java's "long" type
 
 #define DEFAULT_PRECISION  14
 

@@ -27,7 +27,7 @@
 #include "envdefs.h"
 #include "envirext.h"
 #include "cconfig.h"
-#include "platdep/timeutil.h"
+#include "timeutil.h"
 
 
 class cXMLDocCache;

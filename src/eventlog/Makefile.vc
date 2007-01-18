@@ -10,7 +10,7 @@ CFLAGS=$(CFLAGS) -DWIN32_DLL
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR) /Fd"eventlog.pdb"
+COPTS=$(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"eventlog.pdb"
 
 OBJS= ievent.obj ieventlog.obj eventlogfacade.obj eventlogtablefacade.obj sequencechartfacade.obj eventlog.obj eventlogindex.obj messagedependency.obj event.obj eventlogentry.obj eventlogentries.obj filteredevent.obj filteredeventlog.obj eventlogentryfactory.obj stringpool.obj
 LIBS= eventlog.lib ../common/common.lib
@@ -56,10 +56,10 @@ event.obj: event.cc \
   ievent.h \
   eventlogentries.h \
   messagedependency.h \
+  eventlogdefs.h \
   stringpool.h \
   ieventlog.h \
-  eventlogindex.h \
-  eventlogdefs.h
+  eventlogindex.h
 eventlog.obj: eventlog.cc \
   stringpool.h \
   eventlog.h \
@@ -76,7 +76,8 @@ eventlogentries.obj: eventlogentries.cc \
   eventlogentries.h \
   ievent.h \
   eventlogentry.h \
-  messagedependency.h
+  messagedependency.h \
+  eventlogdefs.h
 eventlogentry.obj: eventlogentry.cc \
   eventlog.h \
   eventlogentry.h \
@@ -95,7 +96,8 @@ eventlogentryfactory.obj: eventlogentryfactory.cc \
   ievent.h \
   eventlogentry.h \
   eventlogentries.h \
-  messagedependency.h
+  messagedependency.h \
+  eventlogdefs.h
 eventlogfacade.obj: eventlogfacade.cc \
   ievent.h \
   ieventlog.h \
@@ -103,8 +105,8 @@ eventlogfacade.obj: eventlogfacade.cc \
   eventlogfacade.h \
   eventlogentry.h \
   messagedependency.h \
-  eventlogentries.h \
-  eventlogdefs.h
+  eventlogdefs.h \
+  eventlogentries.h
 eventlogindex.obj: eventlogindex.cc \
   eventlogindex.h \
   eventlogdefs.h
@@ -115,8 +117,8 @@ eventlogtablefacade.obj: eventlogtablefacade.cc \
   eventlogtablefacade.h \
   eventlogentry.h \
   messagedependency.h \
-  eventlogentries.h \
   eventlogdefs.h \
+  eventlogentries.h \
   eventlogfacade.h
 eventlogtool.obj: eventlogtool.cc \
   eventlogindex.h \
@@ -161,6 +163,7 @@ ievent.obj: ievent.cc \
   ievent.h \
   eventlogentry.h \
   messagedependency.h \
+  eventlogdefs.h \
   eventlogentries.h
 ieventlog.obj: ieventlog.cc \
   ieventlog.h \

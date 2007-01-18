@@ -14,7 +14,7 @@ CFLAGS=$(CFLAGS) -DWITH_NETBUILDER
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I../sim  -I../common -DBUILDING_ENVIR -DHAVE_DLOPEN=$(HAVE_DLOPEN) /Fd"envir.pdb"
+COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../sim  -I../common -DBUILDING_ENVIR -DHAVE_DLOPEN=$(HAVE_DLOPEN) /Fd"envir.pdb"
 
 OBJS=args.obj cenvir.obj cinifile.obj main.obj omnetapp.obj fsutils.obj \
      speedmtr.obj filemgrs.obj akoutvectormgr.obj matchableobject.obj \
@@ -70,8 +70,7 @@ akaroarng.obj: akaroarng.cc \
   ../../include/cconfig.h \
   ../../include/cobject.h \
   ../../include/cvisitor.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h
+  ../../include/regmacros.h
 akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/cenvir.h \
   omnetapp.h \
@@ -86,7 +85,6 @@ akoutvectormgr.obj: akoutvectormgr.cc \
   envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfig.h \
-  ../../include/platdep/timeutil.h \
   ../../include/cownedobject.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
@@ -147,7 +145,6 @@ cenvir.obj: cenvir.cc \
   ../../include/opp_string.h \
   ../../include/cconfig.h \
   ../../include/envirext.h \
-  ../../include/platdep/timeutil.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cpar.h \
@@ -167,8 +164,7 @@ cinifile.obj: cinifile.cc \
   ../../include/opp_string.h \
   ../../include/cobject.h \
   ../../include/cvisitor.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h
+  ../../include/regmacros.h
 cxmldoccache.obj: cxmldoccache.cc \
   ../../include/cobject.h \
   cxmldoccache.h \
@@ -180,14 +176,11 @@ cxmldoccache.obj: cxmldoccache.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
-  ../../include/onstartup.h \
   envdefs.h \
   ../../include/cenvir.h \
   ../../include/opp_string.h
 filemgrs.obj: filemgrs.cc \
   ../../include/defs.h \
-  ../../include/platdep/timeutil.h \
-  ../../include/platdep/platmisc.h \
   ../../include/cenvir.h \
   omnetapp.h \
   ../../include/csimulation.h \
@@ -225,17 +218,21 @@ filemgrs.obj: filemgrs.cc \
   ../../include/cparvalue.h
 fsutils.obj: fsutils.cc \
   fsutils.h \
-  ../../include/platdep/platmisc.h \
   ../../include/onstartup.h \
   ../../include/cexception.h \
   ../../include/util.h \
   ../../include/opp_string.h \
   ../../include/defs.h \
-  ../../include/errmsg.h
+  ../../include/errmsg.h \
+  ../../include/cownedobject.h \
+  ../../include/cenvir.h \
+  ../../include/cnamedobject.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h
 ivfilemgr.obj: ivfilemgr.cc \
   ../../include/defs.h \
-  ../../include/platdep/timeutil.h \
-  ../../include/platdep/platmisc.h \
   ../../include/cenvir.h \
   omnetapp.h \
   ../../include/csimulation.h \
@@ -281,7 +278,6 @@ main.obj: main.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/onstartup.h \
   ../../include/opp_string.h
 matchableobject.obj: matchableobject.cc \
   matchableobject.h \
@@ -292,7 +288,6 @@ matchableobject.obj: matchableobject.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
-  ../../include/onstartup.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/cnamedobject.h \
@@ -316,8 +311,6 @@ omnetapp.obj: omnetapp.cc \
   cxmldoccache.h \
   ../../include/chasher.h \
   ../../include/cparsimcomm.h \
-  ../../include/platdep/timeutil.h \
-  ../../include/platdep/platmisc.h \
   envdefs.h \
   ../../include/defs.h \
   ../../include/carray.h \
@@ -338,13 +331,14 @@ omnetapp.obj: omnetapp.cc \
   ../../include/cclassfactory.h \
   ../../include/opp_string.h \
   ../../include/cmsgheap.h \
+  ../../include/platdep/timeutil.h \
   ../../include/cexpression.h \
   ../../include/stlwrap.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
-  ../../include/cdefaultlist.h
+  ../../include/cdefaultlist.h \
+  ../../include/platdep/inttypes.h
 speedmtr.obj: speedmtr.cc \
   speedmtr.h \
   ../../include/defs.h \
-  envdefs.h \
-  ../../include/platdep/timeutil.h
+  envdefs.h

@@ -23,8 +23,8 @@
 #include <string.h>
 #include <fstream>
 #include <errno.h> // SGI
-#include "platdep/timeutil.h"
-#include "platdep/platmisc.h"
+#include "timeutil.h"
+#include "platmisc.h"
 #include "cenvir.h"
 #include "omnetapp.h"
 #include "csimulation.h"
@@ -123,13 +123,13 @@ void cFileOutputVectorManager::writeHeader()
         {
             std::vector<opp_string> entries = config->getEntriesWithPrefix(sectionName, "", "");
             std::vector<opp_string>::size_type size = entries.size();
-            
+
             if (size % 2 != 0)
                 fprintf(stderr, "WARNING: getEntriesWithPrefix(\"%s\", \"\", \"\") returned odd number of strings. Section will be skipped.", sectionName);
 
             if (size == 0 || size % 2 != 0)
                 continue;
-            
+
             for (std::vector<opp_string>::size_type j=0; j<size-1; j+=2)
             {
                 const char *name = entries[j].c_str();

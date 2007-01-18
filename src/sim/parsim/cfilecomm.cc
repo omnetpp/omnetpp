@@ -31,7 +31,7 @@
 #include "cconfig.h"
 #include "parsimutil.h"
 #include "fileglobber.h"
-#include "platdep/platmisc.h"
+#include "platmisc.h"
 
 
 Register_Class(cFileCommunications);

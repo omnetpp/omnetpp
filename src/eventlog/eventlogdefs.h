@@ -16,9 +16,12 @@
 #define _EVENTLOGDEFS_H_
 
 #include "exception.h"
-#include "platdep/inttypes.h" // for int64, our equivalent of Java's "long" type
+#include "inttypes.h" // for int64, our equivalent of Java's "long" type
+#include "commonutil.h"
 
 #define PRINT_DEBUG_MESSAGES false
+
+typedef double simtime_t;  //XXX revise later
 
 
 /**
