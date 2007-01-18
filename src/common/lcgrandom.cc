@@ -12,14 +12,14 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "random.h"
+#include "lcgrandom.h"
 
-Random::Random(int32 seed)
+LCGRandom::LCGRandom(int32 seed)
 {
     this->seed = seed;
 }
 
-double Random::next01()
+double LCGRandom::next01()
 {
     const long int a = 16807, q = 127773, r = 2836;
     seed = a * (seed % q) - r * (seed / q);

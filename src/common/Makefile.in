@@ -28,7 +28,7 @@ SO_LIB_SUFFIX=@SO_LIB_SUFFIX@
 #
 COPTS=$(CFLAGS) -I. -I$(OMNETPP_INCL_DIR)/platdep
 
-OBJS= random.o filetokenizer.o filereader.o linetokenizer.o \
+OBJS= lcgrandom.o filetokenizer.o filereader.o linetokenizer.o \
       stringtokenizer.o fnamelisttokenizer.o \
       matchexpression.o lex.matchexpressionyy.o matchexpression.tab.o \
       patternmatcher.o unitconversion.o displaystring.o fileglobber.o \

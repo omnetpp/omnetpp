@@ -1,5 +1,5 @@
 //==========================================================================
-//  RANDOM.H - part of
+//  LCGRANDOM.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -12,21 +12,21 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __COMMON_RANDOM_H
-#define __COMMON_RANDOM_H
+#ifndef __LCGRANDOM_H
+#define __LCGRANDOM_H
 
 #include "inttypes.h"
 
 #define GLRAND_MAX  0x7ffffffeL  /* = 2**31-2 */
 
 // our RNG on [0,1) -- C's rand() is not to be trusted
-class Random
+class LCGRandom
 {
     private:
         int32 seed;
 
     public:
-        Random(int32 seed = 1);
+        LCGRandom(int32 seed = 1);
 
         int32 getSeed() { return seed; }
         void setSeed(int32 seed) { this->seed = seed; }
