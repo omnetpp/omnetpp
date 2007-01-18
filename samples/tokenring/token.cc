@@ -123,7 +123,7 @@ void TokenRingMAC::activity()
     {
         TRToken *token = new TRToken("token", TR_TOKEN);
         token->setLength(TR_TOKEN_BITS);
-        send(token, "phy_out");
+        send(token, "phyOut");
     }
 
     // enter token ring protocol
@@ -193,7 +193,7 @@ void TokenRingMAC::activity()
                     ev << "Begun transmitting \"" << data->name() << "\""
                           " in frame \"" << frame->name() << "\"" << endl;
                 }
-                send(frame, "phy_out");
+                send(frame, "phyOut");
 
                 simtime_t transmStartTime = simTime();
 
@@ -217,7 +217,7 @@ void TokenRingMAC::activity()
                     parentModule()->displayString().setTagArg("t",0,"");
                 }
             }
-            send(token, "phy_out");
+            send(token, "phyOut");
             token = NULL;
         }
 
@@ -388,7 +388,7 @@ void TokenRingMAC::beginReceiveFrame(TRFrame *frame)
         {
             ev << "Forwarding to next station" << endl;
         }
-        send(frame, "phy_out");
+        send(frame, "phyOut");
     }
 }
 
@@ -398,7 +398,7 @@ void TokenRingMAC::endReceiveFrame(cMessage *data)
     {
         ev << "End receiving frame containing \"" << data->name() << "\", passing up to higher layer." << endl;
     }
-    send(data, "to_hl");
+    send(data, "toHL");
 }
 
 void TokenRingMAC::finish()
