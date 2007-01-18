@@ -12,7 +12,7 @@ CFLAGS=$(CFLAGS) -DWIN32_DLL
 #
 COPTS=$(CFLAGS) -I. -I$(OMNETPP_INCL_DIR)/platdep /Fd"common.pdb"
 
-OBJS= filetokenizer.obj filereader.obj linetokenizer.obj \
+OBJS= random.obj filetokenizer.obj filereader.obj linetokenizer.obj \
       stringtokenizer.obj fnamelisttokenizer.obj \
       matchexpression.obj lex.matchexpressionyy.obj matchexpression.tab.obj \
       patternmatcher.obj unitconversion.obj displaystring.obj fileglobber.obj \
