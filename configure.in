@@ -816,6 +816,7 @@ AC_CONFIG_FILES(
   src/common/Makefile
   src/scave/Makefile
   src/eventlog/Makefile
+  src/layout/Makefile
   src/utils/Makefile
   src/utils/opp_makemake
   src/utils/opp_neddoc

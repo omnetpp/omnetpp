@@ -272,7 +272,7 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
 ac_unique_file="include/omnetpp.h"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX RANLIB ac_ct_RANLIB YACC LEX LEXLIB LEX_OUTPUT_ROOT MAKE DOXYGEN PERL XSLTPROC GHOSTSCRIPT CONVERT DOT GIFTRANS CXXCPP WISH OMNETPP_VERSION OMNETPP_EDITION OMNETPP_BIN_DIR OMNETPP_INCL_DIR OMNETPP_LIB_DIR OMNETPP_BITMAP_PATH OMNETPP_SRC_DIR OMNETPP_UI_DIR OMNETPP_UTILS_DIR OMNETPP_DOC_DIR OMNETPP_SAMPLES_DIR OMNETPP_TEST_DIR USER_CFLAGS MYPWD NEDC MSGC NEDTOOL GNED NEDCFLAGS AS AR SHLIB_LD MAKEDEPEND A_LIB_SUFFIX SO_LIB_SUFFIX LIB_SUFFIX EXE_SUFFIX NO_TCL HAVE_DLOPEN TK_CFLAGS TK_LIBS HAVE_BLT BLT_LIBS HAVE_MPI MPI_CFLAGS MPI_LIBS SYS_LIBS XMLPARSER XML_CFLAGS XML_LIBS AKAROA_CFLAGS AKAROA_LIBS TKENV_IF_POSSIBLE GNED_IF_POSSIBLE SCALARS_IF_POSSIBLE PLOVE_IF_POSSIBLE USERIF_LIBS TKENV_EMBED_SUFFIX GNED_EMBED_SUFFIX SCALARS_EMBED_SUFFIX PLOVE_EMBED_SUFFIX OMNETPP_TKENV_DIR OMNETPP_GNED_DIR OMNETPP_SCALARS_DIR OMNETPP_PLOVE_DIR WITH_NETBUILDER WITH_PARSIM LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX RANLIB ac_ct_RANLIB YACC LEX LEXLIB LEX_OUTPUT_ROOT MAKE DOXYGEN PERL XSLTPROC GHOSTSCRIPT CONVERT DOT GIFTRANS CXXCPP WISH OMNETPP_VERSION OMNETPP_EDITION OMNETPP_BIN_DIR OMNETPP_INCL_DIR OMNETPP_LIB_DIR OMNETPP_IMAGE_PATH OMNETPP_SRC_DIR OMNETPP_UI_DIR OMNETPP_UTILS_DIR OMNETPP_DOC_DIR OMNETPP_SAMPLES_DIR OMNETPP_TEST_DIR USER_CFLAGS MYPWD NEDC MSGC NEDTOOL GNED NEDCFLAGS AS AR SHLIB_LD MAKEDEPEND A_LIB_SUFFIX SO_LIB_SUFFIX LIB_SUFFIX EXE_SUFFIX NO_TCL HAVE_DLOPEN TK_CFLAGS TK_LIBS HAVE_BLT BLT_LIBS HAVE_MPI MPI_CFLAGS MPI_LIBS SYS_LIBS XMLPARSER XML_CFLAGS XML_LIBS AKAROA_CFLAGS AKAROA_LIBS TKENV_IF_POSSIBLE GNED_IF_POSSIBLE SCALARS_IF_POSSIBLE PLOVE_IF_POSSIBLE USERIF_LIBS TKENV_EMBED_SUFFIX GNED_EMBED_SUFFIX SCALARS_EMBED_SUFFIX PLOVE_EMBED_SUFFIX OMNETPP_TKENV_DIR OMNETPP_GNED_DIR OMNETPP_SCALARS_DIR OMNETPP_PLOVE_DIR WITH_NETBUILDER WITH_PARSIM LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1441,7 +1441,7 @@ OMNETPP_UTILS_DIR="$OMNETPP_SRC_DIR/utils"
 OMNETPP_DOC_DIR="$OMNETPP_ROOT/doc"
 OMNETPP_SAMPLES_DIR="$OMNETPP_ROOT/samples"
 OMNETPP_TEST_DIR="$OMNETPP_ROOT/test"
-OMNETPP_BITMAP_PATH="./bitmaps;$OMNETPP_ROOT/bitmaps"
+OMNETPP_IMAGE_PATH="./bitmaps;./images;$OMNETPP_ROOT/images"
 
 OMNETPP_BIN_DIR="$OMNETPP_ROOT/bin"
 OMNETPP_INCL_DIR="$OMNETPP_ROOT/include"
@@ -6317,7 +6317,7 @@ fi
 #----------------------
 # Files to be generated
 #----------------------
-                                                                                                                                                                                                                                                                                                  ac_config_files="$ac_config_files Makefile src/sim/Makefile src/envir/Makefile src/tkenv/Makefile src/cmdenv/Makefile src/nedc/Makefile src/nedxml/Makefile src/common/Makefile src/scave/Makefile src/eventlog/Makefile src/utils/Makefile src/utils/opp_makemake src/utils/opp_neddoc test/core/runtest samples/aloha/Makefile samples/cqn/Makefile samples/dyna/Makefile samples/fifo/Makefile samples/hcube/Makefile samples/hist/Makefile samples/neddemo/Makefile samples/p-to-p/Makefile samples/queueing/Makefile samples/routing/Makefile samples/queues/Makefile samples/tictoc/Makefile samples/tokenring/Makefile samples/sockets/Makefile test/Makefile"
+                                                                                                                                                                                                                                                                                                            ac_config_files="$ac_config_files Makefile src/sim/Makefile src/envir/Makefile src/tkenv/Makefile src/cmdenv/Makefile src/nedc/Makefile src/nedxml/Makefile src/common/Makefile src/scave/Makefile src/eventlog/Makefile src/layout/Makefile src/utils/Makefile src/utils/opp_makemake src/utils/opp_neddoc test/core/runtest samples/aloha/Makefile samples/cqn/Makefile samples/dyna/Makefile samples/fifo/Makefile samples/hcube/Makefile samples/hist/Makefile samples/neddemo/Makefile samples/p-to-p/Makefile samples/queueing/Makefile samples/routing/Makefile samples/queues/Makefile samples/tictoc/Makefile samples/tokenring/Makefile samples/sockets/Makefile test/Makefile"
 
 
 #----------------------
@@ -6973,6 +6973,7 @@ do
   "src/common/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/common/Makefile" ;;
   "src/scave/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/scave/Makefile" ;;
   "src/eventlog/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/eventlog/Makefile" ;;
+  "src/layout/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/layout/Makefile" ;;
   "src/utils/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/utils/Makefile" ;;
   "src/utils/opp_makemake" ) CONFIG_FILES="$CONFIG_FILES src/utils/opp_makemake" ;;
   "src/utils/opp_neddoc" ) CONFIG_FILES="$CONFIG_FILES src/utils/opp_neddoc" ;;
@@ -7114,7 +7115,7 @@ s,@OMNETPP_EDITION@,$OMNETPP_EDITION,;t t
 s,@OMNETPP_BIN_DIR@,$OMNETPP_BIN_DIR,;t t
 s,@OMNETPP_INCL_DIR@,$OMNETPP_INCL_DIR,;t t
 s,@OMNETPP_LIB_DIR@,$OMNETPP_LIB_DIR,;t t
-s,@OMNETPP_BITMAP_PATH@,$OMNETPP_BITMAP_PATH,;t t
+s,@OMNETPP_IMAGE_PATH@,$OMNETPP_IMAGE_PATH,;t t
 s,@OMNETPP_SRC_DIR@,$OMNETPP_SRC_DIR,;t t
 s,@OMNETPP_UI_DIR@,$OMNETPP_UI_DIR,;t t
 s,@OMNETPP_UTILS_DIR@,$OMNETPP_UTILS_DIR,;t t
