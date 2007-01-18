@@ -14,7 +14,7 @@ option animation_msgclassnames	{1}
 option animation_msgcolors	{1}
 option penguin_mode	{0}
 option showlayouting	{0}
-option usenewlayouter	{0}
+option usenewlayouter	{1}
 option bubbles	{1}
 option animation_speed	{1.5}
 option bkpts_enabled	{1}
@@ -37,7 +37,7 @@ config filtobjlist-order	{Class}
 config last-nedfile	{}
 config log-save-filename	{omnetpp.out}
 config logwindow-scrollbacklines	{100000}
-config mainwin-geom	{640x350+72+93}
+config mainwin-geom	{640x350+193+183}
 config mainwin-state	{normal}
 config rununtil-event	{}
 config rununtil-mode	{Express (tracing off)}

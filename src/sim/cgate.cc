@@ -173,12 +173,13 @@ cProperties *cGate::properties() const
 
 void cGate::take(cChannel *channelp)
 {
-    desc->ownerp->take(channelp);  //FIXME or maybe nothing? or maybe give it to the compound module in which the connection is?
+//XXX    desc->ownerp->take(channelp);  //FIXME or maybe nothing? or maybe give it to the compound module in which the connection is?
 }
 
 void cGate::dropAndDelete(cChannel *channelp)
 {
-    desc->ownerp->dropAndDelete(channelp); //FIXME
+//XXX    desc->ownerp->dropAndDelete(channelp); //FIXME
+    delete channelp;    //just simply....
 }
 
 void cGate::connectTo(cGate *g, cChannel *chan)
