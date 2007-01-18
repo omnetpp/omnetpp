@@ -16,7 +16,17 @@
 
 LCGRandom::LCGRandom(int32 seed)
 {
+    setSeed(seed);
+}
+
+void LCGRandom::setSeed(int32 seed)
+{
     this->seed = seed;
+
+    // consume some values, so that small seeds will work correctly
+    next01();
+    next01();
+    next01();
 }
 
 double LCGRandom::next01()

@@ -29,7 +29,7 @@ class LCGRandom
         LCGRandom(int32 seed = 1);
 
         int32 getSeed() { return seed; }
-        void setSeed(int32 seed) { this->seed = seed; }
+        void setSeed(int32 seed);
 
         double next01();
 };
