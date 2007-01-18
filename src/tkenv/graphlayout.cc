@@ -1151,7 +1151,7 @@ void ForceDirectedGraphLayouter::addElectricRepulsions()
                 ASSERT(vertex2);
 
                 if (vertex1->coherentSubComponent != vertex2->coherentSubComponent)
-	    		    embedding.addForceProvider(new ElectricRepulsion(body1, body2, 100, 200));
+	    		    embedding.addForceProvider(new ElectricRepulsion(body1, body2, embedding.parameters.defaultSpringReposeLength, embedding.parameters.defaultSpringReposeLength * 2));
                 else
     			    embedding.addForceProvider(new ElectricRepulsion(body1, body2));
             }
