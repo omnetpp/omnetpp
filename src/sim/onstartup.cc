@@ -121,7 +121,7 @@ cOwnedObject *cSymTable::lookup(const char *name, const char *contextNamespace)
         return it->second;
 
     // new lookup: do it, then cache the result
-    while (!namespacePrefix.empty())
+    while (true)
     {
         cOwnedObject *obj = lookup((namespacePrefix+name).c_str());
         if (obj)
@@ -129,6 +129,9 @@ cOwnedObject *cSymTable::lookup(const char *name, const char *contextNamespace)
             lookupCache[namespacePrefix+name] = obj;
             return obj;
         }
+
+		if (namespacePrefix.empty())
+			break;
 
         // discard last namespace element
         namespacePrefix.resize(namespacePrefix.length()-2); // chop "::"

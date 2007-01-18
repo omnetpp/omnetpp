@@ -19,11 +19,11 @@ network QNet
     submodules:
         enter: QSource {
             parameters:
-                @display("p=63,130");
+                @display("");
         };
         classifier: QClassifier {
             parameters:
-                @display("p=160,130");
+                @display("");
             gates:
                 out[3];
         };
