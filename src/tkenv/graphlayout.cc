@@ -34,7 +34,7 @@ bool resolveBoolDispStrArg(const char *s, bool defaultval)
 {
    if (!s || !*s)
        return defaultval;
-   return !strcmpi("1", s) || !strcmpi("true", s);
+   return !strcmp("1", s) || !strcmp("true", s);
 }
 
 long resolveLongDispStrArg(const char *s, cModule *mod, int defaultval)
@@ -1000,7 +1000,7 @@ void ForceDirectedGraphLayouter::setRandomPositions(double size)
     if (size == -1) {
         size = pow(embedding.parameters.defaultSpringReposeLength, 2) * bodies.size();
 
-	    for (int i = 0; i < bodies.size(); i++) {
+	    for (int i = 0; i < (int)bodies.size(); i++) {
 		    IBody *body = bodies[i];
 
             if (!dynamic_cast<WallBody *>(body))
@@ -1013,7 +1013,7 @@ void ForceDirectedGraphLayouter::setRandomPositions(double size)
     ASSERT(!isNaN(size));
 
     const std::vector<Variable *>& variables = embedding.getVariables();
-	for (int i = 0; i < variables.size(); i++) {
+	for (int i = 0; i < (int)variables.size(); i++) {
         Pt pt = variables[i]->getPosition();
 
         if (isNaN(pt.x))
@@ -1085,7 +1085,7 @@ void ForceDirectedGraphLayouter::ensureBorders()
 		rightBorder = new WallBody(false, NaN);
 
         const std::vector<IBody *>& bodies = embedding.getBodies();
-		for (int i = 0; i < bodies.size(); i++) {
+		for (int i = 0; i < (int)bodies.size(); i++) {
 			IBody *body = bodies[i];
 			embedding.addForceProvider(new VerticalElectricRepulsion(topBorder, body));
 			embedding.addForceProvider(new VerticalElectricRepulsion(bottomBorder, body));
@@ -1112,7 +1112,7 @@ void ForceDirectedGraphLayouter::setBorderPositions()
 	double left = DBL_MAX, right = DBL_MIN;
 
     const std::vector<IBody *>& bodies = embedding.getBodies();
-	for (int i = 0; i < bodies.size(); i++) {
+	for (int i = 0; i < (int)bodies.size(); i++) {
 		IBody *body = bodies[i];
 
         if (!dynamic_cast<WallBody *>(body)) {
@@ -1133,8 +1133,8 @@ void ForceDirectedGraphLayouter::addElectricRepulsions()
 {
     // TODO: move this to the embedding, so that it can be called from java
     const std::vector<IBody *>& bodies = embedding.getBodies();
-    for (int i = 0; i < bodies.size(); i++)
-	    for (int j = i + 1; j < bodies.size(); j++) {
+    for (int i = 0; i < (int)bodies.size(); i++)
+	    for (int j = i + 1; j < (int)bodies.size(); j++) {
     		IBody *body1 = bodies[i];
 	    	IBody *body2 = bodies[j];
             Variable *variable1 = body1->getVariable();
@@ -1161,7 +1161,7 @@ void ForceDirectedGraphLayouter::addElectricRepulsions()
 void ForceDirectedGraphLayouter::addBasePlaneSprings()
 {
     const std::vector<IBody *>& bodies = embedding.getBodies();
-    for (int i = 0; i < bodies.size(); i++) {
+    for (int i = 0; i < (int)bodies.size(); i++) {
   		IBody *body = bodies[i];
 
         if (!dynamic_cast<WallBody *>(body))
@@ -1194,7 +1194,7 @@ void ForceDirectedGraphLayouter::normalize()
 	double left = DBL_MAX;
 
     const std::vector<IBody *>& bodies = embedding.getBodies();
-	for (int i = 0; i < bodies.size(); i++) {
+	for (int i = 0; i < (int)bodies.size(); i++) {
 		IBody *body = bodies[i];
 
         if (!dynamic_cast<WallBody *>(body)) {
@@ -1204,7 +1204,7 @@ void ForceDirectedGraphLayouter::normalize()
 	}
 
     const std::vector<Variable *>& variables = embedding.getVariables();
-	for (int i = 0; i < variables.size(); i++) {
+	for (int i = 0; i < (int)variables.size(); i++) {
         variables[i]->assignPosition(variables[i]->getPosition().subtract(Pt(left - border, top - border, 0)));
     }
 }
@@ -1289,7 +1289,6 @@ void ForceDirectedGraphLayouter::execute()
         embedding.reinitialize();
 
         if (embedding.inspected) {
-            int step = 0;
             while (!embedding.getFinished()) {
                 embedding.embed();
                 debugDraw();
@@ -1322,8 +1321,8 @@ void ForceDirectedGraphLayouter::getNodePosition(cModule *mod, int& x, int& y)
 {
     IBody *body = findBody(mod);
     Pt pt = body->getPosition();
-    x = pt.x;
-    y = pt.y;
+    x = (int) pt.x;
+    y = (int) pt.y;
 }
 
 void ForceDirectedGraphLayouter::debugDraw()
@@ -1333,7 +1332,7 @@ void ForceDirectedGraphLayouter::debugDraw()
     char coords[100];
 
     const std::vector<IBody *>& bodies = embedding.getBodies();
-	for (int i = 0; i < bodies.size(); i++) {
+	for (int i = 0; i < (int)bodies.size(); i++) {
 		IBody *body = bodies[i];
         Pt pt = body->getPosition();
         Rs rs = body->getSize();
@@ -1361,7 +1360,7 @@ void ForceDirectedGraphLayouter::debugDraw()
     }
 
     const std::vector<IForceProvider *>& forceProviders = embedding.getForceProviders();
-	for (int i = 0; i < forceProviders.size(); i++) {
+	for (int i = 0; i < (int)forceProviders.size(); i++) {
 		Spring *spring = dynamic_cast<Spring *>(forceProviders[i]);
 
         if (spring) {
@@ -1375,14 +1374,14 @@ void ForceDirectedGraphLayouter::debugDraw()
 
     double forceScale = 10;
     const std::vector<Variable *>& variables = embedding.getVariables();
-    for (int i = 0; i < variables.size(); i++) {
+    for (int i = 0; i < (int)variables.size(); i++) {
         Variable *variable = variables[i];
         Pt pt1 = variable->getPosition();
 
         if (showForces) {
             std::vector<Pt> forces = variable->getForces();
 
-	        for (int j = 0; j < forces.size(); j++) {
+	        for (int j = 0; j < (int)forces.size(); j++) {
                 Pt pt2(pt1);
                 Pt force(forces[j]);
                 force.multiply(forceScale);

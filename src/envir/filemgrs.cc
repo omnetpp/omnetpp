@@ -389,3 +389,6 @@ const char *cFileSnapshotManager::fileName() const
 void dummyMethodReferencingCIndexedFileOutputVectorManager() {
   cIndexedFileOutputVectorManager m;
 }
+
+
+

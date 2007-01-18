@@ -1,5 +1,5 @@
 //=========================================================================
-//  EVENTLOGENTRY.H - part of
+//  EVENTLOGENTRYFACTORY.H - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -24,3 +24,5 @@ class EventLogEntryFactory
 };
 
 #endif
+
+

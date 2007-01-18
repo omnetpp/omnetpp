@@ -103,7 +103,7 @@ void ForceDirectedEmbedding::reinitialize() {
     tvn = createPtArray();
 
     // set positions and velocities
-    for (int i = 0; i < variables.size(); i++) {
+    for (int i = 0; i < (int)variables.size(); i++) {
         Variable *variable = variables[i];
         pn[i].assign(variable->getPosition());
         vn[i].assign(variable->getVelocity());
@@ -130,7 +130,7 @@ void ForceDirectedEmbedding::reinitialize() {
  *
  * pn+1 = pn + h * vn + h * h / 6 * [a1 + a2 + a3]
  * vn+1 = vn + h / 6 * (a1 + 2 * a2 + 2 * a3 + a4)
- * 
+ *
  * This algorithm adaptively modifies timeStep and friction.
  */
 void ForceDirectedEmbedding::embed() {
@@ -212,7 +212,7 @@ void ForceDirectedEmbedding::embed() {
             double nextUpdatedTimeStep = updatedTimeStep * hMultiplier;
             if (nextUpdatedTimeStep < parameters.minTimeStep || parameters.maxTimeStep < nextUpdatedTimeStep)
                 break;
-            
+
             updatedTimeStep = nextUpdatedTimeStep;
         }
 
@@ -231,7 +231,7 @@ void ForceDirectedEmbedding::embed() {
         increment(vn, dvn);
 
         // Maximize velocity
-        for (int i = 0; i < vn.size(); i++) {
+        for (int i = 0; i < (int)vn.size(); i++) {
             if (vn[i].getLength() > parameters.maxVelocity) {
                 vn[i].normalize();
                 vn[i].multiply(parameters.maxVelocity);
@@ -248,7 +248,7 @@ void ForceDirectedEmbedding::embed() {
         // check if relaxed
         lastMaxVelocity = 0;
         lastMaxAcceleration = 0;
-        for (int i = 0; i < vn.size(); i++) {
+        for (int i = 0; i < (int)vn.size(); i++) {
             double velocity = vn[i].getLength();
             if (velocity > lastMaxVelocity)
                 lastMaxVelocity = velocity;
@@ -290,14 +290,14 @@ void ForceDirectedEmbedding::a(std::vector<Pt>& an, const std::vector<Pt>& pn, c
 {
     if (debugLevel >= 4) {
         std::cout << "\nCalling a() with:\n";
-        for (int i = 0; i < pn.size(); i++) {
+        for (int i = 0; i < (int)pn.size(); i++) {
             std::cout << "p[" << i << "] = " << pn[i].x << ", " << pn[i].y << ", " << pn[i].z << " ";
             std::cout << "v[" << i << "] = " << vn[i].x << ", " << vn[i].y << ", " << vn[i].z << "\n";
         }
     }
 
     // set positions and velocities and reset forces
-    for (int i = 0; i < variables.size(); i++) {
+    for (int i = 0; i < (int)variables.size(); i++) {
         Variable *variable = variables[i];
         variable->assignPosition(pn[i]);
         variable->assignVelocity(vn[i]);
@@ -312,14 +312,14 @@ void ForceDirectedEmbedding::a(std::vector<Pt>& an, const std::vector<Pt>& pn, c
         (*it)->applyForces();
 
     // return accelerations
-    for (int i = 0; i < variables.size(); i++) {
+    for (int i = 0; i < (int)variables.size(); i++) {
         Variable *variable = variables[i];
         an[i].assign(variable->getAcceleration());
     }
 
     if (debugLevel >= 4) {
         std::cout << "Returning from a() with:\n";
-        for (int i = 0; i < pn.size(); i++)
+        for (int i = 0; i < (int)pn.size(); i++)
             std::cout << "a[" << i << "] = " << an[i].x << ", " << an[i].y << ", " << an[i].z << "\n";
     }
 }

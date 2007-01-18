@@ -105,13 +105,13 @@ class ForceDirectedEmbedding
          * Members are destructed.
          */
         std::vector<Variable *> variables;
-        
+
         /**
          * Used to generate forces in each cycle of the calculation.
          * Members are destructed.
          */
         std::vector<IForceProvider *> forceProviders;
-        
+
         /**
          * The various bodies which are part of the calculation.
          * Members are destructed.
@@ -148,20 +148,20 @@ class ForceDirectedEmbedding
          * The total time spent on calculation since the last reinitialize call.
          */
         double elapsedCalculationTime;
-        
+
         /**
          * Time step is automatically updated during the solution. It will always have the highest value so that the acceleration error
          * is less than the max acceleration error. The time step is either multiplied or divided by the time step multiplier according to
          * the current acceleration error.
          */
         double updatedTimeStep;
-        
+
         /**
          * Acceleration error limit is updated automatically during the solution.
          * It decreases towards zero proportional to the relax factor.
          */
         double updatedMinAccelerationError;
-        
+
         /**
          * Acceleration error limit is updated automatically during the solution.
          * It decreases towards zero proportional to the relax factor.
@@ -195,12 +195,12 @@ class ForceDirectedEmbedding
         const std::vector<IBody *>& getBodies() const {
             return bodies;
         }
-        
+
         void addBody(IBody *body) {
             bodies.push_back(body);
             body->setForceDirectedEmbedding(this);
             body->getVariable()->addMass(body->getMass());
-            
+
             if (std::find(variables.begin(), variables.end(), body->getVariable()) == variables.end())
                 variables.push_back(body->getVariable());
         }
@@ -224,7 +224,7 @@ class ForceDirectedEmbedding
          */
         double getKineticEnergy() {
             double sum = 0;
-            for (int i = 0; i < variables.size(); i++)
+            for (int i = 0; i < (int)variables.size(); i++)
                 sum +=  variables[i]->getKineticEnergy();
 
             return sum;
@@ -235,7 +235,7 @@ class ForceDirectedEmbedding
          */
         double getPotentialEnergy() {
             double sum = 0;
-            for (int i = 0; i < forceProviders.size(); i++)
+            for (int i = 0; i < (int)forceProviders.size(); i++)
                 sum += forceProviders[i]->getPotentialEnergy();
 
             return sum;
@@ -256,7 +256,7 @@ class ForceDirectedEmbedding
          *
          * pn+1 = pn + h * vn + h * h / 6 * [a1 + a2 + a3]
          * vn+1 = vn + h / 6 * (a1 + 2 * a2 + 2 * a3 + a4)
-         * 
+         *
          * This algorithm adaptively modifies timeStep and friction.
          */
         void embed();
@@ -273,7 +273,7 @@ class ForceDirectedEmbedding
         std::vector<Pt> createPtArray() {
             std::vector<Pt> pts;
 
-            for (int i = 0; i < variables.size(); i++)
+            for (int i = 0; i < (int)variables.size(); i++)
                 pts.push_back(Pt::getZero());
 
             return pts;
@@ -304,7 +304,7 @@ class ForceDirectedEmbedding
             ASSERT(a.size() == c.size());
             ASSERT(pts.size() == c.size());
 
-            for (int i = 0; i < pts.size(); i++)
+            for (int i = 0; i < (int)pts.size(); i++)
                 pts[i].assign(c[i]).multiply(b).add(a[i]);
         }
 
@@ -316,7 +316,7 @@ class ForceDirectedEmbedding
             Pt pt;
             ASSERT(pts.size() == b.size());
 
-            for (int i = 0; i < pts.size(); i++) {
+            for (int i = 0; i < (int)pts.size(); i++) {
                 pt.assign(b[i]).multiply(a);
                 pts[i].add(pt);
             }
@@ -329,7 +329,7 @@ class ForceDirectedEmbedding
         {
             ASSERT(a.size() == b.size());
 
-            for (int i = 0; i < pts.size(); i++)
+            for (int i = 0; i < (int)pts.size(); i++)
                 pts[i].assign(a[i]).add(b[i]);
         }
 
@@ -340,7 +340,7 @@ class ForceDirectedEmbedding
         {
             ASSERT(pts.size() == a.size());
 
-            for (int i = 0; i < pts.size(); i++)
+            for (int i = 0; i < (int)pts.size(); i++)
                 pts[i].add(a[i]);
         }
 
@@ -349,7 +349,7 @@ class ForceDirectedEmbedding
          */
         void multiply(std::vector<Pt>& pts, double a)
         {
-            for (int i = 0; i < pts.size(); i++)
+            for (int i = 0; i < (int)pts.size(); i++)
                 pts[i].multiply(a);
         }
 

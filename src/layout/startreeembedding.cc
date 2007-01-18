@@ -67,8 +67,8 @@ void StarTreeEmbedding::calculateCenterRecursive(Vertex *vertex)
 		    }
 
 		    // Find point candidates
-		    for (int i = 0; i < circles.size(); i++)
-			    for (int j = i + 1; j < circles.size(); j++)
+		    for (int i = 0; i < (int)circles.size(); i++)
+			    for (int j = i + 1; j < (int)circles.size(); j++)
 			    {
 				    Cc circle1 = circles[i];
 				    Cc circle2 = circles[j];
@@ -89,7 +89,7 @@ void StarTreeEmbedding::calculateCenterRecursive(Vertex *vertex)
 			    pts.push_back(circleSelf.getRightCenter());
 		    }
 
-            for (int j = 0; j < pts.size(); j++) {
+            for (int j = 0; j < (int)pts.size(); j++) {
                 for (std::vector<Cc>::iterator kt = circles.begin(); kt != circles.end(); kt++) {
                     Pt pt = pts[j];
                     Cc cc = *kt;

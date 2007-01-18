@@ -22,8 +22,8 @@ int main(int, char **)
     }
 
     std::vector<IBody *> bodies = embedding.getBodies();
-    for (int i = 0; i < bodies.size(); i++) {
-		for (int j = i + 1; j < bodies.size(); j++) {
+    for (int i = 0; i < (int)bodies.size(); i++) {
+		for (int j = i + 1; j < (int)bodies.size(); j++) {
 			IBody *body1 = bodies[i];
 			IBody *body2 = bodies[j];
 
@@ -41,7 +41,7 @@ int main(int, char **)
         embedding.embed();
     }
 
-    for (int i = 0; i < bodies.size(); i++) {
+    for (int i = 0; i < (int)bodies.size(); i++) {
         printf("%g %g\n", bodies[i]->getPosition().x, bodies[i]->getPosition().y);
     }
 }

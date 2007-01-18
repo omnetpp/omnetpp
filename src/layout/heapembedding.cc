@@ -40,7 +40,7 @@ void HeapEmbedding::embed()
         Rc bestRc;
 
         // for all candidate points
-        for (int j = 0; j < pts.size(); j++) {
+        for (int j = 0; j < (int)pts.size(); j++) {
             Pt pt = pts[j];
 
             // align vertex to candidate points with its various points
@@ -69,7 +69,7 @@ void HeapEmbedding::embed()
 
                 // find an already positioned vertex which would intersect the candidate rectangle
                 bool intersects = false;
-                for (int l = 0; l < rcs.size(); l++) {
+                for (int l = 0; l < (int)rcs.size(); l++) {
                     Rc rc = rcs[l];
                     if (candidateRc.basePlaneProjectionIntersects(rc, true)) {
                         intersects = true;
@@ -107,7 +107,7 @@ void HeapEmbedding::embed()
         bestRc.rs.height += 2 * nodeSpacing;
 
         // delete candidate points covered by best rc
-        for (int j = 0; j < pts.size(); j++) {
+        for (int j = 0; j < (int)pts.size(); j++) {
             Pt pt = pts[j];
 
             if (bestRc.basePlaneProjectionContains(pt, true))
@@ -126,7 +126,7 @@ void HeapEmbedding::embed()
 
 void HeapEmbedding::pushPtUnlessRcsContains(std::vector<Pt>& pts, const std::vector<Rc>& rcs, const Pt& pt)
 {
-    for (int j = 0; j < rcs.size(); j++) {
+    for (int j = 0; j < (int)rcs.size(); j++) {
         Rc rc = rcs[j];
 
         if (rc.basePlaneProjectionContains(pt, true))

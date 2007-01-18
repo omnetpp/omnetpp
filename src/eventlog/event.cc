@@ -194,7 +194,7 @@ MessageDependencyList *Event::getCauses()
             causes->push_back(getCause());
 
         // add message reuses
-        for (int beginSendEntryNumber = 0; beginSendEntryNumber < eventLogEntries.size(); beginSendEntryNumber++)
+        for (int beginSendEntryNumber = 0; beginSendEntryNumber < (int)eventLogEntries.size(); beginSendEntryNumber++)
         {
             BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(eventLogEntries[beginSendEntryNumber]);
 
@@ -218,7 +218,7 @@ MessageDependencyList *Event::getConsequences()
     {
         consequences = new MessageDependencyList();
 
-        for (int beginSendEntryNumber = 0; beginSendEntryNumber < eventLogEntries.size(); beginSendEntryNumber++)
+        for (int beginSendEntryNumber = 0; beginSendEntryNumber < (int)eventLogEntries.size(); beginSendEntryNumber++)
         {
             EventLogEntry *eventLogEntry = eventLogEntries[beginSendEntryNumber];
 
