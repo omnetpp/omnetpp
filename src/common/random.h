@@ -16,10 +16,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "inttypes.h"
-
 #ifndef __COMMON_RANDOM_H
 #define __COMMON_RANDOM_H
+
+#include "inttypes.h"
 
 #define GLRAND_MAX  0x7ffffffeL  /* = 2**31-2 */
 
