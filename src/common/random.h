@@ -23,6 +23,7 @@
 
 #define GLRAND_MAX  0x7ffffffeL  /* = 2**31-2 */
 
+// our RNG on [0,1) -- C's rand() is not to be trusted
 class Random
 {
     private:

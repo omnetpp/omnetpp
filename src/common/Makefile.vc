@@ -75,6 +75,7 @@ filereader.obj: filereader.cc \
 filetokenizer.obj: filetokenizer.cc \
   filetokenizer.h
 fileutil.obj: fileutil.cc \
+  ./unistd.h \
   fileutil.h
 fnamelisttokenizer.obj: fnamelisttokenizer.cc \
   fnamelisttokenizer.h \
@@ -98,6 +99,8 @@ patternmatcher.obj: patternmatcher.cc \
   stringutil.h \
   exception.h \
   commonutil.h
+random.obj: random.cc \
+  random.h
 stringtokenizer.obj: stringtokenizer.cc \
   stringtokenizer.h
 stringutil.obj: stringutil.cc \
