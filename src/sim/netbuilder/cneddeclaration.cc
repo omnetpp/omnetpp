@@ -136,14 +136,14 @@ std::string cNEDDeclaration::nedSource() const
 
 const char *cNEDDeclaration::interfaceName(int k) const
 {
-    if (k<0 || k>=interfacenames.size())
+    if (k<0 || k>=(int)interfacenames.size())
         throw cRuntimeError(this, "interface index %d out of range 0..%d", k, interfacenames.size()-1);
     return interfacenames[k].c_str();
 }
 
 const char *cNEDDeclaration::extendsName(int k) const
 {
-    if (k<0 || k>=extendsnames.size())
+    if (k<0 || k>=(int)extendsnames.size())
         throw cRuntimeError(this, "extendsName(): index %d out of range 0..%d", k, extendsnames.size()-1);
     return extendsnames[k].c_str();
 }

@@ -72,8 +72,8 @@ void FileReader::checkConsistence()
     bool ok = bufferEnd - bufferBegin == bufferSize &&
               dataBegin <= dataEnd && dataBegin >= bufferBegin && dataEnd <= bufferEnd &&
               strlen(dataBegin) == dataEnd - dataBegin;
-//    if (!ok)
-//        __asm int 3;
+    if (!ok)
+        throw opp_runtime_error("FileReader: internal error");
 }
 
 void FileReader::fillBuffer(bool forward)
@@ -118,7 +118,7 @@ void FileReader::fillBuffer(bool forward)
         if (ferror(f))
             throw opp_runtime_error("Read error in file `%s'", fileName.c_str());
 
-        if (PRINT_DEBUG_MESSAGES) printf("Reading data at file offset: %ld, length: %ld\n", fileOffset, bytesRead);
+        if (PRINT_DEBUG_MESSAGES) printf("Reading data at file offset: %lld, length: %d\n", fileOffset, bytesRead);
 
         if (!hasData()) {
             dataBegin = dataPointer;
@@ -238,7 +238,7 @@ char *FileReader::readNextLine()
 {
     numReadLines++;
     if (!f) openFile();
-    if (PRINT_DEBUG_MESSAGES) printf("Reading in next line at file offset: %ld\n", pointerToFileOffset(currentDataPointer));
+    if (PRINT_DEBUG_MESSAGES) printf("Reading in next line at file offset: %lld\n", pointerToFileOffset(currentDataPointer));
 
     fillBuffer(true);
 
@@ -264,7 +264,7 @@ char *FileReader::readPreviousLine()
 {
     numReadLines++;
     if (!f) openFile();
-    if (PRINT_DEBUG_MESSAGES) printf("Reading in previous line at file offset: %ld\n", pointerToFileOffset(currentDataPointer));
+    if (PRINT_DEBUG_MESSAGES) printf("Reading in previous line at file offset: %lld\n", pointerToFileOffset(currentDataPointer));
 
     fillBuffer(false);
 
@@ -305,10 +305,10 @@ int64 FileReader::getFileSize()
 
 void FileReader::seekTo(file_offset_t fileOffset, int ensureBufferSizeAround)
 {
-    if (PRINT_DEBUG_MESSAGES) printf("Seeking to file offset: %ld\n", fileOffset);
+    if (PRINT_DEBUG_MESSAGES) printf("Seeking to file offset: %lld\n", fileOffset);
 
     if (fileOffset < 0 || fileOffset > getFileSize())
-        throw opp_runtime_error("Invalid file offset: %ld", fileOffset);
+        throw opp_runtime_error("Invalid file offset: %lld", fileOffset);
 
     if (!f) openFile();
 
@@ -320,16 +320,16 @@ void FileReader::seekTo(file_offset_t fileOffset, int ensureBufferSizeAround)
     }
 
     file_offset_t newBufferFileOffset = std::min(std::max((int64)0L, getFileSize() - (int64)bufferSize), std::max((int64)0L, fileOffset - (int64)bufferSize / 2));
-    file_offset_t fileOffsetDelta = newBufferFileOffset - bufferFileOffset;
+    //file_offset_t fileOffsetDelta = newBufferFileOffset - bufferFileOffset;
     currentDataPointer = bufferBegin + fileOffset - newBufferFileOffset;
 
-    if (PRINT_DEBUG_MESSAGES) printf("Setting buffer file offset to: %ld\n", newBufferFileOffset);
+    if (PRINT_DEBUG_MESSAGES) printf("Setting buffer file offset to: %lld\n", newBufferFileOffset);
 
     if (hasData()) {
         file_offset_t oldDataBeginFileOffset = getDataBeginFileOffset();
         file_offset_t oldDataEndFileOffset = getDataEndFileOffset();
 
-        if (PRINT_DEBUG_MESSAGES) printf("Data before: from file offset: %ld to file offset: %ld\n", oldDataBeginFileOffset, oldDataEndFileOffset);
+        if (PRINT_DEBUG_MESSAGES) printf("Data before: from file offset: %lld to file offset: %lld\n", oldDataBeginFileOffset, oldDataEndFileOffset);
 
         file_offset_t newBufferBeginFileOffset = newBufferFileOffset;
         file_offset_t newBufferEndFileOffset = newBufferFileOffset + bufferSize;
@@ -340,7 +340,7 @@ void FileReader::seekTo(file_offset_t fileOffset, int ensureBufferSizeAround)
         int moveSize = moveSrcEndFileOffset - moveSrcBeginFileOffset;
 
         if (moveSize > 0 && moveSrc != moveDest) {
-            if (PRINT_DEBUG_MESSAGES) printf("Keeping data from file offset: %ld with length: %ld\n", pointerToFileOffset(moveSrc), moveSize);
+            if (PRINT_DEBUG_MESSAGES) printf("Keeping data from file offset: %lld with length: %d\n", pointerToFileOffset(moveSrc), moveSize);
             fflush(stdout);
 
             memmove(moveDest, moveSrc, moveSize);
@@ -350,7 +350,7 @@ void FileReader::seekTo(file_offset_t fileOffset, int ensureBufferSizeAround)
         dataBegin = moveDest;
         dataEnd = moveDest + moveSize;
 
-        if (PRINT_DEBUG_MESSAGES) printf("Data after: from file offset: %ld to file offset: %ld\n", getDataBeginFileOffset(), getDataEndFileOffset());
+        if (PRINT_DEBUG_MESSAGES) printf("Data after: from file offset: %lld to file offset: %lld\n", getDataBeginFileOffset(), getDataEndFileOffset());
     }
     else {
         bufferFileOffset = newBufferFileOffset;

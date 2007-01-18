@@ -33,11 +33,13 @@ inline bool strnull(const char *s)
     return !s || !s[0];
 }
 
+/* for debugging
 static void dump(NEDElement *node)
 {
     generateXML(std::cout, node, false);
     std::cout.flush();
 }
+*/
 
 cExpressionBuilder::cExpressionBuilder()
 {
@@ -179,7 +181,6 @@ void cExpressionBuilder::doFunction(FunctionNode *node)
 
         const char *ident = identnode->getName();
         const char *modulename = identnode->getModule();
-        bool hasChild = identnode->getFirstChild()!=NULL;
 
         // XXX actually we could decide here from the NED declarations
         // if it's sizeof(parentModuleGateVector) or sizeof(submoduleVector),

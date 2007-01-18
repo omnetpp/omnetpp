@@ -224,7 +224,7 @@ void cNEDLoader::tryResolvePendingDeclarations()
     while (again)
     {
         again = false;
-        for (int i=0; i<pendingList.size(); i++)
+        for (int i=0; i<(int)pendingList.size(); i++)
         {
             NEDElement *node = pendingList[i];
             if (areDependenciesResolved(node))
@@ -247,7 +247,7 @@ void cNEDLoader::done()
     // we've loaded all NED files now, try resolving those which had missing dependencies
     tryResolvePendingDeclarations();
 
-    for (int i=0; i<pendingList.size(); i++)
+    for (int i=0; i<(int)pendingList.size(); i++)
     {
         NEDElement *tree = pendingList[i];
         ev.printfmsg("WARNING: Type `%s' at %s could not be fully resolved, dropped (base type or interface missing)",

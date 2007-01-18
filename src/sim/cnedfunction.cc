@@ -54,7 +54,7 @@ std::string cNEDFunction::info() const
 {
     std::stringstream out;
     out << "(";
-    for (int i=0; i<strlen(argtypes.c_str()); i++)
+    for (int i = 0; i < (int)strlen(argtypes.c_str()); i++)
         out << (i?",":"") << typeName(argtypes[i]);
     out << ") -> " << typeName(rettype);
     return out.str();
@@ -63,7 +63,7 @@ std::string cNEDFunction::info() const
 cNEDFunction *cNEDFunction::find(const char *name, int argcount)
 {
     cSymTable *a = nedFunctions.instance();
-    for (int i=0; i<a->size(); i++)
+    for (int i = 0; i< a->size(); i++)
     {
         cNEDFunction *f = dynamic_cast<cNEDFunction *>(a->get(i));
         if (f && f->isName(name) && f->numArgs()==argcount)

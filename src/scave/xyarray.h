@@ -25,9 +25,9 @@ class XYArray
     private:
         double *x;
         double *y;
-        size_t len;
+        int len;
     public:
-        XYArray(double *xv, double *yv, size_t l) {x = xv; y = yv; len = l;}
+        XYArray(double *xv, double *yv, int l) {x = xv; y = yv; len = l;}
         ~XYArray() {delete [] x; delete [] y;}
         int length() const  {return len;}
         double getX(int i) const  {return (i>=0 && i<len) ? x[i] : 0;}

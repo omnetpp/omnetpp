@@ -79,7 +79,7 @@ void NEDErrorStore::add(const char *location, int category, const char *message,
 
 bool NEDErrorStore::containsError() const
 {
-    for (int i=0; i<entries.size(); i++)
+    for (int i=0; i<(int)entries.size(); i++)
         if (entries[i].category == ERRCAT_ERROR || entries[i].category == ERRCAT_FATAL)
             return true;
     return false;
@@ -87,7 +87,7 @@ bool NEDErrorStore::containsError() const
 
 bool NEDErrorStore::containsFatal() const
 {
-    for (int i=0; i<entries.size(); i++)
+    for (int i=0; i<(int)entries.size(); i++)
         if (entries[i].category == ERRCAT_FATAL)
             return true;
     return false;
@@ -95,31 +95,31 @@ bool NEDErrorStore::containsFatal() const
 
 const char *NEDErrorStore::errorCategory(int i) const
 {
-    if (i<0 || i>=entries.size()) return NULL;
+    if (i<0 || i>=(int)entries.size()) return NULL;
     return categoryName(entries[i].category);
 }
 
 int NEDErrorStore::errorCategoryCode(int i) const
 {
-    if (i<0 || i>=entries.size()) return -1;
+    if (i<0 || i>=(int)entries.size()) return -1;
     return entries[i].category;
 }
 
 const char *NEDErrorStore::errorLocation(int i) const
 {
-    if (i<0 || i>=entries.size()) return NULL;
+    if (i<0 || i>=(int)entries.size()) return NULL;
     return entries[i].location.c_str();
 }
 
 NEDElement *NEDErrorStore::errorContext(int i) const
 {
-    if (i<0 || i>=entries.size()) return NULL;
+    if (i<0 || i>=(int)entries.size()) return NULL;
     return entries[i].context;
 }
 
 const char *NEDErrorStore::errorText(int i) const
 {
-    if (i<0 || i>=entries.size()) return NULL;
+    if (i<0 || i>=(int)entries.size()) return NULL;
     return entries[i].message.c_str();
 }
 

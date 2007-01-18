@@ -323,7 +323,6 @@ YYLTYPE NEDFileBuffer::getTrailingCommentPos(YYLTYPE pos)
 static const char *findCommentOnLine(const char *s)
 {
     // find comment on this line
-    const char *beg = s;
     while (*s!='\n' && (*s!='/' || *(s+1)!='/')) s++;
     if (*s!='/' || *(s+1)!='/')
         return NULL;

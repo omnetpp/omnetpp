@@ -134,7 +134,7 @@ std::string cProperty::info() const
                 os << ";";
             if (keyv[i] && *keyv[i])
                 os << keyv[i] << "=";
-            for (int j=0; j<valuesv[i].size(); j++)
+            for (int j=0; j<(int)valuesv[i].size(); j++)
                 os << (j==0 ? "" : ",") << valuesv[i][j];  //FIXME value may need quoting
         }
         os << ")";
@@ -184,7 +184,7 @@ int cProperty::findKey(const char *key) const
 {
     if (!key)
         key = "";
-    for (int i=0; i<keyv.size(); i++)
+    for (int i=0; i<(int)keyv.size(); i++)
         if (!strcmp(key,keyv[i]))
             return i;
     return -1;
@@ -250,7 +250,7 @@ void cProperty::setNumValues(const char *key, int size)
 const char *cProperty::value(const char *key, int k) const
 {
     CharPtrVector& v = valuesVector(key);
-    if (k<0 || k>=v.size())
+    if (k<0 || k>=(int)v.size())
         return "";
     return v[k];
 }
@@ -263,8 +263,8 @@ void cProperty::setValue(const char *key, int k, const char *value)
         value = "";
     CharPtrVector& v = valuesVector(key);
     if (k<0)
-        throw cRuntimeError(this,"negative property value index %d for key `%s'", k, key);
-    if (k>=v.size())
+        throw cRuntimeError(this, "negative property value index %d for key `%s'", k, key);
+    if (k>=(int)v.size())
         setNumValues(key, k+1);
     stringPool.release(v[k]);
     v[k] = stringPool.get(value);

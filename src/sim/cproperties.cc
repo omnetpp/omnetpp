@@ -25,7 +25,7 @@ cProperties::cProperties()
 
 cProperties::~cProperties()
 {
-    for (int i=0; i<propv.size(); i++)
+    for (int i = 0; i < (int)propv.size(); i++)
         delete propv[i];
 }
 
@@ -37,12 +37,12 @@ cProperties& cProperties::operator=(const cProperties& other)
     // note: do NOT copy islocked flag
 
     // delete existing contents
-    for (int i=0; i<propv.size(); i++)
+    for (int i = 0; i < (int)propv.size(); i++)
         delete propv[i];
     propv.clear();
 
     // copy properties from other
-    for (int i=0; i<other.propv.size(); i++)
+    for (int i = 0; i < (int)other.propv.size(); i++)
     {
         cProperty *p = other.propv[i]->dup();
         propv.push_back(p);
@@ -56,7 +56,7 @@ std::string cProperties::info() const
         return "";
     std::stringstream out;
     //out << "size=" << propv.size();
-    for (int i=0; i<propv.size(); i++)
+    for (int i = 0; i < (int)propv.size(); i++)
         out << (i==0 ? "" : " ") << propv[i]->info();
     return out.str();
 }
@@ -75,14 +75,14 @@ void cProperties::netUnpack(cCommBuffer *buffer)
 
 cProperty *cProperties::get(int k) const
 {
-    if (k<0 || k>=propv.size())
+    if (k < 0 || k >= (int)propv.size())
         throw cRuntimeError(this, "property index %d out of range", k);
     return propv[k];
 }
 
 cProperty *cProperties::get(const char *name, const char *index) const
 {
-    for (int i=0; i<propv.size(); i++)
+    for (int i = 0; i < (int)propv.size(); i++)
         if (!strcmp(propv[i]->name(), name) && !opp_strcmp(index, propv[i]->index()))
             return propv[i];
     return NULL;
@@ -101,7 +101,7 @@ void cProperties::remove(int k)
     if (islocked)
         throw cRuntimeError(this, eLOCKED);
 
-    if (k<0 || k>=propv.size())
+    if (k < 0 || k >= (int)propv.size())
         throw cRuntimeError(this, "property index %d out of range", k);
 
     delete propv[k];
@@ -111,7 +111,7 @@ void cProperties::remove(int k)
 const std::vector<const char *> cProperties::getNames() const
 {
     std::vector<const char *> v;
-    for (int i=0; i<propv.size(); i++)
+    for (int i = 0; i < (int)propv.size(); i++)
     {
         const char *s = propv[i]->name();
         if (std::find(v.begin(), v.end(), s) != v.end())
@@ -123,7 +123,7 @@ const std::vector<const char *> cProperties::getNames() const
 const std::vector<const char *> cProperties::getIndicesFor(const char *name) const
 {
     std::vector<const char *> v;
-    for (int i=0; i<propv.size(); i++)
+    for (int i = 0; i < (int)propv.size(); i++)
     {
         if (!strcmp(propv[i]->name(), name))
         {
@@ -138,7 +138,7 @@ const std::vector<const char *> cProperties::getIndicesFor(const char *name) con
 void cProperties::lock()
 {
     islocked = true;
-    for (int i=0; i<propv.size(); i++)
+    for (int i = 0; i < (int)propv.size(); i++)
         propv[i]->lock();
 }
 

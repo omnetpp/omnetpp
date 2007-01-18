@@ -61,7 +61,7 @@ void ExecuteOnStartup::executeAll()
 
 cSymTable::~cSymTable()
 {
-    for (int i=0; i<v.size(); i++)
+    for (int i=0; i<(int)v.size(); i++)
         dropAndDelete(v[i]);
 }
 
@@ -76,7 +76,7 @@ std::string cSymTable::info() const
 
 void cSymTable::forEachChild(cVisitor *visitor)
 {
-    for (int i=0; i<v.size(); i++)
+    for (int i=0; i<(int)v.size(); i++)
         visitor->visit(v[i]);
 }
 
@@ -94,14 +94,14 @@ int cSymTable::size()
 
 cOwnedObject *cSymTable::get(int i)
 {
-    if (i<0 || i>=v.size())
+    if (i<0 || i>=(int)v.size())
         return NULL;
     return v[i];
 }
 
 cOwnedObject *cSymTable::lookup(const char *qualifiedName)
 {
-    for (int i=0; i<v.size(); i++)
+    for (int i=0; i<(int)v.size(); i++)
     {
         const char *fullname = v[i]->fullName();
         if (fullname[0]==qualifiedName[0] && strcmp(fullname, qualifiedName)==0)
@@ -130,8 +130,8 @@ cOwnedObject *cSymTable::lookup(const char *name, const char *contextNamespace)
             return obj;
         }
 
-		if (namespacePrefix.empty())
-			break;
+        if (namespacePrefix.empty())
+            break;
 
         // discard last namespace element
         namespacePrefix.resize(namespacePrefix.length()-2); // chop "::"

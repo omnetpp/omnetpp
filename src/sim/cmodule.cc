@@ -267,7 +267,7 @@ int cModule::findGateDesc(const char *gatename, char& suffix) const
         for (int i=0; i<n; i++)
         {
             const cGate::Desc& desc = gatedescv[i];
-            if (desc.namep && desc.namep[0]==gatename[0] && strncmp(desc.namep, gatename, len-2)==0 && strlen(desc.namep)==len-2)
+            if (desc.namep && desc.namep[0]==gatename[0] && strncmp(desc.namep, gatename, len-2)==0 && (int)strlen(desc.namep)==len-2)
             {
                 if (!desc.isInout())
                     return -1;  // looking for a "foo$i"/"foo$o" gate, but found a non-inout "foo" gate
@@ -373,7 +373,7 @@ int cModule::moveGates(int oldpos, int oldsize, int newsize, cGate::Desc *desc)
             delete gate;
         }
         // shrink stl container if the gate vector was at its end
-        if (oldpos+newsize > gatev.size())
+        if (oldpos+newsize > (int)gatev.size())
             gatev.resize(oldpos+newsize);
 
         return oldpos;
@@ -382,14 +382,14 @@ int cModule::moveGates(int oldpos, int oldsize, int newsize, cGate::Desc *desc)
     // OK, it'll be expand.
     // find a new id range: newsize empty adjacent slots in the array
     int newpos = 0;
-    for (i=0; i<newsize && newpos+i<gatev.size(); i++)
+    for (i=0; i < newsize && newpos+i < (int)gatev.size(); i++)
     {
         // if position free, go on to next one
         if (gatev[newpos+i]==NULL)
            continue;
 
         // also regard old position of this gate vector as unoccupied
-        if (newpos+i>=oldpos && newpos+i<oldpos+oldsize)
+        if (newpos+i >= oldpos && newpos+i < oldpos+oldsize)
            continue;
 
         // position occupied -- must start over from a new position
@@ -398,7 +398,7 @@ int cModule::moveGates(int oldpos, int oldsize, int newsize, cGate::Desc *desc)
     }
 
     // expand stl container if necessary
-    if (newpos+newsize > gatev.size())
+    if (newpos+newsize > (int)gatev.size())
         gatev.resize(newpos+newsize);
 
     // move existing gates from oldpos to newpos.
@@ -682,7 +682,7 @@ cGate *cModule::gateHalf(const char *gatename, cGate::Type type, int index)
 
 cGate *cModule::gate(int k)
 {
-    if (k<0 || k>=gatev.size())
+    if (k < 0 || k >= (int)gatev.size())
         throw cRuntimeError(this, "gate id %d out of range", k);
     return gatev[k];
 }

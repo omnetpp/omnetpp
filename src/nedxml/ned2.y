@@ -798,7 +798,7 @@ property_key
                 {
                   ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
                   ps.propkey->setName(toString(@1));
-                  for (int i=0; i<ps.propvals.size(); i++)
+                  for (int i=0; i<(int)ps.propvals.size(); i++)
                       ps.propkey->appendChild(ps.propvals[i]);
                   ps.propvals.clear();
                   storePos(ps.propkey, @$);
@@ -807,7 +807,7 @@ property_key
                 {
                   ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
                   ps.propkey->appendChild($1);
-                  for (int i=0; i<ps.propvals.size(); i++)
+                  for (int i=0; i<(int)ps.propvals.size(); i++)
                       ps.propkey->appendChild(ps.propvals[i]);
                   ps.propvals.clear();
                   storePos(ps.propkey, @$);
