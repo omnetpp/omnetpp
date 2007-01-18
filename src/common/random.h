@@ -28,6 +28,7 @@ class Random
     public:
         Random(int32 seed = 1);
 
+        int32 getSeed() { return seed; }
         void setSeed(int32 seed) { this->seed = seed; }
 
         double next01();
