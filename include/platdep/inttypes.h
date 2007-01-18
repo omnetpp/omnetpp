@@ -28,6 +28,7 @@
 #else
     // the following should work on 32-bit and 64-bit architectures too
     // XXX this may need to be refined for different platforms
+    // note: main.cc contains asserts to ensure that these typedefs are correct
     typedef char                int8;
     typedef short               int16;
     typedef int                 int32;
