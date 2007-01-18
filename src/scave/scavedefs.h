@@ -15,12 +15,7 @@
 #ifndef _SCAVEDEFS_H_
 #define _SCAVEDEFS_H_
 
-// define int64, our equivalent of Java's "long" type
-#ifdef _MSC_VER
-typedef __int64 int64;
-#else
-typedef long long int64;
-#endif
+#include "platdep/inttypes.h" // for int64, our equivalent of Java's "long" type
 
 #define DEFAULT_PRECISION  14
 

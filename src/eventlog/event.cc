@@ -64,8 +64,8 @@ ModuleCreatedEntry *Event::getModuleCreatedEntry()
 
 file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
 {
-    EASSERT(offset >= 0);
-    EASSERT(!eventEntry);
+    ASSERT(offset >= 0);
+    ASSERT(!eventEntry);
 
     beginOffset = offset;
     reader->seekTo(offset);
@@ -77,7 +77,7 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
         char *line = reader->readNextLine();
 
         if (!line) {
-            EASSERT(eventEntry);
+            ASSERT(eventEntry);
             endOffset = reader->getFileSize();
             return endOffset;
         }
@@ -87,13 +87,13 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
 
         // first line must be an event entry
         if (!eventEntry) {
-            EASSERT(readEventEntry);
+            ASSERT(readEventEntry);
             eventEntry = readEventEntry;
         }
         else if (readEventEntry)
             break; // stop at the start of the next event
 
-        EASSERT(eventEntry);
+        ASSERT(eventEntry);
 
         if (eventLogEntry)
             eventLogEntries.push_back(eventLogEntry);
@@ -198,7 +198,7 @@ MessageDependencyList *Event::getCauses()
         {
             BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(eventLogEntries[beginSendEntryNumber]);
 
-            if (beginSendEntry && 
+            if (beginSendEntry &&
                 beginSendEntry->previousEventNumber != -1 &&
                 beginSendEntry->previousEventNumber != getEventNumber())
             {
@@ -251,7 +251,7 @@ Event *Event::getReuserEvent(int &beginSendEntryNumber)
             EventLogEntry *eventLogEntry = current->eventLogEntries[beginSendEntryNumber];
             BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(eventLogEntry);
 
-            if (beginSendEntry && 
+            if (beginSendEntry &&
                 beginSendEntry->messageId == getMessageId())
                 return current;
 

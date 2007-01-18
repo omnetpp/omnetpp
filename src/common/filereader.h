@@ -17,19 +17,15 @@
 
 #include <vector>
 #include <string>
+#include "platdep/inttypes.h"   // for int64
 
-#ifdef _MSC_VER
-typedef __int64 int64;
-typedef __int64 file_offset_t;
-#else
-typedef long long int64;
-typedef off_t file_offset_t;
-#endif
+typedef int64 file_offset_t;  // off_t on Linux
 
 #if defined _MSC_VER && (_MSC_VER >= 1400)
 #define filereader_ftell _ftelli64
 #define filereader_fseek _fseeki64
 #elif defined _MSC_VER
+// for Visual C++ 7.1, fall back to 32-bit functions
 #define filereader_ftell ftell
 #define filereader_fseek fseek
 #else

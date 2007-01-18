@@ -16,24 +16,10 @@
 #define _EVENTLOGDEFS_H_
 
 #include "exception.h"
+#include "platdep/inttypes.h" // for int64, our equivalent of Java's "long" type
 
 #define PRINT_DEBUG_MESSAGES false
 
-// define int64, our equivalent of Java's "long" type
-#ifdef _MSC_VER
-typedef __int64 int64;
-#else
-typedef long long int64;
-#endif
-
-#ifndef NDEBUG
-#define EASSERT(expr)  \
-  ((void) ((expr) ? 0 : \
-           (throw opp_runtime_error("ASSERT: condition %s false, %s line %d", \
-                                    #expr, __FILE__, __LINE__), 0)))
-#else
-#define EASSERT(expr)  ((void)0)
-#endif
 
 /**
  * variables which store event numbers throughout the API may have these additional values (positive values are real event numbers)

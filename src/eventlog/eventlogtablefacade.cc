@@ -24,32 +24,32 @@ EventLogTableFacade::EventLogTableFacade(IEventLog *eventLog) : EventLogFacade(e
 
 EventLogEntry *EventLogTableFacade::getFirstEntry()
 {
-	IEvent *event = eventLog->getFirstEvent();
-	
-	if (!event)
-		return NULL;
-	else
-		return getEntryInEvent(event, 0);
+    IEvent *event = eventLog->getFirstEvent();
+
+    if (!event)
+        return NULL;
+    else
+        return getEntryInEvent(event, 0);
 }
 
 EventLogEntry *EventLogTableFacade::getLastEntry()
 {
-	IEvent *event = eventLog->getLastEvent();
-	
-	if (!event)
-		return NULL;
-	else
-		return getEntryInEvent(event, event->getNumEventLogMessages());
+    IEvent *event = eventLog->getLastEvent();
+
+    if (!event)
+        return NULL;
+    else
+        return getEntryInEvent(event, event->getNumEventLogMessages());
 }
 
 EventLogEntry *EventLogTableFacade::getEntryAndDistance(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long distance, long& reachedDistance)
 {
-    EASSERT(sourceEventLogEntry);
+    ASSERT(sourceEventLogEntry);
     EventLogEntry *eventLogEntry = sourceEventLogEntry;
     reachedDistance = 0;
 
     int index = getEntryIndexInEvent(eventLogEntry);
-    EASSERT(index >= 0);
+    ASSERT(index >= 0);
 
     while (distance && eventLogEntry && eventLogEntry != targetEventLogEntry) {
         if (distance > 0) {
@@ -107,7 +107,7 @@ EventLogEntry *EventLogTableFacade::getNextEntry(EventLogEntry *eventLogEntry, i
 
 EventLogEntry *EventLogTableFacade::getEntryInEvent(IEvent *event, int index)
 {
-    EASSERT(index >= 0 && index <= event->getNumEventLogMessages());
+    ASSERT(index >= 0 && index <= event->getNumEventLogMessages());
 
     if (index == 0)
         return event->getEventEntry();
@@ -159,7 +159,7 @@ EventLogEntry *EventLogTableFacade::getApproximateEventLogEntryTableAt(double pe
 {
     if (percentage == 1) {
         IEvent* event = eventLog->getLastEvent();
- 
+
         if (!event)
             return NULL;
         else if (event->getNumEventLogMessages() != 0)

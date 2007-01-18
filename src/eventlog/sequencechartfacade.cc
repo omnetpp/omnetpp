@@ -47,9 +47,9 @@ double SequenceChartFacade::getTimelineCoordinate(IEvent *event)
                 break;
             case NON_LINEAR:
                 // TODO: copied from Java code
-	        	//double timelineCoordinate = previousTimelineCoordinate + Math.atan((simulationTime - previousSimulationTime) / nonLinearFocus) / Math.PI * 2;
-	        	//logFacade.setEvent_i_timelineCoordinate(i, timelineCoordinate);
-	        	//previousTimelineCoordinate = timelineCoordinate;
+                //double timelineCoordinate = previousTimelineCoordinate + Math.atan((simulationTime - previousSimulationTime) / nonLinearFocus) / Math.PI * 2;
+                //logFacade.setEvent_i_timelineCoordinate(i, timelineCoordinate);
+                //previousTimelineCoordinate = timelineCoordinate;
                 throw opp_runtime_error("Not yet implemented");
                 break;
             default:
@@ -65,7 +65,7 @@ double SequenceChartFacade::getTimelineCoordinate(IEvent *event)
 
 IEvent *SequenceChartFacade::getLastEventNotAfterTimelineCoordinate(double timelineCoordinate)
 {
-    EASSERT(timelineCoordinate >= 0);
+    ASSERT(timelineCoordinate >= 0);
 
     switch (timelineMode) {
         case LINEAR:
@@ -88,7 +88,7 @@ IEvent *SequenceChartFacade::getLastEventNotAfterTimelineCoordinate(double timel
 
 IEvent *SequenceChartFacade::getFirstEventNotBeforeTimelineCoordinate(double timelineCoordinate)
 {
-    EASSERT(timelineCoordinate >= 0);
+    ASSERT(timelineCoordinate >= 0);
 
     switch (timelineMode) {
         case LINEAR:
@@ -111,83 +111,30 @@ IEvent *SequenceChartFacade::getFirstEventNotBeforeTimelineCoordinate(double tim
 
 double SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double timelineCoordinate)
 {
-    EASSERT(timelineCoordinate >= 0);
+    ASSERT(timelineCoordinate >= 0);
 
     switch (getTimelineMode())
     {
-	    case LINEAR:
-		    return timelineCoordinate;
-	    case STEP:
-	    case NON_LINEAR:
+        case LINEAR:
+            return timelineCoordinate;
+        case STEP:
+        case NON_LINEAR:
             {
-		        IEvent *event = getLastEventNotAfterTimelineCoordinate(timelineCoordinate);
-		        double eventSimulationTime;
-		        double eventTimelineCoordinate;
+                IEvent *event = getLastEventNotAfterTimelineCoordinate(timelineCoordinate);
+                double eventSimulationTime;
+                double eventTimelineCoordinate;
 
-   		        // if before the first event
-		        if (event) {
+                // if before the first event
+                if (event) {
                     eventSimulationTime = event->getSimulationTime();
                     eventTimelineCoordinate = getTimelineCoordinate(event);
-		        }
-		        else {
-			        eventSimulationTime = 0;
-			        eventTimelineCoordinate = 0;
-		        }
-
-		        // linear approximation between two enclosing events
-                IEvent *nextEvent = event ? event->getNextEvent() : eventLog->getFirstEvent();
-                double nextEventSimulationTime;
-                double nextEventTimelineCoordinate;
-
-                if (nextEvent) {
-                    nextEventSimulationTime = nextEvent->getSimulationTime();
-                    nextEventTimelineCoordinate = getTimelineCoordinate(nextEvent);
                 }
-                else
-    		        // after the last event simulationTime and timelineCoordinate are proportional
-			        return eventSimulationTime + timelineCoordinate - eventTimelineCoordinate;
+                else {
+                    eventSimulationTime = 0;
+                    eventTimelineCoordinate = 0;
+                }
 
-                double simulationTimeDelta = nextEventSimulationTime - eventSimulationTime;
-		        double timelineCoordinateDelta = nextEventTimelineCoordinate - eventTimelineCoordinate;
-
-		        if (timelineCoordinateDelta == 0) //XXX this can happen in STEP mode when pos==-1, and 1st event is at timeline zero. perhaps getLastEventPositionBeforeTimelineCoordinate() should check "<=" not "<" ?
-			        return eventSimulationTime;
-
-		        EASSERT(timelineCoordinateDelta > 0);
-
-		        return eventSimulationTime + simulationTimeDelta * (timelineCoordinate - eventTimelineCoordinate) / timelineCoordinateDelta;
-            }
-	    default:
-		    throw opp_runtime_error("Unknown timeline mode");
-    }
-}
-
-double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simulationTime)
-{
-    EASSERT(simulationTime >= 0);
-
-    switch (getTimelineMode())
-	{
-    	case LINEAR:
-    		return simulationTime;
-    	case STEP:
-    	case NON_LINEAR:
-            {
-    		    IEvent *event = eventLog->getLastEventNotAfterSimulationTime(simulationTime);
-    		    double eventSimulationTime;
-    		    double eventTimelineCoordinate;
-
-    		    // if before the first event
-    		    if (event) {
-                    eventSimulationTime = event->getSimulationTime();
-                    eventTimelineCoordinate = getTimelineCoordinate(event);
-    		    }
-    		    else {
-    			    eventSimulationTime = 0;
-    			    eventTimelineCoordinate = 0;
-			    }
-
-		        // linear approximation between two enclosing events
+                // linear approximation between two enclosing events
                 IEvent *nextEvent = event ? event->getNextEvent() : eventLog->getFirstEvent();
                 double nextEventSimulationTime;
                 double nextEventTimelineCoordinate;
@@ -198,22 +145,75 @@ double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simula
                 }
                 else
                     // after the last event simulationTime and timelineCoordinate are proportional
-    			    return eventTimelineCoordinate + simulationTime - eventSimulationTime;
+                    return eventSimulationTime + timelineCoordinate - eventTimelineCoordinate;
 
-			    // linear approximation between two enclosing events
-    		    double simulationTimeDelta = nextEventSimulationTime - eventSimulationTime;
-    		    double timelineCoordinateDelta = nextEventTimelineCoordinate - eventTimelineCoordinate;
+                double simulationTimeDelta = nextEventSimulationTime - eventSimulationTime;
+                double timelineCoordinateDelta = nextEventTimelineCoordinate - eventTimelineCoordinate;
 
-    		    if (simulationTimeDelta == 0) //XXX this can happen in STEP mode when pos==-1, and 1st event is at timeline zero. perhaps getLastEventPositionBeforeTimelineCoordinate() should check "<=" not "<" ?
-    			    return eventTimelineCoordinate;
+                if (timelineCoordinateDelta == 0) //XXX this can happen in STEP mode when pos==-1, and 1st event is at timeline zero. perhaps getLastEventPositionBeforeTimelineCoordinate() should check "<=" not "<" ?
+                    return eventSimulationTime;
 
-    		    EASSERT(simulationTimeDelta > 0);
+                ASSERT(timelineCoordinateDelta > 0);
 
-    		    return eventTimelineCoordinate + timelineCoordinateDelta * (simulationTime - eventSimulationTime) / simulationTimeDelta;
+                return eventSimulationTime + simulationTimeDelta * (timelineCoordinate - eventTimelineCoordinate) / timelineCoordinateDelta;
             }
-    	default:
-    		throw opp_runtime_error("Unknown timeline mode");
-	}
+        default:
+            throw opp_runtime_error("Unknown timeline mode");
+    }
+}
+
+double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simulationTime)
+{
+    ASSERT(simulationTime >= 0);
+
+    switch (getTimelineMode())
+    {
+        case LINEAR:
+            return simulationTime;
+        case STEP:
+        case NON_LINEAR:
+            {
+                IEvent *event = eventLog->getLastEventNotAfterSimulationTime(simulationTime);
+                double eventSimulationTime;
+                double eventTimelineCoordinate;
+
+                // if before the first event
+                if (event) {
+                    eventSimulationTime = event->getSimulationTime();
+                    eventTimelineCoordinate = getTimelineCoordinate(event);
+                }
+                else {
+                    eventSimulationTime = 0;
+                    eventTimelineCoordinate = 0;
+                }
+
+                // linear approximation between two enclosing events
+                IEvent *nextEvent = event ? event->getNextEvent() : eventLog->getFirstEvent();
+                double nextEventSimulationTime;
+                double nextEventTimelineCoordinate;
+
+                if (nextEvent) {
+                    nextEventSimulationTime = nextEvent->getSimulationTime();
+                    nextEventTimelineCoordinate = getTimelineCoordinate(nextEvent);
+                }
+                else
+                    // after the last event simulationTime and timelineCoordinate are proportional
+                    return eventTimelineCoordinate + simulationTime - eventSimulationTime;
+
+                // linear approximation between two enclosing events
+                double simulationTimeDelta = nextEventSimulationTime - eventSimulationTime;
+                double timelineCoordinateDelta = nextEventTimelineCoordinate - eventTimelineCoordinate;
+
+                if (simulationTimeDelta == 0) //XXX this can happen in STEP mode when pos==-1, and 1st event is at timeline zero. perhaps getLastEventPositionBeforeTimelineCoordinate() should check "<=" not "<" ?
+                    return eventTimelineCoordinate;
+
+                ASSERT(simulationTimeDelta > 0);
+
+                return eventTimelineCoordinate + timelineCoordinateDelta * (simulationTime - eventSimulationTime) / simulationTimeDelta;
+            }
+        default:
+            throw opp_runtime_error("Unknown timeline mode");
+    }
 }
 
 std::vector<int64> *SequenceChartFacade::getIntersectingMessageDependencies(int64 startEventPtr, int64 endEventPtr)

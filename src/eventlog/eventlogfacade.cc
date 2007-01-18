@@ -19,7 +19,7 @@
 
 EventLogFacade::EventLogFacade(IEventLog *eventLog)
 {
-    EASSERT(eventLog);
+    ASSERT(eventLog);
     this->eventLog = eventLog;
 }
 
