@@ -85,7 +85,7 @@ class IndexedVectorFileWriterNode : public Node
             int bufferNumOfRecords; //
 
             VectorInputPort(int id, std::string moduleName, std::string name, int bufferSize, Node *owner)
-                : vector(id, moduleName, name, bufferSize), Port(owner)
+                : Port(owner), vector(id, moduleName, name, bufferSize) 
                 { this->allocateBuffer(bufferSize); }
             ~VectorInputPort() { if (buffer) delete[] buffer; }
 

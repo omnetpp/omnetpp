@@ -18,6 +18,9 @@
 #include <string>
 #include "resultfilemanager.h"
 
+/**
+ * FIXME comment
+ */
 class VectorFileIndexer
 {
     public:

@@ -64,7 +64,7 @@ void VectorFileWriterNode::process()
         // print file header and vector declarations
         CHECK(fprintf(f,"%s\n\n", fileHeader.c_str()));
         for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
-            CHECK(fprintf(f, "vector %ld  %s  %s  %d\n", it->id,
+            CHECK(fprintf(f, "vector %d  %s  %s  %d\n", it->id,
                              QUOTE(it->moduleName.c_str()),
                              QUOTE(it->name.c_str()), 1));
     }
@@ -77,7 +77,7 @@ void VectorFileWriterNode::process()
         {
             Datum a;
             chan->read(&a,1);
-            CHECK(fprintf(f,"%ld\t%.*g\t%.*g\n", it->id, prec, a.x, prec, a.y));
+            CHECK(fprintf(f,"%d\t%.*g\t%.*g\n", it->id, prec, a.x, prec, a.y));
         }
     }
 

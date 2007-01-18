@@ -64,7 +64,6 @@ static bool parseDouble(char *s, double& dest)
 void VectorFileReaderNode::process()
 {
     char *line;
-    int length;
 
     for (int k=0; k<1000 && (line=reader.readNextLine())!=NULL; k++)
     {

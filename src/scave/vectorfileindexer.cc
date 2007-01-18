@@ -38,7 +38,6 @@ static std::string createTempFileName(const std::string baseFileName)
     prefix.append(".temp");
     std::string tmpFileName = prefix;
     int serial = 0;
-    char buffer[11];
 
     while (existsFile(tmpFileName))
         tmpFileName = opp_stringf("%s%d", prefix.c_str(), serial++);
@@ -94,7 +93,7 @@ void VectorFileIndexer::generateIndex(const char* fileName)
 
         // create a ports for each vector on reader node and writer node and connect them
         IDList vectorIDList = resultFileManager.getAllVectors();
-        for (int i=0; i<vectorIDList.size(); i++)
+        for (int i=0; i<(int)vectorIDList.size(); i++)
         {
              const VectorResult& vector = resultFileManager.getVector(vectorIDList.get(i));
              Port *readerPort = reader->addVector(vector.vectorId);

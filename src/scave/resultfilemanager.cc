@@ -66,13 +66,13 @@ ResultFileManager::ResultFileManager()
 
 ResultFileManager::~ResultFileManager()
 {
-    for (int i=0; i<fileRunList.size(); i++)
+    for (int i=0; i<(int)fileRunList.size(); i++)
         delete fileRunList[i];
 
-    for (int i=0; i<runList.size(); i++)
+    for (int i=0; i<(int)runList.size(); i++)
         delete runList[i];
 
-    for (int i=0; i<fileList.size(); i++)
+    for (int i=0; i<(int)fileList.size(); i++)
         delete fileList[i];
 
     fileRunList.clear();
@@ -98,7 +98,7 @@ std::string *ResultFileManager::stringSetFindOrInsert(StringSet& set, const std:
 ResultFileList ResultFileManager::getFiles() const
 {
     ResultFileList out;
-    for (int i=0; i<fileList.size(); i++)
+    for (int i=0; i<(int)fileList.size(); i++)
         if (fileList[i])
             out.push_back(fileList[i]);
     return out;
@@ -107,7 +107,7 @@ ResultFileList ResultFileManager::getFiles() const
 RunList ResultFileManager::getRunsInFile(ResultFile *file) const
 {
     RunList out;
-    for (int i=0; i<fileRunList.size(); i++)
+    for (int i=0; i<(int)fileRunList.size(); i++)
         if (fileRunList[i]->fileRef == file)
             out.push_back(fileRunList[i]->runRef);
     return out;
@@ -116,7 +116,7 @@ RunList ResultFileManager::getRunsInFile(ResultFile *file) const
 ResultFileList ResultFileManager::getFilesForRun(Run *run) const
 {
     ResultFileList out;
-    for (int i=0; i<fileRunList.size(); i++)
+    for (int i=0; i<(int)fileRunList.size(); i++)
         if (fileRunList[i]->runRef == run)
             out.push_back(fileRunList[i]->fileRef);
     return out;
@@ -143,7 +143,7 @@ ResultFileList *ResultFileManager::getUniqueFiles(const IDList& ids) const
 {
     // collect unique runs in this dataset
     std::set<ResultFile*> set;
-    for (int i=0; i<ids.size(); i++)
+    for (int i=0; i<(int)ids.size(); i++)
         set.insert(getItem(ids.get(i)).fileRunRef->fileRef);
 
     // convert to list for easier handling at recipient
@@ -157,7 +157,7 @@ RunList *ResultFileManager::getUniqueRuns(const IDList& ids) const
 {
     // collect unique runs in this dataset
     std::set<Run*> set;
-    for (int i=0; i<ids.size(); i++)
+    for (int i=0; i<(int)ids.size(); i++)
         set.insert(getItem(ids.get(i)).fileRunRef->runRef);
 
     // convert to list for easier handling at recipient
@@ -171,7 +171,7 @@ FileRunList *ResultFileManager::getUniqueFileRuns(const IDList& ids) const
 {
     // collect unique FileRuns in this dataset
     std::set<FileRun*> set;
-    for (int i=0; i<ids.size(); i++)
+    for (int i=0; i<(int)ids.size(); i++)
         set.insert(getItem(ids.get(i)).fileRunRef);
 
     // convert to list for easier handling at recipient
@@ -185,7 +185,7 @@ StringSet *ResultFileManager::getUniqueModuleNames(const IDList& ids) const
 {
     // collect unique module names in this dataset
     StringSet *set = new StringSet();
-    for (int i=0; i<ids.size(); i++)
+    for (int i=0; i<(int)ids.size(); i++)
         set->insert(*getItem(ids.get(i)).moduleNameRef);
     return set;
 }
@@ -194,7 +194,7 @@ StringSet *ResultFileManager::getUniqueNames(const IDList& ids) const
 {
     // collect unique scalar/vector names in this dataset
     StringSet *set = new StringSet();
-    for (int i=0; i<ids.size(); i++)
+    for (int i=0; i<(int)ids.size(); i++)
         set->insert(*getItem(ids.get(i)).nameRef);
     return set;
 }
@@ -216,12 +216,12 @@ const VectorResult& ResultFileManager::getVector(ID id) const
 IDList ResultFileManager::getAllScalars() const
 {
     IDList out;
-    for (int k=0; k<fileList.size(); k++)
+    for (int k=0; k<(int)fileList.size(); k++)
     {
         if (fileList[k]!=NULL)
         {
             ScalarResults& v = fileList[k]->scalarResults;
-            for (int i=0; i<v.size(); i++)
+            for (int i=0; i<(int)v.size(); i++)
                 out.uncheckedAdd(_mkID(SCALAR,k,i));
         }
     }
@@ -231,12 +231,12 @@ IDList ResultFileManager::getAllScalars() const
 IDList ResultFileManager::getAllVectors() const
 {
     IDList out;
-    for (int k=0; k<fileList.size(); k++)
+    for (int k=0; k<(int)fileList.size(); k++)
     {
         if (fileList[k]!=NULL)
         {
             VectorResults& v = fileList[k]->vectorResults;
-            for (int i=0; i<v.size(); i++)
+            for (int i=0; i<(int)v.size(); i++)
                 out.uncheckedAdd(_mkID(VECTOR,k,i));
         }
     }
@@ -248,7 +248,7 @@ IDList ResultFileManager::getScalarsInFileRun(FileRun *fileRun) const
     IDList out;
     int fileId = fileRun->fileRef->id;
     ScalarResults& v = fileRun->fileRef->scalarResults;
-    for (int i=0; i<v.size(); i++)
+    for (int i=0; i<(int)v.size(); i++)
         if (v[i].fileRunRef==fileRun)
             out.uncheckedAdd(_mkID(SCALAR,fileId,i));
     return out;
@@ -259,7 +259,7 @@ IDList ResultFileManager::getVectorsInFileRun(FileRun *fileRun) const
     IDList out;
     int fileId = fileRun->fileRef->id;
     VectorResults& v = fileRun->fileRef->vectorResults;
-    for (int i=0; i<v.size(); i++)
+    for (int i=0; i<(int)v.size(); i++)
         if (v[i].fileRunRef==fileRun)
             out.uncheckedAdd(_mkID(VECTOR,fileId,i));
     return out;
@@ -274,7 +274,7 @@ ResultFile *ResultFileManager::getFile(const char *fileName) const
 {
     if (!fileName)
         return NULL;
-    for (int i=0; i<fileList.size(); i++)
+    for (int i=0; i<(int)fileList.size(); i++)
         if (fileList[i]!=NULL && fileList[i]->filePath==fileName)
             return fileList[i];
     return NULL;
@@ -284,7 +284,7 @@ Run *ResultFileManager::getRunByName(const char *runName) const
 {
     if (!runName)
         return NULL;
-    for (int i=0; i<runList.size(); i++)
+    for (int i=0; i<(int)runList.size(); i++)
         if (runList[i]->runName==runName)
             return runList[i];
     return NULL;
@@ -292,7 +292,7 @@ Run *ResultFileManager::getRunByName(const char *runName) const
 
 FileRun *ResultFileManager::getFileRun(ResultFile *file, Run *run) const
 {
-    for (int i=0; i<fileRunList.size(); i++)
+    for (int i=0; i<(int)fileRunList.size(); i++)
         if (fileRunList[i]->fileRef==file && fileRunList[i]->runRef==run)
             return fileRunList[i];
     return NULL;
@@ -315,7 +315,7 @@ ID ResultFileManager::getItemByName(FileRun *fileRunRef, const char *module, con
     const std::string *nameRef = &(*n);
 
     ScalarResults& scalarResults = fileRunRef->fileRef->scalarResults;
-    for (int i=0; i<scalarResults.size(); i++)
+    for (int i=0; i<(int)scalarResults.size(); i++)
     {
         const ResultItem& d = scalarResults[i];
         if (d.moduleNameRef==moduleNameRef && d.nameRef==nameRef && d.fileRunRef==fileRunRef)
@@ -323,7 +323,7 @@ ID ResultFileManager::getItemByName(FileRun *fileRunRef, const char *module, con
     }
 
     VectorResults& vectorResults = fileRunRef->fileRef->vectorResults;
-    for (int i=0; i<vectorResults.size(); i++)
+    for (int i=0; i<(int)vectorResults.size(); i++)
     {
         const ResultItem& d = vectorResults[i];
         if (d.moduleNameRef==moduleNameRef && d.nameRef==nameRef && d.fileRunRef==fileRunRef)
@@ -335,7 +335,7 @@ ID ResultFileManager::getItemByName(FileRun *fileRunRef, const char *module, con
 StringVector ResultFileManager::getUniqueAttributeValues(const RunList& runList, const char *attrName) const
 {
     StringSet values;
-    for (int i=0; i<runList.size(); i++)
+    for (int i=0; i<(int)runList.size(); i++)
     {
         const char *value = runList[i]->getAttribute(attrName);
         if (value!=NULL)
@@ -372,13 +372,13 @@ RunList ResultFileManager::filterRunList(const RunList& runList,
     }
 
     // do it
-    for (int i=0; i<runList.size(); i++)
+    for (int i=0; i<(int)runList.size(); i++)
     {
         Run *run = runList[i];
         if (!runNamePattern.matches(run->runName.c_str()))
             continue;
         bool matches = true;
-        for (int j=0; j<attrNames.size() && matches; j++)
+        for (int j=0; j<(int)attrNames.size() && matches; j++)
         {
             const char *attrValue = run->getAttribute(attrNames[j].c_str());
             if (attrValue == NULL)
@@ -404,7 +404,7 @@ ResultFileList ResultFileManager::filterFileList(const ResultFileList& fileList,
     // filePath matcher
     PatternMatcher filePathPattern(filePathFilter, false, true, true);
 
-    for (int i=0; i<fileList.size(); i++)
+    for (int i=0; i<(int)fileList.size(); i++)
     {
         ResultFile *file = fileList[i];
         if (!filePathPattern.matches(file->filePath.c_str()))
@@ -417,7 +417,7 @@ ResultFileList ResultFileManager::filterFileList(const ResultFileList& fileList,
 FileRunList ResultFileManager::getFileRuns(const ResultFileList *fileList, const RunList *runList) const
 {
     FileRunList out;
-    for (int i=0; i<fileRunList.size(); i++)
+    for (int i=0; i<(int)fileRunList.size(); i++)
     {
         FileRun *fileRun = fileRunList[i];
         if (fileList && std::find(fileList->begin(), fileList->end(), fileRun->fileRef)==fileList->end())
@@ -631,7 +631,7 @@ void ResultFileManager::dump(ResultFile *fileRef, std::ostream& out) const
 }
 */
 
-// XXX unused function
+/* XXX unused function
 static void parseString(char *&s, std::string& dest, int lineNum)
 {
     while (*s==' ' || *s=='\t') s++;
@@ -654,6 +654,7 @@ static void parseString(char *&s, std::string& dest, int lineNum)
         dest.assign(start, s-start); // can be empty as well
     }
 }
+*/
 
 static bool parseDouble(char *s, double& dest)
 {
@@ -945,7 +946,7 @@ void ResultFileManager::unloadFile(ResultFile *file)
 {
     // remove FileRun entries
     RunList runsPotentiallyToBeDeleted;
-    for (int i=0; i<fileRunList.size(); i++)
+    for (int i=0; i<(int)fileRunList.size(); i++)
     {
         if (fileRunList[i]->fileRef==file)
         {
@@ -967,7 +968,7 @@ void ResultFileManager::unloadFile(ResultFile *file)
     delete file;
 
     // remove Runs that don't appear in other loaded files
-    for (int i=0; i<runsPotentiallyToBeDeleted.size(); i++)
+    for (int i=0; i<(int)runsPotentiallyToBeDeleted.size(); i++)
     {
         Run *runRef = runsPotentiallyToBeDeleted[i];
         if (getFilesForRun(runRef).empty())
@@ -1009,7 +1010,7 @@ StringVector ResultFileManager::getFileAndRunNumberFilterHints(const IDList& idl
     StringVector vec;
     DuplicateStringCollector coll;
 
-    for (int i=0; i<fileRuns->size(); i++)
+    for (int i=0; i<(int)fileRuns->size(); i++)
     {
         FileRun *fileRun = (*fileRuns)[i];
         if (fileRun->runRef->runNumber==0)

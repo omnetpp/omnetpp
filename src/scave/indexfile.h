@@ -17,19 +17,25 @@
 
 #include <float.h>
 
+/**
+ * FIXME comment
+ */
 struct Block {
     long startOffset;
     long startSerial; // inclusive
     long endSerial;   // exclusive
 
     Block(long startSerial, long endSerial, long startOffset)
-        : startSerial(startSerial), endSerial(endSerial), startOffset(startOffset) {}
+        : startOffset(startOffset), startSerial(startSerial), endSerial(endSerial) {}
     long numOfEntries() { return endSerial-startSerial; }
     bool contains(long serial) { return startSerial <= serial && serial < endSerial; }
 };
 
 typedef std::vector<Block> Blocks;
 
+/**
+ * FIXME comment
+ */
 struct VectorData {
     int vectorId;
     std::string moduleName;
@@ -67,6 +73,9 @@ struct VectorData {
 
 typedef std::vector<VectorData> Vectors;
 
+/**
+ * FIXME comment
+ */
 struct VectorFileIndex {
     std::string vectorFileName;
     long vectorFileLastModified;
@@ -79,6 +88,9 @@ struct VectorFileIndex {
     VectorData *getVector(int vectorId);
 };
 
+/**
+ * FIXME comment
+ */
 class IndexFile
 {
     public:
@@ -95,6 +107,9 @@ class IndexFile
         static bool isIndexFileUpToDate(const char *fileName);
 };
 
+/**
+ * FIXME comment
+ */
 class IndexFileReader
 {
    private:
@@ -107,6 +122,9 @@ class IndexFileReader
         void parseLine(char **tokens, int numTokens, VectorFileIndex *index, long &numOfEntries, int lineNum);
 };
 
+/**
+ * FIXME comment
+ */
 class IndexFileWriter
 {
     private:
@@ -116,11 +134,11 @@ class IndexFileWriter
     public:
         IndexFileWriter(const char *filename, int precision=14);
         ~IndexFileWriter();
-        void writeAll(VectorFileIndex &index);
+        void writeAll(VectorFileIndex& index);
         void writeFingerprint(std::string vectorFileName);
-        void writeVector(VectorData &vector);
-        void writeVectorDeclaration(VectorData &vector);
-        void writeBlock(Block &block);
+        void writeVector(VectorData& vector);
+        void writeVectorDeclaration(VectorData& vector);
+        void writeBlock(Block& block);
     protected:
         void openFile();
         void closeFile();

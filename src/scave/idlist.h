@@ -54,7 +54,7 @@ class IDList
         IDList(unsigned int sz)  {v = new V(sz);}
         IDList(const IDList& ids); // transfer of ownership semantics!
         ~IDList()  {delete v;}
-        unsigned int size() const  {checkV(); return v->size();}
+        size_t size() const  {checkV(); return v->size();}
         bool isEmpty() const  {checkV(); return v->empty();}
         void clear()  {checkV(); v->clear();}
         void set(const IDList& ids);
@@ -85,7 +85,7 @@ class IDList
         void sortVectorsByStdDev(ResultFileManager *mgr, bool ascending);
         void sortVectorsByMin(ResultFileManager *mgr, bool ascending);
         void sortVectorsByMax(ResultFileManager *mgr, bool ascending);
-		void sortByRunAttribute(ResultFileManager *mgr, const char* runAttr, bool ascending);
+        void sortByRunAttribute(ResultFileManager *mgr, const char* runAttr, bool ascending);
         void reverse();
         void toByteArray(char *array, int n) const;
         void fromByteArray(char *array, int n);

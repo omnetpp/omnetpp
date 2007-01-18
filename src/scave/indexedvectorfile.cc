@@ -89,7 +89,7 @@ BlockWithEntries *IndexedVectorFileReader::loadBlock(Block &block)
     for (int i=0; i<count; ++i)
     {
         if ((line=reader->readNextLine())==NULL)
-            throw opp_runtime_error("Unexpected end of file in '%s'", fname);
+            throw opp_runtime_error("Unexpected end of file in '%s'", fname.c_str());
         int len = reader->getLastLineLength();
 
         tokenizer.tokenize(line, len);
@@ -196,7 +196,7 @@ void IndexedVectorFileWriterNode::process()
         for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
         {
             VectorInputPort *port = *it;
-            CHECK(fprintf(f, "vector %ld  %s  %s  %d\n", port->vector.vectorId,
+            CHECK(fprintf(f, "vector %d  %s  %s  %d\n", port->vector.vectorId,
                              QUOTE(port->vector.moduleName.c_str()),
                              QUOTE(port->vector.name.c_str()), 1));
         }
@@ -237,7 +237,7 @@ void IndexedVectorFileWriterNode::writeRecordsToBuffer(VectorInputPort *port)
         chan->read(&a,1);
         if (port->bufferPtr - port->buffer >= port->bufferSize - 100)
             writeBufferToFile(port);
-        int count = sprintf(port->bufferPtr, "%ld\t%.*g\t%.*g\n", port->vector.vectorId, prec, a.x, prec, a.y);
+        int count = sprintf(port->bufferPtr, "%d\t%.*g\t%.*g\n", port->vector.vectorId, prec, a.x, prec, a.y);
         if (count > 0)
         {
             port->bufferPtr+=count;

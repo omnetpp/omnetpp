@@ -473,7 +473,7 @@ bool IDList::areAllVectors() const
 void IDList::toByteArray(char *array, int n) const
 {
     checkV();
-    if (n != v->size()*8)
+    if (n != (int)v->size()*8)
         throw opp_runtime_error("byteArray is of wrong size -- must be 8*numIDs");
     std::copy(v->begin(), v->end(), (ID*)array);
 }

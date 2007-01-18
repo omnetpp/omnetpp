@@ -186,7 +186,7 @@ VectorFileIndex *IndexFileReader::readHeader()
 }
 
 
-void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *index, long &numOfEntries, int lineNum)
+void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *index, long& numOfEntries, int lineNum)
 {
     if (numTokens == 0 || tokens[0][0] == '#')
         return;
@@ -274,7 +274,7 @@ IndexFileWriter::~IndexFileWriter()
     }
 }
 
-void IndexFileWriter::writeAll(VectorFileIndex &index)
+void IndexFileWriter::writeAll(VectorFileIndex& index)
 {
     openFile();
     writeFingerprint(index.vectorFileName);
@@ -291,18 +291,18 @@ void IndexFileWriter::writeFingerprint(std::string vectorFileName)
 {
     if (file == NULL)
         openFile();
-    
+
     struct stat s;
     if (stat(vectorFileName.c_str(), &s) != 0)
-        throw opp_runtime_error("vector file %s does not exists", vectorFileName.c_str());
+        throw opp_runtime_error("vector file %s does not exist", vectorFileName.c_str());
 
     long saveOffset = ftell(file);
     fseek(file, 0, SEEK_SET);
-    fprintf(file, "file %ld %ld", (long)s.st_size, (long)s.st_mtime);
+    fprintf(file, "file %ld %ld", (long)s.st_size, (long)s.st_mtime); //FIXME use CHECK()
     fseek(file,saveOffset, SEEK_SET);
 }
 
-void IndexFileWriter::writeVector(VectorData &vector)
+void IndexFileWriter::writeVector(VectorData& vector)
 {
     if (file == NULL)
         openFile();
@@ -314,7 +314,7 @@ void IndexFileWriter::writeVector(VectorData &vector)
 
         for (int i=0; i<numBlocks; i+=10)
         {
-            fprintf(file, "%ld\t", vector.vectorId);
+            fprintf(file, "%d\t", vector.vectorId);  //FIXME use CHECK()
             for (int j = 0; j<10 && i+j < numBlocks; ++j)
             {
                 writeBlock(vector.blocks[i+j]);
@@ -324,16 +324,16 @@ void IndexFileWriter::writeVector(VectorData &vector)
     }
 }
 
-void IndexFileWriter::writeVectorDeclaration(VectorData &vector)
+void IndexFileWriter::writeVectorDeclaration(VectorData& vector)
 {
     fprintf(file, "vector %d  %s  %s  %d  %ld  %ld  %.*g  %.*g  %.*g  %.*g\n",
         vector.vectorId, QUOTE(vector.moduleName.c_str()), QUOTE(vector.name.c_str()), 1/*tuple*/,
         vector.blockSize, vector.count, precision, vector.min, precision, vector.max,
-        precision, vector.sum, precision, vector.sumSqr);
+        precision, vector.sum, precision, vector.sumSqr);  //FIXME use CHECK()
 
 }
 
-void IndexFileWriter::writeBlock(Block &block)
+void IndexFileWriter::writeBlock(Block& block)
 {
     fprintf(file, "%ld:%ld ", block.startOffset, block.numOfEntries());
 }
@@ -342,7 +342,7 @@ void IndexFileWriter::openFile()
 {
     file = fopen(filename.c_str(), "w");
     if (file == NULL)
-        throw opp_runtime_error("");
+        throw opp_runtime_error("");  //FIXME
 
     // space for header
     fprintf(file, "%64s\n", "");
