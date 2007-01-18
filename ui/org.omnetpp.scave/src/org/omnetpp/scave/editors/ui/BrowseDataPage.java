@@ -4,6 +4,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -22,6 +23,7 @@ import org.omnetpp.scave.actions.CreateDatasetAction;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.DataTable;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
+import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
@@ -40,15 +42,31 @@ public class BrowseDataPage extends ScaveEditorPage {
 	private Button createChartButton;
 	private Button copyToClipboardButton;
 	
+	private TabItem vectorsTab;
+	private TabItem scalarsTab;
+	private TabItem histogramsTab;
 	private FilteredDataPanel vectorsPanel;
 	private FilteredDataPanel scalarsPanel;
 	private FilteredDataPanel histogramsPanel;
 	
+	private IResultFilesChangeListener fileChangeListener;
+	private SelectionListener selectionChangeListener;
+	
+	
 	public BrowseDataPage(Composite parent, ScaveEditor editor) {
 		super(parent, SWT.V_SCROLL, editor);
 		initialize();
+		hookListeners();
 	}
 	
+	
+	@Override
+	public void dispose() {
+		unhookListeners();
+		super.dispose();
+	}
+
+
 	public FilteredDataPanel getScalarsPanel() {
 		return scalarsPanel;
 	}
@@ -106,37 +124,6 @@ public class BrowseDataPage extends ScaveEditorPage {
 		scalarsPanel.setIDList(manager.getAllScalars());
 		vectorsPanel.setIDList(manager.getAllVectors());
 		
-		// stay up to date
-		manager.addListener(new IResultFilesChangeListener() {
-			public void resultFileManagerChanged(final ResultFileManager manager) {
-				getDisplay().asyncExec(new Runnable() {
-					public void run() {
-						scalarsPanel.setIDList(manager.getAllScalars());
-						vectorsPanel.setIDList(manager.getAllVectors());
-					}
-				});
-			}
-		});
-		
-		vectorsPanel.getTable().addSelectionListener(new SelectionAdapter() {
-//			@Override
-//			public void widgetDefaultSelected(SelectionEvent e) {
-//				TableItem item = (TableItem)e.item;
-//				Object data = item.getData(DataTable.ITEM_KEY);
-//				if (data instanceof VectorResult) {
-//					scaveEditor.openBrowseVectorDataPage((VectorResult)data);
-//				}
-//			}
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				TableItem item = (TableItem)e.item;
-				Object data = item.getData(DataTable.ITEM_KEY);
-				if (data instanceof VectorResult) {
-					scaveEditor.setSelection(new StructuredSelection(data));
-				}
-			}
-		});
 	}
 	
 	private void createTabFolder() {
@@ -153,17 +140,23 @@ public class BrowseDataPage extends ScaveEditorPage {
 		configureFilteredDataPanel(scalarsPanel);
 		histogramsPanel = new FilteredDataPanel(tabfolder, SWT.NONE, DataTable.TYPE_HISTOGRAM);
 		configureFilteredDataPanel(histogramsPanel);
-		addItem("Vectors", vectorsPanel);
-		addItem("Scalars", scalarsPanel);
-		addItem("Histograms", histogramsPanel);
+		
+		ResultFileManager manager = scaveEditor.getResultFileManager();
+		long numVectors = manager.getAllVectors().size();
+		long numScalars = manager.getAllScalars().size();
+		long numHistograms = 0; // TODO
+		vectorsTab = addItem("Vectors("+numVectors+")", vectorsPanel);
+		scalarsTab = addItem("Scalars("+numScalars+")", scalarsPanel);
+		histogramsTab = addItem("Histograms("+numHistograms+")", histogramsPanel);
 		
 		tabfolder.setSelection(0);
 	}
 	
-	private void addItem(String text, Control control) {
+	private TabItem addItem(String text, Control control) {
 		TabItem item = new TabItem(tabfolder, SWT.NONE);
 		item.setText(text);
 		item.setControl(control);
+		return item;
 	}
 	
 	private void createButtonsPanel() {
@@ -185,6 +178,53 @@ public class BrowseDataPage extends ScaveEditorPage {
 		createChartButton.setText("Create chart...");
 		copyToClipboardButton = new Button(buttonPanel, SWT.NONE);
 		copyToClipboardButton.setText("Copy...");
+	}
+	
+	private void hookListeners() {
+		if (fileChangeListener == null) {
+			fileChangeListener = new IResultFilesChangeListener() {
+				public void resultFileManagerChanged(final ResultFileManager manager) {
+					getDisplay().asyncExec(new Runnable() {
+						public void run() {
+							IDList vectors = manager.getAllVectors();
+							IDList scalars = manager.getAllScalars();
+							IDList histograms = new IDList(); // TODO
+							vectorsTab.setText("Vectors("+vectors.size()+")");
+							scalarsTab.setText("Scalars("+scalars.size()+")");
+							histogramsTab.setText("Histograms("+histograms.size()+")");
+							scalarsPanel.setIDList(scalars);
+							vectorsPanel.setIDList(vectors);
+							histogramsPanel.setIDList(histograms);
+						}
+					});
+				}
+			};
+			scaveEditor.getResultFileManager().addListener(fileChangeListener);
+		}
+		
+		if (selectionChangeListener == null) {
+			selectionChangeListener = new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					TableItem item = (TableItem)e.item;
+					Object data = item.getData(DataTable.ITEM_KEY);
+					if (data instanceof VectorResult) {
+						scaveEditor.setSelection(new StructuredSelection(data));
+					}
+				}
+			};
+			vectorsPanel.getTable().addSelectionListener(selectionChangeListener);
+		}
+	}
+	
+	private void unhookListeners() {
+		if (fileChangeListener != null) {
+			ResultFileManagerEx manager = scaveEditor.getResultFileManager();
+			manager.removeListener(fileChangeListener);
+		}
+		if (selectionChangeListener != null) {
+			vectorsPanel.getTable().removeSelectionListener(selectionChangeListener);
+		}
 	}
 
 	@Override
