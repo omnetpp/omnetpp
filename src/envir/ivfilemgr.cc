@@ -204,7 +204,7 @@ bool cIndexedFileOutputVectorManager::record(void *vectorhandle, simtime_t t, do
 
         memoryUsed += sizeof(sSample);
 
-        if (vp->maxBufferedSamples > 0 && vp->buffer.size() >= vp->maxBufferedSamples)
+        if (vp->maxBufferedSamples > 0 && (int)vp->buffer.size() >= vp->maxBufferedSamples)
             writeRecords(vp);
         else if (memoryUsed >= maxMemoryUsed)
             writeRecords();
@@ -236,7 +236,7 @@ void cIndexedFileOutputVectorManager::writeRecords(sVector *vp)
     long startOffset = ftell(f);
     for (std::vector<sSample>::iterator it = vp->buffer.begin(); it != vp->buffer.end(); ++it)
     {
-        CHECK(fprintf(f,"%ld\t%.*g\t%.*g\n", vp->id, prec, it->symtime, prec, it->value));
+        CHECK(fprintf(f,"%d\t%.*g\t%.*g\n", vp->id, prec, it->symtime, prec, it->value));
     }
     long endOffset = ftell(f);
 
@@ -258,18 +258,18 @@ void cIndexedFileOutputVectorManager::writeIndex(sVector *vp)
     int nBlocks = vp->blocks.size();
     if (nBlocks > 0)
     {
-        CHECK(fprintf(fi,"vector %ld  \"%s\"  \"%s\"  %d  %ld  %ld  %.*g  %.*g  %.*g  %.*g\n",
+        CHECK(fprintf(fi,"vector %d  \"%s\"  \"%s\"  %d  %ld  %ld  %.*g  %.*g  %.*g  %.*g\n",
                       vp->id, QUOTE(vp->modulename.c_str()), QUOTE(vp->vectorname.c_str()), 1, vp->maxBlockSize,
                       vp->count, prec, vp->min, prec, vp->max, prec, vp->sum, prec, vp->sumsqr));
         for (int i=0; i<nBlocks; i+=10)
         {
-            fprintf(fi, "%ld\t", vp->id);
+            fprintf(fi, "%d\t", vp->id);   //FIXME use CHECK()
             for (int j = 0; j<10 && i+j < nBlocks; ++j)
             {
-                sBlock &block=vp->blocks[i+j];
+                sBlock& block=vp->blocks[i+j];
                 fprintf(fi, "%ld:%ld ", block.offset, block.count);
             }
-            fprintf(fi, "\n");
+            fprintf(fi, "\n");  //FIXME use CHECK()
         }
         vp->blocks.clear();
     }

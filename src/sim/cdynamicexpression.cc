@@ -490,7 +490,7 @@ std::string cDynamicExpression::toString() const
                  if (tos>=stksize-1)
                      throw cRuntimeError(this,eESTKOFLOW);
                  char buf[32];
-                 sprintf(buf, "%g", e.d);
+                 sprintf(buf, "%g", e.d.d);
                  strstk[++tos] = buf;
                  pristk[tos] = 0;
                  }

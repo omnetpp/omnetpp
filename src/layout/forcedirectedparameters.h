@@ -108,21 +108,21 @@ class RelativelyPositionedBody : public Body {
         IPositioned *anchor;
 
     private:
-        void constructor(IPositioned *anchor, Pt& relativePosition) {
+        void constructor(IPositioned *anchor, const Pt& relativePosition) {
             this->anchor = anchor;
             this->relativePosition = relativePosition;
         }
 
     public:
-        RelativelyPositionedBody(Variable *variable, Pt& relativePosition) : Body(variable) {
+        RelativelyPositionedBody(Variable *variable, const Pt& relativePosition) : Body(variable) {
             constructor(variable, relativePosition);
         }
 
-        RelativelyPositionedBody(Variable *variable, Pt& relativePosition, Rs& size) : Body(variable) {
+        RelativelyPositionedBody(Variable *variable, const Pt& relativePosition, const Rs& size) : Body(variable) {
             constructor(variable, relativePosition);
         }
 
-        RelativelyPositionedBody(Variable *variable, IPositioned *anchor, Pt& relativePosition) : Body(variable) {
+        RelativelyPositionedBody(Variable *variable, IPositioned *anchor, const Pt& relativePosition) : Body(variable) {
             constructor(anchor, relativePosition);
         }
 

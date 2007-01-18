@@ -42,7 +42,7 @@ class cFileOutputVectorManager : public cOutputVectorManager
   protected:
     struct sVectorData {
        int tuple;           // 1 or 2
-       long id;             // vector ID
+       int id;              // vector ID
        opp_string modulename; // module of cOutVector object
        opp_string vectorname; // cOutVector object name
        bool initialised;    // true if the "label" line is already written out
@@ -51,7 +51,7 @@ class cFileOutputVectorManager : public cOutputVectorManager
        simtime_t stoptime;  // write stops at stoptime
     };
 
-    long nextid;       // holds next free ID for output vectors
+    int nextid;        // holds next free ID for output vectors
     opp_string fname;  // output file name
     FILE *f;           // file ptr of output file
     int prec;          // number of significant digits when writing doubles (time, value)

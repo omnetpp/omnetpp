@@ -150,9 +150,10 @@ class ForceDirectedEmbedding
         double elapsedCalculationTime;
 
         /**
-         * Time step is automatically updated during the solution. It will always have the highest value so that the acceleration error
-         * is less than the max acceleration error. The time step is either multiplied or divided by the time step multiplier according to
-         * the current acceleration error.
+         * Time step is automatically updated during the solution. It will always
+	 * have the highest value so that the acceleration error is less than the max 
+	 * acceleration error. The time step is either multiplied or divided by the 
+	 * time step multiplier according to the current acceleration error.
          */
         double updatedTimeStep;
 
@@ -268,7 +269,7 @@ class ForceDirectedEmbedding
 
     protected:
         /**
-         * Create an Pt array filled with zeros.
+         * Create a Pt array filled with zeros.
          */
         std::vector<Pt> createPtArray() {
             std::vector<Pt> pts;
@@ -282,12 +283,13 @@ class ForceDirectedEmbedding
         /**
          * Calculate the maximum difference of any corresponding pair between a1, a2, a3 and a4.
          */
-        double maximumDifference(const std::vector<Pt>& a1, const std::vector<Pt>& a2, const std::vector<Pt>& a3, const std::vector<Pt>& a4)
+        double maximumDifference(const std::vector<Pt>& a1, const std::vector<Pt>& a2, 
+                                 const std::vector<Pt>& a3, const std::vector<Pt>& a4)
         {
             double max = 0;
             ASSERT(a1.size() == a2.size() && a2.size() == a3.size() && a3.size() == a4.size());
 
-            for (int i = 0; i < a1.size(); i++) {
+            for (int i = 0; i < (int)a1.size(); i++) {
                 max = std::max(max, a1[i].getDistance(a2[i]));
                 max = std::max(max, a2[i].getDistance(a3[i]));
                 max = std::max(max, a3[i].getDistance(a4[i]));

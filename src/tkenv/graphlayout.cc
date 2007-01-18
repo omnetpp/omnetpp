@@ -25,6 +25,7 @@
 #include "graphlayout.h"
 #include "startreeembedding.h"
 #include "heapembedding.h"
+#include "platmisc.h"
 
 #define MIN(a,b) ((a)<(b) ? (a) : (b))
 #define MAX(a,b) ((a)<(b) ? (b) : (a))
@@ -1328,7 +1329,7 @@ void ForceDirectedGraphLayouter::getNodePosition(cModule *mod, int& x, int& y)
 void ForceDirectedGraphLayouter::debugDraw()
 {
     if (TCL_ERROR==Tcl_VarEval(interp, canvas, " delete all", NULL)) return;
-    const char *colors[] = {"black","red","blue","green","yellow","cyan","purple","darkgreen"};
+    const char *colors[] = {"black","red","blue","green","yellow","cyan","purple","darkgreen"}; //XXX unused?
     char coords[100];
 
     const std::vector<IBody *>& bodies = embedding.getBodies();
@@ -1407,5 +1408,5 @@ void ForceDirectedGraphLayouter::debugDraw()
     embedding.writeDebugInformation(info);
     Tcl_VarEval(interp, canvas, " raise node", NULL);
     Tcl_VarEval(interp, "layouter_debugDraw_finish ", canvas, " {", info.str().c_str(), "} ", NULL);
-    _sleep(debugWaitTime);
+    usleep((int)(debugWaitTime*1000));
 }
