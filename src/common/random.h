@@ -18,8 +18,8 @@
 
 #include "inttypes.h"
 
-#ifndef __RANDOM_H
-#define __RANDOM_H
+#ifndef __COMMON_RANDOM_H
+#define __COMMON_RANDOM_H
 
 #define GLRAND_MAX  0x7ffffffeL  /* = 2**31-2 */
 
