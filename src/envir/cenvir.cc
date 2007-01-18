@@ -36,9 +36,12 @@
 #include "akaroarng.h"      // env_dummy_function()
 #include "akoutvectormgr.h" // env_dummy_function()
 
+#include "platdep/inttypes.h"
+
 using std::ostream;
 
-//=== Global objects:
+
+// Global objects:
 cEnvir ev;
 
 // the global list for the registration objects
@@ -101,6 +104,21 @@ static void loadLibs(const char *libs)
         loadExtensionLibrary(lib);
 }
 
+static void verifyIntTypes()
+{
+#define VERIFY(t,size) if (sizeof(t)!=size) {printf("INTERNAL ERROR: sizeof(%s)!=%s, please check typedefs in include/platdep/inttypes.h, and report this bug!", #t, size); exit(1);}
+    VERIFY(int8,  1);
+    VERIFY(int16, 2);
+    VERIFY(int32, 4);
+    VERIFY(int64, 8);
+
+    VERIFY(uint8, 1);
+    VERIFY(uint16,2);
+    VERIFY(uint32,4);
+    VERIFY(uint64,8);
+#undef VERIFY
+}
+
 void cEnvir::setup(int argc, char *argv[])
 {
     ArgList *args = NULL;
@@ -111,6 +129,9 @@ void cEnvir::setup(int argc, char *argv[])
 
         // construct global lists
         ExecuteOnStartup::executeAll();
+
+        // verify definitions of int64, int32, etc.
+        verifyIntTypes();
 
         // args
         args = new ArgList(argc, argv, "hf:u:l:r:p:");
