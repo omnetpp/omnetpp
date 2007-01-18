@@ -30,7 +30,9 @@ class Random
         int32 seed;
 
     public:
-        Random(int32 seed);
+        Random(int32 seed = 1);
+
+        void setSeed(int32 seed) { this->seed = seed; }
 
         double next01();
 };
