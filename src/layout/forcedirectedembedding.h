@@ -212,7 +212,7 @@ class ForceDirectedEmbedding
         /**
          * Sets the default parameters.
          */
-        ForceDirectedParameters getDefaultParameters(int32 seed = 0);
+        ForceDirectedParameters getParameters(int32 seed = 0);
 
         /**
          * Clears all results from previous calculations and sets initial values.
