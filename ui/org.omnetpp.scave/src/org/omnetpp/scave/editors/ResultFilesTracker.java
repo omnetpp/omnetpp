@@ -197,8 +197,12 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	private void loadFile(IFile file) {
 		System.out.println("loadFile: "+file);
 		if (isResultFile(file)) {
-			String osPath = file.getLocation().toOSString();
-			manager.loadFile(file.getFullPath().toString(), osPath);
+			try {
+				String osPath = file.getLocation().toOSString();
+				manager.loadFile(file.getFullPath().toString(), osPath);
+			} catch (Exception e) {
+				Activator.logError("Could not load file: " + file.getLocation().toOSString(), e);
+			}
 		}
 		else 
 			throw new RuntimeException("wrong file type:"+file.getFullPath()); //XXX proper error handling (e.g. remove file from Inputs?)
@@ -226,8 +230,12 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			String osPath = file.getLocation().toOSString();
 			ResultFile resultFile = manager.getFile(resourcePath);
 			if (resultFile != null) {
-				manager.unloadFile(resultFile);
-				manager.loadFile(resourcePath, osPath);
+				try {
+					manager.unloadFile(resultFile);
+					manager.loadFile(resourcePath, osPath);
+				} catch (Exception e) {
+					Activator.logError("Could not reload file: " + file.getLocation().toOSString(), e);
+				}
 			}
 		}
 	}
@@ -242,7 +250,9 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 				return ContentTypes.SCALAR.equals(contentType.getId()) || ContentTypes.VECTOR.equals(contentType.getId());
 			}
 		} catch (CoreException e) {
-			Activator.logError("Cannot open resource: " + file.getFullPath(), e);
+			// the file might not exists, so content description is not available
+			String extension = file.getFileExtension();
+			return "vec".equals(extension) || "vci".equals(extension);
 		}
 		return false;
 	}

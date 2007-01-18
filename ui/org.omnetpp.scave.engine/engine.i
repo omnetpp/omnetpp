@@ -16,6 +16,7 @@
 #include "resultfilemanager.h"
 #include "datasorter.h"
 #include "stringutil.h"   // strdictcmp
+#include "indexfile.h"
 %}
 
 %exception {
@@ -297,6 +298,7 @@ int strdictcmp(const char *s1, const char *s2);
 %include "idlist.h"
 %include "resultfilemanager.h"
 %include "datasorter.h"
+%include "indexfile.h"
 
 // wrap the data-flow engine as well
 %include plove.i

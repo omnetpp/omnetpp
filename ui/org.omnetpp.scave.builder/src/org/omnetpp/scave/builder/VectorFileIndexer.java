@@ -18,6 +18,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Path;
+import org.omnetpp.scave.engine.IndexFile;
 
 public class VectorFileIndexer extends IncrementalProjectBuilder {
 
@@ -118,9 +120,7 @@ public class VectorFileIndexer extends IncrementalProjectBuilder {
 	
 	protected boolean toBeIndexed(IFile file) {
 		if (isVectorFile(file)) {
-			File osFile = file.getLocation().toFile();
-			File osIndexFile = getIndexFile(file).getLocation().toFile(); // might not be added to the workspace, use java.io.File methods
-			return !osIndexFile.exists() || osFile.lastModified() > osIndexFile.lastModified();
+			return !IndexFile.isIndexFileUpToDate(getOsPath(file));
 		}
 		else
 			return false;
@@ -130,25 +130,31 @@ public class VectorFileIndexer extends IncrementalProjectBuilder {
 		indexer.generateIndex(vectorFile.getLocation().toFile().getAbsolutePath());
 	}
 	
-	private static boolean isVectorFile(IFile file) {
-		return "vec".equals(file.getFullPath().getFileExtension());
+	protected boolean isVectorFile(IFile file) {
+		return IndexFile.isVectorFile(getOsPath(file));
 	}
 	
-	private static boolean isIndexFile(IFile file) {
-		return "vci".equals(file.getFullPath().getFileExtension());
+	protected boolean isIndexFile(IFile file) {
+		return IndexFile.isIndexFile(getOsPath(file));
 	}
 	
-	private static IFile getIndexFile(IFile vectorFile) {
+	protected IFile getIndexFile(IFile vectorFile) {
 		Assert.isLegal(isVectorFile(vectorFile));
-		IPath indexFilePath = vectorFile.getFullPath().removeFileExtension().addFileExtension("vci");
-		IFile indexFile = ResourcesPlugin.getWorkspace().getRoot().getFile(indexFilePath);
-		return  indexFile;
+		IPath location = new Path(IndexFile.getIndexFileName(getOsPath(vectorFile))); 
+		IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(location);
+		Assert.isTrue(files != null && files.length > 0);
+		return  files[0];
 	}
 
-	private static IFile getVectorFile(IFile indexFile) {
+	protected IFile getVectorFile(IFile indexFile) {
 		Assert.isLegal(isIndexFile(indexFile));
-		IPath vectorFilePath = indexFile.getFullPath().removeFileExtension().addFileExtension("vec");
-		IFile vectorFile = ResourcesPlugin.getWorkspace().getRoot().getFile(vectorFilePath);
-		return  vectorFile;
+		IPath location = new Path(IndexFile.getVectorFileName(getOsPath(indexFile))); 
+		IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(location);
+		Assert.isTrue(files != null && files.length > 0);
+		return  files[0];
+	}
+	
+	private static String getOsPath(IFile file) {
+		return file.getLocation().toOSString();
 	}
 }
