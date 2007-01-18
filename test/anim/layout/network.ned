@@ -404,11 +404,11 @@ network BinaryTree
         };
 }
 
-network HexGrid
+network TriangleGrid
 {
     parameters:
-        double rows = default(6) @prompt("Mest rows");
-        double cols = default(3) @prompt("Mesh columns");
+        int rows = default(5) @prompt("TriangleGrid rows");
+        int cols = default(5) @prompt("TriangleGrid columns");
     submodules:
         node[rows*cols]: Node {
             parameters:
@@ -419,9 +419,30 @@ network HexGrid
         };
     connections allowunconnected:
         for i=0..rows*cols-1 {
-            node[i].in[0] <-- node[i-2*cols].out[0] if i+1>2*cols;
-            node[i].in[1] <-- node[(i-cols)-(i/cols+1)%2].out[1] if i%(2*cols)!=0 && i+1>cols;
-            node[i].in[2] <-- node[((i+cols)-1)+(i/cols)%2].out[2] if i%(2*cols)!=0 && i<rows*cols-cols;
+              node[i].in[0] <-- node[i+1].out[0] if (i+1)%cols!=0;
+              node[i].in[1] <-- node[i+cols].out[1] if i<(rows-1)*cols;
+              node[i].in[2] <-- node[i+cols+1].out[2] if i<(rows-1)*cols && (i+1)%cols!=0;
+        };
+}
+
+network HexGrid
+{
+    parameters:
+        int rows = default(2) @prompt("HexGrid rows");
+        int cols = default(2) @prompt("HexGrid columns");
+        int num = 2*(rows*cols+rows+cols);
+    submodules:
+        node[num]: Node {
+            parameters:
+                @display("i=ball2;is=vs");
+            gates:
+                in[3];
+                out[3];
+        };
+    connections allowunconnected:
+        for i=0..num-1 {
+              node[i].in[0] <-- node[i+1].out[0] if i<num-1 && i%(2*cols+2)!=2*cols;
+              node[i].in[1] <-- node[i+2*cols+1].out[1] if i<num-2*cols-1 && i%2==0;
         };
 }
 
