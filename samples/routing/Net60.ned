@@ -7,7 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
-import "node";
+import "Node";
 
 //
 // A network topology commonly known as the "NTT backbone".
