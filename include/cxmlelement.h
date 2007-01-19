@@ -21,7 +21,7 @@
 #include <string>
 #include <map>
 #include <vector>
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "cenvir.h"
 
 class cXMLElement;

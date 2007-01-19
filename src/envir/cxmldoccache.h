@@ -20,7 +20,7 @@
 
 #include <map>
 #include <string>
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "envdefs.h"
 #include "cxmlelement.h"
 

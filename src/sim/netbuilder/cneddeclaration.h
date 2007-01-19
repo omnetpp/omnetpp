@@ -20,7 +20,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "globals.h"
 #include "cownedobject.h"
 #include "cparvalue.h"

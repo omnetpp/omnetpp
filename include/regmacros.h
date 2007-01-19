@@ -15,11 +15,11 @@
 #ifndef __REGMACROS_H
 #define __REGMACROS_H
 
-#include "defs.h"
+#include "simkerneldefs.h"
 //XXX #include "onstartup.h"
 
 
-// Note: this header file is included from "defs.h" directly
+// Note: this header file is included from "simkerneldefs.h" directly
 
 /**
  * @name NED function registration macros

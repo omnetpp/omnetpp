@@ -19,7 +19,7 @@
 
 #include <typeinfo>
 #include <iostream>
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "util.h"
 #include "cobject.h"
 #include "cexception.h"

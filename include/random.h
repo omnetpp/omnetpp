@@ -18,7 +18,7 @@
 #ifndef __RANDOM_H
 #define __RANDOM_H
 
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "csimulation.h"
 #include "cmodule.h"
 #include "crng.h"

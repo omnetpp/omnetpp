@@ -16,7 +16,7 @@
 #define __CNEDFUNCTION_H
 
 #include <stdarg.h>
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "globals.h"
 #include "cownedobject.h"
 #include "cdynamicexpression.h"

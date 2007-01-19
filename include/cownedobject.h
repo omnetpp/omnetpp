@@ -20,7 +20,7 @@
 #include <typeinfo>
 #include <iostream>
 #include "cenvir.h"
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "util.h"
 #include "cnamedobject.h"
 #include "cexception.h"

@@ -21,7 +21,7 @@
 #include <stdarg.h>  // for va_list
 #include <stdio.h>   // for sprintf
 #include <typeinfo>  // for type_info
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "errmsg.h"
 
 // forward declarations

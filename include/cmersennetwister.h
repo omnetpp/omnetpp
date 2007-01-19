@@ -18,7 +18,7 @@
 #ifndef __CMERSENNETWISTER_H
 #define __CMERSENNETWISTER_H
 
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "globals.h"
 #include "crng.h"
 #include "cconfig.h"

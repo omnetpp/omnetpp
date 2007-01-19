@@ -20,7 +20,7 @@
 #ifndef __CSTAT_H
 #define __CSTAT_H
 
-#include "defs.h"
+#include "simkerneldefs.h"
 
 #include <stdio.h>
 #include "cownedobject.h"

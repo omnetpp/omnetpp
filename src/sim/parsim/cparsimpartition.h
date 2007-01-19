@@ -21,7 +21,7 @@
 #ifndef __CPARSIMPARTITION_H__
 #define __CPARSIMPARTITION_H__
 
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "cobject.h"
 
 // forward declarations:

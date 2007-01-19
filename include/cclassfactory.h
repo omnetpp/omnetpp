@@ -15,7 +15,7 @@
 #ifndef __CCLASSFACTORY_H
 #define __CCLASSFACTORY_H
 
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "globals.h"
 #include "cownedobject.h"
 

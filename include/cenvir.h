@@ -22,7 +22,7 @@
 
 #include <sstream>
 #include <iostream>
-#include "defs.h"
+#include "simkerneldefs.h"
 
 class cObject;
 class cOwnedObject;

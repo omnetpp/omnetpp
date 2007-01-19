@@ -18,7 +18,7 @@
 #ifndef __CVISITOR_H
 #define __CVISITOR_H
 
-#include "defs.h"
+#include "simkerneldefs.h"
 
 class cObject;
 

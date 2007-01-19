@@ -16,7 +16,7 @@
 #define __CFUNCTION_H
 
 #include <stdarg.h>
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "globals.h"
 #include "cownedobject.h"
 

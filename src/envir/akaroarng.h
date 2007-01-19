@@ -20,7 +20,7 @@
 #ifndef __AKAROARNG_H
 #define __AKAROARNG_H
 
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "macros.h"
 #include "crng.h"
 #include "cconfig.h"

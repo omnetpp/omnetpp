@@ -18,7 +18,7 @@
 #ifndef __CRNG_H
 #define __CRNG_H
 
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "cobject.h"
 
 class cConfiguration;

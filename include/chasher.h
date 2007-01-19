@@ -19,7 +19,7 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "cobject.h"
 #include "cexception.h"
 #include "platdep/inttypes.h"

@@ -1,5 +1,5 @@
 //==========================================================================
-//  DEFS.H - part of
+//  SIMKERNELDEFS.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __DEFS_H
-#define __DEFS_H
+#ifndef __SIMKERNELDEFS_H
+#define __SIMKERNELDEFS_H
 
 #include <stddef.h>     // size_t
 #include <math.h>       // HUGE_VAL

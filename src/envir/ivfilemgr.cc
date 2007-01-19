@@ -15,7 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "defs.h"
+#include "simkerneldefs.h"
 
 #include <assert.h>
 #include <string.h>

@@ -19,7 +19,7 @@
 #ifndef __SPEEDMTR_H
 #define __SPEEDMTR_H
 
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "envdefs.h"
 #include "timeutil.h"
 

@@ -18,7 +18,7 @@
 #ifndef __DISTRIB_H_
 #define __DISTRIB_H_
 
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "random.h"
 
 

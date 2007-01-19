@@ -15,7 +15,7 @@
 #ifndef __STLWRAP_H
 #define __STLWRAP_H
 
-#include "defs.h"
+#include "simkerneldefs.h"
 #include <string>
 #include <vector>
 
@@ -26,9 +26,9 @@
  * Motivation: Microsoft Visual C++ has problems exporting templated
  * classes from DLLs, so we cannot use "raw" STL in our public API.
  *
- * This is related to VC71 warning C4251: <tt>class 'std::vector<_Ty>' needs 
- * to have dll-interface to be used by clients of class 'cIniFile'</tt>. 
- * For discussion of the issue, see 
+ * This is related to VC71 warning C4251: <tt>class 'std::vector<_Ty>' needs
+ * to have dll-interface to be used by clients of class 'cIniFile'</tt>.
+ * For discussion of the issue, see
  * http://www.unknownroad.com/rtfm/VisualStudio/warningC4251.html
  */
 class SIM_API stdstring : public std::string

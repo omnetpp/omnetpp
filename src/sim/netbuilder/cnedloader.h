@@ -17,7 +17,7 @@
 #ifndef __CNEDLOADER_H
 #define __CNEDLOADER_H
 
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "nedresourcecache.h"
 #include "cneddeclaration.h"
 

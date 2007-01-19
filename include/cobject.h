@@ -19,7 +19,7 @@
 #define __COBJECT_H
 
 #include <string>
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "util.h"
 #include "cvisitor.h"
 

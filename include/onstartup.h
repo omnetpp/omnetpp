@@ -20,7 +20,7 @@
 
 #include <vector>
 #include <map>
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "cownedobject.h"
 
 

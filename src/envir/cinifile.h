@@ -23,7 +23,7 @@
 #include <stdlib.h> // atol, atof
 #include <string.h> // strncpy
 #include <string>
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "envdefs.h"
 #include "cconfig.h"
 #include "patternmatcher.h"

@@ -80,6 +80,8 @@ fnamelisttokenizer.obj: fnamelisttokenizer.cc \
   fnamelisttokenizer.h \
   commonutil.h \
   exception.h
+lcgrandom.obj: lcgrandom.cc \
+  lcgrandom.h
 lex.matchexpressionyy.obj: lex.matchexpressionyy.cc \
   matchexpression.tab.h
 linetokenizer.obj: linetokenizer.cc \
@@ -98,8 +100,6 @@ patternmatcher.obj: patternmatcher.cc \
   stringutil.h \
   exception.h \
   commonutil.h
-random.obj: random.cc \
-  random.h
 stringtokenizer.obj: stringtokenizer.cc \
   stringtokenizer.h
 stringutil.obj: stringutil.cc \

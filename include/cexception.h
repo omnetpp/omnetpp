@@ -22,7 +22,7 @@
 #include <exception>
 #include <stdexcept>
 
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "errmsg.h"
 #include "opp_string.h"
 

@@ -17,7 +17,7 @@
 #ifndef __CMDDEFS_H
 #define __CMDDEFS_H
 
-#include "defs.h"  // for OPP_DLLIMPORT, OPP_DLLEXPORT
+#include "simkerneldefs.h"  // for OPP_DLLIMPORT, OPP_DLLEXPORT
 
 // OPP_DLLIMPORT/EXPORT are empty if not needed
 #ifdef BUILDING_CMDENV

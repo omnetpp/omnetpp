@@ -81,7 +81,7 @@
 #include "cwatch.h"
 #include "cxmlelement.h"
 #include "cxmlpar.h"
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "distrib.h"
 #include "envirext.h"
 #include "errmsg.h"

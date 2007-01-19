@@ -20,7 +20,7 @@
 #define __ENVIREXT_H
 
 #include <iostream>
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "cobject.h"
 
 

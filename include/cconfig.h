@@ -21,7 +21,7 @@
 #define __CCONFIG_H
 
 #include <vector>
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "opp_string.h"
 #include "cobject.h"
 

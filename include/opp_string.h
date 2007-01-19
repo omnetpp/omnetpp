@@ -19,7 +19,7 @@
 #define __OPP_STRING_H
 
 #include <ostream>
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "util.h"
 
 /**

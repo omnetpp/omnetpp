@@ -17,7 +17,7 @@
 #ifndef __ENVDEFS_H
 #define __ENVDEFS_H
 
-#include "defs.h"  // for OPP_DLLIMPORT, OPP_DLLEXPORT
+#include "simkerneldefs.h"  // for OPP_DLLIMPORT, OPP_DLLEXPORT
 
 // OPP_DLLIMPORT/EXPORT are empty if non-Windows, non-dll, etc.
 #ifdef BUILDING_ENVIR

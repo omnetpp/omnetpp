@@ -17,7 +17,7 @@
 #ifndef __ERRMSG_H
 #define __ERRMSG_H
 
-#include "defs.h"
+#include "simkerneldefs.h"
 
 /**
  * Error codes

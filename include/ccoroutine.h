@@ -25,7 +25,7 @@
 #define USE_PORTABLE_COROUTINES
 #endif
 
-#include "defs.h"
+#include "simkerneldefs.h"
 
 
 #ifdef USE_WIN32_FIBERS

@@ -21,7 +21,7 @@
 
 #include <string>
 #include <vector>
-#include "defs.h"
+#include "simkerneldefs.h"
 
 /**
  * String tokenizer class, modelled after strtok(). It considers the input

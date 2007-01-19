@@ -18,7 +18,7 @@
 #ifndef __CLCG32_H
 #define __CLCG32_H
 
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "globals.h"
 #include "crng.h"
 #include "cconfig.h"

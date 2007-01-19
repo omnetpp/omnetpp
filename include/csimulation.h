@@ -19,7 +19,7 @@
 #ifndef __CSIMULATION_H
 #define __CSIMULATION_H
 
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "util.h"
 #include "globals.h"
 #include "cmsgheap.h"

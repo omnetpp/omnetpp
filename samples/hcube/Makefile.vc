@@ -122,6 +122,10 @@ re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 gensink.obj: gensink.cc \
-  gensink.h
+  gensink.h \
+  hcpacket_m.h
 hc_rte.obj: hc_rte.cc \
-  hc_rte.h
+  hc_rte.h \
+  hcpacket_m.h
+hcpacket_m.obj: hcpacket_m.cc \
+  hcpacket_m.h

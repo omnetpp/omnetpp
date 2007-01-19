@@ -16,7 +16,7 @@
 #define __CCOMPONENT_H
 
 #include <vector>
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "cownedobject.h"
 #include "cpar.h"
 #include "cdefaultlist.h"

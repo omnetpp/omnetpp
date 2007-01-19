@@ -15,7 +15,7 @@
 #ifndef __CPROPERTY_H
 #define __CPROPERTY_H
 
-#include "defs.h"
+#include "simkerneldefs.h"
 #include "globals.h"
 #include "cobject.h"
 #include "cstringpool.h"
