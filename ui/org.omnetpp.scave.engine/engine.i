@@ -27,6 +27,7 @@
     }
 }
 
+%include "inttypes.h"
 %include "scavedefs.h"
 
 %typemap(jni) ID "jlong";

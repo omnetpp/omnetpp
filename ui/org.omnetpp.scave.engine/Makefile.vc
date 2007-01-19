@@ -15,7 +15,8 @@ SCAVE_ENGINE=$(OMNETPP_ROOT)\src\scave
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 -I$(SCAVE_ENGINE) -I$(COMMON) -I$(OMNETPP_INCL_DIR)/platdep
+INCLUDES=-I$(SCAVE_ENGINE) -I$(COMMON) -I$(OMNETPP_INCL_DIR)/platdep
+COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 $(INCLUDES)
 
 OBJS = engine_wrap.obj
 HEADERS = $(SCAVE_ENGINE)\*.h $(COMMON)\*.h
@@ -41,7 +42,7 @@ default: scave_engine.dll
 
 engine_wrap.cxx: engine.i plove.i $(HEADERS)
 	-del $(JAVADIR)\*.java >nul
-	$(SWIG) -c++ -java -package $(JAVAPKG) -I$(SCAVE_ENGINE) -I$(COMMON) -outdir $(JAVADIR) engine.i
+	$(SWIG) -c++ -java -package $(JAVAPKG) $(INCLUDES) -outdir $(JAVADIR) engine.i
 
 scave_engine.dll : $(OBJS)
 	$(LINK) /dll /out:"scave_engine.dll" $(OBJS) $(SCAVE_ENGINE)/scave.lib $(COMMON)/common.lib $(LDFLAGS)

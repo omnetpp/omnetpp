@@ -15,7 +15,8 @@ EVENTLOG_ENGINE=$(OMNETPP_ROOT)\src\eventlog
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 -I$(EVENTLOG_ENGINE) -I$(COMMON) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep
+INCLUDES=-I$(EVENTLOG_ENGINE) -I$(COMMON) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep
+COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 $(INCLUDES)
 
 OBJS = engine_wrap.obj
 HEADERS = $(EVENTLOG_ENGINE)\*.h $(COMMON)\*.h
@@ -41,7 +42,7 @@ default: eventlog_engine.dll
 
 engine_wrap.cxx: engine.i $(HEADERS)
 	-del $(JAVADIR)\*.java >nul
-	$(SWIG) -c++ -java -package $(JAVAPKG) -I$(EVENTLOG_ENGINE) -I$(COMMON) -outdir $(JAVADIR) engine.i
+	$(SWIG) -c++ -java -package $(JAVAPKG) $(INCLUDES) -outdir $(JAVADIR) engine.i
 
 eventlog_engine.dll : $(OBJS) $(EVENTLOG_ENGINE)/eventlog.lib $(COMMON)/common.lib
 	$(LINK) /dll /out:"eventlog_engine.dll" $(OBJS) $(EVENTLOG_ENGINE)/eventlog.lib $(COMMON)/common.lib $(LDFLAGS)

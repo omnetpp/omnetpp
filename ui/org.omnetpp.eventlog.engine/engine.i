@@ -39,6 +39,7 @@
     }
 }
 
+%include "inttypes.h"
 %include "eventlogdefs.h"
 
 %typemap(jni)    int64 "jlong"

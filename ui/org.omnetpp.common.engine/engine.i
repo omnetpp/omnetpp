@@ -165,6 +165,7 @@ namespace std {
 %ignore zero;
 %ignore NaN;
 %ignore isNaN;
+%ignore ForceDirectedEmbedding::parameters;
 
 %include "geometry.h"
 %include "forcedirectedparametersbase.h"
