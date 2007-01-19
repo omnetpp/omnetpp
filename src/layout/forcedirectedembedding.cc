@@ -155,7 +155,6 @@ void ForceDirectedEmbedding::embed() {
             if (elapsedCalculationTime > parameters.maxCalculationTime)
                 break;
             else {
-                //double coefficient = std::min(1.0, std::max(0.0, (maxCalculationTime - elapsedCalculationTime) / maxCalculationTime));
                 double coefficient = 1 - relaxFactor;
 
                 updatedMinAccelerationError = coefficient * parameters.minAccelerationError;

@@ -27,7 +27,7 @@ SO_LIB_SUFFIX=@SO_LIB_SUFFIX@
 #
 COPTS=$(CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR)/platdep
 
-OBJS= geometry.o graphcomponent.o heapembedding.o startreeembedding.o forcedirectedembedding.o forcedirectedparametersbase.o forcedirectedparameters.o
+OBJS= geometry.o graphcomponent.o heapembedding.o startreeembedding.o forcedirectedparametersbase.o forcedirectedparameters.o forcedirectedembedding.o graphlayouter.o
 LIBS= -llayout -lcommon
 
 #

@@ -12,7 +12,7 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 #
 COPTS=$(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"layout.pdb"
 
-OBJS= geometry.obj graphcomponent.obj heapembedding.obj startreeembedding.obj forcedirectedembedding.obj forcedirectedparametersbase.obj forcedirectedparameters.obj
+OBJS= geometry.obj graphcomponent.obj heapembedding.obj startreeembedding.obj forcedirectedparametersbase.obj forcedirectedparameters.obj forcedirectedembedding.obj graphlayouter.obj
 LIBS= layout.lib ../common/common.lib
 
 #
@@ -63,6 +63,15 @@ geometry.obj: geometry.cc \
 graphcomponent.obj: graphcomponent.cc \
   graphcomponent.h \
   geometry.h
+graphlayout.obj: graphlayout.cc \
+  graphlayout.h \
+  startreeembedding.h \
+  heapembedding.h \
+  forcedirectedembedding.h \
+  forcedirectedparameters.h \
+  graphcomponent.h \
+  geometry.h \
+  forcedirectedparametersbase.h
 heapembedding.obj: heapembedding.cc \
   heapembedding.h \
   geometry.h \
@@ -70,6 +79,15 @@ heapembedding.obj: heapembedding.cc \
 layouttool.obj: layouttool.cc \
   forcedirectedparameters.h \
   forcedirectedembedding.h \
+  geometry.h \
+  forcedirectedparametersbase.h
+oldgraphlayout.obj: oldgraphlayout.cc \
+  graphlayout.h \
+  startreeembedding.h \
+  heapembedding.h \
+  forcedirectedembedding.h \
+  forcedirectedparameters.h \
+  graphcomponent.h \
   geometry.h \
   forcedirectedparametersbase.h
 startreeembedding.obj: startreeembedding.cc \
