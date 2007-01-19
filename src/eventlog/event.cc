@@ -64,8 +64,8 @@ ModuleCreatedEntry *Event::getModuleCreatedEntry()
 
 file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
 {
-    ASSERT(offset >= 0);
-    ASSERT(!eventEntry);
+    Assert(offset >= 0);
+    Assert(!eventEntry);
 
     beginOffset = offset;
     reader->seekTo(offset);
@@ -77,7 +77,7 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
         char *line = reader->readNextLine();
 
         if (!line) {
-            ASSERT(eventEntry);
+            Assert(eventEntry);
             endOffset = reader->getFileSize();
             return endOffset;
         }
@@ -87,13 +87,13 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
 
         // first line must be an event entry
         if (!eventEntry) {
-            ASSERT(readEventEntry);
+            Assert(readEventEntry);
             eventEntry = readEventEntry;
         }
         else if (readEventEntry)
             break; // stop at the start of the next event
 
-        ASSERT(eventEntry);
+        Assert(eventEntry);
 
         if (eventLogEntry)
             eventLogEntries.push_back(eventLogEntry);

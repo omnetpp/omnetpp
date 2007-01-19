@@ -19,10 +19,10 @@
 #include "exception.h"
 
 #ifdef NDEBUG
-#  define ASSERT(x)
+#  define Assert(x)
 #  define DBG(x)
 #else
-#  define ASSERT(expr)  ((void) ((expr) ? 0 : (throw opp_runtime_error("ASSERT: condition %s false, %s line %d", \
+#  define Assert(expr)  ((void) ((expr) ? 0 : (throw opp_runtime_error("ASSERT: condition %s false, %s line %d", \
                         #expr, __FILE__, __LINE__), 0)))
 //#  define DBG(x)  printf x
 #  define DBG(x)

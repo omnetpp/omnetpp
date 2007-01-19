@@ -55,7 +55,7 @@ bool ArrayBuilderNode::isReady() const
 
 void ArrayBuilderNode::process()
 {
-    ASSERT(xvec && yvec);
+    Assert(xvec && yvec);
     int n = in()->length();
     for (int i=0; i<n; i++)
     {

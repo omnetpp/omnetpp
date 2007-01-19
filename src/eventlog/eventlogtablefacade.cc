@@ -44,12 +44,12 @@ EventLogEntry *EventLogTableFacade::getLastEntry()
 
 EventLogEntry *EventLogTableFacade::getEntryAndDistance(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long distance, long& reachedDistance)
 {
-    ASSERT(sourceEventLogEntry);
+    Assert(sourceEventLogEntry);
     EventLogEntry *eventLogEntry = sourceEventLogEntry;
     reachedDistance = 0;
 
     int index = getEntryIndexInEvent(eventLogEntry);
-    ASSERT(index >= 0);
+    Assert(index >= 0);
 
     while (distance && eventLogEntry && eventLogEntry != targetEventLogEntry) {
         if (distance > 0) {
@@ -107,7 +107,7 @@ EventLogEntry *EventLogTableFacade::getNextEntry(EventLogEntry *eventLogEntry, i
 
 EventLogEntry *EventLogTableFacade::getEntryInEvent(IEvent *event, int index)
 {
-    ASSERT(index >= 0 && index <= event->getNumEventLogMessages());
+    Assert(index >= 0 && index <= event->getNumEventLogMessages());
 
     if (index == 0)
         return event->getEventEntry();

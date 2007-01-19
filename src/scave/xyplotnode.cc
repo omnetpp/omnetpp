@@ -57,14 +57,14 @@ void XYPlotNode::process()
     // return ty>tx values (where tx is timestamp of the "x" value). Meanwhile,
     // if we find ty==tx values, output the (x,y) pair. If a port has reached
     // EOF, skip it.
-    ASSERT(xin()->length()>0);
+    Assert(xin()->length()>0);
     Datum xd;
     xin()->read(&xd,1);
 
     for (unsigned int i=0; i<yin.size(); i++)
     {
         Channel *ychan = yin[i]();
-        ASSERT(ychan->eof() || ychan->length()>0);
+        Assert(ychan->eof() || ychan->length()>0);
         const Datum *yp;
         Datum d;
         while ((yp=ychan->peek())!=NULL && yp->x < xd.x)

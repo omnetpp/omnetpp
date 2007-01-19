@@ -131,7 +131,7 @@ FilteredEvent *FilteredEventLog::getNeighbourEvent(IEvent *event, long distance)
 
 bool FilteredEventLog::matchesFilter(IEvent *event)
 {
-    ASSERT(event);
+    Assert(event);
     EventNumberToBooleanMap::iterator it = eventNumberToFilterMatchesFlagMap.find(event->getEventNumber());
 
     // if cached, return it
@@ -266,7 +266,7 @@ FilteredEvent* FilteredEventLog::getLastEvent()
 
 FilteredEvent *FilteredEventLog::getEventForEventNumber(long eventNumber, MatchKind matchKind)
 {
-    ASSERT(eventNumber >= 0);
+    Assert(eventNumber >= 0);
 
     if (matchKind == EXACT) {
         EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.find(eventNumber);
@@ -297,7 +297,7 @@ FilteredEvent *FilteredEventLog::getEventForSimulationTime(simtime_t simulationT
 
 FilteredEvent* FilteredEventLog::getMatchingEventInDirection(long eventNumber, bool forward)
 {
-    ASSERT(eventNumber >= 0);
+    Assert(eventNumber >= 0);
     IEvent *event = eventLog->getEventForEventNumber(eventNumber);
 
     while (event)

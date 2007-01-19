@@ -210,7 +210,7 @@ class AbstractForceProvider : public IForceProvider {
 	    }
 
 	    double getValidForce(double force) {
-		    ASSERT(force >= 0);
+		    Assert(force >= 0);
             return std::min(maxForce, force);
 	    }
 
@@ -344,7 +344,7 @@ class AbstractElectricRepulsion : public AbstractForceProvider {
         virtual void applyForces() {
             double distance;
             Pt vector = getDistanceAndVector(distance);
-            ASSERT(distance >= 0);
+            Assert(distance >= 0);
 
             double power;
             if (distance == 0)
@@ -478,7 +478,7 @@ class AbstractSpring : public AbstractForceProvider {
         virtual void applyForces() {
             double distance;
             Pt vector = getDistanceAndVector(distance);
-            ASSERT(distance >= 0);
+            Assert(distance >= 0);
             double expansion = distance - reposeLength;
             double power = getValidSignedForce(getSpringCoefficient() * expansion);
 

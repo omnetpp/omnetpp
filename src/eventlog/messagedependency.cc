@@ -28,12 +28,12 @@ MessageDependency::MessageDependency(IEventLog *eventLog,
     this->causeBeginSendEntryNumber = causeBeginSendEntryNumber;
     this->consequenceBeginSendEntryNumber = consequenceBeginSendEntryNumber;
 
-    ASSERT(causeEventNumber >= 0 || consequenceEventNumber >= 0);
+    Assert(causeEventNumber >= 0 || consequenceEventNumber >= 0);
 }
 
 BeginSendEntry *MessageDependency::getCauseBeginSendEntry()
 {
-    ASSERT(causeBeginSendEntryNumber != -1);
+    Assert(causeBeginSendEntryNumber != -1);
     return (BeginSendEntry *)getCauseEvent()->getEventLogEntry(causeBeginSendEntryNumber);
 }
 
@@ -43,7 +43,7 @@ long MessageDependency::getCauseEventNumber()
     {
         // only consequence is present, calculate cause from it
         IEvent *consequenceEvent = getConsequenceEvent();
-        ASSERT(consequenceEvent);
+        Assert(consequenceEvent);
         BeginSendEntry *beginSendEntry = (BeginSendEntry *)consequenceEvent->getEventLogEntry(consequenceBeginSendEntryNumber);
         causeEventNumber = beginSendEntry->previousEventNumber;
     }
@@ -68,7 +68,7 @@ simtime_t MessageDependency::getCauseTime()
 
 BeginSendEntry *MessageDependency::getConsequenceBeginSendEntry()
 {
-    ASSERT(consequenceBeginSendEntryNumber != -1);
+    Assert(consequenceBeginSendEntryNumber != -1);
     return (BeginSendEntry *)getConsequenceEvent()->getEventLogEntry(consequenceBeginSendEntryNumber);
 }
 
@@ -234,7 +234,7 @@ simtime_t FilteredMessageDependency::getMiddleTime()
 
 BeginSendEntry *FilteredMessageDependency::getMiddleBeginSendEntry()
 {
-    ASSERT(middleBeginSendEntryNumber != -1);
+    Assert(middleBeginSendEntryNumber != -1);
     return (BeginSendEntry *)getMiddleEvent()->getEventLogEntry(middleBeginSendEntryNumber);
 }
 

@@ -162,7 +162,7 @@ Node *DataflowManager::selectNode()
         if (ch->length()>threshold && ch->consumerNode()->isReady())
         {
             Node *node = ch->consumerNode();
-            ASSERT(!node->alreadyFinished());
+            Assert(!node->alreadyFinished());
             if (!nodeFinished(node))
                 return node;
         }

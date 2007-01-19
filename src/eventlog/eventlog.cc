@@ -134,7 +134,7 @@ void EventLog::printInitializationLogEntries(FILE *file)
 
 Event *EventLog::getEventForEventNumber(long eventNumber, MatchKind matchKind)
 {
-    ASSERT(eventNumber >= 0);
+    Assert(eventNumber >= 0);
 
     if (matchKind == EXACT) {
         EventNumberToEventMap::iterator it = eventNumberToEventMap.find(eventNumber);
@@ -160,7 +160,7 @@ Event *EventLog::getNeighbourEvent(IEvent *event, long distance)
 Event *EventLog::getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind)
 {
     // TODO: cache result
-    ASSERT(simulationTime >= 0);
+    Assert(simulationTime >= 0);
 
     file_offset_t offset = getOffsetForSimulationTime(simulationTime, matchKind);
 

@@ -151,8 +151,8 @@ class ForceDirectedEmbedding
 
         /**
          * Time step is automatically updated during the solution. It will always
-         * have the highest value so that the acceleration error is less than the max 
-         * acceleration error. The time step is either multiplied or divided by the 
+         * have the highest value so that the acceleration error is less than the max
+         * acceleration error. The time step is either multiplied or divided by the
          * time step multiplier according to the current acceleration error.
          */
         double updatedTimeStep;
@@ -283,11 +283,11 @@ class ForceDirectedEmbedding
         /**
          * Calculate the maximum difference of any corresponding pair between a1, a2, a3 and a4.
          */
-        double maximumDifference(const std::vector<Pt>& a1, const std::vector<Pt>& a2, 
+        double maximumDifference(const std::vector<Pt>& a1, const std::vector<Pt>& a2,
                                  const std::vector<Pt>& a3, const std::vector<Pt>& a4)
         {
             double max = 0;
-            ASSERT(a1.size() == a2.size() && a2.size() == a3.size() && a3.size() == a4.size());
+            Assert(a1.size() == a2.size() && a2.size() == a3.size() && a3.size() == a4.size());
 
             for (int i = 0; i < (int)a1.size(); i++) {
                 max = std::max(max, a1[i].getDistance(a2[i]));
@@ -303,8 +303,8 @@ class ForceDirectedEmbedding
          */
         void addMultiplied(std::vector<Pt>& pts, const std::vector<Pt>& a, double b, const std::vector<Pt>& c)
         {
-            ASSERT(a.size() == c.size());
-            ASSERT(pts.size() == c.size());
+            Assert(a.size() == c.size());
+            Assert(pts.size() == c.size());
 
             for (int i = 0; i < (int)pts.size(); i++)
                 pts[i].assign(c[i]).multiply(b).add(a[i]);
@@ -316,7 +316,7 @@ class ForceDirectedEmbedding
         void incrementWithMultiplied(std::vector<Pt>& pts, double a, const std::vector<Pt>& b)
         {
             Pt pt;
-            ASSERT(pts.size() == b.size());
+            Assert(pts.size() == b.size());
 
             for (int i = 0; i < (int)pts.size(); i++) {
                 pt.assign(b[i]).multiply(a);
@@ -329,7 +329,7 @@ class ForceDirectedEmbedding
          */
         void add(std::vector<Pt>& pts, const std::vector<Pt>& a, const std::vector<Pt>& b)
         {
-            ASSERT(a.size() == b.size());
+            Assert(a.size() == b.size());
 
             for (int i = 0; i < (int)pts.size(); i++)
                 pts[i].assign(a[i]).add(b[i]);
@@ -340,7 +340,7 @@ class ForceDirectedEmbedding
          */
         void increment(std::vector<Pt>& pts, const std::vector<Pt>& a)
         {
-            ASSERT(pts.size() == a.size());
+            Assert(pts.size() == a.size());
 
             for (int i = 0; i < (int)pts.size(); i++)
                 pts[i].add(a[i]);

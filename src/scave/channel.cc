@@ -36,7 +36,7 @@ const Datum *Channel::peek() const
 
 int Channel::read(Datum *a, int max)
 {
-    ASSERT(!consumerfinished);
+    Assert(!consumerfinished);
     int n = buffer.size();
     if (n>max)
         n = max;
@@ -50,7 +50,7 @@ int Channel::read(Datum *a, int max)
 
 void Channel::write(Datum *a, int n)
 {
-    ASSERT(!producerfinished);
+    Assert(!producerfinished);
     if (consumerfinished)
         return;  // discard data if consumer finished
     for (int i=0; i<n; i++)

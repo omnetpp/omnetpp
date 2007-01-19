@@ -66,7 +66,7 @@ double SequenceChartFacade::getTimelineCoordinate(IEvent *event)
 
 IEvent *SequenceChartFacade::getLastEventNotAfterTimelineCoordinate(double timelineCoordinate)
 {
-    ASSERT(timelineCoordinate >= 0);
+    Assert(timelineCoordinate >= 0);
 
     switch (timelineMode) {
         case LINEAR:
@@ -89,7 +89,7 @@ IEvent *SequenceChartFacade::getLastEventNotAfterTimelineCoordinate(double timel
 
 IEvent *SequenceChartFacade::getFirstEventNotBeforeTimelineCoordinate(double timelineCoordinate)
 {
-    ASSERT(timelineCoordinate >= 0);
+    Assert(timelineCoordinate >= 0);
 
     switch (timelineMode) {
         case LINEAR:
@@ -112,7 +112,7 @@ IEvent *SequenceChartFacade::getFirstEventNotBeforeTimelineCoordinate(double tim
 
 double SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double timelineCoordinate)
 {
-    ASSERT(timelineCoordinate >= 0);
+    Assert(timelineCoordinate >= 0);
 
     switch (getTimelineMode())
     {
@@ -154,7 +154,7 @@ double SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double timeli
                 if (timelineCoordinateDelta == 0) //XXX this can happen in STEP mode when pos==-1, and 1st event is at timeline zero. perhaps getLastEventPositionBeforeTimelineCoordinate() should check "<=" not "<" ?
                     return eventSimulationTime;
 
-                ASSERT(timelineCoordinateDelta > 0);
+                Assert(timelineCoordinateDelta > 0);
 
                 return eventSimulationTime + simulationTimeDelta * (timelineCoordinate - eventTimelineCoordinate) / timelineCoordinateDelta;
             }
@@ -165,7 +165,7 @@ double SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double timeli
 
 double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simulationTime)
 {
-    ASSERT(simulationTime >= 0);
+    Assert(simulationTime >= 0);
 
     switch (getTimelineMode())
     {
@@ -208,7 +208,7 @@ double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simula
                 if (simulationTimeDelta == 0) //XXX this can happen in STEP mode when pos==-1, and 1st event is at timeline zero. perhaps getLastEventPositionBeforeTimelineCoordinate() should check "<=" not "<" ?
                     return eventTimelineCoordinate;
 
-                ASSERT(simulationTimeDelta > 0);
+                Assert(simulationTimeDelta > 0);
 
                 return eventTimelineCoordinate + timelineCoordinateDelta * (simulationTime - eventSimulationTime) / simulationTimeDelta;
             }
