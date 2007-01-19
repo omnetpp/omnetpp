@@ -33,7 +33,7 @@ void QServer::initialize(int stage)
     // storeRequest() can only be done after that
     if (stage==0)
     {
-        numQueues = gate("in")->size();
+        numQueues = gateSize("in");
         queues = new QPassiveQueue *[numQueues];
         for (int i=0; i<numQueues; i++)
         {
