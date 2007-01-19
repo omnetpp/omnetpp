@@ -36,7 +36,7 @@
 %token INVALID_CHAR   /* just to generate parse error --VA */
 
 /* Operator precedences (low to high) and associativity */
-%left '?' ':'
+%right '?' ':'
 %left AND OR XOR
 %left EQ NE '>' GE '<' LE
 %left BIN_AND BIN_OR BIN_XOR

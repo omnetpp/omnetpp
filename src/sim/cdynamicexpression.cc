@@ -276,7 +276,7 @@ cDynamicExpression::StkValue cDynamicExpression::evaluate(cComponent *context) c
                      throw cRuntimeError(this,eESTKUFLOW);
                  // 1st arg must be bool, others 2nd and 3rd can be anything
                  if (stk[tos-2].type!=StkValue::BOOL)
-                     throw cRuntimeError(this,eEBADARGS,"");
+                     throw cRuntimeError(this,eEBADARGS,""); //XXX fix error msg
                  stk[tos-2] = (stk[tos-2].bl ? stk[tos-1] : stk[tos]);
                  tos-=2;
              }
@@ -593,10 +593,10 @@ std::string cDynamicExpression::toString() const
                          case DIV: op=" / "; pri=2; break;
                          case MOD: op=" % "; pri=2; break;
                          case POW: op=" ^ "; pri=1; break;
-                         case EQ:  op=" = "; pri=6; break;
+                         case EQ:  op=" == "; pri=6; break;
+                         case NE:  op=" != "; pri=6; break;
                          case LT:  op=" < "; pri=6; break;
                          case GT:  op=" > "; pri=6; break;
-                         case NE:  op=" != "; pri=6; break;
                          case LE:  op=" <= "; pri=6; break;
                          case GE:  op=" >= "; pri=6; break;
                          case AND: op=" && "; pri=7; break;
