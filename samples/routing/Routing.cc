@@ -13,7 +13,7 @@
 
 #include <map>
 #include <omnetpp.h>
-#include "packet_m.h"
+#include "Packet_m.h"
 
 
 /**

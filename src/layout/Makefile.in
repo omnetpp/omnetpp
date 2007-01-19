@@ -88,6 +88,18 @@ graphcomponent.o: graphcomponent.cc \
   geometry.h \
   ../common/commonutil.h \
   ../common/exception.h
+graphlayouter.o: graphlayouter.cc \
+  ../common/commonutil.h \
+  graphlayouter.h \
+  startreeembedding.h \
+  heapembedding.h \
+  ../common/exception.h \
+  ../common/lcgrandom.h \
+  forcedirectedembedding.h \
+  forcedirectedparameters.h \
+  graphcomponent.h \
+  geometry.h \
+  forcedirectedparametersbase.h
 heapembedding.o: heapembedding.cc \
   heapembedding.h \
   geometry.h \
