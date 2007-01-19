@@ -41,7 +41,7 @@ LIBS= -llayout -lcommon
 #
 # Targets
 #
-all: liblayout$(LIB_SUFFIX) layouttool
+all: liblayout$(LIB_SUFFIX)
 
 liblayout$(A_LIB_SUFFIX) : $(OBJS)
 	$(AR) liblayout$(A_LIB_SUFFIX) $(OBJS)
@@ -51,10 +51,6 @@ liblayout$(A_LIB_SUFFIX) : $(OBJS)
 liblayout$(SO_LIB_SUFFIX) : $(OBJS)
 	$(SHLIB_LD) -o liblayout$(SO_LIB_SUFFIX) $(OBJS)
 	../utils/install-lib liblayout$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) liblayout$(SO_LIB_SUFFIX)
-
-layouttool : layouttool.o liblayout$(LIB_SUFFIX)
-	$(CXX) $(LDFLAGS) -o layouttool layouttool.o -L$(OMNETPP_LIB_DIR) $(LIBS)
-	#../utils/install-prog layouttool $(OMNETPP_BIN_DIR)
 
 depend:
 	$(MAKEDEPEND) -I. -I../common -- *.cc
@@ -96,13 +92,6 @@ heapembedding.o: heapembedding.cc \
   heapembedding.h \
   geometry.h \
   graphcomponent.h \
-  ../common/commonutil.h \
-  ../common/exception.h
-layouttool.o: layouttool.cc \
-  forcedirectedparameters.h \
-  forcedirectedembedding.h \
-  geometry.h \
-  forcedirectedparametersbase.h \
   ../common/commonutil.h \
   ../common/exception.h
 startreeembedding.o: startreeembedding.cc \
