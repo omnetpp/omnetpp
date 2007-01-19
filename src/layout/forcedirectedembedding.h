@@ -151,9 +151,9 @@ class ForceDirectedEmbedding
 
         /**
          * Time step is automatically updated during the solution. It will always
-	 * have the highest value so that the acceleration error is less than the max 
-	 * acceleration error. The time step is either multiplied or divided by the 
-	 * time step multiplier according to the current acceleration error.
+         * have the highest value so that the acceleration error is less than the max 
+         * acceleration error. The time step is either multiplied or divided by the 
+         * time step multiplier according to the current acceleration error.
          */
         double updatedTimeStep;
 

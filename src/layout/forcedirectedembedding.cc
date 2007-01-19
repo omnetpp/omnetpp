@@ -54,7 +54,7 @@ ForceDirectedParameters ForceDirectedEmbedding::getParameters(int32 seed) {
     parameters.frictionCoefficient = 1 + 4 * lcgRandom.next01();
 
     parameters.defaultSlippery = false;
-    parameters.defaultPointLikeDistance = true;
+    parameters.defaultPointLikeDistance = false;
 
     parameters.timeStep = 1;
     parameters.minTimeStep = 0.01;

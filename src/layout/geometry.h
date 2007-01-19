@@ -225,7 +225,7 @@ class Pt
 };
 
 /**
- * A three dimensional line or section.
+ * A three dimensional line or section defined by two points.
  */
 class Ln {
     public:
@@ -346,7 +346,7 @@ class Rs {
 };
 
 /**
- * A two dimensional rectangle parallel to the base plane.
+ * A two dimensional rectangle positioned in three dimensions and parallel to the base plane.
  */
 class Rc {
     public:
@@ -518,7 +518,7 @@ class Rc {
 };
 
 /**
- * A two dimensional circle parallel to the base plane.
+ * A two dimensional circle positioned in three dimensions and parallel to the base plane.
  */
 class Cc {
     public:

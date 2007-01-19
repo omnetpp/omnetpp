@@ -14,10 +14,10 @@
 
 #include "heapembedding.h"
 
-HeapEmbedding::HeapEmbedding(GraphComponent *graphComponent, double nodeSpacing)
+HeapEmbedding::HeapEmbedding(GraphComponent *graphComponent, double vertexSpacing)
 {
     this->graphComponent = graphComponent;
-    this->nodeSpacing = nodeSpacing;
+    this->vertexSpacing = vertexSpacing;
 }
 
 void HeapEmbedding::embed()
@@ -101,10 +101,10 @@ void HeapEmbedding::embed()
         vertex->rc.pt = bestRc.pt;
 
         // grow rectangle
-        bestRc.pt.x -= nodeSpacing;
-        bestRc.pt.y -= nodeSpacing;
-        bestRc.rs.width += 2 * nodeSpacing;
-        bestRc.rs.height += 2 * nodeSpacing;
+        bestRc.pt.x -= vertexSpacing;
+        bestRc.pt.y -= vertexSpacing;
+        bestRc.rs.width += 2 * vertexSpacing;
+        bestRc.rs.height += 2 * vertexSpacing;
 
         // delete candidate points covered by best rc
         for (int j = 0; j < (int)pts.size(); j++) {

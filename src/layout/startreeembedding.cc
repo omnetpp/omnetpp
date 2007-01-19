@@ -14,10 +14,10 @@
 
 #include "startreeembedding.h"
 
-StarTreeEmbedding::StarTreeEmbedding(GraphComponent *graphComponent, double nodeSpacing)
+StarTreeEmbedding::StarTreeEmbedding(GraphComponent *graphComponent, double vertexSpacing)
 {
     this->graphComponent = graphComponent;
-    this->nodeSpacing = nodeSpacing;
+    this->vertexSpacing = vertexSpacing;
 }
 
 void StarTreeEmbedding::embed()
@@ -36,6 +36,7 @@ void StarTreeEmbedding::calculateCenterRecursive(Vertex *vertex)
 {
     if (vertex->spanningTreeChildren.size() == 0)
     {
+        // position a vertex without children
 	    vertex->starTreeRadius = vertex->rc.rs.getDiagonalLength() / 2;
         vertex->starTreeCenter = Pt::getZero();
         vertex->starTreeCircleCenter = Pt::getZero();
@@ -55,7 +56,7 @@ void StarTreeEmbedding::calculateCenterRecursive(Vertex *vertex)
 		    pts.clear();
 		    circles.clear();
 
-            circles.push_back(Cc(Pt::getZero(), vertex->rc.rs.getDiagonalLength() / 2 + nodeSpacing + vertexChild->starTreeRadius));
+            circles.push_back(Cc(Pt::getZero(), vertex->rc.rs.getDiagonalLength() / 2 + vertexSpacing + vertexChild->starTreeRadius));
 
             for (std::vector<Vertex *>::iterator jt = vertex->spanningTreeChildren.begin(); jt != vertex->spanningTreeChildren.end(); jt++) {
                 Vertex *vertexPositioned = *jt;
@@ -63,7 +64,7 @@ void StarTreeEmbedding::calculateCenterRecursive(Vertex *vertex)
                 if (vertexPositioned == vertexChild)
 				    break;
 
-			    circles.push_back(Cc(vertexPositioned->starTreeCenter.copy().add(vertexPositioned->starTreeCircleCenter), vertexPositioned->starTreeRadius + nodeSpacing + vertexChild->starTreeRadius));
+			    circles.push_back(Cc(vertexPositioned->starTreeCenter.copy().add(vertexPositioned->starTreeCircleCenter), vertexPositioned->starTreeRadius + vertexSpacing + vertexChild->starTreeRadius));
 		    }
 
 		    // Find point candidates

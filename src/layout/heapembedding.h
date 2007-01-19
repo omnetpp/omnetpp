@@ -19,16 +19,33 @@
 #include "geometry.h"
 #include "graphcomponent.h"
 
+/**
+ * This is a planar graph embedding for a connected graph component with spanning tree.
+ *
+ * Vertices are positioned in the component's spanning tree traversal order.
+ * A list of availabe positions are kept during the embedding and vertices are positioned
+ * to the best position with one of their side center point. The best position is the one
+ * which minimizes the length of the edges to already positioned neighbours.
+ * When a vertex is positioned its side center points are added to the list of availabe points.
+ *
+ * The resulting embedding will not have overlapping vertices.
+ */
 class HeapEmbedding
 {
     public:
-	    double nodeSpacing;
+        /**
+         * Minimum distance between vertices
+         */
+	    double vertexSpacing;
 
     private:
+        /**
+         * A connected graph component which must have a spanning tree.
+         */
         GraphComponent *graphComponent;
 
     public:
-	    HeapEmbedding(GraphComponent *graphComponent, double nodeSpacing);
+	    HeapEmbedding(GraphComponent *graphComponent, double vertexSpacing);
 	    void embed();
 
     private:

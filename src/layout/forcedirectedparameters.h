@@ -155,10 +155,6 @@ class WallBody : public Body {
                 size = Rs(0, POSITIVE_INFINITY);
         }
 
-        ~WallBody() {
-            delete variable;
-        }
-
         void setPosition(double position) {
             getVariable()->assignPosition(Pt(horizontal ? NaN : position, horizontal ? position : NaN, NaN));
         }

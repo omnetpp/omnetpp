@@ -20,7 +20,7 @@ Vertex::Vertex(Pt pt, Rs rs, void *identity) {
     this->identity = identity;
 
     color = 0;
-    coherentSubComponent = NULL;
+    connectedSubComponent = NULL;
     spanningTreeParent = NULL;
     starTreeCenter = Pt::getNil();
     starTreeCircleCenter = Pt::getNil();
@@ -33,7 +33,7 @@ Edge::Edge(Vertex *source, Vertex *target, void *identity) {
     this->identity = identity;
 
     color = 0;
-    coherentSubComponent = NULL;
+    connectedSubComponent = NULL;
 }
 
 GraphComponent::GraphComponent() {
@@ -49,7 +49,7 @@ GraphComponent::~GraphComponent() {
         for (std::vector<Edge *>::iterator it = edges.begin(); it != edges.end(); it++)
             delete *it;
 
-        for (std::vector<GraphComponent *>::iterator it = coherentSubComponents.begin(); it != coherentSubComponents.end(); it++)
+        for (std::vector<GraphComponent *>::iterator it = connectedSubComponents.begin(); it != connectedSubComponents.end(); it++)
             delete *it;
     }
 }
@@ -164,8 +164,8 @@ void GraphComponent::addToSpanningTreeParent(Vertex *parentVertex, Vertex *verte
 	    parentVertex->spanningTreeChildren.push_back(vertex);
 }
 
-void GraphComponent::calculateCoherentSubComponents() {
-    coherentSubComponents.clear();
+void GraphComponent::calculateConnectedSubComponents() {
+    connectedSubComponents.clear();
 
     for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); it++) {
         Vertex *vertex = *it;
@@ -185,16 +185,16 @@ void GraphComponent::calculateCoherentSubComponents() {
         if (!vertex->color) {
             GraphComponent *childComponent = new GraphComponent();
             childComponent->owner = false;
-            coherentSubComponents.push_back(childComponent);
+            connectedSubComponents.push_back(childComponent);
 
-            colorizeCoherentSubComponent(childComponent, vertex, color++);
+            colorizeConnectedSubComponent(childComponent, vertex, color++);
         }
     }
 }
 
-void GraphComponent::colorizeCoherentSubComponent(GraphComponent *childComponent, Vertex *vertex, int color) {
+void GraphComponent::colorizeConnectedSubComponent(GraphComponent *childComponent, Vertex *vertex, int color) {
     vertex->color = color;
-    vertex->coherentSubComponent = childComponent;
+    vertex->connectedSubComponent = childComponent;
     childComponent->vertices.push_back(vertex);
 
     for (std::vector<Edge *>::iterator it = vertex->edges.begin(); it != vertex->edges.end(); it++) {
@@ -202,7 +202,7 @@ void GraphComponent::colorizeCoherentSubComponent(GraphComponent *childComponent
 
         if (!edge->color) {
             edge->color = color;
-            edge->coherentSubComponent = childComponent;
+            edge->connectedSubComponent = childComponent;
             childComponent->edges.push_back(edge);
         }
     }
@@ -211,6 +211,6 @@ void GraphComponent::colorizeCoherentSubComponent(GraphComponent *childComponent
         Vertex *neighbour = *it;
 
         if (!neighbour->color)
-            colorizeCoherentSubComponent(childComponent, neighbour, color);
+            colorizeConnectedSubComponent(childComponent, neighbour, color);
     }
 }
