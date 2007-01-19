@@ -127,7 +127,7 @@ class Edge {
 };
 
 /**
- * A connected component of a graph.
+ * A graph or a connected component of a graph.
  */
 class GraphComponent {
     private:

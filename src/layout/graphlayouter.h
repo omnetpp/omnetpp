@@ -122,7 +122,7 @@ class GraphLayouter
     virtual void execute() = 0;
 
     /**
-     * Extracting the results
+     * Extracting the results. The returned position is the center of the module.
      */
     virtual void getNodePosition(cModule *mod, int& x, int& y) = 0;
 };
@@ -266,11 +266,6 @@ class ForceDirectedGraphLayouter : public GraphLayouter
     bool showSummaForce;
 
     /**
-     * True means the force directed embedding has been finalized and ready to use.
-     */
-    bool finalized;
-
-    /**
      * True means wall bodies representing borders has been already added.
      */
     bool bordersAdded;
@@ -369,14 +364,46 @@ class ForceDirectedGraphLayouter : public GraphLayouter
     void addBody(cModule *mod, IBody *body);
     IBody *findBody(cModule *mod);
     Variable *ensureAnchorVariable(const char *anchorname);
+
+    /**
+     * Adds electric repulsions between bodies. Bodies being part of different connected
+     * subcomponents will have a finite repulsion range determined by default spring repose length.
+     */
     void addElectricRepulsions();
+
+    /**
+     * Adds springs generating attraction forces.
+     */
     void addBasePlaneSprings();
-    void ensureFinalized();
+
+    /**
+     * Assigns positions to coordinates not yet assigned by some other means.
+     * The size of the random range is determined by the total size of the bodies
+     * and the default spring repose length.
+     */
     void setRandomPositions(double size = -1);
+
+    /**
+     * Executes pre embedding.
+     */
     void setInitialPositions(double distance);
+
+    /**
+     * Adds border bodies to the force directed embedding.
+     * Adds springs between left-right and top-bottom walls and electric repulsions to other bodies.
+     */
     void ensureBorders();
+
+    /**
+     * Assigns positions to border bodies so that all other bodies are within.
+     */
     void setBorderPositions();
+
+    /**
+     * Translates coordinates so that the smallest x and y value will be equal to border size.
+     */
     void normalize();
+
     void debugDraw();
 };
 

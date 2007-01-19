@@ -663,7 +663,6 @@ void BasicSpringEmbedderLayout::debugDraw(int step)
 
 ForceDirectedGraphLayouter::ForceDirectedGraphLayouter()
 {
-    finalized = false;
     bordersAdded = false;
     hasFixedNode = false;
     hasMovableNode = false;
@@ -732,6 +731,7 @@ void ForceDirectedGraphLayouter::setRandomPositions(double size)
 {
     const std::vector<IBody *>& bodies = embedding.getBodies();
 
+    // if size is not given determine it
     if (size == -1) {
         size = pow(embedding.parameters.defaultSpringReposeLength, 2) * bodies.size();
 
@@ -747,6 +747,7 @@ void ForceDirectedGraphLayouter::setRandomPositions(double size)
 
     Assert(!isNaN(size));
 
+    // assign values to not yet assigned coordinates
     const std::vector<Variable *>& variables = embedding.getVariables();
 	for (int i = 0; i < (int)variables.size(); i++) {
         Pt pt = variables[i]->getPosition();
@@ -768,10 +769,12 @@ void ForceDirectedGraphLayouter::setInitialPositions(double distance) {
     GraphComponent childrenComponentsStar;
     Vertex *childrenComponentsStarRoot = NULL;
 
+    // first pre embed all connected components, one by one
     for (std::vector<GraphComponent *>::iterator it = graphComponent.connectedSubComponents.begin(); it != graphComponent.connectedSubComponents.end(); it++) {
 	    GraphComponent *childComponent = *it;
         childComponent->calculateSpanningTree();
 
+        // use tree embedding if connected component is a tree
         if (childComponent->getEdgeCount() == childComponent->getVertexCount() - 1) {
             StarTreeEmbedding starTreeEmbedding(childComponent, distance);
             starTreeEmbedding.embed();
@@ -781,6 +784,7 @@ void ForceDirectedGraphLayouter::setInitialPositions(double distance) {
             heapEmbedding.embed();
         }
 
+        // add a new vertex to component graph for each embedded sub component
         Vertex *childComponentVertex = new Vertex(Pt::getNil(), childComponent->getSize(), NULL);
         if (!childrenComponentsStarRoot)
             childrenComponentsStarRoot = childComponentVertex;
@@ -789,10 +793,13 @@ void ForceDirectedGraphLayouter::setInitialPositions(double distance) {
         childrenComponentsStar.addEdge(new Edge(childrenComponentsStarRoot, childComponentVertex));
     }
 
+    // embed component graph
     childrenComponentsStar.calculateSpanningTree();
     HeapEmbedding heapEmbedding(&childrenComponentsStar, distance);
     heapEmbedding.embed();
 
+    // position all vertices on the plane so that they do not overlap
+    // use both connected component pre embedding coordinates and component graph coordinates
     for (int i = 0; i < graphComponent.connectedSubComponents.size(); i++) {
         Vertex *childComponentVertex = childrenComponentsStar.getVertex(i);
 	    GraphComponent *childComponent = graphComponent.connectedSubComponents[i];
@@ -818,6 +825,7 @@ void ForceDirectedGraphLayouter::ensureBorders()
 		leftBorder = new WallBody(false, NaN);
 		rightBorder = new WallBody(false, NaN);
 
+        // add electric repulsion to all bodies
         const std::vector<IBody *>& bodies = embedding.getBodies();
 		for (int i = 0; i < (int)bodies.size(); i++) {
 			IBody *body = bodies[i];
@@ -827,6 +835,7 @@ void ForceDirectedGraphLayouter::ensureBorders()
 			embedding.addForceProvider(new HorizontalElectricRepulsion(rightBorder, body));
 		}
 
+        // add springs between walls
 		embedding.addBody(topBorder);
 		embedding.addBody(bottomBorder);
 		embedding.addBody(leftBorder);
@@ -856,6 +865,7 @@ void ForceDirectedGraphLayouter::setBorderPositions()
         }
 	}
 
+    // ensure all bodies are within
     topBorder->setPosition(top - distance);
     bottomBorder->setPosition(bottom + distance);
     leftBorder->setPosition(left - distance);
@@ -872,6 +882,7 @@ void ForceDirectedGraphLayouter::addElectricRepulsions()
             Variable *variable1 = body1->getVariable();
             Variable *variable2 = body2->getVariable();
 
+            // ignore wall bodies
 		    if (!dynamic_cast<WallBody *>(body1) &&
                 !dynamic_cast<WallBody *>(body2) &&
 			    variable1 != variable2)
@@ -882,6 +893,7 @@ void ForceDirectedGraphLayouter::addElectricRepulsions()
                 Assert(vertex1);
                 Assert(vertex2);
 
+                // check if the two are in the same connected component
                 if (vertex1->connectedSubComponent != vertex2->connectedSubComponent)
 	    		    embedding.addForceProvider(new ElectricRepulsion(body1, body2, embedding.parameters.defaultSpringReposeLength, embedding.parameters.defaultSpringReposeLength * 2));
                 else
@@ -898,25 +910,6 @@ void ForceDirectedGraphLayouter::addBasePlaneSprings()
 
         if (!dynamic_cast<WallBody *>(body))
     		embedding.addForceProvider(new BasePlaneSpring(body, 5, 0));
-    }
-}
-
-void ForceDirectedGraphLayouter::ensureFinalized()
-{
-    if (!finalized) {
-        addElectricRepulsions();
-
-        if (threeDFactor > 0)
-            addBasePlaneSprings();
-
-        embedding.addForceProvider(new Drag());
-
-        setRandomPositions();
-
-        if (bordersAdded)
-            setBorderPositions();
-
-        finalized = true;
     }
 }
 
@@ -945,6 +938,7 @@ void ForceDirectedGraphLayouter::addMovableNode(cModule *mod, int width, int hei
 {
     hasMovableNode = true;
 
+    // this is a free variable and body
     Variable *variable = new Variable(Pt::getNil());
     addBody(mod, new Body(variable, Rs(width, height)));
 
@@ -955,6 +949,7 @@ void ForceDirectedGraphLayouter::addFixedNode(cModule *mod, int x, int y, int wi
 {
     hasFixedNode = true;
 
+    // a fix node is a constrained variable which can only move on the z axes
     Variable *variable = new PointConstrainedVariable(Pt(x + width / 2, y + height / 2, NaN));
     IBody *body = new Body(variable, Rs(width, height));
     addBody(mod, body);
@@ -964,9 +959,11 @@ void ForceDirectedGraphLayouter::addFixedNode(cModule *mod, int x, int y, int wi
 
 void ForceDirectedGraphLayouter::addAnchoredNode(cModule *mod, const char *anchorname, int offx, int offy, int width, int height)
 {
+    // an anchored node is a relatively (to a variable, namely the anchor) positioned body
     Variable *variable = ensureAnchorVariable(anchorname);
     addBody(mod, new RelativelyPositionedBody(variable, Pt(offx, offy, 0), Rs(width, height)));
 
+    // update vertex size
     Vertex *vertex = graphComponent.findVertex(variable);
     if (!vertex)
         graphComponent.addVertex(new Vertex(Pt::getNil(), Rs(offx + width, offy + height), variable));
@@ -978,8 +975,11 @@ void ForceDirectedGraphLayouter::addAnchoredNode(cModule *mod, const char *ancho
 
 void ForceDirectedGraphLayouter::addEdge(cModule *from, cModule *to, int len)
 {
+    // an edge is a spring
     Spring *spring = new Spring(findBody(from), findBody(to), -1, !len ? -1 : len);
     embedding.addForceProvider(spring);
+
+    // and also an edge in the graph
     graphComponent.addEdge(new Edge(
 			graphComponent.findVertex(spring->getBody1()->getVariable()),
 			graphComponent.findVertex(spring->getBody2()->getVariable())));
@@ -991,50 +991,67 @@ void ForceDirectedGraphLayouter::addEdgeToBorder(cModule *from, int len)
 
     IBody *body = findBody(from);
 
+    // add a force provider which uses for springs each connected to a wall
+    // the least expanded spring will provided an attraction force
     std::vector<AbstractSpring *> springs;
     springs.push_back(new VerticalSpring(topBorder, body, -1, !len ? -1 : len));
     springs.push_back(new VerticalSpring(bottomBorder, body, -1, !len ? -1 : len));
     springs.push_back(new HorizonalSpring(leftBorder, body, -1, !len ? -1 : len));
     springs.push_back(new HorizonalSpring(rightBorder, body, -1, !len ? -1 : len));
-
     embedding.addForceProvider(new LeastExpandedSpring(springs));
 }
 
 void ForceDirectedGraphLayouter::execute()
 {
-    // call pre embedding if requested
-    graphComponent.calculateConnectedSubComponents();
-    if (hasMovableNode && preEmbedding)
-        setInitialPositions(std::min(40.0, embedding.parameters.defaultSpringReposeLength));
+    if (hasMovableNode) {
+        // always calculate graph components
+        graphComponent.calculateConnectedSubComponents();
 
-    // draw initial pre embedding result
-    if (preEmbedding && environment->inspected())
-        debugDraw();
+        // call pre embedding if requested
+        if (preEmbedding) {
+            setInitialPositions(std::min(40.0, embedding.parameters.defaultSpringReposeLength));
 
-    // call force directed embedding if requested
-    if (hasMovableNode && forceDirectedEmbedding) {
-        ensureFinalized();
-
-        //embedding.debug = 3;
-        embedding.inspected = environment->inspected();
-        embedding.reinitialize();
-
-        if (embedding.inspected) {
-            while (!embedding.getFinished()) {
-                embedding.embed();
+            // draw initial pre embedding result
+            if (environment->inspected())
                 debugDraw();
-            }
         }
-        else
-            embedding.embed();
+
+        // call force directed embedding if requested
+        if (forceDirectedEmbedding) {
+            addElectricRepulsions();
+
+            if (threeDFactor > 0)
+                addBasePlaneSprings();
+
+            embedding.addForceProvider(new Drag());
+
+            // assign random values to missing positions 
+            setRandomPositions();
+
+            if (bordersAdded)
+                setBorderPositions();
+
+            //embedding.debug = 3;
+            embedding.inspected = environment->inspected();
+            embedding.reinitialize();
+
+            if (embedding.inspected) {
+                while (!embedding.getFinished()) {
+                    embedding.embed();
+                    debugDraw();
+                }
+            }
+            else
+                embedding.embed();
+        }
+
+        // set random positions if no embedding was used
+        if (!preEmbedding && !forceDirectedEmbedding)
+            setRandomPositions();
+
+        if (!hasFixedNode)
+            normalize();
     }
-
-    // set random positions if no embedding was used
-    if (!preEmbedding && !forceDirectedEmbedding)
-        setRandomPositions();
-
-    if (!hasFixedNode)
-        normalize();
 }
 
 void ForceDirectedGraphLayouter::getNodePosition(cModule *mod, int& x, int& y)
@@ -1049,6 +1066,7 @@ void ForceDirectedGraphLayouter::debugDraw()
 {
     environment->clearGraphics();
 
+    // draw bodies
     const std::vector<IBody *>& bodies = embedding.getBodies();
 	for (int i = 0; i < (int)bodies.size(); i++) {
 		IBody *body = bodies[i];
@@ -1056,6 +1074,7 @@ void ForceDirectedGraphLayouter::debugDraw()
         Rs rs = body->getSize();
         pt.subtract(Pt(rs.width / 2, rs.height / 2, 0));
 
+        // wall bodies are long lines
         if (dynamic_cast<WallBody *>(body)) {
 			if (rs.width == POSITIVE_INFINITY) {
 				pt.x = -1000;
@@ -1074,6 +1093,7 @@ void ForceDirectedGraphLayouter::debugDraw()
         environment->drawText(pt.x, pt.y, text, "{node bbox}", "black");
     }
 
+    // draw springs
     const std::vector<IForceProvider *>& forceProviders = embedding.getForceProviders();
 	for (int i = 0; i < (int)forceProviders.size(); i++) {
 		Spring *spring = dynamic_cast<Spring *>(forceProviders[i]);
@@ -1085,6 +1105,7 @@ void ForceDirectedGraphLayouter::debugDraw()
         }
     }
 
+    // draw forces
     double forceScale = 10;
     const std::vector<Variable *>& variables = embedding.getVariables();
     for (int i = 0; i < (int)variables.size(); i++) {
@@ -1112,6 +1133,7 @@ void ForceDirectedGraphLayouter::debugDraw()
         }
     }
 
+    // write force directed embedding internal state info
     std::stringstream info;
     embedding.writeDebugInformation(info);
     environment->showGraphics(info.str().c_str());
