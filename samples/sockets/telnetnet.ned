@@ -37,7 +37,7 @@ network TelnetNet
             parameters:
                 addr = 1;
                 srvAddr = 0;
-                @display("p=102,92;t=Run the simulation\, then start:\ntelnet localhost 4242\nThen if on Unix\, type:\nCtrl+] ``mode character''");
+                @display("p=102,92;t=Run the simulation\\, then start:\ntelnet localhost 4242\nThen if on Unix\\, type:\nCtrl+] ``mode character''");
         };
         client[numClients]: TelnetClient {
             parameters:
