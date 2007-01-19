@@ -35,10 +35,10 @@ network TokenRing
                 @display("p=80,80,ring");
         };
     connections:
-        comp[numStations-1].out --> { delay = cableDelay; } --> comp[0].in;
+        comp[numStations-1].out --> {  delay = cableDelay; } --> comp[0].in;
 
         for i=0..numStations-2 {
-            comp[i].out --> { delay = cableDelay; } --> comp[i+1].in;
+            comp[i].out --> {  delay = cableDelay; } --> comp[i+1].in;
         };
 }
 
