@@ -39,7 +39,7 @@ class opp_runtime_error : public std::runtime_error
     /**
      * Destructor with throw clause required by gcc.
      */
-    virtual opp_runtime_error::~opp_runtime_error() throw() {};
+    virtual ~opp_runtime_error() throw() {}
 
     /**
      * Returns the text of the error. Redefined from std::exception.

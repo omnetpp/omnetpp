@@ -196,21 +196,24 @@ void cRuntimeError::breakIntoDebuggerIfRequested()
     if (ev.debug_on_errors)
     {
         printf("\n"
-               "RUNTIME ERROR. A cRuntimeError exception is about to be thrown,\n"
-               "and you requested (by setting debug-on-errors=true in the ini file)\n"
-               "that errors abort execution and break into the debugger.\n"
-               " - on Linux or Unix-like systems: you should now probably be running the\n"
-               "   simulation under gdb or another debugger. The simulation kernel will now\n"
-               "   raise a SIGABRT signal which will get you into the debugger. If you're not\n"
-               "   running under a debugger, you can still use the core dump for post-mortem\n"
-               "   debugging.\n"
-               " - on Windows: your should have a just-in-time debugger (such as\n"
-               "   the Visual C++ IDE) enabled. The simulation kernel will now\n"
-               "   cause a debugger interrupt to get you into the debugger -- press\n"
-               "   the [Debug] button in the dialog that comes up.\n"
-               "Once in the debugger, use its \"view stack trace\" command (in gdb: \"bt\")\n"
-               "to see the context of the runtime error. See error text below.\n"
-               "\n"
+               "RUNTIME ERROR. A cRuntimeError exception is about to be thrown, and you\n"
+               "requested (by setting debug-on-errors=true in the ini file) that errors\n"
+               "abort execution and break into the debugger.\n\n"
+#ifdef _MSC_VER
+               "If you see a [Debug] button on the Windows crash dialog and you have\n"
+               "just-in-time debugging enabled, select it to get into the Visual Studio\n"
+               "debugger. Otherwise, you should already have attached to this process from\n"
+               "Visual Studio. Once in the debugger, see you can browse to the context of\n"
+               "the error in the \"Call stack\" debug view.\n\n"
+#else
+               "You should now probably be running the simulation under gdb or another\n"
+               "debugger. The simulation kernel will now raise a SIGABRT signal which will\n"
+               "get you into the debugger. If you are not running under a debugger, you can\n"
+               "still use the core dump for post-mortem debugging. Once in the debugger,\n"
+               "view the call stack (in gdb: \"bt\" command) to see the context of the\n"
+               "runtime error.\n\n"
+#endif
+               "See error text below:\n\n"
                );
         if (!hascontext)
             printf("<!> Error: %s.\n", what());
