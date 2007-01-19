@@ -10,35 +10,6 @@
 
 
 //
-// Application model to generate traffic for the network.
-//
-simple App
-{
-    parameters:
-        string destAddresses;
-        @display("i=block/browser");
-    gates:
-        input in;
-        output out;
-}
-
-
-//
-// Models a router.
-//
-simple Routing
-{
-    parameters:
-        @display("i=block/switch");
-    gates:
-        input in[];
-        output out[];
-        input localIn;
-        output localOut;
-}
-
-
-//
 // A "Node" consists of a Router plus an App module which represents the
 // aggregate traffic of the subnets connected to that router.
 //
@@ -65,8 +36,8 @@ module Node
         routing.localOut --> app.in;
         routing.localIn <-- app.out;
         for i=0..sizeof(port)-1 {
-            routing.out[i] --> port$o[i];
-            routing.in[i] <-- port$i[i];
+            routing.out[i] --> port[i]$o;
+            routing.in[i] <-- port[i]$i;
         };
 }
 
