@@ -1,3 +1,29 @@
+2007-01-19
+----------
+
+Additions:
+
+   + FileOutputVectorManager now saves the run attributes and module parameters in the vector file.
+
+   + The size and date of the vector file is saved in the index file and used to decide
+     if indexing is needed.
+
+   + The tabs on the 'Browse Data' page shows the number of Vectors/Scalars/Histograms.
+
+Fixes:
+
+
+   + Fixed: vector file indexer removed the run attributes and module parameters
+     when rebuilt a vector file.
+
+   + The VectorBrowser view shows a message instead of the empty table, when the vector can not
+     be browsed, because the index is missing.
+
+   + Loading huge vector files (~100MB) does not block the UI thread, when no index file.
+     Actually an index file is generated and the vectors are loaded from it in this case.
+     The indexer works in the background as a workspace job.
+
+
 2007-01-05
 ----------
 
