@@ -12,15 +12,15 @@
 //
 
 
-import "gen";
-import "sink";
-import "token";
+import "Gen";
+import "Sink";
+import "TokenRingMAC";
 
 
 //
 // A node in a Token Ring LAN. Each instance will be connected to its right neighbour.
 //
-module Computer
+module Station
 {
     parameters:
         int address; // MAC Address of this station.

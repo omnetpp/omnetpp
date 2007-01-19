@@ -12,11 +12,11 @@
 //
 
 
-import "computer";
+import "Station";
 
 
 //
-// Ring with a configurable number of Computers
+// Ring with a configurable number of stations
 //
 network TokenRing
 {
@@ -26,7 +26,7 @@ network TokenRing
         double dataRate = 4 Mbps; // Token Ring data rate
         double cableDelay = 1us; // Delay of the cable connecting adjacent stations
     submodules:
-        comp[numStations]: Computer {
+        comp[numStations]: Station {
             parameters:
                 address = index;
                 THT = THT;
