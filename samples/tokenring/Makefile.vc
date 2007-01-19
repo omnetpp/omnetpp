@@ -59,7 +59,7 @@ MSGCOPTS= $(INCLUDE_PATH)
 
 #------------------------------------------------------------------------------
 # object files in this directory
-OBJS= token_m.obj gen.obj sink.obj token.obj
+OBJS= token_m.obj Gen.obj Sink.obj TokenRingMAC.obj
 
 # header files generated (from msg files)
 GENERATEDHEADERS= token_m.h
@@ -85,14 +85,14 @@ token_m.obj: token_m.cc
 token_m.cc token_m.h: token.msg
 	$(MSGC:/=\) -s _m.cc $(MSGCOPTS) token.msg
 
-gen.obj: gen.cc
-	$(CXX) -c $(COPTS) /Tp gen.cc
+Gen.obj: Gen.cc
+	$(CXX) -c $(COPTS) /Tp Gen.cc
 
-sink.obj: sink.cc
-	$(CXX) -c $(COPTS) /Tp sink.cc
+Sink.obj: Sink.cc
+	$(CXX) -c $(COPTS) /Tp Sink.cc
 
-token.obj: token.cc
-	$(CXX) -c $(COPTS) /Tp token.cc
+TokenRingMAC.obj: TokenRingMAC.cc
+	$(CXX) -c $(COPTS) /Tp TokenRingMAC.cc
 
 
 #doc: neddoc doxy
@@ -124,6 +124,6 @@ makefiles:
 re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-gen.obj: gen.cc
-sink.obj: sink.cc
-token.obj: token.cc
+Gen.obj: Gen.cc
+Sink.obj: Sink.cc
+TokenRingMAC.obj: TokenRingMAC.cc

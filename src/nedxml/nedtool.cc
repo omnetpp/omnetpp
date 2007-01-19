@@ -628,6 +628,10 @@ int main(int argc, char **argv)
                 fprintf(stderr,"nedtool: option -m not supported with C++ output\n");
                 return 1;
             }
+            if (opt_splitnedfiles && !opt_mergeoutput && !opt_inplace)
+            {
+                fprintf(stderr,"nedtool: option -u ignored because -k or -m is not specified\n"); //XXX not too logical
+            }
 
 #if SHELL_EXPANDS_WILDCARDS
             if (!processFile(argv[i], errors))

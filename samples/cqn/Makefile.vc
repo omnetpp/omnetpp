@@ -59,7 +59,7 @@ MSGCOPTS= $(INCLUDE_PATH)
 
 #------------------------------------------------------------------------------
 # object files in this directory
-OBJS= queue.obj switch.obj
+OBJS= Queue.obj Switch.obj
 
 # header files generated (from msg files)
 GENERATEDHEADERS= 
@@ -79,11 +79,11 @@ $(OBJS) : $(GENERATEDHEADERS)
 
 subdirs: $(SUBDIR_TARGETS)
 
-queue.obj: queue.cc
-	$(CXX) -c $(COPTS) /Tp queue.cc
+Queue.obj: Queue.cc
+	$(CXX) -c $(COPTS) /Tp Queue.cc
 
-switch.obj: switch.cc
-	$(CXX) -c $(COPTS) /Tp switch.cc
+Switch.obj: Switch.cc
+	$(CXX) -c $(COPTS) /Tp Switch.cc
 
 
 #doc: neddoc doxy
@@ -115,5 +115,5 @@ makefiles:
 re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-queue.obj: queue.cc
-switch.obj: switch.cc
+Queue.obj: Queue.cc
+Switch.obj: Switch.cc

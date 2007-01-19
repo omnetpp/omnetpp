@@ -8,8 +8,8 @@
 //
 
 
-import "queue.ned";
-import "switch.ned";
+import "Queue.ned";
+import "Switch.ned";
 
 
 //

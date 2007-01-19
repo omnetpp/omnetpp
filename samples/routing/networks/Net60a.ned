@@ -7,7 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
-import "../node";
+import "../Node";
 
 //
 // This network adds one extra connection to the net60 model (net60.ned).

@@ -59,10 +59,10 @@ MSGCOPTS= $(INCLUDE_PATH)
 
 #------------------------------------------------------------------------------
 # object files in this directory
-OBJS= packet_m.obj app.obj routing.obj
+OBJS= Packet_m.obj App.obj Routing.obj
 
 # header files generated (from msg files)
-GENERATEDHEADERS= packet_m.h
+GENERATEDHEADERS= Packet_m.h
 
 # subdirectories to recurse into
 SUBDIRS= 
@@ -79,17 +79,17 @@ $(OBJS) : $(GENERATEDHEADERS)
 
 subdirs: $(SUBDIR_TARGETS)
 
-packet_m.obj: packet_m.cc
-	$(CXX) -c $(NEDCOPTS) /Tp packet_m.cc
+Packet_m.obj: Packet_m.cc
+	$(CXX) -c $(NEDCOPTS) /Tp Packet_m.cc
 
-packet_m.cc packet_m.h: packet.msg
-	$(MSGC:/=\) -s _m.cc $(MSGCOPTS) packet.msg
+Packet_m.cc Packet_m.h: Packet.msg
+	$(MSGC:/=\) -s _m.cc $(MSGCOPTS) Packet.msg
 
-app.obj: app.cc
-	$(CXX) -c $(COPTS) /Tp app.cc
+App.obj: App.cc
+	$(CXX) -c $(COPTS) /Tp App.cc
 
-routing.obj: routing.cc
-	$(CXX) -c $(COPTS) /Tp routing.cc
+Routing.obj: Routing.cc
+	$(CXX) -c $(COPTS) /Tp Routing.cc
 
 
 #doc: neddoc doxy
@@ -121,5 +121,5 @@ makefiles:
 re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-app.obj: app.cc
-routing.obj: routing.cc
+App.obj: App.cc
+Routing.obj: Routing.cc

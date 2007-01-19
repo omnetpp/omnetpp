@@ -59,7 +59,7 @@ MSGCOPTS= $(INCLUDE_PATH)
 
 #------------------------------------------------------------------------------
 # object files in this directory
-OBJS= classifier.obj delay.obj pqueue.obj server.obj sink.obj source.obj
+OBJS= classifier.obj Delay.obj pqueue.obj server.obj Sink.obj Source.obj
 
 # header files generated (from msg files)
 GENERATEDHEADERS= 
@@ -82,8 +82,8 @@ subdirs: $(SUBDIR_TARGETS)
 classifier.obj: classifier.cc
 	$(CXX) -c $(COPTS) /Tp classifier.cc
 
-delay.obj: delay.cc
-	$(CXX) -c $(COPTS) /Tp delay.cc
+Delay.obj: Delay.cc
+	$(CXX) -c $(COPTS) /Tp Delay.cc
 
 pqueue.obj: pqueue.cc
 	$(CXX) -c $(COPTS) /Tp pqueue.cc
@@ -91,11 +91,11 @@ pqueue.obj: pqueue.cc
 server.obj: server.cc
 	$(CXX) -c $(COPTS) /Tp server.cc
 
-sink.obj: sink.cc
-	$(CXX) -c $(COPTS) /Tp sink.cc
+Sink.obj: Sink.cc
+	$(CXX) -c $(COPTS) /Tp Sink.cc
 
-source.obj: source.cc
-	$(CXX) -c $(COPTS) /Tp source.cc
+Source.obj: Source.cc
+	$(CXX) -c $(COPTS) /Tp Source.cc
 
 
 #doc: neddoc doxy
@@ -128,12 +128,12 @@ re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 classifier.obj: classifier.cc
-delay.obj: delay.cc
+Delay.obj: Delay.cc
 pqueue.obj: pqueue.cc \
   pqueue.h \
   server.h
 server.obj: server.cc \
   server.h \
   pqueue.h
-sink.obj: sink.cc
-source.obj: source.cc
+Sink.obj: Sink.cc
+Source.obj: Source.cc

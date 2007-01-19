@@ -7,6 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
+import "../Node";
 
 network Mesh
 {

@@ -59,7 +59,7 @@ MSGCOPTS= $(INCLUDE_PATH)
 
 #------------------------------------------------------------------------------
 # object files in this directory
-OBJS= hist.obj
+OBJS= HistogramDemo.obj
 
 # header files generated (from msg files)
 GENERATEDHEADERS= 
@@ -79,8 +79,8 @@ $(OBJS) : $(GENERATEDHEADERS)
 
 subdirs: $(SUBDIR_TARGETS)
 
-hist.obj: hist.cc
-	$(CXX) -c $(COPTS) /Tp hist.cc
+HistogramDemo.obj: HistogramDemo.cc
+	$(CXX) -c $(COPTS) /Tp HistogramDemo.cc
 
 
 #doc: neddoc doxy
@@ -112,4 +112,4 @@ makefiles:
 re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-hist.obj: hist.cc
+HistogramDemo.obj: HistogramDemo.cc

@@ -59,7 +59,7 @@ MSGCOPTS= $(INCLUDE_PATH)
 
 #------------------------------------------------------------------------------
 # object files in this directory
-OBJS= dynapacket_m.obj client.obj server.obj servproc.obj switch.obj
+OBJS= dynapacket_m.obj Client.obj Server.obj ServerProcess.obj Switch.obj
 
 # header files generated (from msg files)
 GENERATEDHEADERS= dynapacket_m.h
@@ -85,17 +85,17 @@ dynapacket_m.obj: dynapacket_m.cc
 dynapacket_m.cc dynapacket_m.h: dynapacket.msg
 	$(MSGC:/=\) -s _m.cc $(MSGCOPTS) dynapacket.msg
 
-client.obj: client.cc
-	$(CXX) -c $(COPTS) /Tp client.cc
+Client.obj: Client.cc
+	$(CXX) -c $(COPTS) /Tp Client.cc
 
-server.obj: server.cc
-	$(CXX) -c $(COPTS) /Tp server.cc
+Server.obj: Server.cc
+	$(CXX) -c $(COPTS) /Tp Server.cc
 
-servproc.obj: servproc.cc
-	$(CXX) -c $(COPTS) /Tp servproc.cc
+ServerProcess.obj: ServerProcess.cc
+	$(CXX) -c $(COPTS) /Tp ServerProcess.cc
 
-switch.obj: switch.cc
-	$(CXX) -c $(COPTS) /Tp switch.cc
+Switch.obj: Switch.cc
+	$(CXX) -c $(COPTS) /Tp Switch.cc
 
 
 #doc: neddoc doxy
@@ -127,7 +127,7 @@ makefiles:
 re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-client.obj: client.cc
-server.obj: server.cc
-servproc.obj: servproc.cc
-switch.obj: switch.cc
+Client.obj: Client.cc
+Server.obj: Server.cc
+ServerProcess.obj: ServerProcess.cc
+Switch.obj: Switch.cc
