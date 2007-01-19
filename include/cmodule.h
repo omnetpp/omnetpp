@@ -21,7 +21,6 @@
 #include "cgate.h"
 #include "csimulation.h"
 
-#include <time.h>     // time_t, clock_t in cSimulation
 
 class  cMessage;
 class  cGate;
@@ -167,15 +166,15 @@ class SIM_API cModule : public cComponent //implies noncopyable
     cModule *lastsubmodp;   // pointer to last submodule (needed for efficient append operation)
 
   protected:
-    std::vector<cGate::Desc> gatedescv; // stores info about the gates of this module
+    int numgatedescs;       // size of the gatedescv array
+    cGate::Desc *gatedescv; // array with one element per gate or gate vector
     std::vector<cGate*> gatev;  // stores the gates themselves
 
   protected:
-    int idx;               // index if module vector, 0 otherwise
-    int vectsize;          // vector size, -1 if not a vector
+    int idx;      // index if module vector, 0 otherwise
+    int vectsize; // vector size, -1 if not a vector
 
-    cDisplayString *dispstr;   // display string as submodule (icon, etc)
-    cDisplayString *bgdispstr; // display string when enclosing module (background color, etc)
+    cDisplayString *dispstr; // display string (created on demand)
 
   public:
     // internal: used from Tkenv: find out if cGate has a display string.
@@ -211,6 +210,9 @@ class SIM_API cModule : public cComponent //implies noncopyable
     // internal: "virtual ctor" for cGate, because in cPlaceHolderModule
     // we'll need different gate objects
     virtual cGate *createGateObject(cGate::Desc *desc);
+
+    // internal: add a new gatedesc by expanding gatedescv[]
+    cGate::Desc& addGateDesc();
 
     // internal: finds a gate descriptor with the given name in gatedescv[];
     // ignores (but gives back) potential "$i"/"$o" suffix in gatename
@@ -340,7 +342,6 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual void getOrCreateFirstUnconnectedGatePair(const char *gatename,
                                                      bool inside, bool expand,
                                                      cGate *&gatein, cGate *&gateout);
-//FIXME check if these functions are needed ^^^^^
 
     /**
      * Redefined from cComponent. This method must be called as part of the module

@@ -42,11 +42,11 @@ cModule::cModule()
     fullname = NULL;
 
     dispstr = NULL;
-    bgdispstr = NULL;
 
     prevp = nextp = firstsubmodp = lastsubmodp = NULL;
 
-    gatedescv.reserve(10); //FIXME just temporary!!!!!
+    numgatedescs = 0;
+    gatedescv = NULL;
 
     // gates and parameter will be added by cModuleType
 }
@@ -92,7 +92,6 @@ cModule::~cModule()
         delete gatev[i];
 
     // release gatedescs
-    int numgatedescs = gatedescv.size();
     for (int i=0; i<numgatedescs; i++)
     {
         cGate::Desc& desc = gatedescv[i];
@@ -113,7 +112,6 @@ cModule::~cModule()
 
     delete [] fullname;
     delete dispstr;
-    delete bgdispstr;
 }
 
 void cModule::forEachChild(cVisitor *v)
@@ -240,6 +238,28 @@ cGate *cModule::createGateObject(cGate::Desc *desc)
     return new cGate(desc);
 }
 
+cGate::Desc& cModule::addGateDesc()
+{
+    // allocate new array
+    cGate::Desc *newv = new cGate::Desc[numgatedescs+1];
+    memcpy(newv, gatedescv, numgatedescs*sizeof(cGate::Desc));
+
+    // adjust pointers of already existing gates
+    int n = gatev.size();
+    for (int i=0; i<n; i++)
+    {
+        cGate *g = gatev[i];
+        ASSERT(gatedescv <= g->desc && g->desc < gatedescv+numgatedescs);
+        if (g)
+            g->desc = newv + (g->desc - gatedescv);
+    }
+
+    // install the new array and return its last element
+    delete [] gatedescv;
+    gatedescv = newv;
+    return gatedescv[numgatedescs++];
+}
+
 int cModule::findGateDesc(const char *gatename, char& suffix) const
 {
     // determine whether gatename contains "$i"/"$o" suffix
@@ -249,7 +269,7 @@ int cModule::findGateDesc(const char *gatename, char& suffix) const
     // and search accordingly
     if (!suffix)
     {
-        int n = gatedescv.size();
+        int n = numgatedescs;
         for (int i=0; i<n; i++)
         {
             const cGate::Desc& desc = gatedescv[i];
@@ -263,8 +283,7 @@ int cModule::findGateDesc(const char *gatename, char& suffix) const
             return -1;  // invalid suffix ==> no such gate
 
         // ignore suffix during search
-        int n = gatedescv.size();
-        for (int i=0; i<n; i++)
+        for (int i=0; i<numgatedescs; i++)
         {
             const cGate::Desc& desc = gatedescv[i];
             if (desc.namep && desc.namep[0]==gatename[0] && strncmp(desc.namep, gatename, len-2)==0 && (int)strlen(desc.namep)==len-2)
@@ -295,8 +314,7 @@ void cModule::addGate(const char *gatename, cGate::Type type, bool isvector)
         throw cRuntimeError(this, "addGate(): Wrong gate name `%s', must be without `$i'/`$o' suffix", gatename);
 
     // create desc for new gate (or gate vector)
-    gatedescv.push_back(cGate::Desc());  //FIXME f*ck! this will reallocate and I can screw all desc ptrs in cGates!
-    cGate::Desc& desc = gatedescv.back();
+    cGate::Desc& desc = addGateDesc();
     desc.namep = cGate::stringPool.get(gatename);
     desc.ownerp = this;
     desc.size = isvector ? 0 : -1;

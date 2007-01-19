@@ -601,6 +601,8 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
                                        const char *gatename, ExpressionNode *gateindexp,
                                        int subg, bool isplusplus)
 {
+    //TRACE("resolveGate(mod=%s, %s.%s, subg=%d, plusplus=%d)", parentmodp->fullPath().c_str(), modname, gatename, subg, isplusplus);
+
     if (isplusplus && gateindexp)
         throw cRuntimeError("dynamic module builder: \"++\" and gate index expression cannot exist together");
 
