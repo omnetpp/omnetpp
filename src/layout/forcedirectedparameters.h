@@ -239,7 +239,7 @@ class AbstractForceProvider : public IForceProvider {
                 Rs rs2 = body2->getSize();
                 double dx = fabs(pt1.x - pt2.x);
                 double dy = fabs(pt1.y - pt2.y);
-                double dHalf = distance / 2;
+                double dHalf = vector.getBasePlaneProjectionLength() / 2;
                 double d1 = dHalf * std::min(rs1.width / dx, rs1.height / dy);
                 double d2 = dHalf * std::min(rs2.width / dx, rs2.height / dy);
 
