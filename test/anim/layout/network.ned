@@ -425,11 +425,11 @@ network TriangleGrid
         };
 }
 
-network HexGrid
+network HexMesh
 {
     parameters:
-        int rows = default(2) @prompt("HexGrid rows");
-        int cols = default(2) @prompt("HexGrid columns");
+        int rows = default(2) @prompt("HexMesh rows");
+        int cols = default(2) @prompt("HexMesh columns");
         int num = 2*(rows*cols+rows+cols);
     submodules:
         node[num]: Node {
