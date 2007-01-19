@@ -8,56 +8,13 @@
 //
 
 
-#include <stdio.h>
-#include <omnetpp.h>
-#include "gensink.h"
-#include "hcpacket_m.h"
+#include "HCSink.h"
+#include "HCPacket_m.h"
 
-// Turn on code that prints debug messages
-#define TRACE_MSG
 
 // Module registration:
 Define_Module( HCSink );
-Define_Module( HCGenerator );
 
-//
-// Activities of the simple modules
-//
-void HCGenerator::activity()
-{
-    int numStations = par("numStations");
-    int my_address = par("address");
-    cPar& iaTime = par("iaTime"); // take by ref since it can be random
-
-    for (int i=0;;i++)
-    {
-        // select destination randomly (but not the local station)
-        int dest = intrand(numStations-1);
-        if (dest>=my_address) dest++;
-
-        // create packet
-        char pktname[30];
-        sprintf(pktname, "%d-->%d", my_address,dest);
-        HCPacket *pkt = new HCPacket(pktname);
-        pkt->setSrcAddress(my_address);
-        pkt->setDestAddress(dest);
-        pkt->setHops(0L);
-        pkt->setTimestamp();
-
-        // send out the message
-#ifdef TRACE_MSG
-        ev.printf("gen[%d]: Generated new pkt: '%s'\n",my_address, pkt->name());
-#endif
-        send(pkt, "out");
-
-        // wait between messages
-        //
-        // Note that iaTime is a reference to the module parameter "iaTime"
-        // that will be evaluated here. The module parameter can also take
-        // a random value (for example: truncnormal(0.5,0.1) ).
-        wait( iaTime );
-    }
-}
 
 int hammingDistance(unsigned long a, unsigned long b)
 {
@@ -68,6 +25,7 @@ int hammingDistance(unsigned long a, unsigned long b)
              k++;
      return k;
 }
+
 
 void HCSink::activity()
 {

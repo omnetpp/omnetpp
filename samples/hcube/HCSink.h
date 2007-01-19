@@ -7,24 +7,23 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifndef __HC_RTE_H
-#define __HC_RTE_H
+
+#ifndef __HCSINK_H_
+#define __HCSINK_H_
 
 #include <omnetpp.h>
 
 #define STACKSIZE 16384
 
-
 /**
- * A router node that implements deflection routing; see NED file for more info.
+ * Packet sink; see NED file for more info.
  */
-class HCRouter : public cSimpleModule
+class HCSink : public cSimpleModule
 {
   public:
-    HCRouter() : cSimpleModule(STACKSIZE) {}
+    HCSink() : cSimpleModule(STACKSIZE) {}
     virtual void activity();
 };
 
 #endif
-
 

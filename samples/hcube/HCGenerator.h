@@ -8,13 +8,12 @@
 //
 
 
-#ifndef __GENSINK_H
-#define __GENSINK_H
+#ifndef __HCGENERATOR_H_
+#define __HCGENERATOR_H_
 
 #include <omnetpp.h>
 
 #define STACKSIZE 16384
-
 
 /**
  * Packet generator; see NED file for more info.
@@ -26,16 +25,5 @@ class HCGenerator : public cSimpleModule
     virtual void activity();
 };
 
-/**
- * Packet sink; see NED file for more info.
- */
-class HCSink : public cSimpleModule
-{
-  public:
-    HCSink() : cSimpleModule(STACKSIZE) {}
-    virtual void activity();
-};
-
 #endif
-
 
