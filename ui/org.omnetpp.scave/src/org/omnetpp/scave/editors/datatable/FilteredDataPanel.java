@@ -7,12 +7,10 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
-import org.omnetpp.scave.model2.FilterHints;
 import org.omnetpp.scave.model2.Filter;
+import org.omnetpp.scave.model2.FilterHints;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -36,7 +34,6 @@ public class FilteredDataPanel extends Composite {
 	private FilteringPanel filterPanel;
 	private DataTable table;
 	private IDList idlist; // the unfiltered data list
-	private FormToolkit formToolkit = null;   //  @jve:decl-index=0:visual-constraint=""
 	
 	public FilteredDataPanel(Composite parent, int style, int type) {
 		super(parent, style);
@@ -126,17 +123,5 @@ public class FilteredDataPanel extends Composite {
 	public void setFilterParams(Filter params) {
 		filterPanel.setFilterParams(params);
 		runFilter();
-	}
-
-	/**
-	 * This method initializes formToolkit	
-	 * 	
-	 * @return org.eclipse.ui.forms.widgets.FormToolkit	
-	 */
-	private FormToolkit getFormToolkit() {
-		if (formToolkit == null) {
-			formToolkit = new FormToolkit(Display.getCurrent());
-		}
-		return formToolkit;
 	}
 }

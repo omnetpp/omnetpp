@@ -1,5 +1,10 @@
 package org.omnetpp.scave.jobs;
 
+import static org.omnetpp.scave.engineext.IndexFile.getVectorFile;
+import static org.omnetpp.scave.engineext.IndexFile.isIndexFile;
+import static org.omnetpp.scave.engineext.IndexFile.isIndexFileUpToDate;
+import static org.omnetpp.scave.engineext.IndexFile.isVectorFile;
+
 import java.io.File;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -13,19 +18,15 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.WorkspaceJob;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.content.IContentDescription;
-import org.omnetpp.scave.ContentTypes;
 import org.omnetpp.scave.engine.VectorFileIndexer;
 
 /**
  * This job generates index files for vector files in the workspace.
- * It is sheduled on workspace changes.
+ * When active it is scheduled automatically on workspace changes.
  *
  * @author tomi
  */
@@ -41,13 +42,18 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 		super(name);
 	}
 	
+	public VectorFileIndexerJob(String name, IFile[] filesToBeIndexed) {
+		super(name);
+		for (IFile file : filesToBeIndexed)
+			enqueueFile(file);
+	}
+	
 	/**
 	 * Turns on automatic indexing.
 	 */
 	public static void activate() {
 		if (instance == null) {
-			instance = new VectorFileIndexerJob("Indexing vector files");
-			instance.initialize();
+			getInstance().initialize();
 		}
 	}
 	
@@ -59,6 +65,13 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 			instance.dispose();
 			instance = null;
 		}
+	}
+	
+	private static VectorFileIndexerJob getInstance() {
+		if (instance == null) {
+			instance = new VectorFileIndexerJob("Indexing vector files");
+		}
+		return instance;
 	}
 	
 	private void initialize() {
@@ -76,7 +89,8 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 	}
 	
 	private void dispose() {
-		ResourcesPlugin.getWorkspace().removeResourceChangeListener(instance.listener);
+		if (listener != null)
+			ResourcesPlugin.getWorkspace().removeResourceChangeListener(listener);
 	}
 
 	/**
@@ -97,7 +111,7 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 					
 					monitor.subTask("Indexing "+file.getName());
 					try {
-						if (file.exists())
+						if (file.exists() && !isIndexFileUpToDate(file))
 							indexer.generateIndex(file.getAbsolutePath());
 					}
 					catch (Exception e) {
@@ -126,11 +140,11 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 							case IResourceDelta.ADDED:
 							case IResourceDelta.CHANGED:
 								if (toBeIndexed(file))
-									filesToBeIndexed.offer(file.getLocation().toFile());
+									enqueueFile(file);
 								break;
 							case IResourceDelta.REMOVED:
-								if (hasContentType(file, ContentTypes.INDEX))
-									filesToBeIndexed.offer(getVectorFile(file).getLocation().toFile());
+								if (isIndexFile(file))
+									enqueueFile(getVectorFile(file));
 							}
 						}
 						return true;
@@ -150,7 +164,7 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 					if (resource instanceof IFile) {
 						IFile file = (IFile)resource;
 						if (toBeIndexed(file))
-								filesToBeIndexed.offer(file.getLocation().toFile());
+								enqueueFile(file);
 						return false;
 					}
 					else
@@ -162,40 +176,15 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 		}
 	}
 	
+	private void enqueueFile(IFile file) {
+		filesToBeIndexed.offer(file.getLocation().toFile());
+	}
+	
 	private boolean toBeIndexed(IFile file) {
-		if (hasContentType(file, ContentTypes.VECTOR)) {
-			File osFile = file.getLocation().toFile();
-			File osIndexFile = getIndexFile(file).getLocation().toFile(); // might not be added to the workspace, use java.io.File methods
-			return !osIndexFile.exists() || osFile.lastModified() > osIndexFile.lastModified();
+		if (isVectorFile(file)) {
+			return !isIndexFileUpToDate(file);
 		}
 		else
 			return false;
-	}
-	
-	private static boolean hasContentType(IFile file, String contentType) {
-		try
-		{
-			IContentDescription description = file.getContentDescription();
-			if (description != null) {
-				return contentType.equals(description.getContentType().getId());
-			}
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-	
-	private static IFile getIndexFile(IFile vectorFile) {
-		Assert.isLegal(hasContentType(vectorFile, ContentTypes.VECTOR));
-		IPath indexFilePath = vectorFile.getFullPath().removeFileExtension().addFileExtension("vci");
-		IFile indexFile = ResourcesPlugin.getWorkspace().getRoot().getFile(indexFilePath);
-		return  indexFile;
-	}
-
-	private static IFile getVectorFile(IFile indexFile) {
-		Assert.isLegal(hasContentType(indexFile, ContentTypes.INDEX));
-		IPath vectorFilePath = indexFile.getFullPath().removeFileExtension().addFileExtension("vec");
-		IFile vectorFile = ResourcesPlugin.getWorkspace().getRoot().getFile(vectorFilePath);
-		return  vectorFile;
 	}
 }

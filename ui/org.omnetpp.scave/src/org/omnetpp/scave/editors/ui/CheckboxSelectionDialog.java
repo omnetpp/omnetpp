@@ -36,6 +36,7 @@ public class CheckboxSelectionDialog extends Dialog {
 	protected Control createDialogArea(Composite parent) {
 		Composite composite = (Composite)super.createDialogArea(parent);
 		RowLayout layout = new RowLayout(SWT.VERTICAL);
+		composite.setLayout(layout);
 		for (int i = 0; i < labels.length; ++i) {
 			final int index = i;
 			final Button checkbox = createCheckbox(composite, labels[i], selection[i]);

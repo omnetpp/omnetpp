@@ -121,9 +121,10 @@ public class BrowseDataPage extends ScaveEditorPage {
 		ResultFileManagerEx manager = scaveEditor.getResultFileManager();
 		scalarsPanel.setResultFileManager(manager);
 		vectorsPanel.setResultFileManager(manager);
+		histogramsPanel.setResultFileManager(manager);
 		scalarsPanel.setIDList(manager.getAllScalars());
 		vectorsPanel.setIDList(manager.getAllVectors());
-		
+		histogramsPanel.setIDList(new IDList()); // TODO
 	}
 	
 	private void createTabFolder() {

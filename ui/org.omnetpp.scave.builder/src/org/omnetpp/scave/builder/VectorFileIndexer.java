@@ -1,5 +1,10 @@
 package org.omnetpp.scave.builder;
 
+import static org.omnetpp.scave.engineext.IndexFile.getVectorFile;
+import static org.omnetpp.scave.engineext.IndexFile.isIndexFile;
+import static org.omnetpp.scave.engineext.IndexFile.isIndexFileUpToDate;
+import static org.omnetpp.scave.engineext.IndexFile.isVectorFile;
+
 import java.io.File;
 import java.util.Map;
 import java.util.Queue;
@@ -12,14 +17,9 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.Path;
-import org.omnetpp.scave.engine.IndexFile;
 
 public class VectorFileIndexer extends IncrementalProjectBuilder {
 
@@ -120,7 +120,7 @@ public class VectorFileIndexer extends IncrementalProjectBuilder {
 	
 	protected boolean toBeIndexed(IFile file) {
 		if (isVectorFile(file)) {
-			return !IndexFile.isIndexFileUpToDate(getOsPath(file));
+			return !isIndexFileUpToDate(file);
 		}
 		else
 			return false;
@@ -128,33 +128,5 @@ public class VectorFileIndexer extends IncrementalProjectBuilder {
 	
 	protected void generateIndex(IFile vectorFile) {
 		indexer.generateIndex(vectorFile.getLocation().toFile().getAbsolutePath());
-	}
-	
-	protected boolean isVectorFile(IFile file) {
-		return IndexFile.isVectorFile(getOsPath(file));
-	}
-	
-	protected boolean isIndexFile(IFile file) {
-		return IndexFile.isIndexFile(getOsPath(file));
-	}
-	
-	protected IFile getIndexFile(IFile vectorFile) {
-		Assert.isLegal(isVectorFile(vectorFile));
-		IPath location = new Path(IndexFile.getIndexFileName(getOsPath(vectorFile))); 
-		IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(location);
-		Assert.isTrue(files != null && files.length > 0);
-		return  files[0];
-	}
-
-	protected IFile getVectorFile(IFile indexFile) {
-		Assert.isLegal(isIndexFile(indexFile));
-		IPath location = new Path(IndexFile.getVectorFileName(getOsPath(indexFile))); 
-		IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(location);
-		Assert.isTrue(files != null && files.length > 0);
-		return  files[0];
-	}
-	
-	private static String getOsPath(IFile file) {
-		return file.getLocation().toOSString();
 	}
 }

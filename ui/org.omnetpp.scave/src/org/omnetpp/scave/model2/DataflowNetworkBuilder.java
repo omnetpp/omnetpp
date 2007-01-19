@@ -168,7 +168,6 @@ public class DataflowNetworkBuilder {
 	 * Adds an arraybuilder node for each open ports.
 	 */
 	public void close() {
-		StringMap attrs = new StringMap();
 		IDList idlist = getIDs();
 		for (int i = 0; i < idlist.size(); ++i) {
 			long id = idlist.get(i);

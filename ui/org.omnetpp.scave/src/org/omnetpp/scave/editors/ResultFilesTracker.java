@@ -1,5 +1,10 @@
 package org.omnetpp.scave.editors;
 
+import static org.omnetpp.scave.engineext.IndexFile.getVectorFile;
+import static org.omnetpp.scave.engineext.IndexFile.isIndexFile;
+import static org.omnetpp.scave.engineext.IndexFile.isIndexFileUpToDate;
+import static org.omnetpp.scave.engineext.IndexFile.isVectorFile;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,16 +17,18 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.content.IContentType;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.omnetpp.scave.Activator;
 import org.omnetpp.scave.ContentTypes;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
+import org.omnetpp.scave.jobs.VectorFileIndexerJob;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 
@@ -193,13 +200,31 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	
 	/**
 	 * Loads the specified <code>file</code> into the ResultFileManager.
+	 * If a vector file is loaded, it checks that the index file is up-to-date.
+	 * When not, it generates the index first and then loads it from the index.
 	 */
-	private void loadFile(IFile file) {
+	private void loadFile(final IFile file) {
 		System.out.println("loadFile: "+file);
 		if (isResultFile(file)) {
 			try {
-				String osPath = file.getLocation().toOSString();
-				manager.loadFile(file.getFullPath().toString(), osPath);
+				// Do not try to load from the vector file whose index is not up-to-date,
+				// because the ResultFileManager loads it from the vector file and it takes too much time
+				// for ~100MB files.
+				// Create or update the index file first, and try again.
+				if (isVectorFile(file) && !isIndexFileUpToDate(file)) {
+					System.out.println("indexing: "+file);
+					VectorFileIndexerJob indexer = new VectorFileIndexerJob("Indexing "+file, new IFile[] {file});
+					indexer.setPriority(Job.LONG);
+					indexer.addJobChangeListener(new JobChangeAdapter() {
+						public void done(IJobChangeEvent event) {
+							loadFile(file); // will load from the newly created index file
+						}
+					});
+					indexer.schedule();
+				} else {
+					String osPath = file.getLocation().toOSString();
+					manager.loadFile(file.getFullPath().toString(), osPath);
+				}
 			} catch (Exception e) {
 				Activator.logError("Could not load file: " + file.getLocation().toOSString(), e);
 			}
@@ -322,16 +347,5 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		}
 		
 		return strStart == strEnd && patternStart == patternEnd;
-	}
-	
-	private static boolean isIndexFile(IFile file) {
-		return "vci".equals(file.getFullPath().getFileExtension());
-	}
-	
-	private static IFile getVectorFile(IFile indexFile) {
-		Assert.isLegal(isIndexFile(indexFile));
-		IPath vectorFilePath = indexFile.getFullPath().removeFileExtension().addFileExtension("vec");
-		IFile vectorFile = ResourcesPlugin.getWorkspace().getRoot().getFile(vectorFilePath);
-		return  vectorFile;
 	}
 }
