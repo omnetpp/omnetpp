@@ -895,12 +895,7 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
     if (IndexFile::isVectorFile(fileSystemFileName) && IndexFile::isIndexFileUpToDate(fileSystemFileName))
     {
         std::string indexFileName = IndexFile::getIndexFileName(fileSystemFileName);
-        // fake a new Run, should be stored in the index
-        Run *runRef = addRun();
-        fileRunRef = addFileRun(fileRef, runRef);
-        runRef->runNumber = 0;
-        // load index
-        loadVectorsFromIndex(indexFileName.c_str(), fileRef, fileRunRef);
+        loadVectorsFromIndex(indexFileName.c_str(), fileRef);
         return fileRef;
     }
 
@@ -921,8 +916,13 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
     return fileRef;
 }
 
-void ResultFileManager::loadVectorsFromIndex(const char *filename, ResultFile *fileRef, FileRun *fileRunRef)
+void ResultFileManager::loadVectorsFromIndex(const char *filename, ResultFile *fileRef)
 {
+    // fake a new Run, should be stored in the index
+    Run *runRef = addRun();
+    FileRun *fileRunRef = addFileRun(fileRef, runRef);
+    runRef->runNumber = 0;
+
     VectorFileIndex *index = IndexFileReader(filename).readAll();
     Vectors &vectors = index->vectors;
     for (Vectors::iterator vectorRef = vectors.begin(); vectorRef != vectors.end(); ++vectorRef)

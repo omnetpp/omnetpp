@@ -69,6 +69,7 @@ struct VectorResult : public ResultItem
     double stddev() const;
 };
 
+
 typedef std::vector<ScalarResult> ScalarResults;
 typedef std::vector<VectorResult> VectorResults;
 
@@ -201,7 +202,7 @@ class ResultFileManager
     void addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, double value);
 
     ResultFile *getFileForID(ID id) const; // checks for NULL
-    void loadVectorsFromIndex(const char *filename, ResultFile *fileRef, FileRun *fileRunRef);
+    void loadVectorsFromIndex(const char *filename, ResultFile *fileRef);
 
   public:
     ResultFileManager();
@@ -250,7 +251,10 @@ class ResultFileManager
 
     IDList filterIDList(const IDList &idlist, const char *pattern) const;
 
-    // loading files. fileName is the file path in the Eclipse workspace; the file is actually read from fileSystemFileName
+    /**
+     * loading files. fileName is the file path in the Eclipse workspace;
+     * the file is actually read from fileSystemFileName
+     */
     ResultFile *loadFile(const char *fileName, const char *fileSystemFileName=NULL);
     void unloadFile(ResultFile *file);
 
