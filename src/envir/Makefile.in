@@ -68,7 +68,7 @@ akaroarng.o: akaroarng.cc \
   ../../include/util.h \
   ../../include/cexception.h \
   akaroarng.h \
-  ../../include/defs.h \
+  ../../include/simkerneldefs.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
   ../../include/crng.h \
@@ -82,7 +82,7 @@ akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/cmodule.h \
   ../../include/cstat.h \
   akoutvectormgr.h \
-  ../../include/defs.h \
+  ../../include/simkerneldefs.h \
   ../../include/carray.h \
   ../../include/globals.h \
   ../../include/cexception.h \
@@ -113,7 +113,7 @@ akoutvectormgr.o: akoutvectormgr.cc \
 args.o: args.cc \
   args.h \
   envdefs.h \
-  ../../include/defs.h
+  ../../include/simkerneldefs.h
 cenvir.o: cenvir.cc \
   args.h \
   ../../include/distrib.h \
@@ -128,7 +128,7 @@ cenvir.o: cenvir.cc \
   akaroarng.h \
   akoutvectormgr.h \
   envdefs.h \
-  ../../include/defs.h \
+  ../../include/simkerneldefs.h \
   ../../include/random.h \
   ../../include/csimulation.h \
   ../../include/crng.h \
@@ -162,7 +162,7 @@ cinifile.o: cinifile.cc \
   ../../include/cexception.h \
   fsutils.h \
   ../../include/cstrtokenizer.h \
-  ../../include/defs.h \
+  ../../include/simkerneldefs.h \
   ../../include/errmsg.h \
   envdefs.h \
   ../../include/cconfig.h \
@@ -176,7 +176,7 @@ cxmldoccache.o: cxmldoccache.cc \
   ../../include/cxmlelement.h \
   ../../include/cexception.h \
   ../nedxml/saxparser.h \
-  ../../include/defs.h \
+  ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
@@ -185,7 +185,7 @@ cxmldoccache.o: cxmldoccache.cc \
   ../../include/cenvir.h \
   ../../include/opp_string.h
 filemgrs.o: filemgrs.cc \
-  ../../include/defs.h \
+  ../../include/simkerneldefs.h \
   ../../include/cenvir.h \
   omnetapp.h \
   ../../include/csimulation.h \
@@ -227,7 +227,7 @@ fsutils.o: fsutils.cc \
   ../../include/cexception.h \
   ../../include/util.h \
   ../../include/opp_string.h \
-  ../../include/defs.h \
+  ../../include/simkerneldefs.h \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
@@ -237,7 +237,7 @@ fsutils.o: fsutils.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h
 ivfilemgr.o: ivfilemgr.cc \
-  ../../include/defs.h \
+  ../../include/simkerneldefs.h \
   ../../include/cenvir.h \
   omnetapp.h \
   ../../include/csimulation.h \
@@ -274,7 +274,7 @@ main.o: main.cc \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../utils/ver.h \
-  ../../include/defs.h \
+  ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
@@ -288,7 +288,7 @@ matchableobject.o: matchableobject.cc \
   matchableobject.h \
   ../../include/cclassdescriptor.h \
   ../../include/cobject.h \
-  ../../include/defs.h \
+  ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
@@ -317,7 +317,7 @@ omnetapp.o: omnetapp.cc \
   ../../include/chasher.h \
   ../../include/cparsimcomm.h \
   envdefs.h \
-  ../../include/defs.h \
+  ../../include/simkerneldefs.h \
   ../../include/carray.h \
   ../../include/globals.h \
   ../../include/cenvir.h \
@@ -345,5 +345,5 @@ omnetapp.o: omnetapp.cc \
   ../../include/platdep/inttypes.h
 speedmtr.o: speedmtr.cc \
   speedmtr.h \
-  ../../include/defs.h \
+  ../../include/simkerneldefs.h \
   envdefs.h

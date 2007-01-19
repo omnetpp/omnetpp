@@ -97,7 +97,7 @@ graphlayout.o: graphlayout.cc \
   ../../include/ccomponent.h \
   ../../include/globals.h \
   ../../include/csimulation.h \
-  ../../include/defs.h \
+  ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
   ../../include/cdefaultlist.h \
   ../../include/cenvir.h \
@@ -191,7 +191,7 @@ inspector.o: inspector.cc \
   ../../include/cwatch.h \
   ../../include/cxmlelement.h \
   ../../include/cxmlpar.h \
-  ../../include/defs.h \
+  ../../include/simkerneldefs.h \
   ../../include/distrib.h \
   ../../include/envirext.h \
   ../../include/errmsg.h \
@@ -285,7 +285,7 @@ inspfactory.o: inspfactory.cc \
   ../../include/cwatch.h \
   ../../include/cxmlelement.h \
   ../../include/cxmlpar.h \
-  ../../include/defs.h \
+  ../../include/simkerneldefs.h \
   ../../include/distrib.h \
   ../../include/envirext.h \
   ../../include/errmsg.h \
@@ -333,7 +333,7 @@ modinsp.o: modinsp.cc \
   ../../include/ccomponent.h \
   ../../include/globals.h \
   ../../include/csimulation.h \
-  ../../include/defs.h \
+  ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
   ../../include/cdefaultlist.h \
   ../../include/cenvir.h \
@@ -435,7 +435,7 @@ objinsp.o: objinsp.cc \
   ../../include/cwatch.h \
   ../../include/cxmlelement.h \
   ../../include/cxmlpar.h \
-  ../../include/defs.h \
+  ../../include/simkerneldefs.h \
   ../../include/distrib.h \
   ../../include/envirext.h \
   ../../include/errmsg.h \
@@ -476,7 +476,7 @@ statinsp.o: statinsp.cc \
   ../../include/globals.h \
   ../../include/cgate.h \
   ../../include/csimulation.h \
-  ../../include/defs.h \
+  ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
   ../../include/cdefaultlist.h \
   ../../include/cenvir.h \
@@ -525,7 +525,7 @@ tkapp.o: tkapp.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cownedobject.h \
-  ../../include/defs.h \
+  ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
@@ -578,7 +578,7 @@ tkcmd.o: tkcmd.cc \
   inspfactory.h \
   visitor.h \
   ../envir/fsutils.h \
-  ../../include/defs.h \
+  ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
@@ -624,7 +624,7 @@ tklib.o: tklib.cc \
   ../../include/envirext.h \
   ../../include/cconfig.h \
   ../../include/cownedobject.h \
-  ../../include/defs.h \
+  ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/errmsg.h \
@@ -643,7 +643,7 @@ tkutil.o: tkutil.cc \
   visitor.h \
   tkutil.h \
   ../../include/cenvir.h \
-  ../../include/defs.h \
+  ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
@@ -685,7 +685,7 @@ visitor.o: visitor.cc \
   ../../include/cchannel.h \
   ../../include/cgate.h \
   visitor.h \
-  ../../include/defs.h \
+  ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \

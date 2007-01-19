@@ -68,7 +68,7 @@ cmdenv.o: cmdenv.cc \
   ../../include/cmessage.h \
   ../envir/args.h \
   ../envir/speedmtr.h \
-  ../../include/defs.h \
+  ../../include/simkerneldefs.h \
   ../../include/csimulation.h \
   ../envir/omnetapp.h \
   ../../include/util.h \

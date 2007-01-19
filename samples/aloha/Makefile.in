@@ -82,7 +82,7 @@ MSGCOPTS= $(INCLUDE_PATH)
 SUBDIRS= 
 
 # object files in this directory
-OBJS=  host.o server.o
+OBJS=  AHost.o AServer.o
 
 # header files generated (from msg files)
 GENERATEDHEADERS= 
@@ -103,11 +103,11 @@ purify: $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) Makefile
 
 subdirs: $(SUBDIRS)
 
-host.o: host.cc
-	$(CXX) -c $(COPTS) host.cc
+AHost.o: AHost.cc
+	$(CXX) -c $(COPTS) AHost.cc
 
-server.o: server.cc
-	$(CXX) -c $(COPTS) server.cc
+AServer.o: AServer.cc
+	$(CXX) -c $(COPTS) AServer.cc
 
 
 #doc: neddoc doxy
@@ -148,5 +148,7 @@ re-makemake-m: makefile-ins
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-host.o: host.cc
-server.o: server.cc
+AHost.o: AHost.cc \
+  AHost.h
+AServer.o: AServer.cc \
+  AServer.h

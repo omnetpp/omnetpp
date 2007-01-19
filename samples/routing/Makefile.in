@@ -82,10 +82,10 @@ MSGCOPTS= $(INCLUDE_PATH)
 SUBDIRS= 
 
 # object files in this directory
-OBJS= packet_m.o app.o routing.o
+OBJS= Packet_m.o App.o Routing.o
 
 # header files generated (from msg files)
-GENERATEDHEADERS= packet_m.h
+GENERATEDHEADERS= Packet_m.h
 
 #------------------------------------------------------------------------------
 
@@ -103,17 +103,17 @@ purify: $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS) Makefile
 
 subdirs: $(SUBDIRS)
 
-packet_m.o: packet_m.cc
-	$(CXX) -c $(NEDCOPTS) packet_m.cc
+Packet_m.o: Packet_m.cc
+	$(CXX) -c $(NEDCOPTS) Packet_m.cc
 
-packet_m.cc packet_m.h: packet.msg
-	$(MSGC) $(MSGCOPTS) packet.msg
+Packet_m.cc Packet_m.h: Packet.msg
+	$(MSGC) $(MSGCOPTS) Packet.msg
 
-app.o: app.cc
-	$(CXX) -c $(COPTS) app.cc
+App.o: App.cc
+	$(CXX) -c $(COPTS) App.cc
 
-routing.o: routing.cc
-	$(CXX) -c $(COPTS) routing.cc
+Routing.o: Routing.cc
+	$(CXX) -c $(COPTS) Routing.cc
 
 
 #doc: neddoc doxy
@@ -154,5 +154,5 @@ re-makemake-m: makefile-ins
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-app.o: app.cc
-routing.o: routing.cc
+App.o: App.cc
+Routing.o: Routing.cc
