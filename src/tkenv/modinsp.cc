@@ -25,34 +25,66 @@
 #include <math.h>
 #include <assert.h>
 
-#include "csimplemodule.h"
-#include "cchannel.h"
-#include "cgate.h"
-#include "cmessage.h"
-#include "cpar.h"
-#include "carray.h"
-#include "coutvect.h"
-#include "cstat.h"
-#include "cdensity.h"
-#include "cdisplaystring.h"
-#include "cqueue.h"
-#include "ccompoundmodule.h"
-#include "cchannel.h"
-#include "cbasicchannel.h"
-
 #include "modinsp.h"
 #include "tkapp.h"
 #include "tklib.h"
 #include "inspfactory.h"
 #include "arrow.h"
-#include "graphlayout.h"
-
 
 #define UNKNOWNICON_WIDTH  32
 #define UNKNOWNICON_HEIGHT 32
 
-
 void _dummy_for_modinsp() {}
+
+static cPar *displayStringPar(const char *parname, cModule *mod, bool searchparent)
+{
+   cPar *par = NULL;
+   int k = mod->findPar(parname);
+   if (k>=0)
+      par = &(mod->par(k));
+
+   if (!par && searchparent && mod->parentModule())
+   {
+      k = mod->parentModule()->findPar( parname );
+      if (k>=0)
+         par = &(mod->parentModule()->par(k));
+   }
+   if (!par)
+   {
+      if (!searchparent)
+          throw cRuntimeError("module `%s' has no parameter `%s'", mod->fullPath().c_str(), parname);
+      else
+          throw cRuntimeError("module `%s' and its parent have no parameter `%s'", mod->fullPath().c_str(), parname);
+   }
+   return par;
+}
+
+static bool resolveBoolDispStrArg(const char *s, cModule *mod, bool defaultValue)
+{
+   if (!s || !*s)
+       return defaultValue;
+   if (*s=='$')
+       return displayStringPar(s+1, mod, true)->boolValue();
+   return !strcmp("1", s) || !strcmp("true", s);
+}
+
+static long resolveLongDispStrArg(const char *s, cModule *mod, int defaultValue)
+{
+   if (!s || !*s)
+       return defaultValue;
+   if (*s=='$')
+       return displayStringPar(s+1, mod, true)->longValue();
+   return (long) atol(s);
+}
+
+static double resolveDoubleDispStrArg(const char *s, cModule *mod, double defaultValue)
+{
+   if (!s || !*s)
+       return defaultValue;
+   if (*s=='$')
+       return displayStringPar(s+1, mod, true)->doubleValue();
+   return atof(s);
+}
 
 //=======================================================================
 
@@ -345,12 +377,13 @@ void TGraphicalModWindow::refreshLayout()
     int32 seed = resolveLongDispStrArg(ds.getTagArg("bgl",4), parentmodule, random_seed);
     layouter->setSeed(seed);
 
-    // set layouter specific display string arguments
-    layouter->setDisplayString(ds, parentmodule);
-
+    TGraphLayouterEnvironment environment(parentmodule, ds);
     // enable graphics only if full re-layouting (no cached coordinates in submodPosMap)
-    if (submodPosMap.empty() && getTkApplication()->opt_showlayouting)
-        layouter->setCanvas(getTkApplication()->getInterp(), canvas);
+    if (submodPosMap.empty() && getTkApplication()->opt_showlayouting) {
+        environment.setInterpreter(getTkApplication()->getInterp());
+        environment.setCanvas(canvas);
+    }
+    layouter->setEnvironment(&environment);
 
     // size
     int sx = resolveLongDispStrArg(ds.getTagArg("bgb",0), parentmodule, 740);
@@ -435,6 +468,8 @@ void TGraphicalModWindow::refreshLayout()
         layouter->getNodePosition(submod, pos.x, pos.y);
         submodPosMap[submod] = pos;
     }
+
+    environment.cleanup();
 
     delete layouter;
 }
@@ -1128,4 +1163,71 @@ void TGraphicalGateWindow::displayStringChanged(cGate *gate)
    //XXX should defer redraw (via redraw_needed) to avoid "flickering"
 }
 
+/**********************************************************************/
 
+TGraphLayouterEnvironment::TGraphLayouterEnvironment(cModule *parentModule, const cDisplayString& displayString)
+    : displayString(displayString)
+{
+    this->parentModule = parentModule;
+}
+
+bool TGraphLayouterEnvironment::getBoolParameter(const char *tagName, int index, bool defaultValue)
+{
+    return resolveBoolDispStrArg(displayString.getTagArg(tagName, index), parentModule, defaultValue);
+}
+
+long TGraphLayouterEnvironment::getLongParameter(const char *tagName, int index, long defaultValue)
+{
+    return resolveLongDispStrArg(displayString.getTagArg(tagName, index), parentModule, defaultValue);
+}
+
+double TGraphLayouterEnvironment::getDoubleParameter(const char *tagName, int index, double defaultValue)
+{
+    return resolveDoubleDispStrArg(displayString.getTagArg(tagName, index), parentModule, defaultValue);
+}
+
+void TGraphLayouterEnvironment::clearGraphics()
+{
+    Tcl_VarEval(interp, canvas, " delete all", NULL);
+}
+
+void TGraphLayouterEnvironment::showGraphics(const char *text)
+{
+    Tcl_VarEval(interp, canvas, " raise node", NULL);
+    Tcl_VarEval(interp, "layouter_debugDraw_finish ", canvas, " {", text, "}", NULL);
+}
+
+void TGraphLayouterEnvironment::drawText(int x, int y, const char *text, const char *tags, const char *color)
+{
+    char coords[100];
+    sprintf(coords,"%d %d", x, y);
+    Tcl_VarEval(interp, canvas, " create text ", coords, " -text ", text, " -fill ", color, " -tag ", tags, NULL);
+}
+
+void TGraphLayouterEnvironment::drawLine(int x1, int y1, int x2, int y2, const char *tags, const char *color)
+{
+    char coords[100];
+    sprintf(coords,"%d %d %d %d", x1, y1, x2, y2);
+    Tcl_VarEval(interp, canvas, " create line ", coords, " -fill ", color, " -tag ", tags, NULL);
+}
+
+void TGraphLayouterEnvironment::drawRectangle(int x1, int y1, int x2, int y2, const char *tags, const char *color)
+{
+    char coords[100];
+    sprintf(coords,"%d %d %d %d", x1, y1, x2, y2);
+    Tcl_VarEval(interp, canvas, " create rect ", coords, " -outline ", color, " -tag ", tags, NULL);
+}
+
+void TGraphLayouterEnvironment::cleanup()
+{
+    if (inspected())
+    {
+        Tcl_VarEval(interp, canvas, " delete node\n",
+                            canvas, " delete edge\n",
+                            canvas, " delete force\n",
+                            canvas, " config -scrollregion {0 0 1 1}\n",
+                            canvas, " xview moveto 0\n",
+                            canvas, " yview moveto 0\n",
+                            NULL);
+    }
+}

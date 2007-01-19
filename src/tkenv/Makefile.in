@@ -36,7 +36,7 @@ OMNETPP_TKENV_DIR=@OMNETPP_TKENV_DIR@
 
 OBJS = tkapp$(TKENV_EMBED_SUFFIX).o tkcmd.o tklib.o inspector.o \
        inspfactory.o objinsp.o modinsp.o statinsp.o \
-       arrow.o visitor.o tkutil.o graphlayout.o
+       arrow.o visitor.o tkutil.o
 
 #
 # Automatic rules

@@ -23,7 +23,7 @@ COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../env
 
 OBJS = tkapp$(TKENV_EMBED_SUFFIX).obj tkcmd.obj tklib.obj inspector.obj \
        inspfactory.obj objinsp.obj modinsp.obj statinsp.obj \
-       arrow.obj visitor.obj tkutil.obj graphlayout.obj
+       arrow.obj visitor.obj tkutil.obj
 LIBS = $(OMNETPP_SRC_DIR)/sim/sim_std.ilib $(OMNETPP_SRC_DIR)/envir/envir.ilib $(TK_LIB_DIR)/tcl82.lib $(TK_LIB_DIR)/tk82.lib
 
 #
@@ -311,7 +311,6 @@ modinsp.obj: modinsp.cc \
   tklib.h \
   inspfactory.h \
   arrow.h \
-  graphlayout.h \
   ../../include/cmodule.h \
   ../../include/ccomponent.h \
   ../../include/globals.h \
