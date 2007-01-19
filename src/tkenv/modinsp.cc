@@ -1169,6 +1169,9 @@ TGraphLayouterEnvironment::TGraphLayouterEnvironment(cModule *parentModule, cons
     : displayString(displayString)
 {
     this->parentModule = parentModule;
+
+    canvas = NULL;
+    interp = NULL;
 }
 
 bool TGraphLayouterEnvironment::getBoolParameter(const char *tagName, int index, bool defaultValue)
