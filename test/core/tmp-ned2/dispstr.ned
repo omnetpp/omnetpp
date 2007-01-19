@@ -3,7 +3,7 @@ module Base {
 }
 
 module Node extends Base {
-    @display(",foo,bar");  // syntax errors should not cause crash!
+    @display(",foo,bar");  // syntax errors should not cause crash! ALSO: FIX dispstr errors in INET/RouterPerf!
 }
 
 network Net {
