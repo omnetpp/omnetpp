@@ -699,11 +699,6 @@ void NED2Generator::printConnectionGate(NEDElement *conn, const char *modname, c
     }
 
     OUT << gatename;
-    if (isplusplus)
-        OUT << "++";
-    else
-        printOptVector(conn, gateindexattr,indent);
-
     switch (gatesubg)
     {
         case NED_SUBGATE_NONE: break;
@@ -711,6 +706,10 @@ void NED2Generator::printConnectionGate(NEDElement *conn, const char *modname, c
         case NED_SUBGATE_O: OUT << "$o"; break;
         default: INTERNAL_ERROR0(conn, "wrong subg type");
     }
+    if (isplusplus)
+        OUT << "++";
+    else
+        printOptVector(conn, gateindexattr,indent);
 }
 
 void NED2Generator::doExpression(ExpressionNode *node, const char *indent, bool islast, const char *)
