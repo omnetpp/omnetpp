@@ -238,11 +238,11 @@ bool cDisplayString::setTagArg(int tagindex, int index, const char *value)
 int cDisplayString::insertTag(const char *tagname, int atindex)
 {
     // check name validity
-    if (!tagname || tagname[0])
-        throw cRuntimeError("Error inserting new display string tag: tag name is empty");
+    if (!tagname || !tagname[0])
+        throw cRuntimeError("Error adding a new display string tag: tag name is empty");
     for (const char *s=tagname; *s; s++)
         if (!isalnum(*s) && *s!=':')
-            throw cRuntimeError("Error inserting new display string tag: tag name \"%s\" "
+            throw cRuntimeError("Error adding a new display string tag: tag name \"%s\" "
                                 "contains invalid character", tagname);
 
     // check uniqueness
@@ -402,7 +402,7 @@ void cDisplayString::parse()
     for (int i=0; i<numtags; i++)
     {
         if (!tags[i].name[0])
-            throw cRuntimeError("Error parsing display string: empty tag name in \"%s\"", dispstr);
+            throw cRuntimeError("Error parsing display string: missing tag name in \"%s\"", dispstr);
         for (const char *s=tags[i].name; *s; s++)
             if (!isalnum(*s) && *s!=':')
                 throw cRuntimeError("Error parsing display string: tag name \"%s\" contains invalid character in  \"%s\"", tags[i].name, dispstr);
