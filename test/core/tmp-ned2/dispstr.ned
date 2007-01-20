@@ -1,12 +1,24 @@
-module Base {
-    @display("i=misc/node");
+
+network Error1 {
+    @display("=foo");  // missing tagname
 }
 
-module Node extends Base {
-    @display(",foo,bar");  // syntax errors should not cause crash! ALSO: FIX dispstr errors in INET/RouterPerf!
+network Error2 {
+    @display(",foo");  // missing tagname
 }
 
-network Net {
-    submodules:
-        n : Node {}
+network Error3 {
+    @display("=;=;=");  // missing tagname (?)
+}
+
+network Error4 {
+    @display("i**=foo"); // illegal tag name
+}
+
+network Error5 {
+    @display("i,,=foo"); // illegal tag name (?)
+}
+
+network Error6 {
+    @display("x=1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1"); // too many args
 }
