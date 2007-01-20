@@ -43,7 +43,7 @@ $filename = '';
 $ccsuffix = '_m.cc';
 $hsuffix = '_m.h';
 $exportdef = '';
-$generate_classes = 1;
+$generate_classes = 1;  #TODO these should be available from the msg file itself too, e.g. like @generateClasses(false)
 $generate_descriptions = 1;
 $generate_setters_in_descr = 1;
 while (@ARGV)
