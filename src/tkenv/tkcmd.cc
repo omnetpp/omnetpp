@@ -1481,7 +1481,7 @@ int inspectorCommand_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
    TInspector *insp = app->findInspector( object, type );
    assert(insp!=NULL);
 
-   return insp->inspectorCommand(interp, argc-2, argv+2);
+   TRY(return insp->inspectorCommand(interp, argc-2, argv+2));
 }
 
 int getClassDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)

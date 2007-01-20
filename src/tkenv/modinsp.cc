@@ -773,7 +773,7 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 
    cModule *mod = dynamic_cast<cModule *>(strToPtr( argv[1] ));
    const char *qname = argv[2];
-   cQueue *q = dynamic_cast<cQueue *>(mod->findObject(qname));
+   cQueue *q = dynamic_cast<cQueue *>(mod->findObject(qname)); //FIXME THIS MUST BE REFINED! SEARCHES WAY TOO DEEEEEP!!!!
    if (!q) {Tcl_SetResult(interp, "", TCL_STATIC); return TCL_OK;}
 
    char buf[20];
