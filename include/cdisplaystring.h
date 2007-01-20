@@ -64,6 +64,7 @@ class SIM_API cDisplayString
        char *name;
        int numargs;
        char *args[MAXARGS];
+       Tag() {name=NULL; numargs=0;}
     };
     char *buffer;       // holds pieces of display string (sliced with zeroes)
     char *bufferend;    // points to last byte of buffer allocated
@@ -79,7 +80,7 @@ class SIM_API cDisplayString
 
   private:
     // helper functions
-    bool parse();
+    void parse();
     void assemble() const;
     int gettagindex(const char *tagname) const;
     void cleartags();
@@ -94,6 +95,7 @@ class SIM_API cDisplayString
     // internal:
     void setRoleToConnection(cGate *gate) {object=gate; role=CONNECTION;}
     void setRoleToModule(cModule *submodule) {object=submodule; role=MODULE;}
+    void dump() const;
 
   public:
     /** Constructors, destructor. */
@@ -105,7 +107,7 @@ class SIM_API cDisplayString
     cDisplayString();
 
     /**
-     * Constructor.
+     * Constructor. Throws an error if there was an error parsing the string.
      */
     cDisplayString(const char *dispstr);
 
@@ -153,10 +155,10 @@ class SIM_API cDisplayString
     const char *getString() const _OPPDEPRECATED {return toString();}
 
     /**
-     * Sets the display string to the given value. The return value is false
-     * if there was an error parsing the string.
+     * Sets the display string to the given value. Throws an error if there
+     * was an error parsing the string.
      */
-    bool parse(const char *displaystr);
+    void parse(const char *displaystr);
 
     /**
      * Update with the contents of another display string. Corresponding

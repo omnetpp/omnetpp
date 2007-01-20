@@ -46,6 +46,8 @@ cDisplayString::cDisplayString(const char *displaystr)
 
     object = NULL;
     role = NONE;
+
+    // parse() should be the last one, as it may throw an error
     parse();
 }
 
@@ -92,22 +94,21 @@ const char *cDisplayString::toString() const
 }
 
 
-bool cDisplayString::parse(const char *displaystr)
+void cDisplayString::parse(const char *displaystr)
 {
     // if it's the same, nothing to do
     if (needsassemble)
         assemble();
     if (!opp_strcmp(dispstr,displaystr))
-        return true;
+        return;
 
     // parse and store new string
     delete [] dispstr;
     cleartags();
     dispstr = opp_strdup(displaystr);
-    bool fullyOK = parse();
+    parse();
 
     notify();
-    return fullyOK;
 }
 
 void cDisplayString::updateWith(const cDisplayString& ds)
@@ -236,6 +237,14 @@ bool cDisplayString::setTagArg(int tagindex, int index, const char *value)
 
 int cDisplayString::insertTag(const char *tagname, int atindex)
 {
+    // check name validity
+    if (!tagname || tagname[0])
+        throw cRuntimeError("Error inserting new display string tag: tag name is empty");
+    for (const char *s=tagname; *s; s++)
+        if (!isalnum(*s) && *s!=':')
+            throw cRuntimeError("Error inserting new display string tag: tag name \"%s\" "
+                                "contains invalid character", tagname);
+
     // check uniqueness
     int t = gettagindex(tagname);
     if (t!=-1)
@@ -320,11 +329,11 @@ void cDisplayString::cleartags()
     notify();
 }
 
-bool cDisplayString::parse()
+void cDisplayString::parse()
 {
     cleartags();
     if (dispstr==NULL)
-        return true;
+        return;
 
     bool fully_ok = true;
 
@@ -377,14 +386,10 @@ bool cDisplayString::parse()
             // new argument of current tag begins
             *d = '\0';
             if (tags[numtags-1].numargs>=MAXARGS)
-            {
-                fully_ok = false; // extra args ignored (there were too many)
-            }
-            else
-            {
-                tags[numtags-1].numargs++;
-                tags[numtags-1].args[ tags[numtags-1].numargs-1 ] = d+1;
-            }
+                throw cRuntimeError("Error parsing display string: too many parameters for a tag, "
+                                    "max %d allowed in \"%s\"", MAXARGS, dispstr);
+            tags[numtags-1].numargs++;
+            tags[numtags-1].args[ tags[numtags-1].numargs-1 ] = d+1;
         }
         else
         {
@@ -397,12 +402,11 @@ bool cDisplayString::parse()
     for (int i=0; i<numtags; i++)
     {
         if (!tags[i].name[0])
-            fully_ok = false; // empty string as tagname
+            throw cRuntimeError("Error parsing display string: empty tag name in \"%s\"", dispstr);
         for (const char *s=tags[i].name; *s; s++)
             if (!isalnum(*s) && *s!=':')
-                fully_ok = false; // tagname contains invalid character
+                throw cRuntimeError("Error parsing display string: tag name \"%s\" contains invalid character in  \"%s\"", tags[i].name, dispstr);
     }
-    return fully_ok;
 }
 
 void cDisplayString::assemble() const
@@ -454,4 +458,18 @@ void cDisplayString::strcatescaped(char *d, const char *s)
     *d = '\0';
 }
 
+void cDisplayString::dump() const
+{
+    for (int t=0; t<numtags; t++)
+    {
+        if (t!=0) printf("; ");
+        printf("tags[%d]:\"%s\"=", t, tags[t].name);
+        for (int i=0; i<tags[t].numargs; i++)
+        {
+            if (i!=0) printf(",");
+            printf("\"%s\"", tags[t].args[i]);
+        }
+    }
+    printf(" ==> \"%s\"\n", toString());
+}
 
