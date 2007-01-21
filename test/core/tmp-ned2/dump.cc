@@ -17,6 +17,8 @@ void Dump::initialize()
 
 void Dump::dump(cModule *mod, int level)
 {
+    if (mod==this)
+        return;
     printf("module %s\n", mod->fullPath().c_str());
     cProperties *props = mod->properties();
     for (int i=0; i<props->numProperties(); i++)
