@@ -1,0 +1,63 @@
+%description:
+Cases during display string merging:
+ add tag
+ add tagarg
+ set (overwrite) tagarg
+ delete (unset) tagarg
+
+
+%file: {}.ned
+
+module {Base} {
+    @display("aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2");
+}
+
+module {AddTag} extends {Base} {
+    @display("cc=CCC1,,CCC3");  // add
+}
+
+module {AddTagArg} extends {Base} {
+    @display("aa=,,,,AAA5,AAA6;bb=,,BBB3");  // add tagarg
+}
+
+module {Overwrite} extends {Base} {
+    @display("aa=AAA1,,,AAA4;bb=,BBB2");  // overwrite tagarg
+}
+
+module {Unset} extends {Base} {
+    @display("aa=,-;bb=-,-");  // delete tagarg  FIXME unset does not work yet
+}
+
+network {network} {
+  submodules:
+    dump: Dump;
+    base : {Base};
+    addtag: {AddTag};
+    addtagarg: {AddTagArg};
+    overwrite: {Overwrite};
+    unset: {Unset};
+}
+
+
+%exitcode: 0
+
+%contains: stdout
+module {network}
+  display:
+module {network}.base
+  display: aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2
+  @display(aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2)
+module {network}.addtag
+  display: cc=CCC1,,CCC3;aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2
+  @display(cc=CCC1,,CCC3;aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2)
+module {network}.addtagarg
+  display: aa=aaa1,aaa2,,aaa4,AAA5,AAA6;bb=bbb1,bbb2,BBB3
+  @display(aa=aaa1,aaa2,,aaa4,AAA5,AAA6;bb=bbb1,bbb2,BBB3)
+module {network}.overwrite
+  display: aa=AAA1,aaa2,,AAA4;bb=bbb1,BBB2
+  @display(aa=AAA1,aaa2,,AAA4;bb=bbb1,BBB2)
+module {network}.unset
+  display: aa=aaa1,-,,aaa4;bb=-,-            <========= WRONG
+  @display(aa=aaa1,-,,aaa4;bb=-,-)
+done
+
