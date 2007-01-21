@@ -1,16 +1,38 @@
+//
+// Cases during display string merging:
+//  add tag
+//  add tagarg
+//  set (overwrite) tagarg
+//  delete (unset) tagarg
+//
+
 module Base {
-    @display("i=misc/node,red,100;p=100,100,row");
+    @display("aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2");
 }
 
-module Derived1 {
-    @display("i=block/cogwheel,green,-;p=-,,column;t=Hello");  // override, unset, add new
+module AddTag extends Base {
+    @display("cc=CCC1,,CCC3");  // add
+}
+
+module AddTagArg extends Base {
+    @display("aa=,,,,AAA5,AAA6;bb=,,BBB3");  // add tagarg
+}
+
+module Overwrite extends Base {
+    @display("aa=AAA1,,,AAA4;bb=,BBB2");  // overwrite tagarg
+}
+
+module Unset extends Base {
+    @display("aa=,-;bb=-,-");  // delete tagarg  FIXME unset does not work yet
 }
 
 network DispStr {
   submodules:
     dump: Dump;
-    derived1: Derived1 {
-        @display("p=,,ring");
-    }
+    base : Base;
+    addtag: AddTag;
+    addtagarg: AddTagArg;
+    overwrite: Overwrite;
+    unset: Unset;
 }
 
