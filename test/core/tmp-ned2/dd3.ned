@@ -35,6 +35,8 @@ network DD3 {
         }
 
     submodules:
+        dump: Dump;
+
         node: Node {
             gates:
                 pv1[5];

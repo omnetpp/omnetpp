@@ -1,5 +1,5 @@
 // bidirectional connection with scalar gates
-network DD {
+network DDa {
   types:
     module Node {
       gates:
@@ -15,7 +15,7 @@ network DD {
 
 
 // bidirectional connection with indexed gates
-network DD2 {
+network DDb {
   parameters:
     int n = 5;
   types:
@@ -33,7 +33,7 @@ network DD2 {
 }
 
 // bidirectional connection with gate++
-network DD3 {
+network DDc {
   types:
     module Node {
       gates:
