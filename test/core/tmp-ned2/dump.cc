@@ -12,6 +12,7 @@ Define_Module(Dump);
 void Dump::initialize()
 {
     dump(simulation.systemModule(), 0);
+    printf("done\n");
 }
 
 void Dump::dump(cModule *mod, int level)
@@ -25,8 +26,6 @@ void Dump::dump(cModule *mod, int level)
     for (int i=0; i<mod->gates(); i++)
         if (mod->gate(i))
             printf(" G %2d %s: %s\n", i, mod->gate(i)->fullName(), mod->gate(i)->info().c_str());
-    printf("end\n");
-
     for (cSubModIterator submod(*mod); !submod.end(); submod++)
         dump(submod(), level+1);
 }
