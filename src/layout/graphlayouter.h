@@ -266,11 +266,6 @@ class ForceDirectedGraphLayouter : public GraphLayouter
     bool showSummaForce;
 
     /**
-     * True means wall bodies representing borders has been already added.
-     */
-    bool bordersAdded;
-
-    /**
      * True means there is at least one movable node.
      */
     bool hasMovableNode;
@@ -405,6 +400,7 @@ class ForceDirectedGraphLayouter : public GraphLayouter
      * Adds springs between left-right and top-bottom walls and electric repulsions to other bodies.
      */
     void ensureBorders();
+    void addBorderForceProviders();
 
     /**
      * Assigns positions to border bodies so that all other bodies are within.

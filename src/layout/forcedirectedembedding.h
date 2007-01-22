@@ -285,6 +285,34 @@ class ForceDirectedEmbedding
         }
 
         /**
+         * Calculate the average relative error of any corresponding pair between a1, a2, a3 and a4
+         * relative to the absolute a values. 
+         */
+        double averageRelativeError(const std::vector<Pt>& a1, const std::vector<Pt>& a2,
+                                 const std::vector<Pt>& a3, const std::vector<Pt>& a4)
+        {
+            double sum1 = 0;
+            double sum2 = 0;
+            Assert(a1.size() == a2.size() && a2.size() == a3.size() && a3.size() == a4.size());
+
+            for (int i = 0; i < (int)a1.size(); i++) {
+                sum1 += a1[i].getDistance(a2[i]);
+                sum1 += a2[i].getDistance(a3[i]);
+                sum1 += a3[i].getDistance(a4[i]);
+
+                sum2 += a1[i].getLength();
+                sum2 += a2[i].getLength();
+                sum2 += a3[i].getLength();
+                sum2 += a4[i].getLength();
+            }
+
+            sum1 /= a1.size() * 3;
+            sum2 /= a1.size() * 4;
+
+            return sum2 == 0 ? 0 : sum1 / sum2;
+        }
+
+        /**
          * Calculate the maximum difference of any corresponding pair between a1, a2, a3 and a4.
          */
         double maximumDifference(const std::vector<Pt>& a1, const std::vector<Pt>& a2,

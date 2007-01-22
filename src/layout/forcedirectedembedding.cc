@@ -12,6 +12,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <float.h>
 #include "forcedirectedembedding.h"
 #include "lcgrandom.h"
 
@@ -57,12 +58,12 @@ ForceDirectedParameters ForceDirectedEmbedding::getParameters(int32 seed) {
     parameters.defaultPointLikeDistance = false;
 
     parameters.timeStep = 1;
-    parameters.minTimeStep = 0.01;
-    parameters.maxTimeStep = 10;
+    parameters.minTimeStep = 0;
+    parameters.maxTimeStep = DBL_MAX;
     parameters.timeStepMultiplier = 2;
 
-    parameters.minAccelerationError = 1;
-    parameters.maxAccelerationError = 5;
+    parameters.minAccelerationError = 0.2;
+    parameters.maxAccelerationError = 0.5;
 
     parameters.defaultMaxForce = 1000;
     parameters.maxVelocity = 100;
@@ -158,8 +159,8 @@ void ForceDirectedEmbedding::embed() {
             else {
                 double coefficient = 1 - relaxFactor;
 
-                updatedMinAccelerationError = coefficient * parameters.minAccelerationError;
-                updatedMaxAccelerationError = coefficient * parameters.maxAccelerationError;
+                //updatedMinAccelerationError = coefficient * parameters.minAccelerationError;
+                //updatedMaxAccelerationError = coefficient * parameters.maxAccelerationError;
             }
 
             // a1 = a[pn, vn]
@@ -184,12 +185,16 @@ void ForceDirectedEmbedding::embed() {
             a(a4, tpn, tvn);
 
             // Adjust time step (h)
-            lastAccelerationError = maximumDifference(a1, a2, a3, a4);
+            //lastAccelerationError = maximumDifference(a1, a2, a3, a4);
+            lastAccelerationError = averageRelativeError(a1, a2, a3, a4);
 
             if (debugLevel >= 3) {
                 std::cout << "Prob cycle ";
                 writeDebugInformation(std::cout);
             }
+
+            if (lastAccelerationError == 0)
+                break;
 
             // stop if acceleration error and time step are within range
             if (updatedMinAccelerationError < lastAccelerationError && lastAccelerationError < updatedMaxAccelerationError &&

@@ -663,7 +663,6 @@ void BasicSpringEmbedderLayout::debugDraw(int step)
 
 ForceDirectedGraphLayouter::ForceDirectedGraphLayouter()
 {
-    bordersAdded = false;
     hasFixedNode = false;
     hasMovableNode = false;
 
@@ -671,6 +670,10 @@ ForceDirectedGraphLayouter::ForceDirectedGraphLayouter()
     bottomBorder = NULL;
     leftBorder = NULL;
     rightBorder = NULL;
+
+    expectedEmbeddingSize = -1;
+    expectedEdgeLength = -1;
+    pointLikeDistance = true;
 }
 
 void ForceDirectedGraphLayouter::setParameters()
@@ -734,8 +737,8 @@ void ForceDirectedGraphLayouter::calculateExpectedMeasures()
     double maxBodyLength = 0;
 
     // expected measures
-    expectedEdgeLength = 0;
-    expectedEmbeddingSize = pow(expectedEdgeLength, 2) * bodies.size();
+    expectedEmbeddingSize  = 0;
+    double averageBodyLength = 0;
 
     for (int i = 0; i < (int)bodies.size(); i++) {
         IBody *body = bodies[i];
@@ -744,20 +747,22 @@ void ForceDirectedGraphLayouter::calculateExpectedMeasures()
             double length = body->getSize().getDiagonalLength();
             count++;
             maxBodyLength = std::max(maxBodyLength, length);
-            expectedEdgeLength += length;
+            averageBodyLength += length;
             expectedEmbeddingSize += 10 * body->getSize().getArea();
         }
     }
 
     // pointLikeDistance if there is a body longer than 2 times the average size
-    Assert(!isNaN(expectedEdgeLength));
-    double averageBodyLength = expectedEdgeLength / count;
+    Assert(!isNaN(averageBodyLength));
+    averageBodyLength /= count;
     pointLikeDistance = maxBodyLength < 2 * averageBodyLength;
 
     // minimum length plus averageBodyLength
-    expectedEdgeLength = 50 + averageBodyLength;
+    double minEdgeLength = bodies.size() < 10 ? 100 : bodies.size() < 30 ? 70 : 50;
+    expectedEdgeLength = minEdgeLength + averageBodyLength;
 
     // calculate expected embedding size
+    expectedEmbeddingSize += pow(expectedEdgeLength, 2) * bodies.size();
     expectedEmbeddingSize = sqrt(expectedEmbeddingSize);
     Assert(!isNaN(expectedEmbeddingSize));
 }
@@ -834,34 +839,33 @@ void ForceDirectedGraphLayouter::setInitialPositions() {
 
 void ForceDirectedGraphLayouter::ensureBorders()
 {
-    if (!bordersAdded) {
-        double coefficient = 0.1;
-
+    if (!topBorder) {
         topBorder = new WallBody(true, NaN);
         bottomBorder = new WallBody(true, NaN);
         leftBorder = new WallBody(false, NaN);
         rightBorder = new WallBody(false, NaN);
-
-        // add electric repulsion to all bodies
-        const std::vector<IBody *>& bodies = embedding.getBodies();
-        for (int i = 0; i < (int)bodies.size(); i++) {
-            IBody *body = bodies[i];
-            embedding.addForceProvider(new VerticalElectricRepulsion(topBorder, body));
-            embedding.addForceProvider(new VerticalElectricRepulsion(bottomBorder, body));
-            embedding.addForceProvider(new HorizontalElectricRepulsion(leftBorder, body));
-            embedding.addForceProvider(new HorizontalElectricRepulsion(rightBorder, body));
-        }
-
-        // add springs between walls
-        embedding.addBody(topBorder);
-        embedding.addBody(bottomBorder);
-        embedding.addBody(leftBorder);
-        embedding.addBody(rightBorder);
-        embedding.addForceProvider(new VerticalSpring(topBorder, bottomBorder, coefficient, 0));
-        embedding.addForceProvider(new HorizonalSpring(leftBorder, rightBorder, coefficient, 0));
-
-        bordersAdded = true;
     }
+}
+
+void ForceDirectedGraphLayouter::addBorderForceProviders()
+{
+    // add electric repulsion to all bodies
+    const std::vector<IBody *>& bodies = embedding.getBodies();
+    for (int i = 0; i < (int)bodies.size(); i++) {
+        IBody *body = bodies[i];
+        embedding.addForceProvider(new VerticalElectricRepulsion(topBorder, body));
+        embedding.addForceProvider(new VerticalElectricRepulsion(bottomBorder, body));
+        embedding.addForceProvider(new HorizontalElectricRepulsion(leftBorder, body));
+        embedding.addForceProvider(new HorizontalElectricRepulsion(rightBorder, body));
+    }
+
+    // add springs between walls
+    embedding.addBody(topBorder);
+    embedding.addBody(bottomBorder);
+    embedding.addBody(leftBorder);
+    embedding.addBody(rightBorder);
+    embedding.addForceProvider(new VerticalSpring(topBorder, bottomBorder, -1, expectedEmbeddingSize));
+    embedding.addForceProvider(new HorizonalSpring(leftBorder, rightBorder, -1, expectedEmbeddingSize));
 }
 
 void ForceDirectedGraphLayouter::setBorderPositions()
@@ -946,15 +950,18 @@ void ForceDirectedGraphLayouter::scale()
             averageSpringLength += pt1.getBasePlaneProjectionDistance(pt2);
         }
     }
-    averageSpringLength /= springCount;
-    Assert(!isNaN(averageSpringLength));
 
-    // scale
-    double scale = expectedEdgeLength / averageSpringLength;
+    if (springCount) {
+        averageSpringLength /= springCount;
+        Assert(!isNaN(averageSpringLength));
 
-    const std::vector<Variable *>& variables = embedding.getVariables();
-    for (int i = 0; i < (int)variables.size(); i++) {
-        variables[i]->assignPosition(Pt(variables[i]->getPosition()).multiply(scale));
+        // scale
+        double scale = expectedEdgeLength / averageSpringLength;
+
+        const std::vector<Variable *>& variables = embedding.getVariables();
+        for (int i = 0; i < (int)variables.size(); i++) {
+            variables[i]->assignPosition(Pt(variables[i]->getPosition()).multiply(scale));
+        }
     }
 }
 
@@ -1066,6 +1073,9 @@ void ForceDirectedGraphLayouter::execute()
 
         // call force directed embedding if requested
         if (forceDirectedEmbedding) {
+            if (topBorder)
+                addBorderForceProviders();
+
             addElectricRepulsions();
 
             if (threeDFactor > 0)
@@ -1076,7 +1086,7 @@ void ForceDirectedGraphLayouter::execute()
             // assign random values to missing positions 
             setRandomPositions();
 
-            if (bordersAdded)
+            if (topBorder)
                 setBorderPositions();
 
             //embedding.debug = 3;
