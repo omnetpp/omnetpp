@@ -56,7 +56,7 @@ class SIM_API cProperties : public cObject
     /**
      * Copy constructor.
      */
-    cProperties(const cProperties& other) {islocked=false; operator=(other);}
+    cProperties(const cProperties& other) {refcount=0; islocked=false; operator=(other);}
 
     /**
      * Destructor.
