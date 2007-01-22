@@ -732,7 +732,6 @@ void ForceDirectedGraphLayouter::calculateExpectedMeasures()
     // body sizes
     int count = 0;
     double maxBodyLength = 0;
-    double averageBodyLength = 0;
 
     // expected measures
     expectedEdgeLength = 0;
@@ -744,23 +743,23 @@ void ForceDirectedGraphLayouter::calculateExpectedMeasures()
         if (!dynamic_cast<WallBody *>(body)) {
             double length = body->getSize().getDiagonalLength();
             count++;
+            maxBodyLength = std::max(maxBodyLength, length);
             expectedEdgeLength += length;
             expectedEmbeddingSize += 10 * body->getSize().getArea();
-            maxBodyLength = std::max(maxBodyLength, length);
-            averageBodyLength += length;
         }
     }
 
-    // calculate expected edge length
-    expectedEdgeLength = 50 + expectedEdgeLength / count;
+    // pointLikeDistance if there is a body longer than 2 times the average size
     Assert(!isNaN(expectedEdgeLength));
+    double averageBodyLength = expectedEdgeLength / count;
+    pointLikeDistance = maxBodyLength < 2 * averageBodyLength;
+
+    // minimum length plus averageBodyLength
+    expectedEdgeLength = 50 + averageBodyLength;
 
     // calculate expected embedding size
     expectedEmbeddingSize = sqrt(expectedEmbeddingSize);
     Assert(!isNaN(expectedEmbeddingSize));
-
-    // pointLikeDistance
-    pointLikeDistance = maxBodyLength > 3 * averageBodyLength / count ? false : true;
 }
 
 void ForceDirectedGraphLayouter::setRandomPositions()
