@@ -238,6 +238,8 @@ class ForceDirectedEmbedding
             return 3 * massSum / time * log((getPotentialEnergy() + getKineticEnergy()) / parameters.velocityRelaxLimit);
         }
 
+        Rc ForceDirectedEmbedding::getBoundingRectangle();
+
         /**
          * Find the solution for the differential equation using a
          * modified Runge-Kutta 4th order algorithm.

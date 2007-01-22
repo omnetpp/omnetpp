@@ -276,6 +276,11 @@ class ForceDirectedGraphLayouter : public GraphLayouter
     bool hasFixedNode;
 
     /**
+     * True means there is at least one anchored node.
+     */
+    bool hasAnchoredNode;
+
+    /**
      * Use pre embedding to create an initial layout before calling the force directed embedding.
      */
     bool preEmbedding;

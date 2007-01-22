@@ -665,6 +665,7 @@ ForceDirectedGraphLayouter::ForceDirectedGraphLayouter()
 {
     hasFixedNode = false;
     hasMovableNode = false;
+    hasAnchoredNode = false;
 
     topBorder = NULL;
     bottomBorder = NULL;
@@ -748,7 +749,7 @@ void ForceDirectedGraphLayouter::calculateExpectedMeasures()
             count++;
             maxBodyLength = std::max(maxBodyLength, length);
             averageBodyLength += length;
-            expectedEmbeddingSize += 10 * body->getSize().getArea();
+            expectedEmbeddingSize += body->getSize().getArea();
         }
     }
 
@@ -762,7 +763,7 @@ void ForceDirectedGraphLayouter::calculateExpectedMeasures()
     expectedEdgeLength = minEdgeLength + averageBodyLength;
 
     // calculate expected embedding size
-    expectedEmbeddingSize += pow(expectedEdgeLength, 2) * bodies.size();
+    expectedEmbeddingSize += 2 * pow(expectedEdgeLength, 2) * bodies.size();
     expectedEmbeddingSize = sqrt(expectedEmbeddingSize);
     Assert(!isNaN(expectedEmbeddingSize));
 }
@@ -952,17 +953,19 @@ void ForceDirectedGraphLayouter::scale()
     }
 
     if (springCount) {
+        double actualSize = sqrt(embedding.getBoundingRectangle().rs.getArea());
         averageSpringLength /= springCount;
         Assert(!isNaN(averageSpringLength));
 
-        // scale
-        double scale = expectedEdgeLength / averageSpringLength;
-        scale = std::max(0.25, std::min(4.0, scale));
+        double edgeScale = expectedEdgeLength / averageSpringLength;
+        double areaScale = expectedEmbeddingSize / actualSize;
+        double scale = (edgeScale + areaScale) / 2;
+        scale = std::max(0.2, std::min(5.0, scale));
 
         const std::vector<Variable *>& variables = embedding.getVariables();
         for (int i = 0; i < (int)variables.size(); i++) {
             variables[i]->assignPosition(Pt(variables[i]->getPosition()).multiply(scale));
-        }
+         }
     }
 }
 
@@ -1012,6 +1015,8 @@ void ForceDirectedGraphLayouter::addFixedNode(cModule *mod, int x, int y, int wi
 
 void ForceDirectedGraphLayouter::addAnchoredNode(cModule *mod, const char *anchorname, int offx, int offy, int width, int height)
 {
+    hasAnchoredNode = true;
+
     // an anchored node is a relatively (to a variable, namely the anchor) positioned body
     Variable *variable = ensureAnchorVariable(anchorname);
     addBody(mod, new RelativelyPositionedBody(variable, Pt(offx, offy, 0), Rs(width, height)));
@@ -1109,7 +1114,8 @@ void ForceDirectedGraphLayouter::execute()
             setRandomPositions();
 
         if (!hasFixedNode) {
-            scale();
+            if (!hasAnchoredNode)
+                scale();
             translate();
         }
     }

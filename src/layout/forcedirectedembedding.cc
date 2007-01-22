@@ -14,6 +14,7 @@
 
 #include <float.h>
 #include "forcedirectedembedding.h"
+#include "forcedirectedparameters.h"
 #include "lcgrandom.h"
 
 ForceDirectedEmbedding::ForceDirectedEmbedding() {
@@ -323,6 +324,26 @@ void ForceDirectedEmbedding::a(std::vector<Pt>& an, const std::vector<Pt>& pn, c
         for (int i = 0; i < (int)pn.size(); i++)
             std::cout << "a[" << i << "] = " << an[i].x << ", " << an[i].y << ", " << an[i].z << "\n";
     }
+}
+
+Rc ForceDirectedEmbedding::getBoundingRectangle()
+{
+    double top = DBL_MAX, bottom = DBL_MIN;
+    double left = DBL_MAX, right = DBL_MIN;
+
+    const std::vector<IBody *>& bodies = getBodies();
+    for (int i = 0; i < (int)bodies.size(); i++) {
+        IBody *body = bodies[i];
+
+        if (!dynamic_cast<WallBody *>(body)) {
+            top = std::min(top, body->getTop());
+            bottom = std::max(bottom, body->getBottom());
+            left = std::min(left, body->getLeft());
+            right = std::max(right, body->getRight());
+        }
+    }
+
+    return Rc(left, top, 0, right - left, bottom - top);
 }
 
 void ForceDirectedEmbedding::writeDebugInformation(std::ostream& ostream)
