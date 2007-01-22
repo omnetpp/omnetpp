@@ -47,7 +47,7 @@ components: base jnilibs samples
 #=====================================================================
 
 BASE=$(ENVIR_ILIB) common layout eventlog scave nedxml sim envir cmdenv tkenv utils nedc
-SAMPLES=aloha cqn dyna fifo hcube hist neddemo p-to-p queueing routing queues tictoc tokenring sockets
+SAMPLES=aloha cqn dyna fifo hcube hist neddemo p-to-p queueing queuenet routing queues tictoc tokenring sockets
 JNILIBS=org.omnetpp.ned.model \
         org.omnetpp.scave.engine \
         org.omnetpp.eventlog.engine \
@@ -151,7 +151,9 @@ depend:
 
 makefiles:
 	for %%i in ( $(SAMPLES) ) do \
-	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && call opp_nmakemake -f -N && nmake -f Makefile.vc depend
+	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && call opp_nmakemake -f && nmake -f Makefile.vc depend
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\queuenet\lib && call opp_nmakemake -f -o queuenet && nmake -f Makefile.vc depend
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\queuenet && call opp_nmakemake -f -r -n
 
 reminder:
 !IF "$(TCL_LIBRARY)" == ""
