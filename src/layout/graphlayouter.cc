@@ -673,14 +673,12 @@ ForceDirectedGraphLayouter::ForceDirectedGraphLayouter()
     rightBorder = NULL;
 }
 
-void ForceDirectedGraphLayouter::setEnvironment(GraphLayouterEnvironment *environment)
+void ForceDirectedGraphLayouter::setParameters()
 {
-    GraphLayouter::setEnvironment(environment);
-
     embedding.parameters = embedding.getParameters(lcgRandom.getSeed());
     embedding.parameters.defaultPointLikeDistance = environment->getBoolParameter("pld", 0, embedding.parameters.defaultPointLikeDistance);
     embedding.parameters.defaultSpringCoefficient = environment->getDoubleParameter("sc", 0, embedding.parameters.defaultSpringCoefficient);
-    embedding.parameters.defaultSpringReposeLength = environment->getDoubleParameter("srl", 0, embedding.parameters.defaultSpringReposeLength);
+    embedding.parameters.defaultSpringReposeLength = environment->getDoubleParameter("srl", 0, expectedEdgeLength);
     embedding.parameters.electricRepulsionCoefficient = environment->getDoubleParameter("erc", 0, embedding.parameters.electricRepulsionCoefficient);
     embedding.parameters.frictionCoefficient = environment->getDoubleParameter("fc", 0, embedding.parameters.frictionCoefficient);
     embedding.parameters.minTimeStep = environment->getDoubleParameter("mits", 0, embedding.parameters.minTimeStep);
@@ -727,45 +725,53 @@ Variable *ForceDirectedGraphLayouter::ensureAnchorVariable(const char *anchorNam
         return anchorNameToVariableMap[anchorName] = new Variable(Pt::getNil());
 }
 
-void ForceDirectedGraphLayouter::setRandomPositions(double size)
+void ForceDirectedGraphLayouter::calculateExpectedMeasures()
 {
     const std::vector<IBody *>& bodies = embedding.getBodies();
 
-    // if size is not given determine it
-    if (size == -1) {
-        size = pow(embedding.parameters.defaultSpringReposeLength, 2) * bodies.size();
+    // calculate expected edge length
+    expectedEdgeLength = 0;
+    for (int i = 0; i < (int)bodies.size(); i++) {
+	    IBody *body = bodies[i];
 
-	    for (int i = 0; i < (int)bodies.size(); i++) {
-		    IBody *body = bodies[i];
-
-            if (!dynamic_cast<WallBody *>(body))
-                size += 10 * body->getSize().getArea();
-        }
-
-        size = sqrt(size);
+        expectedEdgeLength += body->getSize().getDiagonalLength();
     }
+    expectedEdgeLength = 50 + expectedEdgeLength / bodies.size();
+    Assert(!isNaN(expectedEdgeLength));
 
-    Assert(!isNaN(size));
+    // calculate expected embedding size
+    expectedEmbeddingSize = pow(expectedEdgeLength, 2) * bodies.size();
+    for (int i = 0; i < (int)bodies.size(); i++) {
+	    IBody *body = bodies[i];
 
+        if (!dynamic_cast<WallBody *>(body))
+            expectedEmbeddingSize += 10 * body->getSize().getArea();
+    }
+    expectedEmbeddingSize = sqrt(expectedEmbeddingSize);
+    Assert(!isNaN(expectedEmbeddingSize));
+}
+
+void ForceDirectedGraphLayouter::setRandomPositions()
+{
     // assign values to not yet assigned coordinates
     const std::vector<Variable *>& variables = embedding.getVariables();
 	for (int i = 0; i < (int)variables.size(); i++) {
         Pt pt = variables[i]->getPosition();
 
         if (isNaN(pt.x))
-            pt.x = privRand01() * size;
+            pt.x = privRand01() * expectedEmbeddingSize;
 
         if (isNaN(pt.y))
-            pt.y = privRand01() * size;
+            pt.y = privRand01() * expectedEmbeddingSize;
 
         if (isNaN(pt.z))
-            pt.z = (privRand01() - 0.5) * size * threeDFactor;
+            pt.z = (privRand01() - 0.5) * expectedEmbeddingSize * threeDFactor;
 
         variables[i]->assignPosition(pt);
     }
 }
 
-void ForceDirectedGraphLayouter::setInitialPositions(double distance) {
+void ForceDirectedGraphLayouter::setInitialPositions() {
     GraphComponent childrenComponentsStar;
     Vertex *childrenComponentsStarRoot = NULL;
 
@@ -776,16 +782,16 @@ void ForceDirectedGraphLayouter::setInitialPositions(double distance) {
 
         // use tree embedding if connected component is a tree
         if (childComponent->getEdgeCount() == childComponent->getVertexCount() - 1) {
-            StarTreeEmbedding starTreeEmbedding(childComponent, distance);
+            StarTreeEmbedding starTreeEmbedding(childComponent, expectedEdgeLength);
             starTreeEmbedding.embed();
         }
         else {
-            HeapEmbedding heapEmbedding(childComponent, distance);
+            HeapEmbedding heapEmbedding(childComponent, expectedEdgeLength);
             heapEmbedding.embed();
         }
 
         // add a new vertex to component graph for each embedded sub component
-        Vertex *childComponentVertex = new Vertex(Pt::getNil(), childComponent->getSize(), NULL);
+        Vertex *childComponentVertex = new Vertex(Pt::getNil(), childComponent->getBoundingRectangle().rs, NULL);
         if (!childrenComponentsStarRoot)
             childrenComponentsStarRoot = childComponentVertex;
 
@@ -795,7 +801,7 @@ void ForceDirectedGraphLayouter::setInitialPositions(double distance) {
 
     // embed component graph
     childrenComponentsStar.calculateSpanningTree();
-    HeapEmbedding heapEmbedding(&childrenComponentsStar, distance);
+    HeapEmbedding heapEmbedding(&childrenComponentsStar, expectedEdgeLength);
     heapEmbedding.embed();
 
     // position all vertices on the plane so that they do not overlap
@@ -895,7 +901,7 @@ void ForceDirectedGraphLayouter::addElectricRepulsions()
 
                 // check if the two are in the same connected component
                 if (vertex1->connectedSubComponent != vertex2->connectedSubComponent)
-	    		    embedding.addForceProvider(new ElectricRepulsion(body1, body2, embedding.parameters.defaultSpringReposeLength, embedding.parameters.defaultSpringReposeLength * 2));
+	    		    embedding.addForceProvider(new ElectricRepulsion(body1, body2, expectedEdgeLength, expectedEdgeLength * 2));
                 else
     			    embedding.addForceProvider(new ElectricRepulsion(body1, body2));
             }
@@ -913,7 +919,34 @@ void ForceDirectedGraphLayouter::addBasePlaneSprings()
     }
 }
 
-void ForceDirectedGraphLayouter::normalize()
+void ForceDirectedGraphLayouter::scale()
+{
+    // find average spring length
+    int springCount = 0;
+    double averageSpringLength = 0;
+    const std::vector<IForceProvider *>& forceProviders = embedding.getForceProviders();
+	for (int i = 0; i < (int)forceProviders.size(); i++) {
+		Spring *spring = dynamic_cast<Spring *>(forceProviders[i]);
+
+        if (spring) {
+            Pt pt1 = spring->getBody1()->getPosition();
+            Pt pt2 = spring->getBody2()->getPosition();
+            springCount++;
+            averageSpringLength += pt1.getDistance(pt2);
+        }
+    }
+    averageSpringLength /= springCount;
+
+    // scale
+    double scale = expectedEdgeLength / averageSpringLength;
+
+    const std::vector<Variable *>& variables = embedding.getVariables();
+	for (int i = 0; i < (int)variables.size(); i++) {
+        variables[i]->assignPosition(variables[i]->getPosition().multiply(scale));
+    }
+}
+
+void ForceDirectedGraphLayouter::translate()
 {
 	double top = DBL_MAX;
 	double left = DBL_MAX;
@@ -1006,10 +1039,11 @@ void ForceDirectedGraphLayouter::execute()
     if (hasMovableNode) {
         // always calculate graph components
         graphComponent.calculateConnectedSubComponents();
+        calculateExpectedMeasures();
 
         // call pre embedding if requested
         if (preEmbedding) {
-            setInitialPositions(std::min(40.0, embedding.parameters.defaultSpringReposeLength));
+            setInitialPositions();
 
             // draw initial pre embedding result
             if (environment->inspected())
@@ -1018,6 +1052,7 @@ void ForceDirectedGraphLayouter::execute()
 
         // call force directed embedding if requested
         if (forceDirectedEmbedding) {
+            setParameters();
             addElectricRepulsions();
 
             if (threeDFactor > 0)
@@ -1049,8 +1084,10 @@ void ForceDirectedGraphLayouter::execute()
         if (!preEmbedding && !forceDirectedEmbedding)
             setRandomPositions();
 
-        if (!hasFixedNode)
-            normalize();
+        if (!hasFixedNode) {
+            scale();
+            translate();
+        }
     }
 }
 

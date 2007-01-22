@@ -89,7 +89,7 @@ Vertex *GraphComponent::findVertex(void *identity)
     return NULL;
 }
 
-Rs GraphComponent::getSize() {
+Rc GraphComponent::getBoundingRectangle() {
 	double top = DBL_MAX, bottom = DBL_MIN;
 	double left = DBL_MAX, right = DBL_MIN;
 
@@ -105,7 +105,7 @@ Rs GraphComponent::getSize() {
 	    right = std::max(right, pt.x + rs.width);
 	}
 
-    return Rs(right - left, bottom - top);
+    return Rc(left, top, 0, right - left, bottom - top);
 }
 
 void GraphComponent::calculateSpanningTree() {

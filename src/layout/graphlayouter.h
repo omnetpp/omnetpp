@@ -297,6 +297,12 @@ class ForceDirectedGraphLayouter : public GraphLayouter
      */
     double threeDFactor;
 
+    /**
+     * Various measures calculated before the actual layout.
+     */
+    double expectedEmbeddingSize;
+    double expectedEdgeLength;
+
     // border bodies added only if there are edges connected to the border
     WallBody *topBorder;
     WallBody *bottomBorder;
@@ -318,7 +324,7 @@ class ForceDirectedGraphLayouter : public GraphLayouter
     virtual ~ForceDirectedGraphLayouter() {}
     //@}
 
-    virtual void setEnvironment(GraphLayouterEnvironment *environment);
+    void setParameters();
 
     /**
      * Add node that can be moved.
@@ -377,16 +383,21 @@ class ForceDirectedGraphLayouter : public GraphLayouter
     void addBasePlaneSprings();
 
     /**
+     * Calculate various expected embedding measures such as width, height, edge length.
+     */
+    void calculateExpectedMeasures();
+
+    /**
      * Assigns positions to coordinates not yet assigned by some other means.
      * The size of the random range is determined by the total size of the bodies
      * and the default spring repose length.
      */
-    void setRandomPositions(double size = -1);
+    void setRandomPositions();
 
     /**
      * Executes pre embedding.
      */
-    void setInitialPositions(double distance);
+    void setInitialPositions();
 
     /**
      * Adds border bodies to the force directed embedding.
@@ -400,9 +411,14 @@ class ForceDirectedGraphLayouter : public GraphLayouter
     void setBorderPositions();
 
     /**
+     * Scale coordinates so that average edge length will be the default.
+     */
+    void scale();
+
+    /**
      * Translates coordinates so that the smallest x and y value will be equal to border size.
      */
-    void normalize();
+    void translate();
 
     void debugDraw();
 };

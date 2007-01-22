@@ -172,7 +172,7 @@ class GraphComponent {
 	    int addEdge(Edge *edge);
 	    int indexOfVertex(Vertex *vertex);
         Vertex *findVertex(void *identity);
-        Rs getSize();
+        Rc getBoundingRectangle();
 
         /**
          * Calculates the spanning tree using breadth search starting from the
