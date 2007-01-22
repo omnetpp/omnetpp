@@ -113,8 +113,6 @@ void ForceDirectedEmbedding::reinitialize() {
 
     // initial values
     updatedTimeStep = parameters.timeStep;
-    updatedMaxAccelerationError = parameters.maxAccelerationError;
-    updatedMinAccelerationError = parameters.minAccelerationError;
 
     if (parameters.frictionCoefficient == -1)
         parameters.frictionCoefficient = getEnergyBasedFrictionCoefficient(parameters.maxCalculationTime);
@@ -156,12 +154,6 @@ void ForceDirectedEmbedding::embed() {
             elapsedCalculationTime = ticksToMilliseconds(elapsedTicks + clock() - begin);
             if (elapsedCalculationTime > parameters.maxCalculationTime)
                 break;
-            else {
-                double coefficient = 1 - relaxFactor;
-
-                //updatedMinAccelerationError = coefficient * parameters.minAccelerationError;
-                //updatedMaxAccelerationError = coefficient * parameters.maxAccelerationError;
-            }
 
             // a1 = a[pn, vn]
             a(a1, pn, vn);
@@ -197,12 +189,12 @@ void ForceDirectedEmbedding::embed() {
                 break;
 
             // stop if acceleration error and time step are within range
-            if (updatedMinAccelerationError < lastAccelerationError && lastAccelerationError < updatedMaxAccelerationError &&
+            if (parameters.minAccelerationError < lastAccelerationError && lastAccelerationError < parameters.maxAccelerationError &&
                 parameters.minTimeStep < updatedTimeStep && updatedTimeStep < parameters.maxTimeStep)
                 break;
 
             // find now to update time step
-            if (lastAccelerationError < updatedMaxAccelerationError) {
+            if (lastAccelerationError < parameters.maxAccelerationError) {
                 if (hMultiplier == 0)
                     hMultiplier = parameters.timeStepMultiplier;
                 else if (hMultiplier = 1.0 / parameters.timeStepMultiplier)
@@ -336,5 +328,5 @@ void ForceDirectedEmbedding::a(std::vector<Pt>& an, const std::vector<Pt>& pn, c
 void ForceDirectedEmbedding::writeDebugInformation(std::ostream& ostream)
 {
     if (initialized)
-        ostream << "at real time: " << elapsedCalculationTime << " time: " << elapsedTime << " relaxFactor: " << relaxFactor << " h: " << updatedTimeStep << " friction: " << parameters.frictionCoefficient << " min acceleration error: " << updatedMinAccelerationError << " max acceleration error: " << updatedMaxAccelerationError << " last acceleration error: " << lastAccelerationError << " cycle: " << cycle << " prob cycle: " << probCycle << " last max velocity: " << lastMaxVelocity << " last max acceleration: " << lastMaxAcceleration << "\n";
+        ostream << "at real time: " << elapsedCalculationTime << " time: " << elapsedTime << " relaxFactor: " << relaxFactor << " h: " << updatedTimeStep << " friction: " << parameters.frictionCoefficient << " min acceleration error: " << parameters.minAccelerationError << " max acceleration error: " << parameters.maxAccelerationError << " last acceleration error: " << lastAccelerationError << " cycle: " << cycle << " prob cycle: " << probCycle << " last max velocity: " << lastMaxVelocity << " last max acceleration: " << lastMaxAcceleration << "\n";
 }

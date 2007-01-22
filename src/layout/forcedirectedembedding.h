@@ -157,18 +157,6 @@ class ForceDirectedEmbedding
          */
         double updatedTimeStep;
 
-        /**
-         * Acceleration error limit is updated automatically during the solution.
-         * It decreases towards zero proportional to the relax factor.
-         */
-        double updatedMinAccelerationError;
-
-        /**
-         * Acceleration error limit is updated automatically during the solution.
-         * It decreases towards zero proportional to the relax factor.
-         */
-        double updatedMaxAccelerationError;
-
     public:
         ForceDirectedEmbedding();
         virtual ~ForceDirectedEmbedding();

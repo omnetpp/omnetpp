@@ -101,13 +101,13 @@ struct ForceDirectedParameters
     double timeStepMultiplier;
 
     /**
-     * Lower limit of acceleration approximation difference (between a1, a2, a3 and a4 in RK-4).
+     * Relative lwer limit of acceleration approximation difference (between a1, a2, a3 and a4 in RK-4).
      * During updating the time step this is the lower limit to accept the current time step.
      */
     double minAccelerationError;
 
     /**
-     * Upper limit of acceleration approximation difference (between a1, a2, a3 and a4 in RK-4).
+     * Relative upper limit of acceleration approximation difference (between a1, a2, a3 and a4 in RK-4).
      */
     double maxAccelerationError;
 

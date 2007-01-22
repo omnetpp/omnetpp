@@ -957,6 +957,7 @@ void ForceDirectedGraphLayouter::scale()
 
         // scale
         double scale = expectedEdgeLength / averageSpringLength;
+        scale = std::max(0.25, std::min(4.0, scale));
 
         const std::vector<Variable *>& variables = embedding.getVariables();
         for (int i = 0; i < (int)variables.size(); i++) {
