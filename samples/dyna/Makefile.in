@@ -82,7 +82,7 @@ MSGCOPTS= $(INCLUDE_PATH)
 SUBDIRS= 
 
 # object files in this directory
-OBJS= dynapacket_m.o Client.o Server.o ServerProcess.o Switch.o
+OBJS= dynapacket_m.o Client.o  Server.o ServerProcess.o Switch.o
 
 # header files generated (from msg files)
 GENERATEDHEADERS= dynapacket_m.h
@@ -160,7 +160,13 @@ re-makemake-m: makefile-ins
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-Client.o: Client.cc
-Server.o: Server.cc
-ServerProcess.o: ServerProcess.cc
-Switch.o: Switch.cc
+Client.o: Client.cc \
+  dynapacket_m.h
+dynapacket_m.o: dynapacket_m.cc \
+  dynapacket_m.h
+Server.o: Server.cc \
+  dynapacket_m.h
+ServerProcess.o: ServerProcess.cc \
+  dynapacket_m.h
+Switch.o: Switch.cc \
+  dynapacket_m.h

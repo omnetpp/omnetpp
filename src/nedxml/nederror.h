@@ -141,7 +141,7 @@ class NEDException : public std::runtime_error   //FIXME into separate header fi
     /**
      * Empty desctructor with throw clause for gcc.
      */ 
-    virtual NEDException::~NEDException() throw() {}
+    virtual ~NEDException() throw() {}
 
     /**
      * Returns the text of the error. Redefined from std::exception.

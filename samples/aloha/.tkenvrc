@@ -37,7 +37,7 @@ config filtobjlist-order	{Class}
 config last-nedfile	{}
 config log-save-filename	{C:/home/omnetpp40/omnetpp/samples/aloha/omnetpp.out}
 config logwindow-scrollbacklines	{}
-config mainwin-geom	{664x374+266+12}
+config mainwin-geom	{664x374+59+50}
 config mainwin-state	{normal}
 config rununtil-event	{}
 config rununtil-mode	{Fast (rare updates)}
@@ -47,10 +47,9 @@ config timeline-msgclassnamepattern	{*}
 config timeline-msgnamepattern	{*}
 config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
-inspector "Aloha" "Aloha" "2" "653x651+72+93"
-inspector "alohaNet" "alohaNet" "1" "460x394+69+60"
-inspector "component types" "cSymTable" "1" "460x312+120+155"
 inspector "ALOHAnet" "ALOHAnet" "1" "529x384+295+298"
-inspector "alohaNet" "alohaNet" "2" "617x576+286+103"
+inspector "component types" "cSymTable" "1" "460x312+120+155"
+inspector "alohaNet" "alohaNet" "1" "460x394+69+60"
 inspector "ALOHAnet" "ALOHAnet" "2" "923x675+35+103"
+inspector "alohaNet" "alohaNet" "2" "617x576+286+103"
 

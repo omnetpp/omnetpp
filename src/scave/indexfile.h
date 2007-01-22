@@ -68,7 +68,7 @@ struct VectorData {
         blocks.push_back(Block(start, start+count, offset));
     }
 
-    Block* VectorData::getBlockForEntry(long serial);
+    Block* getBlockForEntry(long serial);
 };
 
 typedef std::vector<VectorData> Vectors;
