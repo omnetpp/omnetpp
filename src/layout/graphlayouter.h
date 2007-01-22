@@ -302,6 +302,7 @@ class ForceDirectedGraphLayouter : public GraphLayouter
      */
     double expectedEmbeddingSize;
     double expectedEdgeLength;
+    bool pointLikeDistance;
 
     // border bodies added only if there are edges connected to the border
     WallBody *topBorder;

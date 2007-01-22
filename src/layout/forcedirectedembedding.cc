@@ -216,7 +216,9 @@ void ForceDirectedEmbedding::embed() {
             updatedTimeStep = nextUpdatedTimeStep;
         }
 
-        Assert(lastAccelerationError <= parameters.maxAccelerationError || nextUpdatedTimeStep <= parameters.minTimeStep);
+        Assert(elapsedCalculationTime > parameters.maxCalculationTime ||
+               lastAccelerationError <= parameters.maxAccelerationError ||
+               nextUpdatedTimeStep <= parameters.minTimeStep);
 
         // pn+1 = pn + h * vn + h * h / 6 * [a1 + a2 + a3]
         add(dpn, a1, a2);

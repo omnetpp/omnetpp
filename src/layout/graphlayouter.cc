@@ -676,7 +676,7 @@ ForceDirectedGraphLayouter::ForceDirectedGraphLayouter()
 void ForceDirectedGraphLayouter::setParameters()
 {
     embedding.parameters = embedding.getParameters(lcgRandom.getSeed());
-    embedding.parameters.defaultPointLikeDistance = environment->getBoolParameter("pld", 0, embedding.parameters.defaultPointLikeDistance);
+    embedding.parameters.defaultPointLikeDistance = environment->getBoolParameter("pld", 0, pointLikeDistance);
     embedding.parameters.defaultSpringCoefficient = environment->getDoubleParameter("sc", 0, embedding.parameters.defaultSpringCoefficient);
     embedding.parameters.defaultSpringReposeLength = environment->getDoubleParameter("srl", 0, expectedEdgeLength);
     embedding.parameters.electricRepulsionCoefficient = environment->getDoubleParameter("erc", 0, embedding.parameters.electricRepulsionCoefficient);
@@ -729,27 +729,38 @@ void ForceDirectedGraphLayouter::calculateExpectedMeasures()
 {
     const std::vector<IBody *>& bodies = embedding.getBodies();
 
-    // calculate expected edge length
+    // body sizes
+    int count = 0;
+    double maxBodyLength = 0;
+    double averageBodyLength = 0;
+
+    // expected measures
     expectedEdgeLength = 0;
+    expectedEmbeddingSize = pow(expectedEdgeLength, 2) * bodies.size();
+
     for (int i = 0; i < (int)bodies.size(); i++) {
         IBody *body = bodies[i];
 
-        if (!dynamic_cast<WallBody *>(body))
-            expectedEdgeLength += body->getSize().getDiagonalLength();
+        if (!dynamic_cast<WallBody *>(body)) {
+            double length = body->getSize().getDiagonalLength();
+            count++;
+            expectedEdgeLength += length;
+            expectedEmbeddingSize += 10 * body->getSize().getArea();
+            maxBodyLength = std::max(maxBodyLength, length);
+            averageBodyLength += length;
+        }
     }
-    expectedEdgeLength = 50 + expectedEdgeLength / bodies.size();
+
+    // calculate expected edge length
+    expectedEdgeLength = 50 + expectedEdgeLength / count;
     Assert(!isNaN(expectedEdgeLength));
 
     // calculate expected embedding size
-    expectedEmbeddingSize = pow(expectedEdgeLength, 2) * bodies.size();
-    for (int i = 0; i < (int)bodies.size(); i++) {
-        IBody *body = bodies[i];
-
-        if (!dynamic_cast<WallBody *>(body))
-            expectedEmbeddingSize += 10 * body->getSize().getArea();
-    }
     expectedEmbeddingSize = sqrt(expectedEmbeddingSize);
     Assert(!isNaN(expectedEmbeddingSize));
+
+    // pointLikeDistance
+    pointLikeDistance = maxBodyLength > 3 * averageBodyLength / count ? false : true;
 }
 
 void ForceDirectedGraphLayouter::setRandomPositions()
