@@ -248,7 +248,7 @@ class Variable {
         }
 
         void addForce(const Pt& f) {
-            if (!f.isZero() && f.isFullySpecified()) {
+            if (f.isFullySpecified()) {
                 force.add(f);
 
 // TODO:
@@ -258,7 +258,7 @@ class Variable {
         }
 
         void subtractForce(const Pt& f) {
-            if (!f.isZero() && f.isFullySpecified()) {
+            if (f.isFullySpecified()) {
                 force.subtract(f);
 
 // TODO:
