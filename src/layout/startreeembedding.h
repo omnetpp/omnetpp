@@ -41,7 +41,7 @@ class StarTreeEmbedding
         /**
          * Minimum distance between vertices
          */
-	    double vertexSpacing;
+        double vertexSpacing;
 
     private:
         /**
@@ -50,27 +50,27 @@ class StarTreeEmbedding
         GraphComponent *graphComponent;
 
     public:
-	    StarTreeEmbedding(GraphComponent *graphComponent, double vertexSpacing);
-	    void embed();
+        StarTreeEmbedding(GraphComponent *graphComponent, double vertexSpacing);
+        void embed();
 
     private:
         /**
          * Calculates center coordinates relative to parents.
          */
-	    void calculateCenter();
-	    void calculateCenterRecursive(Vertex *vertex);
+        void calculateCenter();
+        void calculateCenterRecursive(Vertex *vertex);
 
         /**
          * Rotate the child subtrees to have the weight point opposite to the parent.
          */
         void rotateCenter();
-	    void rotateCenterRecursive(Vertex *vertex);
+        void rotateCenterRecursive(Vertex *vertex);
 
         /**
          * Calculates absolute positions.
          */
         void calculatePosition();
-	    void calculatePositionRecursive(Vertex *vertex, Pt pt);
+        void calculatePositionRecursive(Vertex *vertex, Pt pt);
 };
 
 #endif

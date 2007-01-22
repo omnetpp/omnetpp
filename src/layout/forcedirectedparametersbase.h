@@ -165,12 +165,12 @@ class Variable : public IPositioned {
         /**
          * Value of the variable.
          */
-	    Pt position;
+        Pt position;
 
         /**
          * First derivative.
          */
-	    Pt velocity;
+        Pt velocity;
 
         /**
          * Second derivative.
@@ -185,91 +185,91 @@ class Variable : public IPositioned {
         /**
          * The list of all applied forces for debug purposes.
          */
-	    std::vector<Pt> forces;
+        std::vector<Pt> forces;
 
         /**
          * Total mass of bodies appling forces to this variable.
          */
-	    double mass;
+        double mass;
 
     private:
         void constructor(const Pt& position, const Pt& velocity) {
-		    this->position = position;
-		    this->velocity = velocity;
+            this->position = position;
+            this->velocity = velocity;
 
             mass = 0;
             force = Pt::getZero();
         }
 
     public:
-	    Variable(const Pt& position) {
+        Variable(const Pt& position) {
             constructor(position, Pt::getZero());
-	    }
+        }
 
-	    Variable(const Pt& position, const Pt& velocity) {
+        Variable(const Pt& position, const Pt& velocity) {
             constructor(position, velocity);
-	    }
+        }
 
-	    virtual Pt getPosition() {
-		    return position;
-	    }
+        virtual Pt getPosition() {
+            return position;
+        }
 
-	    virtual void assignPosition(const Pt& position) {
-		    this->position.assign(position);
-	    }
+        virtual void assignPosition(const Pt& position) {
+            this->position.assign(position);
+        }
 
-	    Pt getVelocity() {
-		    return velocity;
-	    }
+        Pt getVelocity() {
+            return velocity;
+        }
 
-	    virtual void assignVelocity(const Pt& velocity) {
-		    this->velocity.assign(velocity);
-	    }
+        virtual void assignVelocity(const Pt& velocity) {
+            this->velocity.assign(velocity);
+        }
 
-	    virtual Pt getAcceleration() {
-		    return acceleration.assign(force).divide(mass);
-	    }
+        virtual Pt getAcceleration() {
+            return acceleration.assign(force).divide(mass);
+        }
 
         double getKineticEnergy() {
             double vlen = velocity.getLength();
             return 0.5 * mass * vlen * vlen;
         }
 
-	    void resetForce() {
+        void resetForce() {
             force = Pt::getZero();
-	    }
+        }
 
-	    double getMass() {
-		    return mass;
-	    }
+        double getMass() {
+            return mass;
+        }
 
-	    void addMass(double mass) {
-		    this->mass += mass;
-	    }
+        void addMass(double mass) {
+            this->mass += mass;
+        }
 
         Pt getForce() {
             return force;
         }
 
-	    void addForce(const Pt& vector, double power, bool inspected = false) {
-		    Pt f(vector);
+        void addForce(const Pt& vector, double power, bool inspected = false) {
+            Pt f(vector);
 
             if (!f.isZero() && f.isFullySpecified()) {
                 f.normalize().multiply(power);
-		        force.add(f);
+                force.add(f);
 
                 if (inspected)
-    		        forces.push_back(f);
+                    forces.push_back(f);
             }
-	    }
+        }
 
-	    void resetForces() {
-		    forces.clear();
-	    }
+        void resetForces() {
+            forces.clear();
+        }
 
-	    const std::vector<Pt>& getForces() {
-		    return forces;
-	    }
+        const std::vector<Pt>& getForces() {
+            return forces;
+        }
 };
 
 /**
@@ -280,17 +280,17 @@ class PointConstrainedVariable : public Variable {
         PointConstrainedVariable(Pt position) : Variable(position) {
         }
 
-	    virtual void assignPosition(const Pt& position) {
+        virtual void assignPosition(const Pt& position) {
             this->position.z = position.z;
         }
 
-	    virtual void assignVelocity(const Pt& velocity) {
+        virtual void assignVelocity(const Pt& velocity) {
             this->velocity.z = velocity.z;
         }
 
-	    virtual Pt getAcceleration() {
-		    return acceleration.assign(0, 0, force.z).divide(mass);
-	    }
+        virtual Pt getAcceleration() {
+            return acceleration.assign(0, 0, force.z).divide(mass);
+        }
 };
 
 /**

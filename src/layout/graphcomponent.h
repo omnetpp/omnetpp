@@ -47,14 +47,14 @@ class Vertex {
         /**
          * Used to look up the vertex. Not used by any graph algorithm.
          */
-	    void *identity;
-    	
+        void *identity;
+        
         /**
          * The parent of this vertex in the spanning tree. Filled by calculateSpanningTree in
          * the owner graphComponent.
          */
-	    Vertex *spanningTreeParent;
-    	
+        Vertex *spanningTreeParent;
+        
         /**
          * Children vertices of this vertex in the spanning tree. Filled by calculateSpanningTree in
          * the owner graphComponent.
@@ -72,23 +72,23 @@ class Vertex {
          */
         int color;
 
-	    /**
-	     * Center coordinate relative to parent.
-	     */
-	    Pt starTreeCenter;
-    	
-	    /**
-	     * Subtree enclosing circle center.
-	     */
-	    Pt starTreeCircleCenter;
-    	
-	    /**
-	     * Subtree enclosing circle radius.
-	     */
-	    double starTreeRadius;
+        /**
+         * Center coordinate relative to parent.
+         */
+        Pt starTreeCenter;
+        
+        /**
+         * Subtree enclosing circle center.
+         */
+        Pt starTreeCircleCenter;
+        
+        /**
+         * Subtree enclosing circle radius.
+         */
+        double starTreeRadius;
 
     public:
-	    Vertex(Pt pt, Rs rc, void *identity = NULL);
+        Vertex(Pt pt, Rs rc, void *identity = NULL);
 };
 
 /**
@@ -99,17 +99,17 @@ class Edge {
         /**
          * One of the vertices where the edge ends.
          */
-	    Vertex *source;
+        Vertex *source;
 
         /**
          * One of the vertices where the edge ends.
          */
-	    Vertex *target;
-	
+        Vertex *target;
+    
         /**
          * Used to look up the edge. Not used by any graph algorithm.
          */
-	    void *identity;
+        void *identity;
 
         /**
          * The connected graph component this edge is part of. Filled by calculateConnectedSubComponents
@@ -123,7 +123,7 @@ class Edge {
         int color;
 
     public:
-	    Edge(Vertex *source, Vertex *target, void *identity = NULL);
+        Edge(Vertex *source, Vertex *target, void *identity = NULL);
 };
 
 /**
@@ -146,12 +146,12 @@ class GraphComponent {
          * A list of edges present in this component.
          */
         std::vector<Edge *> edges;
-	
+    
     public:
         /**
          * The root of the spanning tree. Filled by calculateSpanningTree.
          */
-	    Vertex *spanningTreeRoot;
+        Vertex *spanningTreeRoot;
 
         /**
          * Contains all vertices in the order of the spanning tree traversal.
@@ -165,12 +165,12 @@ class GraphComponent {
         std::vector<GraphComponent *> connectedSubComponents;
 
     public:
-	    GraphComponent();
-        ~GraphComponent();    	
+        GraphComponent();
+        ~GraphComponent();        
 
-	    int addVertex(Vertex *vertex);
-	    int addEdge(Edge *edge);
-	    int indexOfVertex(Vertex *vertex);
+        int addVertex(Vertex *vertex);
+        int addEdge(Edge *edge);
+        int indexOfVertex(Vertex *vertex);
         Vertex *findVertex(void *identity);
         Rc getBoundingRectangle();
 
@@ -178,8 +178,8 @@ class GraphComponent {
          * Calculates the spanning tree using breadth search starting from the
          * vertex having the highest rank.
          */
-	    void calculateSpanningTree();
-	    void calculateSpanningTree(Vertex *rootVertex);
+        void calculateSpanningTree();
+        void calculateSpanningTree(Vertex *rootVertex);
 
         /**
          * Calculates the list of connected sub graph components by colorizing vertices and edges.
@@ -187,35 +187,35 @@ class GraphComponent {
         void calculateConnectedSubComponents();
 
         bool isEmpty() {
-		    return vertices.size() == 0;
-	    }
+            return vertices.size() == 0;
+        }
 
-	    int getVertexCount() {
-		    return vertices.size();
-	    }
+        int getVertexCount() {
+            return vertices.size();
+        }
 
-	    std::vector<Vertex *>& getVertices() {
-		    return vertices;
-	    }
+        std::vector<Vertex *>& getVertices() {
+            return vertices;
+        }
 
-	    Vertex *getVertex(int index) {
-		    return vertices[index];
-	    }
+        Vertex *getVertex(int index) {
+            return vertices[index];
+        }
 
-	    int getEdgeCount() {
-		    return edges.size();
-	    }
+        int getEdgeCount() {
+            return edges.size();
+        }
 
         std::vector<Edge *> getEdges() {
-		    return edges;
-	    }
+            return edges;
+        }
 
-	    Edge *getEdge(int index) {
-		    return edges[index];
-	    }
+        Edge *getEdge(int index) {
+            return edges[index];
+        }
 
     private:
-	    void addToSpanningTreeParent(Vertex *parentVertex, Vertex *vertex);
+        void addToSpanningTreeParent(Vertex *parentVertex, Vertex *vertex);
         void colorizeConnectedSubComponent(GraphComponent *childComponent, Vertex *vertex, int color);
 };
 

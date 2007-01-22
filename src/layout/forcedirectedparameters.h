@@ -205,21 +205,21 @@ class AbstractForceProvider : public IForceProvider {
                 pointLikeDistance = embedding->parameters.defaultPointLikeDistance;
         }
 
-	    double getMaxForce() {
-		    return maxForce;
-	    }
+        double getMaxForce() {
+            return maxForce;
+        }
 
-	    double getValidForce(double force) {
-		    Assert(force >= 0);
+        double getValidForce(double force) {
+            Assert(force >= 0);
             return std::min(maxForce, force);
-	    }
+        }
 
-	    double getValidSignedForce(double force) {
+        double getValidSignedForce(double force) {
             if (force < 0)
                 return -getValidForce(fabs(force));
             else
                 return getValidForce(fabs(force));
-	    }
+        }
 
         Pt getDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
             if (slippery)

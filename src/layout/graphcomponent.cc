@@ -12,8 +12,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "graphcomponent.h"
 #include <float.h>
+#include "graphcomponent.h"
 
 Vertex::Vertex(Pt pt, Rs rs, void *identity) {
     this->rc = Rc(pt, rs);
@@ -90,20 +90,20 @@ Vertex *GraphComponent::findVertex(void *identity)
 }
 
 Rc GraphComponent::getBoundingRectangle() {
-	double top = DBL_MAX, bottom = DBL_MIN;
-	double left = DBL_MAX, right = DBL_MIN;
+    double top = DBL_MAX, bottom = DBL_MIN;
+    double left = DBL_MAX, right = DBL_MIN;
 
     for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); it++) {
         Vertex *vertex = *it;
 
-	    Pt pt = vertex->rc.pt;
-	    Rs rs = vertex->rc.rs;
+        Pt pt = vertex->rc.pt;
+        Rs rs = vertex->rc.rs;
 
         top = std::min(top, pt.y);
-	    bottom = std::max(bottom, pt.y + rs.height);
-	    left = std::min(left, pt.x);
-	    right = std::max(right, pt.x + rs.width);
-	}
+        bottom = std::max(bottom, pt.y + rs.height);
+        left = std::min(left, pt.x);
+        right = std::max(right, pt.x + rs.width);
+    }
 
     return Rc(left, top, 0, right - left, bottom - top);
 }
@@ -120,7 +120,7 @@ void GraphComponent::calculateSpanningTree() {
     }
 
     if (vertices.size() != 0)
-	    calculateSpanningTree(rootVertex);
+        calculateSpanningTree(rootVertex);
 }
 
 void GraphComponent::calculateSpanningTree(Vertex *rootVertex) {
@@ -128,8 +128,8 @@ void GraphComponent::calculateSpanningTree(Vertex *rootVertex) {
 
     for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); it++) {
         Vertex *vertex = *it;
-	    vertex->spanningTreeChildren.clear();
-	    vertex->spanningTreeParent = NULL;
+        vertex->spanningTreeChildren.clear();
+        vertex->spanningTreeParent = NULL;
         vertex->color = 0;
     }
 
@@ -139,19 +139,19 @@ void GraphComponent::calculateSpanningTree(Vertex *rootVertex) {
     spanningTreeVertices.push_back(rootVertex);
 
     while (vertices.size() != 0) {
-	    Vertex *vertex = vertices[0];
+        Vertex *vertex = vertices[0];
         vertices.pop_front();
 
         for (std::vector<Vertex *>::iterator it = vertex->neighbours.begin(); it != vertex->neighbours.end(); it++) {
             Vertex *neighbour = *it;
 
             if (!neighbour->color) {
-			    addToSpanningTreeParent(vertex, neighbour);
-				
-			    // breadth search
-			    vertices.push_back(neighbour);
+                addToSpanningTreeParent(vertex, neighbour);
+                
+                // breadth search
+                vertices.push_back(neighbour);
                 spanningTreeVertices.push_back(neighbour);
-		    }
+            }
         }
     }
 }
@@ -159,9 +159,9 @@ void GraphComponent::calculateSpanningTree(Vertex *rootVertex) {
 void GraphComponent::addToSpanningTreeParent(Vertex *parentVertex, Vertex *vertex) {
     vertex->color = 1;
     vertex->spanningTreeParent = parentVertex;
-	
+    
     if (parentVertex)
-	    parentVertex->spanningTreeChildren.push_back(vertex);
+        parentVertex->spanningTreeChildren.push_back(vertex);
 }
 
 void GraphComponent::calculateConnectedSubComponents() {

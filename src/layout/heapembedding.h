@@ -36,7 +36,7 @@ class HeapEmbedding
         /**
          * Minimum distance between vertices
          */
-	    double vertexSpacing;
+        double vertexSpacing;
 
     private:
         /**
@@ -45,8 +45,8 @@ class HeapEmbedding
         GraphComponent *graphComponent;
 
     public:
-	    HeapEmbedding(GraphComponent *graphComponent, double vertexSpacing);
-	    void embed();
+        HeapEmbedding(GraphComponent *graphComponent, double vertexSpacing);
+        void embed();
 
     private:
         void pushPtUnlessRcsContains(std::vector<Pt>& pts, const std::vector<Rc>& circles, const Pt& pt);

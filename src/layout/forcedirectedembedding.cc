@@ -146,6 +146,7 @@ void ForceDirectedEmbedding::embed() {
     do {
         double hMultiplier = 0;
         cycle++;
+        double nextUpdatedTimeStep = POSITIVE_INFINITY;
 
         while (true) {
             probCycle++;
@@ -208,14 +209,14 @@ void ForceDirectedEmbedding::embed() {
             }
 
             // stop if time step would be out of valid time step range
-            double nextUpdatedTimeStep = updatedTimeStep * hMultiplier;
+            nextUpdatedTimeStep = updatedTimeStep * hMultiplier;
             if (nextUpdatedTimeStep < parameters.minTimeStep || parameters.maxTimeStep < nextUpdatedTimeStep)
                 break;
 
             updatedTimeStep = nextUpdatedTimeStep;
         }
 
-        //Assert(lastAccelerationError <= parameters.maxAccelerationError);
+        Assert(lastAccelerationError <= parameters.maxAccelerationError || nextUpdatedTimeStep <= parameters.minTimeStep);
 
         // pn+1 = pn + h * vn + h * h / 6 * [a1 + a2 + a3]
         add(dpn, a1, a2);
