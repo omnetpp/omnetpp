@@ -200,10 +200,14 @@ class ForceDirectedEmbedding
         void addBody(IBody *body) {
             bodies.push_back(body);
             body->setForceDirectedEmbedding(this);
-            body->getVariable()->addMass(body->getMass());
 
-            if (std::find(variables.begin(), variables.end(), body->getVariable()) == variables.end())
-                variables.push_back(body->getVariable());
+            Variable *variable = body->getVariable();
+            variable->addMass(body->getMass());
+
+            if (std::find(variables.begin(), variables.end(), variable) == variables.end()) {
+                variable->setForceDirectedEmbedding(this);
+                variables.push_back(variable);
+            }
         }
 
         bool getFinished() {

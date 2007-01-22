@@ -20,6 +20,10 @@
 #include "forcedirectedparametersbase.h"
 #include "forcedirectedembedding.h"
 
+inline double sgn(double val) {
+    return val < 0 ? -1 : val == 0 ? 0 : 1;
+}
+
 /**
  * Represents a freely positioned two dimensional body with a finite mass and charge.
  * The actual position of the body is stored in the corresponding variable. This allows
@@ -77,7 +81,7 @@ class Body : public IBody {
         /**
          * Center of the body.
          */
-        virtual Pt getPosition() {
+        virtual const Pt& getPosition() {
             return variable->getPosition();
         }
 
@@ -93,7 +97,7 @@ class Body : public IBody {
             return charge;
         }
 
-        virtual Rs& getSize() {
+        virtual const Rs& getSize() {
             return size;
         }
 };
@@ -105,10 +109,12 @@ class RelativelyPositionedBody : public Body {
     protected:
         Pt relativePosition;
 
-        IPositioned *anchor;
+        Variable *anchor;
+
+        Pt position;
 
     private:
-        void constructor(IPositioned *anchor, const Pt& relativePosition) {
+        void constructor(Variable *anchor, const Pt& relativePosition) {
             this->anchor = anchor;
             this->relativePosition = relativePosition;
         }
@@ -122,10 +128,6 @@ class RelativelyPositionedBody : public Body {
             constructor(variable, relativePosition);
         }
 
-        RelativelyPositionedBody(Variable *variable, IPositioned *anchor, const Pt& relativePosition) : Body(variable) {
-            constructor(anchor, relativePosition);
-        }
-
         virtual const char *getClassName() {
             return "RelativelyPositionedBody";
         }
@@ -133,8 +135,8 @@ class RelativelyPositionedBody : public Body {
         /**
          * Center of the body.
          */
-        virtual Pt getPosition() {
-            return Pt(anchor->getPosition()).add(relativePosition);
+        virtual const Pt& getPosition() {
+            return position.assign(anchor->getPosition()).add(relativePosition);
         }
 };
 
@@ -229,14 +231,15 @@ class AbstractForceProvider : public IForceProvider {
         }
 
         Pt getStandardDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
-            Pt pt1 = body1->getPosition();
-            Pt pt2 = body2->getPosition();
+            const Pt& pt1 = body1->getPosition();
+            const Pt& pt2 = body2->getPosition();
             Pt vector = Pt(pt1).subtract(pt2);
             distance = vector.getLength();
+            vector.divide(distance);
 
             if (!pointLikeDistance) {
-                Rs rs1 = body1->getSize();
-                Rs rs2 = body2->getSize();
+                const Rs& rs1 = body1->getSize();
+                const Rs& rs2 = body2->getSize();
                 double dx = fabs(pt1.x - pt2.x);
                 double dy = fabs(pt1.y - pt2.y);
                 double dHalf = vector.getBasePlaneProjectionLength() / 2;
@@ -250,10 +253,9 @@ class AbstractForceProvider : public IForceProvider {
         }
 
         Pt getStandardHorizontalDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
-            Pt vector = Pt(body1->getPosition()).subtract(body2->getPosition());
-            vector.y = 0;
-            vector.z = 0;
-            distance = vector.getLength();
+            distance = body1->getPosition().x - body2->getPosition().x;
+            Pt vector = Pt(sgn(distance), 0, 0);
+            distance = fabs(distance);
 
             if (!pointLikeDistance)
                 distance = std::max(0.0, distance - body1->getSize().width - body2->getSize().width);
@@ -262,10 +264,9 @@ class AbstractForceProvider : public IForceProvider {
         }
 
         Pt getStandardVerticalDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
-            Pt vector = Pt(body1->getPosition()).subtract(body2->getPosition());
-            vector.x = 0;
-            vector.z = 0;
-            distance = vector.getLength();
+            distance = body1->getPosition().y - body2->getPosition().y;
+            Pt vector = Pt(0, sgn(distance), 0);
+            distance = fabs(distance);
 
             if (!pointLikeDistance)
                 distance = std::max(0.0, distance - body1->getSize().height - body2->getSize().height);
@@ -280,6 +281,7 @@ class AbstractForceProvider : public IForceProvider {
             Pt vector = ln.begin;
             vector.subtract(ln.end);
             vector.setNaNToZero();
+            vector.normalize();
             return vector;
         }
 };
@@ -343,7 +345,7 @@ class AbstractElectricRepulsion : public AbstractForceProvider {
 
         virtual void applyForces() {
             double distance;
-            Pt vector = getDistanceAndVector(distance);
+            Pt force = getDistanceAndVector(distance);
             Assert(distance >= 0);
 
             double power;
@@ -355,8 +357,10 @@ class AbstractElectricRepulsion : public AbstractForceProvider {
             if (linearityDistance != -1 && distance > linearityDistance)
                 power *= 1 - std::min(1.0, (distance - linearityDistance) / (maxDistance - linearityDistance));
 
-            charge1->getVariable()->addForce(vector, +power, embedding->inspected);
-            charge2->getVariable()->addForce(vector, -power, embedding->inspected);
+            force.multiply(power);
+
+            charge1->getVariable()->addForce(force);
+            charge2->getVariable()->subtractForce(force);
         }
 
         virtual double getPotentialEnergy() {
@@ -477,16 +481,18 @@ class AbstractSpring : public AbstractForceProvider {
 
         virtual void applyForces() {
             double distance;
-            Pt vector = getDistanceAndVector(distance);
+            Pt force = getDistanceAndVector(distance);
             Assert(distance >= 0);
             double expansion = distance - reposeLength;
             double power = getValidSignedForce(getSpringCoefficient() * expansion);
 
+            force.multiply(power);
+
             if (body1)
-                body1->getVariable()->addForce(vector, -power, embedding->inspected);
+                body1->getVariable()->subtractForce(force);
 
             if (body2)
-                body2->getVariable()->addForce(vector, +power, embedding->inspected);
+                body2->getVariable()->addForce(force);
         }
 
         virtual double getPotentialEnergy() {
@@ -625,9 +631,7 @@ class BasePlaneSpring : public AbstractSpring {
         }
 
         virtual Pt getDistanceAndVector(double &distance) {
-            Pt vector = body1->getPosition();
-            vector.x = 0;
-            vector.y = 0;
+            Pt vector(0, 0, body1->getPosition().z);
             distance = fabs(vector.z);
             return vector;
         }
@@ -650,11 +654,9 @@ class AbstractVelocityBasedForceProvider : public AbstractForceProvider {
             for (std::vector<Variable *>::const_iterator it = variables.begin(); it != variables.end(); it++) {
                 Variable *variable = *it;
                 Pt vector(variable->getVelocity());
-                vector.reverse();
-                double vlen = vector.getLength();
-                double power = getPower(variable, vlen);
+                vector.multiply(-getPower(variable, vector.getLength()));
 
-                variable->addForce(vector, power, embedding->inspected);
+                variable->addForce(vector);
             }
         }
 
@@ -733,8 +735,9 @@ class PointConstraint : public BodyConstraint {
             Pt vector(constraint);
             vector.subtract(body->getPosition());
             double power = coefficient * vector.getLength();
+            vector.multiply(power);
 
-            body->getVariable()->addForce(vector, power, embedding->inspected);
+            body->getVariable()->addForce(vector);
         }
 
         virtual const char *getClassName() {
@@ -758,12 +761,12 @@ class LineConstraint : public BodyConstraint {
         }
 
         virtual void applyForces() {
-            Pt position = body->getPosition();
-            Pt vector(constraint.getClosestPoint(position));
-            vector.subtract(position);
-            double power = coefficient * vector.getLength();
+            const Pt& position = body->getPosition();
+            Pt force(constraint.getClosestPoint(position));
+            force.subtract(position);
+            force.multiply(coefficient * force.getLength());
 
-            body->getVariable()->addForce(vector, power, embedding->inspected);
+            body->getVariable()->addForce(force);
         }
 
         virtual const char *getClassName() {
@@ -788,12 +791,12 @@ class CircleConstraint : public BodyConstraint {
         }
 
         virtual void applyForces() {
-            Pt position = body->getPosition();
+            const Pt& position = body->getPosition();
             Pt vector(constraint.origin);
             vector.subtract(position);
-            double power = coefficient * (constraint.origin.getDistance(position) - constraint.radius);
+            vector.multiply(coefficient * (constraint.origin.getDistance(position) - constraint.radius));
 
-            body->getVariable()->addForce(vector, power, embedding->inspected);
+            body->getVariable()->addForce(vector);
         }
 
         virtual const char *getClassName() {

@@ -146,21 +146,11 @@ struct ForceDirectedParameters
 };
 
 /**
- * Base class for things that have position.
- */
-class IPositioned {
-    public:
-        virtual ~IPositioned() {}
-
-        virtual Pt getPosition() = 0;
-};
-
-/**
  * A variable used in the differential equation.
  * The actual value of the variable is the position, the first derivative is the velocity
  * and the second derivative is the acceleration.
  */
-class Variable : public IPositioned {
+class Variable {
     protected:
         /**
          * Value of the variable.
@@ -192,6 +182,8 @@ class Variable : public IPositioned {
          */
         double mass;
 
+        ForceDirectedEmbedding *embedding;
+
     private:
         void constructor(const Pt& position, const Pt& velocity) {
             this->position = position;
@@ -210,7 +202,11 @@ class Variable : public IPositioned {
             constructor(position, velocity);
         }
 
-        virtual Pt getPosition() {
+        void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
+            this->embedding = embedding;
+        }
+
+        const Pt& getPosition() {
             return position;
         }
 
@@ -218,7 +214,7 @@ class Variable : public IPositioned {
             this->position.assign(position);
         }
 
-        Pt getVelocity() {
+        const Pt& getVelocity() {
             return velocity;
         }
 
@@ -226,7 +222,7 @@ class Variable : public IPositioned {
             this->velocity.assign(velocity);
         }
 
-        virtual Pt getAcceleration() {
+        virtual const Pt& getAcceleration() {
             return acceleration.assign(force).divide(mass);
         }
 
@@ -251,15 +247,23 @@ class Variable : public IPositioned {
             return force;
         }
 
-        void addForce(const Pt& vector, double power, bool inspected = false) {
-            Pt f(vector);
-
+        void addForce(const Pt& f) {
             if (!f.isZero() && f.isFullySpecified()) {
-                f.normalize().multiply(power);
                 force.add(f);
 
-                if (inspected)
-                    forces.push_back(f);
+// TODO:
+//                if (embedding->inspected)
+//                    forces.push_back(f);
+            }
+        }
+
+        void subtractForce(const Pt& f) {
+            if (!f.isZero() && f.isFullySpecified()) {
+                force.subtract(f);
+
+// TODO:
+//                if (embedding->inspected)
+//                    forces.push_back(f.multiply(-1));
             }
         }
 
@@ -288,7 +292,7 @@ class PointConstrainedVariable : public Variable {
             this->velocity.z = velocity.z;
         }
 
-        virtual Pt getAcceleration() {
+        virtual const Pt& getAcceleration() {
             return acceleration.assign(0, 0, force.z).divide(mass);
         }
 };
@@ -296,7 +300,7 @@ class PointConstrainedVariable : public Variable {
 /**
  * Interface class for bodies.
  */
-class IBody : public IPositioned {
+class IBody {
     protected:
         ForceDirectedEmbedding *embedding;
 
@@ -305,9 +309,11 @@ class IBody : public IPositioned {
             this->embedding = embedding;
         }
 
+        virtual const Pt& getPosition() = 0;
+
         virtual const char *getClassName() = 0;
 
-        virtual Rs& getSize() = 0;
+        virtual const Rs& getSize() = 0;
 
         virtual double getMass() = 0;
 

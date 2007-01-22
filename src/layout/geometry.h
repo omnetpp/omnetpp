@@ -74,8 +74,16 @@ class Pt
             return sqrt(x * x + y * y + z * z);
         }
 
+        double getLengthSquare() const {
+            return x * x + y * y + z * z;
+        }
+
         double getBasePlaneProjectionLength() const {
             return sqrt(x * x + y * y);
+        }
+
+        double getBasePlaneProjectionLengthSquare() const {
+            return x * x + y * y;
         }
 
         double getDistance(const Pt& other) const {

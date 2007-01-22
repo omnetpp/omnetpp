@@ -734,7 +734,8 @@ void ForceDirectedGraphLayouter::calculateExpectedMeasures()
     for (int i = 0; i < (int)bodies.size(); i++) {
         IBody *body = bodies[i];
 
-        expectedEdgeLength += body->getSize().getDiagonalLength();
+        if (!dynamic_cast<WallBody *>(body))
+            expectedEdgeLength += body->getSize().getDiagonalLength();
     }
     expectedEdgeLength = 50 + expectedEdgeLength / bodies.size();
     Assert(!isNaN(expectedEdgeLength));
@@ -756,7 +757,7 @@ void ForceDirectedGraphLayouter::setRandomPositions()
     // assign values to not yet assigned coordinates
     const std::vector<Variable *>& variables = embedding.getVariables();
     for (int i = 0; i < (int)variables.size(); i++) {
-        Pt pt = variables[i]->getPosition();
+        Pt pt(variables[i]->getPosition());
 
         if (isNaN(pt.x))
             pt.x = privRand01() * expectedEmbeddingSize;
@@ -929,20 +930,21 @@ void ForceDirectedGraphLayouter::scale()
         Spring *spring = dynamic_cast<Spring *>(forceProviders[i]);
 
         if (spring) {
-            Pt pt1 = spring->getBody1()->getPosition();
-            Pt pt2 = spring->getBody2()->getPosition();
+            const Pt& pt1 = spring->getBody1()->getPosition();
+            const Pt& pt2 = spring->getBody2()->getPosition();
             springCount++;
-            averageSpringLength += pt1.getDistance(pt2);
+            averageSpringLength += pt1.getBasePlaneProjectionDistance(pt2);
         }
     }
     averageSpringLength /= springCount;
+    Assert(!isNaN(averageSpringLength));
 
     // scale
     double scale = expectedEdgeLength / averageSpringLength;
 
     const std::vector<Variable *>& variables = embedding.getVariables();
     for (int i = 0; i < (int)variables.size(); i++) {
-        variables[i]->assignPosition(variables[i]->getPosition().multiply(scale));
+        variables[i]->assignPosition(Pt(variables[i]->getPosition()).multiply(scale));
     }
 }
 
@@ -963,7 +965,7 @@ void ForceDirectedGraphLayouter::translate()
 
     const std::vector<Variable *>& variables = embedding.getVariables();
     for (int i = 0; i < (int)variables.size(); i++) {
-        variables[i]->assignPosition(variables[i]->getPosition().subtract(Pt(left - border, top - border, 0)));
+        variables[i]->assignPosition(Pt(variables[i]->getPosition()).subtract(Pt(left - border, top - border, 0)));
     }
 }
 
@@ -1095,7 +1097,7 @@ void ForceDirectedGraphLayouter::execute()
 void ForceDirectedGraphLayouter::getNodePosition(cModule *mod, int& x, int& y)
 {
     IBody *body = findBody(mod);
-    Pt pt = body->getPosition();
+    const Pt& pt = body->getPosition();
     x = (int) pt.x;
     y = (int) pt.y;
 }
@@ -1108,7 +1110,7 @@ void ForceDirectedGraphLayouter::debugDraw()
     const std::vector<IBody *>& bodies = embedding.getBodies();
     for (int i = 0; i < (int)bodies.size(); i++) {
         IBody *body = bodies[i];
-        Pt pt = body->getPosition();
+        Pt pt(body->getPosition());
         Rs rs = body->getSize();
         pt.subtract(Pt(rs.width / 2, rs.height / 2, 0));
 
@@ -1137,8 +1139,8 @@ void ForceDirectedGraphLayouter::debugDraw()
         Spring *spring = dynamic_cast<Spring *>(forceProviders[i]);
 
         if (spring) {
-            Pt pt1 = spring->getBody1()->getPosition();
-            Pt pt2 = spring->getBody2()->getPosition();
+            const Pt& pt1 = spring->getBody1()->getPosition();
+            const Pt& pt2 = spring->getBody2()->getPosition();
             environment->drawLine(pt1.x, pt1.y, pt2.x, pt2.y, "{edge bbox}", "black");
         }
     }
@@ -1148,7 +1150,7 @@ void ForceDirectedGraphLayouter::debugDraw()
     const std::vector<Variable *>& variables = embedding.getVariables();
     for (int i = 0; i < (int)variables.size(); i++) {
         Variable *variable = variables[i];
-        Pt pt1 = variable->getPosition();
+        const Pt& pt1 = variable->getPosition();
 
         if (showForces) {
             std::vector<Pt> forces = variable->getForces();
