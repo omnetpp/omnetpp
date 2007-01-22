@@ -892,7 +892,8 @@ proc graphmodwin_bubble {c modptr txt} {
 proc layouter_debugDraw_finish {c msg} {
     # create label
     set bb [$c bbox bbox]
-    $c create text [expr ([lindex $bb 0]+[lindex $bb 2])/2] [lindex $bb 1] -anchor n -text $msg
+    $c create text [lindex $bb 0] [lindex $bb 1] -tag bbox -anchor sw -text $msg
+    set bb [$c bbox bbox]
 
     # rescale to fit canvas
     set w [expr [lindex $bb 2]-[lindex $bb 0]]
