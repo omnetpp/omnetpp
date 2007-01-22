@@ -6317,7 +6317,7 @@ fi
 #----------------------
 # Files to be generated
 #----------------------
-                                                                                                                                                                                                                                                                                                            ac_config_files="$ac_config_files Makefile src/sim/Makefile src/envir/Makefile src/tkenv/Makefile src/cmdenv/Makefile src/nedc/Makefile src/nedxml/Makefile src/common/Makefile src/scave/Makefile src/eventlog/Makefile src/layout/Makefile src/utils/Makefile src/utils/opp_makemake src/utils/opp_neddoc test/core/runtest samples/aloha/Makefile samples/cqn/Makefile samples/dyna/Makefile samples/fifo/Makefile samples/hcube/Makefile samples/hist/Makefile samples/neddemo/Makefile samples/p-to-p/Makefile samples/queueing/Makefile samples/routing/Makefile samples/queues/Makefile samples/tictoc/Makefile samples/tokenring/Makefile samples/sockets/Makefile test/Makefile"
+                                                                                                                                                                                                                                                                                                                                ac_config_files="$ac_config_files Makefile src/sim/Makefile src/envir/Makefile src/tkenv/Makefile src/cmdenv/Makefile src/nedc/Makefile src/nedxml/Makefile src/common/Makefile src/scave/Makefile src/eventlog/Makefile src/layout/Makefile src/utils/Makefile src/utils/opp_makemake src/utils/opp_neddoc test/core/runtest samples/aloha/Makefile samples/cqn/Makefile samples/dyna/Makefile samples/fifo/Makefile samples/hcube/Makefile samples/hist/Makefile samples/neddemo/Makefile samples/p-to-p/Makefile samples/queueing/Makefile samples/routing/Makefile samples/queues/Makefile samples/queuenet/Makefile samples/queuenet/lib/Makefile samples/tictoc/Makefile samples/tokenring/Makefile samples/sockets/Makefile test/Makefile"
 
 
 #----------------------
@@ -6989,6 +6989,8 @@ do
   "samples/queueing/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/queueing/Makefile" ;;
   "samples/routing/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/routing/Makefile" ;;
   "samples/queues/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/queues/Makefile" ;;
+  "samples/queuenet/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/queuenet/Makefile" ;;
+  "samples/queuenet/lib/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/queuenet/lib/Makefile" ;;
   "samples/tictoc/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/tictoc/Makefile" ;;
   "samples/tokenring/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/tokenring/Makefile" ;;
   "samples/sockets/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/sockets/Makefile" ;;

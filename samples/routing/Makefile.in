@@ -82,7 +82,7 @@ MSGCOPTS= $(INCLUDE_PATH)
 SUBDIRS= 
 
 # object files in this directory
-OBJS= Packet_m.o App.o Routing.o
+OBJS= Packet_m.o App.o  Routing.o
 
 # header files generated (from msg files)
 GENERATEDHEADERS= Packet_m.h
@@ -154,5 +154,9 @@ re-makemake-m: makefile-ins
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-App.o: App.cc
-Routing.o: Routing.cc
+App.o: App.cc \
+  Packet_m.h
+Packet_m.o: Packet_m.cc \
+  Packet_m.h
+Routing.o: Routing.cc \
+  Packet_m.h

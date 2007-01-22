@@ -22,9 +22,9 @@
 # C++ exceptions (throw/catch) are used together)!
 #
 #CFLAGS='-g -Wno-unused'
-#CFLAGS='-g -Wall'
+CFLAGS='-g -Wall'
 #CFLAGS='-gstabs+3 -Wall'
-CFLAGS='-O2 -DNDEBUG=1'
+#CFLAGS='-O2 -DNDEBUG=1'
 
 #
 # CFLAGS for simulation models: opp_makemake will generate Makefiles with this

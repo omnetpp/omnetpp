@@ -29,12 +29,12 @@ void Classifier::handleMessage(cMessage *msg)
 {
     //FIXME celszeru enumba kiszedni a dispatch fieldet az elejen
     int outGateIndex = -1;
-    if (strcmpi(dispatchField, "type") == 0) {
+    if (strcmp(dispatchField, "type") == 0) {
     outGateIndex = msg->kind();
-    } else if (strcmpi(dispatchField, "priority") == 0) {
+    } else if (strcmp(dispatchField, "priority") == 0) {
         outGateIndex = msg->priority();
     }
-	// TODO we could look for the value in the dynamically added parameters too		 		
+    // TODO we could look for the value in the dynamically added parameters too		 		
 
     if ((outGateIndex < 0) || (outGateIndex >= gateSize("out"))) {
         send(msg, "rest");
@@ -42,3 +42,6 @@ void Classifier::handleMessage(cMessage *msg)
         send(msg, "out", outGateIndex);
     }	
 }
+
+
+

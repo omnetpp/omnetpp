@@ -832,6 +832,8 @@ AC_CONFIG_FILES(
   samples/queueing/Makefile
   samples/routing/Makefile
   samples/queues/Makefile
+  samples/queuenet/Makefile
+  samples/queuenet/lib/Makefile
   samples/tictoc/Makefile
   samples/tokenring/Makefile
   samples/sockets/Makefile

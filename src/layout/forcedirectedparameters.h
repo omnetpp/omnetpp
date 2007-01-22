@@ -20,7 +20,7 @@
 #include "forcedirectedparametersbase.h"
 #include "forcedirectedembedding.h"
 
-inline double sgn(double val) {
+inline double signum(double val) {
     return val < 0 ? -1 : val == 0 ? 0 : 1;
 }
 
@@ -254,7 +254,7 @@ class AbstractForceProvider : public IForceProvider {
 
         Pt getStandardHorizontalDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
             distance = body1->getPosition().x - body2->getPosition().x;
-            Pt vector = Pt(sgn(distance), 0, 0);
+            Pt vector = Pt(signum(distance), 0, 0);
             distance = fabs(distance);
 
             if (!pointLikeDistance)
@@ -265,7 +265,7 @@ class AbstractForceProvider : public IForceProvider {
 
         Pt getStandardVerticalDistanceAndVector(IBody *body1, IBody *body2, double &distance) {
             distance = body1->getPosition().y - body2->getPosition().y;
-            Pt vector = Pt(0, sgn(distance), 0);
+            Pt vector = Pt(0, signum(distance), 0);
             distance = fabs(distance);
 
             if (!pointLikeDistance)

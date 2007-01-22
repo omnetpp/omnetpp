@@ -82,7 +82,7 @@ MSGCOPTS= $(INCLUDE_PATH)
 SUBDIRS= 
 
 # object files in this directory
-OBJS= HCPacket_m.o HCGenerator.o HCRouter.o HCSink.o
+OBJS= HCPacket_m.o HCGenerator.o  HCRouter.o HCSink.o
 
 # header files generated (from msg files)
 GENERATEDHEADERS= HCPacket_m.h
@@ -158,8 +158,13 @@ re-makemake-m: makefile-ins
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 HCGenerator.o: HCGenerator.cc \
-  HCGenerator.h
+  HCGenerator.h \
+  HCPacket_m.h
+HCPacket_m.o: HCPacket_m.cc \
+  HCPacket_m.h
 HCRouter.o: HCRouter.cc \
-  HCRouter.h
+  HCRouter.h \
+  HCPacket_m.h
 HCSink.o: HCSink.cc \
-  HCSink.h
+  HCSink.h \
+  HCPacket_m.h

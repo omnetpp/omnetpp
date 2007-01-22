@@ -41,7 +41,7 @@ void Fork::handleMessage(cMessage *msg)
     {
         cMessage *dupMsg = msg->dup();
         if (changeMsgNames) {
-            char buff[1024];
+            char buff[80];
             sprintf(buff, "%.60s.%d", msg->name(), i);
             dupMsg->setName(buff);
         } 
@@ -49,9 +49,11 @@ void Fork::handleMessage(cMessage *msg)
     }
     // send out the original message on out[0]
     if (changeMsgNames) {
-        char buff[1024];
+        char buff[80];
         sprintf(buff, "%.60s.0", msg->name());
         msg->setName(buff);
     } 
     send(msg, "out", 0);
 }
+
+

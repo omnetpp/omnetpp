@@ -36,15 +36,15 @@ SelectionStrategy *SelectionStrategy::create(const char *algName, cSimpleModule 
 {
     SelectionStrategy *strat = NULL;
     
-    if (strcmpi(algName, "priority") == 0) {
+    if (strcmp(algName, "priority") == 0) {
         strat = new PrioritySelectionStrategy(module, selectOnInGate);
-    } else if (strcmpi(algName, "random") == 0) {
+    } else if (strcmp(algName, "random") == 0) {
         strat = new RandomSelectionStrategy(module, selectOnInGate);
-    } else if (strcmpi(algName, "roundRobin") == 0) {
+    } else if (strcmp(algName, "roundRobin") == 0) {
         strat = new RoundRobinSelectionStrategy(module, selectOnInGate);
-    } else if (strcmpi(algName, "shortestQueue") == 0) {
+    } else if (strcmp(algName, "shortestQueue") == 0) {
         strat = new ShortestQueueSelectionStrategy(module, selectOnInGate);
-    } else if (strcmpi(algName, "longestQueue") == 0) {
+    } else if (strcmp(algName, "longestQueue") == 0) {
         strat = new LongestQueueSelectionStrategy(module, selectOnInGate);
     }
     
@@ -191,4 +191,5 @@ int LongestQueueSelectionStrategy::select()
     }
     return result;            
 }
-                
+
+

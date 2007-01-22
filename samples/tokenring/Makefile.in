@@ -82,7 +82,7 @@ MSGCOPTS= $(INCLUDE_PATH)
 SUBDIRS= 
 
 # object files in this directory
-OBJS= token_m.o Gen.o Sink.o TokenRingMAC.o
+OBJS= token_m.o Gen.o Sink.o  TokenRingMAC.o
 
 # header files generated (from msg files)
 GENERATEDHEADERS= token_m.h
@@ -157,6 +157,11 @@ re-makemake-m: makefile-ins
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-Gen.o: Gen.cc
-Sink.o: Sink.cc
-TokenRingMAC.o: TokenRingMAC.cc
+Gen.o: Gen.cc \
+  token_m.h
+Sink.o: Sink.cc \
+  token_m.h
+token_m.o: token_m.cc \
+  token_m.h
+TokenRingMAC.o: TokenRingMAC.cc \
+  token_m.h
