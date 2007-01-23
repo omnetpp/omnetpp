@@ -1,8 +1,16 @@
 package org.omnetpp.ned.model;
 
+import java.nio.channels.Channel;
+
 import org.eclipse.core.runtime.Assert;
+import org.omnetpp.ned.model.pojo.ChannelSpecNode;
+import org.omnetpp.ned.model.pojo.ConnectionsNode;
+import org.omnetpp.ned.model.pojo.GatesNode;
 import org.omnetpp.ned.model.pojo.NEDElementFactory;
 import org.omnetpp.ned.model.pojo.NedFileNode;
+import org.omnetpp.ned.model.pojo.ParametersNode;
+import org.omnetpp.ned.model.pojo.SubmodulesNode;
+import org.omnetpp.ned.model.pojo.TypesNode;
 import org.omnetpp.ned.model.swig.NED1Generator;
 import org.omnetpp.ned.model.swig.NED2Generator;
 import org.omnetpp.ned.model.swig.NEDBasicValidator;
@@ -28,17 +36,19 @@ public class NEDTreeUtil {
 	 * @param keepSyntax if set, sources parsed in old syntax (NED-1) will be generated in old syntax as well 
 	 */
 	public static String generateNedSource(org.omnetpp.ned.model.NEDElement treeRoot, boolean keepSyntax) {
-		// for debuggind
-        // System.out.println(generateXmlFromPojoElementTree(treeRoot,""));
+		// XXX for debugging
+        System.out.println(generateXmlFromPojoElementTree(treeRoot,""));
         
         NEDErrorStore errors = new NEDErrorStore();
 		errors.setPrintToStderr(true); //XXX just for debugging
 		if (keepSyntax && treeRoot instanceof NedFileNode && "1".equals(((NedFileNode)treeRoot).getVersion())) {
 			NED1Generator ng = new NED1Generator(errors);
-			return ng.generate(pojo2swig(treeRoot), ""); // TODO check NEDErrorStore for conversion errors!! 
+			filterPojoTree(treeRoot);
+            return ng.generate(pojo2swig(treeRoot), ""); // TODO check NEDErrorStore for conversion errors!! 
 		}
 		else {
 			NED2Generator ng = new NED2Generator(errors);
+            filterPojoTree(treeRoot);
 			return ng.generate(pojo2swig(treeRoot), ""); // TODO check NEDErrorStore for errors!!
 		}
 	}
@@ -189,11 +199,50 @@ public class NEDTreeUtil {
 		// create child nodes
 		for (org.omnetpp.ned.model.NEDElement child = pojoNode.getFirstChild(); 
 					child != null; child = child.getNextSibling()) {
-			swigNode.appendChild(pojo2swig(child));
+            NEDElement convertedChild = pojo2swig(child); 
+			if (convertedChild != null) 
+                swigNode.appendChild(convertedChild);
 		}
 
 		return swigNode;
-	}	
+	}
+    
+    /**
+     * The function allows the normalization of the node before converted to SWIG objects.
+     * Unnecessary nodes can be removed from the tree.
+     * (ie. empty channelSpec objects etc.)
+     * @param pojoNode Node to be filtered
+     */
+    protected static void filterPojoTree(org.omnetpp.ned.model.NEDElement pojoNode) {
+        // filter the child nodes first
+        for (org.omnetpp.ned.model.NEDElement child = pojoNode.getFirstChild(); 
+                    child != null; child = child.getNextSibling()) {
+            filterPojoTree(child);
+        }
+
+        // se if the current node can be filtered out
+
+        // skip a channel spec if it does not contain any meaningful information
+        if (pojoNode instanceof ChannelSpecNode) {
+            ChannelSpecNode cpn = (ChannelSpecNode) pojoNode;
+            if ((cpn.getType() == null || "".equals(cpn.getType())) 
+                && (cpn.getLikeType() == null || "".equals(cpn.getLikeType())) 
+                && !cpn.hasChildren()) {
+
+                // remove it from the parent if it does not matter
+                pojoNode.removeFromParent();
+            }
+        }
+        // check for empty types, parameters, gates, submodules, connections node
+        if (((pojoNode instanceof TypesNode) 
+                || (pojoNode instanceof ParametersNode)
+                || (pojoNode instanceof GatesNode)
+                || (pojoNode instanceof SubmodulesNode)
+                || (pojoNode instanceof ConnectionsNode))
+                                && !pojoNode.hasChildren()) {
+            pojoNode.removeFromParent();
+        }
+    }
 
 	/**
 	 * Converts a NEDElement tree to an XML-like textual format. Useful for debugging.
