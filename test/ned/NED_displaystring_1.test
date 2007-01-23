@@ -42,22 +42,21 @@ network {network} {
 %exitcode: 0
 
 %contains: stdout
-module {network}
+module NED_displaystring_1_network
   display:
-module {network}.base
+module NED_displaystring_1_network.base
   display: aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2
   @display(aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2)
-module {network}.addtag
+module NED_displaystring_1_network.addtag
   display: cc=CCC1,,CCC3;aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2
   @display(cc=CCC1,,CCC3;aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2)
-module {network}.addtagarg
+module NED_displaystring_1_network.addtagarg
   display: aa=aaa1,aaa2,,aaa4,AAA5,AAA6;bb=bbb1,bbb2,BBB3
   @display(aa=aaa1,aaa2,,aaa4,AAA5,AAA6;bb=bbb1,bbb2,BBB3)
-module {network}.overwrite
+module NED_displaystring_1_network.overwrite
   display: aa=AAA1,aaa2,,AAA4;bb=bbb1,BBB2
   @display(aa=AAA1,aaa2,,AAA4;bb=bbb1,BBB2)
-module {network}.unset
-  display: aa=aaa1,-,,aaa4;bb=-,-            <========= WRONG
-  @display(aa=aaa1,-,,aaa4;bb=-,-)
+module NED_displaystring_1_network.unset
+  display: aa=aaa1,,,aaa4
+  @display(aa=aaa1,,,aaa4)
 done
-
