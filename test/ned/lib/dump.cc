@@ -21,7 +21,8 @@ void Dump::dump(cModule *mod, int level)
         return;
 
     printf("module %s\n", mod->fullPath().c_str());
-    printf("  display: %s\n", mod->displayString().toString());
+    if (strlen(mod->displayString().toString())>0)
+        printf("  display: %s\n", mod->displayString().toString());
 
     cProperties *props = mod->properties();
     for (int i=0; i<props->numProperties(); i++)
