@@ -1,0 +1,56 @@
+%description:
+Test overriding the default display string in submodules.
+
+Cases during display string merging:
+ add tag
+ add tagarg
+ set (overwrite) tagarg
+ delete (unset) tagarg
+
+
+%file: {}.ned
+
+network {network} {
+  types:
+    module Base {
+        @display("aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2");
+    }
+  submodules:
+    dump: Dump;
+    base : Base;
+    addTag : Base {
+        @display("cc=CCC1,,CCC3");  // add
+    }
+    addTagArg : Base {
+        @display("aa=,,,,AAA5,AAA6;bb=,,BBB3");  // add tagarg
+    }
+    overwrite : Base {
+        @display("aa=AAA1,,,AAA4;bb=,BBB2");  // overwrite tagarg
+    }
+    unset : Base {
+        @display("aa=,-;bb=-,-");  // delete tagarg
+    }
+}
+
+
+%exitcode: 0
+
+%contains: stdout
+module {network}
+  display:
+module {network}.base
+  display: aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2
+  @display(aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2)
+module {network}.addTag
+  display: cc=CCC1,,CCC3;aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2
+  @display(cc=CCC1,,CCC3;aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2)
+module {network}.addTagArg
+  display: aa=aaa1,aaa2,,aaa4,AAA5,AAA6;bb=bbb1,bbb2,BBB3
+  @display(aa=aaa1,aaa2,,aaa4,AAA5,AAA6;bb=bbb1,bbb2,BBB3)
+module {network}.overwrite
+  display: aa=AAA1,aaa2,,AAA4;bb=bbb1,BBB2
+  @display(aa=AAA1,aaa2,,AAA4;bb=bbb1,BBB2)
+module {network}.unset
+  display: aa=aaa1,,,aaa4
+  @display(aa=aaa1,,,aaa4)
+done

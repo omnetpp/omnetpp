@@ -1,4 +1,6 @@
 %description:
+Test display string inheritance.
+
 Cases during display string merging:
  add tag
  add tagarg
