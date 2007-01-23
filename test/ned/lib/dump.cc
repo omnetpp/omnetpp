@@ -20,7 +20,7 @@ void Dump::dump(cModule *mod, int level)
     if (mod==this)
         return;
 
-    printf("module %s\n", mod->fullPath().c_str());
+    printf("module %s: %s\n", mod->fullPath().c_str(), mod->className());
     if (strlen(mod->displayString().toString())>0)
         printf("  display: %s\n", mod->displayString().toString());
 

@@ -3,9 +3,8 @@ Test that the local Node type takes precedence over the global one.
 
 %file: {}.ned
 
-// the global type
-module {Node} {  
-}
+module {Node} {  // the global type 
+} 
 
 network {network} {
   types:
