@@ -27,7 +27,7 @@ module {Overwrite} extends {Base} {
 }
 
 module {Unset} extends {Base} {
-    @display("aa=,-;bb=-,-");  // delete tagarg  FIXME unset does not work yet
+    @display("aa=,-;bb=-,-");  // delete tagarg
 }
 
 network {network} {
