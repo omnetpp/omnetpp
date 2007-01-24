@@ -63,12 +63,14 @@ class SIM_API cHasher : noncopyable
     void add(short d) {merge((uint32)d);}
     void add(char d)  {merge((uint32)d);}
     void add(long d)  {merge((uint64)d);}
+    void add(int64 d) {merge2(d);}
     void add(unsigned int d)   {merge((uint32)d);}
     void add(unsigned short d) {merge((uint32)d);}
     void add(unsigned char d)  {merge((uint32)d);}
     void add(unsigned long d)  {merge((uint64)(int64)d);} // sign! TODO regression test! as this is tricky
-    void add(double d)  {merge(*(uint64 *)&d);}
-    void add(const char *s)  {if (s) add(s, strlen(s)+1); else add(0);}
+    void add(uint64 d)         {merge2(*(uint64 *)&d);}  //TODO regression test!
+    void add(double d)         {merge2(*(uint64 *)&d);}
+    void add(const char *s)    {if (s) add(s, strlen(s)+1); else add(0);}
     //@}
 
     /** @name Obtaining the result */

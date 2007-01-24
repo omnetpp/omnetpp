@@ -31,6 +31,7 @@ class SIM_API SimTime
     static int scaleexp;     // scale exponent, >=0
     static double scale_;    // 10^scaleexp, >=1
     static double invscale_; // 1/scale_; we store it because floating-point multiplication is faster than division
+    static double maxtime;   // also precalculated
 
   public:
     static const int SCALEEXP_S  = 0;
@@ -72,6 +73,7 @@ class SIM_API SimTime
 
     static int64 scale()  {return (int64)scale_;}
     static int scaleExp() {return scaleexp;}
+    static double maxTime() {return maxtime;}
 
     /**
      * IMPORTANT: This function has a global effect, and therefore
