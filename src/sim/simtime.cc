@@ -33,6 +33,9 @@ void SimTime::setScaleExp(int e)
     // store it in double, because that's how we'll need it most often
     scale_ = (double) scale;
     invscale_ = 1.0 / (double) scale;
+
+    // precalculate maxtime too
+    maxtime = ((((int64)1) << 63) - 1) * invscale_;
 }
 
 std::string SimTime::str() const
@@ -43,4 +46,13 @@ std::string SimTime::str() const
     return out.str();
 }
 
+/*XXX
+std::string pr(const SimTime& x)
+{
+   char buf[40];
+   char *s;
+   sprintf((s=buf+10),"%I64d", x.raw());  // linux: use s=lltostr(x.raw(),buf+sizeof(buf)-1);
+   return buf;
+}
+*/
 
