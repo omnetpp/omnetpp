@@ -127,13 +127,6 @@ We hope you&apos;ll enjoy working with OMNeT++/OMNEST.
          unpack="false"/>
 
    <plugin
-         id="org.omnetpp.eventlog.engine"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.omnetpp.eventlogtable"
          download-size="0"
          install-size="0"
