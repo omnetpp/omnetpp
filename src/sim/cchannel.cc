@@ -32,7 +32,7 @@
 
 using std::ostream;
 
-Register_Class(cChannel);
+Register_Class(cNullChannel);
 
 
 cChannel::cChannel(const char *name) : cComponent(name)
@@ -120,7 +120,9 @@ cModule *cChannel::parentModule() const
     return fromgatep->type()==cGate::INPUT ? ownerMod : ownerMod->parentModule();
 }
 
-bool cChannel::deliver(cMessage *msg, simtime_t t)
+//----
+
+bool cNullChannel::deliver(cMessage *msg, simtime_t t)
 {
     // just hand over msg to next gate
     return fromGate()->toGate()->deliver(msg, t);

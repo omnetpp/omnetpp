@@ -28,6 +28,8 @@
 #include "cexception.h"
 #include "cdisplaystring.h"
 #include "cchannel.h"
+#include "cproperties.h"
+#include "cproperty.h"
 #include "util.h"
 
 // static members:
@@ -758,6 +760,13 @@ void cModule::finalizeParameters()
     // temporarily switch context
     cContextSwitcher tmp(this);
     cContextTypeSwitcher tmp2(CTX_BUILD);
+
+    // set display string (it may depend on parameter values via "$param" references)
+    cProperties *props = properties();
+    cProperty *prop = props->get("display");
+    const char *propValue = prop ? prop->value(cProperty::DEFAULTKEY) : NULL;
+    if (propValue)
+        setDisplayString(propValue);
 
     // set up gate vectors (their sizes may depend on the parameter settings)
     moduleType()->addGatesTo(this);

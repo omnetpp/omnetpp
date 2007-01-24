@@ -35,8 +35,7 @@ network {network} extends {Derived3} {
 %exitcode: 0
 
 %contains: stdout
-module NED_displaystring_netwbg_1_network
+module NED_display_networkbg_1_network: NED_display_networkbg_1_network
   display: dd=DDD1,,DDD3;aa=,aaa2,,AAA4,aaa5,AAA6,AAA7;bb=bbb1,BBB2,BBB3
   @display(dd=DDD1,,DDD3;aa=,aaa2,,AAA4,aaa5,AAA6,AAA7;bb=bbb1,BBB2,BBB3)
 done
-

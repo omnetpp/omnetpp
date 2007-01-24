@@ -121,7 +121,9 @@ void cDisplayString::updateWith(const cDisplayString& ds)
         for (int j=0; j<m; j++)
         {
             const char *arg = ds.getTagArg(i,j);
-            if (arg[0])
+            if (arg[0]=='-' && !arg[1])  // "-" is the "antivalue"
+                setTagArg(ds.getTagName(i), j, "");
+            else if (arg[0])
                 setTagArg(ds.getTagName(i), j, arg);
         }
     }
@@ -226,9 +228,11 @@ bool cDisplayString::setTagArg(int tagindex, int index, const char *value)
         delete [] slot;
     slot = opp_strdup(value);
 
-    // get rid of possible empty trailing args
+    // get rid of possible empty trailing args, throw out tag if it became empty
     while (tag.numargs>0 && tag.args[tag.numargs-1]==NULL)
         tag.numargs--;
+    if (tag.numargs==0)
+        removeTag(tagindex);
 
     notify();
     return true;

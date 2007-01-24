@@ -49,18 +49,6 @@
 
 /*
   FIXME FIXME FIXME
-
-  a toplevel modulra nem hivodnak meg a kovetkezok:
-
-        setDisplayString(submodp);
-        assignSubcomponentParams(submodp, submod);  --> ez kell?
-        submodp->readParams();  --> ez most mar OK, finalizeParameters()-ben van
-
-  mivel ezek az addSubmodule()-ban vannak!
-
-  atrakni a buildInside()-ba???
-
-
   TODO connection display string
 */
 
@@ -373,7 +361,6 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
         v.push_back(submodp);
 
         cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
-        setDisplayString(submodp);
         assignSubcomponentParams(submodp, submod);
         submodp->finalizeParameters(); // also sets up type's gates
         setupGateVectors(submodp, submod);
@@ -391,7 +378,6 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
             v.push_back(submodp);
 
             cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
-            setDisplayString(submodp);
             assignSubcomponentParams(submodp, submod);
             submodp->finalizeParameters(); // also sets up type's gates
             setupGateVectors(submodp, submod);
@@ -402,26 +388,15 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
     // on this level too.
 }
 
-
-void cNEDNetworkBuilder::setDisplayString(cModule *module)
+void cNEDNetworkBuilder::setConnDisplayString(cGate *srcgatep)
 {
-    cProperties *props = module->properties();
+/*XXX
+    cProperties *props = XXXX->properties();
     cProperty *prop = props->get("display");
     const char *propValue = prop ? prop->value(cProperty::DEFAULTKEY) : NULL;
     if (propValue)
     {
-        module->setDisplayString(propValue);
-    }
-}
-
-void cNEDNetworkBuilder::setConnDisplayString(cGate *srcgatep)
-{
-/*XXX
-    DisplayStringNode *dispstrnode = conn->getFirstDisplayStringChild();
-    if (dispstrnode)
-    {
-        const char *dispstr = dispstrnode->getValue();
-        srcgatep->setDisplayString(dispstr);
+        srcgatep->setDisplayString(propValue);
     }
 */
 }

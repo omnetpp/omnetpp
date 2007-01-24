@@ -132,6 +132,38 @@ class SIM_API cChannel : public cComponent //implies noncopyable
      * object should be deleted by the caller; this can be used to model that
      * the message gets lost in the channel.
      */
+    virtual bool deliver(cMessage *msg, simtime_t at) = 0;
+    //@}
+};
+
+
+/**
+ * A channel that does nothing.
+ *
+ * @ingroup SimCore
+ */
+class SIM_API cNullChannel : public cChannel //implies noncopyable
+{
+  public:
+    /** @name Constructors, destructor */
+    //@{
+    /**
+     * Constructor.
+     */
+    explicit cNullChannel(const char *name=NULL) : cChannel(name) {}
+
+    /**
+     * Destructor.
+     */
+    virtual ~cNullChannel();
+    //@}
+
+    /** @name Redefined cChannel member functions. */
+    //@{
+    /**
+     * This implementation just delivers the message to the opposite gate
+     * of the connection without any processing.
+     */
     virtual bool deliver(cMessage *msg, simtime_t at);
     //@}
 };
