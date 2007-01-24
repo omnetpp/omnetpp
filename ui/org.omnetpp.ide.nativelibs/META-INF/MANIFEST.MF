@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Native library Plug-in
+Bundle-SymbolicName: org.omnetpp.ide.nativelibs
+Bundle-Version: 4.0.0
+Bundle-Vendor: OpenSim Ltd.
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.core.runtime
+Eclipse-LazyStart: true
