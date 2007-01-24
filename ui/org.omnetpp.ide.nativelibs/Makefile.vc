@@ -15,7 +15,7 @@ LAYOUT=$(OMNETPP_ROOT)\src\layout
 EVENTLOG=$(OMNETPP_ROOT)\src\eventlog
 
 COMMON_JAVAPKG = org.omnetpp.common.engine
-NEDXML_JAVAPKG = org.omnetpp.ned.model.swig
+NEDXML_JAVAPKG = org.omnetpp.ned.engine
 SCAVE_JAVAPKG = org.omnetpp.scave.engine
 LAYOUT_JAVAPKG = org.omnetpp.layout.engine
 EVENTLOG_JAVAPKG = org.omnetpp.eventlog.engine
@@ -95,6 +95,5 @@ depend:
 clean:
 	-del *.cxx *.obj *.exp *.lib test*.exe *.dll 2>nul
 	-del *.ilk *.idb *.pdb *.pch 2>nul
-
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

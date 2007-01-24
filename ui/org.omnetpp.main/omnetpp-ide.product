@@ -19,7 +19,7 @@
    <splash
       location="org.omnetpp.main"
       startupProgressRect="10,10,300,10"
-      startupMessageRect="0,0,0,0"
+      startupMessageRect="10,30,500,25"
       startupForegroundColor="000000" />
    <launcher name="omnetide">
       <solaris/>

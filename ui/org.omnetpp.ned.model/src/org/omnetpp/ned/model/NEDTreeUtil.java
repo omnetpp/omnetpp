@@ -9,17 +9,17 @@ import org.omnetpp.ned.model.pojo.NedFileNode;
 import org.omnetpp.ned.model.pojo.ParametersNode;
 import org.omnetpp.ned.model.pojo.SubmodulesNode;
 import org.omnetpp.ned.model.pojo.TypesNode;
-import org.omnetpp.ned.model.swig.NED1Generator;
-import org.omnetpp.ned.model.swig.NED2Generator;
-import org.omnetpp.ned.model.swig.NEDBasicValidator;
-import org.omnetpp.ned.model.swig.NEDDTDValidator;
-import org.omnetpp.ned.model.swig.NEDElement;
-import org.omnetpp.ned.model.swig.NEDElementCode;
-import org.omnetpp.ned.model.swig.NEDErrorCategory;
-import org.omnetpp.ned.model.swig.NEDErrorStore;
-import org.omnetpp.ned.model.swig.NEDParser;
-import org.omnetpp.ned.model.swig.NEDSourceRegion;
-import org.omnetpp.ned.model.swig.NEDTools;
+import org.omnetpp.ned.engine.NED1Generator;
+import org.omnetpp.ned.engine.NED2Generator;
+import org.omnetpp.ned.engine.NEDBasicValidator;
+import org.omnetpp.ned.engine.NEDDTDValidator;
+import org.omnetpp.ned.engine.NEDElement;
+import org.omnetpp.ned.engine.NEDElementCode;
+import org.omnetpp.ned.engine.NEDErrorCategory;
+import org.omnetpp.ned.engine.NEDErrorStore;
+import org.omnetpp.ned.engine.NEDParser;
+import org.omnetpp.ned.engine.NEDSourceRegion;
+import org.omnetpp.ned.engine.NEDTools;
 
 /**
  * Utility functions working on NEDELelemt trees. Conversions, serialization, dumping of trees. 
@@ -183,7 +183,7 @@ public class NEDTreeUtil {
 	 */
 	public static NEDElement pojo2swig(org.omnetpp.ned.model.NEDElement pojoNode) {
 
-		NEDElement swigNode = org.omnetpp.ned.model.swig.NEDElementFactory.getInstance()
+		NEDElement swigNode = org.omnetpp.ned.engine.NEDElementFactory.getInstance()
 				.createNodeWithTag(pojoNode.getTagCode());
 
 		// set the attributes

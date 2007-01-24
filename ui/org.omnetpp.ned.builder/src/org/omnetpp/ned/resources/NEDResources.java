@@ -35,8 +35,8 @@ import org.omnetpp.ned.model.pojo.NedFileNode;
 import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.model.pojo.ParametersNode;
 import org.omnetpp.ned.model.pojo.SimpleModuleNode;
-import org.omnetpp.ned.model.swig.NEDErrorCategory;
-import org.omnetpp.ned.model.swig.NEDErrorStore;
+import org.omnetpp.ned.engine.NEDErrorCategory;
+import org.omnetpp.ned.engine.NEDErrorStore;
 
 /**
  * Parses all NED files in the workspace and makes them available
