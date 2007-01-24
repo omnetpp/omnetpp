@@ -29,8 +29,8 @@
 
 %typemap(javacode) Variable %{
     protected Variable disown() {
-		swigCMemOwn = false;
-	    return this;
+        swigCMemOwn = false;
+        return this;
     }
 
     public boolean equals(Object obj) {
@@ -62,11 +62,11 @@ import java.lang.reflect.Constructor;
    private static java.util.ArrayList<Constructor> bodyConstructors = new java.util.ArrayList<Constructor>();
 
    public static IBody newIBody(long cPtr, boolean isOwner) {
-	  try {
+      try {
          if (cPtr == 0)
             return null;
 
-         String className = CommonEngineJNI.IBody_getClassName(cPtr);
+         String className = LayoutEngineJNI.IBody_getClassName(cPtr);
          Constructor constructor = null;
          for (int i = 0; i < bodyConstructors.size(); i++)
             if (bodyConstructors.get(i).getName().equals(className))
@@ -107,11 +107,11 @@ import java.lang.reflect.Constructor;
    private static java.util.ArrayList<Constructor> forceProviderConstructors = new java.util.ArrayList<Constructor>();
 
    public static IForceProvider newIForceProvider(long cPtr, boolean isOwner) {
-	  try {
+      try {
          if (cPtr == 0)
             return null;
 
-         String className = CommonEngineJNI.IForceProvider_getClassName(cPtr);
+         String className = LayoutEngineJNI.IForceProvider_getClassName(cPtr);
          Constructor constructor = null;
          for (int i = 0; i < forceProviderConstructors.size(); i++)
             if (forceProviderConstructors.get(i).getName().equals(className))
