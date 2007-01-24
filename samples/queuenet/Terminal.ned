@@ -54,7 +54,7 @@
 network Terminal
 {
     parameters:
-        @display("bgb=595.0,353.0;i=block/users");
+        @display("i=block/users");
     submodules:
         clerk: Server {
             @display("p=448.0,132.0");

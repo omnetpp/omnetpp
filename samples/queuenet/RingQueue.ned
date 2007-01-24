@@ -15,7 +15,7 @@
 network RingQueue
 {
     parameters:
-        @display("i=device/lan-ring;bgb=434.0,353.0");
+        @display("i=device/lan-ring");
     submodules:
         source1: Source {
             @display("p=370.0,36.0");

@@ -14,7 +14,7 @@
 network CallCenter
 {
     parameters:
-        @display("bgb=606.0,426.0;bgl=2;i=device/cellphone");
+        @display("i=device/cellphone");
     submodules:
         hangingUp: Sink {
             @display("p=131.0,330.0");

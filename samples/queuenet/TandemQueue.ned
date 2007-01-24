@@ -15,7 +15,7 @@
 network TandemQueue
 {
     parameters:
-        @display("i=block/network;bgb=468.0,224.0");
+        @display("i=block/network");
     submodules:
         source: Source {
             @display("p=32.0,74.0");
