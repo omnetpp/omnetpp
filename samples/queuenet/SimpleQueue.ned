@@ -17,6 +17,6 @@ network SimpleQueue
             @display("p=50.0,79.0");
         };
     connections:
-        source.out --> --> queue.in++;
-        queue.out --> --> sink.in++;
+        source.out --> queue.in++;
+        queue.out --> sink.in++;
 }
