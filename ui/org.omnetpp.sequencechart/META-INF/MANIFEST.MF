@@ -15,6 +15,7 @@ Require-Bundle: org.eclipse.core.resources,
  org.eclipse.draw2d,
  org.omnetpp.common,
  org.omnetpp.scave.engine,
- org.omnetpp.eventlog.engine
+ org.omnetpp.eventlog.engine,
+ org.omnetpp.ide.nativelibs
 Eclipse-LazyStart: true
 Bundle-Vendor: OpenSim Ltd.

@@ -18,7 +18,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.omnetpp.figures,
  org.eclipse.ui,
  org.omnetpp.ned.model,
- org.omnetpp.ned.builder
+ org.omnetpp.ned.builder,
+ org.omnetpp.ide.nativelibs
 Eclipse-LazyStart: true
 Export-Package: org.omnetpp.ned.editor.graph,
  org.omnetpp.ned.editor.graph.actions,

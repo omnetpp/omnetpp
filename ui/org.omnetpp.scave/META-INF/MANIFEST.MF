@@ -16,8 +16,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jface.text,
  org.eclipse.ui.workbench.texteditor,
  org.eclipse.ui.forms,
+ org.eclipse.gef,
  org.omnetpp.scave.model,
- org.eclipse.gef
+ org.omnetpp.ide.nativelibs
 Eclipse-LazyStart: true
 Bundle-Vendor: OpenSim Ltd.
 Bundle-ClassPath: lib/jcommon-1.0.0.jar,
