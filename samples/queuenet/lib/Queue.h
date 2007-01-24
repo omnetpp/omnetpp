@@ -22,6 +22,7 @@
 #include <omnetpp.h>
 
 class Job;
+
 /**
  * Abstract base class for single-server queues.
  */
@@ -47,6 +48,7 @@ class Queue : public cSimpleModule
         simtime_t prevServiceEventTimeStamp; // the timestamp of the last service state change
         void queueLengthWillChange();
         void processorStateWillChange();
+
     public:
         Queue();
         virtual ~Queue();
