@@ -1,4 +1,4 @@
-package org.omnetpp.eventlog.selection;
+package org.omnetpp.eventlogtable.selection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,7 @@ import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.virtualtable.IVirtualTableSelection;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
-import org.omnetpp.eventlog.selection.IEventLogSelection;
+import org.omnetpp.eventlogtable.selection.IEventLogSelection;
 
 /**
  * Selection that is published by event log editors/viewers.

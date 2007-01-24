@@ -1,4 +1,4 @@
-package org.omnetpp.eventlog.selection;
+package org.omnetpp.eventlogtable.selection;
 
 import java.util.List;
 

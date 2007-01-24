@@ -1,4 +1,4 @@
-package org.omnetpp.eventlog.editors;
+package org.omnetpp.eventlogtable.editors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;

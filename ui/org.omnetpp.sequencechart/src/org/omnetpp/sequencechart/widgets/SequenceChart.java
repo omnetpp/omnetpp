@@ -51,8 +51,8 @@ import org.omnetpp.eventlog.engine.MessageDependencyKind;
 import org.omnetpp.eventlog.engine.MessageSend;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
-import org.omnetpp.eventlog.selection.EventLogSelection;
-import org.omnetpp.eventlog.selection.IEventLogSelection;
+import org.omnetpp.eventlogtable.selection.EventLogSelection;
+import org.omnetpp.eventlogtable.selection.IEventLogSelection;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.sequencechart.moduletree.ModuleTreeItem;
 

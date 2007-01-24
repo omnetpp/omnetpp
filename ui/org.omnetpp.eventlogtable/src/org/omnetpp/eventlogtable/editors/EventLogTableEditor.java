@@ -7,7 +7,6 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.INavigationLocation;
 import org.eclipse.ui.INavigationLocationProvider;
 import org.eclipse.ui.ide.IGotoMarker;
-import org.omnetpp.eventlog.editors.EventLogEditor;
 import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
