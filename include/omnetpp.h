@@ -48,6 +48,7 @@
 #include "cllist.h"
 #include "clongpar.h"
 #include "cmersennetwister.h"
+#include "simtime.h"
 #include "cmessage.h"
 #include "cmsgpar.h"
 #include "cmodule.h"

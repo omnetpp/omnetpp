@@ -339,8 +339,6 @@ void cDisplayString::parse()
     if (dispstr==NULL)
         return;
 
-    bool fully_ok = true;
-
     buffer = new char[opp_strlen(dispstr)+1];
     bufferend = buffer + opp_strlen(dispstr);
 

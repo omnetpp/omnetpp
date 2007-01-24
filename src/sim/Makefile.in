@@ -49,7 +49,7 @@ CPPOBJS_STD=\
     cstringpool.o cstrtokenizer.o cclassdescriptor.o ctopo.o cvarhist.o \
     cvisitor.o cwatch.o cxmlelement.o cxmlpar.o distrib.o \
     errmsg.o globals.o lex.expryy.o minixpath.o onstartup.o \
-    task.o util.o expr.tab.o nedsupport.o sim_std_m.o \
+    simtime.o task.o util.o expr.tab.o nedsupport.o sim_std_m.o \
     ccommbuffer.o cparsimcomm.o
 
 CPPOBJS_NETBUILDER=\

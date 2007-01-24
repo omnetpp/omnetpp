@@ -27,7 +27,7 @@ CPPOBJS_STD=\
     cstringpool.obj cstrtokenizer.obj cclassdescriptor.obj ctopo.obj cvarhist.obj \
     cvisitor.obj cwatch.obj cxmlelement.obj cxmlpar.obj distrib.obj \
     errmsg.obj globals.obj lex.expryy.obj minixpath.obj onstartup.obj \
-    task.obj util.obj  expr.tab.obj nedsupport.obj sim_std_m.obj \
+    simtime.obj task.obj util.obj  expr.tab.obj nedsupport.obj sim_std_m.obj \
     ccommbuffer.obj cparsimcomm.obj
 
 CPPOBJS_NETBUILDER=\
