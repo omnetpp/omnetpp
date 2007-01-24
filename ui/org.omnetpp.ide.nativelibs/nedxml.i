@@ -27,17 +27,6 @@ namespace std {
 //class ostream;
 };
 
-%pragma(java) jniclasscode=%{
-  static {
-    try {
-      System.loadLibrary("nedxml_engine");
-    }
-    catch (UnsatisfiedLinkError e) {
-      System.err.println("Native code library failed to load. \n" + e);
-      System.exit(1);
-    }
-  }
-%}
 
 // parse functions return new objects, supposed to be deleted from Java
 %newobject NEDParser::parseNEDText(const char *);

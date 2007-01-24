@@ -3,18 +3,6 @@
 %include "enumtypeunsafe.swg"
 %javaconst(1);
 
-%pragma(java) jniclasscode=%{
-  static {
-    try {
-      System.load("C:\\Workspace\\Repository\\trunk\\omnetpp\\ui\\org.omnetpp.common.engine\\common_engine.dll");
-      //System.loadLibrary("common_engine");
-    } catch (UnsatisfiedLinkError e) {
-      System.err.println("Native code library failed to load. \n" + e);
-      System.exit(1);
-    }
-  }
-%}
-
 %{
 #include "geometry.h"
 #include "forcedirectedparametersbase.h"

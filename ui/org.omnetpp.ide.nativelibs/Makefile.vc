@@ -30,9 +30,12 @@ SWIGFILES = common.i nedxml.i scave.i layout.i eventlog.i
 CXXFILES = $(SWIGFILES:.i=.cxx)
 OBJS = $(CXXFILES:.cxx=.obj)
 
-DLL=omnetpplib.dll
-
 LIBS=/libpath:$(OMNETPP_LIB_DIR) common.lib nedxml.lib scave.lib layout.lib eventlog.lib
+
+DLL = opplibs.dll
+
+DLL_TARGET_DIR = ..\org.omnetpp.ide.nativelibs.win32.win32.x86
+
 
 #
 # Local definitions
@@ -40,8 +43,6 @@ LIBS=/libpath:$(OMNETPP_LIB_DIR) common.lib nedxml.lib scave.lib layout.lib even
 INCLUDES=-I$(COMMON) -I$(NEDXML) -I$(SCAVE) -I$(LAYOUT) -I$(EVENTLOG) -I$(OMNETPP_INCL_DIR)/platdep
 COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 $(INCLUDES)
 
-JAVAPKG = org.omnetpp.scave.engine
-JAVADIR = src\$(JAVAPKG:.=\)
 
 #
 # Automatic rules
@@ -86,6 +87,7 @@ eventlog.cxx : eventlog.i
 
 $(DLL): $(OBJS)
 	$(LINK) /dll /out:$(DLL) $(OBJS) $(LIBS) $(LDFLAGS)
+	copy $(DLL) $(DLL_TARGET_DIR)
 
 depend:
 	$(MAKEDEPEND) $(INCLUDES) -fMakefile.vc -- *.cxx *.cc

@@ -1,3 +1,14 @@
 %module CommonEngine
 
-// none of common.lib is directly used from Java for now
+%pragma(java) jniclasscode=%{
+  static {
+    try {
+      System.loadLibrary("opplibs");
+    } catch (UnsatisfiedLinkError e) {
+      System.err.println("Native code library failed to load.\n" + e);
+      System.exit(1);
+    }
+  }
+%}
+
+
