@@ -1,7 +1,16 @@
 //
-// TODO Place comment here
+// This file is part of an OMNeT++/OMNEST simulation example.
+//
+// Copyright (C) 1992-2005 Andras Varga
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
 //
 
+
+//
+// A call center simulation.
+//
 network CallCenter
 {
     parameters:
@@ -52,23 +61,23 @@ network CallCenter
             @display("p=366.0,236.0");
         };
     connections:
-        incomingCall.out --> --> classifier.in++;
-        classifier.out++ --> --> billing.in++;
-        classifier.out++ --> --> marketing.in++;
-        classifier.out++ --> --> techicalSupport.in++;
-        classifier.out++ --> --> internal.in++;
-        billing.out++ --> --> operator1.in++;
-        billing.out++ --> --> operator2.in++;
-        marketing.out++ --> --> operator2.in++;
-        techicalSupport.out++ --> --> operator2.in++;
-        techicalSupport.out++ --> --> operator3.in++;
-        internal.out++ --> --> operator4.in++;
-        operator1.out --> --> router.in++;
-        operator2.out --> --> router.in++;
-        operator3.out --> --> router.in++;
-        operator4.out --> --> router.in++;
-        router.out[0] --> --> callServed.in++;
-        router.out[1] --> --> switchingDelay.in++;
-        switchingDelay.out --> --> classifier.in++;
-        classifier.rest --> --> hangingUp.in++;
+        incomingCall.out --> classifier.in++;
+        classifier.out++ --> billing.in++;
+        classifier.out++ --> marketing.in++;
+        classifier.out++ --> techicalSupport.in++;
+        classifier.out++ --> internal.in++;
+        billing.out++ --> operator1.in++;
+        billing.out++ --> operator2.in++;
+        marketing.out++ --> operator2.in++;
+        techicalSupport.out++ --> operator2.in++;
+        techicalSupport.out++ --> operator3.in++;
+        internal.out++ --> operator4.in++;
+        operator1.out --> router.in++;
+        operator2.out --> router.in++;
+        operator3.out --> router.in++;
+        operator4.out --> router.in++;
+        router.out[0] --> callServed.in++;
+        router.out[1] --> switchingDelay.in++;
+        switchingDelay.out --> classifier.in++;
+        classifier.rest --> hangingUp.in++;
 }

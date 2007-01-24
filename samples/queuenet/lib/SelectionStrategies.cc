@@ -34,21 +34,21 @@ SelectionStrategy::~SelectionStrategy()
 
 SelectionStrategy *SelectionStrategy::create(const char *algName, cSimpleModule *module, bool selectOnInGate)
 {
-    SelectionStrategy *strat = NULL;
+    SelectionStrategy *strategy = NULL;
 
     if (strcmp(algName, "priority") == 0) {
-        strat = new PrioritySelectionStrategy(module, selectOnInGate);
+        strategy = new PrioritySelectionStrategy(module, selectOnInGate);
     } else if (strcmp(algName, "random") == 0) {
-        strat = new RandomSelectionStrategy(module, selectOnInGate);
+        strategy = new RandomSelectionStrategy(module, selectOnInGate);
     } else if (strcmp(algName, "roundRobin") == 0) {
-        strat = new RoundRobinSelectionStrategy(module, selectOnInGate);
+        strategy = new RoundRobinSelectionStrategy(module, selectOnInGate);
     } else if (strcmp(algName, "shortestQueue") == 0) {
-        strat = new ShortestQueueSelectionStrategy(module, selectOnInGate);
+        strategy = new ShortestQueueSelectionStrategy(module, selectOnInGate);
     } else if (strcmp(algName, "longestQueue") == 0) {
-        strat = new LongestQueueSelectionStrategy(module, selectOnInGate);
+        strategy = new LongestQueueSelectionStrategy(module, selectOnInGate);
     }
 
-    return strat;
+    return strategy;
 }
 
 cGate *SelectionStrategy::selectableGate(int i)
@@ -69,7 +69,7 @@ bool SelectionStrategy::isSelectable(cModule *module)
     if (server != NULL)
         return server->isIdle();
 
-    error("Only PQueue and Server is supported by this Strategy");
+    opp_error("Only PQueue and Server is supported by this Strategy");
     return true;
 }
 

@@ -1,6 +1,12 @@
 //
-// TODO Place comment here
+// This file is part of an OMNeT++/OMNEST simulation example.
 //
+// Copyright (C) 1992-2005 Andras Varga
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//
+
 
 //
 // This is queueing network consists of several queues, connected in tandem.
@@ -27,8 +33,8 @@ network TandemQueue
             @display("p=430.0,74.0");
         };
     connections:
-        source.out --> --> queue.in++;
-        queue.out --> --> queue1.in++;
-        queue1.out --> --> queue2.in++;
-        queue2.out --> --> sink.in++;
+        source.out --> queue.in++;
+        queue.out --> queue1.in++;
+        queue1.out --> queue2.in++;
+        queue2.out --> sink.in++;
 }

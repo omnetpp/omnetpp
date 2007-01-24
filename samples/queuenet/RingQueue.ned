@@ -1,6 +1,12 @@
 //
-// TODO Place comment here
+// This file is part of an OMNeT++/OMNEST simulation example.
 //
+// Copyright (C) 1992-2005 Andras Varga
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//
+
 
 //
 // This is a closed ring network.
@@ -33,11 +39,11 @@ network RingQueue
             @display("p=232.0,64.0");
         };
     connections:
-        queue4.out --> --> queue.in++;
-        queue.out --> --> queue1.in++;
-        queue1.out --> --> queue2.in++;
-        queue2.out --> --> queue3.in++;
-        queue3.out --> --> queue4.in++;
-        source.out --> --> queue.in++;
-        source1.out --> --> queue3.in++;
+        queue4.out --> queue.in++;
+        queue.out --> queue1.in++;
+        queue1.out --> queue2.in++;
+        queue2.out --> queue3.in++;
+        queue3.out --> queue4.in++;
+        source.out --> queue.in++;
+        source1.out --> queue3.in++;
 }

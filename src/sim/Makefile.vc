@@ -868,6 +868,8 @@ cmodule.obj: cmodule.cc \
   ../../include/cexception.h \
   ../../include/cdisplaystring.h \
   ../../include/cchannel.h \
+  ../../include/cproperties.h \
+  ../../include/cproperty.h \
   ../../include/util.h \
   ../../include/ccomponent.h \
   ../../include/globals.h \
@@ -890,7 +892,8 @@ cmodule.obj: cmodule.cc \
   ../../include/cneddeclarationbase.h \
   ../../include/cparvalue.h \
   ../../include/errmsg.h \
-  ../../include/opp_string.h
+  ../../include/opp_string.h \
+  ../../include/stlwrap.h
 cmsgheap.obj: cmsgheap.cc \
   ../../include/globals.h \
   ../../include/cmessage.h \

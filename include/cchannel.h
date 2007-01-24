@@ -155,7 +155,7 @@ class SIM_API cNullChannel : public cChannel //implies noncopyable
     /**
      * Destructor.
      */
-    virtual ~cNullChannel();
+    virtual ~cNullChannel() {}
     //@}
 
     /** @name Redefined cChannel member functions. */
