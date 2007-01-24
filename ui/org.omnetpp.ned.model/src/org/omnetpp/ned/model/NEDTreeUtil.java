@@ -1,7 +1,5 @@
 package org.omnetpp.ned.model;
 
-import java.nio.channels.Channel;
-
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.ned.model.pojo.ChannelSpecNode;
 import org.omnetpp.ned.model.pojo.ConnectionsNode;
@@ -37,7 +35,7 @@ public class NEDTreeUtil {
 	 */
 	public static String generateNedSource(org.omnetpp.ned.model.NEDElement treeRoot, boolean keepSyntax) {
 		// XXX for debugging
-        System.out.println(generateXmlFromPojoElementTree(treeRoot,""));
+        //System.out.println(generateXmlFromPojoElementTree(treeRoot,""));
         
         NEDErrorStore errors = new NEDErrorStore();
 		errors.setPrintToStderr(true); //XXX just for debugging
