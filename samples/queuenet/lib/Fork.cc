@@ -22,37 +22,38 @@
 
 Define_Module( Fork );
 
-void Fork::initialize() 
+void Fork::initialize()
 {
     changeMsgNames = par("changeMsgNames");
 }
-    
+
 void Fork::handleMessage(cMessage *msg)
 {
     Job *job = check_and_cast<Job *>(msg);
-    if (job == NULL)
-        error("Non-job message received");
-        
-    // increment the generation counter
-    job->setGeneration(job->getGeneration()+1);    
 
-    // if there are more than one out gate, send a duplicate on each outgate (index>0)
+    // increment the generation counter
+    job->setGeneration(job->getGeneration()+1);
+
+    // if there are more than one output gates, send a duplicate on each output gate (index>0)
     for (int i = 1; i < gateSize("out"); ++i)
     {
         cMessage *dupMsg = msg->dup();
-        if (changeMsgNames) {
+        if (changeMsgNames)
+        {
             char buff[80];
             sprintf(buff, "%.60s.%d", msg->name(), i);
             dupMsg->setName(buff);
-        } 
+        }
         send(dupMsg, "out", i);
     }
+
     // send out the original message on out[0]
-    if (changeMsgNames) {
+    if (changeMsgNames)
+    {
         char buff[80];
         sprintf(buff, "%.60s.0", msg->name());
         msg->setName(buff);
-    } 
+    }
     send(msg, "out", 0);
 }
 

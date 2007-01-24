@@ -25,29 +25,32 @@ void Source::initialize()
 {
     jobCounter = 0;
     startTime =  par("startTime");
-    stopTime =  par("stopTime"); 
-    selfMsg = new cMessage("newJobTimer");
+    stopTime =  par("stopTime");
     numJobs =  par("numJobs");
-    jobName = par("jobName");
+
     // if empty, use the module name as the default for message names
+    jobName = par("jobName");
     if (strcmp(jobName, "") == 0)
         jobName = name();
+
     // schedule the first message timer for start time
+    selfMsg = new cMessage("newJobTimer");
     scheduleAt(startTime, selfMsg);
 }
 
 void Source::handleMessage(cMessage *msg)
 {
-    if (msg->isSelfMessage() 
-        && ((numJobs < 0) || (numJobs > jobCounter)) 
-        && ((stopTime < 0.0) || (stopTime > simTime()))) 
+    if (msg->isSelfMessage()
+        && (numJobs < 0 || numJobs > jobCounter)
+        && (stopTime < 0.0 || stopTime > simTime()))
     {
         // reschedule the self timer for the next message
         scheduleAt(simTime() + par("interArrivalTime").doubleValue(), msg );
-        // create a new message to be sent		
+
+        // create a new message to be sent
         Job *newJob = new Job();
-        newJob->setTimestamp();	
-        char buff[1024];
+        newJob->setTimestamp();
+        char buff[80];
         sprintf(buff, "%.60s %d", jobName, ++jobCounter);
         newJob->setName(buff);
         newJob->setKind(par("jobType"));

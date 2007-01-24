@@ -36,8 +36,8 @@ enum {
 class Router : public cSimpleModule
 {
     private:
-        int routingAlgorithm;                          // the algorithm we are using for routing
-        int rrCounter;                                 // msgCounter for round robin routing
+        int routingAlgorithm;  // the algorithm we are using for routing
+        int rrCounter;         // msgCounter for round robin routing
     protected:
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);

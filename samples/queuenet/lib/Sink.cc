@@ -36,10 +36,8 @@ void Sink::initialize()
 void Sink::handleMessage(cMessage *msg)
 {
     Job *job = check_and_cast<Job *>(msg);
-    if (job == NULL)
-        error("Non-job message received");
 
-    // gather statistics        
+    // gather statistics
     lifeTimeStats.record(simTime() - job->creationTime());
     queueingTimeStats.record(job->getTotalQueueingTime());
     queueStats.record(job->getQueueCount());
@@ -49,7 +47,7 @@ void Sink::handleMessage(cMessage *msg)
     generationStats.record(job->getGeneration());
 
     if (!keepJobs)
-    	delete msg;
+        delete msg;
 }
 
 void Sink::finish()

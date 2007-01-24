@@ -25,7 +25,7 @@ SelectionStrategy::SelectionStrategy(cSimpleModule *module, bool selectOnInGate)
 {
     hostModule = module;
     isInputGate = selectOnInGate;
-    gateSize = isInputGate ? hostModule->gateSize("in") : hostModule->gateSize("out");                
+    gateSize = isInputGate ? hostModule->gateSize("in") : hostModule->gateSize("out");
 }
 
 SelectionStrategy::~SelectionStrategy()
@@ -35,7 +35,7 @@ SelectionStrategy::~SelectionStrategy()
 SelectionStrategy *SelectionStrategy::create(const char *algName, cSimpleModule *module, bool selectOnInGate)
 {
     SelectionStrategy *strat = NULL;
-    
+
     if (strcmp(algName, "priority") == 0) {
         strat = new PrioritySelectionStrategy(module, selectOnInGate);
     } else if (strcmp(algName, "random") == 0) {
@@ -47,34 +47,29 @@ SelectionStrategy *SelectionStrategy::create(const char *algName, cSimpleModule 
     } else if (strcmp(algName, "longestQueue") == 0) {
         strat = new LongestQueueSelectionStrategy(module, selectOnInGate);
     }
-    
+
     return strat;
 }
-    
+
 cGate *SelectionStrategy::selectableGate(int i)
 {
     if (isInputGate)
-        return hostModule->gate("in", i)->fromGate();                
+        return hostModule->gate("in", i)->fromGate();
     else
         return hostModule->gate("out", i)->toGate();
-        
-    return NULL;                
 }
 
 bool SelectionStrategy::isSelectable(cModule *module)
 {
     PQueue *pqueue = dynamic_cast<PQueue *>(module);
     if (pqueue != NULL)
-    {
         return pqueue->length() > 0;
-    }
+
     Server *server = dynamic_cast<Server *>(module);
     if (server != NULL)
-    {
         return server->isIdle();
-    }
-    
-    throw cRuntimeError("Only PQueue and Server is supported by this Strategy");
+
+    error("Only PQueue and Server is supported by this Strategy");
     return true;
 }
 
@@ -85,16 +80,17 @@ PrioritySelectionStrategy::PrioritySelectionStrategy(cSimpleModule *module, bool
 {
 }
 
-// return the smallest selectable index
 int PrioritySelectionStrategy::select()
 {
-    for(int i=0; i<gateSize; i++)
+    // return the smallest selectable index
+    for (int i=0; i<gateSize; i++)
         if (isSelectable(selectableGate(i)->ownerModule()))
             return i;
+
     // if none of them is selectable return an invalid no.
-    return -1;            
+    return -1;
 }
-    
+
 // --------------------------------------------------------------------------------------------
 
 RandomSelectionStrategy::RandomSelectionStrategy(cSimpleModule *module, bool selectOnInGate) :
@@ -102,25 +98,20 @@ RandomSelectionStrategy::RandomSelectionStrategy(cSimpleModule *module, bool sel
 {
 }
 
-// return the smallest selectable index
 int RandomSelectionStrategy::select()
 {
-    int result = -1;
+    // return the smallest selectable index
     int noOfSelectables = 0;
-    for(int i=0; i<gateSize; i++)
+    for (int i=0; i<gateSize; i++)
         if (isSelectable(selectableGate(i)->ownerModule()))
             noOfSelectables++;
-    
+
     int rnd = intuniform(1, noOfSelectables);
-    
-    for(int i=0; i<gateSize; i++)
+
+    for (int i=0; i<gateSize; i++)
         if (isSelectable(selectableGate(i)->ownerModule()) && (--rnd == 0))
-        {
-            result = i;
-            break;
-        }
-    
-    return result;            
+            return i;
+    return -1;
 }
 
 // --------------------------------------------------------------------------------------------
@@ -131,17 +122,18 @@ RoundRobinSelectionStrategy::RoundRobinSelectionStrategy(cSimpleModule *module, 
     lastIndex = -1;
 }
 
-// return the smallest selectable index
 int RoundRobinSelectionStrategy::select()
 {
-    for(int i = 0; i<gateSize; ++i)
+    // return the smallest selectable index
+    for (int i = 0; i<gateSize; ++i)
     {
         lastIndex = (lastIndex+1) % gateSize;
         if (isSelectable(selectableGate(lastIndex)->ownerModule()))
             return lastIndex;
-    }        
+    }
+
     // if none of them is selectable return an invalid no.
-    return -1;            
+    return -1;
 }
 
 // --------------------------------------------------------------------------------------------
@@ -151,12 +143,12 @@ ShortestQueueSelectionStrategy::ShortestQueueSelectionStrategy(cSimpleModule *mo
 {
 }
 
-// return the smallest selectable index
 int ShortestQueueSelectionStrategy::select()
-{   
+{
+    // return the smallest selectable index
     int result = -1;            // by default none of them is selectable
     int sizeMin = 2^30;
-    for(int i = 0; i<gateSize; ++i)
+    for (int i = 0; i<gateSize; ++i)
     {
         PQueue *queue = check_and_cast<PQueue *>(selectableGate(i)->ownerModule());
         if (isSelectable(queue) && (queue->length()<sizeMin))
@@ -165,7 +157,7 @@ int ShortestQueueSelectionStrategy::select()
             result = i;
         }
     }
-    return result;            
+    return result;
 }
 
 // --------------------------------------------------------------------------------------------
@@ -175,12 +167,12 @@ LongestQueueSelectionStrategy::LongestQueueSelectionStrategy(cSimpleModule *modu
 {
 }
 
-// return the longest selectable queue
 int LongestQueueSelectionStrategy::select()
 {
+    // return the longest selectable queue
     int result = -1;            // by default none of them is selectable
     int sizeMax = -1;
-    for(int i = 0; i<gateSize; ++i)
+    for (int i = 0; i<gateSize; ++i)
     {
         PQueue *queue = check_and_cast<PQueue *>(selectableGate(i)->ownerModule());
         if (isSelectable(queue) && queue->length()>sizeMax)
@@ -189,7 +181,7 @@ int LongestQueueSelectionStrategy::select()
             result = i;
         }
     }
-    return result;            
+    return result;
 }
 
 

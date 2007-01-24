@@ -43,8 +43,8 @@ class Queue : public cSimpleModule
         int droppedJobs;
 
         Job *getFromQueue();
-        simtime_t prevQueueEventTimeStamp;               // the timestamp of the last queuelength change
-        simtime_t prevServiceEventTimeStamp;             // the timestamp of the last service state change
+        simtime_t prevQueueEventTimeStamp;   // the timestamp of the last queuelength change
+        simtime_t prevServiceEventTimeStamp; // the timestamp of the last service state change
         void queueLengthWillChange();
         void processorStateWillChange();
     public:
@@ -56,7 +56,7 @@ class Queue : public cSimpleModule
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
         virtual void finish();
-        
+
         // hook functions to (re)define behaviour
         virtual void arrival(Job *job);
         virtual simtime_t startService(Job *job);

@@ -32,22 +32,20 @@ void Delay::initialize()
 void Delay::handleMessage(cMessage *msg)
 {
     Job *job = check_and_cast<Job *>(msg);
-    if (job == NULL)
-        error("Non-job message received");
-    
+
     if (!msg->isSelfMessage())
-    {	
+    {
         job->setTimestamp();
         currentlyStored++;
         // if it is not a selfmessage, send it to ourselves with a delay
         double delay = par("delay");
         scheduleAt( simTime() + delay, msg );
-    } 
-    else 
+    }
+    else
     {
         job->setDelayCount(job->getDelayCount()+1);
         job->setTotalDelayTime(job->getTotalDelayTime() + (simTime() - job->timestamp()));
-           
+
         // if it was a self message (ie. we have already delayed) so we send it out
         currentlyStored--;
         send(msg, "out");
@@ -55,7 +53,7 @@ void Delay::handleMessage(cMessage *msg)
 
     sizeStats.record(currentlyStored);
 
-    if (ev.isGUI()) 
+    if (ev.isGUI())
         displayString().setTagArg("i",1, currentlyStored==0 ? "" : "cyan4");
 }
 

@@ -39,26 +39,27 @@ void Router::initialize()
 
 void Router::handleMessage(cMessage *msg)
 {
-	int outGateIndex = -1;		// by default we drop the message
-	
-    switch (routingAlgorithm) {
+    int outGateIndex = -1;  // by default we drop the message
+
+    switch (routingAlgorithm)
+    {
         case ALG_RANDOM:
-    		outGateIndex = par("randomGateIndex");
+            outGateIndex = par("randomGateIndex");
             break;
         case ALG_ROUND_ROBIN:
-    		outGateIndex = rrCounter;
-    		rrCounter = (rrCounter + 1) % gateSize("out");
+            outGateIndex = rrCounter;
+            rrCounter = (rrCounter + 1) % gateSize("out");
             break;
         case ALG_MIN_QUEUE_LENGTH:
-    		// TODO implementataion missing
-    		outGateIndex = -1;
+            // TODO implementation missing
+            outGateIndex = -1;
             break;
         case ALG_MIN_DELAY:
-            // TODO implementataion missing
+            // TODO implementation missing
             outGateIndex = -1;
             break;
         case ALG_MIN_SERVICE_TIME:
-            // TODO implementataion missing
+            // TODO implementation missing
             outGateIndex = -1;
             break;
         default:
@@ -66,13 +67,9 @@ void Router::handleMessage(cMessage *msg)
             break;
     }
 
-	// send out if the index is legal	
-	if ((outGateIndex >= 0) && (outGateIndex < gateSize("out"))) {
-		send(msg, "out", outGateIndex);
-	} else {
-        // otherwise drop the message
-        ev << "Message '" << msg->name() << "' dropped because cannot be routed to out[" <<outGateIndex << "]"<< endl;
-        delete msg;
+    // send out if the index is legal
+    if (outGateIndex < 0 || outGateIndex >= gateSize("out"))
         error("Invalid output gate selected during routing");
-    }	
+
+    send(msg, "out", outGateIndex);
 }

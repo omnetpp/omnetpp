@@ -27,7 +27,7 @@
 class Classifier : public cSimpleModule
 {
     private:
-        const char *dispatchField;              // the message's field or parameter we are dispatching on
+        const char *dispatchField;   // the message's field or parameter we are dispatching on
     protected:
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);

@@ -27,20 +27,19 @@ void Classifier::initialize()
 
 void Classifier::handleMessage(cMessage *msg)
 {
-    //FIXME celszeru enumba kiszedni a dispatch fieldet az elejen
     int outGateIndex = -1;
-    if (strcmp(dispatchField, "type") == 0) {
-    outGateIndex = msg->kind();
-    } else if (strcmp(dispatchField, "priority") == 0) {
+    if (strcmp(dispatchField, "type") == 0)
+        outGateIndex = msg->kind();
+    else if (strcmp(dispatchField, "priority") == 0)
         outGateIndex = msg->priority();
-    }
-    // TODO we could look for the value in the dynamically added parameters too		 		
+    else
+        error("invalid dispatchField parameter, must be \"type\" or \"priority\"");
+    // TODO we could look for the value in the dynamically added parameters too
 
-    if ((outGateIndex < 0) || (outGateIndex >= gateSize("out"))) {
+    if (outGateIndex < 0 || outGateIndex >= gateSize("out"))
         send(msg, "rest");
-    } else {
+    else
         send(msg, "out", outGateIndex);
-    }	
 }
 
 

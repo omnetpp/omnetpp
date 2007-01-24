@@ -42,11 +42,14 @@ void PQueue::initialize()
     scalarUtilizationStats.setName("utilization");
     scalarWeightedLengthStats.setName("time weighted length");
     scalarLengthStats.setName("length");
-    fifo = par("fifo");
     capacity = par("capacity");
+    queue.setName("queue");
+
     droppedJobs = 0;
     prevEventTimeStamp = 0.0;
-    queue.setName("queue");
+
+    fifo = par("fifo");
+
     selectionStrategy = SelectionStrategy::create(par("sendingAlgorithm"), this, false);
     if (!selectionStrategy)
         error("invalid selection strategy");
@@ -58,9 +61,9 @@ void PQueue::handleMessage(cMessage *msg)
     job->setTimestamp();
 
     // check for container capacity
-    if ((capacity >=0) && (queue.length() >= capacity))
+    if (capacity >=0 && queue.length() >= capacity)
     {
-        ev << "Capacity full! Job dropped.\n";
+        ev << "Queue full! Job dropped.\n";
         if (ev.isGUI()) bubble("Dropped!");
         droppedStats.record(++droppedJobs);
         delete msg;
@@ -78,13 +81,16 @@ void PQueue::handleMessage(cMessage *msg)
     {
         // send through without queueing
         send(job, "out", k);
-    } else 
+    }
+    else
         error("This should not happen. Queueue is NOT empty and there is an IDLE server attached to us.");
 
     // statistics
     lengthStats.record(length());
-    // chenge the icon color
-    if (ev.isGUI()) displayString().setTagArg("i",1, queue.empty() ? "" : "cyan3");
+
+    // change the icon color
+    if (ev.isGUI())
+        displayString().setTagArg("i",1, queue.empty() ? "" : "cyan3");
 }
 
 void PQueue::queueLengthChanged()
@@ -113,9 +119,11 @@ void PQueue::request(int gateIndex)
     if (fifo)
     {
         job = (Job *)queue.pop();
-    } else {
+    }
+    else
+    {
         job = (Job *)queue.back();
-        // FIXME this may have bad performance as remove uses linear serch
+        // FIXME this may have bad performance as remove uses linear search
         queue.remove(job);
     }
 
@@ -125,7 +133,8 @@ void PQueue::request(int gateIndex)
 
     send(job, "out", gateIndex);
 
-    if (ev.isGUI()) displayString().setTagArg("i",1, queue.empty() ? "" : "cyan");
+    if (ev.isGUI())
+        displayString().setTagArg("i",1, queue.empty() ? "" : "cyan");
 }
 
 void PQueue::finish()

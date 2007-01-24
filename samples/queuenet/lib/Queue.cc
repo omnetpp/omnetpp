@@ -24,7 +24,7 @@ Define_Module(Queue);
 
 Queue::Queue()
 {
-    jobServiced = NULL; 
+    jobServiced = NULL;
     endServiceMsg = NULL;
 }
 
@@ -70,11 +70,11 @@ void Queue::handleMessage(cMessage *msg)
             scheduleAt( simTime()+serviceTime, endServiceMsg );
         }
     }
-    else 
+    else
     {
         Job *job = check_and_cast<Job *>(msg);
-            
-        job->setTimestamp();    
+
+        job->setTimestamp();
 
         // processor was idle
         if (!jobServiced)
@@ -84,12 +84,12 @@ void Queue::handleMessage(cMessage *msg)
             processorStateWillChange();
             simtime_t serviceTime = startService( jobServiced );
             scheduleAt( simTime()+serviceTime, endServiceMsg );
-    
+
         }
         else
         {
             // check for container capacity
-            if ((capacity >=0) && (queue.length() >= capacity))
+            if (capacity >=0 && queue.length() >= capacity)
             {
                 ev << "Capacity full! Job dropped.\n";
                 if (ev.isGUI()) bubble("Dropped!");
@@ -114,13 +114,15 @@ Job *Queue::getFromQueue()
     if (fifo)
     {
         job = (Job *)queue.pop();
-    } else {
+    }
+    else
+    {
         job = (Job *)queue.back();
         // FIXME this may have bad performance as remove uses linear serch
         queue.remove(job);
     }
     return job;
-}    
+}
 
 int Queue::length()
 {
@@ -138,12 +140,12 @@ void Queue::processorStateWillChange()
 {
     scalarUtilizationStats.collect2((jobServiced ? 1 : 0), simTime()-prevServiceEventTimeStamp);
     prevServiceEventTimeStamp = simTime();
-}    
+}
 
 void Queue::arrival(Job *job)
 {
     job->setTimestamp();
-}    
+}
 
 simtime_t Queue::startService(Job *job)
 {
