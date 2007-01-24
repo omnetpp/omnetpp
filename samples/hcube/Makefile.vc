@@ -59,10 +59,10 @@ MSGCOPTS= $(INCLUDE_PATH)
 
 #------------------------------------------------------------------------------
 # object files in this directory
-OBJS= hcpacket_m.obj HCGenerator.obj HCRouter.obj HCSink.obj
+OBJS= HCPacket_m.obj HCGenerator.obj HCRouter.obj HCSink.obj
 
 # header files generated (from msg files)
-GENERATEDHEADERS= hcpacket_m.h
+GENERATEDHEADERS= HCPacket_m.h
 
 # subdirectories to recurse into
 SUBDIRS= 
@@ -79,11 +79,11 @@ $(OBJS) : $(GENERATEDHEADERS)
 
 subdirs: $(SUBDIR_TARGETS)
 
-hcpacket_m.obj: hcpacket_m.cc
-	$(CXX) -c $(NEDCOPTS) /Tp hcpacket_m.cc
+HCPacket_m.obj: HCPacket_m.cc
+	$(CXX) -c $(NEDCOPTS) /Tp HCPacket_m.cc
 
-hcpacket_m.cc hcpacket_m.h: hcpacket.msg
-	$(MSGC:/=\) -s _m.cc $(MSGCOPTS) hcpacket.msg
+HCPacket_m.cc HCPacket_m.h: HCPacket.msg
+	$(MSGC:/=\) -s _m.cc $(MSGCOPTS) HCPacket.msg
 
 HCGenerator.obj: HCGenerator.cc
 	$(CXX) -c $(COPTS) /Tp HCGenerator.cc

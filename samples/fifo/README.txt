@@ -31,6 +31,6 @@ One can subclass AbstractFifo and redefine the following member functions:
 These functions are called by AbstractFifo::handleMessage() whenever
 a message arrives, begins service and ends service, respectively.
 startService() should return the service time for the message.
-ACBFifo and ACPFifo demostrates how to do this.
+ACBFifo and ACPFifo demonstrates how to do this.
 
 

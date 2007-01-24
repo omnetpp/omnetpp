@@ -52,9 +52,8 @@ foreach line {
    {color3  "NEDDemo"          "neddemo"          "./neddemo"   "neddemo.exe"}
    {color3  "Hist"             "hist"             "./hist"      "hist.exe"}
    {color4  "Fifo"             "fifo"             "./fifo"      "fifo.exe"}
-   {color4  "Queues"           "queues"           "./queues"    "queues.exe"}
    {color4  "CQN"              "cqn"              "./cqn"       "cqn.exe"}
-   {color4  "Queueing"         "queueing"         "./queueing"  "queueing.exe"}
+   {color4  "QueueNet"         "queuenet"         "./queuenet"  "queuenet"}
    {color5  "P-to-P"           "p-to-p"           "./p-to-p"    "p-to-p.exe"}
    {color5  "Aloha"            "aloha"            "./aloha"     "aloha.exe"}
    {color5  "Dyna"             "dyna"             "./dyna"      "dyna.exe"}
