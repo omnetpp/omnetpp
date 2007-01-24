@@ -1,5 +1,6 @@
 %module LayoutEngine
 
+%include "loadlib.i"
 %include "enumtypeunsafe.swg"
 %javaconst(1);
 

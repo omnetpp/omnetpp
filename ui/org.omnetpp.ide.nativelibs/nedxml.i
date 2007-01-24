@@ -1,5 +1,11 @@
 %module nedxml
 
+%include "loadlib.i"
+%include "std_string.i"
+%include "enums.swg"
+
+%javaconst(1);
+
 %{
 #include "nedelement.h"
 #include "nederror.h"
@@ -18,10 +24,6 @@
 // #include "cppgenerator.h"
 %}
 
-%include "std_string.i"
-
-%include "enums.swg"
-%javaconst(1);
 
 namespace std {
 //class ostream;

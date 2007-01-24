@@ -1,5 +1,7 @@
 %module ScaveEngine
 
+%include "loadlib.i"
+
 %{
 #include "idlist.h"
 #include "resultfilemanager.h"

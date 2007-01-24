@@ -1,5 +1,6 @@
 %module EventLogEngine
 
+%include "loadlib.i"
 %include "enumtypeunsafe.swg"
 %javaconst(1);
 
