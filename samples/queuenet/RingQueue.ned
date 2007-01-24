@@ -2,6 +2,10 @@
 // TODO Place comment here
 //
 
+//
+// This is a closed ring network.
+// Based on the idea from Nicky van Foreest (vanforeest@gmail.com)
+//
 network RingQueue
 {
     parameters:

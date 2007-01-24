@@ -2,6 +2,9 @@
 // TODO Place comment here
 //
 
+//
+// This simple queueing network only contains a source, a FIFO queue and a sink.
+//
 network SimpleQueue
 {
     parameters:

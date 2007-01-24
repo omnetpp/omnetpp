@@ -19,7 +19,7 @@
 
 //
 // Passive queue. Messages have to be requested via direct method call.
-// Its output must be connected to a Server
+// Its output must be connected to a Server.
 //
 // @author rhornig
 // @todo minDelay not implemented
