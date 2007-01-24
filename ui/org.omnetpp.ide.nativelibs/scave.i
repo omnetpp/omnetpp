@@ -302,6 +302,6 @@ int strdictcmp(const char *s1, const char *s2);
 %include "indexfile.h"
 
 // wrap the data-flow engine as well
-%include plove.i
+%include scave-plove.i
 
 
