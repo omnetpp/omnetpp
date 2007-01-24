@@ -49,10 +49,8 @@ components: base jnilibs samples
 BASE=$(ENVIR_ILIB) common layout eventlog scave nedxml sim envir cmdenv tkenv utils nedc
 SAMPLES=aloha cqn dyna fifo hcube hist neddemo p-to-p queueing queuenet routing queues tictoc tokenring sockets
 JNILIBS=org.omnetpp.ned.model \
-        org.omnetpp.scave.engine \
-        org.omnetpp.eventlog.engine \
-	org.omnetpp.common.engine
-#        org.omnetpp.experimental.simkernel   FIXME this does not build currently, to be added back
+        org.omnetpp.ide.nativelibs
+        #        org.omnetpp.experimental.simkernel   FIXME this does not build currently, to be added back
 
 #
 # Group targets.
