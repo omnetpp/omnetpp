@@ -198,7 +198,7 @@ bool cSimulation::snapshot(cObject *object, const char *label)
     os << "<snapshot\n";
     os << "    object=\"" << xmlquote(object->fullPath()) << "\"\n";
     os << "    label=\"" << xmlquote(label?label:"") << "\"\n";
-    os << "    simtime=\"" << xmlquote(simtimeToStr(simTime())) << "\"\n";
+    os << "    simtime=\"" << xmlquote(SIMTIME_STR(simTime())) << "\"\n";
     os << "    network=\"" << xmlquote(networktype?networktype->name():"") << "\"\n";
     os << "    runnumber=\"" << run_number << "\">\n";
 
@@ -567,7 +567,7 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
     if (hasher())
     {
         // note: there's probably no value in adding eventNumber()
-        hasher()->add(simTime());
+        hasher()->add(SIMTIME_RAW(simTime()));
         hasher()->add(mod->id());
         //XXX msg id too?
     }

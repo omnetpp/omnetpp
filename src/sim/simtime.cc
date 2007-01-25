@@ -17,6 +17,14 @@
 #include "cexception.h"
 
 
+int SimTime::scaleexp;
+int64 SimTime::iscale;
+double SimTime::scale_;
+double SimTime::invscale_;
+double SimTime::maxtime;
+
+//FIXME overflow should be detected somehow...
+
 void SimTime::setScaleExp(int e)
 {
     if (e<0 || e>18)
@@ -26,15 +34,15 @@ void SimTime::setScaleExp(int e)
 
     // calculate 10^e
     scaleexp = e;
-    int64 scale = 1;
+    iscale = 1;
     while(e-- >0)
-        scale *= 10;
+        iscale *= 10;
 
-    // store it in double, because that's how we'll need it most often
-    scale_ = (double) scale;
-    invscale_ = 1.0 / (double) scale;
+    // store it in double too
+    scale_ = (double) iscale;
+    invscale_ = 1.0 / scale_;
 
-    // precalculate maxtime too
+    // and precalculate maxtime as well
     maxtime = ((((int64)1) << 63) - 1) * invscale_;
 }
 

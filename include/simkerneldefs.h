@@ -126,9 +126,26 @@
 /**
  * Model time.
  */
-typedef double       simtime_t;
+//XXX #define SIMTIME_DOUBLE
+#ifdef SIMTIME_DOUBLE
 
-#define MAXTIME      HUGE_VAL
+typedef double   simtime_t;
+#define MAXTIME  HUGE_VAL
+#define SIMTIME_STR(t) simtimeToStr(t)
+#define SIMTIME_DBL(t) (t)
+#define SIMTIME_RAW(t) (t)
+
+#else
+
+class SimTime;
+#include "simtime.h"
+typedef SimTime  simtime_t;
+#define MAXTIME  SimTime::maxTime()
+#define SIMTIME_STR(t) ((t).str().c_str())
+#define SIMTIME_DBL(t) ((t).dbl())
+#define SIMTIME_RAW(t) ((t).raw())
+
+#endif
 
 
 /**

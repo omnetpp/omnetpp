@@ -41,16 +41,17 @@ class cIndexedFileOutputVectorManager : public cFileOutputVectorManager
     struct sBlock {
       long offset;
       long count;
+
       sBlock(long offset, long count) : offset(offset), count(count) {}
     };
 
     typedef std::vector<sBlock> Blocks;
 
     struct sSample {
-        double symtime;
+        simtime_t simtime;
         double value;
 
-        sSample(double t, double val) : symtime(t), value(val) {}
+        sSample(simtime_t t, double val) : simtime(t), value(val) {}
     };
 
     typedef std::vector<sSample> Samples;

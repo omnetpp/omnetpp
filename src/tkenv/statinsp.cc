@@ -342,7 +342,7 @@ void TOutVectorWindow::update()
    {
        // adjust time_factor if it's too far from the optimal value
        simtime_t firstt = circbuf.entry(circbuf.tailPos()).t;
-       double dt = tbase - firstt;
+       double dt = SIMTIME_DBL(tbase - firstt);
        if (dt>0)
        {
           double opt_tf = dt/canvaswidth;
@@ -400,7 +400,7 @@ void TOutVectorWindow::update()
    int x, y1, y2;
    int pos;
    int next_pos = (circbuf.headPos()-circbuf.items()+circbuf.size())%circbuf.size();
-   for(int i=0;i<=circbuf.items();i++)
+   for (int i=0;i<=circbuf.items();i++)
    {
        x  = next_x;
        y1 = next_y1;
@@ -498,10 +498,10 @@ void TOutVectorWindow::update()
        }
    }
 
-   double tmin = tbase-tf*(canvaswidth-20);
+   double tmin = SIMTIME_DBL(tbase-tf*(canvaswidth-20));
 
    if (moving_tline<tmin)
-       moving_tline=tbase;
+       moving_tline = SIMTIME_DBL(tbase);
 
    double midy = (miny+maxy)/2;
 
@@ -565,7 +565,7 @@ void TOutVectorWindow::generalInfo( char *buf )
         return;
    }
 
-/*
+/*XXX
    simtime_t tbase = simulation.simTime();
    simtime_t firstt = circbuf.entry(circbuf.tailPos()).t;
    char buf1[32], buf2[32];
@@ -575,11 +575,9 @@ void TOutVectorWindow::generalInfo( char *buf )
    int tuple = static_cast<cOutVector *>(object)->tuple();
    CircBuffer::CBEntry& p = circbuf.entry(circbuf.headPos());
    if (tuple==1)
-     sprintf(buf, "Last value: t=%s  value=%g",
-                   simtimeToStr(p.t), p.value1);
+     sprintf(buf, "Last value: t=%s  value=%g", SIMTIME_STR(p.t), p.value1);
    else
-     sprintf(buf, "Last value: t=%s  val1=%g  val2=%g",
-                   simtimeToStr(p.t), p.value1, p.value2);
+     sprintf(buf, "Last value: t=%s  val1=%g  val2=%g", SIMTIME_STR(p.t), p.value1, p.value2);
 }
 
 void TOutVectorWindow::valueInfo( char *buf, int valueindex )
@@ -587,13 +585,11 @@ void TOutVectorWindow::valueInfo( char *buf, int valueindex )
    int tuple = static_cast<cOutVector *>(object)->tuple();
    CircBuffer::CBEntry& p = circbuf.entry(valueindex);
    if (tuple==1)
-     sprintf(buf, "t=%s  value=%g",
-                  simtimeToStr(p.t), p.value1);
+     sprintf(buf, "t=%s  value=%g", SIMTIME_STR(p.t), p.value1);
    else
-     sprintf(buf, "t=%s  val1=%g  val2=%g",
-                  simtimeToStr(p.t), p.value1, p.value2);
+     sprintf(buf, "t=%s  val1=%g  val2=%g", SIMTIME_STR(p.t), p.value1, p.value2);
 
-   moving_tline = p.t;
+   moving_tline = SIMTIME_DBL(p.t);
 }
 
 void TOutVectorWindow::getConfig( char *buf )

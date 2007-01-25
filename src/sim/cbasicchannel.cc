@@ -35,8 +35,8 @@ Register_Class(cBasicChannel);
 
 cBasicChannel::cBasicChannel(const char *name) : cChannel(name)
 {
-    transm_finishes = 0.0;
-    delay_ = error_ = datarate_ = 0.0;
+    transm_finishes = 0;
+    delay_ = error_ = datarate_ = 0;
 }
 
 cBasicChannel::~cBasicChannel()

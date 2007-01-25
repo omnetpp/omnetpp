@@ -425,7 +425,7 @@ double cIniFile::getAsTime(const char *sect, const char *key, double defaultval)
        return defaultval;
     }
 
-    return strToSimtime(s);
+    return SIMTIME_DBL(strToSimtime(s)); //FIXME
 }
 
 std::string cIniFile::getAsFilename(const char *sect, const char *key, const char *defaultval)

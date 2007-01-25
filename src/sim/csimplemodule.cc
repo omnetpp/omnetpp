@@ -488,7 +488,7 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
     if (msg==NULL)
         throw cRuntimeError("scheduleAt(): message pointer is NULL");
     if (t<simTime())
-        throw cRuntimeError(eBACKSCHED, msg->className(), msg->name(), (double)t);
+        throw cRuntimeError(eBACKSCHED, msg->className(), msg->name(), SIMTIME_DBL(t));
     if (msg->owner()!=this)
     {
         if (this!=simulation.contextModule())
@@ -551,7 +551,7 @@ void cSimpleModule::arrived( cMessage *msg, int ongate, simtime_t t)
     if (t<simTime())
         throw cRuntimeError("causality violation: message `%s' arrival time %s at module `%s' "
                             "is earlier than current simulation time",
-                            msg->name(), simtimeToStr(t), fullPath().c_str());
+                            msg->name(), SIMTIME_STR(t), fullPath().c_str());
     msg->setArrival(this, ongate, t);
     simulation.msgQueue.insert( msg );
 }

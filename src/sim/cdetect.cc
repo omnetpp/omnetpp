@@ -123,7 +123,7 @@ void cTDExpandingWindows::collect(double val)
   {
      int maxsize = minwinds + (int)(minwinds*windexp + 0.5);
      xy* pair = new xy;         //create new element
-     pair->x = simulation.simTime();
+     pair->x = SIMTIME_DBL(simulation.simTime());
      pair->y = val;
      pair->next = NULL;
      if (size == 0)

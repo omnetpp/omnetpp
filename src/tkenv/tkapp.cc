@@ -874,7 +874,7 @@ void TOmnetTkApp::updateSimtimeDisplay()
                         "Event #", buf,
                         "}", NULL ));
     CHK(Tcl_VarEval(interp, TIME_LABEL " config -text {"
-                        "T=", simtimeToStr(simulation.guessNextSimtime()),
+                        "T=", SIMTIME_STR(simulation.guessNextSimtime()),
                         "}", NULL ));
 
     // statistics
@@ -959,7 +959,7 @@ void TOmnetTkApp::printEventBanner(cSimpleModule *module)
     char banner[MAX_OBJECTFULLPATH+60];
     sprintf(banner,"** Event #%ld.  T=%s.  Module #%u `%s'\n",
             simulation.eventNumber(),
-            simtimeToStr(simulation.simTime()),
+            SIMTIME_STR(simulation.simTime()),
             module->id(),
             module->fullPath().c_str()
           );
@@ -1076,6 +1076,7 @@ void TOmnetTkApp::objectDeleted(cObject *object)
 
 void TOmnetTkApp::messageSent(cMessage *msg, cGate *directToGate)
 {
+    //FIXME check FIRST if the window exists!!!!
     // display in message window
     CHK(Tcl_VarEval(interp, "catch {\n"
                             " .messagewindow.main.text insert end {SENT:\t (",msg->className(),")",msg->fullName(),"}\n"

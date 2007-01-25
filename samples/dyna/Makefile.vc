@@ -127,13 +127,7 @@ makefiles:
 re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-Client.obj: Client.cc \
-  dynapacket_m.h
-dynapacket_m.obj: dynapacket_m.cc \
-  dynapacket_m.h
-Server.obj: Server.cc \
-  dynapacket_m.h
-ServerProcess.obj: ServerProcess.cc \
-  dynapacket_m.h
-Switch.obj: Switch.cc \
-  dynapacket_m.h
+Client.obj: Client.cc
+Server.obj: Server.cc
+ServerProcess.obj: ServerProcess.cc
+Switch.obj: Switch.cc

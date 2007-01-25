@@ -236,7 +236,7 @@ void cIndexedFileOutputVectorManager::writeRecords(sVector *vp)
     long startOffset = ftell(f);
     for (std::vector<sSample>::iterator it = vp->buffer.begin(); it != vp->buffer.end(); ++it)
     {
-        CHECK(fprintf(f,"%d\t%.*g\t%.*g\n", vp->id, prec, it->symtime, prec, it->value));
+        CHECK(fprintf(f,"%d\t%.*g\t%.*g\n", vp->id, prec, it->simtime, prec, it->value));
     }
     long endOffset = ftell(f);
 

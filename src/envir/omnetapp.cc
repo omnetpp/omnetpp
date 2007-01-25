@@ -451,7 +451,7 @@ bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index
 }
 
 void TOmnetApp::getOutVectorConfig(int run_no, const char *modname,const char *vecname, /*input*/
-                                   bool& enabled, double& starttime, double& stoptime /*output*/ )
+                                   bool& enabled, simtime_t& starttime, simtime_t& stoptime /*output*/ )
 {
     // prepare section name and entry name
     sprintf(buffer, "%s.%s.", modname?modname:"", vecname?vecname:"");
@@ -478,8 +478,8 @@ void TOmnetApp::getOutVectorConfig(int run_no, const char *modname,const char *v
 
     const char *startstr = s;
     const char *stopstr = ellipsis+2;
-    starttime = strToSimtime0(startstr);
-    stoptime = strToSimtime0(stopstr);
+    starttime = SIMTIME_DBL(strToSimtime0(startstr)); //FIXME
+    stoptime = SIMTIME_DBL(strToSimtime0(stopstr)); //FIXME
 
     if (startstr<ellipsis || *stopstr!='\0')
         throw cRuntimeError("Error in output vector interval %s=%s",buffer,s);
@@ -592,6 +592,11 @@ void TOmnetApp::readOptions()
     ev.debug_on_errors = cfg->getAsBool("General", "debug-on-errors", false);
     cDefaultList::doGC = cfg->getAsBool("General", "perform-gc", false);
     opt_print_undisposed = cfg->getAsBool("General", "print-undisposed", true);
+
+#ifndef SIMTIME_DOUBLE
+    int scaleexp = cfg->getAsInt("General", "simtime-scale", 12); //XXX review
+    SimTime::setScaleExp(scaleexp);
+#endif
 
     // other options are read on per-run basis
 }

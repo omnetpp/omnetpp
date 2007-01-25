@@ -29,6 +29,7 @@ class SIM_API SimTime
     int64 t;
 
     static int scaleexp;     // scale exponent, >=0
+    static int64 iscale;     // 10^scaleexp, >=1      //XXX not needed then...
     static double scale_;    // 10^scaleexp, >=1
     static double invscale_; // 1/scale_; we store it because floating-point multiplication is faster than division
     static double maxtime;   // also precalculated
@@ -42,7 +43,18 @@ class SIM_API SimTime
     static const int SCALEEXP_FS = 15;
 
     SimTime() {t=0;}
-    SimTime(double d) {operator=(d);}
+//XXX these integer ctors are no win -- looks like performance-wise int*int64 ~ double*int64
+//XXX another idea that does NOT work for speeding up conversion from double: t = d==0 ? 0 : (int64)(scale_*d);
+//    SimTime(char d)  {operator=(d);}
+//    SimTime(short d) {operator=(d);}
+//    SimTime(int d)   {operator=(d);}
+//    SimTime(long d)  {operator=(d);}
+//    SimTime(unsigned short d) {operator=(d);}
+//    SimTime(unsigned int d)   {operator=(d);}
+//    SimTime(unsigned long d)  {operator=(d);}
+
+//    SimTime(double d) {operator=(d);}
+    SimTime(double d) {t = (int64)(scale_*d);}
     SimTime(const SimTime& x) {t=x.t;}
 
     bool operator==(const SimTime& x) const  {return t==x.t;}
@@ -51,6 +63,14 @@ class SIM_API SimTime
     bool operator> (const SimTime& x) const  {return t>x.t;}
     bool operator<=(const SimTime& x) const  {return t<=x.t;}
     bool operator>=(const SimTime& x) const  {return t>=x.t;}
+
+//    const SimTime& operator=(char d)  {t=iscale*d; return *this;}
+//    const SimTime& operator=(short d) {t=iscale*d; return *this;}
+//    const SimTime& operator=(int d)   {t=iscale*d; return *this;}
+//    const SimTime& operator=(long d)  {t=iscale*d; return *this;}
+//    const SimTime& operator=(unsigned short d) {t=iscale*d; return *this;}
+//    const SimTime& operator=(unsigned int d)   {t=iscale*d; return *this;}
+//    const SimTime& operator=(unsigned long d)  {t=iscale*d; return *this;}
 
     const SimTime& operator=(double d) {t = (int64)(scale_*d); return *this;}
     const SimTime& operator=(const SimTime& x) {t=x.t; return *this;}
@@ -68,6 +88,10 @@ class SIM_API SimTime
     friend const SimTime operator/(const SimTime& x, double d);
     friend double operator/(const SimTime& x, const SimTime& y);
 
+    double dbl() const  {return t * invscale_;} //XXX operator double? perhaps not a good idea
+
+    std::string str() const;
+
     int64 raw() const    {return t;}
     void setRaw(int64 l) {t = l;}
 
@@ -81,9 +105,6 @@ class SIM_API SimTime
      */
     static void setScaleExp(int e);
 
-    double dbl() const  {return t * invscale_;} //XXX operator double? perhaps not a good idea
-
-    std::string str() const;
 };
 
 /*XXX
@@ -124,7 +145,7 @@ inline double operator/(const SimTime& x, const SimTime& y)
     return (double)x.t / (double)y.t;
 }
 
-std::ostream& operator<<(std::ostream& os, const SimTime& x)
+inline std::ostream& operator<<(std::ostream& os, const SimTime& x)
 {
     return os << x.dbl() << " (raw:" << x.raw() << ")";   //XXX refine
 }

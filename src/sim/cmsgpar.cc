@@ -784,11 +784,6 @@ bool cMsgPar::parse(const char *text, char tp)
         if (len < (int)strlen(tmp) || !strchr("?D",tp)) goto error;
         setDoubleValue(num);
     }
-    else if ((d=strToSimtime(tmp))>=0.0) // double given as time?
-    {
-        if (!strchr("?D",tp)) goto error;
-        setDoubleValue(d);
-    }
     else if (!strncmp(tmp,"xmldoc",6))
     {
         if (!strchr("?M",tp)) goto error;
@@ -878,34 +873,34 @@ bool cMsgPar::setfunction(char *text)
                setDoubleValue(ff->mathFuncNoArg());
                return true;
        case 1: if (*s++!='(') return false;
-               p1 = strToSimtime0(s);
+               p1 = SIMTIME_DBL(strToSimtime0(s)); //FIXME
                if (*s++!=')') return false;
                setDoubleValue(ff->mathFunc1Arg(), p1);
                return true;
        case 2: if (*s++!='(') return false;
-               p1 = strToSimtime0(s);
+               p1 = SIMTIME_DBL(strToSimtime0(s)); //FIXME
                if (*s++!=',') return false;
-               p2 = strToSimtime0(s);
+               p2 = SIMTIME_DBL(strToSimtime0(s)); //FIXME
                if (*s++!=')') return false;
                setDoubleValue(ff->mathFunc2Args(), p1,p2);
                return true;
        case 3: if (*s++!='(') return false;
-               p1 = strToSimtime0(s);
+               p1 = SIMTIME_DBL(strToSimtime0(s)); //FIXME
                if (*s++!=',') return false;
-               p2 = strToSimtime0(s);
+               p2 = SIMTIME_DBL(strToSimtime0(s)); //FIXME
                if (*s++!=',') return false;
-               p3 = strToSimtime0(s);
+               p3 = SIMTIME_DBL(strToSimtime0(s)); //FIXME
                if (*s++!=')') return false;
                setDoubleValue(ff->mathFunc3Args(), p1,p2,p3);
                return true;
        case 4: if (*s++!='(') return false;
-               p1 = strToSimtime0(s);
+               p1 = SIMTIME_DBL(strToSimtime0(s)); //FIXME
                if (*s++!=',') return false;
-               p2 = strToSimtime0(s);
+               p2 = SIMTIME_DBL(strToSimtime0(s)); //FIXME
                if (*s++!=',') return false;
-               p3 = strToSimtime0(s);
+               p3 = SIMTIME_DBL(strToSimtime0(s)); //FIXME
                if (*s++!=',') return false;
-               p4 = strToSimtime0(s);
+               p4 = SIMTIME_DBL(strToSimtime0(s)); //FIXME
                if (*s++!=')') return false;
                setDoubleValue(ff->mathFunc4Args(), p1,p2,p3,p4);
                return true;

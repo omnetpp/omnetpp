@@ -74,7 +74,8 @@ void cRealTimeScheduler::endRun()
 void cRealTimeScheduler::executionResumed()
 {
     gettimeofday(&baseTime, NULL);
-    baseTime = timeval_substract(baseTime, doScaling ? factor*sim->simTime() : sim->simTime());
+//FIXME put back if compiles:
+//   baseTime = timeval_substract(baseTime, doScaling ? factor*sim->simTime() : sim->simTime());
 }
 
 bool cRealTimeScheduler::waitUntil(const timeval& targetTime)
@@ -107,6 +108,7 @@ cMessage *cRealTimeScheduler::getNextEvent()
 
     // calculate target time
     simtime_t eventSimtime = msg->arrivalTime();
+/*FIXME put back if compiles
     timeval targetTime = timeval_add(baseTime, doScaling ? factor*eventSimtime : eventSimtime);
 
     // if needed, wait until that time arrives
@@ -122,7 +124,7 @@ cMessage *cRealTimeScheduler::getNextEvent()
         // we're behind -- customized versions of this class may alert
         // if we're too much behind, or modify basetime to accept the skew
     }
-
+*/
     // ok, return the message
     return msg;
 }

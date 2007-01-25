@@ -145,7 +145,7 @@ class ENVIR_API TOmnetApp
     virtual void getOutVectorConfig(int run_no, const char *modname, /*input*/
                                     const char *vecname,
                                     bool& enabled, /*output*/
-                                    double& starttime, double& stoptime);
+                                    simtime_t& starttime, simtime_t& stoptime);
 
     virtual cXMLElement *getXMLDocument(const char *filename, const char *path=NULL);
     //@}

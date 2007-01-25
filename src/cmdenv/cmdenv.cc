@@ -312,7 +312,7 @@ void TCmdenvApp::simulate()
                {
                    ::fprintf(fout, "** Event #%ld  T=%s.  (%s) %s (id=%d)\n",
                            simulation.eventNumber(),
-                           simtimeToStr( simulation.simTime() ),
+                           SIMTIME_STR(simulation.simTime()),
                            mod->className(),
                            mod->fullPath().c_str(),
                            mod->id()
@@ -366,7 +366,7 @@ void TCmdenvApp::simulate()
                    {
                        ::fprintf(fout, "** Event #%ld   T=%s    Elapsed: %s\n",
                                simulation.eventNumber(),
-                               simtimeToStr(simulation.simTime()),
+                               SIMTIME_STR(simulation.simTime()),
                                timeToStr(totalElapsed()));
                        ::fprintf(fout, "     Speed:     ev/sec=%g   simsec/sec=%g   ev/simsec=%g\n",
                                speedometer.eventsPerSec(),
@@ -382,7 +382,7 @@ void TCmdenvApp::simulate()
                    {
                        ::fprintf(fout, "** Event #%ld   T=%s   Elapsed: %s   ev/sec=%g\n",
                                simulation.eventNumber(),
-                               simtimeToStr(simulation.simTime()),
+                               SIMTIME_STR(simulation.simTime()),
                                timeToStr(totalElapsed()),
                                speedometer.eventsPerSec());
                    }

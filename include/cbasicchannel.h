@@ -38,7 +38,7 @@ class SIM_API cBasicChannel : public cChannel //implies noncopyable
     };
 
     // cached values of parameters (note: parameters are non-volatile)
-    double delay_;    // propagation delay
+    simtime_t delay_; // propagation delay
     double error_;    // bit error rate
     double datarate_; // data rate
 
@@ -121,7 +121,7 @@ class SIM_API cBasicChannel : public cChannel //implies noncopyable
     /**
      * Returns the delay of the channel.
      */
-    virtual double delay() const {checkInitialized(); return delay_;}
+    virtual simtime_t delay() const {checkInitialized(); return delay_;}
 
     /**
      * Returns the bit error rate of the channel.

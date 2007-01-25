@@ -86,7 +86,7 @@ std::string cMessageHeap::info() const
     if (n==0)
         return std::string("empty");
     std::stringstream out;
-    out << "length=" << n << " Tmin=" << simtimeToStr(h[1]->arrivalTime());
+    out << "length=" << n << " Tmin=" << h[1]->arrivalTime();
     return out.str();
 }
 

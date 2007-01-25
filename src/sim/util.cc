@@ -44,6 +44,7 @@ Define_Function( max,  2 )
 //----
 // utility functions
 
+#ifdef SIMTIME_DOUBLE
 char *simtimeToStr(simtime_t t, char *buf)
 {
    // Print simulation time into a string.
@@ -120,6 +121,7 @@ char *simtimeToStrShort(simtime_t t, char *buf)
 
    return b;
 }
+#endif
 
 // *
 // * old version of simtimeToStr():

@@ -106,8 +106,7 @@ std::string cMessage::info() const
     if (delivd > simulation.simTime())
     {
         // if it arrived in the past, dt is usually unimportant, don't print it
-        out << "at T=" << simtimeToStrShort(delivd);
-        out << ", in dt=" << simtimeToStrShort(delivd-simulation.simTime()) << "; ";
+        out << "at T=" << delivd << ", in dt=" << (delivd - simulation.simTime()) << "; ";
     }
 
 #define MODNAME(modp) ((modp) ? (modp)->fullPath().c_str() : deletedstr)
@@ -155,13 +154,13 @@ std::string cMessage::detailedInfo() const
     std::stringstream os;
     os << "  sender:    id=" << senderModuleId() << '\n';
     os << "  dest.:     id=" << arrivalModuleId() << '\n';
-    os << "  sent:      " << simtimeToStr(sendingTime()) << '\n';
-    os << "  arrived:   " << simtimeToStr(arrivalTime()) << '\n';
+    os << "  sent:      " << sendingTime() << '\n';
+    os << "  arrived:   " << arrivalTime() << '\n';
     os << "  length:    " << length() << '\n';
     os << "  kind:      " << kind() << '\n';
     os << "  priority:  " << priority() << '\n';
     os << "  error:     " << (hasBitError() ? "true" : "false") << '\n';
-    os << "  timestamp: " << simtimeToStr(timestamp()) << '\n';
+    os << "  timestamp: " << timestamp() << '\n';
     if (parlistp)
     {
         os << "  parameter list:\n";

@@ -97,8 +97,7 @@ cMessage *cIdealSimulationProtocol::getNextEvent()
     if (msg->srcProcId()==nextExternalEvent.srcProcId && msgTime==nextExternalEvent.t)
     {
         if (debug) ev << "expected external event (srcProcId=" << msg->srcProcId()
-                      << " t=" << simtimeToStr(nextExternalEvent.t)
-                      << ") has already arrived, good!"<< endl;
+                      << " t=" << nextExternalEvent.t << ") has already arrived, good!\n";
         readNextRecordedEvent();
         msg->setPriority(0);
         return msg;
@@ -108,10 +107,8 @@ cMessage *cIdealSimulationProtocol::getNextEvent()
     ASSERT(msgTime > nextExternalEvent.t);
     if (debug)
     {
-        ev << "next local event at " << simtimeToStr(msgTime) << " is PAST the "
-              "next external event expected for t=" << simtimeToStr(nextExternalEvent.t) <<
-              " -- waiting..." << endl;
-        //printf("DBG:next external event: %.30g, next local event: %.30g\n", nextExternalEvent.t, msgTime);
+        ev << "next local event at " << msgTime << " is PAST the next external event "
+              "expected for t=" << nextExternalEvent.t << " -- waiting...\n";
     }
 
     do
@@ -152,6 +149,6 @@ void cIdealSimulationProtocol::readNextRecordedEvent()
     nextExternalEvent = table[nextPos++];
 
     if (debug) ev << "next expected external event: srcProcId=" << nextExternalEvent.srcProcId
-                  << " t=" << simtimeToStr(nextExternalEvent.t) << endl;
+                  << " t=" << nextExternalEvent.t << endl;
 }
 

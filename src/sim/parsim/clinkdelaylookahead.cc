@@ -100,7 +100,7 @@ void cLinkDelayLookahead::startRun()
 
     for (i=0; i<numSeg; i++)
         if (i!=myProcId)
-            ev << "    lookahead to procId=" << i << " is " << simtimeToStr(segInfo[i].minDelay) << endl;
+            ev << "    lookahead to procId=" << i << " is " << segInfo[i].minDelay << endl;
 
     ev << "  setup done.\n";
 }

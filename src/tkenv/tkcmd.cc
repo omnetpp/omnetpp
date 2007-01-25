@@ -329,7 +329,7 @@ int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    long until_event=0;
    if (argc==4)
    {
-       until_time = strToSimtime(argv[2]);
+       until_time = SIMTIME_DBL(strToSimtime(argv[2])); //FIXME
        sscanf(argv[3],"%ld",&until_event);
    }
 
@@ -360,7 +360,7 @@ int setRunUntil_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    }
    else
    {
-       simtime_t until_time = strToSimtime(argv[1]);
+       simtime_t until_time = SIMTIME_DBL(strToSimtime(argv[1]));
        long until_event = atol(argv[2]);
 
        app->setSimulationRunUntil(until_time, until_event);
@@ -873,7 +873,7 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    TOmnetTkApp *app = getTkApplication();
 
    if (0==strcmp(argv[1], "stepdelay"))
-      app->opt_stepdelay = long(1000*strToSimtime(argv[2])+.5);
+      app->opt_stepdelay = long(1000*SIMTIME_DBL(strToSimtime(argv[2]))+.5); //FIXME
    else if (0==strcmp(argv[1], "bkpts_enabled"))
       app->opt_bkpts_enabled = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "animation_enabled"))
@@ -1234,8 +1234,8 @@ int sortFesAndGetRange_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 
    // return result
    Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
-   Tcl_ListObjAppendElement(interp, listobj, Tcl_NewDoubleObj(tmin-now));
-   Tcl_ListObjAppendElement(interp, listobj, Tcl_NewDoubleObj(tmax-now));
+   Tcl_ListObjAppendElement(interp, listobj, Tcl_NewDoubleObj(SIMTIME_DBL(tmin-now)));
+   Tcl_ListObjAppendElement(interp, listobj, Tcl_NewDoubleObj(SIMTIME_DBL(tmax-now)));
    Tcl_SetObjResult(interp, listobj);
    return TCL_OK;
 }
@@ -1245,7 +1245,8 @@ int msgArrTimeFromNow_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    cMessage *msg = dynamic_cast<cMessage *>(strToPtr( argv[1] ));
    if (!msg) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetObjResult(interp, Tcl_NewDoubleObj(msg->arrivalTime()-simulation.simTime()));
+   simtime_t dt = msg->arrivalTime()-simulation.simTime();
+   Tcl_SetObjResult(interp, Tcl_NewDoubleObj(SIMTIME_DBL(dt)));
    return TCL_OK;
 }
 

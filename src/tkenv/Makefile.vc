@@ -109,6 +109,7 @@ inspector.obj: inspector.cc \
   ../../include/cllist.h \
   ../../include/clongpar.h \
   ../../include/cmersennetwister.h \
+  ../../include/simtime.h \
   ../../include/cmessage.h \
   ../../include/cmsgpar.h \
   ../../include/cmodule.h \
@@ -200,6 +201,7 @@ inspfactory.obj: inspfactory.cc \
   ../../include/cllist.h \
   ../../include/clongpar.h \
   ../../include/cmersennetwister.h \
+  ../../include/simtime.h \
   ../../include/cmessage.h \
   ../../include/cmsgpar.h \
   ../../include/cmodule.h \
@@ -281,6 +283,8 @@ modinsp.obj: modinsp.cc \
   ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
   ../../include/cdefaultlist.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/cenvir.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
@@ -340,6 +344,7 @@ objinsp.obj: objinsp.cc \
   ../../include/cllist.h \
   ../../include/clongpar.h \
   ../../include/cmersennetwister.h \
+  ../../include/simtime.h \
   ../../include/cmessage.h \
   ../../include/cmsgpar.h \
   ../../include/cmodule.h \
@@ -414,6 +419,8 @@ statinsp.obj: statinsp.cc \
   ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
   ../../include/cdefaultlist.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/cenvir.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
@@ -449,6 +456,8 @@ tkapp.obj: tkapp.cc \
   modinsp.h \
   ../utils/ver.h \
   ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/cmodule.h \
   ../../include/ccomponent.h \
   ../../include/globals.h \
@@ -508,6 +517,8 @@ tkcmd.obj: tkcmd.cc \
   inspfactory.h \
   visitor.h \
   ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/cownedobject.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
@@ -549,6 +560,8 @@ tkutil.obj: tkutil.cc \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
@@ -582,6 +595,8 @@ visitor.obj: visitor.cc \
   ../../include/cgate.h \
   visitor.h \
   ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/util.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
