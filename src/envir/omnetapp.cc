@@ -593,8 +593,8 @@ void TOmnetApp::readOptions()
     cDefaultList::doGC = cfg->getAsBool("General", "perform-gc", false);
     opt_print_undisposed = cfg->getAsBool("General", "print-undisposed", true);
 
-#ifndef SIMTIME_DOUBLE
-    int scaleexp = cfg->getAsInt("General", "simtime-scale", 12); //XXX review
+#ifndef USE_DOUBLE_SIMTIME
+    int scaleexp = cfg->getAsInt("General", "simtime-scale", -12); //XXX review
     SimTime::setScaleExp(scaleexp);
 #endif
 

@@ -18,32 +18,26 @@
 
 
 int SimTime::scaleexp;
-int64 SimTime::iscale;
-double SimTime::scale_;
-double SimTime::invscale_;
-double SimTime::maxtime;
+double SimTime::fscale;
+double SimTime::invfscale;
 
 //FIXME overflow should be detected somehow...
 
 void SimTime::setScaleExp(int e)
 {
-    if (e<0 || e>18)
-        throw cRuntimeError("simtime_t scale %d is out of accepted range 0..18; "
-                            "recommended value is 12 (picosecond resolution, "
-                            "range +-106 days)", e);
+    if (e < -18 || e > 0)
+        throw cRuntimeError("simtime_t scale exponent %d is out of accepted range -18..0; "
+                            "recommended value is -12 (picosecond resolution with range +-106 days)", e);
 
-    // calculate 10^e
+    // calculate 10^-e
     scaleexp = e;
-    iscale = 1;
-    while(e-- >0)
-        iscale *= 10;
+    int64 scale = 1;
+    while(e++ < 0)
+        scale *= 10;
 
     // store it in double too
-    scale_ = (double) iscale;
-    invscale_ = 1.0 / scale_;
-
-    // and precalculate maxtime as well
-    maxtime = ((((int64)1) << 63) - 1) * invscale_;
+    fscale = (double) scale;
+    invfscale = 1.0 / fscale;
 }
 
 std::string SimTime::str() const

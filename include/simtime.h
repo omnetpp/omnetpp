@@ -28,33 +28,24 @@ class SIM_API SimTime
   private:
     int64 t;
 
-    static int scaleexp;     // scale exponent, >=0
-    static int64 iscale;     // 10^scaleexp, >=1      //XXX not needed then...
-    static double scale_;    // 10^scaleexp, >=1
-    static double invscale_; // 1/scale_; we store it because floating-point multiplication is faster than division
-    static double maxtime;   // also precalculated
+    static int scaleexp;     // scale exponent in the range -18..0
+    static double fscale;    // 10^-scaleexp, that is 1 or 1000 or 1000000...
+    static double invfscale; // 1/fscale; we store it because floating-point multiplication is faster than division
 
   public:
-    static const int SCALEEXP_S  = 0;
-    static const int SCALEEXP_MS = 3;
-    static const int SCALEEXP_US = 6;
-    static const int SCALEEXP_NS = 9;
-    static const int SCALEEXP_PS = 12;
-    static const int SCALEEXP_FS = 15;
+    static const int SCALEEXP_S  =  0;
+    static const int SCALEEXP_MS = -3;
+    static const int SCALEEXP_US = -6;
+    static const int SCALEEXP_NS = -9;
+    static const int SCALEEXP_PS = -12;
+    static const int SCALEEXP_FS = -15;
 
     SimTime() {t=0;}
 //XXX these integer ctors are no win -- looks like performance-wise int*int64 ~ double*int64
-//XXX another idea that does NOT work for speeding up conversion from double: t = d==0 ? 0 : (int64)(scale_*d);
-//    SimTime(char d)  {operator=(d);}
-//    SimTime(short d) {operator=(d);}
 //    SimTime(int d)   {operator=(d);}
-//    SimTime(long d)  {operator=(d);}
-//    SimTime(unsigned short d) {operator=(d);}
-//    SimTime(unsigned int d)   {operator=(d);}
-//    SimTime(unsigned long d)  {operator=(d);}
+//XXX another idea that does NOT work for speeding up conversion from double: t = d==0 ? 0 : (int64)(fscale*d);
 
-//    SimTime(double d) {operator=(d);}
-    SimTime(double d) {t = (int64)(scale_*d);}
+    SimTime(double d) {operator=(d);}
     SimTime(const SimTime& x) {t=x.t;}
 
     bool operator==(const SimTime& x) const  {return t==x.t;}
@@ -64,15 +55,7 @@ class SIM_API SimTime
     bool operator<=(const SimTime& x) const  {return t<=x.t;}
     bool operator>=(const SimTime& x) const  {return t>=x.t;}
 
-//    const SimTime& operator=(char d)  {t=iscale*d; return *this;}
-//    const SimTime& operator=(short d) {t=iscale*d; return *this;}
-//    const SimTime& operator=(int d)   {t=iscale*d; return *this;}
-//    const SimTime& operator=(long d)  {t=iscale*d; return *this;}
-//    const SimTime& operator=(unsigned short d) {t=iscale*d; return *this;}
-//    const SimTime& operator=(unsigned int d)   {t=iscale*d; return *this;}
-//    const SimTime& operator=(unsigned long d)  {t=iscale*d; return *this;}
-
-    const SimTime& operator=(double d) {t = (int64)(scale_*d); return *this;}
+    const SimTime& operator=(double d) {t = (int64)(fscale*d); return *this;}
     const SimTime& operator=(const SimTime& x) {t=x.t; return *this;}
 
     const SimTime& operator+=(const SimTime& x) {t+=x.t; return *this;}
@@ -88,18 +71,63 @@ class SIM_API SimTime
     friend const SimTime operator/(const SimTime& x, double d);
     friend double operator/(const SimTime& x, const SimTime& y);
 
-    double dbl() const  {return t * invscale_;} //XXX operator double? perhaps not a good idea
+    /**
+     * Converts simulation time to double. Note that conversion to and from
+     * double may lose precision. We do not provide implicit conversion to
+     * double as it would conflict with other overloaded operators, and would
+     * cause ambiguities and unexpected conversions to be chosen by the
+     * C++ compiler.
+     */
+     double dbl() const  {return t*invfscale;}
+
+    /**
+     * Comparison functions. They provide a performance advantage by avoiding
+     * conversion to double, and are more concise than comparing against
+     * <tt>SimTime::zero()</tt>.
+     */
+    //@{
+    bool isZero()     {return t!=0;}
+    bool isPositive() {return t>0;}
+    bool isNegative() {return t<0;}
+    bool isMaxTime()  {return t==maxTime().t;}
+    //@}
 
     std::string str() const;
 
-    int64 raw() const    {return t;}
-    void setRaw(int64 l) {t = l;}
-
-    static int64 scale()  {return (int64)scale_;}
-    static int scaleExp() {return scaleexp;}
-    static double maxTime() {return maxtime;}
+    int64 raw() const  {return t;}
+    const SimTime& setRaw(int64 l) {t = l; return *this;}
 
     /**
+     * Returns 0 as simulation time. The code <tt>t = SimTime::zero();</tt> or
+     * <tt>t = SimTime();</tt> is more efficient than plain <tt>t = 0;</tt>,
+     * because the latter involves a <tt>SimTime(double)</tt> constructor call
+     * which the compiler usually does not fully optimize.
+     */
+    static const SimTime zero() {return SimTime();}
+
+    /**
+     * Returns the largest simulation time that can be represented using the
+     * present scale exponent.
+     */
+    static const SimTime maxTime() {return SimTime().setRaw((((int64)1) << 63) - 1);}
+
+    /**
+     * Returns the time resolution as the number of units per second,
+     * e.g. for microsecond resolution it returns 1000000.
+     */
+    static int64 scale()  {return (int64)fscale;}
+
+    /**
+     * Returns the scale exponent, which is an integer in the range -18..0.
+     * For example, for microsecond resolution it returns -6.
+     */
+    static int scaleExp() {return scaleexp;}
+
+    /**
+     * Sets the scale exponent, and thus the resolution of time. Accepted
+     * values are -18..0; for example, setScaleExp(-6) selects microsecond
+     * resolution.
+     *
      * IMPORTANT: This function has a global effect, and therefore
      * should NEVER be called during simulation.
      */

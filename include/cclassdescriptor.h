@@ -72,7 +72,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     static void bool2string(bool b, char *buf, int bufsize);
     static bool string2bool(const char *s);
     static void double2string(double d, char *buf, int bufsize);
-#ifndef SIMTIME_DOUBLE
+#ifndef USE_DOUBLE_SIMTIME
     static void double2string(SimTime t, char *buf, int bufsize) {double2string(t.dbl(),buf,bufsize);} //FIXME this is a hack, remove!!!!!
 #endif
     static double string2double(const char *s);

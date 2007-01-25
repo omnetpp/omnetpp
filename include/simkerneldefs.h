@@ -126,8 +126,8 @@
 /**
  * Model time.
  */
-//XXX #define SIMTIME_DOUBLE
-#ifdef SIMTIME_DOUBLE
+//XXX #define USE_DOUBLE_SIMTIME
+#ifdef USE_DOUBLE_SIMTIME
 
 typedef double   simtime_t;
 #define MAXTIME  HUGE_VAL
