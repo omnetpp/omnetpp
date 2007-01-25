@@ -48,9 +48,10 @@ static int qsort_cmp_msgs(const void *p1, const void *p2)
     cMessage *m1 = *(cMessage **)p1;
     cMessage *m2 = *(cMessage **)p2;
 
-    simtime_t dt = m1->arrivalTime() - m2->arrivalTime();
-    if (dt<0)       return -1;
-    else if (dt>0)  return 1;
+    if (m1->arrivalTime() < m2->arrivalTime())
+        return -1;
+    if (m1->arrivalTime() > m2->arrivalTime())
+        return 1;
 
     int dpri = m1->priority() - m2->priority();
     if (dpri) return dpri;
@@ -71,7 +72,7 @@ cMessageHeap::cMessageHeap(const char *name, int siz) : cOwnedObject(name, false
 cMessageHeap::cMessageHeap(const cMessageHeap& heap) : cOwnedObject()
 {
     h=NULL; n=0;
-    setName( heap.name() );
+    setName(heap.name());
     operator=(heap);
 }
 
@@ -158,7 +159,7 @@ void cMessageHeap::insert(cMessage *event)
 
     for (j=n; j>1; j=i)
     {
-        i=j/2;            //FIXME use j>>1 not j/2?
+        i = j>>1;
         if (*h[i] <= *event)   //direction
             break;
 
@@ -173,8 +174,8 @@ void cMessageHeap::shiftup(int from)
     int i,j;
     cMessage *temp;
 
-    i=from;
-    while ((j=2*i) <= n)  //FIXME  use i<<1 not 2*i?
+    i = from;
+    while ((j=i<<1) <= n)
     {
         if (j<n && (*h[j] > *h[j+1]))   //direction
             j++;
@@ -222,7 +223,7 @@ cMessage *cMessageHeap::get(cMessage *event)
     // last element will be used to fill the hole
     int father, out = event->heapindex;
     cMessage *fill = h[n--];
-    while ((father=out/2)!=0 && *h[father] > *fill)
+    while ((father=out>>1)!=0 && *h[father] > *fill)
     {
         (h[out]=h[father])->heapindex=out;  // father is moved down
         out=father;
