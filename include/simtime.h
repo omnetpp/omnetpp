@@ -133,6 +133,15 @@ class SIM_API SimTime
      */
     static void setScaleExp(int e);
 
+    /**
+     * Convert a 64-bit fixed point number into a string buffer.
+     * scaleexp must be in the -18..0 range, and the buffer must be
+     * at least 64 bytes long. A pointer to the result string will be
+     * returned; it will point *somewhere* into the buffer, but likely
+     * NOT at the beginning. There are performance reasons for this.
+     * A pointer to the terminating '\0' will be returned in endp.
+     */
+    static char *ttoa(char *buf, int64 t, int scaleexp, char *&endp);
 };
 
 /*XXX
@@ -175,7 +184,8 @@ inline double operator/(const SimTime& x, const SimTime& y)
 
 inline std::ostream& operator<<(std::ostream& os, const SimTime& x)
 {
-    return os << x.dbl() << " (raw:" << x.raw() << ")";   //XXX refine
+    char buf[64]; char *endp;
+    return os << SimTime::ttoa(buf, x.t, SimTime::scaleExp(), endp);   //XXX refine
 }
 
 #endif

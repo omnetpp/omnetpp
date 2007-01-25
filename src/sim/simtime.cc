@@ -48,6 +48,53 @@ std::string SimTime::str() const
     return out.str();
 }
 
+char *SimTime::ttoa(char *buf, int64 t, int scaleexp, char *&endp)
+{
+    ASSERT(scaleexp<=0 && scaleexp>=-18);
+
+    if (t==0)
+    {
+        buf[0] = '0';
+        buf[1] = '\0';
+        endp = buf+1;
+        return buf;
+    }
+
+    bool negative = t<0;
+    if (negative) t = -t;
+
+    // conversion
+    endp = buf+63;  //19+19+4 should be enough, but play it safe
+    *endp = '\0';
+    char *s = endp;
+    bool skipzeros = true;
+    int decimalplace = scaleexp;
+    do {
+        int64 res = t / 10;
+        int digit = t - (10*res);
+
+        if (skipzeros && (digit!=0 || decimalplace>=0))
+            skipzeros = false;
+        if (decimalplace++==0 && s!=endp)
+            *--s = '.';
+        if (!skipzeros)
+            *--s = '0'+digit;
+        t = res;
+    } while (t);
+
+    // add leading zeros, decimal point, etc if needed
+    if (decimalplace<=0)
+    {
+        while (decimalplace++ < 0)
+            *--s = '0';
+        *--s = '.';
+        *--s = '0';
+    }
+
+    if (negative) *--s = '-';
+    return s;
+}
+
 /*XXX
 std::string pr(const SimTime& x)
 {
@@ -57,4 +104,5 @@ std::string pr(const SimTime& x)
    return buf;
 }
 */
+
 
