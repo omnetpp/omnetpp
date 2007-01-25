@@ -48,25 +48,23 @@ std::string SimTime::str() const
     return out.str();
 }
 
-char *SimTime::ttoa(char *buf, int64 t, int scaleexp, char *&endp)
+char *SimTime::ttoa(char *buf, int64 t, int scaleexp, bool appendunit, char *&endp)
 {
     ASSERT(scaleexp<=0 && scaleexp>=-18);
 
+    // prepare for conversion
+    endp = buf+63;  //19+19+5 should be enough, but play it safe
+    *endp = '\0';
+    char *s = endp;
+    if (appendunit)
+        *--s = 's';
     if (t==0)
-    {
-        buf[0] = '0';
-        buf[1] = '\0';
-        endp = buf+1;
-        return buf;
-    }
+        {*--s = '0'; return s;}
 
+    // convert digits
     bool negative = t<0;
     if (negative) t = -t;
 
-    // conversion
-    endp = buf+63;  //19+19+4 should be enough, but play it safe
-    *endp = '\0';
-    char *s = endp;
     bool skipzeros = true;
     int decimalplace = scaleexp;
     do {

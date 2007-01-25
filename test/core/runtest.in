@@ -4,9 +4,7 @@
 # without args, runs all *.test files in the current directory   
 #
 
-# Use -N to test with dynamic NED loading
-#OPT=
-OPT="-N"
+OPT=
 
 MAKE=@MAKE@
 
