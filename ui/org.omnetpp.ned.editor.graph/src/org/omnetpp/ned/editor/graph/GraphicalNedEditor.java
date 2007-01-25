@@ -191,7 +191,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
         public Object getAdapter(Class type) {
             if (type == ZoomManager.class)
                 return getGraphicalViewer().getProperty(ZoomManager.class.toString());
-            
             return null;
         }
 
@@ -471,7 +470,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
     		public void run() throws Exception {
     			saveProperties();
     			ByteArrayOutputStream out = new ByteArrayOutputStream();
-// TODO save the contents of theeditor
+// TODO save the contents of the editor
 //    			writeToOutputStream(out);
     			IFile file = ((IFileEditorInput)getEditorInput()).getFile();
     			file.setContents(new ByteArrayInputStream(out.toByteArray()), 
@@ -493,7 +492,8 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
             outlinePage = new OutlinePage(new TreeViewer());
             return outlinePage;
         }
-        if (type == ZoomManager.class) return getGraphicalViewer().getProperty(ZoomManager.class.toString());
+        if (type == ZoomManager.class) 
+            return getGraphicalViewer().getProperty(ZoomManager.class.toString());
 
         return super.getAdapter(type);
     }

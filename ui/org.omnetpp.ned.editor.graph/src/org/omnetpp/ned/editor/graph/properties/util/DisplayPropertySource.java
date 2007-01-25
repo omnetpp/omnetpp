@@ -67,6 +67,10 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
         // set the other parameters
         pdesc.setCategory(prop.getGroup().name());
         pdesc.setDescription(prop.getVisibleDesc());
+        // the one line display string descriptor should be always incompatible, so selecting 
+        // two or more items will autamiically hide this composite property
+        if (prop == DisplayString.Prop.DISPLAY)
+            pdesc.setAlwaysIncompatible(true);
         
         return pdesc;
     }
