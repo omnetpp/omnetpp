@@ -37,7 +37,7 @@ void PPSink::initialize()
 void PPSink::handleMessage(cMessage *msg)
 {
     // update statistics and delete message
-    double d = simTime()-msg->timestamp();
+    simtime_t d = simTime()-msg->timestamp();
     ev << "Received " << msg->name() << ", queueing time: " << d << "sec" << endl;
     qstats.collect( d );
     qtime.record( d );

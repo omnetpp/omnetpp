@@ -24,7 +24,7 @@ class AHost : public cSimpleModule
     double txRate;
     cPar *iaTime;
     cPar *pkLenBits;
-    double slotTime;
+    simtime_t slotTime;
     bool isSlotted;
 
     // state variables, event pointers etc

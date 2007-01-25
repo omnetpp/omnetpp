@@ -75,7 +75,7 @@ void Generator::activity()
         // parameter "interArrivalTime" which will be evaluated here. The module parameter
         // can be set to a random variate (for example: truncnormal(0.5,0.1)),
         // and then we'll get random delay here.
-        wait( interArrivalTime );
+        wait( interArrivalTime.doubleValue() );
     }
 }
 

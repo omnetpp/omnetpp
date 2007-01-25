@@ -50,7 +50,7 @@ void HCGenerator::activity()
         // Note that iaTime is a reference to the module parameter "iaTime"
         // that will be evaluated here. The module parameter can also take
         // a random value (for example: truncnormal(0.5,0.1) ).
-        wait( iaTime );
+        wait( iaTime.doubleValue() );
     }
 }
 

@@ -35,7 +35,7 @@ void FFSink::initialize()
 
 void FFSink::handleMessage(cMessage *msg)
 {
-    double d = simTime()-msg->creationTime();
+    simtime_t d = simTime()-msg->creationTime();
     ev << "Received " << msg->name() << ", queueing time: " << d << "sec" << endl;
     qstats.collect( d );
     qtime.record( d );
