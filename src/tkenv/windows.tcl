@@ -38,6 +38,8 @@ proc create_messagewindow {name} {
     wm resizable $w 1 1
     wm title $w "Sent/Delivered Messages"
 
+    wm protocol $w WM_DELETE_WINDOW "opp_setmsgwindowexists 0; destroy $w"
+
     frame $w.toolbar
     textwindow_add_icons $w
 
@@ -58,6 +60,8 @@ proc create_messagewindow {name} {
     bind_runcommands $w
     bind_findcommands_to_textwidget $w.main.text
 
+    # let C++ code know about it
+    opp_setmsgwindowexists 1
 }
 
 #===================================================================

@@ -97,6 +97,7 @@ TOmnetTkApp::TOmnetTkApp(ArgList *args, cConfiguration *config) :
     simstate = SIM_NONET;
     stopsimulation_flag = false;
     animating = false;
+    hasmessagewindow = false;
 
     // The opt_* vars will be set by readOptions()
 }
@@ -971,11 +972,12 @@ void TOmnetTkApp::printEventBanner(cSimpleModule *module)
               ".main.text see end", NULL));
 
     // and into the message window
-    CHK(Tcl_VarEval(interp,
-            "catch {\n"
-            " .messagewindow.main.text insert end {",banner,"} event\n"
-            " .messagewindow.main.text see end\n"
-            "}\n", NULL));
+    if (hasmessagewindow)
+        CHK(Tcl_VarEval(interp,
+              "catch {\n"
+              " .messagewindow.main.text insert end {",banner,"} event\n"
+              " .messagewindow.main.text see end\n"
+              "}\n", NULL));
 
     // print banner into module window and all parent module windows if they exist
     cModule *mod = module;
@@ -1078,13 +1080,15 @@ void TOmnetTkApp::messageSent(cMessage *msg, cGate *directToGate)
 {
     //FIXME check FIRST if the window exists!!!!
     // display in message window
-    CHK(Tcl_VarEval(interp, "catch {\n"
-                            " .messagewindow.main.text insert end {SENT:\t (",msg->className(),")",msg->fullName(),"}\n"
-                            " .messagewindow.main.text insert end ",TclQuotedString(msg->info().c_str()).get(),"\n"
-                            " .messagewindow.main.text insert end {\n}\n"
-                            " .messagewindow.main.text see end\n"
-                            "}\n",
-                            NULL));
+    if (hasmessagewindow)
+        CHK(Tcl_VarEval(interp,
+            "catch {\n"
+            " .messagewindow.main.text insert end {SENT:\t (", msg->className(),")", msg->fullName(), "}\n"
+            " .messagewindow.main.text insert end ", TclQuotedString(msg->info().c_str()).get(), "\n"
+            " .messagewindow.main.text insert end {\n}\n"
+            " .messagewindow.main.text see end\n"
+            "}\n",
+            NULL));
 
     if (animating && opt_animation_enabled)
     {
@@ -1108,13 +1112,15 @@ void TOmnetTkApp::messageSent(cMessage *msg, cGate *directToGate)
 void TOmnetTkApp::messageDelivered(cMessage *msg)
 {
     // display in message window
-    CHK(Tcl_VarEval(interp, "catch {\n"
-                            " .messagewindow.main.text insert end {DELIVD:\t (",msg->className(),")",msg->fullName(),"}\n"
-                            " .messagewindow.main.text insert end ",TclQuotedString(msg->info().c_str()).get(),"\n"
-                            " .messagewindow.main.text insert end {\n}\n"
-                            " .messagewindow.main.text see end\n"
-                            "}\n",
-                            NULL));
+    if (hasmessagewindow)
+        CHK(Tcl_VarEval(interp,
+            "catch {\n"
+            " .messagewindow.main.text insert end {DELIVD:\t (",msg->className(),")",msg->fullName(),"}\n"
+            " .messagewindow.main.text insert end ",TclQuotedString(msg->info().c_str()).get(),"\n"
+            " .messagewindow.main.text insert end {\n}\n"
+            " .messagewindow.main.text see end\n"
+            "}\n",
+            NULL));
 
     if (animating && opt_animation_enabled)
     {

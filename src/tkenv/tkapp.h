@@ -94,6 +94,7 @@ class TOmnetTkApp : public TOmnetApp
 
       // state variables
       bool animating;              // while execution, do message animation or not
+      bool hasmessagewindow;       // whether the message window is currently open
 
    protected:
       Tcl_Interp *interp;          // Tcl interpreter

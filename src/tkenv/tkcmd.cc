@@ -101,6 +101,7 @@ int fesMsgs_cmd(ClientData, Tcl_Interp *, int, const char **);
 int sortFesAndGetRange_cmd(ClientData, Tcl_Interp *, int, const char **);
 int msgArrTimeFromNow_cmd(ClientData, Tcl_Interp *, int, const char **);
 int patmatch_cmd(ClientData, Tcl_Interp *, int, const char **);
+int setMsgWindowExists_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int inspect_cmd(ClientData, Tcl_Interp *, int, const char **);
 int supportedInspTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -190,6 +191,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_sortfesandgetrange",sortFesAndGetRange_cmd  }, // args: -  ret: {minDeltaT maxDeltaT}
    { "opp_msgarrtimefromnow",msgArrTimeFromNow_cmd    }, // args: <modptr>
    { "opp_patmatch",         patmatch_cmd             }, // args: <string> <pattern>
+   { "opp_setmsgwindowexists", setMsgWindowExists_cmd }, // args: 0 or 1
 
    // Inspector stuff
    { "opp_inspect",           inspect_cmd           }, // args: <ptr> <type> <opt> ret: window
@@ -1259,6 +1261,14 @@ int patmatch_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    PatternMatcher pat;
    TRY(pat.setPattern(p, true, true, true));
    Tcl_SetResult(interp, TCLCONST(pat.matches(s) ? "1" : "0"), TCL_STATIC);
+   return TCL_OK;
+}
+
+int setMsgWindowExists_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   TOmnetTkApp *app = getTkApplication();
+   app->hasmessagewindow = argv[1][0]!='0';
    return TCL_OK;
 }
 
