@@ -32,25 +32,18 @@
 
 Register_Class(cOutVector);
 
-cOutVector::cOutVector(const char *name, int tuple) : cNoncopyableOwnedObject(name)
+cOutVector::cOutVector(const char *name) : cNoncopyableOwnedObject(name)
 {
     enabled = true;
     handle = NULL;
     num_received = 0;
     num_stored = 0;
     record_in_inspector = NULL;
-    tupl = tuple;
     last_t = 0;
-
-    if (tupl!=1 && tupl!=2)
-    {
-        tupl = 0;
-        throw cRuntimeError(this,"constructor: invalid value (%d) for tuple; supported values are 1 and 2", tupl);
-    }
 
     // register early if possible (only required by Akaroa)
     if (name)
-        handle = ev.registerOutputVector(simulation.context()->fullPath().c_str(), name, tupl);
+        handle = ev.registerOutputVector(simulation.context()->fullPath().c_str(), name);
 }
 
 cOutVector::~cOutVector()
@@ -67,7 +60,7 @@ void cOutVector::setName(const char *nam)
 
     // register early (only needed for Akaroa...)
     if (nam)
-        handle = ev.registerOutputVector(simulation.context()->fullPath().c_str(), name(), tupl);
+        handle = ev.registerOutputVector(simulation.context()->fullPath().c_str(), name());
 }
 
 std::string cOutVector::info() const
@@ -95,17 +88,8 @@ bool cOutVector::record(double value)
     return recordWithTimestamp(simulation.simTime(), value);
 }
 
-bool cOutVector::record(double value1, double value2)
-{
-    return recordWithTimestamp(simulation.simTime(), value1, value2);
-}
-
 bool cOutVector::recordWithTimestamp(simtime_t t, double value)
 {
-    // check tuple
-    if (tupl!=1)
-        throw cRuntimeError(this,eNUMARGS,1);
-
     // check timestamp
     if (t<last_t)
         throw cRuntimeError(this,"Cannot record data with an earlier timestamp (t=%s) "
@@ -123,41 +107,10 @@ bool cOutVector::recordWithTimestamp(simtime_t t, double value)
 
     // initialize if not yet done
     if (!handle)
-        handle = ev.registerOutputVector(simulation.context()->fullPath().c_str(), name(), tupl);
+        handle = ev.registerOutputVector(simulation.context()->fullPath().c_str(), name());
 
     // pass data to envir for storage
     bool stored = ev.recordInOutputVector(handle, t, value);
-    if (stored) num_stored++;
-    return stored;
-}
-
-bool cOutVector::recordWithTimestamp(simtime_t t, double value1, double value2)
-{
-    // check tuple
-    if (tupl!=2)
-        throw cRuntimeError(this,eNUMARGS,2);
-
-    // check timestamp
-    if (t<last_t)
-        throw cRuntimeError(this,"Cannot record data with an earlier timestamp (t=%s) "
-                                 "than the previously recorded value", SIMTIME_STR(t));
-    last_t = t;
-
-    num_received++;
-
-    // pass data to inspector
-    if (record_in_inspector)
-        record_in_inspector(data_for_inspector,t,value1,value2);
-
-    if (!enabled)
-        return false;
-
-    // initialize if not yet done
-    if (!handle)
-        handle = ev.registerOutputVector(simulation.context()->fullPath().c_str(), name(), tupl);
-
-    // pass data to envir for storage
-    bool stored = ev.recordInOutputVector(handle, t, value1, value2);
     if (stored) num_stored++;
     return stored;
 }

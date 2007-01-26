@@ -160,12 +160,11 @@ void cMySQLOutputVectorManager::insertRunIntoDB()
     }
 }
 
-void *cMySQLOutputVectorManager::registerVector(const char *modulename, const char *vectorname, int tuple)
+void *cMySQLOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
 {
     // only create the data structure here -- we'll insert the entry into the
     // DB lazily, when first data gets written
     sVectorData *vp = createVectorData();
-    vp->tuple = tuple;
     vp->id = -1; // we'll get it from the database
     vp->initialised = false;
     vp->modulename = modulename;
@@ -216,11 +215,6 @@ bool cMySQLOutputVectorManager::record(void *vectorhandle, simtime_t t, double v
         return true;
     }
     return false;
-}
-
-bool cMySQLOutputVectorManager::record(void *vectorhandle, simtime_t t, double value1, double value2)
-{
-    throw cRuntimeError("cMySQLOutputVectorManager: tuple=2 not supported");
 }
 
 void cMySQLOutputVectorManager::flush()

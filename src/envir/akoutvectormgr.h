@@ -69,18 +69,12 @@ class cAkOutputVectorManager : public cFileOutputVectorManager
     /**
      * Registers a vector and returns a handle.
      */
-    virtual void *registerVector(const char *modulename, const char *vectorname, int tuple);
+    virtual void *registerVector(const char *modulename, const char *vectorname);
 
     /**
      * Passes a (time, value) pair to Akaroa and also writes it into the output file.
      */
     virtual bool record(void *vectorhandle, simtime_t t, double value);
-
-    /**
-     * Recording value pairs is not supported with Akaroa.
-     */
-    virtual bool record(void *vectorhandle, simtime_t t, double value1, double value2);
-
     //@}
 };
 

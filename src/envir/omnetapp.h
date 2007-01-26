@@ -245,10 +245,9 @@ class ENVIR_API TOmnetApp
 
     /** @name Methods for recording data from output vectors; called by cEnvir's similar functions */
     //@{
-    void *registerOutputVector(const char *modulename, const char *vectorname, int tuple);
+    void *registerOutputVector(const char *modulename, const char *vectorname);
     void deregisterOutputVector(void *vechandle);
     bool recordInOutputVector(void *vechandle, simtime_t t, double value);
-    bool recordInOutputVector(void *vechandle, simtime_t t, double value1, double value2);
     //@}
 
     /** @name Methods for output scalars; called by cEnvir's similar functions */

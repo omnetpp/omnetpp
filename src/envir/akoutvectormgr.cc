@@ -45,9 +45,9 @@ cAkOutputVectorManager::~cAkOutputVectorManager()
 {
 }
 
-void *cAkOutputVectorManager::registerVector(const char *modulename, const char *vectorname, int tuple)
+void *cAkOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
 {
-    sAkVectorData *vp = (sAkVectorData *)cFileOutputVectorManager::registerVector(modulename,vectorname, tuple);
+    sAkVectorData *vp = (sAkVectorData *)cFileOutputVectorManager::registerVector(modulename, vectorname);
 
     // see if this vector needs Akaroa control
     // section stands for RUN[]
@@ -64,9 +64,6 @@ void *cAkOutputVectorManager::registerVector(const char *modulename, const char 
         // register vector with Akaroa
         if (ak_declared)
             throw cRuntimeError("cAkOutputVectorManager: With Akaroa, cannot create new vector after first data have been recorded");
-
-        if (tuple > 1)
-            throw cRuntimeError("cAkOutputVectorManager: Akaroa can handle only one parameter per cOutVector");
 
         // Akaroa starts parameter numbering with one
         vp->ak_id = ++ak_count;

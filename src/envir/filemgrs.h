@@ -41,7 +41,6 @@ class cFileOutputVectorManager : public cOutputVectorManager
 {
   protected:
     struct sVectorData {
-       int tuple;           // 1 or 2
        int id;              // vector ID
        opp_string modulename; // module of cOutVector object
        opp_string vectorname; // cOutVector object name
@@ -95,7 +94,7 @@ class cFileOutputVectorManager : public cOutputVectorManager
     /**
      * Registers a vector and returns a handle.
      */
-    virtual void *registerVector(const char *modulename, const char *vectorname, int tuple);
+    virtual void *registerVector(const char *modulename, const char *vectorname);
 
     /**
      * Deregisters the output vector.
@@ -106,11 +105,6 @@ class cFileOutputVectorManager : public cOutputVectorManager
      * Writes the (time, value) pair into the output file.
      */
     virtual bool record(void *vectorhandle, simtime_t t, double value);
-
-    /**
-     * Writes the (time, value1, value2) triplet into the output file.
-     */
-    virtual bool record(void *vectorhandle, simtime_t t, double value1, double value2);
 
     /**
      * Returns the file name.

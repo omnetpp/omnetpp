@@ -70,7 +70,6 @@ class cMySQLOutputVectorManager : public cOutputVectorManager
 {
   protected:
     struct sVectorData {
-       int tuple;           // 1 or 2
        long id;             // vector ID
        opp_string modulename; // module of cOutVector object
        opp_string vectorname; // cOutVector object name
@@ -148,7 +147,7 @@ class cMySQLOutputVectorManager : public cOutputVectorManager
     /**
      * Registers a vector and returns a handle.
      */
-    virtual void *registerVector(const char *modulename, const char *vectorname, int tuple);
+    virtual void *registerVector(const char *modulename, const char *vectorname);
 
     /**
      * Deregisters the output vector.
@@ -159,11 +158,6 @@ class cMySQLOutputVectorManager : public cOutputVectorManager
      * Writes the (time, value) pair into the output file.
      */
     virtual bool record(void *vectorhandle, simtime_t t, double value);
-
-    /**
-     * Writes the (time, value1, value2) triplet into the output file.
-     */
-    virtual bool record(void *vectorhandle, simtime_t t, double value1, double value2);
 
     /**
      * Returns NULL, because this class doesn't use a file.

@@ -325,8 +325,6 @@ void TOutVectorWindow::update()
 
    if (circbuf.items()==0) return;
 
-   int tuple = static_cast<cOutVector *>(object)->tuple();
-
    // get canvas size
    CHK(Tcl_VarEval(interp, "winfo width ",canvas, NULL));
    int canvaswidth = atoi( Tcl_GetStringResult(interp) );
@@ -364,11 +362,6 @@ void TOutVectorWindow::update()
            CircBuffer::CBEntry& p = circbuf.entry(pos);
            if (p.value1<miny) miny = p.value1;
            if (p.value1>maxy) maxy = p.value1;
-           if (tuple==2)
-           {
-               if (p.value2<miny) miny = p.value2;
-               if (p.value2>maxy) maxy = p.value2;
-           }
            pos=(pos-1+circbuf.size())%circbuf.size();
        }
        if (miny==maxy)
@@ -434,65 +427,30 @@ void TOutVectorWindow::update()
                 sprintf(coords,"%d %d %d %d", x-d, y1-d, x+d, y1+d);
                 CHK(Tcl_VarEval(interp, canvas," create rect ",coords,
                                     " -tag ",tag," -outline red -fill red", NULL));
-                if (tuple==2)
-                {
-                    // draw rectangle 2
-                    sprintf(coords,"%d %d %d %d", x-d, y2-d, x+d, y2+d);
-                    CHK(Tcl_VarEval(interp, canvas," create rect ",coords,
-                                        " -tag ",tag," -outline blue -fill blue", NULL));
-                }
                 break;
              case DRAW_PINS:
                 // draw rectangle 1
                 sprintf(coords,"%d %d %d %d", x, y_zero, x, y1);
                 CHK(Tcl_VarEval(interp, canvas," create line ",coords,
                                     " -tag ",tag," -fill red", NULL));
-                if (tuple==2)
-                {
-                    // draw rectangle 2
-                    sprintf(coords,"%d %d %d %d", x, y_zero, x, y2);
-                    CHK(Tcl_VarEval(interp, canvas," create line ",coords,
-                                        " -tag ",tag," -fill blue", NULL));
-                }
                 break;
              case DRAW_LINES:
                 // draw rectangle 1
                 sprintf(coords,"%d %d %d %d", x, y1, next_x, next_y1);
                 CHK(Tcl_VarEval(interp, canvas," create line ",coords,
                                     " -tag ",tag," -fill red", NULL));
-                if (tuple==2)
-                {
-                    // draw rectangle 2
-                    sprintf(coords,"%d %d %d %d", x, y2, next_x, next_y2);
-                    CHK(Tcl_VarEval(interp, canvas," create line ",coords,
-                                        " -tag ",tag," -fill blue", NULL));
-                }
                 break;
              case DRAW_SAMPLEHOLD:
                 // draw rectangle 1
                 sprintf(coords,"%d %d %d %d", x, y1, next_x, y1);
                 CHK(Tcl_VarEval(interp, canvas," create line ",coords,
                                     " -tag ",tag," -fill red", NULL));
-                if (tuple==2)
-                {
-                    // draw rectangle 2
-                    sprintf(coords,"%d %d %d %d", x, y2, next_x, y2);
-                    CHK(Tcl_VarEval(interp, canvas," create line ",coords,
-                                        " -tag ",tag," -fill blue", NULL));
-                }
                 break;
              case DRAW_BARS:
                 // draw rectangle 1
                 sprintf(coords,"%d %d %d %d", x, y_zero, next_x, y1);
                 CHK(Tcl_VarEval(interp, canvas," create rect ",coords,
                                     " -tag ",tag," -outline red -fill red", NULL));
-                if (tuple==2)
-                {
-                    // draw rectangle 2
-                    sprintf(coords,"%d %d %d %d", x, y_zero, next_x, y2);
-                    CHK(Tcl_VarEval(interp, canvas," create rect ",coords,
-                                        " -tag ",tag," -outline blue -fill blue", NULL));
-                }
                 break;
            }
        }
@@ -572,22 +530,14 @@ void TOutVectorWindow::generalInfo( char *buf )
    sprintf(buf, "t=%s .. %s  value=%g .. %g", simtimeToStr(firstt,buf1),
                 simtimeToStr(tbase,buf2), miny, maxy);
 */
-   int tuple = static_cast<cOutVector *>(object)->tuple();
    CircBuffer::CBEntry& p = circbuf.entry(circbuf.headPos());
-   if (tuple==1)
-     sprintf(buf, "Last value: t=%s  value=%g", SIMTIME_STR(p.t), p.value1);
-   else
-     sprintf(buf, "Last value: t=%s  val1=%g  val2=%g", SIMTIME_STR(p.t), p.value1, p.value2);
+   sprintf(buf, "Last value: t=%s  value=%g", SIMTIME_STR(p.t), p.value1);
 }
 
 void TOutVectorWindow::valueInfo( char *buf, int valueindex )
 {
-   int tuple = static_cast<cOutVector *>(object)->tuple();
    CircBuffer::CBEntry& p = circbuf.entry(valueindex);
-   if (tuple==1)
-     sprintf(buf, "t=%s  value=%g", SIMTIME_STR(p.t), p.value1);
-   else
-     sprintf(buf, "t=%s  val1=%g  val2=%g", SIMTIME_STR(p.t), p.value1, p.value2);
+   sprintf(buf, "t=%s  value=%g", SIMTIME_STR(p.t), p.value1);
 
    moving_tline = SIMTIME_DBL(p.t);
 }

@@ -137,12 +137,9 @@ void cIndexedFileOutputVectorManager::endRun()
     closeIndexFile();
 }
 
-void *cIndexedFileOutputVectorManager::registerVector(const char *modulename, const char *vectorname, int tuple)
+void *cIndexedFileOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
 {
-    if (tuple > 1) WARN("cIndexedFileOutputVectorManager does not support 2-component vectors. Second value will be dropped.\n");
-
     sVector *vp = (sVector *)createVectorData();
-    vp->tuple = tuple;
     vp->id = nextid++;
     vp->initialised = false;
     vp->modulename = modulename;
@@ -211,12 +208,6 @@ bool cIndexedFileOutputVectorManager::record(void *vectorhandle, simtime_t t, do
         return true;
     }
     return false;
-}
-
-bool cIndexedFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double value1, double value2)
-{
-    // drop second component, see warning in registerVector()
-    return record(vectorhandle, t, value1);
 }
 
 // empties all buffer

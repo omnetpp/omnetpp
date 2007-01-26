@@ -166,8 +166,8 @@ void cFileOutputVectorManager::initVector(sVectorData *vp)
         writeHeader();
     }
 
-    CHECK(fprintf(f,"vector %d  %s  %s  %d\n",
-                  vp->id, QUOTE(vp->modulename.c_str()), QUOTE(vp->vectorname.c_str()), vp->tuple));
+    CHECK(fprintf(f,"vector %d  %s  %s\n",
+                  vp->id, QUOTE(vp->modulename.c_str()), QUOTE(vp->vectorname.c_str())));
     vp->initialised = true;
 }
 
@@ -184,10 +184,9 @@ void cFileOutputVectorManager::endRun()
     closeFile();
 }
 
-void *cFileOutputVectorManager::registerVector(const char *modulename, const char *vectorname, int tuple)
+void *cFileOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
 {
     sVectorData *vp = createVectorData();
-    vp->tuple = tuple;
     vp->id = nextid++;
     vp->initialised = false;
     vp->modulename = modulename;
@@ -222,24 +221,6 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
             initVector(vp);
         assert(f!=NULL);
         CHECK(fprintf(f,"%d\t%.*g\t%.*g\n", vp->id, prec, t, prec, value));
-        return true;
-    }
-    return false;
-}
-
-bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double value1, double value2)
-{
-    sVectorData *vp = (sVectorData *)vectorhandle;
-
-    if (!vp->enabled)
-        return false;
-
-    if (t>=vp->starttime && (vp->stoptime==0.0 || t<=vp->stoptime))
-    {
-        if (!vp->initialised)
-            initVector(vp);
-        assert(f!=NULL);
-        CHECK(fprintf(f,"%d\t%.*g\t%.*g\t%.*g\n", vp->id, prec, t, prec, value1, prec, value2));
         return true;
     }
     return false;

@@ -479,7 +479,7 @@ class ENVIR_API cEnvir : public std::ostream
      * this handle has to be passed to record() to identify the vector
      * each time a value is written.
      */
-    void *registerOutputVector(const char *modulename, const char *vectorname, int tuple);
+    void *registerOutputVector(const char *modulename, const char *vectorname);
 
     /**
      * cOutVector objects must deregister themselves when they are no longer needed.
@@ -492,13 +492,6 @@ class ENVIR_API cEnvir : public std::ostream
      * actually recorded, and false if it was not recorded (because of filtering, etc.)
      */
     bool recordInOutputVector(void *vechandle, simtime_t t, double value);
-
-    /**
-     * This method is intended to be called by cOutVector objects to write
-     * a value pair into the output vector. The return value is true if the data was
-     * actually recorded, and false if it was not recorded (because of filtering, etc.)
-     */
-    bool recordInOutputVector(void *vechandle, simtime_t t, double value1, double value2);
     //@}
 
     /** @name Scalar statistics.

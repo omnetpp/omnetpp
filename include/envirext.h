@@ -91,7 +91,7 @@ class ENVIR_API cOutputVectorManager : public cObject
      * The return value is a handle of type void*; this handle is passed to
      * record() to identify the vector.
      */
-    virtual void *registerVector(const char *modulename, const char *vectorname, int tuple) = 0;
+    virtual void *registerVector(const char *modulename, const char *vectorname) = 0;
 
     /**
      * This method is called internally by the Envir library when a cOutVector object deregisters itself.
@@ -104,13 +104,6 @@ class ENVIR_API cOutputVectorManager : public cObject
      * data was actually recorded, and false if it was not recorded (because of filtering, etc.)
      */
     virtual bool record(void *vechandle, simtime_t t, double value) = 0;
-
-    /**
-     * This method is called internally by the Envir library when a cOutVector object
-     * writes a value pair into the output vector. The return value should be true if the data was
-     * actually recorded, and false if it was not recorded (because of filtering, etc.)
-     */
-    virtual bool record(void *vechandle, simtime_t t, double value1, double value2) = 0;
 
     /**
      * Returns the output vector file name. Returns NULL if this object is not

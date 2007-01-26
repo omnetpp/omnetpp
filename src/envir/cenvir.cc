@@ -511,9 +511,9 @@ void cEnvir::getRNGMappingFor(cComponent *component)
 
 //---------------------------------------------------------
 
-void *cEnvir::registerOutputVector(const char *modulename, const char *vectorname, int tuple)
+void *cEnvir::registerOutputVector(const char *modulename, const char *vectorname)
 {
-    return app->registerOutputVector(modulename, vectorname, tuple);
+    return app->registerOutputVector(modulename, vectorname);
 }
 
 void cEnvir::deregisterOutputVector(void *vechandle)
@@ -524,11 +524,6 @@ void cEnvir::deregisterOutputVector(void *vechandle)
 bool cEnvir::recordInOutputVector(void *vechandle, simtime_t t, double value)
 {
     return app->recordInOutputVector(vechandle, t, value);
-}
-
-bool cEnvir::recordInOutputVector(void *vechandle, simtime_t t, double value1, double value2)
-{
-    return app->recordInOutputVector(vechandle, t, value1, value2);
 }
 
 //---------------------------------------------------------

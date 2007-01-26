@@ -46,7 +46,6 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
 {
   protected:
     bool enabled;        // if false, record() method will do nothing
-    int tupl;            // values: 1 or 2
     void *handle;        // identifies output vector for the output vector manager
     long num_received;   // total number of values passed to the output vector object
     long num_stored;     // number of values actually stored
@@ -64,10 +63,9 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
     /** @name Constructors, destructor, assignment */
     //@{
     /**
-     * Constructor. Accepts the object name, and tuple which can be 1 or 2
-     * (2 is discouraged).
+     * Constructor.
      */
-    explicit cOutVector(const char *name=NULL, int tuple=1);
+    explicit cOutVector(const char *name=NULL);
 
     /**
      * Destructor.
@@ -108,7 +106,6 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
 
     /**
      * Records the value with the current simulation time as timestamp.
-     * This method can be used with cOutVectors created with tuple=1.
      *
      * The return value is true if the data was actually recorded, and false
      * if it was not recorded (because of filtering, etc.)
@@ -116,39 +113,15 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
     virtual bool record(double value);
 
     /**
-     * Records two values with the current simulation time as timestamp.
-     * This method can be used with cOutVectors created with tuple=2.
-     *
-     * The return value is true if the data was actually recorded, and false
-     * if it was not recorded (because of filtering, etc.)
-     */
-    virtual bool record(double value1, double value2);
-
-    /**
      * Records the value with the given time as timestamp. Values must be
      * recorded in increasing timestamp order, that is, it is not possible
      * to record a value with a timestamp that is less than that of the
      * last recorded value.
      *
-     * This method can be used with cOutVectors created with tuple=1.
-     *
      * The return value is true if the data was actually recorded, and false
      * if it was not recorded (because of filtering, etc.)
      */
     virtual bool recordWithTimestamp(simtime_t t, double value);
-
-    /**
-     * Records two values with the given time as timestamp. Values must be
-     * recorded in increasing timestamp order, that is, it is not possible
-     * to record a value with a timestamp that is less than that of the
-     * last recorded value.
-     *
-     * This method can be used with cOutVectors created with tuple=2.
-     *
-     * The return value is true if the data was actually recorded, and false
-     * if it was not recorded (because of filtering, etc.)
-     */
-    virtual bool recordWithTimestamp(simtime_t t, double value1, double value2);
 
     /**
      * Enables recording data via this object. (It is enabled by default.)
@@ -185,11 +158,6 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
      * environment configuration, filtering, etc.) do not count.
      */
     long valuesStored() const  {return num_stored;}
-
-    /**
-     * Returns the tuple parameter passed to the constructor.
-     */
-    int tuple() {return tupl;}
     //@}
 };
 

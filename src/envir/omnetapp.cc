@@ -779,10 +779,10 @@ void TOmnetApp::getRNGMappingFor(cComponent *component)
 
 //-------------------------------------------------------------
 
-void *TOmnetApp::registerOutputVector(const char *modulename, const char *vectorname, int tuple)
+void *TOmnetApp::registerOutputVector(const char *modulename, const char *vectorname)
 {
     assert(outvectmgr);
-    return outvectmgr->registerVector(modulename, vectorname, tuple);
+    return outvectmgr->registerVector(modulename, vectorname);
 }
 
 void TOmnetApp::deregisterOutputVector(void *vechandle)
@@ -795,12 +795,6 @@ bool TOmnetApp::recordInOutputVector(void *vechandle, simtime_t t, double value)
 {
     assert(outvectmgr);
     return outvectmgr->record(vechandle, t, value);
-}
-
-bool TOmnetApp::recordInOutputVector(void *vechandle, simtime_t t, double value1, double value2)
-{
-    assert(outvectmgr);
-    return outvectmgr->record(vechandle, t, value1, value2);
 }
 
 //-------------------------------------------------------------
