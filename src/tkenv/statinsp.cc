@@ -523,13 +523,6 @@ void TOutVectorWindow::generalInfo( char *buf )
         return;
    }
 
-/*XXX
-   simtime_t tbase = simulation.simTime();
-   simtime_t firstt = circbuf.entry(circbuf.tailPos()).t;
-   char buf1[32], buf2[32];
-   sprintf(buf, "t=%s .. %s  value=%g .. %g", simtimeToStr(firstt,buf1),
-                simtimeToStr(tbase,buf2), miny, maxy);
-*/
    CircBuffer::CBEntry& p = circbuf.entry(circbuf.headPos());
    sprintf(buf, "Last value: t=%s  value=%g", SIMTIME_STR(p.t), p.value1);
 }
