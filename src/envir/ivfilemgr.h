@@ -127,13 +127,6 @@ class cIndexedFileOutputVectorManager : public cFileOutputVectorManager
      * When the buffer is full, writes it out into the file.
      */
     virtual bool record(void *vectorhandle, simtime_t t, double value);
-
-    /**
-     * Writes the (time, value1, value2) triplet into the buffer.
-     * When the buffer is full, writes it out into the file.
-     */
-    virtual bool record(void *vectorhandle, simtime_t t, double value1, double value2);
-
     //@}
 };
 

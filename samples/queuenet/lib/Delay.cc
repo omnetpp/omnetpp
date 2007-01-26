@@ -44,7 +44,8 @@ void Delay::handleMessage(cMessage *msg)
     else
     {
         job->setDelayCount(job->getDelayCount()+1);
-        job->setTotalDelayTime(job->getTotalDelayTime() + (simTime() - job->timestamp()));
+        simtime_t d = simTime() - job->timestamp();
+        job->setTotalDelayTime(job->getTotalDelayTime() + delay.dbl());
 
         // if it was a self message (ie. we have already delayed) so we send it out
         currentlyStored--;

@@ -41,7 +41,7 @@ void Server::initialize()
 {
     scalarUtilizationStats.setName("utilization");
     prevEventTimeStamp = 0.0;
-    
+
     endServiceMsg = new cMessage("end-service");
     jobServiced = NULL;
     selectionStrategy = SelectionStrategy::create(par("fetchingAlgorithm"), this, true);
@@ -57,7 +57,8 @@ void Server::handleMessage(cMessage *msg)
     if (msg==endServiceMsg)
     {
         ASSERT(jobServiced!=NULL);
-        jobServiced->setTotalServiceTime(jobServiced->getTotalServiceTime()+ (simTime() - jobServiced->timestamp()));
+        simtime_t d = simTime() - jobServiced->timestamp();
+        jobServiced->setTotalServiceTime(jobServiced->getTotalServiceTime() + d.dbl());
         send(jobServiced, "out");
         jobServiced = NULL;
 

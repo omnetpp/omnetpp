@@ -42,10 +42,10 @@ void Source::handleMessage(cMessage *msg)
 {
     if (msg->isSelfMessage()
         && (numJobs < 0 || numJobs > jobCounter)
-        && (stopTime < 0.0 || stopTime > simTime()))
+        && (stopTime < 0 || stopTime > simTime()))
     {
         // reschedule the self timer for the next message
-        scheduleAt(simTime() + par("interArrivalTime").doubleValue(), msg );
+        scheduleAt(simTime() + par("interArrivalTime").doubleValue(), msg);
 
         // create a new message to be sent
         Job *newJob = new Job();

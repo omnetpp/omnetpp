@@ -28,8 +28,8 @@ class Source : public cSimpleModule
 {
     private:
         cMessage *selfMsg;
-        double startTime;          // when the module sends out the first job
-        double stopTime;           // when the module stops the job generation (-1 means no limit)
+        simtime_t startTime;       // when the module sends out the first job
+        simtime_t stopTime;        // when the module stops the job generation (-1 means no limit)
         int numJobs;               // number of jobs to be generated (-1 means no limit)
         int jobCounter;            // number of jobs generated since start
         const char *jobName;       // the name of the generated job (if "" the job name should be

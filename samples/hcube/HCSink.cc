@@ -31,9 +31,9 @@ void HCSink::activity()
 {
     int my_address = par("address");
 
-    cOutVector eed_vec("end-to-end delay",1);
-    cOutVector hops_vec("hops",1);
-    cOutVector hopratio_vec("actual/min hops ratio",1);
+    cOutVector eed_vec("end-to-end delay");
+    cOutVector hops_vec("hops");
+    cOutVector hopratio_vec("actual/min hops ratio");
 
     for(;;)
     {

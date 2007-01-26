@@ -9,7 +9,7 @@
 
 
 //
-// Authors: Gabor Lencse, Andras Varga (TU Budapest)
+// Authors: Gabor Lencse, Andras Varga
 // Based on the code by:
 //          Maurits Andre, George van Montfort,
 //          Gerard van de Weerd (TU Delft)
@@ -62,7 +62,7 @@ void Sink::handleMessage(cMessage *msg)
     {
         ev << "Received app. data: \"" << msg->name() << "\", "
               "length=" << msg->length()/8 << "bytes, " <<
-              "end-to-end delay=" << simtimeToStr(eed) << endl;
+              "end-to-end delay=" << eed << endl;
     }
 
     // record statistics to output vector file and histograms

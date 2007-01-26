@@ -128,8 +128,9 @@ void PQueue::request(int gateIndex)
     }
 
     job->setQueueCount(job->getQueueCount()+1);
-    job->setTotalQueueingTime(job->getTotalQueueingTime() + simTime() - job->timestamp());
-    queueingTimeStats.record(simTime() - job->timestamp());
+    simtime_t d = simTime() - job->timestamp();
+    job->setTotalQueueingTime(job->getTotalQueueingTime() + d.dbl());
+    queueingTimeStats.record(d);
 
     send(job, "out", gateIndex);
 

@@ -160,7 +160,6 @@ cenvir.obj: cenvir.cc \
   ../../include/cexpression.h
 cinifile.obj: cinifile.cc \
   ../../include/cenvir.h \
-  ../../include/util.h \
   cinifile.h \
   ../../include/cexception.h \
   fsutils.h \
@@ -168,11 +167,12 @@ cinifile.obj: cinifile.cc \
   ../../include/simkerneldefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
-  ../../include/errmsg.h \
   envdefs.h \
   ../../include/cconfig.h \
   ../../include/opp_string.h \
   ../../include/cobject.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h
 cxmldoccache.obj: cxmldoccache.cc \

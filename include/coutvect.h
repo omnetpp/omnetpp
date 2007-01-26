@@ -112,6 +112,13 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
      */
     virtual bool record(double value);
 
+#ifndef USE_DOUBLE_SIMTIME
+    /**
+     * Convenience method, delegates to record(double).
+     */
+    virtual bool record(simtime_t value)  {return record(value.dbl());}
+#endif
+
     /**
      * Records the value with the given time as timestamp. Values must be
      * recorded in increasing timestamp order, that is, it is not possible
@@ -122,6 +129,13 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
      * if it was not recorded (because of filtering, etc.)
      */
     virtual bool recordWithTimestamp(simtime_t t, double value);
+
+#ifndef USE_DOUBLE_SIMTIME
+    /**
+     * Convenience method, delegates to recordWithTimestamp(simtime_t, double).
+     */
+    virtual bool recordWithTimestamp(simtime_t t, simtime_t value) {return recordWithTimestamp(t, value.dbl());}
+#endif
 
     /**
      * Enables recording data via this object. (It is enabled by default.)

@@ -172,7 +172,14 @@ class SIM_API cDensityEstBase : public cStdDev
      * method is called. After transformation, it calls collectTransformed()
      * to update the stored statistics with this value.
      */
-    virtual void collect(double val);
+    virtual void collect(double value);
+
+#ifndef USE_DOUBLE_SIMTIME
+    /**
+     * Convenience method, delegates to collect(double).
+     */
+    virtual void collect(simtime_t value) {collect(value.dbl());}
+#endif
 
     /**
      * Clears the results collected so far.
@@ -252,7 +259,7 @@ class SIM_API cDensityEstBase : public cStdDev
      * Updating the underflow/overflow cells must be handled within this function.
      * This is a pure virtual function; it must be redefined in subclasses.
      */
-    virtual void collectTransformed(double val) = 0;
+    virtual void collectTransformed(double value) = 0;
 
   public:
 

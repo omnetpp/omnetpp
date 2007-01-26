@@ -435,6 +435,13 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * @see cStatistic::recordScalar()
      */
     void recordScalar(const char *name, double value);
+
+#ifndef USE_DOUBLE_SIMTIME
+    /**
+     * Convenience method, delegates to recordScalar(const char *, double).
+     */
+    void recordScalar(const char *name, simtime_t value) {recordScalar(name, value.dbl());}
+#endif
     //@}
 
     /** Coroutine stack info. Useful only if module uses activity(). */

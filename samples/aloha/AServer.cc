@@ -89,7 +89,7 @@ void AServer::handleMessage(cMessage *msg)
     else
     {
         totalFrames++;
-        double endReception = simTime() + msg->length() / txRate;
+        simtime_t endReception = simTime() + msg->length() / txRate;
         if (!channelBusy)
         {
             ev << "started receiving\n";

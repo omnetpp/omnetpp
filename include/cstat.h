@@ -105,17 +105,19 @@ class SIM_API cStatistic : public cOwnedObject
      * Collects one value.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual void collect(double val) = 0;
+    virtual void collect(double value) = 0;
+
+#ifndef USE_DOUBLE_SIMTIME
+    /**
+     * Convenience method, delegates to collect(double).
+     */
+    virtual void collect(simtime_t value) {collect(value.dbl());}
+#endif
 
     /**
      * Collects one value with a given weight.
      */
-    virtual void collect2(double val, double weight);
-
-    /**
-     * Same as the collect(double) method.
-     */
-    void operator+= (double val) {collect(val);}
+    virtual void collect2(double value, double weight);
 
     /**
      * This function should be redefined in derived classes to clear
@@ -335,7 +337,14 @@ class SIM_API cStdDev : public cStatistic
     /**
      * Collects one value.
      */
-    virtual void collect(double val);
+    virtual void collect(double value);
+
+#ifndef USE_DOUBLE_SIMTIME
+    /**
+     * Convenience method, delegates to collect(double).
+     */
+    virtual void collect(simtime_t value) {collect(value.dbl());}
+#endif
 
     /**
      * Returns the number of samples collected.
@@ -480,12 +489,36 @@ class SIM_API cWeightedStdDev : public cStdDev
     /**
      * Collects one value.
      */
-    virtual void collect(double val)  {collect2(val,1.0);}
+    virtual void collect(double value)  {collect2(value,1.0);}
+
+#ifndef USE_DOUBLE_SIMTIME
+    /**
+     * Convenience method, delegates to collect(double).
+     */
+    virtual void collect(simtime_t value) {collect(value.dbl());}
+#endif
 
     /**
      * Collects one value with a given weight.
      */
-    virtual void collect2(double val, double weight);
+    virtual void collect2(double value, double weight);
+
+#ifndef USE_DOUBLE_SIMTIME
+    /**
+     * Convenience method, delegates to collect2(double, double).
+     */
+    virtual void collect2(simtime_t value, double weight) {collect2(value.dbl(), weight);}
+
+    /**
+     * Convenience method, delegates to collect2(double, double).
+     */
+    virtual void collect2(double value, simtime_t weight) {collect2(value, weight.dbl());}
+
+    /**
+     * Convenience method, delegates to collect2(double, double).
+     */
+    virtual void collect2(simtime_t value, simtime_t weight) {collect2(value.dbl(), weight.dbl());}
+#endif
 
     /**
      * Clears the results collected so far.
@@ -500,7 +533,7 @@ class SIM_API cWeightedStdDev : public cStdDev
     /**
      * Returns the mean of the samples collected.
      */
-    virtual double mean() const    {return sum_weights!=0 ? sum_samples/sum_weights : 0.0;}
+    virtual double mean() const  {return sum_weights!=0 ? sum_samples/sum_weights : 0.0;}
 
     /**
      * Returns the variance of the samples collected.

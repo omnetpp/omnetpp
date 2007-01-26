@@ -150,17 +150,19 @@ void Queue::arrival(Job *job)
 simtime_t Queue::startService(Job *job)
 {
     // gather queueing time statistics
-    job->setTotalQueueingTime(job->getTotalQueueingTime() + simTime() - job->timestamp());
-    queueingTimeStats.record(simTime() - job->timestamp());
+    simtime_t d = simTime() - job->timestamp();
+    job->setTotalQueueingTime(job->getTotalQueueingTime() + d.dbl());
+    queueingTimeStats.record(d);
     ev << "Starting service of " << job->name() << endl;
     job->setTimestamp();
-    return par("serviceTime");
+    return par("serviceTime").doubleValue();
 }
 
 void Queue::endService(Job *job)
 {
     ev << "Finishing service of " << job->name() << endl;
-    job->setTotalServiceTime(job->getTotalServiceTime()+ (simTime() - job->timestamp()));
+    simtime_t d = simTime() - job->timestamp();
+    job->setTotalServiceTime(job->getTotalServiceTime() + d.dbl());
     send(job, "out");
 }
 

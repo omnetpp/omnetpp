@@ -9,7 +9,7 @@
 
 
 //
-// Authors: Gabor Lencse, Andras Varga (TU Budapest)
+// Authors: Gabor Lencse, Andras Varga
 // Based on the code by:
 //          Maurits Andre, George van Montfort,
 //          Gerard van de Weerd (TU Delft)
@@ -143,7 +143,7 @@ void TokenRingMAC::activity()
             token = (TRToken *)msg;
             if (debug)
             {
-                ev << "Token arrived (we can keep it for THT=" << simtimeToStr(tokenHoldingTime) << ")" << endl;
+                ev << "Token arrived (we can keep it for THT=" << tokenHoldingTime << ")" << endl;
                 if (ev.isGUI())
                 {
                     parentModule()->displayString().setTagArg("i",1,"gold");
@@ -203,7 +203,7 @@ void TokenRingMAC::activity()
 
                 if (debug)
                 {
-                    ev << "End transmission " << simtimeToStr(transmStartTime) << endl;
+                    ev << "End transmission " << transmStartTime << endl;
                 }
             }
 
@@ -344,7 +344,7 @@ void TokenRingMAC::beginReceiveFrame(TRFrame *frame)
         if (recvEnd->isScheduled())
         {
             // make sure our assumption is right
-            ASSERT(fabs(recvEnd->arrivalTime()-simTime())<1e-10);
+            ASSERT(fabs((recvEnd->arrivalTime()-simTime()).dbl())<1e-10);
 
             if (debug)
             {

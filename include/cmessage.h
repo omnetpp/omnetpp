@@ -19,7 +19,7 @@
 #ifndef __CMESSAGE_H
 #define __CMESSAGE_H
 
-#include <time.h>
+//#include <time.h>
 #include "cownedobject.h"
 #include "carray.h"
 #include "cmsgpar.h"

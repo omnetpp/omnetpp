@@ -184,7 +184,7 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
      * Called internally by collect(), this method collects a value
      * after the histogram has been transformed.
      */
-    virtual void collectTransformed(double val);
+    virtual void collectTransformed(double value);
 
     /**
      * Called internally by transform(), this method should determine and set up
@@ -345,10 +345,17 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
     //@{
 
     /**
-     * Collects one value. Internally, the double is converted to long using floor()
-     * before everything else.
+     * Collects one value. Internally, the double value is converted to a long
+     * using floor() before any processing.
      */
-    virtual void collect(double val);
+    virtual void collect(double value);
+
+#ifndef USE_DOUBLE_SIMTIME
+    /**
+     * Convenience method, delegates to collect(double).
+     */
+    virtual void collect(simtime_t value) {collect(value.dbl());}
+#endif
 
     /**
      * Returns a random number based on the distribution collected. If
