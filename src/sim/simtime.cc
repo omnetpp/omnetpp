@@ -15,13 +15,13 @@
 #include <sstream>
 #include "simtime.h"
 #include "cexception.h"
+#include "unitconversion.h"
 
 
 int SimTime::scaleexp;
 double SimTime::fscale;
 double SimTime::invfscale;
 
-//FIXME overflow should be detected somehow...
 
 void SimTime::setScaleExp(int e)
 {
@@ -93,14 +93,24 @@ char *SimTime::ttoa(char *buf, int64 t, int scaleexp, bool appendunit, char *&en
     return s;
 }
 
-/*XXX
-std::string pr(const SimTime& x)
+const SimTime SimTime::parse(const char *s)
 {
-   char buf[40];
-   char *s;
-   sprintf((s=buf+10),"%I64d", x.raw());  // linux: use s=lltostr(x.raw(),buf+sizeof(buf)-1);
-   return buf;
+    // Note: UnitConversion calculates in double, so we may lose some precision during conversion
+    return UnitConversion::parseQuantity(s, "s");
 }
-*/
 
+const SimTime SimTime::parse(const char *s, const char *&endp)
+{
+    endp = s;
+    while (isspace(*endp))
+        endp++;
+    if (!*endp)
+        {endp = s; return 0;} // it was just space
+
+    while (isalnum(*endp) || isspace(*endp) || *endp=='+' || *endp=='-' || *endp=='.')
+        endp++;
+
+    // Note: UnitConversion calculates in double, so we may lose some precision during conversion
+    return UnitConversion::parseQuantity(std::string(s, endp-s).c_str(), "s");
+}
 

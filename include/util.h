@@ -34,6 +34,8 @@ enum {CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH};
 #undef min
 #undef max
 
+#ifdef USE_DOUBLE_SIMTIME
+//FIXME deprecate
 /**
  * @name Converting simulation time to and from string form.
  * @ingroup Functions
@@ -48,7 +50,7 @@ enum {CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH};
  * Empty string (or only spaces+tabs) is also an error.
  * E.g. strtoSimtime("3s 600ms x") will return -1.
  */
-SIM_API simtime_t strToSimtime(const char *str);
+SIM_API double strToSimtime(const char *str);
 
 /**
  * Convert the beginning of a string to simtime_t. Similar to
@@ -61,22 +63,23 @@ SIM_API simtime_t strToSimtime(const char *str);
  * Example: strToSimtime0("3s 600ms x") will return 3.6 and the
  * str pointer will point to the character 'x'.
  */
-SIM_API simtime_t strToSimtime0(const char *&str);
+SIM_API double strToSimtime0(const char *&str);
 
 /**
  * Converts simulation time (passed as simtime_t) into a
  * string like "0.0120000 (12ms)". If no destination pointer
  * is given, it will use a static buffer.
  */
-SIM_API char *simtimeToStr(simtime_t t, char *dest=NULL);
+SIM_API char *simtimeToStr(double t, char *dest=NULL);
 
 /**
  * Converts simulation time (passed as simtime_t) into a short string
  * form like "12.37ms". If no destination pointer is given, it will use
  * a static buffer.
  */
-SIM_API char *simtimeToStrShort(simtime_t t, char *buf=NULL);
+SIM_API char *simtimeToStrShort(double t, char *buf=NULL);
 //@}
+#endif //USE_DOUBLE_SIMTIME
 
 
 /**

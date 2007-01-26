@@ -45,7 +45,11 @@ Define_Function( max,  2 )
 // utility functions
 
 #ifdef USE_DOUBLE_SIMTIME
-char *simtimeToStr(simtime_t t, char *buf)
+//
+// This function is legacy from OMNeT++ 3.x, and it is only used if simtime_t
+// is double. It will be removed in the future.
+//
+char *simtimeToStr(double t, char *buf)
 {
    // Print simulation time into a string.
    // The result has two fields:
@@ -64,9 +68,6 @@ char *simtimeToStr(simtime_t t, char *buf)
        sprintf(b,"0.0000000  ( 0.00s)");
    // Note that in the following line, a small constant is added to t
    // in order to eliminate truncation errors (like: "1.0000000e-6 (0us)")
-
-   // TBD change int(...) to int(...+0.5) and remove +=1e-16; test a lot
-   // with different values, e.g. 0.1 increments!
    else if (t+=1e-16, t<1e-9)
        sprintf(b,"%8.8e ( <1ns)", t);
    else if (t<1e-6)
@@ -89,7 +90,11 @@ char *simtimeToStr(simtime_t t, char *buf)
    return b;
 }
 
-char *simtimeToStrShort(simtime_t t, char *buf)
+//
+// This function is legacy from OMNeT++ 3.x, and it is only used if simtime_t
+// is double. It will be removed in the future.
+//
+char *simtimeToStrShort(double t, char *buf)
 {
    // Print simulation time into a string -- short version.
    static char buf2[48];
@@ -99,9 +104,6 @@ char *simtimeToStrShort(simtime_t t, char *buf)
        sprintf(b,"0s");
    // Note that in the following line, a small constant is added to t
    // in order to eliminate truncation errors (like: "1.0000000e-6 (0us)")
-
-   // TBD change int(...) to int(...+0.5) and remove +=1e-16; test a lot
-   // with different values, e.g. 0.1 increments!
    else if (t+=1e-16, t<1e-9)
        sprintf(b,"%.5gs", t);
    else if (t<1e-6)
@@ -121,90 +123,37 @@ char *simtimeToStrShort(simtime_t t, char *buf)
 
    return b;
 }
-#endif
 
-// *
-// * old version of simtimeToStr():
-// *
-// char *simtimeToStr(simtime_t t, char *dest)
-// {                                // place result either into dest
-//       static char buf[32];       //   or into a static buffer
-//       if (dest==NULL) dest=buf;
 //
-//       if (t<600)  // < 10 minutes: 's ms us ns' format
-//       {
-//           double tt = (double)t + 0.5e-9; //rounding
-//           int   s = (int) tt;   tt -= s;   tt *= 1000.0;
-//           int  ms = (int) tt;   tt -= ms;  tt *= 1000.0;
-//           int  us = (int) tt;   tt -= us;  tt *= 1000.0;
-//           int  ns = (int) tt;
-//           sprintf(dest,"%3ds %3dms %3dus %3dns", s,ms,us,ns); // 22 chars
-//       }
-//       else if (t<48L*3600L) // < 3 days: 'h m s ms' format
-//       {
-//           double tt = ((double)t+0.5e-3)/3600.0; //hours + rounding
-//           int   h = (int) tt;   tt -= h;   tt *= 60.0;
-//           int   m = (int) tt;   tt -= m;   tt *= 60.0;
-//           int   s = (int) tt;   tt -= s;   tt *= 1000.0;
-//           int  ms = (int) tt;
-//           sprintf(dest,"%2dh %2dm %3ds %3dms", h,m,s,ms); // 18 chars
-//       }
-//       else // >= 3 days: 'd h m s' format
-//       {
-//           double tt = ((double)t+0.005)/3600.0/24.0; //days + rounding
-//           long  d = (int) tt;   tt -= d;   tt *= 24.0;
-//           int   h = (int) tt;   tt -= h;   tt *= 60.0;
-//           int   m = (int) tt;   tt -= m;   tt *= 60.0;
-//           int   s = (int) tt;   tt -= s;   tt *= 100.0;
-//           int   s100 = (int) tt;
-//           sprintf(dest,"%ldd %2dh %2dm %3d.%.2d", d,h,m,s,s100); // 18+ chars
-//       }
+// This function is legacy from OMNeT++ 3.x, and it is only used if simtime_t
+// is double. It will be removed in the future.
 //
-//       return dest;
-// }
-
-simtime_t strToSimtime(const char *str)
+double strToSimtime(const char *str)
 {
-    while (*str==' ' || *str=='\t') str++;
-    if (*str=='\0') return -1; // empty string not accepted
-    simtime_t d = strToSimtime0( str );
-    return (*str=='\0') ? d : -1; // OK if whole string could be interpreted
+    //XXX in 3.x, it returned -1 on error, now it throws exception: TBD check invocations!!!!
+    return UnitConversion::parseQuantity(str, "s");
 }
 
-simtime_t strToSimtime0(const char *&str)
+//
+// This function is legacy from OMNeT++ 3.x, and it is only used if simtime_t
+// is double. It will be removed in the future.
+//
+double strToSimtime0(const char *&str)
 {
-    double simtime = 0;
+    //XXX in 3.x, it returned -1 on error, now it throws exception: TBD check invocations!!!!
+    const char *end = str;
+    while (isspace(*end))
+        end++;
+    if (!*end)
+        return 0.0; // it was just space
 
-    while (*str!='\0')
-    {
-          // read number into num and skip it
-          double num;
-          int len;
-          while (*str==' ' || *str=='\t') str++;
-          if (0==sscanf(str, "%lf%n", &num, &len)) break; // break if error
-          str+=len;
-
-          // process time unit: d,h,m,s,ms,us,ns
-          while (*str==' ' || *str=='\t') str++;
-          if (str[0]=='n' && str[1]=='s')
-                          {simtime += 1e-9*num; str+=2;}
-          else if (str[0]=='u' && str[1]=='s')
-                          {simtime += 1e-6*num; str+=2;}
-          else if (str[0]=='m' && str[1]=='s')
-                          {simtime += 1e-3*num; str+=2;}
-          else if (str[0]=='s')
-                          {simtime += num; str++;}
-          else if (str[0]=='m')
-                          {simtime += 60*num; str++;}
-          else if (str[0]=='h')
-                          {simtime += 3600*num; str++;}
-          else if (str[0]=='d')
-                          {simtime += 24*3600*num; str++;}
-          else
-                          {simtime += num; break;} // nothing can come after 'pure' number
-    }
-    return (simtime_t)simtime;
+    while (isalnum(*end) || isspace(*end) || *end=='+' || *end=='-' || *end=='.')
+        end++;
+    std::string tmp(str, end-str);
+    str = end;
+    return UnitConversion::parseQuantity(tmp.c_str(), "s");
 }
+#endif //USE_DOUBLE_SIMTIME
 
 char *opp_strdup(const char *s)
 {

@@ -30,11 +30,13 @@ class UnitConversion
     static UnitDesc *lookupUnit(const char *unit);
     static bool readNumber(const char *&s, double& number);
     static bool readUnit(const char *&s, std::string& unit);
-    double doParseQuantity(const char *str, const char *expectedUnit, std::string& actualUnit);
+    static double doParseQuantity(const char *str, const char *expectedUnit, std::string& actualUnit);
 
-  public:
+  private:
+    // all methods are static, no reason to instantiate
     UnitConversion() {}
 
+  public:
     /**
      * Converts a quantity given as string to a double, and returns it.
      * Performs unit conversion and unit checking as needed.
@@ -58,7 +60,7 @@ class UnitConversion
      *   and (2) to prevent silently changing actual values of parameters if
      *   @unit is accidentally removed from the parameter's NED declaration.
      */
-    double parseQuantity(const char *str, const char *expectedUnit=NULL);
+    static double parseQuantity(const char *str, const char *expectedUnit=NULL);
 
     /**
      * XXX. todo docu. like the one above, but expectedUnit==NULL assumed,
@@ -66,12 +68,12 @@ class UnitConversion
      * is left out, because if given, it outActualUnit would be exactly the
      * same (else exception!), so the two don't make sense together.
      */
-    double parseQuantity(const char *str, std::string& outActualUnit);
+    static double parseQuantity(const char *str, std::string& outActualUnit);
 
     /**
      *
      */
-    std::string formatQuantity(double d, const char *unit=NULL);
+    static std::string formatQuantity(double d, const char *unit=NULL);
 
     /**
      * Returns a descriptive name of the given unit; in the worst case

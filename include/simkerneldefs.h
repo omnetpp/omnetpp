@@ -134,6 +134,7 @@ typedef double   simtime_t;
 #define SIMTIME_STR(t) simtimeToStr(t)
 #define SIMTIME_DBL(t) (t)
 #define SIMTIME_RAW(t) (t)
+#define STR_SIMTIME(s) strToSimtime(s)
 
 #else
 
@@ -144,6 +145,7 @@ typedef SimTime  simtime_t;
 #define SIMTIME_STR(t) ((t).str().c_str())
 #define SIMTIME_DBL(t) ((t).dbl())
 #define SIMTIME_RAW(t) ((t).raw())
+#define STR_SIMTIME(s) SimTime::parse(s)
 
 #endif
 

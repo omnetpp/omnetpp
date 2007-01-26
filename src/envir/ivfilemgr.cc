@@ -73,8 +73,7 @@ cIndexedFileOutputVectorManager::cIndexedFileOutputVectorManager()
 
     const char *currentRunSection = getRunSectionName(simulation.runNumber());
     const char *memoryLimitStr = ev.config()->getAsCustom2(currentRunSection,"General","output-vectors-memory-limit",DEFAULT_MEMORY_LIMIT);
-    UnitConversion units;
-    maxMemoryUsed=max((long)units.parseQuantity(memoryLimitStr, "B"), MIN_BUFFER_MEMORY);
+    maxMemoryUsed = max((long)UnitConversion::parseQuantity(memoryLimitStr, "B"), MIN_BUFFER_MEMORY);
 }
 
 void cIndexedFileOutputVectorManager::openIndexFile()

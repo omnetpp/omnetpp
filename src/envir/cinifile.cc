@@ -19,7 +19,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "cenvir.h"
-#include "util.h"  //strToSimtime
+#include "unitconversion.h"
 #include "cinifile.h"
 #include "patternmatcher.h"
 #include "cexception.h"
@@ -425,7 +425,7 @@ double cIniFile::getAsTime(const char *sect, const char *key, double defaultval)
        return defaultval;
     }
 
-    return SIMTIME_DBL(strToSimtime(s)); //FIXME
+    return UnitConversion::parseQuantity(s, "s");
 }
 
 std::string cIniFile::getAsFilename(const char *sect, const char *key, const char *defaultval)

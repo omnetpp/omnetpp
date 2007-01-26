@@ -41,6 +41,7 @@
 #include "patternmatcher.h"
 #include "visitor.h"
 #include "fsutils.h"
+#include "unitconversion.h"
 
 using std::string;
 
@@ -329,7 +330,7 @@ int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    long until_event=0;
    if (argc==4)
    {
-       until_time = SIMTIME_DBL(strToSimtime(argv[2])); //FIXME
+       until_time = STR_SIMTIME(argv[2]);
        sscanf(argv[3],"%ld",&until_event);
    }
 
@@ -360,7 +361,7 @@ int setRunUntil_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    }
    else
    {
-       simtime_t until_time = SIMTIME_DBL(strToSimtime(argv[1]));
+       simtime_t until_time = STR_SIMTIME(argv[1]);
        long until_event = atol(argv[2]);
 
        app->setSimulationRunUntil(until_time, until_event);
@@ -873,7 +874,7 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    TOmnetTkApp *app = getTkApplication();
 
    if (0==strcmp(argv[1], "stepdelay"))
-      app->opt_stepdelay = long(1000*SIMTIME_DBL(strToSimtime(argv[2]))+.5); //FIXME
+      app->opt_stepdelay = (long)(1000*UnitConversion::parseQuantity(argv[2], "s"));
    else if (0==strcmp(argv[1], "bkpts_enabled"))
       app->opt_bkpts_enabled = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "animation_enabled"))

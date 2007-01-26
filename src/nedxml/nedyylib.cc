@@ -406,7 +406,7 @@ LiteralNode *createQuantityLiteral(YYLTYPE textpos)
 
     try {
         // evaluate quantities like "5s 230ms"
-        d = UnitConversion().parseQuantity(text, unit);
+        d = UnitConversion::parseQuantity(text, unit);
     }
     catch (std::exception& e) {
         np->error(e.what(), pos.li);

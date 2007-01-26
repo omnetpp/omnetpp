@@ -118,6 +118,7 @@ class ENVIR_API cConfiguration : public cObject
     virtual double getAsDouble(const char *section, const char *key, double defaultvalue=0.0) = 0;
 
     /** Returns a config value as time */
+    //XXX revise: why not getAsUnit() then?
     virtual double getAsTime(const char *sect, const char *key, double defaultvalue=0.0) = 0;
 
     /** Returns a config value as string */

@@ -478,8 +478,8 @@ void TOmnetApp::getOutVectorConfig(int run_no, const char *modname,const char *v
 
     const char *startstr = s;
     const char *stopstr = ellipsis+2;
-    starttime = SIMTIME_DBL(strToSimtime0(startstr)); //FIXME
-    stoptime = SIMTIME_DBL(strToSimtime0(stopstr)); //FIXME
+    starttime = STR_SIMTIME(std::string(startstr, ellipsis-startstr).c_str()); //FIXME this won't accept empty string?
+    stoptime = STR_SIMTIME(stopstr); //FIXME this won't accept empty string?
 
     if (startstr<ellipsis || *stopstr!='\0')
         throw cRuntimeError("Error in output vector interval %s=%s",buffer,s);
@@ -593,10 +593,8 @@ void TOmnetApp::readOptions()
     cDefaultList::doGC = cfg->getAsBool("General", "perform-gc", false);
     opt_print_undisposed = cfg->getAsBool("General", "print-undisposed", true);
 
-#ifndef USE_DOUBLE_SIMTIME
     int scaleexp = cfg->getAsInt("General", "simtime-scale", -12); //XXX review
     SimTime::setScaleExp(scaleexp);
-#endif
 
     // other options are read on per-run basis
 }

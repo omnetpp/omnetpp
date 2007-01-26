@@ -392,7 +392,7 @@ double cMySQLConfiguration::getAsTime(const char *sect, const char *key, double 
        return defaultval;
     }
 
-    return strToSimtime(s);
+    return STR_SIMTIME(s);
 }
 
 std::string cIniFile::getAsFilename(const char *sect, const char *key, const char *defaultval)

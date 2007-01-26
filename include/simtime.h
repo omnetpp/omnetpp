@@ -151,6 +151,24 @@ class SIM_API SimTime
     static void setScaleExp(int e);
 
     /**
+     * Converts the given string to simulation time. Throws an error if
+     * there is an error during conversion. Accepted format is:
+     * &lt;number&gt; or (&lt;number&gt;&lt;unit&gt;)+.
+     */
+    static const SimTime parse(const char *s);
+
+    /**
+     * Converts a prefix of the given string to simulation time, up to the
+     * first character that cannot occur in simulation time strings:
+     * not (digit or letter or "." or "+" or "-" or whitespace).
+     * Throws an error if there is an error during conversion of the prefix.
+     * If the prefix is empty (whitespace only), then 0 is returned, and
+     * endp is set equal to s; otherwise,  endp is set to point to the
+     * first character that was not converted.
+     */
+    static const SimTime parse(const char *s, const char *&endp);
+
+    /**
      * Utility function to convert a 64-bit fixed point number into a string
      * buffer. scaleexp must be in the -18..0 range, and the buffer must be
      * at least 64 bytes long. A pointer to the result string will be

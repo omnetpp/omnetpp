@@ -829,6 +829,18 @@ bool cMsgPar::parse(const char *text, char tp)
     return false;
 }
 
+static double parsedbl(const char *&s)
+{
+    while (*s==' ' || *s=='\t') s++;
+    int len = 0;
+    double num = 0;
+    sscanf(s, "%lf%n", &num, &len);
+    s += len;
+    while (*s==' ' || *s=='\t') s++;
+    return num;
+}
+
+
 bool cMsgPar::setfunction(char *text)
 {
     // Note: this function *will* alter its input string
@@ -873,34 +885,34 @@ bool cMsgPar::setfunction(char *text)
                setDoubleValue(ff->mathFuncNoArg());
                return true;
        case 1: if (*s++!='(') return false;
-               p1 = SIMTIME_DBL(strToSimtime0(s)); //FIXME
+               p1 = parsedbl(s);
                if (*s++!=')') return false;
                setDoubleValue(ff->mathFunc1Arg(), p1);
                return true;
        case 2: if (*s++!='(') return false;
-               p1 = SIMTIME_DBL(strToSimtime0(s)); //FIXME
+               p1 = parsedbl(s);
                if (*s++!=',') return false;
-               p2 = SIMTIME_DBL(strToSimtime0(s)); //FIXME
+               p2 = parsedbl(s);
                if (*s++!=')') return false;
                setDoubleValue(ff->mathFunc2Args(), p1,p2);
                return true;
        case 3: if (*s++!='(') return false;
-               p1 = SIMTIME_DBL(strToSimtime0(s)); //FIXME
+               p1 = parsedbl(s);
                if (*s++!=',') return false;
-               p2 = SIMTIME_DBL(strToSimtime0(s)); //FIXME
+               p2 = parsedbl(s);
                if (*s++!=',') return false;
-               p3 = SIMTIME_DBL(strToSimtime0(s)); //FIXME
+               p3 = parsedbl(s);
                if (*s++!=')') return false;
                setDoubleValue(ff->mathFunc3Args(), p1,p2,p3);
                return true;
        case 4: if (*s++!='(') return false;
-               p1 = SIMTIME_DBL(strToSimtime0(s)); //FIXME
+               p1 = parsedbl(s);
                if (*s++!=',') return false;
-               p2 = SIMTIME_DBL(strToSimtime0(s)); //FIXME
+               p2 = parsedbl(s);
                if (*s++!=',') return false;
-               p3 = SIMTIME_DBL(strToSimtime0(s)); //FIXME
+               p3 = parsedbl(s);
                if (*s++!=',') return false;
-               p4 = SIMTIME_DBL(strToSimtime0(s)); //FIXME
+               p4 = parsedbl(s);
                if (*s++!=')') return false;
                setDoubleValue(ff->mathFunc4Args(), p1,p2,p3,p4);
                return true;

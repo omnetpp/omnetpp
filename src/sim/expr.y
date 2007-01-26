@@ -113,7 +113,7 @@ static double parseQuantity(const char *text, std::string& unit)
 {
     try {
         // evaluate quantities like "5s 230ms"
-        return UnitConversion().parseQuantity(text, unit);
+        return UnitConversion::parseQuantity(text, unit);
     }
     catch (std::exception& e) {
         yyerror(e.what());
