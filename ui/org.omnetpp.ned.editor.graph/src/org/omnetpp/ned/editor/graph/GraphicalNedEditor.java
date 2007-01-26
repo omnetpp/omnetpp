@@ -56,6 +56,7 @@ import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
 import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.gef.ui.parts.TreeViewer;
+import org.eclipse.gef.ui.properties.UndoablePropertySheetEntry;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
@@ -97,6 +98,8 @@ import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
 import org.omnetpp.ned.editor.graph.misc.ISelectionSupport;
 import org.omnetpp.ned.editor.graph.misc.ModulePaletteCustomizer;
+import org.omnetpp.ned.editor.graph.properties.view.BasePreferrerPropertySheetSorter;
+import org.omnetpp.ned.editor.graph.properties.view.PropertySheetPageEx;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
 
@@ -488,6 +491,14 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
 
     @Override
     public Object getAdapter(Class type) {
+        if (type == org.eclipse.ui.views.properties.IPropertySheetPage.class) {
+            PropertySheetPageEx page = new PropertySheetPageEx();
+            // customize the property sheet with a custom sorter (to place the "Base"
+            // category at the beginning)
+            page.setSorter(new BasePreferrerPropertySheetSorter());
+            page.setRootEntry(new UndoablePropertySheetEntry(getCommandStack()));
+            return page;
+        }
         if (type == IContentOutlinePage.class) {
             outlinePage = new OutlinePage(new TreeViewer());
             return outlinePage;
