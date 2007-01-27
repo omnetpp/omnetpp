@@ -340,7 +340,7 @@ int cSimpleModule::send(cMessage *msg, cGate *outgate)
     return sendDelayed(msg, 0.0, outgate);
 }
 
-int cSimpleModule::sendDelayed(cMessage *msg, double delay, const char *gatename, int sn)
+int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, const char *gatename, int sn)
 {
     cGate *outgate = gate(gatename,sn);
     if (outgate==NULL)
@@ -349,7 +349,7 @@ int cSimpleModule::sendDelayed(cMessage *msg, double delay, const char *gatename
     return sendDelayed(msg, delay, outgate);
 }
 
-int cSimpleModule::sendDelayed(cMessage *msg, double delay, int g)
+int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, int g)
 {
     cGate *outgate = gate(g);
     if (outgate==NULL)
@@ -357,7 +357,7 @@ int cSimpleModule::sendDelayed(cMessage *msg, double delay, int g)
     return sendDelayed(msg, delay, outgate);
 }
 
-int cSimpleModule::sendDelayed(cMessage *msg, double delay, cGate *outgate)
+int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outgate)
 {
     // error checking:
     if (outgate==NULL)
@@ -410,7 +410,7 @@ int cSimpleModule::sendDelayed(cMessage *msg, double delay, cGate *outgate)
     return 0;
 }
 
-int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cModule *mod, int g)
+int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, cModule *mod, int g)
 {
     cGate *togate = mod->gate(g);
     if (togate==NULL)
@@ -419,7 +419,7 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cModule *mod, int
     return sendDirect(msg, propdelay, togate);
 }
 
-int cSimpleModule::sendDirect(cMessage *msg, double propdelay,
+int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay,
                               cModule *mod, const char *gatename, int sn)
 {
     if (!mod)
@@ -432,7 +432,7 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay,
     return sendDirect(msg, propdelay, togate);
 }
 
-int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cGate *togate)
+int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, cGate *togate)
 {
     // Note: it is permitted to send to an output gate. It is especially useful
     // with several submodules sending to a single output gate of their parent module.

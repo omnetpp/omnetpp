@@ -251,27 +251,27 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * Delayed sending. Sends a message through the gate given with
      * its index as if it was sent delay seconds later.
      */
-    int sendDelayed(cMessage *msg, double delay, int gateid);
+    int sendDelayed(cMessage *msg, simtime_t delay, int gateid);
 
     /**
      * Delayed sending. Sends a message through the gate given with
      * its name and index (if multiple gate) as if it was sent delay
      * seconds later.
      */
-    int sendDelayed(cMessage *msg, double delay, const char *gatename, int sn=-1);
+    int sendDelayed(cMessage *msg, simtime_t delay, const char *gatename, int sn=-1);
 
     /**
      * Sends a message through the gate given with its pointer as if
      * it was sent delay seconds later.
      */
-    int sendDelayed(cMessage *msg, double delay, cGate *outputgate);
+    int sendDelayed(cMessage *msg, simtime_t delay, cGate *outputgate);
 
     /**
      * Sends a message directly to another module.
-     * See sendDirect(cMessage *, double, cModule *, const char *, in) for a
+     * See sendDirect(cMessage *, simtime_t, cModule *, const char *, in) for a
      * more detailed description.
      */
-    int sendDirect(cMessage *msg, double delay, cModule *mod, int inputgateid);
+    int sendDirect(cMessage *msg, simtime_t delay, cModule *mod, int inputgateid);
 
     /**
      * Send a message directly to another module.
@@ -295,14 +295,14 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * dedicated gates for receiving via sendDirect(). You cannot have a gate
      * which receives messages via both connections and sendDirect().
      */
-    int sendDirect(cMessage *msg, double delay, cModule *mod, const char *inputgatename, int sn=-1);
+    int sendDirect(cMessage *msg, simtime_t delay, cModule *mod, const char *inputgatename, int sn=-1);
 
     /**
      * Sends a message directly to another module.
-     * See sendDirect(cMessage *, double, cModule *, const char *, in) for a
+     * See sendDirect(cMessage *, simtime_t, cModule *, const char *, in) for a
      * more detailed description.
      */
-    int sendDirect(cMessage *msg, double delay, cGate *inputgate);
+    int sendDirect(cMessage *msg, simtime_t delay, cGate *inputgate);
     //@}
 
     /** @name Self-messages. */
