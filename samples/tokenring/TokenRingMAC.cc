@@ -344,7 +344,7 @@ void TokenRingMAC::beginReceiveFrame(TRFrame *frame)
         if (recvEnd->isScheduled())
         {
             // make sure our assumption is right
-            ASSERT(fabs((recvEnd->arrivalTime()-simTime()).dbl())<1e-10);
+            ASSERT(fabs((recvEnd->arrivalTime()-simTime())) < 1e-10);
 
             if (debug)
             {

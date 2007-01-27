@@ -48,7 +48,7 @@ std::string SimTime::str() const
     return out.str();
 }
 
-char *SimTime::ttoa(char *buf, int64 t, int scaleexp, bool appendunit, char *&endp)
+char *SimTime::ttoa(char *buf, int64 t, int scaleexp, char *&endp)
 {
     ASSERT(scaleexp<=0 && scaleexp>=-18);
 
@@ -56,8 +56,6 @@ char *SimTime::ttoa(char *buf, int64 t, int scaleexp, bool appendunit, char *&en
     endp = buf+63;  //19+19+5 should be enough, but play it safe
     *endp = '\0';
     char *s = endp;
-    if (appendunit)
-        *--s = 's';
     if (t==0)
         {*--s = '0'; return s;}
 

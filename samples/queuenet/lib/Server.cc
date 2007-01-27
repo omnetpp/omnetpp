@@ -58,7 +58,7 @@ void Server::handleMessage(cMessage *msg)
     {
         ASSERT(jobServiced!=NULL);
         simtime_t d = simTime() - jobServiced->timestamp();
-        jobServiced->setTotalServiceTime(jobServiced->getTotalServiceTime() + d.dbl());
+        jobServiced->setTotalServiceTime(jobServiced->getTotalServiceTime() + d);
         send(jobServiced, "out");
         jobServiced = NULL;
 

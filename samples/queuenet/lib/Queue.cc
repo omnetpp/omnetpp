@@ -151,7 +151,7 @@ simtime_t Queue::startService(Job *job)
 {
     // gather queueing time statistics
     simtime_t d = simTime() - job->timestamp();
-    job->setTotalQueueingTime(job->getTotalQueueingTime() + d.dbl());
+    job->setTotalQueueingTime(job->getTotalQueueingTime() + d);
     queueingTimeStats.record(d);
     ev << "Starting service of " << job->name() << endl;
     job->setTimestamp();
@@ -162,7 +162,7 @@ void Queue::endService(Job *job)
 {
     ev << "Finishing service of " << job->name() << endl;
     simtime_t d = simTime() - job->timestamp();
-    job->setTotalServiceTime(job->getTotalServiceTime() + d.dbl());
+    job->setTotalServiceTime(job->getTotalServiceTime() + d);
     send(job, "out");
 }
 

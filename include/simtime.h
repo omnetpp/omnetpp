@@ -93,10 +93,11 @@ class SIM_API SimTime
      * <tt>SimTime::zero()</tt>.
      */
     //@{
-    bool isZero()     {return t!=0;}
-    bool isPositive() {return t>0;}
-    bool isNegative() {return t<0;}
-    bool isMaxTime()  {return t==maxTime().t;}
+    //XXX turn them into plain functions like floor() or fabs()?
+    bool isZero() const     {return t!=0;}
+    bool isPositive() const {return t>0;}
+    bool isNegative() const {return t<0;}
+    bool isMaxTime() const  {return t==maxTime().t;}
     //@}
 
     /**
@@ -177,7 +178,7 @@ class SIM_API SimTime
      * ATTENTION: For performance reasons, the returned pointer will point
      * *somewhere* into the buffer, but NOT necessarily at the beginning.
      */
-    static char *ttoa(char *buf, int64 t, int scaleexp, bool appendunit, char *&endp);
+    static char *ttoa(char *buf, int64 t, int scaleexp, char *&endp);
 };
 
 /*XXX
@@ -221,7 +222,86 @@ inline double operator/(const SimTime& x, const SimTime& y)
 inline std::ostream& operator<<(std::ostream& os, const SimTime& x)
 {
     char buf[64]; char *endp;
-    return os << SimTime::ttoa(buf, x.raw(), SimTime::scaleExp(), true, endp);   //XXX refine
+    return os << SimTime::ttoa(buf, x.raw(), SimTime::scaleExp(), endp);
+}
+
+/**
+ * simtime_t version of floor(double) from math.h.
+ */
+inline const SimTime floor(const SimTime& x)
+{
+    int64 u = SimTime::scale();
+    int64 t = x.raw();
+    return SimTime().setRaw(t - t % u); //XXX test: also OK for negative t?
+}
+
+/**
+ * Generalized version of floor(), accepting a unit and an offset:
+ * floor(x,u,off) = floor((x-off)/u)*u + off.
+ *
+ * Examples: floor(2.1234, 0.1) = 2.1; floor(2.1234, 0.1, 0.007) = 2.107;
+ * floor(2.1006, 0.1, 0.007) = 2.007.
+ */
+inline const SimTime floor(const SimTime& x, const SimTime& unit, const SimTime& offset = SimTime())
+{
+    int64 off = offset.raw();
+    int64 u = unit.raw();
+    int64 t = x.raw() - off;
+    return SimTime().setRaw(t - t % u + off); //XXX test: also OK for negative t?
+}
+
+/**
+ * simtime_t version of ceil(double) from math.h.
+ */
+inline const SimTime ceil(const SimTime& x)
+{
+    int64 u = SimTime::scale();
+    int64 t = x.raw() + u-1;
+    return SimTime().setRaw(t - t % u); //XXX test: also OK for negative t?
+}
+
+/**
+ * Generalized version of ceil(), accepting a unit and an offset:
+ * ceil(x,u,off) = ceil((x-off)/u)*u + off.
+ */
+inline const SimTime ceil(const SimTime& x, const SimTime& unit, const SimTime& offset = SimTime())
+{
+    int64 off = offset.raw();
+    int64 u = unit.raw();
+    int64 t = x.raw() - off + u-1;
+    return SimTime().setRaw(t - t % u + off); //XXX test: also OK for negative t?
+}
+
+/**
+ * simtime_t version of fabs(double) from math.h.
+ */
+inline const SimTime fabs(const SimTime& x)
+{
+    return x.isNegative() ? SimTime().setRaw(-x.raw()) : x;
+}
+
+/**
+ * simtime_t version of fmod(double,double) from math.h.
+ */
+inline const SimTime fmod(const SimTime& x, const SimTime& y)
+{
+    return SimTime().setRaw(x.raw() % y.raw()); //XXX test: also OK for negative x or y?
+}
+
+/**
+ * Returns the greater of the two arguments.
+ */
+inline const SimTime max(const SimTime& x, const SimTime& y)
+{
+    return x > y ? x : y;
+}
+
+/**
+ * Returns the smaller of the two arguments.
+ */
+inline const SimTime min(const SimTime& x, const SimTime& y)
+{
+    return x < y ? x : y;
 }
 
 #endif
