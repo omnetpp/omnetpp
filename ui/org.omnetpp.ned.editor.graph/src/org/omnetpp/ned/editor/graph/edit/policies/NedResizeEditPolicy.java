@@ -8,6 +8,7 @@ import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.LayerConstants;
+import org.eclipse.gef.Request;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -97,4 +98,20 @@ public class NedResizeEditPolicy extends ResizableEditPolicy {
         return handles;
     }
     
+    public boolean understandsRequest(Request request) {
+        // XXX this is a MEGA HACK.  During the initiation of cloning (CTRL+drag) the DragEditPartsTracker does not check
+        // the state of CTRL key, so it creates a MOVE request (instead of clone), however a non-movable submodule
+        // (for example an inherited submodule which shouldnot be moved) will report that he does not understand
+        // a move request, so the currently selected editpart will be filtered out from targetEditParts (it check it by calling the
+        // understandsRequest method on the policy) of the request. The cloning of the submodule will not work because of this, 
+        // because the understandsRequest for the MOVE request will return false ( it would return isDragAllowed (which is false in case of an
+        // inherited submodule)
+        // we are pretending here that we support the MOVE command (so the selected part in the targetEditParts of the 
+        // CLONE request will not be filtered). Of course we still not return an executable command for the MOVE request (so 
+        // move is still not possible)
+        // if this bug will be fixed we could remove this method
+        if (REQ_MOVE.equals(request.getType()))
+            return true;
+        return super.understandsRequest(request);
+    }
 }

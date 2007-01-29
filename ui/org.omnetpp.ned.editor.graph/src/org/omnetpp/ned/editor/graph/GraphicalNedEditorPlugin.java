@@ -183,6 +183,13 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         for(String name : typeNames) {
         	INEDTypeInfo comp = NEDResourcesPlugin.getNEDResources().getComponent(name);
         	NEDElement nedElement = comp.getNEDElement();
+
+            // skip this type if it is a top level network
+            if (nedElement instanceof CompoundModuleNodeEx &&
+                    ((CompoundModuleNodeEx)nedElement).getIsNetwork()) {
+                continue;
+            }
+            
         	// set the default images for the palette entry
         	ImageDescriptor imageDescNorm = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE,null,null,0);
         	ImageDescriptor imageDescLarge = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE,"l",null,0);
