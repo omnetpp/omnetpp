@@ -26,7 +26,7 @@ void HTTPServer::initialize()
 simtime_t HTTPServer::startService(cMessage *msg)
 {
     ev << "Starting service of " << msg->name() << endl;
-    return par("serviceTime");
+    return par("serviceTime").doubleValue();
 }
 
 void HTTPServer::endService(cMessage *msg)

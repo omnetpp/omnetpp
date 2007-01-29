@@ -18,7 +18,7 @@ Define_Module( TelnetServer );
 simtime_t TelnetServer::startService(cMessage *msg)
 {
     ev << "Starting service of " << msg->name() << endl;
-    return par("serviceTime");
+    return par("serviceTime").doubleValue();
 }
 
 void TelnetServer::endService(cMessage *msg)

@@ -78,7 +78,7 @@ void cSocketRTScheduler::endRun()
 void cSocketRTScheduler::executionResumed()
 {
     gettimeofday(&baseTime, NULL);
-    baseTime = timeval_substract(baseTime, sim->simTime());
+    baseTime = timeval_substract(baseTime, SIMTIME_DBL(sim->simTime()));
 }
 
 void cSocketRTScheduler::setInterfaceModule(cModule *mod, cMessage *notifMsg, char *buf, int bufSize, int *nBytesPtr)
@@ -213,7 +213,7 @@ cMessage *cSocketRTScheduler::getNextEvent()
     {
         // use time of next event
         simtime_t eventSimtime = msg->arrivalTime();
-        targetTime = timeval_add(baseTime, eventSimtime);
+        targetTime = timeval_add(baseTime, SIMTIME_DBL(eventSimtime));
     }
 
     // if needed, wait until that time arrives
