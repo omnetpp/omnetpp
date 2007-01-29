@@ -12,6 +12,11 @@
 #include "stringutil.h"
 #include "indexfile.h"
 
+#ifdef CHECK
+#undef CHECK
+#endif
+#define CHECK(fprintf)    if (fprintf<0) throw new opp_runtime_error("Cannot write output file `%s'", filename.c_str())
+
 Block* VectorData::getBlockForEntry(long serial)
 {
     int low = 0;
@@ -195,7 +200,7 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
 
     if (tokens[0][0] == 'v' && strcmp(tokens[0], "vector") == 0)
     {
-        if (numTokens < 11)
+        if (numTokens < 10)
             throw opp_runtime_error("invalid index file syntax: invalid vector definition, line %d", lineNum);
 
         VectorData vector;
@@ -207,12 +212,12 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
 
         vector.moduleName = tokens[2];
         vector.name = tokens[3];
-        vector.blockSize = strtol(tokens[5],&e,10);
-        vector.count = strtol(tokens[6],&e,10);
-        vector.min = strtod(tokens[7],&e);
-        vector.max = strtod(tokens[8],&e);
-        vector.sum = strtod(tokens[9],&e);
-        vector.sumSqr = strtod(tokens[10],&e);
+        vector.blockSize = strtol(tokens[4],&e,10);
+        vector.count = strtol(tokens[5],&e,10);
+        vector.min = strtod(tokens[6],&e);
+        vector.max = strtod(tokens[7],&e);
+        vector.sum = strtod(tokens[8],&e);
+        vector.sumSqr = strtod(tokens[9],&e);
 
         index->vectors.push_back(vector);
         numOfEntries = 0;
@@ -298,7 +303,7 @@ void IndexFileWriter::writeFingerprint(std::string vectorFileName)
 
     long saveOffset = ftell(file);
     fseek(file, 0, SEEK_SET);
-    fprintf(file, "file %ld %ld", (long)s.st_size, (long)s.st_mtime); //FIXME use CHECK()
+    CHECK(fprintf(file, "file %ld %ld", (long)s.st_size, (long)s.st_mtime));
     fseek(file,saveOffset, SEEK_SET);
 }
 
@@ -314,28 +319,28 @@ void IndexFileWriter::writeVector(VectorData& vector)
 
         for (int i=0; i<numBlocks; i+=10)
         {
-            fprintf(file, "%d\t", vector.vectorId);  //FIXME use CHECK()
+            CHECK(fprintf(file, "%d\t", vector.vectorId));
             for (int j = 0; j<10 && i+j < numBlocks; ++j)
             {
                 writeBlock(vector.blocks[i+j]);
             }
-            fprintf(file, "\n");
+            CHECK(fprintf(file, "\n"));
         }
     }
 }
 
 void IndexFileWriter::writeVectorDeclaration(VectorData& vector)
 {
-    fprintf(file, "vector %d  %s  %s  %d  %ld  %ld  %.*g  %.*g  %.*g  %.*g\n",
-        vector.vectorId, QUOTE(vector.moduleName.c_str()), QUOTE(vector.name.c_str()), 1/*tuple*/,
-        vector.blockSize, vector.count, precision, vector.min, precision, vector.max,
-        precision, vector.sum, precision, vector.sumSqr);  //FIXME use CHECK()
+    CHECK(fprintf(file, "vector %d  %s  %s  %ld  %ld  %.*g  %.*g  %.*g  %.*g\n",
+          vector.vectorId, QUOTE(vector.moduleName.c_str()), QUOTE(vector.name.c_str()),
+          vector.blockSize, vector.count, precision, vector.min, precision, vector.max,
+          precision, vector.sum, precision, vector.sumSqr));
 
 }
 
 void IndexFileWriter::writeBlock(Block& block)
 {
-    fprintf(file, "%ld:%ld ", block.startOffset, block.numOfEntries());
+    CHECK(fprintf(file, "%ld:%ld ", block.startOffset, block.numOfEntries()));
 }
 
 void IndexFileWriter::openFile()
@@ -345,7 +350,7 @@ void IndexFileWriter::openFile()
         throw opp_runtime_error("");  //FIXME
 
     // space for header
-    fprintf(file, "%64s\n", "");
+    CHECK(fprintf(file, "%64s\n", ""));
 }
 
 void IndexFileWriter::closeFile()

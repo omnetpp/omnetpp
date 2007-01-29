@@ -43,7 +43,7 @@ using std::ios;
 #ifdef CHECK
 #undef CHECK
 #endif
-#define CHECK(fprintf)    if (fprintf<0) throw new cRuntimeError("Cannot write output vector file `%s'", fname.c_str())
+#define CHECK(fprintf, fname)    if (fprintf<0) throw new cRuntimeError("Cannot write output file `%s'", fname.c_str())
 #define WARN(msg)       fprintf(stderr,msg)
 
 // helper function
@@ -226,7 +226,7 @@ void cIndexedFileOutputVectorManager::writeRecords(sVector *vp)
     long startOffset = ftell(f);
     for (std::vector<sSample>::iterator it = vp->buffer.begin(); it != vp->buffer.end(); ++it)
     {
-        CHECK(fprintf(f,"%d\t%.*g\t%.*g\n", vp->id, prec, it->simtime, prec, it->value));
+        CHECK(fprintf(f,"%d\t%.*g\t%.*g\n", vp->id, prec, SIMTIME_DBL(it->simtime), prec, it->value), fname);
     }
     long endOffset = ftell(f);
 
@@ -248,18 +248,18 @@ void cIndexedFileOutputVectorManager::writeIndex(sVector *vp)
     int nBlocks = vp->blocks.size();
     if (nBlocks > 0)
     {
-        CHECK(fprintf(fi,"vector %d  \"%s\"  \"%s\"  %d  %ld  %ld  %.*g  %.*g  %.*g  %.*g\n",
-                      vp->id, QUOTE(vp->modulename.c_str()), QUOTE(vp->vectorname.c_str()), 1, vp->maxBlockSize,
-                      vp->count, prec, vp->min, prec, vp->max, prec, vp->sum, prec, vp->sumsqr));
+        CHECK(fprintf(fi,"vector %d  %s  %s  %ld  %ld  %.*g  %.*g  %.*g  %.*g\n",
+                      vp->id, QUOTE(vp->modulename.c_str()), QUOTE(vp->vectorname.c_str()), vp->maxBlockSize,
+                      vp->count, prec, vp->min, prec, vp->max, prec, vp->sum, prec, vp->sumsqr), ifname);
         for (int i=0; i<nBlocks; i+=10)
         {
-            fprintf(fi, "%d\t", vp->id);   //FIXME use CHECK()
+            CHECK(fprintf(fi, "%d\t", vp->id), ifname);
             for (int j = 0; j<10 && i+j < nBlocks; ++j)
             {
                 sBlock& block=vp->blocks[i+j];
-                fprintf(fi, "%ld:%ld ", block.offset, block.count);
+                CHECK(fprintf(fi, "%ld:%ld ", block.offset, block.count), ifname);
             }
-            fprintf(fi, "\n");  //FIXME use CHECK()
+            CHECK(fprintf(fi, "\n"), ifname);
         }
         vp->blocks.clear();
     }

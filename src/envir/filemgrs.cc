@@ -220,7 +220,7 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
         if (!vp->initialised)
             initVector(vp);
         assert(f!=NULL);
-        CHECK(fprintf(f,"%d\t%.*g\t%.*g\n", vp->id, prec, t, prec, value));
+        CHECK(fprintf(f,"%d\t%.*g\t%.*g\n", vp->id, prec, SIMTIME_DBL(t), prec, value));
         return true;
     }
     return false;
