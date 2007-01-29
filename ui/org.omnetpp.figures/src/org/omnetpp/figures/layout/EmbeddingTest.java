@@ -16,7 +16,7 @@ import java.util.Random;
 
 public class EmbeddingTest
 {
-	public static void main(String[] args) {
+/*	public static void main(String[] args) {
 		new EmbeddingTest().run();
 	}
 
@@ -249,8 +249,9 @@ public class EmbeddingTest
 		TestFrame2 testFrame = new TestFrame2(embedding, 1000, 800);
 		testFrame.embed();
 	}
+	*/
 }
-
+/*
 class TestCanvas2 extends Canvas implements ForceDirectedEmbedding.IForceDirectedEmbeddingListener {
 	private static final long serialVersionUID = 1L;
 
@@ -484,3 +485,4 @@ class TestFrame2 extends Frame {
 		testCanvas.embed();
 	}
 }
+*/
