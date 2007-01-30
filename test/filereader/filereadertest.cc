@@ -18,12 +18,17 @@
 #include "lcgrandom.h"
 #include "filereader.h"
 
-int testFileReader(const char *file, long numberOfLines)
+int parseLineNumber(char *line)
+{
+    return !line || *line == '\r' || *line == '\n' ? -1 : atol(line);
+}
+
+int testFileReader(const char *file, long numberOfLines, int numberOfSeeks, int numberOfReadLines)
 {
     _setmode(_fileno(stdout), _O_BINARY);
     FileReader fileReader(file);
     LCGRandom random;
-    int i = 1000;
+    int i = numberOfSeeks;
     int64 fileSize = fileReader.getFileSize();
 
     while (i--) {
@@ -31,30 +36,32 @@ int testFileReader(const char *file, long numberOfLines)
         printf("Seeking to offset: %lld\n", offset);
         fileReader.seekTo(offset);
 
-        int j = 32;
+        int j = numberOfReadLines;
         long expectedLineNumber = -1;
         bool forward;
 
         while (j--) {
             char *line;
 
+            // either read forward or backward a line
             if (random.next01() < 0.5) {
                 line = fileReader.readPreviousLine();
 
                 if (line) {
                     printf("Read previous line: %.*s", fileReader.getLastLineLength(), line);
 
+                    // calculate expected line number based on previous expected if any
                     if (expectedLineNumber != -1) {
                         if (!forward)
                             expectedLineNumber--;
                     }
                     else
-                        expectedLineNumber = atol(line);
+                        expectedLineNumber = parseLineNumber(line);
                 }
                 else {
                     if (expectedLineNumber != -1 &&
                         expectedLineNumber != 0) {
-                        printf("*** No more previous lines but not at the very beginning of the file");
+                        printf("*** No more previous lines (%ld) but not at the very beginning of the file\n", expectedLineNumber);
                         return -1;
                     }
                 }
@@ -67,17 +74,18 @@ int testFileReader(const char *file, long numberOfLines)
                 if (line) {
                     printf("Read next line: %.*s", fileReader.getLastLineLength(), line);
 
+                    // calculate expected line number based on previous expected if any
                     if (expectedLineNumber != -1) {
                         if (forward)
                             expectedLineNumber++;
                     }
                     else
-                        expectedLineNumber = atol(line);
+                        expectedLineNumber = parseLineNumber(line);
                 }
                 else {
                     if (expectedLineNumber != -1 &&
                         expectedLineNumber != numberOfLines - 1) {
-                        printf("*** No more next lines but not at the very end of the file");
+                        printf("*** No more next lines (%ld) but not at the very end of the file\n", expectedLineNumber);
                         return -2;
                     }
                 }
@@ -85,8 +93,8 @@ int testFileReader(const char *file, long numberOfLines)
                 forward = true;
             }
 
-            long lineNumber = !line || *line == '\r' || *line == '\n'? -1 : atol(line);
-
+            // compare expected and actual line numbers
+            long lineNumber = parseLineNumber(line);
             if (lineNumber != -1 && lineNumber != expectedLineNumber) {
                 printf("*** Line number %ld, %ld comparison failed for line: %.*s", lineNumber, expectedLineNumber, fileReader.getLastLineLength(), line);
                 return -3;
@@ -112,8 +120,21 @@ int usage(char *message)
 
 int main(int argc, char **argv)
 {
-    if (argc < 3)
-        return usage("Not enough arguments specified");
-    else
-        return testFileReader(argv[1], atol(argv[2]));
+    try {
+        if (argc < 5)
+            return usage("Not enough arguments specified");
+        else {
+            int result = testFileReader(argv[1], atol(argv[2]), atoi(argv[3]), atoi(argv[4]));
+
+            if (result)
+                printf("FAIL\n");
+            else
+                printf("PASS\n");
+
+            return result;
+        }
+    }
+    catch (std::exception& e) {
+        printf("Error: %s", e.what());
+    }
 }
