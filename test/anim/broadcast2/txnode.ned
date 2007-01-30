@@ -1,15 +1,17 @@
 import "tx";
 
 module TxNode
+{
     gates:
-        out: out[];
+        output out[];
     submodules:
-        tx: Tx;
-          gatesizes:
-              out[sizeof(out)];
+        tx: Tx {
+            gates:
+                out[sizeof(out)];
+        };
     connections:
-        for i=0..sizeof(out)-1 do
+        for i=0..sizeof(out)-1 {
             tx.out[i] --> out[i];
-        endfor
-endmodule
+        };
+}
 

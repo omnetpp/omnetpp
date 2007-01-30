@@ -1,4 +1,6 @@
-import "txnode", "sinknode", "sink";
+import "txnode";
+import "sinknode";
+import "sink";
 
 //
 // Model for testing animation of broadcasts
@@ -7,34 +9,32 @@ import "txnode", "sinknode", "sink";
 //
 // A: both tx and sink are compound modules
 //
-module BroadcastTestA
+network BroadcastTestA
+{
     submodules:
         tx: TxNode;
-        sink: SinkNode[10];
+        sink[10]: SinkNode;
     connections:
-        for i=0..9 do
+        for i=0..9 {
             tx.out++ --> sink[i].in++;
-        endfor
-endmodule
+        };
+}
 
-network broadcastTestA : BroadcastTestA
-endnetwork
 
 
 //
 // B: tx is compound, sink is simple module
 //
-module BroadcastTestB
+network BroadcastTestB
+{
     submodules:
         tx: TxNode;
-        sink: Sink[10];
+        sink[10]: Sink;
     connections:
-        for i=0..9 do
+        for i=0..9 {
             tx.out++ --> sink[i].in++;
-        endfor
-endmodule
+        };
+}
 
-network broadcastTestB : BroadcastTestB
-endnetwork
 
 

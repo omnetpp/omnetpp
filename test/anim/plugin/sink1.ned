@@ -13,7 +13,8 @@
 // destroys the packets and creates statistics
 //
 simple FF1Sink
+{
     gates:
-      in: in;
-endsimple
+        input in;
+}
 

@@ -1,15 +1,17 @@
 import "sink";
 
 module SinkNode
+{
     gates:
-        in: in[];
+        input in[];
     submodules:
-        sink: Sink;
-          gatesizes:
-              in[sizeof(in)];
+        sink: Sink {
+            gates:
+                in[sizeof(in)];
+        };
     connections:
-        for i=0..sizeof(in)-1 do
+        for i=0..sizeof(in)-1 {
             in[i] --> sink.in[i];
-        endfor
-endmodule
+        };
+}
 

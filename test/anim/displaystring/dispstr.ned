@@ -6,7 +6,8 @@ import "conntextandtooltip";
 import "nedparams";
 import "background";
 
-module DisplayStringTest
+network DisplayStringTest
+{
     submodules:
         colors: Colors;
         icons: Icons;
@@ -16,8 +17,6 @@ module DisplayStringTest
         connColors: ConnColors;
         nedParams: NedParams;
         background: Background;
-endmodule
+}
 
-network displayStringTest : DisplayStringTest
-endnetwork
 

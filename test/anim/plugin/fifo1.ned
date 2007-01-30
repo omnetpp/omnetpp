@@ -13,11 +13,12 @@
 // single-server queue, same service rate for each packet
 //
 simple FF1PacketFifo
+{
     parameters:
-        serviceRate: numeric;
+        volatile double serviceRate;
     gates:
-        in: in[];
-        out: out;
-endsimple
+        input in[];
+        output out;
+}
 
 

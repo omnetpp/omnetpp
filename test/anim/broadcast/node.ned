@@ -2,12 +2,13 @@ import "sink";
 import "tx";
 
 module Node
+{
     gates:
-        in: in;
+        input in;
     submodules:
         tx: Tx;
         sink: Sink;
     connections:
         in --> sink.in;
-endmodule
+}
 

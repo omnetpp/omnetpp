@@ -13,10 +13,11 @@
 // generates messages (jobs,packets etc.)
 //
 simple FF1Generator
+{
     parameters:
-        messageKind : numeric const,
-        arrivalRate : numeric;
+        double messageKind;
+        volatile double arrivalRate;
     gates:
-        out: out;
-endsimple
+        output out;
+}
 

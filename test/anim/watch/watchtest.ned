@@ -1,16 +1,18 @@
 
 simple WatchTest
+{
     parameters:
-        num: numeric,
-        boolean: bool,
-        str: string;
-endsimple
+        double num;
+        bool boolean;
+        string str;
+}
 
-network watchTest : WatchTest
+network watchTest extends WatchTest
+{
     parameters:
-        num = 100,
-        boolean = true,
+        num = 100;
+        boolean = true;
         str = "foo";
-endnetwork
+}
 
 

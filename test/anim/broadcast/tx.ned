@@ -1,3 +1,4 @@
 simple Tx
-endsimple
+{
+}
 

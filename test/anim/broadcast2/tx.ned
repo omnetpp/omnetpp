@@ -1,5 +1,6 @@
 simple Tx
+{
     gates:
-        out: out[];
-endsimple
+        output out[];
+}
 

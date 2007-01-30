@@ -1,6 +1,7 @@
 module Dummy
+{
     gates:
-        in: in[];
-        out: out[];
-    connections nocheck:
-endmodule
+        input in[];
+        output out[];
+    connections allowunconnected:
+}

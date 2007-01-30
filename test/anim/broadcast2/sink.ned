@@ -1,5 +1,6 @@
 simple Sink
+{
     gates:
-      in: in[];
-endsimple
+        input in[];
+}
 
