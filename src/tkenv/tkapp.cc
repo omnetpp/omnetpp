@@ -1141,12 +1141,18 @@ void TOmnetTkApp::messageDelivered(cMessage *msg)
     }
 }
 
-void TOmnetTkApp::moduleMethodCalled(cModule *from, cModule *to, const char *method)
+void TOmnetTkApp::componentMethodCalled(cComponent *fromComp, cComponent *toComp, const char *method)
 {
     if (!animating || !opt_anim_methodcalls)
         return;
 
+    if (!fromComp->isModule() || !toComp->isModule())
+        return; // not yet handled
+
     updateGraphicalInspectorsBeforeAnimation();
+
+    cModule *from = (cModule *)fromComp;
+    cModule *to = (cModule *)toComp;
 
     // find modules along the way
     PathVec pathvec;

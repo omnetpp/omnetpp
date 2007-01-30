@@ -315,32 +315,32 @@ cConfiguration *cEnvir::config()
 
 //-----------------------------------------------------------------
 
-void cEnvir::messageSent( cMessage *msg, cGate *directToGate)
+void cEnvir::messageSent(cMessage *msg, cGate *directToGate)
 {
     if (disable_tracing) return;
-    app->messageSent( msg, directToGate );
+    app->messageSent(msg, directToGate);
 }
 
-void cEnvir::messageDelivered( cMessage *msg )
+void cEnvir::messageDelivered(cMessage *msg)
 {
     if (disable_tracing) return;
-    app->messageDelivered( msg );
+    app->messageDelivered(msg);
 }
 
-void cEnvir::methodCalled(cComponent *from, cComponent *to, const char *method)
+void cEnvir::componentMethodCalled(cComponent *from, cComponent *to, const char *method)
 {
     if (disable_tracing) return;
-    app->moduleMethodCalled((cModule *)from, (cModule *)to, method); // FIXME change OmnetApp method signature too
+    app->componentMethodCalled(from, to, method);
 }
 
-void cEnvir::objectDeleted(cObject *obj )
+void cEnvir::objectDeleted(cObject *obj)
 {
-    if (app) app->objectDeleted( obj );
+    if (app) app->objectDeleted(obj);
 }
 
-void cEnvir::breakpointHit( const char *label, cSimpleModule *module )
+void cEnvir::breakpointHit(const char *label, cSimpleModule *module)
 {
-    app->breakpointHit( label, module );
+    app->breakpointHit(label, module);
 }
 
 void cEnvir::moduleCreated(cModule *newmodule)

@@ -130,7 +130,7 @@ class TOmnetTkApp : public TOmnetApp
       virtual void messageSent(cMessage *msg, cGate *directToGate);
       virtual void messageDelivered(cMessage *msg);
       virtual void breakpointHit(const char *lbl, cSimpleModule *mod);
-      virtual void moduleMethodCalled(cModule *from, cModule *to, const char *method);
+      virtual void componentMethodCalled(cComponent *from, cComponent *to, const char *method);
       virtual void moduleCreated(cModule *newmodule);
       virtual void moduleDeleted(cModule *module);
       virtual void moduleReparented(cModule *module, cModule *oldparent);
