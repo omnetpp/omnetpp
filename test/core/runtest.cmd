@@ -4,7 +4,7 @@ rem usage: runtest [<testfile>...]
 rem without args, runs all *.test files in the current directory
 rem
 
-set OPT=
+set OPT=-N
 
 rem --- nothing to change below this line ---
 
