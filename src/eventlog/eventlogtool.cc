@@ -169,45 +169,6 @@ long Options::getLastEventNumber()
     return lastEventNumber;
 }
 
-void readLines(Options options)
-{
-    if (options.verbose)
-        fprintf(stdout, "# Reading lines from log file %s\n", options.inputFileName);
-
-    char *line;
-    LineTokenizer tokenizer;
-    FileReader fileReader(options.inputFileName);
-
-    long begin = clock();
-
-    while ((line = fileReader.readNextLine())!=NULL)
-        tokenizer.tokenize(line, fileReader.getLastLineLength());
-
-    long end = clock();
-
-    if (options.verbose)
-        fprintf(stdout, "# Reading of %lld lines and %lld bytes from log file %s completed in %g seconds\n", fileReader.getNumReadLines(), fileReader.getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
-}
-
-void loadEvents(Options options)
-{
-    if (options.verbose)
-        fprintf(stdout, "# Loading events from log file %s\n", options.inputFileName);
-
-    FileReader *fileReader = new FileReader(options.inputFileName);
-    EventLog eventLog(fileReader);
-    long begin = clock();
-
-    IEvent *event = eventLog.getFirstEvent();
-    while (event)
-        event = event->getNextEvent();
-
-    long end = clock();
-
-    if (options.verbose)
-        fprintf(stdout, "# Loading of %ld events, %lld lines and %lld bytes form log file %s completed in %g seconds\n", eventLog.getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
-}
-
 void offsets(Options options)
 {
     if (options.verbose)
@@ -270,7 +231,7 @@ void events(Options options)
 void ranges(Options options)
 {
     if (options.verbose)
-        fprintf(stdout, "# Printing ranges from log file %s\n", options.inputFileName);
+        fprintf(stdout, "# Printing coherent ranges from log file %s\n", options.inputFileName);
 
     FileReader *fileReader = new FileReader(options.inputFileName);
     EventLog eventLog(fileReader);
@@ -294,7 +255,7 @@ void ranges(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Printing ranges while reading %lld lines and %lld bytes form log file %s completed in %g seconds\n", fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Printing coherent ranges while reading %lld lines and %lld bytes form log file %s completed in %g seconds\n", fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
 void echo(Options options)
@@ -310,85 +271,7 @@ void echo(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Parsing of %ld events, %lld lines and %lld bytes form log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
-
-    delete eventLog;
-}
-
-void consistency(Options options)
-{
-    if (options.verbose)
-        fprintf(stdout, "# Checking consistency of log file %s from event number %ld to event number %ld\n", options.inputFileName, options.getFirstEventNumber(), options.getLastEventNumber());
-
-    FileReader *fileReader = new FileReader(options.inputFileName);
-    IEventLog *eventLog = options.getEventLog(fileReader);
-
-    long begin = clock();
-
-    IEvent *event = options.getFirstEventNumber() == -1 ? eventLog->getFirstEvent() : eventLog->getEventForEventNumber(options.getFirstEventNumber());
-
-    while (event) {
-        if (options.verbose)
-            fprintf(stdout, "# Checking consistency for event %ld\n", event->getEventNumber());
-
-        // check causes
-        MessageDependencyList *causes = event->getCauses();
-
-        for (MessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++) {
-            MessageDependency *messageDependency = *it;
-            IEvent *causeEvent = messageDependency->getCauseEvent();
-
-            if (causeEvent) {
-                bool foundCauseConsequence = false;
-                MessageDependencyList *causeConseqences = causeEvent->getConsequences();
-
-                for (MessageDependencyList::iterator ot = causeConseqences->begin(); ot != causeConseqences->end(); ot++) {
-                    if ((*ot)->getConsequenceEvent() == event) {
-                        foundCauseConsequence = true;
-                        break;
-                    }
-                }
-
-                if (!foundCauseConsequence)
-                    fprintf(options.outputFile, "Consistency check failed, could not find event %ld in the consequences of event %ld which is included in the causes of event %ld\n",
-                        event->getEventNumber(), causeEvent->getEventNumber(), event->getEventNumber());
-            }
-        }
-
-        // check consequences
-        MessageDependencyList *consequences = event->getConsequences();
-
-        for (MessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++) {
-            MessageDependency *messageDependency = *it;
-            IEvent *consequenceEvent = messageDependency->getConsequenceEvent();
-
-            if (consequenceEvent) {
-                bool foundConsequenceCause = false;
-                MessageDependencyList *consequenceCauses = consequenceEvent->getCauses();
-
-                for (MessageDependencyList::iterator ot = consequenceCauses->begin(); ot != consequenceCauses->end(); ot++) {
-                    if ((*ot)->getCauseEvent() == event) {
-                        foundConsequenceCause = true;
-                        break;
-                    }
-                }
-
-                if (!foundConsequenceCause)
-                    fprintf(options.outputFile, "Consistency check failed, could not find event %ld in the causes of event %ld which is included in the consequences of event %ld\n",
-                        event->getEventNumber(), consequenceEvent->getEventNumber(), event->getEventNumber());
-            }
-        }
-
-        if (event->getEventNumber() == options.getLastEventNumber())
-            break;
-
-        event = event->getNextEvent();
-    }
-
-    long end = clock();
-
-    if (options.verbose)
-        fprintf(stdout, "# Checking consistency while loading of %ld events, %lld lines and %lld bytes form log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Echoing of %ld events, %lld lines and %lld bytes form log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 
     delete eventLog;
 }
@@ -409,7 +292,7 @@ void filter(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Parsing of %ld events, %lld lines and %lld bytes form log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Filtering of %ld events, %lld lines and %lld bytes form log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 
     delete eventLog;
 }
@@ -424,13 +307,10 @@ void usage(char *message)
 "   eventlogtool <command> [options]* <input-file-name>\n"
 "\n"
 "   Commands:\n"
-"      readlines   - reads the input lines one at a time and outputs nothing, options are ignored.\n"
-"      loadevents  - loads the whole input file at once into memory and outputs nothing, options are ignored.\n"
 "      offsets     - prints the file offsets for the given even numbers (-e) one per line, all other options are ignored.\n"
 "      events      - prints the events for the given offsets (-f), all other options are ignored.\n"
-"      ranges      - prints the event number ranges found in the input, all other options are ignored.\n"
+"      ranges      - prints the coherent event number ranges found in the input as event number pairs, all other options are ignored.\n"
 "      echo        - echos the input to the output, range options are supported.\n"
-"      consistency - checks the consistency of the requested region in the input file.\n"
 "      filter      - filters the input according to the varios options and outputs the result, only one event number is traced,\n"
 "                    but it may be outside of the specified event number or simulation time region.\n"
 "\n"
@@ -448,7 +328,7 @@ void usage(char *message)
 "      -tt     --to-simulation-time      <number>\n"
 "         inclusive\n"
 "      -e      --event-numbers           <integer>+\n"
-"         events must be present in the input file"
+"         events must be present in the input file\n"
 "      -f      --file-offsets            <integer>+\n"
 "      -mn     --module-names            <pattern>+\n"
 "      -mt     --module-types            <pattern>+\n"
@@ -572,11 +452,7 @@ int main(int argc, char **argv)
                 options.outputFile = stdout;
 
             try {
-                if (!strcmp(command, "readlines"))
-                    readLines(options);
-                else if (!strcmp(command, "loadevents"))
-                    loadEvents(options);
-                else if (!strcmp(command, "offsets"))
+                if (!strcmp(command, "offsets"))
                     offsets(options);
                 else if (!strcmp(command, "events"))
                     events(options);
@@ -584,8 +460,6 @@ int main(int argc, char **argv)
                     ranges(options);
                 else if (!strcmp(command, "echo"))
                     echo(options);
-                else if (!strcmp(command, "consistency"))
-                    consistency(options);
                 else if (!strcmp(command, "filter"))
                     filter(options);
                 else
