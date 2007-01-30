@@ -508,7 +508,7 @@ cConfiguration *TOmnetApp::getConfig()
 
 //-------------------------------------------------------------
 
-void TOmnetApp::undisposedObject(cOwnedObject *obj)
+void TOmnetApp::undisposedObject(cObject *obj)
 {
     if (opt_print_undisposed)
         ::printf("undisposed: (%s) %s\n", obj->className(), obj->fullPath().c_str());

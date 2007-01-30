@@ -189,7 +189,7 @@ class ENVIR_API cEnvir : public std::ostream
     /**
      * Notifies the environment that the object no longer exists. The
      * user interface should close all inspector windows for the object
-     * and remove it from object lists currently displayed. cOwnedObject's
+     * and remove it from object lists currently displayed. cObject's
      * destructor automatically calls this function.
      */
     void objectDeleted(cObject *object);
@@ -284,7 +284,7 @@ class ENVIR_API cEnvir : public std::ostream
      * Called from module destructors, to notify the environment about objects
      * that the user didn't delete in the module destructor.
      */
-    void undisposedObject(cOwnedObject *obj);
+    void undisposedObject(cObject *obj);
     //@}
 
     /** @name Methods called by the simulation kernel to access configuration settings. */

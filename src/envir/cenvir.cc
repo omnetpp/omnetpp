@@ -378,7 +378,7 @@ void cEnvir::displayStringChanged(cModule *module)
     app->displayStringChanged(module);
 }
 
-void cEnvir::undisposedObject(cOwnedObject *obj)
+void cEnvir::undisposedObject(cObject *obj)
 {
     if (!app)
     {

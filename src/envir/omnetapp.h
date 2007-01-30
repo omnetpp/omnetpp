@@ -218,7 +218,7 @@ class ENVIR_API TOmnetApp
     virtual void connectionRemoved(cGate *srcgate) {}
     virtual void displayStringChanged(cGate *gate) {}
     virtual void displayStringChanged(cModule *module) {}
-    virtual void undisposedObject(cOwnedObject *obj);
+    virtual void undisposedObject(cObject *obj);
     //@}
 
     /** @name Functions called by cEnvir's similar functions.
