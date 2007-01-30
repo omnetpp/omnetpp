@@ -13,8 +13,8 @@
 *--------------------------------------------------------------*/
 
 
-#include <assert.h>
 #include <sstream>
+#include "commonutil.h"
 #include "filereader.h"
 #include "exception.h"
 
@@ -88,6 +88,8 @@ void FileReader::fillBuffer(bool forward)
         dataLength = bufferSize;
     }
     else if (forward) {
+        Assert(currentDataPointer);
+
         if (currentDataPointer < dataBegin) {
             dataPointer = currentDataPointer;
             dataLength = dataBegin - currentDataPointer;
@@ -98,6 +100,8 @@ void FileReader::fillBuffer(bool forward)
         }
     }
     else {
+        Assert(currentDataPointer);
+
         if (currentDataPointer > dataEnd) {
             dataPointer = dataEnd;
             dataLength = currentDataPointer - dataEnd;
@@ -236,19 +240,31 @@ char *FileReader::findPreviousLineStart(char *start, bool bufferFilled)
 
 char *FileReader::readNextLine()
 {
+    Assert(currentDataPointer);
+
     numReadLines++;
     if (!f) openFile();
     if (PRINT_DEBUG_MESSAGES) printf("Reading in next line at file offset: %lld\n", pointerToFileOffset(currentDataPointer));
 
     fillBuffer(true);
 
-    if (!isLineStart(currentDataPointer))
-        currentDataPointer = findNextLineStart(currentDataPointer);
+    if (!isLineStart(currentDataPointer)) {
+        char *nextLineDataPointer = findNextLineStart(currentDataPointer);
+
+        if (nextLineDataPointer)
+            currentDataPointer = nextLineDataPointer;
+        else {
+            lastLineStartOffset = lastLineEndOffset = -1;
+
+            return NULL;
+        }
+    }
 
     lastLineStartOffset = pointerToFileOffset(currentDataPointer);
-    currentDataPointer = findNextLineStart(currentDataPointer);
+    char *nextLineDataPointer = findNextLineStart(currentDataPointer);
 
-    if (currentDataPointer) {
+    if (nextLineDataPointer) {
+        currentDataPointer = nextLineDataPointer;
         lastLineEndOffset = pointerToFileOffset(currentDataPointer);
 
         return fileOffsetToPointer(lastLineStartOffset);
@@ -262,19 +278,31 @@ char *FileReader::readNextLine()
 
 char *FileReader::readPreviousLine()
 {
+    Assert(currentDataPointer);
+
     numReadLines++;
     if (!f) openFile();
     if (PRINT_DEBUG_MESSAGES) printf("Reading in previous line at file offset: %lld\n", pointerToFileOffset(currentDataPointer));
 
     fillBuffer(false);
 
-    if (!isLineStart(currentDataPointer))
-        currentDataPointer = findPreviousLineStart(currentDataPointer);
+    if (!isLineStart(currentDataPointer)) {
+        char *previousLineDataPointer = findPreviousLineStart(currentDataPointer);
+
+        if (previousLineDataPointer)
+            currentDataPointer = previousLineDataPointer;
+        else {
+            lastLineStartOffset = lastLineEndOffset = -1;
+
+            return NULL;
+        }
+    }
 
     lastLineEndOffset = pointerToFileOffset(currentDataPointer);
-    currentDataPointer = findPreviousLineStart(currentDataPointer);
+    char *previousLineDataPointer = findPreviousLineStart(currentDataPointer);
 
-    if (currentDataPointer) {
+    if (previousLineDataPointer) {
+        currentDataPointer = previousLineDataPointer;
         lastLineStartOffset = pointerToFileOffset(currentDataPointer);
 
         return fileOffsetToPointer(lastLineStartOffset);
@@ -316,12 +344,14 @@ void FileReader::seekTo(file_offset_t fileOffset, int ensureBufferSizeAround)
         fileOffset <= bufferFileOffset + bufferSize - ensureBufferSizeAround)
     {
         currentDataPointer = fileOffsetToPointer(fileOffset);
+        Assert(currentDataPointer);
         return;
     }
 
     file_offset_t newBufferFileOffset = std::min(std::max((int64)0L, getFileSize() - (int64)bufferSize), std::max((int64)0L, fileOffset - (int64)bufferSize / 2));
     //file_offset_t fileOffsetDelta = newBufferFileOffset - bufferFileOffset;
     currentDataPointer = bufferBegin + fileOffset - newBufferFileOffset;
+    Assert(currentDataPointer);
 
     if (PRINT_DEBUG_MESSAGES) printf("Setting buffer file offset to: %lld\n", newBufferFileOffset);
 
