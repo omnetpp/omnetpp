@@ -65,7 +65,8 @@ sub generateAndTest
 mkdir("generated");
 mkdir("result");
 
-test("text/empty.txt", 0, 1, 10);
+test("text/empty.txt", 0, 10, 10);
+test("text/one-character.txt", 0, 10, 10);
 test("text/one-big-line.txt", 0, 10, 10);
 test("text/one-big-line-with-new-line-at-the-end.txt", 1, 10, 10);
 test("text/one-line.txt", 0, 10, 10);
