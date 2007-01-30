@@ -1,4 +1,4 @@
 @echo off
-call ..\..\setenv-vc71.bat
+call ..\..\setenv-vc80.bat
 nmake -f Makefile.vc %*
 
