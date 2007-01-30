@@ -738,7 +738,7 @@ void ForceDirectedGraphLayouter::calculateExpectedMeasures()
     double maxBodyLength = 0;
 
     // expected measures
-    expectedEmbeddingSize  = 0;
+    expectedEmbeddingSize = 0;
     double averageBodyLength = 0;
 
     for (int i = 0; i < (int)bodies.size(); i++) {
@@ -1008,11 +1008,11 @@ void ForceDirectedGraphLayouter::addFixedNode(cModule *mod, int x, int y, int wi
     hasFixedNode = true;
 
     // a fix node is a constrained variable which can only move on the z axes
-    Variable *variable = new PointConstrainedVariable(Pt(x + width / 2, y + height / 2, NaN));
+    Variable *variable = new PointConstrainedVariable(Pt(x, y, NaN));
     IBody *body = new Body(variable, Rs(width, height));
     addBody(mod, body);
 
-    graphComponent.addVertex(new Vertex(Pt(x, y, NaN), Rs(width, height), variable));
+    graphComponent.addVertex(new Vertex(Pt(x - width / 2, y - height / 2, NaN), Rs(width, height), variable));
 }
 
 void ForceDirectedGraphLayouter::addAnchoredNode(cModule *mod, const char *anchorname, int offx, int offy, int width, int height)
@@ -1026,10 +1026,10 @@ void ForceDirectedGraphLayouter::addAnchoredNode(cModule *mod, const char *ancho
     // update vertex size
     Vertex *vertex = graphComponent.findVertex(variable);
     if (!vertex)
-        graphComponent.addVertex(new Vertex(Pt::getNil(), Rs(offx + width, offy + height), variable));
+        graphComponent.addVertex(new Vertex(Pt::getNil(), Rs(offx + width / 2, offy + height / 2), variable));
     else {
         Rs rs = vertex->rc.rs;
-        vertex->rc.rs = Rs(std::max(rs.width, (double)(offx + width)), std::max(rs.height, (double)(offy + height)));
+        vertex->rc.rs = Rs(std::max(rs.width, (double)(offx + width / 2)), std::max(rs.height, (double)(offy + height / 2)));
     }
 }
 
@@ -1156,10 +1156,10 @@ void ForceDirectedGraphLayouter::debugDraw()
             }
         }
 
-        environment->drawRectangle(pt.x, pt.y, pt.x + rs.width, pt.y + rs.height, "{node bbox}", "black");
+        environment->drawRectangle(pt.x - rs.width / 2, pt.y - rs.height / 2, pt.x + rs.width / 2, pt.y + rs.height / 2, "{node bbox}", "black");
         char text[100];
         sprintf(text,"%g", pt.z);
-        environment->drawText(pt.x, pt.y, text, "{node bbox}", "black");
+        environment->drawText(pt.x - rs.width / 2, pt.y - rs.height / 2, text, "{node bbox}", "black");
     }
 
     // draw springs
