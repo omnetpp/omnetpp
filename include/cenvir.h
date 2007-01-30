@@ -232,9 +232,9 @@ class ENVIR_API cEnvir : public std::ostream
     /**
      * Notifies the environment that one component (module) called a member
      * function of another component. This hook enables a graphical user
-     * interface animate the method call in the network diagram.
+     * interface to animate the method call in the network diagram.
      */
-    void methodCalled(cComponent *from, cComponent *to, const char *method); //XXX used to be moduleMethodCalled
+    void componentMethodCalled(cComponent *from, cComponent *to, const char *method);
 
     /**
      * Notifies the environment that a module was created. This method is called
@@ -289,21 +289,6 @@ class ENVIR_API cEnvir : public std::ostream
 
     /** @name Methods called by the simulation kernel to access configuration settings. */
     //@{
-
-/*XXX replaced by readParameter() -- remove!!!
-    / **
-     * Called by the simulation kernel (cPar) to obtain value for an input
-     * module parameter. Returns empty string if the configuration doesn't specify
-     * a value for this parameter.
-     * /
-    std::string getParameter(int run_no, const char *parname);
-
-    / **
-     * Called by the simulation kernel (cPar) to learn whether it should
-     * use the default value for a parameter if getParameter() fails.
-     * /
-    bool getParameterUseDefault(int run_no, const char *parname);
-*/
 
     /**
      * Assigns the module or channel parameter from the configuration, or
