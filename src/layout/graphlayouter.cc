@@ -917,7 +917,7 @@ void ForceDirectedGraphLayouter::addElectricRepulsions()
 
                 // check if the two are in the same connected component
                 if (vertex1->connectedSubComponent != vertex2->connectedSubComponent)
-                    embedding.addForceProvider(new ElectricRepulsion(body1, body2, expectedEdgeLength, expectedEdgeLength * 2));
+                    embedding.addForceProvider(new ElectricRepulsion(body1, body2, expectedEdgeLength / 2, expectedEdgeLength));
                 else
                     embedding.addForceProvider(new ElectricRepulsion(body1, body2));
             }
@@ -952,20 +952,22 @@ void ForceDirectedGraphLayouter::scale()
         }
     }
 
+    double edgeScale = 0;
     if (springCount) {
-        double actualSize = sqrt(embedding.getBoundingRectangle().rs.getArea());
         averageSpringLength /= springCount;
         Assert(!isNaN(averageSpringLength));
+        edgeScale = expectedEdgeLength / averageSpringLength;
+    }
 
-        double edgeScale = expectedEdgeLength / averageSpringLength;
-        double areaScale = expectedEmbeddingSize / actualSize;
-        double scale = (edgeScale + areaScale) / 2;
-        scale = std::max(0.2, std::min(5.0, scale));
+    double actualSize = sqrt(embedding.getBoundingRectangle().rs.getArea());
+    double areaScale = expectedEmbeddingSize / actualSize;
 
-        const std::vector<Variable *>& variables = embedding.getVariables();
-        for (int i = 0; i < (int)variables.size(); i++) {
-            variables[i]->assignPosition(Pt(variables[i]->getPosition()).multiply(scale));
-         }
+    double scale = springCount ? (edgeScale + areaScale) / 2 : areaScale;
+    scale = std::max(0.2, std::min(5.0, scale));
+
+    const std::vector<Variable *>& variables = embedding.getVariables();
+    for (int i = 0; i < (int)variables.size(); i++) {
+        variables[i]->assignPosition(Pt(variables[i]->getPosition()).multiply(scale));
     }
 }
 
