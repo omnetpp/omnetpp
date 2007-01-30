@@ -1,0 +1,2 @@
+0 This file contains two lines separated by
+1 a new line without a no new line at the end.

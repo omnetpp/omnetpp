@@ -1,0 +1,42 @@
+#
+# Global definitions
+#
+!include ..\..\configuser.vc
+
+!if "$(LIB_SUFFIX)"==".dll"
+CFLAGS=$(CFLAGS) -DWIN32_DLL
+!endif
+
+#
+# Local definitions
+#
+COPTS=$(CFLAGS) -I. -I../../src/common -I../../include/platdep /Fd"filereadertest.pdb"
+
+OBJS= filereadertest.obj
+LIBS= ../../lib/common.lib
+
+#
+# Automatic rules
+#
+.SUFFIXES : .cc
+
+.cc.obj:
+	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
+
+#
+# Targets (TBD: build dll)
+#
+all: filereadertest.exe
+
+filereadertest.exe: filereadertest.obj $(LIBS)
+	$(LINK) $(LDFLAGS) /nologo /out:filereadertest.exe filereadertest.obj $(LIBS)
+
+depend:
+	$(MAKEDEPEND) -I. -fMakefile.vc -- *.cc
+
+clean:
+	- del *.obj 2> nul
+	- del *.ilk *.idb *.pdb *.lib *.exe 2> nul
+
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
