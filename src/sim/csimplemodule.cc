@@ -327,7 +327,7 @@ void cSimpleModule::deleteModule()
 
 int cSimpleModule::send(cMessage *msg, int g)
 {
-    return sendDelayed(msg, 0.0, g);
+    return sendDelayed(msg, 0.0, g); //XXX use SimTime::ZERO! everywhere else too!
 }
 
 int cSimpleModule::send(cMessage *msg, const char *gatename, int sn)
