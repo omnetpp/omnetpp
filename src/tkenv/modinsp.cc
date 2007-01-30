@@ -379,8 +379,10 @@ void TGraphicalModWindow::refreshLayout()
     layouter->setSeed(seed);
 
     TGraphLayouterEnvironment environment(parentmodule, ds);
+
     // enable graphics only if full re-layouting (no cached coordinates in submodPosMap)
-    if (submodPosMap.empty() && getTkApplication()->opt_showlayouting) {
+    if (submodPosMap.empty() && getTkApplication()->opt_showlayouting)
+    {
         environment.setInterpreter(getTkApplication()->getInterp());
         environment.setCanvas(canvas);
     }

@@ -93,9 +93,8 @@ void TGraphLayouterEnvironment::cleanup()
 {
     if (inspected())
     {
-        Tcl_VarEval(interp, canvas, " delete node\n",
-                            canvas, " delete edge\n",
-                            canvas, " delete force\n",
+        Tcl_VarEval(interp, canvas, " delete all\n",
+        //Tcl_VarEval(interp, canvas, " delete node edge force\n",
                             canvas, " config -scrollregion {0 0 1 1}\n",
                             canvas, " xview moveto 0\n",
                             canvas, " yview moveto 0\n",

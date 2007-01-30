@@ -82,7 +82,7 @@ class GraphLayouter
     virtual void addMovableNode(cModule *mod, int width, int height) = 0;
 
     /**
-     * Add fixed node
+     * Add fixed node. (x,y) denotes the center of the node.
      */
     virtual void addFixedNode(cModule *mod, int x, int y, int width, int height) = 0;
 
@@ -92,17 +92,18 @@ class GraphLayouter
      * identified by name, and they need not be predeclared (they are registered
      * on demand.) Usage: module vectors in ring, matrix, etc. layout.
      *
-     * offx, offy: offset to anchor point
+     * offx, offy: offset of the node center to the anchor point
      */
     virtual void addAnchoredNode(cModule *mod, const char *anchorname, int offx, int offy, int width, int height) = 0;
 
     /**
-     * Add connection (graph edge)
+     * Add connection (graph edge). len is the preferred length (0==unspecified)
      */
     virtual void addEdge(cModule *from, cModule *to, int len=0) = 0;
 
     /**
-     * Add connection (graph edge) to enclosing (parent) module
+     * Add connection (graph edge) to enclosing (parent) module. len is the 
+     * preferred length (0==unspecified)
      */
     virtual void addEdgeToBorder(cModule *from, int len=0) = 0;
 

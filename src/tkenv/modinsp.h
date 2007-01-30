@@ -118,7 +118,7 @@ class TGraphicalModWindow : public TInspector
 };
 
 //
-// *** Note: te following inspectors have been replaced with TGenericObjectInspector ***
+// *** Note: the following inspectors have been replaced with TGenericObjectInspector ***
 //
 // class TCompoundModInspector: public TInspector
 // {
