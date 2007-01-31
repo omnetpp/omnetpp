@@ -12,7 +12,7 @@ CFLAGS=$(CFLAGS) -DWIN32_DLL
 #
 COPTS=$(CFLAGS) -I. -I../../src/common -I../../include/platdep /Fd"filereadertest.pdb"
 
-OBJS= filereadertest.obj
+OBJS= fileechotest.obj filereadertest.obj
 LIBS= ../../lib/common.lib
 
 #
@@ -26,7 +26,10 @@ LIBS= ../../lib/common.lib
 #
 # Targets (TBD: build dll)
 #
-all: filereadertest.exe
+all: fileechotest.exe filereadertest.exe
+
+fileechotest.exe: fileechotest.obj $(LIBS)
+	$(LINK) $(LDFLAGS) /nologo /out:fileechotest.exe fileechotest.obj $(LIBS)
 
 filereadertest.exe: filereadertest.obj $(LIBS)
 	$(LINK) $(LDFLAGS) /nologo /out:filereadertest.exe filereadertest.obj $(LIBS)

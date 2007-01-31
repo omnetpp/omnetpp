@@ -1,5 +1,5 @@
 //=========================================================================
-//  EVENTLOGTEST.CC - part of
+//  FILEREADERTEST.CC - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -32,7 +32,15 @@ void testFileReader(const char *file, long numberOfLines, int numberOfSeeks, int
     int64 fileSize = fileReader.getFileSize();
 
     while (numberOfSeeks--) {
-        file_offset_t offset = random.next01() * fileSize;
+        file_offset_t offset;
+
+        if (numberOfSeeks == 1)
+            offset = fileReader.getFileSize();
+        else if (numberOfSeeks == 2)
+            offset = 0;
+        else
+            offset = random.next01() * fileSize;
+
         printf("Seeking to offset: %lld\n", offset);
         fileReader.seekTo(offset);
 
@@ -45,7 +53,7 @@ void testFileReader(const char *file, long numberOfLines, int numberOfSeeks, int
 
             // either read forward or backward a line
             if (random.next01() < 0.5) {
-                line = fileReader.readPreviousLine();
+                line = fileReader.getPreviousLineBufferPointer();
 
                 if (line) {
                     printf("Read previous line: %.*s", fileReader.getLastLineLength(), line);
@@ -67,7 +75,7 @@ void testFileReader(const char *file, long numberOfLines, int numberOfSeeks, int
                 forward = false;
             }
             else {
-                line = fileReader.readNextLine();
+                line = fileReader.getNextLineBufferPointer();
 
                 if (line) {
                     printf("Read next line: %.*s", fileReader.getLastLineLength(), line);
