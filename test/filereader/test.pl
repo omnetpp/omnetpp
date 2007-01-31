@@ -1,5 +1,3 @@
-$fileReaderTest = 'filereadertest';
-
 sub test
 {
    my($fileName, $numberOfLines, $numberOfSeeks, $numberOfReadLines) = @_;
@@ -8,7 +6,7 @@ sub test
    $resultFileName = $fileName;
    $resultFileName =~ s/^(.*)\//result\//;
 
-   if (system("$fileReaderTest $fileName $numberOfLines $numberOfSeeks $numberOfReadLines > $resultFileName") == 0)
+   if (system("fileReaderTest $fileName $numberOfLines $numberOfSeeks $numberOfReadLines > $resultFileName") == 0)
    {
       print("PASS: $fileName\n\n");
    }
