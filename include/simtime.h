@@ -304,4 +304,14 @@ inline const SimTime min(const SimTime& x, const SimTime& y)
     return x < y ? x : y;
 }
 
+/**
+ * Converts the simulation time to string.
+ * See SimTime::ttoa().
+ */
+inline char *simtimeTtoa(char *buff, const SimTime& t)
+{
+    char *endp;
+    return SimTime::ttoa(buff, t.raw(), SimTime::scaleExp(), endp); 
+}
+
 #endif

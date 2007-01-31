@@ -151,6 +151,13 @@ typedef double   simtime_t;
 #define SIMTIME_DBL(t) (t)
 #define SIMTIME_RAW(t) (t)
 #define STR_SIMTIME(s) strToSimtime(s)
+#define SIMTIME_TTOA(buff, t) simtimeTtoa(buff, t)
+
+inline char *simtimeTtoa(char *buff, simtime_t t)
+{
+    strcpy(buff, simtimeToStr(t));
+    return buff;
+}
 
 #else
 
@@ -163,6 +170,7 @@ typedef SimTime  simtime_t;
 #define SIMTIME_DBL(t) ((t).dbl())
 #define SIMTIME_RAW(t) ((t).raw())
 #define STR_SIMTIME(s) SimTime::parse(s)
+#define SIMTIME_TTOA(buff, t) simtimeTtoa(buff, t)
 
 #endif
 
