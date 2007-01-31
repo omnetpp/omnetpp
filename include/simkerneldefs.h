@@ -154,17 +154,11 @@ typedef double   simtime_t;
 #define SIMTIME_DBL(t) (t)
 #define SIMTIME_RAW(t) (t)
 #define STR_SIMTIME(s) strToSimtime(s)
-#define SIMTIME_TTOA(buf,t)   simtimeToStr(t,buf)
-/* XXX
-#define SIMTIME_ZERO          0.0
-#define SIMTIME_ISZERO(t)     ((t)==0)
-#define SIMTIME_ISNEGATIVE(t) ((t)<0)
-#define SIMTIME_ISPOSITIVE(t) ((t)>0)
-*/
+#define SIMTIME_TTOA(buf,t) simtimeToStr(t,buf)
 
 #else
 
-// OMNeT++ 4.x native mode: int64-based simtime_t (class SimTime)
+// OMNeT++ 4.x native mode: int64-based fixed-point simtime_t (class SimTime)
 class SimTime;
 #include "simtime.h"
 typedef SimTime  simtime_t;
@@ -173,13 +167,7 @@ typedef SimTime  simtime_t;
 #define SIMTIME_DBL(t) ((t).dbl())
 #define SIMTIME_RAW(t) ((t).raw())
 #define STR_SIMTIME(s) SimTime::parse(s)
-#define SIMTIME_TTOA(buf,t)    ((t).str(buf))
-/*XXX
-#define SIMTIME_ZERO           SimTime::zero()
-#define SIMTIME_ISZERO(t)      ((t).isZero())
-#define SIMTIME_ISNEGATIVE(t)  ((t).isNegative())
-#define SIMTIME_ISPOSITIVE(t)  ((t).isPositive())
-*/
+#define SIMTIME_TTOA(buf,t) ((t).str(buf))
 
 #endif
 

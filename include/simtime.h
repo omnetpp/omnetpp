@@ -23,7 +23,20 @@
 class cPar;
 
 /**
- * int64-based simulation time.
+ * int64-based, fixed-point simulation time. Precision is determined by a scale
+ * exponent, which is global (shared by all SimTime instances), and falls in
+ * the range -18..0. For example, a scale exponent of -6 means microsecond
+ * precision.
+ *
+ * Conversions and arithmetic operations are provided specifically for double
+ * and cPar, and via template functions for integer types. Performance note:
+ * conversion from double uses the scale stored as double, and conversion from
+ * integer types uses the scale stored as int64; the former eliminates an
+ * int64-to-double conversion, and the latter allows the compiler
+ * to optimize expressions like <tt>if (time>0)</tt> to a trivial integer
+ * operation, without floating-point or int64 multiplication.
+ *
+ * The underlying raw 64-bit integer is also made accessible.
  */
 class SIM_API SimTime
 {
@@ -52,7 +65,7 @@ class SIM_API SimTime
     /** @name Arithmetic operations */
     //@{
     const SimTime& operator=(double d) {t = (int64)(fscale*d); return *this;}
-    const SimTime& operator=(const cPar& d); //XXX cPar overloads for other ops too...
+    const SimTime& operator=(const cPar& d);
     const SimTime& operator=(const SimTime& x) {t=x.t; return *this;}
     template<typename T> const SimTime& operator=(T d) {t = (int64)(dscale*d); return *this;}
 
@@ -61,6 +74,8 @@ class SIM_API SimTime
 
     const SimTime& operator*=(double d) {t=(int64)(t*d); return *this;} //XXX to be checked on Linux, see below
     const SimTime& operator/=(double d) {t=(int64)(t/d); return *this;} //XXX to be checked on Linux, see below
+    const SimTime& operator*=(const cPar& p);
+    const SimTime& operator/=(const cPar& p);
     template<typename T> const SimTime& operator*=(T d) {t*=d; return *this;}
     template<typename T> const SimTime& operator/=(T d) {t/=d; return *this;}
 
@@ -79,36 +94,24 @@ class SIM_API SimTime
     friend const SimTime operator/(const SimTime& x, double d);
     friend double operator/(const SimTime& x, const SimTime& y);
 
-/*XXX finish this
+    friend const SimTime operator*(const SimTime& x, const cPar& p);
+    friend const SimTime operator*(const cPar& p, const SimTime& x);
+    friend const SimTime operator/(const SimTime& x, const cPar& p);
+
+    /*
     template<typename T> friend const SimTime operator*(const SimTime& x, T d);
     template<typename T> friend const SimTime operator*(T d, const SimTime& x);
     template<typename T> friend const SimTime operator/(const SimTime& x, T d);
-*/
+    */
     //@}
 
     /**
      * Converts simulation time to double. Note that conversion to and from
      * double may lose precision. We do not provide implicit conversion to
      * double as it would conflict with other overloaded operators, and would
-     * cause ambiguities and unexpected conversions to be chosen by the
-     * C++ compiler.
+     * cause ambiguities during compilation.
      */
-     double dbl() const  {return t*invfscale;}
-
-    /**
-     * Comparison functions. They provide a performance advantage by avoiding
-     * conversion to double, and are more concise than comparing against
-     * <tt>SimTime::zero()</tt>.
-     */
-    //@{
-/*XXX not needed
-    //XXX turn them into plain functions like floor() or fabs()?
-    bool isZero() const     {return t==0;}
-    bool isPositive() const {return t>0;}
-    bool isNegative() const {return t<0;}
-*/
-    bool isMaxTime() const  {return t==maxTime().t;}
-    //@}
+    double dbl() const  {return t*invfscale;}
 
     /**
      * Converts to string.
@@ -116,8 +119,11 @@ class SIM_API SimTime
     std::string str() const;
 
     /**
-     * Converts to a string using the given buffer. Based on ttoa() -- please
-     * read the documentation of ttoa()!
+     * Converts to a string. Use this variant over str() where performance is
+     * critical. The result is placed somewhere in the given buffer (pointer
+     * is returned), but for performance reasons, not necessarily at the buffer's
+     * beginning. Please read the documentation of ttoa() for the minimum
+     * required buffer size.
      */
     char *str(char *buf) {char *endp; return SimTime::ttoa(buf, t, scaleExp(), endp);}
 
@@ -131,16 +137,6 @@ class SIM_API SimTime
      */
     const SimTime& setRaw(int64 l) {t = l; return *this;}
 
-/*XXX not needed
-    /**
-     * Returns 0 as simulation time. The code <tt>t = SimTime::zero();</tt> or
-     * <tt>t = SimTime();</tt> is more efficient than plain <tt>t = 0;</tt>,
-     * because the latter involves a <tt>SimTime(double)</tt> constructor call
-     * which the compiler usually does not fully optimize.
-     * /
-    static const SimTime zero() {return SimTime();}
-*/
-
     /**
      * Returns the largest simulation time that can be represented using the
      * present scale exponent.
@@ -151,7 +147,7 @@ class SIM_API SimTime
      * Returns the time resolution as the number of units per second,
      * e.g. for microsecond resolution it returns 1000000.
      */
-    static int64 scale()  {return (int64)fscale;}
+    static int64 scale()  {return dscale;}
 
     /**
      * Returns the scale exponent, which is an integer in the range -18..0.
@@ -162,7 +158,8 @@ class SIM_API SimTime
     /**
      * Sets the scale exponent, and thus the resolution of time. Accepted
      * values are -18..0; for example, setScaleExp(-6) selects microsecond
-     * resolution.
+     * resolution. Normally, the scale exponent is set from the configuration
+     * file (omnetpp.ini) on simulation startup.
      *
      * IMPORTANT: This function has a global effect, and therefore
      * should NEVER be called during simulation.

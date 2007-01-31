@@ -44,9 +44,34 @@ void SimTime::setScaleExp(int e)
 }
 
 //XXX inline, at the end of simtime.h, just after #include "cpar.h" ?
-const SimTime& SimTime::operator=(const cPar& d)
+const SimTime& SimTime::operator=(const cPar& p)
 {
-    return operator=((double)d);
+    return operator=((double)p);
+}
+
+const SimTime& SimTime::operator*=(const cPar& p)
+{
+    return operator*=((double)p);
+}
+
+const SimTime& SimTime::operator/=(const cPar& p)
+{
+    return operator/=((double)p);
+}
+
+const SimTime operator*(const SimTime& x, const cPar& p)
+{
+    return operator*(x, (double)p);
+}
+
+const SimTime operator*(const cPar& p, const SimTime& x)
+{
+    return operator*((double)p, x);
+}
+
+const SimTime operator/(const SimTime& x, const cPar& p)
+{
+    return operator/(x, (double)p);
 }
 
 std::string SimTime::str() const
