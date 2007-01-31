@@ -11,6 +11,7 @@ import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
+import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.editpolicies.FlowLayoutEditPolicy;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
@@ -21,7 +22,7 @@ import org.omnetpp.ned.editor.graph.commands.ReorderCommand;
 import org.omnetpp.ned.editor.graph.commands.SetCompoundModuleConstraintCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.model.NEDElement;
-import org.omnetpp.ned.model.interfaces.INamedGraphNode;
+import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 
 /**
  * Layout policy used in the top levele NedFile element allowing a vertical, toolbar like
@@ -131,16 +132,19 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
         if (modelConstraint.height < 0) modelConstraint.y += figureBounds.height / 2;
 
         // create the constraint change command 
-        INamedGraphNode module = (INamedGraphNode) child.getModel();
-        SetCompoundModuleConstraintCommand cmd = new SetCompoundModuleConstraintCommand(module);
-        cmd.setSize(modelConstraint.getSize());
-
-        // if size constrant is not specified, then remove it from the model too
-        // TODO is this needed?
-        if ((modelConstraint.width < 0 || modelConstraint.height < 0) && module.getDisplayString().getCompoundSize(null) == null)
-            cmd.setSize(null);
+        if (child.getModel() instanceof CompoundModuleNodeEx) {
+            CompoundModuleNodeEx module = (CompoundModuleNodeEx) child.getModel();
+            SetCompoundModuleConstraintCommand cmd = new SetCompoundModuleConstraintCommand(module);
+            cmd.setSize(modelConstraint.getSize());
+            
+            // if size constrant is not specified, then remove it from the model too
+            // TODO is this needed?
+            if ((modelConstraint.width < 0 || modelConstraint.height < 0) && module.getDisplayString().getCompoundSize(null) == null)
+                cmd.setSize(null);
+            return cmd;
+        } 
         
-        return cmd;
+        return UnexecutableCommand.INSTANCE;
     }
 
     /**

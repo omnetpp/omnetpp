@@ -2,7 +2,7 @@ package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.gef.commands.Command;
-import org.omnetpp.ned.model.interfaces.INamedGraphNode;
+import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 
 /**
  * Change the size and location of a compound module (location cannot be changed)
@@ -13,9 +13,9 @@ public class SetCompoundModuleConstraintCommand extends Command {
 
     private Dimension newSize;
     private Dimension oldSize;
-    private INamedGraphNode module;
+    private CompoundModuleNodeEx module;
 
-    public SetCompoundModuleConstraintCommand(INamedGraphNode newModule) {
+    public SetCompoundModuleConstraintCommand(CompoundModuleNodeEx newModule) {
     	super();
         module = newModule;
     }
