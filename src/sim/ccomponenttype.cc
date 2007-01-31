@@ -144,7 +144,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     addParametersTo(mod);
 
     // notify envir
-    ev.moduleCreated(mod);
+    EVCB.moduleCreated(mod);
 
     // done -- if it's a compound module, buildInside() will do the rest
     return mod;

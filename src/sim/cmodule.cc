@@ -56,7 +56,7 @@ cModule::cModule()
 cModule::~cModule()
 {
     // notify envir while module object still exists (more or less)
-    ev.moduleDeleted(this);
+    EVCB.moduleDeleted(this);
 
     // delete submodules
     for (SubmoduleIterator submod(this); !submod.end(); )
@@ -826,7 +826,7 @@ void cModule::changeParentTo(cModule *mod)
     mod->insertSubmodule(this);
 
     // notify environment
-    ev.moduleReparented(this,oldparent);
+    EVCB.moduleReparented(this,oldparent);
 }
 
 void cModule::callInitialize()

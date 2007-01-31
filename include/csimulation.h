@@ -85,6 +85,8 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     long event_num;           // sequence number of current event
 
     int run_number;           // which simulation run
+
+    cMessage *msg_for_activity; // helper variable to pass the received message into activity()
     cException *exception;    // helper variable to get exceptions back from activity()
 
     cHasher *hasherp;         // used for fingerprint calculation

@@ -197,7 +197,7 @@ void cGate::connectTo(cGate *g, cChannel *chan)
     if (chan)
         setChannel(chan);
 
-    ev.connectionCreated(this);
+    EVCB.connectionCreated(this);
 }
 
 void cGate::disconnect()
@@ -205,7 +205,7 @@ void cGate::disconnect()
     if (!togatep) return;
 
     // notify envir that old conn gets removed
-    ev.connectionRemoved(this);
+    EVCB.connectionRemoved(this);
 
     // remove connection
     togatep->fromgatep = NULL;
@@ -256,7 +256,7 @@ bool cGate::deliver(cMessage *msg, simtime_t t)
         if (channelp) {
             return channelp->deliver(msg, t);
         } else {
-            ev.messageSendHop(msg, this);
+            EVCB.messageSendHop(msg, this);
             return togatep->deliver(msg, t);
         }
     }

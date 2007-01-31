@@ -218,7 +218,7 @@ void cParsimPartition::processReceivedMessage(cMessage *msg, int destModuleId, i
     // deliver it to the "destination" gate of the connection -- the channel
     // has already been simulated in the originating partition.
     g->deliver(msg, msg->arrivalTime());
-    ev.messageSent(msg);
+    ev.messageSent(msg); //FIXME change to the newer callback methods! messageSendHop() etc
 }
 
 void cParsimPartition::broadcastTerminationException(cTerminationException *e)

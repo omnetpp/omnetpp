@@ -41,18 +41,22 @@ class cEnvir;
 
 using std::endl;
 
+// internal macro, usage: EVCB.messageSent(...)
+#define EVCB  ev.suppress_notifications ? (void)0 : ev
+
+
 //
 // std::streambuf used by cEnvir's ostream base. It redirects writes to
 // cEnvir::sputn(s,n). Flush is done at the end of each line, meanwhile
 // writes are buffered in a stringbuf.
 //
 template <class E, class T = std::char_traits<E> >
-    class basic_evbuf : public std::basic_stringbuf<E,T> {
-public:
+class basic_evbuf : public std::basic_stringbuf<E,T> {
+  public:
     basic_evbuf(cEnvir *ev) : _ev(ev) {}
     // gcc>=3.4 needs either this-> or std::basic_stringbuf<E,T>:: in front of pptr()/pbase()
     bool isempty() {return this->pptr()==this->pbase();}
-protected:
+  protected:
     virtual int sync();
     virtual std::streamsize xsputn(const E *s, std::streamsize n) {
         std::streamsize r = std::basic_stringbuf<E,T>::xsputn(s,n);
@@ -125,9 +129,22 @@ class ENVIR_API cEnvir : public std::ostream
 {
   public:
     // internal variables
-    TOmnetApp *app;  // the application" instance
+    TOmnetApp *app;  // the application instance
+
+    // Internal flag for express mode. XXX define exactly
     bool disable_tracing;
+
+    // Internal flag. When set to true, the simulation kernel MAY omit calling
+    // the following cEnvir methods: messageScheduled(), messageCancelled(),
+    // beginSend(), messageSendDirect(), messageSendHop(), messageSendHop(),
+    // messageSendHop(), messageDeleted(), moduleReparented(), simulationEvent(),
+    // componentMethodCalled(), moduleCreated(), moduleDeleted(), connectionCreated(),
+    // connectionRemoved(), displayStringChanged().
+    bool suppress_notifications; //XXX make use of this flag in Envir impl.
+
+    // Internal flag. When set, cRuntimeError constructor to raises an exception.
     bool debug_on_errors;
+
   private:
     // further internal vars
     evbuf ev_buf;

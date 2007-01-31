@@ -84,7 +84,7 @@ cMessage::cMessage(const char *name, int k, long ln, int pri, bool err) : cOwned
 
 cMessage::~cMessage()
 {
-    ev.messageDeleted(this);  //XXX verify this is really needed
+    EVCB.messageDeleted(this);  //XXX verify this is really needed
 
     if (parlistp)
         dropAndDelete(parlistp);

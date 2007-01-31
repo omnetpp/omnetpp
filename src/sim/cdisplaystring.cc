@@ -80,8 +80,8 @@ void cDisplayString::notify()
     switch (role)
     {
         case NONE: break;
-        case CONNECTION: ev.displayStringChanged((cGate *)object); break;
-        case MODULE: ev.displayStringChanged((cModule *)object); break;
+        case CONNECTION: EVCB.displayStringChanged((cGate *)object); break;
+        case MODULE: EVCB.displayStringChanged((cModule *)object); break;
         default: ASSERT(0); // internal error: bad role
     }
 }

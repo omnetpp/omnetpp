@@ -87,6 +87,7 @@ cEnvir::cEnvir() : ostream(&ev_buf), ev_buf(this)
 {
     disable_tracing = false;
     debug_on_errors = false;
+    suppress_notifications = true;
     app = NULL;
 }
 
@@ -305,13 +306,13 @@ cConfiguration *cEnvir::config()
 
 void cEnvir::messageSent(cMessage *msg, cGate *directToGate)
 {
-    //XXX if (disable_tracing) return;
+    if (disable_tracing) return;
     app->messageSent(msg, directToGate);
 }
 
 void cEnvir::simulationEvent(cMessage *msg)
 {
-    //XXX if (disable_tracing) return;
+    if (disable_tracing) return;
     app->simulationEvent(msg);
 }
 

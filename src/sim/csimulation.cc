@@ -378,7 +378,7 @@ void cSimulation::setupNetwork(cModuleType *network, int run_num)
 void cSimulation::startRun()
 {
     sim_time = 0;
-    event_num = -1;
+    event_num = 0;  //XXX in sandbox omnetpp this was -1 -- why?
 
     // NOTE: should NOT call msgQueue.clear() here because the parallel
     // simulation library (cNullMessageProtocol::startRun()) has already
@@ -573,10 +573,10 @@ void cSimulation::doOneEvent(cSimpleModule *mod) //FIXME FIXME FIXME this should
     }
 
     // get event to be handled
-    cMessage *msg = msgQueue.peekFirst();
+    cMessage *msg = msgQueue.getFirst();
 
     // notify the environment about the message
-    ev.simulationEvent(msg);
+    EVCB.simulationEvent(msg);
 
     // store arrival event number of this message; it is useful input for the
     // sequence chart tool if the message doesn't get immediately deleted or
@@ -591,6 +591,7 @@ void cSimulation::doOneEvent(cSimpleModule *mod) //FIXME FIXME FIXME this should
             // when the module executes a receive() or wait() call.
             // If there was an error during simulation, the call will throw an exception
             // (which originally occurred inside activity()).
+            msg_for_activity = msg;
             transferTo(mod);
         }
         else

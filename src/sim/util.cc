@@ -428,7 +428,7 @@ void cContextSwitcher::methodCall(const char *fmt,...)
     vsprintf(buf,fmt,va);
     va_end(va);
 
-    ev.componentMethodCalled(callerContext, methodContext, buf);
+    EVCB.componentMethodCalled(callerContext, methodContext, buf);
 }
 
 //----

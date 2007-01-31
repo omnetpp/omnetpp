@@ -403,9 +403,9 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outgate)
     // set message parameters and send it
     msg->setSentFrom(this, outgate->id(), simTime()+delay);
 
-    ev.beginSend(msg);
+    EVCB.beginSend(msg);
     bool keepit = outgate->deliver(msg, simTime()+delay);
-    ev.messageSent(msg);  //XXX obsolete
+    EVCB.messageSent(msg);  //XXX obsolete
     if (!keepit)
         delete msg;
     return 0;
@@ -495,10 +495,10 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t tran
     // set message parameters and send it
     msg->setSentFrom(this, -1, simTime());
 
-    ev.beginSend(msg);
-    ev.messageSendDirect(msg, togate, propdelay, transmdelay);
+    EVCB.beginSend(msg);
+    EVCB.messageSendDirect(msg, togate, propdelay, transmdelay);
     bool keepit = togate->deliver( msg, simTime()+propdelay);  //XXX NOTE: no +transmdelay! we want to deliver the msg when the *first* bit arrives, not the last one
-    ev.messageSent(msg, togate); //XXX obsolete, and must be here AFTER the deliver call (this breaks seqChart code probably, where it was moved BEFORE)
+    EVCB.messageSent(msg, togate); //XXX obsolete, and must be here AFTER the deliver call (this breaks seqChart code probably, where it was moved BEFORE)
     if (!keepit)
         delete msg;
     return 0;
@@ -542,8 +542,8 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
     // set message parameters and schedule it
     msg->setSentFrom(this, -1, simTime());
     msg->setArrival(this, -1, t);
-    ev.messageSent( msg ); //XXX obsolete but needed for Tkenv
-    ev.messageScheduled(msg);
+    EVCB.messageSent( msg ); //XXX obsolete but needed for Tkenv
+    EVCB.messageScheduled(msg);
     simulation.insertMsg(msg);  //XXX do we need beginSend before() this???
     return 0;
 }
@@ -558,10 +558,10 @@ cMessage *cSimpleModule::cancelEvent(cMessage *msg)
     if (msg->isScheduled())
     {
         simulation.msgQueue.get(msg);
-        ev.messageCancelled(msg); //XXX use "EV"-like macro to optimize: #define EVCB  ev.disableCallbacks() ? 0 : ev
+        EVCB.messageCancelled(msg);
     }
 
-    msg->setPreviousEventNumber(-1);
+    msg->setPreviousEventNumber(-1); //XXX why is this needed???
 
     return msg;
 }
@@ -572,7 +572,7 @@ void cSimpleModule::cancelAndDelete(cMessage *msg)
         delete cancelEvent(msg);
 }
 
-void cSimpleModule::arrived( cMessage *msg, int ongate, simtime_t t)
+void cSimpleModule::arrived(cMessage *msg, int ongate, simtime_t t)
 {
     if (isterminated)
         throw cRuntimeError(eMODFIN,fullPath().c_str());
@@ -598,7 +598,7 @@ void cSimpleModule::wait(simtime_t t)
     if (stack_cleanup_requested)
         throw cStackCleanupException();
 
-    cMessage *newmsg = simulation.msgQueue.getFirst();
+    cMessage *newmsg = simulation.msg_for_activity;
 
     if (newmsg!=timeoutmsg)
         throw cRuntimeError("message arrived during wait() call ((%s)%s); if this "
@@ -624,7 +624,7 @@ void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
         if (stack_cleanup_requested)
             throw cStackCleanupException();
 
-        cMessage *newmsg = simulation.msgQueue.getFirst();
+        cMessage *newmsg = simulation.msg_for_activity;
 
         if (newmsg==timeoutmsg)
             break;
@@ -644,7 +644,7 @@ cMessage *cSimpleModule::receive()
     if (stack_cleanup_requested)
         throw cStackCleanupException();
 
-    cMessage *newmsg = simulation.msgQueue.getFirst();
+    cMessage *newmsg = simulation.msg_for_activity;
     return newmsg;
 }
 
@@ -662,7 +662,7 @@ cMessage *cSimpleModule::receive(simtime_t t)
     if (stack_cleanup_requested)
         throw cStackCleanupException();
 
-    cMessage *newmsg = simulation.msgQueue.getFirst();
+    cMessage *newmsg = simulation.msg_for_activity;
 
     if (newmsg==timeoutmsg)  // timeout expired
     {

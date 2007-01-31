@@ -151,9 +151,9 @@ bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
     }
 
     if (channelbusy)
-        ev.messageSendHop(msg, fromGate(), delay_, transmissiondelay, transmissionstarttime);
+        EVCB.messageSendHop(msg, fromGate(), delay_, transmissiondelay, transmissionstarttime);
     else
-        ev.messageSendHop(msg, fromGate(), delay_, transmissiondelay);
+        EVCB.messageSendHop(msg, fromGate(), delay_, transmissiondelay);
 
     // hand over msg to next gate
     return fromGate()->toGate()->deliver(msg, t);
