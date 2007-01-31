@@ -240,10 +240,9 @@ char *FileReader::findPreviousLineStart(char *start, bool bufferFilled)
 
 char *FileReader::getNextLineBufferPointer()
 {
-    Assert(currentDataPointer);
-
     numReadLines++;
     if (!f) openFile();
+    Assert(currentDataPointer);
     if (PRINT_DEBUG_MESSAGES) printf("Reading in next line at file offset: %lld\n", pointerToFileOffset(currentDataPointer));
 
     fillBuffer(true);
@@ -278,10 +277,9 @@ char *FileReader::getNextLineBufferPointer()
 
 char *FileReader::getPreviousLineBufferPointer()
 {
-    Assert(currentDataPointer);
-
     numReadLines++;
     if (!f) openFile();
+    Assert(currentDataPointer);
     if (PRINT_DEBUG_MESSAGES) printf("Reading in previous line at file offset: %lld\n", pointerToFileOffset(currentDataPointer));
 
     fillBuffer(false);
