@@ -1,6 +1,7 @@
 package org.omnetpp.ned.editor.text.actions;
 
 
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.IActionBars;
@@ -43,7 +44,7 @@ public class TextualNedEditorActionContributor extends TextEditorActionContribut
 			editMenu.add(new Separator());
 			editMenu.add(fContentAssistProposal);
 			editMenu.add(fContentAssistTip);
-		}	
+		}
 	}
 	
 	private void doSetActiveEditor(IEditorPart part) {
