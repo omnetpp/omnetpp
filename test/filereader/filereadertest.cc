@@ -28,10 +28,9 @@ int testFileReader(const char *file, long numberOfLines, int numberOfSeeks, int 
     _setmode(_fileno(stdout), _O_BINARY);
     FileReader fileReader(file);
     LCGRandom random;
-    int i = numberOfSeeks;
     int64 fileSize = fileReader.getFileSize();
 
-    while (i--) {
+    while (numberOfSeeks--) {
         file_offset_t offset = random.next01() * fileSize;
         printf("Seeking to offset: %lld\n", offset);
         fileReader.seekTo(offset);
