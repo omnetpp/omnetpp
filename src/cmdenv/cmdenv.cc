@@ -499,7 +499,7 @@ void TCmdenvApp::messageSent(cMessage *msg, cGate *)
     }
 }
 
-void TCmdenvApp::messageDelivered(cMessage *msg)
+void TCmdenvApp::simulationEvent(cMessage *msg)
 {
     if (!opt_expressmode && opt_messagetrace)
     {

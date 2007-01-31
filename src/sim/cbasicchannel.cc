@@ -119,16 +119,21 @@ bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
 
     // if channel is disabled, signal that message should be deleted
     if (flags & FL_ISDISABLED)
-        return false;
+        return false;  //XXX report to ev?
 
     // must wait until previous transmissions end
-    if (t < transm_finishes)
+    bool channelbusy = transm_finishes > t;
+    if (channelbusy)
         t = transm_finishes;
+
+    simtime_t transmissionstarttime = t;
+    simtime_t transmissiondelay = 0;
 
     // datarate modeling
     if (flags & FL_DATARATE_NONZERO)
     {
-        t += (simtime_t) (msg->length() / datarate_);
+        transmissiondelay = msg->length() / datarate_;
+        t += transmissiondelay;
         transm_finishes = t;
     }
 
@@ -144,6 +149,11 @@ bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
         if (dblrand() < 1.0 - pow(1.0-error_, msg->length()))
             msg->setBitError(true);
     }
+
+    if (channelbusy)
+        ev.messageSendHop(msg, fromGate(), delay_, transmissiondelay, transmissionstarttime);
+    else
+        ev.messageSendHop(msg, fromGate(), delay_, transmissiondelay);
 
     // hand over msg to next gate
     return fromGate()->toGate()->deliver(msg, t);

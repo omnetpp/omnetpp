@@ -65,10 +65,10 @@ class TCmdenvApp : public TOmnetApp
 
      virtual void moduleCreated(cModule *newmodule);
      virtual void messageSent(cMessage *msg, cGate *directToGate);
-     virtual void messageDelivered(cMessage *msg);
+     virtual void simulationEvent(cMessage *msg);
 
      virtual void readOptions();
-     virtual void readPerRunOptions( int run_nr );
+     virtual void readPerRunOptions(int run_nr);
 
      // new functions:
      void help();

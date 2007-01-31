@@ -378,7 +378,7 @@ void cSimulation::setupNetwork(cModuleType *network, int run_num)
 void cSimulation::startRun()
 {
     sim_time = 0;
-    event_num = 0;
+    event_num = -1;
 
     // NOTE: should NOT call msgQueue.clear() here because the parallel
     // simulation library (cNullMessageProtocol::startRun()) has already
@@ -558,7 +558,7 @@ void cSimulation::transferTo(cSimpleModule *modp)
     }
 }
 
-void cSimulation::doOneEvent(cSimpleModule *mod)
+void cSimulation::doOneEvent(cSimpleModule *mod) //FIXME FIXME FIXME this should be based on MESSAGE not module!!!!!!!!!!!!!!!!!!!!!!!
 {
     // switch to the module's context
     setContext(mod);
@@ -572,6 +572,17 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
         //XXX msg id too?
     }
 
+    // get event to be handled
+    cMessage *msg = msgQueue.peekFirst();
+
+    // notify the environment about the message
+    ev.simulationEvent(msg);
+
+    // store arrival event number of this message; it is useful input for the
+    // sequence chart tool if the message doesn't get immediately deleted or
+    // sent out again
+    msg->setPreviousEventNumber(event_num);
+
     try
     {
         if (mod->usesActivity())
@@ -584,12 +595,6 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
         }
         else
         {
-            // get event to be handled
-            cMessage *msg = msgQueue.getFirst();
-
-            // notify the environment about the message
-            ev.messageDelivered(msg);
-
             // if there was an error during simulation, handleMessage() will come back
             // with an exception
             mod->handleMessage(msg);
@@ -661,6 +666,12 @@ void cSimulation::setHasher(cHasher *hasher)
     if (hasherp)
         delete hasherp;
     hasherp = hasher;
+}
+
+void cSimulation::insertMsg(cMessage *msg)
+{
+    msg->setPreviousEventNumber(event_num);
+    simulation.msgQueue.insert(msg);
 }
 
 

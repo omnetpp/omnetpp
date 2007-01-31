@@ -1109,7 +1109,7 @@ void TOmnetTkApp::messageSent(cMessage *msg, cGate *directToGate)
     }
 }
 
-void TOmnetTkApp::messageDelivered(cMessage *msg)
+void TOmnetTkApp::simulationEvent(cMessage *msg)
 {
     // display in message window
     if (hasmessagewindow)

@@ -429,6 +429,12 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      */
     void setHasher(cHasher *hasher);
     //@}
+
+    /**
+     * Inserts the given message into the future events queue while assigning
+     * the current event to its scheduling event.   FIXME move it into the proper function group
+     */
+    void insertMsg(cMessage *msg);
 };
 
 #endif

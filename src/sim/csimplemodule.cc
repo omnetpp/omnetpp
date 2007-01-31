@@ -309,7 +309,7 @@ void cSimpleModule::scheduleStart(simtime_t t)
     timeoutmsg->setArrival(this,-1, t);
 
     // use timeoutmsg as the activation message; insert it into the FES
-    simulation.msgQueue.insert( timeoutmsg );
+    simulation.insertMsg( timeoutmsg );
 }
 
 void cSimpleModule::deleteModule()
@@ -403,14 +403,31 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outgate)
     // set message parameters and send it
     msg->setSentFrom(this, outgate->id(), simTime()+delay);
 
+    ev.beginSend(msg);
     bool keepit = outgate->deliver(msg, simTime()+delay);
-    ev.messageSent( msg );
+    ev.messageSent(msg);  //XXX obsolete
     if (!keepit)
         delete msg;
     return 0;
 }
 
 int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, cModule *mod, int g)
+{
+    return sendDirect(msg, propdelay, 0, mod, g);
+}
+
+int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay,
+                              cModule *mod, const char *gatename, int sn)
+{
+    return sendDirect(msg, propdelay, 0, mod, gatename, sn);
+}
+
+int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, cGate *togate)
+{
+    return sendDirect(msg, propdelay, 0, togate);
+}
+
+int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t transmdelay, cModule *mod, int g)
 {
     cGate *togate = mod->gate(g);
     if (togate==NULL)
@@ -419,7 +436,7 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, cModule *mod, 
     return sendDirect(msg, propdelay, togate);
 }
 
-int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay,
+int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t transmdelay,
                               cModule *mod, const char *gatename, int sn)
 {
     if (!mod)
@@ -432,7 +449,7 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay,
     return sendDirect(msg, propdelay, togate);
 }
 
-int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, cGate *togate)
+int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t transmdelay, cGate *togate)
 {
     // Note: it is permitted to send to an output gate. It is especially useful
     // with several submodules sending to a single output gate of their parent module.
@@ -441,7 +458,8 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, cGate *togate)
     if (togate->fromGate())
         throw cRuntimeError("sendDirect(): module must have dedicated gate(s) for receiving via sendDirect()"
                             " (\"from\" side of dest. gate `%s' should NOT be connected)",togate->fullPath().c_str());
-
+    if (propdelay<0 || transmdelay<0)
+        throw cRuntimeError("sendDirect(): propagation and transmission delay cannot be negative");
     if (msg==NULL)
         throw cRuntimeError("sendDirect(): message pointer is NULL");
     if (msg->owner()!=this)
@@ -476,8 +494,11 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, cGate *togate)
 
     // set message parameters and send it
     msg->setSentFrom(this, -1, simTime());
-    bool keepit = togate->deliver( msg, simTime()+propdelay);
-    ev.messageSent(msg, togate);
+
+    ev.beginSend(msg);
+    ev.messageSendDirect(msg, togate, propdelay, transmdelay);
+    bool keepit = togate->deliver( msg, simTime()+propdelay);  //XXX NOTE: no +transmdelay! we want to deliver the msg when the *first* bit arrives, not the last one
+    ev.messageSent(msg, togate); //XXX obsolete, and must be here AFTER the deliver call (this breaks seqChart code probably, where it was moved BEFORE)
     if (!keepit)
         delete msg;
     return 0;
@@ -521,8 +542,9 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
     // set message parameters and schedule it
     msg->setSentFrom(this, -1, simTime());
     msg->setArrival(this, -1, t);
-    ev.messageSent( msg );
-    simulation.msgQueue.insert( msg );
+    ev.messageSent( msg ); //XXX obsolete but needed for Tkenv
+    ev.messageScheduled(msg);
+    simulation.insertMsg(msg);  //XXX do we need beginSend before() this???
     return 0;
 }
 
@@ -534,7 +556,13 @@ cMessage *cSimpleModule::cancelEvent(cMessage *msg)
 
     // now remove it from future events and return pointer
     if (msg->isScheduled())
-        simulation.msgQueue.get( msg );
+    {
+        simulation.msgQueue.get(msg);
+        ev.messageCancelled(msg); //XXX use "EV"-like macro to optimize: #define EVCB  ev.disableCallbacks() ? 0 : ev
+    }
+
+    msg->setPreviousEventNumber(-1);
+
     return msg;
 }
 
@@ -553,7 +581,7 @@ void cSimpleModule::arrived( cMessage *msg, int ongate, simtime_t t)
                             "is earlier than current simulation time",
                             msg->name(), SIMTIME_STR(t), fullPath().c_str());
     msg->setArrival(this, ongate, t);
-    simulation.msgQueue.insert( msg );
+    simulation.insertMsg( msg );
 }
 
 void cSimpleModule::wait(simtime_t t)
@@ -564,7 +592,7 @@ void cSimpleModule::wait(simtime_t t)
         throw cRuntimeError(eNEGTIME);
 
     timeoutmsg->setArrivalTime(simTime()+t);
-    simulation.msgQueue.insert( timeoutmsg );
+    simulation.insertMsg( timeoutmsg );
 
     simulation.transferToMain();
     if (stack_cleanup_requested)
@@ -588,7 +616,7 @@ void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
         throw cRuntimeError("waitAndEnqueue(): queue pointer is NULL");
 
     timeoutmsg->setArrivalTime(simTime()+t);
-    simulation.msgQueue.insert( timeoutmsg );
+    simulation.insertMsg( timeoutmsg );
 
     for(;;)
     {
@@ -601,10 +629,7 @@ void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
         if (newmsg==timeoutmsg)
             break;
         else
-        {
-            ev.messageDelivered( newmsg );
-            queue->insert( newmsg );
-        }
+            queue->insert(newmsg);
     }
 }
 
@@ -620,9 +645,6 @@ cMessage *cSimpleModule::receive()
         throw cStackCleanupException();
 
     cMessage *newmsg = simulation.msgQueue.getFirst();
-
-    ev.messageDelivered( newmsg );
-
     return newmsg;
 }
 
@@ -634,7 +656,7 @@ cMessage *cSimpleModule::receive(simtime_t t)
         throw cRuntimeError(eNEGTOUT);
 
     timeoutmsg->setArrivalTime(simTime()+t);
-    simulation.msgQueue.insert( timeoutmsg );
+    simulation.insertMsg( timeoutmsg );
 
     simulation.transferToMain();
     if (stack_cleanup_requested)
@@ -650,7 +672,6 @@ cMessage *cSimpleModule::receive(simtime_t t)
     else  // message received OK
     {
         take(cancelEvent(timeoutmsg));
-        ev.messageDelivered( newmsg );
         return newmsg;
     }
 }

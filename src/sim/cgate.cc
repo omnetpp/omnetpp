@@ -253,10 +253,12 @@ bool cGate::deliver(cMessage *msg, simtime_t t)
     }
     else
     {
-        if (channelp)
+        if (channelp) {
             return channelp->deliver(msg, t);
-        else
+        } else {
+            ev.messageSendHop(msg, this);
             return togatep->deliver(msg, t);
+        }
     }
 }
 

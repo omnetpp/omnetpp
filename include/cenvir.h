@@ -207,7 +207,21 @@ class ENVIR_API cEnvir : public std::ostream
      * the message will additionally travel through a series of connections
      * before it arrives in a simple module.)
      */
+    //XXX obsolete -- see beginSend(), etc.
     void messageSent(cMessage *msg, cGate *directToGate=NULL);
+
+    void messageScheduled(cMessage *msg);
+    void messageCancelled(cMessage *msg);
+
+    // this will be followed by a messageSendDirect (optional), and several messageSendHop() calls
+    void beginSend(cMessage *msg);
+    void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay=0, simtime_t transmissionDelay=0);
+    void messageSendHop(cMessage *msg, cGate *srcGate);
+    void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay);
+    void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, simtime_t transmissionStartTime);
+    //XXX missing variant: what if message gets deleted by the channel
+
+    void messageDeleted(cMessage *msg);  //XXX document this and all above funcs
 
     /**
      * Notifies the environment that a module changed parent.
@@ -221,7 +235,7 @@ class ENVIR_API cEnvir : public std::ostream
      * implementation may use the notification to animate the message on a
      * network diagram, to write a log entry, etc.
      */
-    void messageDelivered(cMessage *msg);
+    void simulationEvent(cMessage *msg);  //XXX rename to simulationEvent() ?
 
     /**
      * Notifies the environment that a simple module executed a

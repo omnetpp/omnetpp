@@ -276,18 +276,6 @@ void cEnvir::shutdown()
 
 //-----------------------------------------------------------------
 
-/*XXX remove
-std::string cEnvir::getParameter(int run_no, const char *parname)
-{
-    return app->getParameter(run_no, parname);
-}
-
-bool cEnvir::getParameterUseDefault(int run_no, const char *parname)
-{
-    return app->getParameterUseDefault(run_no, parname);
-}
-*/
-
 void cEnvir::readParameter(cPar *parameter)
 {
     app->readParameter(parameter);
@@ -317,14 +305,54 @@ cConfiguration *cEnvir::config()
 
 void cEnvir::messageSent(cMessage *msg, cGate *directToGate)
 {
-    if (disable_tracing) return;
+    //XXX if (disable_tracing) return;
     app->messageSent(msg, directToGate);
 }
 
-void cEnvir::messageDelivered(cMessage *msg)
+void cEnvir::simulationEvent(cMessage *msg)
 {
-    if (disable_tracing) return;
-    app->messageDelivered(msg);
+    //XXX if (disable_tracing) return;
+    app->simulationEvent(msg);
+}
+
+void cEnvir::messageScheduled(cMessage *msg)
+{
+    //XXX app->messageScheduled(msg);
+}
+
+void cEnvir::messageCancelled(cMessage *msg)
+{
+    //XXX app->messageCancelled(msg);
+}
+
+void cEnvir::beginSend(cMessage *msg)
+{
+    //XXX app->beginSend(msg);
+}
+
+void cEnvir::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+{
+    //XXX app->messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
+}
+
+void cEnvir::messageSendHop(cMessage *msg, cGate *srcGate)
+{
+    //XXX app->messageSendHop(msg, srcGate);
+}
+
+void cEnvir::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+{
+    //XXX app->messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
+}
+
+void cEnvir::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, simtime_t transmissionStartTime)
+{
+    //XXX app->messageSendHop(msg, srcGate, propagationDelay, transmissionDelay, transmissionStartTime);
+}
+
+void cEnvir::messageDeleted(cMessage *msg)
+{
+    //XXX
 }
 
 void cEnvir::componentMethodCalled(cComponent *from, cComponent *to, const char *method)

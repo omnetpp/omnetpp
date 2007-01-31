@@ -125,6 +125,7 @@ cModule *cChannel::parentModule() const
 bool cNullChannel::deliver(cMessage *msg, simtime_t t)
 {
     // just hand over msg to next gate
+    ev.messageSendHop(msg, fromGate());
     return fromGate()->toGate()->deliver(msg, t);
 }
 

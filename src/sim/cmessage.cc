@@ -40,6 +40,7 @@ using std::ostream;
 Register_Class(cMessage);
 
 // static members of cMessage
+long cMessage::next_msg_id = 0;
 long cMessage::total_msgs = 0;
 long cMessage::live_msgs = 0;
 
@@ -52,6 +53,8 @@ cMessage::cMessage(const cMessage& msg) : cOwnedObject(msg)
     ctrlp = NULL;
     operator=(msg);
 
+    msg_tree_id = msg.msg_tree_id;
+    msg_seq_id = next_msg_id++;
     total_msgs++;
     live_msgs++;
 }
@@ -72,13 +75,17 @@ cMessage::cMessage(const char *name, int k, long ln, int pri, bool err) : cOwned
     created=simulation.simTime();
     sent=delivd=tstamp=0;
     heapindex=-1;
+    prev_event_num=-1;
 
+    msg_tree_id = msg_seq_id = next_msg_id++;
     total_msgs++;
     live_msgs++;
 }
 
 cMessage::~cMessage()
 {
+    ev.messageDeleted(this);  //XXX verify this is really needed
+
     if (parlistp)
         dropAndDelete(parlistp);
     if (encapmsg)
@@ -305,6 +312,8 @@ cMessage& cMessage::operator=(const cMessage& msg)
     sent = msg.sent;
     delivd = msg.delivd;
 
+    // NOTE: do not copy msg_tree_id, msg_seq_id, and prev_event_num!
+
     return *this;
 }
 
@@ -444,6 +453,24 @@ cObject *cMessage::removeControlInfo()
     if (dynamic_cast<cOwnedObject *>(p))
         drop((cOwnedObject *)p);
     return p;
+}
+
+long cMessage::encapsulationId() const
+{
+    // find innermost msg. Note: don't use encapsulatedMsg() because it does copy-on-touch of shared msgs
+    const cMessage *msg = this;
+    while (msg->encapmsg)
+        msg = msg->encapmsg;
+    return msg->id();
+}
+
+long cMessage::encapsulationTreeId() const
+{
+    // find innermost msg. Note: don't use encapsulatedMsg() because it does copy-on-touch of shared msgs
+    const cMessage *msg = this;
+    while (msg->encapmsg)
+        msg = msg->encapmsg;
+    return msg->treeId();
 }
 
 cMsgPar& cMessage::par(int n)

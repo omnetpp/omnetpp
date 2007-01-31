@@ -129,6 +129,12 @@ class SIM_API cMessage : public cOwnedObject
     int heapindex;             // used by cMessageHeap (-1 if not on heap)
     unsigned long insertordr;  // used by cMessageHeap
 
+    long prev_event_num;   // event number of the sending, scheduling this message
+
+    long msg_seq_id;           // a unique message identifier assigned upon message creation
+    long msg_tree_id;          // a message identifier that is inherited by dup, if non dupped it is msg_seq_id
+    static long next_msg_id;   // the next unique message identifier to be assigned upon message creation
+
     // global variables for statistics
     static long total_msgs;
     static long live_msgs;
@@ -657,6 +663,38 @@ class SIM_API cMessage : public cOwnedObject
      * in the named gate vector.
      */
     bool arrivedOn(const char *s, int gateindex);
+
+    /**
+     * Returns the event number which scheduled this event, or the event in which this message was last delivered to a module.
+     * FIXME more details: "scheduled" includes send()/scheduleAt()/sendDirect(); why do we store it?
+     */
+    long previousEventNumber() const {return prev_event_num;}
+
+    /**
+     * FIXME comment!!! What is this, what for, why is it here, when is it useful to set at all? make private??
+     */
+    void setPreviousEventNumber(long num) {prev_event_num = num;}
+
+    /**
+     * Returns a unique message identifier assigned upon message creation.
+     */
+    long id() const {return msg_seq_id;}
+
+    /**
+     * Returns an identifier which is shared among a message object and all messages
+     * created by copying it (i.e. by dup() or the copy constructor).
+     */
+    long treeId() const {return msg_tree_id;}
+
+    /**
+     * Convenience method: returns the sequenceId() of the innermost encapsulated message.
+     */
+    long encapsulationId() const;
+
+    /**
+     * Convenience method: returns the treeId() of the innermost encapsulated message.
+     */
+    long encapsulationTreeId() const;
     //@}
 
     /** @name Internally used methods. */
