@@ -41,10 +41,10 @@ void IEventLog::print(FILE *file, long fromEventNumber, long toEventNumber, bool
 
 IEvent *IEventLog::getNeighbourEvent(IEvent *event, long distance)
 {
-    long eventNumber = event->getEventNumber() + distance;
+    long neighbourEventNumber = event->getEventNumber() + distance;
 
-    if (lastNeighbourEventNumber != -1 && abs(eventNumber - lastNeighbourEventNumber) < abs(distance))
-        return getNeighbourEvent(lastNeighbourEvent, eventNumber - lastNeighbourEventNumber);
+    if (lastNeighbourEvent && lastNeighbourEventNumber != -1 && abs(neighbourEventNumber - lastNeighbourEventNumber) < abs(distance))
+        return getNeighbourEvent(lastNeighbourEvent, neighbourEventNumber - lastNeighbourEventNumber);
 
     while (event != NULL && distance != 0)
     {
@@ -58,7 +58,7 @@ IEvent *IEventLog::getNeighbourEvent(IEvent *event, long distance)
         }
     }
 
-    lastNeighbourEventNumber = eventNumber;
+    lastNeighbourEventNumber = neighbourEventNumber;
     lastNeighbourEvent = (IEvent *)event;
 
     return lastNeighbourEvent;

@@ -132,6 +132,26 @@ void EventLog::printInitializationLogEntries(FILE *file)
         (*it)->print(file);
 }
 
+Event *EventLog::getFirstEvent()
+{
+    file_offset_t offset = getFirstEventOffset();
+    
+    if (offset == -1)
+        return NULL;
+    else
+        return getEventForBeginOffset(offset);
+}
+
+Event *EventLog::getLastEvent()
+{
+    file_offset_t offset = getLastEventOffset();
+
+    if (offset == -1)
+        return NULL;
+    else
+        return getEventForBeginOffset(offset);
+}
+
 Event *EventLog::getEventForEventNumber(long eventNumber, MatchKind matchKind)
 {
     Assert(eventNumber >= 0);
