@@ -84,8 +84,8 @@ generateAndTest("generated/large-small-lines.txt",  1E+8, 1000, 1000, 1000);
 
 generateAndTest("generated/tiny-big-lines.txt",   1E+5, 32768, 100, 100);
 generateAndTest("generated/small-big-lines.txt",  1E+6, 32768, 100, 100);
-generateAndTest("generated/medium-big-lines.txt", 1E+7, 32768, 1000, 1000);
-generateAndTest("generated/large-big-lines.txt",  1E+8, 32768, 1000, 1000);
+generateAndTest("generated/medium-big-lines.txt", 1E+7, 32768, 1000, 100);
+generateAndTest("generated/large-big-lines.txt",  1E+8, 32768, 1000, 100);
 
 # uncomment this if you want to test it with GByte files
 #generateAndTest("huge-big-lines.txt",   5E+9, 32768, 100, 100);

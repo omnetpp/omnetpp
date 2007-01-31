@@ -16,6 +16,7 @@
 #include <fcntl.h>
 #include <io.h>
 #include "lcgrandom.h"
+#include "exception.h"
 #include "filereader.h"
 
 int parseLineNumber(char *line)
@@ -23,7 +24,7 @@ int parseLineNumber(char *line)
     return !line || *line == '\r' || *line == '\n' ? -1 : atol(line);
 }
 
-int testFileReader(const char *file, long numberOfLines, int numberOfSeeks, int numberOfReadLines)
+void testFileReader(const char *file, long numberOfLines, int numberOfSeeks, int numberOfReadLines)
 {
     _setmode(_fileno(stdout), _O_BINARY);
     FileReader fileReader(file);
@@ -59,10 +60,8 @@ int testFileReader(const char *file, long numberOfLines, int numberOfSeeks, int 
                 }
                 else {
                     if (expectedLineNumber != -1 &&
-                        expectedLineNumber != 0) {
-                        printf("*** No more previous lines (%ld) but not at the very beginning of the file\n", expectedLineNumber);
-                        return -1;
-                    }
+                        expectedLineNumber != 0)
+                        throw opp_runtime_error("*** No more previous lines (%ld) but not at the very beginning of the file\n", expectedLineNumber);
                 }
 
                 forward = false;
@@ -83,10 +82,8 @@ int testFileReader(const char *file, long numberOfLines, int numberOfSeeks, int 
                 }
                 else {
                     if (expectedLineNumber != -1 &&
-                        expectedLineNumber != numberOfLines - 1) {
-                        printf("*** No more next lines (%ld) but not at the very end of the file\n", expectedLineNumber);
-                        return -2;
-                    }
+                        expectedLineNumber != numberOfLines - 1)
+                        throw opp_runtime_error("*** No more next lines (%ld) but not at the very end of the file\n", expectedLineNumber);
                 }
 
                 forward = true;
@@ -94,46 +91,41 @@ int testFileReader(const char *file, long numberOfLines, int numberOfSeeks, int 
 
             // compare expected and actual line numbers
             long lineNumber = parseLineNumber(line);
-            if (lineNumber != -1 && lineNumber != expectedLineNumber) {
-                printf("*** Line number %ld, %ld comparison failed for line: %.*s", lineNumber, expectedLineNumber, fileReader.getLastLineLength(), line);
-                return -3;
-            }
+            if (lineNumber != -1 && lineNumber != expectedLineNumber)
+                throw opp_runtime_error("*** Line number %ld, %ld comparison failed for line: %.*s", lineNumber, expectedLineNumber, fileReader.getLastLineLength(), line);
         }
     }
-
-    return 0;
 }
 
-int usage(char *message)
+void usage(char *message)
 {
     if (message)
         fprintf(stderr, "Error: %s\n\n", message);
 
     fprintf(stderr, ""
 "Usage:\n"
-"   filereadertest <input-file-name> <number-of-lines>\n"
+"   filereadertest <input-file-name> <number-of-lines> <number-of-seeks> <number-of-read-lines-per-seek>\n"
 );
-
-    return 0;
 }
 
 int main(int argc, char **argv)
 {
     try {
-        if (argc < 5)
-            return usage("Not enough arguments specified");
+        if (argc < 5) {
+            usage("Not enough arguments specified");
+
+            return -1;
+        }
         else {
-            int result = testFileReader(argv[1], atol(argv[2]), atoi(argv[3]), atoi(argv[4]));
+            testFileReader(argv[1], atol(argv[2]), atoi(argv[3]), atoi(argv[4]));
+            printf("PASS\n");
 
-            if (result)
-                printf("FAIL\n");
-            else
-                printf("PASS\n");
-
-            return result;
+            return 0;
         }
     }
     catch (std::exception& e) {
-        printf("Error: %s", e.what());
+        printf("FAIL: %s", e.what());
+
+        return -2;
     }
 }
