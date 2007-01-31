@@ -50,7 +50,8 @@ void cSimpleModule::activate(void *p)
             simulation.transferTo(after_cleanup_transfer_to);
         else
             simulation.transferToMain();
-        assert(("INTERNAL ERROR: switch to the fiber of a module already terminated",false));
+        fprintf(stderr, "INTERNAL ERROR: switch to the fiber of a module already terminated");
+        abort();
     }
 
     // The starter message should be the same as the timeoutmsg member of
@@ -63,7 +64,8 @@ void cSimpleModule::activate(void *p)
         mod->stackalreadyunwound = true;
         simulation.exception = new cRuntimeError("scheduleStart() should have been called for dynamically created module `%s'", mod->fullPath().c_str());
         simulation.transferToMain();
-        assert(("INTERNAL ERROR: switch to the fiber of a module already terminated",false));
+        fprintf(stderr, "INTERNAL ERROR: switch to the fiber of a module already terminated");
+        abort();
     }
 
     // rename message
@@ -129,7 +131,8 @@ void cSimpleModule::activate(void *p)
         // Module function terminated normally, without exception. Just mark
         // the module as finished, and transfer to the main coroutine (fiber).
         simulation.transferToMain();
-        assert(("INTERNAL ERROR: switch to the fiber of a module already terminated",false));
+        fprintf(stderr, "INTERNAL ERROR: switch to the fiber of a module already terminated");
+        abort();
     }
     else if (dynamic_cast<cStackCleanupException *>(exception))
     {
@@ -142,7 +145,8 @@ void cSimpleModule::activate(void *p)
             simulation.transferTo(after_cleanup_transfer_to);
         else
             simulation.transferToMain();  //FIXME turn this into transferTo(NULL)?
-        assert(("INTERNAL ERROR: switch to the fiber of a module already terminated",false));
+        fprintf(stderr, "INTERNAL ERROR: switch to the fiber of a module already terminated");
+        abort();
     }
     else
     {
@@ -152,7 +156,8 @@ void cSimpleModule::activate(void *p)
         // an error dialog or the like.
         simulation.exception = exception;
         simulation.transferToMain();
-        assert(("INTERNAL ERROR: switch to the fiber of a module already terminated",false));
+        fprintf(stderr, "INTERNAL ERROR: switch to the fiber of a module already terminated");
+        abort();
     }
 }
 
@@ -305,11 +310,11 @@ void cSimpleModule::scheduleStart(simtime_t t)
     timeoutmsg = new cMessage(buf,MK_STARTER);
 
     // initialize message fields
-    timeoutmsg->setSentFrom(NULL,-1, 0);
-    timeoutmsg->setArrival(this,-1, t);
+    timeoutmsg->setSentFrom(NULL, -1, 0);
+    timeoutmsg->setArrival(this, -1, t);
 
     // use timeoutmsg as the activation message; insert it into the FES
-    simulation.insertMsg( timeoutmsg );
+    simulation.insertMsg(timeoutmsg);
 }
 
 void cSimpleModule::deleteModule()
@@ -327,17 +332,17 @@ void cSimpleModule::deleteModule()
 
 int cSimpleModule::send(cMessage *msg, int g)
 {
-    return sendDelayed(msg, 0.0, g); //XXX use SimTime::ZERO! everywhere else too!
+    return sendDelayed(msg, 0, g); //XXX use SimTime::ZERO! everywhere else too!
 }
 
 int cSimpleModule::send(cMessage *msg, const char *gatename, int sn)
 {
-    return sendDelayed(msg, 0.0, gatename, sn);
+    return sendDelayed(msg, 0, gatename, sn);
 }
 
 int cSimpleModule::send(cMessage *msg, cGate *outgate)
 {
-    return sendDelayed(msg, 0.0, outgate);
+    return sendDelayed(msg, 0, outgate);
 }
 
 int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, const char *gatename, int sn)
@@ -397,7 +402,7 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outgate)
                                 msg->className(), msg->name(), msg->owner()->className(),
                                 msg->owner()->fullPath().c_str());
     }
-    if (delay<0.0)
+    if (delay < 0)
         throw cRuntimeError("sendDelayed(): negative delay %g",delay);
 
     // set message parameters and send it
@@ -405,7 +410,7 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outgate)
 
     EVCB.beginSend(msg);
     bool keepit = outgate->deliver(msg, simTime()+delay);
-    EVCB.messageSent(msg);  //XXX obsolete
+    EVCB.messageSent_OBSOLETE(msg);  //XXX obsolete
     if (!keepit)
         delete msg;
     return 0;
@@ -497,8 +502,8 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t tran
 
     EVCB.beginSend(msg);
     EVCB.messageSendDirect(msg, togate, propdelay, transmdelay);
-    bool keepit = togate->deliver( msg, simTime()+propdelay);  //XXX NOTE: no +transmdelay! we want to deliver the msg when the *first* bit arrives, not the last one
-    EVCB.messageSent(msg, togate); //XXX obsolete, and must be here AFTER the deliver call (this breaks seqChart code probably, where it was moved BEFORE)
+    bool keepit = togate->deliver(msg, simTime()+propdelay);  //XXX NOTE: no +transmdelay! we want to deliver the msg when the *first* bit arrives, not the last one
+    EVCB.messageSent_OBSOLETE(msg, togate); //XXX obsolete, and must be here AFTER the deliver call (this breaks seqChart code probably, where it was moved BEFORE)
     if (!keepit)
         delete msg;
     return 0;
@@ -542,7 +547,7 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
     // set message parameters and schedule it
     msg->setSentFrom(this, -1, simTime());
     msg->setArrival(this, -1, t);
-    EVCB.messageSent( msg ); //XXX obsolete but needed for Tkenv
+    EVCB.messageSent_OBSOLETE( msg ); //XXX obsolete but needed for Tkenv
     EVCB.messageScheduled(msg);
     simulation.insertMsg(msg);  //XXX do we need beginSend before() this???
     return 0;
@@ -576,12 +581,12 @@ void cSimpleModule::arrived(cMessage *msg, int ongate, simtime_t t)
 {
     if (isterminated)
         throw cRuntimeError(eMODFIN,fullPath().c_str());
-    if (t<simTime())
+    if (t < simTime())
         throw cRuntimeError("causality violation: message `%s' arrival time %s at module `%s' "
                             "is earlier than current simulation time",
                             msg->name(), SIMTIME_STR(t), fullPath().c_str());
     msg->setArrival(this, ongate, t);
-    simulation.insertMsg( msg );
+    simulation.insertMsg(msg);
 }
 
 void cSimpleModule::wait(simtime_t t)
@@ -616,7 +621,7 @@ void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
         throw cRuntimeError("waitAndEnqueue(): queue pointer is NULL");
 
     timeoutmsg->setArrivalTime(simTime()+t);
-    simulation.insertMsg( timeoutmsg );
+    simulation.insertMsg(timeoutmsg);
 
     for(;;)
     {
@@ -656,7 +661,7 @@ cMessage *cSimpleModule::receive(simtime_t t)
         throw cRuntimeError(eNEGTOUT);
 
     timeoutmsg->setArrivalTime(simTime()+t);
-    simulation.insertMsg( timeoutmsg );
+    simulation.insertMsg(timeoutmsg);
 
     simulation.transferToMain();
     if (stack_cleanup_requested)

@@ -64,7 +64,7 @@ class TCmdenvApp : public TOmnetApp
      virtual void printUISpecificHelp();
 
      virtual void moduleCreated(cModule *newmodule);
-     virtual void messageSent(cMessage *msg, cGate *directToGate);
+     virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate);
      virtual void simulationEvent(cMessage *msg);
 
      virtual void readOptions();

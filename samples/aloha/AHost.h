@@ -20,7 +20,7 @@ class AHost : public cSimpleModule
 {
   private:
     // parameters
-    double radioDelay;
+    simtime_t radioDelay;
     double txRate;
     cPar *iaTime;
     cPar *pkLenBits;

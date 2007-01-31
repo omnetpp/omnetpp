@@ -20,6 +20,8 @@
 #include "simkerneldefs.h"
 #include "platdep/inttypes.h"
 
+class cPar;
+
 /**
  * int64-based simulation time.
  */
@@ -29,6 +31,7 @@ class SIM_API SimTime
     int64 t;
 
     static int scaleexp;     // scale exponent in the range -18..0
+    static int64 dscale;     // 10^-scaleexp, that is 1 or 1000 or 1000000...
     static double fscale;    // 10^-scaleexp, that is 1 or 1000 or 1000000...
     static double invfscale; // 1/fscale; we store it because floating-point multiplication is faster than division
 
@@ -44,16 +47,23 @@ class SIM_API SimTime
      * Constructor initializes to zero.
      */
     SimTime() {t=0;}
-
-//XXX these integer ctors are no win -- looks like performance-wise int*int64 ~ double*int64
-//    SimTime(int d)   {operator=(d);}
-//XXX another idea that does NOT work for speeding up conversion from double: t = d==0 ? 0 : (int64)(fscale*d);
-
-    SimTime(double d) {operator=(d);}
-    SimTime(const SimTime& x) {t=x.t;}
+    template<typename T> SimTime(T d) {operator=(d);}
 
     /** @name Arithmetic operations */
     //@{
+    const SimTime& operator=(double d) {t = (int64)(fscale*d); return *this;}
+    const SimTime& operator=(const cPar& d); //XXX cPar overloads for other ops too...
+    const SimTime& operator=(const SimTime& x) {t=x.t; return *this;}
+    template<typename T> const SimTime& operator=(T d) {t = (int64)(dscale*d); return *this;}
+
+    const SimTime& operator+=(const SimTime& x) {t+=x.t; return *this;}
+    const SimTime& operator-=(const SimTime& x) {t-=x.t; return *this;}
+
+    const SimTime& operator*=(double d) {t=(int64)(t*d); return *this;} //XXX to be checked on Linux, see below
+    const SimTime& operator/=(double d) {t=(int64)(t/d); return *this;} //XXX to be checked on Linux, see below
+    template<typename T> const SimTime& operator*=(T d) {t*=d; return *this;}
+    template<typename T> const SimTime& operator/=(T d) {t/=d; return *this;}
+
     bool operator==(const SimTime& x) const  {return t==x.t;}
     bool operator!=(const SimTime& x) const  {return t!=x.t;}
     bool operator< (const SimTime& x) const  {return t<x.t;}
@@ -61,21 +71,19 @@ class SIM_API SimTime
     bool operator<=(const SimTime& x) const  {return t<=x.t;}
     bool operator>=(const SimTime& x) const  {return t>=x.t;}
 
-    const SimTime& operator=(double d) {t = (int64)(fscale*d); return *this;}
-    const SimTime& operator=(const SimTime& x) {t=x.t; return *this;}
-
-    const SimTime& operator+=(const SimTime& x) {t+=x.t; return *this;}
-    const SimTime& operator-=(const SimTime& x) {t-=x.t; return *this;}
-
-    const SimTime& operator*=(double d) {t*=d; return *this;} //XXX to be checked on Linux, see below
-    const SimTime& operator/=(double d) {t/=d; return *this;} //XXX to be checked on Linux, see below
-
     friend const SimTime operator+(const SimTime& x, const SimTime& y);
     friend const SimTime operator-(const SimTime& x, const SimTime& y);
+
     friend const SimTime operator*(const SimTime& x, double d);
     friend const SimTime operator*(double d, const SimTime& x);
     friend const SimTime operator/(const SimTime& x, double d);
     friend double operator/(const SimTime& x, const SimTime& y);
+
+/*XXX finish this
+    template<typename T> friend const SimTime operator*(const SimTime& x, T d);
+    template<typename T> friend const SimTime operator*(T d, const SimTime& x);
+    template<typename T> friend const SimTime operator/(const SimTime& x, T d);
+*/
     //@}
 
     /**
@@ -93,10 +101,12 @@ class SIM_API SimTime
      * <tt>SimTime::zero()</tt>.
      */
     //@{
+/*XXX not needed
     //XXX turn them into plain functions like floor() or fabs()?
-    bool isZero() const     {return t!=0;}
+    bool isZero() const     {return t==0;}
     bool isPositive() const {return t>0;}
     bool isNegative() const {return t<0;}
+*/
     bool isMaxTime() const  {return t==maxTime().t;}
     //@}
 
@@ -104,6 +114,12 @@ class SIM_API SimTime
      * Converts to string.
      */
     std::string str() const;
+
+    /**
+     * Converts to a string using the given buffer. Based on ttoa() -- please
+     * read the documentation of ttoa()!
+     */
+    char *str(char *buf) {char *endp; return SimTime::ttoa(buf, t, scaleExp(), endp);}
 
     /**
      * Returns the underlying 64-bit integer.
@@ -115,13 +131,15 @@ class SIM_API SimTime
      */
     const SimTime& setRaw(int64 l) {t = l; return *this;}
 
+/*XXX not needed
     /**
      * Returns 0 as simulation time. The code <tt>t = SimTime::zero();</tt> or
      * <tt>t = SimTime();</tt> is more efficient than plain <tt>t = 0;</tt>,
      * because the latter involves a <tt>SimTime(double)</tt> constructor call
      * which the compiler usually does not fully optimize.
-     */
+     * /
     static const SimTime zero() {return SimTime();}
+*/
 
     /**
      * Returns the largest simulation time that can be represented using the
@@ -277,7 +295,7 @@ inline const SimTime ceil(const SimTime& x, const SimTime& unit, const SimTime& 
  */
 inline const SimTime fabs(const SimTime& x)
 {
-    return x.isNegative() ? SimTime().setRaw(-x.raw()) : x;
+    return x.raw()<0 ? SimTime().setRaw(-x.raw()) : x;
 }
 
 /**
@@ -304,14 +322,5 @@ inline const SimTime min(const SimTime& x, const SimTime& y)
     return x < y ? x : y;
 }
 
-/**
- * Converts the simulation time to string.
- * See SimTime::ttoa().
- */
-inline char *simtimeTtoa(char *buff, const SimTime& t)
-{
-    char *endp;
-    return SimTime::ttoa(buff, t.raw(), SimTime::scaleExp(), endp); 
-}
 
 #endif

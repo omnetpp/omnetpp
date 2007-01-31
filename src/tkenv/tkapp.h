@@ -127,7 +127,7 @@ class TOmnetTkApp : public TOmnetApp
       virtual void printUISpecificHelp();
 
       virtual void objectDeleted(cObject *object); // notify environment
-      virtual void messageSent(cMessage *msg, cGate *directToGate);
+      virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate);
       virtual void simulationEvent(cMessage *msg);
       virtual void breakpointHit(const char *lbl, cSimpleModule *mod);
       virtual void componentMethodCalled(cComponent *from, cComponent *to, const char *method);

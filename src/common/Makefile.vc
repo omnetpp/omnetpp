@@ -70,10 +70,9 @@ exception.obj: exception.cc \
 fileglobber.obj: fileglobber.cc \
   fileglobber.h
 filereader.obj: filereader.cc \
+  commonutil.h \
   filereader.h \
   exception.h
-filetokenizer.obj: filetokenizer.cc \
-  filetokenizer.h
 fileutil.obj: fileutil.cc \
   fileutil.h
 fnamelisttokenizer.obj: fnamelisttokenizer.cc \

@@ -528,7 +528,7 @@ bool TOmnetTkApp::doRunSimulationExpress()
 
         speedometer.addEvent(simulation.simTime());
 
-        simulation.doOneEvent( mod );
+        simulation.doOneEvent(mod);
 
         if (simulation.eventNumber()%opt_updatefreq_express==0)
         {
@@ -546,9 +546,9 @@ bool TOmnetTkApp::doRunSimulationExpress()
         }
         checkTimeLimits();
     }
-    while(  !breakpointhit_flag && !stopsimulation_flag &&
-            (rununtil_time<=0 || simulation.guessNextSimtime()<rununtil_time) &&
-            (rununtil_event<=0 || simulation.eventNumber()<rununtil_event)
+    while( !breakpointhit_flag && !stopsimulation_flag &&
+           (rununtil_time<=0 || simulation.guessNextSimtime() < rununtil_time) &&
+           (rununtil_event<=0 || simulation.eventNumber() < rununtil_event)
          );
     return false;
 }
@@ -1076,7 +1076,7 @@ void TOmnetTkApp::objectDeleted(cObject *object)
     }
 }
 
-void TOmnetTkApp::messageSent(cMessage *msg, cGate *directToGate)
+void TOmnetTkApp::messageSent_OBSOLETE(cMessage *msg, cGate *directToGate)
 {
     //FIXME check FIRST if the window exists!!!!
     // display in message window

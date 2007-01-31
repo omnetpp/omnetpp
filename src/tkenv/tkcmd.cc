@@ -328,8 +328,8 @@ int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    int mode = resolveRunMode(argv[1]);
    if (mode==-1) {Tcl_SetResult(interp, "wrong mode argument, should be slow, normal, fast or express", TCL_STATIC);return TCL_ERROR;}
 
-   simtime_t until_time=0;
-   long until_event=0;
+   simtime_t until_time = 0;
+   long until_event = 0;
    if (argc==4)
    {
        until_time = STR_SIMTIME(argv[2]);

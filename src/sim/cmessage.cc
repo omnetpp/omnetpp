@@ -70,12 +70,12 @@ cMessage::cMessage(const char *name, int k, long ln, int pri, bool err) : cOwned
     sharecount = 0;
     srcprocid = -1;
 
-    frommod=fromgate=-1;
-    tomod=togate=-1;
-    created=simulation.simTime();
-    sent=delivd=tstamp=0;
-    heapindex=-1;
-    prev_event_num=-1;
+    frommod = fromgate = -1;
+    tomod = togate = -1;
+    created = simulation.simTime();
+    sent = delivd = tstamp = 0;
+    heapindex = -1;
+    prev_event_num = -1;
 
     msg_tree_id = msg_seq_id = next_msg_id++;
     total_msgs++;

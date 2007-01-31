@@ -114,12 +114,15 @@
 #endif
 
 #ifndef NDEBUG
-#define ASSERT(expr)  \
-  ((void) ((expr) ? 0 : \
-           (opp_error("ASSERT: condition %s false, %s line %d", \
-                             #expr, __FILE__, __LINE__), 0)))
+#define ASSERT(expr) \
+  ((void) ((expr) ? 0 : (opp_error("ASSERT: condition %s false in function %s, %s line %d", \
+                                   #expr, __FUNCTION__, __FILE__, __LINE__), 0)))
+#define ASSERT2(expr,text) \
+  ((void) ((expr) ? 0 : (opp_error("ASSERT: %s in function %s, %s line %d", \
+                                   text, __FUNCTION__, __FILE__, __LINE__), 0)))
 #else
-#define ASSERT(expr)  ((void)0)
+#define ASSERT(expr)        ((void)0)
+#define ASSERT2(expr,text)  ((void)0)
 #endif
 
 
@@ -151,13 +154,13 @@ typedef double   simtime_t;
 #define SIMTIME_DBL(t) (t)
 #define SIMTIME_RAW(t) (t)
 #define STR_SIMTIME(s) strToSimtime(s)
-#define SIMTIME_TTOA(buff, t) simtimeTtoa(buff, t)
-
-inline char *simtimeTtoa(char *buff, simtime_t t)
-{
-    strcpy(buff, simtimeToStr(t));
-    return buff;
-}
+#define SIMTIME_TTOA(buf,t)   simtimeToStr(t,buf)
+/* XXX
+#define SIMTIME_ZERO          0.0
+#define SIMTIME_ISZERO(t)     ((t)==0)
+#define SIMTIME_ISNEGATIVE(t) ((t)<0)
+#define SIMTIME_ISPOSITIVE(t) ((t)>0)
+*/
 
 #else
 
@@ -170,7 +173,13 @@ typedef SimTime  simtime_t;
 #define SIMTIME_DBL(t) ((t).dbl())
 #define SIMTIME_RAW(t) ((t).raw())
 #define STR_SIMTIME(s) SimTime::parse(s)
-#define SIMTIME_TTOA(buff, t) simtimeTtoa(buff, t)
+#define SIMTIME_TTOA(buf,t)    ((t).str(buf))
+/*XXX
+#define SIMTIME_ZERO           SimTime::zero()
+#define SIMTIME_ISZERO(t)      ((t).isZero())
+#define SIMTIME_ISNEGATIVE(t)  ((t).isNegative())
+#define SIMTIME_ISPOSITIVE(t)  ((t).isPositive())
+*/
 
 #endif
 

@@ -125,8 +125,13 @@ re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 HCGenerator.obj: HCGenerator.cc \
-  HCGenerator.h
+  HCGenerator.h \
+  HCPacket_m.h
+HCPacket_m.obj: HCPacket_m.cc \
+  HCPacket_m.h
 HCRouter.obj: HCRouter.cc \
-  HCRouter.h
+  HCRouter.h \
+  HCPacket_m.h
 HCSink.obj: HCSink.cc \
-  HCSink.h
+  HCSink.h \
+  HCPacket_m.h

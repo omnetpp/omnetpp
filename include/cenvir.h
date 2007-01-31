@@ -41,7 +41,7 @@ class cEnvir;
 
 using std::endl;
 
-// internal macro, usage: EVCB.messageSent(...)
+// internal macro, usage: EVCB.messageSent_OBSOLETE(...)
 #define EVCB  ev.suppress_notifications ? (void)0 : ev
 
 
@@ -212,6 +212,15 @@ class ENVIR_API cEnvir : public std::ostream
     void objectDeleted(cObject *object);
 
     /**
+     * Notifies the environment that a message was delivered to its destination
+     * module, that is, a message arrival event occurred. Details can be
+     * extracted from the message object itself. The user interface
+     * implementation may use the notification to animate the message on a
+     * network diagram, to write a log entry, etc.
+     */
+    void simulationEvent(cMessage *msg);
+
+    /**
      * Notifies the environment that a message was sent. Details can be
      * extracted from the message object itself. The user interface
      * implementation may use the notification to animate the message on a
@@ -225,40 +234,22 @@ class ENVIR_API cEnvir : public std::ostream
      * before it arrives in a simple module.)
      */
     //XXX obsolete -- see beginSend(), etc.
-    void messageSent(cMessage *msg, cGate *directToGate=NULL);
-
-    void messageScheduled(cMessage *msg);
-    void messageCancelled(cMessage *msg);
+    void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=NULL);
 
     // this will be followed by a messageSendDirect (optional), and several messageSendHop() calls
     void beginSend(cMessage *msg);
+    void messageScheduled(cMessage *msg);
+    void messageCancelled(cMessage *msg);
     void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay=0, simtime_t transmissionDelay=0);
     void messageSendHop(cMessage *msg, cGate *srcGate);
     void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay);
     void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, simtime_t transmissionStartTime);
-    //XXX missing variant: what if message gets deleted by the channel
-
     void messageDeleted(cMessage *msg);  //XXX document this and all above funcs
 
     /**
      * Notifies the environment that a module changed parent.
      */
     void moduleReparented(cModule *module, cModule *oldparent);
-
-    /**
-     * Notifies the environment that a message was delivered to its destination
-     * module, that is, a message arrival event occurred. Details can be
-     * extracted from the message object itself. The user interface
-     * implementation may use the notification to animate the message on a
-     * network diagram, to write a log entry, etc.
-     */
-    void simulationEvent(cMessage *msg);  //XXX rename to simulationEvent() ?
-
-    /**
-     * Notifies the environment that a simple module executed a
-     * breakpoint() call.
-     */
-    void breakpointHit(const char *lbl, cSimpleModule *mod);
 
     /**
      * Notifies the environment that one component (module) called a member
@@ -316,6 +307,12 @@ class ENVIR_API cEnvir : public std::ostream
      * that the user didn't delete in the module destructor.
      */
     void undisposedObject(cObject *obj);
+
+    /**
+     * Notifies the environment that a simple module executed a
+     * breakpoint() call.
+     */
+    void breakpointHit(const char *lbl, cSimpleModule *mod);
     //@}
 
     /** @name Methods called by the simulation kernel to access configuration settings. */

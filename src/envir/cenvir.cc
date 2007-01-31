@@ -304,16 +304,26 @@ cConfiguration *cEnvir::config()
 
 //-----------------------------------------------------------------
 
-void cEnvir::messageSent(cMessage *msg, cGate *directToGate)
+void cEnvir::objectDeleted(cObject *obj)
 {
-    if (disable_tracing) return;
-    app->messageSent(msg, directToGate);
+    if (app) app->objectDeleted(obj);
 }
 
 void cEnvir::simulationEvent(cMessage *msg)
 {
     if (disable_tracing) return;
     app->simulationEvent(msg);
+}
+
+void cEnvir::messageSent_OBSOLETE(cMessage *msg, cGate *directToGate)
+{
+    if (disable_tracing) return;
+    app->messageSent_OBSOLETE(msg, directToGate);
+}
+
+void cEnvir::beginSend(cMessage *msg)
+{
+    //XXX app->beginSend(msg);
 }
 
 void cEnvir::messageScheduled(cMessage *msg)
@@ -324,11 +334,6 @@ void cEnvir::messageScheduled(cMessage *msg)
 void cEnvir::messageCancelled(cMessage *msg)
 {
     //XXX app->messageCancelled(msg);
-}
-
-void cEnvir::beginSend(cMessage *msg)
-{
-    //XXX app->beginSend(msg);
 }
 
 void cEnvir::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
@@ -360,16 +365,6 @@ void cEnvir::componentMethodCalled(cComponent *from, cComponent *to, const char 
 {
     if (disable_tracing) return;
     app->componentMethodCalled(from, to, method);
-}
-
-void cEnvir::objectDeleted(cObject *obj)
-{
-    if (app) app->objectDeleted(obj);
-}
-
-void cEnvir::breakpointHit(const char *label, cSimpleModule *module)
-{
-    app->breakpointHit(label, module);
 }
 
 void cEnvir::moduleCreated(cModule *newmodule)
@@ -417,6 +412,11 @@ void cEnvir::undisposedObject(cObject *obj)
         return;
     }
     app->undisposedObject(obj);
+}
+
+void cEnvir::breakpointHit(const char *label, cSimpleModule *module)
+{
+    app->breakpointHit(label, module);
 }
 
 //-----------------------------------------------------------------

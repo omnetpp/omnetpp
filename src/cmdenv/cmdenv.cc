@@ -489,7 +489,7 @@ void TCmdenvApp::moduleCreated(cModule *mod)
     mod->setEvEnabled(ev_enabled);
 }
 
-void TCmdenvApp::messageSent(cMessage *msg, cGate *)
+void TCmdenvApp::messageSent_OBSOLETE(cMessage *msg, cGate *)
 {
     if (!opt_expressmode && opt_messagetrace)
     {

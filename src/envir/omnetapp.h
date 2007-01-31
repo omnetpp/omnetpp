@@ -207,9 +207,16 @@ class ENVIR_API TOmnetApp
      */
     //@{
     virtual void objectDeleted(cObject *object) {}
-    virtual void messageSent(cMessage *msg, cGate *directToGate) {}
     virtual void simulationEvent(cMessage *msg) {}
-    virtual void breakpointHit(const char *lbl, cSimpleModule *mod) {}
+    virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate) {}
+    virtual void beginSend(cMessage *msg) {}
+    virtual void messageScheduled(cMessage *msg) {}
+    virtual void messageCancelled(cMessage *msg) {}
+    virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay=0, simtime_t transmissionDelay=0) {}
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate) {}
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay) {}
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, simtime_t transmissionStartTime) {}
+    virtual void messageDeleted(cMessage *msg) {}
     virtual void componentMethodCalled(cComponent *from, cComponent *to, const char *method) {}
     virtual void moduleCreated(cModule *newmodule) {}
     virtual void moduleDeleted(cModule *module) {}
@@ -219,6 +226,7 @@ class ENVIR_API TOmnetApp
     virtual void displayStringChanged(cGate *gate) {}
     virtual void displayStringChanged(cModule *module) {}
     virtual void undisposedObject(cObject *obj);
+    virtual void breakpointHit(const char *lbl, cSimpleModule *mod) {}
     //@}
 
     /** @name Functions called by cEnvir's similar functions.

@@ -16,9 +16,11 @@
 #include "simtime.h"
 #include "cexception.h"
 #include "unitconversion.h"
+#include "cpar.h"
 
 
 int SimTime::scaleexp;
+int64 SimTime::dscale;
 double SimTime::fscale;
 double SimTime::invfscale;
 
@@ -36,8 +38,15 @@ void SimTime::setScaleExp(int e)
         scale *= 10;
 
     // store it in double too
+    dscale = scale;
     fscale = (double) scale;
     invfscale = 1.0 / fscale;
+}
+
+//XXX inline, at the end of simtime.h, just after #include "cpar.h" ?
+const SimTime& SimTime::operator=(const cPar& d)
+{
+    return operator=((double)d);
 }
 
 std::string SimTime::str() const
