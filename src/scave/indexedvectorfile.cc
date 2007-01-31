@@ -88,7 +88,7 @@ BlockWithEntries *IndexedVectorFileReader::loadBlock(Block &block)
 
     for (int i=0; i<count; ++i)
     {
-        if ((line=reader->readNextLine())==NULL)
+        if ((line=reader->getNextLineBufferPointer())==NULL)
             throw opp_runtime_error("Unexpected end of file in '%s'", fname.c_str());
         int len = reader->getLastLineLength();
 

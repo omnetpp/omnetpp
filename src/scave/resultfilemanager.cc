@@ -903,7 +903,7 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
     FileReader freader(fileSystemFileName);
     char *line;
     LineTokenizer tokenizer;
-    while ((line=freader.readNextLine())!=NULL)
+    while ((line=freader.getNextLineBufferPointer())!=NULL)
     {
         int len = freader.getLastLineLength();
         int numTokens = tokenizer.tokenize(line, len);

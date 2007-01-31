@@ -145,7 +145,7 @@ VectorFileIndex *IndexFileReader::readAll()
 
     VectorFileIndex *index = new VectorFileIndex();
     long numOfEntries = 0;
-    while ((line=reader.readNextLine())!=NULL)
+    while ((line=reader.getNextLineBufferPointer())!=NULL)
     {
         int lineNum = reader.getNumReadLines();
         int len=reader.getLastLineLength();
@@ -165,7 +165,7 @@ VectorFileIndex *IndexFileReader::readHeader()
     char *line, **tokens;
 
     VectorFileIndex *index = NULL;
-    while ((line=reader.readNextLine())!=NULL)
+    while ((line=reader.getNextLineBufferPointer())!=NULL)
     {
         int lineNum = reader.getNumReadLines();
         int len = reader.getLastLineLength();
