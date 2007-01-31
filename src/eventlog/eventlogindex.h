@@ -69,13 +69,15 @@ class EventLogIndex
 
         long getFirstEventNumber();
         long getLastEventNumber();
+        simtime_t getFirstSimulationTime();
+        simtime_t getLastSimulationTime();
         file_offset_t getFirstEventOffset();
         file_offset_t getLastEventOffset();
         file_offset_t getBeginOffsetForEndOffset(file_offset_t endOffset);
         file_offset_t getEndOffsetForBeginOffset(file_offset_t beginOffset);
         file_offset_t getOffsetForEventNumber(long eventNumber, MatchKind matchKind = EXACT);
-        bool positionToEventNumber(long eventNumber, MatchKind matchKind = EXACT);
         file_offset_t getOffsetForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT);
+        bool positionToEventNumber(long eventNumber, MatchKind matchKind = EXACT);
         bool positionToSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT);
         void dumpTable();
 };

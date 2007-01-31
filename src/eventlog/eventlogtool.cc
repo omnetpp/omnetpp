@@ -13,6 +13,7 @@
 *--------------------------------------------------------------*/
 
 #include <time.h>
+#include "../utils/ver.h"
 #include "filereader.h"
 #include "linetokenizer.h"
 #include "eventlogindex.h"
@@ -188,7 +189,7 @@ void offsets(Options options)
 
             if (offset != -1 && options.verbose) {
                 fileReader->seekTo(offset);
-                fprintf(stdout, "#  - line at that offset: %.*s", fileReader->getLastLineLength(), fileReader->readNextLine());
+                fprintf(stdout, "#  - line at that offset: %.*s", fileReader->getLastLineLength(), fileReader->getNextLineBufferPointer());
             }
 
             fprintf(options.outputFile, "%lld\n", offset);
@@ -303,6 +304,9 @@ void usage(char *message)
         fprintf(stderr, "Error: %s\n\n", message);
 
     fprintf(stderr, ""
+"eventlogtool -- part of OMNeT++/OMNEST, (C) 2006 Andras Varga\n"
+"Release: " OMNETPP_RELEASE ", edition: " OMNETPP_EDITION ".\n"
+"\n"
 "Usage:\n"
 "   eventlogtool <command> [options]* <input-file-name>\n"
 "\n"

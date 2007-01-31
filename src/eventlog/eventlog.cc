@@ -106,7 +106,7 @@ void EventLog::parseInitializationLogEntries()
 
     while (true)
     {
-        char *line = reader->readNextLine();
+        char *line = reader->getNextLineBufferPointer();
 
         if (!line)
             break;
@@ -172,9 +172,7 @@ Event *EventLog::getEventForSimulationTime(simtime_t simulationTime, MatchKind m
 
 Event *EventLog::getEventForBeginOffset(file_offset_t beginOffset)
 {
-    if (beginOffset < 0)
-        throw opp_runtime_error("Offset number must be >= 0, %lld", beginOffset);
-
+    Assert(beginOffset >= 0);
     OffsetToEventMap::iterator it = offsetToEventMap.find(beginOffset);
 
     long eventNumber;
@@ -198,6 +196,7 @@ Event *EventLog::getEventForBeginOffset(file_offset_t beginOffset)
 
 Event *EventLog::getEventForEndOffset(file_offset_t endOffset)
 {
+    Assert(endOffset >= 0);
     file_offset_t beginOffset = getBeginOffsetForEndOffset(endOffset);
 
     if (beginOffset == -1)

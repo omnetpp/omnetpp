@@ -74,7 +74,7 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
 
     while (true)
     {
-        char *line = reader->readNextLine();
+        char *line = reader->getNextLineBufferPointer();
 
         if (!line) {
             Assert(eventEntry);

@@ -66,6 +66,20 @@ file_offset_t EventLogIndex::getLastEventOffset()
     return lastEventOffset;
 }
 
+simtime_t EventLogIndex::getFirstSimulationTime()
+{
+    getFirstEventNumber();
+
+    return firstSimulationTime;
+}
+
+simtime_t EventLogIndex::getLastSimulationTime()
+{
+    getLastEventNumber();
+
+    return lastSimulationTime;
+}
+
 bool EventLogIndex::needsToBeStored(long eventNumber)
 {
     if (eventNumber%EVENTNUM_INDEX_DENSITY==0)
@@ -91,6 +105,8 @@ void EventLogIndex::addPosition(long eventNumber, simtime_t simulationTime, file
 
 file_offset_t EventLogIndex::getBeginOffsetForEndOffset(file_offset_t endOffset)
 {
+    Assert(endOffset >= 0);
+
     long eventNumber;
     file_offset_t lineStartOffset, lineEndOffset;
     simtime_t simulationTime;
@@ -103,6 +119,8 @@ file_offset_t EventLogIndex::getBeginOffsetForEndOffset(file_offset_t endOffset)
 
 file_offset_t EventLogIndex::getEndOffsetForBeginOffset(file_offset_t beginOffset)
 {
+    Assert(beginOffset >= 0);
+
     long eventNumber;
     file_offset_t lineStartOffset, lineEndOffset;
     simtime_t simulationTime;
@@ -110,7 +128,7 @@ file_offset_t EventLogIndex::getEndOffsetForBeginOffset(file_offset_t beginOffse
     if (readToEventLine(true, beginOffset + 1, eventNumber, simulationTime, lineStartOffset, lineEndOffset))
         return lineStartOffset;
     else
-        return -1;
+        return reader->getFileSize();
 }
 
 bool EventLogIndex::positionToEventNumber(long eventNumber, MatchKind matchKind)
@@ -132,6 +150,7 @@ bool EventLogIndex::positionToSimulationTime(simtime_t simulationTime, MatchKind
 
 file_offset_t EventLogIndex::getOffsetForEventNumber(long eventNumber, MatchKind matchKind)
 {
+    Assert(eventNumber >= 0);
     file_offset_t offset = binarySearchForOffset(true, &eventNumberToOffsetMap, eventNumber, matchKind);
 
     if (PRINT_DEBUG_MESSAGES) printf("Found event number: %ld at offset: %lld\n", eventNumber, offset);
@@ -141,6 +160,7 @@ file_offset_t EventLogIndex::getOffsetForEventNumber(long eventNumber, MatchKind
 
 file_offset_t EventLogIndex::getOffsetForSimulationTime(simtime_t simulationTime, MatchKind matchKind)
 {
+    Assert(simulationTime >= 0);
     file_offset_t offset = binarySearchForOffset(false, &simulationTimeToOffsetMap, simulationTime, matchKind);
 
     if (PRINT_DEBUG_MESSAGES) printf("*** Found simulation time: %.*g at offset: %lld\n", 12, simulationTime, offset);
@@ -150,6 +170,7 @@ file_offset_t EventLogIndex::getOffsetForSimulationTime(simtime_t simulationTime
 
 template <typename T> file_offset_t EventLogIndex::binarySearchForOffset(bool eventNumberBased, std::map<T, file_offset_t> *keyToOffsetMap, T key, MatchKind matchKind)
 {
+    Assert(key >= 0);
     file_offset_t foundOffset = -1;
     file_offset_t lowerOffset, upperOffset;
 
@@ -278,6 +299,7 @@ template <typename T> file_offset_t EventLogIndex::binarySearchForOffset(bool ev
 
 template <typename T> file_offset_t EventLogIndex::linearSearchForOffset(bool eventNumberBased, file_offset_t offset, T key, MatchKind matchKind, bool exactMatchFound)
 {
+    Assert(offset >= 0);
     // this is a search either forward or backward based on matchKind
     if (matchKind == EXACT)
         throw opp_runtime_error("Invalid match kind");
@@ -329,6 +351,7 @@ template <typename T> file_offset_t EventLogIndex::linearSearchForOffset(bool ev
 
 bool EventLogIndex::readToEventLine(bool forward, file_offset_t readStartOffset, long& eventNumber, simtime_t& simulationTime, file_offset_t& lineStartOffset, file_offset_t& lineEndOffset)
 {
+    Assert(readStartOffset >= 0);
     eventNumber = -1;
     simulationTime = -1;
     reader->seekTo(readStartOffset);
@@ -341,9 +364,9 @@ bool EventLogIndex::readToEventLine(bool forward, file_offset_t readStartOffset,
     while (true)
     {
         if (forward)
-            line = reader->readNextLine();
+            line = reader->getNextLineBufferPointer();
         else
-            line = reader->readPreviousLine();
+            line = reader->getPreviousLineBufferPointer();
 
         if (!line)
             return false;
