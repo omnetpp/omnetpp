@@ -238,7 +238,7 @@ char *FileReader::findPreviousLineStart(char *start, bool bufferFilled)
     return s + 1;
 }
 
-char *FileReader::readNextLine()
+char *FileReader::getNextLineBufferPointer()
 {
     Assert(currentDataPointer);
 
@@ -276,7 +276,7 @@ char *FileReader::readNextLine()
     }
 }
 
-char *FileReader::readPreviousLine()
+char *FileReader::getPreviousLineBufferPointer()
 {
     Assert(currentDataPointer);
 
@@ -403,7 +403,7 @@ int main(int argc, char **argv)
     try {
         FileReader freader(argv[1],200);
         char *line;
-        while ((line = freader.readNextLine()) != NULL)
+        while ((line = freader.getNextLineBufferPointer()) != NULL)
             cout << line << "\n";
     }
     catch (std::exception& e) {

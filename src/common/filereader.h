@@ -136,14 +136,14 @@ class FileReader
      * as it is possible that the file is currently being written into.
      * Moves the current position to the end of the line just returned.
      */
-    char *readNextLine();
+    char *getNextLineBufferPointer();
 
     /**
      * Reads the previous line from the file ending at the current position, and returns a pointer to its first character.
      * It returns NULL when the beginning of file reached.
      * Moves the current position to the beginning of the line just returned.
      */
-    char *readPreviousLine();
+    char *getPreviousLineBufferPointer();
 
     /**
      * Returns the start offset of the line last parsed with readNextLine() or readPreviousLine().
