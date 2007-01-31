@@ -32,7 +32,7 @@ int testFileReader(const char *file, long numberOfLines, int numberOfSeeks, int 
     int64 fileSize = fileReader.getFileSize();
 
     while (i--) {
-        int64 offset = random.next01() * fileSize;
+        file_offset_t offset = random.next01() * fileSize;
         printf("Seeking to offset: %lld\n", offset);
         fileReader.seekTo(offset);
 
