@@ -55,7 +55,7 @@ void cSimpleModule::activate(void *p)
 
     // The starter message should be the same as the timeoutmsg member of
     // cSimpleModule. If not, then something is wrong...
-    cMessage *starter = simulation.msgQueue.getFirst();
+    cMessage *starter = simulation.msg_for_activity;
     if (starter!=mod->timeoutmsg)
     {
         // hand exception to cSimulation::transferTo() and switch back
