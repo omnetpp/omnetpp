@@ -27,7 +27,6 @@ public class MultiPageNedEditorActionContributor extends MultiPageEditorActionBa
         textContrib = new TextualNedEditorActionContributor();
     }
 
-    
     /* (non-JavaDoc)
      * Method declared in AbstractMultiPageEditorActionBarContributor.
      */
@@ -39,22 +38,26 @@ public class MultiPageNedEditorActionContributor extends MultiPageEditorActionBa
         textContrib.init(bars, getPage());
     }
 
-
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.part.MultiPageEditorActionBarContributor#setActivePage(org.eclipse.ui.IEditorPart)
+     * Respond to an editor change with reassigning the local and global actions
+     */
     public void setActivePage(IEditorPart part) {
         if (activeEditorPart == part)
             return;
 
         activeEditorPart = part;
-
+        // first remove the old global and local handlers
+        // then add the ones for the new editor
         if(part instanceof GraphicalNedEditor) {
             textContrib.setActiveEditor(activeEditorPart);
             graphContrib.setActiveEditor(activeEditorPart);
         } else if (part instanceof TextualNedEditor) {
-            // FIXME disable graphical editor actions
-            // graphContrib.setActiveEditor(activeEditorPart);
+            graphContrib.setActiveEditor(activeEditorPart);
             textContrib.setActiveEditor(activeEditorPart);
-        }
-
+        } else
+            return;
+        // propagate the changes to the workbench
+        getActionBars().updateActionBars();
     }
-    
 }
