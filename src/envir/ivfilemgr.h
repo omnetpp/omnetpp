@@ -39,19 +39,28 @@ class cIndexedFileOutputVectorManager : public cFileOutputVectorManager
 {
   protected:
     struct sBlock {
-      long offset;
-      long count;
+      long offset;          // file offset of the block
+      long startEventNum;   // event number of the first sample in the block
+      long endEventNum;     // event number of the last sample in the block
+      simtime_t startTime;  // simulation time of the first sample in the block
+      simtime_t endTime;    // simulation time of the last sample in the block
+      long count;           // count of samples in the block
+      double min;           // minimum value of the samples
+      double max;           // maximum value of the samples
+      double sum;           // sum of values of the samples
+      double sumSqr;        // sum of squares of values
 
-      sBlock(long offset, long count) : offset(offset), count(count) {}
+      sBlock() : offset(-1), count(0), min(DBL_MAX), max(DBL_MIN), sum(0.0), sumSqr(0.0) {}
     };
 
     typedef std::vector<sBlock> Blocks;
 
     struct sSample {
         simtime_t simtime;
+        long eventNumber;
         double value;
 
-        sSample(simtime_t t, double val) : simtime(t), value(val) {}
+        sSample(simtime_t t, long eventNumber, double val) : simtime(t), eventNumber(eventNumber), value(val) {}
     };
 
     typedef std::vector<sSample> Samples;

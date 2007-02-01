@@ -48,6 +48,9 @@ class cFileOutputVectorManager : public cOutputVectorManager
        bool enabled;        // write to the output file can be enabled/disabled
        simtime_t starttime; // write begins at starttime
        simtime_t stoptime;  // write stops at stoptime
+       bool recordEventNumbers; // record the current event number for each sample
+
+       const char *getColumns() { return recordEventNumbers ? "ETV" : "TV"; }
     };
 
     int nextid;        // holds next free ID for output vectors

@@ -166,8 +166,8 @@ void cFileOutputVectorManager::initVector(sVectorData *vp)
         writeHeader();
     }
 
-    CHECK(fprintf(f,"vector %d  %s  %s\n",
-                  vp->id, QUOTE(vp->modulename.c_str()), QUOTE(vp->vectorname.c_str())));
+    CHECK(fprintf(f,"vector %d  %s  %s  %s\n",
+                  vp->id, QUOTE(vp->modulename.c_str()), QUOTE(vp->vectorname.c_str()), vp->getColumns()));
     vp->initialised = true;
 }
 
@@ -191,9 +191,14 @@ void *cFileOutputVectorManager::registerVector(const char *modulename, const cha
     vp->initialised = false;
     vp->modulename = modulename;
     vp->vectorname = vectorname;
-
     ev.app->getOutVectorConfig(simulation.runNumber(), modulename, vectorname,
                                vp->enabled, vp->starttime, vp->stoptime);
+
+    const char *runSection = getRunSectionName(simulation.runNumber());
+    static char param[1024];
+    sprintf(param, "%s.%s.record-event-numbers", modulename, vectorname);
+    vp->recordEventNumbers = ev.config()->getAsBool2(runSection, "OutVectors", param, true);
+
     return vp;
 }
 
@@ -210,6 +215,8 @@ void cFileOutputVectorManager::deregisterVector(void *vectorhandle)
 
 bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double value)
 {
+    static char buff[64];
+
     sVectorData *vp = (sVectorData *)vectorhandle;
 
     if (!vp->enabled)
@@ -220,7 +227,14 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
         if (!vp->initialised)
             initVector(vp);
         assert(f!=NULL);
-        CHECK(fprintf(f,"%d\t%.*g\t%.*g\n", vp->id, prec, SIMTIME_DBL(t), prec, value));
+        if (vp->recordEventNumbers)
+        {
+            CHECK(fprintf(f,"%d\t%ld\t%s\t%.*g\n", vp->id, simulation.eventNumber(), SIMTIME_TTOA(buff, t), prec, value));
+        }
+        else
+        {
+            CHECK(fprintf(f,"%d\t%s\t%.*g\n", vp->id, SIMTIME_TTOA(buff, t), prec, value));
+        }
         return true;
     }
     return false;

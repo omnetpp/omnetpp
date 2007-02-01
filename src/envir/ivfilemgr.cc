@@ -139,27 +139,22 @@ void cIndexedFileOutputVectorManager::endRun()
 
 void *cIndexedFileOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
 {
-    sVector *vp = (sVector *)createVectorData();
-    vp->id = nextid++;
-    vp->initialised = false;
-    vp->modulename = modulename;
-    vp->vectorname = vectorname;
+    sVector *vp = (sVector *)cFileOutputVectorManager::registerVector(modulename, vectorname);
 
-    // TODO: make this configurable per vector
-    vp->maxBufferedSamples = ev.config()->getAsInt2(getRunSectionName(simulation.runNumber()),"General","output-vectors-max-buffered-samples", -1);
+    static char param[1024];
+    sprintf(param, "%s.%s.max-buffered-samples", modulename, vectorname);
+    vp->maxBufferedSamples = ev.config()->getAsInt2(getRunSectionName(simulation.runNumber()),"OutVectors",param, -1);
     if (vp->maxBufferedSamples > 0)
         vp->allocateBuffer(vp->maxBufferedSamples);
 
-    ev.app->getOutVectorConfig(simulation.runNumber(), modulename, vectorname,
-                               vp->enabled, vp->starttime, vp->stoptime);
-
+    vp->blocks.push_back(sBlock());
     vectors.push_back(vp);
     return vp;
 }
 
 cFileOutputVectorManager::sVectorData *cIndexedFileOutputVectorManager::createVectorData()
 {
-    return new sVector;
+    return new sVector();
 }
 
 void cIndexedFileOutputVectorManager::deregisterVector(void *vectorhandle)
@@ -191,13 +186,22 @@ bool cIndexedFileOutputVectorManager::record(void *vectorhandle, simtime_t t, do
         if (!vp->initialised)
             initVector(vp);
 
-        vp->buffer.push_back(sSample(t, value));
-        vp->count++;
-        vp->min = min(vp->min, value);
-        vp->max = max(vp->max, value);
-        vp->sum += value;
-        vp->sumsqr += value*value;
+        sBlock &currentBlock = vp->blocks.back();
+        long eventNumber = simulation.eventNumber();
+        if (currentBlock.count == 0) 
+        {
+            currentBlock.startTime = t;
+            currentBlock.startEventNum = eventNumber;
+        }
+        currentBlock.endTime = t;
+        currentBlock.endEventNum = eventNumber;
+        currentBlock.count++;
+        currentBlock.min = min(currentBlock.min, value);
+        currentBlock.max = max(currentBlock.max, value);
+        currentBlock.sum += value;
+        currentBlock.sumSqr += value*value;
 
+        vp->buffer.push_back(sSample(t, eventNumber, value));
         memoryUsed += sizeof(sSample);
 
         if (vp->maxBufferedSamples > 0 && (int)vp->buffer.size() >= vp->maxBufferedSamples)
@@ -223,21 +227,38 @@ void cIndexedFileOutputVectorManager::writeRecords()
 void cIndexedFileOutputVectorManager::writeRecords(sVector *vp)
 {
     assert(f!=NULL);
-    long startOffset = ftell(f);
-    for (std::vector<sSample>::iterator it = vp->buffer.begin(); it != vp->buffer.end(); ++it)
-    {
-        CHECK(fprintf(f,"%d\t%.*g\t%.*g\n", vp->id, prec, SIMTIME_DBL(it->simtime), prec, it->value), fname);
-    }
-    long endOffset = ftell(f);
+    static char buff[64];
 
-    vp->maxBlockSize = max(vp->maxBlockSize, endOffset - startOffset);
-    vp->blocks.push_back(sBlock(startOffset, vp->buffer.size()));
+    sBlock &currentBlock = vp->blocks.back();
+    currentBlock.offset = ftell(f);
+
+    if (vp->recordEventNumbers)
+    {
+        for (std::vector<sSample>::iterator it = vp->buffer.begin(); it != vp->buffer.end(); ++it)
+            CHECK(fprintf(f,"%d\t%ld\t%s\t%.*g\n", vp->id, it->eventNumber, SIMTIME_TTOA(buff, it->simtime), prec, it->value), fname);
+    }
+    else
+    {
+        for (std::vector<sSample>::iterator it = vp->buffer.begin(); it != vp->buffer.end(); ++it)
+            CHECK(fprintf(f,"%d\t%s\t%.*g\n", vp->id, SIMTIME_TTOA(buff, it->simtime), prec, it->value), fname);
+    }
+
+    vp->maxBlockSize = max(vp->maxBlockSize, ftell(f) - currentBlock.offset);
+    vp->count += currentBlock.count;
+    vp->min = min(vp->min, currentBlock.min);
+    vp->max = max(vp->max, currentBlock.max);
+    vp->sum += currentBlock.sum;
+    vp->sumsqr += currentBlock.sumSqr;
+
     memoryUsed -= vp->buffer.size()*sizeof(sSample);
     vp->buffer.clear();
+    vp->blocks.push_back(sBlock());
 }
 
 void cIndexedFileOutputVectorManager::writeIndex(sVector *vp)
 {
+    static char buff1[64], buff2[64];
+
     if (!fi)
     {
         openIndexFile();
@@ -245,21 +266,41 @@ void cIndexedFileOutputVectorManager::writeIndex(sVector *vp)
             return;
     }
 
-    int nBlocks = vp->blocks.size();
-    if (nBlocks > 0)
+    if (vp->count > 0)
     {
-        CHECK(fprintf(fi,"vector %d  %s  %s  %ld  %ld  %.*g  %.*g  %.*g  %.*g\n",
-                      vp->id, QUOTE(vp->modulename.c_str()), QUOTE(vp->vectorname.c_str()), vp->maxBlockSize,
+        CHECK(fprintf(fi,"vector %d  %s  %s  %s  %ld  %ld  %.*g  %.*g  %.*g  %.*g\n",
+                      vp->id, QUOTE(vp->modulename.c_str()), QUOTE(vp->vectorname.c_str()), 
+                      vp->getColumns(), vp->maxBlockSize,
                       vp->count, prec, vp->min, prec, vp->max, prec, vp->sum, prec, vp->sumsqr), ifname);
-        for (int i=0; i<nBlocks; i+=10)
+        int nBlocks = vp->blocks.size();
+        if (vp->recordEventNumbers)
         {
-            CHECK(fprintf(fi, "%d\t", vp->id), ifname);
-            for (int j = 0; j<10 && i+j < nBlocks; ++j)
+            for (Blocks::iterator blockPtr = vp->blocks.begin(); blockPtr != vp->blocks.end(); ++blockPtr)
             {
-                sBlock& block=vp->blocks[i+j];
-                CHECK(fprintf(fi, "%ld:%ld ", block.offset, block.count), ifname);
+                if (blockPtr->count > 0) // last block might be empty
+                {
+                    CHECK(fprintf(fi, "%d\t%ld %ld %ld %s %s %ld %.*g %.*g %.*g %.*g\n",
+                                vp->id, blockPtr->offset, 
+                                blockPtr->startEventNum, blockPtr->endEventNum,
+                                SIMTIME_TTOA(buff1, blockPtr->startTime), SIMTIME_TTOA(buff2, blockPtr->endTime),
+                                blockPtr->count, prec, blockPtr->min, prec, blockPtr->max, prec, blockPtr->sum, prec, blockPtr->sumSqr)
+                          , ifname);
+                }
             }
-            CHECK(fprintf(fi, "\n"), ifname);
+        }
+        else
+        {
+            for (Blocks::iterator blockPtr = vp->blocks.begin(); blockPtr != vp->blocks.end(); ++blockPtr)
+            {
+                if (blockPtr->count > 0) // last block might be empty
+                {
+                    CHECK(fprintf(fi, "%d\t%ld %s %s %ld %.*g %.*g %.*g %.*g\n",
+                                vp->id, blockPtr->offset, 
+                                SIMTIME_TTOA(buff1, blockPtr->startTime), SIMTIME_TTOA(buff2, blockPtr->endTime),
+                                blockPtr->count, prec, blockPtr->min, prec, blockPtr->max, prec, blockPtr->sum, prec, blockPtr->sumSqr)
+                          , ifname);
+                }
+            }
         }
         vp->blocks.clear();
     }
