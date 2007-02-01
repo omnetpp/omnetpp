@@ -98,7 +98,7 @@ class SIM_API SimTime
     friend const SimTime operator*(const cPar& p, const SimTime& x);
     friend const SimTime operator/(const SimTime& x, const cPar& p);
 
-    /*
+    /*XXX todo
     template<typename T> friend const SimTime operator*(const SimTime& x, T d);
     template<typename T> friend const SimTime operator*(T d, const SimTime& x);
     template<typename T> friend const SimTime operator/(const SimTime& x, T d);
