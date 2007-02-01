@@ -56,15 +56,8 @@ void cBasicChannel::initialize()
     flags |= FL_INITIALIZED;
 }
 
-void cBasicChannel::checkInitialized() const
-{
-    if (!(flags & FL_INITIALIZED))
-        throw cRuntimeError(this, "channel object not initialized yet, try calling the same method in a later init stage");
-}
-
 void cBasicChannel::rereadPars()
 {
-    //XXX printf("CHANNEL %s PARAMS REREAD\n", fullPath().c_str());//XXX
     delay_ = par("delay");
     error_ = par("error");
     datarate_ = par("datarate");
@@ -81,8 +74,6 @@ void cBasicChannel::rereadPars()
     if (delay_!=0) flags |= FL_DELAY_NONZERO;
     if (error_!=0) flags |= FL_ERROR_NONZERO;
     if (datarate_!=0) flags |= FL_DATARATE_NONZERO;
-
-    // FIXME call this from initialize()!!
 }
 
 void cBasicChannel::handleParameterChange(const char *)
@@ -117,11 +108,11 @@ bool cBasicChannel::isBusy() const
 
 bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
 {
-    checkInitialized(); //XXX remove
+    checkInitialized();
 
     // if channel is disabled, signal that message should be deleted
     if (flags & FL_ISDISABLED)
-        return false;  //XXX report to ev?
+        return false;
 
     // must wait until previous transmissions end
     if (transm_finishes > t)

@@ -59,7 +59,7 @@ App::~App()
 void App::initialize()
 {
     myAddress = parentModule()->par("address");
-    iatime = 1.0;
+    iatime = 0.0000001; //FIXME change into volatile parameter!!!
     pkCounter = 0;
     pkReceived = 0;
 
@@ -94,6 +94,7 @@ void App::handleMessage(cMessage *msg)
         ev << "generating packet " << pkname << endl;
 
         Packet *pk = new Packet(pkname);
+        pk->setByteLength(1024);
         pk->setSrcAddr(myAddress);
         pk->setDestAddr(destAddress);
         send(pk,"out");

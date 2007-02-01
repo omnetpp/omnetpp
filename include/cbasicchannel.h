@@ -46,7 +46,7 @@ class SIM_API cBasicChannel : public cChannel //implies noncopyable
     simtime_t transm_finishes;
 
   protected:
-    void checkInitialized() const;
+    void checkInitialized() const {ASSERT2(flags & FL_INITIALIZED, "Call is too early, channel object not initialized yet");}
     void rereadPars();
 
     /**
