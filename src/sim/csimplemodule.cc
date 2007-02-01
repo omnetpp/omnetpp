@@ -413,6 +413,8 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outgate)
     EVCB.messageSent_OBSOLETE(msg);  //XXX obsolete
     if (!keepit)
         delete msg;
+    else
+        EVCB.endSend(msg);
     return 0;
 }
 
@@ -506,6 +508,8 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t tran
     EVCB.messageSent_OBSOLETE(msg, togate); //XXX obsolete, and must be here AFTER the deliver call (this breaks seqChart code probably, where it was moved BEFORE)
     if (!keepit)
         delete msg;
+    else
+        EVCB.endSend(msg);
     return 0;
 }
 
