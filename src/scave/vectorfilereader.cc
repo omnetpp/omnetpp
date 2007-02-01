@@ -17,6 +17,7 @@
 #endif
 
 #include "channel.h"
+#include "scaveutils.h"
 #include "vectorfilereader.h"
 
 
@@ -29,11 +30,12 @@ VectorFileReaderNode::~VectorFileReaderNode()
 {
 }
 
-Port *VectorFileReaderNode::addVector(int vectorId)
+Port *VectorFileReaderNode::addVector(const VectorResult &vector)
 {
-    PortVector& portvec = ports[vectorId];
+    PortVector& portvec = ports[vector.vectorId];
     portvec.push_back(Port(this));
     Port& port = portvec.back();
+    columns[vector.vectorId] = vector.columns;
     return &port;
 }
 
@@ -42,29 +44,66 @@ bool VectorFileReaderNode::isReady() const
     return true;
 }
 
-static double zero =0;
-
-static bool parseDouble(char *s, double& dest)
+/**
+ * Parses columns of one line in the vector file.
+ */
+static Datum parseColumns(char **tokens, int numtokens, const VectorFileReaderNode::ColumnSpec &columns, int lineno)
 {
-    char *e;
-    dest = strtod(s,&e);
-    if (!*e)
+    Datum a;
+    int colno = columns.size();
+
+    if (colno > numtokens - 1)
+        throw opp_runtime_error("invalid vector file syntax: missing columns, line %d", lineno);
+    if (numtokens - 1 > colno)
+        throw opp_runtime_error("invalid vector file syntax: extra columns, line %d", lineno);
+
+    // optimization:
+    //   first process the two most common case, then the general case
+
+    if (colno == 2 && columns[0] == 'T' && columns[1] == 'V')
     {
-        return true;
+        // parse time and value
+        if (!parseDouble(tokens[1],a.x) || !parseDouble(tokens[2],a.y))
+            throw opp_runtime_error("invalid vector file syntax: invalid time or value column, line %d", lineno);
+        a.eventNumber = -1;
     }
-    if (strstr(s,"INF") || strstr(s, "inf"))
+    else if (colno == 3 && columns[0] == 'E' && columns[1] == 'T' && columns[2] == 'V')
     {
-        dest = 1/zero;  // +INF or -INF
-        if (*s=='-') dest = -dest;
-        return true;
+        // parse event number, time and value
+        if (!parseLong(tokens[1], a.eventNumber) || !parseDouble(tokens[2],a.x) || !parseDouble(tokens[3],a.y))
+            throw opp_runtime_error("invalid vector file syntax: invalid event number, time or value column, line %d", lineno);
     }
-    return false;
+    else // interpret general case
+    {
+        a.eventNumber = -1;
+        for (int i = 0; i < columns.size(); ++i)
+        {
+            switch (columns[i])
+            {
+            case 'E':
+                if (!parseLong(tokens[i+1], a.eventNumber))
+                    throw opp_runtime_error("invalid vector file syntax: invalid event number, line %d", lineno);
+                break;
+            case 'T':
+                if (!parseDouble(tokens[i+1], a.x))
+                    throw opp_runtime_error("invalid vector file syntax: invalid time, line %d", lineno);
+                break;
+            case 'V':
+                if (!parseDouble(tokens[i+1], a.y))
+                    throw opp_runtime_error("invalid vector file syntax: invalid value, line %d", lineno);
+                break;
+            default:
+                throw opp_runtime_error("invalid vector file syntax: unknown column type: '%c', line %d", columns[i], lineno);
+            }
+        }
+    }
+
+    return a;
 }
 
 void VectorFileReaderNode::process()
 {
     char *line;
-
     for (int k=0; k<1000 && (line=reader.getNextLineBufferPointer())!=NULL; k++)
     {
         int length = reader.getLastLineLength();
@@ -83,16 +122,17 @@ void VectorFileReaderNode::process()
             Portmap::iterator portvec = ports.find(vectorId);
             if (portvec!=ports.end())
             {
-                // parse time and value
-                Datum a;
-                if (!parseDouble(vec[1],a.x) || !parseDouble(vec[2],a.y))
-                    throw opp_runtime_error("invalid vector file syntax: invalid time or value column, line %d", (int)reader.getNumReadLines());
+                ColumnMap::iterator columnSpec = columns.find(vectorId);
+                assert(columnSpec != columns.end());
+
+                // parse columns
+                Datum a = parseColumns(vec, numtokens, columnSpec->second, (int)reader.getNumReadLines());
 
                 // write to port(s)
                 for (PortVector::iterator p=portvec->second.begin(); p!=portvec->second.end(); ++p)
                     p->channel()->write(&a,1);
 
-                //DBG(("vectorfilereader: written id=%d (%lg,%lg)\n", vectorId, time, value));
+                //DBG(("vectorfilereader: written id=%d (%ld,%lg,%lg)\n", vectorId, a.eventNumber, a.x, a.y));
             }
         }
     }
@@ -135,7 +175,9 @@ Port *VectorFileReaderNodeType::getPort(Node *node, const char *portname) const
 {
     // vector id is used as port name
     VectorFileReaderNode *node1 = dynamic_cast<VectorFileReaderNode *>(node);
-    int vectorId = atoi(portname);  // FIXME check it's numeric at all
-    return node1->addVector(vectorId);
+    VectorResult vector;
+    vector.vectorId = atoi(portname);  // FIXME check it's numeric at all
+    vector.columns = "TV";             // support old vector file format only
+    return node1->addVector(vector);
 }
 

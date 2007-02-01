@@ -34,6 +34,9 @@ struct Datum
 {
     double x;  ///< usually t simulation time
     double y;  ///< usually the value at t
+    long eventNumber;
+
+    Datum() : eventNumber(-1) {}
 };
 
 

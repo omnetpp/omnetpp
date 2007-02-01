@@ -38,9 +38,9 @@ VectorFileWriterNode::~VectorFileWriterNode()
 {
 }
 
-Port *VectorFileWriterNode::addVector(int vectorId, const char *moduleName, const char *name)
+Port *VectorFileWriterNode::addVector(const VectorResult &vector)
 {
-    ports.push_back(Pair(vectorId, moduleName, name, this));
+    ports.push_back(Pair(vector.vectorId, vector.moduleNameRef->c_str(), vector.nameRef->c_str(), vector.columns.c_str(), this));
     return &(ports.back().port);
 }
 
@@ -64,23 +64,57 @@ void VectorFileWriterNode::process()
         // print file header and vector declarations
         CHECK(fprintf(f,"%s\n\n", fileHeader.c_str()));
         for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
-            CHECK(fprintf(f, "vector %d  %s  %s  %d\n", it->id,
+            CHECK(fprintf(f, "vector %d  %s  %s  %s\n", it->id,
                              QUOTE(it->moduleName.c_str()),
-                             QUOTE(it->name.c_str()), 1));
+                             QUOTE(it->name.c_str()), it->columns.c_str()));
     }
 
     for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
     {
         Channel *chan = it->port();
         int n = chan->length();
-        for (int i=0; i<n; i++)
+        std::string &columns = it->columns;
+        int colno = columns.size();
+        Datum a;
+
+        if (colno == 2 && columns[0] == 'T' && columns[1] == 'V')
         {
-            Datum a;
-            chan->read(&a,1);
-            CHECK(fprintf(f,"%d\t%.*g\t%.*g\n", it->id, prec, a.x, prec, a.y));
+            for (int i=0; i<n; i++)
+            {
+                chan->read(&a,1);
+                CHECK(fprintf(f,"%d\t%.*g\t%.*g\n", it->id, prec, a.x, prec, a.y));
+            }
+        }
+        else if (colno == 3 && columns[0] == 'E' && columns[1] == 'T' && columns[2] == 'V')
+        {
+            for (int i=0; i<n; i++)
+            {
+                chan->read(&a,1);
+                CHECK(fprintf(f,"%d\t%ld\t%.*g\t%.*g\n", it->id, a.eventNumber, prec, a.x, prec, a.y));
+            }
+        }
+        else
+        {
+            for (int i=0; i<n; i++)
+            {
+                chan->read(&a,1);
+                CHECK(fprintf(f,"%d",it->id));
+                for (int j=0; j<colno; ++j)
+                {
+                    CHECK(fputc('\t', f));
+                    switch (columns[j])
+                    {
+                    case 'T': CHECK(fprintf(f,"%.*g", prec, a.x)); break;
+                    case 'V': CHECK(fprintf(f,"%.*g", prec, a.y)); break;
+                    case 'E': CHECK(fprintf(f,"%ld", a.eventNumber)); break; 
+                    default: throw opp_runtime_error("unknown column type: '%c' while writing %s", columns[j], fileName.c_str());
+                    }
+                }
+                CHECK(fputc('\n', f));
+
+            }
         }
     }
-
 }
 
 bool VectorFileWriterNode::finished() const
@@ -119,7 +153,12 @@ Port *VectorFileWriterNodeType::getPort(Node *node, const char *portname) const
 {
     // vector id is used as port name
     VectorFileWriterNode *node1 = dynamic_cast<VectorFileWriterNode *>(node);
-    int vectorId = atoi(portname);  // FIXME check it's numeric at all
-    return node1->addVector(vectorId, "n/a", "n/a");
+    VectorResult vector;
+    std::string moduleName = "n/a", name = "n/a";
+    vector.vectorId = atoi(portname);  // FIXME check it's numeric at all
+    vector.moduleNameRef = &moduleName;
+    vector.nameRef = &name;
+    vector.columns = "TV";             // old vector file format 
+    return node1->addVector(vector);
 }
 

@@ -58,6 +58,7 @@ struct ScalarResult : public ResultItem
 struct VectorResult : public ResultItem
 {
     int vectorId;
+    std::string columns;
     long count;
     double min;
     double max;

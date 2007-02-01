@@ -205,7 +205,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	 */
 	private void loadFile(final IFile file) {
 		System.out.println("loadFile: "+file);
-		if (isResultFile(file)) {
+		if (isResultFile(file) && file.getLocation().toFile().exists()) {
 			try {
 				// Do not try to load from the vector file whose index is not up-to-date,
 				// because the ResultFileManager loads it from the vector file and it takes too much time
@@ -217,7 +217,9 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 					indexer.setPriority(Job.LONG);
 					indexer.addJobChangeListener(new JobChangeAdapter() {
 						public void done(IJobChangeEvent event) {
-							loadFile(file); // will load from the newly created index file
+							// load from the newly created index file
+		 				    // even if the workspace is not refreshed automatically
+							loadFile(file);
 						}
 					});
 					indexer.schedule();

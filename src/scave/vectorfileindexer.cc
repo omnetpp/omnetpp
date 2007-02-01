@@ -97,8 +97,8 @@ void VectorFileIndexer::generateIndex(const char* fileName)
         for (int i=0; i<(int)vectorIDList.size(); i++)
         {
              const VectorResult& vector = resultFileManager.getVector(vectorIDList.get(i));
-             Port *readerPort = reader->addVector(vector.vectorId);
-             Port *writerPort = writer->addVector(vector.vectorId, *(vector.moduleNameRef), *(vector.nameRef));
+             Port *readerPort = reader->addVector(vector);
+             Port *writerPort = writer->addVector(vector);
              dataflowManager->connect(readerPort, writerPort);
         }
 

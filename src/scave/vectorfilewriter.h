@@ -18,7 +18,7 @@
 #include <vector>
 #include "node.h"
 #include "nodetype.h"
-
+#include "resultfilemanager.h"
 
 /**
  * Consumer node which writes an output vector file.
@@ -30,10 +30,11 @@ class VectorFileWriterNode : public Node
             int id;
             std::string moduleName;
             std::string name;
+            std::string columns;
             Port port;
 
-            Pair(int id, const char *moduleName, const char *name, Node *owner) : port(owner)
-                {this->id = id; this->moduleName = moduleName; this->name = name;}
+            Pair(int id, const char *moduleName, const char *name, const char *columns, Node *owner) : port(owner)
+                {this->id = id; this->moduleName = moduleName; this->name = name; this->columns = columns; }
         };
         typedef std::vector<Pair> PortVector;
 
@@ -48,7 +49,7 @@ class VectorFileWriterNode : public Node
         VectorFileWriterNode(const char *filename, const char *fileHeader=NULL);
         virtual ~VectorFileWriterNode();
 
-        Port *addVector(int vectorId, const char *moduleName, const char *name);
+        Port *addVector(const VectorResult &vector);
         void setPrecision(int prec) {this->prec = prec;}
 
         virtual bool isReady() const;

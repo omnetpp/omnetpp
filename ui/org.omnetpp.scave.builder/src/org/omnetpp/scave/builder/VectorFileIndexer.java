@@ -104,7 +104,7 @@ public class VectorFileIndexer extends IncrementalProjectBuilder {
 				monitor.subTask("Indexing "+file.getName());
 				try {
 					File path = file.getLocation().toFile();
-					if (path.exists())
+					if (path.exists() && !isIndexFileUpToDate(path))
 						indexer.generateIndex(path.getAbsolutePath());
 				}
 				catch (Exception e) {

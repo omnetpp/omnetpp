@@ -25,12 +25,14 @@
 #include <algorithm>
 #include "matchexpression.h"
 #include "patternmatcher.h"
-#include "resultfilemanager.h"
 #include "filereader.h"
 #include "linetokenizer.h"
 #include "stringtokenizer.h"
 #include "filereader.h"
 #include "indexfile.h"
+#include "scaveutils.h"
+#include "resultfilemanager.h"
+
 
 static double zero = 0.0;
 static double NaN = zero / zero;
@@ -656,23 +658,6 @@ static void parseString(char *&s, std::string& dest, int lineNum)
 }
 */
 
-static bool parseDouble(char *s, double& dest)
-{
-    char *e;
-    dest = strtod(s,&e);
-    if (!*e)
-    {
-        return true;
-    }
-    if (strstr(s,"INF") || strstr(s, "inf"))
-    {
-        dest = 1/zero;  // +INF or -INF
-        if (*s=='-') dest = -dest;
-        return true;
-    }
-    return false;
-}
-
 static void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly)
 {
     if (!pathname || !*pathname)
@@ -834,8 +819,11 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
         // module name, vector name
         const char *moduleName = vec[2];
         const char *vectorName = vec[3];
+        const char *columns = (numTokens < 5 || isdigit(vec[4][0]) ? "TV" : vec[4]);
+        //printf("columns: %s\n", vecdata.columns.c_str());
         vecdata.moduleNameRef = stringSetFindOrInsert(moduleNames, std::string(moduleName));
         vecdata.nameRef = stringSetFindOrInsert(names, std::string(vectorName));
+        vecdata.columns = columns;
         vecdata.count = -1;
         vecdata.min = NaN;
         vecdata.max = NaN;
@@ -844,7 +832,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
 
         fileRef->vectorResults.push_back(vecdata);
     }
-    else if (isdigit(vec[0][0]) && numTokens==3)
+    else if (isdigit(vec[0][0]) && numTokens>=3)
     {
         // this looks like a vector data line, skip it this time
     }
@@ -932,11 +920,12 @@ void ResultFileManager::loadVectorsFromIndex(const char *filename, ResultFile *f
         vectorResult.vectorId = vectorRef->vectorId;
         vectorResult.moduleNameRef = stringSetFindOrInsert(moduleNames, vectorRef->moduleName);
         vectorResult.nameRef = stringSetFindOrInsert(names, vectorRef->name);
-        vectorResult.count = vectorRef->count;
-        vectorResult.min = vectorRef->min;
-        vectorResult.max = vectorRef->max;
-        vectorResult.sum = vectorRef->sum;
-        vectorResult.sumSqr = vectorRef->sumSqr;
+        vectorResult.columns = vectorRef->columns;
+        vectorResult.count = vectorRef->count();
+        vectorResult.min = vectorRef->min();
+        vectorResult.max = vectorRef->max();
+        vectorResult.sum = vectorRef->sum();
+        vectorResult.sumSqr = vectorRef->sumSqr();
         fileRef->vectorResults.push_back(vectorResult);
     }
     delete index;

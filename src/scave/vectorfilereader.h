@@ -21,6 +21,7 @@
 #include "nodetype.h"
 #include "filereader.h"
 #include "linetokenizer.h"
+#include "resultfilemanager.h"
 
 // read in 64K chunks (apparently it doesn't matter much if we use a bigger buffer)
 #define VECFILEREADER_BUFSIZE  (64*1024)
@@ -34,8 +35,11 @@ class VectorFileReaderNode : public Node
     public:
         typedef std::vector<Port> PortVector;
         typedef std::map<int,PortVector> Portmap;
+        typedef std::string ColumnSpec;
+        typedef std::map<int,ColumnSpec> ColumnMap;
     private:
         Portmap ports;
+        ColumnMap columns;
         FileReader reader;
         LineTokenizer tokenizer;
         bool fFinished;
@@ -44,7 +48,7 @@ class VectorFileReaderNode : public Node
         VectorFileReaderNode(const char *filename, size_t bufferSize = VECFILEREADER_BUFSIZE);
         virtual ~VectorFileReaderNode();
 
-        Port *addVector(int vectorId);
+        Port *addVector(const VectorResult &vector);
 
         virtual bool isReady() const;
         virtual void process();

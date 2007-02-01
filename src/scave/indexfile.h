@@ -18,63 +18,156 @@
 #include <float.h>
 
 /**
- * FIXME comment
+ * Statistical data collected per block and per vector.
+ */
+class Statistics {
+    private:
+        long _count;
+        double _min;
+        double _max;
+        double _sum;
+        double _sumSqr;
+
+    public:
+        Statistics() : _count(0), _min(DBL_MAX), _max(DBL_MIN), _sum(0.0), _sumSqr(0.0) {}
+        Statistics(long count, double min, double max, double sum, double sumSqr)
+            :_count(count), _min(min), _max(max), _sum(sum), _sumSqr(sumSqr) {}
+
+        Statistics &operator=(const Statistics &other)
+        {
+            _count = other._count;
+            _min = other._min;
+            _max = other._max;
+            _sum = other._sum;
+            _sumSqr = other._sumSqr;
+            return *this;
+        }
+
+        long count() const { return _count; }
+        double min() const { return _min; }
+        double max() const { return _max; }
+        double sum() const { return _sum; }
+        double sumSqr() const { return _sumSqr; }
+
+        void collect(double value)
+        {
+            _count++;
+            _min = (_min < value ? _min : value);
+            _max = (_max > value ? _max : value);
+            _sum += value;
+            _sumSqr += value * value;
+        }
+
+        void adjoin(const Statistics &other)
+        {
+            _count += other._count;
+            _min = (_min < other._min ? _min : other._min);
+            _max = (_max > other._max ? _max : other._max);
+            _sum += other._sum;
+            _sumSqr += other._sumSqr;
+        }
+};
+
+/**
+ * Data of one block stored in the index file.
  */
 struct Block {
     long startOffset;
-    long startSerial; // inclusive
-    long endSerial;   // exclusive
+    long startSerial;
+    long startEventNum;
+    long endEventNum;
+    double startTime;
+    double endTime;
+    Statistics stat;
 
-    Block(long startSerial, long endSerial, long startOffset)
-        : startOffset(startOffset), startSerial(startSerial), endSerial(endSerial) {}
-    long numOfEntries() { return endSerial-startSerial; }
-    bool contains(long serial) { return startSerial <= serial && serial < endSerial; }
+    Block() : startOffset(-1), startSerial(-1), startEventNum(-1), endEventNum(-1),
+        startTime(0.0), endTime(0.0), stat() {}
+
+    long count() const { return stat.count(); }
+    double min() const { return stat.min(); }
+    double max() const { return stat.max(); }
+    double sum() const { return stat.sum(); }
+    double sumSqr() const { return stat.sumSqr(); }
+
+    long endSerial() const { return startSerial + count(); }
+
+    bool contains(long serial) const { return startSerial <= serial && serial < endSerial(); }
+    
+    void collect(long eventNum, double simtime, double value)
+    {
+        if (count() == 0)
+        {
+            startEventNum = eventNum;
+            startTime = simtime;
+        }
+        endTime = simtime;
+        endEventNum = eventNum;
+        stat.collect(value);
+    }
 };
 
 typedef std::vector<Block> Blocks;
 
 /**
- * FIXME comment
+ * Entry for one vector in the index.
  */
 struct VectorData {
     int vectorId;
     std::string moduleName;
     std::string name;
+    std::string columns;
     long blockSize;
-    long count;
-    double min;
-    double max;
-    double sum;
-    double sumSqr;
+    Statistics stat;
     Blocks blocks;
 
+    /**
+     * Creates an index entry for a vector.
+     */
     VectorData() {}
-    VectorData(int vectorId, std::string moduleName, std::string name, long blockSize)
-        : vectorId(vectorId), moduleName(moduleName), name(name), blockSize(blockSize),
-        count(0), min(DBL_MAX), max(DBL_MIN), sum(0.0), sumSqr(0.0) {}
+    VectorData(int vectorId, std::string moduleName, std::string name, std::string columns, long blockSize)
+        : vectorId(vectorId), moduleName(moduleName), name(name), columns(columns), blockSize(blockSize), stat() {}
 
-    void collect(double value)
-    {
-        count++;
-        min = (min < value ? min : value);
-        max = (max > value ? max : value);
-        sum += value;
-        sumSqr += value*value;
-    }
+    long count() const { return stat.count(); }
+    double min() const { return stat.min(); }
+    double max() const { return stat.max(); }
+    double sum() const { return stat.sum(); }
+    double sumSqr() const { return stat.sumSqr(); }
 
-    void addBlock(long offset, long count)
-    {
-        long start = blocks.size() == 0 ? 0 : blocks.back().endSerial;
-        blocks.push_back(Block(start, start+count, offset));
-    }
+    /**
+     * Adds the block statistics to the vector statistics.
+     */
+    void collect(const Block &block) { stat.adjoin(block.stat); }
 
-    Block* getBlockForEntry(long serial);
+    /**
+     * Returns true if the vector contains the specified column.
+     */
+    bool hasColumn(char column) const { return columns.find(column) != std::string::npos; }
+
+    /**
+     * Returns a pointer to the block containing the entry with the given serial,
+     * or NULL if no such entry.
+     */
+    Block* getBlockForEntry(long serial) const;
+
+    /**
+     * Finds the start (inclusive) and end (exclusive) indeces of the range of blocks,
+     * containing entries in the [startTime,endTime] interval (both inclusive).
+     * Returns the number of blocks found.
+     */
+    Blocks::size_type getBlocksInSimtimeInterval(double startTime, double endTime, Blocks::size_type &startIndex, Blocks::size_type &endIndex) const;
+
+    /**
+     * Finds the start (inclusive) and end (exclusive) indeces of the range of blocks,
+     * containing entries in the [startEventNum,endEventNum] interval (both inclusive).
+     * Returns the number of blocks found.
+     */
+    Blocks::size_type getBlocksInEventnumInterval(long startEventNum, long endEventNum, Blocks::size_type &startIndex, Blocks::size_type &endIndex) const;
 };
 
 typedef std::vector<VectorData> Vectors;
 
 /**
- * FIXME comment
+ * Data of all vectors stored in the index file.
  */
 struct VectorFileIndex {
     std::string vectorFileName;
@@ -108,39 +201,80 @@ class IndexFile
 };
 
 /**
- * FIXME comment
+ * Reader for an index file.
  */
 class IndexFileReader
 {
    private:
+        /** The name of the index file. */
         std::string filename;
     public:
+        /**
+         * Creates a reader for the specified index file.
+         */
         IndexFileReader(const char *filename);
+
+        /**
+         * Reads the index fully into the memory.
+         */
         VectorFileIndex *readAll();
-        VectorFileIndex *readHeader();
+
+        /**
+         * Reads the fingerprint of the vector file this index file belongs to.
+         */
+        VectorFileIndex *readFingerprint();
     protected:
+        /**
+         * Parse one line of the index file.
+         */
         void parseLine(char **tokens, int numTokens, VectorFileIndex *index, long &numOfEntries, int lineNum);
 };
 
 /**
- * FIXME comment
+ * Writer for an index file.
  */
 class IndexFileWriter
 {
     private:
+        /** Name of the index file. */
         std::string filename;
+        /** Precision of double values stored in the index file. */
         int precision;
+        /** Handle of the opened index file. */
         FILE *file;
     public:
+        /**
+         * Creates a writer for the specified index file.
+         */
         IndexFileWriter(const char *filename, int precision=14);
+        /**
+         * Deletes the writer. (Closes the index file first.)
+         */
         ~IndexFileWriter();
-        void writeAll(VectorFileIndex& index);
+        /**
+         * Writes out the index fully.
+         */
+        void writeAll(const VectorFileIndex& index);
+        /**
+         * Writes out the fingerprint of the vector file this file belongs to.
+         */
         void writeFingerprint(std::string vectorFileName);
-        void writeVector(VectorData& vector);
-        void writeVectorDeclaration(VectorData& vector);
-        void writeBlock(Block& block);
+        /**
+         * Writes out the index of one vector (declaration+blocks).
+         */
+        void writeVector(const VectorData& vector);
+        /**
+         * Writes out the declaration of a vector.
+         */
+        void writeVectorDeclaration(const VectorData& vector);
+        /**
+         * Writes out a block of the specified vector.
+         */
+        void writeBlock(const VectorData &vector, const Block& block);
     protected:
+        /** Opens the index file. */
         void openFile();
+        /** Closes the index file. */
         void closeFile();
 };
 

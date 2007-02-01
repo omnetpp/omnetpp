@@ -8,6 +8,8 @@
 #include "datasorter.h"
 #include "stringutil.h"   // strdictcmp
 #include "indexfile.h"
+#include "indexedvectorfile.h"
+#include "vectorfileindexer.h"
 %}
 
 %exception {
@@ -290,7 +292,33 @@ int strdictcmp(const char *s1, const char *s2);
 %include "idlist.h"
 %include "resultfilemanager.h"
 %include "datasorter.h"
-%include "indexfile.h"
+
+/* ------------- indexedvectorfile.h  ----------------- */
+// %include "indexfile.h"
+class IndexFile
+{
+    public:
+        static bool isIndexFile(const char *indexFileName);
+        static bool isVectorFile(const char *vectorFileName);
+        static std::string getIndexFileName(const char *vectorFileName);
+        static std::string getVectorFileName(const char *indexFileName);
+        static bool isIndexFileUpToDate(const char *fileName);
+};
+
+/* ------------- vectorfileindexer.h  ----------------- */
+
+%include "vectorfileindexer.h"
+
+/* ------------- indexedvectorfile.h  ----------------- */
+
+namespace std {
+  specialize_std_vector(OutputVectorEntry);
+  %template(EntryVector) vector<OutputVectorEntry>;
+};
+%ignore BlockWithEntries;
+%ignore IndexedVectorFileWriterNode;
+%ignore IndexedVectorFileWriterNodeType;
+%include "indexedvectorfile.h"
 
 // wrap the data-flow engine as well
 %include scave-plove.i

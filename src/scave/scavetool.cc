@@ -223,7 +223,7 @@ int filterCommand(int argc, char **argv)
              const VectorResult& vector = resultFileManager.getVector(vectorIDList.get(i));
              assert(vectorFileReaders.find(vector.fileRunRef->fileRef) != vectorFileReaders.end());
              VectorFileReaderNode *readerNode = vectorFileReaders[vector.fileRunRef->fileRef];
-             vectorPorts.push_back(readerNode->addVector(vector.vectorId));
+             vectorPorts.push_back(readerNode->addVector(vector));
         }
 
         // add filters
@@ -253,7 +253,7 @@ int filterCommand(int argc, char **argv)
             for (int i=0; i<vectorIDList.size(); i++)
             {
                 const VectorResult& vector = resultFileManager.getVector(vectorIDList.get(i));
-                Port *writerNodePort = writerNode->addVector(i, vector.moduleNameRef->c_str(), vector.nameRef->c_str()); // vectors get renumbered
+                Port *writerNodePort = writerNode->addVector(vector); // FIXME: renumber vectors
                 dataflowManager.connect(vectorPorts[i], writerNodePort);
             }
         }

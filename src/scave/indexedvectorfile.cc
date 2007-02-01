@@ -18,6 +18,7 @@
 #include "channel.h"
 #include "stringutil.h"
 #include "indexedvectorfile.h"
+#include "scaveutils.h"
 
 #ifdef _MSC_VER
 #pragma warning(disable:4786)
@@ -40,97 +41,151 @@ IndexedVectorFileReader::~IndexedVectorFileReader()
         delete reader;
     if (index != NULL)
         delete index;
-    if (currentBlock != NULL)
-        delete currentBlock;
+    if (currentEntries != NULL)
+        delete currentEntries;
 }
-
-//=========================================================================
 
 // see filemgrs.h
 #define MIN_BUFFER_SIZE 512
 
+#ifdef CHECK
+#undef CHECK
+#endif
+#define CHECK(cond, msg, block, line) \
+            if (!(cond))\
+            {\
+                delete entries;\
+                throw opp_runtime_error("Invalid vector file syntax: %s, file %s, block offset %ld, line in block %d", \
+                                        msg, fname.c_str(), block.startOffset, line);\
+            }
 
-static double zero =0;
-
-static bool parseDouble(char *s, double& dest)
-{
-    char *e;
-    dest = strtod(s,&e);
-    if (!*e)
-    {
-        return true;
-    }
-    if (strstr(s,"INF") || strstr(s, "inf"))
-    {
-        dest = 1/zero;  // +INF or -INF
-        if (*s=='-') dest = -dest;
-        return true;
-    }
-    return false;
-}
-
-BlockWithEntries *IndexedVectorFileReader::loadBlock(Block &block)
+void IndexedVectorFileReader::loadBlock(Block &block)
 {
     if (reader==NULL)
         reader=new FileReader(fname.c_str(), vector->blockSize);
 
-    BlockWithEntries *result = new BlockWithEntries(block);
+    if (currentBlock == &block)
+        return;
 
-    long count=block.endSerial-block.startSerial;
+    if (currentBlock != NULL) {
+        delete currentEntries;
+        currentEntries = NULL;
+        currentBlock = NULL;
+    }
+
+    long count=block.count();
     reader->seekTo(block.startOffset);
-    result->entries=new OutputVectorEntry[count];
+    OutputVectorEntry *entries = new OutputVectorEntry[count];
 
-    char *line, **tokens, *end;
+    char *line, **tokens;
     int numTokens;
     LineTokenizer tokenizer;
-    long id;
+    long id, eventNumber;
     double t, val;
+
+    std::string columns = vector->columns;
+    int columnsNo = columns.size();
 
     for (int i=0; i<count; ++i)
     {
-        if ((line=reader->getNextLineBufferPointer())==NULL)
-            throw opp_runtime_error("Unexpected end of file in '%s'", fname.c_str());
+        CHECK(line=reader->getNextLineBufferPointer(), "Unexpected end of file", block, i);
         int len = reader->getLastLineLength();
 
         tokenizer.tokenize(line, len);
         tokens=tokenizer.tokens();
         numTokens = tokenizer.numTokens();
-        if (numTokens < 3)
-            throw opp_runtime_error("Line to short: %.*s", len, line);
 
-        id = strtol(tokens[0], &end, 10);
-        if (*end || id!=vector->vectorId)
-            throw opp_runtime_error("Missing or unexpected vector id: %.*s", len, line);
+        CHECK(numTokens >= columns.size() + 1, "Line is too short", block, i);
+        CHECK(parseLong(tokens[0],id) && id==vector->vectorId, "Missing or unexpected vector id", block, i);
 
-        if (!parseDouble(tokens[1], t) || !parseDouble(tokens[2], val))
-            throw opp_runtime_error("Malformed line: %.*s", len, line);
-
-        result->entries[i] = OutputVectorEntry(block.startSerial+i, t, val);
+        entries[i].serial = block.startSerial+i;
+        for (int j = 0; j < columnsNo; ++j)
+        {
+            switch (columns[j])
+            {
+            case 'E': CHECK(parseLong(tokens[j+1], entries[i].eventNumber), "Malformed event number", block, i); break;
+            case 'T': CHECK(parseDouble(tokens[j+1], entries[i].simtime), "Malformed simulation time", block, i); break;
+            case 'V': CHECK(parseDouble(tokens[j+1], entries[i].value), "Malformed vector value", block, i); break;
+            default: CHECK(false, "Unknown column", block, i); break;
+            }
+        }
     }
 
-    return result;
+    currentEntries = entries;
+    currentBlock = &block;
 }
 
 OutputVectorEntry *IndexedVectorFileReader::getEntryBySerial(long serial)
 {
-    if (serial<0 || serial>=vector->count)
+    if (serial<0 || serial>=vector->count())
         return NULL;
 
     if (currentBlock == NULL || !currentBlock->contains(serial))
     {
-        if (currentBlock != NULL) {
-            delete currentBlock;
-            currentBlock = NULL;
-        }
-        currentBlock = loadBlock(*(vector->getBlockForEntry(serial)));
+        loadBlock(*(vector->getBlockForEntry(serial)));
     }
 
-    return currentBlock->getEntryBySerial(serial);
+    return &currentEntries[serial - currentBlock->startSerial];
+}
+
+long IndexedVectorFileReader::collectEntriesInSimtimeInterval(double startTime, double endTime, Entries &out)
+{
+    Blocks::size_type startIndex;
+    Blocks::size_type endIndex;
+    vector->getBlocksInSimtimeInterval(startTime, endTime, /*out*/ startIndex, /*out*/ endIndex);
+
+    Entries::size_type count = 0;
+    for (Blocks::size_type i = startIndex; i < endIndex; i++)
+    {
+        Block &block = vector->blocks[i];
+        loadBlock(block);
+        for (long j = 0; j < block.count(); ++j)
+        {
+            OutputVectorEntry &entry = currentEntries[i];
+            if (startTime <= entry.simtime && entry.simtime <= endTime)
+            {
+                out.push_back(entry);
+                count++;
+            }
+            else if (entry.simtime > endTime)
+                break;
+        }
+    }
+    return count;
+}
+
+long IndexedVectorFileReader::collectEntriesInEventnumInterval(long startEventNum, long endEventNum, Entries &out)
+{
+    Blocks::size_type startIndex;
+    Blocks::size_type endIndex;
+    vector->getBlocksInEventnumInterval(startEventNum, endEventNum, /*out*/ startIndex, /*out*/ endIndex);
+
+    Entries::size_type count = 0;
+    for (Blocks::size_type i = startIndex; i < endIndex; i++)
+    {
+        Block &block = vector->blocks[i];
+        loadBlock(block);
+        
+        for (long j = 0; j < block.count(); ++j)
+        {
+            OutputVectorEntry &entry = currentEntries[i];
+            if (startEventNum <= entry.eventNumber && entry.eventNumber <= endEventNum)
+            {
+                out.push_back(entry);
+                count++;
+            }
+            else if (entry.eventNumber > endEventNum)
+                break;
+        }
+    }
+    return count;
 }
 
 //=========================================================================
 
-
+#ifdef CHECK
+#undef CHECK
+#endif
 #define CHECK(printf) if (printf<0) throw opp_runtime_error("Cannot write vector file '%s'", fileName.c_str());
 
 
@@ -167,9 +222,9 @@ IndexedVectorFileWriterNode::~IndexedVectorFileWriterNode()
     }
 }
 
-Port *IndexedVectorFileWriterNode::addVector(int vectorId, std::string moduleName, std::string name)
+Port *IndexedVectorFileWriterNode::addVector(const VectorResult &vector)
 {
-    VectorInputPort *inputport = new VectorInputPort(vectorId, moduleName, name, blockSize, this);
+    VectorInputPort *inputport = new VectorInputPort(vector.vectorId, *(vector.moduleNameRef), *(vector.nameRef), vector.columns, blockSize, this);
     ports.push_back(inputport);
     return inputport;
 }
@@ -196,9 +251,10 @@ void IndexedVectorFileWriterNode::process()
         for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
         {
             VectorInputPort *port = *it;
-            CHECK(fprintf(f, "vector %d  %s  %s  %d\n", port->vector.vectorId,
+            CHECK(fprintf(f, "vector %d  %s  %s  %s\n", port->vector.vectorId,
                              QUOTE(port->vector.moduleName.c_str()),
-                             QUOTE(port->vector.name.c_str()), 1));
+                             QUOTE(port->vector.name.c_str()),
+                             port->vector.columns.c_str()));
         }
     }
 
@@ -227,35 +283,90 @@ bool IndexedVectorFileWriterNode::finished() const
     return true;
 }
 
+void IndexedVectorFileWriterNode::bufferPrintf(VectorInputPort *port, const char *format...)
+{
+    va_list va;
+    va_start(va, format);
+    int count = vsprintf(port->bufferPtr, format, va);
+    va_end(va);
+    if (count < 0)
+        throw opp_runtime_error("Cannot write data to output buffer");
+    port->bufferPtr+=count;
+}
+
 void IndexedVectorFileWriterNode::writeRecordsToBuffer(VectorInputPort *port)
 {
+    assert(port->vector.blocks.size() > 0);
+
+    int vectorId = port->vector.vectorId;
     Channel *chan = port->channel();
     int n = chan->length();
-    for (int i=0; i<n; i++)
+    std::string &columns = port->vector.columns;
+    int colno = columns.size();
+    Datum a;
+    int count;
+
+    if (colno == 2 && columns[0] == 'T' && columns[1] == 'V')
     {
-        Datum a;
-        chan->read(&a,1);
-        if (port->bufferPtr - port->buffer >= port->bufferSize - 100)
-            writeBufferToFile(port);
-        int count = sprintf(port->bufferPtr, "%d\t%.*g\t%.*g\n", port->vector.vectorId, prec, a.x, prec, a.y);
-        if (count > 0)
+        for (int i=0; i<n; i++)
         {
-            port->bufferPtr+=count;
+            chan->read(&a,1);
+            if (port->bufferPtr - port->buffer >= port->bufferSize - 100)
+                writeBufferToFile(port);
+            bufferPrintf(port, "%d\t%.*g\t%.*g\n", vectorId, prec, a.x, prec, a.y);
             port->bufferNumOfRecords++;
-            port->vector.collect(a.y);
+            port->vector.blocks.back().collect(-1, a.x, a.y);
         }
-        else
-            throw opp_runtime_error("Cannot write data to output buffer.");
+    }
+    else if (colno == 3 && columns[0] == 'E' && columns[1] == 'T' && columns[2] == 'V')
+    {
+        for (int i=0; i<n; i++)
+        {
+            chan->read(&a,1);
+            if (port->bufferPtr - port->buffer >= port->bufferSize - 100)
+                writeBufferToFile(port);
+            bufferPrintf(port, "%d\t%ld\t%.*g\t%.*g\n", vectorId, a.eventNumber, prec, a.x, prec, a.y);
+            port->bufferNumOfRecords++;
+            port->vector.blocks.back().collect(a.eventNumber, a.x, a.y);
+        }
+    }
+    else
+    {
+        for (int i=0; i<n; i++)
+        {
+            chan->read(&a,1);
+            int count = 0;
+            bufferPrintf(port,"%d", vectorId);
+            for (int j=0; j<colno; ++j)
+            {
+                bufferPrintf(port, "\t");
+                switch (columns[j])
+                {
+                case 'T': bufferPrintf(port,"%.*g", prec, a.x); break;
+                case 'V': bufferPrintf(port,"%.*g", prec, a.y); break;
+                case 'E': bufferPrintf(port,"%ld", a.eventNumber); break; 
+                default: throw opp_runtime_error("unknown column type: '%c'", columns[j]);
+                }
+            }
+            bufferPrintf(port, "\n");
+            port->bufferNumOfRecords++;
+            port->vector.blocks.back().collect(a.eventNumber, a.x, a.y);
+        }
     }
 }
 
 void IndexedVectorFileWriterNode::writeBufferToFile(VectorInputPort *port)
 {
     assert(f!=NULL);
-    long offset = ftell(f);
+    assert(port->vector.blocks.size() > 0);
+
+    Block &currentBlock = port->vector.blocks.back();
+    currentBlock.startOffset = ftell(f);
+
     CHECK(fputs(port->buffer, f));
-    port->vector.addBlock(offset, port->bufferNumOfRecords);
+    port->vector.collect(currentBlock);
     port->clearBuffer();
+    port->vector.blocks.push_back(Block());
 }
 
 void IndexedVectorFileWriterNode::writeIndex(VectorInputPort *port)
@@ -303,8 +414,13 @@ Port *IndexedVectorFileWriterNodeType::getPort(Node *node, const char *portname)
 {
     // vector id is used as port name
     IndexedVectorFileWriterNode *node1 = dynamic_cast<IndexedVectorFileWriterNode *>(node);
-    int vectorId = atoi(portname);  // FIXME check it's numeric at all
-    return node1->addVector(vectorId, "n/a", "n/a");
+    VectorResult vector;
+    std::string moduleName = "n/a", name = "n/a";
+    vector.vectorId = atoi(portname);  // FIXME check it's numeric at all
+    vector.moduleNameRef = &moduleName;
+    vector.nameRef = &name;
+    vector.columns = "TV";             // old vector file format 
+    return node1->addVector(vector);
 }
 
 
