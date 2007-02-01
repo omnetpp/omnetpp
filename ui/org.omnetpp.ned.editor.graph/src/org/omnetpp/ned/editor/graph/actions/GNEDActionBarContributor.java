@@ -12,7 +12,6 @@ import org.eclipse.gef.ui.actions.MatchHeightRetargetAction;
 import org.eclipse.gef.ui.actions.MatchWidthRetargetAction;
 import org.eclipse.gef.ui.actions.RedoRetargetAction;
 import org.eclipse.gef.ui.actions.UndoRetargetAction;
-import org.eclipse.gef.ui.actions.ZoomComboContributionItem;
 import org.eclipse.gef.ui.actions.ZoomInRetargetAction;
 import org.eclipse.gef.ui.actions.ZoomOutRetargetAction;
 import org.eclipse.jface.action.IAction;
@@ -35,8 +34,6 @@ import org.eclipse.ui.part.EditorActionBarContributor;
 // gets activated. once it is fixed in GEF theic calss can be derived from ActionBarContributor 
 public class GNEDActionBarContributor extends EditorActionBarContributor {
 
-    protected ZoomComboContributionItem zoomContrib;
-    
     private ActionRegistry registry = new ActionRegistry();
 
     /**
@@ -143,8 +140,6 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
             // end fix
             bars.setGlobalActionHandler(id, action);
         }
-
-        // TODO enable/disable the zoomCOmboCOntribution
     }
     
 // ********** customize the graphical NED editor ***********************
@@ -211,10 +206,6 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
     	tbm.add(getAction(UnpinAction.ID));
     	tbm.add(getAction(ReLayoutAction.ID));
 
-    	tbm.add(new Separator());
-        String[] zoomStrings = new String[] { ZoomManager.FIT_ALL, ZoomManager.FIT_HEIGHT,
-                ZoomManager.FIT_WIDTH };
-        tbm.add(zoomContrib = new NEDZoomComboContributionItem(getPage(), zoomStrings));
     }
 
     /**
