@@ -32,7 +32,7 @@ module Node
                 in[sizeof(port)];
                 out[sizeof(port)];
         };
-        queue[sizeof(port)]: PointToPointIF {
+        queue[sizeof(port)]: L2Queue {
             parameters:
                 @display("p=80,200,row");
         };

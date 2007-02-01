@@ -16,7 +16,7 @@
  * Point-to-point interface module. While one frame is transmitted,
  * additional frames get queued up; see NED file for more info.
  */
-class PointToPointIF : public cSimpleModule
+class L2Queue : public cSimpleModule
 {
   private:
     long frameCapacity;
@@ -28,8 +28,8 @@ class PointToPointIF : public cSimpleModule
     long numFramesDropped;
 
   public:
-    PointToPointIF();
-    virtual ~PointToPointIF();
+    L2Queue();
+    virtual ~L2Queue();
 
   protected:
     virtual void initialize();
@@ -40,19 +40,19 @@ class PointToPointIF : public cSimpleModule
     virtual void displayStatus(bool isBusy);
 };
 
-Define_Module(PointToPointIF);
+Define_Module(L2Queue);
 
-PointToPointIF::PointToPointIF()
+L2Queue::L2Queue()
 {
     endTransmissionEvent = NULL;
 }
 
-PointToPointIF::~PointToPointIF()
+L2Queue::~L2Queue()
 {
     cancelAndDelete(endTransmissionEvent);
 }
 
-void PointToPointIF::initialize()
+void L2Queue::initialize()
 {
     numFramesDropped = 0;
     WATCH(numFramesDropped);
@@ -85,7 +85,7 @@ void PointToPointIF::initialize()
     }
 }
 
-void PointToPointIF::startTransmitting(cMessage *msg)
+void L2Queue::startTransmitting(cMessage *msg)
 {
     if (ev.isGUI()) displayStatus(true);
 
@@ -97,7 +97,7 @@ void PointToPointIF::startTransmitting(cMessage *msg)
     scheduleAt(endTransmission, endTransmissionEvent);
 }
 
-void PointToPointIF::handleMessage(cMessage *msg)
+void L2Queue::handleMessage(cMessage *msg)
 {
     if (msg==endTransmissionEvent)
     {
@@ -141,7 +141,7 @@ void PointToPointIF::handleMessage(cMessage *msg)
     }
 }
 
-void PointToPointIF::displayStatus(bool isBusy)
+void L2Queue::displayStatus(bool isBusy)
 {
     displayString().setTagArg("t",0, isBusy ? "transmitting" : "idle");
     displayString().setTagArg("i",1, isBusy ? (queue.length()>=3 ? "red" : "yellow") : "");
