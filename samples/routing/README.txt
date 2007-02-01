@@ -21,10 +21,13 @@ Once the routing tables are set up, nodes start sending packets at random
 intervals. Every node gets a list of destination addresses in a parameter,
 and for every packet it randomly chooses a destination from the list.
 
-To keep the model simple, packet forwarding takes zero time in the model,
-and so it is not necessary to queue the packets. In a realistic simulation
-this also has to be changed.
+There are two apps provided: App generates packets with exponential interarrival
+times, while BurstyApp alternates between active and idle periods. BurstyApp's
+implementation demonstrates the use of the FSMs (Finite State Machine).
 
 The networks/ subdirectory contains further networks that can be tested with
 the "routing" executable -- provided OMNeT++ was compiled with support for
 dynamic loading of NED files (WITH_NETBUILDER option).
+
+
+
