@@ -351,9 +351,9 @@ void cEnvir::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagation
     //XXX app->messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
 }
 
-void cEnvir::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, simtime_t transmissionStartTime)
+void cEnvir::endSend(cMessage *msg)
 {
-    //XXX app->messageSendHop(msg, srcGate, propagationDelay, transmissionDelay, transmissionStartTime);
+    //XXX app->endSend(msg);
 }
 
 void cEnvir::messageDeleted(cMessage *msg)

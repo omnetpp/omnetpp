@@ -124,11 +124,14 @@ bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
         return false;  //XXX report to ev?
 
     // must wait until previous transmissions end
-    bool channelbusy = transm_finishes > t;
-    if (channelbusy)
-        t = transm_finishes;
+    if (transm_finishes > t)
+        throw cRuntimeError("Error sending message (%s)%s on gate %s: gate is currently "
+                            "busy with an ongoing transmission -- please rewrite the sender "
+                            "simple module to only send when the previous transmission has "
+                            "already finished, using cGate::transmissionFinishes(), scheduleAt(), "
+                            "and possibly a cQueue for storing messages waiting to be transmitted",
+                            msg->className(), msg->fullName(), fromGate()->fullPath().c_str());
 
-    simtime_t transmissionstarttime = t;
     simtime_t transmissiondelay = 0;
 
     // datarate modeling
@@ -152,10 +155,7 @@ bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
             msg->setBitError(true);
     }
 
-    if (channelbusy)
-        EVCB.messageSendHop(msg, fromGate(), delay_, transmissiondelay, transmissionstarttime);
-    else
-        EVCB.messageSendHop(msg, fromGate(), delay_, transmissiondelay);
+    EVCB.messageSendHop(msg, fromGate(), delay_, transmissiondelay);
 
     // hand over msg to next gate
     return fromGate()->toGate()->deliver(msg, t);
