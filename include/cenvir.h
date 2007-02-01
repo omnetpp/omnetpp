@@ -243,7 +243,7 @@ class ENVIR_API cEnvir : public std::ostream
     void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay=0, simtime_t transmissionDelay=0);
     void messageSendHop(cMessage *msg, cGate *srcGate);
     void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay);
-    void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, simtime_t transmissionStartTime);
+    void endSend(cMessage *msg);
     void messageDeleted(cMessage *msg);  //XXX document this and all above funcs
 
     /**
