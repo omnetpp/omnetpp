@@ -828,12 +828,9 @@ AC_CONFIG_FILES(
   samples/hcube/Makefile
   samples/hist/Makefile
   samples/neddemo/Makefile
-  samples/p-to-p/Makefile
-  samples/queueing/Makefile
-  samples/routing/Makefile
-  samples/queues/Makefile
   samples/queuenet/Makefile
   samples/queuenet/lib/Makefile
+  samples/routing/Makefile
   samples/tictoc/Makefile
   samples/tokenring/Makefile
   samples/sockets/Makefile

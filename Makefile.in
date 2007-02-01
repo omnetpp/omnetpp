@@ -35,7 +35,7 @@ components: base jnilibs samples
 #=====================================================================
 
 BASE=common layout eventlog scave nedxml sim envir cmdenv tkenv utils nedc
-SAMPLES=aloha cqn dyna fifo hcube hist neddemo p-to-p routing queuenet tictoc tokenring sockets
+SAMPLES=aloha cqn dyna fifo hcube hist neddemo queuenet routing tictoc tokenring sockets
 JNILIBS=
 #JNILIBS=org.omnetpp.ned.model \
 #        org.omnetpp.ide.nativelibs
