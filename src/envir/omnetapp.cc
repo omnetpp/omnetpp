@@ -38,6 +38,8 @@
 #include "random.h"
 #include "crng.h"
 #include "cmodule.h"
+#include "cmessage.h"
+#include "cdisplaystring.h"
 #include "cxmlelement.h"
 #include "cxmldoccache.h"
 #include "fnamelisttokenizer.h"
@@ -95,6 +97,8 @@ TOmnetApp::TOmnetApp(ArgList *arglist, cConfiguration *conf)
     outvectmgr = NULL;
     outscalarmgr = NULL;
     snapshotmgr = NULL;
+
+    feventlog = NULL;
 
     num_rngs = 0;
     rngs = NULL;
@@ -331,6 +335,14 @@ void TOmnetApp::endRun()
         parsimpartition->endRun();
 #endif
     }
+
+    // close message log file
+    if (feventlog)
+    {
+        fclose(feventlog);
+        feventlog = NULL;
+    }
+
     snapshotmgr->endRun();
     outscalarmgr->endRun();
     outvectmgr->endRun();
@@ -508,10 +520,244 @@ cConfiguration *TOmnetApp::getConfig()
 
 //-------------------------------------------------------------
 
+void TOmnetApp::bubble(cModule *mod, const char *text)
+{
+    if (feventlog)
+    {
+        ::fprintf(feventlog, "BU id %ld txt \"%s\"\n",
+                           mod->id(),
+                           text);
+    }
+}
+
+void TOmnetApp::simulationEvent(cMessage *msg)
+{
+    if (feventlog)
+    {
+        cModule *mod = simulation.contextModule();
+        ::fprintf(feventlog, "\nE # %ld t %s m %ld msg %ld ce %ld\n",
+                           simulation.eventNumber(),
+                           SIMTIME_STR(simulation.simTime()),
+                           mod->id(),
+                           msg->id(),
+                           msg->previousEventNumber());
+    }
+}
+
+//XXX message display string, etc?
+//XXX properly escape strings everywhere...
+void TOmnetApp::beginSend(cMessage *msg)
+{
+    if (feventlog)
+    {
+        ::fprintf(feventlog, "BS id %ld tid %ld eid %ld etid %ld c %s n \"%s\" k %d l %ld pe %ld\n",
+                           msg->id(),
+                           msg->treeId(), //XXX only if differs from id()
+                           msg->encapsulationId(), //XXX only if differs from id()
+                           msg->encapsulationTreeId(), //XXX only if differs from id()
+                           msg->className(),
+                           msg->fullName(),
+                           msg->kind(),
+                           msg->length(),
+                           msg->previousEventNumber());  //XXX plus many other fields...
+    }
+}
+
+void TOmnetApp::messageScheduled(cMessage *msg)
+{
+    if (feventlog)
+    {
+        ::fprintf(feventlog, "BS id %ld tid %ld c %s n %s sm %ld pe %ld\n",
+                           msg->id(),
+                           msg->treeId(),
+                           msg->className(),
+                           msg->fullName(),
+                           msg->senderModuleId(),
+                           msg->previousEventNumber());  //XXX plus many other fields...
+        ::fprintf(feventlog, "ES t %s\n",
+                           SIMTIME_STR(msg->arrivalTime())
+                           );
+    }
+}
+
+void TOmnetApp::messageCancelled(cMessage *msg)
+{
+    if (feventlog)
+    {
+        ::fprintf(feventlog, "CE id %ld\n",
+                           msg->id());
+    }
+}
+
+void TOmnetApp::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+{
+    if (feventlog)
+    {
+        ::fprintf(feventlog, "SD sm %ld dm %ld dg %d pd %s td %s\n",
+                           msg->senderModuleId(),
+                           toGate->ownerModule()->id(),
+                           toGate->id(),
+                           SIMTIME_STR(propagationDelay),
+                           SIMTIME_STR(transmissionDelay));
+    }
+}
+
+void TOmnetApp::messageSendHop(cMessage *msg, cGate *srcGate)
+{
+    if (feventlog)
+    {
+        ::fprintf(feventlog, "SH sm %ld sg %d\n",
+                           srcGate->ownerModule()->id(),
+                           srcGate->id());
+    }
+}
+
+void TOmnetApp::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+{
+    if (feventlog)
+    {
+          ::fprintf(feventlog, "SH sm %ld sg %d td %s pd %s\n",
+                             srcGate->ownerModule()->id(),
+                             srcGate->id(),
+                             SIMTIME_STR(transmissionDelay),
+                             SIMTIME_STR(propagationDelay));
+    }
+}
+
+void TOmnetApp::endSend(cMessage *msg)
+{
+    if (feventlog)
+    {
+        ::fprintf(feventlog, "ES t %s\n",
+                           SIMTIME_STR(msg->arrivalTime())
+                           );
+    }
+}
+
+void TOmnetApp::messageDeleted(cMessage *msg)
+{
+    if (feventlog)
+    {
+        ::fprintf(feventlog, "DE id %ld\n",
+                           msg->id());
+    }
+}
+
+void TOmnetApp::componentMethodCalled(cComponent *from, cComponent *to, const char *method)
+{
+    if (feventlog)
+    {
+        if (from->isModule() && to->isModule())
+        {
+            cModule *fromMod = (cModule *)from;
+            cModule *toMod = (cModule *)to;
+            ::fprintf(feventlog, "MM sm %ld tm %ld m \"%s\"\n",
+                               fromMod->id(),
+                               toMod->id(),
+                               method);
+        }
+    }
+}
+
+void TOmnetApp::moduleCreated(cModule *newmodule)
+{
+    if (feventlog)
+    {
+        cModule *m = newmodule;
+        if (m->parentModule())
+        {
+            ::fprintf(feventlog, "MC id %ld c %s pid %ld n %s\n",
+                               m->id(),
+                               m->className(),
+                               m->parentModule()->id(), //FIXME size() is missing
+                               m->fullName());
+        } else {
+            ::fprintf(feventlog, "MC id %ld c %s n %s\n",
+                               m->id(),
+                               m->className(),
+                               m->fullName());
+        }
+    }
+}
+
+void TOmnetApp::moduleDeleted(cModule *module)
+{
+    if (feventlog)
+    {
+        ::fprintf(feventlog, "MD id %ld\n",
+                           module->id());
+    }
+}
+
+void TOmnetApp::moduleReparented(cModule *module, cModule *oldparent)
+{
+    if (feventlog)
+    {
+        ::fprintf(feventlog, "MR id %ld p %ld\n",
+                           module->id(),
+                           module->parentModule()->id());
+    }
+}
+
+void TOmnetApp::connectionCreated(cGate *srcgate)
+{
+    if (feventlog)
+    {
+        cGate *destgate = srcgate->toGate();
+        ::fprintf(feventlog, "CC sm %ld sg %d sn %s dm %ld dg %d dn %s\n",
+                           srcgate->ownerModule()->id(),
+                           srcgate->id(),
+                           srcgate->fullName(),
+                           destgate->ownerModule()->id(),
+                           destgate->id(),
+                           destgate->fullName());  //XXX channel, channel attributes, etc
+    }
+}
+
+void TOmnetApp::connectionRemoved(cGate *srcgate)
+{
+    if (feventlog)
+    {
+        ::fprintf(feventlog, "CD sm %ld sg %d\n",
+                           srcgate->ownerModule()->id(),
+                           srcgate->id());
+    }
+}
+
+void TOmnetApp::displayStringChanged(cGate *gate)
+{
+    if (feventlog)
+    {
+        ::fprintf(feventlog, "CS sm %ld sg %d d \"%s\"\n",
+                           gate->ownerModule()->id(),
+                           gate->id(),
+                           gate->displayString().getString());
+    }
+}
+
+void TOmnetApp::displayStringChanged(cModule *submodule)
+{
+    if (feventlog)
+    {
+        ::fprintf(feventlog, "DS id %ld d \"%s\"\n",
+                           submodule->id(),
+                           submodule->displayString().getString());
+    }
+}
+
 void TOmnetApp::undisposedObject(cObject *obj)
 {
     if (opt_print_undisposed)
         ::printf("undisposed: (%s) %s\n", obj->className(), obj->fullPath().c_str());
+}
+
+void TOmnetApp::sputn(const char *s, int n)
+{
+    if (feventlog)
+    {
+        ::fprintf(feventlog, "- ");
+        ::fwrite(s, 1, n, feventlog); //TODO: autoflush for feventlog (after each event? after each line?)
+    }
 }
 
 //-------------------------------------------------------------
@@ -611,6 +857,7 @@ void TOmnetApp::readPerRunOptions(int run_no)
     opt_cputimelimit = (long)cfg->getAsTime2(section, "General", "cpu-time-limit", 0.0);
     opt_netifcheckfreq = cfg->getAsInt2(section, "General", "netif-check-freq", 1);
     opt_fingerprint = cfg->getAsString2(section, "General", "fingerprint", "");
+    opt_eventlogfilename = cfg->getAsFilename2(section, "General", "eventlog-file", "").c_str();
 
     // install hasher object
     if (!opt_fingerprint.empty())
@@ -618,7 +865,7 @@ void TOmnetApp::readPerRunOptions(int run_no)
     else
         simulation.setHasher(NULL);
 
-    // run RNG self-test
+    // run RNG self-test    FIXME why per-run?
     cRNG *testrng;
     CREATE_BY_CLASSNAME(testrng, opt_rng_class.c_str(), cRNG, "random number generator");
     testrng->selfTest();
@@ -646,6 +893,17 @@ void TOmnetApp::readPerRunOptions(int run_no)
     if (opt_parsim)
         nextuniquenumber = (unsigned)parsimcomm->getProcId() * ((~0UL) / (unsigned)parsimcomm->getNumPartitions());
 #endif
+
+    // open message log file (in startRun() it's too late, because modules have already been created then)
+    if (!opt_eventlogfilename.empty())
+    {
+        processFileName(opt_eventlogfilename);
+        ::printf("Recording event log to file `%s'...\n", opt_eventlogfilename.c_str());
+        FILE *out = fopen(opt_eventlogfilename.c_str(), "w");
+        if (!out)
+            throw new cRuntimeError("Cannot open event log file `%s' for write", opt_eventlogfilename.c_str());
+        feventlog = out;
+    }
 
 }
 

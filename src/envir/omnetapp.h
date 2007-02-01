@@ -73,6 +73,8 @@ class ENVIR_API TOmnetApp
     opp_string opt_snapshotmanager_class;
     bool opt_fname_append_host;
 
+    opp_string opt_eventlogfilename;
+
     bool opt_warnings;
     bool opt_print_undisposed;
 
@@ -89,6 +91,8 @@ class ENVIR_API TOmnetApp
 // end
 
     cScheduler *scheduler;
+
+    FILE *feventlog;
 
     int num_rngs;
     cRNG **rngs;
@@ -126,7 +130,6 @@ class ENVIR_API TOmnetApp
 
     /** @name Functions called from cEnvir's similar functions */
     //@{
-
     virtual void setup();
     virtual int run() = 0;
     virtual void shutdown();
@@ -134,10 +137,6 @@ class ENVIR_API TOmnetApp
     virtual void startRun();
     virtual void endRun();
 
-/*XXX remove
-    virtual std::string getParameter(int run_nr, const char *parname);
-    virtual bool getParameterUseDefault(int run_no, const char *parname);
-*/
     virtual void readParameter(cPar *parameter);
 
     virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index);
@@ -206,25 +205,26 @@ class ENVIR_API TOmnetApp
      * For documentation see corresponding methods in cEnvir.
      */
     //@{
+    //XXX make sure base class gets properly called from Tkenv versions of these funcs!!!
     virtual void objectDeleted(cObject *object) {}
-    virtual void simulationEvent(cMessage *msg) {}
+    virtual void simulationEvent(cMessage *msg);
     virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate) {}
-    virtual void beginSend(cMessage *msg) {}
-    virtual void messageScheduled(cMessage *msg) {}
-    virtual void messageCancelled(cMessage *msg) {}
-    virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay=0, simtime_t transmissionDelay=0) {}
-    virtual void messageSendHop(cMessage *msg, cGate *srcGate) {}
-    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay) {}
-    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, simtime_t transmissionStartTime) {}
-    virtual void messageDeleted(cMessage *msg) {}
-    virtual void componentMethodCalled(cComponent *from, cComponent *to, const char *method) {}
-    virtual void moduleCreated(cModule *newmodule) {}
-    virtual void moduleDeleted(cModule *module) {}
-    virtual void moduleReparented(cModule *module, cModule *oldparent) {}
-    virtual void connectionCreated(cGate *srcgate) {}
-    virtual void connectionRemoved(cGate *srcgate) {}
-    virtual void displayStringChanged(cGate *gate) {}
-    virtual void displayStringChanged(cModule *module) {}
+    virtual void messageScheduled(cMessage *msg);
+    virtual void messageCancelled(cMessage *msg);
+    virtual void beginSend(cMessage *msg);
+    virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay);
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate);
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay);
+    virtual void endSend(cMessage *msg);
+    virtual void messageDeleted(cMessage *msg);
+    virtual void componentMethodCalled(cComponent *from, cComponent *to, const char *method);
+    virtual void moduleCreated(cModule *newmodule);
+    virtual void moduleDeleted(cModule *module);
+    virtual void moduleReparented(cModule *module, cModule *oldparent);
+    virtual void connectionCreated(cGate *srcgate);
+    virtual void connectionRemoved(cGate *srcgate);
+    virtual void displayStringChanged(cGate *gate);
+    virtual void displayStringChanged(cModule *module);
     virtual void undisposedObject(cObject *obj);
     virtual void breakpointHit(const char *lbl, cSimpleModule *mod) {}
     //@}
@@ -235,10 +235,10 @@ class ENVIR_API TOmnetApp
      */
     //@{
     virtual bool isGUI() = 0;
-    virtual void bubble(cModule *mod, const char *text) {}
+    virtual void bubble(cModule *mod, const char *text);
 
     virtual void putmsg(const char *s) = 0;
-    virtual void sputn(const char *s, int n) = 0;
+    virtual void sputn(const char *s, int n);
     virtual void flush() = 0;
     virtual bool gets(const char *promptstr, char *buf, int len=255) = 0;  // 0==OK 1==CANCEL
     virtual int  askYesNo(const char *question) = 0; //0==NO 1==YES -1==CANCEL

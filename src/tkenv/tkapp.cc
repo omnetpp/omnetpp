@@ -1076,41 +1076,10 @@ void TOmnetTkApp::objectDeleted(cObject *object)
     }
 }
 
-void TOmnetTkApp::messageSent_OBSOLETE(cMessage *msg, cGate *directToGate)
-{
-    //FIXME check FIRST if the window exists!!!!
-    // display in message window
-    if (hasmessagewindow)
-        CHK(Tcl_VarEval(interp,
-            "catch {\n"
-            " .messagewindow.main.text insert end {SENT:\t (", msg->className(),")", msg->fullName(), "}\n"
-            " .messagewindow.main.text insert end ", TclQuotedString(msg->info().c_str()).get(), "\n"
-            " .messagewindow.main.text insert end {\n}\n"
-            " .messagewindow.main.text see end\n"
-            "}\n",
-            NULL));
-
-    if (animating && opt_animation_enabled)
-    {
-        // find suitable inspectors and do animate the message...
-        updateGraphicalInspectorsBeforeAnimation(); // actually this will draw `msg' too (which would cause "phantom message"),
-                                                    // but we'll manually remove it before animation
-        if (!directToGate)
-        {
-            // message was sent via a gate (send())
-            animateSend(msg, msg->senderGate(), msg->arrivalGate());
-        }
-        else
-        {
-            // sendDirect() was used
-            animateSendDirect(msg, simulation.module(msg->senderModuleId()), directToGate);
-            animateSend(msg, directToGate, msg->arrivalGate());
-        }
-    }
-}
-
 void TOmnetTkApp::simulationEvent(cMessage *msg)
 {
+    TOmnetApp::simulationEvent(msg);
+
     // display in message window
     if (hasmessagewindow)
         CHK(Tcl_VarEval(interp,
@@ -1141,8 +1110,82 @@ void TOmnetTkApp::simulationEvent(cMessage *msg)
     }
 }
 
+void TOmnetTkApp::messageSent_OBSOLETE(cMessage *msg, cGate *directToGate)
+{
+    // display in message window
+    if (hasmessagewindow)
+        CHK(Tcl_VarEval(interp,
+            "catch {\n"
+            " .messagewindow.main.text insert end {SENT:\t (", msg->className(),")", msg->fullName(), "}\n"
+            " .messagewindow.main.text insert end ", TclQuotedString(msg->info().c_str()).get(), "\n"
+            " .messagewindow.main.text insert end {\n}\n"
+            " .messagewindow.main.text see end\n"
+            "}\n",
+            NULL));
+
+    if (animating && opt_animation_enabled)
+    {
+        // find suitable inspectors and do animate the message...
+        updateGraphicalInspectorsBeforeAnimation(); // actually this will draw `msg' too (which would cause "phantom message"),
+                                                    // but we'll manually remove it before animation
+        if (!directToGate)
+        {
+            // message was sent via a gate (send())
+            animateSend(msg, msg->senderGate(), msg->arrivalGate());
+        }
+        else
+        {
+            // sendDirect() was used
+            animateSendDirect(msg, simulation.module(msg->senderModuleId()), directToGate);
+            animateSend(msg, directToGate, msg->arrivalGate());
+        }
+    }
+}
+
+void TOmnetTkApp::messageScheduled(cMessage *msg)
+{
+    TOmnetApp::messageScheduled(msg);
+}
+
+void TOmnetTkApp::messageCancelled(cMessage *msg)
+{
+    TOmnetApp::messageCancelled(msg);
+}
+
+void TOmnetTkApp::beginSend(cMessage *msg)
+{
+    TOmnetApp::beginSend(msg);
+}
+
+void TOmnetTkApp::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+{
+    TOmnetApp::messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
+}
+
+void TOmnetTkApp::messageSendHop(cMessage *msg, cGate *srcGate)
+{
+    TOmnetApp::messageSendHop(msg, srcGate);
+}
+
+void TOmnetTkApp::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+{
+    TOmnetApp::messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
+}
+
+void TOmnetTkApp::endSend(cMessage *msg)
+{
+    TOmnetApp::endSend(msg);
+}
+
+void TOmnetTkApp::messageDeleted(cMessage *msg)
+{
+    TOmnetApp::messageDeleted(msg);
+}
+
 void TOmnetTkApp::componentMethodCalled(cComponent *fromComp, cComponent *toComp, const char *method)
 {
+    TOmnetApp::componentMethodCalled(fromComp, toComp, method);
+
     if (!animating || !opt_anim_methodcalls)
         return;
 
@@ -1250,6 +1293,8 @@ void TOmnetTkApp::componentMethodCalled(cComponent *fromComp, cComponent *toComp
 
 void TOmnetTkApp::moduleCreated(cModule *newmodule)
 {
+    TOmnetApp::moduleCreated(newmodule);
+
     cModule *mod = newmodule->parentModule();
     TInspector *insp = findInspector(mod,INSP_GRAPHICAL);
     if (!insp) return;
@@ -1260,6 +1305,8 @@ void TOmnetTkApp::moduleCreated(cModule *newmodule)
 
 void TOmnetTkApp::moduleDeleted(cModule *module)
 {
+    TOmnetApp::moduleDeleted(module);
+
     cModule *mod = module->parentModule();
     TInspector *insp = findInspector(mod,INSP_GRAPHICAL);
     if (!insp) return;
@@ -1270,6 +1317,8 @@ void TOmnetTkApp::moduleDeleted(cModule *module)
 
 void TOmnetTkApp::moduleReparented(cModule *module, cModule *oldparent)
 {
+    TOmnetApp::moduleReparented(module, oldparent);
+
     // pretend it got deleted from under the 1st module, and got created under the 2nd
     TInspector *insp = findInspector(oldparent,INSP_GRAPHICAL);
     TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
@@ -1283,6 +1332,8 @@ void TOmnetTkApp::moduleReparented(cModule *module, cModule *oldparent)
 
 void TOmnetTkApp::connectionCreated(cGate *srcgate)
 {
+    TOmnetApp::connectionCreated(srcgate);
+
     // notify compound module where the connection (whose source is this gate) is displayed
     cModule *notifymodule = NULL;
     if (srcgate->type()=='O')
@@ -1298,6 +1349,8 @@ void TOmnetTkApp::connectionCreated(cGate *srcgate)
 
 void TOmnetTkApp::connectionRemoved(cGate *srcgate)
 {
+    TOmnetApp::connectionRemoved(srcgate);
+
     // notify compound module where the connection (whose source is this gate) is displayed
     // note: almost the same code as above
     cModule *notifymodule;
@@ -1314,6 +1367,8 @@ void TOmnetTkApp::connectionRemoved(cGate *srcgate)
 
 void TOmnetTkApp::displayStringChanged(cGate *gate)
 {
+    TOmnetApp::displayStringChanged(gate);
+
     // if gate is not connected, nothing is displayed, so nothing to do
     if (!gate->toGate())  return;
 
@@ -1345,6 +1400,8 @@ void TOmnetTkApp::displayStringChanged(cGate *gate)
 
 void TOmnetTkApp::displayStringChanged(cModule *module)
 {
+    TOmnetApp::displayStringChanged(module);
+
     // refresh inspector where this module is a submodule
     cModule *parentmodule = module->parentModule();
     TInspector *insp = findInspector(parentmodule,INSP_GRAPHICAL);

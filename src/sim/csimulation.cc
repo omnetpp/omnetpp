@@ -558,7 +558,7 @@ void cSimulation::transferTo(cSimpleModule *modp)
     }
 }
 
-void cSimulation::doOneEvent(cSimpleModule *mod) //FIXME FIXME FIXME this should be based on MESSAGE not module!!!!!!!!!!!!!!!!!!!!!!!
+void cSimulation::doOneEvent(cSimpleModule *mod)  //FIXME why do we need the cSimpleModule argument??? remove!!!
 {
     // switch to the module's context
     setContext(mod);

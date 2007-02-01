@@ -127,9 +127,16 @@ class TOmnetTkApp : public TOmnetApp
       virtual void printUISpecificHelp();
 
       virtual void objectDeleted(cObject *object); // notify environment
-      virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate);
       virtual void simulationEvent(cMessage *msg);
-      virtual void breakpointHit(const char *lbl, cSimpleModule *mod);
+      virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate);
+      virtual void messageScheduled(cMessage *msg);
+      virtual void messageCancelled(cMessage *msg);
+      virtual void beginSend(cMessage *msg);
+      virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay);
+      virtual void messageSendHop(cMessage *msg, cGate *srcGate);
+      virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay);
+      virtual void endSend(cMessage *msg);
+      virtual void messageDeleted(cMessage *msg);
       virtual void componentMethodCalled(cComponent *from, cComponent *to, const char *method);
       virtual void moduleCreated(cModule *newmodule);
       virtual void moduleDeleted(cModule *module);
@@ -138,6 +145,7 @@ class TOmnetTkApp : public TOmnetApp
       virtual void connectionRemoved(cGate *srcgate);
       virtual void displayStringChanged(cGate *gate);
       virtual void displayStringChanged(cModule *module);
+      virtual void breakpointHit(const char *lbl, cSimpleModule *mod);
 
       virtual bool isGUI() {return true;}
       virtual void bubble(cModule *mod, const char *text);

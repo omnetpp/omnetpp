@@ -88,7 +88,7 @@ cEnvir::cEnvir() : ostream(&ev_buf), ev_buf(this)
 {
     disable_tracing = false;
     debug_on_errors = false;
-    suppress_notifications = true;
+    suppress_notifications = false; //FIXME set to true when not needed!
     app = NULL;
 }
 
@@ -312,62 +312,60 @@ void cEnvir::objectDeleted(cObject *obj)
 
 void cEnvir::simulationEvent(cMessage *msg)
 {
-    if (disable_tracing) return;
     app->simulationEvent(msg);
 }
 
 void cEnvir::messageSent_OBSOLETE(cMessage *msg, cGate *directToGate)
 {
-    if (disable_tracing) return;
     app->messageSent_OBSOLETE(msg, directToGate);
-}
-
-void cEnvir::beginSend(cMessage *msg)
-{
-    //XXX app->beginSend(msg);
 }
 
 void cEnvir::messageScheduled(cMessage *msg)
 {
-    //XXX app->messageScheduled(msg);
+    app->messageScheduled(msg);
 }
 
 void cEnvir::messageCancelled(cMessage *msg)
 {
-    //XXX app->messageCancelled(msg);
+    app->messageCancelled(msg);
+}
+
+void cEnvir::beginSend(cMessage *msg)
+{
+    app->beginSend(msg);
 }
 
 void cEnvir::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
-    //XXX app->messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
+    app->messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
 }
 
 void cEnvir::messageSendHop(cMessage *msg, cGate *srcGate)
 {
-    //XXX app->messageSendHop(msg, srcGate);
+    app->messageSendHop(msg, srcGate);
 }
 
 void cEnvir::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
-    //XXX app->messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
+    app->messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
 }
 
 void cEnvir::endSend(cMessage *msg)
 {
-    //XXX app->endSend(msg);
+    app->endSend(msg);
 }
 
 void cEnvir::messageDeleted(cMessage *msg)
 {
-    //XXX
+    app->messageDeleted(msg);
 }
 
 void cEnvir::componentMethodCalled(cComponent *from, cComponent *to, const char *method)
 {
-    if (disable_tracing) return;
     app->componentMethodCalled(from, to, method);
 }
 
+//FIXME we should probably NOT use EVCB for these! (or we should redraw the network diagram every time!!!)
 void cEnvir::moduleCreated(cModule *newmodule)
 {
     app->moduleCreated(newmodule);

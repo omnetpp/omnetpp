@@ -236,10 +236,11 @@ class ENVIR_API cEnvir : public std::ostream
     //XXX obsolete -- see beginSend(), etc.
     void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=NULL);
 
-    // this will be followed by a messageSendDirect (optional), and several messageSendHop() calls
-    void beginSend(cMessage *msg);
     void messageScheduled(cMessage *msg);
     void messageCancelled(cMessage *msg);
+
+    // beginSend() will be followed by a messageSendDirect (optional), and several messageSendHop() calls
+    void beginSend(cMessage *msg);
     void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay=0, simtime_t transmissionDelay=0);
     void messageSendHop(cMessage *msg, cGate *srcGate);
     void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay);

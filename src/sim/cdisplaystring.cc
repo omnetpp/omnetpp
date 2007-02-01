@@ -374,7 +374,8 @@ void cDisplayString::parse()
             numtags++;
             tags[numtags-1].name = d+1;
             tags[numtags-1].numargs = 0;
-            for (int i=0; i<MAXARGS; i++) tags[numtags-1].args[i] = NULL;
+            for (int i=0; i<MAXARGS; i++) 
+                tags[numtags-1].args[i] = NULL;
         }
         else if (*s=='=')
         {
@@ -404,7 +405,10 @@ void cDisplayString::parse()
     for (int i=0; i<numtags; i++)
     {
         if (!tags[i].name[0])
-            throw cRuntimeError("Error parsing display string: missing tag name in \"%s\"", dispstr);
+            if (tags[i].numargs==0)
+                ; // empty tag (occurs when there're redundant semicolons, or the display string is empty) -- XXX remove it
+            else
+                throw cRuntimeError("Error parsing display string: missing tag name in \"%s\"", dispstr);
         for (const char *s=tags[i].name; *s; s++)
             if (!isalnum(*s) && *s!=':')
                 throw cRuntimeError("Error parsing display string: tag name \"%s\" contains invalid character in  \"%s\"", tags[i].name, dispstr);
