@@ -63,7 +63,7 @@ void cBasicChannel::rereadPars()
     datarate_ = par("datarate");
 
     if (delay_<0)
-        throw cRuntimeError(this, "negative delay %g", delay_);
+        throw cRuntimeError(this, "negative delay %s", SIMTIME_STR(delay_));
     if (error_<0 || error_>1)
         throw cRuntimeError(this,"wrong bit error rate %g", error_);
     if (datarate_<0)

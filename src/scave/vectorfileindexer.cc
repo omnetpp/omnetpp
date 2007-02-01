@@ -16,6 +16,7 @@
 #include <errno.h>
 #include <sstream>
 #include <ostream>
+#include "platmisc.h"
 #include "stringutil.h"
 #include "resultfilemanager.h"
 #include "nodetype.h"

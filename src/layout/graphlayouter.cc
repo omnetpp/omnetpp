@@ -73,7 +73,7 @@ void BasicSpringEmbedderLayout::setEnvironment(GraphLayouterEnvironment *environ
 
     repulsiveForce = environment->getDoubleParameter("bgl", 0, repulsiveForce);
     attractionForce = environment->getDoubleParameter("bgl", 1, attractionForce);
-    defaultEdgeLen = environment->getDoubleParameter("bgl", 2, defaultEdgeLen);
+    defaultEdgeLen = environment->getLongParameter("bgl", 2, defaultEdgeLen);
     maxIterations = environment->getLongParameter("bgl", 3 , maxIterations);
 
 #ifdef USE_CONTRACTING_BOX
@@ -823,7 +823,7 @@ void ForceDirectedGraphLayouter::setInitialPositions() {
 
     // position all vertices on the plane so that they do not overlap
     // use both connected component pre embedding coordinates and component graph coordinates
-    for (int i = 0; i < graphComponent.connectedSubComponents.size(); i++) {
+    for (int i = 0; i < (int)graphComponent.connectedSubComponents.size(); i++) {
         Vertex *childComponentVertex = childrenComponentsStar.getVertex(i);
         GraphComponent *childComponent = graphComponent.connectedSubComponents[i];
 

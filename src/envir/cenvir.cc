@@ -35,6 +35,7 @@
 #include "filemgrs.h"       // env_dummy_function()
 #include "akaroarng.h"      // env_dummy_function()
 #include "akoutvectormgr.h" // env_dummy_function()
+#include "matchableobject.h" // env_dummy_function()
 
 #include "inttypes.h"
 
@@ -636,7 +637,8 @@ void env_dummy_function() {
     exponential(1.0);
     Speedometer a;
     cFileOutputVectorManager o;
-    (void)a; (void)o; // eliminate 'unused var' warning
+    MatchableObjectAdapter moa;
+    (void)a; (void)o; (void)moa; // eliminate 'unused var' warning
 #ifdef WITH_AKAROA
     cAkOutputVectorManager ao;
     cAkaroaRNG ar;

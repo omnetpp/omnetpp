@@ -403,7 +403,7 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outgate)
                                 msg->owner()->fullPath().c_str());
     }
     if (delay < 0)
-        throw cRuntimeError("sendDelayed(): negative delay %g",delay);
+        throw cRuntimeError("sendDelayed(): negative delay %s", SIMTIME_STR(delay));
 
     // set message parameters and send it
     msg->setSentFrom(this, outgate->id(), simTime()+delay);

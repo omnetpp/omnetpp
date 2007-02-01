@@ -68,24 +68,24 @@ void TGraphLayouterEnvironment::showGraphics(const char *text)
     Tcl_VarEval(interp, "layouter_debugDraw_finish ", canvas, " {", text, "}", NULL);
 }
 
-void TGraphLayouterEnvironment::drawText(int x, int y, const char *text, const char *tags, const char *color)
+void TGraphLayouterEnvironment::drawText(double x, double y, const char *text, const char *tags, const char *color)
 {
     char coords[100];
-    sprintf(coords,"%d %d", x, y);
+    sprintf(coords,"%d %d", (int)x, (int)y);
     Tcl_VarEval(interp, canvas, " create text ", coords, " -text ", text, " -fill ", color, " -tag ", tags, NULL);
 }
 
-void TGraphLayouterEnvironment::drawLine(int x1, int y1, int x2, int y2, const char *tags, const char *color)
+void TGraphLayouterEnvironment::drawLine(double x1, double y1, double x2, double y2, const char *tags, const char *color)
 {
     char coords[100];
-    sprintf(coords,"%d %d %d %d", x1, y1, x2, y2);
+    sprintf(coords,"%d %d %d %d", (int)x1, (int)y1, (int)x2, (int)y2);
     Tcl_VarEval(interp, canvas, " create line ", coords, " -fill ", color, " -tag ", tags, NULL);
 }
 
-void TGraphLayouterEnvironment::drawRectangle(int x1, int y1, int x2, int y2, const char *tags, const char *color)
+void TGraphLayouterEnvironment::drawRectangle(double x1, double y1, double x2, double y2, const char *tags, const char *color)
 {
     char coords[100];
-    sprintf(coords,"%d %d %d %d", x1, y1, x2, y2);
+    sprintf(coords,"%d %d %d %d", (int)x1, (int)y1, (int)x2, (int)y2);
     Tcl_VarEval(interp, canvas, " create rect ", coords, " -outline ", color, " -tag ", tags, NULL);
 }
 

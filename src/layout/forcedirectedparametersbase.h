@@ -201,6 +201,7 @@ class Variable {
         Variable(const Pt& position, const Pt& velocity) {
             constructor(position, velocity);
         }
+        virtual ~Variable() {}
 
         void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
             this->embedding = embedding;

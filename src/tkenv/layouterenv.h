@@ -47,9 +47,9 @@ class TGraphLayouterEnvironment : public GraphLayouterEnvironment
 
       virtual void clearGraphics();
       virtual void showGraphics(const char *text);
-      virtual void drawText(int x, int y, const char *text, const char *tags, const char *color);
-      virtual void drawLine(int x1, int y1, int x2, int y2, const char *tags, const char *color);
-      virtual void drawRectangle(int x1, int y1, int x2, int y2, const char *tags, const char *color);
+      virtual void drawText(double x, double y, const char *text, const char *tags, const char *color);
+      virtual void drawLine(double x1, double y1, double x2, double y2, const char *tags, const char *color);
+      virtual void drawRectangle(double x1, double y1, double x2, double y2, const char *tags, const char *color);
 };
 
 #endif

@@ -15,6 +15,7 @@
 #ifndef _STRINGUTIL_H_
 #define _STRINGUTIL_H_
 
+#include <stdarg.h>
 #include <string>
 #include "commonutil.h"
 
