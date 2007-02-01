@@ -93,12 +93,6 @@ void Routing::handleMessage(cMessage *msg)
     ev << "forwarding packet " << pk->name() << " on gate id=" << outGate << endl;
     pk->setHopCount(pk->getHopCount()+1);
 
-    if (ev.isGUI())
-    {
-        gate(outGate)->toGate()->displayString().setTagArg("o",0,"white");
-        gate(outGate)->toGate()->displayString().setTagArg("o",1,"3");
-    }
-
     send(pk, outGate);
 }
 

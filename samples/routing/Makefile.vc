@@ -59,7 +59,7 @@ MSGCOPTS= $(INCLUDE_PATH)
 
 #------------------------------------------------------------------------------
 # object files in this directory
-OBJS= Packet_m.obj App.obj Routing.obj
+OBJS= Packet_m.obj App.obj ppif.obj Routing.obj
 
 # header files generated (from msg files)
 GENERATEDHEADERS= Packet_m.h
@@ -87,6 +87,9 @@ Packet_m.cc Packet_m.h: Packet.msg
 
 App.obj: App.cc
 	$(CXX) -c $(COPTS) /Tp App.cc
+
+ppif.obj: ppif.cc
+	$(CXX) -c $(COPTS) /Tp ppif.cc
 
 Routing.obj: Routing.cc
 	$(CXX) -c $(COPTS) /Tp Routing.cc
@@ -125,5 +128,6 @@ App.obj: App.cc \
   Packet_m.h
 Packet_m.obj: Packet_m.cc \
   Packet_m.h
+ppif.obj: ppif.cc
 Routing.obj: Routing.cc \
   Packet_m.h
