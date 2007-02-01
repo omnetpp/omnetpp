@@ -24,7 +24,7 @@ class Routing : public cSimpleModule
   private:
     int myAddress;
 
-    typedef std::map<int,int> RoutingTable; // destaddr -> port
+    typedef std::map<int,int> RoutingTable; // destaddr -> gateindex
     RoutingTable rtable;
 
   protected:
@@ -61,10 +61,10 @@ void Routing::initialize()
         if (thisNode->paths()==0) continue; // not connected
 
         cGate *parentModuleGate = thisNode->path(0)->localGate();
-        int gateId = parentModuleGate->fromGate()->id();
+        int gateIndex = parentModuleGate->index();
         int address = topo->node(i)->module()->par("address");
-        rtable[address] = gateId;
-        ev << "  towards address " << address << " gateId is " << gateId << endl;
+        rtable[address] = gateIndex;
+        ev << "  towards address " << address << " gateIndex is " << gateIndex << endl;
     }
     delete topo;
 }
@@ -77,7 +77,7 @@ void Routing::handleMessage(cMessage *msg)
     if (destAddr == myAddress)
     {
         ev << "local delivery of packet " << pk->name() << endl;
-        send(pk,"localOut");
+        send(pk, "localOut");
         return;
     }
 
@@ -89,10 +89,10 @@ void Routing::handleMessage(cMessage *msg)
         return;
     }
 
-    int outGate = (*it).second;
-    ev << "forwarding packet " << pk->name() << " on gate id=" << outGate << endl;
+    int outGateIndex = (*it).second;
+    ev << "forwarding packet " << pk->name() << " on gate index " << outGateIndex << endl;
     pk->setHopCount(pk->getHopCount()+1);
 
-    send(pk, outGate);
+    send(pk, "out", outGateIndex);
 }
 
