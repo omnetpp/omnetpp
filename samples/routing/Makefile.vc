@@ -59,7 +59,7 @@ MSGCOPTS= $(INCLUDE_PATH)
 
 #------------------------------------------------------------------------------
 # object files in this directory
-OBJS= Packet_m.obj App.obj BurstyApp.obj L2Queue.obj ppsink.obj Routing.obj
+OBJS= Packet_m.obj App.obj BurstyApp.obj L2Queue.obj Routing.obj
 
 # header files generated (from msg files)
 GENERATEDHEADERS= Packet_m.h
@@ -93,9 +93,6 @@ BurstyApp.obj: BurstyApp.cc
 
 L2Queue.obj: L2Queue.cc
 	$(CXX) -c $(COPTS) /Tp L2Queue.cc
-
-ppsink.obj: ppsink.cc
-	$(CXX) -c $(COPTS) /Tp ppsink.cc
 
 Routing.obj: Routing.cc
 	$(CXX) -c $(COPTS) /Tp Routing.cc
@@ -136,6 +133,5 @@ BurstyApp.obj: BurstyApp.cc
 L2Queue.obj: L2Queue.cc
 Packet_m.obj: Packet_m.cc \
   Packet_m.h
-ppsink.obj: ppsink.cc
 Routing.obj: Routing.cc \
   Packet_m.h
