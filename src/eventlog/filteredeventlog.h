@@ -25,6 +25,8 @@
 /**
  * This is a "view" of the EventLog, including only a subset of events and their dependencies. This class
  * uses EventLog by delegation so that multiple instances might share the same EventLog object.
+ * TODO: filtered event log must save extra info in the exported log file to be able to reproduce the
+ * same in memory model for filtered message dependencies. These can be done by adding new tags to E lines.
  */
 class FilteredEventLog : public IEventLog
 {

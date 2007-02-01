@@ -72,6 +72,7 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
 
     if (PRINT_DEBUG_MESSAGES) printf("Parsing event at offset: %lld\n", offset);
 
+    int emptyLines = 0;
     while (true)
     {
         char *line = reader->getNextLineBufferPointer();
@@ -83,6 +84,9 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
         }
 
         EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(this, line, reader->getLastLineLength());
+        if (!eventLogEntry)
+            emptyLines++;
+
         EventEntry *readEventEntry = dynamic_cast<EventEntry *>(eventLogEntry);
 
         // first line must be an event entry
@@ -90,8 +94,12 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
             Assert(readEventEntry);
             eventEntry = readEventEntry;
         }
-        else if (readEventEntry)
-            break; // stop at the start of the next event
+        else if (readEventEntry) {
+            if (emptyLines == 1)
+                break; // stop at the start of the next event
+            else
+                throw opp_runtime_error("Too many empty lines for a single event after offset: %lld", offset);
+        }
 
         Assert(eventEntry);
 
@@ -191,6 +199,7 @@ MessageDependencyList *Event::getCauses()
         causes = new MessageDependencyList();
 
         if (getCause())
+            // using "ce" from "E" line
             causes->push_back(getCause());
 
         // add message reuses
@@ -223,6 +232,7 @@ MessageDependencyList *Event::getConsequences()
             EventLogEntry *eventLogEntry = eventLogEntries[beginSendEntryNumber];
 
             if (eventLogEntry->isMessageSend())
+                // using "t" from "ES" lines
                 consequences->push_back(new MessageSend(eventLog, getEventNumber(), beginSendEntryNumber));
         }
 
@@ -242,10 +252,8 @@ Event *Event::getReuserEvent(int &beginSendEntryNumber)
 
     // TODO: the result of this calculation should be put into an index file lazily
     // TODO: and first we should look it up there, so that the expesive computation is not repeated
+    // TODO: there should be some kind of limit on this loop not the end of the file
     while (current) {
-        beginSendEntryNumber = -1;
-        bool causeMessageDeleted = false;
-
         for (beginSendEntryNumber = 0; beginSendEntryNumber < current->eventLogEntries.size(); beginSendEntryNumber++)
         {
             EventLogEntry *eventLogEntry = current->eventLogEntries[beginSendEntryNumber];
@@ -253,7 +261,13 @@ Event *Event::getReuserEvent(int &beginSendEntryNumber)
 
             if (beginSendEntry &&
                 beginSendEntry->messageId == getMessageId())
-                return current;
+            {
+                if (beginSendEntry->previousEventNumber == getEventNumber())
+                    return current;
+                else
+                    // events were filtered in between and this is not the first reuse
+                    return NULL;
+            }
 
             DeleteMessageEntry *deleteMessageEntry = dynamic_cast<DeleteMessageEntry *>(eventLogEntry);
 
