@@ -21,3 +21,5 @@ testEventLogIndex("log/empty.log", 1);
 testEventLogIndex("log/one-event.log", 5);
 testEventLogIndex("log/two-events.log", 10);
 testEventLogIndex("log/nclients.log", 1000);
+testEventLogIndex("filtered/nclients-lines.log", 1000);
+testEventLogIndex("filtered/nclients-events.log", 1000);

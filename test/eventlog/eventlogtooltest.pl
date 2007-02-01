@@ -132,7 +132,7 @@ sub testFilter
    unlink("result/tmp.log");
 }
 
-sub test
+sub testEventLogTool
 {
    my($fileName) = @_;
 
@@ -149,7 +149,8 @@ sub test
    testFilter($fileName, $lastEventNumber);
 }
 
-test("log/empty.log");
-test("log/one-event.log");
-test("log/two-events.log");
-test("log/nclients.log");
+testEventLogTool("log/empty.log");
+testEventLogTool("log/one-event.log");
+testEventLogTool("log/two-events.log");
+testEventLogTool("log/nclients.log");
+testEventLogTool("filtered/nclients-events.log");
