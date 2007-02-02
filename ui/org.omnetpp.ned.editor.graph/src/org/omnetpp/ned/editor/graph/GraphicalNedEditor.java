@@ -370,7 +370,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
     }
     
     /**
-     * @param parent Setes the parent editor embedding this one (ie, parent may be a multipage editor)
+     * @param parent Sets the parent editor embedding this one (ie, parent may be a multipage editor)
      */
     public void setEmbeddingEditor(MultiPageEditorPart parent) {
         embeddingEditor = parent; 
@@ -404,8 +404,8 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
         IAction zoomOut = new ZoomOutAction(root.getZoomManager());
         getActionRegistry().registerAction(zoomIn);
         getActionRegistry().registerAction(zoomOut);
-        getSite().getKeyBindingService().registerAction(zoomIn);
-        getSite().getKeyBindingService().registerAction(zoomOut);
+//        getSite().getKeyBindingService().registerAction(zoomIn);
+//        getSite().getKeyBindingService().registerAction(zoomOut);
         
         // set the root edit part as the main viewer
         viewer.setRootEditPart(root);

@@ -99,14 +99,12 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 	 * Method declared on ContentOutlinePage
 	 */
 	public void createControl(Composite parent) {
-
 		super.createControl(parent);
 
-		TreeViewer viewer= getTreeViewer();
-		viewer.setContentProvider(new ViewContentProvider());
-		viewer.setLabelProvider(new ViewLabelProvider());
-		viewer.addSelectionChangedListener(this);
-        viewer.setInput(null);  //XXX 
+        getTreeViewer().setContentProvider(new ViewContentProvider());
+        getTreeViewer().setLabelProvider(new ViewLabelProvider());
+        getTreeViewer().addSelectionChangedListener(this);
+        update();
 	}
 	
 	/* (non-Javadoc)
@@ -155,6 +153,8 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 	 */
 	public void update() {
 		System.out.println(this+".update() called");
+        if (fInput == null) 
+            return;
 
 		TreeViewer viewer = getTreeViewer();
 		if (viewer != null) {
@@ -163,10 +163,9 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 				control.setRedraw(false);
 
 				// set file contents as input
-                // FIXME fInput might be NULL if called durnign dispose
 				IFile file = fInput.getFile();
 				NEDElement tree = NEDResourcesPlugin.getNEDResources().getNEDFileContents(file);
-				viewer.setInput(tree);
+                viewer.setInput(tree);
 
 				//viewer.expandAll();
 				control.setRedraw(true);
