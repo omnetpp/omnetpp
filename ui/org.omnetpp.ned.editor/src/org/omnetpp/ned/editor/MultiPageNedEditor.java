@@ -12,6 +12,7 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
+import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.misc.ISelectionSupport;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
@@ -45,6 +46,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         NEDResourcesPlugin.getNEDResources().connect(((IFileEditorInput)editorInput).getFile());
 	}
 	
+    
     @Override
     public void dispose() {
         super.dispose();
@@ -82,12 +84,30 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 	
 	@Override
 	protected void pageChange(int newPageIndex) {
-		super.pageChange(newPageIndex);
-		
-        //	prevent recursive call from setActivePage() below
-		if (insidePageChange)
-			return;
-		insidePageChange = true;
+	    //	prevent recursive call from setActivePage() below
+	    if (insidePageChange)
+	        return;
+	    
+	    insidePageChange = true;
+
+        super.pageChange(newPageIndex);
+
+        // XXX this is a MEGA hack because currently the workbench do not send a partActivated,deactivated messge
+        // for the embedded editors in a MultiPageEditorView (this is a missing unimplemented feature, it works with MultiEditor however)
+        // to make the nedded outline page active we should send activate/deactivate directly
+        // we look for the outline view directy and send thenotification by hand. once the MultiPageEditors are handled correctly
+        // this can be removed
+        // on each page change we emulate a close/open cycle of the multipage editor, this removed the associated
+        // outline page, so the outline view will re-request the multipageeditor for a ContentOutlinePage (via getAdapter)
+        // the current implementation of MultipageEditorPart.getAdapter delegates this request to the active 
+        // embedded editor.
+        ContentOutline coutline = (ContentOutline)getEditorSite().getPage().findView("org.eclipse.ui.views.ContentOutline");
+        if (coutline != null) {
+            // notify from the old closed editor
+            coutline.partClosed(this);
+            coutline.partActivated(this);
+        }
+        // end of the hack
 
 		NEDResources res = NEDResourcesPlugin.getNEDResources();
 		if (newPageIndex == textPageIndex) { 
@@ -144,13 +164,13 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         initPhase = false;
 	}
 
-	@Override
-	public Object getAdapter(Class type) {
-		Object adapter = getActiveEditor().getAdapter(type);
-		if (adapter == null) 
-			adapter = super.getAdapter(type);
-		return adapter;
-	}
+//	@Override
+//	public Object getAdapter(Class type) {
+//		Object adapter = getActiveEditor().getAdapter(type);
+//		if (adapter == null) 
+//			adapter = super.getAdapter(type);
+//		return adapter;
+//	}
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {

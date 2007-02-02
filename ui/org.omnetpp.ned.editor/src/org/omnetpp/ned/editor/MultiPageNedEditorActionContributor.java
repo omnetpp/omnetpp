@@ -46,8 +46,10 @@ public class MultiPageNedEditorActionContributor extends MultiPageEditorActionBa
         if (activeEditorPart == part)
             return;
 
+        // set the new active editor
         activeEditorPart = part;
-        // first remove the old global and local handlers
+        
+        // first remove the old global and local action handlers
         // then add the ones for the new editor
         if(part instanceof GraphicalNedEditor) {
             textContrib.setActiveEditor(activeEditorPart);
@@ -57,7 +59,7 @@ public class MultiPageNedEditorActionContributor extends MultiPageEditorActionBa
             textContrib.setActiveEditor(activeEditorPart);
         } else
             return;
-        // propagate the changes to the workbench
+
         getActionBars().updateActionBars();
     }
 }
