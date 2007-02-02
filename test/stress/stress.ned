@@ -22,8 +22,20 @@ simple StressNode
         volatile int outGateIndex = intuniform(0, sizeof(out) - 1);
         @display("i=block/cogwheel");
     gates:
+        input directIn;
         input in[];
         output out[];
+}
+
+simple StressDirect
+{
+    parameters:
+        volatile double propagationDelay;
+        volatile double transmissionDelay;
+        @display("i=block/rightarrow");
+    gates:
+        input directIn;
+        input in[];
 }
 
 simple StressCapsulate
@@ -33,6 +45,7 @@ simple StressCapsulate
         double decapsulateProbability;
         @display("i=block/socket");
     gates:
+        input directIn;
         input in[];
         output out[];
 }
@@ -43,6 +56,7 @@ simple StressDuplicate
         volatile double numberOfDuplicates;
         @display("i=block/fork");
     gates:
+        input directIn;
         input in[];
         output out[];
 }
@@ -52,6 +66,7 @@ simple StressSink
     parameters:
         @display("i=block/sink");
     gates:
+        input directIn;
         input in[];
 }
 
@@ -64,18 +79,13 @@ module StressLossy
         input in[];
         output out[];
     submodules:
-        sink: StressSink {
-            @display("p=200.0,154.0");
-        };
+        sink: StressSink;
         node1: StressNode {
             parameters:
                 outGateIndex = uniform(0, 1) < dropProbability ? 0 : 1;
-                @display("p=125.0,64.0");
         };
-        node2: StressNode {
-            @display("p=55.0,152.0");
-        };
-    connections:
+        node2: StressNode;
+    connections allowunconnected:
         node1.out++ --> sink.in++;
         node1.out++ --> node2.in++;
         for i=1..sizeof(out) {
@@ -89,28 +99,16 @@ module StressLossy
 network SimpleStress
 {
     submodules:
-        lossy: StressLossy {
-            @display("p=329.0,171.0");
-        };
-        source: StressSource {
-            @display("p=576.0,232.0");
-        };
-        capsulate1: StressCapsulate {
-            @display("p=255.0,60.0");
-        };
-        capsulate2: StressCapsulate {
-            @display("p=404.0,287.0");
-        };
-        duplicate1: StressDuplicate {
-            @display("p=444.0,100.0");
-        };
-        duplicate2: StressDuplicate {
-            @display("p=215.0,247.0");
-        };
-        sink: StressSink {
-            @display("p=66.0,117.0");
-        };
-    connections:
+        direct1: StressDirect;
+        direct2: StressDirect;
+        lossy: StressLossy;
+        source: StressSource;
+        capsulate1: StressCapsulate;
+        capsulate2: StressCapsulate;
+        duplicate1: StressDuplicate;
+        duplicate2: StressDuplicate;
+        sink: StressSink;
+    connections allowunconnected:
         source.out++ --> capsulate2.in++;
         source.out++ --> duplicate1.in++;
         duplicate1.out++ --> capsulate1.in++;
@@ -131,4 +129,8 @@ network SimpleStress
         lossy.out++ --> duplicate1.in++;
         lossy.out++ --> capsulate2.in++;
         lossy.out++ --> duplicate2.in++;
+        capsulate2.out++ --> direct2.in++;
+        duplicate2.out++ --> direct2.in++;
+        duplicate1.out++ --> direct1.in++;
+        capsulate1.out++ --> direct1.in++;
 }

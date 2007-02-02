@@ -25,7 +25,7 @@ StressSource::~StressSource()
 
 void StressSource::initialize()
 {
-	// TEST: uses a self message
+	// TEST: self message
 	scheduleAt(par("serviceTime"), timer);
 }
 
@@ -33,7 +33,7 @@ void StressSource::handleMessage(cMessage *msg)
 {
 	if (msg == timer) {
 		send(new StressPacket(), "out", intrand(gateSize("out")));
-		// TEST: reuses a self message
+		// TEST: reusing self message
 		scheduleAt(simTime() + par("serviceTime"), timer);
 	}
 }
