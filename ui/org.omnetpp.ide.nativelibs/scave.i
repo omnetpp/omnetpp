@@ -242,6 +242,7 @@ FIX_STRING_MEMBER(Run, runName, RunName);
 //FIX_STRING_MEMBER(Run, experimentName, ExperimentName);
 //FIX_STRING_MEMBER(Run, measurementName, MeasurementName);
 //FIX_STRING_MEMBER(Run, replicationName, ReplicationName);
+FIX_STRING_MEMBER(VectorResult, columns, Columns);
 
 %rename FileRun::fileRef file;
 %rename FileRun::runRef run;
