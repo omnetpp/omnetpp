@@ -93,8 +93,8 @@ close(FILE);
 
 open(H, ">eventlogwriter.h");
 
-print H "\
-//=========================================================================
+print H \
+"//=========================================================================
 //  EVENTLOGWRITER.H - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
@@ -138,8 +138,8 @@ close(H);
 
 open(CC, ">eventlogwriter.cc");
 
-print CC "\
-//=========================================================================
+print CC \
+"//=========================================================================
 //  EVENTLOGWRITER.CC - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
@@ -149,6 +149,7 @@ print CC "\
 //=========================================================================
 
 #include \"eventlogwriter.h\"
+
 ";
 
 foreach $class (@classes)
@@ -158,7 +159,20 @@ foreach $class (@classes)
    {
       print CC ", $field->{CTYPE} $field->{NAME}";
    }
+   print CC ")\n";
+   print CC "{\n";
+   print CC "    fprintf(f, \"$class->{CODE}";
+   foreach $field (@{ $class->{FIELDS} })
+   {
+      print CC " $field->{CODE} %???";
+   }
+   print CC "\\n\"";
+   foreach $field (@{ $class->{FIELDS} })
+   {
+      print CC ", $field->{NAME}";
+   }
    print CC ");\n";
+   print CC "}\n\n";
 }
 
 close(CC);
