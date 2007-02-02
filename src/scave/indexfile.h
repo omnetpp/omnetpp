@@ -147,7 +147,21 @@ struct VectorData {
      * Returns a pointer to the block containing the entry with the given serial,
      * or NULL if no such entry.
      */
-    Block* getBlockForEntry(long serial) const;
+    const Block *getBlockBySerial(long serial) const;
+
+    /**
+     * Returns the first block which endTime >= simtime (when after == true)
+     * or the last block whose startTime <= simtime (when after == false).
+     * Returns NULL if no such block.
+     */
+    const Block *getBlockBySimtime(double simtime, bool after) const;
+
+    /**
+     * Returns the first block which endEventNum >= eventNum (when after == true)
+     * or the last block whose startEventNum <= eventNum (when after == false).
+     * Returns NULL if no such block.
+     */
+    const Block *getBlockByEventnum(long eventNum, bool after) const;
 
     /**
      * Finds the start (inclusive) and end (exclusive) indeces of the range of blocks,
@@ -176,9 +190,9 @@ struct VectorFileIndex {
     Vectors vectors;
 
     VectorFileIndex() : vectorFileLastModified(0), vectorFileSize(0), vectors() {}
-    int getNumberOfVectors() { return vectors.size(); };
-    VectorData *getVectorAt(int index) { return &vectors[index]; };
-    VectorData *getVector(int vectorId);
+    int getNumberOfVectors() const { return vectors.size(); };
+    const VectorData *getVectorAt(int index) const { return &vectors[index]; };
+    const VectorData *getVector(int vectorId) const;
 };
 
 /**
@@ -256,7 +270,7 @@ class IndexFileWriter
          */
         void writeAll(const VectorFileIndex& index);
         /**
-         * Writes out the fingerprint of the vector file this file belongs to.
+         * Writes out the fingerprint of the vector file this index file belongs to.
          */
         void writeFingerprint(std::string vectorFileName);
         /**

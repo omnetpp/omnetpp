@@ -9,7 +9,7 @@ import org.omnetpp.scave.engine.OutputVectorEntry;
  * because the underlying C++ objects of OutputVectorEntries can be
  * deleted by the next getEntryBySerial() call, so their use is 
  * dangerous.
- *
+ * 
  * @author tomi
  */
 public class IndexedVectorFileReaderEx extends IndexedVectorFileReader {
@@ -19,8 +19,21 @@ public class IndexedVectorFileReaderEx extends IndexedVectorFileReader {
 	}
 	
 	public OutputVectorEntry getEntryBySerial(int serial) {
-		OutputVectorEntry entry = super.getEntryBySerial((int)serial);
-		OutputVectorEntry ownedEntry = entry == null ? null :
+		return copy(super.getEntryBySerial((int)serial));
+	}
+
+	@Override
+	public OutputVectorEntry getEntryByEventnum(int eventNum, boolean after) {
+		return copy(super.getEntryByEventnum(eventNum, after));
+	}
+
+	@Override
+	public OutputVectorEntry getEntryBySimtime(double simtime, boolean after) {
+		return copy(super.getEntryBySimtime(simtime, after));
+	}
+	
+	private static OutputVectorEntry copy(OutputVectorEntry entry) {
+		OutputVectorEntry ownedEntry = entry == null ? null : 
 			new OutputVectorEntry(entry.getSerial(), entry.getEventNumber(), entry.getSimtime(), entry.getValue());
 		return ownedEntry;
 	}

@@ -50,16 +50,16 @@ class IndexedVectorFileReader
     FileReader *reader; // reader of the vector file
     
     VectorFileIndex *index; // index of the vector file, loaded fully into the memory
-    VectorData *vector;     // index data of the read vector, points into index
-    Block *currentBlock;    // last loaded block, points into index
-    OutputVectorEntry *currentEntries; // entries of the loaded block
+    const VectorData *vector;     // index data of the read vector, points into index
+    const Block *currentBlock;    // last loaded block, points into index
+    Entries currentEntries; // entries of the loaded block
 
     public:
         explicit IndexedVectorFileReader(const char* filename, long vectorId);
         ~IndexedVectorFileReader();
     protected:
         /** reads a block from the vector file */
-        void loadBlock(Block &block);
+        void loadBlock(const Block &block);
     public:
         /**
          * Returns the number of entries in the vector.
@@ -71,6 +71,21 @@ class IndexedVectorFileReader
          * The pointer will be valid until the next call to getEntryBySerial().
          */
         OutputVectorEntry *getEntryBySerial(long serial);
+
+        /**
+         * Returns the first entry whose simtime is >= than the given simtime (when after is true),
+         * or the last entry whose simtime is <= than the given simtime (when after is false).
+         * Returns NULL when no entry after/before.
+         */
+        OutputVectorEntry *getEntryBySimtime(double simtime, bool after);
+
+        /**
+         * Returns the first entry whose simtime is >= than the given simtime (when after is true),
+         * or the last entry whose simtime is <= than the given simtime (when after is false).
+         * Returns NULL when no entry after/before.
+         */
+        OutputVectorEntry *getEntryByEventnum(long eventNum, bool after);
+
         /**
          * Adds output vector entries in the [startTime,endTime] interval to
          * the specified vector. Returns the number of entries added.

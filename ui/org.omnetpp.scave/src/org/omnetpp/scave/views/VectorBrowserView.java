@@ -1,8 +1,13 @@
 package org.omnetpp.scave.views;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.dialogs.IInputValidator;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -37,7 +42,11 @@ public class VectorBrowserView extends ViewPart {
 	Label message;
 	VirtualTable<OutputVectorEntry> viewer;
 	ISelectionListener selectionChangedListener;
+	VectorResultContentProvider contentProvider;
 	
+	GotoAction gotoLineAction;
+	GotoAction gotoEventAction;
+	GotoAction gotoTimeAction;
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -48,6 +57,7 @@ public class VectorBrowserView extends ViewPart {
 		createMessage(panel);
 		createTable(panel);
 		createTableViewer(table);
+		createPulldownMenu();
 		hookSelectionChangedListener();
 	}
 	
@@ -80,10 +90,40 @@ public class VectorBrowserView extends ViewPart {
 	}
 
 	private void createTableViewer(Table table) {
+		contentProvider = new VectorResultContentProvider();
 		viewer = new VirtualTable<OutputVectorEntry>(table);
-		viewer.setContentProvider(new VectorResultContentProvider());
+		viewer.setContentProvider(contentProvider);
 		viewer.setLabelProvider(new VectorResultLabelProvider());
 		setViewerInput(getSite().getPage().getSelection());
+	}
+	
+	private void createPulldownMenu() {
+		gotoLineAction = new GotoAction(this, GotoTarget.Line);
+		gotoEventAction = new GotoAction(this, GotoTarget.Event);
+		gotoTimeAction = new GotoAction(this, GotoTarget.Time);
+
+		IMenuManager manager = getViewSite().getActionBars().getMenuManager();
+		manager.add(gotoLineAction);
+		manager.add(gotoEventAction);
+		manager.add(gotoTimeAction);
+	}
+	
+	public void gotoLine(int lineNumber) {
+		OutputVectorEntry entry = contentProvider.getElementBySerial(lineNumber);
+		if (entry != null)
+			viewer.gotoElement(entry);
+	}
+	
+	public void gotoEvent(int eventNumber) {
+		OutputVectorEntry entry = contentProvider.getElementByEventNumber(eventNumber, true);
+		if (entry != null)
+			viewer.gotoElement(entry);
+	}
+	
+	public void gotoTime(double time) {
+		OutputVectorEntry entry = contentProvider.getElementBySimulationTime(time, true);
+		if (entry != null)
+			viewer.gotoElement(entry);
 	}
 	
 	
@@ -132,8 +172,11 @@ public class VectorBrowserView extends ViewPart {
 			viewer.setInput(selectedVector);
 			// show message instead of empty table, when no index file
 			checkInput(selectedVector);
-			if (selectedVector != null)
-				setEventNumberColumnVisible(selectedVector.getColumns().indexOf('E') >= 0);
+			if (selectedVector != null) {
+				boolean hasEventNumbers = selectedVector.getColumns().indexOf('E') >= 0;
+				gotoEventAction.setEnabled(hasEventNumbers);
+				setEventNumberColumnVisible(hasEventNumbers);
+			}
 		}
 	}
 	
@@ -188,6 +231,64 @@ public class VectorBrowserView extends ViewPart {
 			eventNumberColumn.setWidth(60);
 			eventNumberColumn.setText("Event#");
 			table.setColumnOrder(ColumnOrder);
+		}
+	}
+	
+	
+	enum GotoTarget {
+		Line,
+		Event,
+		Time,
+	}
+
+	static class GotoAction extends Action
+	{
+		VectorBrowserView view;
+		GotoTarget target;
+		String prompt;
+		
+		public GotoAction(VectorBrowserView view, GotoTarget target) {
+			this.view = view;
+			this.target = target;
+			switch (target) {
+			case Line: setText("Go to line..."); prompt = "Line number:"; break;
+			case Event: setText("Go to event..."); prompt = "Event number:"; break;
+			case Time: setText("Go to time..."); prompt = "Time:"; break;
+			}
+		}
+		
+		public void run() {
+			IInputValidator validator = new IInputValidator() {
+				public String isValid(String text) {
+					if (text == null || text.length() == 0)
+						return " ";
+					else if (parseTarget(text) == null)
+						return "Enter a" + (target == GotoTarget.Time ? "" : "n integer") + " number";
+					else
+						return null; // ok
+				}
+			};
+			InputDialog dialog = new InputDialog(view.getSite().getShell(), "Go to", prompt, "", validator);
+			if (dialog.open() == Window.OK) {
+				Number targetAddr = parseTarget(dialog.getValue());
+				switch (target) {
+				case Line: view.gotoLine((Integer)targetAddr); break;
+				case Event: view.gotoEvent((Integer)targetAddr); break;
+				case Time: view.gotoTime((Double)targetAddr); break;
+				}
+			}
+		}
+		
+		public Number parseTarget(String str) {
+			try
+			{
+				if (target == GotoTarget.Time)
+					return Double.parseDouble(str);
+				else
+					return Integer.parseInt(str);
+			} catch (NumberFormatException e) {
+				return null;
+			}
 		}
 	}
 }

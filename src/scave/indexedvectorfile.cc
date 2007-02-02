@@ -41,8 +41,6 @@ IndexedVectorFileReader::~IndexedVectorFileReader()
         delete reader;
     if (index != NULL)
         delete index;
-    if (currentEntries != NULL)
-        delete currentEntries;
 }
 
 // see filemgrs.h
@@ -54,12 +52,11 @@ IndexedVectorFileReader::~IndexedVectorFileReader()
 #define CHECK(cond, msg, block, line) \
             if (!(cond))\
             {\
-                delete entries;\
                 throw opp_runtime_error("Invalid vector file syntax: %s, file %s, block offset %ld, line in block %d", \
                                         msg, fname.c_str(), block.startOffset, line);\
             }
 
-void IndexedVectorFileReader::loadBlock(Block &block)
+void IndexedVectorFileReader::loadBlock(const Block &block)
 {
     if (reader==NULL)
         reader=new FileReader(fname.c_str(), vector->blockSize);
@@ -68,14 +65,13 @@ void IndexedVectorFileReader::loadBlock(Block &block)
         return;
 
     if (currentBlock != NULL) {
-        delete currentEntries;
-        currentEntries = NULL;
         currentBlock = NULL;
+        currentEntries.clear();
     }
 
     long count=block.count();
     reader->seekTo(block.startOffset);
-    OutputVectorEntry *entries = new OutputVectorEntry[count];
+    currentEntries.resize(count);
 
     char *line, **tokens;
     int numTokens;
@@ -98,20 +94,20 @@ void IndexedVectorFileReader::loadBlock(Block &block)
         CHECK(numTokens >= columns.size() + 1, "Line is too short", block, i);
         CHECK(parseLong(tokens[0],id) && id==vector->vectorId, "Missing or unexpected vector id", block, i);
 
-        entries[i].serial = block.startSerial+i;
+        OutputVectorEntry &entry = currentEntries[i];
+        entry.serial = block.startSerial+i;
         for (int j = 0; j < columnsNo; ++j)
         {
             switch (columns[j])
             {
-            case 'E': CHECK(parseLong(tokens[j+1], entries[i].eventNumber), "Malformed event number", block, i); break;
-            case 'T': CHECK(parseDouble(tokens[j+1], entries[i].simtime), "Malformed simulation time", block, i); break;
-            case 'V': CHECK(parseDouble(tokens[j+1], entries[i].value), "Malformed vector value", block, i); break;
+            case 'E': CHECK(parseLong(tokens[j+1], entry.eventNumber), "Malformed event number", block, i); break;
+            case 'T': CHECK(parseDouble(tokens[j+1], entry.simtime), "Malformed simulation time", block, i); break;
+            case 'V': CHECK(parseDouble(tokens[j+1], entry.value), "Malformed vector value", block, i); break;
             default: CHECK(false, "Unknown column", block, i); break;
             }
         }
     }
 
-    currentEntries = entries;
     currentBlock = &block;
 }
 
@@ -122,10 +118,54 @@ OutputVectorEntry *IndexedVectorFileReader::getEntryBySerial(long serial)
 
     if (currentBlock == NULL || !currentBlock->contains(serial))
     {
-        loadBlock(*(vector->getBlockForEntry(serial)));
+        loadBlock(*(vector->getBlockBySerial(serial)));
     }
 
     return &currentEntries[serial - currentBlock->startSerial];
+}
+
+OutputVectorEntry *IndexedVectorFileReader::getEntryBySimtime(double simtime, bool after)
+{
+    const Block *block = vector->getBlockBySimtime(simtime, after);
+    if (block)
+    {
+        loadBlock(*block);
+        if (after)
+        {
+            for (Entries::iterator it = currentEntries.begin(); it != currentEntries.end(); ++it) // FIXME: binary search
+                if (it->simtime >= simtime)
+                    return &(*it);
+        }
+        else
+        {
+            for (Entries::reverse_iterator it = currentEntries.rbegin(); it != currentEntries.rend(); ++it)  // FIXME: binary search
+                if (it->simtime <= simtime)
+                    return &(*it);
+        }
+    }
+    return NULL;
+}
+
+OutputVectorEntry *IndexedVectorFileReader::getEntryByEventnum(long eventNum, bool after)
+{
+    const Block *block = vector->getBlockByEventnum(eventNum, after);
+    if (block)
+    {
+        loadBlock(*block);
+        if (after)
+        {
+            for (Entries::iterator it = currentEntries.begin(); it != currentEntries.end(); ++it) // FIXME: binary search
+                if (it->eventNumber >= eventNum)
+                    return &(*it);
+        }
+        else
+        {
+            for (Entries::reverse_iterator it = currentEntries.rbegin(); it != currentEntries.rend(); ++it) // FIXME: binary search
+                if (it->eventNumber <= eventNum)
+                    return &(*it);
+        }
+    }
+    return NULL;
 }
 
 long IndexedVectorFileReader::collectEntriesInSimtimeInterval(double startTime, double endTime, Entries &out)
@@ -137,11 +177,11 @@ long IndexedVectorFileReader::collectEntriesInSimtimeInterval(double startTime, 
     Entries::size_type count = 0;
     for (Blocks::size_type i = startIndex; i < endIndex; i++)
     {
-        Block &block = vector->blocks[i];
+        const Block &block = vector->blocks[i];
         loadBlock(block);
         for (long j = 0; j < block.count(); ++j)
         {
-            OutputVectorEntry &entry = currentEntries[i];
+            OutputVectorEntry &entry = currentEntries[j];
             if (startTime <= entry.simtime && entry.simtime <= endTime)
             {
                 out.push_back(entry);
@@ -163,12 +203,12 @@ long IndexedVectorFileReader::collectEntriesInEventnumInterval(long startEventNu
     Entries::size_type count = 0;
     for (Blocks::size_type i = startIndex; i < endIndex; i++)
     {
-        Block &block = vector->blocks[i];
+        const Block &block = vector->blocks[i];
         loadBlock(block);
         
         for (long j = 0; j < block.count(); ++j)
         {
-            OutputVectorEntry &entry = currentEntries[i];
+            OutputVectorEntry &entry = currentEntries[j];
             if (startEventNum <= entry.eventNumber && entry.eventNumber <= endEventNum)
             {
                 out.push_back(entry);

@@ -19,7 +19,7 @@ static bool serialLess(const Block &first, const Block &second)
     return first.endSerial() < second.endSerial();
 }
 
-Block* VectorData::getBlockForEntry(long serial) const
+const Block* VectorData::getBlockBySerial(long serial) const
 {
     if (serial < 0 || serial >= count())
         return NULL;
@@ -31,16 +31,41 @@ Block* VectorData::getBlockForEntry(long serial) const
 
     if (first != blocks.end()) {
         assert(first->contains(serial));
-        return (Block*)&(*first);
+        return &(*first);
     }
     else
         return NULL;
 }
 
-
+// ordering of blocks
 static bool simtimeLess(const Block &first, const Block &second)
 {
     return first.endTime < second.startTime;
+}
+
+// ordering of reversed blocks
+static bool simtimeGreater(const Block &first, const Block &second)
+{
+    return first.startTime > second.endTime;
+}
+
+    
+const Block *VectorData::getBlockBySimtime(double simtime, bool after) const
+{
+    Block blockToFind;
+    blockToFind.startTime = simtime;
+    blockToFind.endTime = simtime;
+
+    if (after)
+    {
+        Blocks::const_iterator first = std::lower_bound(blocks.begin(), blocks.end(), blockToFind, simtimeLess);
+        return first != blocks.end() ? &(*first) : NULL;
+    }
+    else
+    {
+        Blocks::const_reverse_iterator last = std::lower_bound(blocks.rbegin(), blocks.rend(), blockToFind, simtimeGreater);
+        return last != blocks.rend() ? &(*last) : NULL;
+    }
 }
 
 Blocks::size_type VectorData::getBlocksInSimtimeInterval(double startTime, double endTime, Blocks::size_type &startIndex, Blocks::size_type &endIndex) const
@@ -61,9 +86,34 @@ Blocks::size_type VectorData::getBlocksInSimtimeInterval(double startTime, doubl
     return endIndex - startIndex;
 }
 
+// ordering of blocks
 static bool eventnumLess(const Block &first, const Block &second)
 {
     return first.endEventNum < second.startEventNum;
+}
+
+// ordering of reversed blocks
+static bool eventnumGreater(const Block &first, const Block &second)
+{
+    return first.startEventNum > second.endEventNum;
+}
+
+const Block *VectorData::getBlockByEventnum(long eventNum, bool after) const
+{
+    Block blockToFind;
+    blockToFind.startEventNum = eventNum;
+    blockToFind.endEventNum = eventNum;
+
+    if (after)
+    {
+        Blocks::const_iterator first = std::lower_bound(blocks.begin(), blocks.end(), blockToFind, eventnumLess);
+        return first != blocks.end() ? &(*first) : NULL;
+    }
+    else
+    {
+        Blocks::const_reverse_iterator last = std::lower_bound(blocks.rbegin(), blocks.rend(), blockToFind, eventnumGreater);
+        return last != blocks.rend() ? &(*last) : NULL;
+    }
 }
 
 Blocks::size_type VectorData::getBlocksInEventnumInterval(long startEventNum, long endEventNum, Blocks::size_type &startIndex, Blocks::size_type &endIndex) const
@@ -86,9 +136,9 @@ Blocks::size_type VectorData::getBlocksInEventnumInterval(long startEventNum, lo
 
 //=========================================================================
 
-VectorData *VectorFileIndex::getVector(int vectorId)
+const VectorData *VectorFileIndex::getVector(int vectorId) const
 {
-    for (Vectors::iterator it=vectors.begin(); it != vectors.end(); ++it)
+    for (Vectors::const_iterator it=vectors.begin(); it != vectors.end(); ++it)
     {
         if (it->vectorId == vectorId)
             return &(*it);

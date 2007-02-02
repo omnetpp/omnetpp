@@ -316,7 +316,6 @@ namespace std {
   specialize_std_vector(OutputVectorEntry);
   %template(EntryVector) vector<OutputVectorEntry>;
 };
-%ignore BlockWithEntries;
 %ignore IndexedVectorFileWriterNode;
 %ignore IndexedVectorFileWriterNodeType;
 %include "indexedvectorfile.h"

@@ -81,7 +81,19 @@ public class VectorResultContentProvider implements IVirtualTableContentProvider
 		else
 			return null;
 	}
-
+	
+	public OutputVectorEntry getElementBySerial(int serial) {
+		return reader != null ? reader.getEntryBySerial(serial) : null;
+	}
+	
+	public OutputVectorEntry getElementBySimulationTime(double time, boolean after) {
+		return reader != null ? reader.getEntryBySimtime(time, after) : null;
+	}
+	
+	public OutputVectorEntry getElementByEventNumber(int eventNumber, boolean after) {
+		return reader != null ? reader.getEntryByEventnum(eventNumber, after) : null;
+	}
+	
 	public void dispose() {
 		if (reader != null) {
 			reader.delete();
