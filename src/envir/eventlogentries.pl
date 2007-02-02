@@ -51,7 +51,7 @@ while (<FILE>)
       }
       elsif ($fieldType eq "simtime_t")
       {
-         $fieldPrintfType = "%s";  #XXX SIMTIME_STR()
+         $fieldPrintfType = "%s";
       }
 
       $fieldCType = $fieldType;
@@ -157,6 +157,8 @@ print CC
 
 
 ";
+
+#FIXME: use SIMTIME_STR(), quote strings, etc! and change omnetapp.cc to use this
 
 foreach $class (@classes)
 {
