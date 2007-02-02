@@ -1,0 +1,155 @@
+#
+# Generates eventlog writer code from eventlogentries.txt
+#
+# Author: Andras Varga, 2006
+#
+
+open(FILE, "../eventlog/eventlogentries.txt");
+
+
+#
+# Read input file
+#
+while (<FILE>)
+{
+   chomp;
+   if ($_ =~ /^ *$/)
+   {
+      # blank line
+   }
+   elsif ($_ =~ /^ *\/\//)
+   {
+      # comment
+   }
+   elsif ($_ =~ /^([\w]+) +([\w]+) *$/)
+   {
+      $classCode = $1;
+      $className = $2;
+      print "$classCode $className\n";
+   }
+   elsif ($_ =~ /^ *{ *$/)
+   {
+      print "{\n";
+   }
+   elsif ($_ =~ /^ +([\w#]+) +([\w]+) +([\w]+)( +opt)? *$/)
+   {
+      $fieldCode = $1;
+      $fieldType = $2;
+      $fieldName = $3;
+
+      if ($fieldType eq "string")
+      {
+         $fieldPrintfType = "%s";
+      }
+      elsif ($fieldType eq "long")
+      {
+         $fieldPrintfType = "%ld";
+      }
+      elsif ($fieldType eq "int")
+      {
+         $fieldPrintfType = "%d";
+      }
+      elsif ($fieldType eq "simtime_t")
+      {
+         $fieldPrintfType = "%.*g";
+      }
+
+      $fieldCType = $fieldType;
+      $fieldCType =~ s/string/const char */;
+      $field = {
+         CODE => $fieldCode,
+         TYPE => $fieldType,
+         CTYPE => $fieldCType,
+         PRINTFTYPE => $fieldPrintfType,
+         NAME => $fieldName,
+      };
+      push(@fields, $field);
+      print " $fieldCode $fieldType $fieldName\n";
+   }
+   elsif ($_ =~ /^ *} *$/)
+   {
+      $class = {
+         CODE => $classCode,
+         NAME => $className,
+         FIELDS => [ @fields ],
+      };
+      push(@classes, $class);
+      @fields = ();
+      print "}\n";
+   }
+   else
+   {
+       die "unrecognized line \"$_\"";
+   }
+}
+
+close(FILE);
+
+
+
+#
+# Write eventlogentries header file
+#
+
+open(H, ">eventlogwriter.h");
+
+print H "\
+//=========================================================================
+//  EVENTLOGWRITER.H - part of
+//                  OMNeT++/OMNEST
+//           Discrete System Simulation in C++
+//
+//  This is a generated file -- do not modify.
+//
+//=========================================================================
+
+#ifndef __EVENTLOGWRITER_H_
+#define __EVENTLOGWRITER_H_
+
+class EventLogWriter
+{
+  public:
+";
+
+foreach $class (@classes)
+{
+   print H "    static record$class->{NAME}(FILE *f";
+
+   foreach $field (@{ $class->{FIELDS} })
+   {
+      print H ", $field->{CTYPE} $field->{NAME}";
+   }
+   print H "};\n";
+}
+
+print H "
+};
+
+#endif
+";
+
+close(H);
+
+
+
+#
+# Write eventlogwriter.cc file
+#
+
+open(CC, ">eventlogwriter.cc");
+
+print CC "\
+//=========================================================================
+//  EVENTLOGWRITER.CC - part of
+//                  OMNeT++/OMNEST
+//           Discrete System Simulation in C++
+//
+//  This is a generated file -- do not modify.
+//
+//=========================================================================
+
+#include \"eventlogwriter.h\"
+";
+
+close(CC);
+
