@@ -693,7 +693,7 @@ void TOmnetApp::moduleReparented(cModule *module, cModule *oldparent)
 {
     if (feventlog)
     {
-        ::fprintf(feventlog, "MR id %ld p %ld\n",
+        ::fprintf(feventlog, "MR id %ld p %ld\n",    //XXX make use of generated EventLogWriter class everywhere
                            module->id(),
                            module->parentModule()->id());
     }

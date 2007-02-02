@@ -150,6 +150,12 @@ print CC
 
 #include \"eventlogwriter.h\"
 
+#ifdef CHECK
+#undef CHECK
+#endif
+#define CHECK(fprintf)    if (fprintf<0) throw new cRuntimeError(\"Cannot write event log file, disk full?\");
+
+
 ";
 
 foreach $class (@classes)
@@ -161,7 +167,7 @@ foreach $class (@classes)
    }
    print CC ")\n";
    print CC "{\n";
-   print CC "    fprintf(f, \"$class->{CODE}";
+   print CC "    CHECK(fprintf(f, \"$class->{CODE}";
    foreach $field (@{ $class->{FIELDS} })
    {
       print CC " $field->{CODE} $field->{PRINTFTYPE}";
@@ -171,7 +177,7 @@ foreach $class (@classes)
    {
       print CC ", $field->{NAME}";
    }
-   print CC ");\n";
+   print CC "));\n";
    print CC "}\n\n";
 }
 

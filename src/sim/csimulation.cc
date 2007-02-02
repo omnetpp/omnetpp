@@ -378,7 +378,7 @@ void cSimulation::setupNetwork(cModuleType *network, int run_num)
 void cSimulation::startRun()
 {
     sim_time = 0;
-    event_num = 0;  //XXX in sandbox omnetpp this was -1 -- why?
+    event_num = -1; // event numbering starts from 0, initialize() is represented with -1
 
     // NOTE: should NOT call msgQueue.clear() here because the parallel
     // simulation library (cNullMessageProtocol::startRun()) has already
