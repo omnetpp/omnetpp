@@ -1,3 +1,24 @@
+2007-02-02
+----------
+
+Additions:
+
+   + Event numbers are stored in vector files. New vector files describes the columns in the
+     vector declaration ('E' = event number, 'T' = simulation time, 'V' = vector value).
+     Older vector files are accepted by scave (their columns are 'TV').
+
+   + Indexing by simulation time and event number is implemented.
+
+   + Statistical data (min/max/sum/sumsqr) is stored for each vector and for each block
+     in the index. It is possible to answer the min/max/avg/stddev for time/event number
+     intervals efficiently.
+
+   + Event numbers are displayed in the "Vector Browser" view. There is a sample file (aloha.vec)
+     containing event numbers in the repository.
+
+   + "Go to line", "Go to event", "Go to time" actions are available from the pull down menu
+     of the "Vector Browser" view.
+
 2007-01-19
 ----------
 
