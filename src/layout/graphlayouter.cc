@@ -1156,10 +1156,10 @@ void ForceDirectedGraphLayouter::debugDraw()
             }
         }
 
-        environment->drawRectangle(pt.x - rs.width / 2, pt.y - rs.height / 2, pt.x + rs.width / 2, pt.y + rs.height / 2, "{node bbox}", "black");
+        environment->drawRectangle(pt.x , pt.y, pt.x + rs.width, pt.y + rs.height, "{node bbox}", "black");
         char text[100];
         sprintf(text,"%g", pt.z);
-        environment->drawText(pt.x - rs.width / 2, pt.y - rs.height / 2, text, "{node bbox}", "black");
+        environment->drawText(pt.x, pt.y, text, "{node bbox}", "black");
     }
 
     // draw springs
