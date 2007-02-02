@@ -378,7 +378,7 @@ void cSimulation::setupNetwork(cModuleType *network, int run_num)
 void cSimulation::startRun()
 {
     sim_time = 0;
-    event_num = -1; // event numbering starts from 0, initialize() is represented with -1
+    event_num = -1; // initialize() has event number -1
 
     // NOTE: should NOT call msgQueue.clear() here because the parallel
     // simulation library (cNullMessageProtocol::startRun()) has already
@@ -398,6 +398,8 @@ void cSimulation::startRun()
         systemmodp->scheduleStart(0);
         systemmodp->callInitialize();
     }
+
+    event_num = 0; // events are numbered from 0
 }
 
 void cSimulation::callFinish()
