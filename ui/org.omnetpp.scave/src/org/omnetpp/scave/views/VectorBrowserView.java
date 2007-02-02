@@ -32,6 +32,7 @@ public class VectorBrowserView extends ViewPart {
 
 	Composite panel;
 	Table table;
+	TableColumn eventNumberColumn;
 	Composite messagePanel;
 	Label message;
 	VirtualTable<OutputVectorEntry> viewer;
@@ -131,11 +132,15 @@ public class VectorBrowserView extends ViewPart {
 			viewer.setInput(selectedVector);
 			// show message instead of empty table, when no index file
 			checkInput(selectedVector);
+			if (selectedVector != null)
+				setEventNumberColumnVisible(selectedVector.getColumns().indexOf('E') >= 0);
 		}
 	}
 	
 	/**
-	 * 
+	 * Checks if the input is a vector whose file has an index.
+	 * If not then the content of the vector can not be displayed
+	 * and a message is shown.
 	 */
 	private void checkInput(VectorResult input) {
 		if (input != null) {
@@ -143,6 +148,16 @@ public class VectorBrowserView extends ViewPart {
 			if (IndexFile.isIndexFileUpToDate(file)) {
 				setVisible(messagePanel, false);
 				setVisible(table, true);
+				if (eventNumberColumn != null && input.getColumns().indexOf('E') < 0) {
+					eventNumberColumn.dispose();
+					eventNumberColumn = null;
+				}
+				else if (eventNumberColumn == null && input.getColumns().indexOf('E') >= 0) {
+					eventNumberColumn = new TableColumn(table, SWT.NONE);
+					eventNumberColumn.setWidth(60);
+					eventNumberColumn.setText("Event#");
+					table.setColumnOrder(new int[] {0,3,1,2});
+				}
 			} else {
 				message.setText("The vector content can not be browsed," +
 						" because the index for \""+file+"\" is not up to date.");
@@ -158,5 +173,21 @@ public class VectorBrowserView extends ViewPart {
 		gridData.exclude = !visible;
 		control.setVisible(visible);
 		panel.layout(true, true);
+	}
+	
+	// Order: Item#, Event#, Time, Value
+	private static final int[] ColumnOrder = new int[] {0,3,1,2};
+	
+	private void setEventNumberColumnVisible(boolean visible) {
+		if (eventNumberColumn != null && !visible) {
+			eventNumberColumn.dispose();
+			eventNumberColumn = null;
+		}
+		else if (eventNumberColumn == null && visible) {
+			eventNumberColumn = new TableColumn(table, SWT.NONE);
+			eventNumberColumn.setWidth(60);
+			eventNumberColumn.setText("Event#");
+			table.setColumnOrder(ColumnOrder);
+		}
 	}
 }

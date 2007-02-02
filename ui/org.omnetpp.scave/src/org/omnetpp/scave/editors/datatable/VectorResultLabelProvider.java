@@ -18,5 +18,6 @@ public class VectorResultLabelProvider extends LabelProvider implements IVirtual
 		item.setText(0, String.valueOf(entry.getSerial()));
 		item.setText(1, String.valueOf(entry.getSimtime()));
 		item.setText(2, String.valueOf(entry.getValue()));
+		item.setText(3, String.valueOf(entry.getEventNumber()));
 	}
 }
