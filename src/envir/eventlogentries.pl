@@ -93,7 +93,7 @@ close(FILE);
 
 open(H, ">eventlogwriter.h");
 
-print H \
+print H
 "//=========================================================================
 //  EVENTLOGWRITER.H - part of
 //                  OMNeT++/OMNEST
@@ -138,7 +138,7 @@ close(H);
 
 open(CC, ">eventlogwriter.cc");
 
-print CC \
+print CC
 "//=========================================================================
 //  EVENTLOGWRITER.CC - part of
 //                  OMNeT++/OMNEST
