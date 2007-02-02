@@ -51,7 +51,7 @@ while (<FILE>)
       }
       elsif ($fieldType eq "simtime_t")
       {
-         $fieldPrintfType = "%.*g";
+         $fieldPrintfType = "%s";  #XXX SIMTIME_STR()
       }
 
       $fieldCType = $fieldType;
@@ -164,7 +164,7 @@ foreach $class (@classes)
    print CC "    fprintf(f, \"$class->{CODE}";
    foreach $field (@{ $class->{FIELDS} })
    {
-      print CC " $field->{CODE} %???";
+      print CC " $field->{CODE} $field->{PRINTFTYPE}";
    }
    print CC "\\n\"";
    foreach $field (@{ $class->{FIELDS} })
