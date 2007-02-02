@@ -38,7 +38,7 @@ CC ConnectionCreatedEntry
    dm int destModuleId
    dg int destGateId
    dn string destGateFullName
-// channel, channel attributes, etc
+   //XXX channel, channel attributes, etc
 }
 
 CD ConnectionDeletedEntry
@@ -55,12 +55,6 @@ CS ConnectionDisplayStringChangedEntry
 }
 
 DS ModuleDisplayStringChangedEntry
-{
-   id int moduleId
-   d string displayString
-}
-
-DG BackgroundDisplayStringChangedEntry
 {
    id int moduleId
    d string displayString
@@ -91,7 +85,7 @@ BS BeginSendEntry
    k int messageKind
    l long messageLength
    pe long previousEventNumber
-// and many other fields...
+   //XXX and many other fields, including message contents
 }
 
 ES EndSendEntry
@@ -104,19 +98,16 @@ SD MessageSendDirectEntry
    sm int senderModuleId
    dm int destModuleId
    dg int destGateId
-   pd simtime_t propagationDelay
-   td simtime_t transmissionDelay
+   pd simtime_t propagationDelay opt
+   td simtime_t transmissionDelay opt
 }
 
 SH MessageSendHopEntry
-// FIXME split into two? it's typical that there's no delay
 {
    sm int senderModuleId
    sg int senderGateId
-// FIXME this should be eliminated from simkernel (eliminate sendDelay)
-   ts simtime_t transmissionStart
-   pd simtime_t propagationDelay
-   td simtime_t transmissionDelay
+   pd simtime_t propagationDelay opt
+   td simtime_t transmissionDelay opt
 }
 
 DE DeleteMessageEntry

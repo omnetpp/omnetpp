@@ -15,7 +15,12 @@ open(FILE, "eventlogentries.txt");
 #
 while (<FILE>)
 {
-   if ($_ =~ /^ *\/\//)
+   chomp;
+   if ($_ =~ /^ *$/)
+   {
+      # blank line
+   }
+   elsif ($_ =~ /^ *\/\//)
    {
       # comment
    }
@@ -29,7 +34,7 @@ while (<FILE>)
    {
       print "{\n";
    }
-   elsif ($_ =~ /^ +([\w#]+) +([\w]+) +([\w]+) *$/)
+   elsif ($_ =~ /^ +([\w#]+) +([\w]+) +([\w]+)( +opt)? *$/)
    {
       $fieldCode = $1;
       $fieldType = $2;
@@ -74,6 +79,10 @@ while (<FILE>)
       push(@classes, $class);
       @fields = ();
       print "}\n";
+   }
+   else
+   {
+       die "unrecognized line \"$_\"";
    }
 }
 
@@ -203,19 +212,19 @@ foreach $class (@classes)
    {
       if ($field->{TYPE} eq "int")
       {
-      	$parserFunction = "getIntToken";
+        $parserFunction = "getIntToken";
       }
       elsif ($field->{TYPE} eq "long")
       {
-      	$parserFunction = "getLongToken";
+        $parserFunction = "getLongToken";
       }
       elsif ($field->{TYPE} eq "string")
       {
-      	$parserFunction = "getStringToken";
+        $parserFunction = "getStringToken";
       }
       elsif ($field->{TYPE} eq "simtime_t")
       {
-      	$parserFunction = "getSimtimeToken";
+        $parserFunction = "getSimtimeToken";
       }
       print ENTRIES_CC_FILE "    $field->{NAME} = $parserFunction(tokens, numTokens, \"$field->{CODE}\");\n";
    }
@@ -299,7 +308,7 @@ foreach $class (@classes)
        $i++;
    }
    print FACTORY_CC_FILE "code[$i]==0)  // $class->{CODE}\n";
-   
+
    print FACTORY_CC_FILE "        entry = new $class->{NAME}(event);\n";
 }
 print FACTORY_CC_FILE "    else\n";

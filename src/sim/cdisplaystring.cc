@@ -128,9 +128,10 @@ void cDisplayString::updateWith(const cDisplayString& ds)
         }
     }
 
-    // optimize storage
+    // optimize storage; parse() also calls notify()
     parse(toString());
 }
+
 
 void cDisplayString::updateWith(const char *s)
 {
@@ -330,7 +331,6 @@ void cDisplayString::cleartags()
     // must be done after deleting tags[] because of isinbuffer()
     delete [] buffer;
     buffer = bufferend = NULL;
-    notify();
 }
 
 void cDisplayString::parse()
@@ -374,7 +374,7 @@ void cDisplayString::parse()
             numtags++;
             tags[numtags-1].name = d+1;
             tags[numtags-1].numargs = 0;
-            for (int i=0; i<MAXARGS; i++) 
+            for (int i=0; i<MAXARGS; i++)
                 tags[numtags-1].args[i] = NULL;
         }
         else if (*s=='=')
