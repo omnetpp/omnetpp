@@ -113,7 +113,7 @@ class EventLogWriter
 
 foreach $class (@classes)
 {
-   print H "    static record$class->{NAME}(FILE *f";
+   print H "    static void record$class->{NAME}(FILE *f";
 
    foreach $field (@{ $class->{FIELDS} })
    {
@@ -150,6 +150,16 @@ print CC "\
 
 #include \"eventlogwriter.h\"
 ";
+
+foreach $class (@classes)
+{
+   print CC "void EventLogWriter::record$class->{NAME}(FILE *f";
+   foreach $field (@{ $class->{FIELDS} })
+   {
+      print CC ", $field->{CTYPE} $field->{NAME}";
+   }
+   print CC ");\n";
+}
 
 close(CC);
 

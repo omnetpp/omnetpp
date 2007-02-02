@@ -22,6 +22,7 @@
 #include "cexception.h"
 #include "onstartup.h"
 #include "carray.h"
+#include "random.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -52,6 +53,9 @@ Define_Function( hypot, 2 )
 
 Define_Function( log,   1 )
 Define_Function( log10, 1 )
+
+Define_Function( intrand, 1 )  //XXX the 2nd arg should be integer! register differently
+Define_Function( dblrand, 0 )
 
 
 cMathFunction::cMathFunction(const char *name, MathFuncNoArg f, int ac) : cNoncopyableOwnedObject(name)
