@@ -32,6 +32,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 
     private GraphicalNedEditor graphEditor;
 	private TextualNedEditor nedEditor;
+    private String textFormat = "";          // the text version of the file the last time we have switched editors
 	private int graphPageIndex;
 	private int textPageIndex;
 	private boolean insidePageChange = false;
@@ -49,6 +50,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
     
     @Override
     public void dispose() {
+        // TODO maybe not the dispose is the righ place to disconnect (rather when the editor is closed)
         super.dispose();
         NEDResourcesPlugin.getNEDResources().disconnect(((IFileEditorInput)getEditorInput()).getFile());
     }
@@ -56,24 +58,24 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 	@Override
 	protected void createPages() {
 		graphEditor = new GraphicalNedEditor();
-        graphEditor.setEmbeddingEditor(this);
 		nedEditor = new TextualNedEditor();
         IFile ifile = ((FileEditorInput)getEditorInput()).getFile();
         
 		try {
-            // fill graphical editor
+            // setup graphical editor
 			NEDResources res = NEDResourcesPlugin.getNEDResources();
             NedFileNodeEx modelRoot = (NedFileNodeEx)res.getNEDFileContents(ifile);
             graphEditor.setModel(modelRoot);
-
-            // fill text editor
             graphPageIndex = addPage(graphEditor, getEditorInput());
             setPageText(graphPageIndex,"Graphical");
 
+            // setup text editor
+            // we don't have to set the content because it's set 
+            // automatically by the text editor (from the FileEditorInput)
             textPageIndex = addPage(nedEditor, getEditorInput());
             setPageText(textPageIndex,"Text");
 
-            // only start in graphics mode if there's no error in the file
+            // switch to graphics mode initially if there's no error in the file
             if (!res.containsNEDErrors(ifile))
                 setActivePage(graphPageIndex);
             
@@ -115,17 +117,18 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 			// generate text representation from the model
 			NedFileNodeEx modelRoot = graphEditor.getModel();
             // generate the text representation
-            String textEditorContent = NEDTreeUtil.generateNedSource(modelRoot, true);
-            // put it into the text editor
-            nedEditor.setText(textEditorContent);
+            textFormat = NEDTreeUtil.generateNedSource(modelRoot, true);
+            // put it into the text editor if changed
+            if (!textFormat.equals(nedEditor.getText()))
+                nedEditor.setText(textFormat);
 		} 
-		else if (newPageIndex == graphPageIndex) { 
+		else if (newPageIndex==graphPageIndex && !textFormat.equals(nedEditor.getText())) {
 			// switch from text to graphics
-            IFile ifile = ((FileEditorInput)getEditorInput()).getFile();
-            res.setNEDFileContents(ifile, nedEditor.getText());
-
+		    IFile ifile = ((FileEditorInput)getEditorInput()).getFile();
+            textFormat = nedEditor.getText();
+            res.setNEDFileContents(ifile, textFormat);
+            // convert it to object representation
             NedFileNodeEx modelRoot = (NedFileNodeEx)res.getNEDFileContents(ifile);
-			
             // only start in graphics mode if there's no error in the file
             if (!res.containsNEDErrors(ifile)) {
 				// give the backparsed model to the graphical editor 
@@ -137,20 +140,6 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 				// switched away from it in the first place)
 				setActivePage(textPageIndex);
 				
-				//XXX old code: ask user what to do
-				//    if (graphEditor.getModel() != null) {
-				//        MessageBox messageBox = new MessageBox(getEditorSite().getShell(), 
-				//                SWT.ICON_WARNING | SWT.YES | SWT.NO);
-				//        messageBox.setText("Warning");
-				//        messageBox.setMessage("The editor contents has syntax errors, "+
-				//                "switching is only possible with losing text mode changes. "+
-				//        "Do you want to revert to graphics view (and lose your changes)?"); 
-				//        // XXX better dialog, with "Continue editing" and "Lose changes" buttons
-				//        int buttonID = messageBox.open();
-				//        if (buttonID==SWT.YES) 
-				//            setActivePage(graphPageIndex);
-				//    } else {
-
 				if (!initPhase) {
 					MessageBox messageBox = new MessageBox(getEditorSite().getShell(), SWT.ICON_WARNING | SWT.OK);
 					messageBox.setText("Warning");
@@ -163,14 +152,6 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 		insidePageChange = false;
         initPhase = false;
 	}
-
-//	@Override
-//	public Object getAdapter(Class type) {
-//		Object adapter = getActiveEditor().getAdapter(type);
-//		if (adapter == null) 
-//			adapter = super.getAdapter(type);
-//		return adapter;
-//	}
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
