@@ -86,7 +86,7 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.IPageSite;
-import org.eclipse.ui.part.MultiPageEditorPart;
+import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.common.image.ImageFactory;
@@ -357,7 +357,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
 
     private NedFileNodeEx nedFileModel;
     private ResourceTracker resourceListener = new ResourceTracker();
-    private MultiPageEditorPart embeddingEditor;
 
     protected static final String PALETTE_DOCK_LOCATION = "Dock location"; //$NON-NLS-1$
     protected static final String PALETTE_SIZE = "Palette Size"; //$NON-NLS-1$
@@ -369,13 +368,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
         setEditDomain(new DefaultEditDomain(this));
     }
     
-    /**
-     * @param parent Sets the parent editor embedding this one (ie, parent may be a multipage editor)
-     */
-    public void setEmbeddingEditor(MultiPageEditorPart parent) {
-        embeddingEditor = parent; 
-    }
-
     protected void closeEditor(boolean save) {
         getSite().getPage().closeEditor(GraphicalNedEditor.this, save);
     }
@@ -627,7 +619,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
 //                new Boolean(getModel().isSnapToGeometryEnabled()));
 //
         // Zoom
-        ZoomManager manager = (ZoomManager) getGraphicalViewer().getProperty(ZoomManager.class.toString());
+//        ZoomManager manager = (ZoomManager) getGraphicalViewer().getProperty(ZoomManager.class.toString());
 //        if (manager != null) manager.setZoom(getModel().getZoom());
 
         // Scroll-wheel Zoom support
@@ -748,8 +740,10 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
     @Override
     public void selectionChanged(IWorkbenchPart part, ISelection selection) {
         // update actions ONLY if we are the active editor or the parent editor which is a multipage editor
-        if (this.equals(getSite().getPage().getActiveEditor()) ||
-                embeddingEditor.equals(getSite().getPage().getActiveEditor()))
+        IEditorPart activeEditor = getSite().getPage().getActiveEditor(); 
+        if (this == activeEditor ||
+              (getSite() instanceof MultiPageEditorSite && 
+              ((MultiPageEditorSite)getSite()).getMultiPageEditor() == activeEditor))
             updateActions(getSelectionActions());
     }
     
