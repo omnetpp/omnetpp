@@ -88,7 +88,7 @@ close(FILE);
 
 
 #
-# Write eventlogentries header file
+# Write eventlogwriter.h file
 #
 
 open(H, ">eventlogwriter.h");
@@ -119,7 +119,7 @@ foreach $class (@classes)
    {
       print H ", $field->{CTYPE} $field->{NAME}";
    }
-   print H "};\n";
+   print H ");\n";
 }
 
 print H "
