@@ -14,6 +14,7 @@ OMNETPP_DOC_DIR =     @OMNETPP_DOC_DIR@
 OMNETPP_SAMPLES_DIR = @OMNETPP_SAMPLES_DIR@
 OMNETPP_TEST_DIR =    @OMNETPP_TEST_DIR@
 
+PERL =                @PERL@
 YACC =                @YACC@
 LEX =                 @LEX@
 CC =                  @CC@
