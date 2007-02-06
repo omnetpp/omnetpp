@@ -238,7 +238,7 @@ class ForceDirectedEmbedding
             return 3 * massSum / time * log((getPotentialEnergy() + getKineticEnergy()) / parameters.velocityRelaxLimit);
         }
 
-        Rc ForceDirectedEmbedding::getBoundingRectangle();
+        Rc getBoundingRectangle();
 
         /**
          * Find the solution for the differential equation using a
