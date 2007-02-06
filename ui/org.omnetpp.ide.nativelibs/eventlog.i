@@ -25,7 +25,7 @@
     try {
         $action
     } catch (std::exception& e) {
-        SWIG_exception(SWIG_RuntimeError,const_cast<char*>(e.what()));
+        SWIG_JavaThrowException(jenv, SWIG_JavaRuntimeException, const_cast<char*>(e.what()));
     }
 }
 
