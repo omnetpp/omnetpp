@@ -38,10 +38,12 @@ while (<FILE>)
       $fieldType = $2;
       $fieldName = $3;
       $fieldOpt  = ($4 ne "");
+      $fieldPrintfValue = $fieldName;
 
       if ($fieldType eq "string")
       {
          $fieldPrintfType = "%s";
+         $fieldPrintfValue = "QUOTE($fieldPrintfValue)";
       }
       elsif ($fieldType eq "long")
       {
@@ -54,6 +56,7 @@ while (<FILE>)
       elsif ($fieldType eq "simtime_t")
       {
          $fieldPrintfType = "%s";
+         $fieldPrintfValue = "SIMTIME_STR($fieldPrintfValue)";
       }
 
       if ($fieldOpt) {
@@ -67,6 +70,7 @@ while (<FILE>)
          TYPE => $fieldType,
          CTYPE => $fieldCType,
          PRINTFTYPE => $fieldPrintfType,
+         PRINTFVALUE => $fieldPrintfValue,
          NAME => $fieldName,
          OPT => $fieldOpt,
       };
@@ -136,6 +140,7 @@ open(CC, ">eventlogwriter.cc");
 print CC makeFileBanner("eventlogwriter.cc");
 print CC "
 #include \"eventlogwriter.h\"
+#include \"stringutil.h\"
 
 #ifdef CHECK
 #undef CHECK
@@ -170,7 +175,7 @@ sub makeMethodImpl ()
    $txt .= "\\n\"";
    foreach $field (@{ $class->{FIELDS} })
    {
-      $txt .= ", $field->{NAME}" if ($optfields || !$field->{OPT});
+      $txt .= ", $field->{PRINTFVALUE}" if ($optfields || !$field->{OPT});
    }
    $txt .= "));\n";
    $txt .= "}\n\n";
