@@ -25,6 +25,7 @@ while (<FILE>)
    {
       $classCode = $1;
       $className = $2;
+      $classHasOptField = 0;
       print "$classCode $className\n";
    }
    elsif ($_ =~ /^ *{ *$/)
@@ -55,6 +56,10 @@ while (<FILE>)
          $fieldPrintfType = "%s";
       }
 
+      if ($fieldOpt) {
+         $classHasOptField = 1;
+      }
+
       $fieldCType = $fieldType;
       $fieldCType =~ s/string/const char */;
       $field = {
@@ -63,7 +68,9 @@ while (<FILE>)
          CTYPE => $fieldCType,
          PRINTFTYPE => $fieldPrintfType,
          NAME => $fieldName,
+         OPT => $fieldOpt,
       };
+
       push(@fields, $field);
       print " $fieldCode $fieldType $fieldName $fieldOpt\n";
    }
@@ -72,6 +79,7 @@ while (<FILE>)
       $class = {
          CODE => $classCode,
          NAME => $className,
+         HASOPT => $classHasOptField,
          FIELDS => [ @fields ],
       };
       push(@classes, $class);
@@ -106,7 +114,8 @@ class EventLogWriter
 
 foreach $class (@classes)
 {
-   print H "    static void " . makeMethodDecl($class) . ";\n";
+   print H "    static void " . makeMethodDecl($class,0) . ";\n";
+   print H "    static void " . makeMethodDecl($class,1) . ";\n" if ($class->{HASOPT});
 }
 
 print H "};
@@ -139,33 +148,44 @@ print CC "
 
 foreach $class (@classes)
 {
-   print CC "void EventLogWriter::" . makeMethodDecl($class) . "\n";
-   print CC "{\n";
-   print CC "    CHECK(fprintf(f, \"$class->{CODE}";
-   foreach $field (@{ $class->{FIELDS} })
-   {
-      print CC " $field->{CODE} $field->{PRINTFTYPE}";
-   }
-   print CC "\\n\"";
-   foreach $field (@{ $class->{FIELDS} })
-   {
-      print CC ", $field->{NAME}";
-   }
-   print CC "));\n";
-   print CC "}\n\n";
+   print CC makeMethodImpl($class,0);
+   print CC makeMethodImpl($class,1) if ($class->{HASOPT});
 }
 
 close(CC);
 
 
+sub makeMethodImpl ()
+{
+   my $class = shift;
+   my $optfields = shift;
+
+   my $txt = "void EventLogWriter::" . makeMethodDecl($class,$optfields) . "\n";
+   $txt .= "{\n";
+   $txt .= "    CHECK(fprintf(f, \"$class->{CODE}";
+   foreach $field (@{ $class->{FIELDS} })
+   {
+      $txt .= " $field->{CODE} $field->{PRINTFTYPE}" if ($optfields || !$field->{OPT});
+   }
+   $txt .= "\\n\"";
+   foreach $field (@{ $class->{FIELDS} })
+   {
+      $txt .= ", $field->{NAME}" if ($optfields || !$field->{OPT});
+   }
+   $txt .= "));\n";
+   $txt .= "}\n\n";
+   $txt;
+}
+
 sub makeMethodDecl ()
 {
    my $class = shift;
+   my $optfields = shift;
 
    my $txt = "record$class->{NAME}(FILE *f";
    foreach $field (@{ $class->{FIELDS} })
    {
-      $txt .= ", $field->{CTYPE} $field->{NAME}";
+      $txt .= ", $field->{CTYPE} $field->{NAME}" if ($optfields || !$field->{OPT});
    }
    $txt .= ")";
    $txt;
@@ -183,6 +203,7 @@ sub makeFileBanner ()
 //  This is a generated file -- do not modify.
 //
 //=========================================================================
+
 ";
 }
 
