@@ -1,21 +1,8 @@
 #
 # variables set by `configure':
 #
-CXX=@CXX@
-CC=@CC@
-MAKEDEPEND=@MAKEDEPEND@
-WISH=@WISH@
 
-CFLAGS=@CFLAGS@
-LDFLAGS=@LDFLAGS@
-EXE_SUFFIX=@EXE_SUFFIX@
-
-COPTS=$(CFLAGS)
-
-OMNETPP_BIN_DIR=@OMNETPP_BIN_DIR@
-
-OMNETPP_VERSION=@OMNETPP_VERSION@
-OMNETPP_EDITION=@OMNETPP_EDITION@
+include ../../Makefile.inc
 
 all: seedtool tcl2c
 	chmod +x opp_makemake opp_test opp_makedep opp_neddoc splitvec

@@ -829,24 +829,10 @@ fi
 # Files to be generated
 #----------------------
 AC_CONFIG_FILES(
-  Makefile
-  src/sim/Makefile
-  src/envir/Makefile
-  src/tkenv/Makefile
-  src/cmdenv/Makefile
-  src/nedc/Makefile
-  src/nedxml/Makefile
-  src/common/Makefile
-  src/scave/Makefile
-  src/eventlog/Makefile
-  src/layout/Makefile
-  src/utils/Makefile
+  Makefile.inc
   src/utils/opp_makemake
   src/utils/opp_neddoc
-  ui/org.omnetpp.ide.nativelibs/Makefile
-  ui/org.omnetpp.ned.model/Makefile
   test/core/runtest
-  test/Makefile
 )
 
 #----------------------
@@ -869,6 +855,7 @@ AC_SUBST(OMNETPP_DOC_DIR)
 AC_SUBST(OMNETPP_SAMPLES_DIR)
 AC_SUBST(OMNETPP_TEST_DIR)
 
+AC_SUBST(PERL)
 AC_SUBST(YACC)
 AC_SUBST(LEX)
 AC_SUBST(CC)

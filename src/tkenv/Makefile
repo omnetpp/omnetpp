@@ -1,38 +1,15 @@
 #
 # Definitions to be customized by 'configure'
 #
-CXX=@CXX@
-AR=@AR@
-SHLIB_LD=@SHLIB_LD@
-RANLIB=@RANLIB@
-MAKEDEPEND=@MAKEDEPEND@
 
-CFLAGS=@CFLAGS@
-
-OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
-OMNETPP_IMAGE_PATH=@OMNETPP_IMAGE_PATH@
-OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
-
-OMNETPP_VERSION=@OMNETPP_VERSION@
-OMNETPP_EDITION=@OMNETPP_EDITION@
-
-TK_CFLAGS=@TK_CFLAGS@
-
-# LIB_SUFFIX is either A_LIB_SUFFIX or SO_LIB_SUFFIX
-LIB_SUFFIX=@LIB_SUFFIX@
-
-A_LIB_SUFFIX=@A_LIB_SUFFIX@
-SO_LIB_SUFFIX=@SO_LIB_SUFFIX@
-
-# The following is either '-e' (embedded Tcl code) or '' (no embedding)
-TKENV_EMBED_SUFFIX=@TKENV_EMBED_SUFFIX@
+include ../../Makefile.inc
 
 #
 # Local definitions
 #
 COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../envir -I../layout -I../common $(TK_CFLAGS) -DBUILDING_TKENV
 
-OMNETPP_TKENV_DIR=@OMNETPP_TKENV_DIR@
+OMNETPP_TKENV_DIR=/home/rhornig/work/omnetpp/omnetpp/src/tkenv
 
 OBJS = tkapp$(TKENV_EMBED_SUFFIX).o tkcmd.o tklib.o inspector.o \
        inspfactory.o objinsp.o modinsp.o statinsp.o layouterenv.o \
@@ -49,7 +26,7 @@ OBJS = tkapp$(TKENV_EMBED_SUFFIX).o tkcmd.o tklib.o inspector.o \
 #
 # Targets
 #
-default: @TKENV_IF_POSSIBLE@
+default: tkenv
 
 tkenv : libtkenv$(LIB_SUFFIX)
 
