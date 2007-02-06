@@ -500,6 +500,16 @@ if test "$GIFTRANS" = ""; then
    AC_MSG_WARN(giftrans not found -- opp_neddoc needs it to make the background of diagrams transparent.)
 fi
 
+# swig is used for building the ui support libs
+AC_ARG_VAR(SWIG, The Swig interface generator)
+AC_CHECK_PROG(SWIG, swig, swig, not found)
+
+if test "$SWIG" = "not found"; then
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  swig"
+   AC_MSG_WARN(swig not found -- it is needed to create the OMNeT++/OMNEST IDE support library.)
+   AC_MSG_WARN(It is available from http://www.swig.org/)
+fi
+
 #----------------------
 # Checks for standard libraries.
 #----------------------
@@ -672,6 +682,19 @@ USERIF_LIBS='$(TKENV_LIBS)'
 fi # end of Tcl tests ($NO_TCL=="" branch)
 
 #----------------------
+# Check for JDK 
+# FIXME detect the optional JDK correctly
+#----------------------
+AC_CHECK_PROG(JDK, javac , jdk, not found)
+if test "$JDK" = "not found"; then
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES jdk"
+   AC_MSG_WARN(JDK not found. IDE cannot be built.)
+else
+   JAVA_CFLAGS="-I$JAVA_HOME/include -I$JAVA_HOME/include/linux"
+fi
+
+
+#----------------------
 # Check for MPI.
 #----------------------
 OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $MPI_CFLAGS, $MPI_LIBS, mpi_ok)
@@ -820,6 +843,8 @@ AC_CONFIG_FILES(
   src/utils/Makefile
   src/utils/opp_makemake
   src/utils/opp_neddoc
+  ui/org.omnetpp.ide.nativelibs/Makefile
+  ui/org.omnetpp.ned.model/Makefile
   test/core/runtest
   test/Makefile
 )
@@ -831,6 +856,7 @@ AC_CONFIG_FILES(
 AC_SUBST(OMNETPP_VERSION)
 AC_SUBST(OMNETPP_EDITION)
 
+AC_SUBST(OMNETPP_ROOT)
 AC_SUBST(OMNETPP_BIN_DIR)
 AC_SUBST(OMNETPP_INCL_DIR)
 AC_SUBST(OMNETPP_LIB_DIR)
@@ -912,8 +938,8 @@ AC_SUBST(OMNETPP_PLOVE_DIR)
 AC_SUBST(WITH_NETBUILDER)
 AC_SUBST(WITH_PARSIM)
 
-
-
+AC_SUBST(JAVA_CFLAGS)
+AC_SUBST(SWIG)
 #
 # Generate files
 #

@@ -2,10 +2,11 @@
 # Global definitions
 #
 OMNETPP_ROOT=@OMNETPP_ROOT@
+OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
 
-JDK="$(TOOLS_DIR)/jdk1.5.0"
-SWIG="$(TOOLS_DIR)/SWIG-1.3.25/swig.exe"
+JAVA_CFLAGS=@JAVA_CFLAGS@
+SWIG=@SWIG@
 
 COMMON=$(OMNETPP_ROOT)/src/common
 NEDXML=$(OMNETPP_ROOT)/src/nedxml
@@ -27,31 +28,31 @@ EVENTLOG_JAVADIR = src/$(EVENTLOG_JAVAPKG)
 
 SWIGFILES = common.i nedxml.i scave.i layout.i eventlog.i
 CXXFILES = $(SWIGFILES:.i=.cxx)
-OBJS = $(CXXFILES:.cxx=.obj)
+OBJS = $(CXXFILES:.cxx=.o)
 
 LIBS=-L$(OMNETPP_LIB_DIR) -lcommon -lnedxml -lscave -llayout -leventlog
 
-DLL = opplibs.dll
+DLL = opplibs$(SO_LIB_SUFFIX)
 
-DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.win32.x86
+DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.linux.x86
 
 
 #
 # Local definitions
 #
 INCLUDES=-I$(COMMON) -I$(NEDXML) -I$(SCAVE) -I$(LAYOUT) -I$(EVENTLOG) -I$(OMNETPP_INCL_DIR)/platdep
-COPTS=$(CFLAGS) -I$(JDK)/include -I$(JDK)/include/win32 $(INCLUDES)
+COPTS=$(CFLAGS) $(JAVA_CFLAGS) $(INCLUDES)
 
 
 #
 # Automatic rules
 #
-.SUFFIXES : .cc
+.SUFFIXES : .cc .cxx
 
-.cc.obj:
+.cc.o:
 	$(CXX) -c $(COPTS) $<
 
-.cxx.obj:
+.cxx.o:
 	$(CXX) -c $(COPTS) $<
 
 #
@@ -62,34 +63,34 @@ all: $(DLL)
 common.cxx : common.i
 	-rm -f $(COMMON_JAVADIR)/*.java
 	-mkdir $(COMMON_JAVADIR)
-	$(SWIG) -c++ -java $(INCLUDES) -package $(COMMON_JAVAPKG) -outdir $(COMMON_JAVADIR) -o $@ $**
+	$(SWIG) -c++ -java $(INCLUDES) -package $(COMMON_JAVAPKG) -outdir $(COMMON_JAVADIR) -o $@ $<
 
 nedxml.cxx : nedxml.i
 	-rm -f $(NEDXML_JAVADIR)/*.java
 	-mkdir $(NEDXML_JAVADIR)
-	$(SWIG) -c++ -java $(INCLUDES) -package $(NEDXML_JAVAPKG) -outdir $(NEDXML_JAVADIR) -o $@ $**
+	$(SWIG) -c++ -java $(INCLUDES) -package $(NEDXML_JAVAPKG) -outdir $(NEDXML_JAVADIR) -o $@ $<
 
 scave.cxx : scave.i
 	-rm -f $(SCAVE_JAVADIR)/*.java
 	-mkdir $(SCAVE_JAVADIR)
-	$(SWIG) -c++ -java $(INCLUDES) -package $(SCAVE_JAVAPKG) -outdir $(SCAVE_JAVADIR) -o $@ $**
+	$(SWIG) -c++ -java $(INCLUDES) -package $(SCAVE_JAVAPKG) -outdir $(SCAVE_JAVADIR) -o $@ $<
 
 layout.cxx : layout.i
 	-rm -f $(LAYOUT_JAVADIR)/*.java
 	-mkdir $(LAYOUT_JAVADIR)
-	$(SWIG) -c++ -java $(INCLUDES) -package $(LAYOUT_JAVAPKG) -outdir $(LAYOUT_JAVADIR) -o $@ $**
+	$(SWIG) -c++ -java $(INCLUDES) -package $(LAYOUT_JAVAPKG) -outdir $(LAYOUT_JAVADIR) -o $@ $<
 
 eventlog.cxx : eventlog.i
 	-rm -f $(EVENTLOG_JAVADIR)/*.java
 	-mkdir $(EVENTLOG_JAVADIR)
-	$(SWIG) -c++ -java $(INCLUDES) -package $(EVENTLOG_JAVAPKG) -outdir $(EVENTLOG_JAVADIR) -o $@ $**
+	$(SWIG) -c++ -java $(INCLUDES) -package $(EVENTLOG_JAVAPKG) -outdir $(EVENTLOG_JAVADIR) -o $@ $<
 
 $(DLL): $(OBJS)
-	$(LINK) /dll /out:$(DLL) $(OBJS) $(LIBS) $(LDFLAGS)
+	$(SHLIB_LD) -o $(DLL) $(OBJS)
 	cp $(DLL) $(DLL_TARGET_DIR)
 
 depend:
-	$(MAKEDEPEND) $(INCLUDES) -fMakefile.vc -- *.cxx *.cc
+	$(MAKEDEPEND) $(INCLUDES) -fMakefile -- *.cxx *.cc
 
 clean:
 	-rm -f *.cxx *.o *.a *.so

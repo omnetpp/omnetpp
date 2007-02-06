@@ -47,7 +47,7 @@ COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 $(INCLUDES)
 #
 # Automatic rules
 #
-.SUFFIXES : .cc
+.SUFFIXES : .cc .cxx
 
 .cc.obj:
 	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<

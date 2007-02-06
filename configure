@@ -631,11 +631,14 @@ GHOSTSCRIPT
 CONVERT
 DOT
 GIFTRANS
+SWIG
 XMKMF
 CXXCPP
 WISH
+JDK
 OMNETPP_VERSION
 OMNETPP_EDITION
+OMNETPP_ROOT
 OMNETPP_BIN_DIR
 OMNETPP_INCL_DIR
 OMNETPP_LIB_DIR
@@ -691,6 +694,7 @@ OMNETPP_SCALARS_DIR
 OMNETPP_PLOVE_DIR
 WITH_NETBUILDER
 WITH_PARSIM
+JAVA_CFLAGS
 LIBOBJS
 LTLIBOBJS'
 ac_subst_files=''
@@ -713,6 +717,7 @@ GHOSTSCRIPT
 CONVERT
 DOT
 GIFTRANS
+SWIG
 XMKMF
 CXXCPP'
 
@@ -1315,6 +1320,7 @@ Some influential environment variables:
               opp_neddoc
   DOT         Graph drawing program from the Graphviz package
   GIFTRANS    Utility to make GIFs transparent
+  SWIG        The Swig interface generator
   XMKMF       Path to xmkmf, Makefile generator for X Window System
   CXXCPP      C++ preprocessor
 
@@ -4432,6 +4438,55 @@ if test "$GIFTRANS" = ""; then
 echo "$as_me: WARNING: giftrans not found -- opp_neddoc needs it to make the background of diagrams transparent." >&2;}
 fi
 
+# swig is used for building the ui support libs
+
+# Extract the first word of "swig", so it can be a program name with args.
+set dummy swig; ac_word=$2
+{ echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
+if test "${ac_cv_prog_SWIG+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$SWIG"; then
+  ac_cv_prog_SWIG="$SWIG" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_SWIG="swig"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_prog_SWIG" && ac_cv_prog_SWIG="not found"
+fi
+fi
+SWIG=$ac_cv_prog_SWIG
+if test -n "$SWIG"; then
+  { echo "$as_me:$LINENO: result: $SWIG" >&5
+echo "${ECHO_T}$SWIG" >&6; }
+else
+  { echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
+fi
+
+
+
+if test "$SWIG" = "not found"; then
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  swig"
+   { echo "$as_me:$LINENO: WARNING: swig not found -- it is needed to create the OMNeT++/OMNEST IDE support library." >&5
+echo "$as_me: WARNING: swig not found -- it is needed to create the OMNeT++/OMNEST IDE support library." >&2;}
+   { echo "$as_me:$LINENO: WARNING: It is available from http://www.swig.org/" >&5
+echo "$as_me: WARNING: It is available from http://www.swig.org/" >&2;}
+fi
+
 #----------------------
 # Checks for standard libraries.
 #----------------------
@@ -6655,6 +6710,57 @@ USERIF_LIBS='$(TKENV_LIBS)'
 fi # end of Tcl tests ($NO_TCL=="" branch)
 
 #----------------------
+# Check for JDK
+# FIXME detect the optional JDK correctly
+#----------------------
+# Extract the first word of "javac ", so it can be a program name with args.
+set dummy javac ; ac_word=$2
+{ echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
+if test "${ac_cv_prog_JDK+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$JDK"; then
+  ac_cv_prog_JDK="$JDK" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_JDK="jdk"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_prog_JDK" && ac_cv_prog_JDK="not found"
+fi
+fi
+JDK=$ac_cv_prog_JDK
+if test -n "$JDK"; then
+  { echo "$as_me:$LINENO: result: $JDK" >&5
+echo "${ECHO_T}$JDK" >&6; }
+else
+  { echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
+fi
+
+
+if test "$JDK" = "not found"; then
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES jdk"
+   { echo "$as_me:$LINENO: WARNING: JDK not found. IDE cannot be built." >&5
+echo "$as_me: WARNING: JDK not found. IDE cannot be built." >&2;}
+else
+   JAVA_CFLAGS="-I$JAVA_HOME/include -I$JAVA_HOME/include/linux"
+fi
+
+
+#----------------------
 # Check for MPI.
 #----------------------
 
@@ -7532,12 +7638,13 @@ fi
 #----------------------
 # Files to be generated
 #----------------------
-ac_config_files="$ac_config_files Makefile src/sim/Makefile src/envir/Makefile src/tkenv/Makefile src/cmdenv/Makefile src/nedc/Makefile src/nedxml/Makefile src/common/Makefile src/scave/Makefile src/eventlog/Makefile src/layout/Makefile src/utils/Makefile src/utils/opp_makemake src/utils/opp_neddoc test/core/runtest test/Makefile"
+ac_config_files="$ac_config_files Makefile src/sim/Makefile src/envir/Makefile src/tkenv/Makefile src/cmdenv/Makefile src/nedc/Makefile src/nedxml/Makefile src/common/Makefile src/scave/Makefile src/eventlog/Makefile src/layout/Makefile src/utils/Makefile src/utils/opp_makemake src/utils/opp_neddoc ui/org.omnetpp.ide.nativelibs/Makefile ui/org.omnetpp.ned.model/Makefile test/core/runtest test/Makefile"
 
 
 #----------------------
 # Substitutions.
 #----------------------
+
 
 
 
@@ -8196,6 +8303,8 @@ do
     "src/utils/Makefile") CONFIG_FILES="$CONFIG_FILES src/utils/Makefile" ;;
     "src/utils/opp_makemake") CONFIG_FILES="$CONFIG_FILES src/utils/opp_makemake" ;;
     "src/utils/opp_neddoc") CONFIG_FILES="$CONFIG_FILES src/utils/opp_neddoc" ;;
+    "ui/org.omnetpp.ide.nativelibs/Makefile") CONFIG_FILES="$CONFIG_FILES ui/org.omnetpp.ide.nativelibs/Makefile" ;;
+    "ui/org.omnetpp.ned.model/Makefile") CONFIG_FILES="$CONFIG_FILES ui/org.omnetpp.ned.model/Makefile" ;;
     "test/core/runtest") CONFIG_FILES="$CONFIG_FILES test/core/runtest" ;;
     "test/Makefile") CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
 
@@ -8327,11 +8436,14 @@ GHOSTSCRIPT!$GHOSTSCRIPT$ac_delim
 CONVERT!$CONVERT$ac_delim
 DOT!$DOT$ac_delim
 GIFTRANS!$GIFTRANS$ac_delim
+SWIG!$SWIG$ac_delim
 XMKMF!$XMKMF$ac_delim
 CXXCPP!$CXXCPP$ac_delim
 WISH!$WISH$ac_delim
+JDK!$JDK$ac_delim
 OMNETPP_VERSION!$OMNETPP_VERSION$ac_delim
 OMNETPP_EDITION!$OMNETPP_EDITION$ac_delim
+OMNETPP_ROOT!$OMNETPP_ROOT$ac_delim
 OMNETPP_BIN_DIR!$OMNETPP_BIN_DIR$ac_delim
 OMNETPP_INCL_DIR!$OMNETPP_INCL_DIR$ac_delim
 OMNETPP_LIB_DIR!$OMNETPP_LIB_DIR$ac_delim
@@ -8352,9 +8464,6 @@ NEDCFLAGS!$NEDCFLAGS$ac_delim
 AS!$AS$ac_delim
 AR!$AR$ac_delim
 SHLIB_LD!$SHLIB_LD$ac_delim
-MAKEDEPEND!$MAKEDEPEND$ac_delim
-A_LIB_SUFFIX!$A_LIB_SUFFIX$ac_delim
-SO_LIB_SUFFIX!$SO_LIB_SUFFIX$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -8396,6 +8505,9 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+MAKEDEPEND!$MAKEDEPEND$ac_delim
+A_LIB_SUFFIX!$A_LIB_SUFFIX$ac_delim
+SO_LIB_SUFFIX!$SO_LIB_SUFFIX$ac_delim
 LIB_SUFFIX!$LIB_SUFFIX$ac_delim
 EXE_SUFFIX!$EXE_SUFFIX$ac_delim
 NO_TCL!$NO_TCL$ac_delim
@@ -8428,11 +8540,12 @@ OMNETPP_SCALARS_DIR!$OMNETPP_SCALARS_DIR$ac_delim
 OMNETPP_PLOVE_DIR!$OMNETPP_PLOVE_DIR$ac_delim
 WITH_NETBUILDER!$WITH_NETBUILDER$ac_delim
 WITH_PARSIM!$WITH_PARSIM$ac_delim
+JAVA_CFLAGS!$JAVA_CFLAGS$ac_delim
 LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 34; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 38; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
