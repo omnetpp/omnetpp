@@ -456,10 +456,10 @@ void TOutVectorWindow::update()
        }
    }
 
-   double tmin = SIMTIME_DBL(tbase-tf*(canvaswidth-20));
+   simtime_t tmin = tbase - tf * (canvaswidth-20);
 
-   if (moving_tline<tmin)
-       moving_tline = SIMTIME_DBL(tbase);
+   if (moving_tline < tmin)
+       moving_tline = tbase;
 
    double midy = (miny+maxy)/2;
 
@@ -496,15 +496,15 @@ void TOutVectorWindow::update()
    CHK(Tcl_VarEval(interp, canvas," create text ",coords," -text ", value, " -anchor e", NULL));
 
    sprintf(coords,"%d %d", X(tbase)+3, Y(miny));
-   sprintf(value,"%.9g", tbase);
+   sprintf(value,"%s", SIMTIME_STR(tbase));
    CHK(Tcl_VarEval(interp, canvas," create text ",coords," -text ", value, " -anchor ne", NULL));
 
    sprintf(coords,"%d %d", X(tmin)-3, Y(miny));
-   sprintf(value,"%.9g", tmin);
+   sprintf(value,"%s", SIMTIME_STR(tmin));
    CHK(Tcl_VarEval(interp, canvas," create text ",coords," -text ", value, " -anchor nw", NULL));
 
    sprintf(coords,"%d %d", X(moving_tline)-3, Y(miny));
-   sprintf(value,"%.9g", moving_tline);
+   sprintf(value,"%s", SIMTIME_STR(moving_tline));
    CHK(Tcl_VarEval(interp, canvas," create text ",coords," -text ", value, " -anchor n", NULL));
 
 #undef X

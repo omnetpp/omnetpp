@@ -185,3 +185,9 @@ foreach $class (@classes)
 
 close(CC);
 
+
+sub makeMethodDecl ()
+{
+    my $class = shift;
+    my @fields = shift;
+}

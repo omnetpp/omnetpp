@@ -176,7 +176,7 @@ MessageSend *Event::getCause()
         if (event)
         {
             // find the "BS" or "SA" line in the cause event
-            for (int beginSendEntryNumber = 0; beginSendEntryNumber < event->eventLogEntries.size(); beginSendEntryNumber++)
+            for (int beginSendEntryNumber = 0; beginSendEntryNumber < (int)event->eventLogEntries.size(); beginSendEntryNumber++)
             {
                 BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(event->eventLogEntries[beginSendEntryNumber]);
 
@@ -254,7 +254,7 @@ Event *Event::getReuserEvent(int &beginSendEntryNumber)
     // TODO: and first we should look it up there, so that the expesive computation is not repeated
     // TODO: there should be some kind of limit on this loop not the end of the file
     while (current) {
-        for (beginSendEntryNumber = 0; beginSendEntryNumber < current->eventLogEntries.size(); beginSendEntryNumber++)
+        for (beginSendEntryNumber = 0; beginSendEntryNumber < (int)current->eventLogEntries.size(); beginSendEntryNumber++)
         {
             EventLogEntry *eventLogEntry = current->eventLogEntries[beginSendEntryNumber];
             BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(eventLogEntry);

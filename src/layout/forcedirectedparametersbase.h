@@ -306,6 +306,8 @@ class IBody {
         ForceDirectedEmbedding *embedding;
 
     public:
+        virtual ~IBody() {}
+
         virtual void setForceDirectedEmbedding(ForceDirectedEmbedding *embedding) {
             this->embedding = embedding;
         }

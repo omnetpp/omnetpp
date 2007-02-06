@@ -76,7 +76,7 @@ static Datum parseColumns(char **tokens, int numtokens, const VectorFileReaderNo
     else // interpret general case
     {
         a.eventNumber = -1;
-        for (int i = 0; i < columns.size(); ++i)
+        for (int i = 0; i < (int)columns.size(); ++i)
         {
             switch (columns[i])
             {

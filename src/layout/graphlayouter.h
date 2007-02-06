@@ -39,6 +39,7 @@ class cModule;
 class GraphLayouterEnvironment
 {
     public:
+        virtual ~GraphLayouterEnvironment() {}
         virtual bool inspected() = 0;
 
         virtual bool getBoolParameter(const char *tagName, int index, bool defaultValue) = 0;
@@ -102,7 +103,7 @@ class GraphLayouter
     virtual void addEdge(cModule *from, cModule *to, int len=0) = 0;
 
     /**
-     * Add connection (graph edge) to enclosing (parent) module. len is the 
+     * Add connection (graph edge) to enclosing (parent) module. len is the
      * preferred length (0==unspecified)
      */
     virtual void addEdgeToBorder(cModule *from, int len=0) = 0;

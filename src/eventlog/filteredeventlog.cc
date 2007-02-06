@@ -110,7 +110,7 @@ long FilteredEventLog::getApproximateNumberOfEvents()
 double FilteredEventLog::getApproximatePercentageForEventNumber(long eventNumber)
 {
     if (tracedEventNumber != -1)
-        // TODO: this is clearly not good and should return a much better approximationk
+        // TODO: this is clearly not good and should return a much better approximation
         return IEventLog::getApproximatePercentageForEventNumber(eventNumber);
     else
         // TODO: what if filter is event range limited

@@ -31,7 +31,7 @@ void HeapEmbedding::embed()
         graphComponent->getVertex(i)->rc.pt = Pt::getNil();
 
     // go through vertices in spanning tree order
-    for (int i = 0; i < graphComponent->spanningTreeVertices.size(); i++) {
+    for (int i = 0; i < (int)graphComponent->spanningTreeVertices.size(); i++) {
         Vertex *vertex = graphComponent->spanningTreeVertices[i];
         Rs rs = vertex->rc.rs;
 
@@ -82,7 +82,7 @@ void HeapEmbedding::embed()
 
                 // calculate the distance sum to neighbours already positioned
                 double distance = 0;
-                for (int k = 0; k < vertex->neighbours.size(); k++) {
+                for (int k = 0; k < (int)vertex->neighbours.size(); k++) {
                     Vertex *neighbour = vertex->neighbours[k];
 
                     if (!neighbour->rc.pt.isNil())

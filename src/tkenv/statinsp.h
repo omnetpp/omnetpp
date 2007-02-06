@@ -71,7 +71,7 @@ class TOutVectorWindow : public TInspector
       int drawing_mode;
       double miny, maxy;
       double time_factor; // x scaling: secs/10 pixel
-      double moving_tline;   // t position of moving axis
+      simtime_t moving_tline;   // t position of moving axis
 
    public:
       TOutVectorWindow(cObject *obj,int typ,const char *geom,void *dat=NULL, int size=100);

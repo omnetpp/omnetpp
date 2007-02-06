@@ -135,7 +135,7 @@ cOwnedObject *cSymTable::lookup(const char *name, const char *contextNamespace)
 
         // discard last namespace element
         namespacePrefix.resize(namespacePrefix.length()-2); // chop "::"
-        int k = namespacePrefix.rfind("::", namespacePrefix.length());
+        size_type k = namespacePrefix.rfind("::", namespacePrefix.length());
         if (k==std::string::npos)
             namespacePrefix.clear();
         else
