@@ -4,6 +4,8 @@
 # Author: Andras Varga, 2006
 #
 
+#FIXME: make use of "default value" column!!
+
 open(FILE, "../eventlog/eventlogentries.txt");
 
 
@@ -32,12 +34,12 @@ while (<FILE>)
    {
       print "{\n";
    }
-   elsif ($_ =~ /^ +([\w#]+) +([\w]+) +([\w]+)( +opt)? *$/)
+   elsif ($_ =~ /^ +([\w]+) +([\w]+) +([\w]+)( +([^ ]+))? *$/)
    {
       $fieldCode = $1;
       $fieldType = $2;
       $fieldName = $3;
-      $fieldOpt  = ($4 ne "");
+      $fieldDefault  = $5;
       $fieldPrintfValue = $fieldName;
 
       if ($fieldType eq "string")
@@ -59,7 +61,7 @@ while (<FILE>)
          $fieldPrintfValue = "SIMTIME_STR($fieldPrintfValue)";
       }
 
-      if ($fieldOpt) {
+      if ($fieldDefault ne "") {
          $classHasOptField = 1;
       }
 
@@ -72,11 +74,11 @@ while (<FILE>)
          PRINTFTYPE => $fieldPrintfType,
          PRINTFVALUE => $fieldPrintfValue,
          NAME => $fieldName,
-         OPT => $fieldOpt,
+         DEFAULTVALUE => $fieldDefault,
       };
 
       push(@fields, $field);
-      print " $fieldCode $fieldType $fieldName $fieldOpt\n";
+      print " $fieldCode $fieldType $fieldName $fieldDefault\n";
    }
    elsif ($_ =~ /^ *} *$/)
    {
@@ -172,20 +174,20 @@ close(CC);
 sub makeMethodImpl ()
 {
    my $class = shift;
-   my $optfields = shift;
+   my $wantOptFields = shift;
 
-   my $txt = "void EventLogWriter::" . makeMethodDecl($class,$optfields) . "\n";
+   my $txt = "void EventLogWriter::" . makeMethodDecl($class,$wantOptFields) . "\n";
    $txt .= "{\n";
    $nl = ($class->{CODE} eq "E") ? "\\n" : "";
    $txt .= "    CHECK(fprintf(f, \"$nl$class->{CODE}";
    foreach $field (@{ $class->{FIELDS} })
    {
-      $txt .= " $field->{CODE} $field->{PRINTFTYPE}" if ($optfields || !$field->{OPT});
+      $txt .= " $field->{CODE} $field->{PRINTFTYPE}" if ($wantOptFields || $field->{DEFAULTVALUE} eq "");
    }
    $txt .= "\\n\"";
    foreach $field (@{ $class->{FIELDS} })
    {
-      $txt .= ", $field->{PRINTFVALUE}" if ($optfields || !$field->{OPT});
+      $txt .= ", $field->{PRINTFVALUE}" if ($wantOptFields || $field->{DEFAULTVALUE} eq "");
    }
    $txt .= "));\n";
    $txt .= "}\n\n";
@@ -195,17 +197,17 @@ sub makeMethodImpl ()
 sub makeMethodDecl ()
 {
    my $class = shift;
-   my $optfields = shift;
+   my $wantOptFields = shift;
 
    my $txt = "record$class->{NAME}";
    foreach $field (@{ $class->{FIELDS} })
    {
-      $txt .= "_$field->{CODE}" if ($optfields || !$field->{OPT});
+      $txt .= "_$field->{CODE}" if ($wantOptFields || $field->{DEFAULTVALUE} eq "");
    }
    $txt .= "(FILE *f";
    foreach $field (@{ $class->{FIELDS} })
    {
-      $txt .= ", $field->{CTYPE} $field->{NAME}" if ($optfields || !$field->{OPT});
+      $txt .= ", $field->{CTYPE} $field->{NAME}" if ($wantOptFields || $field->{DEFAULTVALUE} eq "");
    }
    $txt .= ")";
    $txt;

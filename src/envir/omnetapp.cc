@@ -544,11 +544,10 @@ void TOmnetApp::beginSend(cMessage *msg)
 {
     if (feventlog)
     {
-        EventLogWriter::recordBeginSendEntry_id_tid_eid_etid_c_n_k_l_pe(feventlog,
+        EventLogWriter::recordBeginSendEntry_id_tid_eid_etid_c_n_pe_k_l_p_er(feventlog,
             msg->id(), msg->treeId(), msg->encapsulationId(), msg->encapsulationTreeId(),
-            msg->className(), msg->fullName(), msg->kind(), msg->length(), msg->previousEventNumber());
-               //XXX treeId: only if differs from id()
-               //XXX encapsulatedIds: only if there's an encapsulated msg
+            msg->className(), msg->fullName(), msg->previousEventNumber(),
+            msg->kind(), msg->length(), msg->priority(), msg->hasBitError());
                //XXX message display string, etc?
                //XXX plus many other fields...
     }

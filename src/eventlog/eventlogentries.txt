@@ -15,7 +15,7 @@ MC ModuleCreatedEntry
 {
    id int moduleId
    c string moduleClassName
-   pid int parentModuleId
+   pid int parentModuleId  -1
    n string fullName
 }
 
@@ -78,13 +78,15 @@ BS BeginSendEntry
 {
    id long messageId
    tid long messageTid
-   eid long messageEid
-   etid long messageEtid
+   eid long messageEid   -1
+   etid long messageEtid -1
    c string messageClassName
    n string messageFullName
-   k int messageKind
-   l long messageLength
    pe long previousEventNumber
+   k int messageKind     0
+   l long messageLength  0
+   p int messagePriority 0
+   er bool hasBitError   false
    //XXX and many other fields, including message contents
 }
 
@@ -98,19 +100,21 @@ SD MessageSendDirectEntry
    sm int senderModuleId
    dm int destModuleId
    dg int destGateId
-   pd simtime_t propagationDelay opt
-   td simtime_t transmissionDelay opt
+   pd simtime_t propagationDelay  0
+   td simtime_t transmissionDelay 0
 }
 
 SH MessageSendHopEntry
 {
    sm int senderModuleId
    sg int senderGateId
-   pd simtime_t propagationDelay opt
-   td simtime_t transmissionDelay opt
+   pd simtime_t propagationDelay  0
+   td simtime_t transmissionDelay 0
 }
 
 DE DeleteMessageEntry
 {
    id int messageId
 }
+
+

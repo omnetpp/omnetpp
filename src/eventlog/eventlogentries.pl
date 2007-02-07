@@ -4,8 +4,9 @@
 # Author: Levente Meszaros, 2006
 #
 
-# FIXME parsing: choose different strategy, current code cannot detect unrecognized field names in the trace file!
-# FIXME parsing: does it support optional fields in the trace file?
+# FIXME parsing: choose different strategy, current code cannot detect
+#    unrecognized field names and missing mandatory fields in the trace file!
+# FIXME ctors should use default value from the eventlogentries.txt file; also parse() and print() methods
 
 open(FILE, "eventlogentries.txt");
 
@@ -28,21 +29,25 @@ while (<FILE>)
    {
       $classCode = $1;
       $className = $2;
+      $classHasOptField = 0;
       print "$classCode $className\n";
    }
    elsif ($_ =~ /^ *{ *$/)
    {
       print "{\n";
    }
-   elsif ($_ =~ /^ +([\w#]+) +([\w]+) +([\w]+)( +opt)? *$/)
+   elsif ($_ =~ /^ +([\w]+) +([\w]+) +([\w]+)( +([^ ]+))? *$/)
    {
       $fieldCode = $1;
       $fieldType = $2;
       $fieldName = $3;
+      $fieldDefault  = $5;
+      $fieldPrintfValue = $fieldName;
 
       if ($fieldType eq "string")
       {
          $fieldPrintfType = "%s";
+         $fieldPrintfValue = "QUOTE($fieldPrintfValue)";
       }
       elsif ($fieldType eq "long")
       {
@@ -54,7 +59,12 @@ while (<FILE>)
       }
       elsif ($fieldType eq "simtime_t")
       {
-         $fieldPrintfType = "%.*g";
+         $fieldPrintfType = "%s";
+         $fieldPrintfValue = "SIMTIME_STR($fieldPrintfValue)";
+      }
+
+      if ($fieldDefault ne "") {
+         $classHasOptField = 1;
       }
 
       $fieldCType = $fieldType;
@@ -64,16 +74,20 @@ while (<FILE>)
          TYPE => $fieldType,
          CTYPE => $fieldCType,
          PRINTFTYPE => $fieldPrintfType,
+         PRINTFVALUE => $fieldPrintfValue,
          NAME => $fieldName,
+         DEFAULTVALUE => $fieldDefault,
       };
+
       push(@fields, $field);
-      print " $fieldCode $fieldType $fieldName\n";
+      print " $fieldCode $fieldType $fieldName $fieldDefault\n";
    }
    elsif ($_ =~ /^ *} *$/)
    {
       $class = {
          CODE => $classCode,
          NAME => $className,
+         HASOPT => $classHasOptField,
          FIELDS => [ @fields ],
       };
       push(@classes, $class);
@@ -187,7 +201,7 @@ foreach $class (@classes)
       if ($field->{TYPE} eq "string") {
           print ENTRIES_CC_FILE "    $field->{NAME} = NULL;\n";
       } else {
-          print ENTRIES_CC_FILE "    $field->{NAME} = -1;\n";
+          print ENTRIES_CC_FILE "    $field->{NAME} = -1;\n";  #XXX or default
       }
    }
    print ENTRIES_CC_FILE "}\n\n";
@@ -200,7 +214,7 @@ foreach $class (@classes)
       if ($field->{TYPE} eq "string") {
           print ENTRIES_CC_FILE "    $field->{NAME} = NULL;\n";
       } else {
-          print ENTRIES_CC_FILE "    $field->{NAME} = -1;\n";
+          print ENTRIES_CC_FILE "    $field->{NAME} = -1;\n";  #XXX or default
       }
    }
    print ENTRIES_CC_FILE "}\n\n";

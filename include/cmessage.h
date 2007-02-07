@@ -19,7 +19,6 @@
 #ifndef __CMESSAGE_H
 #define __CMESSAGE_H
 
-//#include <time.h>
 #include "cownedobject.h"
 #include "carray.h"
 #include "cmsgpar.h"
@@ -155,6 +154,21 @@ class SIM_API cMessage : public cOwnedObject
     void _deleteEncapMsg();
 
   public:
+    // internal: returns the event number which scheduled this event, or the event in which
+    // this message was last delivered to a module. Stored for recording into the event log file.
+    long previousEventNumber() const {return prev_event_num;}
+
+    // internal: sets previousEventNumber.
+    void setPreviousEventNumber(long num) {prev_event_num = num;}
+
+    // internal convenience method: returns the id() of the innermost encapsulated message,
+    // or -1 if there is no encapsulated message.
+    long encapsulationId() const;
+
+    // internal convenience method: returns treeId() of the innermost encapsulated message,
+    // or -1 if there is no encapsulated message.
+    long encapsulationTreeId() const;
+
     // internal: only to be used by test cases
     int shareCount() const {return sharecount;}
 
@@ -665,17 +679,6 @@ class SIM_API cMessage : public cOwnedObject
     bool arrivedOn(const char *s, int gateindex);
 
     /**
-     * Returns the event number which scheduled this event, or the event in which this message was last delivered to a module.
-     * FIXME more details: "scheduled" includes send()/scheduleAt()/sendDirect(); why do we store it?
-     */
-    long previousEventNumber() const {return prev_event_num;}
-
-    /**
-     * FIXME comment!!! What is this, what for, why is it here, when is it useful to set at all? make private??
-     */
-    void setPreviousEventNumber(long num) {prev_event_num = num;}
-
-    /**
      * Returns a unique message identifier assigned upon message creation.
      */
     long id() const {return msg_seq_id;}
@@ -685,16 +688,6 @@ class SIM_API cMessage : public cOwnedObject
      * created by copying it (i.e. by dup() or the copy constructor).
      */
     long treeId() const {return msg_tree_id;}
-
-    /**
-     * Convenience method: returns the sequenceId() of the innermost encapsulated message.
-     */
-    long encapsulationId() const;
-
-    /**
-     * Convenience method: returns the treeId() of the innermost encapsulated message.
-     */
-    long encapsulationTreeId() const;
     //@}
 
     /** @name Internally used methods. */
