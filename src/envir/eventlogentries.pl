@@ -113,10 +113,12 @@ print H
 
 #include <stdio.h>
 #include \"envdefs.h\"
+#include \"cexception.h\"
 
 class EventLogWriter
 {
   public:
+    static void recordLogLine(FILE *f, const char *s, int n);
 ";
 
 foreach $class (@classes)
@@ -150,9 +152,13 @@ print CC "
 #endif
 #define CHECK(fprintf)    if (fprintf<0) throw new cRuntimeError(\"Cannot write event log file, disk full?\");
 
-";
+void EventLogWriter::recordLogLine(FILE *f, const char *s, int n)
+{
+    CHECK(fprintf(f, \"- \"));
+    CHECK(fwrite(s, 1, n, f));
+}
 
-#FIXME: use SIMTIME_STR(), quote strings, etc! and change omnetapp.cc to use this
+";
 
 foreach $class (@classes)
 {
@@ -170,7 +176,8 @@ sub makeMethodImpl ()
 
    my $txt = "void EventLogWriter::" . makeMethodDecl($class,$optfields) . "\n";
    $txt .= "{\n";
-   $txt .= "    CHECK(fprintf(f, \"$class->{CODE}";
+   $nl = ($class->{CODE} eq "E") ? "\\n" : "";
+   $txt .= "    CHECK(fprintf(f, \"$nl$class->{CODE}";
    foreach $field (@{ $class->{FIELDS} })
    {
       $txt .= " $field->{CODE} $field->{PRINTFTYPE}" if ($optfields || !$field->{OPT});
@@ -190,7 +197,12 @@ sub makeMethodDecl ()
    my $class = shift;
    my $optfields = shift;
 
-   my $txt = "record$class->{NAME}(FILE *f";
+   my $txt = "record$class->{NAME}";
+   foreach $field (@{ $class->{FIELDS} })
+   {
+      $txt .= "_$field->{CODE}" if ($optfields || !$field->{OPT});
+   }
+   $txt .= "(FILE *f";
    foreach $field (@{ $class->{FIELDS} })
    {
       $txt .= ", $field->{CTYPE} $field->{NAME}" if ($optfields || !$field->{OPT});

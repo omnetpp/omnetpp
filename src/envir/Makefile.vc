@@ -18,7 +18,7 @@ COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../sim
 
 OBJS=args.obj cenvir.obj cinifile.obj main.obj omnetapp.obj fsutils.obj \
      speedmtr.obj filemgrs.obj akoutvectormgr.obj matchableobject.obj \
-     akaroarng.obj cxmldoccache.obj ivfilemgr.obj
+     akaroarng.obj cxmldoccache.obj ivfilemgr.obj eventlogwriter.obj
 
 LIBS=$(OMNETPP_SRC_DIR)/sim/sim_std.ilib
 
@@ -49,6 +49,9 @@ envir.dll : $(OBJS) $(LIBS)
 	$(SHLIB_LD) /out:envir.dll /implib:envir.ilib /subsystem:console /def:envir.def $(OBJS) $(LIBS)
 	copy envir.dll $(OMNETPP_LIB_DIR:/=\)
 	copy envir.ilib $(OMNETPP_LIB_DIR:/=\)
+
+eventlogwriter.cc eventlogwriter.h : eventlogentries.pl
+	$(PERL) eventlogentries.pl
 
 depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc

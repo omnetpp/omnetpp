@@ -62,7 +62,7 @@ DS ModuleDisplayStringChangedEntry
 
 E EventEntry
 {
-   # long eventNumber
+   e long eventNumber
    t simtime_t simulationTime
    m int moduleId
    ce long causeEventNumber

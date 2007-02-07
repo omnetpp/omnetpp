@@ -28,6 +28,7 @@
 #include "omnetapp.h"
 #include "patternmatcher.h"
 #include "fsutils.h"
+#include "eventlogwriter.h"
 
 #include "ccoroutine.h"
 #include "csimulation.h"
@@ -524,9 +525,7 @@ void TOmnetApp::bubble(cModule *mod, const char *text)
 {
     if (feventlog)
     {
-        ::fprintf(feventlog, "BU id %ld txt \"%s\"\n",
-                           mod->id(),
-                           text);
+        EventLogWriter::recordBubbleEntry_id_txt(feventlog, mod->id(), text);
     }
 }
 
@@ -535,31 +534,23 @@ void TOmnetApp::simulationEvent(cMessage *msg)
     if (feventlog)
     {
         cModule *mod = simulation.contextModule();
-        ::fprintf(feventlog, "\nE # %ld t %s m %ld msg %ld ce %ld\n",
-                           simulation.eventNumber(),
-                           SIMTIME_STR(simulation.simTime()),
-                           mod->id(),
-                           msg->id(),
-                           msg->previousEventNumber());
+        EventLogWriter::recordEventEntry_e_t_m_ce_msg(feventlog,
+            simulation.eventNumber(), simulation.simTime(), mod->id(),
+            msg->previousEventNumber(), msg->id());
     }
 }
 
-//XXX message display string, etc?
-//XXX properly escape strings everywhere...
 void TOmnetApp::beginSend(cMessage *msg)
 {
     if (feventlog)
     {
-        ::fprintf(feventlog, "BS id %ld tid %ld eid %ld etid %ld c %s n \"%s\" k %d l %ld pe %ld\n",
-                           msg->id(),
-                           msg->treeId(), //XXX only if differs from id()
-                           msg->encapsulationId(), //XXX only if differs from id()
-                           msg->encapsulationTreeId(), //XXX only if differs from id()
-                           msg->className(),
-                           msg->fullName(),
-                           msg->kind(),
-                           msg->length(),
-                           msg->previousEventNumber());  //XXX plus many other fields...
+        EventLogWriter::recordBeginSendEntry_id_tid_eid_etid_c_n_k_l_pe(feventlog,
+            msg->id(), msg->treeId(), msg->encapsulationId(), msg->encapsulationTreeId(),
+            msg->className(), msg->fullName(), msg->kind(), msg->length(), msg->previousEventNumber());
+               //XXX treeId: only if differs from id()
+               //XXX encapsulatedIds: only if there's an encapsulated msg
+               //XXX message display string, etc?
+               //XXX plus many other fields...
     }
 }
 
@@ -567,16 +558,8 @@ void TOmnetApp::messageScheduled(cMessage *msg)
 {
     if (feventlog)
     {
-        ::fprintf(feventlog, "BS id %ld tid %ld c %s n %s sm %ld pe %ld\n",
-                           msg->id(),
-                           msg->treeId(),
-                           msg->className(),
-                           msg->fullName(),
-                           msg->senderModuleId(),
-                           msg->previousEventNumber());  //XXX plus many other fields...
-        ::fprintf(feventlog, "ES t %s\n",
-                           SIMTIME_STR(msg->arrivalTime())
-                           );
+        TOmnetApp::beginSend(msg);
+        TOmnetApp::endSend(msg);
     }
 }
 
@@ -584,8 +567,7 @@ void TOmnetApp::messageCancelled(cMessage *msg)
 {
     if (feventlog)
     {
-        ::fprintf(feventlog, "CE id %ld\n",
-                           msg->id());
+        EventLogWriter::recordCancelMessageEntry_id(feventlog, msg->id());
     }
 }
 
@@ -593,12 +575,9 @@ void TOmnetApp::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propag
 {
     if (feventlog)
     {
-        ::fprintf(feventlog, "SD sm %ld dm %ld dg %d pd %s td %s\n",
-                           msg->senderModuleId(),
-                           toGate->ownerModule()->id(),
-                           toGate->id(),
-                           SIMTIME_STR(propagationDelay),
-                           SIMTIME_STR(transmissionDelay));
+        EventLogWriter::recordMessageSendDirectEntry_sm_dm_dg_pd_td(feventlog,
+            msg->senderModuleId(), toGate->ownerModule()->id(), toGate->id(),
+            propagationDelay, transmissionDelay);
     }
 }
 
@@ -606,9 +585,8 @@ void TOmnetApp::messageSendHop(cMessage *msg, cGate *srcGate)
 {
     if (feventlog)
     {
-        ::fprintf(feventlog, "SH sm %ld sg %d\n",
-                           srcGate->ownerModule()->id(),
-                           srcGate->id());
+        EventLogWriter::recordMessageSendHopEntry_sm_sg(feventlog,
+            srcGate->ownerModule()->id(), srcGate->id());
     }
 }
 
@@ -616,11 +594,8 @@ void TOmnetApp::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagat
 {
     if (feventlog)
     {
-          ::fprintf(feventlog, "SH sm %ld sg %d td %s pd %s\n",
-                             srcGate->ownerModule()->id(),
-                             srcGate->id(),
-                             SIMTIME_STR(transmissionDelay),
-                             SIMTIME_STR(propagationDelay));
+        EventLogWriter::recordMessageSendHopEntry_sm_sg_pd_td(feventlog,
+            srcGate->ownerModule()->id(), srcGate->id(), transmissionDelay, propagationDelay);
     }
 }
 
@@ -628,9 +603,7 @@ void TOmnetApp::endSend(cMessage *msg)
 {
     if (feventlog)
     {
-        ::fprintf(feventlog, "ES t %s\n",
-                           SIMTIME_STR(msg->arrivalTime())
-                           );
+        EventLogWriter::recordEndSendEntry_t(feventlog, msg->arrivalTime());
     }
 }
 
@@ -638,8 +611,7 @@ void TOmnetApp::messageDeleted(cMessage *msg)
 {
     if (feventlog)
     {
-        ::fprintf(feventlog, "DE id %ld\n",
-                           msg->id());
+        EventLogWriter::recordDeleteMessageEntry_id(feventlog, msg->id());
     }
 }
 
@@ -649,12 +621,8 @@ void TOmnetApp::componentMethodCalled(cComponent *from, cComponent *to, const ch
     {
         if (from->isModule() && to->isModule())
         {
-            cModule *fromMod = (cModule *)from;
-            cModule *toMod = (cModule *)to;
-            ::fprintf(feventlog, "MM sm %ld tm %ld m \"%s\"\n",
-                               fromMod->id(),
-                               toMod->id(),
-                               method);
+            EventLogWriter::recordModuleMethodCalledEntry_sm_tm_m(feventlog,
+                ((cModule *)from)->id(), ((cModule *)to)->id(), method);
         }
     }
 }
@@ -666,16 +634,13 @@ void TOmnetApp::moduleCreated(cModule *newmodule)
         cModule *m = newmodule;
         if (m->parentModule())
         {
-            ::fprintf(feventlog, "MC id %ld c %s pid %ld n %s\n",
-                               m->id(),
-                               m->className(),
-                               m->parentModule()->id(), //FIXME size() is missing
-                               m->fullName());
-        } else {
-            ::fprintf(feventlog, "MC id %ld c %s n %s\n",
-                               m->id(),
-                               m->className(),
-                               m->fullName());
+            EventLogWriter::recordModuleCreatedEntry_id_c_pid_n(feventlog,
+                m->id(), m->className(), m->parentModule()->id(), m->fullName()); //FIXME size() is missing
+        }
+        else
+        {
+            EventLogWriter::recordModuleCreatedEntry_id_c_pid_n(feventlog,
+                m->id(), m->className(), -1, m->fullName()); //FIXME size() is missing; omit parentModuleId
         }
     }
 }
@@ -684,8 +649,7 @@ void TOmnetApp::moduleDeleted(cModule *module)
 {
     if (feventlog)
     {
-        ::fprintf(feventlog, "MD id %ld\n",
-                           module->id());
+        EventLogWriter::recordModuleDeletedEntry_id(feventlog, module->id());
     }
 }
 
@@ -693,9 +657,7 @@ void TOmnetApp::moduleReparented(cModule *module, cModule *oldparent)
 {
     if (feventlog)
     {
-        ::fprintf(feventlog, "MR id %ld p %ld\n",    //XXX make use of generated EventLogWriter class everywhere
-                           module->id(),
-                           module->parentModule()->id());
+        EventLogWriter::recordModuleReparentedEntry_id_p(feventlog, module->id(), module->parentModule()->id());
     }
 }
 
@@ -704,13 +666,9 @@ void TOmnetApp::connectionCreated(cGate *srcgate)
     if (feventlog)
     {
         cGate *destgate = srcgate->toGate();
-        ::fprintf(feventlog, "CC sm %ld sg %d sn %s dm %ld dg %d dn %s\n",
-                           srcgate->ownerModule()->id(),
-                           srcgate->id(),
-                           srcgate->fullName(),
-                           destgate->ownerModule()->id(),
-                           destgate->id(),
-                           destgate->fullName());  //XXX channel, channel attributes, etc
+        EventLogWriter::recordConnectionCreatedEntry_sm_sg_sn_dm_dg_dn(feventlog,
+            srcgate->ownerModule()->id(), srcgate->id(), srcgate->fullName(),
+            destgate->ownerModule()->id(), destgate->id(), destgate->fullName());  //XXX channel, channel attributes, etc
     }
 }
 
@@ -718,9 +676,8 @@ void TOmnetApp::connectionRemoved(cGate *srcgate)
 {
     if (feventlog)
     {
-        ::fprintf(feventlog, "CD sm %ld sg %d\n",
-                           srcgate->ownerModule()->id(),
-                           srcgate->id());
+        EventLogWriter::recordConnectionDeletedEntry_sm_sg(feventlog,
+            srcgate->ownerModule()->id(), srcgate->id());
     }
 }
 
@@ -728,10 +685,8 @@ void TOmnetApp::displayStringChanged(cGate *gate)
 {
     if (feventlog)
     {
-        ::fprintf(feventlog, "CS sm %ld sg %d d \"%s\"\n",
-                           gate->ownerModule()->id(),
-                           gate->id(),
-                           gate->displayString().getString());
+        EventLogWriter::recordConnectionDisplayStringChangedEntry_sm_sg_d(feventlog,
+            gate->ownerModule()->id(), gate->id(), gate->displayString().getString());
     }
 }
 
@@ -739,9 +694,8 @@ void TOmnetApp::displayStringChanged(cModule *submodule)
 {
     if (feventlog)
     {
-        ::fprintf(feventlog, "DS id %ld d \"%s\"\n",
-                           submodule->id(),
-                           submodule->displayString().getString());
+        EventLogWriter::recordModuleDisplayStringChangedEntry_id_d(feventlog,
+            submodule->id(), submodule->displayString().getString());
     }
 }
 
@@ -755,9 +709,9 @@ void TOmnetApp::sputn(const char *s, int n)
 {
     if (feventlog)
     {
-        ::fprintf(feventlog, "- ");
-        ::fwrite(s, 1, n, feventlog); //TODO: autoflush for feventlog (after each event? after each line?)
+        EventLogWriter::recordLogLine(feventlog, s, n);
     }
+    //TODO: autoflush for feventlog (after each event? after each line?)
 }
 
 //-------------------------------------------------------------
