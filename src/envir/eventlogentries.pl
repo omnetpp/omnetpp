@@ -111,6 +111,9 @@ print H
 "#ifndef __EVENTLOGWRITER_H_
 #define __EVENTLOGWRITER_H_
 
+#include <stdio.h>
+#include \"envdefs.h\"
+
 class EventLogWriter
 {
   public:
