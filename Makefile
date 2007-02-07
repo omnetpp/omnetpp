@@ -1,12 +1,8 @@
 #=====================================================================
 #
-# toplevel makefile for OMNeT++ libraries and programs
+# Toplevel makefile for OMNeT++ libraries and programs
 #
 #=====================================================================
-
-#
-# Directories
-#
 
 include Makefile.inc
 
@@ -30,9 +26,7 @@ components: base jnilibs samples
 
 BASE=common layout eventlog scave nedxml sim envir cmdenv tkenv utils nedc
 SAMPLES=aloha cqn dyna fifo hcube hist neddemo queuenet routing tictoc tokenring sockets
-#JNILIBS=
-JNILIBS=org.omnetpp.ned.model \
-        org.omnetpp.ide.nativelibs
+JNILIBS=org.omnetpp.ned.model  org.omnetpp.ide.nativelibs
 
 #
 # Group targets.
@@ -42,10 +36,11 @@ jnilibs : $(JNILIBS)
 samples: $(SAMPLES)
 
 # dependencies (because of ver.h, tcl2c, opp_msgc, etc)
-common eventlog scave nedxml sim envir cmdenv tkenv nedc makefiles: utils
-eventlog scave nedxml sim envir cmdenv : common
+common layout eventlog scave nedxml sim envir cmdenv tkenv nedc makefiles: utils
+layout eventlog scave nedxml sim envir cmdenv : common
 nedc : nedxml
 sim : nedc
+makefiles: utils
 $(SAMPLES) clean depend: makefiles
 
 #
@@ -120,7 +115,7 @@ clean:
 	done
 	cd $(OMNETPP_TEST_DIR) && $(MAKE) clean
 
-depend: utils
+depend:
 	for i in $(BASE); do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) depend); \
 	done
