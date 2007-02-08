@@ -22,7 +22,7 @@
  * Processing node which performs sliding window average. Replaces every
  * value with the mean of values in the window.
  */
-class SlidingWindowAverageNode : public FilterNode
+class SCAVE_API SlidingWindowAverageNode : public FilterNode
 {
     protected:
         int winsize;
@@ -37,7 +37,7 @@ class SlidingWindowAverageNode : public FilterNode
         virtual void process();
 };
 
-class SlidingWindowAverageNodeType : public FilterNodeType
+class SCAVE_API SlidingWindowAverageNodeType : public FilterNodeType
 {
     public:
         virtual const char *name() const {return "slidingwinavg";}

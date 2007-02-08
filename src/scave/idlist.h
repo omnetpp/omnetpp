@@ -34,7 +34,7 @@ typedef int64 ID;
  *
  * Beware: Copy ctor implements transfer-of-ownership semantics!
  */
-class IDList
+class SCAVE_API IDList
 {
     private:
         friend class ResultFileManager;

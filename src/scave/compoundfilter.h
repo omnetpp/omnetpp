@@ -28,7 +28,7 @@ class CompoundFilterType;
 /**
  * FilterNode nodes combined into a single filter by cascading them.
  */
-class CompoundFilter : public FilterNode
+class SCAVE_API CompoundFilter : public FilterNode
 {
         friend class CompoundFilterType;
     protected:
@@ -50,7 +50,7 @@ class CompoundFilter : public FilterNode
 /**
  * FilterNode nodes combined into a single filter by cascading them.
  */
-class CompoundFilterType : public FilterNodeType
+class SCAVE_API CompoundFilterType : public FilterNodeType
 {
     public:
         /** Describes one of the cascaded filters */

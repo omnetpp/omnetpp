@@ -20,7 +20,7 @@
 /**
  * ArrayBuilderNode returns the results in this class.
  */
-class XYArray
+class SCAVE_API XYArray
 {
     private:
         double *x;

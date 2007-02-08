@@ -44,11 +44,11 @@ typedef std::vector<OutputVectorEntry> Entries;
  * Vector file reader with random access.
  * Each instance reads one vector from a vector file.
  */
-class IndexedVectorFileReader
+class SCAVE_API IndexedVectorFileReader
 {
     std::string fname;  // file name of the vector file
     FileReader *reader; // reader of the vector file
-    
+
     VectorFileIndex *index; // index of the vector file, loaded fully into the memory
     const VectorData *vector;     // index data of the read vector, points into index
     const Block *currentBlock;    // last loaded block, points into index
@@ -101,7 +101,7 @@ class IndexedVectorFileReader
 /**
  * Consumer node which writes an indexed output vector file.
  */
-class IndexedVectorFileWriterNode : public Node
+class SCAVE_API IndexedVectorFileWriterNode : public Node
 {
     protected:
         class VectorInputPort : public Port {
@@ -113,7 +113,7 @@ class IndexedVectorFileWriterNode : public Node
             int bufferNumOfRecords; //
 
             VectorInputPort(int id, std::string moduleName, std::string name, std::string columns, int bufferSize, Node *owner)
-                : Port(owner), vector(id, moduleName, name, columns, bufferSize) 
+                : Port(owner), vector(id, moduleName, name, columns, bufferSize)
                 { this->allocateBuffer(bufferSize); vector.blocks.push_back(Block()); }
             ~VectorInputPort() { if (buffer) delete[] buffer; }
 
@@ -154,7 +154,7 @@ class IndexedVectorFileWriterNode : public Node
         void bufferPrintf(VectorInputPort *port, const char *format...);
 };
 
-class IndexedVectorFileWriterNodeType : public NodeType
+class SCAVE_API IndexedVectorFileWriterNodeType : public NodeType
 {
     public:
         virtual const char *name() const {return "indexedvectorfilewriter";}

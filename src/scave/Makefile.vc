@@ -50,6 +50,10 @@ scavetool.exe : scavetool.obj scave$(LIB_SUFFIX)
 	$(LINK) $(LDFLAGS) /nologo /out:scavetool.exe scavetool.obj scave.lib $(IMPLIBS)
 	copy scavetool.exe $(OMNETPP_BIN_DIR:/=\)
 
+scavetool.obj : scavetool.cc
+	@: note: scavetool.cc must be compiled *without* -DBUILDING_SCAVE
+	$(CXX) $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /c /Tp scavetool.cc
+
 doc:
 	$(DOXYGEN:/=\) doxy.cfg
 

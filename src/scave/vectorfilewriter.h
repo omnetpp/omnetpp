@@ -23,7 +23,7 @@
 /**
  * Consumer node which writes an output vector file.
  */
-class VectorFileWriterNode : public Node
+class SCAVE_API VectorFileWriterNode : public Node
 {
     public:
         struct Pair {
@@ -57,7 +57,7 @@ class VectorFileWriterNode : public Node
         virtual bool finished() const;
 };
 
-class VectorFileWriterNodeType : public NodeType
+class SCAVE_API VectorFileWriterNodeType : public NodeType
 {
     public:
         virtual const char *name() const {return "vectorfilewriter";}

@@ -21,7 +21,7 @@
 /**
  * FIXME comment
  */
-class VectorFileIndexer
+class SCAVE_API VectorFileIndexer
 {
     public:
         void generateIndex(const char *filename);

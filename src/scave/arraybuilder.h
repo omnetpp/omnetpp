@@ -22,7 +22,7 @@
 /**
  * Stores all data in vector (two 'double' vectors in fact).
  */
-class ArrayBuilderNode : public SingleSinkNode
+class SCAVE_API ArrayBuilderNode : public SingleSinkNode
 {
     private:
         double *xvec;
@@ -44,7 +44,7 @@ class ArrayBuilderNode : public SingleSinkNode
 };
 
 
-class ArrayBuilderNodeType : public SingleSinkNodeType
+class SCAVE_API ArrayBuilderNodeType : public SingleSinkNodeType
 {
     public:
         virtual const char *name() const {return "arraybuilder";}

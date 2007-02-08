@@ -23,7 +23,7 @@
  * Processing node which writes data into a file. Every line contains two
  * real numbers (time and value) separated by a tab.
  */
-class FileWriterNode : public SingleSinkNode
+class SCAVE_API FileWriterNode : public SingleSinkNode
 {
     private:
         std::string fileName;
@@ -39,7 +39,7 @@ class FileWriterNode : public SingleSinkNode
         virtual bool finished() const;
 };
 
-class FileWriterNodeType : public SingleSinkNodeType
+class SCAVE_API FileWriterNodeType : public SingleSinkNodeType
 {
     public:
         virtual const char *name() const {return "filewriter";}

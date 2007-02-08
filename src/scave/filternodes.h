@@ -21,7 +21,7 @@
 /**
  * Processing node which does nothing but copying its input to its output.
  */
-class NopNode : public FilterNode
+class SCAVE_API NopNode : public FilterNode
 {
     public:
         NopNode()  {}
@@ -30,7 +30,7 @@ class NopNode : public FilterNode
         virtual void process();
 };
 
-class NopNodeType : public FilterNodeType
+class SCAVE_API NopNodeType : public FilterNodeType
 {
     public:
         virtual const char *name() const {return "nop";}
@@ -44,7 +44,7 @@ class NopNodeType : public FilterNodeType
 /**
  * Processing node which adds a constant to every value.
  */
-class AdderNode : public FilterNode
+class SCAVE_API AdderNode : public FilterNode
 {
     protected:
         double c;
@@ -55,7 +55,7 @@ class AdderNode : public FilterNode
         virtual void process();
 };
 
-class AdderNodeType : public FilterNodeType
+class SCAVE_API AdderNodeType : public FilterNodeType
 {
     public:
         virtual const char *name() const {return "add";}
@@ -69,7 +69,7 @@ class AdderNodeType : public FilterNodeType
 /**
  * Processing node which multiplies every value by a constant.
  */
-class MultiplierNode : public FilterNode
+class SCAVE_API MultiplierNode : public FilterNode
 {
     protected:
         double a;
@@ -80,7 +80,7 @@ class MultiplierNode : public FilterNode
         virtual void process();
 };
 
-class MultiplierNodeType : public FilterNodeType
+class SCAVE_API MultiplierNodeType : public FilterNodeType
 {
     public:
         virtual const char *name() const {return "multiply-by";}
@@ -95,7 +95,7 @@ class MultiplierNodeType : public FilterNodeType
 /**
  * Processing node which divides every value by a constant.
  */
-class DividerNode : public FilterNode
+class SCAVE_API DividerNode : public FilterNode
 {
     protected:
         double a;
@@ -106,7 +106,7 @@ class DividerNode : public FilterNode
         virtual void process();
 };
 
-class DividerNodeType : public FilterNodeType
+class SCAVE_API DividerNodeType : public FilterNodeType
 {
     public:
         virtual const char *name() const {return "divide-by";}
@@ -121,7 +121,7 @@ class DividerNodeType : public FilterNodeType
 /**
  * Processing node which computes value modulo a constant.
  */
-class ModuloNode : public FilterNode
+class SCAVE_API ModuloNode : public FilterNode
 {
     protected:
         double a;
@@ -132,7 +132,7 @@ class ModuloNode : public FilterNode
         virtual void process();
 };
 
-class ModuloNodeType : public FilterNodeType
+class SCAVE_API ModuloNodeType : public FilterNodeType
 {
     public:
         virtual const char *name() const {return "modulo";}
@@ -147,7 +147,7 @@ class ModuloNodeType : public FilterNodeType
 /**
  * Processing node which substracts the previous value from every value
  */
-class DifferenceNode : public FilterNode
+class SCAVE_API DifferenceNode : public FilterNode
 {
     protected:
         double prevy;
@@ -158,7 +158,7 @@ class DifferenceNode : public FilterNode
         virtual void process();
 };
 
-class DifferenceNodeType : public FilterNodeType
+class SCAVE_API DifferenceNodeType : public FilterNodeType
 {
     public:
         virtual const char *name() const {return "difference";}
@@ -173,7 +173,7 @@ class DifferenceNodeType : public FilterNodeType
 /**
  * Processing node which substracts the previous value from every value
  */
-class TimeDiffNode : public FilterNode
+class SCAVE_API TimeDiffNode : public FilterNode
 {
     protected:
         double prevx;
@@ -184,7 +184,7 @@ class TimeDiffNode : public FilterNode
         virtual void process();
 };
 
-class TimeDiffNodeType : public FilterNodeType
+class SCAVE_API TimeDiffNodeType : public FilterNodeType
 {
     public:
         virtual const char *name() const {return "timediff";}
@@ -199,7 +199,7 @@ class TimeDiffNodeType : public FilterNodeType
 /**
  * Processing node which calculates moving average
  */
-class MovingAverageNode : public FilterNode
+class SCAVE_API MovingAverageNode : public FilterNode
 {
     protected:
         double alpha;
@@ -212,7 +212,7 @@ class MovingAverageNode : public FilterNode
         virtual void process();
 };
 
-class MovingAverageNodeType : public FilterNodeType
+class SCAVE_API MovingAverageNodeType : public FilterNodeType
 {
     public:
         virtual const char *name() const {return "movingavg";}
@@ -227,7 +227,7 @@ class MovingAverageNodeType : public FilterNodeType
 /**
  * Processing node which sums up values
  */
-class SumNode : public FilterNode
+class SCAVE_API SumNode : public FilterNode
 {
     protected:
         double sum;
@@ -238,7 +238,7 @@ class SumNode : public FilterNode
         virtual void process();
 };
 
-class SumNodeType : public FilterNodeType
+class SCAVE_API SumNodeType : public FilterNodeType
 {
     public:
         virtual const char *name() const {return "sum";}
@@ -252,7 +252,7 @@ class SumNodeType : public FilterNodeType
 /**
  * Processing node which shifts every value in time.
  */
-class TimeShiftNode : public FilterNode
+class SCAVE_API TimeShiftNode : public FilterNode
 {
     protected:
         double dt;
@@ -263,7 +263,7 @@ class TimeShiftNode : public FilterNode
         virtual void process();
 };
 
-class TimeShiftNodeType : public FilterNodeType
+class SCAVE_API TimeShiftNodeType : public FilterNodeType
 {
     public:
         virtual const char *name() const {return "timeshift";}
@@ -277,7 +277,7 @@ class TimeShiftNodeType : public FilterNodeType
 /**
  * Processing node which adds linear trend to its input.
  */
-class LinearTrendNode : public FilterNode
+class SCAVE_API LinearTrendNode : public FilterNode
 {
     protected:
         double a;
@@ -288,7 +288,7 @@ class LinearTrendNode : public FilterNode
         virtual void process();
 };
 
-class LinearTrendNodeType : public FilterNodeType
+class SCAVE_API LinearTrendNodeType : public FilterNodeType
 {
     public:
         virtual const char *name() const {return "lineartrend";}
@@ -303,7 +303,7 @@ class LinearTrendNodeType : public FilterNodeType
 /**
  * Processing node which deletes values outside a specified time interval.
  */
-class CropNode : public FilterNode
+class SCAVE_API CropNode : public FilterNode
 {
     protected:
         double from, to;
@@ -314,7 +314,7 @@ class CropNode : public FilterNode
         virtual void process();
 };
 
-class CropNodeType : public FilterNodeType
+class SCAVE_API CropNodeType : public FilterNodeType
 {
     public:
         virtual const char *name() const {return "crop";}
@@ -328,7 +328,7 @@ class CropNodeType : public FilterNodeType
 /**
  * Processing node which calculates mean on (0,t)
  */
-class MeanNode : public FilterNode
+class SCAVE_API MeanNode : public FilterNode
 {
     protected:
         double sum;
@@ -340,7 +340,7 @@ class MeanNode : public FilterNode
         virtual void process();
 };
 
-class MeanNodeType : public FilterNodeType
+class SCAVE_API MeanNodeType : public FilterNodeType
 {
     public:
         virtual const char *name() const {return "mean";}
@@ -357,7 +357,7 @@ class MeanNodeType : public FilterNodeType
 /**
  * Processing node which removes repeated y values.
  */
-class RemoveRepeatsNode : public FilterNode
+class SCAVE_API RemoveRepeatsNode : public FilterNode
 {
     protected:
         bool first;
@@ -369,7 +369,7 @@ class RemoveRepeatsNode : public FilterNode
         virtual void process();
 };
 
-class RemoveRepeatsNodeType : public FilterNodeType
+class SCAVE_API RemoveRepeatsNodeType : public FilterNodeType
 {
     public:
         virtual const char *name() const {return "removerepeats";}

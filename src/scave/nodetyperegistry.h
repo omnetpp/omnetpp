@@ -31,7 +31,7 @@ typedef std::vector<NodeType*> NodeTypeVector;
  *
  * @see NodeType, Node
  */
-class NodeTypeRegistry
+class SCAVE_API NodeTypeRegistry
 {
     protected:
         static NodeTypeRegistry *inst;

@@ -22,7 +22,7 @@
  * Processing node which calculates difference quotient of every value
  * and the next one.
  */
-class DifferenceQuotientNode : public FilterNode
+class SCAVE_API DifferenceQuotientNode : public FilterNode
 {
     private:
         bool firstRead;
@@ -33,7 +33,7 @@ class DifferenceQuotientNode : public FilterNode
         virtual void process();
 };
 
-class DifferenceQuotientNodeType : public FilterNodeType
+class SCAVE_API DifferenceQuotientNodeType : public FilterNodeType
 {
     public:
         virtual const char *name() const {return "diffquot";}

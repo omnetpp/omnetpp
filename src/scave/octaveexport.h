@@ -49,7 +49,7 @@
  *
  * This class exports output vectors as two-column matrices.
  */
-class OctaveExport
+class SCAVE_API OctaveExport
 {
     private:
         std::string fileName;

@@ -26,7 +26,7 @@
 /**
  * Base class for one-port producer nodes.
  */
-class SingleSourceNode : public Node
+class SCAVE_API SingleSourceNode : public Node
 {
     public:
         Port out;
@@ -38,7 +38,7 @@ class SingleSourceNode : public Node
 /**
  * Base class for one-port consumer nodes.
  */
-class SingleSinkNode : public Node
+class SCAVE_API SingleSinkNode : public Node
 {
     public:
         Port in;
@@ -50,7 +50,7 @@ class SingleSinkNode : public Node
 /**
  * Base class for processing nodes with one input and one output port.
  */
-class FilterNode : public Node
+class SCAVE_API FilterNode : public Node
 {
     protected:
         virtual bool finished() const;
@@ -65,7 +65,7 @@ class FilterNode : public Node
 /**
  * NodeType for SingleSourceNode.
  */
-class SingleSourceNodeType : public NodeType
+class SCAVE_API SingleSourceNodeType : public NodeType
 {
     public:
         virtual const char *category() const {return "single sources";}
@@ -77,7 +77,7 @@ class SingleSourceNodeType : public NodeType
 /**
  * NodeType for SingleSinkNode.
  */
-class SingleSinkNodeType : public NodeType
+class SCAVE_API SingleSinkNodeType : public NodeType
 {
     public:
         virtual const char *category() const {return "single sinks";}
@@ -89,7 +89,7 @@ class SingleSinkNodeType : public NodeType
 /**
  * NodeType for FilterNode.
  */
-class FilterNodeType : public NodeType
+class SCAVE_API FilterNodeType : public NodeType
 {
     public:
         virtual const char *category() const {return "filter";}

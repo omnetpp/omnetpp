@@ -45,7 +45,7 @@ struct Datum
  *
  * @see Datum, Node, Channel
  */
-class Port
+class SCAVE_API Port
 {
     private:
         Node *ownernode;
@@ -67,7 +67,7 @@ class Port
  *
  * @see DataflowManager, Port, Channel, Datum, NodeType
  */
-class Node
+class SCAVE_API Node
 {
         friend class DataflowManager;
 

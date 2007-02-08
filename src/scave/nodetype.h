@@ -30,7 +30,7 @@ typedef std::map<std::string,std::string> StringMap;
  *
  * @see Node, NodeTypeRegistry
  */
-class NodeType
+class SCAVE_API NodeType
 {
     protected:
         void checkAttrNames(const StringMap& attr) const;

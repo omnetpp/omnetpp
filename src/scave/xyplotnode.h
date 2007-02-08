@@ -30,7 +30,7 @@
  * Note: the output will *not* be ordered by x, so one should be very cautious
  * with further processing. Connecting an ArrayBuilder is fine.
  */
-class XYPlotNode : public Node
+class SCAVE_API XYPlotNode : public Node
 {
     public:
         typedef std::vector<Port> PortVector;
@@ -49,7 +49,7 @@ class XYPlotNode : public Node
         virtual bool finished() const;
 };
 
-class XYPlotNodeType : public NodeType
+class SCAVE_API XYPlotNodeType : public NodeType
 {
     public:
         virtual const char *name() const {return "xyplot";}

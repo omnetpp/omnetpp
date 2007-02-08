@@ -25,7 +25,7 @@
 /**
  * Processing node which merges several input streams into one.
  */
-class MergerNode : public Node
+class SCAVE_API MergerNode : public Node
 {
     public:
         typedef std::vector<Port> PortVector;
@@ -42,7 +42,7 @@ class MergerNode : public Node
         virtual bool finished() const;
 };
 
-class MergerNodeType : public NodeType
+class SCAVE_API MergerNodeType : public NodeType
 {
     public:
         virtual const char *name() const {return "merger";}

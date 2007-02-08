@@ -157,7 +157,7 @@ typedef std::vector<std::string> StringVector;
  *
  * Data can be extracted, filtered, etc by external functions.
  */
-class ResultFileManager
+class SCAVE_API ResultFileManager
 {
     friend class IDList;  // _type()
   private:

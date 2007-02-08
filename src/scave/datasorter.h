@@ -38,7 +38,7 @@ typedef std::vector<IDVector> IDVectorVector;
  * Helps to organize scalars in a ResultFileManager into bar charts,
  * scatter plots, etc.
  */
-class ScalarDataSorter
+class SCAVE_API ScalarDataSorter
 {
   private:
     ResultFileManager *resultFileMgr;

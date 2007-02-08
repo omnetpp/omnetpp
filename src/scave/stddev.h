@@ -22,7 +22,7 @@
 /**
  * Calculates min, max, mean, stddev.
  */
-class StddevNode : public SingleSinkNode
+class SCAVE_API StddevNode : public SingleSinkNode
 {
     protected:
          long num_samples;
@@ -50,7 +50,7 @@ class StddevNode : public SingleSinkNode
 };
 
 
-class StddevNodeType : public SingleSinkNodeType
+class SCAVE_API StddevNodeType : public SingleSinkNodeType
 {
     public:
         virtual const char *name() const {return "stddev";}

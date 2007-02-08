@@ -30,7 +30,7 @@
 /**
  * Producer node which reads an output vector file.
  */
-class VectorFileReaderNode : public Node
+class SCAVE_API VectorFileReaderNode : public Node
 {
     public:
         typedef std::vector<Port> PortVector;
@@ -56,7 +56,7 @@ class VectorFileReaderNode : public Node
 };
 
 
-class VectorFileReaderNodeType : public NodeType
+class SCAVE_API VectorFileReaderNodeType : public NodeType
 {
     public:
         virtual const char *name() const {return "vectorfilereader";}

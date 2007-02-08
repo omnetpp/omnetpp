@@ -25,7 +25,7 @@
  *
  * @see Node, Channel
  */
-class DataflowManager
+class SCAVE_API DataflowManager
 {
     protected:
         std::vector<Node *> nodes;

@@ -22,7 +22,7 @@
  * Processing node which performs window average. Replaces every batch
  * of values with their means.
  */
-class WindowAverageNode : public FilterNode
+class SCAVE_API WindowAverageNode : public FilterNode
 {
     protected:
         int winsize;
@@ -35,7 +35,7 @@ class WindowAverageNode : public FilterNode
         virtual void process();
 };
 
-class WindowAverageNodeType : public FilterNodeType
+class SCAVE_API WindowAverageNodeType : public FilterNodeType
 {
     public:
         virtual const char *name() const {return "winavg";}

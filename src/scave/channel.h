@@ -26,7 +26,7 @@
  *
  * @see Node, Port, Datum
  */
-class Channel
+class SCAVE_API Channel
 {
     private:
         // note: a Channel should *never* hold a pointer back to its Ports
@@ -86,7 +86,7 @@ class Channel
         void consumerClose() {buffer.clear();consumerfinished=true;}
 
         /**
-         * Returns true when the consumer has closed the channel, that is, 
+         * Returns true when the consumer has closed the channel, that is,
          * it will not read any more data from the channel.
          */
         bool consumerClosed() {return consumerfinished;}

@@ -16,11 +16,13 @@
 #define _INDEXFILE_H_
 
 #include <float.h>
+#include "scavedefs.h"
 
 /**
  * Statistical data collected per block and per vector.
  */
-class Statistics {
+class SCAVE_API Statistics 
+{
     private:
         long _count;
         double _min;
@@ -92,7 +94,7 @@ struct Block {
     long endSerial() const { return startSerial + count(); }
 
     bool contains(long serial) const { return startSerial <= serial && serial < endSerial(); }
-    
+
     void collect(long eventNum, double simtime, double value)
     {
         if (count() == 0)
@@ -198,7 +200,7 @@ struct VectorFileIndex {
 /**
  * FIXME comment
  */
-class IndexFile
+class SCAVE_API IndexFile
 {
     public:
         static bool isIndexFile(const char *indexFileName);
@@ -217,7 +219,7 @@ class IndexFile
 /**
  * Reader for an index file.
  */
-class IndexFileReader
+class SCAVE_API IndexFileReader
 {
    private:
         /** The name of the index file. */
@@ -247,7 +249,7 @@ class IndexFileReader
 /**
  * Writer for an index file.
  */
-class IndexFileWriter
+class SCAVE_API IndexFileWriter
 {
     private:
         /** Name of the index file. */
