@@ -19,7 +19,6 @@
 #include "globals.h"
 #include "cobject.h"
 #include "cstringpool.h"
-#include "stlwrap.h" //XXX out!!!!
 
 #include <map>
 #include <vector>
