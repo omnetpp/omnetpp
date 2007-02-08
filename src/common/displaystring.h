@@ -15,6 +15,7 @@
 #ifndef __DISPLAYSTRING_H
 #define __DISPLAYSTRING_H
 
+#include "commondefs.h"
 
 #define MAXARGS 16
 
@@ -48,7 +49,7 @@
  *
  * Limitation: a tag may have at most 16 arguments.
  */
-class DisplayString
+class COMMON_API DisplayString
 {
   private:
     struct Tag {

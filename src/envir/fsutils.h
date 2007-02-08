@@ -29,7 +29,7 @@
  * original dir when goes out of scope. Does nothing if NULL is passed
  * to the constructor.
  */
-class PushDir
+class ENVIR_API PushDir
 {
   private:
     opp_string olddir;
@@ -46,7 +46,7 @@ class PushDir
  *
  * On failure, cRuntimeError will be thrown.
  */
-void loadExtensionLibrary(const char *lib);
+ENVIR_API void loadExtensionLibrary(const char *lib);
 
 #endif
 

@@ -18,6 +18,7 @@
 #include <string>
 #include <exception>
 #include <stdexcept>
+#include "commondefs.h"
 
 //FIXME rename this file
 
@@ -25,7 +26,7 @@
  * Utility class: makes std::runtime_error somewhat more convenient to use,
  * by providing a printf-style constructor. Catch as std::runtime_error.
  */
-class opp_runtime_error : public std::runtime_error
+class COMMON_API opp_runtime_error : public std::runtime_error
 {
   protected:
     std::string errormsg;

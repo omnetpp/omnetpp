@@ -37,6 +37,8 @@
 #define SHELL_EXPANDS_WILDCARDS 1
 #endif
 
+#include "commondefs.h"
+
 struct GlobPrivateData;
 
 /**
@@ -44,7 +46,7 @@ struct GlobPrivateData;
  * a wildcard, it is returned as it is, regardless whether such file exists
  * or not.
  */
-class FileGlobber
+class COMMON_API FileGlobber
 {
   private:
     std::string fnamepattern;

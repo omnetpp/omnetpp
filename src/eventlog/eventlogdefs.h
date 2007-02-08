@@ -15,9 +15,18 @@
 #ifndef _EVENTLOGDEFS_H_
 #define _EVENTLOGDEFS_H_
 
+#include "platdefs.h"
 #include "exception.h"
 #include "inttypes.h" // for int64, our equivalent of Java's "long" type
 #include "commonutil.h"
+
+
+#ifdef BUILDING_EVENTLOG
+#  define LAYOUT_API  OPP_DLLEXPORT
+#else
+#  define LAYOUT_API  OPP_DLLIMPORT
+#endif
+
 
 #define PRINT_DEBUG_MESSAGES false
 
@@ -25,7 +34,8 @@ typedef double simtime_t;  //XXX revise later
 
 
 /**
- * variables which store event numbers throughout the API may have these additional values (positive values are real event numbers)
+ * Variables which store event numbers throughout the API may have these 
+ * additional values (positive values are real event numbers).
  */
 enum EventNumberKind
 {
@@ -42,7 +52,7 @@ enum EventNumberKind
      */
     FILTERED_EVENT = -3,
     /**
-     * The event is not yet in the log, but it might appear in the future (e.g. simulation not there yet)
+     * The event is not yet in the log, but it might appear in the future (e.g. simulation not there yet).
      * The last event number is added to the constant and returned.
      * (e.g. reading the event 1000 when the file ends at 100 will give -104)
      */

@@ -16,6 +16,13 @@
 #define _SCAVEDEFS_H_
 
 #include "inttypes.h" // for int64, our equivalent of Java's "long" type
+#include "platdefs.h"
+
+#ifdef BUILDING_SCAVE
+#  define LAYOUT_API  OPP_DLLEXPORT
+#else
+#  define LAYOUT_API  OPP_DLLIMPORT
+#endif
 
 #define DEFAULT_PRECISION  14
 

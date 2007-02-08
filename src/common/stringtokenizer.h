@@ -21,6 +21,7 @@
 
 #include <string>
 #include <vector>
+#include "commondefs.h"
 
 /**
  * String tokenizer class, modelled after strtok(). It considers the input
@@ -52,7 +53,7 @@
  *
  * @ingroup SimSupport
  */
-class StringTokenizer
+class COMMON_API StringTokenizer
 {
   private:
     char *str; // copy of full string

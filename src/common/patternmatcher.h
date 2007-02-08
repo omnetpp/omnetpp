@@ -19,6 +19,7 @@
 
 #include <string>
 #include <vector>
+#include "commondefs.h"
 
 /**
  * Glob-style pattern matching class, adopted to special OMNeT++ requirements.
@@ -66,7 +67,7 @@
  *     matches any number). The specification must use exactly two dots.
  *     Caveat: "*{17..19}" will match "a17","117" and "963217" as well.
  */
-class PatternMatcher
+class COMMON_API PatternMatcher
 {
   private:
     enum ElemType {
@@ -162,7 +163,7 @@ class PatternMatcher
 
     /**
      * Utility function to determine whether a given string contains wildcards.
-     * If it does not, a simple strcmp() might be a faster option than using 
+     * If it does not, a simple strcmp() might be a faster option than using
      * PatternMatcher.
      */
     static bool containsWildcards(const char *pattern);

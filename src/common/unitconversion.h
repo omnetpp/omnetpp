@@ -15,12 +15,13 @@
 #ifndef _UNITCONVERSION_H_
 #define _UNITCONVERSION_H_
 
+#include "commondefs.h"
 #include "exception.h"
 
 /**
  * XXX
  */
-class UnitConversion
+class COMMON_API UnitConversion
 {
   protected:
     struct UnitDesc { const char *unit; double mult; const char *baseUnit; const char *longName; };

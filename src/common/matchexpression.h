@@ -18,6 +18,7 @@
 
 #include <string>
 #include <vector>
+#include "commondefs.h"
 #include "exception.h"
 
 class PatternMatcher;
@@ -44,7 +45,7 @@ class PatternMatcher;
  *  - "className(TCPSegment) and not kind({0..2}) and SYN or data-*"
  *  - "className(TCPSegment) or byteLength({4096..})
  */
-class MatchExpression
+class COMMON_API MatchExpression
 {
   public:
     /**
@@ -72,7 +73,7 @@ class MatchExpression
         /**
          * Virtual destructor, for good manners...
          */
-	virtual ~Matchable() {}
+        virtual ~Matchable() {}
     };
 
     /**
@@ -147,7 +148,7 @@ class MatchExpression
 /**
  * Wrapper to make a string matchable with MatchExpression.
  */
-class MatchableString : public MatchExpression::Matchable
+class COMMON_API MatchableString : public MatchExpression::Matchable
 {
   private:
     std::string str;

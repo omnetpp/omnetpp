@@ -17,6 +17,7 @@
 
 #include <vector>
 #include <string>
+#include "commondefs.h"
 #include "inttypes.h"   // for int64
 
 typedef int64 file_offset_t;  // off_t on Linux
@@ -62,7 +63,7 @@ typedef int64 file_offset_t;  // off_t on Linux
  *
  * All functions throw class opp_runtime_error on error.
  */
-class FileReader
+class COMMON_API FileReader
 {
   private:
     // the file

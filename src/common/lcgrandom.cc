@@ -14,6 +14,7 @@
 
 #include "lcgrandom.h"
 
+
 LCGRandom::LCGRandom(int32 seed)
 {
     setSeed(seed);

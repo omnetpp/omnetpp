@@ -36,7 +36,7 @@
 #endif
 
 //XXX docu
-class DebugCall
+class COMMON_API DebugCall
 {
   private:
     static int depth;

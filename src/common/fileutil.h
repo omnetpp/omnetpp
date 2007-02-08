@@ -16,12 +16,13 @@
 #define __FILEUTIL_H
 
 #include <string>
+#include "commondefs.h"
 
-void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly);
-std::string directoryOf(const char *pathname);
-std::string tidyFilename(const char *pathname, bool slashes=false);
-std::string absolutePath(const char *pathname);
-std::string concatDirAndFile(const char *basedir, const char *pathname);
+COMMON_API void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly);
+COMMON_API std::string directoryOf(const char *pathname);
+COMMON_API std::string tidyFilename(const char *pathname, bool slashes=false);
+COMMON_API std::string absolutePath(const char *pathname);
+COMMON_API std::string concatDirAndFile(const char *basedir, const char *pathname);
 
 #endif
 

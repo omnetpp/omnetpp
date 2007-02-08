@@ -15,12 +15,16 @@
 #ifndef __LCGRANDOM_H
 #define __LCGRANDOM_H
 
+#include "commondefs.h"
 #include "inttypes.h"
 
 #define GLRAND_MAX  0x7ffffffeL  /* = 2**31-2 */
 
-// our RNG on [0,1) -- C's rand() is not to be trusted
-class LCGRandom
+/**
+ * Our RNG on [0,1), for the layouting library and other non-simulation purposes.
+ * C's rand() is not to be trusted.
+ */
+class COMMON_API LCGRandom
 {
     private:
         int32 seed;

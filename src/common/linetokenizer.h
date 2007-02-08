@@ -17,6 +17,7 @@
 
 #include <vector>
 #include <string>
+#include "commondefs.h"
 
 /**
  * Tokenizes a line. Uses space as separator, and also honors quoted substrings
@@ -25,7 +26,7 @@
  * be preceded by backslash. A backslash also needs to be quoted (ie.
  * duplicated) if it appears within a token.
  */
-class LineTokenizer
+class COMMON_API LineTokenizer
 {
   private:
     int lineBufferSize;

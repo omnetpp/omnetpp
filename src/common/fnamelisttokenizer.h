@@ -21,6 +21,7 @@
 
 #include <string>
 #include <vector>
+#include "commondefs.h"
 #include "commonutil.h"
 
 
@@ -36,7 +37,7 @@
  * may well contain backslashes, so interpreting backslashes would not be
  * very practical.)
  */
-class FilenamesListTokenizer
+class COMMON_API FilenamesListTokenizer
 {
   private:
     char *str; // copy of full string (will be corrupted during tokenization)
