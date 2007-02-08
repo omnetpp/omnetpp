@@ -16,6 +16,7 @@
 #define _COMMONUTIL_H_
 
 #include <assert.h>
+#include "commondefs.h"
 #include "exception.h"
 
 #ifdef NDEBUG

@@ -29,14 +29,19 @@ OBJS= lcgrandom.obj filereader.obj linetokenizer.obj \
 
 
 #
-# Targets (TBD: build dll)
+# Targets
 #
-all : common.lib
+all : common$(LIB_SUFFIX)
 
 common.lib : $(OBJS)
 	$(AR) /out:common.lib $(OBJS)
 	copy common.lib $(OMNETPP_LIB_DIR:/=\)
 	- copy /b common.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
+
+common.dll : $(OBJS)
+	$(SHLIB_LD) /out:common.dll /subsystem:console $(OBJS)
+	copy common.dll $(OMNETPP_LIB_DIR:/=\)
+	copy common.lib $(OMNETPP_LIB_DIR:/=\)
 
 matchexpression.tab.h matchexpression.tab.cc : matchexpression.y
 	$(YACC:/=\) -p matchexpressionyy -b matchexpression -d matchexpression.y
