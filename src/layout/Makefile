@@ -8,9 +8,12 @@ include ../../Makefile.inc
 # Local definitions
 #
 COPTS=$(CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR)/platdep
+LIBS= -lcommon
 
-OBJS= geometry.o graphcomponent.o heapembedding.o startreeembedding.o forcedirectedparametersbase.o forcedirectedparameters.o forcedirectedembedding.o graphlayouter.o
-LIBS= -llayout -lcommon
+OBJS= geometry.o graphcomponent.o heapembedding.o startreeembedding.o \
+      forcedirectedparametersbase.o forcedirectedparameters.o forcedirectedembedding.o \
+      graphlayouter.o
+
 
 #
 # Automatic rules

@@ -15,12 +15,12 @@ CFLAGS=$(CFLAGS) -DWITH_NETBUILDER
 # Local definitions
 #
 COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../sim  -I../common -DBUILDING_ENVIR -DHAVE_DLOPEN=$(HAVE_DLOPEN) /Fd"envir.pdb"
+IMPLIBS=../sim/sim_std.lib ../nedxml/nedxml.lib ../common/common.lib
 
 OBJS=args.obj cenvir.obj cinifile.obj main.obj omnetapp.obj fsutils.obj \
      speedmtr.obj filemgrs.obj akoutvectormgr.obj matchableobject.obj \
      akaroarng.obj cxmldoccache.obj ivfilemgr.obj eventlogwriter.obj
 
-LIBS=$(OMNETPP_SRC_DIR)/sim/sim_std.ilib
 
 #
 # Automatic rules
@@ -40,15 +40,15 @@ envir.lib : $(OBJS)
 	copy envir.lib $(OMNETPP_LIB_DIR:/=\)
 	- copy /b envir.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
 
-envir.ilib : $(OBJS)
+envir-implib : $(OBJS)
 	@rem How can one create only the import lib, without trying to link the DLL?
         @rem With this command, we need the '>nul' to hide the 'undefined symbol' errors
-	- $(SHLIB_LD) /implib:envir.ilib /subsystem:console /def:envir.def $(OBJS) >nul
+	- $(SHLIB_LD) /out:envir.dll /subsystem:console $(OBJS) >nul
 
-envir.dll : $(OBJS) $(LIBS)
-	$(SHLIB_LD) /out:envir.dll /implib:envir.ilib /subsystem:console /def:envir.def $(OBJS) $(LIBS)
+envir.dll : $(OBJS)
+	$(SHLIB_LD) /out:envir.dll /subsystem:console $(OBJS) $(IMPLIBS)
 	copy envir.dll $(OMNETPP_LIB_DIR:/=\)
-	copy envir.ilib $(OMNETPP_LIB_DIR:/=\)
+	copy envir.lib $(OMNETPP_LIB_DIR:/=\)
 
 eventlogwriter.cc eventlogwriter.h : eventlogentries.pl
 	$(PERL) eventlogentries.pl
@@ -59,8 +59,8 @@ depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc
 
 clean:
-	-del *.obj envir.lib envir.dll envir.ilib envir.exp 2> nul
-	-del *.ilk *.idb *.pdb *.pch 2> nul
+	-del *.obj envir.lib envir.dll envir.lib envir.exp 2> nul
+	-del $(VC_AUX_FILES) 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 akaroarng.obj: akaroarng.cc \
@@ -133,6 +133,7 @@ cenvir.obj: cenvir.cc \
   filemgrs.h \
   akaroarng.h \
   akoutvectormgr.h \
+  matchableobject.h \
   envdefs.h \
   ../../include/simkerneldefs.h \
   ../../include/simtime.h \
@@ -195,7 +196,53 @@ cxmldoccache.obj: cxmldoccache.cc \
   ../../include/errmsg.h \
   envdefs.h \
   ../../include/cenvir.h \
-  ../../include/opp_string.h
+  ../../include/opp_string.h \
+  ../nedxml/nedxmldefs.h
+eventlog.obj: eventlog.cc \
+  eventlogwriter.h \
+  eventlog.h \
+  ../../include/csimulation.h \
+  ../../include/cmodule.h \
+  ../../include/cmessage.h \
+  ../../include/cdisplaystring.h \
+  envdefs.h \
+  ../../include/cexception.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/util.h \
+  ../../include/globals.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/onstartup.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h \
+  ../../include/cownedobject.h \
+  ../../include/cenvir.h \
+  ../../include/cnamedobject.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/ccomponent.h \
+  ../../include/cgate.h \
+  ../../include/cpar.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cexpression.h \
+  ../../include/cmsgpar.h \
+  ../../include/cfunction.h
+eventlogwriter.obj: eventlogwriter.cc \
+  eventlogwriter.h \
+  envdefs.h \
+  ../../include/cexception.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/util.h
 filemgrs.obj: filemgrs.cc \
   ../../include/simkerneldefs.h \
   ../../include/cenvir.h \
@@ -324,6 +371,7 @@ omnetapp.obj: omnetapp.cc \
   args.h \
   omnetapp.h \
   fsutils.h \
+  eventlogwriter.h \
   ../../include/ccoroutine.h \
   ../../include/csimulation.h \
   ../../include/cscheduler.h \
@@ -333,6 +381,8 @@ omnetapp.obj: omnetapp.cc \
   ../../include/random.h \
   ../../include/crng.h \
   ../../include/cmodule.h \
+  ../../include/cmessage.h \
+  ../../include/cdisplaystring.h \
   ../../include/cxmlelement.h \
   cxmldoccache.h \
   ../../include/chasher.h \
@@ -364,7 +414,9 @@ omnetapp.obj: omnetapp.cc \
   ../../include/stlwrap.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
-  ../../include/cdefaultlist.h
+  ../../include/cdefaultlist.h \
+  ../../include/cmsgpar.h \
+  ../../include/cfunction.h
 speedmtr.obj: speedmtr.cc \
   speedmtr.h \
   ../../include/simkerneldefs.h \

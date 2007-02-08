@@ -24,6 +24,8 @@
 #include <map>
 #include <string>
 
+#include "layoutdefs.h"
+
 #include "inttypes.h"
 #include "lcgrandom.h"
 
@@ -36,7 +38,7 @@
 
 class cModule;
 
-class GraphLayouterEnvironment
+class LAYOUT_API GraphLayouterEnvironment
 {
     public:
         virtual ~GraphLayouterEnvironment() {}
@@ -56,7 +58,7 @@ class GraphLayouterEnvironment
 /**
  * Abstract base class for graph layouting algorithms.
  */
-class GraphLayouter
+class LAYOUT_API GraphLayouter
 {
   protected:
     LCGRandom lcgRandom;
@@ -140,7 +142,7 @@ class GraphLayouter
  *  - it is also problematic if the graph is not connected -- disjoint
  *    parts tend to drift far away
  */
-class BasicSpringEmbedderLayout : public GraphLayouter
+class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
 {
   protected:
     struct Anchor
@@ -249,7 +251,7 @@ class BasicSpringEmbedderLayout : public GraphLayouter
     //@}
 };
 
-class ForceDirectedGraphLayouter : public GraphLayouter
+class LAYOUT_API ForceDirectedGraphLayouter : public GraphLayouter
 {
   protected:
     /**

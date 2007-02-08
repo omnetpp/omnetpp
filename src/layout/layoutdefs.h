@@ -1,9 +1,7 @@
 //==========================================================================
-//  NEDXMLDEFS.H - part of
+//  LAYOUTDEFS.H - part of
 //                     OMNeT++/OMNEST
 //             Discrete System Simulation in C++
-//
-//  General defines for the Envir library
 //
 //==========================================================================
 
@@ -14,15 +12,15 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __NEDXMLDEFS_H
-#define __NEDXMLDEFS_H
+#ifndef __LAYOUTDEFS_H
+#define __LAYOUTDEFS_H
 
 #include "platdefs.h"
 
-#ifdef BUILDING_NEDXML
-#  define NEDXML_API  OPP_DLLEXPORT
+#ifdef BUILDING_LAYOUT
+#  define LAYOUT_API  OPP_DLLEXPORT
 #else
-#  define NEDXML_API  OPP_DLLIMPORT
+#  define LAYOUT_API  OPP_DLLIMPORT
 #endif
 
 #endif

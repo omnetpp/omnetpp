@@ -11,8 +11,9 @@ CFLAGS=$(CFLAGS) -DWIN32_DLL
 # Local definitions
 #
 COPTS=$(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_SIM /Fd"sim_std.pdb"
+IMPLIBS=../envir/envir.lib ../common/common.lib
 
-CPPOBJS_STD=\
+OBJS_STD=\
     carray.obj cbasicchannel.obj cboolpar.obj cchannel.obj \
     cclassfactory.obj ccomponent.obj ccomponenttype.obj \
     ccompoundmodule.obj ccoroutine.obj cdefaultlist.obj cdensity.obj \
@@ -30,7 +31,7 @@ CPPOBJS_STD=\
     simtime.obj task.obj util.obj  expr.tab.obj nedsupport.obj sim_std_m.obj \
     ccommbuffer.obj cparsimcomm.obj
 
-CPPOBJS_NETBUILDER=\
+OBJS_NETBUILDER=\
     netbuilder\cexpressionbuilder.obj \
     netbuilder\cneddeclaration.obj \
     netbuilder\cnedloader.obj \
@@ -38,7 +39,7 @@ CPPOBJS_NETBUILDER=\
     netbuilder\cdynamicmoduletype.obj \
     netbuilder\cnednetworkbuilder.obj
 
-CPPOBJS_PARSIM=\
+OBJS_PARSIM=\
     parsim\cmemcommbuffer.obj \
     parsim\cparsimpartition.obj parsim\cplaceholdermod.obj parsim\cproxygate.obj \
     parsim\cparsimprotocolbase.obj parsim\cnosynchronization.obj \
@@ -48,25 +49,26 @@ CPPOBJS_PARSIM=\
     parsim\cfilecommbuffer.obj parsim\cnamedpipecomm-win.obj parsim\parsimutil.obj \
     parsim\creceivedexception.obj
 
-CPPOBJS_MPI=\
+OBJS_MPI=\
     parsim\cmpicomm.obj parsim\cmpicommbuffer.obj
 
-CPPOBJS= $(CPPOBJS_STD)
+OBJS= $(OBJS_STD)
 
 !if "$(WITH_NETBUILDER)"=="yes"
-CPPOBJS= $(CPPOBJS) $(CPPOBJS_NETBUILDER)
+OBJS= $(OBJS) $(OBJS_NETBUILDER)
 COPTS= $(COPTS) -I../nedxml
+IMPLIBS= $(IMPLIBS) ../nedxml/nedxml.lib
 !endif
 
 !if "$(WITH_PARSIM)"=="yes"
-CPPOBJS= $(CPPOBJS) $(CPPOBJS_PARSIM)
+OBJS= $(OBJS) $(OBJS_PARSIM)
 !if "$(HAVE_MPI)"=="yes"
-CPPOBJS= $(CPPOBJS) $(CPPOBJS_MPI)
+OBJS= $(OBJS) $(OBJS_MPI)
 COPTS= $(COPTS) $(MPI_CFLAGS)
+IMPLIBS= $(IMPLIBS) $(MPI_LIBS)
 !endif
 !endif
 
-LIBS= $(OMNETPP_SRC_DIR)/envir/envir.ilib
 
 #
 # Automatic rules
@@ -83,15 +85,15 @@ default : sim_std
 
 sim_std : sim_std$(LIB_SUFFIX)
 
-sim_std.lib : $(CPPOBJS)
-	$(AR) /out:sim_std.lib $(CPPOBJS)
+sim_std.lib : $(OBJS)
+	$(AR) /out:sim_std.lib $(OBJS)
 	copy sim_std.lib $(OMNETPP_LIB_DIR:/=\)
 	- copy /b sim_std.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
 
-sim_std.dll : $(CPPOBJS) $(LIBS)
-	$(SHLIB_LD) /out:sim_std.dll /implib:sim_std.ilib /subsystem:console /def:sim_std.def $(CPPOBJS) $(LIBS)
+sim_std.dll : $(OBJS)
+	$(SHLIB_LD) /out:sim_std.dll /subsystem:console $(OBJS) $(IMPLIBS)
 	copy sim_std.dll $(OMNETPP_LIB_DIR:/=\)
-	copy sim_std.ilib $(OMNETPP_LIB_DIR:/=\)
+	copy sim_std.lib $(OMNETPP_LIB_DIR:/=\)
 
 expr.tab.h expr.tab.cc : expr.y
 	$(YACC:/=\) -p expryy -b expr -d expr.y
@@ -113,8 +115,8 @@ depend:
 clean:
 	-del expr.tab.h expr.tab.cc lex.expryy.cc
 	-del *.obj netbuilder\*.obj parsim\*.obj
-	-del sim_std.lib sim_std.dll sim_std.ilib sim_std.exp 2> nul
-	-del *.ilk *.idb *.pdb *.pch 2> nul
+	-del sim_std.lib sim_std.dll sim_std.lib sim_std.exp 2> nul
+	-del $(VC_AUX_FILES) 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 carray.obj: carray.cc \
@@ -537,7 +539,7 @@ cdynamicexpression.obj: cdynamicexpression.cc \
   ../../include/cfunction.h \
   ../../include/cnedfunction.h \
   ../../include/cexception.h \
-  ../../include/expryydefs.h \
+  expryydefs.h \
   ../../include/cpar.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
@@ -643,6 +645,7 @@ cfunction.obj: cfunction.cc \
   ../../include/cexception.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
+  ../../include/random.h \
   ../../include/ccommbuffer.h \
   parsim/cplaceholdermod.h \
   ../../include/simkerneldefs.h \
@@ -658,15 +661,16 @@ cfunction.obj: cfunction.cc \
   ../../include/regmacros.h \
   ../../include/cclassfactory.h \
   ../../include/opp_string.h \
+  ../../include/csimulation.h \
   ../../include/cmodule.h \
+  ../../include/crng.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
-  ../../include/csimulation.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
-  ../../include/cexpression.h \
-  ../../include/cmsgheap.h \
-  ../../include/ccoroutine.h
+  ../../include/cexpression.h
 cgate.obj: cgate.cc \
   ../../include/cmessage.h \
   ../../include/cmodule.h \
@@ -1696,7 +1700,7 @@ errmsg.obj: errmsg.cc \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h
 expr.tab.obj: expr.tab.cc \
-  ../../include/expryydefs.h \
+  expryydefs.h \
   ../../include/cdynamicexpression.h \
   ../../include/cpar.h \
   ../../include/cxmlelement.h \
@@ -1748,7 +1752,7 @@ globals.obj: globals.cc \
   ../../include/cexpression.h \
   ../../include/cparvalue.h
 lex.expryy.obj: lex.expryy.cc \
-  ../../include/expryydefs.h \
+  expryydefs.h \
   ../../include/cexception.h \
   expr.tab.h \
   ../../include/util.h \
@@ -1896,7 +1900,6 @@ sim_std_m.obj: sim_std_m.cc \
   ../../include/distrib.h \
   ../../include/envirext.h \
   ../../include/errmsg.h \
-  ../../include/expryydefs.h \
   ../../include/globals.h \
   ../../include/index.h \
   ../../include/mersennetwister.h \
@@ -1914,11 +1917,20 @@ sim_std_m.obj: sim_std_m.cc \
 simtime.obj: simtime.cc \
   ../../include/simtime.h \
   ../../include/cexception.h \
+  ../../include/cpar.h \
   ../../include/simkerneldefs.h \
   ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
-  ../../include/util.h
+  ../../include/util.h \
+  ../../include/cownedobject.h \
+  ../../include/cexpression.h \
+  ../../include/cenvir.h \
+  ../../include/cnamedobject.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h
 task.obj: task.cc \
   task.h
 util.obj: util.cc \

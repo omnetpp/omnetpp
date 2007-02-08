@@ -11,8 +11,7 @@ CFLAGS=$(CFLAGS) -DWIN32_DLL
 # Local definitions
 #
 COPTS=$(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_NEDXML /Fd"nedxml.pdb"
-
-LIBS=../common/common.lib $(XML_LIBS)
+IMPLIBS=../common/common.lib $(XML_LIBS)
 
 
 #OBJS= nedelements.obj nedelement.obj nederror.obj \
@@ -55,7 +54,7 @@ all : nedtool.exe nedxml$(LIB_SUFFIX)
 	copy nedc.bat $(OMNETPP_BIN_DIR:/=\)
 
 nedtool.exe : nedxml$(LIB_SUFFIX) nedtool.obj
-	$(LINK) $(LDFLAGS) /nologo /out:nedtool.exe nedtool.obj nedxml.lib $(LIBS)
+	$(LINK) $(LDFLAGS) /nologo /out:nedtool.exe nedtool.obj nedxml.lib $(IMPLIBS)
 	copy nedtool.exe $(OMNETPP_BIN_DIR:/=\)
 
 nedxml.lib : $(OBJS)
@@ -64,7 +63,7 @@ nedxml.lib : $(OBJS)
 	- copy /b nedxml.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
 
 nedxml.dll : $(OBJS)
-	$(SHLIB_LD) /out:nedxml.dll /subsystem:console $(OBJS) $(LIBS)
+	$(SHLIB_LD) /out:nedxml.dll /subsystem:console $(OBJS) $(IMPLIBS)
 	copy nedxml.dll $(OMNETPP_LIB_DIR:/=\)
 	copy nedxml.lib $(OMNETPP_LIB_DIR:/=\)
 
@@ -115,10 +114,9 @@ depend:
 	$(MAKEDEPEND) -I. -fMakefile.vc -- *.cc
 
 clean:
-	- del *.obj *.lib *.dll 2> nul
-	- del *.ilk *.idb *.pdb *.suo *.exp *.sln 2> nul
-	- del *.tab.* lex.*yy.* 2> nul
-	- del nedtool.exe 2> nul
+	-del *.exe *.obj *.lib *.dll 2> nul
+	-del *.tab.* lex.*yy.* 2> nul
+	-del $(VC_AUX_FILES) 2> nul
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

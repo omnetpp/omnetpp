@@ -10,10 +10,13 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"layout.pdb"
+COPTS=$(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_LAYOUT /Fd"layout.pdb"
+IMPLIBS= ../common/common.lib
 
-OBJS= geometry.obj graphcomponent.obj heapembedding.obj startreeembedding.obj forcedirectedparametersbase.obj forcedirectedparameters.obj forcedirectedembedding.obj graphlayouter.obj
-LIBS= layout.lib ../common/common.lib
+OBJS= geometry.obj graphcomponent.obj heapembedding.obj startreeembedding.obj \
+      forcedirectedparametersbase.obj forcedirectedparameters.obj forcedirectedembedding.obj \
+      graphlayouter.obj
+
 
 #
 # Automatic rules
@@ -24,21 +27,26 @@ LIBS= layout.lib ../common/common.lib
 	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
 
 #
-# Targets (TBD: build dll)
+# Targets
 #
-all : layout.lib
+all : layout$(LIB_SUFFIX)
 
 layout.lib : $(OBJS)
 	$(AR) /out:layout.lib $(OBJS)
 	copy layout.lib $(OMNETPP_LIB_DIR:/=\)
 	- copy /b layout.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
 
+layout.dll : $(OBJS)
+	$(SHLIB_LD) /out:layout.dll /subsystem:console $(OBJS) $(IMPLIBS)
+	copy layout.dll $(OMNETPP_LIB_DIR:/=\)
+	copy layout.lib $(OMNETPP_LIB_DIR:/=\)
+
 depend:
 	$(MAKEDEPEND) -I. -fMakefile.vc -- *.cc
 
 clean:
-	- del *.obj 2> nul
-	- del *.ilk *.idb *.pdb *.lib *.exe 2> nul
+	-del *.obj 2> nul
+	-del $(VC_AUX_FILES) 2> nul
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
@@ -64,6 +72,7 @@ graphlayouter.obj: graphlayouter.cc \
   graphlayouter.h \
   startreeembedding.h \
   heapembedding.h \
+  layoutdefs.h \
   forcedirectedembedding.h \
   forcedirectedparameters.h \
   graphcomponent.h \

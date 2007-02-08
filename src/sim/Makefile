@@ -9,7 +9,7 @@ include ../../Makefile.inc
 #
 COPTS=$(CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -DBUILDING_SIM $(MPI_CFLAGS)
 
-CPPOBJS_STD=\
+OBJS_STD=\
     carray.o cbasicchannel.o cboolpar.o cchannel.o \
     cclassfactory.o ccomponent.o ccomponenttype.o \
     ccompoundmodule.o ccoroutine.o cdefaultlist.o cdensity.o \
@@ -27,7 +27,7 @@ CPPOBJS_STD=\
     simtime.o task.o util.o expr.tab.o nedsupport.o sim_std_m.o \
     ccommbuffer.o cparsimcomm.o
 
-CPPOBJS_NETBUILDER=\
+OBJS_NETBUILDER=\
     netbuilder/cexpressionbuilder.o \
     netbuilder/cneddeclaration.o \
     netbuilder/cnedloader.o \
@@ -35,7 +35,7 @@ CPPOBJS_NETBUILDER=\
     netbuilder/cdynamicmoduletype.o \
     netbuilder/cnednetworkbuilder.o
 
-CPPOBJS_PARSIM=\
+OBJS_PARSIM=\
     parsim\cmemcommbuffer.o \
     parsim\cparsimpartition.o parsim/cplaceholdermod.o parsim/cproxygate.o \
     parsim/cparsimprotocolbase.o parsim/cnosynchronization.o \
@@ -45,20 +45,20 @@ CPPOBJS_PARSIM=\
     parsim/cfilecommbuffer.o parsim/cnamedpipecomm-win.o parsim/parsimutil.o \
     parsim/creceivedexception.o
 
-CPPOBJS_MPI=\
+OBJS_MPI=\
     parsim/cmpicomm.o parsim/cmpicommbuffer.o
 
-CPPOBJS= $(CPPOBJS_STD)
+OBJS= $(OBJS_STD)
 
 ifeq ($(WITH_NETBUILDER),yes)
-CPPOBJS += $(CPPOBJS_NETBUILDER)
+OBJS += $(OBJS_NETBUILDER)
 COPTS += -I../nedxml
 endif
 
 ifeq ($(WITH_PARSIM),yes)
-CPPOBJS += $(CPPOBJS_PARSIM)
+OBJS += $(OBJS_PARSIM)
 ifeq ($(HAVE_MPI),yes)
-CPPOBJS += $(CPPOBJS_MPI)
+OBJS += $(OBJS_MPI)
 COPTS += $(MPI_CFLAGS)
 endif
 endif
@@ -78,13 +78,13 @@ default : sim_std
 
 sim_std : libsim_std$(LIB_SUFFIX)
 
-libsim_std$(A_LIB_SUFFIX) : $(CPPOBJS)
-	$(AR) libsim_std$(A_LIB_SUFFIX) $(CPPOBJS)
+libsim_std$(A_LIB_SUFFIX) : $(OBJS)
+	$(AR) libsim_std$(A_LIB_SUFFIX) $(OBJS)
 	$(RANLIB) libsim_std$(A_LIB_SUFFIX)
 	../utils/install-lib libsim_std$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libsim_std$(A_LIB_SUFFIX)
 
-libsim_std$(SO_LIB_SUFFIX) : $(CPPOBJS)
-	$(SHLIB_LD) -o libsim_std$(SO_LIB_SUFFIX) $(CPPOBJS)
+libsim_std$(SO_LIB_SUFFIX) : $(OBJS)
+	$(SHLIB_LD) -o libsim_std$(SO_LIB_SUFFIX) $(OBJS)
 	../utils/install-lib libsim_std$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libsim_std$(SO_LIB_SUFFIX)
 
 expr.tab.h expr.tab.cc : expr.y

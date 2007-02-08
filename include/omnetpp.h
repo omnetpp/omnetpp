@@ -86,7 +86,6 @@
 #include "distrib.h"
 #include "envirext.h"
 #include "errmsg.h"
-#include "expryydefs.h"
 #include "globals.h"
 #include "index.h"
 #include "mersennetwister.h"

@@ -15,9 +15,8 @@
 #ifndef _COMMONDEFS_H_
 #define _COMMONDEFS_H_
 
-#include "platdefs.h"  // for OPP_DLLIMPORT, OPP_DLLEXPORT
+#include "platdefs.h"
 
-// OPP_DLLIMPORT/EXPORT are empty if non-Windows, non-dll, etc.
 #ifdef BUILDING_COMMON
 #  define COMMON_API  OPP_DLLEXPORT
 #else

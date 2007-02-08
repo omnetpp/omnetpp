@@ -68,6 +68,9 @@ void yyrestart(FILE *);
 int yylex();
 void yyerror (const char *s);
 
+LineColumn pos, prevpos;
+
+
 #include "cdynamicexpression.h"
 #include "cpar.h"
 #include "cxmlelement.h"
@@ -78,6 +81,7 @@ void yyerror (const char *s);
 #include "nedsupport.h"
 #include "stringutil.h"
 #include "unitconversion.h"
+
 
 static cDynamicExpression::Elem *e;
 

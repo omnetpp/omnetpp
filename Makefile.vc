@@ -61,7 +61,10 @@ $(SAMPLES) clean depend : makefiles
 $(SAMPLES) : rundemo
 
 !if "$(LIB_SUFFIX)"==".dll"
-sim : envir_ilib
+sim : nedxml envir-implib
+envir : sim envir-implib
+tkenv cmdenv : envir
+tkenv : layout
 !endif
 
 #
@@ -71,9 +74,9 @@ $(BASE):
 	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SRC_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
 
-envir_ilib:
+envir-implib:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SRC_DIR:/=\)\envir && $(MAKE) $(MOPTS) $(MAKEFILE) envir.ilib
+	cd /d $(OMNETPP_SRC_DIR:/=\)\envir && $(MAKE) $(MOPTS) $(MAKEFILE) envir-implib
 
 #
 # Native libs for the UI

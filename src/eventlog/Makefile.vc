@@ -12,8 +12,8 @@ CFLAGS=$(CFLAGS) -DWIN32_DLL
 #
 COPTS=$(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"eventlog.pdb"
 
-OBJS= ievent.obj ieventlog.obj eventlogfacade.obj eventlogtablefacade.obj sequencechartfacade.obj eventlog.obj eventlogindex.obj messagedependency.obj event.obj eventlogentry.obj eventlogentries.obj filteredevent.obj filteredeventlog.obj eventlogentryfactory.obj stringpool.obj
-LIBS= eventlog.lib ../common/common.lib
+OBJS=ievent.obj ieventlog.obj eventlogfacade.obj eventlogtablefacade.obj sequencechartfacade.obj eventlog.obj eventlogindex.obj messagedependency.obj event.obj eventlogentry.obj eventlogentries.obj filteredevent.obj filteredeventlog.obj eventlogentryfactory.obj stringpool.obj
+IMPLIBS=../common/common.lib
 
 #
 # Automatic rules
@@ -24,9 +24,9 @@ LIBS= eventlog.lib ../common/common.lib
 	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
 
 #
-# Targets (TBD: build dll)
+# Targets
 #
-all : eventlogentries.cc eventlog.lib eventlogtool.exe
+all : eventlogentries.cc eventlog$(LIB_SUFFIX) eventlogtool.exe
 
 eventlogentries.cc eventlogentries.h eventlogfactory.cc : eventlogentries.txt eventlogentries.pl
 	$(PERL) eventlogentries.pl
@@ -36,16 +36,21 @@ eventlog.lib : $(OBJS)
 	copy eventlog.lib $(OMNETPP_LIB_DIR:/=\)
 	- copy /b eventlog.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
 
-eventlogtool.exe : eventlogtool.obj $(LIBS)
-	$(LINK) $(LDFLAGS) /nologo /out:eventlogtool.exe eventlogtool.obj $(LIBS)
+eventlog.dll : $(OBJS)
+	$(SHLIB_LD) /out:eventlog.dll /subsystem:console $(OBJS) $(IMPLIBS)
+	copy eventlog.dll $(OMNETPP_LIB_DIR:/=\)
+	copy eventlog.lib $(OMNETPP_LIB_DIR:/=\)
+
+eventlogtool.exe : eventlogtool.obj eventlog$(LIB_SUFFIX)
+	$(LINK) $(LDFLAGS) /nologo /out:eventlogtool.exe eventlogtool.obj eventlog.lib $(IMPLIBS)
 	copy eventlogtool.exe $(OMNETPP_BIN_DIR:/=\)
 
 depend:
 	$(MAKEDEPEND) -I. -fMakefile.vc -- *.cc
 
 clean:
-	- del *.obj 2> nul
-	- del *.ilk *.idb *.pdb *.lib *.exe 2> nul
+	-del *.obj 2> nul
+	-del $(VC_AUX_FILES) 2> nul
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
@@ -121,6 +126,7 @@ eventlogtablefacade.obj: eventlogtablefacade.cc \
   eventlogentries.h \
   eventlogfacade.h
 eventlogtool.obj: eventlogtool.cc \
+  ../utils/ver.h \
   eventlogindex.h \
   eventlog.h \
   filteredeventlog.h \
