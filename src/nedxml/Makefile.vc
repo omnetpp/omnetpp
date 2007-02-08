@@ -69,7 +69,8 @@ nedxml.dll : $(OBJS)
 	copy nedxml.lib $(OMNETPP_LIB_DIR:/=\)
 
 nedtool.obj : nedtool.cc
-	$(CXX) $(COPTS) -I"$(OMNETPP_INCL_DIR)" -I. /c /Tp nedtool.cc
+	@: note: nedtool.cc must be compiled *without* -DBUILDING_NEDXML
+	$(CXX) $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /c /Tp nedtool.cc
 
 nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl ned2.dtd
 	$(PERL) dtdclassgen.pl ned2.dtd
@@ -150,6 +151,44 @@ cppmsggenerator.obj: cppmsggenerator.cc \
   nedcompiler.h \
   nedresourcecache.h \
   nedcomponent.h
+lex.msg2yy.obj: lex.msg2yy.cc \
+  nedyydefs.h \
+  nederror.h \
+  msg2.tab.h \
+  nedxmldefs.h \
+  nedelement.h
+lex.ned1yy.obj: lex.ned1yy.cc \
+  nedyydefs.h \
+  nederror.h \
+  ned1.tab.h \
+  nedxmldefs.h \
+  nedelement.h
+lex.ned2yy.obj: lex.ned2yy.cc \
+  nedyydefs.h \
+  nederror.h \
+  ned2.tab.h \
+  nedxmldefs.h \
+  nedelement.h
+msg2.tab.obj: msg2.tab.cc \
+  nedyydefs.h \
+  nederror.h \
+  nedparser.h \
+  nedfilebuffer.h \
+  nedelements.h \
+  nedutil.h \
+  nedyylib.h \
+  nedxmldefs.h \
+  nedelement.h
+ned1.tab.obj: ned1.tab.cc \
+  nedyydefs.h \
+  nedutil.h \
+  nederror.h \
+  nedparser.h \
+  nedfilebuffer.h \
+  nedelements.h \
+  nedyylib.h \
+  nedxmldefs.h \
+  nedelement.h
 ned1generator.obj: ned1generator.cc \
   ned1generator.h \
   nedutil.h \
@@ -157,6 +196,16 @@ ned1generator.obj: ned1generator.cc \
   nederror.h \
   nedelement.h \
   nedxmldefs.h
+ned2.tab.obj: ned2.tab.cc \
+  nedyydefs.h \
+  nederror.h \
+  nedparser.h \
+  nedfilebuffer.h \
+  nedelements.h \
+  nedutil.h \
+  nedyylib.h \
+  nedxmldefs.h \
+  nedelement.h
 ned2generator.obj: ned2generator.cc \
   ned2generator.h \
   nederror.h \

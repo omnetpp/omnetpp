@@ -25,9 +25,9 @@
 using std::ostream;
 
 
-NEDXML_API long NEDElement::lastid = 0;
-NEDXML_API long NEDElement::numcreated = 0;
-NEDXML_API long NEDElement::numexisting = 0;
+long NEDElement::lastid = 0;
+long NEDElement::numcreated = 0;
+long NEDElement::numexisting = 0;
 
 bool NEDElement::stringToBool(const char *s)
 {
