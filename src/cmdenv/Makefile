@@ -52,6 +52,8 @@ cmdenv.o: cmdenv.cc \
   ../envir/args.h \
   ../envir/speedmtr.h \
   ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/csimulation.h \
   ../envir/omnetapp.h \
   ../../include/util.h \

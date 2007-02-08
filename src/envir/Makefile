@@ -11,7 +11,7 @@ COPTS=$(CFLAGS) $(AKAROA_CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/pla
 
 OBJS=args.o cenvir.o cinifile.o main.o omnetapp.o fsutils.o \
      speedmtr.o filemgrs.o akoutvectormgr.o matchableobject.o \
-     akaroarng.o cxmldoccache.o ivfilemgr.o
+     akaroarng.o cxmldoccache.o ivfilemgr.o eventlogwriter.o
 
 #
 # Automatic rules
@@ -35,6 +35,11 @@ libenvir$(SO_LIB_SUFFIX) : $(OBJS)
 	$(SHLIB_LD) -o libenvir$(SO_LIB_SUFFIX) $(OBJS)
 	../utils/install-lib libenvir$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libenvir$(SO_LIB_SUFFIX)
 
+eventlogwriter.cc eventlogwriter.h : eventlogentries.pl
+	$(PERL) eventlogentries.pl
+
+omnetapp.o: eventlogwriter.h
+
 depend:
 	$(MAKEDEPEND) -I. -I../../include -- *.cc
 	$(MAKEDEPEND) -I. -I../../include -fMakefile.in -- *.cc
@@ -49,6 +54,8 @@ akaroarng.o: akaroarng.cc \
   ../../include/cexception.h \
   akaroarng.h \
   ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
   ../../include/crng.h \
@@ -63,6 +70,8 @@ akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/cstat.h \
   akoutvectormgr.h \
   ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/carray.h \
   ../../include/globals.h \
   ../../include/cexception.h \
@@ -93,7 +102,9 @@ akoutvectormgr.o: akoutvectormgr.cc \
 args.o: args.cc \
   args.h \
   envdefs.h \
-  ../../include/simkerneldefs.h
+  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h
 cenvir.o: cenvir.cc \
   args.h \
   ../../include/distrib.h \
@@ -107,8 +118,11 @@ cenvir.o: cenvir.cc \
   filemgrs.h \
   akaroarng.h \
   akoutvectormgr.h \
+  matchableobject.h \
   envdefs.h \
   ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/random.h \
   ../../include/csimulation.h \
   ../../include/crng.h \
@@ -137,17 +151,19 @@ cenvir.o: cenvir.cc \
   ../../include/cexpression.h
 cinifile.o: cinifile.cc \
   ../../include/cenvir.h \
-  ../../include/util.h \
   cinifile.h \
   ../../include/cexception.h \
   fsutils.h \
   ../../include/cstrtokenizer.h \
   ../../include/simkerneldefs.h \
-  ../../include/errmsg.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   envdefs.h \
   ../../include/cconfig.h \
   ../../include/opp_string.h \
   ../../include/cobject.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h
 cxmldoccache.o: cxmldoccache.cc \
@@ -160,6 +176,8 @@ cxmldoccache.o: cxmldoccache.cc \
   ../../include/util.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   envdefs.h \
   ../../include/cenvir.h \
@@ -174,6 +192,8 @@ filemgrs.o: filemgrs.cc \
   filemgrs.h \
   ../../include/ccomponenttype.h \
   ivfilemgr.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/carray.h \
   ../../include/globals.h \
   ../../include/cexception.h \
@@ -209,6 +229,8 @@ fsutils.o: fsutils.cc \
   ../../include/opp_string.h \
   ../../include/simkerneldefs.h \
   ../../include/errmsg.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/cnamedobject.h \
@@ -225,6 +247,8 @@ ivfilemgr.o: ivfilemgr.cc \
   ../../include/cmodule.h \
   ../../include/cstat.h \
   ivfilemgr.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/carray.h \
   ../../include/globals.h \
   ../../include/cexception.h \
@@ -258,6 +282,8 @@ main.o: main.cc \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
@@ -272,6 +298,8 @@ matchableobject.o: matchableobject.cc \
   ../../include/util.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
@@ -292,12 +320,16 @@ omnetapp.o: omnetapp.cc \
   ../../include/random.h \
   ../../include/crng.h \
   ../../include/cmodule.h \
+  ../../include/cmessage.h \
+  ../../include/cdisplaystring.h \
   ../../include/cxmlelement.h \
   cxmldoccache.h \
   ../../include/chasher.h \
   ../../include/cparsimcomm.h \
   envdefs.h \
   ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/carray.h \
   ../../include/globals.h \
   ../../include/cenvir.h \
@@ -322,8 +354,11 @@ omnetapp.o: omnetapp.cc \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
-  ../../include/platdep/inttypes.h
+  ../../include/cmsgpar.h \
+  ../../include/cfunction.h
 speedmtr.o: speedmtr.cc \
   speedmtr.h \
   ../../include/simkerneldefs.h \
-  envdefs.h
+  envdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h

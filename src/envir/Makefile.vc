@@ -53,6 +53,8 @@ envir.dll : $(OBJS) $(LIBS)
 eventlogwriter.cc eventlogwriter.h : eventlogentries.pl
 	$(PERL) eventlogentries.pl
 
+omnetapp.o: eventlogwriter.h
+
 depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc
 

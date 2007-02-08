@@ -685,7 +685,7 @@ void TOmnetApp::displayStringChanged(cGate *gate)
     if (feventlog)
     {
         EventLogWriter::recordConnectionDisplayStringChangedEntry_sm_sg_d(feventlog,
-            gate->ownerModule()->id(), gate->id(), gate->displayString().getString());
+            gate->ownerModule()->id(), gate->id(), gate->displayString().toString());
     }
 }
 
@@ -694,7 +694,7 @@ void TOmnetApp::displayStringChanged(cModule *submodule)
     if (feventlog)
     {
         EventLogWriter::recordModuleDisplayStringChangedEntry_id_d(feventlog,
-            submodule->id(), submodule->displayString().getString());
+            submodule->id(), submodule->displayString().toString());
     }
 }
 

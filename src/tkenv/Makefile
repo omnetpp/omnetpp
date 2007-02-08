@@ -97,6 +97,7 @@ inspector.o: inspector.cc \
   ../../include/cllist.h \
   ../../include/clongpar.h \
   ../../include/cmersennetwister.h \
+  ../../include/simtime.h \
   ../../include/cmessage.h \
   ../../include/cmsgpar.h \
   ../../include/cmodule.h \
@@ -191,6 +192,7 @@ inspfactory.o: inspfactory.cc \
   ../../include/cllist.h \
   ../../include/clongpar.h \
   ../../include/cmersennetwister.h \
+  ../../include/simtime.h \
   ../../include/cmessage.h \
   ../../include/cmsgpar.h \
   ../../include/cmodule.h \
@@ -248,12 +250,67 @@ inspfactory.o: inspfactory.cc \
   ../envir/envdefs.h \
   tkutil.h \
   tkdefs.h
+layouterenv.o: layouterenv.cc \
+  layouterenv.h \
+  tklib.h \
+  modinsp.h \
+  ../../include/cmodule.h \
+  ../../include/cdisplaystring.h \
+  ../../include/csimplemodule.h \
+  ../../include/cchannel.h \
+  ../../include/cgate.h \
+  ../../include/cmessage.h \
+  ../../include/cpar.h \
+  ../../include/carray.h \
+  ../../include/coutvect.h \
+  ../../include/cstat.h \
+  ../../include/cdensity.h \
+  ../../include/cqueue.h \
+  ../../include/ccompoundmodule.h \
+  ../../include/cbasicchannel.h \
+  inspector.h \
+  ../envir/omnetapp.h \
+  ../../include/ccomponent.h \
+  ../../include/ccomponenttype.h \
+  ../../include/simkerneldefs.h \
+  ../../include/cownedobject.h \
+  ../../include/cdefaultlist.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/cenvir.h \
+  ../../include/util.h \
+  ../../include/cnamedobject.h \
+  ../../include/cexception.h \
+  ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/opp_string.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/globals.h \
+  ../../include/cparvalue.h \
+  ../../include/onstartup.h \
+  ../../include/cclassfactory.h \
+  ../../include/cexpression.h \
+  ../../include/cmsgpar.h \
+  ../../include/csimulation.h \
+  ../../include/cfunction.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
+  tkutil.h \
+  tkdefs.h \
+  ../envir/args.h \
+  ../envir/envdefs.h \
+  ../../include/envirext.h \
+  ../../include/cconfig.h
 modinsp.o: modinsp.cc \
   modinsp.h \
   tkapp.h \
   tklib.h \
   inspfactory.h \
   arrow.h \
+  layouterenv.h \
   ../../include/csimplemodule.h \
   ../../include/cchannel.h \
   ../../include/cgate.h \
@@ -276,6 +333,8 @@ modinsp.o: modinsp.cc \
   ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
   ../../include/cdefaultlist.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/cenvir.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
@@ -339,6 +398,7 @@ objinsp.o: objinsp.cc \
   ../../include/cllist.h \
   ../../include/clongpar.h \
   ../../include/cmersennetwister.h \
+  ../../include/simtime.h \
   ../../include/cmessage.h \
   ../../include/cmsgpar.h \
   ../../include/cmodule.h \
@@ -416,6 +476,8 @@ statinsp.o: statinsp.cc \
   ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
   ../../include/cdefaultlist.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/cenvir.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
@@ -466,6 +528,8 @@ tkapp.o: tkapp.cc \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
@@ -523,6 +587,8 @@ tkcmd.o: tkcmd.cc \
   visitor.h \
   ../envir/fsutils.h \
   ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/cownedobject.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
@@ -571,6 +637,8 @@ tklib.o: tklib.cc \
   ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
@@ -591,6 +659,8 @@ tkutil.o: tkutil.cc \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
@@ -630,6 +700,8 @@ visitor.o: visitor.cc \
   ../../include/cgate.h \
   visitor.h \
   ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/util.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \

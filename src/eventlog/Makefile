@@ -153,6 +153,7 @@ eventlogtablefacade.o: eventlogtablefacade.cc \
   eventlogentries.h \
   eventlogfacade.h
 eventlogtool.o: eventlogtool.cc \
+  ../utils/ver.h \
   ../common/filereader.h \
   ../common/linetokenizer.h \
   eventlogindex.h \

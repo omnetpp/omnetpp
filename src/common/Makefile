@@ -63,10 +63,9 @@ exception.o: exception.cc \
 fileglobber.o: fileglobber.cc \
   fileglobber.h
 filereader.o: filereader.cc \
+  commonutil.h \
   filereader.h \
   exception.h
-filetokenizer.o: filetokenizer.cc \
-  filetokenizer.h
 fileutil.o: fileutil.cc \
   fileutil.h
 fnamelisttokenizer.o: fnamelisttokenizer.cc \

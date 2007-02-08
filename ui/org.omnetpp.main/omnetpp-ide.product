@@ -28,7 +28,6 @@
       </win>
    </launcher>
 
-
    <plugins>
       <plugin id="com.ibm.icu"/>
       <plugin id="org.apache.lucene"/>
@@ -36,7 +35,7 @@
       <plugin id="org.eclipse.ant.core"/>
       <plugin id="org.eclipse.cdt"/>
       <plugin id="org.eclipse.cdt.core"/>
-      <plugin id="org.eclipse.cdt.core.win32" fragment="true"/>
+      <plugin id="org.eclipse.cdt.core.win32"/>
       <plugin id="org.eclipse.cdt.debug.core"/>
       <plugin id="org.eclipse.cdt.debug.mi.core"/>
       <plugin id="org.eclipse.cdt.debug.mi.ui"/>
@@ -56,11 +55,11 @@
       <plugin id="org.eclipse.core.expressions"/>
       <plugin id="org.eclipse.core.filebuffers"/>
       <plugin id="org.eclipse.core.filesystem"/>
-      <plugin id="org.eclipse.core.filesystem.win32.x86" fragment="true"/>
+      <plugin id="org.eclipse.core.filesystem.win32.x86"/>
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.core.resources"/>
       <plugin id="org.eclipse.core.resources.compatibility" fragment="true"/>
-      <plugin id="org.eclipse.core.resources.win32" fragment="true"/>
+      <plugin id="org.eclipse.core.resources.win32"/>
       <plugin id="org.eclipse.core.runtime"/>
       <plugin id="org.eclipse.core.runtime.compatibility"/>
       <plugin id="org.eclipse.core.runtime.compatibility.auth"/>
@@ -92,7 +91,7 @@
       <plugin id="org.eclipse.platform"/>
       <plugin id="org.eclipse.search"/>
       <plugin id="org.eclipse.swt"/>
-      <plugin id="org.eclipse.swt.win32.win32.x86" fragment="true"/>
+      <plugin id="org.eclipse.swt.win32.win32.x86"/>
       <plugin id="org.eclipse.team.core"/>
       <plugin id="org.eclipse.team.ui"/>
       <plugin id="org.eclipse.text"/>
@@ -108,12 +107,12 @@
       <plugin id="org.eclipse.ui.navigator.resources"/>
       <plugin id="org.eclipse.ui.views"/>
       <plugin id="org.eclipse.ui.views.properties.tabbed"/>
-      <plugin id="org.eclipse.ui.win32" fragment="true"/>
+      <plugin id="org.eclipse.ui.win32"/>
       <plugin id="org.eclipse.ui.workbench"/>
       <plugin id="org.eclipse.ui.workbench.texteditor"/>
       <plugin id="org.eclipse.update.configurator"/>
       <plugin id="org.eclipse.update.core"/>
-      <plugin id="org.eclipse.update.core.win32" fragment="true"/>
+      <plugin id="org.eclipse.update.core.win32"/>
       <plugin id="org.eclipse.update.ui"/>
       <plugin id="org.omnetpp.common"/>
       <plugin id="org.omnetpp.common.engine"/>
@@ -138,7 +137,7 @@
       <feature id="org.eclipse.cdt" version="3.1.1.200609270800"/>
       <feature id="org.eclipse.emf" version="2.2.1.v200609210005"/>
       <feature id="org.eclipse.gef" version="3.2.1.v20060921"/>
-      <feature id="org.eclipse.platform" version="3.2.1.r321_v20060921-b_XVA-INSQSyMtx"/>
+      <feature id="org.eclipse.platform" version="3.2.1.r321_v20060921-MGDh_08KUYM-Bvn"/>
       <feature id="org.omnetpp.ide" version="4.0.0"/>
    </features>
 

@@ -44,6 +44,7 @@ clean:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 forcedirectedembedding.o: forcedirectedembedding.cc \
   forcedirectedembedding.h \
+  forcedirectedparameters.h \
   ../common/lcgrandom.h \
   geometry.h \
   forcedirectedparametersbase.h \

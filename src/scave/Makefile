@@ -153,18 +153,22 @@ indexedvectorfile.o: indexedvectorfile.cc \
   channel.h \
   ../common/stringutil.h \
   indexedvectorfile.h \
+  scaveutils.h \
   ../common/commonutil.h \
   node.h \
   scavedefs.h \
   ../common/filereader.h \
   indexfile.h \
   nodetype.h \
-  dataflowmanager.h
+  resultfilemanager.h \
+  dataflowmanager.h \
+  idlist.h
 indexfile.o: indexfile.cc \
   ../common/exception.h \
   ../common/filereader.h \
   ../common/linetokenizer.h \
   ../common/stringutil.h \
+  scaveutils.h \
   indexfile.h \
   ../common/commonutil.h
 mergernodes.o: mergernodes.cc \
@@ -211,6 +215,8 @@ nodetyperegistry.o: nodetyperegistry.cc \
   xyarray.h \
   ../common/filereader.h \
   ../common/linetokenizer.h \
+  resultfilemanager.h \
+  idlist.h \
   indexfile.h
 octaveexport.o: octaveexport.cc \
   octaveexport.h \
@@ -220,11 +226,12 @@ octaveexport.o: octaveexport.cc \
 resultfilemanager.o: resultfilemanager.cc \
   ../common/matchexpression.h \
   ../common/patternmatcher.h \
-  resultfilemanager.h \
   ../common/filereader.h \
   ../common/linetokenizer.h \
   ../common/stringtokenizer.h \
   indexfile.h \
+  scaveutils.h \
+  resultfilemanager.h \
   ../common/exception.h \
   idlist.h \
   ../common/commonutil.h \
@@ -253,6 +260,8 @@ scavetool.o: scavetool.cc \
   ../common/linetokenizer.h \
   commonnodes.h \
   xyarray.h
+scaveutils.o: scaveutils.cc \
+  scaveutils.h
 slidingwinavg.o: slidingwinavg.cc \
   channel.h \
   slidingwinavg.h \
@@ -294,6 +303,7 @@ vectorfileindexer.o: vectorfileindexer.cc \
   ../common/linetokenizer.h
 vectorfilereader.o: vectorfilereader.cc \
   channel.h \
+  scaveutils.h \
   vectorfilereader.h \
   ../common/commonutil.h \
   node.h \
@@ -302,7 +312,9 @@ vectorfilereader.o: vectorfilereader.cc \
   nodetype.h \
   ../common/filereader.h \
   ../common/linetokenizer.h \
-  dataflowmanager.h
+  resultfilemanager.h \
+  dataflowmanager.h \
+  idlist.h
 vectorfilewriter.o: vectorfilewriter.cc \
   channel.h \
   vectorfilewriter.h \
@@ -312,7 +324,9 @@ vectorfilewriter.o: vectorfilewriter.cc \
   ../common/exception.h \
   scavedefs.h \
   nodetype.h \
-  dataflowmanager.h
+  resultfilemanager.h \
+  dataflowmanager.h \
+  idlist.h
 windowavg.o: windowavg.cc \
   channel.h \
   windowavg.h \
