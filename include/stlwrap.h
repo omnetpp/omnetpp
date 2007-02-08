@@ -30,6 +30,8 @@
  * to have dll-interface to be used by clients of class 'cIniFile'</tt>.
  * For discussion of the issue, see
  * http://www.unknownroad.com/rtfm/VisualStudio/warningC4251.html
+ *
+ * CAREFUL! This class may cause linker error: std::string methods multiply defined
  */
 class SIM_API stdstring : public std::string
 {
