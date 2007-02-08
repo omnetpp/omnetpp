@@ -85,7 +85,7 @@ eventlog.cxx : eventlog.i
 	$(SWIG) -c++ -java $(INCLUDES) -package $(EVENTLOG_JAVAPKG) -outdir $(EVENTLOG_JAVADIR) -o $@ $<
 
 $(DLL): $(OBJS)
-	$(SHLIB_LD) -o $(DLL) $(OBJS)
+	$(SHLIB_LD) -L$(OMNETPP_LIB_DIR) -leventlog -llayout -lscave -lnedxml -lcommon -o $(DLL) $(OBJS)
 	cp $(DLL) $(DLL_TARGET_DIR)
 
 depend:

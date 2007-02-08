@@ -64,7 +64,7 @@ libnedxml$(A_LIB_SUFFIX): $(OBJS)
 	../utils/install-lib libnedxml$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libnedxml$(A_LIB_SUFFIX)
 
 libnedxml$(SO_LIB_SUFFIX) : $(OBJS)
-	$(SHLIB_LD) -o libnedxml$(SO_LIB_SUFFIX) $(OBJS)
+	$(SHLIB_LD) $(XML_LIBS) -o libnedxml$(SO_LIB_SUFFIX) $(OBJS)
 	../utils/install-lib libnedxml$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libnedxml$(SO_LIB_SUFFIX)
 
 nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl ned2.dtd
