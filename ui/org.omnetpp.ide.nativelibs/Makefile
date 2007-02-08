@@ -1,15 +1,12 @@
 #
 # Global definitions
 #
-OMNETPP_ROOT=@OMNETPP_ROOT@
-OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
-OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
-SO_LIB_SUFFIX=@SO_LIB_SUFFIX@
-SHLIB_LD=@SHLIB_LD@
 
-JAVA_CFLAGS=@JAVA_CFLAGS@
-SWIG=@SWIG@
+include ../../Makefile.inc
 
+#
+# Local definitions
+#
 COMMON=$(OMNETPP_ROOT)/src/common
 NEDXML=$(OMNETPP_ROOT)/src/nedxml
 SCAVE=$(OMNETPP_ROOT)/src/scave
@@ -22,11 +19,11 @@ SCAVE_JAVAPKG = org.omnetpp.scave.engine
 LAYOUT_JAVAPKG = org.omnetpp.layout.engine
 EVENTLOG_JAVAPKG = org.omnetpp.eventlog.engine
 
-COMMON_JAVADIR = src/$(COMMON_JAVAPKG)
-NEDXML_JAVADIR = src/$(NEDXML_JAVAPKG)
-SCAVE_JAVADIR = src/$(SCAVE_JAVAPKG)
-LAYOUT_JAVADIR = src/$(LAYOUT_JAVAPKG)
-EVENTLOG_JAVADIR = src/$(EVENTLOG_JAVAPKG)
+COMMON_JAVADIR = src/$(subst .,/,$(COMMON_JAVAPKG))
+NEDXML_JAVADIR = src/$(subst .,/,$(NEDXML_JAVAPKG))
+SCAVE_JAVADIR = src/$(subst .,/,$(SCAVE_JAVAPKG))
+LAYOUT_JAVADIR = src/$(subst .,/,$(LAYOUT_JAVAPKG))
+EVENTLOG_JAVADIR = src/$(subst .,/,$(EVENTLOG_JAVAPKG))
 
 SWIGFILES = common.i nedxml.i scave.i layout.i eventlog.i
 CXXFILES = $(SWIGFILES:.i=.cxx)
@@ -34,7 +31,7 @@ OBJS = $(CXXFILES:.cxx=.o)
 
 LIBS=-L$(OMNETPP_LIB_DIR) -lcommon -lnedxml -lscave -llayout -leventlog
 
-DLL = opplibs$(SO_LIB_SUFFIX)
+DLL = libopplibs$(SO_LIB_SUFFIX)
 
 DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.linux.x86
 
