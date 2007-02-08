@@ -20,13 +20,6 @@ MAKEFILE=/F Makefile.vc
 !error This makefile only works on NT kernel (NT4.0, Win2K, XP, Vista)
 !endif
 
-# envir_ilib only needed if dlls are to be built
-!if "$(LIB_SUFFIX)"==".dll"
-ENVIR_ILIB=envir_ilib
-!else
-ENVIR_ILIB=
-!endif
-
 
 #=====================================================================
 #
@@ -46,7 +39,7 @@ components: base jnilibs samples
 #
 #=====================================================================
 
-BASE=$(ENVIR_ILIB) common layout eventlog scave nedxml sim envir cmdenv tkenv utils nedc
+BASE=common layout eventlog scave nedxml sim envir cmdenv tkenv utils nedc
 SAMPLES=aloha cqn dyna fifo hcube hist neddemo queuenet routing tictoc tokenring sockets
 JNILIBS=org.omnetpp.ned.model  org.omnetpp.ide.nativelibs
         # org.omnetpp.experimental.simkernel   FIXME this does not build currently, to be added back
@@ -64,8 +57,12 @@ layout eventlog scave nedxml sim envir cmdenv : common
 nedc : nedxml
 sim : nedc
 makefiles: utils
-$(SAMPLES) clean depend: makefiles
+$(SAMPLES) clean depend : makefiles
 $(SAMPLES) : rundemo
+
+!if "$(LIB_SUFFIX)"==".dll"
+sim : envir_ilib
+!endif
 
 #
 # Core libraries and programs
@@ -73,6 +70,10 @@ $(SAMPLES) : rundemo
 $(BASE):
 	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SRC_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
+
+envir_ilib:
+	@echo ===== Compiling $@ ====
+	cd /d $(OMNETPP_SRC_DIR:/=\)\envir && $(MAKE) $(MOPTS) $(MAKEFILE) envir.ilib
 
 #
 # Native libs for the UI

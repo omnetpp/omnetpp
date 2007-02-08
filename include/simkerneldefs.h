@@ -4,7 +4,7 @@
 //            Discrete System Simulation in C++
 //
 //
-//  Defines of global interest
+//  Defines of for the simulation kernel
 //
 //==========================================================================
 
@@ -18,31 +18,13 @@
 #ifndef __SIMKERNELDEFS_H
 #define __SIMKERNELDEFS_H
 
-#include <stddef.h>     // size_t
-#include <math.h>       // HUGE_VAL
+#include <stddef.h>
+#include <math.h>
+#include "platdefs.h"
 
 // OMNeT++ version -- must match NEDC_VERSION and MSGC_VERSION in nedxml!
+//XXX move to platdefs.h? and remove NEDC_VERSION
 #define OMNETPP_VERSION 0x0400
-
-//=== Windows DLL IMPORT/EXPORT stuff
-#ifndef __WIN32__
-#  if defined(_WIN32) || defined(WIN32)
-#    define __WIN32__
-#  endif
-#endif
-
-// OPP_DLLIMPORT/EXPORT are empty if not needed
-#if defined(__WIN32__)
-#  define OPP_DLLEXPORT  __declspec(dllexport)
-#  if defined(WIN32_DLL)
-#    define OPP_DLLIMPORT  __declspec(dllimport)
-#  else
-#    define OPP_DLLIMPORT
-#  endif
-#else
-#  define OPP_DLLIMPORT
-#  define OPP_DLLEXPORT
-#endif
 
 // SIM_API, ENVIR_API etc are also empty if not needed
 #ifdef BUILDING_SIM
@@ -58,12 +40,10 @@
 #  define ENVIR_API  OPP_DLLIMPORT
 #endif
 
-
 // NULL
 #ifndef NULL
 #define NULL ((void*)0)
 #endif
-
 
 // maximum lengths for className(), fullPath() and old info(buf) strings
 #define MAX_CLASSNAME       100
@@ -72,18 +52,6 @@
 
 // in case someone still needs the old name
 #define FULLPATHBUF_SIZE  MAX_OBJECTFULLPATH
-
-// check VC++ version (6.0 is no longer accepted)
-#ifdef _MSC_VER
-#if _MSC_VER<1300
-#error "OMNEST/OMNeT++ cannot be compiled with Visual C++ 6.0 or earlier, at least version 7.0 required"
-#endif
-#endif
-
-#ifdef _MSC_VER
-#pragma warning(disable:4800)  // disable "forcing int to bool"
-#pragma warning(disable:4996)  // disable VC8.0 warnings on Unix syscalls
-#endif
 
 //=== other common defines
 
@@ -98,20 +66,6 @@
 
 #define sgn(x)       ((x)==0 ? 0 : ((x)<0 ? -1 : 1))
 
-// gcc 2.9x.x had broken exception handling
-#ifdef __GNUC__
-#  if  __GNUC__<3
-#    error gcc 3.x or later required -- please upgrade
-#  endif
-#endif
-
-#if defined __GNUC__ && __GNUC__>=4
-#define _MAYBEUNUSED   __attribute((__unused__))
-#define _OPPDEPRECATED __attribute((__deprecated__))
-#else
-#define _MAYBEUNUSED
-#define _OPPDEPRECATED
-#endif
 
 #ifndef NDEBUG
 #define ASSERT(expr) \
