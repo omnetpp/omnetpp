@@ -51,7 +51,7 @@ class COMMON_API MatchExpression
     /**
      * Objects to be matched must implement this interface
      */
-    class Matchable
+    class COMMON_API Matchable
     {
       public:
         /**
@@ -79,7 +79,7 @@ class COMMON_API MatchExpression
     /**
      * One element in a (reverse Polish) expression
      */
-    class Elem
+    class COMMON_API Elem
     {
       public:
         friend class MatchExpression;
