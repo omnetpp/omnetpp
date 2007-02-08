@@ -346,7 +346,7 @@ class SIM_API cNoncopyableOwnedObject : public cOwnedObject, noncopyable
 //
 // Internal helper class for cOwnedObject.
 //
-class cStaticFlag
+class SIM_API cStaticFlag
 {
   private:
     static bool staticflag;  // set to true while in main()

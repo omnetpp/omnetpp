@@ -70,7 +70,7 @@ class SIM_API ExecuteOnStartup
  * and the fullName() method the qualified name (with namespace, e.g. "INET::name").
  */
 //XXX better name
-class cSymTable : public cNoncopyableOwnedObject
+class SIM_API cSymTable : public cNoncopyableOwnedObject
 {
   private:
     std::vector<cOwnedObject *> v;  // stores the objects
@@ -106,7 +106,7 @@ class cSymTable : public cNoncopyableOwnedObject
  *
  * @ingroup Internals
  */
-class cRegistrationList
+class SIM_API cRegistrationList
 {
   private:
     cSymTable *inst;
