@@ -32,7 +32,7 @@
  *
  * @ingroup NEDCompiler
  */
-class NEDResourceCache
+class NEDXML_API NEDResourceCache
 {
   protected:
     typedef std::map<std::string, NEDElement *> NEDFileMap;

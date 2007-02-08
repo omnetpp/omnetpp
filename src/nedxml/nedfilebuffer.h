@@ -26,7 +26,7 @@
  *
  * @ingroup NEDParser
  */
-class NEDFileBuffer
+class NEDXML_API NEDFileBuffer
 {
   private:
     enum {COMMENT_LINE, BLANK_LINE, CODE_LINE};

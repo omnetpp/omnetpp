@@ -42,7 +42,7 @@ void generateCpp(std::ostream& out, std::ostream& outh, NEDElement *node, NEDSym
  *
  * @ingroup CppGenerator
  */
-class NEDCppGenerator
+class NEDXML_API NEDCppGenerator
 {
   protected:
     ostream& out;  // stream for writing .cc file

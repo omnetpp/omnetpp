@@ -31,7 +31,7 @@
  *
  * @ingroup Validation
  */
-class NEDBasicValidator : public NEDValidatorBase
+class NEDXML_API NEDBasicValidator : public NEDValidatorBase
 {
   protected:
     bool parsedExpressions;

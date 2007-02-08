@@ -26,13 +26,15 @@
 #endif
 
 #include <string>
+#include "nedxmldefs.h"
+
 
 /**
  * Empty. Subclass from this if you want to attach extra data to NEDElement objects.
  *
  * @ingroup Data
  */
-class NEDElementUserData
+class NEDXML_API NEDElementUserData
 {
   public:
     /** Constructor */
@@ -67,7 +69,7 @@ struct NEDSourceRegion
  *
  * @ingroup Data
  */
-class NEDElement
+class NEDXML_API NEDElement
 {
   private:
     long id;

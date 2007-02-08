@@ -18,6 +18,7 @@
 #define __SAXPARSER_H
 
 #include <stdio.h>
+#include "nedxmldefs.h"
 
 class SAXParser;
 
@@ -32,7 +33,7 @@ class SAXParser;
  *
  * @ingroup XMLParser
  */
-class SAXHandler
+class NEDXML_API SAXHandler
 {
     friend class SAXParser;
   protected:
@@ -97,7 +98,7 @@ class SAXHandler
  *
  * @ingroup XMLParser
  */
-class SAXParser
+class NEDXML_API SAXParser
 {
   protected:
     char errortext[512];

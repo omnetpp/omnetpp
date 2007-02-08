@@ -34,7 +34,7 @@ void generateNED1(std::ostream& out, NEDElement *node, NEDErrorStore *e);
  *
  * @ingroup NED1Generator
  */
-class NED1Generator
+class NEDXML_API NED1Generator
 {
   protected:
     int indentsize;

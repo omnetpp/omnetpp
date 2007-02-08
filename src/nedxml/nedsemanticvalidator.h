@@ -31,7 +31,7 @@ class NEDResourceCache;
  *
  * @ingroup Validation
  */
-class NEDSemanticValidator : public NEDValidatorBase
+class NEDXML_API NEDSemanticValidator : public NEDValidatorBase
 {
   protected:
     bool parsedExpressions;

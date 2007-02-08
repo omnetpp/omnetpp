@@ -44,7 +44,7 @@ extern NEDParser *np;
  *
  * @ingroup NEDParser
  */
-class NEDParser
+class NEDXML_API NEDParser
 {
   public:
     // INTERNAL: error and debug handling, called from grammar file

@@ -28,7 +28,7 @@
  * 
  * @ingroup Validation
  */
-class NEDDTDValidator : public NEDDTDValidatorBase
+class NEDXML_API NEDDTDValidator : public NEDDTDValidatorBase
 {
   public:
     NEDDTDValidator(NEDErrorStore *e) : NEDDTDValidatorBase(e) {}

@@ -24,7 +24,7 @@
  *
  * @ingroup Validation
  */
-class NEDDTDValidatorBase : public NEDValidatorBase
+class NEDXML_API NEDDTDValidatorBase : public NEDValidatorBase
 {
   protected:
     struct Choice {

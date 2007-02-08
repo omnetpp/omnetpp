@@ -41,7 +41,7 @@ class NEDSymbolTable;
  *
  * @ingroup CppGenerator
  */
-class CppExpressionGenerator
+class NEDXML_API CppExpressionGenerator
 {
   protected:
     typedef std::vector<NEDElement *> NEDElementVector;

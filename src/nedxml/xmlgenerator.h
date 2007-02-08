@@ -33,7 +33,7 @@ void generateXML(std::ostream& out, NEDElement *tree, bool srcloc, int indentsiz
  *
  * @ingroup XMLGenerator
  */
-class NEDXMLGenerator
+class NEDXML_API NEDXMLGenerator
 {
   protected:
     bool printsrcloc;

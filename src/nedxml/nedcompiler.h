@@ -32,7 +32,7 @@
  *
  * @ingroup NEDCompiler
  */
-class NEDImportResolver
+class NEDXML_API NEDImportResolver
 {
   public:
     /** Constructor */
@@ -55,7 +55,7 @@ class NEDImportResolver
  *
  * @ingroup NEDCompiler
  */
-class NEDClassicImportResolver : public NEDImportResolver
+class NEDXML_API NEDClassicImportResolver : public NEDImportResolver
 {
   protected:
     typedef std::vector<std::string> NEDStringVector;
@@ -97,7 +97,7 @@ class NEDClassicImportResolver : public NEDImportResolver
  *
  * @ingroup NEDCompiler
  */
-class NEDCompiler
+class NEDXML_API NEDCompiler
 {
   protected:
 //XXX    NEDMap imports;  // list of already imported modules (to avoid double importing)

@@ -24,7 +24,7 @@
  *
  * @ingroup Validation
  */
-class NEDTools
+class NEDXML_API NEDTools
 {
   public:
     /**

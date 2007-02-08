@@ -25,12 +25,12 @@
 
 /**
  * Wraps a NEDElement tree of a NED declaration (module, channel, module
- * interface or channel interface), or declaration in a msg file (enum, 
+ * interface or channel interface), or declaration in a msg file (enum,
  * class, struct). May be extended by subclassing.
  *
  * @ingroup NEDCompiler
  */
-class NEDComponent
+class NEDXML_API NEDComponent
 {
   protected:
     NEDElement *tree;

@@ -1,5 +1,5 @@
 //==========================================================================
-//  NEDGRAMMAR.H - part of
+//  NEDYYDEFS.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -13,8 +13,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __NEDGRAMMAR_H
-#define __NEDGRAMMAR_H
+#ifndef __NEDYYDEFS_H
+#define __NEDYYDEFS_H
+
+#include "nedxmldefs.h"
 
 //
 // misc bison/flex related stuff, shared among *.lex, *.y and nedparser.cc/h files

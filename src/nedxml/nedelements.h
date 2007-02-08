@@ -150,7 +150,7 @@ enum {NED_SUBGATE_NONE, NED_SUBGATE_I, NED_SUBGATE_O};
  * 
  * @ingroup Data
  */
-class FilesNode : public NEDElement
+class NEDXML_API FilesNode : public NEDElement
 {
   private:
   public:
@@ -196,7 +196,7 @@ class FilesNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NedFileNode : public NEDElement
+class NEDXML_API NedFileNode : public NEDElement
 {
   private:
     std::string filename;
@@ -256,7 +256,7 @@ class NedFileNode : public NEDElement
  * 
  * @ingroup Data
  */
-class CommentNode : public NEDElement
+class NEDXML_API CommentNode : public NEDElement
 {
   private:
     std::string locid;
@@ -303,7 +303,7 @@ class CommentNode : public NEDElement
  * 
  * @ingroup Data
  */
-class ImportNode : public NEDElement
+class NEDXML_API ImportNode : public NEDElement
 {
   private:
     std::string filename;
@@ -349,7 +349,7 @@ class ImportNode : public NEDElement
  * 
  * @ingroup Data
  */
-class PropertyDeclNode : public NEDElement
+class NEDXML_API PropertyDeclNode : public NEDElement
 {
   private:
     std::string name;
@@ -399,7 +399,7 @@ class PropertyDeclNode : public NEDElement
  * 
  * @ingroup Data
  */
-class ExtendsNode : public NEDElement
+class NEDXML_API ExtendsNode : public NEDElement
 {
   private:
     std::string name;
@@ -444,7 +444,7 @@ class ExtendsNode : public NEDElement
  * 
  * @ingroup Data
  */
-class InterfaceNameNode : public NEDElement
+class NEDXML_API InterfaceNameNode : public NEDElement
 {
   private:
     std::string name;
@@ -490,7 +490,7 @@ class InterfaceNameNode : public NEDElement
  * 
  * @ingroup Data
  */
-class SimpleModuleNode : public NEDElement
+class NEDXML_API SimpleModuleNode : public NEDElement
 {
   private:
     std::string name;
@@ -542,7 +542,7 @@ class SimpleModuleNode : public NEDElement
  * 
  * @ingroup Data
  */
-class ModuleInterfaceNode : public NEDElement
+class NEDXML_API ModuleInterfaceNode : public NEDElement
 {
   private:
     std::string name;
@@ -592,7 +592,7 @@ class ModuleInterfaceNode : public NEDElement
  * 
  * @ingroup Data
  */
-class CompoundModuleNode : public NEDElement
+class NEDXML_API CompoundModuleNode : public NEDElement
 {
   private:
     std::string name;
@@ -647,7 +647,7 @@ class CompoundModuleNode : public NEDElement
  * 
  * @ingroup Data
  */
-class ChannelInterfaceNode : public NEDElement
+class NEDXML_API ChannelInterfaceNode : public NEDElement
 {
   private:
     std::string name;
@@ -695,7 +695,7 @@ class ChannelInterfaceNode : public NEDElement
  * 
  * @ingroup Data
  */
-class ChannelNode : public NEDElement
+class NEDXML_API ChannelNode : public NEDElement
 {
   private:
     bool isWithcppclass;
@@ -746,7 +746,7 @@ class ChannelNode : public NEDElement
  * 
  * @ingroup Data
  */
-class ParametersNode : public NEDElement
+class NEDXML_API ParametersNode : public NEDElement
 {
   private:
     bool isImplicit;
@@ -798,7 +798,7 @@ class ParametersNode : public NEDElement
  * 
  * @ingroup Data
  */
-class ParamNode : public NEDElement
+class NEDXML_API ParamNode : public NEDElement
 {
   private:
     int type;
@@ -859,7 +859,7 @@ class ParamNode : public NEDElement
  * 
  * @ingroup Data
  */
-class PatternNode : public NEDElement
+class NEDXML_API PatternNode : public NEDElement
 {
   private:
     std::string pattern;
@@ -914,7 +914,7 @@ class PatternNode : public NEDElement
  * 
  * @ingroup Data
  */
-class PropertyNode : public NEDElement
+class NEDXML_API PropertyNode : public NEDElement
 {
   private:
     bool isImplicit;
@@ -966,7 +966,7 @@ class PropertyNode : public NEDElement
  * 
  * @ingroup Data
  */
-class PropertyKeyNode : public NEDElement
+class NEDXML_API PropertyKeyNode : public NEDElement
 {
   private:
     std::string name;
@@ -1011,7 +1011,7 @@ class PropertyKeyNode : public NEDElement
  * 
  * @ingroup Data
  */
-class GatesNode : public NEDElement
+class NEDXML_API GatesNode : public NEDElement
 {
   private:
   public:
@@ -1057,7 +1057,7 @@ class GatesNode : public NEDElement
  * 
  * @ingroup Data
  */
-class GateNode : public NEDElement
+class NEDXML_API GateNode : public NEDElement
 {
   private:
     std::string name;
@@ -1113,7 +1113,7 @@ class GateNode : public NEDElement
  * 
  * @ingroup Data
  */
-class TypesNode : public NEDElement
+class NEDXML_API TypesNode : public NEDElement
 {
   private:
   public:
@@ -1159,7 +1159,7 @@ class TypesNode : public NEDElement
  * 
  * @ingroup Data
  */
-class SubmodulesNode : public NEDElement
+class NEDXML_API SubmodulesNode : public NEDElement
 {
   private:
   public:
@@ -1207,7 +1207,7 @@ class SubmodulesNode : public NEDElement
  * 
  * @ingroup Data
  */
-class SubmoduleNode : public NEDElement
+class NEDXML_API SubmoduleNode : public NEDElement
 {
   private:
     std::string name;
@@ -1270,7 +1270,7 @@ class SubmoduleNode : public NEDElement
  * 
  * @ingroup Data
  */
-class ConnectionsNode : public NEDElement
+class NEDXML_API ConnectionsNode : public NEDElement
 {
   private:
     bool allowUnconnected;
@@ -1329,7 +1329,7 @@ class ConnectionsNode : public NEDElement
  * 
  * @ingroup Data
  */
-class ConnectionNode : public NEDElement
+class NEDXML_API ConnectionNode : public NEDElement
 {
   private:
     std::string srcModule;
@@ -1417,7 +1417,7 @@ class ConnectionNode : public NEDElement
  * 
  * @ingroup Data
  */
-class ChannelSpecNode : public NEDElement
+class NEDXML_API ChannelSpecNode : public NEDElement
 {
   private:
     std::string type;
@@ -1472,7 +1472,7 @@ class ChannelSpecNode : public NEDElement
  * 
  * @ingroup Data
  */
-class ConnectionGroupNode : public NEDElement
+class NEDXML_API ConnectionGroupNode : public NEDElement
 {
   private:
   public:
@@ -1519,7 +1519,7 @@ class ConnectionGroupNode : public NEDElement
  * 
  * @ingroup Data
  */
-class LoopNode : public NEDElement
+class NEDXML_API LoopNode : public NEDElement
 {
   private:
     std::string paramName;
@@ -1571,7 +1571,7 @@ class LoopNode : public NEDElement
  * 
  * @ingroup Data
  */
-class ConditionNode : public NEDElement
+class NEDXML_API ConditionNode : public NEDElement
 {
   private:
     std::string condition;
@@ -1617,7 +1617,7 @@ class ConditionNode : public NEDElement
  * 
  * @ingroup Data
  */
-class ExpressionNode : public NEDElement
+class NEDXML_API ExpressionNode : public NEDElement
 {
   private:
     std::string target;
@@ -1666,7 +1666,7 @@ class ExpressionNode : public NEDElement
  * 
  * @ingroup Data
  */
-class OperatorNode : public NEDElement
+class NEDXML_API OperatorNode : public NEDElement
 {
   private:
     std::string name;
@@ -1715,7 +1715,7 @@ class OperatorNode : public NEDElement
  * 
  * @ingroup Data
  */
-class FunctionNode : public NEDElement
+class NEDXML_API FunctionNode : public NEDElement
 {
   private:
     std::string name;
@@ -1765,7 +1765,7 @@ class FunctionNode : public NEDElement
  * 
  * @ingroup Data
  */
-class IdentNode : public NEDElement
+class NEDXML_API IdentNode : public NEDElement
 {
   private:
     std::string module;
@@ -1820,7 +1820,7 @@ class IdentNode : public NEDElement
  * 
  * @ingroup Data
  */
-class LiteralNode : public NEDElement
+class NEDXML_API LiteralNode : public NEDElement
 {
   private:
     int type;
@@ -1876,7 +1876,7 @@ class LiteralNode : public NEDElement
  * 
  * @ingroup Data
  */
-class MsgFileNode : public NEDElement
+class NEDXML_API MsgFileNode : public NEDElement
 {
   private:
     std::string filename;
@@ -1936,7 +1936,7 @@ class MsgFileNode : public NEDElement
  * 
  * @ingroup Data
  */
-class CplusplusNode : public NEDElement
+class NEDXML_API CplusplusNode : public NEDElement
 {
   private:
     std::string body;
@@ -1993,7 +1993,7 @@ class CplusplusNode : public NEDElement
  * 
  * @ingroup Data
  */
-class StructDeclNode : public NEDElement
+class NEDXML_API StructDeclNode : public NEDElement
 {
   private:
     std::string name;
@@ -2051,7 +2051,7 @@ class StructDeclNode : public NEDElement
  * 
  * @ingroup Data
  */
-class ClassDeclNode : public NEDElement
+class NEDXML_API ClassDeclNode : public NEDElement
 {
   private:
     std::string name;
@@ -2111,7 +2111,7 @@ class ClassDeclNode : public NEDElement
  * 
  * @ingroup Data
  */
-class MessageDeclNode : public NEDElement
+class NEDXML_API MessageDeclNode : public NEDElement
 {
   private:
     std::string name;
@@ -2168,7 +2168,7 @@ class MessageDeclNode : public NEDElement
  * 
  * @ingroup Data
  */
-class EnumDeclNode : public NEDElement
+class NEDXML_API EnumDeclNode : public NEDElement
 {
   private:
     std::string name;
@@ -2227,7 +2227,7 @@ class EnumDeclNode : public NEDElement
  * 
  * @ingroup Data
  */
-class EnumNode : public NEDElement
+class NEDXML_API EnumNode : public NEDElement
 {
   private:
     std::string name;
@@ -2289,7 +2289,7 @@ class EnumNode : public NEDElement
  * 
  * @ingroup Data
  */
-class EnumFieldsNode : public NEDElement
+class NEDXML_API EnumFieldsNode : public NEDElement
 {
   private:
     std::string bannerComment;
@@ -2341,7 +2341,7 @@ class EnumFieldsNode : public NEDElement
  * 
  * @ingroup Data
  */
-class EnumFieldNode : public NEDElement
+class NEDXML_API EnumFieldNode : public NEDElement
 {
   private:
     std::string name;
@@ -2400,7 +2400,7 @@ class EnumFieldNode : public NEDElement
  * 
  * @ingroup Data
  */
-class MessageNode : public NEDElement
+class NEDXML_API MessageNode : public NEDElement
 {
   private:
     std::string name;
@@ -2467,7 +2467,7 @@ class MessageNode : public NEDElement
  * 
  * @ingroup Data
  */
-class ClassNode : public NEDElement
+class NEDXML_API ClassNode : public NEDElement
 {
   private:
     std::string name;
@@ -2534,7 +2534,7 @@ class ClassNode : public NEDElement
  * 
  * @ingroup Data
  */
-class StructNode : public NEDElement
+class NEDXML_API StructNode : public NEDElement
 {
   private:
     std::string name;
@@ -2597,7 +2597,7 @@ class StructNode : public NEDElement
  * 
  * @ingroup Data
  */
-class FieldsNode : public NEDElement
+class NEDXML_API FieldsNode : public NEDElement
 {
   private:
     std::string bannerComment;
@@ -2655,7 +2655,7 @@ class FieldsNode : public NEDElement
  * 
  * @ingroup Data
  */
-class FieldNode : public NEDElement
+class NEDXML_API FieldNode : public NEDElement
 {
   private:
     std::string name;
@@ -2728,7 +2728,7 @@ class FieldNode : public NEDElement
  * 
  * @ingroup Data
  */
-class PropertiesNode : public NEDElement
+class NEDXML_API PropertiesNode : public NEDElement
 {
   private:
     std::string bannerComment;
@@ -2780,7 +2780,7 @@ class PropertiesNode : public NEDElement
  * 
  * @ingroup Data
  */
-class MsgpropertyNode : public NEDElement
+class NEDXML_API MsgpropertyNode : public NEDElement
 {
   private:
     std::string name;
@@ -2834,7 +2834,7 @@ class MsgpropertyNode : public NEDElement
  * 
  * @ingroup Data
  */
-class UnknownNode : public NEDElement
+class NEDXML_API UnknownNode : public NEDElement
 {
   private:
     std::string element;
@@ -2872,7 +2872,7 @@ class UnknownNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDElementFactory
+class NEDXML_API NEDElementFactory
 {
   private:
     static NEDElementFactory *f;

@@ -27,7 +27,7 @@ enum NEDErrorCategory {ERRCAT_INFO, ERRCAT_WARNING, ERRCAT_ERROR, ERRCAT_FATAL};
 /**
  * Stores error messages
  */
-class NEDErrorStore
+class NEDXML_API NEDErrorStore
 {
     private:
         struct Entry {
@@ -127,7 +127,7 @@ void NEDInternalError(const char *file, int line, NEDElement *context, const cha
 /**
  * Low-level routines throw an exception instead of calling NEDErrorStore->add().
  */
-class NEDException : public std::runtime_error   //FIXME into separate header file
+class NEDXML_API NEDException : public std::runtime_error   //FIXME into separate header file
 {
   protected:
     std::string errormsg;
@@ -140,7 +140,7 @@ class NEDException : public std::runtime_error   //FIXME into separate header fi
 
     /**
      * Empty desctructor with throw clause for gcc.
-     */ 
+     */
     virtual ~NEDException() throw() {}
 
     /**

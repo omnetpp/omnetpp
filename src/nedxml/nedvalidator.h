@@ -27,7 +27,7 @@
  * 
  * @ingroup Validation
  */
-class NEDValidatorBase
+class NEDXML_API NEDValidatorBase
 {
   protected:
     NEDErrorStore *errors;

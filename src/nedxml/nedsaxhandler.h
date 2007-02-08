@@ -40,7 +40,7 @@
  *
  * @ingroup XMLParser
  */
-class NEDSAXHandler : public SAXHandler
+class NEDXML_API NEDSAXHandler : public SAXHandler
 {
     NEDElement *root;
     NEDElement *current;
