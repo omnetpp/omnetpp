@@ -257,6 +257,8 @@ LIB_SUFFIX=.dll
 
 HAVE_DLOPEN=0
 
+VC_AUX_FILES=*.ilk *.idb *.pdb *.suo *.exp *.sln
+
 !if "$(WITH_PARSIM)"=="yes"
 CFLAGS=$(CFLAGS) /DWITH_PARSIM
 !endif
