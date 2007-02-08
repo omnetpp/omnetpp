@@ -63,7 +63,7 @@ class SIM_API cWatchBase : public cNoncopyableOwnedObject
  * @ingroup Internals
  */
 template<typename T>
-class SIM_API cGenericReadonlyWatch : public cWatchBase
+class cGenericReadonlyWatch : public cWatchBase
 {
   private:
     const T& r;
@@ -86,7 +86,7 @@ class SIM_API cGenericReadonlyWatch : public cWatchBase
  * @ingroup Internals
  */
 template<typename T>
-class SIM_API cGenericAssignableWatch : public cWatchBase
+class cGenericAssignableWatch : public cWatchBase
 {
   private:
     T& r;
