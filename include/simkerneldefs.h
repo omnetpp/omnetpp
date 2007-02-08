@@ -20,7 +20,7 @@
 
 #include <stddef.h>
 #include <math.h>
-#include "platdefs.h"
+#include "platdep/platdefs.h"
 
 // OMNeT++ version -- must match NEDC_VERSION and MSGC_VERSION in nedxml!
 //XXX move to platdefs.h? and remove NEDC_VERSION
