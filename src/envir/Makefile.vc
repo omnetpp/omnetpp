@@ -291,7 +291,6 @@ ivfilemgr.obj: ivfilemgr.cc \
 main.obj: main.cc \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
-  ../utils/ver.h \
   ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \

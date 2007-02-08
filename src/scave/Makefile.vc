@@ -231,7 +231,6 @@ resultfilemanager.obj: resultfilemanager.cc \
   ../common/commonutil.h \
   scavedefs.h
 scavetool.obj: scavetool.cc \
-  ../utils/ver.h \
   resultfilemanager.h \
   nodetype.h \
   nodetyperegistry.h \

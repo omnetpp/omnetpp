@@ -56,10 +56,10 @@ event.obj: event.cc \
   ievent.h \
   eventlogentries.h \
   messagedependency.h \
-  eventlogdefs.h \
   stringpool.h \
   ieventlog.h \
-  eventlogindex.h
+  eventlogindex.h \
+  eventlogdefs.h
 eventlog.obj: eventlog.cc \
   stringpool.h \
   eventlog.h \

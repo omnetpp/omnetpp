@@ -74,6 +74,7 @@ filereader.obj: filereader.cc \
   filereader.h \
   exception.h
 fileutil.obj: fileutil.cc \
+  ./unistd.h \
   fileutil.h
 fnamelisttokenizer.obj: fnamelisttokenizer.cc \
   fnamelisttokenizer.h \
