@@ -26,7 +26,7 @@
  *
  * @ingroup XMLGenerator
  */
-void generateXML(std::ostream& out, NEDElement *tree, bool srcloc, int indentsize = 4);
+NEDXML_API void generateXML(std::ostream& out, NEDElement *tree, bool srcloc, int indentsize = 4);
 
 /**
  * Serializes a NED object tree in XML format.

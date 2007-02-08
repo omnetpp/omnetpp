@@ -26,7 +26,7 @@
  *
  * @ingroup NED2Generator
  */
-void generateNED2(std::ostream& out, NEDElement *node, NEDErrorStore *e);
+NEDXML_API void generateNED2(std::ostream& out, NEDElement *node, NEDErrorStore *e);
 
 /**
  * Generates NED code from a NED object tree.

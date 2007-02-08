@@ -25,7 +25,7 @@
  *
  * @ingroup XMLParser
  */
-NEDElement *parseXML(const char *filename, NEDErrorStore *errors);
+NEDXML_API NEDElement *parseXML(const char *filename, NEDErrorStore *errors);
 
 #endif
 

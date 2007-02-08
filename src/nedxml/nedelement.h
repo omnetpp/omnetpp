@@ -81,6 +81,7 @@ class NEDXML_API NEDElement
     NEDElement *prevsibling;
     NEDElement *nextsibling;
     NEDElementUserData *userdata;
+
     static long lastid;
     static long numcreated;
     static long numexisting;

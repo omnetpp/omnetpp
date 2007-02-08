@@ -17,6 +17,7 @@
 #include "saxparser.h"
 #include "nedsaxhandler.h"
 #include "nederror.h"
+#include "nedxmlparser.h"
 
 NEDElement *parseXML(const char *filename, NEDErrorStore *errors)
 {
