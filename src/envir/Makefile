@@ -42,7 +42,6 @@ omnetapp.o: eventlogwriter.h
 
 depend:
 	$(MAKEDEPEND) -I. -I../../include -- *.cc
-	$(MAKEDEPEND) -I. -I../../include -fMakefile.in -- *.cc
 
 clean:
 	rm -f *.o libenvir$(A_LIB_SUFFIX) libenvir$(SO_LIB_SUFFIX)

@@ -44,7 +44,6 @@ libscave$(SO_LIB_SUFFIX) : $(OBJS)
 
 depend:
 	$(MAKEDEPEND) -I. -I../common -- *.cc
-	$(MAKEDEPEND) -I. -I../common -fMakefile.in -- *.cc
 
 doc:
 	# NOTE: doxy.cfg has the output directory hardcoded!

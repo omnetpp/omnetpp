@@ -42,7 +42,6 @@ eventlogtool : eventlogtool.o  libeventlog$(LIB_SUFFIX)
 
 depend:
 	$(MAKEDEPEND) -I. -I../common -- *.cc
-	$(MAKEDEPEND) -I. -I../common -fMakefile.in -- *.cc
 
 clean:
 	rm -f *.o libeventlog$(A_LIB_SUFFIX) libeventlog$(SO_LIB_SUFFIX) eventlogtool

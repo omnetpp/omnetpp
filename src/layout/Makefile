@@ -36,7 +36,6 @@ liblayout$(SO_LIB_SUFFIX) : $(OBJS)
 
 depend:
 	$(MAKEDEPEND) -I. -I../common -- *.cc
-	$(MAKEDEPEND) -I. -I../common -fMakefile.in -- *.cc
 
 clean:
 	rm -f *.o liblayout$(A_LIB_SUFFIX) liblayout$(SO_LIB_SUFFIX)

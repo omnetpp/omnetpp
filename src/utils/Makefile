@@ -25,7 +25,6 @@ tcl2c: tcl2c.c
 
 depend:
 	$(MAKEDEPEND) -I. -- *.cc
-	$(MAKEDEPEND) -I. -fMakefile.in -- *.cc
 
 clean:
 	rm -f *.o seedtool$(EXE_SUFFIX) tcl2c$(EXE_SUFFIX)

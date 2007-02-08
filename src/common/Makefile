@@ -47,7 +47,6 @@ lex.matchexpressionyy.cc: matchexpression.lex matchexpression.tab.h
 
 depend:
 	$(MAKEDEPEND) -I.  -- *.cc
-	$(MAKEDEPEND) -I. -fMakefile.in -- *.cc
 
 clean:
 	rm -f *.o libcommon$(A_LIB_SUFFIX) libcommon$(SO_LIB_SUFFIX)

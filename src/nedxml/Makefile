@@ -99,7 +99,6 @@ lex.msg2yy.cc: msg2.lex
 
 depend:
 	$(MAKEDEPEND) -I../../include -- *.cc
-	$(MAKEDEPEND) -I../../include -fMakefile.in -- *.cc
 
 doc:
 	# NOTE: doxy.cfg has the output directory hardcoded!

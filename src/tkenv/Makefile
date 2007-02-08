@@ -53,7 +53,6 @@ missing-library:
 
 depend:
 	$(MAKEDEPEND) -I. -I../envir -I../../include -- *.cc
-	$(MAKEDEPEND) -I. -I../envir -I../../include -fMakefile.in -- *.cc
 
 clean:
 	rm -f *.o tclcode.cc libtkenv$(A_LIB_SUFFIX) libtkenv$(SO_LIB_SUFFIX)

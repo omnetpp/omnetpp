@@ -97,7 +97,6 @@ lex.expryy.cc: expr.lex expr.tab.h
 
 depend:
 	$(MAKEDEPEND) -I../../include -- *.cc netbuilder/*.cc parsim/*.cc
-	$(MAKEDEPEND) -I../../include -fMakefile.in -- *.cc netbuilder/*.cc parsim/*.cc
 
 sim_std_m.cc sim_std_m.h : sim_std.msg
 	$(MSGC) -Xnc -Xns sim_std.msg

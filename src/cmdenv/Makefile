@@ -35,7 +35,6 @@ libcmdenv$(SO_LIB_SUFFIX) : $(OBJS)
 
 depend:
 	$(MAKEDEPEND) -I. -I../envir -I../../include -- *.cc
-	$(MAKEDEPEND) -I. -I../envir -I../../include -fMakefile.in -- *.cc
 
 clean:
 	rm -f *.o libcmdenv$(A_LIB_SUFFIX) libcmdenv$(SO_LIB_SUFFIX)
