@@ -5,6 +5,11 @@ OMNETPP_ROOT=..\..
 
 !include $(OMNETPP_ROOT)\configuser.vc
 
+!if "$(LIB_SUFFIX)"==".dll"
+CFLAGS=$(CFLAGS) -DWIN32_DLL
+SWIGFLAGS=$(SWIGFLAGS) -DWIN32_DLL
+!endif
+
 JDK="$(TOOLS_DIR)\jdk1.5.0"
 SWIG="$(TOOLS_DIR)\SWIG-1.3.25\swig.exe"
 #SWIG="$(TOOLS_DIR)\SWIGWIN-1.3.31\swig.exe"
@@ -43,7 +48,7 @@ DLL_TARGET_DIR = ..\org.omnetpp.ide.nativelibs.win32.x86
 #
 INCLUDES=-I$(COMMON) -I$(NEDXML) -I$(SCAVE) -I$(LAYOUT) -I$(EVENTLOG) -I$(OMNETPP_INCL_DIR)/platdep
 COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 $(INCLUDES)
-
+SWIGOPTS=$(SWIGFLAGS) $(INCLUDES)
 
 #
 # Automatic rules
@@ -64,27 +69,27 @@ all: $(DLL)
 common.cxx : common.i
 	-del $(COMMON_JAVADIR)\*.java >nul
 	-mkdir $(COMMON_JAVADIR) >nul
-	$(SWIG) -c++ -java $(INCLUDES) -package $(COMMON_JAVAPKG) -outdir $(COMMON_JAVADIR) -o $@ $**
+	$(SWIG) -c++ -java $(SWIGOPTS) -package $(COMMON_JAVAPKG) -outdir $(COMMON_JAVADIR) -o $@ $**
 
 nedxml.cxx : nedxml.i
 	-del $(NEDXML_JAVADIR)\*.java >nul
 	-mkdir $(NEDXML_JAVADIR) >nul
-	$(SWIG) -c++ -java $(INCLUDES) -package $(NEDXML_JAVAPKG) -outdir $(NEDXML_JAVADIR) -o $@ $**
+	$(SWIG) -c++ -java $(SWIGOPTS) -package $(NEDXML_JAVAPKG) -outdir $(NEDXML_JAVADIR) -o $@ $**
 
 scave.cxx : scave.i
 	-del $(SCAVE_JAVADIR)\*.java >nul
 	-mkdir $(SCAVE_JAVADIR) >nul
-	$(SWIG) -c++ -java $(INCLUDES) -package $(SCAVE_JAVAPKG) -outdir $(SCAVE_JAVADIR) -o $@ $**
+	$(SWIG) -c++ -java $(SWIGOPTS) -package $(SCAVE_JAVAPKG) -outdir $(SCAVE_JAVADIR) -o $@ $**
 
 layout.cxx : layout.i
 	-del $(LAYOUT_JAVADIR)\*.java >nul
 	-mkdir $(LAYOUT_JAVADIR) >nul
-	$(SWIG) -c++ -java $(INCLUDES) -package $(LAYOUT_JAVAPKG) -outdir $(LAYOUT_JAVADIR) -o $@ $**
+	$(SWIG) -c++ -java $(SWIGOPTS) -package $(LAYOUT_JAVAPKG) -outdir $(LAYOUT_JAVADIR) -o $@ $**
 
 eventlog.cxx : eventlog.i
 	-del $(EVENTLOG_JAVADIR)\*.java >nul
 	-mkdir $(EVENTLOG_JAVADIR) >nul
-	$(SWIG) -c++ -java $(INCLUDES) -package $(EVENTLOG_JAVAPKG) -outdir $(EVENTLOG_JAVADIR) -o $@ $**
+	$(SWIG) -c++ -java $(SWIGOPTS) -package $(EVENTLOG_JAVAPKG) -outdir $(EVENTLOG_JAVADIR) -o $@ $**
 
 $(DLL): $(OBJS)
 	$(LINK) /dll /out:$(DLL) $(OBJS) $(LIBS) $(LDFLAGS)
