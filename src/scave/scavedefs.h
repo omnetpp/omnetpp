@@ -19,9 +19,9 @@
 #include "platdefs.h"
 
 #ifdef BUILDING_SCAVE
-#  define LAYOUT_API  OPP_DLLEXPORT
+#  define SCAVE_API  OPP_DLLEXPORT
 #else
-#  define LAYOUT_API  OPP_DLLIMPORT
+#  define SCAVE_API  OPP_DLLIMPORT
 #endif
 
 #define DEFAULT_PRECISION  14

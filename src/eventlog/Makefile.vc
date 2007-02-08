@@ -11,9 +11,9 @@ CFLAGS=$(CFLAGS) -DWIN32_DLL
 # Local definitions
 #
 COPTS=$(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_EVENTLOG /Fd"eventlog.pdb"
+IMPLIBS=../common/common.lib
 
 OBJS=ievent.obj ieventlog.obj eventlogfacade.obj eventlogtablefacade.obj sequencechartfacade.obj eventlog.obj eventlogindex.obj messagedependency.obj event.obj eventlogentry.obj eventlogentries.obj filteredevent.obj filteredeventlog.obj eventlogentryfactory.obj stringpool.obj
-IMPLIBS=../common/common.lib
 
 #
 # Automatic rules
@@ -44,6 +44,10 @@ eventlog.dll : $(OBJS)
 eventlogtool.exe : eventlogtool.obj eventlog$(LIB_SUFFIX)
 	$(LINK) $(LDFLAGS) /nologo /out:eventlogtool.exe eventlogtool.obj eventlog.lib $(IMPLIBS)
 	copy eventlogtool.exe $(OMNETPP_BIN_DIR:/=\)
+
+eventlogtool.obj : eventlogtool.cc
+	@: note: eventlogtool.cc must be compiled *without* -DBUILDING_EVENTLOG
+	$(CXX) $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /c /Tp eventlogtool.cc
 
 depend:
 	$(MAKEDEPEND) -I. -fMakefile.vc -- *.cc
