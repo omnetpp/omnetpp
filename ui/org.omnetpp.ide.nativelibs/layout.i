@@ -21,6 +21,7 @@
 
 // hide export/import macros from swig
 #define COMMON_API
+#define LAYOUT_API
 #define OPP_DLLEXPORT 
 #define OPP_DLLIMPORT
 
@@ -158,6 +159,7 @@ namespace std {
 
 %ignore zero;
 %ignore NaN;
+%ignore POSITIVE_INFINITY;
 %ignore isNaN;
 %ignore ForceDirectedEmbedding::parameters;
 

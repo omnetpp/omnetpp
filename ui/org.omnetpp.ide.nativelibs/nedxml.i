@@ -51,6 +51,7 @@ namespace std {
 
 %ignore generateNED1(std::ostream&, NEDElement *, NEDErrorStore *);
 %ignore generateNED2(std::ostream&, NEDElement *, NEDErrorStore *);
+%ignore NEDInternalError;
 
 // XXX for some reason, SWIG doesn't give a s&%$# about the following ignores:
 %ignore NEDElementStore::add(NEDElement *, const char *, ...);
