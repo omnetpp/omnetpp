@@ -178,29 +178,29 @@ static void _count(bool updateprevpos)
     static int textbuflen;
     int i;
 
-    /* printf("DBG: count(): prev=%d,%d  pos=%d,%d yytext=>>%s<<\n",
-           prevpos.li, prevpos.co, pos.li, pos.co, yytext);
+    /* printf("DBG: count(): prev=%d,%d  xpos=%d,%d yytext=>>%s<<\n",
+           xprevpos.li, xprevpos.co, xpos.li, xpos.co, yytext);
     */
 
     /* init textbuf */
-    if (pos.li==1 && pos.co==0) {
+    if (xpos.li==1 && xpos.co==0) {
         textbuf[0]='\0'; textbuflen=0;
     }
 
     if (updateprevpos) {
         extendbuf = "";
-        prevpos = pos;
+        xprevpos = xpos;
     }
     extendbuf += yytext;
     for (i = 0; yytext[i] != '\0'; i++) {
         if (yytext[i] == '\n') {
-            pos.co = 0;
-            pos.li++;
+            xpos.co = 0;
+            xpos.li++;
             textbuflen=0; textbuf[0]='\0';
         } else if (yytext[i] == '\t')
-            pos.co += 8 - (pos.co % 8);
+            xpos.co += 8 - (xpos.co % 8);
         else
-            pos.co++;
+            xpos.co++;
         if (yytext[i] != '\n') {
             if (textbuflen < TEXTBUF_LEN-5) {
                 textbuf[textbuflen++]=yytext[i]; textbuf[textbuflen]='\0';

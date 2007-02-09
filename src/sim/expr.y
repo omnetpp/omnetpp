@@ -68,7 +68,7 @@ void yyrestart(FILE *);
 int yylex();
 void yyerror (const char *s);
 
-LineColumn pos, prevpos;
+LineColumn xpos, xprevpos;
 
 
 #include "cdynamicexpression.h"
@@ -305,9 +305,9 @@ void doParseExpression(const char *nedtext, cDynamicExpression::Elem *&elems, in
     nelems = 0;
 
     // reset the lexer
-    pos.co = 0;
-    pos.li = 1;
-    prevpos = pos;
+    xpos.co = 0;
+    xpos.li = 1;
+    xprevpos = xpos;
 
     yyin = NULL;
     yyout = stderr; // not used anyway

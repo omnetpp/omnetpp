@@ -34,7 +34,7 @@ while (<FILE>)
    {
       print "{\n";
    }
-   elsif ($_ =~ /^ +([\w]+) +([\w]+) +([\w]+)( +([^ ]+))? *$/)
+   elsif ($_ =~ /^ +([\w#]+) +([\w]+) +([\w]+)( +([^ ]+))? *$/)
    {
       $fieldCode = $1;
       $fieldType = $2;
@@ -202,7 +202,8 @@ sub makeMethodDecl ()
    my $txt = "record$class->{NAME}";
    foreach $field (@{ $class->{FIELDS} })
    {
-      $txt .= "_$field->{CODE}" if ($wantOptFields || $field->{DEFAULTVALUE} eq "");
+      my $code = ($field->{CODE} eq "#") ? "e" : $field->{CODE};
+      $txt .= "_$code" if ($wantOptFields || $field->{DEFAULTVALUE} eq "");
    }
    $txt .= "(FILE *f";
    foreach $field (@{ $class->{FIELDS} })

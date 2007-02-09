@@ -35,7 +35,7 @@ struct my_yyltype {
 #define YYSTYPE  char*
 
 typedef struct {int li; int co;} LineColumn;
-extern LineColumn pos, prevpos;
+extern LineColumn xpos, xprevpos;
 
 void doParseExpression(const char *nedtext, cDynamicExpression::Elem *&elems, int& nelems);
 
