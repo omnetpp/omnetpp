@@ -15,7 +15,7 @@ IMPLIBS= ../common/common.lib
 
 OBJS= geometry.obj graphcomponent.obj heapembedding.obj startreeembedding.obj \
       forcedirectedparametersbase.obj forcedirectedparameters.obj forcedirectedembedding.obj \
-      graphlayouter.obj
+      graphlayouter.obj basicspringembedderlayout.obj forcedirectedgraphlayouter.obj
 
 
 #

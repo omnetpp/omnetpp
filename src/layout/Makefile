@@ -12,7 +12,7 @@ LIBS= -lcommon
 
 OBJS= geometry.o graphcomponent.o heapembedding.o startreeembedding.o \
       forcedirectedparametersbase.o forcedirectedparameters.o forcedirectedembedding.o \
-      graphlayouter.o
+      graphlayouter.o basicspringembedderlayout.o forcedirectedgraphlayouter.o
 
 
 #
