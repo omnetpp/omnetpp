@@ -170,26 +170,42 @@ foreach $class (@classes)
 
 close(CC);
 
-
 sub makeMethodImpl ()
 {
    my $class = shift;
    my $wantOptFields = shift;
 
-   my $txt = "void EventLogWriter::" . makeMethodDecl($class,$wantOptFields) . "\n";
-   $txt .= "{\n";
-   $nl = ($class->{CODE} eq "E") ? "\\n" : "";
-   $txt .= "    CHECK(fprintf(f, \"$nl$class->{CODE}";
+   my $txt = "void EventLogWriter::" . makeMethodDecl($class,$wantOptFields) . "\n{\n";
+
+   # class code goes into initial fprintf
+   my $fmt .= "$class->{CODE}";
+   $fmt = "\\n".$fmt if ($class->{CODE} eq "E");
+   my $args = "";
+
    foreach $field (@{ $class->{FIELDS} })
    {
-      $txt .= " $field->{CODE} $field->{PRINTFTYPE}" if ($wantOptFields || $field->{DEFAULTVALUE} eq "");
+      # if wantOptFields==false, skip optional fields
+      next if (!$wantOptFields && $field->{DEFAULTVALUE} ne "");
+
+      if ($field->{DEFAULTVALUE} eq "")
+      {
+         # mandatory field: append to current fprintf statement
+         $fmt .= " $field->{CODE} $field->{PRINTFTYPE}";
+         $args .= ", $field->{PRINTFVALUE}";
+      }
+      else
+      {
+         # optional field: flush current fprintf statement, and generate a conditional fprintf
+         $txt .= "    CHECK(fprintf(f, \"$fmt\"$args));\n" if ($fmt ne "");
+         $fmt = "";
+         $args = "";
+         $txt .= "    if ($field->{NAME}!=$field->{DEFAULTVALUE})\n";
+         $txt .= "        CHECK(fprintf(f, \" $field->{CODE} $field->{PRINTFTYPE}\", $field->{PRINTFVALUE}));\n";
+      }
    }
-   $txt .= "\\n\"";
-   foreach $field (@{ $class->{FIELDS} })
-   {
-      $txt .= ", $field->{PRINTFVALUE}" if ($wantOptFields || $field->{DEFAULTVALUE} eq "");
-   }
-   $txt .= "));\n";
+   # flush final fprintf statement (or at least a newline if $fmt=="")
+   $txt .= "    CHECK(fprintf(f, \"$fmt\\n\"$args));\n";
+
    $txt .= "}\n\n";
    $txt;
 }
@@ -216,10 +232,10 @@ sub makeMethodDecl ()
 
 sub makeFileBanner ()
 {
-    my $ufilename = uc(shift);
+    my $ucfilename = uc(shift);
     return
 "//=========================================================================
-// $ufilename - part of
+// $ucfilename - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
