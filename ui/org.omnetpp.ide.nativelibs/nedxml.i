@@ -143,6 +143,7 @@ namespace std {
 
 
 /* Let's just grab the original header file here */
+%include "nedxmldefs.h"
 %include "nedelement.h"
 %include "nederror.h"
 %include "nedparser.h"
