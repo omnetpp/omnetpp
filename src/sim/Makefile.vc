@@ -92,7 +92,7 @@ sim_std.lib : $(OBJS)
 
 sim_std.dll : $(OBJS)
 	$(SHLIB_LD) /out:sim_std.dll /subsystem:console $(OBJS) $(IMPLIBS)
-	copy sim_std.dll $(OMNETPP_LIB_DIR:/=\)
+	copy sim_std.dll $(OMNETPP_BIN_DIR:/=\)
 	copy sim_std.lib $(OMNETPP_LIB_DIR:/=\)
 
 expr.tab.h expr.tab.cc : expr.y

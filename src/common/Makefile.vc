@@ -40,7 +40,7 @@ common.lib : $(OBJS)
 
 common.dll : $(OBJS)
 	$(SHLIB_LD) /out:common.dll /subsystem:console $(OBJS)
-	copy common.dll $(OMNETPP_LIB_DIR:/=\)
+	copy common.dll $(OMNETPP_BIN_DIR:/=\)
 	copy common.lib $(OMNETPP_LIB_DIR:/=\)
 
 matchexpression.tab.h matchexpression.tab.cc : matchexpression.y

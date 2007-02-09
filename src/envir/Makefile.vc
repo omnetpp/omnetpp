@@ -47,7 +47,7 @@ envir-implib : $(OBJS)
 
 envir.dll : $(OBJS)
 	$(SHLIB_LD) /out:envir.dll /subsystem:console $(OBJS) $(IMPLIBS)
-	copy envir.dll $(OMNETPP_LIB_DIR:/=\)
+	copy envir.dll $(OMNETPP_BIN_DIR:/=\)
 	copy envir.lib $(OMNETPP_LIB_DIR:/=\)
 
 eventlogwriter.cc eventlogwriter.h : eventlogentries.pl

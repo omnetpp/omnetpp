@@ -43,7 +43,7 @@ scave.lib : $(OBJS)
 
 scave.dll : $(OBJS)
 	$(SHLIB_LD) /out:scave.dll /subsystem:console $(OBJS) $(IMPLIBS)
-	copy scave.dll $(OMNETPP_LIB_DIR:/=\)
+	copy scave.dll $(OMNETPP_BIN_DIR:/=\)
 	copy scave.lib $(OMNETPP_LIB_DIR:/=\)
 
 scavetool.exe : scavetool.obj scave$(LIB_SUFFIX)

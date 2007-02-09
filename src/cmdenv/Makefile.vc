@@ -36,7 +36,7 @@ cmdenv.lib : $(OBJS)
 
 cmdenv.dll : $(OBJS)
 	$(SHLIB_LD) /out:cmdenv.dll /subsystem:console $(OBJS) $(IMPLIBS)
-	copy cmdenv.dll $(OMNETPP_LIB_DIR:/=\)
+	copy cmdenv.dll $(OMNETPP_BIN_DIR:/=\)
 	copy cmdenv.lib $(OMNETPP_LIB_DIR:/=\)
 
 depend:

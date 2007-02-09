@@ -38,7 +38,7 @@ layout.lib : $(OBJS)
 
 layout.dll : $(OBJS)
 	$(SHLIB_LD) /out:layout.dll /subsystem:console $(OBJS) $(IMPLIBS)
-	copy layout.dll $(OMNETPP_LIB_DIR:/=\)
+	copy layout.dll $(OMNETPP_BIN_DIR:/=\)
 	copy layout.lib $(OMNETPP_LIB_DIR:/=\)
 
 depend:

@@ -36,7 +36,7 @@ class ResultFileManager;
  * Item in an output scalar or output vector file. Represents common properties
  * of an output vector or output scalar.
  */
-struct ResultItem
+struct SCAVE_API ResultItem
 {
     FileRun *fileRunRef; // backref to containing FileRun
     std::string *moduleNameRef; // points into ResultFileManager's StringSet
@@ -46,7 +46,7 @@ struct ResultItem
 /**
  * Represents an output scalar
  */
-struct ScalarResult : public ResultItem
+struct SCAVE_API ScalarResult : public ResultItem
 {
     double value;
 };
@@ -55,7 +55,7 @@ struct ScalarResult : public ResultItem
  * Represents an output vector. This is only the declaration,
  * actual vector data are not kept in memory.
  */
-struct VectorResult : public ResultItem
+struct SCAVE_API VectorResult : public ResultItem
 {
     int vectorId;
     std::string columns;
@@ -81,7 +81,7 @@ typedef std::vector<FileRun *> FileRunList;
 /**
  * Represents a loaded scalar or vector file.
  */
-struct ResultFile
+struct SCAVE_API ResultFile
 {
     int id;  // position in fileList
     ResultFileManager *resultFileManager; // backref to containing ResultFileManager
@@ -102,7 +102,7 @@ typedef std::map<std::string, std::string> StringMap;
  * the same run (i.e. runName is the same), they will share
  * the same Run object.
  */
-struct Run
+struct SCAVE_API Run
 {
     std::string runName; // unique identifier for the run, "runId"
     ResultFileManager *resultFileManager; // backref to containing ResultFileManager
@@ -137,7 +137,7 @@ struct Run
  * And ResultItems refer to a FileRun instead of a ResultFile and a Run,
  * to conserve memory.
  */
-struct FileRun
+struct SCAVE_API FileRun
 {
     ResultFile *fileRef;
     Run *runRef;

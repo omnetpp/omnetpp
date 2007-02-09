@@ -48,7 +48,7 @@ tkenv.lib : $(OBJS)
 
 tkenv.dll : $(OBJS)
 	$(SHLIB_LD) /out:tkenv.dll /subsystem:console $(OBJS) $(IMPLIBS)
-	copy tkenv.dll $(OMNETPP_LIB_DIR:/=\)
+	copy tkenv.dll $(OMNETPP_BIN_DIR:/=\)
 	copy tkenv.lib $(OMNETPP_LIB_DIR:/=\)
 
 tkapp.obj : tkapp.cc

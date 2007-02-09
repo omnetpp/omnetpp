@@ -38,7 +38,7 @@ eventlog.lib : $(OBJS)
 
 eventlog.dll : $(OBJS)
 	$(SHLIB_LD) /out:eventlog.dll /subsystem:console $(OBJS) $(IMPLIBS)
-	copy eventlog.dll $(OMNETPP_LIB_DIR:/=\)
+	copy eventlog.dll $(OMNETPP_BIN_DIR:/=\)
 	copy eventlog.lib $(OMNETPP_LIB_DIR:/=\)
 
 eventlogtool.exe : eventlogtool.obj eventlog$(LIB_SUFFIX)

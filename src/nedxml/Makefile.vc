@@ -64,7 +64,7 @@ nedxml.lib : $(OBJS)
 
 nedxml.dll : $(OBJS)
 	$(SHLIB_LD) /out:nedxml.dll /subsystem:console $(OBJS) $(IMPLIBS)
-	copy nedxml.dll $(OMNETPP_LIB_DIR:/=\)
+	copy nedxml.dll $(OMNETPP_BIN_DIR:/=\)
 	copy nedxml.lib $(OMNETPP_LIB_DIR:/=\)
 
 nedtool.obj : nedtool.cc
