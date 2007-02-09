@@ -22,8 +22,8 @@
 #include "exception.h"
 
 
-extern double NaN;
-extern double POSITIVE_INFINITY;
+extern LAYOUT_API double NaN;
+extern LAYOUT_API double POSITIVE_INFINITY;
 
 inline bool isNaN(double x) { return x != x; }
 
