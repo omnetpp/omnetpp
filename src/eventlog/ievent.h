@@ -19,7 +19,7 @@
 #include "eventlogentry.h"
 #include "messagedependency.h"
 
-class IEvent
+class EVENTLOG_API IEvent
 {
     protected:
         IEvent *previousEvent;
@@ -51,7 +51,7 @@ class IEvent
          */
         virtual file_offset_t getEndOffset() = 0;
 
-        /** 
+        /**
          * Returns the 'E' entry (line) corresponding to this event.
          */
         virtual EventEntry *getEventEntry() = 0;
@@ -87,7 +87,7 @@ class IEvent
         /**
          * Returns the closest preceding event which caused this event by sending a message.
          */
-        virtual IEvent *getCauseEvent() = 0; 
+        virtual IEvent *getCauseEvent() = 0;
         virtual BeginSendEntry *getCauseBeginSendEntry() = 0;
         virtual MessageDependency *getCause() = 0;
         virtual MessageDependencyList *getCauses() = 0;

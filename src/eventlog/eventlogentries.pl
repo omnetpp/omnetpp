@@ -134,7 +134,7 @@ $index = 1;
 foreach $class (@classes)
 {
    print ENTRIES_H_FILE "
-class $class->{NAME} : public EventLogTokenBasedEntry
+class EVENTLOG_API $class->{NAME} : public EventLogTokenBasedEntry
 {
    public:
       $class->{NAME}();

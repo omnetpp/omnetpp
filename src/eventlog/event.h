@@ -32,7 +32,7 @@ class EventLog;
  * remembered by callers, because they may get deleted when the event is
  * thrown out of the eventlog cache.
  */
-class Event : public IEvent
+class EVENTLOG_API Event : public IEvent
 {
     protected:
         EventLog *eventLog; // the corresponding event log

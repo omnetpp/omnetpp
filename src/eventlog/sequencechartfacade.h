@@ -27,7 +27,7 @@
  * pointer value inside. This has disastrous effect on performance
  * when dealing with huge amounts of data).
  */
-class SequenceChartFacade : public EventLogFacade
+class EVENTLOG_API SequenceChartFacade : public EventLogFacade
 {
     protected:
         long timelineCoordinateSystemVersion;

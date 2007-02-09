@@ -17,7 +17,7 @@
 
 #include "eventlogentries.h"
 
-class EventLogEntryFactory
+class EVENTLOG_API EventLogEntryFactory
 {
    public:
       EventLogTokenBasedEntry * parseEntry(Event *event, char **tokens, int numTokens);

@@ -28,7 +28,7 @@
  * TODO: filtered event log must save extra info in the exported log file to be able to reproduce the
  * same in memory model for filtered message dependencies. These can be done by adding new tags to E lines.
  */
-class FilteredEventLog : public IEventLog
+class EVENTLOG_API FilteredEventLog : public IEventLog
 {
     protected:
         IEventLog *eventLog;

@@ -25,7 +25,7 @@ class Event;
  * Base class for all kind of event log entries.
  * An entry is represented by a single line in the log file.
  */
-class EventLogEntry
+class EVENTLOG_API EventLogEntry
 {
     protected:
         Event* event; // back pointer
@@ -47,7 +47,7 @@ class EventLogEntry
 /**
  * Base class for entries represented by key value tokens.
  */
-class EventLogTokenBasedEntry : public EventLogEntry
+class EVENTLOG_API EventLogTokenBasedEntry : public EventLogEntry
 {
     protected:
         char *getToken(char **tokens, int numTokens, const char *sign);
@@ -64,12 +64,12 @@ class EventLogTokenBasedEntry : public EventLogEntry
 /**
  * One line log message entry.
  */
-class EventLogMessage : public EventLogEntry
+class EVENTLOG_API EventLogMessage : public EventLogEntry
 {
     public:
         const char *text;
 
-    public: 
+    public:
         EventLogMessage(Event *event);
         virtual void parse(char *line, int length);
         virtual void print(FILE *fout);

@@ -32,7 +32,7 @@
  * Allows random access of an event log file, i.e. positioning
  * on arbitrary event numbers.
  */
-class EventLogIndex
+class EVENTLOG_API EventLogIndex
 {
     protected:
         LineTokenizer tokenizer;

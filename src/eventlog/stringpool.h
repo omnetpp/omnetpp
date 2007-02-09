@@ -22,7 +22,7 @@
  * For saving memory on the storage of (largely) constant strings that occur in
  * many instances. (See Flyweight GoF pattern.)
  */
-class StringPool
+class EVENTLOG_API StringPool
 {
   protected:
     struct strless {

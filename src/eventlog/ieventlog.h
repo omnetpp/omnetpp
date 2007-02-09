@@ -19,7 +19,7 @@
 #include "eventlogdefs.h"
 #include "ievent.h"
 
-class IEventLog
+class EVENTLOG_API IEventLog
 {
     protected:
         /**
@@ -31,7 +31,7 @@ class IEventLog
     public:
         IEventLog();
         virtual ~IEventLog() {}
-	
+
         /**
          * Returns the number of events parsed so far.
          */

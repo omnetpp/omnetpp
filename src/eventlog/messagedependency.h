@@ -35,7 +35,7 @@ class IEventLog;
  * Entry number is the line number after the "E" line.
  *
  */
-class MessageDependency
+class EVENTLOG_API MessageDependency
 {
     protected:
         IEventLog *eventLog;
@@ -78,7 +78,7 @@ class MessageDependency
 
 typedef std::vector<MessageDependency *> MessageDependencyList;
 
-class MessageReuse : public MessageDependency
+class EVENTLOG_API MessageReuse : public MessageDependency
 {
     public:
         MessageReuse(IEventLog *eventLog, long senderEventNumber, int BeginSendEntryNumber);
@@ -88,7 +88,7 @@ class MessageReuse : public MessageDependency
 /**
  * Represents a single message send (or schedule).
  */
-class MessageSend : public MessageDependency
+class EVENTLOG_API MessageSend : public MessageDependency
 {
     public:
         MessageSend(IEventLog *eventLog, long senderEventNumber, int BeginSendEntryNumber);
@@ -104,7 +104,7 @@ class MessageSend : public MessageDependency
         simtime_t getArrivalTime() { return getConsequenceTime(); }
 };
 
-class FilteredMessageDependency : public MessageDependency
+class EVENTLOG_API FilteredMessageDependency : public MessageDependency
 {
     protected:
         long middleEventNumber;

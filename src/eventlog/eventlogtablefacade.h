@@ -26,7 +26,7 @@
  * pointer value inside. This has disastrous effect on performance
  * when dealing with huge amounts of data).
  */
-class EventLogTableFacade : EventLogFacade
+class EVENTLOG_API EventLogTableFacade : EventLogFacade
 {
     protected:
         long approximateNumberOfEntries;

@@ -27,7 +27,7 @@
  * pointer value inside. This has disastrous effect on performance
  * when dealing with huge amounts of data).
  */
-class EventLogFacade
+class EVENTLOG_API EventLogFacade
 {
     protected:
         IEventLog *eventLog;

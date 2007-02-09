@@ -28,7 +28,7 @@ class FilteredEventLog;
  *
  * Filtered events are in a lazy double-linked list based on event numbers.
  */
-class FilteredEvent : public IEvent
+class EVENTLOG_API FilteredEvent : public IEvent
 {
     protected:
         FilteredEventLog *filteredEventLog;

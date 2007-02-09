@@ -24,7 +24,7 @@
 #include "ieventlog.h"
 #include "eventlogindex.h"
 
-extern StringPool eventLogStringPool;
+extern EVENTLOG_API StringPool eventLogStringPool;
 
 class Event;
 class EventLogEntry;
@@ -34,7 +34,7 @@ class EventLogEntry;
  * store pointers to Events or EventLogEntries, because this class may
  * thow them out of the cache any time.
  */
-class EventLog : public IEventLog, public EventLogIndex
+class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
 {
     protected:
         long numParsedEvents;
