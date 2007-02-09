@@ -42,12 +42,10 @@ while (<FILE>)
       $fieldType = $2;
       $fieldName = $3;
       $fieldDefault  = $5;
-      $fieldPrintfValue = $fieldName;
 
       if ($fieldType eq "string")
       {
          $fieldPrintfType = "%s";
-         $fieldPrintfValue = "QUOTE($fieldPrintfValue)";
       }
       elsif ($fieldType eq "long")
       {
@@ -59,8 +57,7 @@ while (<FILE>)
       }
       elsif ($fieldType eq "simtime_t")
       {
-         $fieldPrintfType = "%s";
-         $fieldPrintfValue = "SIMTIME_STR($fieldPrintfValue)";
+         $fieldPrintfType = "%.*g";
       }
 
       if ($fieldDefault ne "") {
@@ -74,7 +71,6 @@ while (<FILE>)
          TYPE => $fieldType,
          CTYPE => $fieldCType,
          PRINTFTYPE => $fieldPrintfType,
-         PRINTFVALUE => $fieldPrintfValue,
          NAME => $fieldName,
          DEFAULTVALUE => $fieldDefault,
       };
@@ -110,8 +106,8 @@ close(FILE);
 
 open(ENTRIES_H_FILE, ">eventlogentries.h");
 
-print ENTRIES_H_FILE "\
-//=========================================================================
+print ENTRIES_H_FILE
+"//=========================================================================
 //  EVENTLOGENTRIES.H - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
@@ -257,18 +253,18 @@ foreach $class (@classes)
    {
       if ($field->{TYPE} eq "string")
       {
-         print ENTRIES_CC_FILE "   if ($field->{NAME})\n";
-         print ENTRIES_CC_FILE "      fprintf(fout, \" $field->{CODE} $field->{PRINTFTYPE}\", QUOTE($field->{NAME}));\n";
+         print ENTRIES_CC_FILE "    if ($field->{NAME})\n";
+         print ENTRIES_CC_FILE "        fprintf(fout, \" $field->{CODE} $field->{PRINTFTYPE}\", QUOTE($field->{NAME}));\n";
       }
       elsif ($field->{TYPE} eq "simtime_t")
       {
-         print ENTRIES_CC_FILE "   if ($field->{NAME} != -1)\n";
-         print ENTRIES_CC_FILE "      fprintf(fout, \" $field->{CODE} $field->{PRINTFTYPE}\", 12, $field->{NAME});\n";
+         print ENTRIES_CC_FILE "    if ($field->{NAME} != -1)\n";
+         print ENTRIES_CC_FILE "        fprintf(fout, \" $field->{CODE} $field->{PRINTFTYPE}\", 12, $field->{NAME});\n";
       }
       else
       {
-         print ENTRIES_CC_FILE "   if ($field->{NAME} != -1)\n";
-         print ENTRIES_CC_FILE "      fprintf(fout, \" $field->{CODE} $field->{PRINTFTYPE}\", $field->{NAME});\n";
+         print ENTRIES_CC_FILE "    if ($field->{NAME} != -1)\n";
+         print ENTRIES_CC_FILE "        fprintf(fout, \" $field->{CODE} $field->{PRINTFTYPE}\", $field->{NAME});\n";
       }
    }
 
