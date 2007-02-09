@@ -9,9 +9,6 @@ OMNETPP_ROOT=..\..
 CFLAGS=$(CFLAGS) -DWIN32_DLL
 !endif
 
-# hide export/import macros from swig
-SWIGFLAGS=-DOPP_DLLEXPORT= -DOPP_DLLIMPORT=
-
 JDK="$(TOOLS_DIR)\jdk1.5.0"
 SWIG="$(TOOLS_DIR)\SWIG-1.3.25\swig.exe"
 #SWIG="$(TOOLS_DIR)\SWIGWIN-1.3.31\swig.exe"

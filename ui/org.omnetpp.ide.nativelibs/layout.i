@@ -19,6 +19,11 @@
     }
 }
 
+// hide export/import macros from swig
+#define COMMON_API
+#define OPP_DLLEXPORT 
+#define OPP_DLLIMPORT
+
 %typemap(jni)    int64 "jlong"
 %typemap(jtype)  int64 "long"
 %typemap(jstype) int64 "long"

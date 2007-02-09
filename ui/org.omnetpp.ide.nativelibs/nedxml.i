@@ -24,6 +24,10 @@
 // #include "cppgenerator.h"
 %}
 
+// hide export/import macros from swig
+#define COMMON_API
+#define OPP_DLLEXPORT 
+#define OPP_DLLIMPORT
 
 namespace std {
 //class ostream;

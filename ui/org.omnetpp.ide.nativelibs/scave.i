@@ -20,6 +20,11 @@
     }
 }
 
+// hide export/import macros from swig
+#define COMMON_API
+#define OPP_DLLEXPORT 
+#define OPP_DLLIMPORT
+
 %include "inttypes.h"
 %include "scavedefs.h"
 
