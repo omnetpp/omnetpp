@@ -22,7 +22,7 @@
 #include "geometry.h"
 #include "forcedirectedparametersbase.h"
 
-class ForceDirectedEmbedding
+class LAYOUT_API ForceDirectedEmbedding
 {
     protected:
         /**

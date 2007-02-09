@@ -17,8 +17,10 @@
 
 #include <math.h>
 #include <vector>
+#include "layoutdefs.h"
 #include "commonutil.h"
 #include "exception.h"
+
 
 extern double NaN;
 extern double POSITIVE_INFINITY;
