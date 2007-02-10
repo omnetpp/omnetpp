@@ -1030,39 +1030,38 @@ void TOmnetTkApp::readOptions()
 
     cConfiguration *cfg = getConfig();
 
-    opt_extrastack_kb = cfg->getAsInt("Tkenv", "extra-stack-kb", TKENV_EXTRASTACK_KB);
+    opt_extrastack_kb = cfg->getAsInt(CFGID_EXTRA_STACK_KB);
 
     const char *r = args->optionValue('r');
     if (r)
         opt_default_run = atoi(r);
     else
-        opt_default_run = cfg->getAsInt( "Tkenv", "default-run", 0);
+        opt_default_run = cfg->getAsInt(CFGID_DEFAULT_RUN);
 
     // Note: most entries below should be obsoleted (with .tkenvrc taking over)
-    opt_stepdelay = long(1000*cfg->getAsTime( "Tkenv", "slowexec-delay", 0.3 )+.5);
-    opt_updatefreq_fast = cfg->getAsInt( "Tkenv", "update-freq-fast", 50);
-    opt_updatefreq_express = cfg->getAsInt( "Tkenv", "update-freq-express", 10000 );
-    opt_bkpts_enabled = cfg->getAsBool( "Tkenv", "breakpoints-enabled", true );
-    opt_animation_enabled = cfg->getAsBool( "Tkenv", "animation-enabled", true );
-    opt_nexteventmarkers = cfg->getAsBool( "Tkenv", "next-event-markers", true );
-    opt_senddirect_arrows = cfg->getAsBool( "Tkenv", "senddirect-arrows", true );
-    opt_anim_methodcalls = cfg->getAsBool( "Tkenv", "anim-methodcalls", true );
-    opt_methodcalls_delay = long(1000*cfg->getAsTime( "Tkenv", "methodcalls-delay", 0.2)+.5);
-    opt_animation_msgnames = cfg->getAsBool( "Tkenv", "animation-msgnames", true );
-    opt_animation_msgclassnames = cfg->getAsBool( "Tkenv", "animation-msgclassnames", true );
-    opt_animation_msgcolors = cfg->getAsBool( "Tkenv", "animation-msgcolors", true );
-    opt_penguin_mode = cfg->getAsBool( "Tkenv", "penguin-mode", false );
-    opt_showlayouting = cfg->getAsBool( "Tkenv", "show-layouting", false);
-    opt_usenewlayouter = cfg->getAsBool( "Tkenv", "use-new-layouter", false);
-    opt_bubbles = cfg->getAsBool( "Tkenv", "show-bubbles", true );
-    opt_animation_speed = cfg->getAsDouble( "Tkenv", "animation-speed", 1.5);
-    if (opt_animation_speed<0) opt_animation_speed=0;
-    if (opt_animation_speed>3) opt_animation_speed=3;
-    opt_print_banners = cfg->getAsBool( "Tkenv", "print-banners", true );
-    opt_use_mainwindow = cfg->getAsBool( "Tkenv", "use-mainwindow", true );
-    opt_expressmode_autoupdate = cfg->getAsBool( "Tkenv", "expressmode-autoupdate", true );
-    opt_image_path = cfg->getAsFilename( "Tkenv", "image-path", "").c_str();
-    opt_plugin_path = cfg->getAsFilename( "Tkenv", "plugin-path", "").c_str();
+    opt_stepdelay = long(1000*cfg->getAsDouble(CFGID_SLOWEXEC_DELAY));
+    opt_updatefreq_fast = cfg->getAsInt(CFGID_UPDATE_FREQ_FAST);
+    opt_updatefreq_express = cfg->getAsInt(CFGID_UPDATE_FREQ_EXPRESS);
+    opt_bkpts_enabled = cfg->getAsBool(CFGID_BREAKPOINTS_ENABLED);
+    opt_animation_enabled = cfg->getAsBool(CFGID_ANIMATION_ENABLED);
+    opt_nexteventmarkers = cfg->getAsBool(CFGID_NEXT_EVENT_MARKERS);
+    opt_senddirect_arrows = cfg->getAsBool(CFGID_SENDDIRECT_ARROWS);
+    opt_anim_methodcalls = cfg->getAsBool(CFGID_ANIM_METHODCALLS);
+    opt_methodcalls_delay = long(1000*cfg->getAsDouble(CFGID_METHODCALLS_DELAY));
+    opt_animation_msgnames = cfg->getAsBool(CFGID_ANIMATION_MSGNAMES);
+    opt_animation_msgclassnames = cfg->getAsBool(CFGID_ANIMATION_MSGCLASSNAMES);
+    opt_animation_msgcolors = cfg->getAsBool(CFGID_ANIMATION_MSGCOLORS);
+    opt_penguin_mode = cfg->getAsBool(CFGID_PENGUIN_MODE);
+    opt_showlayouting = cfg->getAsBool(CFGID_SHOW_LAYOUTING);
+    opt_usenewlayouter = cfg->getAsBool(CFGID_USE_NEW_LAYOUTER);
+    opt_bubbles = cfg->getAsBool(CFGID_SHOW_BUBBLES);
+    opt_animation_speed = cfg->getAsDouble(CFGID_ANIMATION_SPEED);
+    opt_animation_speed = std::min(3.0, std::max(0.0, opt_animation_speed));
+    opt_print_banners = cfg->getAsBool(CFGID_PRINT_BANNERS);
+    opt_use_mainwindow = cfg->getAsBool(CFGID_USE_MAINWINDOW);
+    opt_expressmode_autoupdate = cfg->getAsBool(CFGID_EXPRESSMODE_AUTOUPDATE);
+    opt_image_path = cfg->getAsFilename(CFGID_IMAGE_PATH).c_str();
+    opt_plugin_path = cfg->getAsFilename(CFGID_PLUGIN_PATH).c_str();
 }
 
 void TOmnetTkApp::readPerRunOptions(int run_nr)
