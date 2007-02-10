@@ -24,7 +24,7 @@
 #include "simkerneldefs.h"
 #include "opp_string.h"
 #include "cobject.h"
-
+#include "cconfigentry.h"
 
 /**
  * Abstract base class for representing the configuration (omnetpp.ini).
@@ -56,6 +56,8 @@
  *
  * @ingroup EnvirExtensions
  */
+//FIXME explain what is cConfigEntry (ie purpose: to detect unrecognized entries (ie caused by typos) in omnetpp.ini)
+//XXX cConfigEntry: rename to cConfigEntryDecl?
 class ENVIR_API cConfiguration : public cObject
 {
   public:
@@ -105,7 +107,7 @@ class ENVIR_API cConfiguration : public cObject
     virtual bool notFound() = 0;
     //@}
 
-    /** @name Getter methods */
+    /** @name Explicit getter methods */
     //@{
 
     /** Returns a config value as bool */
@@ -204,6 +206,57 @@ class ENVIR_API cConfiguration : public cObject
      * depending where the given entry was found.
      */
     virtual std::string getLocation(const char *section1, const char *section2, const char *key) = 0;
+    //@}
+
+    /** @name cConfigEntry-based getter methods */
+    //@{
+    /** Returns a config value as bool */
+    virtual bool getAsBool(cConfigEntry *entry) = 0;
+
+    /** Returns a config value as long */
+    virtual long getAsInt(cConfigEntry *entry) = 0;
+
+    /** Returns a config value as double */
+    virtual double getAsDouble(cConfigEntry *entry) = 0;
+
+    /** Returns a config value as string */
+    virtual const char *getAsString(cConfigEntry *entry) = 0;
+
+    /**
+     * Interprets the config value as a path. If it is relative, then it will be
+     * converted to an absolute path, using the base directory (see the
+     * getBaseDirectoryFor() method).
+     */
+    virtual std::string getAsFilename(cConfigEntry *entry) = 0;
+
+    /**
+     * Interprets the config value as a list of paths (file or directory names,
+     * possibly containing wildcards), separated by spaces. The relative paths
+     * in the list will be converted to absolute, using the base directory
+     * (see getBaseDirectoryFor() method). If the base directory name contains spaces,
+     * the path will be surrounded with quotes.
+     */
+    virtual std::string getAsFilenames(cConfigEntry *entry) = 0;
+
+    /** Returns a config entry's "raw" (unparsed) value */
+    virtual const char *getAsCustom(cConfigEntry *entry) = 0;
+
+    /**
+     * Returns the base directory, to which the entry's value -- if it is a string
+     * to be interpreted as a file name -- should be understood as relative.
+     * This method in the cInifile class returns the location of the ini file in which
+     * the given entry occurred. Other cConfiguration implementations may return "."
+     * to mean the current working directory. For example, this function is used by the
+     * preload-ned-files= ini file entry to ensure that files are loaded from the correct
+     * place.
+     */
+    virtual const char *getBaseDirectoryFor(cConfigEntry *entry) = 0;
+
+    /**
+     * Returns the location from which this entry was read (e.g. name of the ini file).
+     * This can be useful for debugging; it is not used by the system for any other purpose.
+     */
+    virtual std::string getLocation(cConfigEntry *entry) = 0;
     //@}
 
     /** @name Special */

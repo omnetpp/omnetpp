@@ -50,39 +50,54 @@ clean:
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+basicspringembedderlayout.obj: basicspringembedderlayout.cc \
+  basicspringembedderlayout.h \
+  graphlayouter.h \
+  layoutdefs.h
 forcedirectedembedding.obj: forcedirectedembedding.cc \
   forcedirectedembedding.h \
   forcedirectedparameters.h \
+  geometry.h \
+  forcedirectedparametersbase.h \
+  layoutdefs.h
+forcedirectedgraphlayouter.obj: forcedirectedgraphlayouter.cc \
+  forcedirectedgraphlayouter.h \
+  startreeembedding.h \
+  heapembedding.h \
+  graphlayouter.h \
+  forcedirectedembedding.h \
+  forcedirectedparameters.h \
+  graphcomponent.h \
+  layoutdefs.h \
   geometry.h \
   forcedirectedparametersbase.h
 forcedirectedparameters.obj: forcedirectedparameters.cc \
   forcedirectedparameters.h \
   geometry.h \
   forcedirectedparametersbase.h \
-  forcedirectedembedding.h
+  forcedirectedembedding.h \
+  layoutdefs.h
 forcedirectedparametersbase.obj: forcedirectedparametersbase.cc \
   forcedirectedparametersbase.h \
-  geometry.h
+  geometry.h \
+  layoutdefs.h
 geometry.obj: geometry.cc \
-  geometry.h
+  geometry.h \
+  layoutdefs.h
 graphcomponent.obj: graphcomponent.cc \
   graphcomponent.h \
-  geometry.h
+  geometry.h \
+  layoutdefs.h
 graphlayouter.obj: graphlayouter.cc \
   graphlayouter.h \
-  startreeembedding.h \
-  heapembedding.h \
-  layoutdefs.h \
-  forcedirectedembedding.h \
-  forcedirectedparameters.h \
-  graphcomponent.h \
-  geometry.h \
-  forcedirectedparametersbase.h
+  layoutdefs.h
 heapembedding.obj: heapembedding.cc \
   heapembedding.h \
   geometry.h \
-  graphcomponent.h
+  graphcomponent.h \
+  layoutdefs.h
 startreeembedding.obj: startreeembedding.cc \
   startreeembedding.h \
   geometry.h \
-  graphcomponent.h
+  graphcomponent.h \
+  layoutdefs.h

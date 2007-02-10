@@ -21,8 +21,8 @@ option bkpts_enabled	{1}
 option expressmode_autoupdate	{1}
 config concurrent-anim	{1}
 config confirm-exit	{1}
-config display-timeline	{1}
-config display-treeview	{1}
+config display-timeline	{0}
+config display-treeview	{0}
 config dontshow	{}
 config editor-backwards	{1}
 config editor-case-sensitive	{0}

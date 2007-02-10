@@ -125,6 +125,19 @@ class ENVIR_API cIniFile : public cConfiguration
     virtual std::vector<opp_string> getEntriesWithPrefix(const char *section1, const char *section2, const char *keypart1, const char *keypart2);
     //@}
 
+    /** @name Redefined cConfigEntry-based getter methods from cConfiguration */
+    //@{
+    virtual bool getAsBool(cConfigEntry *entry);
+    virtual long getAsInt(cConfigEntry *entry);
+    virtual double getAsDouble(cConfigEntry *entry);
+    virtual const char *getAsString(cConfigEntry *entry);
+    virtual std::string getAsFilename(cConfigEntry *entry);
+    virtual std::string getAsFilenames(cConfigEntry *entry);
+    virtual const char *getAsCustom(cConfigEntry *entry);
+    virtual const char *getBaseDirectoryFor(cConfigEntry *entry);
+    virtual std::string getLocation(cConfigEntry *entry);
+    //@}
+
     /**
      * Redefined method from cConfiguration.
      */

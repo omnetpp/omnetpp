@@ -24,7 +24,6 @@
  *
  * @ingroup SimCore
  */
-//FIXME create cNullChannel class as well
 class SIM_API cBasicChannel : public cChannel //implies noncopyable
 {
   private:

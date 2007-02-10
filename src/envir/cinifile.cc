@@ -670,6 +670,81 @@ const char *cIniFile::fileName() const
 
 //-----------
 
+bool cIniFile::getAsBool(cConfigEntry *e)
+{
+    ASSERT(e->type()==cConfigEntry::CFG_BOOL);
+    bool defaultValue = e->defaultValue()[0]!='f' && e->defaultValue()[0]!='0';
+    const char *runsection = "Run 1"; //FIXME FIXME
+    return e->isGlobal() ? getAsBool(e->section(), e->name(), defaultValue) :
+                           getAsBool2(runsection, e->section(), e->name(), defaultValue);
+}
+
+long cIniFile::getAsInt(cConfigEntry *e)
+{
+    ASSERT(e->type()==cConfigEntry::CFG_INT);
+    long defaultValue = atol(e->defaultValue());
+    const char *runsection = "Run 1"; //FIXME FIXME
+    return e->isGlobal() ? getAsInt(e->section(), e->name(), defaultValue) :
+                           getAsInt2(runsection, e->section(), e->name(), defaultValue);
+}
+
+double cIniFile::getAsDouble(cConfigEntry *e)
+{
+    ASSERT(e->type()==cConfigEntry::CFG_DOUBLE);
+    double defaultValue = atof(e->defaultValue());
+    const char *runsection = "Run 1"; //FIXME FIXME
+    return e->isGlobal() ? getAsDouble(e->section(), e->name(), defaultValue) : //XXX obey unit!!!
+                           getAsDouble2(runsection, e->section(), e->name(), defaultValue);
+}
+
+const char *cIniFile::getAsString(cConfigEntry *e)
+{
+    ASSERT(e->type()==cConfigEntry::CFG_STRING);
+    const char *runsection = "Run 1"; //FIXME FIXME
+    return e->isGlobal() ? getAsString(e->section(), e->name(), e->defaultValue()) :
+                           getAsString2(runsection, e->section(), e->name(), e->defaultValue());
+}
+
+std::string cIniFile::getAsFilename(cConfigEntry *e)
+{
+    ASSERT(e->type()==cConfigEntry::CFG_FILENAME);
+    const char *runsection = "Run 1"; //FIXME FIXME
+    return e->isGlobal() ? getAsFilename(e->section(), e->name(), e->defaultValue()) :
+                           getAsFilename2(runsection, e->section(), e->name(), e->defaultValue());
+}
+
+std::string cIniFile::getAsFilenames(cConfigEntry *e)
+{
+    ASSERT(e->type()==cConfigEntry::CFG_FILENAMES);
+    const char *runsection = "Run 1"; //FIXME FIXME
+    return e->isGlobal() ? getAsFilenames(e->section(), e->name(), e->defaultValue()) :
+                           getAsFilenames2(runsection, e->section(), e->name(), e->defaultValue());
+}
+
+const char *cIniFile::getAsCustom(cConfigEntry *e)
+{
+    ASSERT(e->type()==cConfigEntry::CFG_CUSTOM);
+    const char *runsection = "Run 1"; //FIXME FIXME
+    return e->isGlobal() ? getAsCustom(e->section(), e->name(), e->defaultValue()) :
+                           getAsCustom2(runsection, e->section(), e->name(), e->defaultValue());
+}
+
+const char *cIniFile::getBaseDirectoryFor(cConfigEntry *e)
+{
+    const char *runsection = "Run 1"; //FIXME FIXME
+    return e->isGlobal() ? getBaseDirectoryFor(e->section(), e->name()) :
+                           getBaseDirectoryFor(runsection, e->section(), e->name());
+}
+
+std::string cIniFile::getLocation(cConfigEntry *e)
+{
+    const char *runsection = "Run 1"; //FIXME FIXME
+    return e->isGlobal() ? getLocation(e->section(), e->name()) :
+                           getLocation(runsection, e->section(), e->name());
+}
+
+//-----------
+
 std::vector<opp_string> cIniFile::getEntriesWithPrefix(const char *section, const char *keypart1, const char *keypart2)
 {
     // For getting RNG mapping, this is called with:

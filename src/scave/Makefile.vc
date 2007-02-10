@@ -175,9 +175,9 @@ indexedvectorfile.obj: indexedvectorfile.cc \
   ../common/stringutil.h \
   indexedvectorfile.h \
   scaveutils.h \
+  ../common/commondefs.h \
   ../common/commonutil.h \
   node.h \
-  ../common/commondefs.h \
   scavedefs.h \
   ../common/filereader.h \
   indexfile.h \
@@ -192,8 +192,9 @@ indexfile.obj: indexfile.cc \
   ../common/stringutil.h \
   scaveutils.h \
   indexfile.h \
+  ../common/commondefs.h \
   ../common/commonutil.h \
-  ../common/commondefs.h
+  scavedefs.h
 mergernodes.obj: mergernodes.cc \
   channel.h \
   mergernodes.h \
@@ -248,7 +249,8 @@ octaveexport.obj: octaveexport.cc \
   octaveexport.h \
   scavedefs.h \
   xyarray.h \
-  ../common/exception.h
+  ../common/exception.h \
+  ../common/commondefs.h
 resultfilemanager.obj: resultfilemanager.cc \
   ../common/matchexpression.h \
   ../common/patternmatcher.h \
@@ -258,12 +260,13 @@ resultfilemanager.obj: resultfilemanager.cc \
   indexfile.h \
   scaveutils.h \
   resultfilemanager.h \
+  ../common/commondefs.h \
   ../common/exception.h \
-  idlist.h \
-  ../common/commonutil.h \
   scavedefs.h \
-  ../common/commondefs.h
+  idlist.h \
+  ../common/commonutil.h
 scavetool.obj: scavetool.cc \
+  ../utils/ver.h \
   resultfilemanager.h \
   nodetype.h \
   nodetyperegistry.h \
@@ -322,8 +325,8 @@ vectorfileindexer.obj: vectorfileindexer.cc \
   indexedvectorfile.h \
   indexfile.h \
   vectorfileindexer.h \
-  ../common/commonutil.h \
   ../common/commondefs.h \
+  ../common/commonutil.h \
   ../common/exception.h \
   idlist.h \
   scavedefs.h \

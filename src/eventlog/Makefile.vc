@@ -65,10 +65,10 @@ event.obj: event.cc \
   ievent.h \
   eventlogentries.h \
   messagedependency.h \
+  eventlogdefs.h \
   stringpool.h \
   ieventlog.h \
-  eventlogindex.h \
-  eventlogdefs.h
+  eventlogindex.h
 eventlog.obj: eventlog.cc \
   stringpool.h \
   eventlog.h \

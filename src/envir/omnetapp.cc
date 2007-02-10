@@ -89,6 +89,7 @@ static char buffer[1024];
          throw cRuntimeError("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
 
 Register_GlobalConfigEntry(CFGID_INI_WARNINGS, "ini-warnings",  "General", CFG_BOOL,  false , "some description");
+Register_GlobalConfigEntry(CFGID_PRELOAD_NED_FILES, "preload-ned-files", "General", CFG_FILENAMES,  NULL, "some description");
 Register_GlobalConfigEntry(CFGID_TOTAL_STACK_KB, "total-stack-kb",  "General", CFG_INT,  TOTAL_STACK_KB, "some description");
 Register_GlobalConfigEntry(CFGID_DISTRIBUTED, "distributed", "General", CFG_BOOL,  false, "some description");
 Register_GlobalConfigEntry(CFGID_PARALLEL_SIMULATION, "parallel-simulation", "General", CFG_BOOL,  false, "some description");
@@ -227,7 +228,7 @@ void TOmnetApp::setup()
          }
 
          // preload NED files
-         std::string nedfiles = getConfig()->getAsFilenames("General", "preload-ned-files", NULL);
+         std::string nedfiles = getConfig()->getAsFilenames(CFGID_PRELOAD_NED_FILES);
          if (!nedfiles.empty())
          {
              // iterate through file names
@@ -729,7 +730,7 @@ void TOmnetApp::displayStringChanged(cModule *submodule)
 void TOmnetApp::undisposedObject(cObject *obj)
 {
     if (opt_print_undisposed)
-        ::printf("undisposed: (%s) %s\n", obj->className(), obj->fullPath().c_str());
+        ::printf("undisposed object: (%s) %s -- check module destructor\n", obj->className(), obj->fullPath().c_str());
 }
 
 void TOmnetApp::sputn(const char *s, int n)
@@ -770,37 +771,35 @@ void TOmnetApp::readOptions()
 {
     cConfiguration *cfg = getConfig();
 
-    // this must be the very first:
-    opt_ini_warnings = cfg->getAsBool( "General", "ini-warnings", false );
-    //cfg->setWarnings(opt_ini_warnings);
+    opt_ini_warnings = cfg->getAsBool(CFGID_INI_WARNINGS); //XXX ignored
 
-    opt_total_stack_kb = cfg->getAsInt( "General", "total-stack-kb", TOTAL_STACK_KB);
-    if (cfg->getAsBool("General", "distributed", false))
+    opt_total_stack_kb = cfg->getAsInt(CFGID_TOTAL_STACK_KB);
+    if (cfg->getAsBool(CFGID_DISTRIBUTED))
          ev.printfmsg("Warning: config entry distributed= is obsolete (parallel simulation support was reimplemented for version 3.0)");
-    opt_parsim = cfg->getAsBool("General", "parallel-simulation", false);
+    opt_parsim = cfg->getAsBool(CFGID_PARALLEL_SIMULATION);
     if (!opt_parsim)
     {
-        opt_scheduler_class = cfg->getAsString("General", "scheduler-class", "cSequentialScheduler");
+        opt_scheduler_class = cfg->getAsString(CFGID_SCHEDULER_CLASS);
     }
     else
     {
 #ifdef WITH_PARSIM
-        opt_parsimcomm_class = cfg->getAsString("General", "parsim-communications-class", "cFileCommunications");
-        opt_parsimsynch_class = cfg->getAsString("General", "parsim-synchronization-class", "cNullMessageProtocol");
+        opt_parsimcomm_class = cfg->getAsString(CFGID_PARSIM_COMMUNICATIONS_CLASS);
+        opt_parsimsynch_class = cfg->getAsString(CFGID_PARSIM_SYNCHRONIZATION_CLASS);
 #else
         throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
     }
-    opt_load_libs = cfg->getAsFilenames("General", "load-libs", "").c_str();
+    opt_load_libs = cfg->getAsFilenames(CFGID_LOAD_LIBS).c_str();
 
-    opt_num_rngs = cfg->getAsInt("General", "num-rngs", 1);
-    opt_rng_class = cfg->getAsString("General", "rng-class", "cMersenneTwister");
+    opt_num_rngs = cfg->getAsInt(CFGID_NUM_RNGS);
+    opt_rng_class = cfg->getAsString(CFGID_RNG_CLASS);
 
-    opt_outputvectormanager_class = cfg->getAsString("General", "outputvectormanager-class", "cFileOutputVectorManager");
-    opt_outputscalarmanager_class = cfg->getAsString("General", "outputscalarmanager-class", "cFileOutputScalarManager");
-    opt_snapshotmanager_class = cfg->getAsString("General", "snapshotmanager-class", "cFileSnapshotManager");
+    opt_outputvectormanager_class = cfg->getAsString(CFGID_OUTPUTVECTORMANAGER_CLASS);
+    opt_outputscalarmanager_class = cfg->getAsString(CFGID_OUTPUTSCALARMANAGER_CLASS);
+    opt_snapshotmanager_class = cfg->getAsString(CFGID_SNAPSHOTMANAGER_CLASS);
 
-    opt_fname_append_host = cfg->getAsBool("General","fname-append-host",false);
+    opt_fname_append_host = cfg->getAsBool(CFGID_FNAME_APPEND_HOST);
 
     // warn for obsolete RNG seed entries
     bool found = false;
@@ -816,11 +815,11 @@ void TOmnetApp::readOptions()
                      "THE SEEDS YOU SPECIFIED ARE NOT USED. "
                      "Please update your ini file to the OMNeT++ 3.0 Random Number Architecture.");
 
-    ev.debug_on_errors = cfg->getAsBool("General", "debug-on-errors", false);
-    cDefaultList::doGC = cfg->getAsBool("General", "perform-gc", false);
-    opt_print_undisposed = cfg->getAsBool("General", "print-undisposed", true);
+    ev.debug_on_errors = cfg->getAsBool(CFGID_DEBUG_ON_ERRORS);
+    cDefaultList::doGC = cfg->getAsBool(CFGID_PERFORM_GC);
+    opt_print_undisposed = cfg->getAsBool(CFGID_PRINT_UNDISPOSED);
 
-    int scaleexp = cfg->getAsInt("General", "simtime-scale", -12); //XXX review
+    int scaleexp = (int) cfg->getAsInt(CFGID_SIMTIME_SCALE);
     SimTime::setScaleExp(scaleexp);
 
     // other options are read on per-run basis
@@ -832,13 +831,13 @@ void TOmnetApp::readPerRunOptions(int run_no)
     const char *section = getRunSectionName(run_no);
 
     // get options from ini file
-    opt_network_name = cfg->getAsString2(section, "General", "network", "default");
-    opt_warnings = cfg->getAsBool2(section, "General", "warnings", true);
-    opt_simtimelimit = cfg->getAsTime2(section, "General", "sim-time-limit", 0.0);
-    opt_cputimelimit = (long)cfg->getAsTime2(section, "General", "cpu-time-limit", 0.0);
-    opt_netifcheckfreq = cfg->getAsInt2(section, "General", "netif-check-freq", 1);
-    opt_fingerprint = cfg->getAsString2(section, "General", "fingerprint", "");
-    opt_eventlogfilename = cfg->getAsFilename2(section, "General", "eventlog-file", "").c_str();
+    opt_network_name = cfg->getAsString(CFGID_NETWORK);
+    opt_warnings = cfg->getAsBool(CFGID_WARNINGS);
+    opt_simtimelimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT);
+    opt_cputimelimit = (long) cfg->getAsDouble(CFGID_CPU_TIME_LIMIT);
+    opt_netifcheckfreq = cfg->getAsInt(CFGID_NETIF_CHECK_FREQ);
+    opt_fingerprint = cfg->getAsString(CFGID_FINGERPRINT);
+    opt_eventlogfilename = cfg->getAsFilename(CFGID_EVENTLOG_FILE).c_str();
 
     // install hasher object
     if (!opt_fingerprint.empty())

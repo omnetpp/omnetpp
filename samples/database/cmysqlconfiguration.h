@@ -70,6 +70,7 @@ class PatternMatcher;
  *
  * @ingroup EnvirExtensions
  */
+//FIXME add cConfigEntry-based methods too!!! (maybe: inherit them from some cConfigurationBase?)
 class cMySQLConfiguration : public cConfiguration
 {
   private:

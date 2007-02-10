@@ -202,7 +202,7 @@ template<typename T> std::string __tostring(T x)
 // internal
 #define __Register_ConfigEntry(ID, ARGLIST) \
   static cConfigEntry *ID; \
-  EXECUTE_ON_STARTUP(ID##__configentry, configEntries.instance()->add(new cConfigEntry ARGLIST);)
+  EXECUTE_ON_STARTUP(ID##__configentry, configEntries.instance()->add(ID = new cConfigEntry ARGLIST);)
 
 /**
  * Generic, with unit==NULL.
