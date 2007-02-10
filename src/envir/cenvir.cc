@@ -52,9 +52,9 @@ cRegistrationList omnetapps("omnetapps");
 #define ENVIR_TEXTBUF_LEN 1024
 static char buffer[ENVIR_TEXTBUF_LEN];
 
-Register_GlobalConfigEntry(CFGID_LOAD_LIBS, "load-libs", "General", CFG_FILENAMES,  NULL, "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_CONFIGURATION_CLASS, "configuration-class", "General", CFG_STRING,  NULL, "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_USER_INTERFACE, "user-interface", "General", CFG_STRING,  NULL, "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_LOAD_LIBS, "load-libs", "General", CFG_FILENAMES, "", "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_CONFIGURATION_CLASS, "configuration-class", "General", CFG_STRING, "", "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_USER_INTERFACE, "user-interface", "General", CFG_STRING, "", "FIXME add some description here");
 
 // helper macro
 #define CREATE_BY_CLASSNAME(var,classname,baseclass,description) \

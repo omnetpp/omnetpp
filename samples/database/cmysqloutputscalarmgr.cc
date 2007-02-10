@@ -27,7 +27,7 @@
 
 Register_Class(cMySQLOutputScalarManager);
 
-Register_GlobalConfigEntry(CFGID_MYSQLOUTSCALARMGR_CONNECTPREFIX, "mysqloutputscalarmanager-connectprefix", "General", CFG_STRING,  NULL, "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_MYSQLOUTSCALARMGR_CONNECTPREFIX, "mysqloutputscalarmanager-connectprefix", "General", CFG_STRING, "", "FIXME add some description here");
 Register_GlobalConfigEntry(CFGID_MYSQLOUTSCALARMGR_COMMIT_FREQ, "mysqloutputscalarmanager-commit-freq", "General", CFG_INT,  10, "FIXME add some description here");
 
 

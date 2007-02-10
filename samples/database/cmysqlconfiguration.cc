@@ -25,8 +25,8 @@
 Register_Class(cMySQLConfiguration);
 
 Register_GlobalConfigEntry(CFGID_MYSQLCONFIGURATION_DUMPBOOTCFG, "mysqlconfiguration-dumpbootcfg", "General", CFG_BOOL,  false, "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_MYSQLCONFIGURATION_CONNECTPREFIX, "mysqlconfiguration-connectprefix", "General", CFG_STRING,  NULL, "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_MYSQLCONFIGURATION_CONFIGNAME, "mysqlconfiguration-configname", "General", CFG_STRING,  NULL, "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_MYSQLCONFIGURATION_CONNECTPREFIX, "mysqlconfiguration-connectprefix", "General", CFG_STRING, "", "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_MYSQLCONFIGURATION_CONFIGNAME, "mysqlconfiguration-configname", "General", CFG_STRING, "", "FIXME add some description here");
 
 
 cMySQLConfiguration::cMySQLConfiguration()

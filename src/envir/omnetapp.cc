@@ -89,14 +89,13 @@ static char buffer[1024];
          throw cRuntimeError("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
 
 Register_GlobalConfigEntry(CFGID_INI_WARNINGS, "ini-warnings",  "General", CFG_BOOL,  false , "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_PRELOAD_NED_FILES, "preload-ned-files", "General", CFG_FILENAMES,  NULL, "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_PRELOAD_NED_FILES, "preload-ned-files", "General", CFG_FILENAMES, "", "FIXME add some description here");
 Register_GlobalConfigEntry(CFGID_TOTAL_STACK_KB, "total-stack-kb",  "General", CFG_INT,  TOTAL_STACK_KB, "FIXME add some description here");
 Register_GlobalConfigEntry(CFGID_DISTRIBUTED, "distributed", "General", CFG_BOOL,  false, "FIXME add some description here");
 Register_GlobalConfigEntry(CFGID_PARALLEL_SIMULATION, "parallel-simulation", "General", CFG_BOOL,  false, "FIXME add some description here");
 Register_GlobalConfigEntry(CFGID_SCHEDULER_CLASS, "scheduler-class", "General", CFG_STRING,  "cSequentialScheduler", "FIXME add some description here");
 Register_GlobalConfigEntry(CFGID_PARSIM_COMMUNICATIONS_CLASS, "parsim-communications-class", "General", CFG_STRING,  "cFileCommunications", "FIXME add some description here");
 Register_GlobalConfigEntry(CFGID_PARSIM_SYNCHRONIZATION_CLASS, "parsim-synchronization-class", "General", CFG_STRING,  "cNullMessageProtocol", "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_LOAD_LIBS, "load-libs", "General", CFG_FILENAMES,  "", "FIXME add some description here");
 Register_GlobalConfigEntry(CFGID_NUM_RNGS, "num-rngs", "General", CFG_INT, 1, "FIXME add some description here");
 Register_GlobalConfigEntry(CFGID_RNG_CLASS, "rng-class", "General", CFG_STRING,  "cMersenneTwister", "FIXME add some description here");
 Register_GlobalConfigEntry(CFGID_OUTPUTVECTORMANAGER_CLASS, "outputvectormanager-class", "General", CFG_STRING,  "cFileOutputVectorManager", "FIXME add some description here");
@@ -790,7 +789,6 @@ void TOmnetApp::readOptions()
         throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
     }
-    opt_load_libs = cfg->getAsFilenames(CFGID_LOAD_LIBS).c_str();
 
     opt_num_rngs = cfg->getAsInt(CFGID_NUM_RNGS);
     opt_rng_class = cfg->getAsString(CFGID_RNG_CLASS);

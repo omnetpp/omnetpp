@@ -62,7 +62,6 @@ class ENVIR_API TOmnetApp
     opp_string opt_parsimcomm_class; // if opt_parsim: cParsimCommunications class to use
     opp_string opt_parsimsynch_class; // if opt_parsim: cParsimSynchronizer class to use
 // end
-    opp_string opt_load_libs;
     opp_string opt_network_name;
 
     int opt_num_rngs;

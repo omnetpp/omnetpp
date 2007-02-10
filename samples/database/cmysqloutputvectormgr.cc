@@ -32,7 +32,7 @@
 
 Register_Class(cMySQLOutputVectorManager);
 
-Register_GlobalConfigEntry(CFGID_MYSQLOUTVECTORMGR_CONNECTPREFIX, "mysqloutputvectormanager-connectprefix", "General", CFG_STRING,  NULL, "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_MYSQLOUTVECTORMGR_CONNECTPREFIX, "mysqloutputvectormanager-connectprefix", "General", CFG_STRING, "", "FIXME add some description here");
 Register_GlobalConfigEntry(CFGID_MYSQLOUTVECTORMGR_COMMIT_FREQ, "mysqloutputvectormanager-commit-freq", "General", CFG_INT,  50, "FIXME add some description here");
 
 
