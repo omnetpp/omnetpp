@@ -15,7 +15,7 @@ IMPLIBS=../envir/envir.lib ../common/common.lib
 
 OBJS_STD=\
     carray.obj cbasicchannel.obj cboolpar.obj cchannel.obj \
-    cclassfactory.obj ccomponent.obj ccomponenttype.obj \
+    cclassfactory.obj ccomponent.obj ccomponenttype.obj cconfigentry.obj \
     ccompoundmodule.obj ccoroutine.obj cdefaultlist.obj cdensity.obj \
     cdetect.obj cdisplaystring.obj cdoublepar.obj cdynamicexpression.obj \
     cenum.obj cexception.obj cfsm.obj cfunction.obj cgate.obj chist.obj \

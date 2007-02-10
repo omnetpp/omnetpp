@@ -41,6 +41,7 @@ class SIM_API cConfigEntry : public cNoncopyableOwnedObject
 
     // note: entry name (e.g. "sim-time-limit") is stored in object's name field
     std::string section_;      // e.g. "General"
+    mutable std::string fullname_; // concatenated from section and name
     bool isGlobal_;            // if true, it cannot occur in [Run X] sections
     Type type_;                // entry type
     std::string unit_;         // if numeric, its unit ("s") or empty string
@@ -54,26 +55,13 @@ class SIM_API cConfigEntry : public cNoncopyableOwnedObject
      * Constructor.
      */
     cConfigEntry(const char *name, const char *section, bool isGlobal, Type type,
-                 const char *unit, const char *defaultValue, const char *description) :
-        cNoncopyableOwnedObject(name)
-    {
-        section_ = section;
-        isGlobal_ = isGlobal;
-        if (type==CFG_TIME) {
-            type_ = CFG_DOUBLE;
-            unit_ = "s";
-        } else {
-            type_ = type;
-            unit_ = unit ? unit : "";
-        }
-        defaultValue_ = defaultValue ? defaultValue : "";
-        description_ = description ? description : "";
-    }
+                 const char *unit, const char *defaultValue, const char *description);
+    //@}
 
-    /**
-     * Destructor.
-     */
-    virtual ~cConfigEntry() {}
+    /** @name Redefined cObject methods */
+    //@{
+    virtual const char *fullName() const;
+    virtual std::string info() const;
     //@}
 
     /** @name Getter methods */

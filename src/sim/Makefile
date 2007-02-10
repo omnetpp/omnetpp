@@ -11,7 +11,7 @@ COPTS=$(CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/plat
 
 OBJS_STD=\
     carray.o cbasicchannel.o cboolpar.o cchannel.o \
-    cclassfactory.o ccomponent.o ccomponenttype.o \
+    cclassfactory.o ccomponent.o ccomponenttype.o cconfigentry.o \
     ccompoundmodule.o ccoroutine.o cdefaultlist.o cdensity.o \
     cdetect.o cdisplaystring.o cdoublepar.o cdynamicexpression.o \
     cenum.o cexception.o cfsm.o cfunction.o cgate.o chist.o \
