@@ -39,6 +39,7 @@ using std::ostream;
 using std::ofstream;
 using std::ios;
 
+Register_PerRunConfigEntryU(CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, "output-vectors-memory-limit", "General", "B", DEFAULT_MEMORY_LIMIT, "FIXME add some description here");
 
 #ifdef CHECK
 #undef CHECK
@@ -72,8 +73,8 @@ cIndexedFileOutputVectorManager::cIndexedFileOutputVectorManager()
     memoryUsed = 0;
 
     const char *currentRunSection = getRunSectionName(simulation.runNumber());
-    const char *memoryLimitStr = ev.config()->getAsCustom2(currentRunSection,"General","output-vectors-memory-limit",DEFAULT_MEMORY_LIMIT);
-    maxMemoryUsed = max((long)UnitConversion::parseQuantity(memoryLimitStr, "B"), MIN_BUFFER_MEMORY);
+    long d = (long) ev.config()->getAsDouble(CFGID_OUTPUT_VECTORS_MEMORY_LIMIT);
+    maxMemoryUsed = max(d, MIN_BUFFER_MEMORY);
 }
 
 void cIndexedFileOutputVectorManager::openIndexFile()
@@ -82,7 +83,7 @@ void cIndexedFileOutputVectorManager::openIndexFile()
         if (fi==NULL)
             throw new cRuntimeError("Cannot open index file `%s'",ifname.c_str());
 
-        // place for header
+        // leave blank space for header
         fprintf(fi, "%64s\n", "");
 }
 
@@ -188,7 +189,7 @@ bool cIndexedFileOutputVectorManager::record(void *vectorhandle, simtime_t t, do
 
         sBlock &currentBlock = vp->blocks.back();
         long eventNumber = simulation.eventNumber();
-        if (currentBlock.count == 0) 
+        if (currentBlock.count == 0)
         {
             currentBlock.startTime = t;
             currentBlock.startEventNum = eventNumber;
@@ -269,7 +270,7 @@ void cIndexedFileOutputVectorManager::writeIndex(sVector *vp)
     if (vp->count > 0)
     {
         CHECK(fprintf(fi,"vector %d  %s  %s  %s  %ld  %ld  %.*g  %.*g  %.*g  %.*g\n",
-                      vp->id, QUOTE(vp->modulename.c_str()), QUOTE(vp->vectorname.c_str()), 
+                      vp->id, QUOTE(vp->modulename.c_str()), QUOTE(vp->vectorname.c_str()),
                       vp->getColumns(), vp->maxBlockSize,
                       vp->count, prec, vp->min, prec, vp->max, prec, vp->sum, prec, vp->sumsqr), ifname);
         int nBlocks = vp->blocks.size();
@@ -280,7 +281,7 @@ void cIndexedFileOutputVectorManager::writeIndex(sVector *vp)
                 if (blockPtr->count > 0) // last block might be empty
                 {
                     CHECK(fprintf(fi, "%d\t%ld %ld %ld %s %s %ld %.*g %.*g %.*g %.*g\n",
-                                vp->id, blockPtr->offset, 
+                                vp->id, blockPtr->offset,
                                 blockPtr->startEventNum, blockPtr->endEventNum,
                                 SIMTIME_TTOA(buff1, blockPtr->startTime), SIMTIME_TTOA(buff2, blockPtr->endTime),
                                 blockPtr->count, prec, blockPtr->min, prec, blockPtr->max, prec, blockPtr->sum, prec, blockPtr->sumSqr)
@@ -295,7 +296,7 @@ void cIndexedFileOutputVectorManager::writeIndex(sVector *vp)
                 if (blockPtr->count > 0) // last block might be empty
                 {
                     CHECK(fprintf(fi, "%d\t%ld %s %s %ld %.*g %.*g %.*g %.*g\n",
-                                vp->id, blockPtr->offset, 
+                                vp->id, blockPtr->offset,
                                 SIMTIME_TTOA(buff1, blockPtr->startTime), SIMTIME_TTOA(buff2, blockPtr->endTime),
                                 blockPtr->count, prec, blockPtr->min, prec, blockPtr->max, prec, blockPtr->sum, prec, blockPtr->sumSqr)
                           , ifname);

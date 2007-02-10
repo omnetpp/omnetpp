@@ -26,6 +26,7 @@
 #include "cconfig.h"
 #include "platmisc.h" // usleep
 
+Register_GlobalConfigEntry(CFGID_REALTIMESCHEDULER_SCALING, "realtimescheduler-scaling", "General", CFG_DOUBLE,  0, "FIXME add some description here");
 
 cScheduler::cScheduler()
 {
@@ -59,7 +60,7 @@ Register_Class(cRealTimeScheduler);
 
 void cRealTimeScheduler::startRun()
 {
-    factor = ev.config()->getAsDouble("General", "realtimescheduler-scaling", 0);
+    factor = ev.config()->getAsDouble(CFGID_REALTIMESCHEDULER_SCALING);
     if (factor!=0)
         factor = 1/factor;
     doScaling = (factor!=0);

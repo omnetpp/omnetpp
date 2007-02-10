@@ -36,11 +36,15 @@
 
 Register_Class(cFileCommunications);
 
+Register_GlobalConfigEntry(CFGID_FILECOMM_PREFIX, "parsim-filecommunications-prefix", "General", CFG_STRING,  "comm/", "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_FILECOMM_READ_PREFIX, "parsim-filecommunications-read-prefix", "General", CFG_STRING,  "comm/read/", "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_FILECOMM_PRESERVE_READ, "parsim-filecommunications-preserve-read", "General", CFG_BOOL,  false, "FIXME add some description here");
+
 cFileCommunications::cFileCommunications()
 {
-    commDirPrefix = ev.config()->getAsString("General", "parsim-filecommunications-prefix", "comm/");
-    readDirPrefix = ev.config()->getAsString("General", "parsim-filecommunications-read-prefix", "comm/read/");
-    preserveReadFiles = ev.config()->getAsBool("General", "parsim-filecommunications-preserve-read", false);
+    commDirPrefix = ev.config()->getAsString(CFGID_FILECOMM_PREFIX);
+    readDirPrefix = ev.config()->getAsString(CFGID_FILECOMM_READ_PREFIX);
+    preserveReadFiles = ev.config()->getAsBool(CFGID_FILECOMM_PRESERVE_READ);
 
     seqNum = 0;
 }

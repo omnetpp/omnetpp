@@ -28,6 +28,8 @@
 
 Register_Class(cMPICommunications);
 
+Register_GlobalConfigEntry(CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER, "parsim-mpicommunications-mpibuffer", "General", CFG_INT, -1, "FIXME add some description here");
+
 // default is 256k. If too small, simulation can block in MPI send calls.
 #define MPI_SEND_BUFFER_PER_PARTITION (256*1024)
 
@@ -66,7 +68,8 @@ void cMPICommunications::init()
 
     // set up MPI send buffer (+16K prevents MPI_Buffer_attach() error if numPartitions==1)
     int defaultBufSize = MPI_SEND_BUFFER_PER_PARTITION * (numPartitions-1) + 16384;
-    int bufSize = ev.config()->getAsInt("General", "parsim-mpicommunications-mpibuffer", defaultBufSize);
+    int bufSize = ev.config()->getAsInt(CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER);
+    if (bufSize==-1) bufSize = defaultBufSize;
     char *buf = new char[bufSize];
     MPI_Buffer_attach(buf, bufSize);
 }

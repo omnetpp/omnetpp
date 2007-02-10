@@ -39,16 +39,16 @@
 
 Register_Class(cNamedPipeCommunications);
 
+Register_GlobalConfigEntry(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX, "parsim-namedpipecommunications-prefix", "General", CFG_STRING,  "omnetpp", "FIXME add some description here");
+
 
 #define sleep(x)  _sleep((x)*1000)
 #define usleep(x) _sleep((x)/1000)
 
-
-
 #define PIPE_INBUFFERSIZE  (1024*1024) /*1MB*/
 
 
-// TBD resolve duplication -- we have this in Envir as well
+//FIXME resolve duplication -- we have this in Envir as well
 static std::string getWindowsError()
 {
     long errorcode = GetLastError();
@@ -78,7 +78,7 @@ struct PipeHeader
 
 cNamedPipeCommunications::cNamedPipeCommunications()
 {
-    prefix = ev.config()->getAsString("General", "parsim-namedpipecommunications-prefix", "omnetpp");
+    prefix = ev.config()->getAsString(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX);
     rpipes = NULL;
     wpipes = NULL;
     rrBase = 0;

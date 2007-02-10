@@ -35,13 +35,15 @@
 
 Register_Class(cParsimPartition);
 
+//XXX this gets registered multiple times?
+Register_GlobalConfigEntry(CFGID_PARSIM_DEBUG, "parsim-debug", "General", CFG_BOOL,  true, "FIXME add some description here");
 
 cParsimPartition::cParsimPartition()
 {
     sim = NULL;
     comm = NULL;
     synch = NULL;
-    debug = ev.config()->getAsBool("General", "parsim-debug", true);
+    debug = ev.config()->getAsBool(CFGID_PARSIM_DEBUG);
 }
 
 cParsimPartition::~cParsimPartition()

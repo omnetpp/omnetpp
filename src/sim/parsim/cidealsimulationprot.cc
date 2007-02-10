@@ -34,6 +34,10 @@
 
 Register_Class(cIdealSimulationProtocol);
 
+Register_GlobalConfigEntry(CFGID_PARSIM_DEBUG, "parsim-debug", "General", CFG_BOOL, true, "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_PARSIM_IDEALSIMULATIONPROTOCOL_TABLESIZE, "parsim-idealsimulationprotocol-tablesize", "General", CFG_INT, TABLESIZE, "FIXME add some description here");
+
+
 // load 100,000 values from eventlog at once (~800K allocated memory)
 #define TABLESIZE   100000
 
@@ -41,9 +45,9 @@ Register_Class(cIdealSimulationProtocol);
 cIdealSimulationProtocol::cIdealSimulationProtocol() : cParsimProtocolBase()
 {
     fin = NULL;
-    debug = ev.config()->getAsBool("General", "parsim-debug", true);
+    debug = ev.config()->getAsBool(CFGID_PARSIM_DEBUG);
 
-    tableSize = ev.config()->getAsInt("General", "parsim-idealsimulationprotocol-tablesize", TABLESIZE);
+    tableSize = ev.config()->getAsInt(CFGID_PARSIM_IDEALSIMULATIONPROTOCOL_TABLESIZE);
     table = new ExternalEvent[tableSize];
     numItems = 0;
     nextPos = 0;

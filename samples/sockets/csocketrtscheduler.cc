@@ -20,6 +20,7 @@
 
 Register_Class(cSocketRTScheduler);
 
+Register_GlobalConfigEntry(CFGID_SOCKETRTSCHEDULER_PORT, "socketrtscheduler-port", "General", CFG_INT,  4242, "FIXME add some description here");
 
 inline std::ostream& operator<<(std::ostream& ev, const timeval& tv)
 {
@@ -51,7 +52,7 @@ void cSocketRTScheduler::startRun()
     recvBufferSize = 0;
     numBytesPtr = NULL;
 
-    port = ev.config()->getAsInt("General", "socketrtscheduler-port", 4242);
+    port = ev.config()->getAsInt(CFGID_SOCKETRTSCHEDULER_PORT);
     setupListener();
 }
 

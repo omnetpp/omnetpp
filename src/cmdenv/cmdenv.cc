@@ -35,18 +35,18 @@
 
 static char buffer[1024];
 
-Register_GlobalConfigEntry(CFGID_RUNS_TO_EXECUTE, "runs-to-execute", "Cmdenv", CFG_STRING,  "", "some description")
-Register_GlobalConfigEntry(CFGID_EXTRA_STACK_KB, "extra-stack-kb", "Cmdenv", CFG_INT,  CMDENV_EXTRASTACK_KB, "some description")
-Register_GlobalConfigEntry(CFGID_OUTPUT_FILE, "output-file", "Cmdenv", CFG_FILENAME,  "", "some description")
-Register_PerRunConfigEntry(CFGID_EXPRESS_MODE, "express-mode", "Cmdenv", CFG_BOOL,  false, "some description")
-Register_PerRunConfigEntry(CFGID_AUTOFLUSH, "autoflush", "Cmdenv", CFG_BOOL,  false, "some description")
-Register_PerRunConfigEntry(CFGID_MODULE_MESSAGES, "module-messages", "Cmdenv", CFG_BOOL,  true, "some description")
-Register_PerRunConfigEntry(CFGID_EVENT_BANNERS, "event-banners", "Cmdenv", CFG_BOOL,  true, "some description")
-Register_PerRunConfigEntry(CFGID_EVENT_BANNER_DETAILS, "event-banner-details", "Cmdenv", CFG_BOOL,  false, "some description")
-Register_PerRunConfigEntry(CFGID_MESSAGE_TRACE, "message-trace", "Cmdenv", CFG_BOOL,  false, "some description")
-Register_PerRunConfigEntry(CFGID_STATUS_FREQUENCY, "status-frequency", "Cmdenv", CFG_INT,  100000, "some description")
-Register_PerRunConfigEntry(CFGID_STATUS_FREQUENCY_INTERVAL, "status-frequency-interval", "Cmdenv", CFG_TIME,  5.0, "some description")
-Register_PerRunConfigEntry(CFGID_PERFORMANCE_DISPLAY, "performance-display", "Cmdenv", CFG_BOOL,  true, "some description")
+Register_GlobalConfigEntry(CFGID_RUNS_TO_EXECUTE, "runs-to-execute", "Cmdenv", CFG_STRING,  "", "FIXME add some description here")
+Register_GlobalConfigEntry(CFGID_EXTRA_STACK_KB, "extra-stack-kb", "Cmdenv", CFG_INT,  CMDENV_EXTRASTACK_KB, "FIXME add some description here")
+Register_GlobalConfigEntry(CFGID_OUTPUT_FILE, "output-file", "Cmdenv", CFG_FILENAME,  "", "FIXME add some description here")
+Register_PerRunConfigEntry(CFGID_EXPRESS_MODE, "express-mode", "Cmdenv", CFG_BOOL,  false, "FIXME add some description here")
+Register_PerRunConfigEntry(CFGID_AUTOFLUSH, "autoflush", "Cmdenv", CFG_BOOL,  false, "FIXME add some description here")
+Register_PerRunConfigEntry(CFGID_MODULE_MESSAGES, "module-messages", "Cmdenv", CFG_BOOL,  true, "FIXME add some description here")
+Register_PerRunConfigEntry(CFGID_EVENT_BANNERS, "event-banners", "Cmdenv", CFG_BOOL,  true, "FIXME add some description here")
+Register_PerRunConfigEntry(CFGID_EVENT_BANNER_DETAILS, "event-banner-details", "Cmdenv", CFG_BOOL,  false, "FIXME add some description here")
+Register_PerRunConfigEntry(CFGID_MESSAGE_TRACE, "message-trace", "Cmdenv", CFG_BOOL,  false, "FIXME add some description here")
+Register_PerRunConfigEntry(CFGID_STATUS_FREQUENCY, "status-frequency", "Cmdenv", CFG_INT,  100000, "FIXME add some description here")
+Register_PerRunConfigEntry(CFGID_STATUS_FREQUENCY_INTERVAL, "status-frequency-interval", "Cmdenv", CFG_TIME,  5.0, "FIXME add some description here")
+Register_PerRunConfigEntry(CFGID_PERFORMANCE_DISPLAY, "performance-display", "Cmdenv", CFG_BOOL,  true, "FIXME add some description here")
 
 
 //

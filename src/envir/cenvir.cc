@@ -52,6 +52,10 @@ cRegistrationList omnetapps("omnetapps");
 #define ENVIR_TEXTBUF_LEN 1024
 static char buffer[ENVIR_TEXTBUF_LEN];
 
+Register_GlobalConfigEntry(CFGID_LOAD_LIBS, "load-libs", "General", CFG_FILENAMES,  NULL, "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_CONFIGURATION_CLASS, "configuration-class", "General", CFG_STRING,  NULL, "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_USER_INTERFACE, "user-interface", "General", CFG_STRING,  NULL, "FIXME add some description here");
+
 // helper macro
 #define CREATE_BY_CLASSNAME(var,classname,baseclass,description) \
      baseclass *var ## _tmp = (baseclass *) createOne(classname); \
@@ -167,13 +171,13 @@ void cEnvir::setup(int argc, char *argv[])
             loadExtensionLibrary(libname);
 
         // load shared libs given in [General]/load-libs=
-        std::string libs = inifile->getAsFilenames("General", "load-libs", NULL);
+        std::string libs = inifile->getAsFilenames(CFGID_LOAD_LIBS);
         loadLibs(libs.c_str());
 
         //
         // Create custom configuration object, if needed.
         //
-        const char *configclass = inifile->getAsString("General", "configuration-class", NULL);
+        const char *configclass = inifile->getAsString(CFGID_CONFIGURATION_CLASS);
         cConfiguration *configobject = NULL;
         if (!configclass)
         {
@@ -188,7 +192,7 @@ void cEnvir::setup(int argc, char *argv[])
             inifile = NULL;
 
             // load libs from this config as well
-            std::string libs = configobject->getAsFilenames("General", "load-libs", NULL);
+            std::string libs = configobject->getAsFilenames(CFGID_LOAD_LIBS);
             loadLibs(libs.c_str());
         }
 
@@ -201,7 +205,7 @@ void cEnvir::setup(int argc, char *argv[])
         // was it specified explicitly which one to use?
         const char *appname = args->optionValue('u',0);  // 1st '-u name' option
         if (!appname)
-            appname = configobject->getAsString("General", "user-interface", NULL);
+            appname = configobject->getAsString(CFGID_USER_INTERFACE);
 
         cOmnetAppRegistration *appreg = NULL;
         if (appname && appname[0])

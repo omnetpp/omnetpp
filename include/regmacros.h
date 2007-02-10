@@ -222,14 +222,14 @@ template<typename T> std::string __tostring(T x)
  * For type==CFG_DOUBLE and a unit.
  * @hideinitializer
  */
-#define Register_GlobalConfigEntryU(ID, NAME, SECTION, ISGLOBAL, UNIT, DEFAULTVALUE, DESCRIPTION) \
+#define Register_GlobalConfigEntryU(ID, NAME, SECTION, UNIT, DEFAULTVALUE, DESCRIPTION) \
   __Register_ConfigEntry(ID, (NAME, SECTION, true, cConfigEntry::CFG_DOUBLE, UNIT, __tostring(DEFAULTVALUE).c_str(), DESCRIPTION))
 
 /**
  * For type==CFG_DOUBLE and a unit.
  * @hideinitializer
  */
-#define Register_PerRunConfigEntryU(ID, NAME, SECTION, ISGLOBAL, UNIT, DEFAULTVALUE, DESCRIPTION) \
+#define Register_PerRunConfigEntryU(ID, NAME, SECTION, UNIT, DEFAULTVALUE, DESCRIPTION) \
   __Register_ConfigEntry(ID, (NAME, SECTION, false, cConfigEntry::CFG_DOUBLE, UNIT, __tostring(DEFAULTVALUE).c_str(), DESCRIPTION))
 //@}
 

@@ -42,6 +42,9 @@ using std::ios;
 
 Register_Class(cFileOutputVectorManager);
 
+Register_GlobalConfigEntry(CFGID_OUTPUT_VECTOR_PRECISION, "output-vector-precision", "General", CFG_INT,  DEFAULT_PRECISION, "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_OUTPUT_SCALAR_PRECISION, "output-scalar-precision", "General", CFG_INT,  DEFAULT_PRECISION, "FIXME add some description here");
+
 #ifdef CHECK
 #undef CHECK
 #endif
@@ -79,7 +82,7 @@ cFileOutputVectorManager::cFileOutputVectorManager()
 {
     nextid = 0;
     f = NULL;
-    prec = ev.config()->getAsInt("General", "output-vector-precision", DEFAULT_PRECISION);
+    prec = ev.config()->getAsInt(CFGID_OUTPUT_VECTOR_PRECISION);
 }
 
 cFileOutputVectorManager::~cFileOutputVectorManager()
@@ -264,7 +267,7 @@ Register_Class(cFileOutputScalarManager);
 cFileOutputScalarManager::cFileOutputScalarManager()
 {
     f = NULL;
-    prec = ev.config()->getAsInt("General", "output-scalar-precision", DEFAULT_PRECISION);
+    prec = ev.config()->getAsInt(CFGID_OUTPUT_SCALAR_PRECISION);
 }
 
 cFileOutputScalarManager::~cFileOutputScalarManager()

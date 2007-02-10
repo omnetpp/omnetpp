@@ -40,8 +40,10 @@
 
 Register_Class(cNamedPipeCommunications);
 
+Register_GlobalConfigEntry(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX, "parsim-namedpipecommunications-prefix", "General", CFG_STRING,  "comm/", "FIXME add some description here");
 
-int readBytes(int fd, void *buf, int len)
+
+static int readBytes(int fd, void *buf, int len)
 {
     int tot = 0;
     while (tot<len)
@@ -67,7 +69,7 @@ struct PipeHeader
 
 cNamedPipeCommunications::cNamedPipeCommunications()
 {
-    prefix = ev.config()->getAsString("General", "parsim-namedpipecommunications-prefix", "comm/");
+    prefix = ev.config()->getAsString(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX);
     rpipes = NULL;
     wpipes = NULL;
     rrBase = 0;

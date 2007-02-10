@@ -32,6 +32,10 @@
 
 Register_Class(cMySQLOutputVectorManager);
 
+Register_GlobalConfigEntry(CFGID_MYSQLOUTVECTORMGR_CONNECTPREFIX, "mysqloutputvectormanager-connectprefix", "General", CFG_STRING,  NULL, "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_MYSQLOUTVECTORMGR_COMMIT_FREQ, "mysqloutputvectormanager-commit-freq", "General", CFG_INT,  50, "FIXME add some description here");
+
+
 cMySQLOutputVectorManager::cMySQLOutputVectorManager()
 {
     mysql = NULL;
@@ -47,7 +51,7 @@ cMySQLOutputVectorManager::~cMySQLOutputVectorManager()
 void cMySQLOutputVectorManager::openDB()
 {
     // connect
-    const char *prefix = ev.config()->getAsString("General", "mysqloutputvectormanager-connectprefix", NULL);
+    const char *prefix = ev.config()->getAsString(CFGID_MYSQLOUTVECTORMGR_CONNECTPREFIX);
     ev << className() << " connecting to MySQL database";
     if (prefix && prefix[0]) ev << " using " << prefix << "-* config entries";
     ev << "...";
@@ -55,7 +59,7 @@ void cMySQLOutputVectorManager::openDB()
     opp_mysql_connectToDB(mysql, ev.config(), prefix);
     ev << " OK\n";
 
-    commitFreq = ev.config()->getAsInt("General", "mysqloutputvectormanager-commit-freq", 50);
+    commitFreq = ev.config()->getAsInt(CFGID_MYSQLOUTVECTORMGR_COMMIT_FREQ);
     insertCount = 0;
 
     // prepare and bind INSERT INTO VECTOR...

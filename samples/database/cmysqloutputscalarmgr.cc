@@ -17,7 +17,6 @@
 #include "cmysqloutputscalarmgr.h"
 #include "oppmysqlutils.h"
 
-
 //
 // NOTE: INSERT DELAYED is not supported on all engines, notably InnoDB.
 // It is best to create the tables with the ENGINE = MYISAM option.
@@ -27,6 +26,9 @@
 
 
 Register_Class(cMySQLOutputScalarManager);
+
+Register_GlobalConfigEntry(CFGID_MYSQLOUTSCALARMGR_CONNECTPREFIX, "mysqloutputscalarmanager-connectprefix", "General", CFG_STRING,  NULL, "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_MYSQLOUTSCALARMGR_COMMIT_FREQ, "mysqloutputscalarmanager-commit-freq", "General", CFG_INT,  10, "FIXME add some description here");
 
 
 cMySQLOutputScalarManager::cMySQLOutputScalarManager()
@@ -44,7 +46,7 @@ cMySQLOutputScalarManager::~cMySQLOutputScalarManager()
 void cMySQLOutputScalarManager::openDB()
 {
     // connect
-    const char *prefix = ev.config()->getAsString("General", "mysqloutputscalarmanager-connectprefix", NULL);
+    const char *prefix = ev.config()->getAsString(CFGID_MYSQLOUTSCALARMGR_CONNECTPREFIX);
     ev << className() << " connecting to MySQL database";
     if (prefix && prefix[0]) ev << " using " << prefix << "-* config entries";
     ev << "...";
@@ -52,7 +54,7 @@ void cMySQLOutputScalarManager::openDB()
     opp_mysql_connectToDB(mysql, ev.config(), prefix);
     ev << " OK\n";
 
-    commitFreq = ev.config()->getAsInt("General", "mysqloutputscalarmanager-commit-freq", 10);
+    commitFreq = ev.config()->getAsInt(CFGID_MYSQLOUTSCALARMGR_COMMIT_FREQ);
     insertCount = 0;
 
     // prepare and bind INSERT INTO SCALAR...

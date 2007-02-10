@@ -36,18 +36,22 @@
 
 Register_Class(cNullMessageProtocol);
 
+Register_GlobalConfigEntry(CFGID_PARSIM_DEBUG, "parsim-debug", "General", CFG_BOOL,  true, "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS, "parsim-nullmessageprotocol-lookahead-class", "General", CFG_STRING,  "cLinkDelayLookahead", "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS, "parsim-nullmessageprotocol-laziness", "General", CFG_DOUBLE,  0.5, "FIXME add some description here");
+
 
 cNullMessageProtocol::cNullMessageProtocol() : cParsimProtocolBase()
 {
     numSeg = 0;
     segInfo = NULL;
 
-    const char *lookhClass = ev.config()->getAsString("General", "parsim-nullmessageprotocol-lookahead-class", "cLinkDelayLookahead");
+    debug = ev.config()->getAsBool(CFGID_PARSIM_DEBUG);
+    const char *lookhClass = ev.config()->getAsString(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS);
     lookaheadcalc = dynamic_cast<cNMPLookahead *>(createOne(lookhClass));
     if (!lookaheadcalc) \
          throw cRuntimeError("Class \"%s\" is not subclassed from cNMPLookahead", lookhClass);
-    debug = ev.config()->getAsBool("General", "parsim-debug", true);
-    laziness = ev.config()->getAsDouble("General", "parsim-nullmessageprotocol-laziness", 0.5);
+    laziness = ev.config()->getAsDouble(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS);
 }
 
 cNullMessageProtocol::~cNullMessageProtocol()

@@ -24,6 +24,10 @@
 
 Register_Class(cMySQLConfiguration);
 
+Register_GlobalConfigEntry(CFGID_MYSQLCONFIGURATION_DUMPBOOTCFG, "mysqlconfiguration-dumpbootcfg", "General", CFG_BOOL,  false, "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_MYSQLCONFIGURATION_CONNECTPREFIX, "mysqlconfiguration-connectprefix", "General", CFG_STRING,  NULL, "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_MYSQLCONFIGURATION_CONFIGNAME, "mysqlconfiguration-configname", "General", CFG_STRING,  NULL, "FIXME add some description here");
+
 
 cMySQLConfiguration::cMySQLConfiguration()
 {
@@ -39,11 +43,11 @@ cMySQLConfiguration::~cMySQLConfiguration()
 void cMySQLConfiguration::initializeFrom(cConfiguration *cfg)
 {
     // utility: dump existing configuration as SQL INSERT statements
-    if (cfg->getAsBool("General", "mysqlconfiguration-dumpbootcfg", false))
+    if (cfg->getAsBool(CFGID_MYSQLCONFIGURATION_DUMPBOOTCFG))
         dumpConfig(cfg);
 
     // connect
-    const char *prefix = cfg->getAsString("General", "mysqlconfiguration-connectprefix", NULL);
+    const char *prefix = cfg->getAsString(CFGID_MYSQLCONFIGURATION_CONNECTPREFIX);
     ev << className() << " connecting to MySQL database";
     if (prefix && prefix[0]) ev << " using " << prefix << "-* config entries";
     ev << "...";
@@ -53,7 +57,7 @@ void cMySQLConfiguration::initializeFrom(cConfiguration *cfg)
 
     // read the contents, then close the database
     copyExistingConfig(cfg);
-    const char *configName = cfg->getAsString("General", "mysqlconfiguration-configname", NULL);
+    const char *configName = cfg->getAsString(CFGID_MYSQLCONFIGURATION_CONFIGNAME);
     if (!configName || !configName[0])
         throw cRuntimeError("cMySQLConfiguration: config entry mysqlconfiguration-configname= must be given");
     readDB(mysql, configName);
