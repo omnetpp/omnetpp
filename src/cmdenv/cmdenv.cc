@@ -35,10 +35,24 @@
 
 static char buffer[1024];
 
+Register_GlobalConfigEntry(CFGID_RUNS_TO_EXECUTE, "runs-to-execute", "Cmdenv", CFG_STRING,  "", "some description")
+Register_GlobalConfigEntry(CFGID_EXTRA_STACK_KB, "extra-stack-kb", "Cmdenv", CFG_INT,  CMDENV_EXTRASTACK_KB, "some description")
+Register_GlobalConfigEntry(CFGID_OUTPUT_FILE, "output-file", "Cmdenv", CFG_FILENAME,  "", "some description")
+Register_PerRunConfigEntry(CFGID_EXPRESS_MODE, "express-mode", "Cmdenv", CFG_BOOL,  false, "some description")
+Register_PerRunConfigEntry(CFGID_AUTOFLUSH, "autoflush", "Cmdenv", CFG_BOOL,  false, "some description")
+Register_PerRunConfigEntry(CFGID_MODULE_MESSAGES, "module-messages", "Cmdenv", CFG_BOOL,  true, "some description")
+Register_PerRunConfigEntry(CFGID_EVENT_BANNERS, "event-banners", "Cmdenv", CFG_BOOL,  true, "some description")
+Register_PerRunConfigEntry(CFGID_EVENT_BANNER_DETAILS, "event-banner-details", "Cmdenv", CFG_BOOL,  false, "some description")
+Register_PerRunConfigEntry(CFGID_MESSAGE_TRACE, "message-trace", "Cmdenv", CFG_BOOL,  false, "some description")
+Register_PerRunConfigEntry(CFGID_STATUS_FREQUENCY, "status-frequency", "Cmdenv", CFG_INT,  100000, "some description")
+Register_PerRunConfigEntry(CFGID_STATUS_FREQUENCY_INTERVAL, "status-frequency-interval", "Cmdenv", CFG_TIME,  5.0, "some description")
+Register_PerRunConfigEntry(CFGID_PERFORMANCE_DISPLAY, "performance-display", "Cmdenv", CFG_BOOL,  true, "some description")
+
+
 //
 // Register the Cmdenv user interface
 //
-Register_OmnetApp("Cmdenv",TCmdenvApp,10,"command-line user interface");
+Register_OmnetApp("Cmdenv", TCmdenvApp, 10, "command-line user interface");
 
 // some functions that can/should be called from Envir in order to force the
 // linker to include the Cmdenv library into the executable:
@@ -87,9 +101,9 @@ void TCmdenvApp::readOptions()
 
     cConfiguration *cfg = getConfig();
 
-    opt_runstoexec = cfg->getAsString("Cmdenv", "runs-to-execute", "");
-    opt_extrastack_kb = cfg->getAsInt("Cmdenv", "extra-stack-kb", CMDENV_EXTRASTACK_KB);
-    opt_outputfile = cfg->getAsFilename("Cmdenv", "output-file", "").c_str();
+    opt_runstoexec = cfg->getAsString(CFGID_RUNS_TO_EXECUTE);
+    opt_extrastack_kb = cfg->getAsInt(CFGID_EXTRA_STACK_KB);
+    opt_outputfile = cfg->getAsFilename(CFGID_OUTPUT_FILE).c_str();
 
     if (!opt_outputfile.empty())
     {
@@ -109,15 +123,15 @@ void TCmdenvApp::readPerRunOptions(int run_nr)
     cConfiguration *cfg = getConfig();
     const char *section = getRunSectionName(run_nr);
 
-    opt_expressmode = cfg->getAsBool2(section,"Cmdenv", "express-mode", false);
-    opt_autoflush = cfg->getAsBool2(section,"Cmdenv", "autoflush", false);
-    opt_modulemsgs = cfg->getAsBool2(section,"Cmdenv", "module-messages", true);
-    opt_eventbanners = cfg->getAsBool2(section,"Cmdenv", "event-banners", true);
-    opt_eventbanner_details = cfg->getAsBool2(section,"Cmdenv", "event-banner-details", false);
-    opt_messagetrace = cfg->getAsBool2(section,"Cmdenv", "message-trace", false);
-    opt_status_frequency_ev = cfg->getAsInt2(section,"Cmdenv", "status-frequency", 100000);
-    //opt_status_frequency_sec = cfg->getAsTime2(section,"Cmdenv", "status-frequency-interval", 5.0);
-    opt_perfdisplay = cfg->getAsBool2(section,"Cmdenv", "performance-display", true);
+    opt_expressmode = cfg->getAsBool(CFGID_EXPRESS_MODE);
+    opt_autoflush = cfg->getAsBool(CFGID_AUTOFLUSH);
+    opt_modulemsgs = cfg->getAsBool(CFGID_MODULE_MESSAGES);
+    opt_eventbanners = cfg->getAsBool(CFGID_EVENT_BANNERS);
+    opt_eventbanner_details = cfg->getAsBool(CFGID_EVENT_BANNER_DETAILS);
+    opt_messagetrace = cfg->getAsBool(CFGID_MESSAGE_TRACE);
+    opt_status_frequency_ev = cfg->getAsInt(CFGID_STATUS_FREQUENCY);
+    //opt_status_frequency_sec = cfg->getAsDouble(CFGID_STATUS_FREQUENCY_INTERVAL);
+    opt_perfdisplay = cfg->getAsBool(CFGID_PERFORMANCE_DISPLAY);
 
     // warnings on old entries
     if (cfg->exists2(section,"Cmdenv", "display-update"))
