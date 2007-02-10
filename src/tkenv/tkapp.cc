@@ -30,6 +30,8 @@
 #include "cscheduler.h"
 #include "ccomponenttype.h"
 #include "csimulation.h"
+#include "cconfigentry.h"
+#include "regmacros.h"
 
 #include "tkdefs.h"
 #include "tkapp.h"
@@ -74,6 +76,32 @@ TKENV_API void envirDummy() {}
 
 
 #define SPEEDOMETER_UPDATEMILLISECS 1000
+
+
+Register_GlobalConfigEntry(CFGID_EXTRA_STACK_KB, "extra-stack-kb", "Tkenv", CFG_INT,  TKENV_EXTRASTACK_KB, "some description");
+Register_GlobalConfigEntry(CFGID_DEFAULT_RUN, "default-run",  "Tkenv", CFG_INT,  0, "some description");
+Register_GlobalConfigEntry(CFGID_SLOWEXEC_DELAY, "slowexec-delay",  "Tkenv", CFG_TIME,  0.3, "some description");
+Register_GlobalConfigEntry(CFGID_UPDATE_FREQ_FAST, "update-freq-fast",  "Tkenv", CFG_INT,  50, "some description");
+Register_GlobalConfigEntry(CFGID_UPDATE_FREQ_EXPRESS, "update-freq-express",  "Tkenv", CFG_INT,  10000 , "some description");
+Register_GlobalConfigEntry(CFGID_BREAKPOINTS_ENABLED, "breakpoints-enabled",  "Tkenv", CFG_BOOL,  true , "some description");
+Register_GlobalConfigEntry(CFGID_ANIMATION_ENABLED, "animation-enabled",  "Tkenv", CFG_BOOL,  true , "some description");
+Register_GlobalConfigEntry(CFGID_NEXT_EVENT_MARKERS, "next-event-markers",  "Tkenv", CFG_BOOL,  true , "some description");
+Register_GlobalConfigEntry(CFGID_SENDDIRECT_ARROWS, "senddirect-arrows",  "Tkenv", CFG_BOOL,  true , "some description");
+Register_GlobalConfigEntry(CFGID_ANIM_METHODCALLS, "anim-methodcalls",  "Tkenv", CFG_BOOL,  true , "some description");
+Register_GlobalConfigEntry(CFGID_METHODCALLS_DELAY, "methodcalls-delay",  "Tkenv", CFG_TIME,  0.2, "some description");
+Register_GlobalConfigEntry(CFGID_ANIMATION_MSGNAMES, "animation-msgnames",  "Tkenv", CFG_BOOL,  true , "some description");
+Register_GlobalConfigEntry(CFGID_ANIMATION_MSGCLASSNAMES, "animation-msgclassnames",  "Tkenv", CFG_BOOL,  true , "some description");
+Register_GlobalConfigEntry(CFGID_ANIMATION_MSGCOLORS, "animation-msgcolors",  "Tkenv", CFG_BOOL,  true , "some description");
+Register_GlobalConfigEntry(CFGID_PENGUIN_MODE, "penguin-mode",  "Tkenv", CFG_BOOL,  false , "some description");
+Register_GlobalConfigEntry(CFGID_SHOW_LAYOUTING, "show-layouting",  "Tkenv", CFG_BOOL,  false, "some description");
+Register_GlobalConfigEntry(CFGID_USE_NEW_LAYOUTER, "use-new-layouter",  "Tkenv", CFG_BOOL,  false, "some description");
+Register_GlobalConfigEntry(CFGID_SHOW_BUBBLES, "show-bubbles",  "Tkenv", CFG_BOOL,  true , "some description");
+Register_GlobalConfigEntry(CFGID_ANIMATION_SPEED, "animation-speed",  "Tkenv", CFG_DOUBLE,  1.5, "some description");
+Register_GlobalConfigEntry(CFGID_PRINT_BANNERS, "print-banners",  "Tkenv", CFG_BOOL,  true , "some description");
+Register_GlobalConfigEntry(CFGID_USE_MAINWINDOW, "use-mainwindow",  "Tkenv", CFG_BOOL,  true , "some description");
+Register_GlobalConfigEntry(CFGID_EXPRESSMODE_AUTOUPDATE, "expressmode-autoupdate",  "Tkenv", CFG_BOOL,  true , "some description");
+Register_GlobalConfigEntry(CFGID_IMAGE_PATH, "image-path",  "Tkenv", CFG_FILENAME,  "", "some description");
+Register_GlobalConfigEntry(CFGID_PLUGIN_PATH, "plugin-path",  "Tkenv", CFG_FILENAME,  "", "some description");
 
 
 // utility function

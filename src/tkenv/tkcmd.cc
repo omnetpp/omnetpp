@@ -131,6 +131,7 @@ int objectComponentTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectFunctions_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectClasses_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectEnums_cmd(ClientData, Tcl_Interp *, int, const char **);
+int objectConfigEntries_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int loadNEDFile_cmd(ClientData, Tcl_Interp *, int, const char **);
 
@@ -222,6 +223,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_object_classes",      objectClasses_cmd      },
    { "opp_object_functions",    objectFunctions_cmd    },
    { "opp_object_enums",        objectEnums_cmd        },
+   { "opp_object_configentries",objectConfigEntries_cmd},
    // NEDXML
    { "opp_loadnedfile",         loadNEDFile_cmd        },   // args: <ptr> ret: <xml>
    // experimental
@@ -1583,6 +1585,13 @@ int objectEnums_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, ptrToStr( enums.instance() ), TCL_VOLATILE);
+   return TCL_OK;
+}
+
+int objectConfigEntries_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
+{
+   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   Tcl_SetResult(interp, ptrToStr( configEntries.instance() ), TCL_VOLATILE);
    return TCL_OK;
 }
 

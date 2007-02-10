@@ -16,10 +16,7 @@
 #define __REGMACROS_H
 
 #include "simkerneldefs.h"
-//XXX #include "onstartup.h"
 
-
-// Note: this header file is included from "simkerneldefs.h" directly
 
 /**
  * @name NED function registration macros
@@ -184,6 +181,56 @@
 #define Module_Class_Members(CLASSNAME,BASECLASS,STACK) \
     public: \
       CLASSNAME(const char *dummy1=0, cModule *dummy2=0, unsigned stk=STACK) : BASECLASS(0,0,stk) {}
+//@}
+
+
+/**
+ * @name Configuration entry declaration macros. See cConfigEntry.
+ * @ingroup Macros
+ */
+//@{
+
+//XXX
+#include <sstream>
+template<typename T> std::string __tostring(T x)
+{
+    std::stringstream out;
+    out << x;
+    return out.str();
+}
+
+// internal
+#define __Register_ConfigEntry(ID, ARGLIST) \
+  static cConfigEntry *ID; \
+  EXECUTE_ON_STARTUP(ID##__configentry, configEntries.instance()->add(new cConfigEntry ARGLIST);)
+
+/**
+ * Generic, with unit==NULL.
+ * @hideinitializer
+ */
+#define Register_GlobalConfigEntry(ID, NAME, SECTION, TYPE, DEFAULTVALUE, DESCRIPTION) \
+  __Register_ConfigEntry(ID, (NAME, SECTION, true, cConfigEntry::TYPE, NULL, __tostring(DEFAULTVALUE).c_str(), DESCRIPTION))
+
+/**
+ * Generic, with unit==NULL.
+ * @hideinitializer
+ */
+#define Register_PerRunConfigEntry(ID, NAME, SECTION, TYPE, DEFAULTVALUE, DESCRIPTION) \
+  __Register_ConfigEntry(ID, (NAME, SECTION, false, cConfigEntry::TYPE, NULL, __tostring(DEFAULTVALUE).c_str(), DESCRIPTION))
+
+/**
+ * For type==CFG_DOUBLE and a unit.
+ * @hideinitializer
+ */
+#define Register_GlobalConfigEntryU(ID, NAME, SECTION, ISGLOBAL, UNIT, DEFAULTVALUE, DESCRIPTION) \
+  __Register_ConfigEntry(ID, (NAME, SECTION, true, cConfigEntry::CFG_DOUBLE, UNIT, __tostring(DEFAULTVALUE).c_str(), DESCRIPTION))
+
+/**
+ * For type==CFG_DOUBLE and a unit.
+ * @hideinitializer
+ */
+#define Register_PerRunConfigEntryU(ID, NAME, SECTION, ISGLOBAL, UNIT, DEFAULTVALUE, DESCRIPTION) \
+  __Register_ConfigEntry(ID, (NAME, SECTION, false, cConfigEntry::CFG_DOUBLE, UNIT, __tostring(DEFAULTVALUE).c_str(), DESCRIPTION))
 //@}
 
 #endif

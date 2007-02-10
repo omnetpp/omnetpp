@@ -595,6 +595,10 @@ proc inspect_enums {} {
     opp_inspect [opp_object_enums] {(default)}
 }
 
+proc inspect_configentries {} {
+    opp_inspect [opp_object_configentries] {(default)}
+}
+
 proc inspect_functions {} {
     opp_inspect [opp_object_functions] {(default)}
 }

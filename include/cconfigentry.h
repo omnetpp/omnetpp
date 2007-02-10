@@ -31,7 +31,8 @@ class SIM_API cConfigEntry : public cNoncopyableOwnedObject
     enum Type {
       CFG_BOOL,
       CFG_INT,
-      CFG_DOUBLE, // note: former "time" type is now double with unit="s"
+      CFG_TIME, // note: input only: maps to CFG_DOUBLE with unit="s"
+      CFG_DOUBLE,
       CFG_STRING,
       CFG_FILENAME,
       CFG_FILENAMES,
@@ -58,8 +59,13 @@ class SIM_API cConfigEntry : public cNoncopyableOwnedObject
     {
         section_ = section;
         isGlobal_ = isGlobal;
-        type_ = type;
-        unit_ = unit ? unit : "";
+        if (type==CFG_TIME) {
+            type_ = CFG_DOUBLE;
+            unit_ = "s";
+        } else {
+            type_ = type;
+            unit_ = unit ? unit : "";
+        }
         defaultValue_ = defaultValue ? defaultValue : "";
         description_ = description ? description : "";
     }

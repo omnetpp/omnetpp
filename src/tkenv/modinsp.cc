@@ -30,7 +30,10 @@
 #include "tklib.h"
 #include "inspfactory.h"
 #include "arrow.h"
+#include "graphlayouter.h"
 #include "layouterenv.h"
+#include "forcedirectedgraphlayouter.h"
+#include "basicspringembedderlayout.h"
 
 #define UNKNOWNICON_WIDTH  32
 #define UNKNOWNICON_HEIGHT 32

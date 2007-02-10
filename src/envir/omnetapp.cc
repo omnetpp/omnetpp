@@ -45,6 +45,8 @@
 #include "cxmldoccache.h"
 #include "fnamelisttokenizer.h"
 #include "chasher.h"
+#include "cconfigentry.h"
+#include "regmacros.h"
 
 #ifdef WITH_PARSIM
 #include "cparsimcomm.h"
@@ -86,6 +88,32 @@ static char buffer[1024];
      if (!var) \
          throw cRuntimeError("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
 
+Register_GlobalConfigEntry(CFGID_INI_WARNINGS, "ini-warnings",  "General", CFG_BOOL,  false , "some description");
+Register_GlobalConfigEntry(CFGID_TOTAL_STACK_KB, "total-stack-kb",  "General", CFG_INT,  TOTAL_STACK_KB, "some description");
+Register_GlobalConfigEntry(CFGID_DISTRIBUTED, "distributed", "General", CFG_BOOL,  false, "some description");
+Register_GlobalConfigEntry(CFGID_PARALLEL_SIMULATION, "parallel-simulation", "General", CFG_BOOL,  false, "some description");
+Register_GlobalConfigEntry(CFGID_SCHEDULER_CLASS, "scheduler-class", "General", CFG_STRING,  "cSequentialScheduler", "some description");
+Register_GlobalConfigEntry(CFGID_PARSIM_COMMUNICATIONS_CLASS, "parsim-communications-class", "General", CFG_STRING,  "cFileCommunications", "some description");
+Register_GlobalConfigEntry(CFGID_PARSIM_SYNCHRONIZATION_CLASS, "parsim-synchronization-class", "General", CFG_STRING,  "cNullMessageProtocol", "some description");
+Register_GlobalConfigEntry(CFGID_LOAD_LIBS, "load-libs", "General", CFG_FILENAMES,  "", "some description");
+Register_GlobalConfigEntry(CFGID_NUM_RNGS, "num-rngs", "General", CFG_INT, 1, "some description");
+Register_GlobalConfigEntry(CFGID_RNG_CLASS, "rng-class", "General", CFG_STRING,  "cMersenneTwister", "some description");
+Register_GlobalConfigEntry(CFGID_OUTPUTVECTORMANAGER_CLASS, "outputvectormanager-class", "General", CFG_STRING,  "cFileOutputVectorManager", "some description");
+Register_GlobalConfigEntry(CFGID_OUTPUTSCALARMANAGER_CLASS, "outputscalarmanager-class", "General", CFG_STRING,  "cFileOutputScalarManager", "some description");
+Register_GlobalConfigEntry(CFGID_SNAPSHOTMANAGER_CLASS, "snapshotmanager-class", "General", CFG_STRING,  "cFileSnapshotManager", "some description");
+Register_GlobalConfigEntry(CFGID_FNAME_APPEND_HOST, "fname-append-host", "General", CFG_BOOL, false, "some description");
+Register_GlobalConfigEntry(CFGID_DEBUG_ON_ERRORS, "debug-on-errors", "General", CFG_BOOL,  false, "some description");
+Register_GlobalConfigEntry(CFGID_PERFORM_GC, "perform-gc", "General", CFG_BOOL,  false, "some description");
+Register_GlobalConfigEntry(CFGID_PRINT_UNDISPOSED, "print-undisposed", "General", CFG_BOOL,  true, "some description");
+Register_GlobalConfigEntry(CFGID_SIMTIME_SCALE, "simtime-scale", "General", CFG_INT,  -12, "some description");
+
+Register_PerRunConfigEntry(CFGID_NETWORK, "network",  "General", CFG_STRING,  "default", "some description");
+Register_PerRunConfigEntry(CFGID_WARNINGS, "warnings",  "General", CFG_BOOL,  true, "some description");
+Register_PerRunConfigEntry(CFGID_SIM_TIME_LIMIT, "sim-time-limit",  "General", CFG_TIME,  0.0, "some description");
+Register_PerRunConfigEntry(CFGID_CPU_TIME_LIMIT, "cpu-time-limit",  "General", CFG_TIME,  0.0, "some description");
+Register_PerRunConfigEntry(CFGID_NETIF_CHECK_FREQ, "netif-check-freq",  "General", CFG_INT,  1, "some description");
+Register_PerRunConfigEntry(CFGID_FINGERPRINT, "fingerprint",  "General", CFG_STRING,  "", "some description");
+Register_PerRunConfigEntry(CFGID_EVENTLOG_FILE, "eventlog-file",  "General", CFG_FILENAME,  "", "some description");
 
 //-------------------------------------------------------------
 
