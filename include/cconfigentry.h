@@ -77,7 +77,7 @@ class SIM_API cConfigEntry : public cNoncopyableOwnedObject
     bool isGlobal()  {return isGlobal_;}
     Type type()  {return type_;}
     const char *unit()  {return unit_.empty() ? NULL : unit_.c_str();}
-    const char *defaultValue()  {return defaultValue_.empty() ? NULL : defaultValue_.c_str();
+    const char *defaultValue()  {return defaultValue_.empty() ? NULL : defaultValue_.c_str();}
     const char *description()  {return description_.c_str();}
     //@}
 };

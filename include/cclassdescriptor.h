@@ -38,10 +38,6 @@
  * message object has, what are their values etc. The message object
  * is said to be the `client object' of the cClassDescriptor object.
  *
- * In this class, the copy constructor, dup() and the assignment operator
- * are redefined to raise an error (throw cRuntimeError), since they would
- * be of no use in subclasses.
- *
  * @ingroup Internals
  */
 class SIM_API cClassDescriptor : public cNoncopyableOwnedObject

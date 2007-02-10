@@ -31,6 +31,7 @@
 #include "cdefaultlist.h"
 #include "cdensity.h"
 #include "cdetect.h"
+#include "cconfigentry.h"
 #include "cdisplaystring.h"
 #include "cdoublepar.h"
 #include "cdynamicexpression.h"
