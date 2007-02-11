@@ -66,18 +66,23 @@ class ENVIR_API cIniFile : public cConfiguration
     sEntry *_findEntry(const char *section, const char *key);
     const char *_getValue(const char *section, const char *key, bool raw);
     void _readFile(const char *fname, int section_id);
+    void _validateEntries();
 
     bool warnings;
     bool notfound;
+
+    int lastRunNumber;        // the current run number
+    char lastRunSection[32];  // "Run X" where X is the current run number
 
   public:
     cIniFile();
     virtual ~cIniFile();
 
-    /**
-     * Redefined method from cConfiguration.
-     */
+    /** @name Redefined methods from cConfiguration. */
+    //@{
     virtual void initializeFrom(cConfiguration *conf);
+    virtual const char *getPerRunSectionName(int runNumber);
+    //@}
 
     /** @name Inifile-specific methods. Used only from "boot-time" code. */
     //@{
@@ -127,15 +132,15 @@ class ENVIR_API cIniFile : public cConfiguration
 
     /** @name Redefined cConfigEntry-based getter methods from cConfiguration */
     //@{
-    virtual bool getAsBool(cConfigEntry *entry);
-    virtual long getAsInt(cConfigEntry *entry);
-    virtual double getAsDouble(cConfigEntry *entry);
-    virtual const char *getAsString(cConfigEntry *entry);
-    virtual std::string getAsFilename(cConfigEntry *entry);
-    virtual std::string getAsFilenames(cConfigEntry *entry);
-    virtual const char *getAsCustom(cConfigEntry *entry);
-    virtual const char *getBaseDirectoryFor(cConfigEntry *entry);
-    virtual std::string getLocation(cConfigEntry *entry);
+    virtual bool getAsBool(cConfigEntry *entry, const char *perRunSection=NULL);
+    virtual long getAsInt(cConfigEntry *entry, const char *perRunSection=NULL);
+    virtual double getAsDouble(cConfigEntry *entry, const char *perRunSection=NULL);
+    virtual const char *getAsString(cConfigEntry *entry, const char *perRunSection=NULL);
+    virtual std::string getAsFilename(cConfigEntry *entry, const char *perRunSection=NULL);
+    virtual std::string getAsFilenames(cConfigEntry *entry, const char *perRunSection=NULL);
+    virtual const char *getAsCustom(cConfigEntry *entry, const char *perRunSection=NULL);
+    virtual const char *getBaseDirectoryFor(cConfigEntry *entry, const char *perRunSection=NULL);
+    virtual std::string getLocation(cConfigEntry *entry, const char *perRunSection=NULL);
     //@}
 
     /**

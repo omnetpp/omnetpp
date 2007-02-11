@@ -26,6 +26,7 @@
 #include "fsutils.h"
 #include "fileutil.h"  // directoryOf
 #include "cstrtokenizer.h"
+#include "globals.h"
 
 
 #define MAX_LINE   1024
@@ -37,6 +38,9 @@ cIniFile::cIniFile()
     notfound = false;
 
     fname = NULL;
+
+    lastRunNumber = 0;
+    strcpy(lastRunSection, "");
 }
 
 cIniFile::~cIniFile()
@@ -48,13 +52,24 @@ void cIniFile::initializeFrom(cConfiguration *)
 {
 }
 
+const char *cIniFile::getPerRunSectionName(int runNumber)
+{
+    if (runNumber!=lastRunNumber)
+    {
+        lastRunNumber = runNumber;
+        sprintf(lastRunSection, "Run %d", lastRunNumber);
+    }
+    return lastRunSection;
+}
+
 #define SYNTAX_ERROR(txt) throw cRuntimeError("Error reading `%s' line %d: %s",fname,lineno,txt);
 
 void cIniFile::readFile(const char *filename)
 {
     delete [] fname;
     fname = opp_strdup(filename);
-    _readFile(fname,-1);
+    _readFile(fname, -1);
+    _validateEntries();
 }
 
 void cIniFile::_readFile(const char *fname, int section_id)
@@ -245,6 +260,38 @@ void cIniFile::_readFile(const char *fname, int section_id)
 }
 #undef SYNTAX_ERROR
 
+void cIniFile::_validateEntries()
+{
+/*FIXME finish
+    for (int i=0; i<(int)entries.size(); i++)
+    {
+       sEntry& e = entries[i];
+       const char *section = sections[e.section_id];
+       const char *lastDot = strrchr(e.key, '.');
+       bool containsDot = (lastDot!=NULL);
+       bool isPerObjectConfig = containsDot ? strchr(lastDot+1, '-') : false;
+
+       if (!containsDot)
+       {
+           // config setting: check if it is a valid setting
+           cConfigEntry *ce = dynamic_cast<cConfigEntry *>(configEntries.instance()->lookupByName(e.key));
+           if (!ce)
+               throw cRuntimeError("Unrecognized config entry at %s:%d: %s=%s",
+                                   files[e.file_id].fname, e.lineno, e.key, e.rawvalue);
+           if (strcmp(ce->section(), section))
+               throw cRuntimeError("Config entry at %s:%d, %s=%s is in wrong section -- should be XXXX", //FIXME refine message....
+                                   files[e.file_id].fname, e.lineno, e.key, e.rawvalue);
+           //XXX print help that "--help" will print the list of acceptable options
+       }
+       else if (isPerObjectConfig)
+       {
+           // per-object config setting: check if it is valid
+           //FIXME
+       }
+    }
+*/
+}
+
 void cIniFile::clearContents()
 {
     unsigned int i;
@@ -277,7 +324,10 @@ void cIniFile::clearContents()
 
 cIniFile::sEntry *cIniFile::_findEntry(const char *sect, const char *key)
 {
-    notfound=false;  // clear error flag
+    if (!sect || !key)
+        throw cRuntimeError("cIniFile: cannot be invoked with section==NULL or key==NULL");
+
+    notfound = false;  // clear error flag
     unsigned int i;
 
     // search for section
@@ -670,77 +720,77 @@ const char *cIniFile::fileName() const
 
 //-----------
 
-bool cIniFile::getAsBool(cConfigEntry *e)
+bool cIniFile::getAsBool(cConfigEntry *e, const char *perRunSection)
 {
     ASSERT(e->type()==cConfigEntry::CFG_BOOL);
+    ASSERT(e->isGlobal() == (perRunSection==NULL));
     bool defaultValue = e->defaultValue()[0]!='f' && e->defaultValue()[0]!='0';
-    const char *runsection = "Run 1"; //FIXME FIXME
     return e->isGlobal() ? getAsBool(e->section(), e->name(), defaultValue) :
-                           getAsBool2(runsection, e->section(), e->name(), defaultValue);
+                           getAsBool2(perRunSection, e->section(), e->name(), defaultValue);
 }
 
-long cIniFile::getAsInt(cConfigEntry *e)
+long cIniFile::getAsInt(cConfigEntry *e, const char *perRunSection)
 {
     ASSERT(e->type()==cConfigEntry::CFG_INT);
+    ASSERT(e->isGlobal() == (perRunSection==NULL));
     long defaultValue = atol(e->defaultValue());
-    const char *runsection = "Run 1"; //FIXME FIXME
     return e->isGlobal() ? getAsInt(e->section(), e->name(), defaultValue) :
-                           getAsInt2(runsection, e->section(), e->name(), defaultValue);
+                           getAsInt2(perRunSection, e->section(), e->name(), defaultValue);
 }
 
-double cIniFile::getAsDouble(cConfigEntry *e)
+double cIniFile::getAsDouble(cConfigEntry *e, const char *perRunSection)
 {
     ASSERT(e->type()==cConfigEntry::CFG_DOUBLE);
+    ASSERT(e->isGlobal() == (perRunSection==NULL));
     double defaultValue = atof(e->defaultValue());
-    const char *runsection = "Run 1"; //FIXME FIXME
     return e->isGlobal() ? getAsDouble(e->section(), e->name(), defaultValue) : //XXX obey unit!!!
-                           getAsDouble2(runsection, e->section(), e->name(), defaultValue);
+                           getAsDouble2(perRunSection, e->section(), e->name(), defaultValue);
 }
 
-const char *cIniFile::getAsString(cConfigEntry *e)
+const char *cIniFile::getAsString(cConfigEntry *e, const char *perRunSection)
 {
     ASSERT(e->type()==cConfigEntry::CFG_STRING);
-    const char *runsection = "Run 1"; //FIXME FIXME
+    ASSERT(e->isGlobal() == (perRunSection==NULL));
     return e->isGlobal() ? getAsString(e->section(), e->name(), e->defaultValue()) :
-                           getAsString2(runsection, e->section(), e->name(), e->defaultValue());
+                           getAsString2(perRunSection, e->section(), e->name(), e->defaultValue());
 }
 
-std::string cIniFile::getAsFilename(cConfigEntry *e)
+std::string cIniFile::getAsFilename(cConfigEntry *e, const char *perRunSection)
 {
     ASSERT(e->type()==cConfigEntry::CFG_FILENAME);
-    const char *runsection = "Run 1"; //FIXME FIXME
+    ASSERT(e->isGlobal() == (perRunSection==NULL));
     return e->isGlobal() ? getAsFilename(e->section(), e->name(), e->defaultValue()) :
-                           getAsFilename2(runsection, e->section(), e->name(), e->defaultValue());
+                           getAsFilename2(perRunSection, e->section(), e->name(), e->defaultValue());
 }
 
-std::string cIniFile::getAsFilenames(cConfigEntry *e)
+std::string cIniFile::getAsFilenames(cConfigEntry *e, const char *perRunSection)
 {
     ASSERT(e->type()==cConfigEntry::CFG_FILENAMES);
-    const char *runsection = "Run 1"; //FIXME FIXME
+    ASSERT(e->isGlobal() == (perRunSection==NULL));
     return e->isGlobal() ? getAsFilenames(e->section(), e->name(), e->defaultValue()) :
-                           getAsFilenames2(runsection, e->section(), e->name(), e->defaultValue());
+                           getAsFilenames2(perRunSection, e->section(), e->name(), e->defaultValue());
 }
 
-const char *cIniFile::getAsCustom(cConfigEntry *e)
+const char *cIniFile::getAsCustom(cConfigEntry *e, const char *perRunSection)
 {
     ASSERT(e->type()==cConfigEntry::CFG_CUSTOM);
-    const char *runsection = "Run 1"; //FIXME FIXME
+    ASSERT(e->isGlobal() == (perRunSection==NULL));
     return e->isGlobal() ? getAsCustom(e->section(), e->name(), e->defaultValue()) :
-                           getAsCustom2(runsection, e->section(), e->name(), e->defaultValue());
+                           getAsCustom2(perRunSection, e->section(), e->name(), e->defaultValue());
 }
 
-const char *cIniFile::getBaseDirectoryFor(cConfigEntry *e)
+const char *cIniFile::getBaseDirectoryFor(cConfigEntry *e, const char *perRunSection)
 {
-    const char *runsection = "Run 1"; //FIXME FIXME
+    ASSERT(e->isGlobal() == (perRunSection==NULL));
     return e->isGlobal() ? getBaseDirectoryFor(e->section(), e->name()) :
-                           getBaseDirectoryFor(runsection, e->section(), e->name());
+                           getBaseDirectoryFor(perRunSection, e->section(), e->name());
 }
 
-std::string cIniFile::getLocation(cConfigEntry *e)
+std::string cIniFile::getLocation(cConfigEntry *e, const char *perRunSection)
 {
-    const char *runsection = "Run 1"; //FIXME FIXME
+    ASSERT(e->isGlobal() == (perRunSection==NULL));
     return e->isGlobal() ? getLocation(e->section(), e->name()) :
-                           getLocation(runsection, e->section(), e->name());
+                           getLocation(perRunSection, e->section(), e->name());
 }
 
 //-----------
