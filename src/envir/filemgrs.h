@@ -25,9 +25,6 @@
 #include "envirext.h"
 #include "util.h"
 
-// helper function for accessing configuration
-const char *getRunSectionName(int runNumber);
-
 #define DEFAULT_PRECISION 14
 
 /**

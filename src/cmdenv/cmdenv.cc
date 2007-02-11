@@ -121,7 +121,7 @@ void TCmdenvApp::readPerRunOptions(int run_nr)
     TOmnetApp::readPerRunOptions(run_nr);
 
     cConfiguration *cfg = getConfig();
-    const char *section = getRunSectionName(run_nr);
+    const char *runSection = cfg->getPerRunSectionName(run_nr);
 
     opt_expressmode = cfg->getAsBool(CFGID_EXPRESS_MODE);
     opt_autoflush = cfg->getAsBool(CFGID_AUTOFLUSH);
@@ -132,13 +132,6 @@ void TCmdenvApp::readPerRunOptions(int run_nr)
     opt_status_frequency_ev = cfg->getAsInt(CFGID_STATUS_FREQUENCY);
     //opt_status_frequency_sec = cfg->getAsDouble(CFGID_STATUS_FREQUENCY_INTERVAL);
     opt_perfdisplay = cfg->getAsBool(CFGID_PERFORMANCE_DISPLAY);
-
-    // warnings on old entries
-    if (cfg->exists2(section,"Cmdenv", "display-update"))
-         ev.printfmsg("Warning: ini file entry display-update= is obsolete, "
-                      "use status-frequency= instead!");
-    if (cfg->exists2(section,"Cmdenv", "verbose-simulation"))
-         ev.printfmsg("Warning: ini file entry verbose-simulation= is obsolete, use event-banners= instead!");
 }
 
 void TCmdenvApp::setup()

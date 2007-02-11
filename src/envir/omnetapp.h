@@ -110,8 +110,6 @@ class ENVIR_API TOmnetApp
 
   protected:
     // internal
-    const char *getRunSectionName(int runnumber);
-    // internal
     std::string getParameter(int run_nr, const char *parname);
     // internal
     bool getParameterUseDefault(int run_no, const char *parname);

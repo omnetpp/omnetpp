@@ -51,7 +51,8 @@ Register_PerRunConfigEntryU(CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, "output-vectors-m
 static void createFileName(opp_string& fname, int run_no, const char *configentry, const char *defaultval)
 {
     // get file name from ini file
-    fname = ev.config()->getAsFilenames2(getRunSectionName(run_no),"General",configentry,defaultval).c_str();
+    const char *runSection = ev.config()->getPerRunSectionName(run_no);
+    fname = ev.config()->getAsFilenames2(runSection, "General", configentry, defaultval).c_str();
     ev.app->processFileName(fname);
 }
 
@@ -69,10 +70,10 @@ Register_Class(cIndexedFileOutputVectorManager);
 cIndexedFileOutputVectorManager::cIndexedFileOutputVectorManager()
   : cFileOutputVectorManager()
 {
-    fi=NULL;
+    fi = NULL;
     memoryUsed = 0;
 
-    const char *currentRunSection = getRunSectionName(simulation.runNumber());
+    const char *runSection = ev.config()->getPerRunSectionName(simulation.runNumber());
     long d = (long) ev.config()->getAsDouble(CFGID_OUTPUT_VECTORS_MEMORY_LIMIT);
     maxMemoryUsed = max(d, MIN_BUFFER_MEMORY);
 }
@@ -144,7 +145,8 @@ void *cIndexedFileOutputVectorManager::registerVector(const char *modulename, co
 
     static char param[1024];
     sprintf(param, "%s.%s.max-buffered-samples", modulename, vectorname);
-    vp->maxBufferedSamples = ev.config()->getAsInt2(getRunSectionName(simulation.runNumber()),"OutVectors",param, -1);
+    const char *runSection = ev.config()->getPerRunSectionName(simulation.runNumber());
+    vp->maxBufferedSamples = ev.config()->getAsInt2(runSection, "OutVectors", param, -1);
     if (vp->maxBufferedSamples > 0)
         vp->allocateBuffer(vp->maxBufferedSamples);
 

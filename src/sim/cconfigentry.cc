@@ -38,7 +38,7 @@ cNoncopyableOwnedObject(name)
 
 const char *cConfigEntry::fullName() const
 {
-    fullname_ = std::string("[") + section_ + "] " + name();
+    fullname_ = section_ + "::" + name();
     return fullname_.c_str();
 }
 

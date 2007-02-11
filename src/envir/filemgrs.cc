@@ -50,25 +50,12 @@ Register_GlobalConfigEntry(CFGID_OUTPUT_SCALAR_PRECISION, "output-scalar-precisi
 #endif
 #define CHECK(fprintf)    if (fprintf<0) throw cRuntimeError("Cannot write output vector file `%s'", fname.c_str())
 
-// helper functions
-const char *getRunSectionName(int runNumber)
-{
-    static int lastRunNumber = -1;
-    static char section[16];
-
-    if (runNumber != lastRunNumber)
-    {
-        sprintf(section, "Run %d", runNumber);
-        lastRunNumber = runNumber;
-    }
-
-    return section;
-}
 
 static void createFileName(opp_string& fname, int run_no, const char *configentry, const char *defaultval)
 {
     // get file name from ini file
-    fname = ev.config()->getAsFilename2(getRunSectionName(run_no),"General",configentry,defaultval).c_str();
+    const char *runSection = ev.config()->getPerRunSectionName(simulation.runNumber());
+    fname = ev.config()->getAsFilename2(runSection, "General", configentry, defaultval).c_str();
     ev.app->processFileName(fname);
 }
 
@@ -110,7 +97,7 @@ void cFileOutputVectorManager::openFile()
 void cFileOutputVectorManager::writeHeader()
 {
     cConfiguration *config = ev.config();
-    const char *section = getRunSectionName(simulation.runNumber());
+    const char *section = config->getPerRunSectionName(simulation.runNumber());
     const char *runId = "run_id"; // TODO: generate id in TOmnetApp.startRun() and make it available
     fprintf(f, "run %s\n", QUOTE(runId));
     const char *inifile = config->fileName();
@@ -197,7 +184,7 @@ void *cFileOutputVectorManager::registerVector(const char *modulename, const cha
     ev.app->getOutVectorConfig(simulation.runNumber(), modulename, vectorname,
                                vp->enabled, vp->starttime, vp->stoptime);
 
-    const char *runSection = getRunSectionName(simulation.runNumber());
+    const char *runSection = ev.config()->getPerRunSectionName(simulation.runNumber());
     static char param[1024];
     sprintf(param, "%s.%s.record-event-numbers", modulename, vectorname);
     vp->recordEventNumbers = ev.config()->getAsBool2(runSection, "OutVectors", param, true);

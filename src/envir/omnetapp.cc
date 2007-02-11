@@ -107,6 +107,7 @@ Register_GlobalConfigEntry(CFGID_PERFORM_GC, "perform-gc", "General", CFG_BOOL, 
 Register_GlobalConfigEntry(CFGID_PRINT_UNDISPOSED, "print-undisposed", "General", CFG_BOOL,  true, "FIXME add some description here");
 Register_GlobalConfigEntry(CFGID_SIMTIME_SCALE, "simtime-scale", "General", CFG_INT,  -12, "FIXME add some description here");
 
+Register_PerRunConfigEntry(CFGID_DESCRIPTION, "description", "General", CFG_STRING, "", "FIXME add some description here");
 Register_PerRunConfigEntry(CFGID_NETWORK, "network",  "General", CFG_STRING,  "default", "FIXME add some description here");
 Register_PerRunConfigEntry(CFGID_WARNINGS, "warnings",  "General", CFG_BOOL,  true, "FIXME add some description here");
 Register_PerRunConfigEntry(CFGID_SIM_TIME_LIMIT, "sim-time-limit",  "General", CFG_TIME,  0.0, "FIXME add some description here");
@@ -285,18 +286,6 @@ void TOmnetApp::printHelp()
     }
 }
 
-const char *TOmnetApp::getRunSectionName(int runnumber)
-{
-    static int lastrunnumber = -1;
-    static char section[16] = "";
-
-    if (runnumber!=lastrunnumber)
-    {
-        sprintf(section, "Run %d", runnumber);
-        lastrunnumber = runnumber;
-    }
-    return section;
-}
 
 int TOmnetApp::getParsimProcId()
 {
@@ -381,7 +370,8 @@ void TOmnetApp::endRun()
 
 std::string TOmnetApp::getParameter(int run_no, const char *parname)
 {
-    const char *str = getConfig()->getAsCustom2(getRunSectionName(run_no),"Parameters",parname,"");
+    const char *runSection = ev.config()->getPerRunSectionName(run_no);
+    const char *str = getConfig()->getAsCustom2(runSection, "Parameters", parname, "");
     if (str[0]=='x' && !strncmp(str,"xmldoc",6) && !isalnum(str[6]))
     {
         // Make XML file location relative to the ini file in which it occurs.
@@ -396,7 +386,7 @@ std::string TOmnetApp::getParameter(int run_no, const char *parname)
         if (!endQuote)
             return std::string(str);
         std::string fname(begQuote+1, endQuote-begQuote-1);
-        const char *baseDir = getConfig()->getBaseDirectoryFor(getRunSectionName(run_no),"Parameters",parname);
+        const char *baseDir = getConfig()->getBaseDirectoryFor(runSection, "Parameters", parname);
         fname = tidyFilename(concatDirAndFile(baseDir, fname.c_str()).c_str(),true);
         std::string ret = std::string(str, begQuote-str+1) + fname + endQuote;
         return ret;
@@ -411,7 +401,8 @@ bool TOmnetApp::getParameterUseDefault(int run_no, const char *parname)
 {
     std::string entry = parname;
     entry += ".use-default";
-    return getConfig()->getAsBool2(getRunSectionName(run_no), "Parameters", entry.c_str(), false);
+    const char *runSection = ev.config()->getPerRunSectionName(run_no);
+    return getConfig()->getAsBool2(runSection, "Parameters", entry.c_str(), false);
 }
 
 void TOmnetApp::readParameter(cPar *par)
@@ -500,11 +491,12 @@ void TOmnetApp::getOutVectorConfig(int run_no, const char *modname,const char *v
 
     // get 'module.vector.disabled=' entry
     strcpy(end,"enabled");
-    enabled = getConfig()->getAsBool2(getRunSectionName(run_no),"OutVectors",buffer,true);
+    const char *runSection = ev.config()->getPerRunSectionName(run_no);
+    enabled = getConfig()->getAsBool2(runSection, "OutVectors", buffer, true);
 
     // get 'module.vector.interval=' entry
     strcpy(end,"interval");
-    const char *s = getConfig()->getAsString2(getRunSectionName(run_no),"OutVectors",buffer,NULL);
+    const char *s = getConfig()->getAsString2(runSection, "OutVectors", buffer, NULL);
     if (!s)
     {
        starttime = 0;
@@ -826,7 +818,7 @@ void TOmnetApp::readOptions()
 void TOmnetApp::readPerRunOptions(int run_no)
 {
     cConfiguration *cfg = getConfig();
-    const char *section = getRunSectionName(run_no);
+    const char *runSection = cfg->getPerRunSectionName(run_no);
 
     // get options from ini file
     opt_network_name = cfg->getAsString(CFGID_NETWORK);
