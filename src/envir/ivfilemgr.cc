@@ -47,14 +47,6 @@ Register_PerRunConfigEntryU(CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, "output-vectors-m
 #define CHECK(fprintf, fname)    if (fprintf<0) throw new cRuntimeError("Cannot write output file `%s'", fname.c_str())
 #define WARN(msg)       fprintf(stderr,msg)
 
-// helper function
-static void createFileName(opp_string& fname, int run_no, const char *configentry, const char *defaultval)
-{
-    // get file name from ini file
-    const char *runSection = ev.config()->getPerRunSectionName(run_no);
-    fname = ev.config()->getAsFilenames2(runSection, "General", configentry, defaultval).c_str();
-    ev.app->processFileName(fname);
-}
 
 static void removeFile(const char *fname, const char *descr)
 {
@@ -73,7 +65,6 @@ cIndexedFileOutputVectorManager::cIndexedFileOutputVectorManager()
     fi = NULL;
     memoryUsed = 0;
 
-    const char *runSection = ev.config()->getPerRunSectionName(simulation.runNumber());
     long d = (long) ev.config()->getAsDouble(CFGID_OUTPUT_VECTORS_MEMORY_LIMIT);
     maxMemoryUsed = max(d, MIN_BUFFER_MEMORY);
 }
@@ -145,8 +136,7 @@ void *cIndexedFileOutputVectorManager::registerVector(const char *modulename, co
 
     static char param[1024];
     sprintf(param, "%s.%s.max-buffered-samples", modulename, vectorname);
-    const char *runSection = ev.config()->getPerRunSectionName(simulation.runNumber());
-    vp->maxBufferedSamples = ev.config()->getAsInt2(runSection, "OutVectors", param, -1);
+    vp->maxBufferedSamples = ev.config()->getAsInt2(NULL, "OutVectors", param, -1);
     if (vp->maxBufferedSamples > 0)
         vp->allocateBuffer(vp->maxBufferedSamples);
 
@@ -170,7 +160,8 @@ void cIndexedFileOutputVectorManager::deregisterVector(void *vectorhandle)
 
 void cIndexedFileOutputVectorManager::finalizeVector(sVector *vp)
 {
-    if (f != NULL) {
+    if (f)
+    {
         if (!vp->buffer.empty())
             writeRecords(vp);
         writeIndex(vp);

@@ -280,8 +280,8 @@ void TOmnetTkApp::printUISpecificHelp()
 
 void TOmnetTkApp::rebuildSim()
 {
-    if (simulation.runNumber()>0)
-         newRun( simulation.runNumber() );
+    if (getConfig()->getRunNumber()>0)
+         newRun(getConfig()->getRunNumber());
     else if (simulation.networkType()!=NULL)
          newNetwork( simulation.networkType()->name() );
     else
@@ -673,12 +673,12 @@ void TOmnetTkApp::newNetwork(const char *network_name)
 
         CHK(Tcl_VarEval(interp, "clear_windows", NULL));
 
-        // set up new network
-        readPerRunOptions(0);
+        // set up new network with runNumber==0. This means that run-specific
+        // sections of the ini file will be ignored.
+        getConfig()->setRunNumber(0);
+        readPerRunOptions();
         opt_network_name = network->name();
-        // pass run number 0 to setupNetwork(): this means that only the [All runs]
-        // section of the ini file will be searched for parameter values
-        simulation.setupNetwork(network, 0);
+        simulation.setupNetwork(network);
         startRun();
 
         simstate = SIM_NEW;
@@ -697,7 +697,7 @@ void TOmnetTkApp::newNetwork(const char *network_name)
     updateInspectors();
 }
 
-void TOmnetTkApp::newRun(int run)
+void TOmnetTkApp::newRun(int runnumber)
 {
     try
     {
@@ -710,8 +710,8 @@ void TOmnetTkApp::newRun(int run)
         }
 
         // set up new network
-        run_nr = run;
-        readPerRunOptions(run_nr);
+        getConfig()->setRunNumber(runnumber);
+        readPerRunOptions();
 
         cModuleType *network = cModuleType::find(opt_network_name.c_str());
         //FIXME check if it can be instantiated as network
@@ -723,7 +723,7 @@ void TOmnetTkApp::newRun(int run)
 
         CHK(Tcl_VarEval(interp, "clear_windows", NULL));
 
-        simulation.setupNetwork(network, run_nr);
+        simulation.setupNetwork(network);
         startRun();
         simstate = SIM_NEW;
     }
@@ -878,10 +878,10 @@ void TOmnetTkApp::updateNetworkRunDisplay()
     char runnr[10];
     const char *networkname;
 
-    if (simulation.runNumber()<=0)
+    if (getConfig()->getRunNumber())
         sprintf(runnr, "?");
     else
-        sprintf(runnr, "%d",simulation.runNumber());
+        sprintf(runnr, "%d", getConfig()->getRunNumber());
 
     if (simulation.networkType()==NULL)
         networkname = "(no network)";
@@ -1064,9 +1064,9 @@ void TOmnetTkApp::readOptions()
     opt_plugin_path = cfg->getAsFilename(CFGID_PLUGIN_PATH).c_str();
 }
 
-void TOmnetTkApp::readPerRunOptions(int run_nr)
+void TOmnetTkApp::readPerRunOptions()
 {
-    TOmnetApp::readPerRunOptions( run_nr );
+    TOmnetApp::readPerRunOptions();
 }
 
 bool TOmnetTkApp::idle()

@@ -471,7 +471,6 @@ class cSimulation extends cNoncopyableOwnedObject
 {
     fields:
         @omitGetVerb(true);
-        int runNumber @hint(identifies the [Run X] section selected in omnetpp.ini);
         simtime_t simTime @hint(the current simulation time in seconds);
         long eventNumber @hint(the current event number -- counts from 0 up);
         cMessageHeap messageQueue @label(futureEvents) @hint(self-messages scheduled, and messages in transit);

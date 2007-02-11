@@ -84,8 +84,6 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     simtime_t sim_time;       // simulation time (time of current event)
     long event_num;           // sequence number of current event
 
-    int run_number;           // which simulation run
-
     cMessage *msg_for_activity; // helper variable to pass the received message into activity()
     cException *exception;    // helper variable to get exceptions back from activity()
 
@@ -217,7 +215,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     /**
      * Builds a new network.
      */
-    void setupNetwork(cModuleType *networkType, int runNumber);
+    void setupNetwork(cModuleType *networkType);
 
     /**
      * Should be called after setupNetwork(), but before the first
@@ -246,37 +244,33 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
 
     /** @name Information about the current simulation run. */
     //@{
-
     /**
      * Returns the cModuleType object that was instantiated to set up
      * the current simulation model.
      */
-    cModuleType *networkType() const     {return networktype;}
+    cModuleType *networkType() const  {return networktype;}
 
     /**
-     * Returns the current run number. A run is the execution of a
-     * model with a given set of parameter settings. Runs can be defined
-     * in omnetpp.ini.
+     * Delegates to <tt>ev.config()->getRunNumber()</tt>.
      */
-    // TBD does run number really belong to the simulation kernel? why not in Envir?
-    int  runNumber() const           {return run_number;}
+    int runNumber() const;
 
     /**
      * WARNING: INTERNAL USE ONLY. This method should NEVER be invoked from
      * simulation models, only from scheduler classes subclassed from
      * cScheduler.
      */
-    void setSimTime(simtime_t time) { sim_time = time; }
+    void setSimTime(simtime_t time)  {sim_time = time;}
 
     /**
      * Returns current simulation time.
      */
-    simtime_t simTime() const       {return sim_time;}
+    simtime_t simTime() const  {return sim_time;}
 
     /**
      * Returns sequence number of current event.
      */
-    long eventNumber() const         {return event_num;}
+    long eventNumber() const  {return event_num;}
     //@}
 
     /** @name Scheduling and context switching during simulation. */

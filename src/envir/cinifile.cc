@@ -39,8 +39,8 @@ cIniFile::cIniFile()
 
     fname = NULL;
 
-    lastRunNumber = 0;
-    strcpy(lastRunSection, "");
+    runnumber = 0;
+    strcpy(runsection, "");
 }
 
 cIniFile::~cIniFile()
@@ -52,14 +52,10 @@ void cIniFile::initializeFrom(cConfiguration *)
 {
 }
 
-const char *cIniFile::getPerRunSectionName(int runNumber)
+void cIniFile::setRunNumber(int runNumber)
 {
-    if (runNumber!=lastRunNumber)
-    {
-        lastRunNumber = runNumber;
-        sprintf(lastRunSection, "Run %d", lastRunNumber);
-    }
-    return lastRunSection;
+    runnumber = runNumber;
+    sprintf(runsection, "Run %d", runnumber);
 }
 
 #define SYNTAX_ERROR(txt) throw cRuntimeError("Error reading `%s' line %d: %s",fname,lineno,txt);
@@ -586,12 +582,14 @@ bool cIniFile::notFound()
 
 bool cIniFile::exists2(const char *sect1, const char *sect2, const char *key)
 {
+    if (!sect1) sect1 = getPerRunSectionName();
     return exists(sect1, key) || exists(sect2, key);
 }
 
 bool cIniFile::getAsBool2(const char *sect1, const char *sect2, const char *key, bool defaultval)
 {
     bool w = warnings; warnings = false;
+    if (!sect1) sect1 = getPerRunSectionName();
     bool a = getAsBool(sect1,key,defaultval);
     if (notfound)
          a = getAsBool(sect2,key,defaultval);
@@ -605,6 +603,7 @@ bool cIniFile::getAsBool2(const char *sect1, const char *sect2, const char *key,
 long cIniFile::getAsInt2(const char *sect1, const char *sect2, const char *key, long defaultval)
 {
     bool w = warnings; warnings = false;
+    if (!sect1) sect1 = getPerRunSectionName();
     long a = getAsInt(sect1,key,defaultval);
     if (notfound)
          a = getAsInt(sect2,key,defaultval);
@@ -618,6 +617,7 @@ long cIniFile::getAsInt2(const char *sect1, const char *sect2, const char *key, 
 double cIniFile::getAsDouble2(const char *sect1, const char *sect2, const char *key, double defaultval)
 {
     bool w = warnings; warnings = false;
+    if (!sect1) sect1 = getPerRunSectionName();
     double a = getAsDouble(sect1,key,defaultval);
     if (notfound)
          a = getAsDouble(sect2,key,defaultval);
@@ -631,6 +631,7 @@ double cIniFile::getAsDouble2(const char *sect1, const char *sect2, const char *
 const char *cIniFile::getAsString2(const char *sect1, const char *sect2, const char *key, const char *defaultval)
 {
     bool w = warnings; warnings = false;
+    if (!sect1) sect1 = getPerRunSectionName();
     const char *a = getAsString(sect1,key,defaultval);
     if (notfound)
          a = getAsString(sect2,key,defaultval);
@@ -644,6 +645,7 @@ const char *cIniFile::getAsString2(const char *sect1, const char *sect2, const c
 std::string cIniFile::getAsFilename2(const char *sect1, const char *sect2, const char *key, const char *defaultval)
 {
     bool w = warnings; warnings = false;
+    if (!sect1) sect1 = getPerRunSectionName();
     std::string a = getAsFilename(sect1,key,defaultval);
     if (notfound)
          a = getAsFilename(sect2,key,defaultval);
@@ -657,6 +659,7 @@ std::string cIniFile::getAsFilename2(const char *sect1, const char *sect2, const
 std::string cIniFile::getAsFilenames2(const char *sect1, const char *sect2, const char *key, const char *defaultval)
 {
     bool w = warnings; warnings = false;
+    if (!sect1) sect1 = getPerRunSectionName();
     std::string a = getAsFilenames(sect1,key,defaultval);
     if (notfound)
          a = getAsFilenames(sect2,key,defaultval);
@@ -670,6 +673,7 @@ std::string cIniFile::getAsFilenames2(const char *sect1, const char *sect2, cons
 double cIniFile::getAsTime2(const char *sect1, const char *sect2, const char *key, double defaultval)
 {
     bool w = warnings; warnings = false;
+    if (!sect1) sect1 = getPerRunSectionName();
     double a = getAsTime(sect1,key,defaultval);
     if (notfound)
          a = getAsTime(sect2,key,defaultval);
@@ -683,6 +687,7 @@ double cIniFile::getAsTime2(const char *sect1, const char *sect2, const char *ke
 const char *cIniFile::getAsCustom2(const char *sect1, const char *sect2, const char *key, const char *defaultval)
 {
     bool w = warnings; warnings = false;
+    if (!sect1) sect1 = getPerRunSectionName();
     const char *a = getAsCustom(sect1,key,defaultval);
     if (notfound)
          a = getAsCustom(sect2,key,defaultval);
@@ -696,6 +701,7 @@ const char *cIniFile::getAsCustom2(const char *sect1, const char *sect2, const c
 const char *cIniFile::getBaseDirectoryFor(const char *sect1, const char *sect2, const char *key)
 {
     bool w = warnings; warnings = false;
+    if (!sect1) sect1 = getPerRunSectionName();
     const char *a = getBaseDirectoryFor(sect1,key);
     if (notfound)
          a = getBaseDirectoryFor(sect2,key);
@@ -706,6 +712,7 @@ const char *cIniFile::getBaseDirectoryFor(const char *sect1, const char *sect2, 
 std::string cIniFile::getLocation(const char *sect1, const char *sect2, const char *key)
 {
     bool w = warnings; warnings = false;
+    if (!sect1) sect1 = getPerRunSectionName();
     std::string a = getLocation(sect1,key);
     if (notfound)
          a = getLocation(sect2,key);
@@ -723,7 +730,8 @@ const char *cIniFile::fileName() const
 bool cIniFile::getAsBool(cConfigEntry *e, const char *perRunSection)
 {
     ASSERT(e->type()==cConfigEntry::CFG_BOOL);
-    ASSERT(e->isGlobal() == (perRunSection==NULL));
+    if (!e->isGlobal() && perRunSection==NULL)
+        perRunSection = getPerRunSectionName();
     bool defaultValue = e->defaultValue()[0]!='f' && e->defaultValue()[0]!='0';
     return e->isGlobal() ? getAsBool(e->section(), e->name(), defaultValue) :
                            getAsBool2(perRunSection, e->section(), e->name(), defaultValue);
@@ -732,7 +740,8 @@ bool cIniFile::getAsBool(cConfigEntry *e, const char *perRunSection)
 long cIniFile::getAsInt(cConfigEntry *e, const char *perRunSection)
 {
     ASSERT(e->type()==cConfigEntry::CFG_INT);
-    ASSERT(e->isGlobal() == (perRunSection==NULL));
+    if (!e->isGlobal() && perRunSection==NULL)
+        perRunSection = getPerRunSectionName();
     long defaultValue = atol(e->defaultValue());
     return e->isGlobal() ? getAsInt(e->section(), e->name(), defaultValue) :
                            getAsInt2(perRunSection, e->section(), e->name(), defaultValue);
@@ -741,7 +750,8 @@ long cIniFile::getAsInt(cConfigEntry *e, const char *perRunSection)
 double cIniFile::getAsDouble(cConfigEntry *e, const char *perRunSection)
 {
     ASSERT(e->type()==cConfigEntry::CFG_DOUBLE);
-    ASSERT(e->isGlobal() == (perRunSection==NULL));
+    if (!e->isGlobal() && perRunSection==NULL)
+        perRunSection = getPerRunSectionName();
     double defaultValue = atof(e->defaultValue());
     return e->isGlobal() ? getAsDouble(e->section(), e->name(), defaultValue) : //XXX obey unit!!!
                            getAsDouble2(perRunSection, e->section(), e->name(), defaultValue);
@@ -750,7 +760,8 @@ double cIniFile::getAsDouble(cConfigEntry *e, const char *perRunSection)
 const char *cIniFile::getAsString(cConfigEntry *e, const char *perRunSection)
 {
     ASSERT(e->type()==cConfigEntry::CFG_STRING);
-    ASSERT(e->isGlobal() == (perRunSection==NULL));
+    if (!e->isGlobal() && perRunSection==NULL)
+        perRunSection = getPerRunSectionName();
     return e->isGlobal() ? getAsString(e->section(), e->name(), e->defaultValue()) :
                            getAsString2(perRunSection, e->section(), e->name(), e->defaultValue());
 }
@@ -758,7 +769,8 @@ const char *cIniFile::getAsString(cConfigEntry *e, const char *perRunSection)
 std::string cIniFile::getAsFilename(cConfigEntry *e, const char *perRunSection)
 {
     ASSERT(e->type()==cConfigEntry::CFG_FILENAME);
-    ASSERT(e->isGlobal() == (perRunSection==NULL));
+    if (!e->isGlobal() && perRunSection==NULL)
+        perRunSection = getPerRunSectionName();
     return e->isGlobal() ? getAsFilename(e->section(), e->name(), e->defaultValue()) :
                            getAsFilename2(perRunSection, e->section(), e->name(), e->defaultValue());
 }
@@ -766,7 +778,8 @@ std::string cIniFile::getAsFilename(cConfigEntry *e, const char *perRunSection)
 std::string cIniFile::getAsFilenames(cConfigEntry *e, const char *perRunSection)
 {
     ASSERT(e->type()==cConfigEntry::CFG_FILENAMES);
-    ASSERT(e->isGlobal() == (perRunSection==NULL));
+    if (!e->isGlobal() && perRunSection==NULL)
+        perRunSection = getPerRunSectionName();
     return e->isGlobal() ? getAsFilenames(e->section(), e->name(), e->defaultValue()) :
                            getAsFilenames2(perRunSection, e->section(), e->name(), e->defaultValue());
 }
@@ -774,21 +787,24 @@ std::string cIniFile::getAsFilenames(cConfigEntry *e, const char *perRunSection)
 const char *cIniFile::getAsCustom(cConfigEntry *e, const char *perRunSection)
 {
     ASSERT(e->type()==cConfigEntry::CFG_CUSTOM);
-    ASSERT(e->isGlobal() == (perRunSection==NULL));
+    if (!e->isGlobal() && perRunSection==NULL)
+        perRunSection = getPerRunSectionName();
     return e->isGlobal() ? getAsCustom(e->section(), e->name(), e->defaultValue()) :
                            getAsCustom2(perRunSection, e->section(), e->name(), e->defaultValue());
 }
 
 const char *cIniFile::getBaseDirectoryFor(cConfigEntry *e, const char *perRunSection)
 {
-    ASSERT(e->isGlobal() == (perRunSection==NULL));
+    if (!e->isGlobal() && perRunSection==NULL)
+        perRunSection = getPerRunSectionName();
     return e->isGlobal() ? getBaseDirectoryFor(e->section(), e->name()) :
                            getBaseDirectoryFor(perRunSection, e->section(), e->name());
 }
 
 std::string cIniFile::getLocation(cConfigEntry *e, const char *perRunSection)
 {
-    ASSERT(e->isGlobal() == (perRunSection==NULL));
+    if (!e->isGlobal() && perRunSection==NULL)
+        perRunSection = getPerRunSectionName();
     return e->isGlobal() ? getLocation(e->section(), e->name()) :
                            getLocation(perRunSection, e->section(), e->name());
 }

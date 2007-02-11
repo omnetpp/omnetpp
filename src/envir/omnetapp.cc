@@ -368,10 +368,9 @@ void TOmnetApp::endRun()
 
 //-------------------------------------------------------------
 
-std::string TOmnetApp::getParameter(int run_no, const char *parname)
+std::string TOmnetApp::getParameter(const char *parname)
 {
-    const char *runSection = ev.config()->getPerRunSectionName(run_no);
-    const char *str = getConfig()->getAsCustom2(runSection, "Parameters", parname, "");
+    const char *str = getConfig()->getAsCustom2(NULL, "Parameters", parname, "");
     if (str[0]=='x' && !strncmp(str,"xmldoc",6) && !isalnum(str[6]))
     {
         // Make XML file location relative to the ini file in which it occurs.
@@ -386,7 +385,7 @@ std::string TOmnetApp::getParameter(int run_no, const char *parname)
         if (!endQuote)
             return std::string(str);
         std::string fname(begQuote+1, endQuote-begQuote-1);
-        const char *baseDir = getConfig()->getBaseDirectoryFor(runSection, "Parameters", parname);
+        const char *baseDir = getConfig()->getBaseDirectoryFor(NULL, "Parameters", parname);
         fname = tidyFilename(concatDirAndFile(baseDir, fname.c_str()).c_str(),true);
         std::string ret = std::string(str, begQuote-str+1) + fname + endQuote;
         return ret;
@@ -397,19 +396,18 @@ std::string TOmnetApp::getParameter(int run_no, const char *parname)
     }
 }
 
-bool TOmnetApp::getParameterUseDefault(int run_no, const char *parname)
+bool TOmnetApp::getParameterUseDefault(const char *parname)
 {
     std::string entry = parname;
     entry += ".use-default";
-    const char *runSection = ev.config()->getPerRunSectionName(run_no);
-    return getConfig()->getAsBool2(runSection, "Parameters", entry.c_str(), false);
+    return getConfig()->getAsBool2(NULL, "Parameters", entry.c_str(), false);
 }
 
 void TOmnetApp::readParameter(cPar *par)
 {
     // get it from ini file
     std::string parfullpath = par->fullPath();
-    std::string str = getParameter(simulation.runNumber(), parfullpath.c_str());
+    std::string str = getParameter(parfullpath.c_str());
 
     if (!str.empty())
     {
@@ -418,7 +416,7 @@ void TOmnetApp::readParameter(cPar *par)
     }
 
     // maybe we should use default value
-    if (par->hasValue() && getParameterUseDefault(simulation.runNumber(), parfullpath.c_str()))
+    if (par->hasValue() && getParameterUseDefault(parfullpath.c_str()))
     {
         par->acceptDefault();
         return;
@@ -466,7 +464,7 @@ bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index
         sprintf(parname,"%s.%s.partition-id", parentmod->fullPath().c_str(), modname);
     else
         sprintf(parname,"%s.%s[%d].partition-id", parentmod->fullPath().c_str(), modname, index);
-    int procId = getConfig()->getAsInt2(getRunSectionName(simulation.runNumber()),"Partitioning",parname,-1);
+    int procId = getConfig()->getAsInt2(NULL, "Partitioning", parname, -1);
     if (procId<0)
         throw cRuntimeError("incomplete or wrong partitioning: missing or invalid value for '%s'",parname);
     if (procId>=parsimcomm->getNumPartitions())
@@ -482,7 +480,7 @@ bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index
 #endif
 }
 
-void TOmnetApp::getOutVectorConfig(int run_no, const char *modname,const char *vecname, /*input*/
+void TOmnetApp::getOutVectorConfig(const char *modname,const char *vecname, /*input*/
                                    bool& enabled, simtime_t& starttime, simtime_t& stoptime /*output*/ )
 {
     // prepare section name and entry name
@@ -490,13 +488,12 @@ void TOmnetApp::getOutVectorConfig(int run_no, const char *modname,const char *v
     char *end = buffer+strlen(buffer);
 
     // get 'module.vector.disabled=' entry
-    strcpy(end,"enabled");
-    const char *runSection = ev.config()->getPerRunSectionName(run_no);
-    enabled = getConfig()->getAsBool2(runSection, "OutVectors", buffer, true);
+    strcpy(end, "enabled");
+    enabled = getConfig()->getAsBool2(NULL, "OutVectors", buffer, true);
 
     // get 'module.vector.interval=' entry
-    strcpy(end,"interval");
-    const char *s = getConfig()->getAsString2(runSection, "OutVectors", buffer, NULL);
+    strcpy(end, "interval");
+    const char *s = getConfig()->getAsString2(NULL, "OutVectors", buffer, NULL);
     if (!s)
     {
        starttime = 0;
@@ -815,10 +812,9 @@ void TOmnetApp::readOptions()
     // other options are read on per-run basis
 }
 
-void TOmnetApp::readPerRunOptions(int run_no)
+void TOmnetApp::readPerRunOptions()
 {
     cConfiguration *cfg = getConfig();
-    const char *runSection = cfg->getPerRunSectionName(run_no);
 
     // get options from ini file
     opt_network_name = cfg->getAsString(CFGID_NETWORK);
@@ -854,7 +850,7 @@ void TOmnetApp::readPerRunOptions(int run_no)
         cRNG *rng;
         CREATE_BY_CLASSNAME(rng, opt_rng_class.c_str(), cRNG, "random number generator");
         rngs[i] = rng;
-        rngs[i]->initialize(run_no, i, num_rngs, getParsimProcId(), getParsimNumPartitions(), getConfig());
+        rngs[i]->initialize(cfg->getRunNumber(), i, num_rngs, getParsimProcId(), getParsimNumPartitions(), getConfig());
     }
 
     // init nextuniquenumber -- startRun() is too late because simple module ctors have run by then

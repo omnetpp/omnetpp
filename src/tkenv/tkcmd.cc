@@ -456,7 +456,8 @@ int getRunNumber_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    char buf[16];
-   sprintf(buf, "%d", simulation.runNumber());
+   TOmnetTkApp *app = getTkApplication();
+   sprintf(buf, "%d", app->getConfig()->getRunNumber());
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
    return TCL_OK;
 }

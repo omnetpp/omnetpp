@@ -68,7 +68,7 @@ class TCmdenvApp : public TOmnetApp
      virtual void simulationEvent(cMessage *msg);
 
      virtual void readOptions();
-     virtual void readPerRunOptions(int run_nr);
+     virtual void readPerRunOptions();
 
      // new functions:
      void help();

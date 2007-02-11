@@ -87,9 +87,19 @@ class ENVIR_API cConfiguration : public cObject
     virtual const char *getSectionName(int k) = 0;
 
     /**
-     * Returns the name of the section that contains settings for the given run.
+     * Sets the current run number.
      */
-    virtual const char *getPerRunSectionName(int runNumber) = 0;
+    virtual void setRunNumber(int runNumber) = 0;
+
+    /**
+     * Returns the current run number.
+     */
+    virtual int getRunNumber() = 0;
+
+    /**
+     * Returns the name of the section that contains settings for the current run.
+     */
+    virtual const char *getPerRunSectionName() = 0;
     //@}
 
     /** @name Checking for presence of config entries */

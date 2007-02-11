@@ -71,8 +71,8 @@ class ENVIR_API cIniFile : public cConfiguration
     bool warnings;
     bool notfound;
 
-    int lastRunNumber;        // the current run number
-    char lastRunSection[32];  // "Run X" where X is the current run number
+    int runnumber;        // the current run number
+    char runsection[32];  // "Run X" where X is the current run number
 
   public:
     cIniFile();
@@ -81,7 +81,6 @@ class ENVIR_API cIniFile : public cConfiguration
     /** @name Redefined methods from cConfiguration. */
     //@{
     virtual void initializeFrom(cConfiguration *conf);
-    virtual const char *getPerRunSectionName(int runNumber);
     //@}
 
     /** @name Inifile-specific methods. Used only from "boot-time" code. */
@@ -95,6 +94,9 @@ class ENVIR_API cIniFile : public cConfiguration
     //@{
     virtual int getNumSections();
     virtual const char *getSectionName(int k);
+    virtual void setRunNumber(int runNumber);
+    virtual int getRunNumber()  {return runnumber;}
+    virtual const char *getPerRunSectionName() {return runsection;}
     //@}
 
     /** @name Redefined getter methods from cConfiguration */

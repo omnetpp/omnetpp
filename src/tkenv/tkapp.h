@@ -102,8 +102,6 @@ class TOmnetTkApp : public TOmnetApp
 
       opp_string tkenv_dir;        // directory of Tkenv's *.tcl files
 
-      int run_nr;                  // number of current simulation run
-
       eState simstate;             // state of the simulation run
       int runmode;                 // the current mode the simulation is executing under
       simtime_t rununtil_time;     // time limit in current "Run Until" execution, or zero
@@ -157,7 +155,7 @@ class TOmnetTkApp : public TOmnetApp
       virtual int  askYesNo(const char *question);
 
       virtual void readOptions();
-      virtual void readPerRunOptions(int run_nr);
+      virtual void readPerRunOptions();
 
       virtual bool idle();
 
@@ -166,7 +164,7 @@ class TOmnetTkApp : public TOmnetApp
 
       // New functions:
       void newNetwork(const char *networkname);
-      void newRun(int run_no);
+      void newRun(int runnumber);
       void createSnapshot(const char *label);
 
       void rebuildSim();

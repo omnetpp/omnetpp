@@ -50,14 +50,10 @@ void *cAkOutputVectorManager::registerVector(const char *modulename, const char 
     sAkVectorData *vp = (sAkVectorData *)cFileOutputVectorManager::registerVector(modulename, vectorname);
 
     // see if this vector needs Akaroa control
-    // section stands for RUN[]
-    char section[16];
-    sprintf(section,"Run %d", simulation.runNumber() );
-
     opp_string inientry;
     inientry.reserve(opp_strlen(modulename)+1+opp_strlen(vectorname)+sizeof(".akaroa")+1);
     sprintf(inientry.buffer(),"%s.%s.akaroa", modulename, vectorname);
-    vp->ak_controlled = ev.app->getConfig()->getAsBool2(section, "General", inientry.c_str(), true);
+    vp->ak_controlled = ev.app->getConfig()->getAsBool2(NULL, "General", inientry.c_str(), true);
 
     if (vp->ak_controlled)
     {

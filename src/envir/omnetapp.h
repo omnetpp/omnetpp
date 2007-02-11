@@ -110,9 +110,9 @@ class ENVIR_API TOmnetApp
 
   protected:
     // internal
-    std::string getParameter(int run_nr, const char *parname);
+    std::string getParameter(const char *parname);
     // internal
-    bool getParameterUseDefault(int run_no, const char *parname);
+    bool getParameterUseDefault(const char *parname);
 
   public:
     /**
@@ -138,7 +138,7 @@ class ENVIR_API TOmnetApp
 
     virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index);
 
-    virtual void getOutVectorConfig(int run_no, const char *modname, /*input*/
+    virtual void getOutVectorConfig(const char *modname, /*input*/
                                     const char *vecname,
                                     bool& enabled, /*output*/
                                     simtime_t& starttime, simtime_t& stoptime);
@@ -169,7 +169,7 @@ class ENVIR_API TOmnetApp
      * Can be overloaded in subclasses, to support new options.
      */
     virtual void readOptions();
-    virtual void readPerRunOptions(int run_nr);
+    virtual void readPerRunOptions();
 
     // Utility function: optionally appends host name to fname
     virtual void processFileName(opp_string& fname);

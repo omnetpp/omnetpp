@@ -42,22 +42,17 @@ using std::ios;
 
 Register_Class(cFileOutputVectorManager);
 
+Register_GlobalConfigEntry(CFGID_OUTPUT_VECTOR_FILE, "output-vector-file", "General", CFG_FILENAME,  "omnetpp.vec", "FIXME add some description here");
 Register_GlobalConfigEntry(CFGID_OUTPUT_VECTOR_PRECISION, "output-vector-precision", "General", CFG_INT,  DEFAULT_PRECISION, "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_OUTPUT_SCALAR_FILE, "output-scalar-file", "General", CFG_FILENAME,  "omnetpp.sca", "FIXME add some description here");
 Register_GlobalConfigEntry(CFGID_OUTPUT_SCALAR_PRECISION, "output-scalar-precision", "General", CFG_INT,  DEFAULT_PRECISION, "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_SNAPSHOT_FILE, "snapshot-file", "General", CFG_FILENAME,  "omnetpp.sna", "FIXME add some description here");
 
 #ifdef CHECK
 #undef CHECK
 #endif
 #define CHECK(fprintf)    if (fprintf<0) throw cRuntimeError("Cannot write output vector file `%s'", fname.c_str())
 
-
-static void createFileName(opp_string& fname, int run_no, const char *configentry, const char *defaultval)
-{
-    // get file name from ini file
-    const char *runSection = ev.config()->getPerRunSectionName(simulation.runNumber());
-    fname = ev.config()->getAsFilename2(runSection, "General", configentry, defaultval).c_str();
-    ev.app->processFileName(fname);
-}
 
 static void removeFile(const char *fname, const char *descr)
 {
@@ -97,7 +92,7 @@ void cFileOutputVectorManager::openFile()
 void cFileOutputVectorManager::writeHeader()
 {
     cConfiguration *config = ev.config();
-    const char *section = config->getPerRunSectionName(simulation.runNumber());
+    const char *section = config->getPerRunSectionName();
     const char *runId = "run_id"; // TODO: generate id in TOmnetApp.startRun() and make it available
     fprintf(f, "run %s\n", QUOTE(runId));
     const char *inifile = config->fileName();
@@ -165,7 +160,8 @@ void cFileOutputVectorManager::startRun()
 {
     // clean up file from previous runs
     closeFile();
-    createFileName(fname, simulation.runNumber(), "output-vector-file", "omnetpp.vec");
+    fname = ev.config()->getAsFilename(CFGID_OUTPUT_VECTOR_FILE).c_str();
+    ev.app->processFileName(fname);
     removeFile(fname.c_str(), "old output vector file");
 }
 
@@ -181,13 +177,11 @@ void *cFileOutputVectorManager::registerVector(const char *modulename, const cha
     vp->initialised = false;
     vp->modulename = modulename;
     vp->vectorname = vectorname;
-    ev.app->getOutVectorConfig(simulation.runNumber(), modulename, vectorname,
-                               vp->enabled, vp->starttime, vp->stoptime);
+    ev.app->getOutVectorConfig(modulename, vectorname, vp->enabled, vp->starttime, vp->stoptime);
 
-    const char *runSection = ev.config()->getPerRunSectionName(simulation.runNumber());
     static char param[1024];
     sprintf(param, "%s.%s.record-event-numbers", modulename, vectorname);
-    vp->recordEventNumbers = ev.config()->getAsBool2(runSection, "OutVectors", param, true);
+    vp->recordEventNumbers = ev.config()->getAsBool2(NULL, "OutVectors", param, true);
 
     return vp;
 }
@@ -282,7 +276,8 @@ void cFileOutputScalarManager::startRun()
 {
     // clean up file from previous runs
     closeFile();
-    createFileName(fname, simulation.runNumber(), "output-scalar-file", "omnetpp.sca");
+    fname = ev.config()->getAsFilename(CFGID_OUTPUT_SCALAR_FILE).c_str();
+    ev.app->processFileName(fname);
     initialized = false;
 }
 
@@ -303,7 +298,7 @@ void cFileOutputScalarManager::init()
     {
         initialized = true;
         const char *networkname = simulation.networkType()->name();
-        fprintf(f,"run %d  %s\n", simulation.runNumber(), QUOTE(networkname));
+        fprintf(f,"run %d  %s\n", ev.config()->getRunNumber(), QUOTE(networkname));
     }
 }
 
@@ -345,7 +340,8 @@ cFileSnapshotManager::~cFileSnapshotManager()
 void cFileSnapshotManager::startRun()
 {
     // clean up file from previous runs
-    createFileName(fname, simulation.runNumber(), "snapshot-file", "omnetpp.sna");
+    fname = ev.config()->getAsFilename(CFGID_SNAPSHOT_FILE).c_str();
+    ev.app->processFileName(fname);
     removeFile(fname.c_str(), "old snapshot file");
 }
 
@@ -371,8 +367,9 @@ const char *cFileSnapshotManager::fileName() const
 
 // create some reference to cIndexedFileOutputVectorManager
 // otherwise the MS linker omits ivfilemgr.obj
-void dummyMethodReferencingCIndexedFileOutputVectorManager() {
-  cIndexedFileOutputVectorManager m;
+void dummyMethodReferencingCIndexedFileOutputVectorManager()
+{
+    cIndexedFileOutputVectorManager m;
 }
 
 

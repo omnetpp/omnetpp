@@ -34,6 +34,7 @@
 #include "cexception.h"
 #include "cparvalue.h"
 #include "chasher.h"
+#include "cconfig.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -90,7 +91,6 @@ cSimulation::cSimulation(const char *name) : cNoncopyableOwnedObject(name, false
 
     // err = eOK; -- commented out to enable errors prior to starting main()
     networktype = NULL;
-    run_number = 0;
 
     hasherp = NULL;
 
@@ -200,7 +200,7 @@ bool cSimulation::snapshot(cObject *object, const char *label)
     os << "    label=\"" << xmlquote(label?label:"") << "\"\n";
     os << "    simtime=\"" << xmlquote(SIMTIME_STR(simTime())) << "\"\n";
     os << "    network=\"" << xmlquote(networktype?networktype->name():"") << "\"\n";
-    os << "    runnumber=\"" << run_number << "\">\n";
+    os << "    >\n";
 
     cSnapshotWriterVisitor v(os);
     v.process(object);
@@ -332,7 +332,12 @@ cModule *cSimulation::moduleByPath(const char *path) const
     return modp;  // NULL if not found
 }
 
-void cSimulation::setupNetwork(cModuleType *network, int run_num)
+int cSimulation::runNumber() const
+{
+    return ev.config()->getRunNumber();
+}
+
+void cSimulation::setupNetwork(cModuleType *network)
 {
 #ifdef DEVELOPER_DEBUG
     printf("DEBUG: before setupNetwork: %d objects\n", cOwnedObject::liveObjectCount());
@@ -340,9 +345,6 @@ void cSimulation::setupNetwork(cModuleType *network, int run_num)
 #endif
     if (!network)
         throw cRuntimeError(eNONET);
-
-    // set run number
-    run_number = run_num;
 
     // set cNetworkType pointer
     networktype = network;  //FIXME check it's a module declared with the "network" keyword

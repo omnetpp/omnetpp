@@ -116,13 +116,11 @@ void TCmdenvApp::readOptions()
     }
 }
 
-void TCmdenvApp::readPerRunOptions(int run_nr)
+void TCmdenvApp::readPerRunOptions()
 {
-    TOmnetApp::readPerRunOptions(run_nr);
+    TOmnetApp::readPerRunOptions();
 
     cConfiguration *cfg = getConfig();
-    const char *runSection = cfg->getPerRunSectionName(run_nr);
-
     opt_expressmode = cfg->getAsBool(CFGID_EXPRESS_MODE);
     opt_autoflush = cfg->getAsBool(CFGID_AUTOFLUSH);
     opt_modulemsgs = cfg->getAsBool(CFGID_MODULE_MESSAGES);
@@ -215,7 +213,8 @@ int TCmdenvApp::run()
             ::fprintf(fout, "\nPreparing for Run #%d...\n", run_nr());
             ::fflush(fout);
 
-            readPerRunOptions(run_nr());
+            getConfig()->setRunNumber(run_nr());
+            readPerRunOptions();
 
             // find network
             cModuleType *network = cModuleType::find(opt_network_name.c_str());
@@ -226,7 +225,7 @@ int TCmdenvApp::run()
             ::fprintf(fout, "Setting up network `%s'...\n", opt_network_name.c_str());
             ::fflush(fout);
 
-            simulation.setupNetwork(network, run_nr());
+            simulation.setupNetwork(network);
             setupnetwork_done = true;
 
             // prepare for simulation run
