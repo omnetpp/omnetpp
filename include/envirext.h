@@ -184,6 +184,11 @@ class ENVIR_API cOutputScalarManager : public cObject
     virtual void recordScalar(cModule *module, const char *name, double value) = 0;
 
     /**
+     * Records a histogram or statistic object into the scalar result file.
+     */
+    virtual void recordScalar(cModule *module, const char *name, cStatistic *statistic) = 0;
+
+    /**
      * Returns the output scalar file name. Returns NULL if this object is not
      * producing file output.
      */
