@@ -5,6 +5,9 @@
 %javaconst(1);
 
 %{
+#include "graphlayouter.h"
+#include "basicspringembedderlayout.h"
+#include "forcedirectedgraphlayouter.h"
 #include "geometry.h"
 #include "forcedirectedparametersbase.h"
 #include "forcedirectedparameters.h"
@@ -22,8 +25,13 @@
 // hide export/import macros from swig
 #define COMMON_API
 #define LAYOUT_API
-#define OPP_DLLEXPORT 
+#define OPP_DLLEXPORT
 #define OPP_DLLIMPORT
+
+%typemap(jni)    int32 "jint"
+%typemap(jtype)  int32 "int"
+%typemap(jstype) int32 "int"
+%typemap(javain) int32 "$javainput"
 
 %typemap(jni)    int64 "jlong"
 %typemap(jtype)  int64 "long"
@@ -118,6 +126,7 @@ import java.lang.reflect.Constructor;
          if (cPtr == 0)
             return null;
 
+         // we implement polymorphic return types:
          String className = LayoutEngineJNI.IForceProvider_getClassName(cPtr);
          Constructor constructor = null;
          for (int i = 0; i < forceProviderConstructors.size(); i++)
@@ -162,8 +171,16 @@ namespace std {
 %ignore POSITIVE_INFINITY;
 %ignore isNaN;
 %ignore ForceDirectedEmbedding::parameters;
+%ignore ForceDirectedEmbedding::writeDebugInformation;
+%ignore LeastExpandedSpring::LeastExpandedSpring;   //XXX takes std::vector<AbstractSpring*>
 
+
+%include "graphlayouter.h"
+%include "basicspringembedderlayout.h"
+%include "forcedirectedgraphlayouter.h"
 %include "geometry.h"
 %include "forcedirectedparametersbase.h"
 %include "forcedirectedparameters.h"
 %include "forcedirectedembedding.h"
+
+
