@@ -270,11 +270,10 @@ bool cGate::isBusy() const
 
 simtime_t cGate::transmissionFinishes() const
 {
-    cBasicChannel *ch = dynamic_cast<cBasicChannel *>(channelp);
-    return ch ? ch->transmissionFinishes() : 0.0;
+    return ch ? ch->transmissionFinishes() : simulation.simTime();
 }
 
-int cGate::routeContains( cModule *mod, int gate )
+int cGate::routeContains(cModule *mod, int gate)
 {
     cGate *g;
 

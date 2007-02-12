@@ -124,25 +124,35 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     cGate *fromGate() const  {return fromgatep;}
     //@}
 
-    /** @name Internally used methods. */
+    /** @name Channel functionality */
     //@{
     /**
-     * This function is called internally by the simulation kernel for
-     * transmission modelling. A return value of false means that the message
-     * object should be deleted by the caller; this can be used to model that
+     * This method is called by the simulation kernel for transmission
+     * modelling. A return value of false means that the message object
+     * should be deleted by the caller; this can be used to model that
      * the message gets lost in the channel.
      */
     virtual bool deliver(cMessage *msg, simtime_t at) = 0;
+
+    /**
+     * Returns the simulation time the sender gate will finish transmitting.
+     * The return value is only meaningful if isBusy() is true.
+     *
+     * Transmission time of a message depends on the message length
+     * and the data rate assigned to the channel.
+     */
+    virtual simtime_t transmissionFinishes() const = 0;
     //@}
 };
 
 
 /**
- * A channel that does nothing.
+ * A channel with zero propagation delay, zero transmission delay (infinite
+ * datarate), and always enabled.
  *
  * @ingroup SimCore
  */
-class SIM_API cNullChannel : public cChannel //implies noncopyable
+class SIM_API cIdealChannel : public cChannel //implies noncopyable
 {
   public:
     /** @name Constructors, destructor */
@@ -150,12 +160,12 @@ class SIM_API cNullChannel : public cChannel //implies noncopyable
     /**
      * Constructor.
      */
-    explicit cNullChannel(const char *name=NULL) : cChannel(name) {}
+    explicit cIdealChannel(const char *name=NULL) : cChannel(name) {}
 
     /**
      * Destructor.
      */
-    virtual ~cNullChannel() {}
+    virtual ~cIdealChannel() {}
     //@}
 
     /** @name Redefined cChannel member functions. */
@@ -165,6 +175,11 @@ class SIM_API cNullChannel : public cChannel //implies noncopyable
      * of the connection without any processing.
      */
     virtual bool deliver(cMessage *msg, simtime_t at);
+
+    /**
+     * This implementation just returns the current simulation time.
+     */
+    virtual simtime_t transmissionFinishes() const;
     //@}
 };
 

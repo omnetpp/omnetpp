@@ -32,7 +32,7 @@
 
 using std::ostream;
 
-Register_Class(cNullChannel);
+Register_Class(cIdealChannel);
 
 
 cChannel::cChannel(const char *name) : cComponent(name)
@@ -122,11 +122,16 @@ cModule *cChannel::parentModule() const
 
 //----
 
-bool cNullChannel::deliver(cMessage *msg, simtime_t t)
+bool cIdealChannel::deliver(cMessage *msg, simtime_t t)
 {
     // just hand over msg to next gate
     EVCB.messageSendHop(msg, fromGate());
     return fromGate()->toGate()->deliver(msg, t);
+}
+
+simtime_t cIdealChannel::transmissionFinishes() const
+{
+    return simulation.simTime();
 }
 
 

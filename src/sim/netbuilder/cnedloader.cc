@@ -60,7 +60,7 @@ void cNEDLoader::registerBuiltinDeclarations()
 {
     // NED code to define built-in types
     const char *nedcode =
-        "channel withcppclass cBasicChannel\n"
+        "channel cBasicChannel\n"
         "{\n"
         "    bool disabled = false;\n"
         "    double delay = 0 @unit(s);\n"
@@ -68,7 +68,7 @@ void cNEDLoader::registerBuiltinDeclarations()
         "    double datarate = 0 @unit(bps);\n"
         "}\n"
 
-        "channel withcppclass cNullChannel\n"
+        "channel cIdealChannel\n"
         "{\n"
         "}\n"
 

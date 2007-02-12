@@ -243,9 +243,9 @@ class SIM_API cGate : public cObject, noncopyable
     bool isBusy() const;
 
     /**
-     * If the gate has a channel subclassed from cBasicChannel,
-     * the methods calls transmissionFinishes() on it and returns
-     * the result. Otherwise, it returns 0.0.
+     * If the gate has a channel, the method invokes and returns the result of
+     * transmissionFinishes() on the channel; otherwise it returns the
+     * current simulation time.
      */
     simtime_t transmissionFinishes() const;
     //@}
