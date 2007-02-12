@@ -38,6 +38,11 @@
 %typemap(jstype) int64 "long"
 %typemap(javain) int64 "$javainput"
 
+%typemap(jni)    cModule* "jobject"
+%typemap(jtype)  cModule* "Object"
+%typemap(jstype) cModule* "Object"
+%typemap(javain) cModule* "$javainput"
+
 %include "std_common.i"
 %include "std_string.i"
 %include "std_vector.i"
@@ -165,6 +170,18 @@ namespace std {
    specialize_std_vector(Variable *);
    %template(VariableList) vector<Variable *>;
 };
+
+%define FIXUP_GETNODEPOSITION(CLASS)
+%ignore CLASS::getNodePosition;
+%extend CLASS {
+   int getNodePositionX(cModule *mod) {int x,y; self->getNodePosition(mod, x, y); return x;}
+   int getNodePositionY(cModule *mod) {int x,y; self->getNodePosition(mod, x, y); return y;}
+}
+%enddef
+
+FIXUP_GETNODEPOSITION(GraphLayouter);
+FIXUP_GETNODEPOSITION(BasicSpringEmbedderLayout);
+FIXUP_GETNODEPOSITION(ForceDirectedGraphLayouter);
 
 %ignore zero;
 %ignore NaN;
