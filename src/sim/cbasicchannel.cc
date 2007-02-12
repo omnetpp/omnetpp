@@ -146,6 +146,7 @@ bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
             msg->setBitError(true);
     }
 
+    // FIXME: XXX: this is not reusable this way in custom channels, put it into a base class function with the next line (levy)
     EVCB.messageSendHop(msg, fromGate(), delay_, transmissiondelay);
 
     // hand over msg to next gate
