@@ -410,11 +410,15 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outgate)
 
     EVCB.beginSend(msg);
     bool keepit = outgate->deliver(msg, simTime()+delay);
-    EVCB.messageSent_OBSOLETE(msg);  //XXX obsolete
     if (!keepit)
-        delete msg;
+    {
+        delete msg; //FIXME problem: tell tkenv somehow that msg has been deleted, otherwise animation will crash
+    }
     else
+    {
+        EVCB.messageSent_OBSOLETE(msg); //FIXME obsolete
         EVCB.endSend(msg);
+    }
     return 0;
 }
 
@@ -505,11 +509,15 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t tran
     EVCB.beginSend(msg);
     EVCB.messageSendDirect(msg, togate, propdelay, transmdelay);
     bool keepit = togate->deliver(msg, simTime()+propdelay);  //XXX NOTE: no +transmdelay! we want to deliver the msg when the *first* bit arrives, not the last one
-    EVCB.messageSent_OBSOLETE(msg, togate); //XXX obsolete, and must be here AFTER the deliver call (this breaks seqChart code probably, where it was moved BEFORE)
     if (!keepit)
-        delete msg;
+    {
+        delete msg; //FIXME problem: tell tkenv somehow that msg has been deleted, otherwise animation will crash
+    }
     else
+    {
+        EVCB.messageSent_OBSOLETE(msg, togate); //FIXME obsolete
         EVCB.endSend(msg);
+    }
     return 0;
 }
 
