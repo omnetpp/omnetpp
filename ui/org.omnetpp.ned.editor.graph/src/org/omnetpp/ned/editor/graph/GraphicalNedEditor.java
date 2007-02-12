@@ -284,8 +284,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
         IAction zoomOut = new ZoomOutAction(root.getZoomManager());
         getActionRegistry().registerAction(zoomIn);
         getActionRegistry().registerAction(zoomOut);
-//        getSite().getKeyBindingService().registerAction(zoomIn);
-//        getSite().getKeyBindingService().registerAction(zoomOut);
         
         // set the root edit part as the main viewer
         viewer.setRootEditPart(root);
