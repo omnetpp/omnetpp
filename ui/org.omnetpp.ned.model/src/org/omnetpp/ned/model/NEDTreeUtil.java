@@ -1,14 +1,8 @@
 package org.omnetpp.ned.model;
 
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.ned.model.pojo.ChannelSpecNode;
-import org.omnetpp.ned.model.pojo.ConnectionsNode;
-import org.omnetpp.ned.model.pojo.GatesNode;
-import org.omnetpp.ned.model.pojo.NEDElementFactory;
-import org.omnetpp.ned.model.pojo.NedFileNode;
-import org.omnetpp.ned.model.pojo.ParametersNode;
-import org.omnetpp.ned.model.pojo.SubmodulesNode;
-import org.omnetpp.ned.model.pojo.TypesNode;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.omnetpp.ned.engine.NED1Generator;
 import org.omnetpp.ned.engine.NED2Generator;
 import org.omnetpp.ned.engine.NEDBasicValidator;
@@ -20,13 +14,26 @@ import org.omnetpp.ned.engine.NEDErrorStore;
 import org.omnetpp.ned.engine.NEDParser;
 import org.omnetpp.ned.engine.NEDSourceRegion;
 import org.omnetpp.ned.engine.NEDTools;
+import org.omnetpp.ned.model.pojo.ChannelSpecNode;
+import org.omnetpp.ned.model.pojo.ConnectionsNode;
+import org.omnetpp.ned.model.pojo.GatesNode;
+import org.omnetpp.ned.model.pojo.NEDElementFactory;
+import org.omnetpp.ned.model.pojo.NedFileNode;
+import org.omnetpp.ned.model.pojo.ParametersNode;
+import org.omnetpp.ned.model.pojo.SubmodulesNode;
+import org.omnetpp.ned.model.pojo.TypesNode;
+import org.omnetpp.ned.model.ui.NedModelContentProvider;
+import org.omnetpp.ned.model.ui.NedModelLabelProvider;
 
 /**
  * Utility functions working on NEDELelemt trees. Conversions, serialization, dumping of trees. 
  */
 public class NEDTreeUtil {
 
-	/**
+	private static ITreeContentProvider nedModelContentProvider = new NedModelContentProvider();
+    private static ILabelProvider nedModelLabelProvider = new NedModelLabelProvider();
+
+    /**
 	 * Generate NED code from the given NEDElement tree. The root node
 	 * does not have to be NedFileNode, any subtree can be converted
 	 * to source form.
@@ -331,4 +338,19 @@ public class NEDTreeUtil {
 
         return true;
     }
+    
+    /**
+     * @return The default content provider for ned model trees
+     */
+    public static ITreeContentProvider getNedModelContentProvider() {
+        return nedModelContentProvider;
+    }
+    
+    /**
+     * @return The default label/icon provider for ned model trees 
+     */
+    public static ILabelProvider getNedModelLabelProvider() {
+        return nedModelLabelProvider;
+    }
+    
 }
