@@ -30,6 +30,7 @@
 #include "csimulation.h"
 #include "cmodule.h"
 #include "cstat.h"
+#include "cdensity.h"
 #include "filemgrs.h"
 #include "ccomponenttype.h"
 #include "stringutil.h"
@@ -306,27 +307,46 @@ void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, d
 {
     if (!initialized)
         init();
+    if (!f)
+        return;
 
-    if (!f) return;
-
-    CHECK(fprintf(f, "scalar %s \t%s \t%.*g\n",
-                     QUOTE(module->fullPath().c_str()), name ? QUOTE(name) : "(null)",
-                     prec, value));
+    if (!name || !name[0])
+        name = "(unnamed)";
+    CHECK(fprintf(f, "scalar %s \t%s \t%.*g\n", QUOTE(module->fullPath().c_str()), QUOTE(name), prec, value));
 }
 
 void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, cStatistic *statistic)
 {
     if (!initialized)
         init();
+    if (!f)
+        return;
 
-    if (!f) return;
-
-    std::string n = name ? name : statistic->fullName();
+    if (!name)
+        name = statistic->fullName();
+    if (!name || !name[0])
+        name = "(unnamed)";
+    std::string n = name;
     recordScalar(module, (n+".samples").c_str(), statistic->samples());
     recordScalar(module, (n+".mean").c_str(), statistic->mean());
     recordScalar(module, (n+".stddev").c_str(), statistic->stddev());
     recordScalar(module, (n+".min").c_str(), statistic->min());
     recordScalar(module, (n+".max").c_str(), statistic->max());
+
+    if (dynamic_cast<cDensityEstBase *>(statistic))
+    {
+        cDensityEstBase *hist = (cDensityEstBase *)statistic;
+        CHECK(fprintf(f, "histogram %s \t%s\n", QUOTE(module->fullPath().c_str()), QUOTE(name)));
+
+        int n = hist->cells();
+        if (n>0)
+        {
+            CHECK(fprintf(f, "bin\t%.*g\t%lu\n", prec, hist->basepoint(0), hist->underflowCell()));
+            for (int i=0; i<n; i++)
+                CHECK(fprintf(f, "bin\t%.*g\t%.*g\n", prec, hist->basepoint(i+1), prec, hist->cell(i)));
+            CHECK(fprintf(f, "bin\t+INF\t%lu\n", hist->overflowCell()));
+        }
+    }
 }
 
 const char *cFileOutputScalarManager::fileName() const
