@@ -44,56 +44,86 @@ clean:
 	rm -f *.o liblayout$(A_LIB_SUFFIX) liblayout$(SO_LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+basicspringembedderlayout.o: basicspringembedderlayout.cc \
+  ../common/commonutil.h \
+  basicspringembedderlayout.h \
+  ../common/commondefs.h \
+  ../common/exception.h \
+  graphlayouter.h \
+  layoutdefs.h \
+  ../common/lcgrandom.h
 forcedirectedembedding.o: forcedirectedembedding.cc \
   forcedirectedembedding.h \
   forcedirectedparameters.h \
   ../common/lcgrandom.h \
   geometry.h \
   forcedirectedparametersbase.h \
+  layoutdefs.h \
   ../common/commonutil.h \
-  ../common/exception.h
-forcedirectedparametersbase.o: forcedirectedparametersbase.cc \
-  forcedirectedparametersbase.h \
+  ../common/exception.h \
+  ../common/commondefs.h
+forcedirectedgraphlayouter.o: forcedirectedgraphlayouter.cc \
+  ../common/commonutil.h \
+  forcedirectedgraphlayouter.h \
+  startreeembedding.h \
+  heapembedding.h \
+  ../common/commondefs.h \
+  ../common/exception.h \
+  graphlayouter.h \
+  forcedirectedembedding.h \
+  forcedirectedparameters.h \
+  graphcomponent.h \
+  layoutdefs.h \
+  ../common/lcgrandom.h \
   geometry.h \
-  ../common/commonutil.h \
-  ../common/exception.h
+  forcedirectedparametersbase.h
 forcedirectedparameters.o: forcedirectedparameters.cc \
   forcedirectedparameters.h \
   geometry.h \
   forcedirectedparametersbase.h \
   forcedirectedembedding.h \
+  layoutdefs.h \
   ../common/commonutil.h \
-  ../common/exception.h
+  ../common/exception.h \
+  ../common/commondefs.h
+forcedirectedparametersbase.o: forcedirectedparametersbase.cc \
+  forcedirectedparametersbase.h \
+  geometry.h \
+  layoutdefs.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  ../common/commondefs.h
 geometry.o: geometry.cc \
   geometry.h \
+  layoutdefs.h \
   ../common/commonutil.h \
-  ../common/exception.h
+  ../common/exception.h \
+  ../common/commondefs.h
 graphcomponent.o: graphcomponent.cc \
   graphcomponent.h \
   geometry.h \
+  layoutdefs.h \
   ../common/commonutil.h \
-  ../common/exception.h
-graphlayouter.o: graphlayouter.cc \
-  ../common/commonutil.h \
-  graphlayouter.h \
-  startreeembedding.h \
-  heapembedding.h \
   ../common/exception.h \
+  ../common/commondefs.h
+graphlayouter.o: graphlayouter.cc \
+  graphlayouter.h \
+  layoutdefs.h \
   ../common/lcgrandom.h \
-  forcedirectedembedding.h \
-  forcedirectedparameters.h \
-  graphcomponent.h \
-  geometry.h \
-  forcedirectedparametersbase.h
+  ../common/commondefs.h
 heapembedding.o: heapembedding.cc \
   heapembedding.h \
   geometry.h \
   graphcomponent.h \
+  layoutdefs.h \
   ../common/commonutil.h \
-  ../common/exception.h
+  ../common/exception.h \
+  ../common/commondefs.h
 startreeembedding.o: startreeembedding.cc \
   startreeembedding.h \
   geometry.h \
   graphcomponent.h \
+  layoutdefs.h \
   ../common/commonutil.h \
-  ../common/exception.h
+  ../common/exception.h \
+  ../common/commondefs.h

@@ -207,6 +207,7 @@ class AbstractForceProvider : public IForceProvider {
                 pointLikeDistance = embedding->parameters.defaultPointLikeDistance;
         }
 
+    protected:
         double getMaxForce() {
             return maxForce;
         }
@@ -335,8 +336,6 @@ class AbstractElectricRepulsion : public AbstractForceProvider {
             return charge2;
         }
 
-        virtual Pt getDistanceAndVector(double &distance) = 0;
-
         virtual double getDistance() {
             double distance;
             getDistanceAndVector(distance);
@@ -366,6 +365,9 @@ class AbstractElectricRepulsion : public AbstractForceProvider {
         virtual double getPotentialEnergy() {
             return embedding->parameters.electricRepulsionCoefficient * charge1->getCharge() * charge2->getCharge() / getDistance();
         }
+
+    protected:
+        virtual Pt getDistanceAndVector(double &distance) = 0;
 };
 
 /**
@@ -377,12 +379,13 @@ class ElectricRepulsion : public AbstractElectricRepulsion {
         ElectricRepulsion(IBody *charge1, IBody *charge2, double linearityDistance = -1, double maxDistance = -1, int slippery = -1) : AbstractElectricRepulsion(charge1, charge2, linearityDistance, maxDistance, slippery) {
         }
 
-        virtual Pt getDistanceAndVector(double &distance) {
-            return AbstractForceProvider::getDistanceAndVector(charge1, charge2, distance);
-        }
-
         virtual const char *getClassName() {
             return "ElectricRepulsion";
+        }
+
+    protected:
+        virtual Pt getDistanceAndVector(double &distance) {
+            return AbstractForceProvider::getDistanceAndVector(charge1, charge2, distance);
         }
 };
 
@@ -391,12 +394,13 @@ class VerticalElectricRepulsion : public AbstractElectricRepulsion {
         VerticalElectricRepulsion(IBody *charge1, IBody *charge2) : AbstractElectricRepulsion(charge1, charge2) {
         }
 
-        virtual Pt getDistanceAndVector(double &distance) {
-            return getStandardVerticalDistanceAndVector(charge1, charge2, distance);
-        }
-
         virtual const char *getClassName() {
             return "VerticalElectricRepulsion";
+        }
+
+    protected:
+        virtual Pt getDistanceAndVector(double &distance) {
+            return getStandardVerticalDistanceAndVector(charge1, charge2, distance);
         }
 };
 
@@ -405,20 +409,25 @@ class HorizontalElectricRepulsion : public AbstractElectricRepulsion {
         HorizontalElectricRepulsion(IBody *charge1, IBody *charge2) : AbstractElectricRepulsion(charge1, charge2) {
         }
 
-        virtual Pt getDistanceAndVector(double &distance) {
-            return getStandardHorizontalDistanceAndVector(charge1, charge2, distance);
-        }
-
         virtual const char *getClassName() {
             return "HorizontalElectricRepulsion";
         }
+
+    protected:
+        virtual Pt getDistanceAndVector(double &distance) {
+            return getStandardHorizontalDistanceAndVector(charge1, charge2, distance);
+        }
 };
+
+class LeastExpandedSpring;
 
 /**
  * An attractive force which increases in a linear way proportional to the distance of the bodies.
  * Abstract base class for spring attractive forces.
  */
 class AbstractSpring : public AbstractForceProvider {
+    friend LeastExpandedSpring;
+
     protected:
         IBody *body1;
 
@@ -471,8 +480,6 @@ class AbstractSpring : public AbstractForceProvider {
             return body2;
         }
 
-        virtual Pt getDistanceAndVector(double &distance) = 0;
-
         virtual double getDistance() {
             double distance;
             getDistanceAndVector(distance);
@@ -499,6 +506,9 @@ class AbstractSpring : public AbstractForceProvider {
             double expansion = getDistance() - reposeLength;
             return getSpringCoefficient() * expansion * expansion / 2;
         }
+
+    protected:
+        virtual Pt getDistanceAndVector(double &distance) = 0;
 };
 
 /**
@@ -514,12 +524,13 @@ class Spring : public AbstractSpring {
             : AbstractSpring(body1, body2, springCoefficient, reposeLength, slippery) {
         }
 
-        virtual Pt getDistanceAndVector(double &distance) {
-            return AbstractForceProvider::getDistanceAndVector(body1, body2, distance);
-        }
-
         virtual const char *getClassName() {
             return "Spring";
+        }
+
+    protected:
+        virtual Pt getDistanceAndVector(double &distance) {
+            return AbstractForceProvider::getDistanceAndVector(body1, body2, distance);
         }
 };
 
@@ -531,12 +542,13 @@ class VerticalSpring : public AbstractSpring {
         VerticalSpring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) : AbstractSpring(body1, body2, springCoefficient, reposeLength, -1){
         }
 
-        virtual Pt getDistanceAndVector(double &distance) {
-            return getStandardVerticalDistanceAndVector(body1, body2, distance);
-        }
-
         virtual const char *getClassName() {
             return "VerticalSpring";
+        }
+
+    protected:
+        virtual Pt getDistanceAndVector(double &distance) {
+            return getStandardVerticalDistanceAndVector(body1, body2, distance);
         }
 };
 
@@ -548,12 +560,13 @@ class HorizonalSpring : public AbstractSpring {
         HorizonalSpring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) : AbstractSpring(body1, body2, springCoefficient, reposeLength, -1) {
         }
 
-        virtual Pt getDistanceAndVector(double &distance) {
-            return getStandardHorizontalDistanceAndVector(body1, body2, distance);
-        }
-
         virtual const char *getClassName() {
             return "HorizonalSpring";
+        }
+
+    protected:
+        virtual Pt getDistanceAndVector(double &distance) {
+            return getStandardHorizontalDistanceAndVector(body1, body2, distance);
         }
 };
 
@@ -630,14 +643,15 @@ class BasePlaneSpring : public AbstractSpring {
             return springCoefficient * embedding->relaxFactor;
         }
 
+        virtual const char *getClassName() {
+            return "BasePlaneSpring";
+        }
+
+    protected:
         virtual Pt getDistanceAndVector(double &distance) {
             Pt vector(0, 0, body1->getPosition().z);
             distance = fabs(vector.z);
             return vector;
-        }
-
-        virtual const char *getClassName() {
-            return "BasePlaneSpring";
         }
 };
 
