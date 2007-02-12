@@ -39,36 +39,40 @@ bool EventLogEntry::isMessageSend()
     return dynamic_cast<BeginSendEntry *>(this) != NULL;
 }
 
-char *EventLogTokenBasedEntry::getToken(char **tokens, int numTokens, const char *sign)
+char *EventLogTokenBasedEntry::getToken(char **tokens, int numTokens, const char *sign, bool mandatory)
 {
     for (int i = 0; i < numTokens; i++)
         if (!strcmp(tokens[i], sign))
             return tokens[i + 1];
 
+    if (mandatory)
+        throw opp_runtime_error("Missing mandatory token %s", sign);
+
     return NULL;
 }
 
-int EventLogTokenBasedEntry::getIntToken(char **tokens, int numTokens, const char *sign)
+int EventLogTokenBasedEntry::getIntToken(char **tokens, int numTokens, const char *sign, bool mandatory, int defaultValue)
 {
-    char *token = getToken(tokens, numTokens, sign);
-    return token == NULL ? -1 : atoi(token);
+    char *token = getToken(tokens, numTokens, sign, mandatory);
+    return token ? atoi(token) : defaultValue;
 }
 
-long EventLogTokenBasedEntry::getLongToken(char **tokens, int numTokens, const char *sign)
+long EventLogTokenBasedEntry::getLongToken(char **tokens, int numTokens, const char *sign, bool mandatory, long defaultValue)
 {
-    char *token = getToken(tokens, numTokens, sign);
-    return token == NULL ? -1 : atol(token);
+    char *token = getToken(tokens, numTokens, sign, mandatory);
+    return token ? atol(token) : defaultValue;
 }
 
-simtime_t EventLogTokenBasedEntry::getSimtimeToken(char **tokens, int numTokens, const char *sign)
+simtime_t EventLogTokenBasedEntry::getSimtimeToken(char **tokens, int numTokens, const char *sign, bool mandatory, simtime_t defaultValue)
 {
-    char *token = getToken(tokens, numTokens, sign);
-    return token == NULL ? -1 : atof(token);
+    char *token = getToken(tokens, numTokens, sign, mandatory);
+    return token ? atof(token) : defaultValue;
 }
 
-const char *EventLogTokenBasedEntry::getStringToken(char **tokens, int numTokens, const char *sign)
+const char *EventLogTokenBasedEntry::getStringToken(char **tokens, int numTokens, const char *sign, bool mandatory, const char *defaultValue)
 {
-    return eventLogStringPool.get(getToken(tokens, numTokens, sign));
+    char *token = getToken(tokens, numTokens, sign, mandatory);
+    return token ? eventLogStringPool.get(token) : defaultValue;
 }
 
 void EventLogTokenBasedEntry::parse(char *line, int length)

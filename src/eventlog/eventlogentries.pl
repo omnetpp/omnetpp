@@ -41,27 +41,31 @@ while (<FILE>)
       $fieldCode = $1;
       $fieldType = $2;
       $fieldName = $3;
-      $fieldDefault  = $5;
 
       if ($fieldType eq "string")
       {
          $fieldPrintfType = "%s";
+         $fieldDefault = "NULL";
       }
       elsif ($fieldType eq "long")
       {
          $fieldPrintfType = "%ld";
+         $fieldDefault = "-1";
       }
       elsif ($fieldType eq "int")
       {
          $fieldPrintfType = "%d";
+         $fieldDefault = "-1";
       }
       elsif ($fieldType eq "simtime_t")
       {
          $fieldPrintfType = "%.*g";
+         $fieldDefault = "-1";
       }
 
-      if ($fieldDefault ne "") {
+      if ($5 ne "") {
          $classHasOptField = 1;
+         $fieldDefault  = $5;
       }
 
       $fieldCType = $fieldType;
@@ -72,6 +76,7 @@ while (<FILE>)
          CTYPE => $fieldCType,
          PRINTFTYPE => $fieldPrintfType,
          NAME => $fieldName,
+         HASDEFAULT => $5 ne "",
          DEFAULTVALUE => $fieldDefault,
       };
 
@@ -182,6 +187,7 @@ print ENTRIES_CC_FILE "\
 #include \"event.h\"
 #include \"eventlogentries.h\"
 #include \"stringutil.h\"
+
 ";
 
 foreach $class (@classes)
@@ -194,11 +200,7 @@ foreach $class (@classes)
    print ENTRIES_CC_FILE "    this->event = NULL;\n";
    foreach $field (@{ $class->{FIELDS} })
    {
-      if ($field->{TYPE} eq "string") {
-          print ENTRIES_CC_FILE "    $field->{NAME} = NULL;\n";
-      } else {
-          print ENTRIES_CC_FILE "    $field->{NAME} = -1;\n";  #XXX or default
-      }
+      print ENTRIES_CC_FILE "    $field->{NAME} = $field->{DEFAULTVALUE};\n";
    }
    print ENTRIES_CC_FILE "}\n\n";
 
@@ -207,11 +209,7 @@ foreach $class (@classes)
    print ENTRIES_CC_FILE "    this->event = event;\n";
    foreach $field (@{ $class->{FIELDS} })
    {
-      if ($field->{TYPE} eq "string") {
-          print ENTRIES_CC_FILE "    $field->{NAME} = NULL;\n";
-      } else {
-          print ENTRIES_CC_FILE "    $field->{NAME} = -1;\n";  #XXX or default
-      }
+      print ENTRIES_CC_FILE "    $field->{NAME} = $field->{DEFAULTVALUE};\n";
    }
    print ENTRIES_CC_FILE "}\n\n";
 
@@ -236,7 +234,15 @@ foreach $class (@classes)
       {
         $parserFunction = "getSimtimeToken";
       }
-      print ENTRIES_CC_FILE "    $field->{NAME} = $parserFunction(tokens, numTokens, \"$field->{CODE}\");\n";
+      if ($field->{HASDEFAULT})
+      {
+         $hasDefault = "false";
+      }
+      else
+      {
+         $hasDefault = "true";
+      }
+      print ENTRIES_CC_FILE "    $field->{NAME} = $parserFunction(tokens, numTokens, \"$field->{CODE}\", $hasDefault, $field->{NAME});\n";
    }
    print ENTRIES_CC_FILE "}\n\n";
 
@@ -258,12 +264,12 @@ foreach $class (@classes)
       }
       elsif ($field->{TYPE} eq "simtime_t")
       {
-         print ENTRIES_CC_FILE "    if ($field->{NAME} != -1)\n";
+         print ENTRIES_CC_FILE "    if ($field->{NAME} != $field->{DEFAULTVALUE})\n";
          print ENTRIES_CC_FILE "        fprintf(fout, \" $field->{CODE} $field->{PRINTFTYPE}\", 12, $field->{NAME});\n";
       }
       else
       {
-         print ENTRIES_CC_FILE "    if ($field->{NAME} != -1)\n";
+         print ENTRIES_CC_FILE "    if ($field->{NAME} != $field->{DEFAULTVALUE})\n";
          print ENTRIES_CC_FILE "        fprintf(fout, \" $field->{CODE} $field->{PRINTFTYPE}\", $field->{NAME});\n";
       }
    }

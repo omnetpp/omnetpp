@@ -65,7 +65,7 @@ E EventEntry
    # long eventNumber
    t simtime_t simulationTime
    m int moduleId
-   ce long causeEventNumber
+   ce long causeEventNumber -1
    msg long messageId
 }
 
@@ -82,7 +82,7 @@ BS BeginSendEntry
    etid long messageEtid -1
    c string messageClassName
    n string messageFullName
-   pe long previousEventNumber
+   pe long previousEventNumber -1
    k int messageKind     0
    l long messageLength  0
    p int messagePriority 0
@@ -116,5 +116,3 @@ DE DeleteMessageEntry
 {
    id int messageId
 }
-
-

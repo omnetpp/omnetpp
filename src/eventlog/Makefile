@@ -52,6 +52,7 @@ event.o: event.cc \
   event.h \
   eventlog.h \
   eventlogentry.h \
+  ../common/commondefs.h \
   ievent.h \
   eventlogentries.h \
   messagedependency.h \
@@ -66,6 +67,7 @@ eventlog.o: eventlog.cc \
   ../common/filereader.h \
   stringpool.h \
   eventlog.h \
+  ../common/commondefs.h \
   eventlogdefs.h \
   ../common/exception.h \
   ../common/commonutil.h \
@@ -85,6 +87,7 @@ eventlogentries.o: eventlogentries.cc \
   ../common/filereader.h \
   eventlogentry.h \
   messagedependency.h \
+  ../common/commondefs.h \
   eventlogdefs.h \
   ../common/linetokenizer.h \
   ../common/exception.h \
@@ -101,6 +104,7 @@ eventlogentry.o: eventlogentry.cc \
   eventlogdefs.h \
   ../common/exception.h \
   ../common/commonutil.h \
+  ../common/commondefs.h \
   ievent.h \
   eventlogentries.h \
   messagedependency.h \
@@ -113,6 +117,7 @@ eventlogentryfactory.o: eventlogentryfactory.cc \
   eventlogentry.h \
   eventlogentries.h \
   messagedependency.h \
+  ../common/commondefs.h \
   eventlogdefs.h \
   ../common/linetokenizer.h \
   ../common/exception.h \
@@ -128,6 +133,7 @@ eventlogfacade.o: eventlogfacade.cc \
   ../common/linetokenizer.h \
   ../common/exception.h \
   ../common/commonutil.h \
+  ../common/commondefs.h \
   ../common/filereader.h \
   eventlogentries.h
 eventlogindex.o: eventlogindex.cc \
@@ -136,7 +142,8 @@ eventlogindex.o: eventlogindex.cc \
   eventlogdefs.h \
   ../common/filereader.h \
   ../common/linetokenizer.h \
-  ../common/commonutil.h
+  ../common/commonutil.h \
+  ../common/commondefs.h
 eventlogtablefacade.o: eventlogtablefacade.cc \
   ievent.h \
   ieventlog.h \
@@ -148,6 +155,7 @@ eventlogtablefacade.o: eventlogtablefacade.cc \
   ../common/linetokenizer.h \
   ../common/exception.h \
   ../common/commonutil.h \
+  ../common/commondefs.h \
   ../common/filereader.h \
   eventlogentries.h \
   eventlogfacade.h
@@ -158,6 +166,7 @@ eventlogtool.o: eventlogtool.cc \
   eventlogindex.h \
   eventlog.h \
   filteredeventlog.h \
+  ../common/commondefs.h \
   eventlogdefs.h \
   ../common/exception.h \
   ../common/commonutil.h \
@@ -179,6 +188,7 @@ filteredevent.o: filteredevent.cc \
   eventlogentry.h \
   eventlogentries.h \
   messagedependency.h \
+  ../common/commondefs.h \
   eventlogdefs.h \
   ../common/linetokenizer.h \
   ../common/exception.h \
@@ -195,6 +205,7 @@ filteredeventlog.o: filteredeventlog.cc \
   ieventlog.h \
   eventlog.h \
   filteredevent.h \
+  ../common/commondefs.h \
   ../common/exception.h \
   ../common/commonutil.h \
   ievent.h \
@@ -214,6 +225,7 @@ ievent.o: ievent.cc \
   ../common/linetokenizer.h \
   ../common/exception.h \
   ../common/commonutil.h \
+  ../common/commondefs.h \
   ../common/filereader.h \
   eventlogentries.h
 ieventlog.o: ieventlog.cc \
@@ -222,6 +234,7 @@ ieventlog.o: ieventlog.cc \
   ievent.h \
   ../common/exception.h \
   ../common/commonutil.h \
+  ../common/commondefs.h \
   eventlogentry.h \
   messagedependency.h \
   ../common/linetokenizer.h \
@@ -235,6 +248,7 @@ messagedependency.o: messagedependency.cc \
   messagedependency.h \
   ../common/exception.h \
   ../common/commonutil.h \
+  ../common/commondefs.h \
   ../common/linetokenizer.h \
   ../common/filereader.h \
   eventlogentries.h
@@ -249,6 +263,7 @@ sequencechartfacade.o: sequencechartfacade.cc \
   ../common/linetokenizer.h \
   ../common/exception.h \
   ../common/commonutil.h \
+  ../common/commondefs.h \
   ../common/filereader.h \
   eventlogentries.h \
   eventlogfacade.h
@@ -256,4 +271,5 @@ stringpool.o: stringpool.cc \
   stringpool.h \
   eventlogdefs.h \
   ../common/exception.h \
-  ../common/commonutil.h
+  ../common/commonutil.h \
+  ../common/commondefs.h

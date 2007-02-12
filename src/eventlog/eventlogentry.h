@@ -50,11 +50,11 @@ class EVENTLOG_API EventLogEntry
 class EVENTLOG_API EventLogTokenBasedEntry : public EventLogEntry
 {
     protected:
-        char *getToken(char **tokens, int numTokens, const char *sign);
-        int getIntToken(char **tokens, int numTokens, const char *sign);
-        long getLongToken(char **tokens, int numTokens, const char *sign);
-        simtime_t getSimtimeToken(char **tokens, int numTokens, const char *sign);
-        const char *getStringToken(char **tokens, int numTokens, const char *sign);
+        char *getToken(char **tokens, int numTokens, const char *sign, bool mandatory);
+        int getIntToken(char **tokens, int numTokens, const char *sign, bool mandatory, int defaultValue);
+        long getLongToken(char **tokens, int numTokens, const char *sign, bool mandatory, long defaultValue);
+        simtime_t getSimtimeToken(char **tokens, int numTokens, const char *sign, bool mandatory, simtime_t defaultValue);
+        const char *getStringToken(char **tokens, int numTokens, const char *sign, bool mandatory, const char *defaultValue);
 
     public:
         virtual void parse(char *line, int length);
