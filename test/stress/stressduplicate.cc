@@ -17,7 +17,8 @@ void StressDuplicate::handleMessage(cMessage *msg)
 {
 	send(msg, "out", intrand(gateSize("out")));
 
-	// TEST: dup message
-	for (int i = par("numberOfDuplicates").longValue(); i >= 0; i--)
+	for (int i = par("numberOfDuplicates").longValue(); i >= 0; i--) {
+		ev << "TEST: Duplicating message: "  << msg << "\n";;
 		send(msg->dup(), "out", intrand(gateSize("out")));
+	}
 }

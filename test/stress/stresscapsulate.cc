@@ -15,15 +15,15 @@ Define_Module(StressCapsulate);
 
 void StressCapsulate::handleMessage(cMessage *msg)
 {
-	// TEST: decapsulate message
 	if (msg->encapsulatedMsg() && uniform(0, 1) < par("decapsulateProbability").doubleValue()) {
+		ev << "TEST: Decapsulating message: "  << msg << "\n";;
 		cMessage *decapsulatedMsg = msg->decapsulate();
 		delete msg;
 		msg = decapsulatedMsg;
 	}
 	
-	// TEST: encapsulate message
 	if (uniform(0, 1) < par("encapsulateProbability").doubleValue()) {
+		ev << "TEST: Encapsulating message: "  << msg << "\n";;
 		StressPacket *encapsulatedMsg = new StressPacket();
 	   	encapsulatedMsg->encapsulate(msg);
 	   	msg = encapsulatedMsg;

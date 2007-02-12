@@ -13,6 +13,7 @@ simple StressSource
         volatile double serviceTime;
         @display("i=block/source");
     gates:
+        input directIn;
         output out[];
 }
 
@@ -61,6 +62,17 @@ simple StressDuplicate
         output out[];
 }
 
+simple StressQueue
+{
+    parameters:
+        volatile double serviceTime;
+        @display("i=block/queue");
+    gates:
+        input directIn;
+        input in[];
+        output out[];
+}
+
 simple StressSink
 {
     parameters:
@@ -98,39 +110,55 @@ module StressLossy
 
 network SimpleStress
 {
+    @display("bgb=801.0,629.0");
     submodules:
-        direct1: StressDirect;
-        direct2: StressDirect;
-        lossy: StressLossy;
-        source: StressSource;
+        source1: StressSource;
+        source2: StressSource;
         capsulate1: StressCapsulate;
         capsulate2: StressCapsulate;
         duplicate1: StressDuplicate;
         duplicate2: StressDuplicate;
-        sink: StressSink;
+        queue1: StressQueue;
+        queue2: StressQueue;
+        direct1: StressDirect;
+        direct2: StressDirect;
+        lossy1: StressLossy;
+        lossy2: StressLossy;
+        sink1: StressSink;
+        sink2: StressSink;
     connections allowunconnected:
-        source.out++ --> capsulate2.in++;
-        source.out++ --> duplicate1.in++;
+        source1.out++ --> duplicate1.in++;
         duplicate1.out++ --> capsulate1.in++;
-        capsulate1.out++ --> sink.in++;
-        capsulate2.out++ --> duplicate2.in++;
-        duplicate2.out++ --> sink.in++;
-        duplicate1.out++ --> capsulate2.in++;
-        duplicate2.out++ --> capsulate1.in++;
-        capsulate1.out++ --> duplicate1.in++;
+        capsulate1.out++ --> queue1.in++;
+        queue1.out++ --> lossy1.in++;
+        lossy1.out++ --> sink1.in++;
+        source2.out++ --> duplicate2.in++;
         duplicate2.out++ --> capsulate2.in++;
-        capsulate1.out++ --> duplicate2.in++;
-        capsulate2.out++ --> duplicate1.in++;
-        capsulate1.out++ --> lossy.in++;
-        capsulate2.out++ --> lossy.in++;
-        duplicate1.out++ --> lossy.in++;
-        duplicate2.out++ --> lossy.in++;
-        lossy.out++ --> capsulate1.in++;
-        lossy.out++ --> duplicate1.in++;
-        lossy.out++ --> capsulate2.in++;
-        lossy.out++ --> duplicate2.in++;
-        capsulate2.out++ --> direct2.in++;
+        capsulate2.out++ --> queue2.in++;
+        queue2.out++ --> lossy2.in++;
+        lossy2.out++ --> sink2.in++;
+        source2.out++ --> direct2.in++;
         duplicate2.out++ --> direct2.in++;
+        capsulate2.out++ --> direct2.in++;
+        queue2.out++ --> direct2.in++;
+        lossy2.out++ --> direct2.in++;
+        source1.out++ --> direct1.in++;
         duplicate1.out++ --> direct1.in++;
         capsulate1.out++ --> direct1.in++;
+        queue1.out++ --> direct1.in++;
+        lossy1.out++ --> direct1.in++;
+        duplicate1.out++ --> duplicate2.in++;
+        duplicate2.out++ --> duplicate1.in++;
+        capsulate1.out++ --> capsulate2.in++;
+        capsulate2.out++ --> capsulate1.in++;
+        queue1.out++ --> queue2.in++;
+        queue2.out++ --> queue1.in++;
+        lossy1.out++ --> lossy2.in++;
+        lossy2.out++ --> lossy1.in++;
+        queue1.out++ --> sink1.in++;
+        capsulate1.out++ --> sink1.in++;
+        duplicate1.out++ --> sink1.in++;
+        queue2.out++ --> sink2.in++;
+        capsulate2.out++ --> sink2.in++;
+        duplicate2.out++ --> sink2.in++;
 }

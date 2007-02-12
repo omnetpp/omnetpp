@@ -15,6 +15,6 @@ Define_Module(StressNode);
 
 void StressNode::handleMessage(cMessage *msg)
 {
-	// TEST: resend message
+	ev << "TEST: Sending out message: "  << msg << "\n";;
 	send(msg, "out", par("outGateIndex").longValue());
 }

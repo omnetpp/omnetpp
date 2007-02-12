@@ -20,20 +20,27 @@ StressSource::StressSource()
 
 StressSource::~StressSource()
 {
+	ev << "TEST: Cancelling and deleting self message: "  << timer << "\n";;
 	cancelAndDelete(timer);
 }
 
 void StressSource::initialize()
 {
-	// TEST: self message
+	ev << "TEST: Sending self message for the first time: "  << timer << "\n";;
 	scheduleAt(par("serviceTime"), timer);
 }
 
 void StressSource::handleMessage(cMessage *msg)
 {
-	if (msg == timer) {
-		send(new StressPacket(), "out", intrand(gateSize("out")));
-		// TEST: reusing self message
-		scheduleAt(simTime() + par("serviceTime"), timer);
+	if (msg == timer)
+		msg = new StressPacket();
+	else {
+		ev << "TEST: Cancelling self message: " << timer << "\n";;
+		cancelEvent(timer);
 	}
+
+	send(msg, "out", intrand(gateSize("out")));
+
+	ev << "TEST: Reusing self message: " << timer << "\n";
+	scheduleAt(simTime() + par("serviceTime"), timer);
 }
