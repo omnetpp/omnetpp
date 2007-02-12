@@ -419,14 +419,12 @@ class HorizontalElectricRepulsion : public AbstractElectricRepulsion {
         }
 };
 
-class LeastExpandedSpring;
-
 /**
  * An attractive force which increases in a linear way proportional to the distance of the bodies.
  * Abstract base class for spring attractive forces.
  */
 class AbstractSpring : public AbstractForceProvider {
-    friend LeastExpandedSpring;
+    friend class LeastExpandedSpring;
 
     protected:
         IBody *body1;
