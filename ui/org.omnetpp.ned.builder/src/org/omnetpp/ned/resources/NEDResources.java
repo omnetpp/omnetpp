@@ -104,14 +104,14 @@ public class NEDResources implements INEDTypeResolver {
 		// create built-in channel type NullChannel
 		ChannelNode nullChannel = (ChannelNode)NEDElementFactoryEx
                                     .getInstance().createNodeWithTag(NEDElementTags.NED_CHANNEL);
-		nullChannel.setName("NullChannel");
+		nullChannel.setName("cIdealChannel");
 		nullChannel.setIsWithcppclass(true);
 		nullChannelType = new NEDComponent(nullChannel, null, this); 
 
 		// create built-in channel type BasicChannel
 		ChannelNode basicChannel = (ChannelNode) NEDElementFactoryEx
                                     .getInstance().createNodeWithTag(NEDElementTags.NED_CHANNEL);
-		basicChannel.setName("BasicChannel");
+		basicChannel.setName("cBasicChannel");
 		basicChannel.setIsWithcppclass(true);
 		ParametersNode params = (ParametersNode) NEDElementFactoryEx
 		                    .getInstance().createNodeWithTag(NEDElementTags.NED_PARAMETERS);

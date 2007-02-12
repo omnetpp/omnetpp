@@ -464,7 +464,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		}
 		else {
 			// fallback: type is BasicChannel
-			channelSpecType = resolver.getComponent("BasicChannel");
+			channelSpecType = resolver.getComponent("cBasicChannel");
 			Assert.isTrue(channelSpecType!=null);
 		}
 
