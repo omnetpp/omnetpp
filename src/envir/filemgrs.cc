@@ -314,6 +314,21 @@ void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, d
                      prec, value));
 }
 
+void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, cStatistic *statistic)
+{
+    if (!initialized)
+        init();
+
+    if (!f) return;
+
+    std::string n = name ? name : statistic->fullName();
+    recordScalar(module, (n+".samples").c_str(), statistic->samples());
+    recordScalar(module, (n+".mean").c_str(), statistic->mean());
+    recordScalar(module, (n+".stddev").c_str(), statistic->stddev());
+    recordScalar(module, (n+".min").c_str(), statistic->min());
+    recordScalar(module, (n+".max").c_str(), statistic->max());
+}
+
 const char *cFileOutputScalarManager::fileName() const
 {
     return fname.c_str();

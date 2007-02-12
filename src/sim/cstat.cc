@@ -45,8 +45,6 @@ using std::ostream;
 Register_Class(cStdDev);
 Register_Class(cWeightedStdDev);
 
-//----
-// cStatistic - almost all functions are inline
 
 cStatistic::cStatistic(const cStatistic& r) : cOwnedObject()
 {
@@ -146,15 +144,10 @@ void cStatistic::recordScalar(const char *scalarname)
     cSimpleModule *mod = dynamic_cast<cSimpleModule *>(simulation.contextModule());
     if (!mod)
         throw cRuntimeError(this,"recordScalar() may only be invoked from within a simple module");
-    std::string n = scalarname ? scalarname : fullName();
-    mod->recordScalar((n+".samples").c_str(), samples());
-    mod->recordScalar((n+".mean").c_str(), mean());
-    mod->recordScalar((n+".stddev").c_str(), stddev());
-    mod->recordScalar((n+".min").c_str(), min());
-    mod->recordScalar((n+".max").c_str(), max());
+    ev.recordScalar(mod, scalarname ? scalarname : fullName(), this);
 }
 
-void cStatistic::freadvarsf (FILE *f,  const char *fmt, ...)
+void cStatistic::freadvarsf(FILE *f, const char *fmt, ...)
 {
     char line[101];
 

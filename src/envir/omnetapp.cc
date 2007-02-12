@@ -1029,6 +1029,12 @@ void TOmnetApp::recordScalar(cModule *module, const char *name, double value)
     outscalarmgr->recordScalar(module, name, value);
 }
 
+void TOmnetApp::recordScalar(cModule *module, const char *name, cStatistic *statistic)
+{
+    assert(outscalarmgr);
+    outscalarmgr->recordScalar(module, name, statistic);
+}
+
 //-------------------------------------------------------------
 
 ostream *TOmnetApp::getStreamForSnapshot()

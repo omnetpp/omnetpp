@@ -565,6 +565,11 @@ void cEnvir::recordScalar(cModule *module, const char *name, double value)
     app->recordScalar(module, name, value);
 }
 
+void cEnvir::recordScalar(cModule *module, const char *name, cStatistic *statistic)
+{
+    app->recordScalar(module, name, statistic);
+}
+
 //---------------------------------------------------------
 
 ostream *cEnvir::getStreamForSnapshot()

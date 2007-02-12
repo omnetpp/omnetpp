@@ -128,7 +128,7 @@ void cDensityEstBase::clearResult ()
     num_firstvals = 0;
     cell_under = cell_over = 0;
     delete [] firstvals;
-    firstvals=NULL;
+    firstvals = NULL;
     transfd = false;
 }
 

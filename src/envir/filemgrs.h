@@ -175,6 +175,11 @@ class cFileOutputScalarManager : public cOutputScalarManager
     void recordScalar(cModule *module, const char *name, double value);
 
     /**
+     * Records a histogram or statistic object into the scalar result file.
+     */
+    void recordScalar(cModule *module, const char *name, cStatistic *statistic);
+
+    /**
      * Returns the file name.
      */
     const char *fileName() const;
