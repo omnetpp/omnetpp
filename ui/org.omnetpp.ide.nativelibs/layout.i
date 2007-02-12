@@ -183,6 +183,13 @@ FIXUP_GETNODEPOSITION(GraphLayouter);
 FIXUP_GETNODEPOSITION(BasicSpringEmbedderLayout);
 FIXUP_GETNODEPOSITION(ForceDirectedGraphLayouter);
 
+/*
+XXX to ignore:
+  getDistanceAndVector()
+  getStandardVerticalDistanceAndVector()
+  getSlipperyDistanceAndVector()
+*/
+
 %ignore zero;
 %ignore NaN;
 %ignore POSITIVE_INFINITY;
@@ -191,7 +198,6 @@ FIXUP_GETNODEPOSITION(ForceDirectedGraphLayouter);
 %ignore ForceDirectedEmbedding::writeDebugInformation;
 %ignore LeastExpandedSpring::LeastExpandedSpring;   //XXX takes std::vector<AbstractSpring*>
 
-
 %include "graphlayouter.h"
 %include "basicspringembedderlayout.h"
 %include "forcedirectedgraphlayouter.h"
@@ -199,5 +205,4 @@ FIXUP_GETNODEPOSITION(ForceDirectedGraphLayouter);
 %include "forcedirectedparametersbase.h"
 %include "forcedirectedparameters.h"
 %include "forcedirectedembedding.h"
-
 
