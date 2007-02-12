@@ -279,7 +279,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		} catch (CoreException e) {
 			// the file might not exists, so content description is not available
 			String extension = file.getFileExtension();
-			return "vec".equals(extension) || "vci".equals(extension);
+			return "sca".equals(extension) ||  "vec".equals(extension) || "vci".equals(extension);
 		}
 		return false;
 	}
