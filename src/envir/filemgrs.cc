@@ -341,10 +341,10 @@ void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, c
         int n = hist->cells();
         if (n>0)
         {
-            CHECK(fprintf(f, "bin\t%.*g\t%lu\n", prec, hist->basepoint(0), hist->underflowCell()));
+            CHECK(fprintf(f, "bin\t-INF\t%lu\n", hist->underflowCell()));
             for (int i=0; i<n; i++)
-                CHECK(fprintf(f, "bin\t%.*g\t%.*g\n", prec, hist->basepoint(i+1), prec, hist->cell(i)));
-            CHECK(fprintf(f, "bin\t+INF\t%lu\n", hist->overflowCell()));
+                CHECK(fprintf(f, "bin\t%.*g\t%.*g\n", prec, hist->basepoint(i), prec, hist->cell(i)));
+            CHECK(fprintf(f, "bin\t%.*g\t%lu\n", prec, hist->basepoint(n), hist->overflowCell()));
         }
     }
 }
