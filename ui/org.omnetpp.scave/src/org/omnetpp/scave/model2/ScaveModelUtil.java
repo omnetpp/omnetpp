@@ -359,4 +359,22 @@ public class ScaveModelUtil {
 		}
 		return chartsheet;
 	}
+	
+	public static void dumpIDList(String header, IDList idlist, ResultFileManager manager) {
+		System.out.print(header);
+		if (idlist.size() == 0)
+			System.out.println("Empty");
+		else {
+			System.out.println();
+			for (int i = 0; i < idlist.size(); ++i) {
+				ResultItem r = manager.getItem(idlist.get(i));
+				System.out.println(
+					String.format("File: %s Run: %s Module: %s Name: %s",
+						r.getFileRun().getFile().getFilePath(),
+						r.getFileRun().getRun().getRunName(),
+						r.getModuleName(),
+						r.getName()));
+			}
+		}
+	}
 }

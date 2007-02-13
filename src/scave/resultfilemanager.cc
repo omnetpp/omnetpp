@@ -512,7 +512,7 @@ class MatchableResultItem : public MatchExpression::Matchable
     private:
         const char *getName() const { return item.nameRef->c_str(); }
         const char *getModuleName() const { return item.moduleNameRef->c_str(); }
-        const char *getFileName() const { return item.fileRunRef->fileRef->fileName.c_str(); }
+        const char *getFileName() const { return item.fileRunRef->fileRef->filePath.c_str(); }
         const char *getRunName() const { return item.fileRunRef->runRef->runName.c_str(); }
         const char *getRunAttribute(const char *attrName) const { return item.fileRunRef->runRef->getAttribute(attrName); }
 };
