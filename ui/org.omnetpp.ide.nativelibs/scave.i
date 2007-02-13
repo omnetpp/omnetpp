@@ -10,6 +10,7 @@
 #include "indexfile.h"
 #include "indexedvectorfile.h"
 #include "vectorfileindexer.h"
+#include "vectorfilereader.h"
 %}
 
 %exception {
@@ -299,6 +300,9 @@ int strdictcmp(const char *s1, const char *s2);
 %include "resultfilemanager.h"
 %include "datasorter.h"
 
+// wrap the data-flow engine as well
+%include scave-plove.i
+
 /* ------------- indexedvectorfile.h  ----------------- */
 // %include "indexfile.h"
 class IndexFile
@@ -325,7 +329,9 @@ namespace std {
 %ignore IndexedVectorFileWriterNodeType;
 %include "indexedvectorfile.h"
 
-// wrap the data-flow engine as well
-%include scave-plove.i
+%extend VectorFileReaderNode {
+	static VectorFileReaderNode *cast(Node* node) { return dynamic_cast<VectorFileReaderNode*>(node); }
+};
 
-
+%ignore VectorFileReaderNodeType;
+%include "vectorfilereader.h"

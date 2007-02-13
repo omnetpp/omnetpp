@@ -17,6 +17,7 @@ import org.omnetpp.scave.engine.Port;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.StringMap;
+import org.omnetpp.scave.engine.VectorFileReaderNode;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.AddDiscardOp;
 import org.omnetpp.scave.model.Apply;
@@ -251,8 +252,9 @@ public class DataflowNetworkBuilder {
 		}
 		// create new port
 		Node node = getOrCreateSourceNode(id);
-		String portName = Integer.toString(resultfileManager.getVector(id).getVectorId());
-		idToPortMap.put(id, getPort(node, portName));
+		VectorFileReaderNode reader = VectorFileReaderNode.cast(node);
+		Port port = reader.addVector(resultfileManager.getVector(id));
+		idToPortMap.put(id, port);
 		return node;
 	}
 	
