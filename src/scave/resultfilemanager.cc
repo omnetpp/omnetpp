@@ -541,7 +541,7 @@ IDList ResultFileManager::filterIDList(const IDList &idlist, const char *pattern
     if (pattern == NULL || pattern[0] == '\0') // no filter
         pattern = "*";
 
-    MatchExpression matchExpr(pattern, true /*dottedpath*/, true /*fullstring*/, true /*casesensitive*/);
+    MatchExpression matchExpr(pattern, false /*dottedpath*/, true /*fullstring*/, true /*casesensitive*/);
     IDList out;
     int sz = idlist.size();
     for (int i=0; i<sz; ++i)
