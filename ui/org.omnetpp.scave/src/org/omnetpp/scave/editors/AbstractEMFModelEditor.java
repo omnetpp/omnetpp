@@ -840,6 +840,8 @@ public abstract class AbstractEMFModelEditor
 					boolean first = true;
 					for (Iterator i = editingDomain.getResourceSet().getResources().iterator(); i.hasNext(); ) {
 						Resource resource = (Resource)i.next();
+						if (!isSaveable(resource))
+							continue;
 						if ((first || !resource.getContents().isEmpty() || isPersisted(resource)) && !editingDomain.isReadOnly(resource)) {
 							try {
 								savedResources.add(resource);
@@ -872,6 +874,10 @@ public abstract class AbstractEMFModelEditor
 		}
 		updateProblemIndication = true;
 		updateProblemIndication();
+	}
+	
+	protected boolean isSaveable(Resource resource) {
+		return true;
 	}
 
 	/**

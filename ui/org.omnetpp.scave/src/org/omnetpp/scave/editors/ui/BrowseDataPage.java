@@ -1,6 +1,7 @@
 package org.omnetpp.scave.editors.ui;
 
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -12,14 +13,19 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.omnetpp.scave.actions.AddToDatasetAction;
 import org.omnetpp.scave.actions.CopyToClipboardAction;
 import org.omnetpp.scave.actions.CreateChartAction;
 import org.omnetpp.scave.actions.CreateDatasetAction;
+import org.omnetpp.scave.actions.CreateTempChartAction;
+import org.omnetpp.scave.actions.IScaveAction;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.DataTable;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
@@ -51,6 +57,8 @@ public class BrowseDataPage extends ScaveEditorPage {
 	
 	private IResultFilesChangeListener fileChangeListener;
 	private SelectionListener selectionChangeListener;
+	
+	private IScaveAction createTempChartAction;
 	
 	
 	public BrowseDataPage(Composite parent, ScaveEditor editor) {
@@ -116,6 +124,11 @@ public class BrowseDataPage extends ScaveEditorPage {
 		configureGlobalButton(workbenchWindow, addToDatasetButton, new AddToDatasetAction());
 		configureGlobalButton(workbenchWindow, createChartButton, new CreateChartAction());
 		configureGlobalButton(workbenchWindow, copyToClipboardButton, new CopyToClipboardAction());
+		createTempChartAction = new CreateTempChartAction();
+		
+		configurePanel(scalarsPanel);
+		configurePanel(vectorsPanel);
+		configurePanel(histogramsPanel);
 		
 		// set up contents
 		ResultFileManagerEx manager = scaveEditor.getResultFileManager();
@@ -181,6 +194,20 @@ public class BrowseDataPage extends ScaveEditorPage {
 		copyToClipboardButton.setText("Copy...");
 	}
 	
+	private void configurePanel(FilteredDataPanel panel) {
+		final Table table = panel.getTable();
+		if (table.getMenu() == null)
+			table.setMenu(new Menu(table));
+		MenuItem item = new MenuItem(table.getMenu(), SWT.PUSH);
+		item.setText("Open chart");
+		item.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				createTempChartAction.run();
+			}
+		});
+	
+	}
+	
 	private void hookListeners() {
 		if (fileChangeListener == null) {
 			fileChangeListener = new IResultFilesChangeListener() {
@@ -212,6 +239,11 @@ public class BrowseDataPage extends ScaveEditorPage {
 					if (data instanceof VectorResult) {
 						scaveEditor.setSelection(new StructuredSelection(data));
 					}
+				}
+
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {
+					createTempChartAction.run();
 				}
 			};
 			vectorsPanel.getTable().addSelectionListener(selectionChangeListener);

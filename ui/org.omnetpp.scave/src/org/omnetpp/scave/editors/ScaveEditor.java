@@ -4,11 +4,15 @@ import java.util.ArrayList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xmi.XMIResource;
+import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.command.CreateChildCommand;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
@@ -22,6 +26,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.editors.ui.BrowseVectorPage;
@@ -41,6 +46,7 @@ import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ScaveModelFactory;
+import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -84,6 +90,22 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	};
 	
 	/**
+	 * Temporary datasets and charts are added to this resource.
+	 * The resource is not saved.
+	 */
+	private Resource tempResource;
+	
+	/**
+	 * Factory of Scave objects.
+	 */
+	private static final ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
+	
+	/**
+	 * Scave model package. 
+	 */
+	private static final ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
+	
+	/**
 	 * The constructor.
 	 */
 	public ScaveEditor() {
@@ -123,16 +145,18 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	@Override
 	public void createModel() {
 		super.createModel();
-
+		
 		// ensure mandatory objects exist; XXX must also prevent them from being deleted
 		Analysis analysis = getAnalysis();
 		if (analysis.getInputs()==null)
-			analysis.setInputs(ScaveModelFactory.eINSTANCE.createInputs());
+			analysis.setInputs(factory.createInputs());
 		if (analysis.getDatasets()==null)
-			analysis.setDatasets(ScaveModelFactory.eINSTANCE.createDatasets());
+			analysis.setDatasets(factory.createDatasets());
 		if (analysis.getChartSheets()==null)
-			analysis.setChartSheets(ScaveModelFactory.eINSTANCE.createChartSheets());
+			analysis.setChartSheets(factory.createChartSheets());
 
+		tempResource = createTempResource();
+		
 		tracker = new ResultFilesTracker(manager, analysis.getInputs()); //XXX must ensure that Inputs never gets deleted or replaced!!! 
 		
 		// listen to model changes
@@ -144,6 +168,27 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		
 		// listen to resource changes: create, delete, modify
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(tracker);
+	}
+	
+	protected Resource createTempResource() {
+		IFileEditorInput modelFile = (IFileEditorInput)getEditorInput();
+		IPath tempResourcePath = modelFile.getFile().getFullPath().addFileExtension("temp");
+		URI resourceURI = URI.createPlatformResourceURI(tempResourcePath.toString());;
+		Resource resource = editingDomain.getResourceSet().createResource(resourceURI);
+		Analysis analysis = factory.createAnalysis();
+		analysis.setInputs(factory.createInputs());
+		analysis.setDatasets(factory.createDatasets());
+		analysis.setChartSheets(factory.createChartSheets());
+		resource.getContents().add(analysis);
+		return resource;
+	}
+	
+	/**
+	 * Prevent saving the temporary resource.
+	 */
+	@Override
+	protected boolean isSaveable(Resource resource) {
+		return resource != tempResource;
 	}
 
 	@Override
@@ -244,6 +289,10 @@ public class ScaveEditor extends AbstractEMFModelEditor {
     	Analysis analysis = (Analysis)resource.getContents().get(0);
     	return analysis;
     }
+	
+	public Analysis getTempAnalysis() {
+		return (Analysis)tempResource.getContents().get(0);
+	}
 	
 	/**
 	 * Opens the given dataset on a new editor page, and switches to it. 
@@ -367,9 +416,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 			// use the EMF.Edit Framework's command interface to do the job (undoable)
 			InputFile inputFile = ScaveModelFactory.eINSTANCE.createInputFile();
 			inputFile.setName(resourcePath);
-			ArrayList<EObject> selection = new ArrayList<EObject>();
-			selection.add(inputs);
-			Command command = new CreateChildCommand(getEditingDomain(), inputs, ScaveModelFactory.eINSTANCE.getScaveModelPackage().getInputs_Inputs(), inputFile, selection);
+			Command command = AddCommand.create(getEditingDomain(), inputs, pkg.getInputs_Inputs(), inputFile);
 			executeCommand(command);
 		}
 	}
