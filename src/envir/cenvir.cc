@@ -140,7 +140,7 @@ void cEnvir::setup(int argc, char *argv[])
         verifyIntTypes();
 
         // args
-        args = new ArgList(argc, argv, "hf:u:l:r:p:");
+        args = new ArgList(argc, argv, "hf:u:l:r:p:q:");
         args->checkArgs();
 
         //
@@ -618,29 +618,6 @@ bool cEnvir::idle()
 {
     return app->idle();
 }
-
-bool memoryIsLow()
-{
-    return ev.app->memoryIsLow();
-}
-
-
-//=== The DUMMY SECTION -- a tribute to "smart" linkers
-// force the linker to include the user interface library into the executable.
-// dummyDummy() can't be static or very smart linkers will leave it out...
-#ifndef WIN32_DLL
-void envirDummy();
-void dummyDummy() {envirDummy();}
-#endif
-
-// another dummy variant in case you want to have both Cmdenv and Tkenv in
-/*
-#ifndef WIN32_DLL
-OPP_DLLIMPORT void cmdenvDummy();
-OPP_DLLIMPORT void tkenvDummy();
-void dummyDummy() {cmdenvDummy();tkenvDummy();}
-#endif
-*/
 
 // A dummy function to force UNIX linkers collect Speedometer
 // and cFileOutputVectorManager as linker symbols. Otherwise we'd get

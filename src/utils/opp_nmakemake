@@ -25,7 +25,7 @@ $outfile  =~ s/[\/\\]$//;
 $outfile  =~ s/.*[\/\\]//;
 
 $recursive="n";
-$userif = "TKENV";
+$userif = "ALL";
 $type = "exe";
 $includes = "";
 $libpath = "";
@@ -105,7 +105,7 @@ opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
                           link directories and (if -w option is present)
                           -I directories after this option.
     -u name, --userinterface name
-                          Use Cmdenv or Tkenv. Defaults to Tkenv
+                          Use all, Cmdenv or Tkenv. Defaults to all.
     -Idir                 Additional NED and C++ include directory
     -Ldir                 Add a directory to the library path
     -llibrary             Additional library to link against
@@ -203,9 +203,9 @@ could not figure out.
     {
         $userif = shift @ARGV;
         $userif = uc($userif);
-        if ($userif ne "CMDENV" && $userif ne "TKENV")
+        if ($userif ne "ALL" && $userif ne "CMDENV" && $userif ne "TKENV")
         {
-            print STDERR "opp_nmakemake: -u: valid user interface names are Cmdenv or Tkenv";
+            print STDERR "opp_nmakemake: -u: specify all, Cmdenv or Tkenv";
             exit(1);
         }
     }
@@ -430,13 +430,21 @@ if ($type eq "o")
     $suffix = '';
 }
 
-if ($userif eq 'CMDENV')
+if ($userif eq 'ALL')
 {
+    $c_all = '';
+    $c_cmd = '# ';
+    $c_tk = '# ';
+}
+elsif ($userif eq 'CMDENV')
+{
+    $c_all = '#';
     $c_cmd = '';
     $c_tk = '# ';
 }
 elsif ($userif eq 'TKENV')
 {
+    $c_all = '#';
     $c_cmd = '# ';
     $c_tk = '';
 }
@@ -458,6 +466,7 @@ print OUT "
 TARGET = $outfile$suffix
 
 # User interface (uncomment one) (-u option)
+${c_all}USERIF_LIBS=\$(TKENV_LIBS) \$(CMDENV_LIBS)
 ${c_cmd}USERIF_LIBS=\$(CMDENV_LIBS)
 ${c_tk}USERIF_LIBS=\$(TKENV_LIBS)
 
@@ -485,8 +494,8 @@ print OUT "
 !include \"$cfgfile\"
 
 # User interface libs
-CMDENV_LIBS=envir.lib cmdenv.lib
-TKENV_LIBS=envir.lib tkenv.lib layout.lib \$(TK_LIBS)
+CMDENV_LIBS=/include:_cmdenv_lib envir.lib cmdenv.lib
+TKENV_LIBS=/include:_tkenv_lib envir.lib tkenv.lib layout.lib \$(TK_LIBS)
 
 # Simulation kernel
 KERNEL_LIBS=common.lib sim_std.lib

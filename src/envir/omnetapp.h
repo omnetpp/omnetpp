@@ -154,6 +154,11 @@ class ENVIR_API TOmnetApp
     void printHelp();
 
     /**
+     * Prints the contents of a registration list to the standard output.
+     */
+    void dumpComponentList(const char *category);
+
+    /**
      * To be redefined to print Cmdenv or Tkenv-specific help on available
      * command-line options. Invoked from printHelp().
      */
@@ -279,11 +284,6 @@ class ENVIR_API TOmnetApp
 
     /** @name Utility functions. */
     //@{
-
-    /**
-     * Interface to memory manager.
-     */
-    virtual bool memoryIsLow();
 
     /**
      * Original command-line args.

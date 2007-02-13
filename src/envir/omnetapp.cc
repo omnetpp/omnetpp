@@ -165,11 +165,16 @@ TOmnetApp::~TOmnetApp()
 
 void TOmnetApp::setup()
 {
-     // handle -h command-line option
+     // handle -h and -q command-line options
      if (args->optionGiven('h'))
      {
          printHelp();
-         return;  // don't set initialized to true
+         return;  // don't set initialized==true
+     }
+     if (args->optionGiven('q'))
+     {
+         dumpComponentList(args->optionValue('q',0));
+         return;  // don't set initialized==true
      }
 
      try
@@ -272,20 +277,38 @@ void TOmnetApp::printHelp()
     ev << "                (it will be appended automatically.) The loaded module may\n";
     ev << "                contain simple modules, plugins, etc. Multiple -l options\n";
     ev << "                can be present.\n";
+    ev << "  -q <category> List registered components. Category is one of the following:\n";
+    ev << "                all, config, classes, classdesc, nedfunctions, enums\n";
     ev << "\n";
     printUISpecificHelp();
-
-    ev << "The following components are available:\n";
-
-    if (componentTypes.instance()->size()>0)
-    {
-        cSymTable *a = componentTypes.instance();
-        for (int i=0; i<a->size(); i++)
-            ev << "    " << a->get(i)->fullName() << '\n';
-        ev << "\n";
-    }
 }
 
+void TOmnetApp::dumpComponentList(const char *category)
+{
+    bool wantAll = !strcmp(category, "all");
+    if (wantAll || !strcmp(category, "config"))
+    {
+        ev << "Config...\n";
+    }
+    if (wantAll || !strcmp(category, "classes"))
+    {
+        ev << "C++ classes registered via Define_Module(),\n";
+        ev << "         Define_Channel() or Register_Class(), or defined\n";
+        ev << "         in .msg files\n";
+    }
+    if (wantAll || !strcmp(category, "classdesc"))
+    {
+        ev << "Classes that have associated reflection information\n";
+    }
+    if (wantAll || !strcmp(category, "nedfunctions"))
+    {
+        ev << "Functions that can be used in NED expressions and in omnetpp.ini:\n";
+    }
+    if (wantAll || !strcmp(category, "enums"))
+    {
+        ev << "Enums defined in .msg files\n";
+    }
+}
 
 int TOmnetApp::getParsimProcId()
 {
@@ -1062,13 +1085,6 @@ unsigned long TOmnetApp::getUniqueNumber()
 {
     // TBD check for overflow
     return nextuniquenumber++;
-}
-
-bool TOmnetApp::memoryIsLow()
-{
-    // if the concrete user interface implementation has a memory manager,
-    // it should override this function
-    return false;
 }
 
 void TOmnetApp::displayError(std::exception& e)

@@ -86,9 +86,6 @@ class TCmdenvApp : public TOmnetApp
 
      virtual unsigned extraStackForEnvir();
 
-     // cmdenv has an own memory manager (heap.cc)
-     virtual bool memoryIsLow();
-
      // SIG_USR1 handling
      void setupSignals();
      static void signalHandler(int signum);

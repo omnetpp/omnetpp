@@ -17,7 +17,7 @@ args="$*"
 
 MAKEDEPEND="@MAKEDEPEND@"
 
-userif=TKENV
+userif=ALL
 outfile=`pwd | sed "s/\/$//;s/.*\///"`
 recursive=n
 type="exe"
@@ -157,7 +157,7 @@ opp_makemake [-h] [-f] [-m] [-o make-target] [-r] [-n] [-s] [-u userinterface]
                           link directories and (if -w option is present)
                           -I directories after this option.
     -u name, --userinterface name
-                          Use Cmdenv or Tkenv. Defaults to Tkenv.
+                          Use all, Cmdenv or Tkenv. Defaults to all.
     -Idir                 Additional NED and C++ include directory
     -Llibrary-path        Additional library path
     -llibrary             Additional library to link against
@@ -254,10 +254,10 @@ EOT
         shift
         userif=`echo $1 | tr '[a-z]' '[A-Z]'`
         case "$userif" in
-            CMDENV | TKENV)
+            ALL | CMDENV | TKENV)
             ;;
             *)
-            echo "opp_makemake: -u: valid user interface names are Cmdenv or Tkenv" 1>&2
+            echo "opp_makemake: -u: specify all, Cmdenv or Tkenv" 1>&2
             exit 1
             ;;
         esac
@@ -369,8 +369,8 @@ SYS_LIBS_PURE=-ldl -lsocket -lnsl -lm \$(shell \$(CXX) -print-file-name=libstdc+
 #
 
 # User interface libs
-CMDENV_LIBS=-lenvir -lcmdenv
-TKENV_LIBS=-lenvir -ltkenv -llayout \$(TK_LIBS)
+CMDENV_LIBS=-u _cmdenv_lib -lenvir -lcmdenv
+TKENV_LIBS=-u _tkenv_lib -lenvir -ltkenv -llayout \$(TK_LIBS)
 
 # Simulation kernel
 KERNEL_LIBS=-lsim_std
@@ -462,10 +462,12 @@ if [ "$type" = "o" ]; then
 fi
 
 case "$userif" in
+    ALL)
+    c_all=''; c_cmd='#'; c_tk='# '; ;;
     CMDENV)
-    c_cmd=''; c_tk='# '; ;;
+    c_all='#'; c_cmd=''; c_tk='# '; ;;
     TKENV)
-    c_cmd='# '; c_tk=''; ;;
+    c_all='#'; c_cmd='# '; c_tk=''; ;;
 esac
 
 wildcard_extdirobjs=
@@ -485,6 +487,7 @@ cat <<EOT
 TARGET = $outfile$suffix
 
 # User interface (uncomment one) (-u option)
+$(c_all}USERIF_LIBS=\$(TKENV_LIBS) \$(CMDENV_LIBS)
 ${c_cmd}USERIF_LIBS=\$(CMDENV_LIBS)
 ${c_tk}USERIF_LIBS=\$(TKENV_LIBS)
 

@@ -33,8 +33,6 @@
 #include "timeutil.h"
 
 
-static char buffer[1024];
-
 Register_GlobalConfigEntry(CFGID_RUNS_TO_EXECUTE, "runs-to-execute", "Cmdenv", CFG_STRING,  "", "FIXME add some description here")
 Register_GlobalConfigEntry(CFGID_EXTRA_STACK_KB, "extra-stack-kb", "Cmdenv", CFG_INT,  CMDENV_EXTRASTACK_KB, "FIXME add some description here")
 Register_GlobalConfigEntry(CFGID_OUTPUT_FILE, "output-file", "Cmdenv", CFG_FILENAME,  "", "FIXME add some description here")
@@ -54,13 +52,13 @@ Register_PerRunConfigEntry(CFGID_PERFORMANCE_DISPLAY, "performance-display", "Cm
 //
 Register_OmnetApp("Cmdenv", TCmdenvApp, 10, "command-line user interface");
 
-// some functions that can/should be called from Envir in order to force the
-// linker to include the Cmdenv library into the executable:
-CMDENV_API void cmdenvDummy() {}
-CMDENV_API void envirDummy() {}
+//
+// The following function can be used to force linking with Cmdenv; specify
+// -u _cmdenv_lib (gcc) or /include:_cmdenv_lib (vc++) in the link command.
+//
+extern "C" CMDENV_API void cmdenv_lib() {}
 
-// a function defined in heap.cc
-bool cmdenvMemoryIsLow();
+static char buffer[1024];
 
 bool TCmdenvApp::sigint_received;
 
@@ -527,11 +525,6 @@ void TCmdenvApp::printUISpecificHelp()
 unsigned TCmdenvApp::extraStackForEnvir()
 {
     return 1024*opt_extrastack_kb;
-}
-
-bool TCmdenvApp::memoryIsLow()
-{
-    return cmdenvMemoryIsLow();
 }
 
 

@@ -54,10 +54,11 @@
 //
 Register_OmnetApp("Tkenv", TOmnetTkApp, 20, "graphical user interface");
 
-// some functions that can/should be called from Envir in order to force the
-// linker to include the Tkenv library into the executable:
-TKENV_API void tkenvDummy() {}
-TKENV_API void envirDummy() {}
+//
+// The following function can be used to force linking with Tkenv; specify
+// -u _tkenv_lib (gcc) or /include:_tkenv_lib (vc++) in the link command.
+//
+extern "C" TKENV_API void tkenv_lib() {}
 
 
 // widgets in the Tk user interface

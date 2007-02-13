@@ -91,9 +91,6 @@ typedef basic_evbuf<char> evbuf;
  */
 ENVIR_API extern cEnvir ev;
 
-ENVIR_API bool memoryIsLow();
-
-
 
 /**
  * Interface to the environment (user interface) of the simulation. cEnvir
