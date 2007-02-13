@@ -1209,9 +1209,9 @@ void TOmnetTkApp::messageDeleted(cMessage *msg)
     TOmnetApp::messageDeleted(msg);
 }
 
-void TOmnetTkApp::componentMethodCalled(cComponent *fromComp, cComponent *toComp, const char *method)
+void TOmnetTkApp::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const char *method)
 {
-    TOmnetApp::componentMethodCalled(fromComp, toComp, method);
+    TOmnetApp::componentMethodBegin(fromComp, toComp, method);
 
     if (!animating || !opt_anim_methodcalls)
         return;
@@ -1316,6 +1316,11 @@ void TOmnetTkApp::componentMethodCalled(cComponent *fromComp, cComponent *toComp
             }
         }
     }
+}
+
+void TOmnetTkApp::componentMethodEnd()
+{
+    TOmnetApp::componentMethodEnd();
 }
 
 void TOmnetTkApp::moduleCreated(cModule *newmodule)

@@ -130,6 +130,8 @@ std::string opp_quotestr(const char *txt)
 
 bool opp_needsquotes(const char *txt)
 {
+    if (!txt[0])
+        return true;
     for (const char *s = txt; *s; s++)
         if (isspace(*s) || *s=='\\' || *s=='"')
             return true;

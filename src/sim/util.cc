@@ -400,15 +400,19 @@ const char *opp_typename(const std::type_info& t)
 
 //----
 
-cContextSwitcher::cContextSwitcher(cComponent *thisptr)
+cContextSwitcher::cContextSwitcher(cComponent *newContext, bool notifyEnvir)
 {
     // save current context and switch to new
     callerContext = simulation.context();
-    simulation.setContext(thisptr);
+    simulation.setContext(newContext);
+    if (notifyEnvir)
+        EVCB.componentMethodBegin(callerContext, newContext, "");
 }
 
 cContextSwitcher::~cContextSwitcher()
 {
+    EVCB.componentMethodEnd();
+
     // restore old context
     if (!callerContext)
         simulation.setGlobalContext();
@@ -428,7 +432,7 @@ void cContextSwitcher::methodCall(const char *fmt,...)
     vsprintf(buf,fmt,va);
     va_end(va);
 
-    EVCB.componentMethodCalled(callerContext, methodContext, buf);
+    EVCB.componentMethodBegin(callerContext, methodContext, buf);
 }
 
 //----

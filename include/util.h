@@ -270,7 +270,7 @@ SIM_API const char *opp_typename(const std::type_info& t);
  *
  * @see Enter_Method_Simple() macro
  */
-#define Enter_Method cContextSwitcher __ctx(this); __ctx.methodCall
+#define Enter_Method cContextSwitcher __ctx(this, false); __ctx.methodCall
 
 /**
  * Denotes module class member function as callable from other modules.
@@ -282,7 +282,7 @@ SIM_API const char *opp_typename(const std::type_info& t);
  *
  * @see Enter_Method() macro
  */
-#define Enter_Method_Silent() cContextSwitcher __ctx(this)
+#define Enter_Method_Silent() cContextSwitcher __ctx(this, true)
 
 /**
  * Helper class, used internally by the Enter_Method() and Enter_Method_Silent()
@@ -302,7 +302,7 @@ class SIM_API cContextSwitcher
     /**
      * Switches context to the given module
      */
-    cContextSwitcher(cComponent *thisptr);
+    cContextSwitcher(cComponent *newContext, bool notifyEnvir=true);
 
     /**
      * Restores the original context

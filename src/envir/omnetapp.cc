@@ -583,7 +583,7 @@ void TOmnetApp::messageCancelled(cMessage *msg)
 {
     if (feventlog)
     {
-        EventLogWriter::recordCancelMessageEntry_id(feventlog, msg->id());
+        EventLogWriter::recordCancelEventEntry_id(feventlog, msg->id());
     }
 }
 
@@ -591,7 +591,7 @@ void TOmnetApp::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propag
 {
     if (feventlog)
     {
-        EventLogWriter::recordMessageSendDirectEntry_sm_dm_dg_pd_td(feventlog,
+        EventLogWriter::recordSendDirectEntry_sm_dm_dg_pd_td(feventlog,
             msg->senderModuleId(), toGate->ownerModule()->id(), toGate->id(),
             propagationDelay, transmissionDelay);
     }
@@ -601,7 +601,7 @@ void TOmnetApp::messageSendHop(cMessage *msg, cGate *srcGate)
 {
     if (feventlog)
     {
-        EventLogWriter::recordMessageSendHopEntry_sm_sg(feventlog,
+        EventLogWriter::recordSendHopEntry_sm_sg(feventlog,
             srcGate->ownerModule()->id(), srcGate->id());
     }
 }
@@ -610,7 +610,7 @@ void TOmnetApp::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagat
 {
     if (feventlog)
     {
-        EventLogWriter::recordMessageSendHopEntry_sm_sg_pd_td(feventlog,
+        EventLogWriter::recordSendHopEntry_sm_sg_pd_td(feventlog,
             srcGate->ownerModule()->id(), srcGate->id(), transmissionDelay, propagationDelay);
     }
 }
@@ -631,15 +631,24 @@ void TOmnetApp::messageDeleted(cMessage *msg)
     }
 }
 
-void TOmnetApp::componentMethodCalled(cComponent *from, cComponent *to, const char *method)
+void TOmnetApp::componentMethodBegin(cComponent *from, cComponent *to, const char *method)
 {
     if (feventlog)
     {
         if (from->isModule() && to->isModule())
         {
-            EventLogWriter::recordModuleMethodCalledEntry_sm_tm_m(feventlog,
+            EventLogWriter::recordModuleMethodBeginEntry_sm_tm_m(feventlog,
                 ((cModule *)from)->id(), ((cModule *)to)->id(), method);
         }
+    }
+}
+
+void TOmnetApp::componentMethodEnd()
+{
+    if (feventlog)
+    {
+        //XXX problem when channel method is called: we'll emit an "End" entry but no "Begin"
+        EventLogWriter::recordModuleMethodEndEntry(feventlog);
     }
 }
 

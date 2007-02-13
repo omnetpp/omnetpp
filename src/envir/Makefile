@@ -35,7 +35,7 @@ libenvir$(SO_LIB_SUFFIX) : $(OBJS)
 	$(SHLIB_LD) -o libenvir$(SO_LIB_SUFFIX) $(OBJS)
 	../utils/install-lib libenvir$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libenvir$(SO_LIB_SUFFIX)
 
-eventlogwriter.cc eventlogwriter.h : eventlogentries.pl
+eventlogwriter.cc eventlogwriter.h : eventlogentries.pl ../eventlog/eventlogentries.txt
 	$(PERL) eventlogentries.pl
 
 omnetapp.o: eventlogwriter.h
@@ -44,6 +44,7 @@ depend:
 	$(MAKEDEPEND) -I. -I../../include -- *.cc
 
 clean:
+	rm -f eventlogwriter.cc eventlogwriter.h 2> nul
 	rm -f *.o libenvir$(A_LIB_SUFFIX) libenvir$(SO_LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

@@ -364,9 +364,14 @@ void cEnvir::messageDeleted(cMessage *msg)
     app->messageDeleted(msg);
 }
 
-void cEnvir::componentMethodCalled(cComponent *from, cComponent *to, const char *method)
+void cEnvir::componentMethodBegin(cComponent *from, cComponent *to, const char *method)
 {
-    app->componentMethodCalled(from, to, method);
+    app->componentMethodBegin(from, to, method);
+}
+
+void cEnvir::componentMethodEnd()
+{
+    app->componentMethodEnd();
 }
 
 //FIXME we should probably NOT use EVCB for these! (or we should redraw the network diagram every time!!!)

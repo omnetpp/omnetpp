@@ -50,7 +50,7 @@ envir.dll : $(OBJS)
 	copy envir.dll $(OMNETPP_BIN_DIR:/=\)
 	copy envir.lib $(OMNETPP_LIB_DIR:/=\)
 
-eventlogwriter.cc eventlogwriter.h : eventlogentries.pl
+eventlogwriter.cc eventlogwriter.h : eventlogentries.pl ../eventlog/eventlogentries.txt
 	$(PERL) eventlogentries.pl
 
 omnetapp.o: eventlogwriter.h
@@ -59,6 +59,7 @@ depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc
 
 clean:
+	-del eventlogwriter.cc eventlogwriter.h 2> nul
 	-del *.obj envir.lib envir.dll envir.lib envir.exp 2> nul
 	-del $(VC_AUX_FILES) 2> nul
 

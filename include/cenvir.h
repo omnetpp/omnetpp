@@ -138,7 +138,7 @@ class ENVIR_API cEnvir : public std::ostream
     // the following cEnvir methods: messageScheduled(), messageCancelled(),
     // beginSend(), messageSendDirect(), messageSendHop(), messageSendHop(),
     // messageSendHop(), messageDeleted(), moduleReparented(), simulationEvent(),
-    // componentMethodCalled(), moduleCreated(), moduleDeleted(), connectionCreated(),
+    // componentMethodBegin(), moduleCreated(), moduleDeleted(), connectionCreated(),
     // connectionRemoved(), displayStringChanged().
     bool suppress_notifications; //XXX make use of this flag in Envir impl.
 
@@ -257,7 +257,13 @@ class ENVIR_API cEnvir : public std::ostream
      * function of another component. This hook enables a graphical user
      * interface to animate the method call in the network diagram.
      */
-    void componentMethodCalled(cComponent *from, cComponent *to, const char *method);
+    void componentMethodBegin(cComponent *from, cComponent *to, const char *method);
+
+    /**
+     * Notifies the environment that the method entered in the last
+     * componentMethodBegin() call has exited.
+     */
+    void componentMethodEnd();
 
     /**
      * Notifies the environment that a module was created. This method is called
