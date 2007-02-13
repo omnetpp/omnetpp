@@ -4,11 +4,15 @@ BU BubbleEntry
    txt string text
 }
 
-MM ModuleMethodCalledEntry
+MB ModuleMethodBeginEntry
 {
    sm int fromModuleId
    tm int toModuleId
    m string method
+}
+
+ME ModuleMethodEndEntry
+{
 }
 
 MC ModuleCreatedEntry
@@ -54,7 +58,7 @@ CS ConnectionDisplayStringChangedEntry
    d string displayString
 }
 
-DS ModuleDisplayStringChangedEntry
+MS ModuleDisplayStringChangedEntry
 {
    id int moduleId
    d string displayString
@@ -69,7 +73,7 @@ E EventEntry
    msg long messageId
 }
 
-CE CancelMessageEntry
+CE CancelEventEntry
 {
    id long messageId
 }
@@ -95,7 +99,7 @@ ES EndSendEntry
    t simtime_t arrivalTime
 }
 
-SD MessageSendDirectEntry
+SD SendDirectEntry
 {
    sm int senderModuleId
    dm int destModuleId
@@ -104,7 +108,7 @@ SD MessageSendDirectEntry
    td simtime_t transmissionDelay 0
 }
 
-SH MessageSendHopEntry
+SH SendHopEntry
 {
    sm int senderModuleId
    sg int senderGateId
@@ -112,7 +116,7 @@ SH MessageSendHopEntry
    td simtime_t transmissionDelay 0
 }
 
-DE DeleteMessageEntry
+DM DeleteMessageEntry
 {
    id int messageId
 }

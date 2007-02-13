@@ -31,6 +31,13 @@ while (<FILE>)
       $className = $2;
       $classHasOptField = 0;
       print "$classCode $className\n";
+      foreach $class (@classes)
+      {
+         if ($classCode eq $class->{CODE})
+         {
+            die "Class code $classCode used twice";
+         }
+      }
    }
    elsif ($_ =~ /^ *{ *$/)
    {
