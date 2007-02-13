@@ -270,7 +270,7 @@ SIM_API const char *opp_typename(const std::type_info& t);
  *
  * @see Enter_Method_Simple() macro
  */
-#define Enter_Method cContextSwitcher __ctx(this, false); __ctx.methodCall
+#define Enter_Method cMethodCallContextSwitcher __ctx(this, false); __ctx.methodCall
 
 /**
  * Denotes module class member function as callable from other modules.
@@ -282,32 +282,47 @@ SIM_API const char *opp_typename(const std::type_info& t);
  *
  * @see Enter_Method() macro
  */
-#define Enter_Method_Silent() cContextSwitcher __ctx(this, true)
+#define Enter_Method_Silent() cMethodCallContextSwitcher __ctx(this, true)
 
 /**
- * Helper class, used internally by the Enter_Method() and Enter_Method_Silent()
- * macros. The macro should be put at the top of module methods that
- * may be called from other modules, and it creates an instance of this class.
- * The constructor switches the context to the module containing the method,
- * and the destructor restores the original context.
+ * The constructor switches the context to the given component, and the
+ * destructor restores the original context.
  *
  * @see cSimulation::contextModule(), cSimulation::setContextModule()
  * @ingroup Internals
  */
 class SIM_API cContextSwitcher
 {
-  private:
+  protected:
     cComponent *callerContext;
   public:
     /**
      * Switches context to the given module
      */
-    cContextSwitcher(cComponent *newContext, bool notifyEnvir=true);
+    cContextSwitcher(cComponent *newContext);
 
     /**
      * Restores the original context
      */
     ~cContextSwitcher();
+};
+
+/**
+ * Internal class. May only be used via the Enter_Method() and Enter_Method_Silent() macros!
+ * @ingroup Internals
+ */
+class SIM_API cMethodCallContextSwitcher : public cContextSwitcher
+{
+  public:
+    /**
+     * Switches context to the given module
+     */
+    cMethodCallContextSwitcher(cComponent *newContext, bool notifyEnvir=true);
+
+    /**
+     * Restores the original context
+     */
+    ~cMethodCallContextSwitcher();
 
     /**
      * Tells the user interface about the method call (so that it can be

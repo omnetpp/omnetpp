@@ -400,19 +400,15 @@ const char *opp_typename(const std::type_info& t)
 
 //----
 
-cContextSwitcher::cContextSwitcher(cComponent *newContext, bool notifyEnvir)
+cContextSwitcher::cContextSwitcher(cComponent *newContext)
 {
     // save current context and switch to new
     callerContext = simulation.context();
     simulation.setContext(newContext);
-    if (notifyEnvir)
-        EVCB.componentMethodBegin(callerContext, newContext, "");
 }
 
 cContextSwitcher::~cContextSwitcher()
 {
-    EVCB.componentMethodEnd();
-
     // restore old context
     if (!callerContext)
         simulation.setGlobalContext();
@@ -420,19 +416,35 @@ cContextSwitcher::~cContextSwitcher()
         simulation.setContext(callerContext);
 }
 
-void cContextSwitcher::methodCall(const char *fmt,...)
+//----
+
+cMethodCallContextSwitcher::cMethodCallContextSwitcher(cComponent *newContext, bool notifyEnvir) :
+  cContextSwitcher(newContext)
+{
+    if (notifyEnvir)
+        EVCB.componentMethodBegin(callerContext, newContext, "");
+}
+
+void cMethodCallContextSwitcher::methodCall(const char *fmt,...)
 {
     cComponent *methodContext = simulation.context();
-    if (methodContext==callerContext)
-        return;
+    if (methodContext!=callerContext)
+    {
+        static char buf[MAX_METHODCALL];
+        va_list va;
+        va_start(va, fmt);
+        vsprintf(buf,fmt,va);
+        va_end(va);
 
-    static char buf[MAX_METHODCALL];
-    va_list va;
-    va_start(va, fmt);
-    vsprintf(buf,fmt,va);
-    va_end(va);
+        EVCB.componentMethodBegin(callerContext, methodContext, buf);
+    }
+}
 
-    EVCB.componentMethodBegin(callerContext, methodContext, buf);
+cMethodCallContextSwitcher::~cMethodCallContextSwitcher()
+{
+    cComponent *methodContext = simulation.context();
+    if (methodContext!=callerContext)
+        EVCB.componentMethodEnd();
 }
 
 //----
