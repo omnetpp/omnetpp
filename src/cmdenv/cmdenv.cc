@@ -488,6 +488,8 @@ bool TCmdenvApp::idle()
 
 void TCmdenvApp::moduleCreated(cModule *mod)
 {
+    TOmnetApp::moduleCreated(mod);
+
     std::string entryname = mod->fullPath() + ".ev-output";
     bool ev_enabled = ev.config()->getAsBool("Cmdenv", entryname.c_str(), true);
     mod->setEvEnabled(ev_enabled);
