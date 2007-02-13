@@ -487,7 +487,7 @@ cat <<EOT
 TARGET = $outfile$suffix
 
 # User interface (uncomment one) (-u option)
-$(c_all}USERIF_LIBS=\$(TKENV_LIBS) \$(CMDENV_LIBS)
+${c_all}USERIF_LIBS=\$(TKENV_LIBS) \$(CMDENV_LIBS)
 ${c_cmd}USERIF_LIBS=\$(CMDENV_LIBS)
 ${c_tk}USERIF_LIBS=\$(TKENV_LIBS)
 
@@ -585,8 +585,8 @@ if [ "$cfgfile" = "" ]; then
 cat <<EOT
 
 # User interface libs
-CMDENV_LIBS=-lenvir -lcmdenv
-TKENV_LIBS=-lenvir -ltkenv -llayout \$(TK_LIBS)
+CMDENV_LIBS=-u _cmdenv_lib -lenvir -lcmdenv
+TKENV_LIBS=-u _tkenv_lib -lenvir -ltkenv -llayout \$(TK_LIBS)
 
 # Simulation kernel
 KERNEL_LIBS=-lsim_std
