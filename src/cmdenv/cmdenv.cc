@@ -505,9 +505,11 @@ void TCmdenvApp::messageSent_OBSOLETE(cMessage *msg, cGate *)
 
 void TCmdenvApp::simulationEvent(cMessage *msg)
 {
+    TOmnetApp::simulationEvent(msg);
+
     if (!opt_expressmode && opt_messagetrace)
     {
-        ::fprintf(fout, "DELIVD: %s\n", msg->info().c_str());
+        ::fprintf(fout, "DELIVD: %s\n", msg->info().c_str());  //FIXME can go out!!!
         if (opt_autoflush)
             ::fflush(fout);
     }
