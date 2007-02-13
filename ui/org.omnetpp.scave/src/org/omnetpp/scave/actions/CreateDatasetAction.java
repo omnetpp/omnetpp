@@ -23,7 +23,7 @@ public class CreateDatasetAction extends AbstractScaveAction {
 		CreateDatasetDialog dialog = new CreateDatasetDialog(editor.getSite().getShell(), "Create dataset");
 		dialog.setFilterParams(activePanel.getFilterParams());
 		dialog.setFilterHints(activePanel.getFilterHints());
-		dialog.setUseFilter(activePanel.getTable().getSelectionCount() <= 1);
+		dialog.setUseFilter(activePanel.getTable().getSelectionCount() == 0);
 
 		int result = dialog.open();
 		if (result == Window.OK) {

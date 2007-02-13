@@ -38,7 +38,7 @@ public class AddToDatasetAction extends AbstractScaveAction {
 		AddToDatasetDialog dialog = new AddToDatasetDialog(editor.getSite().getShell(), (Dataset[])datasets.toArray());
 		dialog.setFilterParams(activePanel.getFilterParams());
 		dialog.setFilterHints(activePanel.getFilterHints());
-		dialog.setUseFilter(activePanel.getTable().getSelectionCount() <= 1);
+		dialog.setUseFilter(activePanel.getTable().getSelectionCount() == 0);
 		
 		int status = dialog.open();
 		if (status == Window.OK) {
