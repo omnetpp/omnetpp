@@ -13,11 +13,11 @@
             id="org.omnetpp.scave.editors.ScaveEditor">
       </editor>
       <editor
-            default="false"
+            default="true"
             extensions="sca,vec"
             id="org.omnetpp.scave.editors.ResultFileOpener"
             launcher="org.omnetpp.scave.editors.ResultFileEditorLauncher"
-            name="OMNeT++ Result File"/>
+            name="Scave Analysis Editor"/>
    </extension>
    
    <extension
