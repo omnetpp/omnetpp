@@ -21,15 +21,15 @@ RandomModuleSelector::RandomModuleSelector()
 
 void RandomModuleSelector::visit(cObject *object)
 {
-	cSimpleModule *simpleModule = dynamic_cast<cSimpleModule *>(object);
+	cModule *module = dynamic_cast<cModule *>(object);
 	cCompoundModule *compoundModule = dynamic_cast<cCompoundModule *>(object);
 	
-	if (simpleModule && simpleModule->hasGate("directIn")) {
+	if (module && module->hasGate("directIn")) {
 		numberOfVisitedModules++;
 
 		// this will result in a uniform distribution between modules		
 		if (uniform(0, 1) <= 1.0 / numberOfVisitedModules)
-			selectedModule = simpleModule;
+			selectedModule = module;
 	}
 	else if (compoundModule)
 		compoundModule->forEachChild(this);
@@ -44,7 +44,7 @@ cModule* StressDirect::getRandomModule()
 
 void StressDirect::handleMessage(cMessage *msg)
 {
-	ev << "TEST: Sending direct message: "  << msg << "\n";;
+	ev << "Sending direct message: "  << msg << "\n";;
 	cModule *randomModule = getRandomModule();
 	sendDirect(msg,
 	           par("propagationDelay").doubleValue(),

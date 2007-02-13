@@ -24,6 +24,8 @@ class StressSource : public cSimpleModule
     protected:
 		void initialize();
         void handleMessage(cMessage *msg);
+		void sendOut(cMessage *msg);
+		cMessage *generateMessage();
 };
 
 #endif

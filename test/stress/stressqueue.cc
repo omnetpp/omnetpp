@@ -20,25 +20,44 @@ StressQueue::StressQueue()
 
 StressQueue::~StressQueue()
 {
-	ev << "TEST: Cancelling and deleting self message: "  << timer << "\n";;
+	ev << "Cancelling and deleting self message: "  << timer << "\n";;
 	cancelAndDelete(timer);
 }
 
 void StressQueue::handleMessage(cMessage *msg)
 {
+	cMessage *sendOutMsg = NULL;
+	
 	if (msg == timer) {
-		msg = (cMessage*)queue.pop();
-		ev << "TEST: Sending out queued message: "  << msg << "\n";;
-		send(msg, "out", intrand(gateSize("out")));
+		if (!queue.empty()) {
+			sendOutMsg = (cMessage*)queue.pop();	
 
-        if (!queue.empty())
-			scheduleAt(simTime() + par("serviceTime"), timer);
-	}
+			ev << "Sending out queued message: "  << sendOutMsg << "\n";;
+		}
+ 	}
 	else {
-		ev << "TEST: Queuing message: "  << msg << "\n";;
-		queue.insert(msg);
-
-		if (!timer->isScheduled())
-			scheduleAt(simTime() + par("serviceTime"), timer);
+		if (!timer->isScheduled()) {
+			sendOutMsg = msg;
+			ev << "Immediately sending out message: "  << sendOutMsg << "\n";;
+		}
+		else {
+			ev << "Queuing message: "  << msg << "\n";;
+			queue.insert(msg);
+		}
 	}
+
+	if (sendOutMsg) {
+		cGate *outGate = gate("out", intrand(gateSize("out")));
+		send(sendOutMsg, outGate);
+
+		scheduleAt(outGate->transmissionFinishes(), timer);
+	}
+
+	// colorize icon
+	if (!timer->isScheduled())
+		displayString().setTagArg("i", 1, "");
+	else if (queue.empty())
+		displayString().setTagArg("i", 1, "green");
+	else
+		displayString().setTagArg("i", 1, "yellow");
 }

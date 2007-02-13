@@ -15,10 +15,11 @@ Define_Module(StressDuplicate);
 
 void StressDuplicate::handleMessage(cMessage *msg)
 {
-	send(msg, "out", intrand(gateSize("out")));
-
-	for (int i = par("numberOfDuplicates").longValue(); i >= 0; i--) {
-		ev << "TEST: Duplicating message: "  << msg << "\n";;
+	for (int i = par("numberOfDuplicates"); i >= 0; i--) {
+		ev << "Sending out duplicated message: "  << msg << "\n";;
 		send(msg->dup(), "out", intrand(gateSize("out")));
 	}
+
+	ev << "Sending out original message: "  << msg << "\n";;
+	send(msg, "out", intrand(gateSize("out")));
 }
