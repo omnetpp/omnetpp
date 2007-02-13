@@ -288,25 +288,63 @@ void TOmnetApp::dumpComponentList(const char *category)
     bool wantAll = !strcmp(category, "all");
     if (wantAll || !strcmp(category, "config"))
     {
-        ev << "Config...\n";
+        ev << "Supported configuration entries (omnetpp.ini):\n";
+
+        cSymTable *table = configEntries.instance();
+        for (int i=0; i<table->size(); i++)
+        {
+            cObject *obj = table->get(i);
+            ev << " " << obj->fullName() << " : " << obj->info() << "\n";
+        }
+        ev << "\n";
     }
     if (wantAll || !strcmp(category, "classes"))
     {
-        ev << "C++ classes registered via Define_Module(),\n";
-        ev << "         Define_Channel() or Register_Class(), or defined\n";
-        ev << "         in .msg files\n";
+        ev << "Registered C++ classes, including modules, channels and messages:\n";
+        cSymTable *table = classes.instance();
+        for (int i=0; i<table->size(); i++)
+        {
+            cObject *obj = table->get(i);
+            ev << "  class " << obj->fullName() << "\n";
+        }
+        ev << "Note: if your class is not listed, it needs to be registered in the\n";
+        ev << "C++ code using Define_Module(), Define_Channel() or Register_Class().\n";
+        ev << "\n";
     }
     if (wantAll || !strcmp(category, "classdesc"))
     {
-        ev << "Classes that have associated reflection information\n";
+        ev << "Classes that have associated reflection information:\n";
+        cSymTable *table = classDescriptors.instance();
+        for (int i=0; i<table->size(); i++)
+        {
+            cObject *obj = table->get(i);
+            ev << "  class " << obj->fullName() << "\n";
+        }
+        ev << "Tkenv can only display the contents of those objects that have\n";
+        ev << "associated description objects.\n";
+        ev << "\n";
     }
     if (wantAll || !strcmp(category, "nedfunctions"))
     {
         ev << "Functions that can be used in NED expressions and in omnetpp.ini:\n";
+        cSymTable *table = nedFunctions.instance();
+        for (int i=0; i<table->size(); i++)
+        {
+            cObject *obj = table->get(i);
+            ev << "  " << obj->fullName() << " : " << obj->info() << "\n";
+        }
+        ev << "\n";
     }
     if (wantAll || !strcmp(category, "enums"))
     {
         ev << "Enums defined in .msg files\n";
+        cSymTable *table = enums.instance();
+        for (int i=0; i<table->size(); i++)
+        {
+            cObject *obj = table->get(i);
+            ev << "  " << obj->fullName() << " : " << obj->info() << "\n";
+        }
+        ev << "\n";
     }
 }
 
@@ -1002,19 +1040,19 @@ void TOmnetApp::getRNGMappingFor(cComponent *component)
         int physRng = strtol(entries[i+1].c_str(), &s2, 10);
         if (*s1!='\0' || *s2!='\0')
             throw cRuntimeError("Configuration error: rng-%s=%s of module/channel %s: "
-                                    "numeric RNG indices expected",
-                                    entries[i].c_str(), entries[i+1].c_str(), component->fullPath().c_str());
+                                "numeric RNG indices expected",
+                                entries[i].c_str(), entries[i+1].c_str(), component->fullPath().c_str());
 
         if (physRng>numRNGs())
             throw cRuntimeError("Configuration error: rng-%d=%d of module/channel %s: "
-                                    "RNG index out of range (num-rngs=%d)",
-                                    modRng, physRng, component->fullPath().c_str(), numRNGs());
+                                "RNG index out of range (num-rngs=%d)",
+                                modRng, physRng, component->fullPath().c_str(), numRNGs());
         if (modRng>=mapsize)
         {
             if (modRng>=100)
                 throw cRuntimeError("Configuration error: rng-%d=... of module/channel %s: "
-                                        "local RNG index out of supported range 0..99",
-                                        modRng, component->fullPath().c_str());
+                                    "local RNG index out of supported range 0..99",
+                                    modRng, component->fullPath().c_str());
             while (mapsize<=modRng)
             {
                 tmpmap[mapsize] = mapsize;

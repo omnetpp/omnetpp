@@ -432,6 +432,8 @@ void TCmdenvApp::putmsg(const char *s)
 
 void TCmdenvApp::sputn(const char *s, int n)
 {
+    TOmnetApp::sputn(s, n);
+
     cModule *ctxmod = simulation.contextModule();  //FIXME shouldn't this be "component" ?
     if (!ctxmod || (opt_modulemsgs && ctxmod->isEvEnabled()) || simulation.contextType()==CTX_FINISH)
     {

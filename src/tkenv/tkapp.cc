@@ -1726,6 +1726,8 @@ void TOmnetTkApp::putmsg(const char *str)
 
 void TOmnetTkApp::sputn(const char *s, int n)
 {
+    TOmnetApp::sputn(s, n);
+
     if (!interp)
     {
         ::fwrite(s,1,n,stdout); // fallback in case Tkenv didn't fire up correctly
