@@ -9,7 +9,7 @@ include ../../Makefile.inc
 #
 COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../envir -DBUILDING_CMDENV
 
-OBJS = cmdenv.o enumstr.o heap.o
+OBJS = cmdenv.o enumstr.o
 
 #
 # Automatic rules
@@ -87,4 +87,3 @@ cmdenv.o: cmdenv.cc \
   ../../include/cfunction.h
 enumstr.o: enumstr.cc \
   enumstr.h
-heap.o: heap.cc
