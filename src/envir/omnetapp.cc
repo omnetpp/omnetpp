@@ -293,8 +293,18 @@ void TOmnetApp::dumpComponentList(const char *category)
         cSymTable *table = configEntries.instance();
         for (int i=0; i<table->size(); i++)
         {
-            cObject *obj = table->get(i);
-            ev << " " << obj->fullName() << " : " << obj->info() << "\n";
+            cConfigEntry *obj = dynamic_cast<cConfigEntry *>(table->get(i));
+            ASSERT(obj);
+            ev << " [" << obj->section() << "] " << obj->name() << "=";
+            ev << "<" << cConfigEntry::typeName(obj->type()) << ">";
+            if (obj->unit())
+                ev << ", unit=\"" << obj->unit() << "\"";
+            if (obj->defaultValue())
+                ev << ", default=\"" << obj->defaultValue() << "\"";
+            ev << "; " << (obj->isGlobal() ? "global" : "per-run") << " setting";
+            ev << "\n";
+            if (obj->description() && obj->description()[0])
+                ev << "    " << obj->description() << "\n";
         }
         ev << "\n";
     }
