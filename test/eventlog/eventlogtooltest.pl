@@ -152,5 +152,5 @@ sub testEventLogTool
 testEventLogTool("log/empty.log");
 testEventLogTool("log/one-event.log");
 testEventLogTool("log/two-events.log");
-testEventLogTool("log/nclients.log");
+testEventLogTool("generated/stress.log");
 testEventLogTool("filtered/nclients-events.log");

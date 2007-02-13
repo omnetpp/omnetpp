@@ -38,6 +38,6 @@ mkdir("result");
 testEventLog("log/empty.log", 5, 2);
 testEventLog("log/one-event.log", 5, 2);
 testEventLog("log/two-events.log", 10, 2);
-testEventLog("log/nclients.log", 1000, 20);
+testEventLog("generated/stress.log", 1000, 20);
 
-testEventLog("filtered/nclients-events.log", 1000, 20);
+testEventLog("filtered/stress-events.log", 1000, 20);
