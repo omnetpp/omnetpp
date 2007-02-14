@@ -44,24 +44,27 @@ const char *cConfigEntry::fullName() const
 
 std::string cConfigEntry::info() const
 {
-    const char *type;
-    switch (type_)
-    {
-      case CFG_BOOL:      type = "bool"; break;
-      case CFG_INT:       type = "int"; break;
-      case CFG_DOUBLE:    type = "double"; break;
-      case CFG_STRING:    type = "string"; break;
-      case CFG_FILENAME:  type = "filename"; break;
-      case CFG_FILENAMES: type = "filenames"; break;
-      case CFG_CUSTOM:    type = "custom"; break;
-      default:            type = "???";
-    }
     std::stringstream out;
     out << (isGlobal_ ? "global" : "per-run");
-    out << ", type=" << type;
+    out << ", type=" << typeName(type_);
     if (!unit_.empty()) out << ", unit=\"" << unit_ << "\"";
     if (!defaultValue_.empty()) out << ", default=\"" << defaultValue_ << "\"";
     if (!description_.empty()) out << ", hint: " << description_;
     return out.str();
+}
+
+const char *cConfigEntry::typeName(Type type)
+{
+    switch (type)
+    {
+        case CFG_BOOL:      return "bool";
+        case CFG_INT:       return "int";
+        case CFG_DOUBLE:    return "double";
+        case CFG_STRING:    return "string";
+        case CFG_FILENAME:  return "filename";
+        case CFG_FILENAMES: return "filenames";
+        case CFG_CUSTOM:    return "custom";
+        default:            return "???";
+    }
 }
 
