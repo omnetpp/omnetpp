@@ -59,6 +59,9 @@ void MatchExpression::setPattern(const char *pattern, bool dottedpath, bool full
 
 bool MatchExpression::matches(const Matchable *object)
 {
+    if (elems.empty())
+        return true;
+
     const int stksize = 20;
     bool stk[stksize];
 
@@ -66,7 +69,7 @@ bool MatchExpression::matches(const Matchable *object)
     for (int i = 0; i < (int)elems.size(); i++)
     {
         Elem& e = elems[i];
-		const char *attr;
+        const char *attr;
         switch (e.type)
         {
           case Elem::PATTERN:
