@@ -54,6 +54,8 @@ void MatchExpression::setPattern(const char *pattern, bool dottedpath, bool full
     this->fullstring = fullstring;
     this->casesensitive = casesensitive;
 
+    elems.clear();
+
     parsePattern(elems, pattern, dottedpath, fullstring, casesensitive);
 }
 
@@ -106,7 +108,8 @@ bool MatchExpression::matches(const Matchable *object)
        }
     }
     if (tos!=0)
-        throw opp_runtime_error("MatchExpression: malformed expression");
+        throw opp_runtime_error("MatchExpression: malformed expression: %d items on stack", tos);
+
     return stk[tos];
 }
 
