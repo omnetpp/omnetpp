@@ -278,7 +278,7 @@ void TOmnetApp::printHelp()
     ev << "                contain simple modules, plugins, etc. Multiple -l options\n";
     ev << "                can be present.\n";
     ev << "  -q <category> List registered components. Category is one of the following:\n";
-    ev << "                all, config, classes, classdesc, nedfunctions, enums\n";
+    ev << "                all, config, configdetails, classes, classdesc, nedfunctions, enums\n";
     ev << "\n";
     printUISpecificHelp();
 }
@@ -286,11 +286,14 @@ void TOmnetApp::printHelp()
 void TOmnetApp::dumpComponentList(const char *category)
 {
     bool wantAll = !strcmp(category, "all");
-    if (wantAll || !strcmp(category, "config"))
+    if (wantAll || !strcmp(category, "config") || !strcmp(category, "configdetails"))
     {
         ev << "Supported configuration entries (omnetpp.ini):\n";
 
+        bool printDescriptions = !strcmp(category, "configdetails");
+
         cSymTable *table = configEntries.instance();
+        table->sort();
         for (int i=0; i<table->size(); i++)
         {
             cConfigEntry *obj = dynamic_cast<cConfigEntry *>(table->get(i));
@@ -303,7 +306,7 @@ void TOmnetApp::dumpComponentList(const char *category)
                 ev << ", default=\"" << obj->defaultValue() << "\"";
             ev << "; " << (obj->isGlobal() ? "global" : "per-run") << " setting";
             ev << "\n";
-            if (obj->description() && obj->description()[0])
+            if (printDescriptions && obj->description() && obj->description()[0])
                 ev << "    " << obj->description() << "\n";
         }
         ev << "\n";
@@ -312,6 +315,7 @@ void TOmnetApp::dumpComponentList(const char *category)
     {
         ev << "Registered C++ classes, including modules, channels and messages:\n";
         cSymTable *table = classes.instance();
+        table->sort();
         for (int i=0; i<table->size(); i++)
         {
             cObject *obj = table->get(i);
@@ -325,6 +329,7 @@ void TOmnetApp::dumpComponentList(const char *category)
     {
         ev << "Classes that have associated reflection information:\n";
         cSymTable *table = classDescriptors.instance();
+        table->sort();
         for (int i=0; i<table->size(); i++)
         {
             cObject *obj = table->get(i);
@@ -338,6 +343,7 @@ void TOmnetApp::dumpComponentList(const char *category)
     {
         ev << "Functions that can be used in NED expressions and in omnetpp.ini:\n";
         cSymTable *table = nedFunctions.instance();
+        table->sort();
         for (int i=0; i<table->size(); i++)
         {
             cObject *obj = table->get(i);
@@ -349,6 +355,7 @@ void TOmnetApp::dumpComponentList(const char *category)
     {
         ev << "Enums defined in .msg files\n";
         cSymTable *table = enums.instance();
+        table->sort();
         for (int i=0; i<table->size(); i++)
         {
             cObject *obj = table->get(i);
