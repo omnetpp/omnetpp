@@ -17,9 +17,12 @@ void StressDuplicate::handleMessage(cMessage *msg)
 {
 	for (int i = par("numberOfDuplicates"); i >= 0; i--) {
 		ev << "Sending out duplicated message: "  << msg << "\n";;
-		send(msg->dup(), "out", intrand(gateSize("out")));
+        cMessage *dupMsg = msg->dup();
+        dupMsg->setName("Duplicate");
+		send(dupMsg, "out", intrand(gateSize("out")));
 	}
 
 	ev << "Sending out original message: "  << msg << "\n";;
+    msg->setName("Original");
 	send(msg, "out", intrand(gateSize("out")));
 }

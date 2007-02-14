@@ -18,6 +18,7 @@ void StressCapsulate::handleMessage(cMessage *msg)
 	if (msg->encapsulatedMsg() && uniform(0, 1) < par("decapsulateProbability").doubleValue()) {
 		ev << "Decapsulating message: "  << msg << "\n";;
 		cMessage *decapsulatedMsg = msg->decapsulate();
+        decapsulatedMsg->setName("Decapsulated");
     	delete msg;
 		msg = decapsulatedMsg;
 	}
@@ -25,7 +26,7 @@ void StressCapsulate::handleMessage(cMessage *msg)
 	if (uniform(0, 1) < par("encapsulateProbability").doubleValue()) {
 		ev << "Encapsulating message: "  << msg << "\n";;
 		StressPacket *encapsulatedMsg = new StressPacket();
-        encapsulatedMsg->setName("Encapsulated message");
+        encapsulatedMsg->setName("Encapsulated");
 		encapsulatedMsg->setLength((long)exponential(par("messageLength")));
 	   	encapsulatedMsg->encapsulate(msg);
 	   	msg = encapsulatedMsg;

@@ -16,5 +16,6 @@ Define_Module(StressNode);
 void StressNode::handleMessage(cMessage *msg)
 {
 	ev << "Sending out message: "  << msg << "\n";;
+    msg->setName("Forwarded");
 	send(msg, "out", par("outGateIndex"));
 }

@@ -18,7 +18,7 @@ std::vector<StressSource *> sources;
 
 StressSource::StressSource()
 {
-	timer = new cMessage();
+	timer = new cMessage("Source timer");
 	sources.push_back(this);
 }
 
@@ -46,6 +46,12 @@ void StressSource::handleMessage(cMessage *msg)
 
 	// randomly call a source (including ourselve)
 	sources.at(intrand(sources.size()))->sendOut(msg);
+
+    // make sure our timer is always active
+    if (!timer->isScheduled()) {
+        ev << "Reusing self message: " << timer << "\n";
+        scheduleAt(simTime() + par("serviceTime"), timer);
+    }
 }
 
 void StressSource::sendOut(cMessage *msg)
@@ -56,21 +62,21 @@ void StressSource::sendOut(cMessage *msg)
 	// send our own message if did not get one
 	if (!msg) {
 		msg = generateMessage();
-        msg->setName("Source's own message");
+        msg->setName("Source's own");
     }
     else
-        msg->setName("Other source's message");
+        msg->setName("Other source's");
 
 	take(msg);
 	send(msg, "out", intrand(gateSize("out")));
 
 	if (otherModule) {
-		// restart timer
+		// cancel context module's timer
 		ev << "Cancelling self message due to method call: " << timer << "\n";;
 		cancelEvent(timer);
 	}
 
-	// make sure timer is always active
+	// make sure context module's timer is always active
 	ev << "Reusing self message: " << timer << "\n";
 	scheduleAt(simTime() + par("serviceTime"), timer);
 }

@@ -15,7 +15,7 @@ Define_Module(StressQueue);
 
 StressQueue::StressQueue()
 {
-	timer = new cMessage();
+	timer = new cMessage("Queue timer");
 }
 
 StressQueue::~StressQueue()
@@ -48,6 +48,7 @@ void StressQueue::handleMessage(cMessage *msg)
 
 	if (sendOutMsg) {
 		cGate *outGate = gate("out", intrand(gateSize("out")));
+        sendOutMsg->setName("Dequeued");
 		send(sendOutMsg, outGate);
 
 		scheduleAt(outGate->transmissionFinishes(), timer);
