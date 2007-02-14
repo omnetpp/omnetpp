@@ -88,9 +88,9 @@ static char buffer[1024];
      if (!var) \
          throw cRuntimeError("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
 
-Register_GlobalConfigEntry(CFGID_INI_WARNINGS, "ini-warnings",  "General", CFG_BOOL,  false , "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_PRELOAD_NED_FILES, "preload-ned-files", "General", CFG_FILENAMES, "", "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_TOTAL_STACK_KB, "total-stack-kb",  "General", CFG_INT,  TOTAL_STACK_KB, "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_INI_WARNINGS, "ini-warnings",  "General", CFG_BOOL,  false, "Currently ignored. Accepted for backward compatibility.");
+Register_GlobalConfigEntry(CFGID_PRELOAD_NED_FILES, "preload-ned-files", "General", CFG_FILENAMES, "", "NED files to be loaded dynamically. Wildcards, @ and @@ listfiles accepted.");
+Register_GlobalConfigEntry(CFGID_TOTAL_STACK_KB, "total-stack-kb",  "General", CFG_INT,  TOTAL_STACK_KB, "Specifies the maximum memory for activity() simple module stacks in kilobytes. You need to increase this value if you get a ``Cannot allocate coroutine stack'' error.");
 Register_GlobalConfigEntry(CFGID_DISTRIBUTED, "distributed", "General", CFG_BOOL,  false, "FIXME add some description here");
 Register_GlobalConfigEntry(CFGID_PARALLEL_SIMULATION, "parallel-simulation", "General", CFG_BOOL,  false, "FIXME add some description here");
 Register_GlobalConfigEntry(CFGID_SCHEDULER_CLASS, "scheduler-class", "General", CFG_STRING,  "cSequentialScheduler", "FIXME add some description here");
@@ -101,20 +101,20 @@ Register_GlobalConfigEntry(CFGID_RNG_CLASS, "rng-class", "General", CFG_STRING, 
 Register_GlobalConfigEntry(CFGID_OUTPUTVECTORMANAGER_CLASS, "outputvectormanager-class", "General", CFG_STRING,  "cFileOutputVectorManager", "FIXME add some description here");
 Register_GlobalConfigEntry(CFGID_OUTPUTSCALARMANAGER_CLASS, "outputscalarmanager-class", "General", CFG_STRING,  "cFileOutputScalarManager", "FIXME add some description here");
 Register_GlobalConfigEntry(CFGID_SNAPSHOTMANAGER_CLASS, "snapshotmanager-class", "General", CFG_STRING,  "cFileSnapshotManager", "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_FNAME_APPEND_HOST, "fname-append-host", "General", CFG_BOOL, false, "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_DEBUG_ON_ERRORS, "debug-on-errors", "General", CFG_BOOL,  false, "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_PERFORM_GC, "perform-gc", "General", CFG_BOOL,  false, "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_PRINT_UNDISPOSED, "print-undisposed", "General", CFG_BOOL,  true, "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_FNAME_APPEND_HOST, "fname-append-host", "General", CFG_BOOL, false, "Turning it on will cause the host name and process Id to be appended to the names of output files (e.g. omnetpp.vec, omnetpp.sca). This is especially useful with distributed simulation.");
+Register_GlobalConfigEntry(CFGID_DEBUG_ON_ERRORS, "debug-on-errors", "General", CFG_BOOL,  false, "When set to true, runtime errors will cause the simulation program to break into the C++ debugger (if the simulation is running under one, or just-in-time debugging is activated). Once in the debugger, you can view the stack trace or examine variables.");
+Register_GlobalConfigEntry(CFGID_PERFORM_GC, "perform-gc", "General", CFG_BOOL,  false, "Whether the simulation kernel should delete on network cleanup the simulation objects not deleted by simple module destructors. Not recommended.");
+Register_GlobalConfigEntry(CFGID_PRINT_UNDISPOSED, "print-undisposed", "General", CFG_BOOL,  true, "Whether to report objects left (that is, not deallocated by simple module destructors) after network cleanup.");
 Register_GlobalConfigEntry(CFGID_SIMTIME_SCALE, "simtime-scale", "General", CFG_INT,  -12, "FIXME add some description here");
 
-Register_PerRunConfigEntry(CFGID_DESCRIPTION, "description", "General", CFG_STRING, "", "FIXME add some description here");
-Register_PerRunConfigEntry(CFGID_NETWORK, "network",  "General", CFG_STRING,  "default", "FIXME add some description here");
-Register_PerRunConfigEntry(CFGID_WARNINGS, "warnings",  "General", CFG_BOOL,  true, "FIXME add some description here");
-Register_PerRunConfigEntry(CFGID_SIM_TIME_LIMIT, "sim-time-limit",  "General", CFG_TIME,  0.0, "FIXME add some description here");
-Register_PerRunConfigEntry(CFGID_CPU_TIME_LIMIT, "cpu-time-limit",  "General", CFG_TIME,  0.0, "FIXME add some description here");
+Register_PerRunConfigEntry(CFGID_DESCRIPTION, "description", "General", CFG_STRING, "", "Descriptive name for the given simulation configuration. Descriptions get displayed in the run selection dialog.");
+Register_PerRunConfigEntry(CFGID_NETWORK, "network",  "General", CFG_STRING,  "default", "The name of the network to be simulated.");
+Register_PerRunConfigEntry(CFGID_WARNINGS, "warnings",  "General", CFG_BOOL,  true, "Enables warnings.");
+Register_PerRunConfigEntry(CFGID_SIM_TIME_LIMIT, "sim-time-limit",  "General", CFG_TIME,  0.0, "Stops the simulation when simulation time reaches the given limit. The default is no limit.");
+Register_PerRunConfigEntry(CFGID_CPU_TIME_LIMIT, "cpu-time-limit",  "General", CFG_TIME,  0.0, "Stops the simulation when CPU usage has reached the given limit. The default is no limit.");
 Register_PerRunConfigEntry(CFGID_NETIF_CHECK_FREQ, "netif-check-freq",  "General", CFG_INT,  1, "FIXME add some description here");
-Register_PerRunConfigEntry(CFGID_FINGERPRINT, "fingerprint",  "General", CFG_STRING,  "", "FIXME add some description here");
-Register_PerRunConfigEntry(CFGID_EVENTLOG_FILE, "eventlog-file",  "General", CFG_FILENAME,  "", "FIXME add some description here");
+Register_PerRunConfigEntry(CFGID_FINGERPRINT, "fingerprint",  "General", CFG_STRING,  "", "The expected fingerprint, suitable for crude regression tests. If present, the actual fingerprint is calculated during simulation, and compared against the expected one.");
+Register_PerRunConfigEntry(CFGID_EVENTLOG_FILE, "eventlog-file",  "General", CFG_FILENAME,  "", "Name of the event log file to generate. If emtpy, no file is generated.");
 
 //-------------------------------------------------------------
 
