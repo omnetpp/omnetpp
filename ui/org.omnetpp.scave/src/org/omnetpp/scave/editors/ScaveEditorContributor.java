@@ -10,7 +10,10 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.scave.actions.AbstractScaveAction;
+import org.omnetpp.scave.actions.CreateChartTemplateAction;
 import org.omnetpp.scave.actions.EditAction;
+import org.omnetpp.scave.actions.RefreshChartAction;
+import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.model.presentation.ScaveModelActionBarContributor;
 
 /**
@@ -31,6 +34,12 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 //	public IAction createChartAction;
 	
 	private IAction editAction;
+	private IAction zoomInXAction;
+	private IAction zoomOutXAction;
+	private IAction zoomInYAction;
+	private IAction zoomOutYAction;
+	private IAction refreshChartAction;
+	private IAction createChartTemplateAction;
 
 
 	/**
@@ -42,8 +51,14 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	}
 
 	public void init(IActionBars bars, IWorkbenchPage page) {
-        super.init(bars, page);
         editAction = registerAction(page, new EditAction());
+        zoomInXAction = registerAction(page, new ZoomChartAction(true, 1.5));
+        zoomOutXAction = registerAction(page, new ZoomChartAction(true, 1/1.5));
+        zoomInYAction = registerAction(page, new ZoomChartAction(false, 1.5));
+        zoomOutYAction = registerAction(page, new ZoomChartAction(false, 1/1.5));
+        refreshChartAction = registerAction(page, new RefreshChartAction());
+        createChartTemplateAction = registerAction(page, new CreateChartTemplateAction());
+        
 //      addResultFileAction = registerAction(page, new AddResultFileAction());
 //      addWildcardResultFileAction = registerAction(page, new AddWildcardResultFileAction());
 //      openAction = registerAction(page, new OpenAction());
@@ -52,6 +67,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 //		addToDatasetAction = registerAction(page, new AddToDatasetAction());
 //		createDatasetAction = registerAction(page, new CreateDatasetAction());
 //		createChartAction = registerAction(page, new CreateChartAction());
+        super.init(bars, page);
 	}
 
 	private IAction registerAction(IWorkbenchPage page, final AbstractScaveAction action) {
@@ -77,6 +93,12 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 
 	public void contributeToToolBar(IToolBarManager manager) {
 		super.contributeToToolBar(manager);
+		manager.insertBefore("scavemodel-additions", zoomInXAction);
+		manager.insertBefore("scavemodel-additions", zoomOutXAction);
+		manager.insertBefore("scavemodel-additions", zoomInYAction);
+		manager.insertBefore("scavemodel-additions", zoomOutYAction);
+		manager.insertBefore("scavemodel-additions", refreshChartAction);
+		manager.insertBefore("scavemodel-additions", createChartTemplateAction);
 	}
 
 	public void contributeToStatusLine(IStatusLineManager statusLineManager) {

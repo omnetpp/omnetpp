@@ -11,13 +11,14 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 import org.omnetpp.scave.model2.ScaveModelUtil.RunIdKind;
 
 /**
- * Creates a dataset from the filter setting on the BrowseDataPage and 
- * creates a chart displaying the dataset. 
+ * Creates a temporary dataset from the selection on the BrowseDataPage and 
+ * creates a temporary chart containing the items of the dataset.
+ * It opens a chart page to display the chart. 
  */
 public class CreateTempChartAction extends AbstractScaveAction {
 	public CreateTempChartAction() {
-		setText("Create chart...");
-		setToolTipText("Create chart from current data");
+		setText("Create temporary chart...");
+		setToolTipText("Create temporary chart from selected result items");
 	}
 
 	@SuppressWarnings("unchecked")

@@ -58,7 +58,10 @@ public class ChartProperties extends PropertySource {
 		PROP_LEGEND_BORDER		= "Legend.Border",
 		PROP_LEGEND_FONT		= "Legend.Font",
 		PROP_LEGEND_POSITION	= "Legend.Position",
-		PROP_LEGEND_ANCHORING	= "Legend.Anchoring";
+		PROP_LEGEND_ANCHORING	= "Legend.Anchoring",
+		// Plot
+		PROP_ANTIALIAS			= "Plot.Antialias",
+		PROP_CACHING			= "Plot.Caching";
 
 	public enum SymbolType {
 		None,
@@ -256,7 +259,15 @@ public class ChartProperties extends PropertySource {
 		
 		@org.omnetpp.common.properties.Property(category="Plot",id="Lines",displayName="Lines")
 		public LinesPropertySource getLineProperties() { return new LinesPropertySource(); }
+
+		@org.omnetpp.common.properties.Property(category="Plot",id=PROP_ANTIALIAS,displayName="antialias")
+		public boolean getAntialias() { return getBooleanProperty(PROP_ANTIALIAS); }
+		public void setAntialias(boolean flag) { setProperty(PROP_ANTIALIAS, flag); }
 		
+		@org.omnetpp.common.properties.Property(category="Plot",id=PROP_CACHING,displayName="caching")
+		public boolean getCaching() { return getBooleanProperty(PROP_CACHING); }
+		public void setCaching(boolean flag) { setProperty(PROP_CACHING, flag); }
+
 		public LineProperties getLineProperties(String lineId) { return new LineProperties(lineId); }
 
 		public class LinesPropertySource extends BasePropertySource {

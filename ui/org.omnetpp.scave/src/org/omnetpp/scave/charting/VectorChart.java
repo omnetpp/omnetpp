@@ -16,6 +16,8 @@ import static org.omnetpp.scave.model2.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.model2.ChartProperties.PROP_Y_AXIS_MAX;
 import static org.omnetpp.scave.model2.ChartProperties.PROP_Y_AXIS_MIN;
 import static org.omnetpp.scave.model2.ChartProperties.PROP_Y_AXIS_TITLE;
+import static org.omnetpp.scave.model2.ChartProperties.PROP_ANTIALIAS;
+import static org.omnetpp.scave.model2.ChartProperties.PROP_CACHING;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -69,7 +71,6 @@ public class VectorChart extends ChartCanvas {
 	private static final String DEFAULT_Y_TITLE = "";
 	
 	private OutputVectorDataset dataset;
-	private int antialias = SWT.ON; // SWT.ON, SWT.OFF, SWT.DEFAULT
 	private Color insetsBackgroundColor = DEFAULT_INSETS_BACKGROUND_COLOR;
 	private Color insetsLineColor = DEFAULT_INSETS_LINE_COLOR;
 	
@@ -155,6 +156,11 @@ public class VectorChart extends ChartCanvas {
 			;
 		else if (PROP_XY_GRID.equals(name))
 			setGridVisibility(Converter.stringToBoolean(value));
+		// Plot
+		else if (PROP_ANTIALIAS.equals(name))
+			setAntialias(Converter.stringToBoolean(value));
+		else if (PROP_CACHING.equals(name))
+			setCaching(Converter.stringToBoolean(value));
 		// Lines
 		else if (name.startsWith(PROP_SYMBOL_TYPE))
 			setSymbolType(getKey(name), Converter.stringToEnum(value, SymbolType.class));
@@ -277,15 +283,6 @@ public class VectorChart extends ChartCanvas {
 		scheduleRedraw();
 	}
 	
-	public int getAntialias() {
-		return antialias;
-	}
-
-	public void setAntialias(int antialias) {
-		this.antialias = antialias;
-		scheduleRedraw();
-	}
-
 	private void calculateArea() {
 		if (dataset==null || dataset.getSeriesCount()==0) {
 			setArea(0,0,0,0);
@@ -335,7 +332,7 @@ public class VectorChart extends ChartCanvas {
 	@Override
 	protected void paintCachableLayer(GC gc) {
 		Graphics graphics = new SWTGraphics(gc);
-		graphics.setAntialias(antialias);
+		graphics.setAntialias(antialias ? SWT.ON : SWT.OFF);
 		for (int series=0; series<dataset.getSeriesCount(); series++) {
 			String key = dataset.getSeriesKey(series).toString();
 			IVectorPlotter plotter = getPlotter(key);
@@ -385,7 +382,7 @@ public class VectorChart extends ChartCanvas {
 	@Override
 	protected void paintNoncachableLayer(GC gc) {
 		Insets insets = getInsets();
-		gc.setAntialias(antialias);
+		gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
 
 		// draw insets border
 		Rectangle canvasRect = new Rectangle(getClientArea());

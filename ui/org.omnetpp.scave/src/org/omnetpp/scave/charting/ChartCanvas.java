@@ -43,7 +43,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	protected static final LegendAnchor DEFAULT_LEGEND_ANCHOR = LegendAnchor.North;
 	protected static final Font DEFAULT_LEGEND_FONT = new Font(null, "Arial", 8, SWT.NORMAL);
 	
-	protected int antialias = SWT.ON;
+	protected boolean antialias = true;
 	protected Title title = new Title(DEFAULT_TITLE, DEFAULT_TITLE_FONT);
 	protected Legend legend = new Legend(DEFAULT_DISPLAY_LEGEND, DEFAULT_LEGEND_BORDER, DEFAULT_LEGEND_FONT, DEFAULT_LEGEND_POSITION, DEFAULT_LEGEND_ANCHOR);
 	
@@ -81,12 +81,17 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		return null;
 	}
 	
-	public int getAntialias() {
+	public boolean getAntialias() {
 		return antialias;
 	}
 
-	public void setAntialias(int antialias) {
-		this.antialias = antialias;
+	public void setAntialias(Boolean antialias) {
+		this.antialias = antialias != null && antialias.booleanValue();
+		scheduleRedraw();
+	}
+	
+	public void setCaching(Boolean caching) {
+		super.setCaching(caching != null && caching.booleanValue());
 		scheduleRedraw();
 	}
 	

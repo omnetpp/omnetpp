@@ -279,6 +279,16 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 				return i;
 		return -1;
 	}
+	
+	public ScaveEditorPage getActiveEditorPage() {
+		int i = getActivePage();
+		if (i >= 0) {
+			Control page = getControl(i);
+			if (page instanceof ScaveEditorPage)
+				return (ScaveEditorPage)page;
+		}
+		return null;
+	}
 
 	/**
      * Utility method: Returns the Analysis object from the resource.
