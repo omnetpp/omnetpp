@@ -35,7 +35,7 @@ SWIGFILES = common.i nedxml.i scave.i layout.i eventlog.i
 CXXFILES = $(SWIGFILES:.i=.cxx)
 OBJS = $(CXXFILES:.cxx=.obj)
 
-LIBS=/libpath:$(OMNETPP_LIB_DIR) common.lib nedxml.lib scave.lib layout.lib eventlog.lib
+LIBS=$(OMNETPP_LIB_DIR)/common.lib $(OMNETPP_LIB_DIR)/nedxml.lib $(OMNETPP_LIB_DIR)/scave.lib $(OMNETPP_LIB_DIR)/layout.lib $(OMNETPP_LIB_DIR)/eventlog.lib
 
 DLL = opplibs.dll
 
@@ -90,7 +90,7 @@ eventlog.cxx : eventlog.i
 	-mkdir $(EVENTLOG_JAVADIR) >nul
 	$(SWIG) -c++ -java $(SWIGOPTS) -package $(EVENTLOG_JAVAPKG) -outdir $(EVENTLOG_JAVADIR) -o $@ $**
 
-$(DLL): $(OBJS)
+$(DLL): $(OBJS) $(LIBS)
 	$(LINK) /dll /out:$(DLL) $(OBJS) $(LIBS) $(LDFLAGS)
 	copy $(DLL) $(DLL_TARGET_DIR)
 
