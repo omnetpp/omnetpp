@@ -91,21 +91,20 @@ static char buffer[1024];
 Register_GlobalConfigEntry(CFGID_INI_WARNINGS, "ini-warnings",  "General", CFG_BOOL,  false, "Currently ignored. Accepted for backward compatibility.");
 Register_GlobalConfigEntry(CFGID_PRELOAD_NED_FILES, "preload-ned-files", "General", CFG_FILENAMES, "", "NED files to be loaded dynamically. Wildcards, @ and @@ listfiles accepted.");
 Register_GlobalConfigEntry(CFGID_TOTAL_STACK_KB, "total-stack-kb",  "General", CFG_INT,  TOTAL_STACK_KB, "Specifies the maximum memory for activity() simple module stacks in kilobytes. You need to increase this value if you get a ``Cannot allocate coroutine stack'' error.");
-Register_GlobalConfigEntry(CFGID_DISTRIBUTED, "distributed", "General", CFG_BOOL,  false, "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_PARALLEL_SIMULATION, "parallel-simulation", "General", CFG_BOOL,  false, "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_SCHEDULER_CLASS, "scheduler-class", "General", CFG_STRING,  "cSequentialScheduler", "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_PARSIM_COMMUNICATIONS_CLASS, "parsim-communications-class", "General", CFG_STRING,  "cFileCommunications", "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_PARSIM_SYNCHRONIZATION_CLASS, "parsim-synchronization-class", "General", CFG_STRING,  "cNullMessageProtocol", "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_NUM_RNGS, "num-rngs", "General", CFG_INT, 1, "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_RNG_CLASS, "rng-class", "General", CFG_STRING,  "cMersenneTwister", "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_OUTPUTVECTORMANAGER_CLASS, "outputvectormanager-class", "General", CFG_STRING,  "cFileOutputVectorManager", "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_OUTPUTSCALARMANAGER_CLASS, "outputscalarmanager-class", "General", CFG_STRING,  "cFileOutputScalarManager", "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_SNAPSHOTMANAGER_CLASS, "snapshotmanager-class", "General", CFG_STRING,  "cFileSnapshotManager", "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_PARALLEL_SIMULATION, "parallel-simulation", "General", CFG_BOOL,  false, "Enables parallel distributed simulation.");
+Register_GlobalConfigEntry(CFGID_SCHEDULER_CLASS, "scheduler-class", "General", CFG_STRING,  "cSequentialScheduler", "Part of the Envir plugin mechanism: selects the scheduler class. This plugin interface allows for implementing real-time, hardware-in-the-loop, distributed and distributed parallel simulation. The class has to implement the cScheduler interface.");
+Register_GlobalConfigEntry(CFGID_PARSIM_COMMUNICATIONS_CLASS, "parsim-communications-class", "General", CFG_STRING,  "cFileCommunications", "If parallel-simulation=true, it selects the class that implements communication between partitions. The class must implement the cParsimCommunications interface.");
+Register_GlobalConfigEntry(CFGID_PARSIM_SYNCHRONIZATION_CLASS, "parsim-synchronization-class", "General", CFG_STRING,  "cNullMessageProtocol", "If parallel-simulation=true, it selects the parallel simulation algorithm. The class must implement the cParsimSynchronizer interface.");
+Register_GlobalConfigEntry(CFGID_NUM_RNGS, "num-rngs", "General", CFG_INT, 1, "Number of the random number generators.");
+Register_GlobalConfigEntry(CFGID_RNG_CLASS, "rng-class", "General", CFG_STRING,  "cMersenneTwister", "The random number generator class to be used. It can be `cMersenneTwister', `cLCG32', `cAkaroaRNG', or you can use your own RNG class (it must be subclassed from cRNG).");
+Register_GlobalConfigEntry(CFGID_OUTPUTVECTORMANAGER_CLASS, "outputvectormanager-class", "General", CFG_STRING,  "cFileOutputVectorManager", "Part of the Envir plugin mechanism: selects the output vector manager class to be used to record data from output vectors. The class has to implement the cOutputVectorManager interface.");
+Register_GlobalConfigEntry(CFGID_OUTPUTSCALARMANAGER_CLASS, "outputscalarmanager-class", "General", CFG_STRING,  "cFileOutputScalarManager", "Part of the Envir plugin mechanism: selects the output scalar manager class to be used to record data passed to recordScalar(). The class has to implement the cOutputScalarManager interface.");
+Register_GlobalConfigEntry(CFGID_SNAPSHOTMANAGER_CLASS, "snapshotmanager-class", "General", CFG_STRING,  "cFileSnapshotManager", "Part of the Envir plugin mechanism: selects the class to handle streams to which snapshot() writes its output. The class has to implement the cSnapshotManager interface.");
 Register_GlobalConfigEntry(CFGID_FNAME_APPEND_HOST, "fname-append-host", "General", CFG_BOOL, false, "Turning it on will cause the host name and process Id to be appended to the names of output files (e.g. omnetpp.vec, omnetpp.sca). This is especially useful with distributed simulation.");
 Register_GlobalConfigEntry(CFGID_DEBUG_ON_ERRORS, "debug-on-errors", "General", CFG_BOOL,  false, "When set to true, runtime errors will cause the simulation program to break into the C++ debugger (if the simulation is running under one, or just-in-time debugging is activated). Once in the debugger, you can view the stack trace or examine variables.");
 Register_GlobalConfigEntry(CFGID_PERFORM_GC, "perform-gc", "General", CFG_BOOL,  false, "Whether the simulation kernel should delete on network cleanup the simulation objects not deleted by simple module destructors. Not recommended.");
 Register_GlobalConfigEntry(CFGID_PRINT_UNDISPOSED, "print-undisposed", "General", CFG_BOOL,  true, "Whether to report objects left (that is, not deallocated by simple module destructors) after network cleanup.");
-Register_GlobalConfigEntry(CFGID_SIMTIME_SCALE, "simtime-scale", "General", CFG_INT,  -12, "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_SIMTIME_SCALE, "simtime-scale", "General", CFG_INT,  -12, "Sets the scale exponent, and thus the resolution of time for the 64-bit fixed-point simulation time representation. Accepted values are -18..0; for example, -6 selects microsecond resolution. -12 means picosecond resolution, with a maximum simtime of ~110 days.");
 
 Register_PerRunConfigEntry(CFGID_DESCRIPTION, "description", "General", CFG_STRING, "", "Descriptive name for the given simulation configuration. Descriptions get displayed in the run selection dialog.");
 Register_PerRunConfigEntry(CFGID_NETWORK, "network",  "General", CFG_STRING,  "default", "The name of the network to be simulated.");
@@ -849,8 +848,6 @@ void TOmnetApp::readOptions()
     opt_ini_warnings = cfg->getAsBool(CFGID_INI_WARNINGS); //XXX ignored
 
     opt_total_stack_kb = cfg->getAsInt(CFGID_TOTAL_STACK_KB);
-    if (cfg->getAsBool(CFGID_DISTRIBUTED))
-         ev.printfmsg("Warning: config entry distributed= is obsolete (parallel simulation support was reimplemented for version 3.0)");
     opt_parsim = cfg->getAsBool(CFGID_PARALLEL_SIMULATION);
     if (!opt_parsim)
     {
@@ -908,7 +905,6 @@ void TOmnetApp::readPerRunOptions()
     opt_warnings = cfg->getAsBool(CFGID_WARNINGS);
     opt_simtimelimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT);
     opt_cputimelimit = (long) cfg->getAsDouble(CFGID_CPU_TIME_LIMIT);
-    opt_netifcheckfreq = cfg->getAsInt(CFGID_NETIF_CHECK_FREQ);
     opt_fingerprint = cfg->getAsString(CFGID_FINGERPRINT);
     opt_eventlogfilename = cfg->getAsFilename(CFGID_EVENTLOG_FILE).c_str();
 

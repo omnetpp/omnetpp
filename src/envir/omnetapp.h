@@ -80,8 +80,6 @@ class ENVIR_API TOmnetApp
     simtime_t opt_simtimelimit;
     long opt_cputimelimit;
 
-    int opt_netifcheckfreq;
-
     opp_string opt_fingerprint;
 
 // WITH_PARSIM (note: no #ifdef to preserve class layout!)
