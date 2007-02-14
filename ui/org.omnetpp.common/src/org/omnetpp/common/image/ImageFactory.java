@@ -40,6 +40,7 @@ public class ImageFactory {
     public final static String TOOLBAR_IMAGE_MODULE = TOOL_IMAGE_DIR + "module";
     public final static String TOOLBAR_IMAGE_SIMPLE = TOOL_IMAGE_DIR + "simple";
     public final static String TOOLBAR_IMAGE_LABEL = TOOL_IMAGE_DIR + "label";
+    public final static String TOOLBAR_IMAGE_REFRESH = TOOL_IMAGE_DIR + "refresh";
 
     public final static String MODEL_IMAGE_CHANNEL = MODEL_IMAGE_DIR + "Channel";
     public final static String MODEL_IMAGE_COMPOUNDMODULE = MODEL_IMAGE_DIR + "CompoundModule";
