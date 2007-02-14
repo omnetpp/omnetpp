@@ -90,6 +90,18 @@ class SIM_API cSymTable : public cNoncopyableOwnedObject
     virtual cOwnedObject *get(int i);
 
     /**
+     * Searches for the given object name (not fullName!), and returns
+     * the first object one found.
+     */
+    virtual cOwnedObject *get(const char *name);
+
+    /**
+     * Sorts the elements by qualified name (fullName()). This affects
+     * the order get() will return the elements.
+     */
+    virtual void sort();
+
+    /**
      * Returns the object with exactly the given qualified name (fullName()).
      */
     virtual cOwnedObject *lookup(const char *qualifiedName);

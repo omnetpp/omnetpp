@@ -16,6 +16,7 @@
 *--------------------------------------------------------------*/
 
 
+#include <algorithm>
 #include "onstartup.h"
 #include "cexception.h"
 #include "carray.h"
@@ -97,6 +98,24 @@ cOwnedObject *cSymTable::get(int i)
     if (i<0 || i>=(int)v.size())
         return NULL;
     return v[i];
+}
+
+cOwnedObject *cSymTable::get(const char *name)
+{
+    for (int i=0; i<(int)v.size(); i++)
+        if (!strcmp(v[i]->name(), name))
+            return v[i];
+    return NULL;
+}
+
+inline bool less(cObject *a, cObject *b)
+{
+    return strcmp(a->fullName(), b->fullName()) < 0;
+}
+
+void cSymTable::sort()
+{
+    std::sort(v.begin(), v.end(), less);
 }
 
 cOwnedObject *cSymTable::lookup(const char *qualifiedName)

@@ -32,6 +32,8 @@ cNoncopyableOwnedObject(name)
         type_ = type;
         unit_ = unit ? unit : "";
     }
+    if (type_==CFG_BOOL && defaultValue)
+        defaultValue = (defaultValue[0]=='0' || defaultValue[0]=='f') ? "false" : "true";
     defaultValue_ = defaultValue ? defaultValue : "";
     description_ = description ? description : "";
 }

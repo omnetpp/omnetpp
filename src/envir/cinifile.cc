@@ -258,7 +258,6 @@ void cIniFile::_readFile(const char *fname, int section_id)
 
 void cIniFile::_validateEntries()
 {
-/*FIXME finish
     for (int i=0; i<(int)entries.size(); i++)
     {
        sEntry& e = entries[i];
@@ -270,14 +269,14 @@ void cIniFile::_validateEntries()
        if (!containsDot)
        {
            // config setting: check if it is a valid setting
-           cConfigEntry *ce = dynamic_cast<cConfigEntry *>(configEntries.instance()->lookupByName(e.key));
+           cConfigEntry *ce = dynamic_cast<cConfigEntry *>(configEntries.instance()->get(e.key));
            if (!ce)
-               throw cRuntimeError("Unrecognized config entry at %s:%d: %s=%s",
-                                   files[e.file_id].fname, e.lineno, e.key, e.rawvalue);
-           if (strcmp(ce->section(), section))
-               throw cRuntimeError("Config entry at %s:%d, %s=%s is in wrong section -- should be XXXX", //FIXME refine message....
-                                   files[e.file_id].fname, e.lineno, e.key, e.rawvalue);
-           //XXX print help that "--help" will print the list of acceptable options
+               throw cRuntimeError("Unrecognized config entry %s= at %s:%d",
+                                   e.key, files[e.file_id].fname, e.lineno);
+           bool isLocalSection = strncmp(section, "Run ", 4)==0;
+           if (strcmp(ce->section(), section)!=0 && (ce->isGlobal() || !isLocalSection))
+               throw cRuntimeError("Config entry %s= should be in section [%s]; %s:%d,",
+                                   e.key, ce->section(), files[e.file_id].fname, e.lineno);
        }
        else if (isPerObjectConfig)
        {
@@ -285,7 +284,6 @@ void cIniFile::_validateEntries()
            //FIXME
        }
     }
-*/
 }
 
 void cIniFile::clearContents()
