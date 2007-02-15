@@ -322,7 +322,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     //XXX refine doc -- transmissionDelay is currently IGNORED (only used by animation), as we want to deliver the msg when the *first* bit arrives, not the last one
     //XXX make transmissionDelay first?
     int sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t transmissionDelay, cGate *inputgate);
-//@}
+    //@}
 
     /** @name Self-messages. */
     //@{
