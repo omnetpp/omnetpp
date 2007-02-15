@@ -34,7 +34,7 @@
 
 
 Register_GlobalConfigEntry(CFGID_RUNS_TO_EXECUTE, "runs-to-execute", "Cmdenv", CFG_STRING,  "", "FIXME add some description here")
-Register_GlobalConfigEntry(CFGID_EXTRA_STACK_KB, "extra-stack-kb", "Cmdenv", CFG_INT,  CMDENV_EXTRASTACK_KB, "FIXME add some description here")
+Register_GlobalConfigEntry(CFGID_CMDENV_EXTRA_STACK_KB, "cmdenv-extra-stack-kb", "Cmdenv", CFG_INT,  CMDENV_EXTRASTACK_KB, "FIXME add some description here")
 Register_GlobalConfigEntry(CFGID_OUTPUT_FILE, "output-file", "Cmdenv", CFG_FILENAME,  "", "FIXME add some description here")
 Register_PerRunConfigEntry(CFGID_EXPRESS_MODE, "express-mode", "Cmdenv", CFG_BOOL,  false, "FIXME add some description here")
 Register_PerRunConfigEntry(CFGID_AUTOFLUSH, "autoflush", "Cmdenv", CFG_BOOL,  false, "FIXME add some description here")
@@ -100,7 +100,7 @@ void TCmdenvApp::readOptions()
     cConfiguration *cfg = getConfig();
 
     opt_runstoexec = cfg->getAsString(CFGID_RUNS_TO_EXECUTE);
-    opt_extrastack_kb = cfg->getAsInt(CFGID_EXTRA_STACK_KB);
+    opt_extrastack_kb = cfg->getAsInt(CFGID_CMDENV_EXTRA_STACK_KB);
     opt_outputfile = cfg->getAsFilename(CFGID_OUTPUT_FILE).c_str();
 
     if (!opt_outputfile.empty())

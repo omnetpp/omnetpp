@@ -79,7 +79,7 @@ extern "C" TKENV_API void tkenv_lib() {}
 #define SPEEDOMETER_UPDATEMILLISECS 1000
 
 
-Register_GlobalConfigEntry(CFGID_EXTRA_STACK_KB, "extra-stack-kb", "Tkenv", CFG_INT,  TKENV_EXTRASTACK_KB, "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_TKENV_EXTRA_STACK_KB, "tkenv-extra-stack-kb", "Tkenv", CFG_INT,  TKENV_EXTRASTACK_KB, "FIXME add some description here");
 Register_GlobalConfigEntry(CFGID_DEFAULT_RUN, "default-run",  "Tkenv", CFG_INT,  0, "FIXME add some description here");
 Register_GlobalConfigEntry(CFGID_SLOWEXEC_DELAY, "slowexec-delay",  "Tkenv", CFG_TIME,  0.3, "FIXME add some description here");
 Register_GlobalConfigEntry(CFGID_UPDATE_FREQ_FAST, "update-freq-fast",  "Tkenv", CFG_INT,  50, "FIXME add some description here");
@@ -1031,7 +1031,7 @@ void TOmnetTkApp::readOptions()
 
     cConfiguration *cfg = getConfig();
 
-    opt_extrastack_kb = cfg->getAsInt(CFGID_EXTRA_STACK_KB);
+    opt_extrastack_kb = cfg->getAsInt(CFGID_TKENV_EXTRA_STACK_KB);
 
     const char *r = args->optionValue('r');
     if (r)
