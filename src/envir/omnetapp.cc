@@ -40,6 +40,7 @@
 #include "random.h"
 #include "crng.h"
 #include "cmodule.h"
+#include "ccomponenttype.h"
 #include "cmessage.h"
 #include "cdisplaystring.h"
 #include "cxmlelement.h"
@@ -416,6 +417,7 @@ void TOmnetApp::shutdown()
 void TOmnetApp::startRun()
 {
     resetClock();
+    generateRunId();
     outvectmgr->startRun();
     outscalarmgr->startRun();
     snapshotmgr->startRun();
@@ -452,6 +454,27 @@ void TOmnetApp::endRun()
     snapshotmgr->endRun();
     outscalarmgr->endRun();
     outvectmgr->endRun();
+}
+
+void TOmnetApp::generateRunId()
+{
+    // generates and stores a new run Id of the following format:
+    // "<networkname>-<datetime>-<pid>"
+
+    int runNumber = getConfig()->getRunNumber();
+    const char *networkname = simulation.networkType() ? simulation.networkType()->name() : "n/a";
+    int pid = getpid();
+
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    char timestr[32];
+    sprintf(timestr, "%04d%02d%02d-%02d:%02d:%02d",
+            1900+tm.tm_year, tm.tm_mon, tm.tm_mday,
+            tm.tm_hour, tm.tm_min, tm.tm_sec);
+
+    std::stringstream out;
+    out << networkname << "-" << timestr << "-" << getpid();
+    runid = out.str().c_str();
 }
 
 //-------------------------------------------------------------
@@ -840,8 +863,8 @@ void TOmnetApp::processFileName(opp_string& fname)
             hostname=getenv("COMPUTERNAME");
         if (!hostname)
             throw cRuntimeError("Cannot append hostname to file name `%s': no HOST, HOSTNAME "
-                                    "or COMPUTERNAME (Windows) environment variable",
-                                    fname.c_str());
+                                "or COMPUTERNAME (Windows) environment variable",
+                                fname.c_str());
         int pid = getpid();
 
         // add ".<hostname>.<pid>" to fname (note: parsimProcId cannot be appended
@@ -1042,8 +1065,7 @@ int TOmnetApp::numRNGs()
 cRNG *TOmnetApp::rng(int k)
 {
     if (k<0 || k>=num_rngs)
-        throw cRuntimeError("RNG index %d is out of range (num-rngs=%d, "
-                                "check the configuration)", k, num_rngs);
+        throw cRuntimeError("RNG index %d is out of range (num-rngs=%d, check the configuration)", k, num_rngs);
     return rngs[k];
 }
 

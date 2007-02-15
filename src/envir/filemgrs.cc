@@ -94,7 +94,7 @@ void cFileOutputVectorManager::writeHeader()
 {
     cConfiguration *config = ev.config();
     const char *section = config->getPerRunSectionName();
-    const char *runId = "run_id"; // TODO: generate id in TOmnetApp.startRun() and make it available
+    const char *runId = ev.app->getRunId();
     fprintf(f, "run %s\n", QUOTE(runId));
     const char *inifile = config->fileName();
     if (inifile) fprintf(f, "attr inifile %s\n", QUOTE(inifile));
@@ -299,7 +299,8 @@ void cFileOutputScalarManager::init()
     {
         initialized = true;
         const char *networkname = simulation.networkType()->name();
-        fprintf(f,"run %d  %s\n", ev.config()->getRunNumber(), QUOTE(networkname));
+        const char *runId = ev.app->getRunId();
+        fprintf(f, "run %s\n", QUOTE(runId));
     }
 }
 

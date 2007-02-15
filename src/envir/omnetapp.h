@@ -50,11 +50,13 @@ class ENVIR_API TOmnetApp
   protected:
     bool initialized;
     cConfiguration *config;
-    cXMLDocCache *xmlcache;
     ArgList *args;
+    cXMLDocCache *xmlcache;
 
+    //
+    // Configuration options
+    //
     int opt_total_stack_kb;
-
     bool opt_ini_warnings;
     opp_string opt_scheduler_class;
     bool opt_parsim;
@@ -87,17 +89,23 @@ class ENVIR_API TOmnetApp
     cParsimPartition *parsimpartition;
 // end
 
+    // The scheduler object
     cScheduler *scheduler;
 
-    FILE *feventlog;
-
+    // Random number generators. Module RNG's map to these RNG objects.
     int num_rngs;
     cRNG **rngs;
 
+    // Unique "run ID" string (gets written out into output files)
+    opp_string runid;
+
+    // Output file managers
+    FILE *feventlog;  // the eventlog file; NULL if no event log is being written
     cOutputVectorManager *outvectmgr;
     cOutputScalarManager *outscalarmgr;
     cSnapshotManager *snapshotmgr;
 
+    // Data for getUniqueNumber()
     unsigned long nextuniquenumber;
 
     timeval simbegtime;  // real time when sim. started
@@ -108,9 +116,11 @@ class ENVIR_API TOmnetApp
 
   protected:
     // internal
-    std::string getParameter(const char *parname);
+    virtual std::string getParameter(const char *parname);
     // internal
-    bool getParameterUseDefault(const char *parname);
+    virtual bool getParameterUseDefault(const char *parname);
+    // internal
+    virtual void generateRunId();
 
   public:
     /**
@@ -197,6 +207,12 @@ class ENVIR_API TOmnetApp
      * Number of partitions when parallel simulation is active, otherwise 0.
      */
     virtual int getParsimNumPartitions();
+
+    /**
+     * Returns a textual run Id, which is composed of meaningful strings such as
+     * network name and date, and can be reasonably expected to be globally unique.
+     */
+    virtual const char *getRunId()  {return runid.c_str();}
 
     //@}
 
