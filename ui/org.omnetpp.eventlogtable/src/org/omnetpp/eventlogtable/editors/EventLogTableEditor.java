@@ -1,7 +1,11 @@
 package org.omnetpp.eventlogtable.editors;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.INavigationLocation;
@@ -12,12 +16,35 @@ import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 
 public class EventLogTableEditor extends EventLogEditor implements INavigationLocationProvider, IGotoMarker {
+	protected Runnable locationTimer;
+
+	private int lastLocationEventNumber;
+
 	protected EventLogTable eventLogTable;
 
 	@Override
 	public void createPartControl(Composite parent) {
-		eventLogTable = new EventLogTable(parent);
+		IEditorSite editorSite = (IEditorSite)getSite();
+		eventLogTable = new EventLogTable(parent, editorSite.getActionBars());
 		eventLogTable.setInput(eventLog);
+
+		locationTimer = new Runnable() {
+			public void run() {
+				markLocation();
+			}
+		};
+
+		eventLogTable.getTable().addPaintListener(new PaintListener() {
+			public void paintControl(PaintEvent e) {
+				int eventNumber = eventLogTable.getTopVisibleElement().getEvent().getEventNumber();
+
+				if (eventNumber != lastLocationEventNumber) {
+					lastLocationEventNumber = eventNumber;
+					Display.getCurrent().timerExec(3000, locationTimer);
+				}
+			}
+		});
+
 	}
 
 	@Override
@@ -26,7 +53,7 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 	}
 
 	public void markLocation() {
-		getSite().getPage().getNavigationHistory().markLocation(EventLogTableEditor.this);
+		getSite().getPage().getNavigationHistory().markLocation(this);
 	}
 	
 	public class EventLogTableLocation implements INavigationLocation {
@@ -49,7 +76,9 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 		}
 
 		public boolean mergeInto(INavigationLocation currentLocation) {
-			return false;
+			EventLogTableLocation eventLogTableLocation = (EventLogTableLocation)currentLocation;
+			
+			return eventLogTableLocation.eventNumber == eventNumber;	
 		}
 
 		public void releaseState() {
@@ -58,18 +87,23 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 
 		public void restoreLocation() {
 			IEvent event = eventLog.getEventForEventNumber(eventNumber);
-			EventLogEntry eventLogEntry = event == null ? event.getEventEntry() : null;
+			EventLogEntry eventLogEntry = event != null ? event.getEventEntry() : null;
 			
-			if (eventLogEntry != null)
+			if (eventLogEntry != null) {
+				lastLocationEventNumber = event.getEventNumber();
 				eventLogTable.gotoElement(eventLogEntry);
+			}
 		}
 
 		public void restoreState(IMemento memento) {
-			// TODO: implement
+			Integer integer = memento.getInteger("EventNumber");
+			
+			if (integer != null)
+				eventNumber = integer;
 		}
 
 		public void saveState(IMemento memento) {
-			// TODO: implement
+			memento.putInteger("EventNumber", eventNumber);
 		}
 
 		public void setInput(Object input) {
