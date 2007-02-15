@@ -252,7 +252,7 @@ class SIM_API cStatistic : public cOwnedObject
      * or missing, the object name (name()) is used.
      * This method may be overridden in subclasses.
      */
-    virtual void recordScalar(const char *name=NULL);
+    virtual void recordScalar(const char *name=NULL, const char *unit=NULL);
     //@}
 };
 

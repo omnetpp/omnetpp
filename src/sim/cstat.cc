@@ -139,12 +139,20 @@ void cStatistic::collect2(double, double)
     throw cRuntimeError(this, "collect2() not implemented");
 }
 
-void cStatistic::recordScalar(const char *scalarname)
+void cStatistic::recordScalar(const char *scalarname, const char *unit)
 {
     cSimpleModule *mod = dynamic_cast<cSimpleModule *>(simulation.contextModule());
     if (!mod)
         throw cRuntimeError(this,"recordScalar() may only be invoked from within a simple module");
-    ev.recordScalar(mod, scalarname ? scalarname : fullName(), this);
+    if (!scalarname)
+        scalarname = fullName();
+    if (!unit)
+        ev.recordScalar(mod, scalarname, this);
+    else {
+        opp_string_map attributes;
+        attributes["unit"] = unit;
+        ev.recordScalar(mod, scalarname, this, &attributes);
+    }
 }
 
 void cStatistic::freadvarsf(FILE *f, const char *fmt, ...)

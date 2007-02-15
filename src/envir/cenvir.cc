@@ -560,14 +560,14 @@ bool cEnvir::recordInOutputVector(void *vechandle, simtime_t t, double value)
 
 //---------------------------------------------------------
 
-void cEnvir::recordScalar(cModule *module, const char *name, double value)
+void cEnvir::recordScalar(cModule *module, const char *name, double value, opp_string_map *attributes)
 {
-    app->recordScalar(module, name, value);
+    app->recordScalar(module, name, value, attributes);
 }
 
-void cEnvir::recordScalar(cModule *module, const char *name, cStatistic *statistic)
+void cEnvir::recordScalar(cModule *module, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
-    app->recordScalar(module, name, statistic);
+    app->recordScalar(module, name, statistic, attributes);
 }
 
 //---------------------------------------------------------

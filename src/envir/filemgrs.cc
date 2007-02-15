@@ -304,7 +304,7 @@ void cFileOutputScalarManager::init()
     }
 }
 
-void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, double value)
+void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, double value, opp_string_map *attributes)
 {
     if (!initialized)
         init();
@@ -313,10 +313,11 @@ void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, d
 
     if (!name || !name[0])
         name = "(unnamed)";
+    //XXX record attributes too
     CHECK(fprintf(f, "scalar %s \t%s \t%.*g\n", QUOTE(module->fullPath().c_str()), QUOTE(name), prec, value));
 }
 
-void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, cStatistic *statistic)
+void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
     if (!initialized)
         init();
@@ -333,6 +334,7 @@ void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, c
     recordScalar(module, (n+".stddev").c_str(), statistic->stddev());
     recordScalar(module, (n+".min").c_str(), statistic->min());
     recordScalar(module, (n+".max").c_str(), statistic->max());
+    //XXX record attributes too
 
     if (dynamic_cast<cDensityEstBase *>(statistic))
     {

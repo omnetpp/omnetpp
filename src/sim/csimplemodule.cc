@@ -726,9 +726,15 @@ bool cSimpleModule::snapshot(cOwnedObject *object, const char *label)
     return simulation.snapshot(object, label);
 }
 
-void cSimpleModule::recordScalar(const char *name, double value)
+void cSimpleModule::recordScalar(const char *name, double value, const char *unit)
 {
-    ev.recordScalar(this, name, value);
+    if (!unit)
+        ev.recordScalar(this, name, value);
+    else {
+        opp_string_map attributes;
+        attributes["unit"] = unit;
+        ev.recordScalar(this, name, value, &attributes);
+    }
 }
 
 bool cSimpleModule::stackOverflow() const

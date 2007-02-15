@@ -1139,16 +1139,16 @@ bool TOmnetApp::recordInOutputVector(void *vechandle, simtime_t t, double value)
 
 //-------------------------------------------------------------
 
-void TOmnetApp::recordScalar(cModule *module, const char *name, double value)
+void TOmnetApp::recordScalar(cModule *module, const char *name, double value, opp_string_map *attributes)
 {
     assert(outscalarmgr);
-    outscalarmgr->recordScalar(module, name, value);
+    outscalarmgr->recordScalar(module, name, value, attributes);
 }
 
-void TOmnetApp::recordScalar(cModule *module, const char *name, cStatistic *statistic)
+void TOmnetApp::recordScalar(cModule *module, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
     assert(outscalarmgr);
-    outscalarmgr->recordScalar(module, name, statistic);
+    outscalarmgr->recordScalar(module, name, statistic, attributes);
 }
 
 //-------------------------------------------------------------

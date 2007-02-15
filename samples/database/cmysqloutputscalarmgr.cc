@@ -126,7 +126,7 @@ void cMySQLOutputScalarManager::insertRunIntoDB()
     }
 }
 
-void cMySQLOutputScalarManager::recordScalar(cModule *module, const char *name, double value)
+void cMySQLOutputScalarManager::recordScalar(cModule *module, const char *name, double value, opp_string_map *attributes)
 {
     if (!initialized)
         insertRunIntoDB();
@@ -146,6 +146,11 @@ void cMySQLOutputScalarManager::recordScalar(cModule *module, const char *name, 
         insertCount = 0;
         commitDB();
     }
+}
+
+void cMySQLOutputScalarManager::recordScalar(cModule *module, const char *name, cStatistic *statistic, opp_string_map *attributes)
+{
+    throw cRuntimeError("cMySQLOutputScalarManager: recording cStatistics objects not supported yet");
 }
 
 void cMySQLOutputScalarManager::flush()

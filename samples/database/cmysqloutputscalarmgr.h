@@ -126,7 +126,12 @@ class cMySQLOutputScalarManager : public cOutputScalarManager
     /**
      * Records a double scalar result into the scalar result file.
      */
-    void recordScalar(cModule *module, const char *name, double value);
+    virtual void recordScalar(cModule *module, const char *name, double value, opp_string_map *attributes=NULL);
+
+    /**
+     * Records a histogram or statistic object into the scalar result file.
+     */
+    virtual void recordScalar(cModule *module, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL);
 
     /**
      * Returns NULL, because this class doesn't use a file.

@@ -23,6 +23,7 @@
 #include <sstream>
 #include <iostream>
 #include "simkerneldefs.h"
+#include "opp_string.h"
 
 class cObject;
 class cOwnedObject;
@@ -518,12 +519,12 @@ class ENVIR_API cEnvir : public std::ostream
     /**
      * Records a double scalar result, in a default configuration into the scalar result file.
      */
-    void recordScalar(cModule *module, const char *name, double value);
+    void recordScalar(cModule *module, const char *name, double value, opp_string_map *attributes=NULL);
 
     /**
      * Records histogram and statistics objects into the scalar result file.
      */
-    void recordScalar(cModule *module, const char *name, cStatistic *statistic);
+    void recordScalar(cModule *module, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL);
     //@}
 
     /** @name Management of streams where snapshots can be written.
