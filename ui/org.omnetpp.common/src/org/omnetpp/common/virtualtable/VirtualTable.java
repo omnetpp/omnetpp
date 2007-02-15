@@ -88,11 +88,12 @@ public class VirtualTable<T> extends ContentViewer {
 
 			public void widgetSelected(SelectionEvent e) {
 				if (!alreadyInFixTable) {
+					// TODO: this removes selections far away from the current visible items which is not what we want
 					selectionElements = new ArrayList<T>();
 					int[] indices = VirtualTable.this.table.getSelectionIndices();
 					
 					for (int index : indices)
-					selectionElements.add(getElementAtIndex(index));
+						selectionElements.add(getElementAtIndex(index));
 				}
 			}
 		});
@@ -110,6 +111,7 @@ public class VirtualTable<T> extends ContentViewer {
 
 	@Override
 	public void refresh() {
+		redrawTable();
 	}
 
 	@SuppressWarnings("unchecked")
