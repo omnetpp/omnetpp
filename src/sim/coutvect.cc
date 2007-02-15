@@ -82,6 +82,15 @@ void cOutVector::netUnpack(cCommBuffer *buffer)
     throw cRuntimeError(this, "netUnpack(): not supported");
 }
 
+void cOutVector::setUnit(const char *unit)
+{
+    ev.setVectorAttribute(handle, "unit", unit);
+}
+
+void cOutVector::setStyle(Style style)
+{
+    ev.setVectorAttribute(handle, "style", "FIXME");  //XXX
+}
 
 bool cOutVector::record(double value)
 {

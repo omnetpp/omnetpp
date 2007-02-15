@@ -553,6 +553,11 @@ void cEnvir::deregisterOutputVector(void *vechandle)
     app->deregisterOutputVector(vechandle);
 }
 
+void cEnvir::setVectorAttribute(void *vechandle, const char *name, const char *value)
+{
+    app->setVectorAttribute(vechandle, name, value);
+}
+
 bool cEnvir::recordInOutputVector(void *vechandle, simtime_t t, double value)
 {
     return app->recordInOutputVector(vechandle, t, value);

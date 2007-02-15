@@ -190,6 +190,11 @@ void cMySQLOutputVectorManager::deregisterVector(void *vectorhandle)
     delete vp;
 }
 
+void cMySQLOutputVectorManager::setVectorAttribute(void *vechandle, const char *name, const char *value)
+{
+    //FIXME todo
+}
+
 bool cMySQLOutputVectorManager::record(void *vectorhandle, simtime_t t, double value)
 {
     sVectorData *vp = (sVectorData *)vectorhandle;

@@ -155,6 +155,11 @@ class cMySQLOutputVectorManager : public cOutputVectorManager
     virtual void deregisterVector(void *vechandle);
 
     /**
+     * Sets an attribute of an output vector.
+     */
+    virtual void setVectorAttribute(void *vechandle, const char *name, const char *value);
+
+    /**
      * Writes the (time, value) pair into the output file.
      */
     virtual bool record(void *vectorhandle, simtime_t t, double value);

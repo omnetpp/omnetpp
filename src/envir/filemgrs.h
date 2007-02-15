@@ -41,7 +41,8 @@ class cFileOutputVectorManager : public cOutputVectorManager
        int id;              // vector ID
        opp_string modulename; // module of cOutVector object
        opp_string vectorname; // cOutVector object name
-       bool initialised;    // true if the "label" line is already written out
+       opp_string_map attributes; // vector attributes
+       bool initialised;    // true if the vector declaration has been written out
        bool enabled;        // write to the output file can be enabled/disabled
        simtime_t starttime; // write begins at starttime
        simtime_t stoptime;  // write stops at stoptime
@@ -100,6 +101,11 @@ class cFileOutputVectorManager : public cOutputVectorManager
      * Deregisters the output vector.
      */
     virtual void deregisterVector(void *vechandle);
+
+    /**
+     * Sets an attribute of an output vector.
+     */
+    virtual void setVectorAttribute(void *vechandle, const char *name, const char *value);
 
     /**
      * Writes the (time, value) pair into the output file.

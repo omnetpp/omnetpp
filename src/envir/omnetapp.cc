@@ -1131,6 +1131,12 @@ void TOmnetApp::deregisterOutputVector(void *vechandle)
     outvectmgr->deregisterVector(vechandle);
 }
 
+void TOmnetApp::setVectorAttribute(void *vechandle, const char *name, const char *value)
+{
+    assert(outvectmgr);
+    outvectmgr->setVectorAttribute(vechandle, name, value);
+}
+
 bool TOmnetApp::recordInOutputVector(void *vechandle, simtime_t t, double value)
 {
     assert(outvectmgr);

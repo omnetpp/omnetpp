@@ -499,6 +499,11 @@ class ENVIR_API cEnvir : public std::ostream
     void deregisterOutputVector(void *vechandle);
 
     /**
+     * This method is called when an attribute of the output vector is set.
+     */
+    virtual void setVectorAttribute(void *vechandle, const char *name, const char *value);
+
+    /**
      * This method is intended to be called by cOutVector objects to write
      * a value into the output vector. The return value is true if the data was
      * actually recorded, and false if it was not recorded (because of filtering, etc.)

@@ -271,6 +271,7 @@ class ENVIR_API TOmnetApp
     //@{
     void *registerOutputVector(const char *modulename, const char *vectorname);
     void deregisterOutputVector(void *vechandle);
+    void setVectorAttribute(void *vechandle, const char *name, const char *value);
     bool recordInOutputVector(void *vechandle, simtime_t t, double value);
     //@}
 

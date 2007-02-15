@@ -99,6 +99,12 @@ class ENVIR_API cOutputVectorManager : public cObject
     virtual void deregisterVector(void *vechandle) = 0;
 
     /**
+     * This method is called internally by the Envir library when an attribute of the
+     * cOutVector object is set.
+     */
+    virtual void setVectorAttribute(void *vechandle, const char *name, const char *value) = 0;
+
+    /**
      * This method is called internally by the Envir library when a cOutVector object
      * writes a value into the output vector. The return value should be true if the
      * data was actually recorded, and false if it was not recorded (because of filtering, etc.)

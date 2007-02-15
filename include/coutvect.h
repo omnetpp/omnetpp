@@ -60,6 +60,10 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
     void setCallback(RecordFunc f, void *d) {record_in_inspector=f; data_for_inspector=d;}
 
   public:
+    enum Type { SAMPLE_HOLD, BACKWARD_SAMPLE_HOLD, LINEAR_FUNCTION, INDEPENDENT }; // XXXX
+    enum StyleHint { DOTS, PINS };  //XXX
+
+  public:
     /** @name Constructors, destructor, assignment */
     //@{
     /**
@@ -103,6 +107,15 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
 
     /** @name Configuring and writing to output vectors. */
     //@{
+    /**
+     * FIXME
+     */
+    virtual void setUnit(const char *unit);
+
+    /**
+     * FIXME
+     */
+    virtual void setStyle(Style style);
 
     /**
      * Records the value with the current simulation time as timestamp.

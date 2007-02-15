@@ -154,6 +154,9 @@ void cFileOutputVectorManager::initVector(sVectorData *vp)
 
     CHECK(fprintf(f,"vector %d  %s  %s  %s\n",
                   vp->id, QUOTE(vp->modulename.c_str()), QUOTE(vp->vectorname.c_str()), vp->getColumns()));
+    for (opp_string_map::iterator it=vp->attributes.begin(); it!=vp->attributes.end(); it++)
+        CHECK(fprintf(f,"attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
+
     vp->initialised = true;
 }
 
@@ -196,6 +199,12 @@ void cFileOutputVectorManager::deregisterVector(void *vectorhandle)
 {
     sVectorData *vp = (sVectorData *)vectorhandle;
     delete vp;
+}
+
+void cFileOutputVectorManager::setVectorAttribute(void *vectorhandle, const char *name, const char *value)
+{
+    sVectorData *vp = (sVectorData *)vectorhandle;
+    vp->attributes[name] = value;
 }
 
 bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double value)
@@ -313,8 +322,9 @@ void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, d
 
     if (!name || !name[0])
         name = "(unnamed)";
-    //XXX record attributes too
     CHECK(fprintf(f, "scalar %s \t%s \t%.*g\n", QUOTE(module->fullPath().c_str()), QUOTE(name), prec, value));
+    for (opp_string_map::iterator it=attributes->begin(); it!=attributes->end(); it++)
+        CHECK(fprintf(f,"attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
 }
 
 void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, cStatistic *statistic, opp_string_map *attributes)
