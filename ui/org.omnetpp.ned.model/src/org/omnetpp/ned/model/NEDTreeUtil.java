@@ -45,7 +45,7 @@ public class NEDTreeUtil {
         //System.out.println(generateXmlFromPojoElementTree(treeRoot,""));
         
         NEDErrorStore errors = new NEDErrorStore();
-		errors.setPrintToStderr(true); //XXX just for debugging
+		errors.setPrintToStderr(false); //XXX just for debugging
 		if (keepSyntax && treeRoot instanceof NedFileNode && "1".equals(((NedFileNode)treeRoot).getVersion())) {
 			NED1Generator ng = new NED1Generator(errors);
 			filterPojoTree(treeRoot);
@@ -300,7 +300,7 @@ public class NEDTreeUtil {
      * @param s2
      * @return true if both param is null, or s1 equals s2
      */
-    private static boolean nullsafeIsEqual(String s1, String s2) {
+    private static boolean nullsafeIsEqual(Object s1, Object s2) {
         if (s1 == s2)
             return true;
         if (s1 != null)
@@ -315,6 +315,9 @@ public class NEDTreeUtil {
      */
     public static boolean isNEDTreeEqual(org.omnetpp.ned.model.NEDElement tree1, org.omnetpp.ned.model.NEDElement tree2) {
         if (tree1.getTagCode() != tree2.getTagCode())
+            return false;
+        
+        if (!nullsafeIsEqual(tree1.getSourceRegion(), tree2.getSourceRegion()))
             return false;
         
         for (int i = 0; i < tree1.getNumAttributes(); ++i) {

@@ -31,4 +31,13 @@ public class NEDSourceRegion {
 	public String toString() {
 		return ""+startLine+":"+startColumn+"-"+endLine+":"+endColumn;
 	}
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof NEDSourceRegion))
+            return false;
+
+        NEDSourceRegion o = (NEDSourceRegion)obj;
+        return startLine==o.startLine && endLine==o.endLine && startColumn==o.startColumn && endColumn==o.endColumn;  
+    }
 }

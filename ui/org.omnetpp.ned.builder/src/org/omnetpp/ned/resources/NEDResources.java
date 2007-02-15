@@ -9,8 +9,11 @@ import java.util.StringTokenizer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.NEDSourceRegion;
@@ -319,36 +322,30 @@ public class NEDResources implements INEDTypeResolver {
 		}
 	}
 
-	/**
-	 * NED editors should call this when editor content changes.
-	 */
-	public void setNEDFileContents(IFile file, String text) {
-		// parse the NED text and put it into the hash table
-		NEDErrorStore errors = new NEDErrorStore();
-		errors.setPrintToStderr(false);
+    /**
+     * NED editors should call this when editor content changes.
+     */
+    public void setNEDFileModel(IFile file, NEDElement tree) {
+        if (tree==null)
+            forgetNEDFile(file);  // XXX rather: it should never be called with tree==null!
+        else
+            storeNEDFileModel(file, tree);
+        rehashIfNeeded();
+    }
+    
+    /**
+     * NED editors should call this when editor content changes.
+     */
+    public void setNEDFileText(IFile file, String text) {
+        // parse the NED text and put it into the hash table
+        NEDErrorStore errors = new NEDErrorStore();
+        errors.setPrintToStderr(false);
 
         NEDElement tree = NEDTreeUtil.parseNedSource(text, errors, file.getLocation().toOSString());
-		convertErrorsToMarkers(file, errors);
-
-		// store it even if there were errors (needed by content assist)
-		if (tree==null)
-			forgetNEDFile(file);
-		else 
-			storeNEDFileContents(file, tree);
-		rehashIfNeeded();
-	}
-
-	/**
-	 * NED editors should call this when editor content changes.
-	 */
-	public void setNEDFileContents(IFile file, NEDElement tree) {
-		if (tree==null)
-			forgetNEDFile(file);  // XXX rather: it should never be called with tree==null!
-		else
-			storeNEDFileContents(file, tree);
-		rehashIfNeeded();
-	}
-
+        setNEDFileModel(file, tree);
+        convertErrorsToMarkers(file, errors);
+    }
+    
 	/**
 	 * Gets called from incremental builder. 
 	 */
@@ -370,7 +367,7 @@ public class NEDResources implements INEDTypeResolver {
 		if (tree==null || !errors.empty())
 			forgetNEDFile(file);
 		else 
-			storeNEDFileContents(file, tree);
+			storeNEDFileModel(file, tree);
 	}
 
 	private void convertErrorsToMarkers(IFile file, NEDErrorStore errors) {
@@ -414,14 +411,23 @@ public class NEDResources implements INEDTypeResolver {
 		return line;
 	}
 
-	private void addMarker(IFile file, String type, int severity, String message, int line) throws CoreException {
-		IMarker marker = file.createMarker(type);
-		if (marker.exists()) {
-			marker.setAttribute(IMarker.MESSAGE, message);
-			marker.setAttribute(IMarker.SEVERITY, severity);
-			marker.setAttribute(IMarker.LINE_NUMBER, line);
-			//System.out.println("marker added: "+type+" on "+file+": "+message);
-		}
+	private void addMarker(final IFile file, final String type, int severity, String message, int line) throws CoreException {
+
+        // taken from MarkerUtilities see. Eclipse FAQ 304
+        final HashMap map = new HashMap();
+        map.put(IMarker.MESSAGE, message);
+        map.put(IMarker.SEVERITY, severity);
+        map.put(IMarker.LINE_NUMBER, line);
+
+        IWorkspaceRunnable r= new IWorkspaceRunnable() {
+            public void run(IProgressMonitor monitor) throws CoreException {
+                IMarker marker= file.createMarker(type);
+                marker.setAttributes(map);
+            }
+        };
+
+        file.getWorkspace().run(r, null,IWorkspace.AVOID_UPDATE, null);
+        System.out.println("marker added: "+type+" on "+file+" line "+line+": "+message);
 	}
 
 	public void forgetNEDFile(IFile file) {
@@ -431,7 +437,7 @@ public class NEDResources implements INEDTypeResolver {
         }
 	}
 
-	private void storeNEDFileContents(IFile file, NEDElement tree) {
+	private void storeNEDFileModel(IFile file, NEDElement tree) {
 		// store NED file contents
 		Assert.isTrue(tree!=null);
 
@@ -456,8 +462,9 @@ public class NEDResources implements INEDTypeResolver {
 	 * such as duplicate names only get detected when this gets run! 
 	 */
 	private synchronized void rehash() {
-		//long startMillis = System.currentTimeMillis();
-		if (!needsRehash)
+		long startMillis = System.currentTimeMillis();
+		
+        if (!needsRehash)
 			return;
         
         Set<String> duplicates = new HashSet<String>();
@@ -478,7 +485,7 @@ public class NEDResources implements INEDTypeResolver {
 			// remove old consistency problem markers from file, before we proceed to add new ones
 			try {
 				file.deleteMarkers(NEDCONSISTENCYPROBLEM_MARKERID, true, IResource.DEPTH_ZERO);
-				//System.out.println("markers removed: "+NEDCONSISTENCYPROBLEM_MARKERID+" from "+file);
+				// System.out.println("markers removed: "+NEDCONSISTENCYPROBLEM_MARKERID+" from "+file);
 			} catch (CoreException e) {
 			}
 
@@ -576,8 +583,8 @@ public class NEDResources implements INEDTypeResolver {
 		//	c.getMemberNames();  // force resolution of inheritance
 		//}
 
-		//long dt = System.currentTimeMillis() - startMillis;
-		//System.out.println("rehash() took "+dt+"ms");
+		long dt = System.currentTimeMillis() - startMillis;
+		System.out.println("rehash() took "+dt+"ms");
 		//System.out.println("memleak check: native NEDElements: "+org.omnetpp.ned.model.swig.NEDElement.getNumExisting()+" / "+org.omnetpp.ned.model.swig.NEDElement.getNumCreated());
 	}
 

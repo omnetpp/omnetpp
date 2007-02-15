@@ -39,7 +39,7 @@ public class NEDReconcileStrategy implements IReconcilingStrategy {
 		String nedtext = document.get();
 
 		// perform parsing (of full text, we ignore the changed region)
-		NEDResourcesPlugin.getNEDResources().setNEDFileContents(file, nedtext);
+		NEDResourcesPlugin.getNEDResources().setNEDFileText(file, nedtext);
 	}
 
 }

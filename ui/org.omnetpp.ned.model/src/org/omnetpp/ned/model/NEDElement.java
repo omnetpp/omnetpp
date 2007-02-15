@@ -578,7 +578,7 @@ public abstract class NEDElement extends PlatformObject
      * @return Derived classes can override to print extra transient data for debugging
      */
     public String debugString() {
-        return getTagName() + " " + getAttribute("name");
+        return getTagName() + " " + getAttribute("name") + getSourceLocation();
     }
 
     /**

@@ -1,15 +1,23 @@
 package org.omnetpp.ned.editor;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
@@ -28,11 +36,13 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
  * FIXME File|Open in Eclipse won't work!!! it creates a JavaFileEditorInput which is NOT an IFileEditorInput!!! 
  */
 public class MultiPageNedEditor extends MultiPageEditorPart implements
-		IResourceChangeListener, ISelectionSupport {
+		ISelectionSupport, IGotoMarker {
 
     private GraphicalNedEditor graphEditor;
 	private TextualNedEditor nedEditor;
-    private String textFormat = "";          // the text version of the file the last time we have switched editors
+    private ResourceTracker resourceListener = new ResourceTracker();
+
+    private String textContent = "";          // the text version of the file the last time we have switched editors
 	private int graphPageIndex;
 	private int textPageIndex;
 	private boolean insidePageChange = false;
@@ -46,13 +56,13 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         
         NEDResourcesPlugin.getNEDResources().connect(((IFileEditorInput)editorInput).getFile());
 	}
-	
     
     @Override
     public void dispose() {
-        // TODO maybe not the dispose is the righ place to disconnect (rather when the editor is closed)
-        super.dispose();
+        ((IFileEditorInput)getEditorInput()).getFile()
+                .getWorkspace().removeResourceChangeListener(resourceListener);
         NEDResourcesPlugin.getNEDResources().disconnect(((IFileEditorInput)getEditorInput()).getFile());
+        super.dispose();
     }
 
 	@Override
@@ -97,7 +107,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         // XXX this is a MEGA hack because currently the workbench do not send a partActivated,deactivated messge
         // for the embedded editors in a MultiPageEditorView (this is a missing unimplemented feature, it works with MultiEditor however)
         // to make the nedded outline page active we should send activate/deactivate directly
-        // we look for the outline view directy and send thenotification by hand. once the MultiPageEditors are handled correctly
+        // we look for the outline view directy and send the notification by hand. once the MultiPageEditors are handled correctly
         // this can be removed
         // on each page change we emulate a close/open cycle of the multipage editor, this removed the associated
         // outline page, so the outline view will re-request the multipageeditor for a ContentOutlinePage (via getAdapter)
@@ -111,34 +121,45 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         }
         // end of the hack
 
+        IFile ifile = ((FileEditorInput)getEditorInput()).getFile();
 		NEDResources res = NEDResourcesPlugin.getNEDResources();
-		if (newPageIndex == textPageIndex) { 
+        // XXX FIXME this may be a way too slow as invalidates everything
+        // it is needed only to display consistency errors correctly during page switching
+        // it would be ok to invalidate only the components inside this file
+
+        if (newPageIndex == textPageIndex) { 
 			// switch from graphics to text:
 			// generate text representation from the model
 			NedFileNodeEx modelRoot = graphEditor.getModel();
             // generate the text representation
-            textFormat = NEDTreeUtil.generateNedSource(modelRoot, true);
+            textContent = NEDTreeUtil.generateNedSource(modelRoot, true);
             // put it into the text editor if changed
-            if (!textFormat.equals(nedEditor.getText()))
-                nedEditor.setText(textFormat);
+            if (!textContent.equals(nedEditor.getText())) {
+                // TODO refresh the editor annotations to show the error marks
+                res.setNEDFileText(ifile, textContent);
+                nedEditor.setText(textContent);
+            }
 		} 
-		else if (newPageIndex==graphPageIndex && !textFormat.equals(nedEditor.getText())) {
-			// switch from text to graphics
-		    IFile ifile = ((FileEditorInput)getEditorInput()).getFile();
-            textFormat = nedEditor.getText();
-            res.setNEDFileContents(ifile, textFormat);
-            // convert it to object representation
-            NedFileNodeEx modelRoot = (NedFileNodeEx)res.getNEDFileContents(ifile);
-            // only start in graphics mode if there's no error in the file
-            if (!res.containsNEDErrors(ifile)) {
-				// give the backparsed model to the graphical editor 
-				graphEditor.setModel(modelRoot);
+		else if (newPageIndex==graphPageIndex) {
+			
+		    // the text has changed in the editor
+		    res.setNEDFileText(ifile, nedEditor.getText());
+            if (!textContent.equals(nedEditor.getText())) {
+				// set the parsed ned text as a model to the graphical editor 
+				graphEditor.setModel((NedFileNodeEx)res.getNEDFileContents(ifile));
+                // store the actual text content to be able th detect changes in the future
+                textContent = nedEditor.getText();
 			}
-			else {
+
+            // only start in graphics mode if there's no error in the file
+            if (res.containsNEDErrors(ifile)) {
                 // this happens if the parsing was unsuccessful when we wanted to switch from text to graph mode
 				// parse error: switch back immediately to text view (we should never have 
 				// switched away from it in the first place)
 				setActivePage(textPageIndex);
+                
+                // set an empty content so next time we will try to parse the editor text again
+                textContent = "";
 				
 				if (!initPhase) {
 					MessageBox messageBox = new MessageBox(getEditorSite().getShell(), SWT.ICON_WARNING | SWT.OK);
@@ -162,35 +183,116 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
             IFile ifile = ((FileEditorInput)getEditorInput()).getFile();
             
             // put the actual model state back to the incremental builder
-    		NEDResourcesPlugin.getNEDResources().setNEDFileContents(ifile, modelRoot);
+    		NEDResourcesPlugin.getNEDResources().setNEDFileModel(ifile, modelRoot);
             
             // generate the text representation
             String textEditorContent = NEDTreeUtil.generateNedSource(modelRoot, true);
             // put it into the text editor
             nedEditor.setText(textEditorContent);
+            graphEditor.getEditDomain().getCommandStack().markSaveLocation();
 		}
 		// delegate the save task to the TextEditor's save method
 		nedEditor.doSave(monitor);
 	}
 
-	@Override
-	public void doSaveAs() {
-		// TODO open SaveAs dialog
-		getActiveEditor().doSaveAs();
-	}
-
+    @Override
+    public void doSaveAs() {
+        // TODO add save as support
+        Assert.isTrue(false, "save as not implemented");
+    }
+    
 	@Override
 	public boolean isSaveAsAllowed() {
-		return true;
-	}
-
-	public void resourceChanged(IResourceChangeEvent event) {
-		// TODO implement content ReGet from the incremental builder
-        // or close the editor if the file was deleted
+        // we do not support save as...
+		return false;
 	}
 
     public void selectComponent(String componentName) {
         graphEditor.selectComponent(componentName);
+    }
+
+    /**
+     * closes the editor and optionally saves it.
+     * @param save
+     */
+    protected void closeEditor(boolean save) {
+        getSite().getPage().closeEditor(this, save);
+    }
+    
+    @Override
+    protected void setInput(IEditorInput input) {
+        if (getEditorInput() != null) {
+            IFile file = ((IFileEditorInput) getEditorInput()).getFile();
+            file.getWorkspace().removeResourceChangeListener(resourceListener);
+        }
+
+        super.setInput(input);
+
+        if (getEditorInput() != null) {
+            IFile file = ((IFileEditorInput) getEditorInput()).getFile();
+            file.getWorkspace().addResourceChangeListener(resourceListener);
+            setPartName(file.getName());
+        }
+    }
+
+    // resource management open, close the editor depending on workspace notification
+    // This class listens to changes to the file system in the workspace, and
+    // makes changes accordingly.
+    // 1) An open, saved file gets deleted -> close the editor
+    // 2) An open file gets renamed or moved -> change the editor's input
+    // accordingly
+    class ResourceTracker implements IResourceChangeListener, IResourceDeltaVisitor {
+        public void resourceChanged(IResourceChangeEvent event) {
+            IResourceDelta delta = event.getDelta();
+            try {
+                if (delta != null) delta.accept(this);
+            } catch (CoreException exception) {
+                // What should be done here?
+            }
+        }
+
+        public boolean visit(IResourceDelta delta) {
+            if (delta == null || !delta.getResource().equals(((IFileEditorInput) getEditorInput()).getFile()))
+                return true;
+
+            if (delta.getKind() == IResourceDelta.REMOVED) {
+                Display display = getSite().getShell().getDisplay();
+                if ((IResourceDelta.MOVED_TO & delta.getFlags()) == 0) {
+                    // if the file was deleted
+                    display.asyncExec(new Runnable() {
+                        public void run() {
+                            if (!isDirty()) closeEditor(false);
+                        }
+                    });
+                } else { // else if it was moved or renamed
+                    final IFile newFile = ResourcesPlugin.getWorkspace().getRoot().getFile(
+                            delta.getMovedToPath());
+                    display.asyncExec(new Runnable() {
+                        public void run() {
+                            setInput(new FileEditorInput(newFile));
+                        }
+                    });
+                }
+            } else if (delta.getKind() == IResourceDelta.CHANGED) {
+                // guard that we shoul dnot reload while save is in progress
+//                if (!editorSaving) {
+                  
+                  // the file was overwritten somehow (could have been
+                  // replaced by another version in the respository)
+                  // TODO ask the user and reload the file
+                
+//                }
+            }
+            return false;
+        }
+    }
+
+    public void gotoMarker(IMarker marker) {
+        // switch to text page and delagte to it
+        setActivePage(textPageIndex);
+        IGotoMarker gm = (IGotoMarker)nedEditor.getAdapter(IGotoMarker.class);
+        if (gm != null)
+            gm.gotoMarker(marker);
     }
 
 }

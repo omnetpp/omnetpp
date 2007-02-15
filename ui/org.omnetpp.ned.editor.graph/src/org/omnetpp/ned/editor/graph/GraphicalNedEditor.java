@@ -1,22 +1,11 @@
 package org.omnetpp.ned.editor.graph;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.gef.ContextMenuProvider;
@@ -50,27 +39,15 @@ import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.gef.ui.properties.UndoablePropertySheetEntry;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.util.TransferDropTargetListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.actions.ActionFactory;
-import org.eclipse.ui.actions.WorkspaceModifyOperation;
-import org.eclipse.ui.dialogs.SaveAsDialog;
-import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
@@ -150,101 +127,8 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
     private OutlinePage outlinePage;
     private boolean editorSaving = false;
 
-    // This class listens to changes to the file system in the workspace, and
-    // makes changes accordingly.
-    // 1) An open, saved file gets deleted -> close the editor
-    // 2) An open file gets renamed or moved -> change the editor's input
-    // accordingly
-    class ResourceTracker implements IResourceChangeListener, IResourceDeltaVisitor {
-        public void resourceChanged(IResourceChangeEvent event) {
-            IResourceDelta delta = event.getDelta();
-            try {
-                if (delta != null) delta.accept(this);
-            } catch (CoreException exception) {
-                // What should be done here?
-            }
-        }
-
-        public boolean visit(IResourceDelta delta) {
-            if (delta == null || !delta.getResource().equals(((IFileEditorInput) getEditorInput()).getFile()))
-                return true;
-
-            if (delta.getKind() == IResourceDelta.REMOVED) {
-                Display display = getSite().getShell().getDisplay();
-                if ((IResourceDelta.MOVED_TO & delta.getFlags()) == 0) {
-                    // if the file was deleted
-                    // NOTE: The case where an open, unsaved file is deleted is
-                    // being handled by the PartListener added to the Workbench 
-                    // in the initialize() method
-                    display.asyncExec(new Runnable() {
-                        public void run() {
-                            if (!isDirty()) closeEditor(false);
-                        }
-                    });
-                } else { // else if it was moved or renamed
-                    final IFile newFile = ResourcesPlugin.getWorkspace().getRoot().getFile(
-                            delta.getMovedToPath());
-                    display.asyncExec(new Runnable() {
-                        public void run() {
-                            superSetInput(new FileEditorInput(newFile));
-                        }
-                    });
-                }
-            } else if (delta.getKind() == IResourceDelta.CHANGED) {
-                if (!editorSaving) {
-                    // the file was overwritten somehow (could have been
-                    // replaced by another version in the respository)
-                    final IFile newFile = ResourcesPlugin.getWorkspace().getRoot().getFile(
-                            delta.getFullPath());
-                    Display display = getSite().getShell().getDisplay();
-                    display.asyncExec(new Runnable() {
-                        public void run() {
-                            setInput(new FileEditorInput(newFile));
-                            getCommandStack().flush();
-                        }
-                    });
-                }
-            }
-            return false;
-        }
-    }
-
-    private IPartListener partListener = new IPartListener() {
-        // If an open, unsaved file was deleted, query the user to either do a
-        // "Save As"
-        // or close the editor.
-        public void partActivated(IWorkbenchPart part) {
-            if (part != GraphicalNedEditor.this) return;
-            if (!((IFileEditorInput) getEditorInput()).getFile().exists()) {
-                Shell shell = getSite().getShell();
-                String title = "File Deleted";
-                String message = "The file has been deleted from the file system.";
-                String[] buttons = { "Save", "Close" };
-                MessageDialog dialog = new MessageDialog(shell, title, null, message, MessageDialog.QUESTION,
-                        buttons, 0);
-                if (dialog.open() == 0) {
-                    if (!performSaveAs()) partActivated(part);
-                } else {
-                    closeEditor(false);
-                }
-            }
-        }
-
-        public void partBroughtToTop(IWorkbenchPart part) {
-        }
-
-        public void partClosed(IWorkbenchPart part) {
-        }
-
-        public void partDeactivated(IWorkbenchPart part) {
-        }
-
-        public void partOpened(IWorkbenchPart part) {
-        }
-    };
 
     private NedFileNodeEx nedFileModel;
-    private ResourceTracker resourceListener = new ResourceTracker();
 
     protected static final String PALETTE_DOCK_LOCATION = "Dock location"; //$NON-NLS-1$
     protected static final String PALETTE_SIZE = "Palette Size"; //$NON-NLS-1$
@@ -256,10 +140,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
         setEditDomain(new DefaultEditDomain(this));
     }
     
-    protected void closeEditor(boolean save) {
-        getSite().getPage().closeEditor(GraphicalNedEditor.this, save);
-    }
-
     @Override
     public void commandStackChanged(EventObject event) {
     	firePropertyChange(IEditorPart.PROP_DIRTY);
@@ -336,36 +216,68 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
     }
 
     @Override
-    public void dispose() {
-        getSite().getWorkbenchWindow().getPartService().removePartListener(partListener);
-        partListener = null;
-        ((IFileEditorInput) getEditorInput()).getFile().getWorkspace().removeResourceChangeListener(
-                resourceListener);
-        super.dispose();
+    public DefaultEditDomain getEditDomain() {
+        // overridden to make it visible
+        return super.getEditDomain();
     }
-
+    
     @Override
     public void doSave(final IProgressMonitor progressMonitor) {
-    	editorSaving = true;
-    	SafeRunner.run(new SafeRunnable() {
-    		public void run() throws Exception {
-    			saveProperties();
-    			ByteArrayOutputStream out = new ByteArrayOutputStream();
-// TODO save the contents of the editor
-//    			writeToOutputStream(out);
-    			IFile file = ((IFileEditorInput)getEditorInput()).getFile();
-    			file.setContents(new ByteArrayInputStream(out.toByteArray()), 
-    							true, false, progressMonitor);
+        Assert.isTrue(false, "save is not implemented");
+//    	editorSaving = true;
+//    	SafeRunner.run(new SafeRunnable() {
+//    		public void run() throws Exception {
+//    			saveProperties();
+//    			ByteArrayOutputStream out = new ByteArrayOutputStream();
+//    			IFile file = ((IFileEditorInput)getEditorInput()).getFile();
+//    			file.setContents(new ByteArrayInputStream(out.toByteArray()), 
+//    							true, false, progressMonitor);
     			getCommandStack().markSaveLocation();
-    		}
-    	});
-    	editorSaving = false;
+//    		}
+//    	});
+//    	editorSaving = false;
     }
-
-    @Override
-    public void doSaveAs() {
-        performSaveAs();
-    }
+//
+//    @Override
+//    public void doSaveAs() {
+//        SaveAsDialog dialog = new SaveAsDialog(getSite().getWorkbenchWindow().getShell());
+//        dialog.setOriginalFile(((IFileEditorInput) getEditorInput()).getFile());
+//        dialog.open();
+//        IPath path = dialog.getResult();
+//
+//        if (path == null) return;
+//
+//        IWorkspace workspace = ResourcesPlugin.getWorkspace();
+//        final IFile file = workspace.getRoot().getFile(path);
+//
+//        if (!file.exists()) {
+//            WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
+//                @Override
+//                public void execute(final IProgressMonitor monitor) {
+//                    saveProperties();
+//                    try {
+//                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+//                        file.create(new ByteArrayInputStream(out.toByteArray()), true, monitor);
+//                        out.close();
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            };
+//            try {
+//                new ProgressMonitorDialog(getSite().getWorkbenchWindow().getShell()).run(false, true, op);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//        try {
+//            setInput(new FileEditorInput(file));
+//            getCommandStack().markSaveLocation();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @Override
     public Object getAdapter(Class type) {
@@ -515,49 +427,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
 
     }
 
-    protected boolean performSaveAs() {
-        SaveAsDialog dialog = new SaveAsDialog(getSite().getWorkbenchWindow().getShell());
-        dialog.setOriginalFile(((IFileEditorInput) getEditorInput()).getFile());
-        dialog.open();
-        IPath path = dialog.getResult();
-
-        if (path == null) return false;
-
-        IWorkspace workspace = ResourcesPlugin.getWorkspace();
-        final IFile file = workspace.getRoot().getFile(path);
-
-        if (!file.exists()) {
-            WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
-                @Override
-                public void execute(final IProgressMonitor monitor) {
-                    saveProperties();
-                    try {
-                        ByteArrayOutputStream out = new ByteArrayOutputStream();
-// TODO save the contents of the file                        
-//                        writeToOutputStream(out);
-                        file.create(new ByteArrayInputStream(out.toByteArray()), true, monitor);
-                        out.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
-            try {
-                new ProgressMonitorDialog(getSite().getWorkbenchWindow().getShell()).run(false, true, op);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        try {
-            superSetInput(new FileEditorInput(file));
-            getCommandStack().markSaveLocation();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return true;
-    }
-
     protected void saveProperties() {
 //        getModel()
 //                .setGridEnabled(
@@ -570,16 +439,19 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
 //        if (manager != null) getModel().setZoom(manager.getZoom());
     }
 
-    @Override
-    protected void setInput(IEditorInput input) {
-        superSetInput(input);
-    }
+//    @Override
+//    protected void setInput(IEditorInput input) {
+//        superSetInput(input);
+//    }
 
     public NedFileNodeEx getModel() {
         return nedFileModel;
     }
 
     public void setModel(NedFileNodeEx nedModel) {
+        if (nedFileModel == nedModel)
+            return;
+        
         nedFileModel = nedModel;
 
         if (!editorSaving) {
@@ -593,30 +465,30 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
         }
     }
 
-    protected void superSetInput(IEditorInput input) {
-        // The workspace never changes for an editor. So, removing and re-adding the
-        // resourceListener is not necessary. But it is being done here for the sake
-        // of proper implementation. Plus, the resourceListener needs to be added
-        // to the workspace the first time around.
-        if (getEditorInput() != null) {
-            IFile file = ((IFileEditorInput) getEditorInput()).getFile();
-            file.getWorkspace().removeResourceChangeListener(resourceListener);
-        }
+//    protected void superSetInput(IEditorInput input) {
+//        // The workspace never changes for an editor. So, removing and re-adding the
+//        // resourceListener is not necessary. But it is being done here for the sake
+//        // of proper implementation. Plus, the resourceListener needs to be added
+//        // to the workspace the first time around.
+//        if (getEditorInput() != null) {
+//            IFile file = ((IFileEditorInput) getEditorInput()).getFile();
+//            file.getWorkspace().removeResourceChangeListener(resourceListener);
+//        }
+//
+//        super.setInput(input);
+//
+//        if (getEditorInput() != null) {
+//            IFile file = ((IFileEditorInput) getEditorInput()).getFile();
+//            file.getWorkspace().addResourceChangeListener(resourceListener);
+//            setPartName(file.getName());
+//        }
+//    }
 
-        super.setInput(input);
-
-        if (getEditorInput() != null) {
-            IFile file = ((IFileEditorInput) getEditorInput()).getFile();
-            file.getWorkspace().addResourceChangeListener(resourceListener);
-            setPartName(file.getName());
-        }
-    }
-
-    @Override
-    protected void setSite(IWorkbenchPartSite site) {
-        super.setSite(site);
-        getSite().getWorkbenchWindow().getPartService().addPartListener(partListener);
-    }
+//    @Override
+//    protected void setSite(IWorkbenchPartSite site) {
+//        super.setSite(site);
+//        getSite().getWorkbenchWindow().getPartService().addPartListener(partListener);
+//    }
 
 
     // XXX HACK OVERRIDDEN because selection does not work if the editor is embedded in a multipage editor
