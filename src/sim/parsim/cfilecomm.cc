@@ -36,9 +36,9 @@
 
 Register_Class(cFileCommunications);
 
-Register_GlobalConfigEntry(CFGID_FILECOMM_PREFIX, "parsim-filecommunications-prefix", "General", CFG_STRING,  "comm/", "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_FILECOMM_READ_PREFIX, "parsim-filecommunications-read-prefix", "General", CFG_STRING,  "comm/read/", "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_FILECOMM_PRESERVE_READ, "parsim-filecommunications-preserve-read", "General", CFG_BOOL,  false, "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_FILECOMM_PREFIX, "parsim-filecommunications-prefix", "General", CFG_STRING,  "comm/", "When cFileCommunications is selected as parsim communications class: specifies the prefix (directory+potential filename prefix) for creating the files for cross-partition messages.");
+Register_GlobalConfigEntry(CFGID_FILECOMM_READ_PREFIX, "parsim-filecommunications-read-prefix", "General", CFG_STRING,  "comm/read/", "When cFileCommunications is selected as parsim communications class: specifies the prefix (directory) where files will be moved after having been consumed.");
+Register_GlobalConfigEntry(CFGID_FILECOMM_PRESERVE_READ, "parsim-filecommunications-preserve-read", "General", CFG_BOOL,  false, "When cFileCommunications is selected as parsim communications class: specifies that consumed files should be moved into another directory instead of being deleted.");
 
 cFileCommunications::cFileCommunications()
 {

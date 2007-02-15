@@ -35,8 +35,7 @@
 
 Register_Class(cParsimPartition);
 
-//XXX this gets registered multiple times?
-Register_GlobalConfigEntry(CFGID_PARSIM_DEBUG, "parsim-debug", "General", CFG_BOOL,  true, "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_PARSIM_DEBUG, "parsim-debug", "General", CFG_BOOL,  true, "With parallel-simulation=true: turns on printing of log messages from the parallel simulation code.");
 
 cParsimPartition::cParsimPartition()
 {

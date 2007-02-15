@@ -39,7 +39,7 @@ using std::ostream;
 using std::ofstream;
 using std::ios;
 
-Register_PerRunConfigEntryU(CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, "output-vectors-memory-limit", "General", "B", DEFAULT_MEMORY_LIMIT, "FIXME add some description here");
+Register_PerRunConfigEntryU(CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, "output-vectors-memory-limit", "General", "B", DEFAULT_MEMORY_LIMIT, "Total memory that can be used for buffering output vectors. Larger values produce less fragmented vector files (i.e. cause vector data to be grouped into larger chunks), and therefore allow more efficient processing later.");
 
 #ifdef CHECK
 #undef CHECK

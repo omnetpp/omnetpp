@@ -26,6 +26,7 @@
 
 #include "args.h"
 #include "omnetapp.h"
+#include "appreg.h"
 #include "patternmatcher.h"
 #include "fsutils.h"
 #include "eventlogwriter.h"
@@ -276,7 +277,8 @@ void TOmnetApp::printHelp()
     ev << "                contain simple modules, plugins, etc. Multiple -l options\n";
     ev << "                can be present.\n";
     ev << "  -q <category> List registered components. Category is one of the following:\n";
-    ev << "                all, config, configdetails, classes, classdesc, nedfunctions, enums\n";
+    ev << "                all, config, configdetails, classes, classdesc, nedfunctions,\n";
+    ev << "                enums, userinterfaces\n";
     ev << "\n";
     printUISpecificHelp();
 }
@@ -287,8 +289,6 @@ void TOmnetApp::dumpComponentList(const char *category)
     if (wantAll || !strcmp(category, "config") || !strcmp(category, "configdetails"))
     {
         ev << "Supported configuration entries (omnetpp.ini):\n";
-        ev << "\n";
-
         bool printDescriptions = !strcmp(category, "configdetails");
 
         cSymTable *table = configEntries.instance();
@@ -297,6 +297,7 @@ void TOmnetApp::dumpComponentList(const char *category)
         {
             cConfigEntry *obj = dynamic_cast<cConfigEntry *>(table->get(i));
             ASSERT(obj);
+            if (!printDescriptions) ev << "  ";
             ev << "[" << obj->section() << "] " << obj->name() << "=";
             ev << "<" << cConfigEntry::typeName(obj->type()) << ">";
             if (obj->unit())
@@ -307,7 +308,7 @@ void TOmnetApp::dumpComponentList(const char *category)
             ev << "\n";
             if (printDescriptions && obj->description() && obj->description()[0])
                 ev << obj->description() << "\n";
-            ev << "\n";
+            if (printDescriptions) ev << "\n";
         }
         ev << "\n";
     }
@@ -327,7 +328,7 @@ void TOmnetApp::dumpComponentList(const char *category)
     }
     if (wantAll || !strcmp(category, "classdesc"))
     {
-        ev << "Classes that have associated reflection information:\n";
+        ev << "Classes that have associated reflection information (needed for Tkenv inspectors):\n";
         cSymTable *table = classDescriptors.instance();
         table->sort();
         for (int i=0; i<table->size(); i++)
@@ -335,8 +336,6 @@ void TOmnetApp::dumpComponentList(const char *category)
             cObject *obj = table->get(i);
             ev << "  class " << obj->fullName() << "\n";
         }
-        ev << "Tkenv can only display the contents of those objects that have\n";
-        ev << "associated description objects.\n";
         ev << "\n";
     }
     if (wantAll || !strcmp(category, "nedfunctions"))
@@ -362,6 +361,17 @@ void TOmnetApp::dumpComponentList(const char *category)
             ev << "  " << obj->fullName() << " : " << obj->info() << "\n";
         }
         ev << "\n";
+    }
+    if (wantAll || !strcmp(category, "userinterfaces"))
+    {
+        ev << "User interfaces loaded:\n";
+        cSymTable *table = omnetapps.instance();
+        table->sort();
+        for (int i=0; i<table->size(); i++)
+        {
+            cObject *obj = table->get(i);
+            ev << "  " << obj->fullName() << " : " << obj->info() << "\n";
+        }
     }
 }
 

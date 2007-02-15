@@ -36,9 +36,9 @@
 
 Register_Class(cNullMessageProtocol);
 
-Register_GlobalConfigEntry(CFGID_PARSIM_DEBUG, "parsim-debug", "General", CFG_BOOL,  true, "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS, "parsim-nullmessageprotocol-lookahead-class", "General", CFG_STRING,  "cLinkDelayLookahead", "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS, "parsim-nullmessageprotocol-laziness", "General", CFG_DOUBLE,  0.5, "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS, "parsim-nullmessageprotocol-lookahead-class", "General", CFG_STRING,  "cLinkDelayLookahead", "When cNullMessageProtocol is selected as parsim synchronization class: specifies the C++ class that calculates lookahead. The class should subclass from cNMPLookahead.");
+Register_GlobalConfigEntry(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS, "parsim-nullmessageprotocol-laziness", "General", CFG_DOUBLE,  0.5, "When cNullMessageProtocol is selected as parsim synchronization class: specifies the laziness of sending null messages. Values in the range [0,1) are accepted. Laziness=0 causes null messages to be sent out immediately as a new EOT is learned, which may result in excessive null message traffic.");
+extern cConfigEntry *CFGID_PARSIM_DEBUG; // registered in cparsimpartition.cc
 
 
 cNullMessageProtocol::cNullMessageProtocol() : cParsimProtocolBase()
