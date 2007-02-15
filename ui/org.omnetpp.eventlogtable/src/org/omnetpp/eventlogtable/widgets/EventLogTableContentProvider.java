@@ -4,12 +4,10 @@ import org.eclipse.jface.viewers.Viewer;
 import org.omnetpp.common.virtualtable.IVirtualTableContentProvider;
 import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.EventLogTableFacade;
-import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlogtable.editors.EventLogInput;
 
 public class EventLogTableContentProvider implements IVirtualTableContentProvider {
 	protected static boolean debug = false;
-
-	protected IEventLog eventLog;
 	
 	protected EventLogTableFacade eventLogTableFacade;
 	
@@ -142,12 +140,12 @@ public class EventLogTableContentProvider implements IVirtualTableContentProvide
 	}
 
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		eventLog = (IEventLog)newInput;
+		EventLogInput eventLogInput = (EventLogInput)newInput;
 		
-		if (eventLog == null)
+		if (eventLogInput == null)
 			eventLogTableFacade = null;
 		else
-			eventLogTableFacade = new EventLogTableFacade(eventLog);
+			eventLogTableFacade = new EventLogTableFacade(eventLogInput.getEventLog());
 	}
 
 	public EventLogTableFacade getEventLogTableFacade() {

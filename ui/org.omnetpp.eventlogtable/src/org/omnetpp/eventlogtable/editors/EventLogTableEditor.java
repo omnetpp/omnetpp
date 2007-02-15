@@ -1,21 +1,27 @@
 package org.omnetpp.eventlogtable.editors;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.INavigationLocation;
 import org.eclipse.ui.INavigationLocationProvider;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 
-public class EventLogTableEditor extends EventLogEditor implements INavigationLocationProvider, IGotoMarker {
+public class EventLogTableEditor extends EventLogEditor implements IResourceChangeListener, INavigationLocationProvider, IGotoMarker {
 	protected Runnable locationTimer;
 
 	private int lastLocationEventNumber;
@@ -23,10 +29,21 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 	protected EventLogTable eventLogTable;
 
 	@Override
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+		super.init(site, input);
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
+	}
+
+	@Override
+	public void dispose() {
+		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
+	}
+
+	@Override
 	public void createPartControl(Composite parent) {
 		IEditorSite editorSite = (IEditorSite)getSite();
 		eventLogTable = new EventLogTable(parent, editorSite.getActionBars());
-		eventLogTable.setInput(eventLog);
+		eventLogTable.setInput(eventLogInput);
 
 		locationTimer = new Runnable() {
 			public void run() {
@@ -86,7 +103,7 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 		}
 
 		public void restoreLocation() {
-			IEvent event = eventLog.getEventForEventNumber(eventNumber);
+			IEvent event = eventLogInput.getEventLog().getEventForEventNumber(eventNumber);
 			EventLogEntry eventLogEntry = event != null ? event.getEventEntry() : null;
 			
 			if (eventLogEntry != null) {
@@ -124,6 +141,13 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 	}
 
 	public void gotoMarker(IMarker marker) {
-		// TODO:
+		int eventNumber = marker.getAttribute("EventNumber", -1);
+		eventLogTable.gotoElement(eventLogInput.getEventLog().getEventForEventNumber(eventNumber).getEventEntry());
+	}
+
+	public void resourceChanged(IResourceChangeEvent event) {
+		// TODO: check if the affected resource is ours
+		if (event.getDelta().getKind() == IResourceDelta.CHANGED)
+			eventLogTable.refresh();
 	}
 }

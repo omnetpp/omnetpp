@@ -1,5 +1,7 @@
 package org.omnetpp.eventlogtable.widgets;
 
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.action.IToolBarManager;
@@ -22,6 +24,7 @@ import org.omnetpp.common.virtualtable.VirtualTable;
 import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlogtable.editors.EventLogInput;
 
 public class EventLogTable extends VirtualTable<EventLogEntry> {
 	public EventLogTable(Composite parent, IActionBars actionBars) {
@@ -50,10 +53,6 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 		addSetFilterModeAction(toolBarManager);
 		addSetDisplayModeAction(toolBarManager);
 		addPopupMenu();
-	}
-
-	public IEventLog getEventLog() {
-		return (IEventLog)getInput();
 	}
 
 	private void addSetFilterModeAction(IToolBarManager toolBarManager) {
@@ -207,9 +206,9 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 	private void addPopupMenu() {
 		Menu popupMenu = new Menu(getControl());
 
-		// find menu item
+		// search menu item
 		MenuItem subMenuItem = new MenuItem(popupMenu, SWT.PUSH);
-		subMenuItem.setText("Search text");
+		subMenuItem.setText("Search text...");
 		subMenuItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				activateSearchText();
@@ -218,10 +217,37 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 
 		// goto event menu item
 		subMenuItem = new MenuItem(popupMenu, SWT.PUSH);
-		subMenuItem.setText("Goto event");
+		subMenuItem.setText("Goto event...");
 		subMenuItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				activateGotoEvent();
+			}
+		});
+
+		// goto simulation time menu item
+		subMenuItem = new MenuItem(popupMenu, SWT.PUSH);
+		subMenuItem.setText("Goto simulation time...");
+		subMenuItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+			}
+		});
+
+		// goto event menu item
+		subMenuItem = new MenuItem(popupMenu, SWT.PUSH);
+		subMenuItem.setText("Bookmark");
+		subMenuItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent ev) {
+				EventLogInput eventLogInput = (EventLogInput)getInput();
+				try {
+					IMarker marker = eventLogInput.getFile().createMarker(IMarker.BOOKMARK);
+					IEvent event = ((EventLogEntry)getSelectionElement()).getEvent();
+					marker.setAttribute(IMarker.LOCATION, "# " + event.getEventNumber());
+					marker.setAttribute("EventNumber", event.getEventNumber());
+					refresh();
+				}
+				catch (CoreException e) {
+					throw new RuntimeException(e);
+				}
 			}
 		});
 
@@ -270,9 +296,25 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 			// void
 		}
 	}
+	
+	@Override
+	public void setInput(Object input) {
+		super.setInput(input);
+		
+		if (input != null)
+			getEventLogTableLabelProvider().setResource(((EventLogInput)input).getFile());
+	}
+
+	public IEventLog getEventLog() {
+		return (IEventLog)getInput();
+	}
 
 	public EventLogTableContentProvider getEventLogTableContentProvider() {
 		return (EventLogTableContentProvider)getContentProvider();
+	}
+
+	public EventLogTableItemProvider getEventLogTableLabelProvider() {
+		return (EventLogTableItemProvider)getLabelProvider();
 	}
 
 	public int getFilterMode() {

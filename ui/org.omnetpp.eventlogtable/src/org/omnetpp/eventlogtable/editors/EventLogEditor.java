@@ -9,21 +9,23 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.eventlog.engine.EventLog;
 import org.omnetpp.eventlog.engine.FileReader;
-import org.omnetpp.eventlog.engine.IEventLog;
 
 // TODO: resuse this class from sequence chart
 public abstract class EventLogEditor extends EditorPart {
-	protected IEventLog eventLog;
-	
+	protected EventLogInput eventLogInput;
+
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		setSite(site);
 		setInput(input);
 		setPartName(input.getName());
+		
+		eventLogInput = new EventLogInput();
 
 		String logFileName;
 		if (input instanceof IFileEditorInput) {
 			IFileEditorInput fileInput = (IFileEditorInput)input;
+			eventLogInput.setFile(fileInput.getFile());
 			logFileName = fileInput.getFile().getLocation().toFile().getAbsolutePath();
 		}
 		else if (input instanceof IPathEditorInput) {
@@ -33,7 +35,7 @@ public abstract class EventLogEditor extends EditorPart {
 		else 
 			throw new PartInitException("Unsupported input type");
 
-		eventLog = new EventLog(new FileReader(logFileName, /* EventLog will delete it */false));
+		eventLogInput.setEventLog(new EventLog(new FileReader(logFileName, /* EventLog will delete it */false)));
 	}
 
 	@Override

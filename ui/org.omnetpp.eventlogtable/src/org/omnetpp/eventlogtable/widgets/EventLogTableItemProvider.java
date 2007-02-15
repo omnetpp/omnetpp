@@ -1,8 +1,12 @@
 package org.omnetpp.eventlogtable.widgets;
 
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.widgets.TableItem;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.virtualtable.IVirtualTableItemProvider;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
 import org.omnetpp.eventlog.engine.CancelEventEntry;
@@ -27,7 +31,9 @@ public class EventLogTableItemProvider extends LabelProvider implements IVirtual
 		RAW
 	}
 
-	private DisplayMode displayMode = DisplayMode.DESCRIPTIVE;
+	protected DisplayMode displayMode = DisplayMode.DESCRIPTIVE;
+
+	protected IResource resource;
 
 	public DisplayMode getDisplayMode() {
 		return displayMode;
@@ -36,15 +42,38 @@ public class EventLogTableItemProvider extends LabelProvider implements IVirtual
 	public void setDisplayMode(DisplayMode displayMode) {
 		this.displayMode = displayMode;
 	}
+	
+	public IResource getResource() {
+		return resource;
+	}
+	
+	public void setResource(IResource resource) {
+		this.resource = resource;
+	}
 
 	public void fillTableItem(TableItem item, Object element) {
 		EventLogEntry eventLogEntry = (EventLogEntry)element;
 		Event event = eventLogEntry.getEvent();
 		IEventLog eventLog = event.getEventLog();
 
+		try {
+			IResource resource = getResource();
+			IMarker[] markers = resource.findMarkers(IMarker.BOOKMARK, true, IResource.DEPTH_ZERO);
+			boolean marked = false;
+			for (int i = 0; i < markers.length; i++)
+				if (markers[i].getAttribute("EventNumber", -1) == event.getEventNumber()) {
+					marked = true;
+					break;
+				}
+			if (marked)
+				item.setBackground(ColorFactory.asColor("lightCyan"));
+		}
+		catch (CoreException e) {
+		}
+
 		if (eventLogEntry instanceof EventEntry) {
 			MessageDependency cause = event.getCause();
-
+			
 			item.setText(0, "#" + event.getEventNumber());
 			item.setForeground(0, ColorConstants.red);
 			item.setText(1, event.getSimulationTime() + "s"); 
