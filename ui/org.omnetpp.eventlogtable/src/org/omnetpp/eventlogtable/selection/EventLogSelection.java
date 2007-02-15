@@ -16,6 +16,7 @@ import org.omnetpp.eventlogtable.selection.IEventLogSelection;
  */
 public class EventLogSelection implements IEventLogSelection, IVirtualTableSelection<IEvent>, Cloneable {
 
+	// TODO: implement IStructuredSelection and IPropertySourceProvider
 	private IEventLog eventLog;
 	private List<IEvent> events;
 

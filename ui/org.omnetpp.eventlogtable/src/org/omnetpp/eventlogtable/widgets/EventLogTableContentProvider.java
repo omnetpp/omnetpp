@@ -6,12 +6,24 @@ import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.EventLogTableFacade;
 import org.omnetpp.eventlog.engine.IEventLog;
 
-public class EventLogVirtualTableContentProvider implements IVirtualTableContentProvider {
+public class EventLogTableContentProvider implements IVirtualTableContentProvider {
 	protected static boolean debug = false;
 
 	protected IEventLog eventLog;
 	
 	protected EventLogTableFacade eventLogTableFacade;
+	
+	public int getFilterMode() {
+		return eventLogTableFacade.getEventLogTableMode();
+	}
+
+	public void setFilterMode(int mode) {
+		eventLogTableFacade.setEventLogTableMode(mode);
+	}
+	
+	public void setCustomFilter(String pattern) {
+		eventLogTableFacade.setCustomFilter(pattern);
+	}
 
 	public Object getFirstElement() {
 		if (debug)
@@ -120,6 +132,10 @@ public class EventLogVirtualTableContentProvider implements IVirtualTableContent
 			return 0;
 		else
 			return eventLogTableFacade.getApproximateNumberOfEntries();
+	}
+
+	public EventLogEntry getClosestElement(EventLogEntry fixPointElement) {
+		return eventLogTableFacade.getClosestEntry(fixPointElement);
 	}
 
 	public void dispose() {

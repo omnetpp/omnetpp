@@ -11,6 +11,7 @@ import org.omnetpp.eventlog.engine.EventLog;
 import org.omnetpp.eventlog.engine.FileReader;
 import org.omnetpp.eventlog.engine.IEventLog;
 
+// TODO: resuse this class from sequence chart
 public abstract class EventLogEditor extends EditorPart {
 	protected IEventLog eventLog;
 	

@@ -35,9 +35,9 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 		tableColumn.setWidth(800);
 		tableColumn.setText("Details / log message");
 
-		setContentProvider(new EventLogVirtualTableContentProvider());
+		setContentProvider(new EventLogTableContentProvider());
 		setInput(null);
-		setLabelProvider(new EventLogVirtualTableItemProvider());
+		setLabelProvider(new EventLogTableItemProvider());
 
 		addPopupMenu();
 	}
@@ -111,5 +111,19 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 		catch (Exception x) {
 			// void
 		}
+	}
+
+	public EventLogTableContentProvider getEventLogTableContentProvider() {
+		return (EventLogTableContentProvider)getContentProvider();
+	}
+
+	public int getFilterMode() {
+		return getEventLogTableContentProvider().getFilterMode();
+	}
+
+	public void setFilterMode(int i) {
+		getEventLogTableContentProvider().setFilterMode(i);
+		fixPointElement = getEventLogTableContentProvider().getClosestElement(fixPointElement);
+		refresh();
 	}
 }
