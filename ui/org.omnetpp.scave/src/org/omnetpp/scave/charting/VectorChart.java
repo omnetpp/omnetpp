@@ -521,12 +521,21 @@ public class VectorChart extends ChartCanvas {
 		Rectangle rect;
 		private int x = Integer.MAX_VALUE;
 		private int y = Integer.MAX_VALUE;
+		DPoint dataPoint;
 		
 		public CrossHair() {
 			addMouseMoveListener(new MouseMoveListener() {
 				public void mouseMove(MouseEvent e) {
 					x = e.x;
 					y = e.y;
+					
+					// snap to data point
+					dataPoint = dataPointNearTo(x, y, 5);
+					if (dataPoint != null) {
+						x = toCanvasX(dataPoint.x);
+						y = toCanvasY(dataPoint.y);
+					}
+						
 					redraw();
 					
 					if (rect != null && rect.contains(x,y))
@@ -554,7 +563,6 @@ public class VectorChart extends ChartCanvas {
 				gc.drawLine(rect.x, y, rect.x + rect.width, y);
 				gc.drawLine(x, rect.y, x, rect.y + rect.height);
 				
-				DPoint dataPoint = dataPointNearTo(x, y, 5);
 				Font font = dataPoint != null ? CROSS_HAIR_BOLD_FONT : CROSS_HAIR_NORMAL_FONT; 
 				String coordinates =
 					String.format("%.3g,%.3g",
