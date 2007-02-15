@@ -311,12 +311,6 @@ class ENVIR_API cEnvir : public std::ostream
      * that the user didn't delete in the module destructor.
      */
     void undisposedObject(cObject *obj);
-
-    /**
-     * Notifies the environment that a simple module executed a
-     * breakpoint() call.
-     */
-    void breakpointHit(const char *lbl, cSimpleModule *mod);
     //@}
 
     /** @name Methods called by the simulation kernel to access configuration settings. */

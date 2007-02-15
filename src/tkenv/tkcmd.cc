@@ -829,8 +829,6 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       sprintf(buf,"%lu ms", app->opt_stepdelay);
    else if (0==strcmp(argv[1], "default-run"))
       sprintf(buf,"%d", app->opt_default_run);
-   else if (0==strcmp(argv[1], "bkpts_enabled"))
-      sprintf(buf,"%d", app->opt_bkpts_enabled);
    else if (0==strcmp(argv[1], "animation_enabled"))
       sprintf(buf,"%d", app->opt_animation_enabled);
    else if (0==strcmp(argv[1], "nexteventmarkers"))
@@ -880,8 +878,6 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
 
    if (0==strcmp(argv[1], "stepdelay"))
       app->opt_stepdelay = (long)(1000*UnitConversion::parseQuantity(argv[2], "s"));
-   else if (0==strcmp(argv[1], "bkpts_enabled"))
-      app->opt_bkpts_enabled = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "animation_enabled"))
       app->opt_animation_enabled = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "nexteventmarkers"))

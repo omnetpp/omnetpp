@@ -422,11 +422,6 @@ void cEnvir::undisposedObject(cObject *obj)
     app->undisposedObject(obj);
 }
 
-void cEnvir::breakpointHit(const char *label, cSimpleModule *module)
-{
-    app->breakpointHit(label, module);
-}
-
 //-----------------------------------------------------------------
 
 void cEnvir::bubble(cModule *mod, const char *text)

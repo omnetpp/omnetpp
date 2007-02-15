@@ -189,7 +189,6 @@ proc options_dialog {{defaultpage "g"}} {
     checkbutton $nb.g.f2.banners -text {Print event banners} -variable opp(banners)
     label-entry $nb.g.f2.numlines {Scrollback buffer (lines):}
     commentlabel $nb.g.f2.c1 {Applies to main window and module log windows. Leave blank for unlimited. Minimum value is 500 lines.}
-    checkbutton $nb.g.f2.bkpts -text {Stop on breakpoint() calls} -variable opp(bkpts)
     checkbutton $nb.g.f2.layouting -text {Show layouting process} -variable opp(layouting)
     checkbutton $nb.g.f2.newlayouter -text {Use new layouting algorithms} -variable opp(newlayouter)
     checkbutton $nb.g.f2.confirmexit -text {Confirm exit when simulation is in progress} -variable opp(confirmexit)
@@ -198,7 +197,6 @@ proc options_dialog {{defaultpage "g"}} {
     pack $nb.g.f2.banners -anchor w
     pack $nb.g.f2.numlines -anchor w -fill x
     pack $nb.g.f2.c1 -anchor w
-    pack $nb.g.f2.bkpts -anchor w
     pack $nb.g.f2.layouting -anchor w
     pack $nb.g.f2.newlayouter -anchor w
     pack $nb.g.f2.confirmexit -anchor w
@@ -274,7 +272,6 @@ proc options_dialog {{defaultpage "g"}} {
     set opp(newlayouter) [opp_getsimoption usenewlayouter]
     set opp(bubbles)    [opp_getsimoption bubbles]
     set opp(speed)      [opp_getsimoption animation_speed]
-    set opp(bkpts)      [opp_getsimoption bkpts_enabled]
     set opp(confirmexit) $config(confirm-exit)
     $nb.t.tlnamepattern.e insert 0      $config(timeline-msgnamepattern)
     $nb.t.tlclassnamepattern.e insert 0 $config(timeline-msgclassnamepattern)
@@ -308,7 +305,6 @@ proc options_dialog {{defaultpage "g"}} {
         opp_setsimoption usenewlayouter      $opp(newlayouter)
         opp_setsimoption bubbles             $opp(bubbles)
         opp_setsimoption animation_speed     $opp(speed)
-        opp_setsimoption bkpts_enabled       $opp(bkpts)
         set config(confirm-exit)             $opp(confirmexit)
         setIfPatternIsValid config(timeline-msgnamepattern)  [$nb.t.tlnamepattern.e get]
         setIfPatternIsValid config(timeline-msgclassnamepattern) [$nb.t.tlclassnamepattern.e get]

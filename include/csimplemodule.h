@@ -218,14 +218,6 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * See also class cWatch and the WATCH() macro.
      */
     bool snapshot(cOwnedObject *obj=&simulation, const char *label=NULL);
-
-    /**
-     * Specifies a breakpoint. During simulation, if execution gets to
-     * a breakpoint() call (and breakpoints are active etc.),
-     * the simulation will be stopped, if the user interface can handle
-     * breakpoints.
-     */
-    void breakpoint(const char *label);
     //@}
 
     /** @name Message sending. */

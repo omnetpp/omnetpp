@@ -68,7 +68,6 @@ class TOmnetTkApp : public TOmnetApp
    public:
       // options
       int  opt_default_run;        // automatically set up this run at startup
-      bool opt_bkpts_enabled;      // stop at breakpoints (can be improved...)
       bool opt_print_banners;      // print event banners
       bool opt_use_mainwindow;     // dump modules' ev << ... stuff into main window
       bool opt_animation_enabled;  // msg animation
@@ -108,7 +107,6 @@ class TOmnetTkApp : public TOmnetApp
       long rununtil_event;         // event number in current "Run Until" execution, or zero
       cModule *rununtil_module;    // stop before and after events in this module; ignored with EXPRESS mode
 
-      bool breakpointhit_flag;     // flag to signal that a breakpoint was hit and execution must break
       bool stopsimulation_flag;    // flag to signal that simulation must be stopped (STOP button pressed in the UI)
 
       typedef std::list<TInspector*> TInspectorList;
@@ -144,7 +142,6 @@ class TOmnetTkApp : public TOmnetApp
       virtual void connectionRemoved(cGate *srcgate);
       virtual void displayStringChanged(cGate *gate);
       virtual void displayStringChanged(cModule *module);
-      virtual void breakpointHit(const char *lbl, cSimpleModule *mod);
 
       virtual bool isGUI() {return true;}
       virtual void bubble(cModule *mod, const char *text);
@@ -183,9 +180,6 @@ class TOmnetTkApp : public TOmnetApp
       void loadNedFile(const char *fname);
 
       void doPuts(const char *quotedstr);
-
-      bool isBreakpointActive(const char *label, cSimpleModule *mod);
-      void stopAtBreakpoint(const char *label, cSimpleModule *mod);
 
       void updateInspectors();
       TInspector *inspect(cObject *obj, int type, const char *geometry, void *dat);

@@ -227,7 +227,6 @@ class ENVIR_API TOmnetApp
     virtual void displayStringChanged(cGate *gate);
     virtual void displayStringChanged(cModule *module);
     virtual void undisposedObject(cObject *obj);
-    virtual void breakpointHit(const char *lbl, cSimpleModule *mod) {}
     //@}
 
     /** @name Functions called by cEnvir's similar functions.

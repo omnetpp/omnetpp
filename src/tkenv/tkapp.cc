@@ -79,30 +79,29 @@ extern "C" TKENV_API void tkenv_lib() {}
 #define SPEEDOMETER_UPDATEMILLISECS 1000
 
 
-Register_GlobalConfigEntry(CFGID_TKENV_EXTRA_STACK_KB, "tkenv-extra-stack-kb", "Tkenv", CFG_INT,  TKENV_EXTRASTACK_KB, "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_DEFAULT_RUN, "default-run",  "Tkenv", CFG_INT,  0, "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_SLOWEXEC_DELAY, "slowexec-delay",  "Tkenv", CFG_TIME,  0.3, "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_UPDATE_FREQ_FAST, "update-freq-fast",  "Tkenv", CFG_INT,  50, "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_UPDATE_FREQ_EXPRESS, "update-freq-express",  "Tkenv", CFG_INT,  10000 , "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_BREAKPOINTS_ENABLED, "breakpoints-enabled",  "Tkenv", CFG_BOOL,  true , "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_ANIMATION_ENABLED, "animation-enabled",  "Tkenv", CFG_BOOL,  true , "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_NEXT_EVENT_MARKERS, "next-event-markers",  "Tkenv", CFG_BOOL,  true , "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_SENDDIRECT_ARROWS, "senddirect-arrows",  "Tkenv", CFG_BOOL,  true , "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_ANIM_METHODCALLS, "anim-methodcalls",  "Tkenv", CFG_BOOL,  true , "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_METHODCALLS_DELAY, "methodcalls-delay",  "Tkenv", CFG_TIME,  0.2, "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_ANIMATION_MSGNAMES, "animation-msgnames",  "Tkenv", CFG_BOOL,  true , "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_ANIMATION_MSGCLASSNAMES, "animation-msgclassnames",  "Tkenv", CFG_BOOL,  true , "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_ANIMATION_MSGCOLORS, "animation-msgcolors",  "Tkenv", CFG_BOOL,  true , "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_PENGUIN_MODE, "penguin-mode",  "Tkenv", CFG_BOOL,  false , "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_SHOW_LAYOUTING, "show-layouting",  "Tkenv", CFG_BOOL,  false, "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_USE_NEW_LAYOUTER, "use-new-layouter",  "Tkenv", CFG_BOOL,  false, "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_SHOW_BUBBLES, "show-bubbles",  "Tkenv", CFG_BOOL,  true , "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_ANIMATION_SPEED, "animation-speed",  "Tkenv", CFG_DOUBLE,  1.5, "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_PRINT_BANNERS, "print-banners",  "Tkenv", CFG_BOOL,  true , "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_USE_MAINWINDOW, "use-mainwindow",  "Tkenv", CFG_BOOL,  true , "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_EXPRESSMODE_AUTOUPDATE, "expressmode-autoupdate",  "Tkenv", CFG_BOOL,  true , "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_IMAGE_PATH, "image-path",  "Tkenv", CFG_FILENAME,  "", "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_PLUGIN_PATH, "plugin-path",  "Tkenv", CFG_FILENAME,  "", "FIXME add some description here");
+Register_GlobalConfigEntry(CFGID_TKENV_EXTRA_STACK_KB, "tkenv-extra-stack-kb", "Tkenv", CFG_INT,  TKENV_EXTRASTACK_KB, "Specifies the extra amount of stack (in kilobytes) that is reserved for each activity() simple module when the simulation is run under Tkenv.");
+Register_GlobalConfigEntry(CFGID_DEFAULT_RUN, "default-run",  "Tkenv", CFG_INT,  0, "Specifies which run Tkenv should set up automatically on startup. The default is to ask the user.");
+Register_GlobalConfigEntry(CFGID_SLOWEXEC_DELAY, "slowexec-delay",  "Tkenv", CFG_TIME,  0.3, "Delay between steps when you slow-execute the simulation.");
+Register_GlobalConfigEntry(CFGID_UPDATE_FREQ_FAST, "update-freq-fast",  "Tkenv", CFG_INT,  50, "Number of events executed between two display updates when in Fast execution mode.");
+Register_GlobalConfigEntry(CFGID_UPDATE_FREQ_EXPRESS, "update-freq-express",  "Tkenv", CFG_INT,  10000 , "Number of events executed between two display updates when in Express execution mode.");
+Register_GlobalConfigEntry(CFGID_ANIMATION_ENABLED, "animation-enabled",  "Tkenv", CFG_BOOL,  true , "Enables/disables animation.");
+Register_GlobalConfigEntry(CFGID_NEXT_EVENT_MARKERS, "next-event-markers",  "Tkenv", CFG_BOOL,  true , "Whether to display the next event marker (red rectange).");
+Register_GlobalConfigEntry(CFGID_SENDDIRECT_ARROWS, "senddirect-arrows",  "Tkenv", CFG_BOOL,  true , "Whether to display arrows during animation of sendDirect() calls.");
+Register_GlobalConfigEntry(CFGID_ANIM_METHODCALLS, "anim-methodcalls",  "Tkenv", CFG_BOOL,  true , "Whether to animate method calls across modules. Only calls to methods which contain Enter_Method() can be animated.");
+Register_GlobalConfigEntry(CFGID_METHODCALLS_DELAY, "methodcalls-delay",  "Tkenv", CFG_TIME,  0.2, "Sets delay after method call animation.");
+Register_GlobalConfigEntry(CFGID_ANIMATION_MSGNAMES, "animation-msgnames",  "Tkenv", CFG_BOOL,  true , "Enables/disables displaying message names during message flow animation.");
+Register_GlobalConfigEntry(CFGID_ANIMATION_MSGCLASSNAMES, "animation-msgclassnames",  "Tkenv", CFG_BOOL,  true , "Enables/disables displaying the C++ class name of messages during animation.");
+Register_GlobalConfigEntry(CFGID_ANIMATION_MSGCOLORS, "animation-msgcolors",  "Tkenv", CFG_BOOL,  true , "Enables/disables using different colors for each message kind during message flow animation.");
+Register_GlobalConfigEntry(CFGID_PENGUIN_MODE, "penguin-mode",  "Tkenv", CFG_BOOL,  false , "Surprise surprise.");
+Register_GlobalConfigEntry(CFGID_SHOW_LAYOUTING, "show-layouting",  "Tkenv", CFG_BOOL,  false, "Show layouting process of network graphics.");
+Register_GlobalConfigEntry(CFGID_USE_NEW_LAYOUTER, "use-new-layouter",  "Tkenv", CFG_BOOL,  false, "Selects between the new and the old (3.x) network layouting algorithms.");
+Register_GlobalConfigEntry(CFGID_SHOW_BUBBLES, "show-bubbles",  "Tkenv", CFG_BOOL,  true , "Whether to honor the bubble() calls during animation.");
+Register_GlobalConfigEntry(CFGID_ANIMATION_SPEED, "animation-speed",  "Tkenv", CFG_DOUBLE,  1.5, "Controls the speed of the animation; values in the range 0..3 are accepted.");
+Register_GlobalConfigEntry(CFGID_PRINT_BANNERS, "print-banners",  "Tkenv", CFG_BOOL,  true , "Enables/disables printing banners for each event.");
+Register_GlobalConfigEntry(CFGID_USE_MAINWINDOW, "use-mainwindow",  "Tkenv", CFG_BOOL,  true , "Enables/disables writing ev output to the Tkenv main window.");
+Register_GlobalConfigEntry(CFGID_EXPRESSMODE_AUTOUPDATE, "expressmode-autoupdate",  "Tkenv", CFG_BOOL,  true , "Enables/disables updating the inspectors during Express mode.");
+Register_GlobalConfigEntry(CFGID_IMAGE_PATH, "image-path",  "Tkenv", CFG_FILENAME,  "", "Specifies the path for loading module icons.");
+Register_GlobalConfigEntry(CFGID_PLUGIN_PATH, "plugin-path",  "Tkenv", CFG_FILENAME,  "", "Specifies the search path for Tkenv plugins. Tkenv plugins are .tcl files that get evaluated on startup.");
 
 
 // utility function
@@ -301,7 +300,6 @@ void TOmnetTkApp::doOneStep()
     clearPerformanceDisplay();
     updateSimtimeDisplay();
 
-    breakpointhit_flag = false;
     animating = true;
 
     simstate = SIM_RUNNING;
@@ -361,7 +359,6 @@ void TOmnetTkApp::runSimulation(int mode, simtime_t until_time, long until_event
     rununtil_event = until_event;
     rununtil_module = until_module;  // Note: this is NOT supported with RUNMODE_EXPRESS
 
-    breakpointhit_flag = false;
     stopsimulation_flag = false;
 
     clearNextModuleDisplay();
@@ -449,7 +446,7 @@ bool TOmnetTkApp::doRunSimulation()
     // The following variables may change during execution (as a result of user interaction
     // during Tcl_Eval("update"):
     //  - runmode, rununtil_time, rununtil_event, rununtil_module;
-    //  - breakpointhit_flag, stopsimulation_flag
+    //  - stopsimulation_flag
     //
     Speedometer speedometer;
     speedometer.start(simulation.simTime());
@@ -502,7 +499,7 @@ bool TOmnetTkApp::doRunSimulation()
 
         // exit conditions
         if (untilmodule_reached) break;
-        if (breakpointhit_flag || stopsimulation_flag) break;
+        if (stopsimulation_flag) break;
         if (rununtil_time>0 && simulation.guessNextSimtime()>=rununtil_time) break;
         if (rununtil_event>0 && simulation.eventNumber()>=rununtil_event) break;
 
@@ -527,7 +524,7 @@ bool TOmnetTkApp::doRunSimulationExpress()
     // The following variables may change during execution (as a result of user interaction
     // during Tcl_Eval("update"):
     //  - runmode, rununtil_time, rununtil_event, rununtil_module;
-    //  - breakpointhit_flag, stopsimulation_flag
+    //  - stopsimulation_flag
     //  - opt_expressmode_autoupdate
     //
     // EXPRESS does not support rununtil_module!
@@ -575,7 +572,7 @@ bool TOmnetTkApp::doRunSimulationExpress()
         }
         checkTimeLimits();
     }
-    while( !breakpointhit_flag && !stopsimulation_flag &&
+    while( !stopsimulation_flag &&
            (rununtil_time<=0 || simulation.guessNextSimtime() < rununtil_time) &&
            (rununtil_event<=0 || simulation.eventNumber() < rununtil_event)
          );
@@ -740,34 +737,6 @@ void TOmnetTkApp::newRun(int runnumber)
     updateNextModuleDisplay();
     updateSimtimeDisplay();
     updateInspectors();
-}
-
-bool TOmnetTkApp::isBreakpointActive(const char *, cSimpleModule *)
-{
-    // args: label, module
-    if (!opt_bkpts_enabled)
-         return false;
-
-    // To be implemented! Should be able to stop depending on all/selected labels, all/selected modules, etc.
-    return true;
-}
-
-void TOmnetTkApp::stopAtBreakpoint(const char *label, cSimpleModule *mod)
-{
-    updateSimtimeDisplay();
-
-    // pop up a dialog
-    static char buf[MAX_OBJECTFULLPATH+100];
-    sprintf(buf, (mod->usesActivity() ?
-                    "Breakpoint \"%s\" hit in module %s (id=%d)." :
-                    "Breakpoint \"%s\" hit in module %s (id=%d). "
-                    "Break will occur after completing current event, "
-                    "ie. after module's handleMessage() returns."),
-            label, mod->fullPath().c_str(), mod->id() );
-    CHK(Tcl_VarEval(interp,"messagebox {Confirm} {",buf,"} info ok",NULL));
-
-    // breakpointhit_flag will cause event loop to exit in runSimulation...()
-    breakpointhit_flag = true;
 }
 
 TInspector *TOmnetTkApp::inspect(cObject *obj, int type, const char *geometry, void *dat)
@@ -1043,7 +1012,6 @@ void TOmnetTkApp::readOptions()
     opt_stepdelay = long(1000*cfg->getAsDouble(CFGID_SLOWEXEC_DELAY));
     opt_updatefreq_fast = cfg->getAsInt(CFGID_UPDATE_FREQ_FAST);
     opt_updatefreq_express = cfg->getAsInt(CFGID_UPDATE_FREQ_EXPRESS);
-    opt_bkpts_enabled = cfg->getAsBool(CFGID_BREAKPOINTS_ENABLED);
     opt_animation_enabled = cfg->getAsBool(CFGID_ANIMATION_ENABLED);
     opt_nexteventmarkers = cfg->getAsBool(CFGID_NEXT_EVENT_MARKERS);
     opt_senddirect_arrows = cfg->getAsBool(CFGID_SENDDIRECT_ARROWS);
@@ -1695,12 +1663,6 @@ void TOmnetTkApp::animateDeliveryDirect(cMessage *msg)
 void TOmnetTkApp::performAnimations()
 {
     CHK(Tcl_VarEval(interp, "perform_animations", NULL));
-}
-
-void TOmnetTkApp::breakpointHit( const char *label, cSimpleModule *mod )
-{
-    if (isBreakpointActive(label,mod))
-        stopAtBreakpoint(label,mod);
 }
 
 void TOmnetTkApp::bubble(cModule *mod, const char *text)
