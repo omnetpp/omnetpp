@@ -58,6 +58,7 @@ class EVENTLOG_API FilteredEvent : public IEvent
         virtual EventLogEntry *getEventLogEntry(int index) { return getEvent()->getEventLogEntry(index); }
 
         virtual int getNumEventLogMessages() { return getEvent()->getNumEventLogMessages(); }
+        virtual int getNumBeginSendEntries() { return getEvent()->getNumBeginSendEntries(); }
         virtual EventLogMessage *getEventLogMessage(int index) { return getEvent()->getEventLogMessage(index); }
 
         virtual long getEventNumber() { return eventNumber; }

@@ -160,6 +160,9 @@ class EVENTLOG_API $class->{NAME} : public EventLogTokenBasedEntry
       virtual void parse(char **tokens, int numTokens);
       virtual void print(FILE *file);
       virtual int getClassIndex() { return $index; }
+      virtual const char *getDefaultAttribute() const { return \"$class->{CODE}\"; }
+      virtual const std::vector<const char *> getAttributeNames() const;
+      virtual const char *getAttribute(const char *name) const;
       virtual const char *getClassName() { return \"$class->{NAME}\"; }
 };
 ";
@@ -283,6 +286,44 @@ foreach $class (@classes)
 
    print ENTRIES_CC_FILE "    fprintf(fout, \"\\n\");\n";
    print ENTRIES_CC_FILE "    fflush(fout);\n";
+   print ENTRIES_CC_FILE "}\n\n";
+
+
+   # getAttributeNames
+   print ENTRIES_CC_FILE "const std::vector<const char *> $className\::getAttributeNames() const\n";
+   print ENTRIES_CC_FILE "{\n";
+   print ENTRIES_CC_FILE "    std::vector<const char *> names;\n";
+   foreach $field (@{ $class->{FIELDS} })
+   {
+      print ENTRIES_CC_FILE "    names.push_back(\"$field->{CODE}\");\n";
+   }
+   print ENTRIES_CC_FILE "    return names;\n";
+   print ENTRIES_CC_FILE "}\n\n";
+
+   # getAttribute
+   print ENTRIES_CC_FILE "const char *$className\::getAttribute(const char *name) const\n";
+   print ENTRIES_CC_FILE "{\n";
+   print ENTRIES_CC_FILE "    if (false);\n";
+
+   foreach $field (@{ $class->{FIELDS} })
+   {
+      print ENTRIES_CC_FILE "    else if (!strcmp(name, \"$field->{CODE}\"))\n";
+      if ($field->{TYPE} eq "string")
+      {
+         print ENTRIES_CC_FILE "        return $field->{NAME};\n";
+      }
+      elsif ($field->{TYPE} eq "simtime_t")
+      {
+         print ENTRIES_CC_FILE "        return _gcvt($field->{NAME}, 12, buffer);\n";
+      }
+      else
+      {
+         print ENTRIES_CC_FILE "        return _ltoa($field->{NAME}, buffer, 10);\n";
+      }
+   }
+
+   print ENTRIES_CC_FILE "    else\n";
+   print ENTRIES_CC_FILE "        return NULL;\n";
    print ENTRIES_CC_FILE "}\n\n";
 }
 

@@ -45,9 +45,9 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         std::vector<PatternMatcher> messageNames;
         std::vector<PatternMatcher> messageTypes;
         std::vector<long> messageIds;
-        std::vector<long> messageTids;
-        std::vector<long> messageEids;
-        std::vector<long> messageEtids;
+        std::vector<long> messageTreeIds;
+        std::vector<long> messageEncapsulationIds;
+        std::vector<long> messageEncapsulationTreeIds;
         bool traceCauses; // only when tracedEventNumber is given, includes events which cause the traced event even if through a chain of filtered events
         bool traceConsequences; // only when tracedEventNumber is given
         int maxCauseDepth; // maximum number of message dependencies considered when collecting causes
@@ -77,9 +77,9 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         void setMessageNames(std::vector<const char *> &messageNames) { setPatternMatchers(this->messageNames, messageNames); }
         void setMessageTypes(std::vector<const char *> &messageTypes) { setPatternMatchers(this->messageTypes, messageTypes); }
         void setMessageIds(std::vector<long> &messageIds) { this->messageIds = messageIds; }
-        void setMessageTids(std::vector<long> &messageTids) { this->messageTids = messageTids; }
-        void setMessageEids(std::vector<long> &messageEids) { this->messageEids = messageEids; }
-        void setMessageEtids(std::vector<long> &messageEtids) { this->messageEtids = messageEtids; }
+        void setMessageTreeIds(std::vector<long> &messageTreeIds) { this->messageTreeIds = messageTreeIds; }
+        void setMessageEncapsulationIds(std::vector<long> &messageEncapsulationIds) { this->messageEncapsulationIds = messageEncapsulationIds; }
+        void setMessageEncapsulationTreeIds(std::vector<long> &messageEncapsulationTreeIds) { this->messageEncapsulationTreeIds = messageEncapsulationTreeIds; }
         void setTracedEventNumber(long tracedEventNumber) { this->tracedEventNumber = tracedEventNumber; }
         void setTraceCauses(bool traceCauses) { this->traceCauses = traceCauses; }
         void setTraceConsequences(bool traceConsequences) { this->traceConsequences = traceConsequences; }

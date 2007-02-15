@@ -16,6 +16,7 @@
 #define __EVENTLOGENTRY_H_
 
 #include <sstream>
+#include "matchexpression.h"
 #include "eventlogdefs.h"
 #include "linetokenizer.h"
 
@@ -25,13 +26,19 @@ class Event;
  * Base class for all kind of event log entries.
  * An entry is represented by a single line in the log file.
  */
-class EVENTLOG_API EventLogEntry
+class EVENTLOG_API EventLogEntry : public MatchExpression::Matchable
 {
+    public:
+        int contextModuleId;
+        unsigned char level;
+
     protected:
         Event* event; // back pointer
+        static char buffer[100];
         static LineTokenizer tokenizer; // not thread safe
 
     public:
+        EventLogEntry();
         virtual ~EventLogEntry() {}
         virtual void parse(char *line, int length) = 0;
         virtual void print(FILE *fout) = 0;
@@ -40,6 +47,10 @@ class EVENTLOG_API EventLogEntry
 
         Event *getEvent() { return event; }
         bool isMessageSend();
+
+        virtual const std::vector<const char *> getAttributeNames() const = 0;
+        virtual const char *getDefaultAttribute() const = 0;
+        virtual const char *getAttribute(const char *name) const = 0;
 
         static EventLogEntry *parseEntry(Event *event, char *line, int length);
 };
@@ -75,8 +86,10 @@ class EVENTLOG_API EventLogMessage : public EventLogEntry
         virtual void print(FILE *fout);
         virtual int getClassIndex() { return 0; }
         virtual const char *getClassName() { return "EventLogMessage"; }
+
+        virtual const std::vector<const char *> getAttributeNames() const;
+        virtual const char *getDefaultAttribute() const { return "-"; }
+        virtual const char *getAttribute(const char *name) const;
 };
 
 #endif
-
-

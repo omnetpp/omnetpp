@@ -51,9 +51,9 @@ class Options
         std::vector<const char *> messageNames;
         std::vector<const char *> messageTypes;
         std::vector<long> messageIds;
-        std::vector<long> messageTids;
-        std::vector<long> messageEids;
-        std::vector<long> messageEtids;
+        std::vector<long> messageTreeIds;
+        std::vector<long> messageEncapsulationIds;
+        std::vector<long> messageEncapsulationTreeIds;
 
         bool verbose;
 
@@ -93,7 +93,7 @@ IEventLog *Options::getEventLog(FileReader *fileReader)
     if (eventNumbers.empty() &&
         moduleNames.empty() && moduleTypes.empty() && moduleIds.empty() &&
         messageNames.empty() && messageTypes.empty() &&
-        messageIds.empty() && messageTids.empty() && messageEids.empty() && messageEtids.empty())
+        messageIds.empty() && messageTreeIds.empty() && messageEncapsulationIds.empty() && messageEncapsulationTreeIds.empty())
     {
         return new EventLog(fileReader);
     }
@@ -111,9 +111,9 @@ IEventLog *Options::getEventLog(FileReader *fileReader)
         filteredEventLog->setMessageNames(messageNames);
         filteredEventLog->setMessageTypes(messageTypes);
         filteredEventLog->setMessageIds(messageIds);
-        filteredEventLog->setMessageTids(messageTids);
-        filteredEventLog->setMessageEids(messageEids);
-        filteredEventLog->setMessageEtids(messageEtids);
+        filteredEventLog->setMessageTreeIds(messageTreeIds);
+        filteredEventLog->setMessageEncapsulationIds(messageEncapsulationIds);
+        filteredEventLog->setMessageEncapsulationTreeIds(messageEncapsulationTreeIds);
 
         filteredEventLog->setTraceCauses(traceCauses);
         filteredEventLog->setTraceConsequences(traceConsequences);
@@ -320,30 +320,30 @@ void usage(char *message)
 "\n"
 "   Options: Not all options may be used for all commands. Some options optionally accept a list of\n"
 "            space separated tokens as a single parameter. Name and type filters may include patterns.\n"
-"      input-file-name                   <file-name>\n"
-"      -o      --output                  <file-name>\n"
+"      input-file-name                            <file-name>\n"
+"      -o      --output                           <file-name>\n"
 "         defaults to standard output\n"
-"      -fe     --from-event-number       <integer>\n"
+"      -fe     --from-event-number                <integer>\n"
 "         inclusive\n"
-"      -te     --to-event-number         <integer>\n"
+"      -te     --to-event-number                  <integer>\n"
 "         inclusive\n"
-"      -ft     --from-simulation-time    <number>\n"
+"      -ft     --from-simulation-time             <number>\n"
 "         inclusive\n"
-"      -tt     --to-simulation-time      <number>\n"
+"      -tt     --to-simulation-time               <number>\n"
 "         inclusive\n"
-"      -e      --event-numbers           <integer>+\n"
+"      -e      --event-numbers                    <integer>+\n"
 "         events must be present in the input file\n"
-"      -f      --file-offsets            <integer>+\n"
-"      -mn     --module-names            <pattern>+\n"
-"      -mt     --module-types            <pattern>+\n"
-"      -mi     --module-ids              <integer>+\n"
+"      -f      --file-offsets                     <integer>+\n"
+"      -mn     --module-names                     <pattern>+\n"
+"      -mt     --module-types                     <pattern>+\n"
+"      -mi     --module-ids                       <integer>+\n"
 "         compound module ids are allowed\n"
-"      -sn     --message-names           <pattern>+\n"
-"      -st     --message-types           <pattern>+\n"
-"      -si     --message-ids             <integer>+\n"
-"      -sti    --message-tids            <integer>+\n"
-"      -sei    --message-eids            <integer>+\n"
-"      -seti   --message-etids           <integer>+\n"
+"      -sn     --message-names                    <pattern>+\n"
+"      -st     --message-types                    <pattern>+\n"
+"      -si     --message-ids                      <integer>+\n"
+"      -sti    --message-tree-ids                 <integer>+\n"
+"      -sei    --message-encapsulation-ids        <integer>+\n"
+"      -seti   --message-encapsulation-tree-ids   <integer>+\n"
 "      -ob     --omit-causes-trace\n"
 "      -of     --omit-consequences-trace\n"
 "      -oi     --omit-initialization\n"
@@ -429,12 +429,12 @@ int main(int argc, char **argv)
                 parseStringTokens(options.messageTypes, argv[++i]);
             else if (!strcmp(argv[i], "-si") || !strcmp(argv[i], "--message-ids"))
                 parseLongTokens(options.messageIds, argv[++i]);
-            else if (!strcmp(argv[i], "-sti") || !strcmp(argv[i], "--message-tids"))
-                parseLongTokens(options.messageTids, argv[++i]);
-            else if (!strcmp(argv[i], "-sei") || !strcmp(argv[i], "--message-eids"))
-                parseLongTokens(options.messageEids, argv[++i]);
-            else if (!strcmp(argv[i], "-seti") || !strcmp(argv[i], "--message-etids"))
-                parseLongTokens(options.messageEtids, argv[++i]);
+            else if (!strcmp(argv[i], "-sti") || !strcmp(argv[i], "--message-tree-ids"))
+                parseLongTokens(options.messageTreeIds, argv[++i]);
+            else if (!strcmp(argv[i], "-sei") || !strcmp(argv[i], "--message-encapsulation-ids"))
+                parseLongTokens(options.messageEncapsulationIds, argv[++i]);
+            else if (!strcmp(argv[i], "-seti") || !strcmp(argv[i], "--message-encapsulation-tree-ids"))
+                parseLongTokens(options.messageEncapsulationTreeIds, argv[++i]);
             else if (!strcmp(argv[i], "-ob") || !strcmp(argv[i], "--omit-causes-trace"))
                 options.traceCauses = false;
             else if (!strcmp(argv[i], "-of") || !strcmp(argv[i], "--omit-consequences-trace"))

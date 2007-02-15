@@ -15,9 +15,18 @@
 #ifndef __EVENTLOGTABLEFACADE_H_
 #define __EVENTLOGTABLEFACADE_H_
 
+#include "matchexpression.h"
 #include "ievent.h"
 #include "ieventlog.h"
 #include "eventlogfacade.h"
+
+enum EventLogTableMode {
+    ALL_ENTRIES,
+    EVENT_AND_SEND_AND_MESSAGE_ENTRIES,
+    EVENT_AND_MESSAGE_ENTRIES,
+    EVENT_ENTRIES,
+    CUSTOM_ENTRIES
+};
 
 /**
  * A class that makes it possible to extract info about events, without
@@ -30,16 +39,27 @@ class EVENTLOG_API EventLogTableFacade : EventLogFacade
 {
     protected:
         long approximateNumberOfEntries;
+        long lastMatchedEventNumber;
+        int lastNumMatchingEventLogEntries;
+        EventLogTableMode eventLogTableMode;
+        MatchExpression matchExpression;
 
     public:
         EventLogTableFacade(IEventLog *eventLog);
         virtual ~EventLogTableFacade() {}
+
+        EventLogTableMode getEventLogTableMode() { return eventLogTableMode; }
+        void setEventLogTableMode(EventLogTableMode eventLogTableMode);
+        bool matchesFilter(EventLogEntry *eventLogEntry);
+        int getNumMatchingEventLogEntries(IEvent *event);
+        void setCustomFilter(const char *pattern) { matchExpression.setPattern((std::string("E or (") + pattern + ")").c_str(), false, true, false); }
 
 		EventLogEntry *getFirstEntry();
 		EventLogEntry *getLastEntry();
         int getEntryIndexInEvent(EventLogEntry *eventLogEntry);
         EventLogEntry *getEntryInEvent(IEvent *event, int index);
 		long getDistanceToEntry(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long limit);
+        EventLogEntry *getClosestEntry(EventLogEntry *eventLogEntry);
 		long getDistanceToFirstEntry(EventLogEntry *eventLogEntry, long limit);
 		long getDistanceToLastEntry(EventLogEntry *eventLogEntry, long limit);
 		EventLogEntry *getNeighbourEntry(EventLogEntry *eventLogEntry, long distance);

@@ -19,7 +19,82 @@
 
 EventLogTableFacade::EventLogTableFacade(IEventLog *eventLog) : EventLogFacade(eventLog)
 {
+    setEventLogTableMode(ALL_ENTRIES);
+    setCustomFilter("*");
+}
+
+void EventLogTableFacade::setEventLogTableMode(EventLogTableMode eventLogTableMode)
+{
+    this->eventLogTableMode = eventLogTableMode;
+    
     approximateNumberOfEntries = -1;
+    lastMatchedEventNumber = -1;
+    lastNumMatchingEventLogEntries = -1;
+}
+
+bool EventLogTableFacade::matchesFilter(EventLogEntry *eventLogEntry)
+{
+    switch (eventLogTableMode)
+    {
+        case ALL_ENTRIES:
+            return true;
+        case EVENT_AND_SEND_AND_MESSAGE_ENTRIES:
+            return
+                dynamic_cast<EventEntry *>(eventLogEntry) ||
+                dynamic_cast<BeginSendEntry *>(eventLogEntry) ||
+                dynamic_cast<EventLogMessage *>(eventLogEntry);
+        case EVENT_AND_MESSAGE_ENTRIES:
+            return
+                dynamic_cast<EventEntry *>(eventLogEntry) ||
+                dynamic_cast<EventLogMessage *>(eventLogEntry);
+        case EVENT_ENTRIES:
+            return dynamic_cast<EventEntry *>(eventLogEntry);
+        case CUSTOM_ENTRIES:
+            return matchExpression.matches(eventLogEntry);
+        default:
+            throw opp_runtime_error("Unknown event log table filter");
+    }
+}
+
+int EventLogTableFacade::getNumMatchingEventLogEntries(IEvent *event)
+{
+    if (lastMatchedEventNumber == event->getEventNumber())
+        return lastNumMatchingEventLogEntries;
+    else {
+        lastMatchedEventNumber = event->getEventNumber();
+
+        switch (eventLogTableMode)
+        {
+            case ALL_ENTRIES:
+                lastNumMatchingEventLogEntries = event->getNumEventLogEntries();
+                break;
+            case EVENT_AND_SEND_AND_MESSAGE_ENTRIES:
+                lastNumMatchingEventLogEntries = event->getNumBeginSendEntries() + event->getNumEventLogMessages() + 1;
+                break;
+            case EVENT_AND_MESSAGE_ENTRIES:
+                lastNumMatchingEventLogEntries = event->getNumEventLogMessages() + 1;
+                break;
+            case EVENT_ENTRIES:
+                lastNumMatchingEventLogEntries = 1;
+                break;
+            case CUSTOM_ENTRIES:
+                {
+                    int count = 0;
+                    int num = event->getNumEventLogEntries();
+
+                    for (int i = 0; i < num; i++)
+                        if (matchesFilter(event->getEventLogEntry(i)))
+                            count++;
+
+                    lastNumMatchingEventLogEntries = count;
+                    break;
+                }
+            default:
+                throw opp_runtime_error("Unknown event log table filter");
+        }
+
+        return lastNumMatchingEventLogEntries;
+    }
 }
 
 EventLogEntry *EventLogTableFacade::getFirstEntry()
@@ -39,7 +114,7 @@ EventLogEntry *EventLogTableFacade::getLastEntry()
     if (!event)
         return NULL;
     else
-        return getEntryInEvent(event, event->getNumEventLogMessages());
+        return getEntryInEvent(event, getNumMatchingEventLogEntries(event) - 1);
 }
 
 EventLogEntry *EventLogTableFacade::getEntryAndDistance(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long distance, long& reachedDistance)
@@ -71,6 +146,11 @@ EventLogEntry *EventLogTableFacade::getEntryAndDistance(EventLogEntry *sourceEve
     return eventLogEntry;
 }
 
+EventLogEntry *EventLogTableFacade::getClosestEntry(EventLogEntry *eventLogEntry)
+{
+    return getEntryInEvent(eventLogEntry->getEvent(), 0);
+}
+
 EventLogEntry *EventLogTableFacade::getPreviousEntry(EventLogEntry *eventLogEntry, int& index)
 {
     IEvent *event = eventLogEntry->getEvent();
@@ -80,7 +160,7 @@ EventLogEntry *EventLogTableFacade::getPreviousEntry(EventLogEntry *eventLogEntr
         event = event->getPreviousEvent();
 
         if (event)
-            index = event->getNumEventLogMessages();
+            index = getNumMatchingEventLogEntries(event) - 1;
     }
 
     if (!event)
@@ -94,7 +174,7 @@ EventLogEntry *EventLogTableFacade::getNextEntry(EventLogEntry *eventLogEntry, i
     IEvent *event = eventLogEntry->getEvent();
     index++;
 
-    if (index == event->getNumEventLogMessages() + 1) {
+    if (index == getNumMatchingEventLogEntries(event)) {
         event = event->getNextEvent();
         index = 0;
     }
@@ -107,20 +187,44 @@ EventLogEntry *EventLogTableFacade::getNextEntry(EventLogEntry *eventLogEntry, i
 
 EventLogEntry *EventLogTableFacade::getEntryInEvent(IEvent *event, int index)
 {
-    Assert(index >= 0 && index <= event->getNumEventLogMessages());
+    Assert(index >= 0 && index < getNumMatchingEventLogEntries(event));
 
-    if (index == 0)
-        return event->getEventEntry();
-    else
-        return event->getEventLogMessage(index - 1);
+    int num = event->getNumEventLogEntries();
+
+    for (int i = 0; i < num; i++)
+    {
+        EventLogEntry *eventLogEntry = event->getEventLogEntry(i);
+
+        if (matchesFilter(eventLogEntry)) {
+            if (index == 0)
+                return eventLogEntry;
+            else
+                index--;
+        }
+    }
+
+    throw opp_runtime_error("No event log entry with index: %d in event: %lld", index, event->getEventNumber());
 }
 
 int EventLogTableFacade::getEntryIndexInEvent(EventLogEntry *eventLogEntry)
 {
-    if (dynamic_cast<EventEntry *>(eventLogEntry))
-        return 0;
-    else
-        return eventLogEntry->getEvent()->getEventLogMessageIndex((EventLogMessage *)eventLogEntry) + 1;
+    IEvent *event = eventLogEntry->getEvent();
+    int index = 0;
+    int num = event->getNumEventLogEntries();
+
+    for (int i = 0; i < num; i++)
+    {
+        EventLogEntry *currentEventLogEntry = event->getEventLogEntry(i);
+
+        if (matchesFilter(currentEventLogEntry)) {
+            if (currentEventLogEntry == eventLogEntry)
+                return index;
+            else
+                index++;
+        }
+    }
+
+    throw opp_runtime_error("No event log entry found in event: %lld", event->getEventNumber());
 }
 
 long EventLogTableFacade::getDistanceToEntry(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long limit)
@@ -162,10 +266,8 @@ EventLogEntry *EventLogTableFacade::getApproximateEventLogEntryTableAt(double pe
 
         if (!event)
             return NULL;
-        else if (event->getNumEventLogMessages() != 0)
-            return event->getEventLogMessage(event->getNumEventLogMessages() - 1);
         else
-            return event->getEventEntry();
+            return getEntryInEvent(event, getNumMatchingEventLogEntries(event) - 1);
     }
     else
         return eventLog->getApproximateEventAt(percentage)->getEventEntry();
@@ -189,13 +291,13 @@ long EventLogTableFacade::getApproximateNumberOfEntries()
             for (int i = 0; i < eventCount; i++)
             {
                 if (firstEvent) {
-                    sum += firstEvent->getNumEventLogMessages() + 1;
+                    sum += getNumMatchingEventLogEntries(firstEvent) + 1;
                     count++;
                     firstEvent = firstEvent->getNextEvent();
                 }
 
                 if (lastEvent) {
-                    sum += lastEvent->getNumEventLogMessages() + 1;
+                    sum += getNumMatchingEventLogEntries(lastEvent) + 1;
                     count++;
                     lastEvent = lastEvent->getPreviousEvent();
                 }

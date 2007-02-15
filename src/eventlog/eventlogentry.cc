@@ -16,7 +16,13 @@
 #include "eventlogentry.h"
 #include "eventlogentryfactory.h"
 
+char EventLogEntry::buffer[100];
 LineTokenizer EventLogEntry::tokenizer;
+
+EventLogEntry::EventLogEntry()
+{
+    this->contextModuleId;
+}
 
 EventLogEntry *EventLogEntry::parseEntry(Event *event, char *line, int length)
 {
@@ -114,4 +120,22 @@ void EventLogMessage::parse(char *line, int length)
 void EventLogMessage::print(FILE *fout)
 {
     ::fprintf(fout, "- %s\n", text);
+}
+
+const std::vector<const char *> EventLogMessage::getAttributeNames() const
+{
+    std::vector<const char *> names;
+    names.push_back("-");
+
+    return names;
+}
+
+const char *EventLogMessage::getAttribute(const char *name) const
+{
+    if (!strcmp(name, "type"))
+        return "-";
+    else if (!strcmp(name, "-"))
+        return text;
+    else
+        return NULL;
 }

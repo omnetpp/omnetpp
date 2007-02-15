@@ -81,9 +81,10 @@ CE CancelEventEntry
 BS BeginSendEntry
 {
    id long messageId
-   tid long messageTid
-   eid long messageEid   -1
-   etid long messageEtid -1
+   //XXX what about writing dup, encapsulate/decapsulate as separate lines?
+   tid long messageTreeId
+   eid long messageEncapsulationId   -1
+   etid long messageEncapsulationTreeId -1
    c string messageClassName
    n string messageFullName
    pe long previousEventNumber -1

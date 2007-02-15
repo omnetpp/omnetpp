@@ -12,6 +12,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "deque"
 #include "filereader.h"
 #include "event.h"
 #include "eventlog.h"
@@ -27,6 +28,8 @@ Event::Event(EventLog *eventLog)
     cause = NULL;
     causes = NULL;
     consequences = NULL;
+    numEventLogMessages = -1;
+    numBeginSendEntries = -1;
 }
 
 Event::~Event()
@@ -70,9 +73,14 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
     beginOffset = offset;
     reader->seekTo(offset);
 
+    numEventLogMessages = 0;
+    numBeginSendEntries = 0;
+
     if (PRINT_DEBUG_MESSAGES) printf("Parsing event at offset: %lld\n", offset);
 
+    std::deque<int> contextModuleIds;
     int emptyLines = 0;
+
     while (true)
     {
         char *line = reader->getNextLineBufferPointer();
@@ -87,12 +95,12 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
         if (!eventLogEntry)
             emptyLines++;
 
-        EventEntry *readEventEntry = dynamic_cast<EventEntry *>(eventLogEntry);
-
         // first line must be an event entry
+        EventEntry *readEventEntry = dynamic_cast<EventEntry *>(eventLogEntry);
         if (!eventEntry) {
             Assert(readEventEntry);
             eventEntry = readEventEntry;
+            contextModuleIds.push_back(eventEntry->moduleId);
         }
         else if (readEventEntry) {
             if (emptyLines == 1)
@@ -100,15 +108,32 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
             else
                 throw opp_runtime_error("Too many empty lines for a single event after offset: %lld", offset);
         }
-
         Assert(eventEntry);
 
-        if (eventLogEntry)
-            eventLogEntries.push_back(eventLogEntry);
+        // handle module method end
+        ModuleMethodEndEntry *moduleMethodEndEntry = dynamic_cast<ModuleMethodEndEntry *>(eventLogEntry);
+        if (moduleMethodEndEntry)
+            contextModuleIds.pop_front();
 
-        EventLogMessage *eventLogMessage = dynamic_cast<EventLogMessage *>(eventLogEntry);
-        if (eventLogMessage)
-            eventLogMessages.push_back(eventLogMessage);
+        // store log entry
+        if (eventLogEntry) {
+            eventLogEntry->level = contextModuleIds.size() - 1;
+            eventLogEntry->contextModuleId = contextModuleIds.front();
+            eventLogEntries.push_back(eventLogEntry);
+        }
+
+        // handle module method begin
+        ModuleMethodBeginEntry *moduleMethodBeginEntry = dynamic_cast<ModuleMethodBeginEntry *>(eventLogEntry);
+        if (moduleMethodBeginEntry)
+            contextModuleIds.push_front(moduleMethodBeginEntry->toModuleId);
+
+        // count message entry
+        if (dynamic_cast<EventLogMessage *>(eventLogEntry))
+            numEventLogMessages++;
+
+        // count begin send entry
+        if (dynamic_cast<BeginSendEntry *>(eventLogEntry))
+            numBeginSendEntries++;
     }
 
     return endOffset = reader->getLastLineStartOffset();
@@ -123,6 +148,25 @@ void Event::print(FILE *file, bool outputEventLogMessages)
         if (outputEventLogMessages || !dynamic_cast<EventLogMessage *>(eventLogEntry))
             eventLogEntry->print(file);
     }
+}
+
+EventLogMessage *Event::getEventLogMessage(int index)
+{
+    Assert(index >= 0);
+
+    for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++)
+    {
+        EventLogMessage *eventLogMessage = dynamic_cast<EventLogMessage *>(*it);
+
+        if (eventLogMessage) {
+            if (index == 0)
+                return eventLogMessage;
+            else
+                index--;
+        }
+    }
+
+    throw opp_runtime_error("index out of range");
 }
 
 Event *Event::getPreviousEvent()

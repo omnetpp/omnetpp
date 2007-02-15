@@ -83,34 +83,39 @@ long MessageDependency::getConsequenceEventNumber()
         // So here we have to look through all events at the arrival time,
         // and find the one "caused by" our message.
         simtime_t consequenceTime = getConsequenceTime();
-        IEvent *event = eventLog->getEventForSimulationTime(consequenceTime, FIRST_OR_PREVIOUS);
 
-        while (event)
-        {
-            if (event == NULL)
+        if (consequenceTime == -1)
+            consequenceEventNumber = NO_SUCH_EVENT;
+        else {
+            IEvent *event = eventLog->getEventForSimulationTime(consequenceTime, FIRST_OR_PREVIOUS);
+
+            while (event)
             {
-                // end of file
-                consequenceEventNumber = EVENT_NOT_YET_REACHED;
-                break;
-            }
+                if (!event)
+                {
+                    // end of file
+                    consequenceEventNumber = EVENT_NOT_YET_REACHED;
+                    break;
+                }
 
-            if (event->getCauseEventNumber() == getCauseEventNumber() &&
-                event->getMessageId() == getCauseMessageId())
-            {
-                consequenceEventNumber = event->getEventNumber();
-                break;
-            }
+                if (event->getCauseEventNumber() == getCauseEventNumber() &&
+                    event->getMessageId() == getCauseMessageId())
+                {
+                    consequenceEventNumber = event->getEventNumber();
+                    break;
+                }
 
-            if (event->getSimulationTime() > consequenceTime)
-            {
-                // no more event at that simulation time, and consequence event
-                // still not found. It must have been cancelled (self message),
-                // or it is not in the file (filtered out by the user, etc).
-                consequenceEventNumber = NO_SUCH_EVENT;
-                break;
-            }
+                if (event->getSimulationTime() > consequenceTime)
+                {
+                    // no more event at that simulation time, and consequence event
+                    // still not found. It must have been cancelled (self message),
+                    // or it is not in the file (filtered out by the user, etc).
+                    consequenceEventNumber = NO_SUCH_EVENT;
+                    break;
+                }
 
-            event = event->getNextEvent();
+                event = event->getNextEvent();
+            }
         }
     }
 
@@ -142,10 +147,17 @@ simtime_t MessageDependency::getConsequenceTime()
 
         while (i < event->getNumEventLogEntries())
         {
-            EndSendEntry *endSendEntry = dynamic_cast<EndSendEntry *>(event->getEventLogEntry(i++));
+            EventLogEntry *eventLogEntry = event->getEventLogEntry(i++);
 
-            if (endSendEntry != NULL)
+            EndSendEntry *endSendEntry = dynamic_cast<EndSendEntry *>(eventLogEntry);
+            if (endSendEntry)
                 return endSendEntry->arrivalTime;
+
+            DeleteMessageEntry *deleteMessageEntry = dynamic_cast<DeleteMessageEntry *>(eventLogEntry);
+            if (deleteMessageEntry) {
+                Assert(deleteMessageEntry->messageId == beginSendEntry->messageId);
+                return -1;
+            }
         }
 
         throw opp_runtime_error("Missing end message send entry");

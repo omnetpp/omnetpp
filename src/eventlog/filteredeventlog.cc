@@ -181,15 +181,15 @@ bool FilteredEventLog::matchesEvent(IEvent *event)
             return false;
 
         // event's message tid
-        if (!matchesList(messageTids, beginSendEntry->messageTid))
+        if (!matchesList(messageTreeIds, beginSendEntry->messageTreeId))
             return false;
 
         // event's message eid
-        if (!matchesList(messageEids, beginSendEntry->messageEid))
+        if (!matchesList(messageEncapsulationIds, beginSendEntry->messageEncapsulationId))
             return false;
 
         // event's message etid
-        if (!matchesList(messageEtids, beginSendEntry->messageEtid))
+        if (!matchesList(messageEncapsulationTreeIds, beginSendEntry->messageEncapsulationTreeId))
             return false;
     }
 

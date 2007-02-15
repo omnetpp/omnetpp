@@ -39,12 +39,11 @@ class EVENTLOG_API Event : public IEvent
         file_offset_t beginOffset; // file offset where the event starts
         file_offset_t endOffset; // file offset where the event ends (ie. begin of next event)
         EventEntry *eventEntry; // the event log entry that corresponds to the actual event ("E" line)
+        int numEventLogMessages;
+        int numBeginSendEntries;
 
         typedef std::vector<EventLogEntry *> EventLogEntryList;
         EventLogEntryList eventLogEntries; // all entries parsed from the file (lines below "E" line)
-
-        typedef std::vector<EventLogMessage *> EventLogMessageList;
-        EventLogMessageList eventLogMessages;
 
         /**
          * A is a cause of B if and only if B is a consequence of A.
@@ -76,9 +75,9 @@ class EVENTLOG_API Event : public IEvent
         virtual int getNumEventLogEntries() { return eventLogEntries.size(); }
         virtual EventLogEntry *getEventLogEntry(int index) { return eventLogEntries[index]; }
 
-        virtual int getNumEventLogMessages() { return eventLogMessages.size(); }
-        virtual EventLogMessage *getEventLogMessage(int index) { return eventLogMessages[index]; }
-        virtual int getEventLogMessageIndex(EventLogMessage *eventLogMessage) { return find(eventLogMessages.begin(), eventLogMessages.end(), eventLogMessage) - eventLogMessages.begin(); }
+        virtual int getNumEventLogMessages() { return numEventLogMessages; }
+        virtual int getNumBeginSendEntries() { return numBeginSendEntries; }
+        virtual EventLogMessage *getEventLogMessage(int index);
 
         virtual long getEventNumber() { return eventEntry->eventNumber; }
         virtual simtime_t getSimulationTime() { return eventEntry->simulationTime; }
