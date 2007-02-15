@@ -43,7 +43,7 @@ using std::ios;
 
 Register_Class(cFileOutputVectorManager);
 
-Register_GlobalConfigEntry(CFGID_OUTPUT_VECTOR_FILE, "output-vector-file", "General", CFG_FILENAME,  "omnetpp.vec", "Name for the output scalar file."); //XXX desc: what macros are expanded in the filename
+Register_GlobalConfigEntry(CFGID_OUTPUT_VECTOR_FILE, "output-vector-file", "General", CFG_FILENAME,  "omnetpp.vec", "Name for the output vector file."); //XXX desc: what macros are expanded in the filename
 Register_GlobalConfigEntry(CFGID_OUTPUT_VECTOR_PRECISION, "output-vector-precision", "General", CFG_INT,  DEFAULT_PRECISION, "Adjusts the number of significant digits for recording numbers into the output vector file.");
 Register_GlobalConfigEntry(CFGID_OUTPUT_SCALAR_FILE, "output-scalar-file", "General", CFG_FILENAME,  "omnetpp.sca", "Name for the output scalar file."); //XXX desc: what macros are expanded in the filename
 Register_GlobalConfigEntry(CFGID_OUTPUT_SCALAR_PRECISION, "output-scalar-precision", "General", CFG_INT,  DEFAULT_PRECISION, "Adjusts the number of significant digits for recording numbers into the output scalar file.");

@@ -26,7 +26,7 @@
 #include "cconfig.h"
 #include "platmisc.h" // usleep
 
-Register_GlobalConfigEntry(CFGID_REALTIMESCHEDULER_SCALING, "realtimescheduler-scaling", "General", CFG_DOUBLE,  0, "When cRealTimeScheduler is selected as scheduler class: ratio of simulation time to real time. For example, scaling=2 will cause simulation time to progress at 2 seconds per real second.");
+Register_GlobalConfigEntry(CFGID_REALTIMESCHEDULER_SCALING, "realtimescheduler-scaling", "General", CFG_DOUBLE,  0, "When cRealTimeScheduler is selected as scheduler class: ratio of simulation time to real time. For example, scaling=2 will cause simulation time to progress twice as fast as runtime.");
 
 cScheduler::cScheduler()
 {

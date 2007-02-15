@@ -33,18 +33,17 @@
 #include "timeutil.h"
 
 
-Register_GlobalConfigEntry(CFGID_RUNS_TO_EXECUTE, "runs-to-execute", "Cmdenv", CFG_STRING,  "", "FIXME add some description here")
-Register_GlobalConfigEntry(CFGID_CMDENV_EXTRA_STACK_KB, "cmdenv-extra-stack-kb", "Cmdenv", CFG_INT,  CMDENV_EXTRASTACK_KB, "FIXME add some description here")
-Register_GlobalConfigEntry(CFGID_OUTPUT_FILE, "output-file", "Cmdenv", CFG_FILENAME,  "", "FIXME add some description here")
-Register_PerRunConfigEntry(CFGID_EXPRESS_MODE, "express-mode", "Cmdenv", CFG_BOOL,  false, "FIXME add some description here")
-Register_PerRunConfigEntry(CFGID_AUTOFLUSH, "autoflush", "Cmdenv", CFG_BOOL,  false, "FIXME add some description here")
-Register_PerRunConfigEntry(CFGID_MODULE_MESSAGES, "module-messages", "Cmdenv", CFG_BOOL,  true, "FIXME add some description here")
-Register_PerRunConfigEntry(CFGID_EVENT_BANNERS, "event-banners", "Cmdenv", CFG_BOOL,  true, "FIXME add some description here")
-Register_PerRunConfigEntry(CFGID_EVENT_BANNER_DETAILS, "event-banner-details", "Cmdenv", CFG_BOOL,  false, "FIXME add some description here")
-Register_PerRunConfigEntry(CFGID_MESSAGE_TRACE, "message-trace", "Cmdenv", CFG_BOOL,  false, "FIXME add some description here")
-Register_PerRunConfigEntry(CFGID_STATUS_FREQUENCY, "status-frequency", "Cmdenv", CFG_INT,  100000, "FIXME add some description here")
-Register_PerRunConfigEntry(CFGID_STATUS_FREQUENCY_INTERVAL, "status-frequency-interval", "Cmdenv", CFG_TIME,  5.0, "FIXME add some description here")
-Register_PerRunConfigEntry(CFGID_PERFORMANCE_DISPLAY, "performance-display", "Cmdenv", CFG_BOOL,  true, "FIXME add some description here")
+Register_GlobalConfigEntry(CFGID_RUNS_TO_EXECUTE, "runs-to-execute", "Cmdenv", CFG_STRING,  "", "Specifies which simulation runs should be executed. It accepts a comma-separated list of run numbers or run number ranges, e.g. 1,3-4,7-9. If the value is missing, Cmdenv executes all runs that have ini file sections; if no runs are specified in the ini file, Cmdenv does one run. The -r command line option overrides this setting.")
+Register_GlobalConfigEntry(CFGID_CMDENV_EXTRA_STACK_KB, "cmdenv-extra-stack-kb", "Cmdenv", CFG_INT,  CMDENV_EXTRASTACK_KB, "Specifies the extra amount of stack (in kilobytes) that is reserved for each activity() simple module when the simulation is run under Cmdenv.")
+Register_GlobalConfigEntry(CFGID_OUTPUT_FILE, "output-file", "Cmdenv", CFG_FILENAME,  "", "When a filename is specified, Cmdenv redirects standard output into the given file. This is especially useful with parallel simulation. See `fname-append-host' option as well.")
+Register_PerRunConfigEntry(CFGID_EXPRESS_MODE, "express-mode", "Cmdenv", CFG_BOOL,  false, "Selects ``normal'' (debug/trace) or ``express'' mode.")
+Register_PerRunConfigEntry(CFGID_AUTOFLUSH, "autoflush", "Cmdenv", CFG_BOOL,  false, "Call fflush(stdout) after each event banner or status update; affects both express and normal mode. Turning on autoflush can be useful with printf-style debugging for tracking down program crashes.")
+Register_PerRunConfigEntry(CFGID_MODULE_MESSAGES, "module-messages", "Cmdenv", CFG_BOOL,  true, "When express-mode=false: turns printing module ev<< output on/off.")
+Register_PerRunConfigEntry(CFGID_EVENT_BANNERS, "event-banners", "Cmdenv", CFG_BOOL,  true, "When express-mode=false: turns printing event banners on/off.")
+Register_PerRunConfigEntry(CFGID_EVENT_BANNER_DETAILS, "event-banner-details", "Cmdenv", CFG_BOOL,  false, "When express-mode=false: print extra information after event banners.")
+Register_PerRunConfigEntry(CFGID_MESSAGE_TRACE, "message-trace", "Cmdenv", CFG_BOOL,  false, "When express-mode=false: print a line per message sending (by send(),scheduleAt(), etc) and delivery on the standard output.")
+Register_PerRunConfigEntry(CFGID_STATUS_FREQUENCY, "status-frequency", "Cmdenv", CFG_INT,  100000, "When express-mode=true: print status update every n events. Typical values are 100,000...1,000,000.")
+Register_PerRunConfigEntry(CFGID_PERFORMANCE_DISPLAY, "performance-display", "Cmdenv", CFG_BOOL,  true, "When express-mode=true: print detailed performance information. Turning it on results in a 3-line entry printed on each update, containing ev/sec, simsec/sec, ev/simsec, number of messages created/still present/currently scheduled in FES.")
 
 
 //
@@ -126,7 +125,6 @@ void TCmdenvApp::readPerRunOptions()
     opt_eventbanner_details = cfg->getAsBool(CFGID_EVENT_BANNER_DETAILS);
     opt_messagetrace = cfg->getAsBool(CFGID_MESSAGE_TRACE);
     opt_status_frequency_ev = cfg->getAsInt(CFGID_STATUS_FREQUENCY);
-    //opt_status_frequency_sec = cfg->getAsDouble(CFGID_STATUS_FREQUENCY_INTERVAL);
     opt_perfdisplay = cfg->getAsBool(CFGID_PERFORMANCE_DISPLAY);
 }
 

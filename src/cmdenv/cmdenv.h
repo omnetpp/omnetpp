@@ -44,7 +44,6 @@ class TCmdenvApp : public TOmnetApp
      bool opt_eventbanner_details; // if normal mode
      bool opt_messagetrace; // if normal mode
      int opt_status_frequency_ev; // if express mode
-     // double opt_status_frequency_sec; -- not yet implemented
      bool opt_perfdisplay; // if express mode
 
      // set to true on SIGINT/SIGTERM signals
