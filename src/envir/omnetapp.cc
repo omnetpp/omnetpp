@@ -111,7 +111,6 @@ Register_PerRunConfigEntry(CFGID_NETWORK, "network",  "General", CFG_STRING,  "d
 Register_PerRunConfigEntry(CFGID_WARNINGS, "warnings",  "General", CFG_BOOL,  true, "Enables warnings.");
 Register_PerRunConfigEntry(CFGID_SIM_TIME_LIMIT, "sim-time-limit",  "General", CFG_TIME,  0.0, "Stops the simulation when simulation time reaches the given limit. The default is no limit.");
 Register_PerRunConfigEntry(CFGID_CPU_TIME_LIMIT, "cpu-time-limit",  "General", CFG_TIME,  0.0, "Stops the simulation when CPU usage has reached the given limit. The default is no limit.");
-Register_PerRunConfigEntry(CFGID_NETIF_CHECK_FREQ, "netif-check-freq",  "General", CFG_INT,  1, "FIXME add some description here");
 Register_PerRunConfigEntry(CFGID_FINGERPRINT, "fingerprint",  "General", CFG_STRING,  "", "The expected fingerprint, suitable for crude regression tests. If present, the actual fingerprint is calculated during simulation, and compared against the expected one.");
 Register_PerRunConfigEntry(CFGID_EVENTLOG_FILE, "eventlog-file",  "General", CFG_FILENAME,  "", "Name of the event log file to generate. If emtpy, no file is generated.");
 
@@ -288,6 +287,7 @@ void TOmnetApp::dumpComponentList(const char *category)
     if (wantAll || !strcmp(category, "config") || !strcmp(category, "configdetails"))
     {
         ev << "Supported configuration entries (omnetpp.ini):\n";
+        ev << "\n";
 
         bool printDescriptions = !strcmp(category, "configdetails");
 
@@ -297,7 +297,7 @@ void TOmnetApp::dumpComponentList(const char *category)
         {
             cConfigEntry *obj = dynamic_cast<cConfigEntry *>(table->get(i));
             ASSERT(obj);
-            ev << " [" << obj->section() << "] " << obj->name() << "=";
+            ev << "[" << obj->section() << "] " << obj->name() << "=";
             ev << "<" << cConfigEntry::typeName(obj->type()) << ">";
             if (obj->unit())
                 ev << ", unit=\"" << obj->unit() << "\"";
@@ -306,7 +306,8 @@ void TOmnetApp::dumpComponentList(const char *category)
             ev << "; " << (obj->isGlobal() ? "global" : "per-run") << " setting";
             ev << "\n";
             if (printDescriptions && obj->description() && obj->description()[0])
-                ev << "    " << obj->description() << "\n";
+                ev << obj->description() << "\n";
+            ev << "\n";
         }
         ev << "\n";
     }
