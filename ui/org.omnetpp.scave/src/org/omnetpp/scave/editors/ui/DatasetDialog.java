@@ -3,11 +3,12 @@ package org.omnetpp.scave.editors.ui;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.omnetpp.scave.model2.FilterHints;
 import org.omnetpp.scave.model2.Filter;
-import org.omnetpp.scave.model2.ScaveModelUtil.RunIdKind;
+import org.omnetpp.scave.model2.FilterHints;
 
 /**
  * Common base class for CreateDatasetDialog and AddToDatasetDialog.
@@ -16,16 +17,28 @@ import org.omnetpp.scave.model2.ScaveModelUtil.RunIdKind;
  */
 public abstract class DatasetDialog extends Dialog {
 	
+	public static final int SHOW_SELECTION = 0x01;
+	public static final int SHOW_FILTER = 0x02;
+	
+	private int style;
+	
 	private String dialogTitle;
-	private DataItemsPanel panel;
 	
 	private boolean useFilter;
 	private Filter filterParams;
 	private FilterHints filterHints;
-	private RunIdKind runIdKind;
+	private String[] runidFields;
+	
+	private DataItemsPanel panel;
+	private RunSelectionPanel selectionPanel;
+	
+	public DatasetDialog(Shell parent, String title) {
+		this(parent, SHOW_SELECTION | SHOW_FILTER, title);
+	}
 
-	public DatasetDialog(Shell parentShell, String dialogTitle) {
+	public DatasetDialog(Shell parentShell, int style, String dialogTitle) {
 		super(parentShell);
+		this.style = style;
 		this.dialogTitle = dialogTitle;
 	}
 	
@@ -49,8 +62,8 @@ public abstract class DatasetDialog extends Dialog {
 		return filterParams;
 	}
 	
-	public RunIdKind getRunIdKind() {
-		return runIdKind;
+	public String[] getRunIdFields() {
+		return runidFields;
 	}
 	
 	@Override
@@ -60,16 +73,30 @@ public abstract class DatasetDialog extends Dialog {
 	}
 
 	protected Composite createDataItemsPanel(Composite parent ) {
-		panel = new DataItemsPanel(parent, SWT.NONE);
-		panel.setLayoutData(new GridData(GridData.FILL_BOTH));
-		panel.setUseFilter(useFilter);
-		if (filterParams != null) {
-			panel.setFilterParams(filterParams);
+		if (style == (SHOW_SELECTION | SHOW_FILTER)) {
+			panel = new DataItemsPanel(parent, SWT.NONE);
+			panel.setLayoutData(new GridData(GridData.FILL_BOTH));
+			panel.setUseFilter(useFilter);
+			if (filterParams != null) {
+				panel.setFilterParams(filterParams);
+			}
+			if (filterHints != null) {
+				panel.setFilterHints(filterHints);
+			}
+			return panel;
 		}
-		if (filterHints != null) {
-			panel.setFilterHints(filterHints);
+		else if (style == SHOW_SELECTION) {
+			Composite p = new Composite(parent, SWT.NONE);
+			p.setLayout(new GridLayout());
+			Label label = new Label(p, SWT.NONE);
+			label.setText("Add selected data items");
+			GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+			gridData.horizontalIndent = 15;
+			selectionPanel = new RunSelectionPanel(p, SWT.NONE);
+			selectionPanel.setLayoutData(gridData);
+			return p;
 		}
-		return panel;
+		return null;
 	}
 
 	@Override
@@ -82,7 +109,11 @@ public abstract class DatasetDialog extends Dialog {
 		if (panel != null) {
 			useFilter = panel.useFilter();
 			filterParams = panel.getFilterParams();
-			runIdKind = panel.getRunIdKind();
+			runidFields = panel.getRunIdFields();
+		}
+		else if (selectionPanel != null) {
+			useFilter = false;
+			runidFields = selectionPanel.getRunIdFields();
 		}
 	}
 }

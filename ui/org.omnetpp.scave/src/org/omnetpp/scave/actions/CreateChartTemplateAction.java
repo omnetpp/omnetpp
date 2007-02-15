@@ -1,8 +1,12 @@
 package org.omnetpp.scave.actions;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.command.RemoveCommand;
+import org.eclipse.emf.edit.command.ReplaceCommand;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -11,11 +15,17 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.ChartPage2;
 import org.omnetpp.scave.editors.ui.CreateDatasetDialog;
+import org.omnetpp.scave.editors.ui.DatasetDialog;
 import org.omnetpp.scave.editors.ui.ScaveEditorPage;
+import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.ResultItem;
+import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ScaveModelPackage;
+import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.FilterHints;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
@@ -41,24 +51,35 @@ public class CreateChartTemplateAction extends AbstractScaveAction {
 			Chart chart = ((ChartPage2)page).getChart();
 			if (isTemporaryChart(chart, scaveEditor)) {
 				Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
-				FilterHints hints = new FilterHints(scaveEditor.getResultFileManager(), dataset.getType());
-				CreateDatasetDialog dialog = new CreateDatasetDialog(scaveEditor.getSite().getShell(), "Create chart template");
-				dialog.setFilterHints(hints);
+				CreateDatasetDialog dialog = new CreateDatasetDialog(scaveEditor.getSite().getShell(), DatasetDialog.SHOW_SELECTION, "Create chart template");
 				
 				if (dialog.open() == Window.OK) {
 					EditingDomain domain = scaveEditor.getEditingDomain();
 					ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
+					ResultFileManager manager = scaveEditor.getResultFileManager();
+					IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, null);
+					ResultItem[] items = ScaveModelUtil.getResultItems(idlist, manager);
+					Collection<Add> origAdds = getOriginalAdds(dataset);
+					Collection<Add> adds = ScaveModelUtil.createAdds(items, dialog.getRunIdFields());
+					
 					CompoundCommand command = new CompoundCommand();
-					command.append(SetCommand.create(
+					command.append(SetCommand.create( // set dataset name
 										domain,
 										dataset,
 										pkg.getDataset_Name(),
 										dialog.getDatasetName()));
-					command.append(SetCommand.create(
+					command.append(SetCommand.create( // set chart name
 										domain,
 										chart,
 										pkg.getChart_Name(),
 										dialog.getDatasetName()));
+					command.append(RemoveCommand.create(domain, origAdds)); // change Add items
+					command.append(AddCommand.create(
+										domain,
+										dataset,
+										pkg.getDataset_Items(),
+										adds,
+										0));
 					command.append(RemoveCommand.create(domain, dataset));
 					command.append(AddCommand.create(
 										domain,
@@ -80,5 +101,23 @@ public class CreateChartTemplateAction extends AbstractScaveAction {
 	
 	private boolean isTemporaryChart(Chart chart, ScaveEditor editor) {
 		return ScaveModelUtil.findEnclosingObject(chart, Analysis.class) == editor.getTempAnalysis();
+	}
+	
+	private Collection<Add> getOriginalAdds(Dataset dataset) {
+		Collection<Add> adds = new ArrayList<Add>();
+		for (Object obj : dataset.getItems()) {
+			if (obj instanceof Add) {
+				Add add = (Add)obj;
+				if (add.getFilenamePattern() != null && add.getRunNamePattern() != null &&
+					add.getModuleNamePattern() != null && add.getNamePattern() != null &&
+					add.getExperimentNamePattern() == null && add.getMeasurementNamePattern() == null &&
+					add.getReplicationNamePattern() == null) {
+						adds.add(add);
+						continue;
+				}
+			}
+			break;
+		}
+		return adds;
 	}
 }

@@ -13,9 +13,13 @@ public class CreateDatasetDialog extends DatasetDialog {
 	
 	private String datasetName;
 	private Text datasetNameText;
+	
+	public CreateDatasetDialog(Shell parent, String title) {
+		this(parent, SHOW_SELECTION | SHOW_FILTER, title);
+	}
 
-	public CreateDatasetDialog(Shell parentShell, String dialogTitle) {
-		super(parentShell, dialogTitle);
+	public CreateDatasetDialog(Shell parentShell, int style, String dialogTitle) {
+		super(parentShell, style, dialogTitle);
 	}
 	
 	public String getDatasetName() {

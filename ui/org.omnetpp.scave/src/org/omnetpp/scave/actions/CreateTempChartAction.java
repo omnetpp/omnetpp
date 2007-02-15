@@ -7,8 +7,8 @@ import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ScaveModelPackage;
+import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.ScaveModelUtil;
-import org.omnetpp.scave.model2.ScaveModelUtil.RunIdKind;
 
 /**
  * Creates a temporary dataset from the selection on the BrowseDataPage and 
@@ -29,12 +29,13 @@ public class CreateTempChartAction extends AbstractScaveAction {
 			return;
 		
 			String datasetName = "dataset";
+			String[] runidFields = new String[] { Filter.FIELD_FILENAME, Filter.FIELD_RUNNAME};
 			Dataset dataset =
 				ScaveModelUtil.createDataset(
 						datasetName,
 						activePanel.getTable().getDataType(),
 						activePanel.getTable().getSelectedItems(),
-						RunIdKind.FILE_RUN);
+						runidFields);
 			String chartName = "chart"; //FIXME generate proper name
 			Chart chart = ScaveModelUtil.createChart(chartName);
 			dataset.getItems().add(chart);

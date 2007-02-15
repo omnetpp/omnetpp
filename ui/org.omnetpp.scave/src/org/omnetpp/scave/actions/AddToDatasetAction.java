@@ -67,7 +67,7 @@ public class AddToDatasetAction extends AbstractScaveAction {
 							ScaveModelPackage.eINSTANCE.getDataset_Items(),
 							ScaveModelUtil.createAdds(
 									activePanel.getTable().getSelectedItems(),
-									dialog.getRunIdKind()),
+									dialog.getRunIdFields()),
 							index);
 				editor.executeCommand(command);
 			}

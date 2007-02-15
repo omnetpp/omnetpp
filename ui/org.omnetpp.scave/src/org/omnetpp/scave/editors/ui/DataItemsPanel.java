@@ -8,10 +8,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
 import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.FilterHints;
-import org.omnetpp.scave.model2.ScaveModelUtil.RunIdKind;
 
 /**
  * This panel displayed in the DatasetDialog.
@@ -24,13 +22,10 @@ import org.omnetpp.scave.model2.ScaveModelUtil.RunIdKind;
 public class DataItemsPanel extends Composite {
 
 	private Group group = null;
-	private Button useFilterRadio = null;
 	private Button useSelectionRadio = null;
+	private Button useFilterRadio = null;
 	private FilterParamsPanel filterParamsPanel = null;
-	private Composite selectIdentifierPanel = null;
-	private Button useRunNameRadio = null;
-	private Button useReplicationRadio = null;
-	private Label label = null;
+	private RunSelectionPanel selectIdentifierPanel = null;
 	
 	public DataItemsPanel(Composite parent, int style) {
 		super(parent, style);
@@ -46,11 +41,6 @@ public class DataItemsPanel extends Composite {
 		useSelectionRadio.setSelection(!flag);
 	}
 	
-	public RunIdKind getRunIdKind() {
-		return useRunNameRadio.getSelection() ?
-				RunIdKind.FILE_RUN : RunIdKind.EXPERIMENT_MEASUREMENT_REPLICATION;
-	}
-	
 	public Filter getFilterParams() {
 		return filterParamsPanel.getFilterParams();
 	}
@@ -62,6 +52,10 @@ public class DataItemsPanel extends Composite {
 	public void setFilterHints(FilterHints hints) {
 		filterParamsPanel.setFilterHints(hints);
 	}
+	
+	public String[] getRunIdFields() {
+		return selectIdentifierPanel.getRunIdFields();
+	}
 
 	private void initialize() {
 		GridLayout gridLayout = new GridLayout();
@@ -69,34 +63,6 @@ public class DataItemsPanel extends Composite {
 		gridLayout.verticalSpacing = 20;
 		this.setLayout(gridLayout);
 		createGroup();
-	}
-
-	/**
-	 * This method initializes composite2	
-	 *
-	 */
-	private void createSelectIdentifierPanel() {
-		GridData gridData5 = new GridData();
-		gridData5.horizontalIndent = 15;
-		GridData gridData2 = new GridData();
-		gridData2.horizontalIndent = 15;
-		GridLayout gridLayout2 = new GridLayout();
-		gridLayout2.numColumns = 1;
-		GridData gridData3 = new GridData();
-		gridData3.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
-		gridData3.horizontalIndent = 10;
-		selectIdentifierPanel = new Composite(group, SWT.NONE);
-		selectIdentifierPanel.setLayoutData(gridData3);
-		selectIdentifierPanel.setLayout(gridLayout2);
-		label = new Label(selectIdentifierPanel, SWT.NONE);
-		label.setText("Data items identified by");
-		useRunNameRadio = new Button(selectIdentifierPanel, SWT.RADIO);
-		useRunNameRadio.setText("file path, run name, module name and data name");
-		useRunNameRadio.setSelection(true);
-		useRunNameRadio.setLayoutData(gridData2);
-		useReplicationRadio = new Button(selectIdentifierPanel, SWT.RADIO);
-		useReplicationRadio.setText("experiment, measurement, replication, module name and data name");
-		useReplicationRadio.setLayoutData(gridData5);
 	}
 
 	/**
@@ -134,6 +100,18 @@ public class DataItemsPanel extends Composite {
 			}
 		});
 		createFilterPanel();
+	}
+	
+	/**
+	 * This method initializes composite2	
+	 *
+	 */
+	private void createSelectIdentifierPanel() {
+		GridData gridData = new GridData();
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.horizontalIndent = 10;
+		selectIdentifierPanel = new RunSelectionPanel(group, SWT.NONE);
+		selectIdentifierPanel.setLayoutData(gridData);
 	}
 	
 	private void createFilterPanel() {

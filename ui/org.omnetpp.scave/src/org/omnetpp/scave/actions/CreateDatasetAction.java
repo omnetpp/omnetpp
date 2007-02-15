@@ -36,7 +36,7 @@ public class CreateDatasetAction extends AbstractScaveAction {
 						dialog.getDatasetName(),
 						activePanel.getTable().getDataType(),
 						activePanel.getTable().getSelectedItems(),
-						dialog.getRunIdKind());
+						dialog.getRunIdFields());
 			
 			editor.executeCommand(AddCommand.create(
 					editor.getEditingDomain(),

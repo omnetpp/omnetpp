@@ -47,11 +47,6 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  */
 public class ScaveModelUtil {
 	
-	public enum RunIdKind {
-		FILE_RUN,
-		EXPERIMENT_MEASUREMENT_REPLICATION
-	}
-	
 	private static final String DEFAULT_CHARTSHEET_NAME = "default";
 	
 	private static final ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
@@ -71,11 +66,11 @@ public class ScaveModelUtil {
 		return dataset;
 	}
 	
-	public static Dataset createDataset(String name, DatasetType type, ResultItem[] items, RunIdKind id) {
+	public static Dataset createDataset(String name, DatasetType type, ResultItem[] items, String[] runidFields) {
 		Dataset dataset = factory.createDataset();
 		dataset.setName(name);
 		dataset.setType(type);
-		dataset.getItems().addAll(createAdds(items, id));
+		dataset.getItems().addAll(createAdds(items, runidFields));
 		return dataset;
 	}
 	
@@ -97,25 +92,28 @@ public class ScaveModelUtil {
 		return add;
 	}
 	
-	public static Collection<Add> createAdds(ResultItem[] items, RunIdKind id) {
+	public static Collection<Add> createAdds(ResultItem[] items, String[] runidFields) {
 		List<Add> adds = new ArrayList<Add>(items.length);
 		for (ResultItem item : items)
-			adds.add(createAdd(item, id));
+			adds.add(createAdd(item, runidFields));
 		return adds;
 	}
 	
-	public static Add createAdd(ResultItem item, RunIdKind id) {
+	public static Add createAdd(ResultItem item, String[] runidFields) {
 		Add add = factory.createAdd();
 		ResultFile file = item.getFileRun().getFile();
 		Run run = item.getFileRun().getRun();
-		if (id == RunIdKind.FILE_RUN) {
-			add.setFilenamePattern(file.getFilePath());
-			add.setRunNamePattern(run.getRunName());
-		}
-		else if (id == RunIdKind.EXPERIMENT_MEASUREMENT_REPLICATION) {
-			add.setExperimentNamePattern(run.getAttribute(RunAttribute.EXPERIMENT));
-			add.setMeasurementNamePattern(run.getAttribute(RunAttribute.MEASUREMENT));
-			add.setReplicationNamePattern(run.getAttribute(RunAttribute.REPLICATION));
+		for (String field : runidFields) {
+			if (field == Filter.FIELD_FILENAME)
+				add.setFilenamePattern(file.getFilePath());
+			else if (field == Filter.FIELD_RUNNAME)
+				add.setRunNamePattern(run.getRunName());
+			else if (field == Filter.FIELD_EXPERIMENT)
+				add.setExperimentNamePattern(run.getAttribute(RunAttribute.EXPERIMENT));
+			else if (field == Filter.FIELD_MEASUREMENT)
+				add.setExperimentNamePattern(run.getAttribute(RunAttribute.MEASUREMENT));
+			else if (field == Filter.FIELD_REPLICATION)
+				add.setExperimentNamePattern(run.getAttribute(RunAttribute.REPLICATION));
 		}
 		add.setModuleNamePattern(item.getModuleName());
 		add.setNamePattern(item.getName());
@@ -308,6 +306,14 @@ public class ScaveModelUtil {
 		
 		Assert.isTrue(false, "Unknown dataset type: " + type);
 		return null;
+	}
+	
+	public static ResultItem[] getResultItems(IDList idlist, ResultFileManager manager) {
+		int size = (int)idlist.size();
+		ResultItem[] items = new ResultItem[size];
+		for (int i = 0; i < size; ++i)
+			items[i] = manager.getItem(idlist.get(i));
+		return items;
 	}
 	
 	public static IDList filterIDList(IDList idlist, Filter params, ResultFileManager manager) {
