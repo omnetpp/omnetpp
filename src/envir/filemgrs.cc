@@ -80,60 +80,6 @@ void cFileOutputVectorManager::openFile()
         throw cRuntimeError("Cannot open output file `%s'",fname.c_str());
 }
 
-/**
- * Writes the header of the vector file.
- * The header contains:
- * - the run id
- * - run attributes
- * - module parameters specified in the ini file
- *
- * Keys for module parameters should contain an '.' and must not contain '-',
- * otherwise they are handled as run attributes.
- */
-void cFileOutputVectorManager::writeHeader()
-{
-    cConfiguration *config = ev.config();
-    const char *section = config->getPerRunSectionName();
-    const char *runId = ev.app->getRunId();
-    fprintf(f, "run %s\n", QUOTE(runId));
-    const char *inifile = config->fileName();
-    if (inifile) fprintf(f, "attr inifile %s\n", QUOTE(inifile));
-
-    int numSections = config->getNumSections();
-    for (int i=0; i<numSections; ++i)
-    {
-        const char *sectionName = config->getSectionName(i);
-        bool isRunSection = strncmp(sectionName, "Run ", 4) == 0;
-        bool isCurrentRunSection = strcmp(sectionName, section) == 0;
-        if (isCurrentRunSection || !isRunSection) // skip other run sections
-        {
-            std::vector<opp_string> entries = config->getEntriesWithPrefix(sectionName, "", "");
-            std::vector<opp_string>::size_type size = entries.size();
-
-            if (size % 2 != 0)
-                fprintf(stderr, "WARNING: getEntriesWithPrefix(\"%s\", \"\", \"\") returned odd number of strings. Section will be skipped.", sectionName);
-
-            if (size == 0 || size % 2 != 0)
-                continue;
-
-            for (std::vector<opp_string>::size_type j=0; j<size-1; j+=2)
-            {
-                const char *name = entries[j].c_str();
-                const char *value = entries[j+1].c_str();
-
-                if (isCurrentRunSection || !config->exists(section, name))
-                {
-                    bool isModuleParam = strchr(name, '.') && !strchr(name, '-');
-                    if (isModuleParam)
-                        fprintf(f, "param %s %s\n", name, QUOTE(value));
-                    else
-                        fprintf(f, "attr %s %s\n", name, QUOTE(value));
-                }
-            }
-        }
-    }
-}
-
 void cFileOutputVectorManager::closeFile()
 {
     if (f)
@@ -143,13 +89,89 @@ void cFileOutputVectorManager::closeFile()
     }
 }
 
+/**
+ * Collects the attributes and module parameters of the current run from the configuration.
+ *
+ * Keys for module parameters should contain an '.' and must not contain '-',
+ * otherwise they are handled as run attributes.
+ */
+void cFileOutputVectorManager::initRun()
+{
+    if (!run.initialised)
+    {
+        cConfiguration *config = ev.config();
+        const char *section = config->getPerRunSectionName();
+        run.runId = ev.app->getRunId();
+        const char *inifile = config->fileName();
+        if (inifile)
+        {
+            run.attributes["inifile"] = inifile;
+        }
+
+        int numSections = config->getNumSections();
+        for (int i=0; i<numSections; ++i)
+        {
+            const char *sectionName = config->getSectionName(i);
+            bool isRunSection = strncmp(sectionName, "Run ", 4) == 0;
+            bool isCurrentRunSection = strcmp(sectionName, section) == 0;
+            if (isCurrentRunSection || !isRunSection) // skip other run sections
+            {
+                std::vector<opp_string> entries = config->getEntriesWithPrefix(sectionName, "", "");
+                std::vector<opp_string>::size_type size = entries.size();
+
+                if (size % 2 != 0)
+                    fprintf(stderr, "WARNING: getEntriesWithPrefix(\"%s\", \"\", \"\") returned odd number of strings. Section will be skipped.", sectionName);
+
+                if (size == 0 || size % 2 != 0)
+                    continue;
+
+                for (std::vector<opp_string>::size_type j=0; j<size-1; j+=2)
+                {
+                    const char *name = entries[j].c_str();
+                    const char *value = entries[j+1].c_str();
+
+                    if (isCurrentRunSection || !config->exists(section, name))
+                    {
+                        bool isModuleParam = strchr(name, '.') && !strchr(name, '-');
+                        if (isModuleParam)
+                            run.moduleParams[name] = value;
+                        else
+                            run.attributes[name] = value;
+                    }
+                }
+            }
+        }
+
+        run.initialised = true;
+    }
+}
+
+void cFileOutputVectorManager::writeRunData()
+{
+    CHECK(fprintf(f, "run %s\n", QUOTE(run.runId.c_str())));
+    for (opp_string_map::const_iterator it = run.attributes.begin(); it != run.attributes.end(); ++it)
+    {
+        CHECK(fprintf(f, "attr %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
+    }
+    for (opp_string_map::const_iterator it = run.moduleParams.begin(); it != run.moduleParams.end(); ++it)
+    {
+        CHECK(fprintf(f, "param %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
+    }
+}
+
 void cFileOutputVectorManager::initVector(sVectorData *vp)
 {
     if (!f)
     {
         openFile();
         if (!f) return;
-        writeHeader();
+    }
+
+    if (!run.initialised)
+    {
+        // this is the first vector written in this run, write out run attributes
+        initRun();
+        writeRunData();
     }
 
     CHECK(fprintf(f,"vector %d  %s  %s  %s\n",
@@ -167,6 +189,11 @@ void cFileOutputVectorManager::startRun()
     fname = ev.config()->getAsFilename(CFGID_OUTPUT_VECTOR_FILE).c_str();
     ev.app->processFileName(fname);
     removeFile(fname.c_str(), "old output vector file");
+
+    // clear run data
+    run.initialised = false;
+    run.attributes.clear();
+    run.moduleParams.clear();
 }
 
 void cFileOutputVectorManager::endRun()

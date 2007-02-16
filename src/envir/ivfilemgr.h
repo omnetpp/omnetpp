@@ -93,6 +93,7 @@ class cIndexedFileOutputVectorManager : public cFileOutputVectorManager
     void openIndexFile();
     void closeIndexFile();
     virtual void finalizeVector(sVector *vector);
+    virtual void writeRunData();
     virtual void writeRecords();
     virtual void writeRecords(sVector *vector);
     virtual void writeIndex(sVector *vector);

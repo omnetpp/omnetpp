@@ -126,6 +126,7 @@ void cIndexedFileOutputVectorManager::endRun()
             finalizeVector(*it);
     }
 
+    vectors.clear();
     cFileOutputVectorManager::endRun();
     closeIndexFile();
 }
@@ -133,7 +134,6 @@ void cIndexedFileOutputVectorManager::endRun()
 void *cIndexedFileOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
 {
     sVector *vp = (sVector *)cFileOutputVectorManager::registerVector(modulename, vectorname);
-
     static char param[1024];
     sprintf(param, "%s.%s.max-buffered-samples", modulename, vectorname);
     vp->maxBufferedSamples = ev.config()->getAsInt2(NULL, "OutVectors", param, -1);
@@ -208,6 +208,28 @@ bool cIndexedFileOutputVectorManager::record(void *vectorhandle, simtime_t t, do
     return false;
 }
 
+void cIndexedFileOutputVectorManager::writeRunData()
+{
+    // write run attributes to the vector file
+    cFileOutputVectorManager::writeRunData();
+
+    // and to the index file
+    if (!fi)
+    {
+        openIndexFile();
+    }
+
+    CHECK(fprintf(fi, "run %s\n", QUOTE(run.runId.c_str())), ifname);
+    for (opp_string_map::const_iterator it = run.attributes.begin(); it != run.attributes.end(); ++it)
+    {
+        CHECK(fprintf(fi, "attr %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())), ifname);
+    }
+    for (opp_string_map::const_iterator it = run.moduleParams.begin(); it != run.moduleParams.end(); ++it)
+    {
+        CHECK(fprintf(fi, "param %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())), ifname);
+    }
+}
+
 // empties all buffer
 void cIndexedFileOutputVectorManager::writeRecords()
 {
@@ -221,6 +243,10 @@ void cIndexedFileOutputVectorManager::writeRecords()
 void cIndexedFileOutputVectorManager::writeRecords(sVector *vp)
 {
     assert(f!=NULL);
+    assert(vp!=NULL);
+    assert(!vp->buffer.empty());
+    assert(!vp->blocks.empty());
+
     static char buff[64];
 
     sBlock &currentBlock = vp->blocks.back();
@@ -252,13 +278,6 @@ void cIndexedFileOutputVectorManager::writeRecords(sVector *vp)
 void cIndexedFileOutputVectorManager::writeIndex(sVector *vp)
 {
     static char buff1[64], buff2[64];
-
-    if (!fi)
-    {
-        openIndexFile();
-        if (!fi)
-            return;
-    }
 
     if (vp->count > 0)
     {
@@ -297,6 +316,7 @@ void cIndexedFileOutputVectorManager::writeIndex(sVector *vp)
             }
         }
         vp->blocks.clear();
+        vp->blocks.push_back(sBlock());
     }
 }
 

@@ -37,6 +37,15 @@
 class cFileOutputVectorManager : public cOutputVectorManager
 {
   protected:
+    struct sRunData {
+       bool initialised;        // true if the other fields are valid
+       opp_string runId;        // id of the run
+       opp_string_map attributes;    // attributes of the run
+       opp_string_map moduleParams;  // module parameters in the current run
+
+       sRunData() : initialised(false) {}
+    };
+
     struct sVectorData {
        int id;              // vector ID
        opp_string modulename; // module of cOutVector object
@@ -51,6 +60,7 @@ class cFileOutputVectorManager : public cOutputVectorManager
        const char *getColumns() { return recordEventNumbers ? "ETV" : "TV"; }
     };
 
+    struct sRunData run;    // holds data of the current run
     int nextid;        // holds next free ID for output vectors
     opp_string fname;  // output file name
     FILE *f;           // file ptr of output file
@@ -58,10 +68,11 @@ class cFileOutputVectorManager : public cOutputVectorManager
 
   protected:
     void openFile();
-    void writeHeader();
     void closeFile();
+    void initRun();
     void initVector(sVectorData *vp);
     virtual sVectorData *createVectorData();
+    virtual void writeRunData();
 
   public:
     /** @name Constructors, destructor */
