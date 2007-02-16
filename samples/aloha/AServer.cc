@@ -48,10 +48,16 @@ void AServer::initialize()
     WATCH(currentChannelUtilization);
 
     collisionMultiplicityVector.setName("collision multiplicity");
-    collisionLengthVector.setName("collision length");
-    channelUtilizationVector.setName("channel utilization");
+    collisionMultiplicityVector.setType(cOutVector::TYPE_INT);
 
-    if (ev.isGUI()) displayString().setTagArg("i2",0,"x_off");
+    collisionLengthVector.setName("collision length");
+    collisionLengthVector.setUnit("s");
+
+    channelUtilizationVector.setName("channel utilization");
+    channelUtilizationVector.setType(cOutVector::TYPE_DOUBLE);
+
+    if (ev.isGUI())
+        displayString().setTagArg("i2",0,"x_off");
 }
 
 

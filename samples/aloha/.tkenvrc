@@ -47,11 +47,11 @@ config timeline-msgnamepattern	{*}
 config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
 inspector "Aloha" "Aloha" "2" "845x675+76+211"
-inspector "ALOHAnet" "ALOHAnet" "1" "529x384+295+298"
-inspector "component types" "cSymTable" "1" "460x312+120+155"
 inspector "alohaNet" "alohaNet" "1" "460x394+69+60"
-inspector "ALOHAnet" "ALOHAnet" "2" "923x675+35+103"
+inspector "component types" "cSymTable" "1" "460x312+120+155"
+inspector "ALOHAnet" "ALOHAnet" "1" "529x384+295+298"
 inspector "alohaNet" "alohaNet" "2" "617x576+286+103"
-inspector "enums.v×" "cEnum" "1" "460x312+120+155"
+inspector "ALOHAnet" "ALOHAnet" "2" "923x675+35+103"
 inspector "supported config entries" "cSymTable" "1" "788x564+48+62"
+inspector "enums.v×" "cEnum" "1" "460x312+120+155"
 
