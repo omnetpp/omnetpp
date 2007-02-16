@@ -49,12 +49,15 @@ void AServer::initialize()
 
     collisionMultiplicityVector.setName("collision multiplicity");
     collisionMultiplicityVector.setType(cOutVector::TYPE_INT);
+    collisionMultiplicityVector.setInterpolationMode(cOutVector::NONE);
 
     collisionLengthVector.setName("collision length");
     collisionLengthVector.setUnit("s");
+    collisionLengthVector.setInterpolationMode(cOutVector::NONE);
 
     channelUtilizationVector.setName("channel utilization");
     channelUtilizationVector.setType(cOutVector::TYPE_DOUBLE);
+    channelUtilizationVector.setInterpolationMode(cOutVector::LINEAR);
 
     if (ev.isGUI())
         displayString().setTagArg("i2",0,"x_off");

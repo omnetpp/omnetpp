@@ -152,7 +152,7 @@ print CC "
 #ifdef CHECK
 #undef CHECK
 #endif
-#define CHECK(fprintf)    if (fprintf<0) throw new cRuntimeError(\"Cannot write event log file, disk full?\");
+#define CHECK(fprintf)    if (fprintf<0) throw cRuntimeError(\"Cannot write event log file, disk full?\");
 
 void EventLogWriter::recordLogLine(FILE *f, const char *s, int n)
 {

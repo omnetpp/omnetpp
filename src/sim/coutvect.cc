@@ -108,9 +108,14 @@ void cOutVector::setEnum(cEnum *enumDecl)  //XXX
 
 void cOutVector::setType(Type type)
 {
-    cEnum *enumDecl = cEnum::find("cOutVector::Type");  //XXX cache it; or rather, use SWITCH???
-    ASSERT(enumDecl);
-    const char *typeString = enumDecl->stringFor(type);
+    const char *typeString=NULL;
+    switch (type)
+    {
+        case TYPE_INT:    typeString = "int"; break;
+        case TYPE_DOUBLE: typeString = "double"; break;
+        case TYPE_ENUM:   typeString = "enum"; break;
+        //Note: no "default:" so that compiler can warn of incomplete coverage
+    }
     if (!typeString)
         throw cRuntimeError(this, "setType(): invalid type %d", type);
     ev.setVectorAttribute(handle, "type", typeString);
@@ -118,9 +123,15 @@ void cOutVector::setType(Type type)
 
 void cOutVector::setInterpolationMode(InterpolationMode mode)
 {
-    cEnum *enumDecl = cEnum::find("cOutVector::InterpolationMode");  //XXX cache it
-    ASSERT(enumDecl);
-    const char *modeString = enumDecl->stringFor(mode);
+    const char *modeString=NULL;
+    switch (mode)
+    {
+        case NONE:                 modeString = "none"; break;
+        case SAMPLE_HOLD:          modeString = "sample-hold"; break;
+        case BACKWARD_SAMPLE_HOLD: modeString = "backeward-sample-hold"; break;
+        case LINEAR:               modeString = "linear"; break;
+        //Note: no "default:" so that compiler can warn of incomplete coverage
+    }
     if (!modeString)
         throw cRuntimeError(this, "setInterpolationMode(): invalid interpolation mode %d", mode);
     ev.setVectorAttribute(handle, "interpolationmode", modeString);

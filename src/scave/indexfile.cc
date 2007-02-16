@@ -49,7 +49,7 @@ static bool simtimeGreater(const Block &first, const Block &second)
     return first.startTime > second.endTime;
 }
 
-    
+
 const Block *VectorData::getBlockBySimtime(double simtime, bool after) const
 {
     Block blockToFind;
@@ -78,7 +78,7 @@ Blocks::size_type VectorData::getBlocksInSimtimeInterval(double startTime, doubl
     Blocks::const_iterator last = std::upper_bound(blocks.begin(), blocks.end(), blockToFind, simtimeLess);
 
     assert(first == blocks.end() || first->endTime >= startTime);
-    assert(last == blocks.end() || last->startTime > endTime); 
+    assert(last == blocks.end() || last->startTime > endTime);
     assert(first <= last);
 
     startIndex = first - blocks.begin();
@@ -124,9 +124,9 @@ Blocks::size_type VectorData::getBlocksInEventnumInterval(long startEventNum, lo
 
     Blocks::const_iterator first = std::lower_bound(blocks.begin(), blocks.end(), blockToFind, eventnumLess);
     Blocks::const_iterator last = std::upper_bound(blocks.begin(), blocks.end(), blockToFind, eventnumLess);
-    
+
     assert(first == blocks.end() || first->endEventNum >= startEventNum);
-    assert(last == blocks.end() || last->startEventNum > endEventNum); 
+    assert(last == blocks.end() || last->startEventNum > endEventNum);
     assert(first <= last);
 
     startIndex = first - blocks.begin();
@@ -342,7 +342,7 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
         int i = 1; // column index
         block.startSerial = numOfEntries;
         CHECK(parseLong(tokens[i++], block.startOffset), "invalid file offset", lineNum);
-        if (vector.hasColumn('E')) 
+        if (vector.hasColumn('E'))
         {
             CHECK(parseLong(tokens[i++], block.startEventNum) && parseLong(tokens[i++], block.endEventNum),
                 "invalid event numbers", lineNum);
@@ -369,7 +369,7 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
 #ifdef CHECK
 #undef CHECK
 #endif
-#define CHECK(fprintf)    if (fprintf<0) throw new opp_runtime_error("Cannot write output file `%s'", filename.c_str())
+#define CHECK(fprintf)    if (fprintf<0) throw opp_runtime_error("Cannot write output file `%s'", filename.c_str())
 
 IndexFileWriter::IndexFileWriter(const char *filename, int precision)
     : filename(filename), precision(precision), file(NULL)

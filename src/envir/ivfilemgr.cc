@@ -44,14 +44,14 @@ Register_PerRunConfigEntryU(CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, "output-vectors-m
 #ifdef CHECK
 #undef CHECK
 #endif
-#define CHECK(fprintf, fname)    if (fprintf<0) throw new cRuntimeError("Cannot write output file `%s'", fname.c_str())
+#define CHECK(fprintf, fname)    if (fprintf<0) throw cRuntimeError("Cannot write output file `%s'", fname.c_str())
 #define WARN(msg)       fprintf(stderr,msg)
 
 
 static void removeFile(const char *fname, const char *descr)
 {
     if (unlink(fname)!=0 && errno!=ENOENT)
-        throw new cRuntimeError("Cannot remove %s `%s': %s", descr, fname, strerror(errno));
+        throw cRuntimeError("Cannot remove %s `%s': %s", descr, fname, strerror(errno));
 }
 
 
@@ -73,7 +73,7 @@ void cIndexedFileOutputVectorManager::openIndexFile()
 {
         fi = fopen(ifname.c_str(),"w");
         if (fi==NULL)
-            throw new cRuntimeError("Cannot open index file `%s'",ifname.c_str());
+            throw cRuntimeError("Cannot open index file `%s'",ifname.c_str());
 
         // leave blank space for header
         fprintf(fi, "%64s\n", "");

@@ -984,7 +984,7 @@ void TOmnetApp::readPerRunOptions()
         ::printf("Recording event log to file `%s'...\n", opt_eventlogfilename.c_str());
         FILE *out = fopen(opt_eventlogfilename.c_str(), "w");
         if (!out)
-            throw new cRuntimeError("Cannot open event log file `%s' for write", opt_eventlogfilename.c_str());
+            throw cRuntimeError("Cannot open event log file `%s' for write", opt_eventlogfilename.c_str());
         feventlog = out;
     }
 
