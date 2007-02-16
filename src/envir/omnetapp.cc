@@ -694,7 +694,7 @@ void TOmnetApp::messageCancelled(cMessage *msg)
 {
     if (feventlog)
     {
-        EventLogWriter::recordCancelEventEntry_id(feventlog, msg->id());
+        EventLogWriter::recordCancelEventEntry_id_pe(feventlog, msg->id(), msg->previousEventNumber());
     }
 }
 
@@ -738,7 +738,7 @@ void TOmnetApp::messageDeleted(cMessage *msg)
 {
     if (feventlog)
     {
-        EventLogWriter::recordDeleteMessageEntry_id(feventlog, msg->id());
+        EventLogWriter::recordDeleteMessageEntry_id_pe(feventlog, msg->id(), msg->previousEventNumber());
     }
 }
 
