@@ -15,7 +15,9 @@
 
 args.cc/h rewritten ("--" can be used to mark end of options, etc...)
 "-f" is now optional when specifying an inifile (ie. both "runsim omnetpp.ini" and "runsim -f omnetpp.ini" are accepted)
-
+added -q option
+inifile entries are now checked against a database of recognized options
+Cmdenv defaults to express-mode=true
 
 2006-09-30  Andras Varga
 
