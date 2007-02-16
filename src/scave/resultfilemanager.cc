@@ -906,12 +906,20 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
 
 void ResultFileManager::loadVectorsFromIndex(const char *filename, ResultFile *fileRef)
 {
-    // fake a new Run, should be stored in the index
-    Run *runRef = addRun();
-    FileRun *fileRunRef = addFileRun(fileRef, runRef);
-    runRef->runNumber = 0;
-
     VectorFileIndex *index = IndexFileReader(filename).readAll();
+
+
+    Run *runRef = getRunByName(index->run.runName.c_str());
+    if (!runRef)
+    {
+        runRef = addRun();
+        runRef->runName = index->run.runName;
+    }
+    runRef->runNumber = index->run.runNumber;
+    runRef->attributes = index->run.attributes;
+    runRef->moduleParams = index->run.moduleParams;
+    FileRun *fileRunRef = addFileRun(fileRef, runRef);
+
     Vectors &vectors = index->vectors;
     for (Vectors::iterator vectorRef = vectors.begin(); vectorRef != vectors.end(); ++vectorRef)
     {

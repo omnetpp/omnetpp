@@ -412,7 +412,10 @@ void IndexedVectorFileWriterNode::writeBufferToFile(VectorInputPort *port)
 void IndexedVectorFileWriterNode::writeIndex(VectorInputPort *port)
 {
     if (indexWriter == NULL)
+    {
         indexWriter = new IndexFileWriter(indexFileName.c_str(), prec);
+        indexWriter->writeRun(run);
+    }
 
     indexWriter->writeVector(port->vector);
 }

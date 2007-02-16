@@ -145,6 +145,59 @@ const VectorData *VectorFileIndex::getVector(int vectorId) const
     }
     return NULL;
 }
+//=========================================================================
+
+#ifdef CHECK
+#undef CHECK
+#endif
+#define CHECK(cond,msg) if (!(cond)) throw opp_runtime_error("Invalid index file syntax: %s, file %s, line %d", msg, filename, lineNo);
+
+bool RunData::parseLine(char **tokens, int numTokens, const char *filename, int lineNo)
+{
+    if (tokens[0][0] == 'a' && strcmp(tokens[0], "attr") == 0)
+    {
+        CHECK(numTokens >= 3, "'attr <name> <value>' expected");
+        this->attributes[tokens[1]] = tokens[2];
+        // the "runNumber" attribute is also stored separately
+        if (strcmp(tokens[1], "runNumber") == 0) {
+            CHECK(parseInt(tokens[2], this->runNumber), "runNumber: an integer expected");
+        }
+        return true;
+    }
+    else if (tokens[0][0] == 'p' && strcmp(tokens[0], "param") == 0)
+    {
+        CHECK(numTokens >= 3, "'param <namePattern> <value>' expected");
+        this->moduleParams[tokens[1]] = tokens[2];
+        return true;
+    }
+    else if (tokens[0][0] == 'r' && strcmp(tokens[0], "run") == 0)
+    {
+        CHECK(numTokens >= 2, "missing run name");
+        this->runName = tokens[1];
+        return true;
+    }
+
+    return false;
+}
+
+#undef CHECK
+#define CHECK(fprintf)    if (fprintf<0) throw new opp_runtime_error("Cannot write output file `%s'", filename)
+
+void RunData::writeToFile(FILE *file, const char *filename) const
+{
+    if (runName.size() > 0)
+    {
+        CHECK(fprintf(file, "run %s\n", runName.c_str()));
+    }
+    for (StringMap::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
+    {
+        CHECK(fprintf(file, "attr %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
+    }
+    for (StringMap::const_iterator it = moduleParams.begin(); it != moduleParams.end(); ++it)
+    {
+        CHECK(fprintf(file, "param %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
+    }
+}
 
 //=========================================================================
 static bool isFileReadable(const char *filename)
@@ -329,6 +382,10 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
         index->vectorFileSize = fileSize;
         index->vectorFileLastModified = lastModified;
     }
+    else if (index->run.parseLine(tokens, numTokens, filename.c_str(), lineNum))
+    {
+        return;
+    }
     else
     {
         CHECK(index->vectors.size() > 0, "missing vector definition", lineNum);
@@ -388,6 +445,7 @@ void IndexFileWriter::writeAll(const VectorFileIndex& index)
 {
     openFile();
     writeFingerprint(index.vectorFileName);
+    index.run.writeToFile(file, filename.c_str());
 
     for (Vectors::const_iterator vectorRef = index.vectors.begin(); vectorRef != index.vectors.end(); ++vectorRef)
     {
@@ -410,6 +468,13 @@ void IndexFileWriter::writeFingerprint(std::string vectorFileName)
     fseek(file, 0, SEEK_SET);
     CHECK(fprintf(file, "file %ld %ld", (long)s.st_size, (long)s.st_mtime));
     fseek(file,saveOffset, SEEK_SET);
+}
+
+void IndexFileWriter::writeRun(const RunData &run)
+{
+    if (file == NULL)
+        openFile();
+    run.writeToFile(file, filename.c_str());
 }
 
 void IndexFileWriter::writeVector(const VectorData& vector)

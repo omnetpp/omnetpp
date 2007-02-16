@@ -16,6 +16,7 @@
 #define _INDEXFILE_H_
 
 #include <float.h>
+#include <map>
 #include "scavedefs.h"
 
 /**
@@ -182,6 +183,23 @@ struct VectorData {
 
 typedef std::vector<VectorData> Vectors;
 
+typedef std::map<std::string, std::string> StringMap;
+
+/**
+ * Run attributes written into the index file.
+ */
+struct RunData {
+    std::string runName;
+    int runNumber;
+    StringMap attributes;
+    StringMap moduleParams;
+
+    RunData() : runNumber(0) {}
+
+    bool parseLine(char **tokens, int numTokens, const char *filename, int lineNo);
+    void writeToFile(FILE *file, const char *filename) const;
+};
+
 /**
  * Data of all vectors stored in the index file.
  */
@@ -189,9 +207,11 @@ struct VectorFileIndex {
     std::string vectorFileName;
     long vectorFileLastModified;
     long vectorFileSize;
+
+    RunData run;
     Vectors vectors;
 
-    VectorFileIndex() : vectorFileLastModified(0), vectorFileSize(0), vectors() {}
+    VectorFileIndex() : vectorFileLastModified(0), vectorFileSize(0) {}
     int getNumberOfVectors() const { return vectors.size(); };
     const VectorData *getVectorAt(int index) const { return &vectors[index]; };
     const VectorData *getVector(int vectorId) const;
@@ -275,6 +295,10 @@ class SCAVE_API IndexFileWriter
          * Writes out the fingerprint of the vector file this index file belongs to.
          */
         void writeFingerprint(std::string vectorFileName);
+        /**
+         * Writes out the run attributes.
+         */
+        void writeRun(const RunData &run);
         /**
          * Writes out the index of one vector (declaration+blocks).
          */

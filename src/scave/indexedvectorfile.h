@@ -18,6 +18,7 @@
 #include <assert.h>
 #include <float.h>
 #include <vector>
+#include <map>
 #include <stdarg.h>
 #include "filereader.h"
 #include "indexfile.h"
@@ -123,6 +124,7 @@ class SCAVE_API IndexedVectorFileWriterNode : public Node
         };
 
         typedef std::vector<VectorInputPort*> PortVector;
+        typedef std::map<std::string,std::string> StringMap;
 
     private:
         PortVector ports;
@@ -130,6 +132,7 @@ class SCAVE_API IndexedVectorFileWriterNode : public Node
         std::string fileName;
         std::string indexFileName;
         int blockSize;
+        RunData run;
         FILE *f;
         IndexFileWriter *indexWriter;
         int prec;
@@ -141,6 +144,7 @@ class SCAVE_API IndexedVectorFileWriterNode : public Node
         Port *addVector(const VectorResult &vector);
         void setPrecision(int prec) {this->prec = prec;}
         void setHeader(const std::string &header) { fileHeader = header; }
+        void setRun(const char *runName, StringMap &attributes, StringMap &parameters) { run.runName = runName; run.attributes = attributes; run.moduleParams = parameters; };
         std::string filename() const {return fileName;}
 
         virtual bool isReady() const;

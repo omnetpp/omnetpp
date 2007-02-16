@@ -86,11 +86,12 @@ void VectorFileIndexer::generateIndex(const char* fileName)
         NodeType *writerNodeType=NodeTypeRegistry::instance()->getNodeType("indexedvectorfilewriter");
         std::string tmpFileName=createTempFileName(fileName);
         attrs.clear();
-        attrs["fileheader"]=generateHeader(runRef);
+        attrs["fileheader"]= generateHeader(runRef);
         attrs["blocksize"]="65536";
         attrs["filename"]=tmpFileName;
         attrs["indexfilename"]=IndexFile::getIndexFileName(fileName);
         IndexedVectorFileWriterNode *writer = (IndexedVectorFileWriterNode*)writerNodeType->create(dataflowManager, attrs);
+        writer->setRun(runRef->runName.c_str(), runRef->attributes, runRef->moduleParams);
 
         // create a ports for each vector on reader node and writer node and connect them
         IDList vectorIDList = resultFileManager.getAllVectors();
