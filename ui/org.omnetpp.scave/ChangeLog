@@ -1,3 +1,28 @@
+2007-02-16
+----------
+
+Additions:
+
+   + Double clicking on result files in the Navigator view, opens the "New Analysis" wizard.
+     The analysis file will contain the selected result file. The default name of the analysis
+     file is the file name of the result file with the ".scave" extension. If an analysis
+     file exists with this name, it is opened instead of the wizard.
+
+   + Selected vectors and scalars can be put on a chart by choosing "Open chart" from the 
+     context menu of the table on the "Browse Data" page. The created dataset and chart nodes
+     are not saved and not visible on the UI. The user can persist them using the toolbar 
+     button.
+
+   + Some toolbar buttons were added.
+
+Fixes:
+
+   + The crosshair on vector charts snaps to the data points.
+
+   + Run attributes are saved in the vector files too, so they can appear on the GUI,
+     when the vector was loaded from the index file.
+
+
 2007-02-02
 ----------
 
