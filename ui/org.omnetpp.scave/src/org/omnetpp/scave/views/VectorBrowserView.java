@@ -50,6 +50,7 @@ public class VectorBrowserView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
+		createPulldownMenu();
 		panel = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout(1, false);
 		layout.marginWidth = layout.marginHeight = 0;
@@ -57,7 +58,6 @@ public class VectorBrowserView extends ViewPart {
 		createMessage(panel);
 		createTable(panel);
 		createTableViewer(table);
-		createPulldownMenu();
 		hookSelectionChangedListener();
 	}
 	
