@@ -76,6 +76,7 @@ E EventEntry
 CE CancelEventEntry
 {
    id long messageId
+   pe long previousEventNumber -1
 }
 
 BS BeginSendEntry
@@ -120,4 +121,5 @@ SH SendHopEntry
 DM DeleteMessageEntry
 {
    id int messageId
+   pe long previousEventNumber -1
 }
