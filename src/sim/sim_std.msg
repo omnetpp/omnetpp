@@ -26,7 +26,14 @@ cplusplus
 //
 // Register enums from the sim. kernel
 //
-EXECUTE_ON_STARTUP(cGate_Type,
+typedef cPar::Type   cPar_Type;
+typedef cGate::Type  cGate_Type;
+
+Register_Enum(cPar_Type,  (cPar::BOOL, cPar::DOUBLE, cPar::LONG, cPar::STRING, cPar::XML));
+Register_Enum(cGate_Type, (cGate::INPUT, cGate::OUTPUT, cGate::INOUT));
+
+/*FIXME remove
+EXECUTE_ON_STARTUP(
     cEnum *e = new cEnum("cGate_Type");
     enums.instance()->add(e);
     e->insert(cGate::INPUT,  "INPUT");
@@ -34,7 +41,7 @@ EXECUTE_ON_STARTUP(cGate_Type,
     e->insert(cGate::INOUT,  "INOUT");
 );
 
-EXECUTE_ON_STARTUP(cPar_Type,
+EXECUTE_ON_STARTUP(  //FIXME use the Register_Enum macro now
     cEnum *e = new cEnum("cPar_Type");
     enums.instance()->add(e);
     e->insert(cPar::BOOL,   "BOOL");
@@ -43,6 +50,7 @@ EXECUTE_ON_STARTUP(cPar_Type,
     e->insert(cPar::STRING, "STRING");
     e->insert(cPar::XML,    "XML");
 );
+*/
 
 //
 // Define operator<< for some classes

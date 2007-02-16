@@ -22,41 +22,42 @@
 
 #include "cownedobject.h"
 
+#define Register_Enum(NAME, VALUES)  \
+    EXECUTE_ON_STARTUP(enums.instance()->add((new cEnum(#NAME))->registerNames(#VALUES)->registerValues VALUES))
 
 /**
  * Provides string representation for enums. The class basically implements
- * effective integer-to-string mapping. Primary usage is to support displaying
- * symbolic names for integer values that represent some code (such as an enum
- * or #define). To be used mostly from Tkenv and possibly other user interfaces.
+ * effective integer-to-string and string-to-integer mapping. Primary usage
+ * is to support displaying symbolic names for integer values that represent
+ * some code (such as an enum or #define).
  *
  * @ingroup Internals
- * @see sEnumBuilder
  */
-//FIXME use std::map<int,std::string> and std::map<std::string,int>
 class SIM_API cEnum : public cOwnedObject
 {
   private:
-     struct sEnum {
-          int key;
-          char *string;
-     };
-     sEnum *vect;      // vector of objects
-     int size;         // size of vector; always prime
-     int items;        // number if items in the vector
+     std::map<int,std::string> valueToNameMap;
+     std::map<std::string,int> nameToValueMap;
+     std::vector<std::string> tmpNames;
+
+  public:
+    // internal: helper for the Register_Enum() macro
+    cEnum *registerNames(const char *nameList);
+    // internal: helper for the Register_Enum() macro
+    cEnum *registerValues(int first, ...);
 
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
+    /**
+     * Constructor.
+     */
+    cEnum(const char *name=NULL);
 
     /**
      * Copy constructor.
      */
     cEnum(const cEnum& cenum);
-
-    /**
-     * Constructor.
-     */
-    cEnum(const char *name=NULL, int siz=17);
 
     /**
      * Destructor.
@@ -88,24 +89,28 @@ class SIM_API cEnum : public cOwnedObject
 
     /** @name Insertion and lookup. */
     //@{
-
     /**
      * Add an item to the enum. If that numeric code exist, overwrite it.
      */
-    void insert(int key, const char *str);
+    void insert(int value, const char *name);
 
     /**
-     * Look up key and return string representation. Return
+     * Look up value and return string representation. Return
      * NULL if not found.
      */
-    const char *stringFor(int key);
+    const char *stringFor(int value);
 
     /**
      * Look up string and return numeric code. If not found, return
      * second argument (or -1).
      */
-    int lookup(const char *str, int fallback=-1);
+    int lookup(const char *name, int fallback=-1);
     //@}
+
+    /**
+     *XXX
+     */
+    std::string toString() const;
 
     /**
      * Finds a registered enum by name.

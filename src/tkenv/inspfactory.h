@@ -22,7 +22,7 @@
 #include "omnetapp.h"
 
 #define Register_InspectorFactory(FACTORYNAME) \
-  EXECUTE_ON_STARTUP(FACTORYNAME##__ifc, inspectorfactories.instance()->add(new FACTORYNAME(#FACTORYNAME));)
+  EXECUTE_ON_STARTUP(inspectorfactories.instance()->add(new FACTORYNAME(#FACTORYNAME));)
 
 
 /**

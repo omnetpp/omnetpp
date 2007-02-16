@@ -1667,6 +1667,8 @@ void TOmnetTkApp::performAnimations()
 
 void TOmnetTkApp::bubble(cModule *mod, const char *text)
 {
+    TOmnetApp::bubble(mod, text);
+
     if (!opt_bubbles) return;
     cModule *parentmod = mod->parentModule();
     TInspector *insp = findInspector(parentmod,INSP_GRAPHICAL);

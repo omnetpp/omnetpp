@@ -39,7 +39,7 @@
 // the macro
 #define Register_OmnetApp(UINAME,CLASSNAME,SCORE,DESCR) \
   TOmnetApp *CLASSNAME##__create(ArgList *args, cConfiguration *config) {return new CLASSNAME(args, config);} \
-  EXECUTE_ON_STARTUP(__##CLASSNAME##_ui, (omnetapps.instance()->add(new cOmnetAppRegistration(UINAME,SCORE,DESCR,CLASSNAME##__create))))
+  EXECUTE_ON_STARTUP(omnetapps.instance()->add(new cOmnetAppRegistration(UINAME,SCORE,DESCR,CLASSNAME##__create)))
 
 class TOmnetApp;
 class ArgList;

@@ -424,7 +424,7 @@ while ($msg =~ s/enum\s+([A-Za-z0-9_ \t]+?)\s*{(.*?)};?//s)
     }
     print H "};\n\n";
 
-    print CC "EXECUTE_ON_STARTUP($enumname,\n";
+    print CC "EXECUTE_ON_STARTUP(\n";
     print CC "    cEnum *e = cEnum::find(\"$enumname\");\n";
     print CC "    if (!e) enums.instance()->add(e = new cEnum(\"$enumname\"));\n";
     foreach $fieldname (@fieldlist)
@@ -436,7 +436,7 @@ while ($msg =~ s/enum\s+([A-Za-z0-9_ \t]+?)\s*{(.*?)};?//s)
     if ($baseenum ne '')
     {
         # add to base enum, too
-        print CC "EXECUTE_ON_STARTUP(_${baseenum}_${enumname},\n";
+        print CC "EXECUTE_ON_STARTUP(\n";
         print CC "    cEnum *e = cEnum::find(\"$baseenum\");\n";
         print CC "    if (!e) enums.instance()->add(e = new cEnum(\"$baseenum\"));\n";
         foreach $fieldname (@fieldlist)

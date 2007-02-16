@@ -24,139 +24,105 @@
 #include "csimulation.h"
 #include "cenum.h"
 #include "cexception.h"
+#include "cstrtokenizer.h"
 
 
 Register_Class(cEnum);
 
 cEnum::cEnum(const cEnum& list) : cOwnedObject()
 {
-     vect=NULL;
-     size=0;
-     setName( list.name() );
+     setName(list.name());
      operator=(list);
 }
 
-cEnum::cEnum(const char *name, int siz) : cOwnedObject(name)
+cEnum::cEnum(const char *name) : cOwnedObject(name)
 {
-    size = Max(siz,0);
-    items = 0;
-    vect = new sEnum[size];
-    for (int i=0; i<size; i++)
-        vect[i].string=NULL;
 }
 
 cEnum::~cEnum()
 {
-    for (int i=0; i<size; i++)
-        delete [] vect[i].string;
-    delete [] vect;
 }
 
-cEnum& cEnum::operator=(const cEnum& list)
+cEnum& cEnum::operator=(const cEnum& other)
 {
-    int i;
-    for (i=0; i<size; i++)
-        delete [] vect[i].string;
-    delete [] vect;
-
-    cOwnedObject::operator=(list);
-
-    size = list.size;
-    items = list.items;
-    vect = new sEnum[size];
-    if (vect) memcpy( vect, list.vect, size * sizeof(sEnum *) );
-
-    for (i=0; i<size; i++)
-         if (vect[i].string)
-             vect[i].string = opp_strdup(vect[i].string);
+    cOwnedObject::operator=(other);
+    valueToNameMap = other.valueToNameMap;
+    nameToValueMap = other.nameToValueMap;
     return *this;
 }
 
 std::string cEnum::info() const
 {
-    if (items==0)
+    if (valueToNameMap.size()==0)
         return std::string("empty");
-    std::stringstream out;
-    out << items << " values";  //FIXME rather: print a few values (like "ECHO_REQ=1,...")
-    return out.str();
+    return toString();
 }
 
-void cEnum::insert(int key, const char *str)
+void cEnum::insert(int value, const char *name)
 {
-    // if hashtable gets crowded, re-hash into bigger table
-    if (items > 2*size/3)
-    {
-        // remember old table
-        sEnum *oldvect = vect;
-        int oldsize = size;
-
-        // choose new size and allocate table
-        static int sizes[] = {8,16,32,64,128,256,512,2048, 4096,8192,16384,32768,65536,0};
-        int i;
-        for (i=0; size >= sizes[i] && sizes[i]; i++);
-        size=sizes[i];
-
-        // mark all slots empty (string=NULL)
-        vect = new sEnum[size];
-        for (i=0; i<size; i++)
-            vect[i].string=NULL;
-
-        // copy over table contents
-        for (i=0; i<oldsize; i++)
-        {
-            // find a slot...
-            int key = oldvect[i].key;
-            int k = (key<0 ? -key : key) % size;
-            while (vect[k].string)
-                k = (k+1)%size;
-
-            // ...and insert there
-            vect[k].key = key;
-            vect[k].string = oldvect[i].string;
-        }
-        delete [] oldvect;
-    }
-
-    // find a slot...
-    int k = (key<0 ? -key : key) % size;
-    while (vect[k].string && vect[k].key!=key)
-        k = (k+1)%size;
-
-    if (vect[k].string)
-    {
-        // found a slot with this key, check consistency (strings must be the same)
-        ASSERT(vect[k].key==key);
-        if (strcmp(vect[k].string, str))
-            throw cRuntimeError("Key mismatch for enum %s: %s and %s have the same value (%d)",
-                                    name(), vect[k].string, str, key);
-    }
-    else
-    {
-        // ...empty slot found, insert it here
-        vect[k].key = key;
-        vect[k].string = opp_strdup(str);
-        items++;
-    }
+    valueToNameMap[value] = name;
+    nameToValueMap[name] = value;
 }
 
-const char *cEnum::stringFor(int key)
+const char *cEnum::stringFor(int value)
 {
-    int k = (key<0 ? -key : key) % size;
-    while (vect[k].key!=key && vect[k].string)
-        k = (k+1)%size;
-    return vect[k].string;
+    std::map<int,std::string>::const_iterator it = valueToNameMap.find(value);
+    return it==valueToNameMap.end() ? NULL : it->second.c_str();
 }
 
-int cEnum::lookup(const char *str, int fallback)
+int cEnum::lookup(const char *name, int fallback)
 {
-    for (int i=0; i<size; i++)
-        if (vect[i].string && 0==strcmp(vect[i].string,str))
-            return vect[i].key;
-    return fallback;
+    std::map<std::string,int>::const_iterator it = nameToValueMap.find(name);
+    return it==nameToValueMap.end() ? fallback : it->second;
 }
 
 cEnum *cEnum::find(const char *name)
 {
     return dynamic_cast<cEnum *>(enums.instance()->lookup(name));
 }
+
+cEnum *cEnum::registerNames(const char *nameList)
+{
+    tmpNames.clear();
+    cStringTokenizer tokenizer(nameList, "(), ");
+    while (tokenizer.hasMoreTokens())
+    {
+        const char *token = tokenizer.nextToken();
+        if (strstr(token, "::"))
+            token = strstr(token, "::")+2;
+        tmpNames.push_back(token);
+    }
+    return this;
+}
+
+cEnum *cEnum::registerValues(int firstValue, ...)
+{
+    ASSERT(!tmpNames.empty());
+
+    va_list va;
+    va_start(va, firstValue);
+    insert(firstValue, tmpNames[0].c_str());
+    for (int i=1; i<tmpNames.size(); i++)
+    {
+        int value = va_arg(va, int);
+        insert(value, tmpNames[i].c_str());
+    }
+    va_end(va);
+    tmpNames.clear();
+    return this;
+}
+
+std::string cEnum::toString() const
+{
+    std::stringstream out;
+    bool isFirst = true;
+    for (std::map<std::string,int>::const_iterator it=nameToValueMap.begin(); it!=nameToValueMap.end(); ++it)
+    {
+        if (it!=nameToValueMap.begin())
+            out << ", ";
+        out << it->first << "=" << it->second;
+    }
+    return out.str();
+}
+
 

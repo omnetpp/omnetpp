@@ -25,12 +25,18 @@
 #include "csimulation.h"
 #include "cenvir.h"
 #include "cexception.h"
+#include "cenum.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
 #endif
 
 Register_Class(cOutVector);
+
+
+Register_Enum(cOutVector::Type, (cOutVector::TYPE_INT, cOutVector::TYPE_DOUBLE, cOutVector::TYPE_ENUM) );
+Register_Enum(cOutVector::InterpolationMode, (cOutVector::NONE, cOutVector::SAMPLE_HOLD, cOutVector::BACKWARD_SAMPLE_HOLD, cOutVector::LINEAR));
+
 
 cOutVector::cOutVector(const char *name) : cNoncopyableOwnedObject(name)
 {
@@ -87,10 +93,53 @@ void cOutVector::setUnit(const char *unit)
     ev.setVectorAttribute(handle, "unit", unit);
 }
 
-void cOutVector::setStyle(Style style)
+void cOutVector::setEnum(const char *registeredEnumName)
 {
-    ev.setVectorAttribute(handle, "style", "FIXME");  //XXX
+    cEnum *enumDecl = cEnum::find(registeredEnumName);
+    if (!enumDecl)
+        throw cRuntimeError(this, "setEnum(): enum `%s' not found -- is it declared with Register_Enum()?", registeredEnumName);
+    setEnum(enumDecl);
 }
+
+void cOutVector::setEnum(cEnum *enumDecl)  //XXX
+{
+    ev.setVectorAttribute(handle, "enum", enumDecl->toString().c_str());
+}
+
+void cOutVector::setType(Type type)
+{
+    cEnum *enumDecl = cEnum::find("cOutVector::Type");  //XXX cache it; or rather, use SWITCH???
+    ASSERT(enumDecl);
+    const char *typeString = enumDecl->stringFor(type);
+    if (!typeString)
+        throw cRuntimeError(this, "setType(): invalid type %d", type);
+    ev.setVectorAttribute(handle, "type", typeString);
+}
+
+void cOutVector::setInterpolationMode(InterpolationMode mode)
+{
+    cEnum *enumDecl = cEnum::find("cOutVector::InterpolationMode");  //XXX cache it
+    ASSERT(enumDecl);
+    const char *modeString = enumDecl->stringFor(mode);
+    if (!modeString)
+        throw cRuntimeError(this, "setInterpolationMode(): invalid interpolation mode %d", mode);
+    ev.setVectorAttribute(handle, "interpolationmode", modeString);
+}
+
+void cOutVector::setMin(double minValue)
+{
+    char buf[32];
+    sprintf(buf, "%g", minValue);
+    ev.setVectorAttribute(handle, "min", buf);
+}
+
+void cOutVector::setMax(double maxValue)
+{
+    char buf[32];
+    sprintf(buf, "%g", maxValue);
+    ev.setVectorAttribute(handle, "min", buf);
+}
+
 
 bool cOutVector::record(double value)
 {

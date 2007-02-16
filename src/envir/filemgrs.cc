@@ -323,8 +323,9 @@ void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, d
     if (!name || !name[0])
         name = "(unnamed)";
     CHECK(fprintf(f, "scalar %s \t%s \t%.*g\n", QUOTE(module->fullPath().c_str()), QUOTE(name), prec, value));
-    for (opp_string_map::iterator it=attributes->begin(); it!=attributes->end(); it++)
-        CHECK(fprintf(f,"attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
+    if (attributes)
+        for (opp_string_map::iterator it=attributes->begin(); it!=attributes->end(); it++)
+            CHECK(fprintf(f,"attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
 }
 
 void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, cStatistic *statistic, opp_string_map *attributes)
@@ -344,7 +345,10 @@ void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, c
     recordScalar(module, (n+".stddev").c_str(), statistic->stddev());
     recordScalar(module, (n+".min").c_str(), statistic->min());
     recordScalar(module, (n+".max").c_str(), statistic->max());
-    //XXX record attributes too
+
+    if (attributes)
+        for (opp_string_map::iterator it=attributes->begin(); it!=attributes->end(); it++)
+            CHECK(fprintf(f,"attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
 
     if (dynamic_cast<cDensityEstBase *>(statistic))
     {

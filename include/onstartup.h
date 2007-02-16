@@ -24,6 +24,13 @@
 #include "cownedobject.h"
 
 
+// Jump through a loophole to generate unique identifiers.
+// See MSVC Help for __COUNTER__.
+#define __UNIQUEHELPER1(x,y) x##y
+#define __UNIQUEHELPER2(prefix,line) __UNIQUEHELPER1(prefix,line)
+#define __UNIQUEHELPER_A __UNIQUEHELPER2(__uniqueidentA, __LINE__)
+#define __UNIQUEHELPER_B __UNIQUEHELPER2(__uniqueidentB, __LINE__)
+
 
 /**
  * Allows code fragments to be collected in global scope which will
@@ -34,15 +41,10 @@
  *
  * @hideinitializer
  */
-#define EXECUTE_ON_STARTUP(NAME, CODE)  \
- static void __##NAME##_code() {CODE;} \
- static ExecuteOnStartup __##NAME##_reg(__##NAME##_code);
+#define EXECUTE_ON_STARTUP(CODE)  \
+  static void __UNIQUEHELPER_A() {CODE;} \
+  static ExecuteOnStartup __UNIQUEHELPER_B(__UNIQUEHELPER_A);
 
-
-//
-// Example:
-// EXECUTE_ON_STARTUP(EthernetModule, moduletypes->instance().add(new EthernetModuleType());)
-//
 
 /**
  * Supporting class for EXECUTE_ON_STARTUP macro.

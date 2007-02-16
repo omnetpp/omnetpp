@@ -38,7 +38,7 @@
  * @hideinitializer
  */
 #define Define_Function(NAME,ARGCOUNT) \
-  EXECUTE_ON_STARTUP(NAME##__##ARGCOUNT##__func, nedFunctions.instance()->add(new cMathFunction(#NAME,NAME,ARGCOUNT));)
+  EXECUTE_ON_STARTUP(nedFunctions.instance()->add(new cMathFunction(#NAME,NAME,ARGCOUNT));)
 
 /**
  * Like Define_Function(), but takes three arguments, the second one being the
@@ -48,7 +48,7 @@
  * @hideinitializer
  */
 #define Define_Function2(NAME,FUNCTION,ARGCOUNT) \
-  EXECUTE_ON_STARTUP(NAME##__##ARGCOUNT##__func, nedFunctions.instance()->add(new cMathFunction(#NAME,FUNCTION,ARGCOUNT));)
+  EXECUTE_ON_STARTUP(nedFunctions.instance()->add(new cMathFunction(#NAME,FUNCTION,ARGCOUNT));)
 
 /**
  * Registers a C/C++ function for use in NED and ini files. The function
@@ -63,7 +63,7 @@
  * @hideinitializer
  */
 #define Define_NED_Function(NAME,ARGTYPES,RETURNTYPE) \
-  EXECUTE_ON_STARTUP(NAME##__afunc, nedFunctions.instance()->add(new cNEDFunction(#NAME,NAME,ARGTYPES,RETURNTYPE));)
+  EXECUTE_ON_STARTUP(nedFunctions.instance()->add(new cNEDFunction(#NAME,NAME,ARGTYPES,RETURNTYPE));)
 
 /**
  * Like Define_NED_Function(), but it allows registering a function with a
@@ -73,7 +73,7 @@
  */
 //FIXME argtypes without quote, and then it can be included in varname too?
 #define Define_NED_Function2(NAME,FUNCTION,ARGTYPES,RETURNTYPE) \
-  EXECUTE_ON_STARTUP(NAME##__##FUNCTION##__afunc, nedFunctions.instance()->add(new cMathFunction(#NAME,FUNCTION,ARGTYPES,RETURNTYPE));)
+  EXECUTE_ON_STARTUP(nedFunctions.instance()->add(new cMathFunction(#NAME,FUNCTION,ARGTYPES,RETURNTYPE));)
 //@}
 
 
@@ -93,7 +93,7 @@
  */
 #define Register_Class(CLASSNAME) \
   cObject *CLASSNAME##__create() {return new CLASSNAME;} \
-  EXECUTE_ON_STARTUP(CLASSNAME##__class, classes.instance()->add(new cClassFactory(#CLASSNAME,CLASSNAME##__create));)
+  EXECUTE_ON_STARTUP(classes.instance()->add(new cClassFactory(#CLASSNAME,CLASSNAME##__create));)
 //@}
 
 
@@ -112,7 +112,7 @@
 // Implementation note: this is basically a Register_Class(), making sure the class subclasses from cModule.
 #define Define_Module(CLASSNAME) \
   cObject *CLASSNAME##__create() {cModule *ret = new CLASSNAME; return ret; } \
-  EXECUTE_ON_STARTUP(CLASSNAME##__class, classes.instance()->add(new cClassFactory(#CLASSNAME,CLASSNAME##__create, "module"));)
+  EXECUTE_ON_STARTUP(classes.instance()->add(new cClassFactory(#CLASSNAME,CLASSNAME##__create, "module"));)
 
 /**
  * Announces the C++ simple module class to \opp, and couples it with the
@@ -128,7 +128,7 @@
 // Implementation note: this is basically a Register_Class(), only we lie about the class name.
 #define Define_Module_Like(CLASSNAME,NEDNAME) \
   cObject *NEDNAME##__create() {cModule *ret = new CLASSNAME; return ret; } \
-  EXECUTE_ON_STARTUP(NEDNAME##__class, classes.instance()->add(new cClassFactory(#NEDNAME,NEDNAME##__create, \
+  EXECUTE_ON_STARTUP(classes.instance()->add(new cClassFactory(#NEDNAME,NEDNAME##__create, \
                      (std::string("module, implemented by ")+#CLASSNAME).c_str()));)
 
 /**
@@ -140,7 +140,7 @@
 // Implementation note: this is basically a Register_Class().
 #define Define_Channel(CLASSNAME) \
   cObject *CLASSNAME##__create() {cChannel *ret = new CLASSNAME; return ret; } \
-  EXECUTE_ON_STARTUP(CLASSNAME##__class, classes.instance()->add(new cClassFactory(#CLASSNAME,CLASSNAME##__create, "channel"));)
+  EXECUTE_ON_STARTUP(classes.instance()->add(new cClassFactory(#CLASSNAME,CLASSNAME##__create, "channel"));)
 
 /**
  * Announces the C++ channel class to \opp, and couples it with the
@@ -156,7 +156,7 @@
 // Implementation note: this is basically a Register_Class(), only we lie about the class name.
 #define Define_Channel_Like(CLASSNAME,NEDNAME) \
   cObject *NEDNAME##__create() {cChannel *ret = new CLASSNAME; return ret;} \
-  EXECUTE_ON_STARTUP(NEDNAME##__class, classes.instance()->add(new cClassFactory(#NEDNAME,NEDNAME##__create, \
+  EXECUTE_ON_STARTUP(classes.instance()->add(new cClassFactory(#NEDNAME,NEDNAME##__create, \
                      (std::string("channel, implemented by ")+#CLASSNAME).c_str()));)
 
 
@@ -166,7 +166,7 @@
  * @hideinitializer
  */
 #define Register_ClassDescriptor(DESCRIPTORCLASS) \
-  EXECUTE_ON_STARTUP(DESCRIPTORCLASS##__descr, classDescriptors.instance()->add(new DESCRIPTORCLASS());)
+  EXECUTE_ON_STARTUP(classDescriptors.instance()->add(new DESCRIPTORCLASS());)
 
 /**
  * DEPRECATED. This macro basically just expands to an empty constructor
@@ -202,7 +202,7 @@ template<typename T> std::string __tostring(T x)
 // internal
 #define __Register_ConfigEntry(ID, ARGLIST) \
   cConfigEntry *ID; \
-  EXECUTE_ON_STARTUP(ID##__configentry, configEntries.instance()->add(ID = new cConfigEntry ARGLIST);)
+  EXECUTE_ON_STARTUP(configEntries.instance()->add(ID = new cConfigEntry ARGLIST);)
 
 /**
  * Generic, with unit==NULL.

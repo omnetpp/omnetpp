@@ -11,6 +11,7 @@ CFLAGS=$(CFLAGS) -DWIN32_DLL
 # Local definitions
 #
 COPTS=$(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -DBUILDING_SIM /Fd"sim_std.pdb"
+#COPTS=/C /P $(COPTS)
 IMPLIBS=../envir/envir.lib ../common/common.lib
 
 OBJS_STD=\
