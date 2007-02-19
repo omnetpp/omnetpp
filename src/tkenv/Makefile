@@ -9,8 +9,6 @@ include ../../Makefile.inc
 #
 COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../envir -I../layout -I../common $(TK_CFLAGS) -DBUILDING_TKENV
 
-OMNETPP_TKENV_DIR=/home/rhornig/work/omnetpp/omnetpp/src/tkenv
-
 OBJS = tkapp$(TKENV_EMBED_SUFFIX).o tkcmd.o tklib.o inspector.o \
        inspfactory.o objinsp.o modinsp.o statinsp.o layouterenv.o \
        arrow.o visitor.o tkutil.o
@@ -48,8 +46,9 @@ tkapp-e.o : tkapp.cc  tclcode.cc
 tclcode.cc: *.tcl
 	../utils/tcl2c tclcode.cc *.tcl
 
-missing-library:
-	@ echo '  *** No Tk installation found -- skipping Tkenv'
+missing-dependency:
+	@echo '  *** No Tcl/Tk installation found -- skipping Tkenv.'
+	@echo '  *** Install it, then run ./configure again.'
 
 depend:
 	$(MAKEDEPEND) -I. -I../envir -I../../include -- *.cc

@@ -60,8 +60,9 @@ tkapp-e.obj : tkapp.cc  tclcode.cc
 tclcode.cc : *.tcl
 	..\utils\tcl2c tclcode.cc *.tcl
 
-missing-library:
-	@ echo '  *** No Tk installation found -- skipping Tkenv'
+missing-dependency:
+	@echo '  *** No Tcl/Tk installation found -- skipping Tkenv.'
+	@echo '  *** Install it, and edit configuser.vc accordingly.'
 
 depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc

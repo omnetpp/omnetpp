@@ -94,11 +94,16 @@ $(DLL): $(OBJS) $(LIBS)
 	$(LINK) /dll /out:$(DLL) $(OBJS) $(LIBS) $(LDFLAGS)
 	copy $(DLL) $(DLL_TARGET_DIR)
 
+missing-dependency:
+	@echo '  *** Missing required dependency -- skipping build of UI support library.'
+	@echo '  *** Install missing packages (probably SWIG and/or JDK), and edit configuser.vc.'
+
 depend:
 	$(MAKEDEPEND) $(INCLUDES) -fMakefile.vc -- *.cxx *.cc
 
 clean:
 	-del *.cxx *.obj *.exp *.lib test*.exe *.dll 2>nul
 	-del *.ilk *.idb *.pdb *.pch 2>nul
+
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

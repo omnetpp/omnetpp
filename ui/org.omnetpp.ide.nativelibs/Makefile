@@ -55,7 +55,7 @@ COPTS=$(CFLAGS) $(JAVA_CFLAGS) $(INCLUDES)
 	$(CXX) -c $(COPTS) $<
 
 #
-# Targets. NOTE: cmd.exe "Command Extensions" must be enabled for "mkdir" commands to work!
+# Targets
 #
 all: $(DLL)
 
@@ -88,10 +88,15 @@ $(DLL): $(OBJS)
 	$(SHLIB_LD) -L$(OMNETPP_LIB_DIR) -leventlog -llayout -lscave -lnedxml -lcommon -o $(DLL) $(OBJS)
 	cp $(DLL) $(DLL_TARGET_DIR)
 
+missing-dependency:
+	@echo '  *** Missing required dependency -- skipping build of UI support library.'
+	@echo '  *** Install missing packages (probably SWIG and/or JDK), then run ./configure again.'
+
 depend:
 	$(MAKEDEPEND) $(INCLUDES) -fMakefile -- *.cxx *.cc
 
 clean:
 	-rm -f *.cxx *.o *.a *.so
+
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

@@ -9,7 +9,7 @@
 #
 
 #
-# Edit here if you want to use a different compiler than the one autodetected
+# Edit here if you want to use a different compiler from the one autodetected
 # by configure.
 #
 #CC=/usr/local/gcc/4.0.1/bin/gcc
@@ -50,7 +50,7 @@ NEDCFLAGS='-Wno-unused'
 # It is possible to have the Tcl files embedded into the compiled OMNeT++
 # libraries and executables. This can be useful if you want to ship
 # self-contained standalone executables which do not rely on external
-# Tcl scripts. This option affects Tkenv, GNED, Scalars and Plove.
+# Tcl scripts. This option is available for Tkenv.
 #
 EMBED_TCL_CODE=no
 
@@ -105,9 +105,9 @@ WITH_PARSIM=no
 #TK_LIBS=
 
 #
-# BLT is a Tcl/Tk extension needed by the Scalars, Plove and Tkenv components
-# of OMNeT++. BLT 2.4z is required. BLT_LIBS should contain the -l flag
-# for BLT. Default setting is:
+# BLT is a Tcl/Tk extension needed by the Tkenv component of OMNeT++.
+# BLT 2.4z is required. BLT_LIBS should contain the -l flag for BLT.
+# Default setting is:
 #  BLT_LIBS="-lBLT24"
 #
 #BLT_LIBS=

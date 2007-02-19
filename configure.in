@@ -95,10 +95,7 @@ OMNETPP_INCL_DIR="$OMNETPP_ROOT/include"
 OMNETPP_LIB_DIR="$OMNETPP_ROOT/lib"
 
 OMNETPP_TKENV_DIR="$OMNETPP_SRC_DIR/tkenv"
-OMNETPP_GNED_DIR="$OMNETPP_SRC_DIR/gned"
 OMNETPP_NEDC_DIR="$OMNETPP_SRC_DIR/nedc"
-OMNETPP_SCALARS_DIR="$OMNETPP_SRC_DIR/scalars"
-OMNETPP_PLOVE_DIR="$OMNETPP_SRC_DIR/plove"
 
 
 if test "$cygwin" = yes; then
@@ -163,7 +160,6 @@ NEDCFLAGS=${NEDCFLAGS:- -Wno-unused}
 NEDC=${NEDC:-nedtool}
 MSGC=${MSGC:-opp_msgc}
 NEDTOOL=${NEDTOOL:-nedtool}
-GNED=${GNED:-gned}
 MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
 
 #----------------------
@@ -559,10 +555,7 @@ OPP_CHECK_LIB(winsock, winsock.h, socket(0,0,0), , -lwsock32, wsock_ok, SYS_LIBS
 if test -n "$NO_TCL"; then
 
 # skip testing for TCL
-TKENV_IF_POSSIBLE=missing-library
-GNED_IF_POSSIBLE=missing-library
-SCALARS_IF_POSSIBLE=missing-library
-PLOVE_IF_POSSIBLE=missing-library
+TKENV_IF_POSSIBLE=missing-dependency
 
 # and build samples using Cmdenv (TBD)
 USERIF_LIBS='$(CMDENV_LIBS)'
@@ -660,7 +653,7 @@ if test $blt_ok = no; then
 fi
 if test $blt_ok = no; then
     OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT"
-    AC_MSG_WARN([Cannot compile or link program with BLT: BLT or BLT-devel may not be installed -- check config.log for details. Plove and Scalars require BLT to build.])
+    AC_MSG_WARN([Cannot compile or link program with BLT: BLT or BLT-devel may not be installed -- check config.log for details.])
     HAVE_BLT=no
 fi
 if test $blt_ok = yes; then
@@ -672,10 +665,7 @@ if test $blt_ok = yes; then
 fi
 
 # if we got through until here, enable building of the following progs:
-TKENV_IF_POSSIBLE=tkenv
-GNED_IF_POSSIBLE=gned
-SCALARS_IF_POSSIBLE=scalars
-PLOVE_IF_POSSIBLE=plove
+TKENV_IF_POSSIBLE=default
 
 # and build samples using Tkenv
 USERIF_LIBS='$(TKENV_LIBS)'
@@ -683,7 +673,7 @@ USERIF_LIBS='$(TKENV_LIBS)'
 fi # end of Tcl tests ($NO_TCL=="" branch)
 
 #----------------------
-# Check for JDK 
+# Check for JDK
 # FIXME detect the optional JDK correctly
 #----------------------
 AC_CHECK_PROG(JDK, javac , jdk, not found)
@@ -804,14 +794,8 @@ fi
 
 if test "$EMBED_TCL_CODE" = yes; then
    TKENV_EMBED_SUFFIX=-e
-   GNED_EMBED_SUFFIX=-e
-   SCALARS_EMBED_SUFFIX=-e
-   PLOVE_EMBED_SUFFIX=-e
 else
    TKENV_EMBED_SUFFIX=
-   GNED_EMBED_SUFFIX=
-   SCALARS_EMBED_SUFFIX=
-   PLOVE_EMBED_SUFFIX=
 fi
 
 #----------------------
@@ -870,7 +854,6 @@ AC_SUBST(MYPWD)
 AC_SUBST(NEDC)
 AC_SUBST(MSGC)
 AC_SUBST(NEDTOOL)
-AC_SUBST(GNED)
 AC_SUBST(NEDCFLAGS)
 AC_SUBST(AS)
 AC_SUBST(AR)
@@ -910,20 +893,11 @@ AC_SUBST(AKAROA_CFLAGS)
 AC_SUBST(AKAROA_LIBS)
 
 AC_SUBST(TKENV_IF_POSSIBLE)
-AC_SUBST(GNED_IF_POSSIBLE)
-AC_SUBST(SCALARS_IF_POSSIBLE)
-AC_SUBST(PLOVE_IF_POSSIBLE)
 
 AC_SUBST(USERIF_LIBS)
 AC_SUBST(TKENV_EMBED_SUFFIX)
-AC_SUBST(GNED_EMBED_SUFFIX)
-AC_SUBST(SCALARS_EMBED_SUFFIX)
-AC_SUBST(PLOVE_EMBED_SUFFIX)
 
 AC_SUBST(OMNETPP_TKENV_DIR)
-AC_SUBST(OMNETPP_GNED_DIR)
-AC_SUBST(OMNETPP_SCALARS_DIR)
-AC_SUBST(OMNETPP_PLOVE_DIR)
 
 AC_SUBST(WITH_NETBUILDER)
 AC_SUBST(WITH_PARSIM)
