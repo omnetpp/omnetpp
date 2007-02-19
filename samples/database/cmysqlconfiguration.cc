@@ -399,7 +399,7 @@ double cMySQLConfiguration::getAsTime(const char *sect, const char *key, double 
     return STR_SIMTIME(s);
 }
 
-std::string cIniFile::getAsFilename(const char *sect, const char *key, const char *defaultval)
+std::string cMySQLConfiguration::getAsFilename(const char *sect, const char *key, const char *defaultval)
 {
     sEntry *entry = _findEntry(sect, key);
     if (!entry)
