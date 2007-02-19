@@ -102,7 +102,7 @@ cEnum *cEnum::registerValues(int firstValue, ...)
     va_list va;
     va_start(va, firstValue);
     insert(firstValue, tmpNames[0].c_str());
-    for (int i=1; i<tmpNames.size(); i++)
+    for (int i=1; i < (int)tmpNames.size(); i++)
     {
         int value = va_arg(va, int);
         insert(value, tmpNames[i].c_str());
@@ -115,7 +115,6 @@ cEnum *cEnum::registerValues(int firstValue, ...)
 std::string cEnum::toString() const
 {
     std::stringstream out;
-    bool isFirst = true;
     for (std::map<std::string,int>::const_iterator it=nameToValueMap.begin(); it!=nameToValueMap.end(); ++it)
     {
         if (it!=nameToValueMap.begin())

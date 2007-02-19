@@ -730,8 +730,6 @@ bool cMsgPar::parse(const char *text, char tp)
     char *s = tmp+strlen(tmp)-1;
     while (s>=tmp && (*s==' ' || *s=='\t')) *s--='\0';
 
-    double d;
-
     if (strcmp(tmp,"true")==0 || strcmp(tmp,"TRUE")==0 || strcmp(tmp,"True")==0) // bool?
     {
         if (!strchr("?B",tp)) goto error;

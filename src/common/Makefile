@@ -54,49 +54,57 @@ clean:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 commonutil.o: commonutil.cc \
   commonutil.h \
+  commondefs.h \
   exception.h
 displaystring.o: displaystring.cc \
-  displaystring.h
+  displaystring.h \
+  commondefs.h
 exception.o: exception.cc \
-  exception.h
+  exception.h \
+  commondefs.h
 fileglobber.o: fileglobber.cc \
-  fileglobber.h
+  fileglobber.h \
+  commondefs.h
 filereader.o: filereader.cc \
   commonutil.h \
   filereader.h \
-  exception.h
+  exception.h \
+  commondefs.h
 fileutil.o: fileutil.cc \
-  fileutil.h
+  fileutil.h \
+  commondefs.h
 fnamelisttokenizer.o: fnamelisttokenizer.cc \
   fnamelisttokenizer.h \
+  commondefs.h \
   commonutil.h \
   exception.h
 lcgrandom.o: lcgrandom.cc \
-  lcgrandom.h
-lex.matchexpressionyy.o: lex.matchexpressionyy.cc \
-  matchexpression.tab.h
+  lcgrandom.h \
+  commondefs.h
 linetokenizer.o: linetokenizer.cc \
   exception.h \
-  linetokenizer.h
+  linetokenizer.h \
+  commondefs.h
 matchexpression.o: matchexpression.cc \
   matchexpression.h \
   patternmatcher.h \
-  exception.h
-matchexpression.tab.o: matchexpression.tab.cc \
-  matchexpression.h \
-  patternmatcher.h \
+  commondefs.h \
   exception.h
 patternmatcher.o: patternmatcher.cc \
   patternmatcher.h \
   stringutil.h \
   exception.h \
+  commondefs.h \
   commonutil.h
 stringtokenizer.o: stringtokenizer.cc \
-  stringtokenizer.h
+  stringtokenizer.h \
+  commondefs.h
 stringutil.o: stringutil.cc \
   commonutil.h \
   stringutil.h \
+  commondefs.h \
   exception.h
 unitconversion.o: unitconversion.cc \
   unitconversion.h \
+  commondefs.h \
   exception.h

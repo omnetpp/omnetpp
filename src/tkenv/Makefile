@@ -79,6 +79,7 @@ inspector.o: inspector.cc \
   ../../include/cdefaultlist.h \
   ../../include/cdensity.h \
   ../../include/cdetect.h \
+  ../../include/cconfigentry.h \
   ../../include/cdisplaystring.h \
   ../../include/cdoublepar.h \
   ../../include/cdynamicexpression.h \
@@ -134,7 +135,6 @@ inspector.o: inspector.cc \
   ../../include/distrib.h \
   ../../include/envirext.h \
   ../../include/errmsg.h \
-  ../../include/expryydefs.h \
   ../../include/globals.h \
   ../../include/index.h \
   ../../include/mersennetwister.h \
@@ -143,12 +143,12 @@ inspector.o: inspector.cc \
   ../../include/protocol.h \
   ../../include/random.h \
   ../../include/regmacros.h \
-  ../../include/stlwrap.h \
   ../../include/util.h \
   ../../include/nedsupport.h \
   ../../include/compat.h \
   ../../include/platdep/inttypes.h \
   ../../include/platdep/timeutil.h \
+  ../../include/platdep/platdefs.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
   ../envir/envdefs.h \
@@ -174,6 +174,7 @@ inspfactory.o: inspfactory.cc \
   ../../include/cdefaultlist.h \
   ../../include/cdensity.h \
   ../../include/cdetect.h \
+  ../../include/cconfigentry.h \
   ../../include/cdisplaystring.h \
   ../../include/cdoublepar.h \
   ../../include/cdynamicexpression.h \
@@ -229,7 +230,6 @@ inspfactory.o: inspfactory.cc \
   ../../include/distrib.h \
   ../../include/envirext.h \
   ../../include/errmsg.h \
-  ../../include/expryydefs.h \
   ../../include/globals.h \
   ../../include/index.h \
   ../../include/mersennetwister.h \
@@ -238,12 +238,12 @@ inspfactory.o: inspfactory.cc \
   ../../include/protocol.h \
   ../../include/random.h \
   ../../include/regmacros.h \
-  ../../include/stlwrap.h \
   ../../include/util.h \
   ../../include/nedsupport.h \
   ../../include/compat.h \
   ../../include/platdep/inttypes.h \
   ../../include/platdep/timeutil.h \
+  ../../include/platdep/platdefs.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
   ../envir/envdefs.h \
@@ -274,18 +274,19 @@ layouterenv.o: layouterenv.cc \
   ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
   ../../include/cdefaultlist.h \
+  ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/cenvir.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/opp_string.h \
   ../../include/cneddeclarationbase.h \
   ../../include/globals.h \
   ../../include/cparvalue.h \
@@ -302,7 +303,8 @@ layouterenv.o: layouterenv.cc \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
-  ../../include/cconfig.h
+  ../../include/cconfig.h \
+  ../../include/cconfigentry.h
 modinsp.o: modinsp.cc \
   modinsp.h \
   tkapp.h \
@@ -332,18 +334,19 @@ modinsp.o: modinsp.cc \
   ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
   ../../include/cdefaultlist.h \
+  ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/cenvir.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/opp_string.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
@@ -359,7 +362,8 @@ modinsp.o: modinsp.cc \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
-  ../../include/cconfig.h
+  ../../include/cconfig.h \
+  ../../include/cconfigentry.h
 objinsp.o: objinsp.cc \
   ../../include/omnetpp.h \
   tkapp.h \
@@ -380,6 +384,7 @@ objinsp.o: objinsp.cc \
   ../../include/cdefaultlist.h \
   ../../include/cdensity.h \
   ../../include/cdetect.h \
+  ../../include/cconfigentry.h \
   ../../include/cdisplaystring.h \
   ../../include/cdoublepar.h \
   ../../include/cdynamicexpression.h \
@@ -435,7 +440,6 @@ objinsp.o: objinsp.cc \
   ../../include/distrib.h \
   ../../include/envirext.h \
   ../../include/errmsg.h \
-  ../../include/expryydefs.h \
   ../../include/globals.h \
   ../../include/index.h \
   ../../include/mersennetwister.h \
@@ -444,12 +448,12 @@ objinsp.o: objinsp.cc \
   ../../include/protocol.h \
   ../../include/random.h \
   ../../include/regmacros.h \
-  ../../include/stlwrap.h \
   ../../include/util.h \
   ../../include/nedsupport.h \
   ../../include/compat.h \
   ../../include/platdep/inttypes.h \
   ../../include/platdep/timeutil.h \
+  ../../include/platdep/platdefs.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
   ../envir/envdefs.h \
@@ -475,18 +479,19 @@ statinsp.o: statinsp.cc \
   ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
   ../../include/cdefaultlist.h \
+  ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/cenvir.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/opp_string.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
@@ -499,6 +504,7 @@ statinsp.o: statinsp.cc \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfig.h \
+  ../../include/cconfigentry.h \
   inspector.h \
   tkutil.h \
   tkdefs.h
@@ -511,6 +517,8 @@ tkapp.o: tkapp.cc \
   ../../include/cscheduler.h \
   ../../include/ccomponenttype.h \
   ../../include/csimulation.h \
+  ../../include/cconfigentry.h \
+  ../../include/regmacros.h \
   tkdefs.h \
   tkapp.h \
   tklib.h \
@@ -527,13 +535,13 @@ tkapp.o: tkapp.cc \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
+  ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/regmacros.h \
   ../../include/opp_string.h \
   ../../include/cmodule.h \
   ../../include/ccomponent.h \
@@ -586,18 +594,19 @@ tkcmd.o: tkcmd.cc \
   visitor.h \
   ../envir/fsutils.h \
   ../../include/simkerneldefs.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
-  ../../include/cownedobject.h \
   ../../include/util.h \
+  ../../include/errmsg.h \
+  ../../include/cownedobject.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/opp_string.h \
   ../../include/globals.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
@@ -617,6 +626,7 @@ tkcmd.o: tkcmd.cc \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfig.h \
+  ../../include/cconfigentry.h \
   tkutil.h \
   tkdefs.h \
   ../envir/matchableobject.h
@@ -636,6 +646,7 @@ tklib.o: tklib.cc \
   ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
+  ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
@@ -645,7 +656,8 @@ tklib.o: tklib.cc \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/opp_string.h
+  ../../include/opp_string.h \
+  ../../include/cconfigentry.h
 tkutil.o: tkutil.cc \
   ../../include/cownedobject.h \
   ../../include/cmodule.h \
@@ -658,6 +670,8 @@ tkutil.o: tkutil.cc \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
@@ -665,7 +679,6 @@ tkutil.o: tkutil.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/opp_string.h \
   ../../include/ccomponent.h \
   ../../include/globals.h \
   ../../include/cgate.h \
@@ -682,6 +695,7 @@ tkutil.o: tkutil.cc \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfig.h \
+  ../../include/cconfigentry.h \
   ../envir/matchableobject.h \
   tkdefs.h
 visitor.o: visitor.cc \
@@ -699,12 +713,14 @@ visitor.o: visitor.cc \
   ../../include/cgate.h \
   visitor.h \
   ../../include/simkerneldefs.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/util.h \
+  ../../include/errmsg.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/errmsg.h \
   ../../include/ccomponent.h \
   ../../include/globals.h \
   ../../include/csimulation.h \
@@ -713,7 +729,6 @@ visitor.o: visitor.cc \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
   ../../include/cstringpool.h \
-  ../../include/opp_string.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
@@ -731,4 +746,5 @@ visitor.o: visitor.cc \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
-  ../../include/cconfig.h
+  ../../include/cconfig.h \
+  ../../include/cconfigentry.h

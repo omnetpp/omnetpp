@@ -1,8 +1,7 @@
 #
 # Global definitions
 #
-OMNETPP_ROOT=@OMNETPP_ROOT@
-PERL=@PERL@
+include ../../Makefile.inc
 
 #
 # Local definitions

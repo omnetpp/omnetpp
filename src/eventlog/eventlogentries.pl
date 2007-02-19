@@ -162,7 +162,7 @@ class EVENTLOG_API $class->{NAME} : public EventLogTokenBasedEntry
       virtual int getClassIndex() { return $index; }
       virtual const char *getDefaultAttribute() const { return \"$class->{CODE}\"; }
       virtual const std::vector<const char *> getAttributeNames() const;
-      virtual const char *getAttribute(const char *name) const;
+      virtual const char *getAttribute(const char *name) const; // BEWARE: Returns pointer into a static buffer which gets overwritten with each call!
       virtual const char *getClassName() { return \"$class->{NAME}\"; }
 };
 ";
@@ -314,11 +314,11 @@ foreach $class (@classes)
       }
       elsif ($field->{TYPE} eq "simtime_t")
       {
-         print ENTRIES_CC_FILE "        return _gcvt($field->{NAME}, 12, buffer);\n";
+         print ENTRIES_CC_FILE "        {sprintf(buffer, \"%.*g\", 12, $field->{NAME}); return buffer;}\n"; # gcvt() is obsolete
       }
       else
       {
-         print ENTRIES_CC_FILE "        return _ltoa($field->{NAME}, buffer, 10);\n";
+         print ENTRIES_CC_FILE "        {sprintf(buffer, \"%ld\", (long)$field->{NAME}); return buffer;}\n"; # ltoa() is not portable
       }
    }
 

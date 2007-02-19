@@ -54,15 +54,20 @@ akaroarng.o: akaroarng.cc \
   ../../include/cexception.h \
   akaroarng.h \
   ../../include/simkerneldefs.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
-  ../../include/opp_string.h \
   ../../include/crng.h \
   ../../include/cconfig.h \
   ../../include/cobject.h \
   ../../include/cvisitor.h \
-  ../../include/regmacros.h
+  ../../include/regmacros.h \
+  ../../include/cconfigentry.h \
+  ../../include/cownedobject.h \
+  ../../include/cnamedobject.h \
+  ../../include/cstringpool.h
 akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/cenvir.h \
   omnetapp.h \
@@ -70,8 +75,12 @@ akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/cstat.h \
   akoutvectormgr.h \
   ../../include/simkerneldefs.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
   ../../include/carray.h \
   ../../include/globals.h \
   ../../include/cexception.h \
@@ -80,16 +89,14 @@ akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/envirext.h \
   ../../include/cconfig.h \
   ../../include/cownedobject.h \
-  ../../include/util.h \
   ../../include/cnamedobject.h \
-  ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/opp_string.h \
+  ../../include/cconfigentry.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/csimulation.h \
@@ -103,6 +110,7 @@ args.o: args.cc \
   args.h \
   envdefs.h \
   ../../include/simkerneldefs.h \
+  ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h
 cenvir.o: cenvir.cc \
@@ -121,6 +129,7 @@ cenvir.o: cenvir.cc \
   matchableobject.h \
   envdefs.h \
   ../../include/simkerneldefs.h \
+  ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/random.h \
@@ -143,6 +152,7 @@ cenvir.o: cenvir.cc \
   ../../include/regmacros.h \
   ../../include/opp_string.h \
   ../../include/cconfig.h \
+  ../../include/cconfigentry.h \
   ../../include/envirext.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
@@ -155,17 +165,26 @@ cinifile.o: cinifile.cc \
   ../../include/cexception.h \
   fsutils.h \
   ../../include/cstrtokenizer.h \
+  ../../include/globals.h \
   ../../include/simkerneldefs.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
-  envdefs.h \
-  ../../include/cconfig.h \
-  ../../include/opp_string.h \
-  ../../include/cobject.h \
   ../../include/util.h \
   ../../include/errmsg.h \
+  envdefs.h \
+  ../../include/cconfig.h \
+  ../../include/cobject.h \
+  ../../include/cconfigentry.h \
   ../../include/cvisitor.h \
-  ../../include/regmacros.h
+  ../../include/regmacros.h \
+  ../../include/cownedobject.h \
+  ../../include/cnamedobject.h \
+  ../../include/cstringpool.h \
+  ../../include/onstartup.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h
 cxmldoccache.o: cxmldoccache.cc \
   ../../include/cobject.h \
   cxmldoccache.h \
@@ -176,12 +195,14 @@ cxmldoccache.o: cxmldoccache.cc \
   ../../include/util.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
+  ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   envdefs.h \
   ../../include/cenvir.h \
-  ../../include/opp_string.h
+  ../../include/opp_string.h \
+  ../nedxml/nedxmldefs.h
 filemgrs.o: filemgrs.cc \
   ../../include/simkerneldefs.h \
   ../../include/cenvir.h \
@@ -189,11 +210,16 @@ filemgrs.o: filemgrs.cc \
   ../../include/csimulation.h \
   ../../include/cmodule.h \
   ../../include/cstat.h \
+  ../../include/cdensity.h \
   filemgrs.h \
   ../../include/ccomponenttype.h \
   ivfilemgr.h \
+  ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/opp_string.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
   ../../include/carray.h \
   ../../include/globals.h \
   ../../include/cexception.h \
@@ -202,16 +228,14 @@ filemgrs.o: filemgrs.cc \
   ../../include/envirext.h \
   ../../include/cconfig.h \
   ../../include/cownedobject.h \
-  ../../include/util.h \
   ../../include/cnamedobject.h \
-  ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/opp_string.h \
+  ../../include/cconfigentry.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
@@ -229,6 +253,7 @@ fsutils.o: fsutils.cc \
   ../../include/opp_string.h \
   ../../include/simkerneldefs.h \
   ../../include/errmsg.h \
+  ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/cownedobject.h \
@@ -247,8 +272,12 @@ ivfilemgr.o: ivfilemgr.cc \
   ../../include/cmodule.h \
   ../../include/cstat.h \
   ivfilemgr.h \
+  ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/opp_string.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
   ../../include/carray.h \
   ../../include/globals.h \
   ../../include/cexception.h \
@@ -257,15 +286,13 @@ ivfilemgr.o: ivfilemgr.cc \
   ../../include/envirext.h \
   ../../include/cconfig.h \
   ../../include/cownedobject.h \
-  ../../include/util.h \
   ../../include/cnamedobject.h \
-  ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/opp_string.h \
+  ../../include/cconfigentry.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
@@ -282,6 +309,7 @@ main.o: main.cc \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
+  ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
@@ -298,6 +326,7 @@ matchableobject.o: matchableobject.cc \
   ../../include/util.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
+  ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
@@ -305,11 +334,12 @@ matchableobject.o: matchableobject.cc \
   ../../include/cenvir.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cstringpool.h \
-  ../../include/opp_string.h
+  ../../include/opp_string.h \
+  ../../include/cstringpool.h
 omnetapp.o: omnetapp.cc \
   args.h \
   omnetapp.h \
+  appreg.h \
   fsutils.h \
   ../../include/ccoroutine.h \
   ../../include/csimulation.h \
@@ -320,14 +350,18 @@ omnetapp.o: omnetapp.cc \
   ../../include/random.h \
   ../../include/crng.h \
   ../../include/cmodule.h \
+  ../../include/ccomponenttype.h \
   ../../include/cmessage.h \
   ../../include/cdisplaystring.h \
   ../../include/cxmlelement.h \
   cxmldoccache.h \
   ../../include/chasher.h \
+  ../../include/cconfigentry.h \
+  ../../include/regmacros.h \
   ../../include/cparsimcomm.h \
   envdefs.h \
   ../../include/simkerneldefs.h \
+  ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/carray.h \
@@ -343,22 +377,23 @@ omnetapp.o: omnetapp.cc \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
   ../../include/opp_string.h \
   ../../include/cmsgheap.h \
   ../../include/platdep/timeutil.h \
   ../../include/cexpression.h \
-  ../../include/stlwrap.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cparvalue.h \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h
 speedmtr.o: speedmtr.cc \
   speedmtr.h \
   ../../include/simkerneldefs.h \
   envdefs.h \
+  ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h

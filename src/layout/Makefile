@@ -77,18 +77,18 @@ forcedirectedgraphlayouter.o: forcedirectedgraphlayouter.cc \
   ../common/lcgrandom.h \
   geometry.h \
   forcedirectedparametersbase.h
+forcedirectedparametersbase.o: forcedirectedparametersbase.cc \
+  forcedirectedparametersbase.h \
+  geometry.h \
+  layoutdefs.h \
+  ../common/commonutil.h \
+  ../common/exception.h \
+  ../common/commondefs.h
 forcedirectedparameters.o: forcedirectedparameters.cc \
   forcedirectedparameters.h \
   geometry.h \
   forcedirectedparametersbase.h \
   forcedirectedembedding.h \
-  layoutdefs.h \
-  ../common/commonutil.h \
-  ../common/exception.h \
-  ../common/commondefs.h
-forcedirectedparametersbase.o: forcedirectedparametersbase.cc \
-  forcedirectedparametersbase.h \
-  geometry.h \
   layoutdefs.h \
   ../common/commonutil.h \
   ../common/exception.h \

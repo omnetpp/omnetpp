@@ -51,6 +51,7 @@ cmdenv.o: cmdenv.cc \
   ../envir/args.h \
   ../envir/speedmtr.h \
   ../../include/simkerneldefs.h \
+  ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/csimulation.h \
@@ -67,14 +68,15 @@ cmdenv.o: cmdenv.cc \
   ../../include/cenvir.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/opp_string.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfig.h \
+  ../../include/cconfigentry.h \
   ../../include/cmodule.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
