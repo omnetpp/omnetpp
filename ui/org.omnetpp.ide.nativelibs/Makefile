@@ -61,27 +61,27 @@ all: $(DLL)
 
 common.cxx : common.i
 	-rm -f $(COMMON_JAVADIR)/*.java
-	-mkdir $(COMMON_JAVADIR)
+	-mkdir -p $(COMMON_JAVADIR)
 	$(SWIG) -c++ -java $(INCLUDES) -package $(COMMON_JAVAPKG) -outdir $(COMMON_JAVADIR) -o $@ $<
 
 nedxml.cxx : nedxml.i
 	-rm -f $(NEDXML_JAVADIR)/*.java
-	-mkdir $(NEDXML_JAVADIR)
+	-mkdir -p $(NEDXML_JAVADIR)
 	$(SWIG) -c++ -java $(INCLUDES) -package $(NEDXML_JAVAPKG) -outdir $(NEDXML_JAVADIR) -o $@ $<
 
 scave.cxx : scave.i
 	-rm -f $(SCAVE_JAVADIR)/*.java
-	-mkdir $(SCAVE_JAVADIR)
+	-mkdir -p $(SCAVE_JAVADIR)
 	$(SWIG) -c++ -java $(INCLUDES) -package $(SCAVE_JAVAPKG) -outdir $(SCAVE_JAVADIR) -o $@ $<
 
 layout.cxx : layout.i
 	-rm -f $(LAYOUT_JAVADIR)/*.java
-	-mkdir $(LAYOUT_JAVADIR)
+	-mkdir -p $(LAYOUT_JAVADIR)
 	$(SWIG) -c++ -java $(INCLUDES) -package $(LAYOUT_JAVAPKG) -outdir $(LAYOUT_JAVADIR) -o $@ $<
 
 eventlog.cxx : eventlog.i
 	-rm -f $(EVENTLOG_JAVADIR)/*.java
-	-mkdir $(EVENTLOG_JAVADIR)
+	-mkdir -p $(EVENTLOG_JAVADIR)
 	$(SWIG) -c++ -java $(INCLUDES) -package $(EVENTLOG_JAVAPKG) -outdir $(EVENTLOG_JAVADIR) -o $@ $<
 
 $(DLL): $(OBJS)
