@@ -690,8 +690,10 @@ AC_CHECK_PROG(JDK, javac , jdk, not found)
 if test "$JDK" = "not found"; then
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES jdk"
    AC_MSG_WARN(JDK not found. IDE cannot be built.)
+   #FIXME FIXME FIXME prevent building the UI libs then!!!!!!
 else
    JAVA_CFLAGS="-I$JAVA_HOME/include -I$JAVA_HOME/include/linux"
+   #FIXME FIXME FIXME must test building a JNI program!!!!!!!!!!!!!!!!!!
 fi
 
 
