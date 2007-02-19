@@ -37,7 +37,7 @@ OBJS = tkapp$(TKENV_EMBED_SUFFIX).obj tkcmd.obj tklib.obj inspector.obj \
 #
 # Targets
 #
-default: $(TKENV_IF_POSSIBLE)
+all: $(TKENV_IF_POSSIBLE)
 
 tkenv : tkenv$(LIB_SUFFIX)
 

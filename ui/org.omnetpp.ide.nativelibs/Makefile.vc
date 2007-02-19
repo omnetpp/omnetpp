@@ -63,7 +63,9 @@ SWIGOPTS=$(SWIGFLAGS) $(INCLUDES)
 #
 # Targets. NOTE: cmd.exe "Command Extensions" must be enabled for "mkdir" commands to work!
 #
-all: $(DLL)
+all: $(JNILIBS_IF_POSSIBLE)
+
+jnilibs: $(DLL)
 
 common.cxx : common.i
 	-del $(COMMON_JAVADIR)\*.java >nul

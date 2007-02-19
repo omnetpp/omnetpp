@@ -57,7 +57,9 @@ COPTS=$(CFLAGS) $(JAVA_CFLAGS) $(INCLUDES)
 #
 # Targets
 #
-all: $(DLL)
+all: $(JNILIBS_IF_POSSIBLE)
+
+jnilibs: $(DLL)
 
 common.cxx : common.i
 	-rm -f $(COMMON_JAVADIR)/*.java

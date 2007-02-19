@@ -30,6 +30,31 @@ AC_DEFUN(OPP_CHECK_LIB,[
    LIBS=$save_LIBS
 ])
 
+dnl
+dnl OPP_CHECK_LIB_NOLINK(      -- macro to check availability of a library
+dnl   $1: LIBRARY-NAME, -- descriptive name (only for printout)
+dnl   $2: HEADER,       -- optional: header file to #include
+dnl   $3: FUNCTION,     -- optional: function WITH ARG LIST, e.g. floor(0.5)
+dnl   $4: CFLAGS,       -- optional: compiler flags
+dnl   $5: RESULT-VAR    -- will contain "yes" or "no"
+dnl   $6: ACTION-IF-FOUND
+dnl   $7: ACTION-IF-NOT-FOUND
+dnl )
+dnl
+AC_DEFUN(OPP_CHECK_LIB_NOLINK,[
+   save_CXXFLAGS=$CXXFLAGS
+   CXXFLAGS="$4"
+
+   AC_MSG_CHECKING(for $1 with CFLAGS="$4")
+
+   AC_TRY_COMPILE(
+     [#include <$2>], [$3;],
+     [AC_MSG_RESULT(yes); $5=yes; $6],
+     [AC_MSG_RESULT(no); $5=no; $7])
+
+   CXXFLAGS=$save_CXXFLAGS
+])
+
 
 #
 # Autoconf initialization
@@ -389,7 +414,7 @@ then
       AC_MSG_WARN([Avoid linking with static libraries containing simple modules])
       AC_MSG_WARN([and other dynamically registered components. Those components])
       AC_MSG_WARN([will not be found by the simulation program, because the linker])
-      AC_MSG_WARN([leaves them out of the executable.])
+      AC_MSG_WARN([leaves them out from the executable.])
    fi
 else
    AC_MSG_RESULT(test failed)
@@ -504,7 +529,6 @@ if test "$SWIG" = "not found"; then
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  swig"
    AC_MSG_WARN(swig not found -- it is needed to create the OMNeT++/OMNEST IDE support library.)
    AC_MSG_WARN(It is available from http://www.swig.org/)
-   #FIXME FIXME FIXME disable GUI building then!!!!!!!
 fi
 
 #----------------------
@@ -560,7 +584,7 @@ TKENV_IF_POSSIBLE=missing-dependency
 # and build samples using Cmdenv (TBD)
 USERIF_LIBS='$(CMDENV_LIBS)'
 
-else  #find end of "if" after BLT testing
+else  #matching "fi" is after BLT testing
 
 OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $TK_CFLAGS, $TK_LIBS, tcltk_ok)
 if test $tcltk_ok = no; then
@@ -665,10 +689,10 @@ if test $blt_ok = yes; then
 fi
 
 # if we got through until here, enable building of the following progs:
-TKENV_IF_POSSIBLE=default
+TKENV_IF_POSSIBLE=tkenv
 
 # and build samples using Tkenv
-USERIF_LIBS='$(TKENV_LIBS)'
+USERIF_LIBS='$(TKENV_LIBS) $(CMDENV_LIBS)'
 
 fi # end of Tcl tests ($NO_TCL=="" branch)
 
@@ -676,14 +700,29 @@ fi # end of Tcl tests ($NO_TCL=="" branch)
 # Check for JDK
 # FIXME detect the optional JDK correctly
 #----------------------
-AC_CHECK_PROG(JDK, javac , jdk, not found)
+AC_CHECK_PROG(JDK, javac, javac, not found)
 if test "$JDK" = "not found"; then
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES jdk"
    AC_MSG_WARN(JDK not found. IDE cannot be built.)
-   #FIXME FIXME FIXME prevent building the UI libs then!!!!!!
+   jni_ok=no
 else
-   JAVA_CFLAGS="-I$JAVA_HOME/include -I$JAVA_HOME/include/linux"
-   #FIXME FIXME FIXME must test building a JNI program!!!!!!!!!!!!!!!!!!
+   if test "$JAVA_CFLAGS" = ""; then
+      if test "$JAVA_HOME" = ""; then
+         AC_MSG_WARN(JAVA_HOME variable not set.)
+      else
+         JAVA_CFLAGS="-I$JAVA_HOME/include -I$JAVA_HOME/include/linux"
+      fi
+   fi
+   OPP_CHECK_LIB_NOLINK(JNI, jni.h, JNI_GetCreatedJavaVMs(0,0,0), $JAVA_CFLAGS, jni_ok)
+   if test "$jni_ok" = no; then
+      OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  JNI headers for Java"
+   fi
+fi
+
+if test "$jni_ok" = "no" -o "$SWIG" = "not found"; then
+   JNILIBS_IF_POSSIBLE=missing-dependency
+else
+   JNILIBS_IF_POSSIBLE=jnilibs
 fi
 
 
@@ -893,6 +932,7 @@ AC_SUBST(AKAROA_CFLAGS)
 AC_SUBST(AKAROA_LIBS)
 
 AC_SUBST(TKENV_IF_POSSIBLE)
+AC_SUBST(JNILIBS_IF_POSSIBLE)
 
 AC_SUBST(USERIF_LIBS)
 AC_SUBST(TKENV_EMBED_SUFFIX)
