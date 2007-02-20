@@ -15,15 +15,11 @@
    </extension>
 
    <extension
-         point="org.eclipse.ui.views">
-      <category
-            name="OMNeT++/OMNEST"
-            id="org.omnetpp">
-      </category> <!-- FIXME does not show up for some reason -->
+         point="org.eclipse.ui.views"> <!-- FIXME does not show up for some reason -->
       <view
-            name="OMNeT++/OMNEST Sequence Chart"
+            name="Sequence Chart"
             icon="icons/sample.gif"
-            category="viewtest"
+            category="org.omnetpp.views"
             class="org.omnetpp.sequencechart.editors.SequenceChartView"
             id="org.omnetpp.sequencechart.editors.SequenceChartView">
       </view>

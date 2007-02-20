@@ -16,14 +16,10 @@
 
    <extension
          point="org.eclipse.ui.views">
-      <category
-            name="OMNeT++/OMNEST"
-            id="org.omnetpp">
-      </category> <!-- FIXME does not show up for some reason -->
       <view
-            name="OMNeT++/OMNEST Event Log Table"
+            name="Event Log"
             icon="icons/sample.gif"
-            category="viewtest"
+            category="org.omnetpp.views"
             class="org.omnetpp.eventlogtable.editors.EventLogTableView"
             id="org.omnetpp.eventlogtable.editors.EventLogTableView">
       </view>
