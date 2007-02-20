@@ -250,15 +250,19 @@ public class BrowseDataPage extends ScaveEditorPage {
 
 	@Override
 	public void pageSelected() {
-		FilteredDataPanel panelToActivate = null;
-		if (vectorsPanel.getTable().getItemCount() > 0)
-			panelToActivate = vectorsPanel;
-		else if (scalarsPanel.getTable().getItemCount() > 0)
-			panelToActivate = scalarsPanel;
-		else if (histogramsPanel.getTable().getItemCount() > 0)
-			panelToActivate = histogramsPanel;
-		if (panelToActivate != null)
-			this.setActivePanel(panelToActivate);
+		// when the user switches this page, try to show a tab that actually 
+		// contains some data
+		if (getActivePanel().getTable().getItemCount() == 0) {
+			FilteredDataPanel panelToActivate = null;
+			if (vectorsPanel.getTable().getItemCount() > 0)
+				panelToActivate = vectorsPanel;
+			else if (scalarsPanel.getTable().getItemCount() > 0)
+				panelToActivate = scalarsPanel;
+			else if (histogramsPanel.getTable().getItemCount() > 0)
+				panelToActivate = histogramsPanel;
+			if (panelToActivate != null)
+				this.setActivePanel(panelToActivate);
+		}
 	}
 
 	/**
