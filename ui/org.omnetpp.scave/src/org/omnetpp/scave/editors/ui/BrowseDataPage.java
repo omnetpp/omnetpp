@@ -135,9 +135,8 @@ public class BrowseDataPage extends ScaveEditorPage {
 		scalarsPanel.setResultFileManager(manager);
 		vectorsPanel.setResultFileManager(manager);
 		histogramsPanel.setResultFileManager(manager);
-		scalarsPanel.setIDList(manager.getAllScalars());
-		vectorsPanel.setIDList(manager.getAllVectors());
-		histogramsPanel.setIDList(new IDList()); // TODO
+
+		refreshPage(manager); 
 	}
 	
 	private void createTabFolder() {
@@ -154,15 +153,12 @@ public class BrowseDataPage extends ScaveEditorPage {
 		configureFilteredDataPanel(scalarsPanel);
 		histogramsPanel = new FilteredDataPanel(tabfolder, SWT.NONE, DataTable.TYPE_HISTOGRAM);
 		configureFilteredDataPanel(histogramsPanel);
-		
-		ResultFileManager manager = scaveEditor.getResultFileManager();
-		long numVectors = manager.getAllVectors().size();
-		long numScalars = manager.getAllScalars().size();
-		long numHistograms = 0; // TODO
-		vectorsTab = addItem("Vectors ("+numVectors+")", vectorsPanel);
-		scalarsTab = addItem("Scalars ("+numScalars+")", scalarsPanel);
-		histogramsTab = addItem("Histograms ("+numHistograms+")", histogramsPanel);
-		
+
+		// create tabs (note: tab labels will be refreshed from initialize())
+		vectorsTab = addItem("Vectors", vectorsPanel);
+		scalarsTab = addItem("Scalars", scalarsPanel);
+		histogramsTab = addItem("Histograms", histogramsPanel);
+	
 		tabfolder.setSelection(0);
 	}
 	
@@ -214,15 +210,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 				public void resultFileManagerChanged(final ResultFileManager manager) {
 					getDisplay().asyncExec(new Runnable() {
 						public void run() {
-							IDList vectors = manager.getAllVectors();
-							IDList scalars = manager.getAllScalars();
-							IDList histograms = new IDList(); // TODO
-							vectorsTab.setText("Vectors("+vectors.size()+")");
-							scalarsTab.setText("Scalars("+scalars.size()+")");
-							histogramsTab.setText("Histograms("+histograms.size()+")");
-							scalarsPanel.setIDList(scalars);
-							vectorsPanel.setIDList(vectors);
-							histogramsPanel.setIDList(histograms);
+							refreshPage(manager);
 						}
 					});
 				}
@@ -271,5 +259,24 @@ public class BrowseDataPage extends ScaveEditorPage {
 			panelToActivate = histogramsPanel;
 		if (panelToActivate != null)
 			this.setActivePanel(panelToActivate);
+	}
+
+	/**
+	 * Updates the page: retrieves the list of vectors, scalars, etc from 
+	 * ResultFileManager, updates the data tables with them, and updates 
+	 * the tab labels as well.
+	 */
+	protected void refreshPage(final ResultFileManager manager) {
+		IDList vectors = manager.getAllVectors();
+		IDList scalars = manager.getAllScalars();
+		IDList histograms = new IDList(); // TODO
+
+		vectorsTab.setText("Vectors ("+vectors.size()+")");
+		scalarsTab.setText("Scalars ("+scalars.size()+")");
+		histogramsTab.setText("Histograms ("+histograms.size()+")");
+
+		scalarsPanel.setIDList(scalars);
+		vectorsPanel.setIDList(vectors);
+		histogramsPanel.setIDList(histograms);
 	}
 }
