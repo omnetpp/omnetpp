@@ -304,16 +304,6 @@ public class ScaveEditorPage extends ScrolledForm {
 						table.getSelectionCount(), table.getItemCount()));
 			}
 		});
-		// add Edit action to the context menu of the view
-		if (table.getMenu() == null)
-			table.setMenu(new Menu(table));
-		MenuItem item = new MenuItem(table.getMenu(), SWT.PUSH);
-		item.setText("Columns...");
-		item.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				chooseTableColumns(table);
-			}
-		});
 	}
 	
 	public void showStatusMessage(String message) {
@@ -329,48 +319,4 @@ public class ScaveEditorPage extends ScrolledForm {
 	public void pageSelected() {
 	}
 
-	/**
-	 * Opens the "Choose Columns" dialog for a table.
-	 */
-	private static void chooseTableColumns(final DataTable table) {
-//XXX original code, may be deleted		
-//		String[] columns = table.getColumnNames();
-//		boolean[] initialSelection = new boolean[columns.length];
-//		for (int i = 0; i < columns.length; ++i)
-//			initialSelection[i] = table.isColumnVisible(i);
-//		CheckboxSelectionDialog dialog = new CheckboxSelectionDialog(
-//				table.getShell(), 
-//				"Select Columns", 
-//				"Select which columns should be visible in the table:", 
-//				columns, initialSelection);
-//		if (dialog.open() == Window.OK) {
-//			boolean[] selection = dialog.getSelection();
-//			for (int i = 0; i < selection.length; ++i)
-//				table.setColumnVisible(i, selection[i]);
-//		}
-
-		// create dialog with the column names
-		ListSelectionDialog dialog = new ListSelectionDialog(
-			 table.getShell(),
-			 table.getColumnNames(),
-			 new ArrayContentProvider(),
-			 new LabelProvider(), // plain toString()
-			 "Select which columns should be visible in the table:");
-		dialog.setTitle("Select Columns");
-
-		// calculate initial selection
-		String[] columns = table.getColumnNames();
-		ArrayList<String> initialSelection = new ArrayList<String>();
-		for (int i = 0; i < columns.length; ++i)
-			if (table.isColumnVisible(i))
-				initialSelection.add(columns[i]);
-		dialog.setInitialSelections(initialSelection.toArray());
-
-		// execute dialog and store result
-		if (dialog.open() == Dialog.OK) {
-			List result = Arrays.asList(dialog.getResult());
-		    for (int i = 0; i < columns.length; ++i)
-		    	table.setColumnVisible(i, result.contains(columns[i]));
-		}
-	}
 }

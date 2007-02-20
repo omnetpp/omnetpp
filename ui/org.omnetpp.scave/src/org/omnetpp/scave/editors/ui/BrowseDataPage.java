@@ -1,7 +1,9 @@
 package org.omnetpp.scave.editors.ui;
 
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -13,8 +15,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
@@ -27,6 +27,7 @@ import org.omnetpp.scave.actions.CreateDatasetAction;
 import org.omnetpp.scave.actions.CreateTempChartAction;
 import org.omnetpp.scave.actions.IScaveAction;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.editors.datatable.ChooseTableColumnsAction;
 import org.omnetpp.scave.editors.datatable.DataTable;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.engine.IDList;
@@ -40,6 +41,7 @@ import org.omnetpp.scave.engineext.ResultFileManagerEx;
  */
 public class BrowseDataPage extends ScaveEditorPage {
 
+	// UI elements
 	private Label label;
 	private TabFolder tabfolder;
 	private Composite buttonPanel;
@@ -58,8 +60,12 @@ public class BrowseDataPage extends ScaveEditorPage {
 	private IResultFilesChangeListener fileChangeListener;
 	private SelectionListener selectionChangeListener;
 	
-	private IScaveAction createTempChartAction;
-	
+	// actions
+	private IScaveAction createDatasetAction = new CreateDatasetAction();
+	private IScaveAction addToDatasetAction = new AddToDatasetAction();
+	private IScaveAction createChartAction = new CreateChartAction();
+	private IScaveAction copyToClipboardAction = new CopyToClipboardAction();
+	private IScaveAction createTempChartAction = new CreateTempChartAction();
 	
 	public BrowseDataPage(Composite parent, ScaveEditor editor) {
 		super(parent, SWT.V_SCROLL, editor);
@@ -67,13 +73,11 @@ public class BrowseDataPage extends ScaveEditorPage {
 		hookListeners();
 	}
 	
-	
 	@Override
 	public void dispose() {
 		unhookListeners();
 		super.dispose();
 	}
-
 
 	public FilteredDataPanel getScalarsPanel() {
 		return scalarsPanel;
@@ -118,18 +122,17 @@ public class BrowseDataPage extends ScaveEditorPage {
 		createTabFolder();
 		createButtonsPanel();
 		
-		// add actions
+		// assign actions to the buttons
 		IWorkbenchWindow workbenchWindow = scaveEditor.getSite().getWorkbenchWindow();
-		configureGlobalButton(workbenchWindow, createDatasetButton, new CreateDatasetAction());
-		configureGlobalButton(workbenchWindow, addToDatasetButton, new AddToDatasetAction());
-		configureGlobalButton(workbenchWindow, createChartButton, new CreateChartAction());
-		configureGlobalButton(workbenchWindow, copyToClipboardButton, new CopyToClipboardAction());
-		createTempChartAction = new CreateTempChartAction();
+		configureGlobalButton(workbenchWindow, createDatasetButton, createDatasetAction);
+		configureGlobalButton(workbenchWindow, addToDatasetButton, addToDatasetAction);
+		configureGlobalButton(workbenchWindow, createChartButton, createChartAction);
+		configureGlobalButton(workbenchWindow, copyToClipboardButton, copyToClipboardAction);
 		
 		configurePanel(scalarsPanel);
 		configurePanel(vectorsPanel);
 		configurePanel(histogramsPanel);
-		
+        
 		// set up contents
 		ResultFileManagerEx manager = scaveEditor.getResultFileManager();
 		scalarsPanel.setResultFileManager(manager);
@@ -191,17 +194,13 @@ public class BrowseDataPage extends ScaveEditorPage {
 	}
 	
 	private void configurePanel(FilteredDataPanel panel) {
-		final Table table = panel.getTable();
-		if (table.getMenu() == null)
-			table.setMenu(new Menu(table));
-		MenuItem item = new MenuItem(table.getMenu(), SWT.PUSH);
-		item.setText("Open chart");
-		item.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				createTempChartAction.run();
-			}
-		});
-	
+		IMenuManager contextMenuManager = panel.getTable().getMenuManager();
+		contextMenuManager.add(createDatasetAction);
+		contextMenuManager.add(addToDatasetAction);
+		contextMenuManager.add(createChartAction);
+		contextMenuManager.add(copyToClipboardAction);
+		contextMenuManager.add(createTempChartAction);
+		contextMenuManager.add(new ChooseTableColumnsAction(panel.getTable()));
 	}
 	
 	private void hookListeners() {
@@ -250,7 +249,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 
 	@Override
 	public void pageSelected() {
-		// when the user switches this page, try to show a tab that actually 
+		// when the user switches to this page, try to show a tab that actually 
 		// contains some data
 		if (getActivePanel().getTable().getItemCount() == 0) {
 			FilteredDataPanel panelToActivate = null;

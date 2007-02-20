@@ -6,7 +6,12 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -19,6 +24,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.dialogs.ListSelectionDialog;
 import org.omnetpp.common.util.CsvWriter;
 import org.omnetpp.scave.Activator;
 import org.omnetpp.scave.engine.IDList;
@@ -101,6 +107,10 @@ public class DataTable extends Table {
 	private ListenerList listeners;
 	private List<Column> columns;
 	private IPreferenceStore preferences = Activator.getDefault().getPreferenceStore(); // XXX
+
+	// holds actions for the context menu for this data table 
+	private MenuManager contextMenuManager = new MenuManager("#PopupMenu"); 
+
 	
 	public DataTable(Composite parent, int style, int type) {
 		super(parent, style | SWT.VIRTUAL | SWT.FULL_SELECTION);
@@ -117,6 +127,9 @@ public class DataTable extends Table {
 				fillTableLine(item, lineNumber);
 			}
 		});
+
+		setMenu(contextMenuManager.createContextMenu(this));
+		//XXX getSite.registerContextMenu(contextMenuManager, this);
 	}
 
 	/**
@@ -160,6 +173,10 @@ public class DataTable extends Table {
 	public IDList getIDList() {
 		return idlist;
 	}
+
+	public IMenuManager getMenuManager() {
+		return contextMenuManager;
+	}
 	
 	public String[] getColumnNames() {
 		String[] columnNames = new String[columns.size()];
@@ -182,11 +199,11 @@ public class DataTable extends Table {
 	}
 	
 	public ResultItem[] getSelectedItems() {
-		int[] selectionIndeces = getSelectionIndices();
-		ResultItem[] items = new ResultItem[selectionIndeces.length];
+		int[] selectionIndices = getSelectionIndices();
+		ResultItem[] items = new ResultItem[selectionIndices.length];
 		
 		for (int i = 0; i < items.length; ++i) {
-			items[i] = manager.getItem(idlist.get(selectionIndeces[i]));
+			items[i] = manager.getItem(idlist.get(selectionIndices[i]));
 		}
 		
 		return items;
@@ -479,4 +496,5 @@ public class DataTable extends Table {
 		if (preferences != null)
 			column.visible = preferences.getBoolean(getPreferenceStoreKey(column, "visible"));
 	}
+
 }
