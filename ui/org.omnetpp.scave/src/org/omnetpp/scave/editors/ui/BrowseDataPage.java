@@ -159,9 +159,9 @@ public class BrowseDataPage extends ScaveEditorPage {
 		long numVectors = manager.getAllVectors().size();
 		long numScalars = manager.getAllScalars().size();
 		long numHistograms = 0; // TODO
-		vectorsTab = addItem("Vectors("+numVectors+")", vectorsPanel);
-		scalarsTab = addItem("Scalars("+numScalars+")", scalarsPanel);
-		histogramsTab = addItem("Histograms("+numHistograms+")", histogramsPanel);
+		vectorsTab = addItem("Vectors ("+numVectors+")", vectorsPanel);
+		scalarsTab = addItem("Scalars ("+numScalars+")", scalarsPanel);
+		histogramsTab = addItem("Histograms ("+numHistograms+")", histogramsPanel);
 		
 		tabfolder.setSelection(0);
 	}

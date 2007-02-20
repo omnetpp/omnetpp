@@ -1,18 +1,25 @@
 package org.omnetpp.scave.editors.ui;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.ApplicationWindow;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.dnd.DND;
@@ -29,6 +36,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -37,6 +45,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.dialogs.ListSelectionDialog;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.omnetpp.scave.actions.EditAction;
 import org.omnetpp.scave.actions.IScaveAction;
@@ -304,17 +313,7 @@ public class ScaveEditorPage extends ScrolledForm {
 		item.setText("Columns...");
 		item.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				String[] columns = table.getColumnNames();
-				boolean[] initialSelection = new boolean[columns.length];
-				for (int i = 0; i < columns.length; ++i)
-					initialSelection[i] = table.isColumnVisible(i);
-				CheckboxSelectionDialog dialog = 
-					new CheckboxSelectionDialog(scaveEditor.getSite().getShell(), "Select visible columns", columns, initialSelection);
-				if (dialog.open() == Window.OK) {
-					boolean[] selection = dialog.getSelection();
-					for (int i = 0; i < selection.length; ++i)
-						table.setColumnVisible(i, selection[i]);
-				}
+				chooseTableColumns(table);
 			}
 		});
 	}
@@ -330,5 +329,74 @@ public class ScaveEditorPage extends ScrolledForm {
 	 * multipage editor.
 	 */
 	public void pageSelected() {
+	}
+
+	/**
+	 * Opens the "Choose Columns" dialog for a table.
+	 */
+	private static void chooseTableColumns(final DataTable table) {
+//XXX original code, may be deleted		
+//		String[] columns = table.getColumnNames();
+//		boolean[] initialSelection = new boolean[columns.length];
+//		for (int i = 0; i < columns.length; ++i)
+//			initialSelection[i] = table.isColumnVisible(i);
+//		CheckboxSelectionDialog dialog = new CheckboxSelectionDialog(
+//				table.getShell(), 
+//				"Select Columns", 
+//				"Select which columns should be visible in the table:", 
+//				columns, initialSelection);
+//		if (dialog.open() == Window.OK) {
+//			boolean[] selection = dialog.getSelection();
+//			for (int i = 0; i < selection.length; ++i)
+//				table.setColumnVisible(i, selection[i]);
+//		}
+
+		ListSelectionDialog dlg = new ListSelectionDialog(
+			 table.getShell(),
+			 table,
+			 new IStructuredContentProvider() {
+				public Object[] getElements(Object inputElement) {
+					return table.getColumnNames();
+				}
+				public void dispose() {
+				}
+				public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+				}
+			 },
+			 new ILabelProvider() {
+				public Image getImage(Object element) {
+					return null;
+				}
+				public String getText(Object element) {
+					return element.toString();
+				}
+				public void addListener(ILabelProviderListener listener) {
+				}
+				public void dispose() {
+				}
+				public boolean isLabelProperty(Object element, String property) {
+					return false;
+				}
+				public void removeListener(ILabelProviderListener listener) {
+				}
+			 },
+			 "Select which columns should be visible in the table:");
+		dlg.setTitle("Select Columns");
+
+		// calculate initial selection
+		String[] columns = table.getColumnNames();
+		ArrayList<String> initialSelection = new ArrayList<String>();
+		for (int i = 0; i < columns.length; ++i)
+			if (table.isColumnVisible(i))
+				initialSelection.add(columns[i]);
+		dlg.setInitialSelections(initialSelection.toArray());
+
+		// execute dialog and store result
+		if (dlg.open() == Dialog.OK) {
+			List result = Arrays.asList(dlg.getResult());
+		    for (int i = 0; i < columns.length; ++i)
+		    	table.setColumnVisible(i, result.contains(columns[i]));
+		}
+	
 	}
 }
