@@ -23,6 +23,7 @@ import org.omnetpp.scave.actions.OpenAction;
 import org.omnetpp.scave.actions.RemoveAction;
 import org.omnetpp.scave.actions.UngroupAction;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.editors.datatable.ChooseTableColumnsAction;
 import org.omnetpp.scave.editors.datatable.DataTable;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.engine.IDList;
@@ -92,6 +93,10 @@ public class DatasetPage extends ScaveEditorPage {
 		// set up filtered data panel
 		filterPanel.setResultFileManager(scaveEditor.getResultFileManager());
 		updateDataTable();
+		
+		// add "Choose columns" action to data table
+		DataTable table = filterPanel.getTable();
+		table.getMenuManager().add(new ChooseTableColumnsAction(table));
 
 		// make the data table follow the treeviewer's selection
 		treeViewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
