@@ -10,11 +10,10 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -36,7 +35,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -351,37 +349,14 @@ public class ScaveEditorPage extends ScrolledForm {
 //				table.setColumnVisible(i, selection[i]);
 //		}
 
-		ListSelectionDialog dlg = new ListSelectionDialog(
+		// create dialog with the column names
+		ListSelectionDialog dialog = new ListSelectionDialog(
 			 table.getShell(),
-			 table,
-			 new IStructuredContentProvider() {
-				public Object[] getElements(Object inputElement) {
-					return table.getColumnNames();
-				}
-				public void dispose() {
-				}
-				public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-				}
-			 },
-			 new ILabelProvider() {
-				public Image getImage(Object element) {
-					return null;
-				}
-				public String getText(Object element) {
-					return element.toString();
-				}
-				public void addListener(ILabelProviderListener listener) {
-				}
-				public void dispose() {
-				}
-				public boolean isLabelProperty(Object element, String property) {
-					return false;
-				}
-				public void removeListener(ILabelProviderListener listener) {
-				}
-			 },
+			 table.getColumnNames(),
+			 new ArrayContentProvider(),
+			 new LabelProvider(), // plain toString()
 			 "Select which columns should be visible in the table:");
-		dlg.setTitle("Select Columns");
+		dialog.setTitle("Select Columns");
 
 		// calculate initial selection
 		String[] columns = table.getColumnNames();
@@ -389,14 +364,13 @@ public class ScaveEditorPage extends ScrolledForm {
 		for (int i = 0; i < columns.length; ++i)
 			if (table.isColumnVisible(i))
 				initialSelection.add(columns[i]);
-		dlg.setInitialSelections(initialSelection.toArray());
+		dialog.setInitialSelections(initialSelection.toArray());
 
 		// execute dialog and store result
-		if (dlg.open() == Dialog.OK) {
-			List result = Arrays.asList(dlg.getResult());
+		if (dialog.open() == Dialog.OK) {
+			List result = Arrays.asList(dialog.getResult());
 		    for (int i = 0; i < columns.length; ++i)
 		    	table.setColumnVisible(i, result.contains(columns[i]));
 		}
-	
 	}
 }
