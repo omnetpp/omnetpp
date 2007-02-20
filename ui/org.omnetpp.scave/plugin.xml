@@ -60,8 +60,8 @@
            category="org.omnetpp.views"
            class="org.omnetpp.scave.views.VectorBrowserView"
            icon="icons/analfile.gif"
-           id="org.omnetpp.scave.vectorBrowserView"
-           name="Vector Browser"/>
+           id="org.omnetpp.scave.VectorBrowserView"
+           name="Output Vector"/>
   </extension>
   <extension
         id="product"

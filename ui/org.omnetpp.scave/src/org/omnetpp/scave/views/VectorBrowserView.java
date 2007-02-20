@@ -34,19 +34,20 @@ import org.omnetpp.scave.engine.VectorResult;
  * @author tomi
  */
 public class VectorBrowserView extends ViewPart {
-
-	Composite panel;
-	Table table;
-	TableColumn eventNumberColumn;
-	Composite messagePanel;
-	Label message;
-	VirtualTable<OutputVectorEntry> viewer;
-	ISelectionListener selectionChangedListener;
-	VectorResultContentProvider contentProvider;
+	public static final String ID = "org.omnetpp.scave.VectorBrowserView";
 	
-	GotoAction gotoLineAction;
-	GotoAction gotoEventAction;
-	GotoAction gotoTimeAction;
+	protected Composite panel;
+	protected Table table;
+	protected TableColumn eventNumberColumn;
+	protected Composite messagePanel;
+	protected Label message;
+	protected VirtualTable<OutputVectorEntry> viewer;
+	protected ISelectionListener selectionChangedListener;
+	protected VectorResultContentProvider contentProvider;
+	
+	protected GotoAction gotoLineAction;
+	protected GotoAction gotoEventAction;
+	protected GotoAction gotoTimeAction;
 
 	@Override
 	public void createPartControl(Composite parent) {

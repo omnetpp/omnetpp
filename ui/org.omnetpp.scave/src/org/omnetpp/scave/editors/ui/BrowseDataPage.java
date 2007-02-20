@@ -2,7 +2,7 @@ package org.omnetpp.scave.editors.ui;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -17,7 +17,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.omnetpp.scave.actions.AddToDatasetAction;
@@ -26,6 +25,7 @@ import org.omnetpp.scave.actions.CreateChartAction;
 import org.omnetpp.scave.actions.CreateDatasetAction;
 import org.omnetpp.scave.actions.CreateTempChartAction;
 import org.omnetpp.scave.actions.IScaveAction;
+import org.omnetpp.scave.actions.ShowVectorBrowserViewAction;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.ChooseTableColumnsAction;
 import org.omnetpp.scave.editors.datatable.DataTable;
@@ -66,6 +66,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 	private IScaveAction createChartAction = new CreateChartAction();
 	private IScaveAction copyToClipboardAction = new CopyToClipboardAction();
 	private IScaveAction createTempChartAction = new CreateTempChartAction();
+    private IAction showVectorBrowserViewAction = new ShowVectorBrowserViewAction();
 	
 	public BrowseDataPage(Composite parent, ScaveEditor editor) {
 		super(parent, SWT.V_SCROLL, editor);
@@ -195,12 +196,16 @@ public class BrowseDataPage extends ScaveEditorPage {
 	
 	private void configurePanel(FilteredDataPanel panel) {
 		IMenuManager contextMenuManager = panel.getTable().getMenuManager();
+		contextMenuManager.add(createTempChartAction);
+		contextMenuManager.add(new Separator());
 		contextMenuManager.add(createDatasetAction);
 		contextMenuManager.add(addToDatasetAction);
 		contextMenuManager.add(createChartAction);
 		contextMenuManager.add(copyToClipboardAction);
-		contextMenuManager.add(createTempChartAction);
+		contextMenuManager.add(new Separator());
 		contextMenuManager.add(new ChooseTableColumnsAction(panel.getTable()));
+		contextMenuManager.add(new Separator());
+		contextMenuManager.add(showVectorBrowserViewAction);
 	}
 	
 	private void hookListeners() {
