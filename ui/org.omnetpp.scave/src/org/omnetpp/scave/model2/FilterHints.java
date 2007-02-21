@@ -21,6 +21,14 @@ import org.omnetpp.scave.model.DatasetType;
  * @author tomi
  */
 public class FilterHints {
+	public static final String FIELD_FILENAME = "file";
+	public static final String FIELD_RUNNAME = "run";
+	public static final String FIELD_EXPERIMENT = "experiment";
+	public static final String FIELD_MEASUREMENT = "measurement";
+	public static final String FIELD_REPLICATION = "replication";
+	public static final String FIELD_MODULENAME = "module";
+	public static final String FIELD_DATANAME = "name";
+
 	private static final String[] EMPTY = new String[0];
 	
 	private Map<String,String[]> hints = new HashMap<String, String[]>();
@@ -36,13 +44,13 @@ public class FilterHints {
 		ResultFileList fileList = manager.getUniqueFiles(idlist);
 		RunList runList = manager.getUniqueRuns(idlist);
 		
-		setHints(Filter.FIELD_FILENAME, getFileNameFilterHints(fileList));
-		setHints(Filter.FIELD_RUNNAME, getRunNameFilterHints(runList));
-		setHints(Filter.FIELD_MODULENAME, manager.getModuleFilterHints(idlist).toArray());
-		setHints(Filter.FIELD_DATANAME, manager.getNameFilterHints(idlist).toArray());
-		setHints(Filter.FIELD_EXPERIMENT, getFilterHintsForRunAttribute(manager, runList, EXPERIMENT));
-		setHints(Filter.FIELD_REPLICATION, getFilterHintsForRunAttribute(manager, runList, MEASUREMENT));
-		setHints(Filter.FIELD_MEASUREMENT, getFilterHintsForRunAttribute(manager, runList, REPLICATION));
+		setHints(FilterHints.FIELD_FILENAME, getFileNameFilterHints(fileList));
+		setHints(FilterHints.FIELD_RUNNAME, getRunNameFilterHints(runList));
+		setHints(FilterHints.FIELD_MODULENAME, manager.getModuleFilterHints(idlist).toArray());
+		setHints(FilterHints.FIELD_DATANAME, manager.getNameFilterHints(idlist).toArray());
+		setHints(FilterHints.FIELD_EXPERIMENT, getFilterHintsForRunAttribute(manager, runList, EXPERIMENT));
+		setHints(FilterHints.FIELD_REPLICATION, getFilterHintsForRunAttribute(manager, runList, MEASUREMENT));
+		setHints(FilterHints.FIELD_MEASUREMENT, getFilterHintsForRunAttribute(manager, runList, REPLICATION));
 	}
 	
 	public String[] getHints(String fieldName) {

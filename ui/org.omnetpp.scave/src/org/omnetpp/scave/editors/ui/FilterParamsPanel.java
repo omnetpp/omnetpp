@@ -101,23 +101,23 @@ public class FilterParamsPanel extends Composite {
 	}
 	
 	public void setFilterParams(Filter params) {
-		if (fileCombo != null) fileCombo.setText(params.getField(Filter.FIELD_FILENAME));
-		if (runCombo != null) runCombo.setText(params.getField(Filter.FIELD_RUNNAME));
-		if (experimentCombo != null) experimentCombo.setText(params.getField(Filter.FIELD_EXPERIMENT));
-		if (measurementCombo != null) measurementCombo.setText(params.getField(Filter.FIELD_MEASUREMENT));
-		if (replicationCombo != null) replicationCombo.setText(params.getField(Filter.FIELD_REPLICATION));
-		if (moduleCombo != null) moduleCombo.setText(params.getField(Filter.FIELD_MODULENAME));
-		if (dataCombo != null) dataCombo.setText(params.getField(Filter.FIELD_DATANAME));
+		if (fileCombo != null) fileCombo.setText(params.getField(FilterHints.FIELD_FILENAME));
+		if (runCombo != null) runCombo.setText(params.getField(FilterHints.FIELD_RUNNAME));
+		if (experimentCombo != null) experimentCombo.setText(params.getField(FilterHints.FIELD_EXPERIMENT));
+		if (measurementCombo != null) measurementCombo.setText(params.getField(FilterHints.FIELD_MEASUREMENT));
+		if (replicationCombo != null) replicationCombo.setText(params.getField(FilterHints.FIELD_REPLICATION));
+		if (moduleCombo != null) moduleCombo.setText(params.getField(FilterHints.FIELD_MODULENAME));
+		if (dataCombo != null) dataCombo.setText(params.getField(FilterHints.FIELD_DATANAME));
 	}
 	
 	public void setFilterHints(FilterHints hints) {
-		if (fileCombo != null) fileCombo.setItems(hints.getHints(Filter.FIELD_FILENAME));
-		if (runCombo != null) runCombo.setItems(hints.getHints(Filter.FIELD_RUNNAME));
-		if (experimentCombo != null) experimentCombo.setItems(hints.getHints(Filter.FIELD_EXPERIMENT));
-		if (measurementCombo != null) measurementCombo.setItems(hints.getHints(Filter.FIELD_MEASUREMENT));
-		if (replicationCombo != null) replicationCombo.setItems(hints.getHints(Filter.FIELD_REPLICATION));
-		if (moduleCombo != null) moduleCombo.setItems(hints.getHints(Filter.FIELD_MODULENAME));
-		if (dataCombo != null) dataCombo.setItems(hints.getHints(Filter.FIELD_DATANAME));
+		if (fileCombo != null) fileCombo.setItems(hints.getHints(FilterHints.FIELD_FILENAME));
+		if (runCombo != null) runCombo.setItems(hints.getHints(FilterHints.FIELD_RUNNAME));
+		if (experimentCombo != null) experimentCombo.setItems(hints.getHints(FilterHints.FIELD_EXPERIMENT));
+		if (measurementCombo != null) measurementCombo.setItems(hints.getHints(FilterHints.FIELD_MEASUREMENT));
+		if (replicationCombo != null) replicationCombo.setItems(hints.getHints(FilterHints.FIELD_REPLICATION));
+		if (moduleCombo != null) moduleCombo.setItems(hints.getHints(FilterHints.FIELD_MODULENAME));
+		if (dataCombo != null) dataCombo.setItems(hints.getHints(FilterHints.FIELD_DATANAME));
 	}
 
 	private void initialize() {

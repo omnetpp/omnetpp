@@ -90,13 +90,6 @@ public class FilteredDataPanel extends Composite {
 		// when the filter button gets pressed, update the table
 		filterPanel.getFilterButton().addSelectionListener(selectionListener);
 		filterPanel.getFilterText().addSelectionListener(selectionListener);
-		filterPanel.getFileNameCombo().addSelectionListener(selectionListener);
-		filterPanel.getRunNameCombo().addSelectionListener(selectionListener);
-		filterPanel.getExperimentNameCombo().addSelectionListener(selectionListener);
-		filterPanel.getMeasurementNameCombo().addSelectionListener(selectionListener);
-		filterPanel.getReplicationNameCombo().addSelectionListener(selectionListener);
-		filterPanel.getModuleNameCombo().addSelectionListener(selectionListener);
-		filterPanel.getNameCombo().addSelectionListener(selectionListener);
 	}
 
 	protected void updateFilterCombos() {
@@ -117,11 +110,13 @@ public class FilteredDataPanel extends Composite {
 	}
 	
 	public Filter getFilterParams() {
-		return filterPanel.getFilterParams();
+		Filter filter = new Filter();
+		filter.setFilterPattern(filterPanel.getFilterPattern());
+		return filter;
 	}
 	
 	public void setFilterParams(Filter params) {
-		filterPanel.setFilterParams(params);
+		filterPanel.setFilterPattern(params.getFilterPattern());
 		runFilter();
 	}
 }
