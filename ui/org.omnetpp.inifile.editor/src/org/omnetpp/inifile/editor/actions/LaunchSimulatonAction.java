@@ -50,11 +50,11 @@ public class LaunchSimulatonAction extends Action {
 
 		} catch (PartInitException e) {
 			MessageDialog.openError(null, "Ini-file Editor", "Cannot launch simulation: "+e.getMessage());
-			e.printStackTrace(); //XXX
+			e.printStackTrace();  //FIXME log it or something. Just "print" is not OK! //XXX
 		} catch (CoreException e) {
 			MessageDialog.openError(null, "Ini-file Editor", "Cannot launch simulation: "+e.getMessage());
-			e.printStackTrace(); //XXX
-		} 
+			e.printStackTrace();  //FIXME log it or something. Just "print" is not OK! //XXX
+		}
 
 	}
 

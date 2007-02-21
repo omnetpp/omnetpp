@@ -87,7 +87,7 @@ public class ModulePrintAction extends Action implements IObjectActionDelegate {
             ois.close();
         } catch (Exception e) {
             // This is just an example. All exceptions caught here.
-            e.printStackTrace();
+            e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
         }
 
     }

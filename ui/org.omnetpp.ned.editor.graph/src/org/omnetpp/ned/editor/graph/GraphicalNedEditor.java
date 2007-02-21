@@ -65,11 +65,11 @@ import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
 
 
-public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette 
+public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
     implements ISelectionSupport {
-    
+
     public final static String MULTIPAGE_NEDEDITOR_ID = "org.omnetpp.ned.editor";
-    
+
     class OutlinePage extends ContentOutlinePage {
 
         public OutlinePage(EditPartViewer viewer) {
@@ -139,7 +139,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
         GraphicalNedEditorPlugin.getDefault().getPreferenceStore().setDefault(PALETTE_SIZE, DEFAULT_PALETTE_SIZE);
         setEditDomain(new DefaultEditDomain(this));
     }
-    
+
     @Override
     public void commandStackChanged(EventObject event) {
     	firePropertyChange(IEditorPart.PROP_DIRTY);
@@ -164,7 +164,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
         IAction zoomOut = new ZoomOutAction(root.getZoomManager());
         getActionRegistry().registerAction(zoomIn);
         getActionRegistry().registerAction(zoomOut);
-        
+
         // set the root edit part as the main viewer
         viewer.setRootEditPart(root);
 
@@ -180,7 +180,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
 
         IAction snapAction = new ToggleSnapToGeometryAction(getGraphicalViewer());
         getActionRegistry().registerAction(snapAction);
-        
+
 //        Listener listener = new Listener() {
 //            public void handleEvent(Event event) {
 //                handleActivationChanged(event);
@@ -220,7 +220,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
         // overridden to make it visible
         return super.getEditDomain();
     }
-    
+
     @Override
     public void doSave(final IProgressMonitor progressMonitor) {
         Assert.isTrue(false, "save is not implemented");
@@ -230,7 +230,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
 //    			saveProperties();
 //    			ByteArrayOutputStream out = new ByteArrayOutputStream();
 //    			IFile file = ((IFileEditorInput)getEditorInput()).getFile();
-//    			file.setContents(new ByteArrayInputStream(out.toByteArray()), 
+//    			file.setContents(new ByteArrayInputStream(out.toByteArray()),
 //    							true, false, progressMonitor);
     			getCommandStack().markSaveLocation();
 //    		}
@@ -260,14 +260,14 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
 //                        file.create(new ByteArrayInputStream(out.toByteArray()), true, monitor);
 //                        out.close();
 //                    } catch (Exception e) {
-//                        e.printStackTrace();
+//                        e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
 //                    }
 //                }
 //            };
 //            try {
 //                new ProgressMonitorDialog(getSite().getWorkbenchWindow().getShell()).run(false, true, op);
 //            } catch (Exception e) {
-//                e.printStackTrace();
+//                e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
 //            }
 //        }
 //
@@ -275,7 +275,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
 //            setInput(new FileEditorInput(file));
 //            getCommandStack().markSaveLocation();
 //        } catch (Exception e) {
-//            e.printStackTrace();
+//            e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
 //        }
 //    }
 
@@ -294,7 +294,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
                 outlinePage = new OutlinePage(new TreeViewer());
             return outlinePage;
         }
-        if (type == ZoomManager.class) 
+        if (type == ZoomManager.class)
             return getGraphicalViewer().getProperty(ZoomManager.class.toString());
 
         return super.getAdapter(type);
@@ -335,7 +335,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
     protected void initializeGraphicalViewer() {
         super.initializeGraphicalViewer();
         getGraphicalViewer().setContents(getModel());
-        
+
         // TODO do we need these?
         getGraphicalViewer().addDropTargetListener((TransferDropTargetListener)
     			new TemplateTransferDropTargetListener(getGraphicalViewer()));
@@ -345,7 +345,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
 
     /* (non-Javadoc)
      * @see org.eclipse.gef.ui.parts.GraphicalEditor#createActions()
-     * Register the used acions 
+     * Register the used acions
      */
     @SuppressWarnings("unchecked")
 	@Override
@@ -393,7 +393,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
         action = new AlignmentAction((IWorkbenchPart) this, PositionConstants.MIDDLE);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
-        
+
         action = new UnpinAction((IWorkbenchPart)this);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
@@ -451,7 +451,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
     public void setModel(NedFileNodeEx nedModel) {
         if (nedFileModel == nedModel)
             return;
-        
+
         nedFileModel = nedModel;
 
         if (!editorSaving) {
@@ -499,19 +499,19 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
     @Override
     public void selectionChanged(IWorkbenchPart part, ISelection selection) {
         // update actions ONLY if we are the active editor or the parent editor which is a multipage editor
-        IEditorPart activeEditor = getSite().getPage().getActiveEditor(); 
+        IEditorPart activeEditor = getSite().getPage().getActiveEditor();
         if (this == activeEditor ||
-              (getSite() instanceof MultiPageEditorSite && 
+              (getSite() instanceof MultiPageEditorSite &&
               ((MultiPageEditorSite)getSite()).getMultiPageEditor() == activeEditor))
             updateActions(getSelectionActions());
     }
-    
+
     public void selectComponent(String componentName) {
         if (componentName == null || "".equals(componentName)) {
             getGraphicalViewer().deselectAll();
             return;
         }
-        
+
         List toplevelParts = getGraphicalViewer().getContents().getChildren();
         EditPart selectedEditpart = null;
         for (Object child : toplevelParts) {
@@ -519,7 +519,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
             if ((model instanceof IHasName) && componentName.equals(((IHasName)model).getName()))
                     selectedEditpart = (EditPart)child;
         }
-            
+
         getGraphicalViewer().reveal(selectedEditpart);
         getGraphicalViewer().select(selectedEditpart);
     }

@@ -26,30 +26,30 @@ import org.omnetpp.scave.editors.ui.ScaveObjectEditFormFactory;
 
 /**
  * Two-page wizard for creating new scave objects.
- * 
+ *
  * First page offers the types of the children can be added to the
  * specified parent.
- * 
+ *
  * Second page contains a form to edit the new object.
- * 
+ *
  * @author tomi
  */
 // XXX: The new node is temporarily added to the parent, because
 //      edit forms do not work if the edited object is not added to the analysis.
 //      The new node is removed when the dialog is closed.
 public class NewScaveObjectWizard extends Wizard {
-	
+
 	private ScaveEditor editor;
 	private EditingDomain domain;
 	private EObject parent;
 	private CommandParameter newChildDescriptor;
-	
+
 	// command to add the new node temporarily (see class comment above)
 	private Command addNewChildCommand;
-	
+
 	private TypeSelectionWizardPage typeSelectionPage;
 	private EditFieldsWizardPage editFieldsPage;
-	
+
 	public NewScaveObjectWizard(ScaveEditor editor, EObject parent) {
 		this.editor = editor;
 		this.domain = editor.getEditingDomain();
@@ -58,19 +58,19 @@ public class NewScaveObjectWizard extends Wizard {
 		setHelpAvailable(false);
 		setNeedsProgressMonitor(false);
 	}
-	
+
 	/**
 	 * This is result of the wizard.
 	 */
 	public CommandParameter getNewChildDescriptor() {
 		return newChildDescriptor;
 	}
-	
+
 	private void setNewChildDescriptor(CommandParameter newChildDescriptor) {
 		if (this.newChildDescriptor != newChildDescriptor) {
 			this.newChildDescriptor = newChildDescriptor;
 			editFieldsPage.clearControl();
-			
+
 			// remove previous child, add new child
 			removeNewChild();
 			addNewChildCommand = CreateChildCommand.create(domain, parent, newChildDescriptor, Arrays.asList(parent));
@@ -78,12 +78,12 @@ public class NewScaveObjectWizard extends Wizard {
 				addNewChildCommand.execute();
 		}
 	}
-	
+
 	@Override
 	public void addPages() {
 		typeSelectionPage = new TypeSelectionWizardPage("Select type");
 		addPage(typeSelectionPage);
-		
+
 		editFieldsPage = new EditFieldsWizardPage("Set attributes");
 		addPage(editFieldsPage);
 	}
@@ -95,7 +95,7 @@ public class NewScaveObjectWizard extends Wizard {
 	public void createPageControls(Composite pageContainer) {
     	typeSelectionPage.createControl(pageContainer);
     }
-	
+
 	@Override
 	public boolean performCancel() {
 		removeNewChild();
@@ -114,24 +114,24 @@ public class NewScaveObjectWizard extends Wizard {
 		}
 		return false;
 	}
-	
+
 	private void removeNewChild() {
 		try {
 			if (addNewChildCommand != null && addNewChildCommand.canUndo())
 				addNewChildCommand.undo();
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
 		}
 	}
-	
+
 	/**
 	 * This is the first page of the wizard.
-	 * 
+	 *
 	 * The user can select the type of the new object here.
 	 *
 	 */
 	class TypeSelectionWizardPage extends WizardPage {
-		
+
 		private CommandParameter[] childrenDescriptors;
 
 		protected TypeSelectionWizardPage(String pageName) {
@@ -139,12 +139,12 @@ public class NewScaveObjectWizard extends Wizard {
 			setTitle("Select type");
 			setDescription("Select the type of the object to be created");
 			setPageComplete(false);
-			
+
 			// set descriptors of new children
 			Collection descriptors = domain.getNewChildDescriptors(parent, null);
 			childrenDescriptors = (CommandParameter[])descriptors.toArray(new CommandParameter[descriptors.size()]);
 		}
-		
+
 		/**
 		 * Creates the controls of this page.
 		 */
@@ -168,7 +168,7 @@ public class NewScaveObjectWizard extends Wizard {
 			}
 			setControl(radioGroup);
 		}
-		
+
 		/**
 		 * This method called when the selection changed.
 		 * It creates a new object with the selected type.
@@ -179,23 +179,23 @@ public class NewScaveObjectWizard extends Wizard {
 			setPageComplete(radio.getSelection());
 		}
 	}
-	
+
 	/**
 	 * This is the second page of the wizard.
-	 * 
+	 *
 	 * The user can set the properties of the new child here.
 	 * It contains the same controls as the Edit page of child.
 	 */
 	class EditFieldsWizardPage extends WizardPage {
-		
+
 		IScaveObjectEditForm form;
-		
+
 		protected EditFieldsWizardPage(String pageName) {
 			super(pageName);
 			setTitle("Edit fields");
 			setDescription("");
 		}
-		
+
 		/**
 		 * Creates the controls of this page.
 		 */
@@ -207,7 +207,7 @@ public class NewScaveObjectWizard extends Wizard {
 			form.populatePanel(panel);
 			setControl(panel);
 		}
-		
+
 		/**
 		 * This method called when the type of the child has changed,
 		 * so a new form has to be generated.
@@ -217,7 +217,7 @@ public class NewScaveObjectWizard extends Wizard {
 		void clearControl() {
 			setControl(null);
 		}
-		
+
 		/**
 		 * Copies the values on the form to the created object.
 		 * Called when the Finish button pressed.

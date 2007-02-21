@@ -92,26 +92,26 @@ public class EmbeddingTest
 		embedding.addForceProvider(new Spring(body6, body8));
 		embedding.addForceProvider(new Spring(body7, body8));
 	}
-	
+
 	private void addWireless(ForceDirectedEmbedding embedding, int count) {
 		for (int i = 0; i < count; i++)
 			embedding.addBody(new Body(new Variable(Pt.newNil())));
 	}
-	
+
 	private void addLine(ForceDirectedEmbedding embedding, int count) {
 		IBody previous = null;
 
 		for (int i = 0; i < count; i++) {
 			IBody body = new Body(new Variable(Pt.newNil()));
 			embedding.addBody(body);
-			
+
 			if (previous != null)
 				embedding.addForceProvider(new Spring(previous, body));
 
 			previous = body;
 		}
 	}
-	
+
 	private void addAnchoredLine(ForceDirectedEmbedding embedding, int count) {
 		Variable anchor = new Variable(new Pt(50, 50));
 
@@ -120,19 +120,19 @@ public class EmbeddingTest
 			embedding.addBody(body);
 		}
 	}
-	
+
 	private void addCircle(ForceDirectedEmbedding embedding, int count) {
 		IBody first = null;
 		IBody previous = null;
 
 		for (int i = 0; i < count; i++) {
 			IBody body = new Body(new Variable(Pt.newNil()));
-			
+
 			if (first == null)
 				first = body;
 
 			embedding.addBody(body);
-			
+
 			if (previous != null)
 				embedding.addForceProvider(new Spring(previous, body));
 
@@ -141,7 +141,7 @@ public class EmbeddingTest
 
 		embedding.addForceProvider(new Spring(previous, first));
 	}
-	
+
 	private void addAnchoredCircle(ForceDirectedEmbedding embedding, int count) {
 		Pt origin = new Pt(150, 150);
 		Variable anchor = new Variable(origin);
@@ -151,7 +151,7 @@ public class EmbeddingTest
 			embedding.addBody(body);
 		}
 	}
-	
+
 	private void addBorder(ForceDirectedEmbedding embedding) {
 		IBody top = new BorderBody(true, 0);
 		IBody bottom = new BorderBody(true, 300);
@@ -172,7 +172,7 @@ public class EmbeddingTest
 		embedding.addForceProvider(new VerticalSpring(top, bottom));
 		embedding.addForceProvider(new HorizonalSpring(left, right));
 	}
-	
+
 	private void addElectricRepeals(ForceDirectedEmbedding embedding) {
 		List<IBody> bodies = embedding.getBodies();
 
@@ -219,20 +219,20 @@ public class EmbeddingTest
 		//addLine(6);
 		addCircle(embedding, 6);
 		//addAnchoredLine(6);
-		
+
 		//graphComponent.calculateSpanningTree();
 
 		//new RandomEmbedding(graphComponent, new Rc(0, 0, 500, 500)).embed();
 		//new StripTreeEmbedding(graphComponent, 0, 0, 0, false).embed();
 		//new StripTreeEmbedding(graphComponent, 40, 40, 40, false).embed();
 		//new StarTreeEmbedding(graphComponent, 40).embed();
-		
+
 		//addStrange(embedding);
 		//addCube(embedding);
 	 	//addTree(embedding);
 		//addAnchoredLine(embedding, 4);
 		//addAnchoredCircle(embedding, 8);
-		
+
 		IBody body = new Body(new Variable(Pt.newNil()));
 		embedding.addBody(body);
 		//embedding.addForceProvider(new PointConstraint(body, 1, new Pt(500, 500)));
@@ -240,7 +240,7 @@ public class EmbeddingTest
 		embedding.addForceProvider(new CircleConstraint(body, 10, new Cc(200, 200, 200)));
 		embedding.addForceProvider(new Spring(body, embedding.getBodies().get(0)));
 		embedding.addForceProvider(new LineConstraint(embedding.getBodies().get(3), 10, new Ln(0, 500, 500, 0)));
-		
+
 		addElectricRepeals(embedding);
 		addBorder(embedding);
 		addRandomPositions(embedding);
@@ -268,11 +268,11 @@ class TestCanvas2 extends Canvas implements ForceDirectedEmbedding.IForceDirecte
 	private Pt dragPt;
 
 	private Point dragPoint;
-	
+
 	private double centerX = 0;
 
 	private double centerY = 0;
-	
+
 	public TestCanvas2(ForceDirectedEmbedding e) {
 		embedding = e;
 		embedding.listener = this;
@@ -348,17 +348,17 @@ class TestCanvas2 extends Canvas implements ForceDirectedEmbedding.IForceDirecte
 				if (dragPoint != null && dragPt != null) {
 					long begin = System.currentTimeMillis();
 					Pt fixPt = new Pt(dragPt.x + e.getX() - dragPoint.getX(), dragPt.y + e.getY() - dragPoint.getY());
-	
+
 					if (begin - last > 100)
 					{
 						for (IForceProvider forceProvider : embedding.getForceProviders())
 							if (forceProvider instanceof BodyConstraint) {
 								BodyConstraint bodyConstraint = (BodyConstraint)forceProvider;
-								
+
 								if (bodyConstraint.getBody() == dragBody)
 									embedding.removeForceProvider(forceProvider);
 							}
-					
+
 						embedding.addForceProvider(new PointConstraint(dragBody, 1, fixPt));
 						embed();
 						last = begin;
@@ -388,7 +388,7 @@ class TestCanvas2 extends Canvas implements ForceDirectedEmbedding.IForceDirecte
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
 			}
 		}
 	}
@@ -422,7 +422,7 @@ class TestCanvas2 extends Canvas implements ForceDirectedEmbedding.IForceDirecte
 			g.setColor(new Color(0, 0, 0));
 			g.drawRect(x, y, width, height);
 		}
-		
+
 		if (showForces) {
 			g.setColor(new Color(255, 0, 0));
 
@@ -454,11 +454,11 @@ class TestCanvas2 extends Canvas implements ForceDirectedEmbedding.IForceDirecte
 				g.drawLine(x1, y1, x2, y2);
 			}
 		}
-		
+
 		g.drawLine(0, 500, 500, 0);
 		drawCircle(g, new Cc(200, 200, 200));
 	}
-	
+
 	private void drawCircle(Graphics g, Cc cc) {
 		int x = (int)(cc.origin.x - cc.radius + centerX);
 		int y = (int)(cc.origin.y - cc.radius + centerY);
@@ -480,7 +480,7 @@ class TestFrame2 extends Frame {
 		add(testCanvas);
 		setVisible(true);
 	}
-	
+
 	public void embed() {
 		testCanvas.embed();
 	}

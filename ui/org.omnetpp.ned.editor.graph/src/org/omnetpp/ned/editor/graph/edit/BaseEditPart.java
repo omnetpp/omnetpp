@@ -24,15 +24,15 @@ import org.omnetpp.ned.model.notification.NEDModelEvent;
 /**
  * Provides support for Container EditParts.
  */
-abstract public class BaseEditPart 
-                           extends AbstractGraphicalEditPart 
-                           implements INEDChangeListener, IReadOnlySupport, 
+abstract public class BaseEditPart
+                           extends AbstractGraphicalEditPart
+                           implements INEDChangeListener, IReadOnlySupport,
                                       IPropertySourceSupport {
 
     protected long lastEventSerial;
     private boolean editable = true;
     private IPropertySource propertySource;
-    
+
     @Override
     public void activate() {
         if (isActive()) return;
@@ -62,13 +62,13 @@ abstract public class BaseEditPart
 
     /**
      * Returns the model associated with this as a NEDElement.
-     * 
+     *
      * @return The model of this as a NedElement.
      */
     protected NEDElement getNEDModel() {
         return (NEDElement) getModel();
     }
-    
+
     /**
      * Refreshes all visuals and connection models for ALL children (delegates to the children)
      */
@@ -76,18 +76,18 @@ abstract public class BaseEditPart
     	for(Object child : getChildren())
     		((AbstractGraphicalEditPart)child).refresh();
     }
-    
-    
+
+
     protected void refreshChildrenConnections() {
         for(Object child : getChildren()) {
             for(Object conn : ((AbstractGraphicalEditPart)child).getSourceConnections())
                 ((AbstractGraphicalEditPart)conn).refresh();
-            
+
             for(Object conn : ((AbstractGraphicalEditPart)child).getTargetConnections())
                 ((AbstractGraphicalEditPart)conn).refresh();
         }
     }
-    
+
     /**
      * Refreshes everything in this controller. Visual appearence, children and connection list
      * and children and connection appearence too.
@@ -101,7 +101,7 @@ abstract public class BaseEditPart
                 ((BaseEditPart)child).totalRefresh();
             else
                 ((AbstractGraphicalEditPart)child).refresh();
-        
+
         // refresh connections
         refreshChildrenConnections();
     }
@@ -109,20 +109,20 @@ abstract public class BaseEditPart
     public void setEditable(boolean editable) {
         this.editable = editable;
     }
-    
+
     public boolean isEditable() {
         if (!editable)
             return false;
-        // otherwise check what about the parent. if parent is read only we should return its state 
+        // otherwise check what about the parent. if parent is read only we should return its state
         if (getParent() instanceof IReadOnlySupport)
             return ((IReadOnlySupport)getParent()).isEditable();
-        // otherwise edit is possible 
+        // otherwise edit is possible
         return true;
     }
 
     public void modelChanged(NEDModelEvent event) {
         String nameString = getNEDModel().getAttribute("name");
-        if (nameString == null) 
+        if (nameString == null)
             nameString = "";
         System.out.println("NOTIFY ON: "+getModel().getClass().getSimpleName()+" "+nameString+" "+event);
     }
@@ -160,12 +160,12 @@ abstract public class BaseEditPart
 
             } catch (PartInitException e) {
                 // should not happen
-                e.printStackTrace();
+                e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
                 Assert.isTrue(false);
             }
         }
     }
-    
+
     public IPropertySource getPropertySource() {
         return propertySource;
     }

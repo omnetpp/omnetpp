@@ -20,7 +20,7 @@ import org.omnetpp.common.util.StringUtils;
 
 /**
  * Abstract base class for PropertySource wrappers.
- * 
+ *
  * <p> This is a facility to add property source behaviour to
  * an existing hierarchy of classes. You can write a subclass of PropertySource
  * for the objects having properties displayed on the property sheet.
@@ -29,7 +29,7 @@ import org.omnetpp.common.util.StringUtils;
  * and the corresponding getter, default, or setter method is called when
  * the property value, default value requested or set.
  * The getter/setter/default method calls on the subclasses can be delegated
- * to the wrapped objects.  
+ * to the wrapped objects.
  *
  * @author tomi
  */
@@ -44,15 +44,15 @@ public abstract class PropertySource implements IPropertySource2 {
 		public IPropertyDescriptor[] descriptors;
 		// Maps property id to property info.
 		public Map<String,PropInfo> infos;
-		
+
 		public Entry(IPropertyDescriptor[] descriptors, Map<String,PropInfo> infos)
 		{
 			this.descriptors = descriptors;
 			this.infos = infos;
 		}
 	}
-	
-	// Holds getter/setter/default/descriptor factory methods for a property. 
+
+	// Holds getter/setter/default/descriptor factory methods for a property.
 	static class PropInfo
 	{
 		Method getter;
@@ -60,7 +60,7 @@ public abstract class PropertySource implements IPropertySource2 {
 		Method defaultGetter;
 		Method descriptorFactory;
 		IPropertyDescriptor descriptor;
-		
+
 		public PropInfo(Method getter, Method setter,
 				Method defaultGetter, Method descriptorFactory,
 				IPropertyDescriptor descriptor)
@@ -72,7 +72,7 @@ public abstract class PropertySource implements IPropertySource2 {
 			this.descriptor = descriptor;
 		}
 	}
-	
+
 	public PropertySource()
 	{
 		if (map == null)
@@ -80,7 +80,7 @@ public abstract class PropertySource implements IPropertySource2 {
 		if (!map.containsKey(getClass()))
 			buildPropInfo();
 	}
-	
+
 	private PropInfo getInfo(String id)
 	{
 		Entry entry = map.get(getClass());
@@ -89,7 +89,7 @@ public abstract class PropertySource implements IPropertySource2 {
 		else
 			return null;
 	}
-	
+
 	private void buildPropInfo()
 	{
 		ArrayList<IPropertyDescriptor> descriptors = new ArrayList<IPropertyDescriptor>();
@@ -106,46 +106,46 @@ public abstract class PropertySource implements IPropertySource2 {
 					Class propType = getter.getReturnType();
 					IPropertyDescriptor descriptor;
 					Method setter = getPropertySetter(propClass, propName, propType);
-					Method defaultGetter = getPropertyDefaultGetter(propClass, propName, propType); 
+					Method defaultGetter = getPropertyDefaultGetter(propClass, propName, propType);
 					Method descriptorFactory = getDescriptorFactoryMethod(propClass, propAnnotation, propName);
 					descriptor = createPropertyDescriptor(descriptorFactory, propAnnotation, propName, propType);
 					descriptors.add(descriptor);
 					infos.put((String)descriptor.getId(), new PropInfo(getter, setter, defaultGetter, descriptorFactory, descriptor));
 				} catch (Exception e) {
-					e.printStackTrace();
+					e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
 				}
 			}
 		}
-		
+
 		int size = descriptors.size();
 		Entry entry = new Entry(descriptors.toArray(new IPropertyDescriptor[size]), infos);
 		map.put(getClass(), entry);
 	}
-	
+
 	private boolean isPropertyGetter(Method method) {
 		String methodName = method.getName();
 		int modifiers = method.getModifiers();
-		
+
 		return (methodName.startsWith("get") || methodName.startsWith("is")) &&
 			method.getParameterTypes().length == 0 &&
 			Modifier.isPublic(modifiers) && !Modifier.isStatic(modifiers) &&
 			method.isAnnotationPresent(Property.class);
 	}
-	
+
 	private String propNameFromGetterName(String getterName) {
 		if (getterName.startsWith("get"))
 			return getterName.substring(3);
 		else
 			return getterName.substring(2);
 	}
-	
+
 	private String displayNameFromPropName(String propName) {
 		String[] syllables = syllabize(propName);
 		for (int i = 0; i < syllables.length; ++i)
 			syllables[i] = syllables[i].toLowerCase();
 		return unsplit(syllables, " ");
 	}
-	
+
 	private static String[] syllabize(String str) {
 		int startIndex = 0;
 		ArrayList<String> syllables = new ArrayList<String>();
@@ -158,10 +158,10 @@ public abstract class PropertySource implements IPropertySource2 {
 		}
 		if (startIndex < len)
 			syllables.add(str.substring(startIndex));
-		
+
 		return (String[])syllables.toArray(new String[syllables.size()]);
 	}
-	
+
 	private static String unsplit(String[] strings, String separator) {
 		StringBuffer sb =  new StringBuffer();
 		int lastIndex = strings.length - 1;
@@ -172,7 +172,7 @@ public abstract class PropertySource implements IPropertySource2 {
 		}
 		return sb.toString();
 	}
-	
+
 	private static Method getPropertySetter(Class<? extends PropertySource> propClass, String propName, Class propType) {
 		try {
 			Method method = propClass.getMethod("set" + propName, propType);
@@ -184,7 +184,7 @@ public abstract class PropertySource implements IPropertySource2 {
 		} catch (Exception e) {}
 		return null;
 	}
-	
+
 	private static Method getPropertyDefaultGetter(Class<? extends PropertySource> propClass, String propName, Class<?> propType) {
 		try {
 			Method method = propClass.getMethod("default" + propName);
@@ -197,7 +197,7 @@ public abstract class PropertySource implements IPropertySource2 {
 		} catch (Exception e) {}
 		return null;
 	}
-	
+
 	private static Method getDescriptorFactoryMethod(Class<? extends PropertySource> propClass, Property property, String propName) {
 		try {
 			String methodName = getDescriptorFactoryMethodName(property, propName);
@@ -211,12 +211,12 @@ public abstract class PropertySource implements IPropertySource2 {
 		catch (Exception e) {}
 		return null;
 	}
-	
+
 	private static String getDescriptorFactoryMethodName(Property property, String propName) {
 		return property.descriptorFactoryMethod().length() > 0 ?
 			   property.descriptorFactoryMethod() : "create" + propName + "Descriptor";
 	}
-	
+
 	private IPropertyDescriptor createPropertyDescriptor(Method descriptorFactory, Property property, String propName, Class<?> propType)
 		throws Exception
 	{
@@ -247,10 +247,10 @@ public abstract class PropertySource implements IPropertySource2 {
 			descriptor.setDescription(description);
 		if (filterFlags.length > 0)
 			descriptor.setFilterFlags(filterFlags);
-		
+
 		return descriptor;
 	}
-	
+
 	public Class<? extends PropertyDescriptor>
 	getPropertyDescriptorClass(Class<? extends PropertyDescriptor> declaredDescriptorClass, Class<?> propType) {
 		if (declaredDescriptorClass == PropertyDescriptor.class) {
@@ -269,28 +269,28 @@ public abstract class PropertySource implements IPropertySource2 {
 		}
 		return declaredDescriptorClass;
 	}
-	
+
 	// TODO: this method should exists somewhere else
 	public static boolean equals(Object obj1, Object obj2) {
 		return obj1 == null && obj2 == null ||
 			   obj1 != null && obj1.equals(obj2);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "";
 	}
-	
+
 	/*
 	 * The rest is the implementation of IPropertySource2 interface.
 	 */
-	
+
 	public IPropertyDescriptor[] getPropertyDescriptors() {
 		Entry entry = map.get(getClass());
 		updateDescriptors(entry);
 		return entry.descriptors;
 	}
-	
+
 	/**
 	 * Updates descriptors having a factory method.
 	 * XXX: not thread-safe
@@ -302,7 +302,7 @@ public abstract class PropertySource implements IPropertySource2 {
 			entry.descriptors[i] = info.descriptor = updateDescriptor(info, descriptor);
 		}
 	}
-	
+
 	private IPropertyDescriptor updateDescriptor(PropInfo info, IPropertyDescriptor descriptor) {
 		try {
 			if (info.descriptorFactory != null) {
@@ -318,10 +318,10 @@ public abstract class PropertySource implements IPropertySource2 {
 		}
 		catch (InvocationTargetException e) {}
 		catch (IllegalAccessException e) {}
-		
+
 		return descriptor;
 	}
-	
+
 	public Object getEditableValue() {
 		return null;
 	}
@@ -337,12 +337,12 @@ public abstract class PropertySource implements IPropertySource2 {
 		}
 		return true;
 	}
-	
+
 	public boolean isPropertyResettable(Object id) {
 		PropInfo info = getInfo((String)id);
 		return info.defaultGetter != null && info.setter != null;
 	}
-	
+
 	public void resetPropertyValue(Object id) {
 		PropInfo info = getInfo((String)id);
 		if (info.defaultGetter != null && info.setter != null) {
@@ -350,7 +350,7 @@ public abstract class PropertySource implements IPropertySource2 {
 				Object defaultValue = info.defaultGetter.invoke(this);
 				info.setter.invoke(this, defaultValue);
 			} catch (Exception e) {
-				e.printStackTrace();
+				e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
 			}
 		}
 	}
@@ -361,7 +361,7 @@ public abstract class PropertySource implements IPropertySource2 {
 		try {
 			value = info.getter.invoke(this);
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
 		}
 		return value;
 	}
@@ -372,8 +372,8 @@ public abstract class PropertySource implements IPropertySource2 {
 			try {
 				info.setter.invoke(this, new Object[] {value});
 			} catch (Exception e) {
-				e.printStackTrace();
+				e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
 			}
 	}
-}	
+}
 

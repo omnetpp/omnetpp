@@ -33,21 +33,21 @@ import org.omnetpp.scave.engine.VectorFileIndexer;
 public class VectorFileIndexerJob extends WorkspaceJob {
 
 	private static VectorFileIndexerJob instance;
-	
+
 	private IResourceChangeListener listener;
 	private VectorFileIndexer indexer = new VectorFileIndexer();
 	private Queue<File> filesToBeIndexed = new ConcurrentLinkedQueue<File>();
-	
+
 	private VectorFileIndexerJob(String name) {
 		super(name);
 	}
-	
+
 	public VectorFileIndexerJob(String name, IFile[] filesToBeIndexed) {
 		super(name);
 		for (IFile file : filesToBeIndexed)
 			enqueueFile(file);
 	}
-	
+
 	/**
 	 * Turns on automatic indexing.
 	 */
@@ -56,7 +56,7 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 			getInstance().initialize();
 		}
 	}
-	
+
 	/**
 	 * Turns off automatic indexing.
 	 */
@@ -66,18 +66,18 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 			instance = null;
 		}
 	}
-	
+
 	private static VectorFileIndexerJob getInstance() {
 		if (instance == null) {
 			instance = new VectorFileIndexerJob("Indexing vector files");
 		}
 		return instance;
 	}
-	
+
 	private void initialize() {
 		collectFilesToBeIndexed();
 		schedule();
-		
+
 		listener = new IResourceChangeListener() {
 			public void resourceChanged(IResourceChangeEvent event) {
 				updateFilesToBeIndexed(event);
@@ -87,7 +87,7 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(listener,
 				IResourceChangeEvent.POST_BUILD | IResourceChangeEvent.POST_CHANGE);
 	}
-	
+
 	private void dispose() {
 		if (listener != null)
 			ResourcesPlugin.getWorkspace().removeResourceChangeListener(listener);
@@ -99,16 +99,16 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 	@Override
 	public IStatus runInWorkspace(IProgressMonitor monitor)
 			throws CoreException {
-		
+
 		if (!filesToBeIndexed.isEmpty()) {
 			try {
 				monitor.beginTask(getName(), filesToBeIndexed.size());
-				
+
 				File file;
 				while ((file=filesToBeIndexed.poll()) != null) {
 					if (monitor.isCanceled())
 						return Status.CANCEL_STATUS;
-					
+
 					monitor.subTask("Indexing "+file.getName());
 					try {
 						if (file.exists() && !isIndexFileUpToDate(file))
@@ -126,7 +126,7 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 		}
 		return Status.OK_STATUS;
 	}
-	
+
 	private void updateFilesToBeIndexed(IResourceChangeEvent event) {
 		try {
 			int type = event.getType();
@@ -149,14 +149,14 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 						}
 						return true;
 					}
-					
+
 				});
 			}
 		} catch (CoreException e) { // not reached
-			e.printStackTrace();
+			e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
 		}
 	}
-	
+
 	private void collectFilesToBeIndexed() {
 		try {
 			ResourcesPlugin.getWorkspace().getRoot().accept(new IResourceVisitor() {
@@ -172,14 +172,14 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 				}
 			});
 		} catch (CoreException e) {
-			e.printStackTrace();
+			e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
 		}
 	}
-	
+
 	private void enqueueFile(IFile file) {
 		filesToBeIndexed.offer(file.getLocation().toFile());
 	}
-	
+
 	private boolean toBeIndexed(IFile file) {
 		if (isVectorFile(file)) {
 			return !isIndexFileUpToDate(file);

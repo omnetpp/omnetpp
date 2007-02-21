@@ -35,7 +35,7 @@ import org.omnetpp.scave.model.Inputs;
 /**
  * This class is responsible for loading/unloading result files
  * (scalar and vector files), based on changes in the model
- * (the Inputs object) and in the workspace. Thus it should be 
+ * (the Inputs object) and in the workspace. Thus it should be
  * hooked up to listen to EMF and workspace changes.
  *
  * @author andras, tomi
@@ -56,7 +56,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	public void notifyChanged(Notification notification) {
 		if (notification.isTouch())
 			return;
-		
+
 		switch (notification.getEventType()) {
 		case Notification.ADD:
 		case Notification.ADD_MANY:
@@ -70,7 +70,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 				synchronize();
 		}
 	}
-	
+
 	/**
 	 * Listen to workspace changes. We want to keep our result files in
 	 * sync with the workspace. In addition to changes in file contents,
@@ -82,16 +82,16 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			IResourceDelta delta = event.getDelta();
 			delta.accept(new ResourceDeltaVisitor());
 		} catch (CoreException e) {
-			e.printStackTrace();
+			e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
 		}
 	}
-	
+
 	class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 		public boolean visit(IResourceDelta delta) throws CoreException {
 			IResource resource = delta.getResource();
 			if (!(resource instanceof IFile))
 				return true;
-			
+
 			IFile file = (IFile)resource;
 			switch (delta.getKind()) {
 			case IResourceDelta.ADDED:
@@ -129,11 +129,11 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		//FIXME for now, a primitive solution, TO BE REPLACED: unload everything
 		for (ResultFile file : manager.getFiles().toArray())
 			manager.unloadFile(file);
-		
+
 		List<InputFile> files = new ArrayList<InputFile>();
 		List<InputFile> wildcards = new ArrayList<InputFile>();
 		partitionInputFiles(files, wildcards);
-		
+
 		// load files specified by path
 		for (InputFile inputfile : files) {
 			loadFile(inputfile.getName());
@@ -147,7 +147,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 						loadFile(file);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void partitionInputFiles(List<InputFile> files, List<InputFile> wildcards) {
 		for (InputFile inputfile : (List<InputFile>)inputs.getInputs()) {
@@ -157,11 +157,11 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 				files.add(inputfile);
 		}
 	}
-	
+
 	private boolean containsWildcard(String fileSpec) {
 		return fileSpec.indexOf('?') >= 0 || fileSpec.indexOf('*') >= 0;
 	}
-	
+
 	/**
 	 * Returns the list of result files in the workspace.
 	 */
@@ -183,7 +183,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		}
 		return files;
 	}
-	
+
 	/**
 	 * Loads the file specified by <code>resourcePath</code> into the ResultFileManager.
 	 */
@@ -197,7 +197,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			}
 		}
 	}
-	
+
 	/**
 	 * Loads the specified <code>file</code> into the ResultFileManager.
 	 * If a vector file is loaded, it checks that the index file is up-to-date.
@@ -231,10 +231,10 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 				Activator.logError("Could not load file: " + file.getLocation().toOSString(), e);
 			}
 		}
-		else 
+		else
 			throw new RuntimeException("wrong file type:"+file.getFullPath()); //XXX proper error handling (e.g. remove file from Inputs?)
 	}
-	
+
 	/**
 	 * Unloads the specified <code>file</code> from the ResultFileManager.
 	 * Has no effect when the file was not loaded.
@@ -245,7 +245,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		if (resultFile != null)
 			manager.unloadFile(resultFile);
 	}
-	
+
 	/**
 	 * Reloads the specified <code>file</code> into the ResultFileManager.
 	 * Has no effect when the file was not loaded.
@@ -266,7 +266,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			}
 		}
 	}
-	
+
 	/**
 	 * Returns true iff <code>file</code> is a result file (scalar or vector).
 	 */
@@ -283,7 +283,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Return true iff the <code>file</code> matches any of the input files.
 	 */
@@ -294,7 +294,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 				return true;
 		return false;
 	}
-	
+
 	/**
 	 * Returns true if the <code>workspaceFile</code> matches with the file specification
 	 * <code>inputFile</code>.
@@ -304,7 +304,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		String filePath = workspaceFile.getFullPath().toString();
 		return matchPattern(filePath, filePattern);
 	}
-	
+
 	/**
 	 * Matches <code>str</code> against the given <code>pattern</code>.
 	 * The pattern may contain '?' (any char) and '*' (any char sequence) wildcards.
@@ -312,7 +312,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	private static boolean matchPattern(String str, String pattern) {
 		return matchPattern(str, 0, str.length(), pattern, 0, pattern.length());
 	}
-	
+
 	/**
 	 * Matches the given string segment with the given pattern segment.
 	 */
@@ -320,7 +320,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		while (strStart < strEnd && patternStart < patternEnd) {
 			char strChar = str.charAt(strStart);
 			char patternChar = pattern.charAt(patternStart);
-			
+
 			switch (patternChar) {
 			case '?':
 				++strStart;
@@ -347,7 +347,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 				break;
 			}
 		}
-		
+
 		return strStart == strEnd && patternStart == patternEnd;
 	}
 }

@@ -30,7 +30,7 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
         "//\n// TODO Place comment here\n//\n\nmodule #NAME# {\n  parameters:\n  gates:\n  submodules:\n connections:\n}\n",
         "//\n// TODO Place comment here\n//\n\nnetwork #NAME# {\n  parameters:\n  submodules:\n connections:\n}\n"
     };
-    
+
 	private IWorkbench workbench;
 	private static int exampleCount = 1;
 
@@ -106,17 +106,17 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
         String name = getFileName();
         if (name == null || "".equals(name))
             return null;
-        
+
         name = name.substring(0, name.lastIndexOf('.'));
-        
+
 		String contents = NEDFILE_TEMPLATES[modelSelected].replaceAll("#NAME#", name);
 		return new ByteArrayInputStream(contents.getBytes());
 	}
-    
+
 	public boolean finish() {
         // add an extension if missing
         String name = getFileName();
-        if (name.lastIndexOf('.') < 0) 
+        if (name.lastIndexOf('.') < 0)
             setFileName(name+".ned");
 
         IFile newFile = createNewFile();
@@ -131,7 +131,7 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
 			if (page != null)
 				IDE.openEditor(page, newFile, true);
 		} catch (org.eclipse.ui.PartInitException e) {
-			e.printStackTrace();
+			e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
 			return false;
 		}
 		exampleCount++;

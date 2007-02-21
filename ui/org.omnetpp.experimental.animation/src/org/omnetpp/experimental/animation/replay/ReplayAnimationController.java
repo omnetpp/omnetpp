@@ -1418,7 +1418,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 			return beginOrderedAnimationPrimitives.size() - animationPrimitivesCount;
 		}
 		catch (Throwable e) {
-			e.printStackTrace();
+			e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
 
 			throw new RuntimeException(e);
 		}
