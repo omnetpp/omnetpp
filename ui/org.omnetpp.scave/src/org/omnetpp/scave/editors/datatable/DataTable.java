@@ -87,10 +87,10 @@ public class DataTable extends Table {
 	}
 	
 	private static final Column COL_DIRECTORY = new Column("Directory", 60, true);
-	private static final Column COL_FILE_RUN = new Column("File name#run number", 100, true);
+	private static final Column COL_FILE_RUN = new Column("File name and run number", 100, true);
 	private static final Column COL_RUN_ID = new Column("Run id", 100, true);
-	private static final Column COL_MODULE = new Column("Module name", 160, true);
-	private static final Column COL_DATA = new Column("Data name", 100, true);
+	private static final Column COL_MODULE = new Column("Module", 160, true);
+	private static final Column COL_DATA = new Column("Statistic", 100, true);
 	private static final Column COL_VALUE = new Column("Value", 80, true);
 	private static final Column COL_COUNT = new Column("Count", 50, true);
 	private static final Column COL_MEAN = new Column("Mean", 60, true);

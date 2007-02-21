@@ -157,12 +157,12 @@ public class FilterParamsPanel extends Composite {
 		composite3.setLayout(gridLayout4);
 		composite3.setLayoutData(gridData10);
 		moduleLabel = new Label(composite3, SWT.NONE);
-		moduleLabel.setText("Module name:");
+		moduleLabel.setText("Module:");
 		moduleCombo = new CCombo(composite3, SWT.BORDER);
 		moduleCombo.setLayoutData(gridData7);
 		moduleCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		dataLabel = new Label(composite3, SWT.NONE);
-		dataLabel.setText("Data name:");
+		dataLabel.setText("Statistic:");
 		dataCombo = new CCombo(composite3, SWT.BORDER);
 		dataCombo.setLayoutData(gridData8);
 		dataCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);

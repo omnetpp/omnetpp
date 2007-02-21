@@ -17,8 +17,8 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  */
 public class CreateTempChartAction extends AbstractScaveAction {
 	public CreateTempChartAction() {
-		setText("Create temporary chart...");
-		setToolTipText("Create temporary chart from selected result items");
+		setText("Plot");
+		setToolTipText("Plot");
 	}
 
 	@SuppressWarnings("unchecked")

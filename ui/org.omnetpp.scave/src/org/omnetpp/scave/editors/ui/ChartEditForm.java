@@ -1,6 +1,15 @@
 package org.omnetpp.scave.editors.ui;
 
-import static org.omnetpp.scave.model2.ChartProperties.*;
+import static org.omnetpp.scave.model2.ChartProperties.PROP_AXIS_TITLE_FONT;
+import static org.omnetpp.scave.model2.ChartProperties.PROP_GRAPH_TITLE_FONT;
+import static org.omnetpp.scave.model2.ChartProperties.PROP_LABEL_FONT;
+import static org.omnetpp.scave.model2.ChartProperties.PROP_LEGEND_FONT;
+import static org.omnetpp.scave.model2.ChartProperties.PROP_LINE_TYPE;
+import static org.omnetpp.scave.model2.ChartProperties.PROP_SYMBOL_SIZE;
+import static org.omnetpp.scave.model2.ChartProperties.PROP_SYMBOL_TYPE;
+import static org.omnetpp.scave.model2.ChartProperties.PROP_X_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave.model2.ChartProperties.PROP_X_AXIS_MAX;
+import static org.omnetpp.scave.model2.ChartProperties.PROP_X_AXIS_MIN;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,8 +17,6 @@ import java.util.List;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -18,6 +25,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -29,9 +38,13 @@ import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.ChartProperties;
 import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ScaveModelUtil;
+import org.omnetpp.scave.model2.ChartProperties.BarPlacement;
 import org.omnetpp.scave.model2.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.model2.ChartProperties.LegendPosition;
 import org.omnetpp.scave.model2.ChartProperties.LineStyle;
+import org.omnetpp.scave.model2.ChartProperties.ScalarChartProperties;
+import org.omnetpp.scave.model2.ChartProperties.SymbolType;
+import org.omnetpp.scave.model2.ChartProperties.VectorChartProperties;
 import org.omnetpp.scave.model2.ChartProperties.VectorChartProperties.LineProperties;
 
 /**
@@ -156,7 +169,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		Composite panel;
 		Group group;
 		parent.setLayout(new GridLayout(1, false));
-		CTabFolder tabfolder = createTabFolder(parent);
+		TabFolder tabfolder = createTabFolder(parent);
 		// Main
 		panel = createTab("Main", tabfolder, 2);
 		nameText = createTextField("Name", panel);
@@ -223,15 +236,15 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		legendAnchorRadios = createRadioGroup("Anchoring", panel, 4, LegendAnchor.class, false);
 	}
 	
-	private CTabFolder createTabFolder(Composite parent) {
-		CTabFolder tabfolder = new CTabFolder(parent, SWT.NONE);
+	private TabFolder createTabFolder(Composite parent) {
+		TabFolder tabfolder = new TabFolder(parent, SWT.NONE);
 		tabfolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		return tabfolder;
 		
 	}
 	
-	private Composite createTab(String tabText, CTabFolder tabfolder, int numOfColumns) {
-		CTabItem tabitem = new CTabItem(tabfolder, SWT.NONE);
+	private Composite createTab(String tabText, TabFolder tabfolder, int numOfColumns) {
+		TabItem tabitem = new TabItem(tabfolder, SWT.NONE);
 		tabitem.setText(tabText);
 		Composite panel = new Composite(tabfolder, SWT.NONE);
 		panel.setLayout(new GridLayout(numOfColumns, false));
