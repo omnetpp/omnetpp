@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.omnetpp.scave.model/src"
+    editDirectory="/org.omnetpp.scave.model/src" editorDirectory="/org.omnetpp.scave.model/src"
+    modelPluginID="org.omnetpp.scave.model" modelName="Scave" editPluginClass="org.omnetpp.scave.model.provider.ScaveEditPlugin"
+    editorPluginClass="org.omnetpp.scave.model.presentation.ScaveEditorPlugin" rootImplementsInterface=""
+    testsDirectory="/org.omnetpp.scave.model/src" testSuiteClass="org.omnetpp.scave.model.tests.ScaveAllTests"
+    importerID="org.eclipse.emf.importer.ecore" bundleManifest="false">
+  <foreignModel>scave.ecore</foreignModel>
+  <genPackages prefix="ScaveModel" basePackage="org.omnetpp.scave" disposableProviderFactory="true"
+      ecorePackage="scave.ecore#/">
+    <genEnums ecoreEnum="scave.ecore#//DatasetType">
+      <genEnumLiterals ecoreEnumLiteral="scave.ecore#//DatasetType/scalar"/>
+      <genEnumLiterals ecoreEnumLiteral="scave.ecore#//DatasetType/vector"/>
+      <genEnumLiterals ecoreEnumLiteral="scave.ecore#//DatasetType/histogram"/>
+    </genEnums>
+    <genClasses ecoreClass="scave.ecore#//Dataset">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Dataset/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Dataset/items"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Dataset/type"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EReference scave.ecore#//Dataset/basedOn"/>
+    </genClasses>
+    <genClasses ecoreClass="scave.ecore#//Chart">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Chart/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Chart/filters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Chart/properties"/>
+    </genClasses>
+    <genClasses ecoreClass="scave.ecore#//Add">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Add/excepts"/>
+    </genClasses>
+    <genClasses ecoreClass="scave.ecore#//Apply"/>
+    <genClasses ecoreClass="scave.ecore#//Except"/>
+    <genClasses ecoreClass="scave.ecore#//Property">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Property/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Property/value"/>
+    </genClasses>
+    <genClasses ecoreClass="scave.ecore#//SetOperation">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//SetOperation/filenamePattern"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//SetOperation/runNamePattern"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//SetOperation/experimentNamePattern"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//SetOperation/measurementNamePattern"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//SetOperation/replicationNamePattern"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//SetOperation/moduleNamePattern"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//SetOperation/namePattern"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EReference scave.ecore#//SetOperation/sourceDataset"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//SetOperation/fromRunsWhere"/>
+    </genClasses>
+    <genClasses ecoreClass="scave.ecore#//Group">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Group/items"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Group/name"/>
+    </genClasses>
+    <genClasses ecoreClass="scave.ecore#//Discard">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Discard/excepts"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="scave.ecore#//DatasetItem"/>
+    <genClasses ecoreClass="scave.ecore#//Param">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Param/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Param/value"/>
+    </genClasses>
+    <genClasses ecoreClass="scave.ecore#//ChartSheet">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ChartSheet/name"/>
+      <genFeatures children="true" createChild="false" ecoreFeature="ecore:EReference scave.ecore#//ChartSheet/charts"/>
+    </genClasses>
+    <genClasses ecoreClass="scave.ecore#//Analysis">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Analysis/inputs"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Analysis/datasets"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Analysis/chartSheets"/>
+    </genClasses>
+    <genClasses ecoreClass="scave.ecore#//Select">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Select/excepts"/>
+    </genClasses>
+    <genClasses ecoreClass="scave.ecore#//Deselect">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Deselect/excepts"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="scave.ecore#//AddDiscardOp"/>
+    <genClasses image="false" ecoreClass="scave.ecore#//SelectDeselectOp"/>
+    <genClasses ecoreClass="scave.ecore#//Inputs">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Inputs/inputs"/>
+    </genClasses>
+    <genClasses ecoreClass="scave.ecore#//ChartSheets">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//ChartSheets/chartSheets"/>
+    </genClasses>
+    <genClasses ecoreClass="scave.ecore#//Datasets">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Datasets/datasets"/>
+    </genClasses>
+    <genClasses ecoreClass="scave.ecore#//InputFile">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//InputFile/name"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="scave.ecore#//ProcessingOp">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ProcessingOp/operation"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//ProcessingOp/filters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//ProcessingOp/params"/>
+    </genClasses>
+    <genClasses ecoreClass="scave.ecore#//Compute"/>
+  </genPackages>
+</genmodel:GenModel>
