@@ -14,6 +14,12 @@ import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.model.DatasetType;
 
+/**
+ * Given an IDList, produces hints for different filter fields such as
+ * module name, statistic name, etc.
+ *  
+ * @author tomi
+ */
 public class FilterHints {
 	private static final String[] EMPTY = new String[0];
 	

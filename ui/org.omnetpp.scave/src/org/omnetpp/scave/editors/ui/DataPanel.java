@@ -13,6 +13,11 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 
+/**
+ * This class has been created with the Visual Editor. DO NOT HAND-EDIT!
+ * 
+ * @author Andras
+ */
 public class DataPanel extends SashForm {
 
 	private FormToolkit formToolkit = null;   //  @jve:decl-index=0:visual-constraint=""

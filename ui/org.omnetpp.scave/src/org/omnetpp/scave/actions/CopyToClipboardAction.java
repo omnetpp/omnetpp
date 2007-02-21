@@ -9,8 +9,8 @@ import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
  */
 public class CopyToClipboardAction extends AbstractScaveAction {
 	public CopyToClipboardAction() {
-		setText("Copy to clipboard...");
-		setToolTipText("Copy data to clipboard in various formats");
+		setText("Copy to clipboard");
+		setToolTipText("Copy data to clipboard"); //FIXME  in various formats!!!!
 	}
 
 	@Override
