@@ -37,7 +37,13 @@
           value="10,10,300,10"/>
     <property
           name="aboutText"
-          value="about text"/>                
+          value="OMNEST/OMNeT++ IDE, based on Eclipse platform."/>
+    <property
+          name="aboutImage"
+          value="icons/logo128.gif"/>
+    <property
+          name="windowImages"
+          value="icons/omnest16.gif,icons/omnest32.gif,icons/omnest48.gif,icons/omnest64.gif,icons/omnest128.gif"/>                
       </product> 
    </extension> 
    <extension

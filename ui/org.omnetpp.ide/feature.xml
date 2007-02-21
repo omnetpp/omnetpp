@@ -11,22 +11,17 @@
 
    <description url="http://www.omnetpp.org/">
       This is an Integrated Development Environment for the OMNeT++/OMNEST
-Discrete Event Simulation Framework.
-OMNeT++/OMNEST is a C++-based object-oriented discrete event
-simulation framework, primarily targeted at the simulation of
-communication
-networks and other parallel/distributed systems. OMNeT++/OMNEST
-includes
-a graphical network editor, a network topology description language,
-a simulation
+Discrete Event Simulation Framework. OMNeT++/OMNEST is a C++-based
+object-oriented discrete event simulation framework, primarily
+targeted at the simulation of communication networks and other
+parallel/distributed systems. OMNeT++/OMNEST includes a graphical
+network editor, a network topology description language, a simulation
 class library, multiple execution environments (both GUI and
-command
-line), a result plotting tool, documentation, many sample simulations
-and much more.
+command line), a result plotting tool, documentation, many sample
+simulations and much more.
 OMNeT++ is freely available for academic and non-profit purposes;
 the commercial version is licensed under the name OMNEST, but
-otherwise
-they are identical.
+otherwise they are identical.
 You&apos;re invited to visit the OMNeT++ community site at www.omnetpp.org
 any time!
 We hope you&apos;ll enjoy working with OMNeT++/OMNEST.
