@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="OMNeT++ Analysis"
+            extensions="scave"
+            icon="icons/analfile.gif"
+            contributorClass="org.omnetpp.scave.editors.ScaveEditorContributor"
+            class="org.omnetpp.scave.editors.ScaveEditor"
+            id="org.omnetpp.scave.editors.ScaveEditor">
+      </editor>
+      <editor
+            default="true"
+            extensions="sca,vec"
+            id="org.omnetpp.scave.editors.ResultFileOpener"
+            launcher="org.omnetpp.scave.editors.ResultFileEditorLauncher"
+            name="Scave Analysis Editor"/>
+   </extension>
+   
+   <extension
+         id="org.omnetpp.scave.content-types"
+         name="Scave content types"
+         point="org.eclipse.core.runtime.contentTypes">
+      <content-type
+            file-extensions="sca"
+            id="org.omnetpp.scave.content-type.scalar"
+            name="Scalar result file"
+            priority="normal"/>
+      <content-type
+            file-extensions="vec"
+            id="org.omnetpp.scave.content-type.vector"
+            name="Vector result file"
+            priority="normal"/>
+      <content-type
+            file-extensions="vci"
+            id="org.omnetpp.scave.content-type.index"
+            name="Vector index file"
+            priority="normal"/>
+   </extension>
+
+  <extension
+        point="org.eclipse.ui.newWizards">
+     <wizard
+           category="org.omnetpp.wizards"
+           class="org.omnetpp.scave.wizard.ScaveModelWizard"
+           icon="icons/analfile.gif"
+           id="org.omnetpp.scave.wizard.ScaveModelModelWizardID"
+           name="Analysis File (scave)">
+        <description>
+           Create a new Analysis file that describes how charts and plottings should be created from recorded data.
+        </description>
+     </wizard>
+  </extension>
+  <extension
+        point="org.eclipse.ui.views">
+     <view
+           category="org.omnetpp.views"
+           class="org.omnetpp.scave.views.VectorBrowserView"
+           icon="icons/analfile.gif"
+           id="org.omnetpp.scave.VectorBrowserView"
+           name="Output Vector"/>
+  </extension>
+  <extension
+        id="product"
+        point="org.eclipse.core.runtime.products">
+     <product
+           application="org.eclipse.ui.ide.workbench"
+           name="OMNeT++ Scave IDE">
+        <property
+              name="preferenceCustomization"
+              value="plugin_customization.ini"/>
+        <property
+              name="windowImages"
+              value="eclipse.gif,eclipse32.gif,eclipse48.gif,eclipse.png,eclipse32.png"/>
+        <property
+              name="aboutText"
+              value="%productBlurb"/>
+        <property
+              name="aboutImage"
+              value="eclipse_lg.gif"/>
+        <property
+              name="startupForegroundColor"
+              value="C8D5EA"/>
+        <property
+              name="startupProgressRect"
+              value="0,280,455,15"/>
+        <property
+              name="startupMessageRect"
+              value="7,220,441,20"/>
+     </product>
+  </extension>
+
+</plugin>
