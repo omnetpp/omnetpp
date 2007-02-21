@@ -58,6 +58,13 @@ public class ScaveModelUtil {
 		return chartsheet;
 	}
 	
+	public static Dataset createDataset(String name, DatasetType type) {
+		Dataset dataset = factory.createDataset();
+		dataset.setName(name);
+		dataset.setType(type);
+		return dataset;
+	}
+
 	public static Dataset createDataset(String name, DatasetType type, Filter filter) {
 		Dataset dataset = factory.createDataset();
 		dataset.setName(name);
@@ -80,6 +87,12 @@ public class ScaveModelUtil {
 		return chart;
 	}
 	
+	public static Add createAdd(String filterString) {
+		Add add = factory.createAdd();
+		add.setFilterString(filterString);
+		return add;
+	}
+
 	public static Add createAdd(Filter filter) {
 		Add add = factory.createAdd();
 		add.setFilenamePattern(filter.getField(Filter.FIELD_FILENAME));
