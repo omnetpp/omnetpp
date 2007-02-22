@@ -4,10 +4,16 @@ import org.omnetpp.scave.engine.Run;
 
 public class RunAttribute {
 	
+	// Note: these field names must be kept consistent with resultfilemanager.cc
+	// XXX and with FilterUtil
+	// XXX or: merge all these into one place? 
 	public static final String EXPERIMENT = "experiment";
 	public static final String MEASUREMENT = "measurement";
 	public static final String REPLICATION = "replication";
-	
+	public static final String RUNNUMBER = "runNumber";
+	public static final String NETWORKNAME = "networkName";
+	public static final String DATETIME = "dateTime";
+
 	private String name;
 	private String value;
 	

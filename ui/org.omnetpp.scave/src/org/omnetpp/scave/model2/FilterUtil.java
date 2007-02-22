@@ -19,6 +19,7 @@ import org.omnetpp.scave.model2.FilterSyntax.TokenType;
 public class FilterUtil {
 
 	// Note: these field names must be kept consistent with resultfilemanager.cc
+	// XXX and with RunAttribute
 	// XXX or: obtain them from resultfilemanager.cc via swig.. 
 	public static final String FIELD_FILENAME = "file";
 	public static final String FIELD_RUNNAME = "run";
@@ -87,7 +88,9 @@ public class FilterUtil {
 			else {
 				// fallback for old files that don't have runName yet
 				setField(FIELD_FILENAME, file.getFilePath());
-				setField(FIELD_RUNNUMBER, ""+run.getRunNumber());
+				String runNumber = run.getAttribute(RunAttribute.RUNNUMBER);
+				if (runNumber != null)
+					setField(FIELD_RUNNUMBER, runNumber);
 			}
 		}
 		else {
