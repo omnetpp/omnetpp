@@ -9,7 +9,7 @@
             contributorClass="org.omnetpp.ned.editor.MultiPageNedEditorActionContributor"
             default="true"
             extensions="ned"
-            icon="icons/gned.gif"
+            icon="icons/nedfile.gif"
             id="org.omnetpp.ned.editor"
             name="NED Editor">
       </editor>

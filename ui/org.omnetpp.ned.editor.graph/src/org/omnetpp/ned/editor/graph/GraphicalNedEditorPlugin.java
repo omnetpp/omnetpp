@@ -172,7 +172,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
     	
     	// create the default 
         PaletteDrawer defDrawer 
-        	= new PaletteDrawer(defaultGroupName, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_TEMPLATE));
+        	= new PaletteDrawer(defaultGroupName, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FOLDER));
         containerMap.put(defaultGroupName, defDrawer);
 
         // get all the possible type names in alphabetical order
@@ -213,7 +213,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         	// get the correct drawer and create a new one if does not exists
         	PaletteDrawer currentDrawer = containerMap.get(group);
         	if (currentDrawer == null) {
-        		currentDrawer = new PaletteDrawer(group, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_TEMPLATE));
+        		currentDrawer = new PaletteDrawer(group, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FOLDER));
         		containerMap.put(group, currentDrawer);
         	}
         	

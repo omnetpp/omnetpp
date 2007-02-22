@@ -68,7 +68,7 @@
       <wizard
             category="org.omnetpp.wizards"
             class="org.omnetpp.ide.wizard.NewOmnetppProjectWizard"
-            icon="icons/project.gif"
+            icon="icons/newoproject.gif"
             id="org.omnetpp.ide.wizard.newProjectWizard"
             name="OMNEST/OMNeT++ Project"
             project="true">

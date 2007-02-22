@@ -36,6 +36,7 @@ public class ImageFactory {
     public final static String TOOLBAR_IMAGE_ZOOMMINUS = TOOL_IMAGE_DIR + "zoomminus";
     public final static String TOOLBAR_IMAGE_ZOOMPLUS = TOOL_IMAGE_DIR + "zoomplus";
     public final static String TOOLBAR_IMAGE_TEMPLATE = TOOL_IMAGE_DIR + "template";
+    public final static String TOOLBAR_IMAGE_FOLDER = TOOL_IMAGE_DIR + "folder";
     public final static String TOOLBAR_IMAGE_CONNECTION = TOOL_IMAGE_DIR + "connection";
     public final static String TOOLBAR_IMAGE_MODULE = TOOL_IMAGE_DIR + "module";
     public final static String TOOLBAR_IMAGE_SIMPLE = TOOL_IMAGE_DIR + "simple";
@@ -57,7 +58,7 @@ public class ImageFactory {
     public final static String DECORATOR_IMAGE_WARNING = DECORATORS_IMAGE_DIR + "warning";
 
     public final static String DEFAULT_NAME = IMAGE_DIR + INTERNAL_DIR + "default.png";
-    public final static String DEFAULT_PIN = INTERNAL_DIR + "pin";
+    public final static String DEFAULT_PIN = DECORATORS_IMAGE_DIR + "pin";
     public final static String DEFAULT_KEY = "__default__";
 
     private static ImageRegistry imageRegistry = new ImageRegistry();
