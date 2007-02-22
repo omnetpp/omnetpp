@@ -19,23 +19,23 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 /**
  * Displays a data table of vectors/scalars/histograms with filter
  * comboboxes.
- * 
- * This class is reusable, which means it only knows that it has to 
+ *
+ * This class is reusable, which means it only knows that it has to
  * display an IDList belonging to a particular ResultFileManager,
  * and has absolutely no reference to the editor, or EMF model objects,
  * or any widgets outside -- nothing.
- * 
+ *
  * The user is responsible to keep contents up-to-date in case
  * ResultFileManager or IDList contents change. Refreshing can be
- * done by calling setIDList(). 
- *  
+ * done by calling setIDList().
+ *
  * @author andras
  */
 public class FilteredDataPanel extends Composite {
 	private FilteringPanel filterPanel;
 	private DataTable table;
 	private IDList idlist; // the unfiltered data list
-	
+
 	public FilteredDataPanel(Composite parent, int style, int type) {
 		super(parent, style);
 		initialize(type);
@@ -49,7 +49,7 @@ public class FilteredDataPanel extends Composite {
 	public DataTable getTable() {
 		return table;
 	}
-	
+
 	public void setIDList(IDList idlist) {
 		this.idlist = idlist;
 		updateFilterCombos();
@@ -76,7 +76,7 @@ public class FilteredDataPanel extends Composite {
 		filterPanel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		table = new DataTable(this, SWT.MULTI, type);
 		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		
+
 		filterPanel.getToggleFilterTypeButton().addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				if (filterPanel.isShowingAdvancedFilter())
@@ -85,7 +85,7 @@ public class FilteredDataPanel extends Composite {
 					switchToAdvancedFilter();
 			}
 		});
-		
+
 	}
 
 	protected void configureFilterPanel() {
@@ -97,7 +97,7 @@ public class FilteredDataPanel extends Composite {
 				runFilter();
 			}
 		};
-			
+
 		// when the filter button gets pressed, update the table
 		filterPanel.getFilterButton().addSelectionListener(selectionListener);
 		filterPanel.getAdvancedFilterText().addSelectionListener(selectionListener);
@@ -109,11 +109,11 @@ public class FilteredDataPanel extends Composite {
 	protected void updateFilterCombos() {
 		filterPanel.setFilterHints(getFilterHints());
 	}
-	
+
 	public FilterHints getFilterHints() {
 		return new FilterHints(table.getResultFileManager(), idlist);
 	}
-	
+
 	protected void runFilter() {
 		// run the filter on the unfiltered IDList, and set the result to the table
 		if (idlist != null) {
@@ -122,7 +122,7 @@ public class FilteredDataPanel extends Composite {
 			table.setIDList(filteredIDList);
 		}
 	}
-	
+
 	public Filter getFilterParams() {
 		String filterPattern;
 		if (filterPanel.isShowingAdvancedFilter())
@@ -131,7 +131,7 @@ public class FilteredDataPanel extends Composite {
 			filterPattern = assembleFilterPattern();
 		return new Filter(filterPattern);
 	}
-	
+
 	private String assembleFilterPattern() {
 		String runId = filterPanel.getRunNameCombo().getText();
 		String moduleName = filterPanel.getModuleNameCombo().getText();
@@ -141,7 +141,7 @@ public class FilteredDataPanel extends Composite {
 
 	public void setFilterParams(Filter filter) {
 		String filterPattern = filter.getFilterPattern();
-		
+
 		// an arbitrary pattern can only be shown in advanced view -- switch there
 		if (!filterPanel.isShowingAdvancedFilter())
 			filterPanel.showAdvancedFilter();
@@ -162,9 +162,9 @@ public class FilteredDataPanel extends Composite {
 				return;  // user cancelled
 		}
 
-		filterPanel.getRunNameCombo().setText(filterUtil.getField(Filter.FIELD_RUNNAME));
-		filterPanel.getModuleNameCombo().setText(filterUtil.getField(Filter.FIELD_MODULENAME));
-		filterPanel.getNameCombo().setText(filterUtil.getField(Filter.FIELD_DATANAME));
+		filterPanel.getRunNameCombo().setText(filterUtil.getField(FilterUtil.FIELD_RUNNAME));
+		filterPanel.getModuleNameCombo().setText(filterUtil.getField(FilterUtil.FIELD_MODULENAME));
+		filterPanel.getNameCombo().setText(filterUtil.getField(FilterUtil.FIELD_DATANAME));
 
 		filterPanel.showSimpleFilter();
 	}

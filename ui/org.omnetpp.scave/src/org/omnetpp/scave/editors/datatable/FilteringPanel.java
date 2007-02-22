@@ -16,8 +16,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.fieldassist.ContentAssistField;
-import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.FilterHints;
+import org.omnetpp.scave.model2.FilterUtil;
 
 /**
  * A composite with UI elements to filter a data table.
@@ -26,11 +26,11 @@ import org.omnetpp.scave.model2.FilterHints;
  * @author andras
  */
 public class FilteringPanel extends Composite {
-	
+
 	// Switch between "Simple" and "Advanced"
 	private Button toggleFilterTypeButton;
 	private boolean showingAdvancedFilter;
-	
+
 	// Edit field for the "Advanced" mode
 	private Composite advancedFilterPanel;
 	private Text advancedFilterText;
@@ -41,7 +41,7 @@ public class FilteringPanel extends Composite {
 	private CCombo runCombo;
 	private CCombo moduleCombo;
 	private CCombo dataCombo;
-	
+
 	// The "Go" button
 	private Button filterButton;
 
@@ -49,7 +49,7 @@ public class FilteringPanel extends Composite {
 		super(parent, style);
 		initialize();
 	}
-	
+
 	public Text getAdvancedFilterText() {
 		return advancedFilterText;
 	}
@@ -73,14 +73,14 @@ public class FilteringPanel extends Composite {
 	public Button getToggleFilterTypeButton() {
 		return toggleFilterTypeButton;
 	}
-	
+
 	public void setFilterHints(FilterHints hints) {
-		runCombo.setItems(hints.getHints(Filter.FIELD_RUNNAME));
-		moduleCombo.setItems(hints.getHints(Filter.FIELD_MODULENAME));
-		dataCombo.setItems(hints.getHints(Filter.FIELD_DATANAME));
+		runCombo.setItems(hints.getHints(FilterUtil.FIELD_RUNNAME));
+		moduleCombo.setItems(hints.getHints(FilterUtil.FIELD_MODULENAME));
+		dataCombo.setItems(hints.getHints(FilterUtil.FIELD_DATANAME));
 		proposalProvider.setFilterHints(hints);
 	}
-	
+
 	public void showSimpleFilter() {
 		setVisible(advancedFilterPanel, false);
 		setVisible(simpleFilterPanel, true);
@@ -103,17 +103,17 @@ public class FilteringPanel extends Composite {
 
 	private void initialize() {
 		GridLayout gridLayout;
-		
+
 		gridLayout = new GridLayout();
 		gridLayout.marginHeight = 0;
 		this.setLayout(gridLayout);
-		
+
 		Composite filterContainer = new Composite(this, SWT.NONE);
 		filterContainer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		gridLayout = new GridLayout(3, false);
 		gridLayout.marginHeight = 0;
 		filterContainer.setLayout(gridLayout);
-		
+
 		advancedFilterPanel = new Composite(filterContainer, SWT.NONE);
 		advancedFilterPanel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		advancedFilterPanel.setLayout(new GridLayout(2, false));
@@ -121,14 +121,14 @@ public class FilteringPanel extends Composite {
 		Label filterLabel = new Label(advancedFilterPanel, SWT.NONE);
 		filterLabel.setText("Filter:");
 		filterLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
-		
+
 		final IControlContentAdapter2 contentAdapter = new TextContentAdapter2();
 		proposalProvider = new FilterContentProposalProvider();
-		ContentAssistField advancedFilter = new ContentAssistField(advancedFilterPanel, SWT.SINGLE | SWT.BORDER, 
+		ContentAssistField advancedFilter = new ContentAssistField(advancedFilterPanel, SWT.SINGLE | SWT.BORDER,
 				new TextControlCreator(), contentAdapter, proposalProvider, null /*commandId*/, null/*auto-activation*/);
 		advancedFilter.getLayoutControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		ContentAssistCommandAdapter adapter = advancedFilter.getContentAssistCommandAdapter();
-		advancedFilterText = (Text)adapter.getControl(); 
+		advancedFilterText = (Text)adapter.getControl();
 		adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_IGNORE);
 		adapter.addContentProposalListener(new IContentProposalListener() {
 			public void proposalAccepted(IContentProposal proposal) {
@@ -143,17 +143,17 @@ public class FilteringPanel extends Composite {
 		runCombo = createComboWithLabel(simpleFilterPanel, "Run ID:");
 		moduleCombo = createComboWithLabel(simpleFilterPanel, "Module:");
 		dataCombo = createComboWithLabel(simpleFilterPanel, "Name:");
-		
+
 		filterButton = new Button(filterContainer, SWT.NONE);
 		filterButton.setText("Filter");
 		filterButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
-	
+
 		toggleFilterTypeButton = new Button(filterContainer, SWT.PUSH);
 		toggleFilterTypeButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 
-		showSimpleFilter();		
+		showSimpleFilter();
 	}
-	
+
 	private CCombo createComboWithLabel(Composite parent, String text) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new GridLayout(2, false));
