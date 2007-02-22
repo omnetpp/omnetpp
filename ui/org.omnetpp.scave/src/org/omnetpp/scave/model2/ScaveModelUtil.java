@@ -95,13 +95,13 @@ public class ScaveModelUtil {
 
 	public static Add createAdd(Filter filter) {
 		Add add = factory.createAdd();
-		add.setFilenamePattern(filter.getField(FilterHints.FIELD_FILENAME));
-		add.setRunNamePattern(filter.getField(FilterHints.FIELD_RUNNAME));
-		add.setExperimentNamePattern(filter.getField(FilterHints.FIELD_EXPERIMENT));
-		add.setMeasurementNamePattern(filter.getField(FilterHints.FIELD_MEASUREMENT));
-		add.setReplicationNamePattern(filter.getField(FilterHints.FIELD_REPLICATION));
-		add.setModuleNamePattern(filter.getField(FilterHints.FIELD_MODULENAME));
-		add.setNamePattern(filter.getField(FilterHints.FIELD_DATANAME));
+		add.setFilenamePattern(filter.getField(Filter.FIELD_FILENAME));
+		add.setRunNamePattern(filter.getField(Filter.FIELD_RUNNAME));
+		add.setExperimentNamePattern(filter.getField(Filter.FIELD_EXPERIMENT));
+		add.setMeasurementNamePattern(filter.getField(Filter.FIELD_MEASUREMENT));
+		add.setReplicationNamePattern(filter.getField(Filter.FIELD_REPLICATION));
+		add.setModuleNamePattern(filter.getField(Filter.FIELD_MODULENAME));
+		add.setNamePattern(filter.getField(Filter.FIELD_DATANAME));
 		return add;
 	}
 	
@@ -117,15 +117,15 @@ public class ScaveModelUtil {
 		ResultFile file = item.getFileRun().getFile();
 		Run run = item.getFileRun().getRun();
 		for (String field : runidFields) {
-			if (field == FilterHints.FIELD_FILENAME)
+			if (field == Filter.FIELD_FILENAME)
 				add.setFilenamePattern(file.getFilePath());
-			else if (field == FilterHints.FIELD_RUNNAME)
+			else if (field == Filter.FIELD_RUNNAME)
 				add.setRunNamePattern(run.getRunName());
-			else if (field == FilterHints.FIELD_EXPERIMENT)
+			else if (field == Filter.FIELD_EXPERIMENT)
 				add.setExperimentNamePattern(run.getAttribute(RunAttribute.EXPERIMENT));
-			else if (field == FilterHints.FIELD_MEASUREMENT)
+			else if (field == Filter.FIELD_MEASUREMENT)
 				add.setExperimentNamePattern(run.getAttribute(RunAttribute.MEASUREMENT));
-			else if (field == FilterHints.FIELD_REPLICATION)
+			else if (field == Filter.FIELD_REPLICATION)
 				add.setExperimentNamePattern(run.getAttribute(RunAttribute.REPLICATION));
 		}
 		add.setModuleNamePattern(item.getModuleName());
@@ -330,9 +330,27 @@ public class ScaveModelUtil {
 	}
 	
 	public static IDList filterIDList(IDList idlist, Filter params, ResultFileManager manager) {
-		Assert.isTrue(params.getFilterPattern() != null);
+		if (params.getFilterPattern() != null) {
 		// TODO: pattern may be malformed, catch exceptions and report error
 		return manager.filterIDList(idlist, params.getFilterPattern());
+	}
+		else {
+			String fileNamePattern = params.getField(Filter.FIELD_FILENAME);
+			ResultFileList fileList = fileNamePattern.length() > 0 ?
+					manager.filterFileList(manager.getFiles(), fileNamePattern) : null;
+			StringMap attrs = new StringMap();
+			addAttribute(attrs, EXPERIMENT, params.getField(Filter.FIELD_EXPERIMENT));
+			addAttribute(attrs, MEASUREMENT, params.getField(Filter.FIELD_MEASUREMENT));
+			addAttribute(attrs, REPLICATION, params.getField(Filter.FIELD_REPLICATION));
+			String runNamePattern = params.getField(Filter.FIELD_RUNNAME);
+			RunList runList = runNamePattern.length() > 0 || attrs.size() > 0 ?
+					manager.filterRunList(manager.getRuns(), (runNamePattern.length() > 0 ? runNamePattern : "*"), attrs) :
+					null;
+			FileRunList fileRunFilter = manager.getFileRuns(fileList, runList);
+			IDList filteredIDList = manager.filterIDList(idlist,
+					fileRunFilter, params.getField(Filter.FIELD_MODULENAME), params.getField(Filter.FIELD_DATANAME));
+			return filteredIDList;
+		}
 	}
 	
 	private static void addAttribute(StringMap attrs, String name, String value) {

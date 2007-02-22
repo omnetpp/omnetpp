@@ -3,6 +3,7 @@ package org.omnetpp.scave.model2;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.model.SetOperation;
 import org.omnetpp.scave.model2.FilterSyntax.INodeVisitor;
@@ -11,10 +12,9 @@ import org.omnetpp.scave.model2.FilterSyntax.Token;
 import org.omnetpp.scave.model2.FilterSyntax.TokenType;
 
 /**
- * Filter parameters for datasets.
+ * Parsing and assembling filter patterns.
  */
-//FIXME this class has to be stripped down to only contain the filter string, and eventually eliminated
-public class Filter {
+public class FilterUtil {
 
 	public static final String FIELD_FILENAME = "file";
 	public static final String FIELD_RUNNAME = "run";
@@ -39,15 +39,21 @@ public class Filter {
 	// separate fields connected with AND operator
 	private Map<String, String> fields = new HashMap<String, String>();
 
-	public Filter() {
+	public FilterUtil() {
 	}
 
-	public Filter(String filterText) {
+	public FilterUtil(String filterText) {
 		this.filterPattern = filterText;
 		parseFields(filterText);
 	}
 
-	public Filter(String fileName, String runName,
+	public FilterUtil(String runName, String moduleName, String dataName) {
+		setField(FIELD_RUNNAME, runName);
+		setField(FIELD_MODULENAME, moduleName);
+		setField(FIELD_DATANAME, dataName);
+	}
+
+	public FilterUtil(String fileName, String runName,
 			String experimentName, String measurementName, String replicationName,
 			String moduleName, String dataName) {
 		setField(FIELD_FILENAME, fileName);
@@ -59,7 +65,7 @@ public class Filter {
 		setField(FIELD_DATANAME, dataName);
 	}
 
-	public Filter(SetOperation op) {
+	public FilterUtil(SetOperation op) {
 		this(op.getFilenamePattern(),
 				op.getRunNamePattern(),
 				op.getExperimentNamePattern(),
@@ -158,7 +164,9 @@ public class Filter {
 
 		public boolean visit(Node node) {
 			switch (node.type) {
-			case Node.UNARY_OPERATOR_EXPR: simple = false; return false;
+			case Node.UNARY_OPERATOR_EXPR: 
+				simple = false; 
+				return false;
 			case Node.BINARY_OPERATOR_EXPR:
 				if (node.getOperator().getType() == TokenType.AND)
 					return true;
@@ -167,9 +175,9 @@ public class Filter {
 					return false;
 				}
 			case Node.PATTERN:
-				if (!fields.containsKey(Filter.getDefaultField())) {
+				if (!fields.containsKey(FilterUtil.getDefaultField())) {
 					if (!node.getPattern().isEmpty())
-						fields.put(Filter.getDefaultField(), node.getPatternString());
+						fields.put(FilterUtil.getDefaultField(), node.getPatternString());
 				}
 				else
 					simple = false;
@@ -184,7 +192,9 @@ public class Filter {
 				return false;
 			case Node.PARENTHESISED_EXPR:
 				return true;
-			default: /*TODO*/ return false;
+			case Node.ROOT:
+				return true;
+			default: Assert.isTrue(false); return false; 
 			}
 		}
 
@@ -203,5 +213,9 @@ public class Filter {
 		else
 			sb.append("<all>");
 		return sb.toString();
+	}
+
+	public boolean isSimple() {
+		return filterPattern!=null && !filterPattern.contains(" or ");  //FIXME dummy! implement: if only contains runId, module and name, with AND
 	}
 }

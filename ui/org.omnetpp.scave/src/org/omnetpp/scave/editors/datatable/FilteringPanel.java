@@ -5,14 +5,18 @@ import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalListener;
 import org.eclipse.jface.fieldassist.TextControlCreator;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.fieldassist.ContentAssistField;
+import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.FilterHints;
 
 /**
@@ -22,8 +26,23 @@ import org.omnetpp.scave.model2.FilterHints;
  * @author andras
  */
 public class FilteringPanel extends Composite {
+	
+	// Switch between "Simple" and "Advanced"
+	private Button toggleFilterTypeButton;
+	private boolean showingAdvancedFilter;
+	
+	// Edit field for the "Advanced" mode
+	private Composite advancedFilterPanel;
 	private Text advancedFilterText;
 	private FilterContentProposalProvider proposalProvider;
+
+	// Combo boxes for the "Simple" mode
+	private SashForm simpleFilterPanel;
+	private CCombo runCombo;
+	private CCombo moduleCombo;
+	private CCombo dataCombo;
+	
+	// The "Go" button
 	private Button filterButton;
 
 	public FilteringPanel(Composite parent, int style) {
@@ -31,25 +50,55 @@ public class FilteringPanel extends Composite {
 		initialize();
 	}
 	
-	public Text getFilterText() {
+	public Text getAdvancedFilterText() {
 		return advancedFilterText;
+	}
+
+	public CCombo getModuleNameCombo() {
+		return moduleCombo;
+	}
+
+	public CCombo getNameCombo() {
+		return dataCombo;
+	}
+
+	public CCombo getRunNameCombo() {
+		return runCombo;
 	}
 
 	public Button getFilterButton() {
 		return filterButton;
 	}
+
+	public Button getToggleFilterTypeButton() {
+		return toggleFilterTypeButton;
+	}
 	
 	public void setFilterHints(FilterHints hints) {
-		if (proposalProvider != null)
-			proposalProvider.setFilterHints(hints);
+		runCombo.setItems(hints.getHints(Filter.FIELD_RUNNAME));
+		moduleCombo.setItems(hints.getHints(Filter.FIELD_MODULENAME));
+		dataCombo.setItems(hints.getHints(Filter.FIELD_DATANAME));
+		proposalProvider.setFilterHints(hints);
 	}
 	
-	public String getFilterPattern() {
-		return advancedFilterText.getText();
+	public void showSimpleFilter() {
+		setVisible(advancedFilterPanel, false);
+		setVisible(simpleFilterPanel, true);
+		showingAdvancedFilter = false;
+		toggleFilterTypeButton.setText("Advanced");
+		getParent().layout(true, true);
 	}
-	
-	public void setFilterPattern(String filterText) {
-		advancedFilterText.setText(filterText);
+
+	public void showAdvancedFilter() {
+		setVisible(simpleFilterPanel, false);
+		setVisible(advancedFilterPanel, true);
+		showingAdvancedFilter = true;
+		toggleFilterTypeButton.setText("Basic");
+		getParent().layout(true, true);
+	}
+
+	public boolean isShowingAdvancedFilter() {
+		return showingAdvancedFilter;
 	}
 
 	private void initialize() {
@@ -65,7 +114,7 @@ public class FilteringPanel extends Composite {
 		gridLayout.marginHeight = 0;
 		filterContainer.setLayout(gridLayout);
 		
-		final Composite advancedFilterPanel = new Composite(filterContainer, SWT.NONE);
+		advancedFilterPanel = new Composite(filterContainer, SWT.NONE);
 		advancedFilterPanel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		advancedFilterPanel.setLayout(new GridLayout(2, false));
 
@@ -88,8 +137,40 @@ public class FilteringPanel extends Composite {
 			}
 		});
 
+		simpleFilterPanel = new SashForm(filterContainer, SWT.SMOOTH);
+		simpleFilterPanel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		setVisible(simpleFilterPanel, false);
+		runCombo = createComboWithLabel(simpleFilterPanel, "Run ID:");
+		moduleCombo = createComboWithLabel(simpleFilterPanel, "Module:");
+		dataCombo = createComboWithLabel(simpleFilterPanel, "Name:");
+		
 		filterButton = new Button(filterContainer, SWT.NONE);
 		filterButton.setText("Filter");
-		filterButton.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, false, false));
+		filterButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+	
+		toggleFilterTypeButton = new Button(filterContainer, SWT.PUSH);
+		toggleFilterTypeButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+
+		showSimpleFilter();		
+	}
+	
+	private CCombo createComboWithLabel(Composite parent, String text) {
+		Composite composite = new Composite(parent, SWT.NONE);
+		composite.setLayout(new GridLayout(2, false));
+
+		Label label = new Label(composite, SWT.NONE);
+		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+		label.setText(text);
+
+		CCombo combo = new CCombo(composite, SWT.BORDER);
+		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		combo.setVisibleItemCount(20);
+
+		return combo;
+	}
+
+	private static void setVisible(Control control, boolean visible) {
+		control.setVisible(visible);
+		((GridData)control.getLayoutData()).exclude = !visible;
 	}
 }

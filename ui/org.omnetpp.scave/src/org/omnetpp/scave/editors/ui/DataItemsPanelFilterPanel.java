@@ -6,19 +6,19 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.omnetpp.scave.model2.FilterHints;
 import org.omnetpp.scave.model2.Filter;
+import org.omnetpp.scave.model2.FilterHints;
 
 /**
  * A composite for displaying and editing the filter parameters.
  * It is a passive component, needs to be configured
  * to do anything useful.
  * 
- * It is used in the BrowseDataPage and in the CreateDatasetDialog.
+ * It is used in the CreateDatasetDialog (in DataItemsPanel).
  *
  * @author tomi
  */
-public class FilterParamsPanel extends Composite {
+public class DataItemsPanelFilterPanel extends Composite {
 	
 	public static final int
 		MODULE_NAME_ROW = 1,
@@ -51,11 +51,11 @@ public class FilterParamsPanel extends Composite {
 	private CCombo moduleCombo = null;
 	private CCombo dataCombo = null;
 	
-	public FilterParamsPanel(Composite parent, int style) {
+	public DataItemsPanelFilterPanel(Composite parent, int style) {
 		this(parent, style, ALL_ROWS);
 	}
 	
-	private FilterParamsPanel(Composite parent, int style, int rows) { // TODO
+	private DataItemsPanelFilterPanel(Composite parent, int style, int rows) { // TODO
 		super(parent, style);
 		this.rows = rows;
 		initialize();
@@ -101,23 +101,23 @@ public class FilterParamsPanel extends Composite {
 	}
 	
 	public void setFilterParams(Filter params) {
-		if (fileCombo != null) fileCombo.setText(params.getField(FilterHints.FIELD_FILENAME));
-		if (runCombo != null) runCombo.setText(params.getField(FilterHints.FIELD_RUNNAME));
-		if (experimentCombo != null) experimentCombo.setText(params.getField(FilterHints.FIELD_EXPERIMENT));
-		if (measurementCombo != null) measurementCombo.setText(params.getField(FilterHints.FIELD_MEASUREMENT));
-		if (replicationCombo != null) replicationCombo.setText(params.getField(FilterHints.FIELD_REPLICATION));
-		if (moduleCombo != null) moduleCombo.setText(params.getField(FilterHints.FIELD_MODULENAME));
-		if (dataCombo != null) dataCombo.setText(params.getField(FilterHints.FIELD_DATANAME));
+		if (fileCombo != null) fileCombo.setText(params.getField(Filter.FIELD_FILENAME));
+		if (runCombo != null) runCombo.setText(params.getField(Filter.FIELD_RUNNAME));
+		if (experimentCombo != null) experimentCombo.setText(params.getField(Filter.FIELD_EXPERIMENT));
+		if (measurementCombo != null) measurementCombo.setText(params.getField(Filter.FIELD_MEASUREMENT));
+		if (replicationCombo != null) replicationCombo.setText(params.getField(Filter.FIELD_REPLICATION));
+		if (moduleCombo != null) moduleCombo.setText(params.getField(Filter.FIELD_MODULENAME));
+		if (dataCombo != null) dataCombo.setText(params.getField(Filter.FIELD_DATANAME));
 	}
 	
 	public void setFilterHints(FilterHints hints) {
-		if (fileCombo != null) fileCombo.setItems(hints.getHints(FilterHints.FIELD_FILENAME));
-		if (runCombo != null) runCombo.setItems(hints.getHints(FilterHints.FIELD_RUNNAME));
-		if (experimentCombo != null) experimentCombo.setItems(hints.getHints(FilterHints.FIELD_EXPERIMENT));
-		if (measurementCombo != null) measurementCombo.setItems(hints.getHints(FilterHints.FIELD_MEASUREMENT));
-		if (replicationCombo != null) replicationCombo.setItems(hints.getHints(FilterHints.FIELD_REPLICATION));
-		if (moduleCombo != null) moduleCombo.setItems(hints.getHints(FilterHints.FIELD_MODULENAME));
-		if (dataCombo != null) dataCombo.setItems(hints.getHints(FilterHints.FIELD_DATANAME));
+		if (fileCombo != null) fileCombo.setItems(hints.getHints(Filter.FIELD_FILENAME));
+		if (runCombo != null) runCombo.setItems(hints.getHints(Filter.FIELD_RUNNAME));
+		if (experimentCombo != null) experimentCombo.setItems(hints.getHints(Filter.FIELD_EXPERIMENT));
+		if (measurementCombo != null) measurementCombo.setItems(hints.getHints(Filter.FIELD_MEASUREMENT));
+		if (replicationCombo != null) replicationCombo.setItems(hints.getHints(Filter.FIELD_REPLICATION));
+		if (moduleCombo != null) moduleCombo.setItems(hints.getHints(Filter.FIELD_MODULENAME));
+		if (dataCombo != null) dataCombo.setItems(hints.getHints(Filter.FIELD_DATANAME));
 	}
 
 	private void initialize() {

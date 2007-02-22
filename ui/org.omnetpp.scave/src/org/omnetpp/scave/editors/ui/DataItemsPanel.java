@@ -24,7 +24,7 @@ public class DataItemsPanel extends Composite {
 	private Group group = null;
 	private Button useSelectionRadio = null;
 	private Button useFilterRadio = null;
-	private FilterParamsPanel filterParamsPanel = null;
+	private DataItemsPanelFilterPanel filterParamsPanel = null;
 	private RunSelectionPanel selectIdentifierPanel = null;
 	
 	public DataItemsPanel(Composite parent, int style) {
@@ -115,7 +115,7 @@ public class DataItemsPanel extends Composite {
 	}
 	
 	private void createFilterPanel() {
-		filterParamsPanel = new FilterParamsPanel(group, SWT.NONE);
+		filterParamsPanel = new DataItemsPanelFilterPanel(group, SWT.NONE);
 		GridData gridData = new GridData();
 		gridData.grabExcessHorizontalSpace = true;
 		gridData.horizontalIndent = 10;

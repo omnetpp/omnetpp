@@ -1,5 +1,6 @@
 package org.omnetpp.scave.editors.datatable;
 
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -7,10 +8,12 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.MessageBox;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.FilterHints;
+import org.omnetpp.scave.model2.FilterUtil;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -28,8 +31,6 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  *  
  * @author andras
  */
-//XXX filter should include expressions ("where load>10")
-//XXX make filter panel foldable?
 public class FilteredDataPanel extends Composite {
 	private FilteringPanel filterPanel;
 	private DataTable table;
@@ -75,6 +76,16 @@ public class FilteredDataPanel extends Composite {
 		filterPanel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		table = new DataTable(this, SWT.MULTI, type);
 		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		
+		filterPanel.getToggleFilterTypeButton().addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				if (filterPanel.isShowingAdvancedFilter())
+					switchToSimpleFilter();
+				else
+					switchToAdvancedFilter();
+			}
+		});
+		
 	}
 
 	protected void configureFilterPanel() {
@@ -89,7 +100,10 @@ public class FilteredDataPanel extends Composite {
 			
 		// when the filter button gets pressed, update the table
 		filterPanel.getFilterButton().addSelectionListener(selectionListener);
-		filterPanel.getFilterText().addSelectionListener(selectionListener);
+		filterPanel.getAdvancedFilterText().addSelectionListener(selectionListener);
+		filterPanel.getRunNameCombo().addSelectionListener(selectionListener);
+		filterPanel.getModuleNameCombo().addSelectionListener(selectionListener);
+		filterPanel.getNameCombo().addSelectionListener(selectionListener);
 	}
 
 	protected void updateFilterCombos() {
@@ -110,13 +124,53 @@ public class FilteredDataPanel extends Composite {
 	}
 	
 	public Filter getFilterParams() {
-		Filter filter = new Filter();
-		filter.setFilterPattern(filterPanel.getFilterPattern());
-		return filter;
+		String filterPattern;
+		if (filterPanel.isShowingAdvancedFilter())
+			filterPattern = filterPanel.getAdvancedFilterText().getText();
+		else
+			filterPattern = assembleFilterPattern();
+		return new Filter(filterPattern);
 	}
 	
-	public void setFilterParams(Filter params) {
-		filterPanel.setFilterPattern(params.getFilterPattern());
+	private String assembleFilterPattern() {
+		String runId = filterPanel.getRunNameCombo().getText();
+		String moduleName = filterPanel.getModuleNameCombo().getText();
+		String name = filterPanel.getNameCombo().getText();
+		return new FilterUtil(runId, moduleName, name).getFilterPattern();
+	}
+
+	public void setFilterParams(Filter filter) {
+		String filterPattern = filter.getFilterPattern();
+		
+		// an arbitrary pattern can only be shown in advanced view -- switch there
+		if (!filterPanel.isShowingAdvancedFilter())
+			filterPanel.showAdvancedFilter();
+		filterPanel.getAdvancedFilterText().setText(filterPattern);
 		runFilter();
+	}
+
+	public void switchToSimpleFilter() {
+		String filterPattern = filterPanel.getAdvancedFilterText().getText();
+		FilterUtil filterUtil = new FilterUtil(filterPattern);
+
+		if (!filterUtil.isSimple()) {
+			MessageBox messageBox = new MessageBox(getShell(), SWT.ICON_WARNING | SWT.OK | SWT.CANCEL);
+			messageBox.setText("Warning");
+			messageBox.setMessage("The current filter can only be represented in Basic view after "+
+								  "losing some of its details.");
+			if (messageBox.open() != SWT.OK)
+				return;  // user cancelled
+		}
+
+		filterPanel.getRunNameCombo().setText(filterUtil.getField(Filter.FIELD_RUNNAME));
+		filterPanel.getModuleNameCombo().setText(filterUtil.getField(Filter.FIELD_MODULENAME));
+		filterPanel.getNameCombo().setText(filterUtil.getField(Filter.FIELD_DATANAME));
+
+		filterPanel.showSimpleFilter();
+	}
+
+	public void switchToAdvancedFilter() {
+		filterPanel.getAdvancedFilterText().setText(assembleFilterPattern());
+		filterPanel.showAdvancedFilter();
 	}
 }

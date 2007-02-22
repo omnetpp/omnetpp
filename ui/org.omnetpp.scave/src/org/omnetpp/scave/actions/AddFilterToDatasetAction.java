@@ -79,7 +79,7 @@ public class AddFilterToDatasetAction extends AbstractScaveAction {
 						break;
 				}
 
-				String filterString = editor.getBrowseDataPage().getActivePanel().getFilterPanel().getFilterPattern();
+				String filterString = editor.getBrowseDataPage().getActivePanel().getFilterParams().getFilterPattern();
 
 				Command command = AddCommand.create(
 							editor.getEditingDomain(),
@@ -95,7 +95,7 @@ public class AddFilterToDatasetAction extends AbstractScaveAction {
 	@Override
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
 		System.out.println("begin isApplicable");
-		String filterString = editor.getBrowseDataPage().getActivePanel().getFilterPanel().getFilterPattern();
+		String filterString = editor.getBrowseDataPage().getActivePanel().getFilterParams().getFilterPattern();
 		System.out.println("FilterString: >>>>"+filterString+"<<<<");
 		return !filterString.equals("");
 	}
