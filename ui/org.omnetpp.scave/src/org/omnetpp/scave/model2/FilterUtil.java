@@ -152,7 +152,7 @@ public class FilterUtil {
 			if (fields.containsKey(name))
 				addField(sb, name, getField(name));
 		}
-		if (sb.length() == 0) sb.append("**");
+		if (sb.length() == 0) sb.append("*");
 		return sb.toString();
 	}
 

@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.edit.command.AddCommand;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.widgets.MessageBox;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.editors.ui.DatasetSelectionDialog;
@@ -27,8 +29,8 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 public class AddFilterToDatasetAction extends AbstractScaveAction {
 
 	public AddFilterToDatasetAction() {
-		setText("Add filtered data to dataset...");
-		setToolTipText("Add filtered data to dataset");
+		setText("Add filter expression to dataset...");
+		setToolTipText("Add filter expression to dataset");
 	}
 
 	@Override
@@ -37,7 +39,23 @@ public class AddFilterToDatasetAction extends AbstractScaveAction {
 		if (activePanel == null)
 			return;
 
-		DatasetSelectionDialog dlg = new DatasetSelectionDialog(editor, DatasetType.VECTOR_LITERAL); //XXX 
+		String filterPattern = editor.getBrowseDataPage().getActivePanel().getFilterParams().getFilterPattern();
+		if (filterPattern.length()==0 || filterPattern.equals("*")) {
+			MessageDialog.openInformation(
+					editor.getSite().getShell(), 
+					"Filter is Empty", 
+					"The filter expression is currently empty (matches everything), which means the resulting dataset "+
+					"would include all data from all input files. This is probably not what you intended. "+
+					"Please set some filter condition first.");
+			return;
+		}
+		
+		DatasetSelectionDialog dlg = new DatasetSelectionDialog(editor, DatasetType.VECTOR_LITERAL); //XXX
+		dlg.setMessage( //XXX todo
+				"Please select the target dataset below, or create new one.\n"+
+				"This dataset will be modified to include all data from Inputs\n"+
+				"that match the following filter:\n"+
+				filterPattern);
 		if (dlg.open() == Window.OK) {
 			Dataset dataset = (Dataset) dlg.getFirstResult();
 			if (dataset != null) {
@@ -51,13 +69,11 @@ public class AddFilterToDatasetAction extends AbstractScaveAction {
 						break;
 				}
 
-				String filterString = editor.getBrowseDataPage().getActivePanel().getFilterParams().getFilterPattern();
-
 				Command command = AddCommand.create(
 							editor.getEditingDomain(),
 							dataset,
 							ScaveModelPackage.eINSTANCE.getDataset_Items(),
-							ScaveModelUtil.createAdd(filterString),
+							ScaveModelUtil.createAdd(filterPattern),
 							index);
 				editor.executeCommand(command);
 			}
