@@ -114,6 +114,7 @@ public class FilteringPanel extends Composite {
 		gridLayout.marginHeight = 0;
 		filterContainer.setLayout(gridLayout);
 
+		// the "Advanced" view with the content-assisted input field
 		advancedFilterPanel = new Composite(filterContainer, SWT.NONE);
 		advancedFilterPanel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		advancedFilterPanel.setLayout(new GridLayout(2, false));
@@ -124,8 +125,14 @@ public class FilteringPanel extends Composite {
 
 		final IControlContentAdapter2 contentAdapter = new TextContentAdapter2();
 		proposalProvider = new FilterContentProposalProvider();
-		ContentAssistField advancedFilter = new ContentAssistField(advancedFilterPanel, SWT.SINGLE | SWT.BORDER,
-				new TextControlCreator(), contentAdapter, proposalProvider, null /*commandId*/, null/*auto-activation*/);
+		ContentAssistField advancedFilter = new ContentAssistField(
+				advancedFilterPanel, 
+				SWT.SINGLE | SWT.BORDER,
+				new TextControlCreator(), 
+				contentAdapter, 
+				proposalProvider, 
+				null, /*commandId. XXX no binding is found for the default command "org.eclipse.ui.edit.text.contentAssist.proposals", that's why it says "null" in the bubble. how to fix it? */ 
+				"( ".toCharArray() /*auto-activation*/);
 		advancedFilter.getLayoutControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		ContentAssistCommandAdapter adapter = advancedFilter.getContentAssistCommandAdapter();
 		advancedFilterText = (Text)adapter.getControl();
@@ -137,17 +144,19 @@ public class FilteringPanel extends Composite {
 			}
 		});
 
+		// the "Basic" view with a series of combo boxes
 		simpleFilterPanel = new SashForm(filterContainer, SWT.SMOOTH);
 		simpleFilterPanel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		setVisible(simpleFilterPanel, false);
 		runCombo = createComboWithLabel(simpleFilterPanel, "Run ID:");
 		moduleCombo = createComboWithLabel(simpleFilterPanel, "Module:");
 		dataCombo = createComboWithLabel(simpleFilterPanel, "Name:");
 
+		// Filter button
 		filterButton = new Button(filterContainer, SWT.NONE);
 		filterButton.setText("Filter");
 		filterButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 
+		// Toggle button
 		toggleFilterTypeButton = new Button(filterContainer, SWT.PUSH);
 		toggleFilterTypeButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 

@@ -1,5 +1,6 @@
 package org.omnetpp.scave.editors.datatable;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -8,6 +9,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
@@ -115,15 +117,31 @@ public class FilteredDataPanel extends Composite {
 	}
 
 	protected void runFilter() {
+		// check the filter string
+		if (!isFilterPatternValid()) {
+			MessageDialog.openWarning(getShell(), "Error in Filter Expression", "Filter expression is invalid, please fix it. Table contents not changed.");
+			return;
+		}
+
 		// run the filter on the unfiltered IDList, and set the result to the table
 		if (idlist != null) {
-			Filter params = getFilterParams();
-			IDList filteredIDList = ScaveModelUtil.filterIDList(idlist, params, table.getResultFileManager());
+			Filter filter = getFilter();
+			IDList filteredIDList = ScaveModelUtil.filterIDList(idlist, filter, table.getResultFileManager());
 			table.setIDList(filteredIDList);
 		}
 	}
 
-	public Filter getFilterParams() {
+	public boolean isFilterPatternValid() {
+		try {
+			Filter filter = getFilter();
+			table.getResultFileManager().checkPattern(filter.getFilterPattern());
+		} catch (Exception e) {
+			return false; // apparently not valid
+		}
+		return true;
+	}
+
+	public Filter getFilter() {
 		String filterPattern;
 		if (filterPanel.isShowingAdvancedFilter())
 			filterPattern = filterPanel.getAdvancedFilterText().getText();

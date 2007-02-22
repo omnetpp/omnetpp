@@ -39,7 +39,13 @@ public class AddFilterToDatasetAction extends AbstractScaveAction {
 		if (activePanel == null)
 			return;
 
-		String filterPattern = editor.getBrowseDataPage().getActivePanel().getFilterParams().getFilterPattern();
+		if (!activePanel.isFilterPatternValid()) {
+			MessageDialog.openWarning(editor.getSite().getShell(), "Error in Filter Expression", "Current filter expression is invalid, please fix that first.");
+			return;
+		}
+		
+		String filterPattern = activePanel.getFilter().getFilterPattern();
+		
 		if (filterPattern.length()==0 || filterPattern.equals("*")) {
 			MessageDialog.openInformation(
 					editor.getSite().getShell(), 
@@ -83,7 +89,7 @@ public class AddFilterToDatasetAction extends AbstractScaveAction {
 	@Override
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
 		System.out.println("isApplicable called!");  //XXX
-		String filterString = editor.getBrowseDataPage().getActivePanel().getFilterParams().getFilterPattern();
+		String filterString = editor.getBrowseDataPage().getActivePanel().getFilter().getFilterPattern();
 		return !filterString.equals("");
 	}
 }
