@@ -21,6 +21,8 @@ public class DatasetSelectionDialog extends ElementListSelectOrCreateDialog {
 
 	public DatasetSelectionDialog(final ScaveEditor editor, final DatasetType type) {
 		super(editor.getSite().getShell(), new AdapterFactoryLabelProvider(editor.getAdapterFactory()));
+		//XXX problem with this label provider: string begins with "dataset" (kills filter-by-typing)
+		//XXX make own labelprovider, but it should provide images too
 
 		// setup dialog defaults
 		setTitle("Select Target Dataset");
@@ -40,7 +42,6 @@ public class DatasetSelectionDialog extends ElementListSelectOrCreateDialog {
 		// configure the "New" button to prompt for new dataset name
 		setCallback(new ElementListSelectOrCreateDialog.ICallback() {
 			public Object createNewObject() {
-				//XXX use DatasetEditForm
 				InputDialog dlg = new InputDialog(editor.getSite().getShell(), "New Dataset", "Enter name for new Dataset:", "", null);
 				if (dlg.open()== Window.OK) {
 					String datasetName = dlg.getValue();
@@ -55,5 +56,9 @@ public class DatasetSelectionDialog extends ElementListSelectOrCreateDialog {
 				return null;
 			} 
 		});
+	}
+
+	protected static String fallback(String string, String defaultString) {
+		return (string!=null && !string.equals("")) ? string : defaultString; 
 	}
 }
