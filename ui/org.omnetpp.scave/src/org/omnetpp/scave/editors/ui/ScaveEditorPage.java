@@ -204,6 +204,10 @@ public class ScaveEditorPage extends ScrolledForm {
 	 */
 	public static void configureGlobalButton(IWorkbenchWindow workbenchWindow, final Button button, final IScaveAction action) {
 		doConfigureButton(button, action);
+		hookActionOnSelectionChange(workbenchWindow, action);
+	}
+
+	public static void hookActionOnSelectionChange(IWorkbenchWindow workbenchWindow, final IScaveAction action) {
 		workbenchWindow.getSelectionService().addSelectionListener(new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 				action.selectionChanged(selection);

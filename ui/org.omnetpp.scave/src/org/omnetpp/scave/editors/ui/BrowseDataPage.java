@@ -21,10 +21,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.omnetpp.scave.actions.AddFilterToDatasetAction;
 import org.omnetpp.scave.actions.AddSelectedToDatasetAction;
-import org.omnetpp.scave.actions.AddToDatasetAction;
 import org.omnetpp.scave.actions.CopyToClipboardAction;
-import org.omnetpp.scave.actions.CreateChartAction;
-import org.omnetpp.scave.actions.CreateDatasetAction;
 import org.omnetpp.scave.actions.CreateTempChartAction;
 import org.omnetpp.scave.actions.IScaveAction;
 import org.omnetpp.scave.actions.ShowVectorBrowserViewAction;
@@ -46,11 +43,6 @@ public class BrowseDataPage extends ScaveEditorPage {
 	// UI elements
 	private Label label;
 	private TabFolder tabfolder;
-	private Composite buttonPanel;
-	private Button createDatasetButton;
-	private Button addToDatasetButton;
-	private Button createChartButton;
-	private Button copyToClipboardButton;
 	
 	private TabItem vectorsTab;
 	private TabItem scalarsTab;
@@ -63,14 +55,11 @@ public class BrowseDataPage extends ScaveEditorPage {
 	private SelectionListener selectionChangeListener;
 	
 	// actions
-	private IScaveAction createDatasetAction = new CreateDatasetAction();
-	private IScaveAction addToDatasetAction = new AddToDatasetAction();
-	private IScaveAction createChartAction = new CreateChartAction();
+	private IScaveAction addFilterToDatasetAction = new AddFilterToDatasetAction();
+	private IScaveAction addSelectedToDatasetAction = new AddSelectedToDatasetAction();
 	private IScaveAction copyToClipboardAction = new CopyToClipboardAction();
 	private IScaveAction createTempChartAction = new CreateTempChartAction();
     private IAction showVectorBrowserViewAction = new ShowVectorBrowserViewAction();
-	private IScaveAction addFilterToDatasetAction = new AddFilterToDatasetAction();
-	private IScaveAction addSelectedToDatasetAction = new AddSelectedToDatasetAction();
 	
 	
 	public BrowseDataPage(Composite parent, ScaveEditor editor) {
@@ -126,14 +115,12 @@ public class BrowseDataPage extends ScaveEditorPage {
 		label.setText("Here you can see all data that come from the files specified in the Inputs page.");
 		label.setBackground(this.getBackground());
 		createTabFolder();
-		createButtonsPanel();
 		
 		// assign actions to the buttons
 		IWorkbenchWindow workbenchWindow = scaveEditor.getSite().getWorkbenchWindow();
-		configureGlobalButton(workbenchWindow, createDatasetButton, createDatasetAction);
-		configureGlobalButton(workbenchWindow, addToDatasetButton, addToDatasetAction);
-		configureGlobalButton(workbenchWindow, createChartButton, createChartAction);
-		configureGlobalButton(workbenchWindow, copyToClipboardButton, copyToClipboardAction);
+		hookActionOnSelectionChange(workbenchWindow, copyToClipboardAction);
+		hookActionOnSelectionChange(workbenchWindow, addSelectedToDatasetAction);
+		hookActionOnSelectionChange(workbenchWindow, createTempChartAction);
 		
 		configurePanel(scalarsPanel);
 		configurePanel(vectorsPanel);
@@ -178,37 +165,12 @@ public class BrowseDataPage extends ScaveEditorPage {
 		return item;
 	}
 	
-	private void createButtonsPanel() {
-		buttonPanel = new Composite(getBody(), SWT.NONE);
-		buttonPanel.setBackground(this.getBackground());
-		FillLayout layout = new FillLayout();
-		layout.type = SWT.HORIZONTAL;
-		layout.spacing = 5;
-		buttonPanel.setLayout(layout);
-		createButtons();
-	}
-	
-	private void createButtons() {
-		createDatasetButton = new Button(buttonPanel, SWT.NONE);
-		createDatasetButton.setText("Create dataset...");
-		addToDatasetButton = new Button(buttonPanel, SWT.NONE);
-		addToDatasetButton.setText("Add to dataset...");
-		createChartButton = new Button(buttonPanel, SWT.NONE);
-		createChartButton.setText("Create chart...");
-		copyToClipboardButton = new Button(buttonPanel, SWT.NONE);
-		copyToClipboardButton.setText("Copy...");
-	}
-	
 	private void configurePanel(FilteredDataPanel panel) {
 		IMenuManager contextMenuManager = panel.getTable().getMenuManager();
 		contextMenuManager.add(createTempChartAction);
 		contextMenuManager.add(new Separator());
 		contextMenuManager.add(addFilterToDatasetAction);
 		contextMenuManager.add(addSelectedToDatasetAction);
-		contextMenuManager.add(new Separator());
-		contextMenuManager.add(createDatasetAction); //XXX out!
-		contextMenuManager.add(addToDatasetAction); //XXX out!
-		contextMenuManager.add(createChartAction); //XXX out!
 		contextMenuManager.add(new Separator());
 		contextMenuManager.add(copyToClipboardAction);
 		contextMenuManager.add(new Separator());

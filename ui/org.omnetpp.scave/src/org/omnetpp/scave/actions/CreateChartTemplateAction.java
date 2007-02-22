@@ -1,35 +1,20 @@
 package org.omnetpp.scave.actions;
 
+import static org.omnetpp.common.image.ImageFactory.TOOLBAR_IMAGE_TEMPLATE;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.eclipse.emf.common.command.CompoundCommand;
-import org.eclipse.emf.edit.command.AddCommand;
-import org.eclipse.emf.edit.command.RemoveCommand;
-import org.eclipse.emf.edit.command.ReplaceCommand;
-import org.eclipse.emf.edit.command.SetCommand;
-import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.window.Window;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.ChartPage2;
-import org.omnetpp.scave.editors.ui.CreateDatasetDialog;
-import org.omnetpp.scave.editors.ui.DatasetDialog;
 import org.omnetpp.scave.editors.ui.ScaveEditorPage;
-import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
-import org.omnetpp.scave.model.ScaveModelPackage;
-import org.omnetpp.scave.model2.DatasetManager;
-import org.omnetpp.scave.model2.FilterHints;
 import org.omnetpp.scave.model2.ScaveModelUtil;
-
-import static org.omnetpp.common.image.ImageFactory.*;
 
 /**
  * Creates a chart template from a temporary chart.
@@ -51,43 +36,45 @@ public class CreateChartTemplateAction extends AbstractScaveAction {
 			Chart chart = ((ChartPage2)page).getChart();
 			if (isTemporaryChart(chart, scaveEditor)) {
 				Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
-				CreateDatasetDialog dialog = new CreateDatasetDialog(scaveEditor.getSite().getShell(), DatasetDialog.SHOW_SELECTION, "Create chart template");
+				System.out.println("TODO implement"); //FIXME TODO implement
 				
-				if (dialog.open() == Window.OK) {
-					EditingDomain domain = scaveEditor.getEditingDomain();
-					ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
-					ResultFileManager manager = scaveEditor.getResultFileManager();
-					IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, null);
-					ResultItem[] items = ScaveModelUtil.getResultItems(idlist, manager);
-					Collection<Add> origAdds = getOriginalAdds(dataset);
-					Collection<Add> adds = ScaveModelUtil.createAdds(items, dialog.getRunIdFields());
-					
-					CompoundCommand command = new CompoundCommand();
-					command.append(SetCommand.create( // set dataset name
-										domain,
-										dataset,
-										pkg.getDataset_Name(),
-										dialog.getDatasetName()));
-					command.append(SetCommand.create( // set chart name
-										domain,
-										chart,
-										pkg.getChart_Name(),
-										dialog.getDatasetName()));
-					command.append(RemoveCommand.create(domain, origAdds)); // change Add items
-					command.append(AddCommand.create(
-										domain,
-										dataset,
-										pkg.getDataset_Items(),
-										adds,
-										0));
-					command.append(RemoveCommand.create(domain, dataset));
-					command.append(AddCommand.create(
-										domain,
-										scaveEditor.getAnalysis().getDatasets(),
-										ScaveModelPackage.eINSTANCE.getDatasets_Datasets(),
-										dataset));
-					scaveEditor.executeCommand(command);
-				}
+//				CreateDatasetDialog dialog = new CreateDatasetDialog(scaveEditor.getSite().getShell(), DatasetDialog.SHOW_SELECTION, "Create chart template");
+//				
+//				if (dialog.open() == Window.OK) {
+//					EditingDomain domain = scaveEditor.getEditingDomain();
+//					ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
+//					ResultFileManager manager = scaveEditor.getResultFileManager();
+//					IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, null);
+//					ResultItem[] items = ScaveModelUtil.getResultItems(idlist, manager);
+//					Collection<Add> origAdds = getOriginalAdds(dataset);
+//					Collection<Add> adds = ScaveModelUtil.createAdds(items, dialog.getRunIdFields());
+//					
+//					CompoundCommand command = new CompoundCommand();
+//					command.append(SetCommand.create( // set dataset name
+//										domain,
+//										dataset,
+//										pkg.getDataset_Name(),
+//										dialog.getDatasetName()));
+//					command.append(SetCommand.create( // set chart name
+//										domain,
+//										chart,
+//										pkg.getChart_Name(),
+//										dialog.getDatasetName()));
+//					command.append(RemoveCommand.create(domain, origAdds)); // change Add items
+//					command.append(AddCommand.create(
+//										domain,
+//										dataset,
+//										pkg.getDataset_Items(),
+//										adds,
+//										0));
+//					command.append(RemoveCommand.create(domain, dataset));
+//					command.append(AddCommand.create(
+//										domain,
+//										scaveEditor.getAnalysis().getDatasets(),
+//										ScaveModelPackage.eINSTANCE.getDatasets_Datasets(),
+//										dataset));
+//					scaveEditor.executeCommand(command);
+//				}
 			}
 		}
 	}

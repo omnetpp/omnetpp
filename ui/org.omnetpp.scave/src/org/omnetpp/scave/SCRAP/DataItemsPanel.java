@@ -1,4 +1,4 @@
-package org.omnetpp.scave.editors.ui;
+package org.omnetpp.scave.SCRAP;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;

@@ -1,4 +1,4 @@
-package org.omnetpp.scave.editors.ui;
+package org.omnetpp.scave.SCRAP;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;

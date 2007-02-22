@@ -1,4 +1,4 @@
-package org.omnetpp.scave.actions;
+package org.omnetpp.scave.SCRAP;
 
 import java.util.List;
 
@@ -6,9 +6,9 @@ import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
+import org.omnetpp.scave.actions.AbstractScaveAction;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
-import org.omnetpp.scave.editors.ui.AddToDatasetDialog;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
