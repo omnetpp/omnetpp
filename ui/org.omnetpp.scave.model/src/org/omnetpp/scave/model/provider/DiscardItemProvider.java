@@ -97,7 +97,7 @@ public class DiscardItemProvider
 	 * @generated
 	 */
 	public String getText(Object object) {
-		String label = ((Discard)object).getFilenamePattern();
+		String label = ((Discard)object).getFilterPattern();
 		return label == null || label.length() == 0 ?
 			getString("_UI_Discard_type") :
 			getString("_UI_Discard_type") + " " + label;

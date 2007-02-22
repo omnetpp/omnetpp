@@ -108,12 +108,9 @@ public class CreateChartTemplateAction extends AbstractScaveAction {
 		for (Object obj : dataset.getItems()) {
 			if (obj instanceof Add) {
 				Add add = (Add)obj;
-				if (add.getFilenamePattern() != null && add.getRunNamePattern() != null &&
-					add.getModuleNamePattern() != null && add.getNamePattern() != null &&
-					add.getExperimentNamePattern() == null && add.getMeasurementNamePattern() == null &&
-					add.getReplicationNamePattern() == null) {
-						adds.add(add);
-						continue;
+				if (add.getFilterPattern() != null) {
+					adds.add(add); //XXX revise
+					continue;
 				}
 			}
 			break;

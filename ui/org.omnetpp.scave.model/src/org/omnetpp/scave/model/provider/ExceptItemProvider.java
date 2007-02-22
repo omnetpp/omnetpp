@@ -78,7 +78,7 @@ public class ExceptItemProvider
 	 * @generated
 	 */
 	public String getText(Object object) {
-		String label = ((Except)object).getFilenamePattern();
+		String label = ((Except)object).getFilterPattern();
 		return label == null || label.length() == 0 ?
 			getString("_UI_Except_type") :
 			getString("_UI_Except_type") + " " + label;

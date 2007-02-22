@@ -68,7 +68,7 @@ public class SelectDeselectOpItemProvider
 	 * @generated
 	 */
 	public String getText(Object object) {
-		String label = ((SelectDeselectOp)object).getFilenamePattern();
+		String label = ((SelectDeselectOp)object).getFilterPattern();
 		return label == null || label.length() == 0 ?
 			getString("_UI_SelectDeselectOp_type") :
 			getString("_UI_SelectDeselectOp_type") + " " + label;

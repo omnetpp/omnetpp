@@ -97,7 +97,7 @@ public class SelectItemProvider
 	 * @generated
 	 */
 	public String getText(Object object) {
-		String label = ((Select)object).getFilenamePattern();
+		String label = ((Select)object).getFilterPattern();
 		return label == null || label.length() == 0 ?
 			getString("_UI_Select_type") :
 			getString("_UI_Select_type") + " " + label;

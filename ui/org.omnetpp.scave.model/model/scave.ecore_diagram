@@ -169,37 +169,9 @@
   <children xmi:type="notation:Node" xmi:id="_OM2SouBGEdqGIqWRmKIpGw" type="1001">
     <children xmi:type="notation:Node" xmi:id="_OM2SpeBGEdqGIqWRmKIpGw" type="4004"/>
     <children xmi:type="notation:Node" xmi:id="_OM2SpuBGEdqGIqWRmKIpGw" type="5001">
-      <children xmi:type="notation:Node" xmi:id="_r56O0OD-EdqDCuPsfR1pRA" type="2001">
-        <element xmi:type="ecore:EAttribute" href="scave.ecore#//SetOperation/filenamePattern"/>
-        <layoutConstraint xmi:type="notation:Location" xmi:id="_r56O0eD-EdqDCuPsfR1pRA"/>
-      </children>
-      <children xmi:type="notation:Node" xmi:id="_r56O0uD-EdqDCuPsfR1pRA" type="2001">
-        <element xmi:type="ecore:EAttribute" href="scave.ecore#//SetOperation/runNamePattern"/>
-        <layoutConstraint xmi:type="notation:Location" xmi:id="_r56O0-D-EdqDCuPsfR1pRA"/>
-      </children>
-      <children xmi:type="notation:Node" xmi:id="_r56O1OD-EdqDCuPsfR1pRA" type="2001">
-        <element xmi:type="ecore:EAttribute" href="scave.ecore#//SetOperation/experimentNamePattern"/>
-        <layoutConstraint xmi:type="notation:Location" xmi:id="_r56O1eD-EdqDCuPsfR1pRA"/>
-      </children>
-      <children xmi:type="notation:Node" xmi:id="_r56O1uD-EdqDCuPsfR1pRA" type="2001">
-        <element xmi:type="ecore:EAttribute" href="scave.ecore#//SetOperation/measurementNamePattern"/>
-        <layoutConstraint xmi:type="notation:Location" xmi:id="_r56O1-D-EdqDCuPsfR1pRA"/>
-      </children>
-      <children xmi:type="notation:Node" xmi:id="_r56O2OD-EdqDCuPsfR1pRA" type="2001">
-        <element xmi:type="ecore:EAttribute" href="scave.ecore#//SetOperation/replicationNamePattern"/>
-        <layoutConstraint xmi:type="notation:Location" xmi:id="_r56O2eD-EdqDCuPsfR1pRA"/>
-      </children>
-      <children xmi:type="notation:Node" xmi:id="_r56O2uD-EdqDCuPsfR1pRA" type="2001">
-        <element xmi:type="ecore:EAttribute" href="scave.ecore#//SetOperation/moduleNamePattern"/>
-        <layoutConstraint xmi:type="notation:Location" xmi:id="_r56O2-D-EdqDCuPsfR1pRA"/>
-      </children>
-      <children xmi:type="notation:Node" xmi:id="_r6AVcOD-EdqDCuPsfR1pRA" type="2001">
-        <element xmi:type="ecore:EAttribute" href="scave.ecore#//SetOperation/namePattern"/>
-        <layoutConstraint xmi:type="notation:Location" xmi:id="_r6AVceD-EdqDCuPsfR1pRA"/>
-      </children>
-      <children xmi:type="notation:Node" xmi:id="_yoQ94OTHEdqldJgFfGVykA" type="2001">
-        <element xmi:type="ecore:EAttribute" href="scave.ecore#//SetOperation/fromRunsWhere"/>
-        <layoutConstraint xmi:type="notation:Location" xmi:id="_yoQ94eTHEdqldJgFfGVykA"/>
+      <children xmi:type="notation:Node" xmi:id="_4v_8YMHaEdu7i55EcdW8kQ" type="2001">
+        <element xmi:type="ecore:EAttribute" href="scave.ecore#//SetOperation/filterPattern"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_4v_8YcHaEdu7i55EcdW8kQ"/>
       </children>
       <styles xmi:type="notation:DrawerStyle" xmi:id="_OM2Sp-BGEdqGIqWRmKIpGw"/>
       <styles xmi:type="notation:TitleStyle" xmi:id="_OM2SqOBGEdqGIqWRmKIpGw"/>

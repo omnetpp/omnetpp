@@ -442,71 +442,8 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getSetOperation_FilenamePattern() {
-		return (EAttribute)setOperationEClass.getEStructuralFeatures().get(0);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getSetOperation_RunNamePattern() {
-		return (EAttribute)setOperationEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getSetOperation_ExperimentNamePattern() {
-		return (EAttribute)setOperationEClass.getEStructuralFeatures().get(2);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getSetOperation_MeasurementNamePattern() {
-		return (EAttribute)setOperationEClass.getEStructuralFeatures().get(3);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getSetOperation_ReplicationNamePattern() {
-		return (EAttribute)setOperationEClass.getEStructuralFeatures().get(4);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getSetOperation_ModuleNamePattern() {
-		return (EAttribute)setOperationEClass.getEStructuralFeatures().get(5);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getSetOperation_NamePattern() {
-		return (EAttribute)setOperationEClass.getEStructuralFeatures().get(6);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public EReference getSetOperation_SourceDataset() {
-		return (EReference)setOperationEClass.getEStructuralFeatures().get(7);
+		return (EReference)setOperationEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -514,8 +451,8 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getSetOperation_FromRunsWhere() {
-		return (EAttribute)setOperationEClass.getEStructuralFeatures().get(8);
+	public EAttribute getSetOperation_FilterPattern() {
+		return (EAttribute)setOperationEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -893,15 +830,8 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		createEAttribute(propertyEClass, PROPERTY__VALUE);
 
 		setOperationEClass = createEClass(SET_OPERATION);
-		createEAttribute(setOperationEClass, SET_OPERATION__FILENAME_PATTERN);
-		createEAttribute(setOperationEClass, SET_OPERATION__RUN_NAME_PATTERN);
-		createEAttribute(setOperationEClass, SET_OPERATION__EXPERIMENT_NAME_PATTERN);
-		createEAttribute(setOperationEClass, SET_OPERATION__MEASUREMENT_NAME_PATTERN);
-		createEAttribute(setOperationEClass, SET_OPERATION__REPLICATION_NAME_PATTERN);
-		createEAttribute(setOperationEClass, SET_OPERATION__MODULE_NAME_PATTERN);
-		createEAttribute(setOperationEClass, SET_OPERATION__NAME_PATTERN);
 		createEReference(setOperationEClass, SET_OPERATION__SOURCE_DATASET);
-		createEAttribute(setOperationEClass, SET_OPERATION__FROM_RUNS_WHERE);
+		createEAttribute(setOperationEClass, SET_OPERATION__FILTER_PATTERN);
 
 		groupEClass = createEClass(GROUP);
 		createEReference(groupEClass, GROUP__ITEMS);
@@ -1020,15 +950,8 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		initEAttribute(getProperty_Value(), ecorePackage.getEString(), "value", null, 0, 1, Property.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(setOperationEClass, SetOperation.class, "SetOperation", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getSetOperation_FilenamePattern(), ecorePackage.getEString(), "filenamePattern", null, 0, 1, SetOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getSetOperation_RunNamePattern(), ecorePackage.getEString(), "runNamePattern", null, 0, 1, SetOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getSetOperation_ExperimentNamePattern(), ecorePackage.getEString(), "experimentNamePattern", null, 0, 1, SetOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getSetOperation_MeasurementNamePattern(), ecorePackage.getEString(), "measurementNamePattern", null, 0, 1, SetOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getSetOperation_ReplicationNamePattern(), ecorePackage.getEString(), "replicationNamePattern", null, 0, 1, SetOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getSetOperation_ModuleNamePattern(), ecorePackage.getEString(), "moduleNamePattern", null, 0, 1, SetOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getSetOperation_NamePattern(), ecorePackage.getEString(), "namePattern", null, 0, 1, SetOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getSetOperation_SourceDataset(), this.getDataset(), null, "sourceDataset", null, 0, 1, SetOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getSetOperation_FromRunsWhere(), ecorePackage.getEString(), "fromRunsWhere", null, 0, 1, SetOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getSetOperation_FilterPattern(), ecorePackage.getEString(), "filterPattern", null, 0, 1, SetOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(groupEClass, Group.class, "Group", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getGroup_Items(), this.getDatasetItem(), null, "items", null, 0, -1, Group.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

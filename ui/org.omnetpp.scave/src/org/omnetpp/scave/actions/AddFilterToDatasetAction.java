@@ -1,5 +1,6 @@
 package org.omnetpp.scave.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.common.command.Command;
@@ -39,10 +40,12 @@ public class AddFilterToDatasetAction extends AbstractScaveAction {
 	protected void doRun(final ScaveEditor editor, IStructuredSelection selection) {
 		FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
 		List datasets = getDatasets(editor);
-		if (activePanel == null || datasets == null)
+		if (activePanel == null)
 			return;
 
-		//ElementListSelectionDialog dlg = new ElementListSelectionDialog(editor.getSite().getShell(), new LabelProvider());
+		if (datasets == null)
+			datasets = new ArrayList();
+		
 		ElementListSelectOrCreateDialog dlg = new ElementListSelectOrCreateDialog(editor.getSite().getShell(), new AdapterFactoryLabelProvider(editor.getAdapterFactory()));
 		dlg.setTitle("Select Target Dataset");
 		dlg.setMessage("Select the dataset below, or create new one:");

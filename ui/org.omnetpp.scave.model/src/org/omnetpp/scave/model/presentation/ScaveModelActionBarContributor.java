@@ -157,7 +157,7 @@ public class ScaveModelActionBarContributor
 		validateAction = new ValidateAction();
 		controlAction = new ControlAction();
 	}
-	
+
 	public ScaveModelActionBarContributor(boolean createGlobalActions) {
 		if (createGlobalActions) {
 			loadResourceAction = new LoadResourceAction();

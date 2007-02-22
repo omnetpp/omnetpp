@@ -5,7 +5,9 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.scave.model.SetOperation;
+import org.omnetpp.scave.engine.ResultFile;
+import org.omnetpp.scave.engine.ResultItem;
+import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.model2.FilterSyntax.INodeVisitor;
 import org.omnetpp.scave.model2.FilterSyntax.Node;
 import org.omnetpp.scave.model2.FilterSyntax.Token;
@@ -65,14 +67,23 @@ public class FilterUtil {
 		setField(FIELD_DATANAME, dataName);
 	}
 
-	public FilterUtil(SetOperation op) {
-		this(op.getFilenamePattern(),
-				op.getRunNamePattern(),
-				op.getExperimentNamePattern(),
-				op.getMeasurementNamePattern(),
-				op.getReplicationNamePattern(),
-				op.getModuleNamePattern(),
-				op.getNamePattern());
+	public FilterUtil(ResultItem item, String[] runidFields) {
+		ResultFile file = item.getFileRun().getFile();
+		Run run = item.getFileRun().getRun();
+		for (String field : runidFields) {
+			if (field == FIELD_FILENAME)
+				setField(field, file.getFilePath());
+			else if (field == FIELD_RUNNAME)
+				setField(field, run.getRunName());
+			else if (field == FIELD_EXPERIMENT)
+				setField(field, run.getAttribute(RunAttribute.EXPERIMENT));
+			else if (field == FIELD_MEASUREMENT)
+				setField(field, run.getAttribute(RunAttribute.MEASUREMENT));
+			else if (field == FIELD_REPLICATION)
+				setField(field, run.getAttribute(RunAttribute.REPLICATION));
+		}
+		setField(FIELD_MODULENAME, item.getModuleName());
+		setField(FIELD_DATANAME, item.getName());
 	}
 
 	public static String[] getFieldNames() {

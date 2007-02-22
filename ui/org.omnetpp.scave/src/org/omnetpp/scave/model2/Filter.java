@@ -60,13 +60,7 @@ public class Filter {
 	}
 
 	public Filter(SetOperation op) {
-		this(op.getFilenamePattern(),
-				op.getRunNamePattern(),
-				op.getExperimentNamePattern(),
-				op.getMeasurementNamePattern(),
-				op.getReplicationNamePattern(),
-				op.getModuleNamePattern(),
-				op.getNamePattern());
+		this(op.getFilterPattern()==null ? "" : op.getFilterPattern());
 	}
 
 	public static String[] getFieldNames() {

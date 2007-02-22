@@ -191,85 +191,22 @@ public interface ScaveModelPackage extends EPackage {
 	int SET_OPERATION = 6;
 
 	/**
-	 * The feature id for the '<em><b>Filename Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SET_OPERATION__FILENAME_PATTERN = 0;
-
-	/**
-	 * The feature id for the '<em><b>Run Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SET_OPERATION__RUN_NAME_PATTERN = 1;
-
-	/**
-	 * The feature id for the '<em><b>Experiment Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SET_OPERATION__EXPERIMENT_NAME_PATTERN = 2;
-
-	/**
-	 * The feature id for the '<em><b>Measurement Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SET_OPERATION__MEASUREMENT_NAME_PATTERN = 3;
-
-	/**
-	 * The feature id for the '<em><b>Replication Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SET_OPERATION__REPLICATION_NAME_PATTERN = 4;
-
-	/**
-	 * The feature id for the '<em><b>Module Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SET_OPERATION__MODULE_NAME_PATTERN = 5;
-
-	/**
-	 * The feature id for the '<em><b>Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SET_OPERATION__NAME_PATTERN = 6;
-
-	/**
 	 * The feature id for the '<em><b>Source Dataset</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int SET_OPERATION__SOURCE_DATASET = 7;
+	int SET_OPERATION__SOURCE_DATASET = 0;
 
 	/**
-	 * The feature id for the '<em><b>From Runs Where</b></em>' attribute.
+	 * The feature id for the '<em><b>Filter Pattern</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int SET_OPERATION__FROM_RUNS_WHERE = 8;
+	int SET_OPERATION__FILTER_PATTERN = 1;
 
 	/**
 	 * The number of structural features of the '<em>Set Operation</em>' class.
@@ -278,7 +215,7 @@ public interface ScaveModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SET_OPERATION_FEATURE_COUNT = 9;
+	int SET_OPERATION_FEATURE_COUNT = 2;
 
 	/**
 	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.AddDiscardOpImpl <em>Add Discard Op</em>}' class.
@@ -291,69 +228,6 @@ public interface ScaveModelPackage extends EPackage {
 	int ADD_DISCARD_OP = 15;
 
 	/**
-	 * The feature id for the '<em><b>Filename Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int ADD_DISCARD_OP__FILENAME_PATTERN = SET_OPERATION__FILENAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Run Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int ADD_DISCARD_OP__RUN_NAME_PATTERN = SET_OPERATION__RUN_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Experiment Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int ADD_DISCARD_OP__EXPERIMENT_NAME_PATTERN = SET_OPERATION__EXPERIMENT_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Measurement Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int ADD_DISCARD_OP__MEASUREMENT_NAME_PATTERN = SET_OPERATION__MEASUREMENT_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Replication Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int ADD_DISCARD_OP__REPLICATION_NAME_PATTERN = SET_OPERATION__REPLICATION_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Module Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int ADD_DISCARD_OP__MODULE_NAME_PATTERN = SET_OPERATION__MODULE_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int ADD_DISCARD_OP__NAME_PATTERN = SET_OPERATION__NAME_PATTERN;
-
-	/**
 	 * The feature id for the '<em><b>Source Dataset</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -363,13 +237,13 @@ public interface ScaveModelPackage extends EPackage {
 	int ADD_DISCARD_OP__SOURCE_DATASET = SET_OPERATION__SOURCE_DATASET;
 
 	/**
-	 * The feature id for the '<em><b>From Runs Where</b></em>' attribute.
+	 * The feature id for the '<em><b>Filter Pattern</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int ADD_DISCARD_OP__FROM_RUNS_WHERE = SET_OPERATION__FROM_RUNS_WHERE;
+	int ADD_DISCARD_OP__FILTER_PATTERN = SET_OPERATION__FILTER_PATTERN;
 
 	/**
 	 * The number of structural features of the '<em>Add Discard Op</em>' class.
@@ -391,69 +265,6 @@ public interface ScaveModelPackage extends EPackage {
 	int ADD = 2;
 
 	/**
-	 * The feature id for the '<em><b>Filename Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int ADD__FILENAME_PATTERN = ADD_DISCARD_OP__FILENAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Run Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int ADD__RUN_NAME_PATTERN = ADD_DISCARD_OP__RUN_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Experiment Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int ADD__EXPERIMENT_NAME_PATTERN = ADD_DISCARD_OP__EXPERIMENT_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Measurement Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int ADD__MEASUREMENT_NAME_PATTERN = ADD_DISCARD_OP__MEASUREMENT_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Replication Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int ADD__REPLICATION_NAME_PATTERN = ADD_DISCARD_OP__REPLICATION_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Module Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int ADD__MODULE_NAME_PATTERN = ADD_DISCARD_OP__MODULE_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int ADD__NAME_PATTERN = ADD_DISCARD_OP__NAME_PATTERN;
-
-	/**
 	 * The feature id for the '<em><b>Source Dataset</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -463,13 +274,13 @@ public interface ScaveModelPackage extends EPackage {
 	int ADD__SOURCE_DATASET = ADD_DISCARD_OP__SOURCE_DATASET;
 
 	/**
-	 * The feature id for the '<em><b>From Runs Where</b></em>' attribute.
+	 * The feature id for the '<em><b>Filter Pattern</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int ADD__FROM_RUNS_WHERE = ADD_DISCARD_OP__FROM_RUNS_WHERE;
+	int ADD__FILTER_PATTERN = ADD_DISCARD_OP__FILTER_PATTERN;
 
 	/**
 	 * The feature id for the '<em><b>Excepts</b></em>' containment reference list.
@@ -592,69 +403,6 @@ public interface ScaveModelPackage extends EPackage {
 	int EXCEPT = 4;
 
 	/**
-	 * The feature id for the '<em><b>Filename Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int EXCEPT__FILENAME_PATTERN = SET_OPERATION__FILENAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Run Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int EXCEPT__RUN_NAME_PATTERN = SET_OPERATION__RUN_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Experiment Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int EXCEPT__EXPERIMENT_NAME_PATTERN = SET_OPERATION__EXPERIMENT_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Measurement Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int EXCEPT__MEASUREMENT_NAME_PATTERN = SET_OPERATION__MEASUREMENT_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Replication Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int EXCEPT__REPLICATION_NAME_PATTERN = SET_OPERATION__REPLICATION_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Module Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int EXCEPT__MODULE_NAME_PATTERN = SET_OPERATION__MODULE_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int EXCEPT__NAME_PATTERN = SET_OPERATION__NAME_PATTERN;
-
-	/**
 	 * The feature id for the '<em><b>Source Dataset</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -664,13 +412,13 @@ public interface ScaveModelPackage extends EPackage {
 	int EXCEPT__SOURCE_DATASET = SET_OPERATION__SOURCE_DATASET;
 
 	/**
-	 * The feature id for the '<em><b>From Runs Where</b></em>' attribute.
+	 * The feature id for the '<em><b>Filter Pattern</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int EXCEPT__FROM_RUNS_WHERE = SET_OPERATION__FROM_RUNS_WHERE;
+	int EXCEPT__FILTER_PATTERN = SET_OPERATION__FILTER_PATTERN;
 
 	/**
 	 * The number of structural features of the '<em>Except</em>' class.
@@ -766,69 +514,6 @@ public interface ScaveModelPackage extends EPackage {
 	int DISCARD = 8;
 
 	/**
-	 * The feature id for the '<em><b>Filename Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DISCARD__FILENAME_PATTERN = ADD_DISCARD_OP__FILENAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Run Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DISCARD__RUN_NAME_PATTERN = ADD_DISCARD_OP__RUN_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Experiment Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DISCARD__EXPERIMENT_NAME_PATTERN = ADD_DISCARD_OP__EXPERIMENT_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Measurement Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DISCARD__MEASUREMENT_NAME_PATTERN = ADD_DISCARD_OP__MEASUREMENT_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Replication Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DISCARD__REPLICATION_NAME_PATTERN = ADD_DISCARD_OP__REPLICATION_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Module Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DISCARD__MODULE_NAME_PATTERN = ADD_DISCARD_OP__MODULE_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DISCARD__NAME_PATTERN = ADD_DISCARD_OP__NAME_PATTERN;
-
-	/**
 	 * The feature id for the '<em><b>Source Dataset</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -838,13 +523,13 @@ public interface ScaveModelPackage extends EPackage {
 	int DISCARD__SOURCE_DATASET = ADD_DISCARD_OP__SOURCE_DATASET;
 
 	/**
-	 * The feature id for the '<em><b>From Runs Where</b></em>' attribute.
+	 * The feature id for the '<em><b>Filter Pattern</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int DISCARD__FROM_RUNS_WHERE = ADD_DISCARD_OP__FROM_RUNS_WHERE;
+	int DISCARD__FILTER_PATTERN = ADD_DISCARD_OP__FILTER_PATTERN;
 
 	/**
 	 * The feature id for the '<em><b>Excepts</b></em>' containment reference list.
@@ -995,69 +680,6 @@ public interface ScaveModelPackage extends EPackage {
 	int SELECT_DESELECT_OP = 16;
 
 	/**
-	 * The feature id for the '<em><b>Filename Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SELECT_DESELECT_OP__FILENAME_PATTERN = SET_OPERATION__FILENAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Run Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SELECT_DESELECT_OP__RUN_NAME_PATTERN = SET_OPERATION__RUN_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Experiment Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SELECT_DESELECT_OP__EXPERIMENT_NAME_PATTERN = SET_OPERATION__EXPERIMENT_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Measurement Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SELECT_DESELECT_OP__MEASUREMENT_NAME_PATTERN = SET_OPERATION__MEASUREMENT_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Replication Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SELECT_DESELECT_OP__REPLICATION_NAME_PATTERN = SET_OPERATION__REPLICATION_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Module Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SELECT_DESELECT_OP__MODULE_NAME_PATTERN = SET_OPERATION__MODULE_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SELECT_DESELECT_OP__NAME_PATTERN = SET_OPERATION__NAME_PATTERN;
-
-	/**
 	 * The feature id for the '<em><b>Source Dataset</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1067,13 +689,13 @@ public interface ScaveModelPackage extends EPackage {
 	int SELECT_DESELECT_OP__SOURCE_DATASET = SET_OPERATION__SOURCE_DATASET;
 
 	/**
-	 * The feature id for the '<em><b>From Runs Where</b></em>' attribute.
+	 * The feature id for the '<em><b>Filter Pattern</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int SELECT_DESELECT_OP__FROM_RUNS_WHERE = SET_OPERATION__FROM_RUNS_WHERE;
+	int SELECT_DESELECT_OP__FILTER_PATTERN = SET_OPERATION__FILTER_PATTERN;
 
 	/**
 	 * The number of structural features of the '<em>Select Deselect Op</em>' class.
@@ -1095,69 +717,6 @@ public interface ScaveModelPackage extends EPackage {
 	int SELECT = 13;
 
 	/**
-	 * The feature id for the '<em><b>Filename Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SELECT__FILENAME_PATTERN = SELECT_DESELECT_OP__FILENAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Run Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SELECT__RUN_NAME_PATTERN = SELECT_DESELECT_OP__RUN_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Experiment Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SELECT__EXPERIMENT_NAME_PATTERN = SELECT_DESELECT_OP__EXPERIMENT_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Measurement Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SELECT__MEASUREMENT_NAME_PATTERN = SELECT_DESELECT_OP__MEASUREMENT_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Replication Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SELECT__REPLICATION_NAME_PATTERN = SELECT_DESELECT_OP__REPLICATION_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Module Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SELECT__MODULE_NAME_PATTERN = SELECT_DESELECT_OP__MODULE_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int SELECT__NAME_PATTERN = SELECT_DESELECT_OP__NAME_PATTERN;
-
-	/**
 	 * The feature id for the '<em><b>Source Dataset</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1167,13 +726,13 @@ public interface ScaveModelPackage extends EPackage {
 	int SELECT__SOURCE_DATASET = SELECT_DESELECT_OP__SOURCE_DATASET;
 
 	/**
-	 * The feature id for the '<em><b>From Runs Where</b></em>' attribute.
+	 * The feature id for the '<em><b>Filter Pattern</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int SELECT__FROM_RUNS_WHERE = SELECT_DESELECT_OP__FROM_RUNS_WHERE;
+	int SELECT__FILTER_PATTERN = SELECT_DESELECT_OP__FILTER_PATTERN;
 
 	/**
 	 * The feature id for the '<em><b>Excepts</b></em>' containment reference list.
@@ -1204,69 +763,6 @@ public interface ScaveModelPackage extends EPackage {
 	int DESELECT = 14;
 
 	/**
-	 * The feature id for the '<em><b>Filename Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DESELECT__FILENAME_PATTERN = SELECT_DESELECT_OP__FILENAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Run Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DESELECT__RUN_NAME_PATTERN = SELECT_DESELECT_OP__RUN_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Experiment Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DESELECT__EXPERIMENT_NAME_PATTERN = SELECT_DESELECT_OP__EXPERIMENT_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Measurement Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DESELECT__MEASUREMENT_NAME_PATTERN = SELECT_DESELECT_OP__MEASUREMENT_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Replication Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DESELECT__REPLICATION_NAME_PATTERN = SELECT_DESELECT_OP__REPLICATION_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Module Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DESELECT__MODULE_NAME_PATTERN = SELECT_DESELECT_OP__MODULE_NAME_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Name Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DESELECT__NAME_PATTERN = SELECT_DESELECT_OP__NAME_PATTERN;
-
-	/**
 	 * The feature id for the '<em><b>Source Dataset</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1276,13 +772,13 @@ public interface ScaveModelPackage extends EPackage {
 	int DESELECT__SOURCE_DATASET = SELECT_DESELECT_OP__SOURCE_DATASET;
 
 	/**
-	 * The feature id for the '<em><b>From Runs Where</b></em>' attribute.
+	 * The feature id for the '<em><b>Filter Pattern</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int DESELECT__FROM_RUNS_WHERE = SELECT_DESELECT_OP__FROM_RUNS_WHERE;
+	int DESELECT__FILTER_PATTERN = SELECT_DESELECT_OP__FILTER_PATTERN;
 
 	/**
 	 * The feature id for the '<em><b>Excepts</b></em>' containment reference list.
@@ -1653,83 +1149,6 @@ public interface ScaveModelPackage extends EPackage {
 	EClass getSetOperation();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.SetOperation#getFilenamePattern <em>Filename Pattern</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Filename Pattern</em>'.
-	 * @see org.omnetpp.scave.model.SetOperation#getFilenamePattern()
-	 * @see #getSetOperation()
-	 * @generated
-	 */
-	EAttribute getSetOperation_FilenamePattern();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.SetOperation#getRunNamePattern <em>Run Name Pattern</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Run Name Pattern</em>'.
-	 * @see org.omnetpp.scave.model.SetOperation#getRunNamePattern()
-	 * @see #getSetOperation()
-	 * @generated
-	 */
-	EAttribute getSetOperation_RunNamePattern();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.SetOperation#getExperimentNamePattern <em>Experiment Name Pattern</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Experiment Name Pattern</em>'.
-	 * @see org.omnetpp.scave.model.SetOperation#getExperimentNamePattern()
-	 * @see #getSetOperation()
-	 * @generated
-	 */
-	EAttribute getSetOperation_ExperimentNamePattern();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.SetOperation#getMeasurementNamePattern <em>Measurement Name Pattern</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Measurement Name Pattern</em>'.
-	 * @see org.omnetpp.scave.model.SetOperation#getMeasurementNamePattern()
-	 * @see #getSetOperation()
-	 * @generated
-	 */
-	EAttribute getSetOperation_MeasurementNamePattern();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.SetOperation#getReplicationNamePattern <em>Replication Name Pattern</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Replication Name Pattern</em>'.
-	 * @see org.omnetpp.scave.model.SetOperation#getReplicationNamePattern()
-	 * @see #getSetOperation()
-	 * @generated
-	 */
-	EAttribute getSetOperation_ReplicationNamePattern();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.SetOperation#getModuleNamePattern <em>Module Name Pattern</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Module Name Pattern</em>'.
-	 * @see org.omnetpp.scave.model.SetOperation#getModuleNamePattern()
-	 * @see #getSetOperation()
-	 * @generated
-	 */
-	EAttribute getSetOperation_ModuleNamePattern();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.SetOperation#getNamePattern <em>Name Pattern</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Name Pattern</em>'.
-	 * @see org.omnetpp.scave.model.SetOperation#getNamePattern()
-	 * @see #getSetOperation()
-	 * @generated
-	 */
-	EAttribute getSetOperation_NamePattern();
-
-	/**
 	 * Returns the meta object for the reference '{@link org.omnetpp.scave.model.SetOperation#getSourceDataset <em>Source Dataset</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1741,15 +1160,15 @@ public interface ScaveModelPackage extends EPackage {
 	EReference getSetOperation_SourceDataset();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.SetOperation#getFromRunsWhere <em>From Runs Where</em>}'.
+	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.SetOperation#getFilterPattern <em>Filter Pattern</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>From Runs Where</em>'.
-	 * @see org.omnetpp.scave.model.SetOperation#getFromRunsWhere()
+	 * @return the meta object for the attribute '<em>Filter Pattern</em>'.
+	 * @see org.omnetpp.scave.model.SetOperation#getFilterPattern()
 	 * @see #getSetOperation()
 	 * @generated
 	 */
-	EAttribute getSetOperation_FromRunsWhere();
+	EAttribute getSetOperation_FilterPattern();
 
 	/**
 	 * Returns the meta object for class '{@link org.omnetpp.scave.model.Group <em>Group</em>}'.
@@ -2303,62 +1722,6 @@ public interface ScaveModelPackage extends EPackage {
 		EClass SET_OPERATION = eINSTANCE.getSetOperation();
 
 		/**
-		 * The meta object literal for the '<em><b>Filename Pattern</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute SET_OPERATION__FILENAME_PATTERN = eINSTANCE.getSetOperation_FilenamePattern();
-
-		/**
-		 * The meta object literal for the '<em><b>Run Name Pattern</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute SET_OPERATION__RUN_NAME_PATTERN = eINSTANCE.getSetOperation_RunNamePattern();
-
-		/**
-		 * The meta object literal for the '<em><b>Experiment Name Pattern</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute SET_OPERATION__EXPERIMENT_NAME_PATTERN = eINSTANCE.getSetOperation_ExperimentNamePattern();
-
-		/**
-		 * The meta object literal for the '<em><b>Measurement Name Pattern</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute SET_OPERATION__MEASUREMENT_NAME_PATTERN = eINSTANCE.getSetOperation_MeasurementNamePattern();
-
-		/**
-		 * The meta object literal for the '<em><b>Replication Name Pattern</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute SET_OPERATION__REPLICATION_NAME_PATTERN = eINSTANCE.getSetOperation_ReplicationNamePattern();
-
-		/**
-		 * The meta object literal for the '<em><b>Module Name Pattern</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute SET_OPERATION__MODULE_NAME_PATTERN = eINSTANCE.getSetOperation_ModuleNamePattern();
-
-		/**
-		 * The meta object literal for the '<em><b>Name Pattern</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute SET_OPERATION__NAME_PATTERN = eINSTANCE.getSetOperation_NamePattern();
-
-		/**
 		 * The meta object literal for the '<em><b>Source Dataset</b></em>' reference feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -2367,12 +1730,12 @@ public interface ScaveModelPackage extends EPackage {
 		EReference SET_OPERATION__SOURCE_DATASET = eINSTANCE.getSetOperation_SourceDataset();
 
 		/**
-		 * The meta object literal for the '<em><b>From Runs Where</b></em>' attribute feature.
+		 * The meta object literal for the '<em><b>Filter Pattern</b></em>' attribute feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute SET_OPERATION__FROM_RUNS_WHERE = eINSTANCE.getSetOperation_FromRunsWhere();
+		EAttribute SET_OPERATION__FILTER_PATTERN = eINSTANCE.getSetOperation_FilterPattern();
 
 		/**
 		 * The meta object literal for the '{@link org.omnetpp.scave.model.impl.GroupImpl <em>Group</em>}' class.

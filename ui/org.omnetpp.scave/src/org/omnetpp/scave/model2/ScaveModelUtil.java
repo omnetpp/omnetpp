@@ -22,11 +22,9 @@ import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.omnetpp.scave.engine.FileRunList;
 import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
-import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.model.Add;
@@ -94,15 +92,7 @@ public class ScaveModelUtil {
 	}
 
 	public static Add createAdd(Filter filter) {
-		Add add = factory.createAdd();
-		add.setFilenamePattern(filter.getField(Filter.FIELD_FILENAME));
-		add.setRunNamePattern(filter.getField(Filter.FIELD_RUNNAME));
-		add.setExperimentNamePattern(filter.getField(Filter.FIELD_EXPERIMENT));
-		add.setMeasurementNamePattern(filter.getField(Filter.FIELD_MEASUREMENT));
-		add.setReplicationNamePattern(filter.getField(Filter.FIELD_REPLICATION));
-		add.setModuleNamePattern(filter.getField(Filter.FIELD_MODULENAME));
-		add.setNamePattern(filter.getField(Filter.FIELD_DATANAME));
-		return add;
+		return createAdd(filter.getFilterPattern());
 	}
 	
 	public static Collection<Add> createAdds(ResultItem[] items, String[] runidFields) {
@@ -114,22 +104,7 @@ public class ScaveModelUtil {
 	
 	public static Add createAdd(ResultItem item, String[] runidFields) {
 		Add add = factory.createAdd();
-		ResultFile file = item.getFileRun().getFile();
-		Run run = item.getFileRun().getRun();
-		for (String field : runidFields) {
-			if (field == Filter.FIELD_FILENAME)
-				add.setFilenamePattern(file.getFilePath());
-			else if (field == Filter.FIELD_RUNNAME)
-				add.setRunNamePattern(run.getRunName());
-			else if (field == Filter.FIELD_EXPERIMENT)
-				add.setExperimentNamePattern(run.getAttribute(RunAttribute.EXPERIMENT));
-			else if (field == Filter.FIELD_MEASUREMENT)
-				add.setExperimentNamePattern(run.getAttribute(RunAttribute.MEASUREMENT));
-			else if (field == Filter.FIELD_REPLICATION)
-				add.setExperimentNamePattern(run.getAttribute(RunAttribute.REPLICATION));
-		}
-		add.setModuleNamePattern(item.getModuleName());
-		add.setNamePattern(item.getName());
+		add.setFilterPattern(new FilterUtil(item, runidFields).getFilterPattern());
 		return add;
 	}
 	

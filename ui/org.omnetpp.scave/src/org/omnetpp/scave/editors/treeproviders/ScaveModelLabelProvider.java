@@ -99,36 +99,10 @@ public class ScaveModelLabelProvider extends LabelProvider {
 			else 
 				res = "???";
 
-			// "end-to-end delay"
-			if (!isEmpty(o.getNamePattern()))
-				res += " \""+o.getNamePattern()+"\"";
-			else 
-				res += " <all>";
-			if (!isEmpty(o.getModuleNamePattern()))
-				res += " of module(s) \""+o.getModuleNamePattern()+"\"";
+			res += isEmpty(o.getFilterPattern()) ? " everything" : " "+o.getFilterPattern();
 			if (o.getSourceDataset()!=null)
 				res += " from dataset "+fallback(o.getSourceDataset().getName(),"<unnamed>");
 
-			// "from runs where ..."
-			String clause = "";
-			if (!isEmpty(o.getFilenamePattern()))
-				clause += " resultfile ~ \""+o.getFilenamePattern()+"\"";
-			if (!isEmpty(o.getExperimentNamePattern()))
-				clause += comma(clause)+" experiment ~ \""+o.getExperimentNamePattern()+"\"";
-			if (!isEmpty(o.getMeasurementNamePattern()))
-				clause += comma(clause)+" measurement ~ \""+o.getMeasurementNamePattern()+"\"";
-			if (!isEmpty(o.getReplicationNamePattern()))
-				clause += comma(clause)+" replication ~ \""+o.getReplicationNamePattern()+"\"";
-			if (!isEmpty(o.getRunNamePattern()))
-				clause += comma(clause)+" run ~ \""+o.getRunNamePattern()+"\"";
-
-			// "and..."
-			if (!isEmpty(o.getFromRunsWhere()))
-				clause += (clause.equals("") ? " " : ", and ")+o.getFromRunsWhere();
-
-			if (!clause.equals(""))
-				res += " from runs where"+clause;
-			
 			return res;
 		} 
 		else if (element instanceof Apply) {
@@ -162,10 +136,6 @@ public class ScaveModelLabelProvider extends LabelProvider {
 
 	private String fallback(String string, String defaultString) {
 		return (string!=null && !string.equals("")) ? string : defaultString; 
-	}
-
-	private String comma(String before) {
-		return (before!=null && !before.equals("")) ? "," : ""; 
 	}
 
 	private boolean isEmpty(String string) {

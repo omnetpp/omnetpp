@@ -68,7 +68,7 @@ public class AddDiscardOpItemProvider
 	 * @generated
 	 */
 	public String getText(Object object) {
-		String label = ((AddDiscardOp)object).getFilenamePattern();
+		String label = ((AddDiscardOp)object).getFilterPattern();
 		return label == null || label.length() == 0 ?
 			getString("_UI_AddDiscardOp_type") :
 			getString("_UI_AddDiscardOp_type") + " " + label;

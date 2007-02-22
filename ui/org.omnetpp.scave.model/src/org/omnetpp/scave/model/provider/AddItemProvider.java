@@ -97,7 +97,7 @@ public class AddItemProvider
 	 * @generated
 	 */
 	public String getText(Object object) {
-		String label = ((Add)object).getFilenamePattern();
+		String label = ((Add)object).getFilterPattern();
 		return label == null || label.length() == 0 ?
 			getString("_UI_Add_type") :
 			getString("_UI_Add_type") + " " + label;

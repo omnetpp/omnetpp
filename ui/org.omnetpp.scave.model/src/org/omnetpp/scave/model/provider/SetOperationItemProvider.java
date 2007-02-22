@@ -62,157 +62,10 @@ public class SetOperationItemProvider
 		if (itemPropertyDescriptors == null) {
 			super.getPropertyDescriptors(object);
 
-			addFilenamePatternPropertyDescriptor(object);
-			addRunNamePatternPropertyDescriptor(object);
-			addExperimentNamePatternPropertyDescriptor(object);
-			addMeasurementNamePatternPropertyDescriptor(object);
-			addReplicationNamePatternPropertyDescriptor(object);
-			addModuleNamePatternPropertyDescriptor(object);
-			addNamePatternPropertyDescriptor(object);
 			addSourceDatasetPropertyDescriptor(object);
-			addFromRunsWherePropertyDescriptor(object);
+			addFilterPatternPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
-	}
-
-	/**
-	 * This adds a property descriptor for the Filename Pattern feature.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected void addFilenamePatternPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add
-			(createItemPropertyDescriptor
-				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
-				 getResourceLocator(),
-				 getString("_UI_SetOperation_filenamePattern_feature"),
-				 getString("_UI_PropertyDescriptor_description", "_UI_SetOperation_filenamePattern_feature", "_UI_SetOperation_type"),
-				 ScaveModelPackage.Literals.SET_OPERATION__FILENAME_PATTERN,
-				 true,
-				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
-				 null,
-				 null));
-	}
-
-	/**
-	 * This adds a property descriptor for the Run Name Pattern feature.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected void addRunNamePatternPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add
-			(createItemPropertyDescriptor
-				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
-				 getResourceLocator(),
-				 getString("_UI_SetOperation_runNamePattern_feature"),
-				 getString("_UI_PropertyDescriptor_description", "_UI_SetOperation_runNamePattern_feature", "_UI_SetOperation_type"),
-				 ScaveModelPackage.Literals.SET_OPERATION__RUN_NAME_PATTERN,
-				 true,
-				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
-				 null,
-				 null));
-	}
-
-	/**
-	 * This adds a property descriptor for the Experiment Name Pattern feature.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected void addExperimentNamePatternPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add
-			(createItemPropertyDescriptor
-				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
-				 getResourceLocator(),
-				 getString("_UI_SetOperation_experimentNamePattern_feature"),
-				 getString("_UI_PropertyDescriptor_description", "_UI_SetOperation_experimentNamePattern_feature", "_UI_SetOperation_type"),
-				 ScaveModelPackage.Literals.SET_OPERATION__EXPERIMENT_NAME_PATTERN,
-				 true,
-				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
-				 null,
-				 null));
-	}
-
-	/**
-	 * This adds a property descriptor for the Measurement Name Pattern feature.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected void addMeasurementNamePatternPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add
-			(createItemPropertyDescriptor
-				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
-				 getResourceLocator(),
-				 getString("_UI_SetOperation_measurementNamePattern_feature"),
-				 getString("_UI_PropertyDescriptor_description", "_UI_SetOperation_measurementNamePattern_feature", "_UI_SetOperation_type"),
-				 ScaveModelPackage.Literals.SET_OPERATION__MEASUREMENT_NAME_PATTERN,
-				 true,
-				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
-				 null,
-				 null));
-	}
-
-	/**
-	 * This adds a property descriptor for the Replication Name Pattern feature.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected void addReplicationNamePatternPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add
-			(createItemPropertyDescriptor
-				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
-				 getResourceLocator(),
-				 getString("_UI_SetOperation_replicationNamePattern_feature"),
-				 getString("_UI_PropertyDescriptor_description", "_UI_SetOperation_replicationNamePattern_feature", "_UI_SetOperation_type"),
-				 ScaveModelPackage.Literals.SET_OPERATION__REPLICATION_NAME_PATTERN,
-				 true,
-				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
-				 null,
-				 null));
-	}
-
-	/**
-	 * This adds a property descriptor for the Module Name Pattern feature.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected void addModuleNamePatternPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add
-			(createItemPropertyDescriptor
-				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
-				 getResourceLocator(),
-				 getString("_UI_SetOperation_moduleNamePattern_feature"),
-				 getString("_UI_PropertyDescriptor_description", "_UI_SetOperation_moduleNamePattern_feature", "_UI_SetOperation_type"),
-				 ScaveModelPackage.Literals.SET_OPERATION__MODULE_NAME_PATTERN,
-				 true,
-				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
-				 null,
-				 null));
-	}
-
-	/**
-	 * This adds a property descriptor for the Name Pattern feature.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected void addNamePatternPropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add
-			(createItemPropertyDescriptor
-				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
-				 getResourceLocator(),
-				 getString("_UI_SetOperation_namePattern_feature"),
-				 getString("_UI_PropertyDescriptor_description", "_UI_SetOperation_namePattern_feature", "_UI_SetOperation_type"),
-				 ScaveModelPackage.Literals.SET_OPERATION__NAME_PATTERN,
-				 true,
-				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
-				 null,
-				 null));
 	}
 
 	/**
@@ -236,19 +89,19 @@ public class SetOperationItemProvider
 	}
 
 	/**
-	 * This adds a property descriptor for the From Runs Where feature.
+	 * This adds a property descriptor for the Filter Pattern feature.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected void addFromRunsWherePropertyDescriptor(Object object) {
+	protected void addFilterPatternPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add
 			(createItemPropertyDescriptor
 				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
 				 getResourceLocator(),
-				 getString("_UI_SetOperation_fromRunsWhere_feature"),
-				 getString("_UI_PropertyDescriptor_description", "_UI_SetOperation_fromRunsWhere_feature", "_UI_SetOperation_type"),
-				 ScaveModelPackage.Literals.SET_OPERATION__FROM_RUNS_WHERE,
+				 getString("_UI_SetOperation_filterPattern_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_SetOperation_filterPattern_feature", "_UI_SetOperation_type"),
+				 ScaveModelPackage.Literals.SET_OPERATION__FILTER_PATTERN,
 				 true,
 				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
 				 null,
@@ -272,7 +125,7 @@ public class SetOperationItemProvider
 	 * @generated
 	 */
 	public String getText(Object object) {
-		String label = ((SetOperation)object).getFilenamePattern();
+		String label = ((SetOperation)object).getFilterPattern();
 		return label == null || label.length() == 0 ?
 			getString("_UI_SetOperation_type") :
 			getString("_UI_SetOperation_type") + " " + label;
@@ -289,15 +142,8 @@ public class SetOperationItemProvider
 		updateChildren(notification);
 
 		switch (notification.getFeatureID(SetOperation.class)) {
-			case ScaveModelPackage.SET_OPERATION__FILENAME_PATTERN:
-			case ScaveModelPackage.SET_OPERATION__RUN_NAME_PATTERN:
-			case ScaveModelPackage.SET_OPERATION__EXPERIMENT_NAME_PATTERN:
-			case ScaveModelPackage.SET_OPERATION__MEASUREMENT_NAME_PATTERN:
-			case ScaveModelPackage.SET_OPERATION__REPLICATION_NAME_PATTERN:
-			case ScaveModelPackage.SET_OPERATION__MODULE_NAME_PATTERN:
-			case ScaveModelPackage.SET_OPERATION__NAME_PATTERN:
 			case ScaveModelPackage.SET_OPERATION__SOURCE_DATASET:
-			case ScaveModelPackage.SET_OPERATION__FROM_RUNS_WHERE:
+			case ScaveModelPackage.SET_OPERATION__FILTER_PATTERN:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 				return;
 		}
