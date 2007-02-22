@@ -10,6 +10,7 @@ import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.FilterHints;
 import org.omnetpp.scave.model2.FilterSyntax;
+import org.omnetpp.scave.model2.FilterUtil;
 import org.omnetpp.scave.model2.FilterSyntax.INodeVisitor;
 import org.omnetpp.scave.model2.FilterSyntax.Node;
 import org.omnetpp.scave.model2.FilterSyntax.Token;
@@ -26,7 +27,7 @@ class FilterContentProposalProvider implements IContentProposalProvider
 	private Map<String,ContentProposal[]> patternProposals = new HashMap<String,ContentProposal[]>();
 	
 	static {
-		String[] filterFields = Filter.getFieldNames();
+		String[] filterFields = FilterUtil.getFieldNames();
 		fieldProposals = new ContentProposal[filterFields.length];
 		for (int i = 0; i < filterFields.length; ++i) {
 			fieldProposals[i] = new ContentProposal(filterFields[i]);
@@ -43,7 +44,7 @@ class FilterContentProposalProvider implements IContentProposalProvider
 	public void setFilterHints(FilterHints hints) {
 		// add pattern proposals for the filter hints
 		patternProposals.clear();
-		for (String field : Filter.getFieldNames()) {
+		for (String field : FilterUtil.getFieldNames()) {
 			String[] patterns = hints.getHints(field);
 			if (patterns != null) {
 				ContentProposal[] proposals = new ContentProposal[patterns.length];
@@ -106,7 +107,7 @@ class FilterContentProposalProvider implements IContentProposalProvider
 					prefix = parent.getPatternString();
 					startIndex = parent.getPattern().getStartPos();
 					endIndex = parent.getPattern().getEndPos();
-					String field = Filter.getDefaultField();
+					String field = FilterUtil.getDefaultField();
 					collectFilteredProposals(result, unaryOperatorProposals, prefix, startIndex, endIndex, false, false, false);
 					collectFilteredProposals(result, fieldProposals, prefix, startIndex, endIndex, true, true, false);
 					collectFilteredProposals(result, patternProposals.get(field), prefix, startIndex, endIndex, false, false, true);
@@ -122,7 +123,7 @@ class FilterContentProposalProvider implements IContentProposalProvider
 				else if ((type == Node.BINARY_OPERATOR_EXPR  || type == Node.UNARY_OPERATOR_EXPR || type == Node.PARENTHESISED_EXPR) && atEnd) { // insert after unary or binary operator
 					collectFilteredProposals(result, unaryOperatorProposals, "", position, position, false, false, false);
 					collectFilteredProposals(result, fieldProposals, "", position, position, true, true, false);
-					collectFilteredProposals(result, patternProposals.get(Filter.getDefaultField()), "", position, position, false, false, true);
+					collectFilteredProposals(result, patternProposals.get(FilterUtil.getDefaultField()), "", position, position, false, false, true);
 				}
 				else if (type == Node.ROOT && token.getType() == FilterSyntax.TokenType.END) {
 					prefix = "";
@@ -130,7 +131,7 @@ class FilterContentProposalProvider implements IContentProposalProvider
 					endIndex = position;
 					//collectFilteredProposals(result, operatorProposals, prefix, startIndex, endIndex, false, false, false);
 					collectFilteredProposals(result, fieldProposals, prefix, startIndex, endIndex, true, true, false);
-					collectFilteredProposals(result, patternProposals.get(Filter.getDefaultField()), prefix, startIndex, endIndex, false, false, true);
+					collectFilteredProposals(result, patternProposals.get(FilterUtil.getDefaultField()), prefix, startIndex, endIndex, false, false, true);
 				}
 			}
 		} 

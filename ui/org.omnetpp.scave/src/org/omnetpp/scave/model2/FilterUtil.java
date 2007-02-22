@@ -143,6 +143,7 @@ public class FilterUtil {
 	}
 
 	public void setField(String name, String value) {
+		Assert.isTrue(filterPattern==null); //XXX otherwise "fields" will get ignored by getFilterPattern()
 		fields.put(name, value);
 	}
 

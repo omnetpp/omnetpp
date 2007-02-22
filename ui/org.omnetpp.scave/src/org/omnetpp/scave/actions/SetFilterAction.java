@@ -31,9 +31,9 @@ public class SetFilterAction extends AbstractScaveAction {
 	@Override
 	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
 		Object selected = selection.getFirstElement();
-		Filter filter = new Filter();
-
-		if (getFilterParams(filter, selected)) {
+		FilterUtil filterUtil = getFilterParams(selected);
+		if (filterUtil != null) {
+			Filter filter = new Filter(filterUtil.getFilterPattern());
 			BrowseDataPage page = scaveEditor.getBrowseDataPage();
 			page.getScalarsPanel().setFilterParams(filter);
 			page.getVectorsPanel().setFilterParams(filter);
@@ -43,53 +43,54 @@ public class SetFilterAction extends AbstractScaveAction {
 	}
 
 	@Override
-	protected boolean isApplicable(ScaveEditor editor,
-			IStructuredSelection selection) {
+	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
 		return true;
 	}
 
 	/**
-	 * Fills the given filter object with the attributes of the selected object and their ancestors.
-	 * Returns true if the filter is to be applied on the "Browse data" page.
+	 * Returns a filter object with the attributes of the selected object and their ancestors.
+	 * Returns non-null if the filter is to be applied on the "Browse data" page.
 	 */
-	protected boolean getFilterParams(Filter filter, Object object) {
+	protected FilterUtil getFilterParams(Object object) {
 
 		if (object instanceof InputFile) {
+			FilterUtil filterUtil = new FilterUtil();
 			InputFile inputFile = (InputFile)object;
-			filter.setField(FilterUtil.FIELD_FILENAME, inputFile.getName());
-			return true;
+			filterUtil.setField(FilterUtil.FIELD_FILENAME, inputFile.getName());
+			return filterUtil;
 		}
 		else if (object instanceof GenericTreeNode) {
+			// GenericTreeNode trees are used on the Inputs page.
 			GenericTreeNode node = (GenericTreeNode)object;
 			Object payload = node.getPayload();
 
 			// get params up to the root
-			getFilterParams(filter, node.getParent());
+			FilterUtil filterUtil = getFilterParams(node.getParent());
+			if (filterUtil==null) 
+				filterUtil = new FilterUtil();
 
 			if (payload instanceof ResultFile) {
 				ResultFile resultFile = (ResultFile)payload;
-				filter.setField(FilterUtil.FIELD_FILENAME, resultFile.getFilePath());
-				return true;
+				filterUtil.setField(FilterUtil.FIELD_FILENAME, resultFile.getFilePath());
 			}
 			else if (payload instanceof Run) {
 				Run run = (Run)payload;
-				filter.setField(FilterUtil.FIELD_RUNNAME, run.getRunName());
-				return true;
+				filterUtil.setField(FilterUtil.FIELD_RUNNAME, run.getRunName());
 			}
 			else if (payload instanceof RunAttribute) {
 				RunAttribute attr = (RunAttribute)payload;
 				String name = attr.getName();
 				String value = attr.getValue();
 				if (EXPERIMENT.equals(name))
-					filter.setField(FilterUtil.FIELD_EXPERIMENT, value);
+					filterUtil.setField(FilterUtil.FIELD_EXPERIMENT, value);
 				else if (MEASUREMENT.equals(name))
-					filter.setField(FilterUtil.FIELD_MEASUREMENT, value);
+					filterUtil.setField(FilterUtil.FIELD_MEASUREMENT, value);
 				else if (REPLICATION.equals(name))
-					filter.setField(FilterUtil.FIELD_REPLICATION, value);
-				return true;
+					filterUtil.setField(FilterUtil.FIELD_REPLICATION, value);
 			}
+			return filterUtil;
 		}
 
-		return false;
+		return null;
 	}
 }
