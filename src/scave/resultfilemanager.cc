@@ -503,10 +503,10 @@ IDList ResultFileManager::filterIDList(const IDList& idlist,
 
 class MatchableResultItem : public MatchExpression::Matchable
 {
-    const ResultItem &item;
+    const ResultItem& item;
 
     public:
-        MatchableResultItem(const ResultItem &item) : item(item) {}
+        MatchableResultItem(const ResultItem& item) : item(item) {}
         virtual const char *getDefaultAttribute() const;
         virtual const char *getAttribute(const char *name) const;
     private:
