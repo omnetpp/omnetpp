@@ -15,20 +15,21 @@ import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.ScaveModelPackage;
+import org.omnetpp.scave.model2.FilterUtil;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
- * Active on the "Browse Data" page. It adds the filter string to 
+ * Active on the "Browse Data" page. It adds the selected elements to 
  * a dataset. The dataset selection dialog also allows creating 
  * a new dataset.
  * 
  * @author Andras
  */
-public class AddFilterToDatasetAction extends AbstractScaveAction {
+public class AddSelectedToDatasetAction extends AbstractScaveAction {
 
-	public AddFilterToDatasetAction() {
-		setText("Add filtered data to dataset...");
-		setToolTipText("Add filtered data to dataset");
+	public AddSelectedToDatasetAction() {
+		setText("Add selected data to dataset...");
+		setToolTipText("Add selected data to dataset");
 	}
 
 	@Override
@@ -51,13 +52,13 @@ public class AddFilterToDatasetAction extends AbstractScaveAction {
 						break;
 				}
 
-				String filterString = editor.getBrowseDataPage().getActivePanel().getFilterParams().getFilterPattern();
-
 				Command command = AddCommand.create(
 							editor.getEditingDomain(),
 							dataset,
 							ScaveModelPackage.eINSTANCE.getDataset_Items(),
-							ScaveModelUtil.createAdd(filterString),
+							ScaveModelUtil.createAdds(
+									activePanel.getTable().getSelectedItems(),
+									null),
 							index);
 				editor.executeCommand(command);
 			}

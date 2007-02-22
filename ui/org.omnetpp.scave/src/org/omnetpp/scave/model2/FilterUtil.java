@@ -18,6 +18,8 @@ import org.omnetpp.scave.model2.FilterSyntax.TokenType;
  */
 public class FilterUtil {
 
+	// Note: these field names must be kept consistent with resultfilemanager.cc
+	// XXX or: obtain them from resultfilemanager.cc via swig.. 
 	public static final String FIELD_FILENAME = "file";
 	public static final String FIELD_RUNNAME = "run";
 	public static final String FIELD_EXPERIMENT = "experiment";
@@ -25,15 +27,22 @@ public class FilterUtil {
 	public static final String FIELD_REPLICATION = "replication";
 	public static final String FIELD_MODULENAME = "module";
 	public static final String FIELD_DATANAME = "name";
+	public static final String FIELD_RUNNUMBER = "runNumber";
+	public static final String FIELD_NETWORKNAME = "networkName";
+	public static final String FIELD_DATETIME = "dateTime";
 
 	private static final String[] fieldNames = new String[] {
 		FIELD_FILENAME,
 		FIELD_RUNNAME,
+		FIELD_RUNNUMBER,
 		FIELD_EXPERIMENT,
 		FIELD_MEASUREMENT,
 		FIELD_REPLICATION,
 		FIELD_MODULENAME,
 		FIELD_DATANAME,
+		FIELD_RUNNUMBER,
+		FIELD_NETWORKNAME,
+		FIELD_DATETIME,
 	};
 
 	// full match expression
@@ -70,17 +79,31 @@ public class FilterUtil {
 	public FilterUtil(ResultItem item, String[] runidFields) {
 		ResultFile file = item.getFileRun().getFile();
 		Run run = item.getFileRun().getRun();
-		for (String field : runidFields) {
-			if (field == FIELD_FILENAME)
-				setField(field, file.getFilePath());
-			else if (field == FIELD_RUNNAME)
-				setField(field, run.getRunName());
-			else if (field == FIELD_EXPERIMENT)
-				setField(field, run.getAttribute(RunAttribute.EXPERIMENT));
-			else if (field == FIELD_MEASUREMENT)
-				setField(field, run.getAttribute(RunAttribute.MEASUREMENT));
-			else if (field == FIELD_REPLICATION)
-				setField(field, run.getAttribute(RunAttribute.REPLICATION));
+		if (runidFields==null) {
+			if (run.getRunName().length()>0) {
+				// default: identify run with runName
+				setField(FIELD_RUNNAME, run.getRunName());
+			}
+			else {
+				// fallback for old files that don't have runName yet
+				setField(FIELD_FILENAME, file.getFilePath());
+				setField(FIELD_RUNNUMBER, ""+run.getRunNumber());
+			}
+		}
+		else {
+			// explicit selection of run identification fields
+			for (String field : runidFields) {
+				if (field == FIELD_FILENAME)
+					setField(field, file.getFilePath());
+				else if (field == FIELD_RUNNAME)
+					setField(field, run.getRunName());
+				else if (field == FIELD_EXPERIMENT)
+					setField(field, run.getAttribute(RunAttribute.EXPERIMENT));
+				else if (field == FIELD_MEASUREMENT)
+					setField(field, run.getAttribute(RunAttribute.MEASUREMENT));
+				else if (field == FIELD_REPLICATION)
+					setField(field, run.getAttribute(RunAttribute.REPLICATION));
+			}
 		}
 		setField(FIELD_MODULENAME, item.getModuleName());
 		setField(FIELD_DATANAME, item.getName());

@@ -95,6 +95,10 @@ public class ScaveModelUtil {
 		return createAdd(filter.getFilterPattern());
 	}
 	
+	/**
+	 * Generates Add commands with filter patterns that identify elements in items[].
+	 * @param runidFields  may be null (meaning autoselect)
+	 */
 	public static Collection<Add> createAdds(ResultItem[] items, String[] runidFields) {
 		List<Add> adds = new ArrayList<Add>(items.length);
 		for (ResultItem item : items)
@@ -102,6 +106,10 @@ public class ScaveModelUtil {
 		return adds;
 	}
 	
+	/**
+	 * Generates an Add command with filter pattern to identify item.
+	 * @param runidFields  may be null (meaning autoselect)
+	 */
 	public static Add createAdd(ResultItem item, String[] runidFields) {
 		Add add = factory.createAdd();
 		add.setFilterPattern(new FilterUtil(item, runidFields).getFilterPattern());
@@ -304,28 +312,9 @@ public class ScaveModelUtil {
 		return items;
 	}
 	
-	public static IDList filterIDList(IDList idlist, Filter params, ResultFileManager manager) {
-		if (params.getFilterPattern() != null) {
-		// TODO: pattern may be malformed, catch exceptions and report error
-		return manager.filterIDList(idlist, params.getFilterPattern());
-	}
-		else {
-			String fileNamePattern = params.getField(Filter.FIELD_FILENAME);
-			ResultFileList fileList = fileNamePattern.length() > 0 ?
-					manager.filterFileList(manager.getFiles(), fileNamePattern) : null;
-			StringMap attrs = new StringMap();
-			addAttribute(attrs, EXPERIMENT, params.getField(Filter.FIELD_EXPERIMENT));
-			addAttribute(attrs, MEASUREMENT, params.getField(Filter.FIELD_MEASUREMENT));
-			addAttribute(attrs, REPLICATION, params.getField(Filter.FIELD_REPLICATION));
-			String runNamePattern = params.getField(Filter.FIELD_RUNNAME);
-			RunList runList = runNamePattern.length() > 0 || attrs.size() > 0 ?
-					manager.filterRunList(manager.getRuns(), (runNamePattern.length() > 0 ? runNamePattern : "*"), attrs) :
-					null;
-			FileRunList fileRunFilter = manager.getFileRuns(fileList, runList);
-			IDList filteredIDList = manager.filterIDList(idlist,
-					fileRunFilter, params.getField(Filter.FIELD_MODULENAME), params.getField(Filter.FIELD_DATANAME));
-			return filteredIDList;
-		}
+	public static IDList filterIDList(IDList idlist, Filter filter, ResultFileManager manager) {
+		Assert.isTrue(filter.getFilterPattern()!=null);
+		return manager.filterIDList(idlist, filter.getFilterPattern());
 	}
 	
 	private static void addAttribute(StringMap attrs, String name, String value) {

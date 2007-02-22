@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.omnetpp.scave.actions.AddFilterToDatasetAction;
+import org.omnetpp.scave.actions.AddSelectedToDatasetAction;
 import org.omnetpp.scave.actions.AddToDatasetAction;
 import org.omnetpp.scave.actions.CopyToClipboardAction;
 import org.omnetpp.scave.actions.CreateChartAction;
@@ -69,6 +70,8 @@ public class BrowseDataPage extends ScaveEditorPage {
 	private IScaveAction createTempChartAction = new CreateTempChartAction();
     private IAction showVectorBrowserViewAction = new ShowVectorBrowserViewAction();
 	private IScaveAction addFilterToDatasetAction = new AddFilterToDatasetAction();
+	private IScaveAction addSelectedToDatasetAction = new AddSelectedToDatasetAction();
+	
 	
 	public BrowseDataPage(Composite parent, ScaveEditor editor) {
 		super(parent, SWT.V_SCROLL, editor);
@@ -201,6 +204,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 		contextMenuManager.add(createTempChartAction);
 		contextMenuManager.add(new Separator());
 		contextMenuManager.add(addFilterToDatasetAction);
+		contextMenuManager.add(addSelectedToDatasetAction);
 		contextMenuManager.add(new Separator());
 		contextMenuManager.add(createDatasetAction); //XXX out!
 		contextMenuManager.add(addToDatasetAction); //XXX out!
