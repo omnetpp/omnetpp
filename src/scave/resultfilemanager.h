@@ -253,6 +253,13 @@ class SCAVE_API ResultFileManager
     IDList filterIDList(const IDList &idlist, const char *pattern) const;
 
     /**
+     * Checks that the given pattern is syntactically correct.
+     * If not, an exception is thrown, with a (more-or-less useful)
+     * message.
+     */
+    void checkPattern(const char *pattern) const;
+
+    /**
      * loading files. fileName is the file path in the Eclipse workspace;
      * the file is actually read from fileSystemFileName
      */

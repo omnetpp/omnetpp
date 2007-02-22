@@ -555,6 +555,16 @@ IDList ResultFileManager::filterIDList(const IDList &idlist, const char *pattern
     return out;
 }
 
+void ResultFileManager::checkPattern(const char *pattern) const
+{
+    if (pattern==NULL || pattern[0] == '\0') // no filter
+        return;
+
+    // parse it
+    //XXX after successful parsing, we could also check that attribute names in it are valid
+    MatchExpression matchExpr(pattern, false /*dottedpath*/, true /*fullstring*/, true /*casesensitive*/);
+}
+
 ResultFile *ResultFileManager::addFile()
 {
     ResultFile *file = new ResultFile();
