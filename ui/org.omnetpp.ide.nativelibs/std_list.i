@@ -16,6 +16,7 @@
         $action
     } catch (std::out_of_range& e) {
         SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, const_cast<char*>(e.what()));
+        return $null;
     }
 }
 
@@ -24,6 +25,7 @@
         $action
     } catch (std::out_of_range& e) {
         SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, const_cast<char*>(e.what()));
+        return $null;
     }
 }
 

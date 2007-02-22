@@ -7,6 +7,8 @@
 #include "xyarray.h"
 %}
 
+//XXX need %exception?
+
 %include "std_common.i"
 %include "std_string.i"
 %include "std_map.i"

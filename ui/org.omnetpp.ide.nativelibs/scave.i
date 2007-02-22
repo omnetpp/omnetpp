@@ -18,12 +18,13 @@
         $action
     } catch (std::exception& e) {
         SWIG_JavaThrowException(jenv, SWIG_JavaRuntimeException, const_cast<char*>(e.what()));
+        return $null;
     }
 }
 
 // hide export/import macros from swig
 #define COMMON_API
-#define OPP_DLLEXPORT 
+#define OPP_DLLEXPORT
 #define OPP_DLLIMPORT
 
 %include "inttypes.h"
