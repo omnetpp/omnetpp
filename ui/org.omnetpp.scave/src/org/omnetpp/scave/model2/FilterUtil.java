@@ -143,7 +143,8 @@ public class FilterUtil {
 	}
 
 	public void setField(String name, String value) {
-		Assert.isTrue(filterPattern==null); //XXX otherwise "fields" will get ignored by getFilterPattern()
+		//XXX problem: this is called both from outside and during parsing --
+		// this can make things VERY messed up! (setField() is supposed to extend the pattern or is part if it???)
 		fields.put(name, value);
 	}
 
