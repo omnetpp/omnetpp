@@ -14,12 +14,17 @@ import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned.model.pojo.ChannelNode;
 import org.omnetpp.ned.model.pojo.ChannelSpecNode;
+import org.omnetpp.ned.model.pojo.ConnectionsNode;
 import org.omnetpp.ned.model.pojo.GateNode;
+import org.omnetpp.ned.model.pojo.GatesNode;
 import org.omnetpp.ned.model.pojo.ImportNode;
 import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
 import org.omnetpp.ned.model.pojo.ParamNode;
+import org.omnetpp.ned.model.pojo.ParametersNode;
 import org.omnetpp.ned.model.pojo.PropertyNode;
 import org.omnetpp.ned.model.pojo.SimpleModuleNode;
+import org.omnetpp.ned.model.pojo.SubmodulesNode;
+import org.omnetpp.ned.model.pojo.TypesNode;
 
 /**
  * @author rhornig
@@ -123,46 +128,36 @@ public class NedModelLabelProvider extends LabelProvider {
 
 	public Image getImage(Object obj) {
         NEDElement model = (NEDElement)obj;
-        Image image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_INVALID);
+        Image image = null;
         
         if (model instanceof ImportNode) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_IMPORT);
-        } 
-        else if (model instanceof PropertyNode) {
+        } else if (model instanceof PropertyNode) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_PROPERTY);
-        } 
-        else if (model instanceof ParamNode) {
+        } else if (model instanceof ParamNode) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_PARAM);
-        } 
-        else if (model instanceof SimpleModuleNode) {
+        } else if (model instanceof SimpleModuleNode) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_SIMPLEMODULE);
-        } 
-        else if (model instanceof CompoundModuleNodeEx) {
+        } else if (model instanceof CompoundModuleNodeEx) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_COMPOUNDMODULE);
-        }
-        else if (model instanceof SubmoduleNodeEx) {
+        } else if (model instanceof SubmoduleNodeEx) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_SUBMODULE);
-        }
-        else if (model instanceof ModuleInterfaceNode) {
-            image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_COMPOUNDMODULE);
-        }
-        else if (model instanceof ChannelInterfaceNode) {
+        } else if (model instanceof ModuleInterfaceNode) {
+            image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_INTERFACE);
+        } else if (model instanceof ChannelInterfaceNode) {
+            image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE);
+        } else if (model instanceof ChannelSpecNode) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CHANNEL);
-        } 
-        else if (model instanceof ChannelSpecNode) {
+        } else if (model instanceof ChannelNode) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CHANNEL);
-        } 
-        else if (model instanceof ChannelNode) {
-            image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CHANNEL);
-        } 
-        else if (model instanceof GateNode) {
+        } else if (model instanceof GateNode) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_GATE);
-        } 
-        else if (model instanceof ConnectionNodeEx) {
+        } else if (model instanceof ConnectionNodeEx) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CONNECTION);
-        } 
-        else {
-            image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_INVALID);
+        } else if (model instanceof TypesNode || model instanceof ParametersNode || 
+                   model instanceof GatesNode || model instanceof SubmodulesNode || 
+                   model instanceof ConnectionsNode) {
+            image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_FOLDER);
         }
         
         return image;

@@ -15,4 +15,18 @@
       </editor>
    </extension>
 
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            category="org.omnetpp.wizards"
+            class="org.omnetpp.ned.editor.wizards.NewNEDFileWizard"
+            icon="icons/newnedfile.gif"
+            id="org.omnetpp.ned.editor.wizard.new.file"
+            name="Network Description File (ned)">
+         <description>
+            Create a file that contains network elements, like simple or compound modules, channels etc.
+         </description>
+      </wizard>
+   </extension>
+
 </plugin>

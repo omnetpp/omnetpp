@@ -28,23 +28,17 @@ public class ImageFactory {
     private final static String MODEL_IMAGE_DIR = INTERNAL_DIR + "model/";
     private final static String DECORATORS_IMAGE_DIR = INTERNAL_DIR + "decorators/";
 
-    public final static String TOOLBAR_IMAGE_WIZARDBANNER = TOOL_IMAGE_DIR + "module";
     public final static String TOOLBAR_IMAGE_UNPIN = TOOL_IMAGE_DIR + "unpin";
     public final static String TOOLBAR_IMAGE_LAYOUT = TOOL_IMAGE_DIR + "layout";
-    public final static String TOOLBAR_IMAGE_OVERVIEW = TOOL_IMAGE_DIR + "overview";
     public final static String TOOLBAR_IMAGE_OUTLINE = TOOL_IMAGE_DIR + "outline";
     public final static String TOOLBAR_IMAGE_ZOOMMINUS = TOOL_IMAGE_DIR + "zoomminus";
     public final static String TOOLBAR_IMAGE_ZOOMPLUS = TOOL_IMAGE_DIR + "zoomplus";
-    public final static String TOOLBAR_IMAGE_TEMPLATE = TOOL_IMAGE_DIR + "template";
-    public final static String TOOLBAR_IMAGE_FOLDER = TOOL_IMAGE_DIR + "folder";
-    public final static String TOOLBAR_IMAGE_CONNECTION = TOOL_IMAGE_DIR + "connection";
-    public final static String TOOLBAR_IMAGE_MODULE = TOOL_IMAGE_DIR + "module";
-    public final static String TOOLBAR_IMAGE_SIMPLE = TOOL_IMAGE_DIR + "simple";
-    public final static String TOOLBAR_IMAGE_LABEL = TOOL_IMAGE_DIR + "label";
     public final static String TOOLBAR_IMAGE_REFRESH = TOOL_IMAGE_DIR + "refresh";
 
     public final static String MODEL_IMAGE_CHANNEL = MODEL_IMAGE_DIR + "Channel";
+    public final static String MODEL_IMAGE_CHANNELINTERFACE = MODEL_IMAGE_DIR + "ChannelInterface";
     public final static String MODEL_IMAGE_COMPOUNDMODULE = MODEL_IMAGE_DIR + "CompoundModule";
+    public final static String MODEL_IMAGE_INTERFACE = MODEL_IMAGE_DIR + "Interface";
     public final static String MODEL_IMAGE_CONNECTION = MODEL_IMAGE_DIR + "Connection";
     public final static String MODEL_IMAGE_GATE = MODEL_IMAGE_DIR + "Gate";
     public final static String MODEL_IMAGE_IMPORT = MODEL_IMAGE_DIR + "Import";
@@ -53,6 +47,7 @@ public class ImageFactory {
     public final static String MODEL_IMAGE_PROPERTY = MODEL_IMAGE_DIR + "Property";
     public final static String MODEL_IMAGE_SIMPLEMODULE = MODEL_IMAGE_DIR + "SimpleModule";
     public final static String MODEL_IMAGE_SUBMODULE = MODEL_IMAGE_DIR + "Submodule";
+    public final static String MODEL_IMAGE_FOLDER = MODEL_IMAGE_DIR + "Folder";
 
     public final static String DECORATOR_IMAGE_ERROR = DECORATORS_IMAGE_DIR + "error";
     public final static String DECORATOR_IMAGE_WARNING = DECORATORS_IMAGE_DIR + "warning";

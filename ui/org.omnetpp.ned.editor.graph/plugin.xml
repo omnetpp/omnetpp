@@ -2,18 +2,4 @@
 <?eclipse version="3.0"?>
 <plugin>
 
-   <extension
-         point="org.eclipse.ui.newWizards">
-      <wizard
-            category="org.omnetpp.wizards"
-            class="org.omnetpp.ned.editor.graph.wizards.NewNEDFileWizard"
-            icon="icons/nedfile.gif"
-            id="org.omnetpp.ned.editor.graph.wizard.new.file"
-            name="Network Description File (ned)">
-         <description>
-            Create a file that contains network elements, like simple or compound modules, channels etc.
-         </description>
-      </wizard>
-   </extension>
-
 </plugin>

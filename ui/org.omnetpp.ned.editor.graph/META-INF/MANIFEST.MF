@@ -28,5 +28,4 @@ Export-Package: org.omnetpp.ned.editor.graph,
  org.omnetpp.ned.editor.graph.edit,
  org.omnetpp.ned.editor.graph.edit.policies,
  org.omnetpp.ned.editor.graph.misc,
- org.omnetpp.ned.editor.graph.properties,
- org.omnetpp.ned.editor.graph.wizards
+ org.omnetpp.ned.editor.graph.properties
