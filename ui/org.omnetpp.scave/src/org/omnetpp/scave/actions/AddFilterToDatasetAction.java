@@ -56,11 +56,12 @@ public class AddFilterToDatasetAction extends AbstractScaveAction {
 			return;
 		}
 		
-		DatasetSelectionDialog dlg = new DatasetSelectionDialog(editor, DatasetType.VECTOR_LITERAL); //XXX
-		dlg.setMessage( //XXX todo
+		DatasetType datasetType = editor.getBrowseDataPage().getActivePanelType(); 
+		DatasetSelectionDialog dlg = new DatasetSelectionDialog(editor, datasetType); 
+		dlg.setMessage(
 				"Please select the target dataset below, or create new one.\n"+
 				"This dataset will be modified to include all data from Inputs\n"+
-				"that match the following filter:\n"+
+				"that match the following filter:\n\n  "+
 				filterPattern);
 		if (dlg.open() == Window.OK) {
 			Dataset dataset = (Dataset) dlg.getFirstResult();

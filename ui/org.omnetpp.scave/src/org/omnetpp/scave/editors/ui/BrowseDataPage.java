@@ -1,5 +1,6 @@
 package org.omnetpp.scave.editors.ui;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -8,10 +9,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -34,6 +33,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
+import org.omnetpp.scave.model.DatasetType;
 
 /**
  * This is the "Browse data" page of Scave Editor
@@ -101,6 +101,18 @@ public class BrowseDataPage extends ScaveEditorPage {
 				tabfolder.setSelection(i);
 				return;
 			}
+	}
+	
+	public DatasetType getActivePanelType() {
+		FilteredDataPanel activePanel = getActivePanel();
+		if (activePanel == vectorsPanel)
+			return DatasetType.VECTOR_LITERAL;
+		else if (activePanel == scalarsPanel)
+			return DatasetType.SCALAR_LITERAL;
+		else if (activePanel == histogramsPanel)
+			return DatasetType.HISTOGRAM_LITERAL;
+		else
+			throw new IllegalStateException();
 	}
 	
 	private void initialize() {

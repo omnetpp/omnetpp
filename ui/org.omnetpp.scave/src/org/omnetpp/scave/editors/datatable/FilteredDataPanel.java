@@ -81,7 +81,7 @@ public class FilteredDataPanel extends Composite {
 		filterPanel.getToggleFilterTypeButton().addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				if (filterPanel.isShowingAdvancedFilter())
-					switchToSimpleFilter();
+					trySwitchToSimpleFilter();
 				else
 					switchToAdvancedFilter();
 			}
@@ -172,10 +172,16 @@ public class FilteredDataPanel extends Composite {
 		runFilter();
 	}
 
-	public void switchToSimpleFilter() {
+	/**
+	 * Switches the filter from "Avanced" to "Basic" mode. If this cannot be done
+	 * (filter string invalid or too complex), the user is prompted with a dialog,
+	 * and switching may or may not actually take place depending on the answer. 
+	 * @return true if switching was actually done.
+	 */
+	public boolean trySwitchToSimpleFilter() {
 		if (!isFilterPatternValid()) {
 			MessageDialog.openWarning(getShell(), "Error in Filter Expression", "Filter expression is invalid, please fix it first. (Or, just delete the whole text.)");
-			return;
+			return false;
 		}
 		
 		String filterPattern = filterPanel.getAdvancedFilterText().getText();
@@ -183,14 +189,14 @@ public class FilteredDataPanel extends Composite {
 		if (filterUtil.isLossy()) {
 			boolean ok = MessageDialog.openConfirm(getShell(), "Filter Too Complex", "The current filter cannot be represented in Basic view without losing some of its details.");
 			if (!ok)
-				return;  // user cancelled
+				return false;  // user cancelled
 		}
 
 		String[] supportedFields = new String[] {FilterUtil.FIELD_RUNNAME, FilterUtil.FIELD_MODULENAME, FilterUtil.FIELD_DATANAME};
 		if (!filterUtil.containsOnly(supportedFields)) {
 			boolean ok = MessageDialog.openConfirm(getShell(), "Filter Too Complex", "The current filter contains fields not present in Basic view. These extra fields will be discarded.");
 			if (!ok)
-				return;  // user cancelled
+				return false;  // user cancelled
 		}
 
 		filterPanel.getRunNameCombo().setText(filterUtil.getField(FilterUtil.FIELD_RUNNAME));
@@ -199,8 +205,12 @@ public class FilteredDataPanel extends Composite {
 
 		filterPanel.showSimpleFilter();
 		runFilter();
+		return true;
 	}
 
+	/**
+	 * Switches the filter from "Basic" to "Avanced" mode. This is always successful (unlike the opposite way).
+	 */
 	public void switchToAdvancedFilter() {
 		filterPanel.getAdvancedFilterText().setText(assembleFilterPattern());
 		filterPanel.showAdvancedFilter();

@@ -38,7 +38,8 @@ public class AddSelectedToDatasetAction extends AbstractScaveAction {
 		if (activePanel == null)
 			return;
 
-		DatasetSelectionDialog dlg = new DatasetSelectionDialog(editor, DatasetType.VECTOR_LITERAL); //XXX 
+		DatasetType datasetType = editor.getBrowseDataPage().getActivePanelType(); 
+		DatasetSelectionDialog dlg = new DatasetSelectionDialog(editor, datasetType); 
 		if (dlg.open() == Window.OK) {
 			Dataset dataset = (Dataset) dlg.getFirstResult();
 			if (dataset != null) {
