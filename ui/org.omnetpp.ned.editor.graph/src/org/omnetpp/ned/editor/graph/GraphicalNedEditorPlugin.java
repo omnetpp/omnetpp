@@ -88,7 +88,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
                 "The connection tool can be used to connect various modules and submodules",
                 new ModelFactory(ConnectionNodeEx.getStaticTagName()), 
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION),
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION,"l", null, 24)//$NON-NLS-1$
+                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)//$NON-NLS-1$
         );
         // sets the required connection tool
         tool.setToolClass(NedConnectionCreationTool.class);
@@ -108,7 +108,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
                 "A simple module that can be used as a basic building block",
                 new ModelFactory(SimpleModuleNodeEx.getStaticTagName(), IHasName.INITIAL_NAME), 
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SIMPLEMODULE),
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SIMPLEMODULE,"l",null,24)
+                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SIMPLEMODULE)
         );
         drawer.add(combined);
 
@@ -117,7 +117,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
                 "A submodule that can be placed in any compound module",
                 new ModelFactory(SubmoduleNodeEx.getStaticTagName(), IHasName.INITIAL_NAME, IHasName.INITIAL_NAME), 
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SUBMODULE),
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SUBMODULE,"l",null,24)
+                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SUBMODULE)
         );
         drawer.add(combined);
 
@@ -126,7 +126,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
                 "A compound module that is built up from several other modules",
                 new ModelFactory(CompoundModuleNodeEx.getStaticTagName(), IHasName.INITIAL_NAME), 
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_COMPOUNDMODULE),
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_COMPOUNDMODULE,"l",null,24)
+                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_COMPOUNDMODULE)
         );
         drawer.add(combined);
 
@@ -135,7 +135,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
                 "A compound module interface ",
                 new ModelFactory(ModuleInterfaceNodeEx.getStaticTagName(), IHasName.INITIAL_NAME), 
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_INTERFACE),
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_INTERFACE,"l",null,24)
+                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_INTERFACE)
         );
         drawer.add(combined);
         
@@ -144,7 +144,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
                 "A channel is a connection type",
                 new ModelFactory(ChannelNodeEx.getStaticTagName(), IHasName.INITIAL_NAME, IHasName.INITIAL_NAME.toLowerCase()), 
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNEL),
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNEL,"l",null,24)
+                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNEL)
         );
         drawer.add(combined);
 
@@ -153,11 +153,12 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
                 "A channel interface",
                 new ModelFactory(ChannelInterfaceNodeEx.getStaticTagName(), IHasName.INITIAL_NAME), 
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE),
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE,"l",null,24)
+                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE)
         );
         drawer.add(combined);
 
         // TODO add other top level components (channel etc.)
+        // as a multi tool of the current connection tool
         return drawer;
     }
 
@@ -191,8 +192,8 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
             }
             
         	// set the default images for the palette entry
-        	ImageDescriptor imageDescNorm = ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SUBMODULE,null,null,0);
-        	ImageDescriptor imageDescLarge = ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SUBMODULE,"l",null,0);
+        	ImageDescriptor imageDescNorm = ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SUBMODULE);
+        	ImageDescriptor imageDescLarge = ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SUBMODULE);
         	if (nedElement instanceof IHasDisplayString) {
                 IDisplayString dps = ((IHasDisplayString)nedElement).getEffectiveDisplayString();
         		String iid = dps.getAsStringDef(IDisplayString.Prop.IMAGE);

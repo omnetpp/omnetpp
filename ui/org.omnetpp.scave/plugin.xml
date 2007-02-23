@@ -7,17 +7,25 @@
       <editor
             name="OMNeT++ Analysis"
             extensions="scave"
-            icon="icons/analfile.gif"
+            icon="icons/scavefile.png"
             contributorClass="org.omnetpp.scave.editors.ScaveEditorContributor"
             class="org.omnetpp.scave.editors.ScaveEditor"
             id="org.omnetpp.scave.editors.ScaveEditor">
       </editor>
       <editor
             default="true"
-            extensions="sca,vec"
-            id="org.omnetpp.scave.editors.ResultFileOpener"
+            extensions="sca"
+            icon="icons/scafile.png"
+            id="org.omnetpp.scave.editors.ResultFileOpener.sca"
             launcher="org.omnetpp.scave.editors.ResultFileEditorLauncher"
-            name="Scave Analysis Editor"/>
+            name="Scalar Analysis Editor"/>
+      <editor
+            default="true"
+            extensions="vec"
+            icon="icons/vecfile.png"
+            id="org.omnetpp.scave.editors.ResultFileOpener.vec"
+            launcher="org.omnetpp.scave.editors.ResultFileEditorLauncher"
+            name="Vector Analysis Editor"/>
    </extension>
    
    <extension
@@ -46,7 +54,7 @@
      <wizard
            category="org.omnetpp.wizards"
            class="org.omnetpp.scave.wizard.ScaveModelWizard"
-           icon="icons/analfile.gif"
+           icon="icons/newscavefile.png"
            id="org.omnetpp.scave.wizard.ScaveModelModelWizardID"
            name="Analysis File (scave)">
         <description>
@@ -59,7 +67,7 @@
      <view
            category="org.omnetpp.views"
            class="org.omnetpp.scave.views.VectorBrowserView"
-           icon="icons/analfile.gif"
+           icon="icons/vecfile.png"
            id="org.omnetpp.scave.VectorBrowserView"
            name="Output Vector"/>
   </extension>
