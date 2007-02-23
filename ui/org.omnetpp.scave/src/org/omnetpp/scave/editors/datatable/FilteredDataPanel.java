@@ -1,5 +1,6 @@
 package org.omnetpp.scave.editors.datatable;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -8,8 +9,8 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.MessageBox;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.FilterHints;
@@ -91,10 +92,15 @@ public class FilteredDataPanel extends Composite {
 	protected void configureFilterPanel() {
 		SelectionListener selectionListener = new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
+				// check the filter string
+				if (!isFilterPatternValid()) {
+					MessageDialog.openWarning(getShell(), "Error in Filter Expression", "Filter expression is invalid, please fix it. Table contents not changed.");
+					return;
+				}
 				runFilter();
 			}
 			public void widgetDefaultSelected(SelectionEvent e) {
-				runFilter();
+				widgetSelected(e);  //delegate
 			}
 		};
 
@@ -115,24 +121,25 @@ public class FilteredDataPanel extends Composite {
 	}
 
 	protected void runFilter() {
-		// check the filter string
-		if (!isFilterPatternValid()) {
-			MessageDialog.openWarning(getShell(), "Error in Filter Expression", "Filter expression is invalid, please fix it. Table contents not changed.");
-			return;
-		}
-
-		// run the filter on the unfiltered IDList, and set the result to the table
-		if (idlist != null) {
+		Assert.isTrue(idlist!=null);
+		if (isFilterPatternValid()) {
+			// run the filter on the unfiltered IDList, and set the result to the table
 			Filter filter = getFilter();
 			IDList filteredIDList = ScaveModelUtil.filterIDList(idlist, filter, table.getResultFileManager());
 			table.setIDList(filteredIDList);
+		}
+		else {
+			// fallback: if filter is not valid, just show an unfiltered list. This should be
+			// done because we get invoked indirectly as well, like when files get added/removed
+			// on the Inputs page. For the same reason, this function should not bring up an 
+			// error dialog (but the Filter button itself may do so).
+			table.setIDList(idlist);
 		}
 	}
 
 	public boolean isFilterPatternValid() {
 		try {
-			Filter filter = getFilter();
-			table.getResultFileManager().checkPattern(filter.getFilterPattern());
+			ResultFileManager.checkPattern(getFilter().getFilterPattern());
 		} catch (Exception e) {
 			return false; // apparently not valid
 		}

@@ -11,7 +11,7 @@ public class Filter {
 	}
 
 	public Filter(String filterText) {
-		this.filterPattern = filterText;
+		this.filterPattern = filterText==null ? "" : filterText;
 	}
 
 	public String getFilterPattern() {

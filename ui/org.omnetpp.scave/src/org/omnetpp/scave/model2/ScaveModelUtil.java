@@ -317,11 +317,6 @@ public class ScaveModelUtil {
 		return manager.filterIDList(idlist, filter.getFilterPattern());
 	}
 	
-	private static void addAttribute(StringMap attrs, String name, String value) {
-		if (value != null && value.length() > 0)
-			attrs.set(name, value);
-	}
-	
 	/**
 	 * Returns the default chart sheet.
 	 * When the resource did not contain default chart sheet a new one is created,
