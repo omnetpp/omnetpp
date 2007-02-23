@@ -147,7 +147,7 @@ public class DatasetManager {
 
 		builder.getDataflowManager().dump();
 		
-		if (outputs.size() > 0) // XXX DataflowManager craches when there are no sinks
+		if (outputs.size() > 0) // XXX DataflowManager crashes when there are no sinks
 			builder.getDataflowManager().execute();
 
 		XYArray[] result = new XYArray[outputs.size()]; 

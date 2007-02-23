@@ -12,6 +12,7 @@ import org.omnetpp.common.util.StringUtils;
 
 /**
  * Parser for filter texts with error recovery.
+ * FIXME tomi: how does this thing signal errors? document!!!
  *
  * @author tomi
  */
@@ -88,6 +89,9 @@ public class FilterSyntax {
 	}
 	
 	public static interface INodeVisitor {
+		/**
+		 * @return true if traversal should be continued
+		 */
 		boolean visit(Node node);
 		void visit(Token token);
 	}

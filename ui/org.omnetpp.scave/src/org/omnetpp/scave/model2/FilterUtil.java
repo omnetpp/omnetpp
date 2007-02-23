@@ -1,11 +1,16 @@
 package org.omnetpp.scave.model2;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.engine.ResultFile;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.model2.FilterSyntax.INodeVisitor;
@@ -14,7 +19,9 @@ import org.omnetpp.scave.model2.FilterSyntax.Token;
 import org.omnetpp.scave.model2.FilterSyntax.TokenType;
 
 /**
- * Parsing and assembling filter patterns.
+ * Parsing and assembling filter patterns. Filter patterns containing OR, NOT or
+ * parentheses cannot be represented, only ones that contain terms connected with AND.
+ * Whether a pattern is in a representable form can be determined by calling isANDPattern().
  */
 public class FilterUtil {
 
@@ -46,17 +53,27 @@ public class FilterUtil {
 		FIELD_DATETIME,
 	};
 
-	// full match expression
-	private String filterPattern;
-	// separate fields connected with AND operator
-	private Map<String, String> fields = new HashMap<String, String>();
+	// separate fields connected with AND operator. The full string is NOT STORED.
+	private Map<String, String> fields = new LinkedHashMap<String, String>();
+
+	// if true, the original string contained ORs/NOTs/parens, which means it cannot be
+	// reconstructed from fields[].
+	private boolean lossy = false;
 
 	public FilterUtil() {
 	}
 
-	public FilterUtil(String filterText) {
-		this.filterPattern = filterText;
-		parseFields(filterText);
+	public FilterUtil(String filterPattern) {
+		this(filterPattern, false);
+	}
+
+	public FilterUtil(String filterPattern, boolean lossyAllowed) {
+		if (!isANDPattern(filterPattern)) {
+			if (!lossyAllowed) 
+				throw new IllegalArgumentException("Not an AND pattern: "+filterPattern);
+			lossy = true;
+		}
+		parseFields(filterPattern);
 	}
 
 	public FilterUtil(String runName, String moduleName, String dataName) {
@@ -129,36 +146,41 @@ public class FilterUtil {
 	}
 
 	public String getFilterPattern() {
-		return filterPattern != null ? filterPattern : buildPattern();
+		if (lossy)
+			throw new IllegalStateException("Original pattern cannot be reconstructed because it contained OR/NOT/parens");
+		return buildPattern();
 	}
 
-	public boolean setFilterPattern(String text) {
-		filterPattern = text;
-		return parseFields(text);
+	public boolean isLossy() {
+		return lossy;
 	}
-
+	
 	public String getField(String name) {
 		String value = fields.get(name);
 		return value != null ? value : "";
 	}
 
 	public void setField(String name, String value) {
-		//XXX problem: this is called both from outside and during parsing --
-		// this can make things VERY messed up! (setField() is supposed to extend the pattern or is part if it???)
 		fields.put(name, value);
 	}
 
+	public boolean containsOnly(String[] fieldNames) {
+		Set<String> allowedNames = new HashSet<String>(Arrays.asList(fieldNames));
+		for (String name : fields.keySet())
+			if (!allowedNames.contains(name))
+				return false;
+		return true;
+	}
+	
 	private String buildPattern() {
 		StringBuffer sb = new StringBuffer();
-		for (String name : fieldNames) {
-			if (fields.containsKey(name))
-				addField(sb, name, getField(name));
-		}
+		for (String name : fields.keySet())
+			appendField(sb, name, getField(name));
 		if (sb.length() == 0) sb.append("*");
 		return sb.toString();
 	}
 
-	private void addField(StringBuffer sb, String attrName, String attrPattern) {
+	private void appendField(StringBuffer sb, String attrName, String attrPattern) {
 		if (attrPattern != null && attrPattern.length() > 0) {
 			if (sb.length() > 0)
 				sb.append(" AND ");
@@ -167,94 +189,82 @@ public class FilterUtil {
 	}
 
 	private String quote(String str) {
-		if (StringUtils.containsNone(str, " \t\n()"))
+		//FIXME tomi: what if str contains quote??
+		if (StringUtils.containsNone(str, " \t\n()")) {
 			return str;
-		else
-		{
+		}
+		else {
 			StringBuffer sb = new StringBuffer(str.length()+2);
 			sb.append('"').append(str).append('"');
 			return sb.toString();
 		}
 	}
 
-	private boolean parseFields(String matchExpr) { // XXX test code
+	public static boolean isValidPattern(String pattern) {
 		try {
-			Node node = FilterSyntax.parseFilter(matchExpr);
-			FilterNodeVisitor visitor = new FilterNodeVisitor();
-			node.accept(visitor);
-			if (visitor.simple) {
-				for (Map.Entry<String,String> entry : visitor.fields.entrySet())
-					if (isFieldName(entry.getKey()))
-						setField(entry.getKey(), entry.getValue());
-				return true;
-			}
-			else
-				return false;
+			ResultFileManager.checkPattern(pattern);
 		} catch (Exception e) {
-			e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
-			return false;
+			return false; // bogus
 		}
-
+		return true;
 	}
 
+	public static boolean isANDPattern(String pattern) {
+		if (!isValidPattern(pattern))
+			return false; // a bogus pattern is not an "AND" pattern
+		Node node = FilterSyntax.parseFilter(pattern);
+		FilterNodeVisitor visitor = new FilterNodeVisitor();
+		node.accept(visitor);
+		return visitor.isANDPattern;
+	}
+	
+	private void parseFields(String pattern) {
+		// Note: here we allow non-AND patterns which cannot be represented, but 
+		// at least the fields can be extracted.
+		Node node = FilterSyntax.parseFilter(pattern);
+		FilterNodeVisitor visitor = new FilterNodeVisitor();
+		node.accept(visitor);
+		for (Map.Entry<String,String> entry : visitor.fields.entrySet())
+			setField(entry.getKey(), entry.getValue());
+	}
+
+	/**
+	 * Collects fields, and determines whether this is an "AND" pattern
+	 */
 	private static class FilterNodeVisitor implements INodeVisitor {
-		public boolean simple = true;
+		public boolean isANDPattern = true;
 		public Map<String,String> fields = new HashMap<String, String>();
 
 		public boolean visit(Node node) {
 			switch (node.type) {
 			case Node.UNARY_OPERATOR_EXPR: 
-				simple = false; 
-				return false;
+				isANDPattern = false;
+				break;
 			case Node.BINARY_OPERATOR_EXPR:
-				if (node.getOperator().getType() == TokenType.AND)
-					return true;
-				else {
-					simple = false;
-					return false;
-				}
+				if (node.getOperator().getType() != TokenType.AND)
+					isANDPattern = false;
+				break;
 			case Node.PATTERN:
-				if (!fields.containsKey(FilterUtil.getDefaultField())) {
-					if (!node.getPattern().isEmpty())
-						fields.put(FilterUtil.getDefaultField(), node.getPatternString());
-				}
-				else
-					simple = false;
-				return false;
+				if (!node.getPattern().isEmpty())
+					fields.put(FilterUtil.getDefaultField(), node.getPatternString());
+				break;
 			case Node.FIELDPATTERN:
-				if (!fields.containsKey(node.getFieldName())) {
-					if (!node.getPattern().isEmpty())
-						fields.put(node.getFieldName(), node.getPatternString());
-				}
-				else
-					simple = false;
-				return false;
+				if (!node.getPattern().isEmpty())
+					fields.put(node.getFieldName(), node.getPatternString());
+				break;
 			case Node.PARENTHESISED_EXPR:
-				return true;
 			case Node.ROOT:
-				return true;
-			default: Assert.isTrue(false); return false; 
+				break;
+			default: Assert.isTrue(false);  
 			}
+			return true;
 		}
 
 		public void visit(Token token) {}
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		for (String name : fieldNames) {
-			if (fields.containsKey(name)) {
-				sb.append(name).append("=").append(getField(name)).append(" ");
-			}
-		}
-		if (sb.length() > 0)
-			sb.deleteCharAt(sb.length() - 1);
-		else
-			sb.append("<all>");
-		return sb.toString();
+		return getFilterPattern();
 	}
 
-	public boolean isSimple() {
-		return filterPattern!=null && !filterPattern.contains(" or ");  //FIXME dummy! implement: if only contains runId, module and name, with AND
-	}
 }

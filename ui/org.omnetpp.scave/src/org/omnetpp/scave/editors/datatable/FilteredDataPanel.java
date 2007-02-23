@@ -1,7 +1,6 @@
 package org.omnetpp.scave.editors.datatable;
 
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -9,7 +8,6 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
@@ -168,15 +166,23 @@ public class FilteredDataPanel extends Composite {
 	}
 
 	public void switchToSimpleFilter() {
+		if (!isFilterPatternValid()) {
+			MessageDialog.openWarning(getShell(), "Error in Filter Expression", "Filter expression is invalid, please fix it first. (Or, just delete the whole text.)");
+			return;
+		}
+		
 		String filterPattern = filterPanel.getAdvancedFilterText().getText();
-		FilterUtil filterUtil = new FilterUtil(filterPattern);
+		FilterUtil filterUtil = new FilterUtil(filterPattern, true);
+		if (filterUtil.isLossy()) {
+			boolean ok = MessageDialog.openConfirm(getShell(), "Filter Too Complex", "The current filter cannot be represented in Basic view without losing some of its details.");
+			if (!ok)
+				return;  // user cancelled
+		}
 
-		if (!filterUtil.isSimple()) {
-			MessageBox messageBox = new MessageBox(getShell(), SWT.ICON_WARNING | SWT.OK | SWT.CANCEL);
-			messageBox.setText("Warning");
-			messageBox.setMessage("The current filter can only be represented in Basic view after "+
-								  "losing some of its details.");
-			if (messageBox.open() != SWT.OK)
+		String[] supportedFields = new String[] {FilterUtil.FIELD_RUNNAME, FilterUtil.FIELD_MODULENAME, FilterUtil.FIELD_DATANAME};
+		if (!filterUtil.containsOnly(supportedFields)) {
+			boolean ok = MessageDialog.openConfirm(getShell(), "Filter Too Complex", "The current filter contains fields not present in Basic view. These extra fields will be discarded.");
+			if (!ok)
 				return;  // user cancelled
 		}
 
@@ -185,10 +191,12 @@ public class FilteredDataPanel extends Composite {
 		filterPanel.getNameCombo().setText(filterUtil.getField(FilterUtil.FIELD_DATANAME));
 
 		filterPanel.showSimpleFilter();
+		runFilter();
 	}
 
 	public void switchToAdvancedFilter() {
 		filterPanel.getAdvancedFilterText().setText(assembleFilterPattern());
 		filterPanel.showAdvancedFilter();
+		runFilter();
 	}
 }
