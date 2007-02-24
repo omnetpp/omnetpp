@@ -1,9 +1,5 @@
 package org.omnetpp.common.canvas;
 
-import java.util.ArrayList;
-
-import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -11,21 +7,14 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
-import org.omnetpp.common.canvas.ITileCache.Tile;
 
 /**
  * A canvas that supports a scrollable area which can be very large,
- * as the area's width/height are stored 64-bit numbers. This class
+ * as the area's width/height are stored as 64-bit numbers. This class
  * overcomes the scrollbar's 32-bit limit.
  * 
  * @author andras

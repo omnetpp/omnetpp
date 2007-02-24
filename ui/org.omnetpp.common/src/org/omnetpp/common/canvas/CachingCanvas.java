@@ -2,8 +2,6 @@ package org.omnetpp.common.canvas;
 
 import java.util.ArrayList;
 
-import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
