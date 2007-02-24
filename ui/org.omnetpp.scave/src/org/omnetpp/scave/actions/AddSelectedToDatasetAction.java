@@ -77,7 +77,7 @@ public class AddSelectedToDatasetAction extends AbstractScaveAction {
 
 	@Override
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		System.out.println("isApplicable called!");  //XXX
+		//System.out.println("isApplicable called!");  //XXX
 		String filterString = editor.getBrowseDataPage().getActivePanel().getFilter().getFilterPattern();
 		return !filterString.equals("");
 	}

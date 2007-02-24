@@ -102,12 +102,7 @@ public class ChartFactory {
 		setChartProperties(chart, vectorChart);
 
 		vectorChart.setBackground(ColorConstants.white);
-		new RubberbandSupport(vectorChart, SWT.CTRL) {
-			@Override
-			public void rubberBandSelectionMade(Rectangle r) {
-				vectorChart.zoomToRectangle(new org.eclipse.draw2d.geometry.Rectangle(r));
-			}
-		};
+		new CanvasZoomSupport(vectorChart); // add mouse handling
 		return vectorChart;
 	}
 

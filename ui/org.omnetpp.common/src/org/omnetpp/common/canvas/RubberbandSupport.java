@@ -72,7 +72,7 @@ public abstract class RubberbandSupport {
 		canvas.addMouseListener(new MouseListener() {
 			public void mouseDown(MouseEvent e) {
 	    		if (rubberBand==null && e.button==1 && 
-	    			(modifierKeys==0 || (e.stateMask & modifierKeys)!=0) && 
+	    			((e.stateMask & SWT.MODIFIER_MASK)==modifierKeys) && 
 	    			(rubberBandBounds==null || rubberBandBounds.contains(e.x, e.y))) 
 	    		{
 					// start selection

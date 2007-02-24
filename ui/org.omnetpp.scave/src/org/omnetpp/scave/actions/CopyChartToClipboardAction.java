@@ -27,7 +27,7 @@ public class CopyChartToClipboardAction extends AbstractScaveAction {
 
 	@Override
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		System.out.println("********* ActivePAge:"+editor.getActiveEditorPage());
+		//System.out.println("********* ActivePage:"+editor.getActiveEditorPage()); //XXX
 		return editor.getActiveEditorPage() instanceof ChartPage;
 	}
 }
