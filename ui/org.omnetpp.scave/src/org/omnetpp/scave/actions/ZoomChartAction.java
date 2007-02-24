@@ -1,13 +1,12 @@
 package org.omnetpp.scave.actions;
 
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.ChartPage;
 import org.omnetpp.scave.editors.ui.ScaveEditorPage;
-
-import static org.omnetpp.common.image.ImageFactory.*;
 
 /**
  * Zooms in/out the chart of the active chart page in the active Scave editor.
@@ -26,8 +25,8 @@ public class ZoomChartAction extends AbstractScaveAction {
 		String dir = (zoomFactor > 1.0 ? "in" : "out");
 		setText("Zoom " +  dir + (horizontally ? " X" : " Y"));
 		setDescription("Zoom " + dir + " chart " + (horizontally ? "horizontally" : "vertically"));
-		String imageId = zoomFactor > 1.0 ? TOOLBAR_IMAGE_ZOOMPLUS : TOOLBAR_IMAGE_ZOOMMINUS;
-		setImageDescriptor(getDescriptor(imageId));
+		String imageId = zoomFactor > 1.0 ? ImageFactory.TOOLBAR_IMAGE_ZOOMPLUS : ImageFactory.TOOLBAR_IMAGE_ZOOMMINUS;
+		setImageDescriptor(ImageFactory.getDescriptor(imageId));
 	}
 
 	@Override
