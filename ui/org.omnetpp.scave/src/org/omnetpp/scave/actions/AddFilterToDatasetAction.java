@@ -6,12 +6,13 @@ import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.window.Window;
-import org.eclipse.swt.widgets.MessageBox;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.editors.ui.DatasetSelectionDialog;
+import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
@@ -78,13 +79,18 @@ public class AddFilterToDatasetAction extends AbstractScaveAction {
 						break;
 				}
 
+				Add addItem = ScaveModelUtil.createAdd(filterPattern);
 				Command command = AddCommand.create(
 							editor.getEditingDomain(),
 							dataset,
 							ScaveModelPackage.eINSTANCE.getDataset_Items(),
-							ScaveModelUtil.createAdd(filterPattern),
+							addItem,
 							index);
 				editor.executeCommand(command);
+				
+				// show the dataset
+				editor.showDatasetsPage(); // or: editor.openDataset(dataset);
+				editor.setSelection(new StructuredSelection(addItem));
 			}
 		}
 	}

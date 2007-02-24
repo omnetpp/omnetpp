@@ -115,8 +115,16 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		return manager;
 	}
 	
+	public InputsPage getInputsPage() {
+		return inputsPage;
+	}
+
 	public BrowseDataPage getBrowseDataPage() {
 		return browseDataPage;
+	}
+	
+	public DatasetsAndChartsPage getDatasetsPage() {
+		return datasetsPage;
 	}
 	
 	@Override
@@ -308,7 +316,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	 * Opens the given dataset on a new editor page, and switches to it. 
 	 */
 	public void openDataset(Dataset dataset) {
-		int pageIndex = createDatasetPage(dataset);
+		int pageIndex = createDatasetPage(dataset);  //FIXME if already open, just switch to it!
 		setActivePage(pageIndex);
 	}
 
@@ -316,17 +324,31 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	 * Opens the given chart sheet on a new editor page, and switches to it. 
 	 */
 	public void openChartSheet(ChartSheet chartSheet) {
-		int pageIndex = createChartSheetPage(chartSheet);
+		int pageIndex = createChartSheetPage(chartSheet);  //FIXME if already open, just switch to it!
 		setActivePage(pageIndex);
 	}
 	
 	/**
-	 * 
+	 * Opens "Browse Vector Data" page for the given vector 
 	 */
+	//FIXME currently not accessible from the UI -- maybe not even needed because we have a view for this already
 	public void openBrowseVectorDataPage(VectorResult vector) {
 		int pageIndex = createBrowseVectorDataPage(vector);
 		setActivePage(pageIndex);
 	}
+
+	public void showInputsPage() {
+		showPage(getInputsPage());
+	}
+
+	public void showBrowseDataPage() {
+		showPage(getBrowseDataPage());
+	}
+
+	public void showDatasetsPage() {
+		showPage(getDatasetsPage());
+	}
+	
 	
 	public void showPage(ScaveEditorPage page) {
 		int pageIndex = findPage(page);
