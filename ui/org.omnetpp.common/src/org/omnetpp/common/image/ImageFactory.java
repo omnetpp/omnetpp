@@ -31,6 +31,8 @@ public class ImageFactory {
     public final static String TOOLBAR_IMAGE_UNPIN = TOOL_IMAGE_DIR + "unpin";
     public final static String TOOLBAR_IMAGE_LAYOUT = TOOL_IMAGE_DIR + "layout";
     public final static String TOOLBAR_IMAGE_OUTLINE = TOOL_IMAGE_DIR + "outline";
+    public final static String TOOLBAR_IMAGE_ZOOM = TOOL_IMAGE_DIR + "zoom";
+    public final static String TOOLBAR_IMAGE_HAND = TOOL_IMAGE_DIR + "hand";
     public final static String TOOLBAR_IMAGE_ZOOMMINUS = TOOL_IMAGE_DIR + "zoomminus";
     public final static String TOOLBAR_IMAGE_ZOOMPLUS = TOOL_IMAGE_DIR + "zoomplus";
     public final static String TOOLBAR_IMAGE_REFRESH = TOOL_IMAGE_DIR + "refresh";
