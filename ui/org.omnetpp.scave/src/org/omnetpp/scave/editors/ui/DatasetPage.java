@@ -96,7 +96,7 @@ public class DatasetPage extends ScaveEditorPage {
 		
 		// add "Choose columns" action to data table
 		DataTable table = filterPanel.getTable();
-		table.getMenuManager().add(new ChooseTableColumnsAction(table));
+		table.getContextMenuManager().add(new ChooseTableColumnsAction(table));
 
 		// make the data table follow the treeviewer's selection
 		treeViewer.addPostSelectionChangedListener(new ISelectionChangedListener() {

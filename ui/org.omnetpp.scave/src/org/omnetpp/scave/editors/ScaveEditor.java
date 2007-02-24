@@ -30,7 +30,7 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.editors.ui.BrowseVectorPage;
-import org.omnetpp.scave.editors.ui.ChartPage2;
+import org.omnetpp.scave.editors.ui.ChartPage;
 import org.omnetpp.scave.editors.ui.ChartSheetPage;
 import org.omnetpp.scave.editors.ui.DatasetPage;
 import org.omnetpp.scave.editors.ui.DatasetsAndChartsPage;
@@ -380,11 +380,11 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		if (dataset.getType() == DatasetType.VECTOR_LITERAL) {
-			ChartPage2 page = new ChartPage2(getContainer(), this, chart);  //XXX experimental
+			ChartPage page = new ChartPage(getContainer(), this, chart);  //XXX experimental
 			index = addClosableScaveEditorPage(page); //XXX experimental
 		} 
 		else {
-			ChartPage2 page = new ChartPage2(getContainer(), this, chart);
+			ChartPage page = new ChartPage(getContainer(), this, chart);
 			index = addClosableScaveEditorPage(page);
 		}
 

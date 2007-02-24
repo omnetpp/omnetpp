@@ -202,12 +202,10 @@ public class ScaveEditorPage extends ScrolledForm {
 	 * The action will be enabled/disabled based on the selection service's
 	 * selection.
 	 */
+	//XXX not currently used, remove?
 	public static void configureGlobalButton(IWorkbenchWindow workbenchWindow, final Button button, final IScaveAction action) {
 		doConfigureButton(button, action);
-		hookActionOnSelectionChange(workbenchWindow, action);
-	}
-
-	public static void hookActionOnSelectionChange(IWorkbenchWindow workbenchWindow, final IScaveAction action) {
+		 // hook action on selection change
 		workbenchWindow.getSelectionService().addSelectionListener(new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 				action.selectionChanged(selection);
@@ -256,8 +254,8 @@ public class ScaveEditorPage extends ScrolledForm {
 	/**
 	 * Adds event adapter to the chart view so that clicking on the view
 	 * will select the chart object in the model.
-	 * Adds the "Edit..." item to the context menu of the view.
 	 */
+	//FIXME why is it here in this class???? 
 	public void configureChartView(final Control view, final Chart chart) {
 		// mouse click on the view selects the chart object in the model
 		view.addMouseListener(new MouseAdapter() {
@@ -265,35 +263,12 @@ public class ScaveEditorPage extends ScrolledForm {
 				scaveEditor.setSelection(new StructuredSelection(chart));
 			}
 		});
-		
-		// add Edit action to the context menu of the view
-		if (view.getMenu() == null)
-			view.setMenu(new Menu(view));
-		final EditAction editAction = new EditAction();
-		MenuItem item = new MenuItem(view.getMenu(), SWT.PUSH);
-		item.setText(editAction.getText());
-		item.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				editAction.run();
-			}
-		});
-		
-		// experimental
-		if (view instanceof ChartCanvas) {
-			item = new MenuItem(view.getMenu(), SWT.PUSH);
-			item.setText("Copy...");
-			item.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
-					BusyIndicator.showWhile(getDisplay(), new Runnable() {
-						public void run() {
-							((ChartCanvas)view).copyToClipboard();
-						}
-					});
-				}
-			});
-		}
 	}
 	
+	/**
+	 * Utility function configure data panel to display selection count in the status bar.
+	 */
+	//FIXME does it really have to be in this class?
 	public void configureFilteredDataPanel(FilteredDataPanel panel) {
 		final DataTable table = panel.getTable();
 		table.addSelectionListener(new SelectionAdapter() {

@@ -4,7 +4,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.ui.ChartPage2;
+import org.omnetpp.scave.editors.ui.ChartPage;
 import org.omnetpp.scave.editors.ui.ScaveEditorPage;
 
 import static org.omnetpp.common.image.ImageFactory.*;
@@ -33,8 +33,8 @@ public class ZoomChartAction extends AbstractScaveAction {
 	@Override
 	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
 		ScaveEditorPage page = scaveEditor.getActiveEditorPage();
-		if (page != null && page instanceof ChartPage2) {
-			ChartCanvas canvas = ((ChartPage2)page).getChartView();
+		if (page != null && page instanceof ChartPage) {
+			ChartCanvas canvas = ((ChartPage)page).getChartView();
 			if (horizontally)
 				canvas.zoomXBy(zoomFactor);
 			else
@@ -44,6 +44,6 @@ public class ZoomChartAction extends AbstractScaveAction {
 
 	@Override
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		return editor.getActiveEditorPage() instanceof ChartPage2;
+		return editor.getActiveEditorPage() instanceof ChartPage;
 	}
 }

@@ -8,7 +8,7 @@ import java.util.Collection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.ui.ChartPage2;
+import org.omnetpp.scave.editors.ui.ChartPage;
 import org.omnetpp.scave.editors.ui.ScaveEditorPage;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Analysis;
@@ -32,8 +32,8 @@ public class CreateChartTemplateAction extends AbstractScaveAction {
 	@Override
 	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
 		ScaveEditorPage page = scaveEditor.getActiveEditorPage();
-		if (page != null && page instanceof ChartPage2) {
-			Chart chart = ((ChartPage2)page).getChart();
+		if (page != null && page instanceof ChartPage) {
+			Chart chart = ((ChartPage)page).getChart();
 			if (isTemporaryChart(chart, scaveEditor)) {
 				Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 				System.out.println("TODO implement"); //FIXME TODO implement
@@ -82,8 +82,8 @@ public class CreateChartTemplateAction extends AbstractScaveAction {
 	@Override
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
 		ScaveEditorPage page = editor.getActiveEditorPage();
-		return page != null && page instanceof ChartPage2 &&
-				isTemporaryChart(((ChartPage2)page).getChart(), editor);
+		return page != null && page instanceof ChartPage &&
+				isTemporaryChart(((ChartPage)page).getChart(), editor);
 	}
 	
 	private boolean isTemporaryChart(Chart chart, ScaveEditor editor) {

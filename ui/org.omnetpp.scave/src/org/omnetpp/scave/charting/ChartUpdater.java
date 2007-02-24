@@ -16,6 +16,11 @@ import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
+/**
+ * FIXME Tomi: please write a class description! What does this thing do??
+ * 
+ * @author tomi
+ */
 public class ChartUpdater {
 	private Chart chart;
 	private Control view;

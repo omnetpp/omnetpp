@@ -174,7 +174,7 @@ public class DataTable extends Table {
 		return idlist;
 	}
 
-	public IMenuManager getMenuManager() {
+	public IMenuManager getContextMenuManager() {
 		return contextMenuManager;
 	}
 	

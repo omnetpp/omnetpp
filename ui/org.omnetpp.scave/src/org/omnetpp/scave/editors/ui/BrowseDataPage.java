@@ -25,6 +25,7 @@ import org.omnetpp.scave.actions.CreateTempChartAction;
 import org.omnetpp.scave.actions.IScaveAction;
 import org.omnetpp.scave.actions.ShowVectorBrowserViewAction;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.editors.ScaveEditorContributor;
 import org.omnetpp.scave.editors.datatable.ChooseTableColumnsAction;
 import org.omnetpp.scave.editors.datatable.DataTable;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
@@ -53,13 +54,6 @@ public class BrowseDataPage extends ScaveEditorPage {
 	
 	private IResultFilesChangeListener fileChangeListener;
 	private SelectionListener selectionChangeListener;
-	
-	// actions
-	private IScaveAction addFilterToDatasetAction = new AddFilterToDatasetAction();
-	private IScaveAction addSelectedToDatasetAction = new AddSelectedToDatasetAction();
-	private IScaveAction copyToClipboardAction = new CopyToClipboardAction();
-	private IScaveAction createTempChartAction = new CreateTempChartAction();
-    private IAction showVectorBrowserViewAction = new ShowVectorBrowserViewAction();
 	
 	
 	public BrowseDataPage(Composite parent, ScaveEditor editor) {
@@ -128,12 +122,6 @@ public class BrowseDataPage extends ScaveEditorPage {
 		label.setBackground(this.getBackground());
 		createTabFolder();
 		
-		// assign actions to the buttons
-		IWorkbenchWindow workbenchWindow = scaveEditor.getSite().getWorkbenchWindow();
-		hookActionOnSelectionChange(workbenchWindow, copyToClipboardAction);
-		hookActionOnSelectionChange(workbenchWindow, addSelectedToDatasetAction);
-		hookActionOnSelectionChange(workbenchWindow, createTempChartAction);
-		
 		configurePanel(scalarsPanel);
 		configurePanel(vectorsPanel);
 		configurePanel(histogramsPanel);
@@ -178,20 +166,23 @@ public class BrowseDataPage extends ScaveEditorPage {
 	}
 	
 	private void configurePanel(FilteredDataPanel panel) {
-		IMenuManager contextMenuManager = panel.getTable().getMenuManager();
-		contextMenuManager.add(createTempChartAction);
+		// populate the popup menu of the panel
+		IMenuManager contextMenuManager = panel.getTable().getContextMenuManager();
+		ScaveEditorContributor editorContributor = ScaveEditorContributor.getDefault();
+		contextMenuManager.add(editorContributor.getCreateTempChartAction());
 		contextMenuManager.add(new Separator());
-		contextMenuManager.add(addFilterToDatasetAction);
-		contextMenuManager.add(addSelectedToDatasetAction);
+		contextMenuManager.add(editorContributor.getAddFilterToDatasetAction());
+		contextMenuManager.add(editorContributor.getAddSelectedToDatasetAction());
 		contextMenuManager.add(new Separator());
-		contextMenuManager.add(copyToClipboardAction);
+		contextMenuManager.add(editorContributor.getCopyToClipboardAction());
 		contextMenuManager.add(new Separator());
 		contextMenuManager.add(new ChooseTableColumnsAction(panel.getTable()));
 		contextMenuManager.add(new Separator());
-		contextMenuManager.add(showVectorBrowserViewAction);
+		contextMenuManager.add(editorContributor.getShowVectorBrowserViewAction());
 	}
 	
 	private void hookListeners() {
+		// asynchronously update the page contents on result file changes (ie. input file load/unload) 
 		if (fileChangeListener == null) {
 			fileChangeListener = new IResultFilesChangeListener() {
 				public void resultFileManagerChanged(final ResultFileManager manager) {
@@ -205,6 +196,8 @@ public class BrowseDataPage extends ScaveEditorPage {
 			scaveEditor.getResultFileManager().addListener(fileChangeListener);
 		}
 		
+		// when they double-click in the vectors panel, open chart
+		//FIXME remembering selectionChangeListener, and unhooking it in unhookListeners() is probably redundant! remove it! 
 		if (selectionChangeListener == null) {
 			selectionChangeListener = new SelectionAdapter() {
 				@Override
@@ -218,7 +211,8 @@ public class BrowseDataPage extends ScaveEditorPage {
 
 				@Override
 				public void widgetDefaultSelected(SelectionEvent e) {
-					createTempChartAction.run();
+					ScaveEditorContributor editorContributor = ScaveEditorContributor.getDefault();
+					editorContributor.getCreateTempChartAction().run();
 				}
 			};
 			vectorsPanel.getTable().addSelectionListener(selectionChangeListener);
@@ -229,9 +223,11 @@ public class BrowseDataPage extends ScaveEditorPage {
 		if (fileChangeListener != null) {
 			ResultFileManagerEx manager = scaveEditor.getResultFileManager();
 			manager.removeListener(fileChangeListener);
+			fileChangeListener = null;
 		}
 		if (selectionChangeListener != null) {
 			vectorsPanel.getTable().removeSelectionListener(selectionChangeListener);
+			selectionChangeListener = null;
 		}
 	}
 

@@ -5,7 +5,7 @@ import static org.omnetpp.common.image.ImageFactory.TOOLBAR_IMAGE_REFRESH;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.ui.ChartPage2;
+import org.omnetpp.scave.editors.ui.ChartPage;
 import org.omnetpp.scave.editors.ui.ScaveEditorPage;
 
 /**
@@ -28,15 +28,15 @@ public class RefreshChartAction extends AbstractScaveAction {
 	@Override
 	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
 		ScaveEditorPage page = scaveEditor.getActiveEditorPage();
-		if (page != null && page instanceof ChartPage2) {
-			((ChartPage2)page).getChartUpdater().updateDataset();
+		if (page != null && page instanceof ChartPage) {
+			((ChartPage)page).getChartUpdater().updateDataset();
 		}
 	}
 
 	@Override
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
 		ScaveEditorPage page = editor.getActiveEditorPage();
-		return page != null && page instanceof ChartPage2;
+		return page != null && page instanceof ChartPage;
 	}
 
 }
