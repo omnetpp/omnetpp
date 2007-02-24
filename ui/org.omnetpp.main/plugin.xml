@@ -37,7 +37,7 @@
           value="10,10,300,10"/>
     <property
           name="aboutText"
-          value="OMNEST/OMNeT++ IDE, based on Eclipse platform."/>
+          value="OMNEST/OMNeT++ IDE, based on the Eclipse platform."/>
     <property
           name="aboutImage"
           value="icons/logo128.gif"/>
@@ -76,5 +76,13 @@
             Create a Project that can handle OMNEST/OMNeT++ specific files, like NED, VEC, SCA etc.
          </description>
       </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="org.omnetpp.ide.PerspectiveFactory"
+            icon="icons/omnest16.gif"
+            id="org.omnetpp.main.perspective"
+            name="OMNeT++/OMNEST"/>
    </extension>
 </plugin>
