@@ -1,17 +1,9 @@
-package org.omnetpp.scave.charting;
+package org.omnetpp.common.canvas;
 
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-import org.omnetpp.common.canvas.CachingCanvas;
 
 /**
  * Extends CachingCanvas with zoom handling capabilities. Dragging and
@@ -19,7 +11,6 @@ import org.omnetpp.common.canvas.CachingCanvas;
  *
  * @author andras
  */
-//FIXME move to the "common" package
 //FIXME while zooming with Ctrl+wheel too fast, one can get "event loop exception: SWTError: No more handles"
 //FIXME add tooltip support
 public abstract class ZoomableCachingCanvas extends CachingCanvas {
@@ -164,6 +155,11 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	public void zoomBy(double zoomFactor) {
 		zoomXBy(zoomFactor);
 		zoomYBy(zoomFactor);
+	}
+
+	public void zoomBy(double zoomFactor, int aroundCanvasX, int aroundCanvasY) {
+		System.out.println("zoom around point not implemented. x="+aroundCanvasX+", y="+aroundCanvasY); //FIXME
+		zoomBy(zoomFactor);
 	}
 	
 	public void zoomToFitX() {

@@ -27,6 +27,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.image.ImageConverter;
 import org.omnetpp.common.util.Converter;

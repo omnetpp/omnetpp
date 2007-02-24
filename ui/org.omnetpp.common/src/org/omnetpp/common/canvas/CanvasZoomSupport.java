@@ -1,4 +1,4 @@
-package org.omnetpp.scave.charting;
+package org.omnetpp.common.canvas;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
@@ -8,7 +8,6 @@ import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.omnetpp.common.canvas.RubberbandSupport;
 
 /**
  * Adds mouse bindings to a ZoomableCachingCanvas for zooming and panning.
@@ -117,9 +116,9 @@ public class CanvasZoomSupport {
 					int modifier = event.stateMask & SWT.MODIFIER_MASK;
 					if (event.button==1) {
 						if ((mouseMode==ZOOM_MODE && modifier==SWT.NONE) || (mouseMode==PAN_MODE && modifier==SWT.CTRL))
-							canvas.zoomBy(1.5); //zoom in  FIXME about the click position!
+							canvas.zoomBy(1.5, event.x, event.y); //zoom in around mouse
 						if ((mouseMode==ZOOM_MODE && modifier==SWT.SHIFT) || (mouseMode==PAN_MODE && modifier==(SWT.CTRL|SWT.SHIFT)))
-							canvas.zoomBy(1/1.5); //zoom out   FIXME about the click position!
+							canvas.zoomBy(1/1.5, event.x, event.y); //zoom out around mouse
 					}
 				}
 			}

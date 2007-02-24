@@ -1,6 +1,8 @@
 package org.omnetpp.scave.charting;
 
+import static org.omnetpp.scave.model2.ChartProperties.PROP_ANTIALIAS;
 import static org.omnetpp.scave.model2.ChartProperties.PROP_AXIS_TITLE_FONT;
+import static org.omnetpp.scave.model2.ChartProperties.PROP_CACHING;
 import static org.omnetpp.scave.model2.ChartProperties.PROP_LABEL_FONT;
 import static org.omnetpp.scave.model2.ChartProperties.PROP_LINE_TYPE;
 import static org.omnetpp.scave.model2.ChartProperties.PROP_SYMBOL_SIZE;
@@ -16,8 +18,6 @@ import static org.omnetpp.scave.model2.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.model2.ChartProperties.PROP_Y_AXIS_MAX;
 import static org.omnetpp.scave.model2.ChartProperties.PROP_Y_AXIS_MIN;
 import static org.omnetpp.scave.model2.ChartProperties.PROP_Y_AXIS_TITLE;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_ANTIALIAS;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_CACHING;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
