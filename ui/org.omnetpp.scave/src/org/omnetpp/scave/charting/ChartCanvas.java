@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.image.ImageConverter;
 import org.omnetpp.common.util.Converter;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.model2.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.model2.ChartProperties.LegendPosition;
 
@@ -70,6 +71,8 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			setLegendPosition(Converter.stringToEnum(value, LegendPosition.class));
 		else if (PROP_LEGEND_ANCHORING.equals(name))
 			setLegendAnchor(Converter.stringToEnum(value, LegendAnchor.class));
+		else
+			ScavePlugin.logError(new RuntimeException("unrecognized chart property: "+name));
 	}
 	
 	

@@ -24,7 +24,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
-import org.omnetpp.scave.Activator;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.ContentTypes;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
@@ -179,7 +179,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 				}
 			});
 		} catch (CoreException e) {
-			Activator.logError(e);
+			ScavePlugin.logError(e);
 		}
 		return files;
 	}
@@ -228,7 +228,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 					manager.loadFile(file.getFullPath().toString(), osPath);
 				}
 			} catch (Exception e) {
-				Activator.logError("Could not load file: " + file.getLocation().toOSString(), e);
+				ScavePlugin.logError("Could not load file: " + file.getLocation().toOSString(), e);
 			}
 		}
 		else
@@ -261,7 +261,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 					manager.unloadFile(resultFile);
 					manager.loadFile(resourcePath, osPath);
 				} catch (Exception e) {
-					Activator.logError("Could not reload file: " + file.getLocation().toOSString(), e);
+					ScavePlugin.logError("Could not reload file: " + file.getLocation().toOSString(), e);
 				}
 			}
 		}

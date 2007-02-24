@@ -9,18 +9,18 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin {
+public class ScavePlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.omnetpp.scave";
 
 	// The shared instance
-	private static Activator plugin;
+	private static ScavePlugin plugin;
 	
 	/**
 	 * The constructor
 	 */
-	public Activator() {
+	public ScavePlugin() {
 		plugin = this;
 	}
 
@@ -46,7 +46,7 @@ public class Activator extends AbstractUIPlugin {
 	 *
 	 * @return the shared instance
 	 */
-	public static Activator getDefault() {
+	public static ScavePlugin getDefault() {
 		return plugin;
 	}
 

@@ -15,7 +15,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
-import org.omnetpp.scave.Activator;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.wizard.ScaveModelWizard;
 
 /**
@@ -41,7 +41,7 @@ public class ResultFileEditorLauncher implements IEditorLauncher {
 			if (file != null)
 				IDE.openEditor(page, file);
 		} catch (CoreException e) {
-			Activator.logError(e);
+			ScavePlugin.logError(e);
 		}
 	}
 	

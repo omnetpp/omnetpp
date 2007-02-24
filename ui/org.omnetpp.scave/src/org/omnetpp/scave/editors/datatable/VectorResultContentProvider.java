@@ -2,7 +2,7 @@ package org.omnetpp.scave.editors.datatable;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.omnetpp.common.virtualtable.IVirtualTableContentProvider;
-import org.omnetpp.scave.Activator;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.OutputVectorEntry;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.IndexedVectorFileReaderEx;
@@ -115,7 +115,7 @@ public class VectorResultContentProvider implements IVirtualTableContentProvider
 				reader = new IndexedVectorFileReaderEx(filename, vectorId);
 			}
 			catch (Exception e) {
-				Activator.logError("Cannot open index file: "+filename, e);
+				ScavePlugin.logError("Cannot open index file: "+filename, e);
 			}
 		}
 	}

@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.dialogs.ListSelectionDialog;
 import org.omnetpp.common.util.CsvWriter;
-import org.omnetpp.scave.Activator;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ScalarResult;
@@ -106,7 +106,7 @@ public class DataTable extends Table {
 	private IDList idlist;
 	private ListenerList listeners;
 	private List<Column> columns;
-	private IPreferenceStore preferences = Activator.getDefault().getPreferenceStore(); // XXX
+	private IPreferenceStore preferences = ScavePlugin.getDefault().getPreferenceStore(); // XXX
 
 	// holds actions for the context menu for this data table 
 	private MenuManager contextMenuManager = new MenuManager("#PopupMenu"); 
