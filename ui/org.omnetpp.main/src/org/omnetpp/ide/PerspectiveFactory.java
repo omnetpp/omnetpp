@@ -9,6 +9,9 @@ import org.eclipse.ui.progress.IProgressConstants;
  * The default OMNeT++/OMNEST perspective. We mainly define our own perspective 
  * in order to contribute our New File wizards to the File menu.
  * 
+ * Note: all of this would be possible from plugin.xml too, using
+ * the <code>org.eclipse.ui.perspectiveExtensions</code> extension.
+ * 
  * @author Andras
  */
 public class PerspectiveFactory implements IPerspectiveFactory {
@@ -19,7 +22,7 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 		
  		String editorArea = layout.getEditorArea();
 		
- 		IFolderLayout folder = layout.createFolder("left", IPageLayout.LEFT, (float)0.33, editorArea); //$NON-NLS-1$
+ 		IFolderLayout folder = layout.createFolder("left", IPageLayout.LEFT, (float)0.25, editorArea); //$NON-NLS-1$
 		folder.addView(IPageLayout.ID_RES_NAV);
 		layout.addView(IPageLayout.ID_OUTLINE, IPageLayout.BOTTOM, (float)0.75, IPageLayout.ID_RES_NAV);
 		

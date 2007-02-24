@@ -2,12 +2,12 @@
 <?eclipse version="3.2"?>
 <plugin>
 
-     <extension id="product" 
+     <extension id="product"
          name="OMNeT++ Integrated Development Environment"
-	 point="org.eclipse.core.runtime.products"> 
-      <product name="OMNeT++ IDE" application="org.eclipse.ui.ide.workbench" description="%productBlurb"> 
-          <property name="appName" value="OMNeT++ Integrated Development Environment"/> 
-          <property name="preferenceCustomization" value="plugin_customization.ini"/> 
+	 point="org.eclipse.core.runtime.products">
+      <product name="OMNeT++ IDE" application="org.eclipse.ui.ide.workbench" description="%productBlurb">
+          <property name="appName" value="OMNeT++ Integrated Development Environment"/>
+          <property name="preferenceCustomization" value="plugin_customization.ini"/>
          <property
           		name="introTitle"
           		value="Intro title"/>
@@ -43,9 +43,9 @@
           value="icons/logo128.gif"/>
     <property
           name="windowImages"
-          value="icons/omnest16.gif,icons/omnest32.gif,icons/omnest48.gif,icons/omnest64.gif,icons/omnest128.gif"/>                
-      </product> 
-   </extension> 
+          value="icons/omnest16.gif,icons/omnest32.gif,icons/omnest48.gif,icons/omnest64.gif,icons/omnest128.gif"/>
+      </product>
+   </extension>
    <extension
          id="omnetppnature"
          name="OMNeT++ Nature"
@@ -82,7 +82,35 @@
       <perspective
             class="org.omnetpp.ide.PerspectiveFactory"
             icon="icons/omnest16.gif"
-            id="org.omnetpp.main.perspective"
+            id="org.omnetpp.main.OmnetppPerspective"
             name="OMNeT++/OMNEST"/>
    </extension>
+   <extension   
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.ui.resourcePerspective">
+         <perspectiveShortcut
+               id="org.omnetpp.main.OmnetppPerspective">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="org.eclipse.ui.resourcePerspective">
+         <perspectiveShortcut
+               id="org.eclipse.ui.resourcePerspective">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="org.omnetpp.main.OmnetppPerspective">
+         <perspectiveShortcut
+               id="org.omnetpp.main.OmnetppPerspective">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="org.omnetpp.main.OmnetppPerspective">
+         <perspectiveShortcut
+               id="org.eclipse.ui.resourcePerspective">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+   </extension>
+
 </plugin>
