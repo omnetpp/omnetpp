@@ -2,6 +2,7 @@ package org.omnetpp.scave.actions;
 
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.model.Chart;
@@ -19,6 +20,7 @@ public class CreateTempChartAction extends AbstractScaveAction {
 	public CreateTempChartAction() {
 		setText("Plot");
 		setToolTipText("Plot");
+		setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_PLOT));
 	}
 
 	@SuppressWarnings("unchecked")

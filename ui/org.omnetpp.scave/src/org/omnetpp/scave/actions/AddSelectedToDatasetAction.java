@@ -6,6 +6,7 @@ import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
+import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.editors.ui.DatasetSelectionDialog;
@@ -15,7 +16,6 @@ import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.ScaveModelPackage;
-import org.omnetpp.scave.model2.FilterUtil;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -30,6 +30,7 @@ public class AddSelectedToDatasetAction extends AbstractScaveAction {
 	public AddSelectedToDatasetAction() {
 		setText("Add selected data to dataset...");
 		setToolTipText("Add selected data to dataset");
+		setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_ADDSELECTEDTODATASET));
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package org.omnetpp.scave.actions;
 
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.charting.ChartCanvas;

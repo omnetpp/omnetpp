@@ -8,6 +8,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.MessageBox;
+import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.editors.ui.DatasetSelectionDialog;
@@ -31,6 +32,7 @@ public class AddFilterToDatasetAction extends AbstractScaveAction {
 	public AddFilterToDatasetAction() {
 		setText("Add filter expression to dataset...");
 		setToolTipText("Add filter expression to dataset");
+		setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_ADDFILTERTODATASET));
 	}
 
 	@Override
