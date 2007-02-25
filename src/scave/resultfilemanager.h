@@ -70,9 +70,17 @@ struct SCAVE_API VectorResult : public ResultItem
     double stddev() const;
 };
 
+/**
+ * Represents a histogram.
+ */
+struct SCAVE_API HistogramResult : public ResultItem
+{
+    //TODO add data members; also TODO implement loading histograms
+};
 
 typedef std::vector<ScalarResult> ScalarResults;
 typedef std::vector<VectorResult> VectorResults;
+typedef std::vector<HistogramResult> HistogramResults;
 
 typedef std::vector<Run*> RunList;
 typedef std::vector<ResultFile*> ResultFileList;
@@ -91,6 +99,7 @@ struct SCAVE_API ResultFile
     std::string filePath; // workspace directory + fileName
     ScalarResults scalarResults;
     VectorResults vectorResults;
+    HistogramResults histogramResults;
     int numLines;
     int numUnrecognizedLines;
 };
@@ -180,7 +189,8 @@ class SCAVE_API ResultFileManager
     StringSet names;
     StringSet classNames; // currently not used
 
-    enum {SCALAR=1, VECTOR=2}; // must be 1,2,4,8 etc, because of IDList::itemTypes() XXX add histogram
+  public:
+    enum {SCALAR=1, VECTOR=2, HISTOGRAM=4}; // must be 1,2,4,8 etc, because of IDList::itemTypes()
 
   private:
     static std::string *stringSetFindOrInsert(StringSet& set, const std::string& str);
@@ -218,8 +228,8 @@ class SCAVE_API ResultFileManager
     const ResultItem& getItem(ID id) const;
     const ScalarResult& getScalar(ID id) const;
     const VectorResult& getVector(ID id) const;
-    bool isVector(ID id) const {return _type(id)==VECTOR;}
-    bool isScalar(ID id) const {return _type(id)==SCALAR;}
+    const HistogramResult& getHistogram(ID id) const;
+    int getTypeOf(ID id) const {return _type(id);} // SCALAR/VECTOR/HISTOGRAM
 
     // the following are needed for filter combos
     ResultFileList *getUniqueFiles(const IDList& ids) const; //XXX why returns pointer?
@@ -257,7 +267,7 @@ class SCAVE_API ResultFileManager
      * If not, an exception is thrown, with a (more-or-less useful)
      * message.
      */
-    void checkPattern(const char *pattern) const;
+    static void checkPattern(const char *pattern);
 
     /**
      * loading files. fileName is the file path in the Eclipse workspace;

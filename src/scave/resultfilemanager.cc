@@ -215,6 +215,13 @@ const VectorResult& ResultFileManager::getVector(ID id) const
     return getFileForID(id)->vectorResults.at(_pos(id));
 }
 
+const HistogramResult& ResultFileManager::getHistogram(ID id) const
+{
+    if (_type(id)!=HISTOGRAM)
+        throw opp_runtime_error("ResultFileManager::getHistogram(id): this item is not a histogram");
+    return getFileForID(id)->histogramResults.at(_pos(id));
+}
+
 IDList ResultFileManager::getAllScalars() const
 {
     IDList out;
@@ -555,7 +562,7 @@ IDList ResultFileManager::filterIDList(const IDList &idlist, const char *pattern
     return out;
 }
 
-void ResultFileManager::checkPattern(const char *pattern) const
+void ResultFileManager::checkPattern(const char *pattern)
 {
     if (pattern==NULL || pattern[0] == '\0') // no filter
         return;
