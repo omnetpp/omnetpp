@@ -42,7 +42,7 @@ import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Dataset;
-import org.omnetpp.scave.model.DatasetType;
+import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ScaveModelFactory;
@@ -50,11 +50,11 @@ import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
- * OMNeT++/OMNEST Analysis tool.  
- * 
+ * OMNeT++/OMNEST Analysis tool.
+ *
  * @author andras, tomi
  */
-//FIXME merge ChartPage and ChartPage2 
+//FIXME merge ChartPage and ChartPage2
 
 //TODO add flag into InputFile: "name" is OS path or workspace-relative path
 //TODO copy/paste doesn't work on the model
@@ -69,9 +69,9 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	private InputsPage inputsPage;
 	private BrowseDataPage browseDataPage;
 	private DatasetsAndChartsPage datasetsPage;
-	
+
 	/**
-	 *  ResultFileManager containing all files of the analysis. 
+	 *  ResultFileManager containing all files of the analysis.
 	 */
 	private ResultFileManagerEx manager = new ResultFileManagerEx();
 
@@ -79,7 +79,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	 * Loads/unloads result files in manager, according to changes in the model and in the workspace.
 	 */
 	private ResultFilesTracker tracker;
-	
+
 	/**
 	 * Updates pages when the model changed.
 	 */
@@ -88,33 +88,33 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 			updatePages(notification);
 		}
 	};
-	
+
 	/**
 	 * Temporary datasets and charts are added to this resource.
 	 * The resource is not saved.
 	 */
 	private Resource tempResource;
-	
+
 	/**
 	 * Factory of Scave objects.
 	 */
 	private static final ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
-	
+
 	/**
-	 * Scave model package. 
+	 * Scave model package.
 	 */
 	private static final ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
-	
+
 	/**
 	 * The constructor.
 	 */
 	public ScaveEditor() {
 	}
-	
+
 	public ResultFileManagerEx getResultFileManager() {
 		return manager;
 	}
-	
+
 	public InputsPage getInputsPage() {
 		return inputsPage;
 	}
@@ -122,11 +122,11 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	public BrowseDataPage getBrowseDataPage() {
 		return browseDataPage;
 	}
-	
+
 	public DatasetsAndChartsPage getDatasetsPage() {
 		return datasetsPage;
 	}
-	
+
 	@Override
 	public void init(IEditorSite site, IEditorInput editorInput) {
 		// init super. Note that this does not load the model yet -- it's done in createModel() called from createPages().
@@ -149,11 +149,11 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		}
 		super.dispose();
 	}
-	
+
 	@Override
 	public void createModel() {
 		super.createModel();
-		
+
 		// ensure mandatory objects exist; XXX must also prevent them from being deleted
 		Analysis analysis = getAnalysis();
 		if (analysis.getInputs()==null)
@@ -164,20 +164,20 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 			analysis.setChartSheets(factory.createChartSheets());
 
 		tempResource = createTempResource();
-		
-		tracker = new ResultFilesTracker(manager, analysis.getInputs()); //XXX must ensure that Inputs never gets deleted or replaced!!! 
-		
+
+		tracker = new ResultFilesTracker(manager, analysis.getInputs()); //XXX must ensure that Inputs never gets deleted or replaced!!!
+
 		// listen to model changes
 		if (adapterFactory instanceof IChangeNotifier) {
 			IChangeNotifier notifier = (IChangeNotifier)adapterFactory;
 			notifier.addListener(tracker);
 			notifier.addListener(pageUpdater);
 		}
-		
+
 		// listen to resource changes: create, delete, modify
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(tracker);
 	}
-	
+
 	protected Resource createTempResource() {
 		IFileEditorInput modelFile = (IFileEditorInput)getEditorInput();
 		IPath tempResourcePath = modelFile.getFile().getFullPath().addFileExtension("temp");
@@ -190,7 +190,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		resource.getContents().add(analysis);
 		return resource;
 	}
-	
+
 	/**
 	 * Prevent saving the temporary resource.
 	 */
@@ -206,7 +206,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
         getContainer().setLayout(layout);
 
 		// we can load the result files now
-        //XXX we should probably move this after creating the pages, but then we'll need something like browseDataPage.refresh()  
+        //XXX we should probably move this after creating the pages, but then we'll need something like browseDataPage.refresh()
         tracker.synchronize();
 
         createInputsPage();
@@ -219,7 +219,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	protected void initializeContentOutlineViewer(Viewer contentOutlineViewer) {
 		contentOutlineViewer.setInput(getAnalysis());
 	}
-	
+
 	/** Override base method to set the property source provider. */
 	@Override
 	public IPropertySheetPage getPropertySheetPage() {
@@ -235,7 +235,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	}
 
 	/**
-	 * Adds a fixed (non-closable) editor page at the last position 
+	 * Adds a fixed (non-closable) editor page at the last position
 	 */
 	public int addScaveEditorPage(ScaveEditorPage page) {
 		int index = addPage(page);
@@ -244,7 +244,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	}
 
 	/**
-	 * Adds a closable editor page at the last position 
+	 * Adds a closable editor page at the last position
 	 */
 	public int addClosableScaveEditorPage(ScaveEditorPage page) {
 		int index = getPageCount();
@@ -252,9 +252,9 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		setPageText(index, page.getPageTitle());
 		return index;
 	}
-	
+
 	/**
-	 * Adds a closable page to the multi-page editor. This is a variant of 
+	 * Adds a closable page to the multi-page editor. This is a variant of
 	 * addPage(int index, Control control).
 	 */
 	public void addClosablePage(int index, Control control) {
@@ -276,7 +276,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		if (index!=-1)
 			removePage(index);
 	}
-	
+
 	/**
 	 * Returns the index of the multi-page editor page which holds
 	 * the given control (typeically some Composite). Returns -1 if not found.
@@ -287,7 +287,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 				return i;
 		return -1;
 	}
-	
+
 	public ScaveEditorPage getActiveEditorPage() {
 		int i = getActivePage();
 		if (i >= 0) {
@@ -301,19 +301,19 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	/**
      * Utility method: Returns the Analysis object from the resource.
      */
-    //XXX catch potential nullpointer- and classcast exceptions during resource magic 
+    //XXX catch potential nullpointer- and classcast exceptions during resource magic
 	public Analysis getAnalysis() {
     	XMIResource resource = (XMIResource)editingDomain.getResourceSet().getResources().get(0);
     	Analysis analysis = (Analysis)resource.getContents().get(0);
     	return analysis;
     }
-	
+
 	public Analysis getTempAnalysis() {
 		return (Analysis)tempResource.getContents().get(0);
 	}
-	
+
 	/**
-	 * Opens the given dataset on a new editor page, and switches to it. 
+	 * Opens the given dataset on a new editor page, and switches to it.
 	 */
 	public void openDataset(Dataset dataset) {
 		int pageIndex = createDatasetPage(dataset);  //FIXME if already open, just switch to it!
@@ -321,15 +321,15 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	}
 
 	/**
-	 * Opens the given chart sheet on a new editor page, and switches to it. 
+	 * Opens the given chart sheet on a new editor page, and switches to it.
 	 */
 	public void openChartSheet(ChartSheet chartSheet) {
 		int pageIndex = createChartSheetPage(chartSheet);  //FIXME if already open, just switch to it!
 		setActivePage(pageIndex);
 	}
-	
+
 	/**
-	 * Opens "Browse Vector Data" page for the given vector 
+	 * Opens "Browse Vector Data" page for the given vector
 	 */
 	//FIXME currently not accessible from the UI -- maybe not even needed because we have a view for this already
 	public void openBrowseVectorDataPage(VectorResult vector) {
@@ -348,77 +348,67 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	public void showDatasetsPage() {
 		showPage(getDatasetsPage());
 	}
-	
-	
+
+
 	public void showPage(ScaveEditorPage page) {
 		int pageIndex = findPage(page);
 		if (pageIndex >= 0)
 			setActivePage(pageIndex);
 	}
-	
+
 	public void setPageTitle(ScaveEditorPage page, String title) {
 		int pageIndex = findPage(page);
 		if (pageIndex >= 0)
 			setPageText(pageIndex, title);
 	}
-	
+
 	/**
-	 * Opens the given chart on a new editor page, and switches to it. 
+	 * Opens the given chart on a new editor page, and switches to it.
 	 */
 	public void openChart(Chart chart) {
 		int pageIndex = createChartPage(chart);
 		setActivePage(pageIndex);
 	}
-	
+
 	private void createInputsPage() {
 		inputsPage = new InputsPage(getContainer(), this);
 		addScaveEditorPage(inputsPage);
 	}
-	
+
 	private void createBrowseDataPage() {
 		browseDataPage = new BrowseDataPage(getContainer(), this);
 		addScaveEditorPage(browseDataPage);
 	}
-	
+
 	private void createDatasetsPage() {
 		datasetsPage = new DatasetsAndChartsPage(getContainer(), this);
         addScaveEditorPage(datasetsPage);
 	}
-	
+
 	private int createDatasetPage(Dataset dataset) {
 		DatasetPage page = new DatasetPage(getContainer(), this, dataset);
 		int index = addClosableScaveEditorPage(page);
 		return index;
 	}
-	
+
 	private int createChartSheetPage(ChartSheet chartsheet) {
 		ChartSheetPage page = new ChartSheetPage(getContainer(), this, chartsheet);
 		int index = addClosableScaveEditorPage(page);
 		return index;
 	}
-	
+
 	private int createChartPage(Chart chart) {
-		int index;
-
-		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
-		if (dataset.getType() == DatasetType.VECTOR_LITERAL) {
-			ChartPage page = new ChartPage(getContainer(), this, chart);  //XXX experimental
-			index = addClosableScaveEditorPage(page); //XXX experimental
-		} 
-		else {
-			ChartPage page = new ChartPage(getContainer(), this, chart);
-			index = addClosableScaveEditorPage(page);
-		}
-
+		ChartPage page = new ChartPage(getContainer(), this, chart);
+		int index = addClosableScaveEditorPage(page);
 		return index;
 	}
-	
+
 	private int createBrowseVectorDataPage(VectorResult vector) {
 		BrowseVectorPage page = new BrowseVectorPage(getContainer(), this, vector);
 		int index = addClosableScaveEditorPage(page);
 		return index;
 	}
-	
+
 	@Override
 	public void handleSelectionChange(ISelection selection) {
 		super.handleSelectionChange(selection);
@@ -428,7 +418,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		setViewerSelectionNoNotify(datasetsPage.getDatasetsTreeViewer(), selection);
 		setViewerSelectionNoNotify(datasetsPage.getChartSheetsTreeViewer(), selection);
 	}
-	
+
 	/**
 	 * Adds the given workspace file to Inputs.
 	 */
@@ -452,14 +442,14 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 			executeCommand(command);
 		}
 	}
-	
+
 	/**
 	 * Utility function: finds an IFile for an existing file given with OS path. Returns null if the file was not found.
 	 */
 	public static IFile findFileInWorkspace(String fileName) {
 		IFile[] iFiles = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(new Path(fileName));
 		IFile iFile = null;
-		for (IFile f : iFiles) { 
+		for (IFile f : iFiles) {
 			if (f.exists()) {
 				iFile = f;
 				break;
@@ -471,9 +461,9 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	public void reportError(String message) {
 		// TODO
 	}
-	
+
 	/**
-	 * Utility method. 
+	 * Utility method.
 	 */
 	public void executeCommand(Command command) {
 		getEditingDomain().getCommandStack().execute(command);
@@ -482,7 +472,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	public ISelectionChangedListener getSelectionChangedListener() {
 		return selectionChangedListener;
 	}
-	
+
 	/**
 	 * Updates the pages.
 	 * Registered as a listener on model changes.
@@ -490,7 +480,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	private void updatePages(Notification notification) {
 		if (notification.isTouch())
 			return;
-		
+
 		int pageCount = getPageCount();
 		for (int pageIndex = 0; pageIndex < pageCount; ++pageIndex) {
 			Control control = getControl(pageIndex);

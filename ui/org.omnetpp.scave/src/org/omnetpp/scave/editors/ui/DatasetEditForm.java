@@ -3,7 +3,6 @@ package org.omnetpp.scave.editors.ui;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -59,7 +58,7 @@ public class DatasetEditForm implements IScaveObjectEditForm {
 		baseDatasets = new ArrayList<Dataset>();
 		baseDatasets.add(null);
 		for (Dataset ds : ScaveModelUtil.findObjects(dataset.eResource(), Dataset.class))
-			if (ds != dataset && ds.getType().equals(dataset.getType()))
+			if (ds != dataset)
 				baseDatasets.add(ds);
 	}
 	
@@ -67,7 +66,7 @@ public class DatasetEditForm implements IScaveObjectEditForm {
 	 * Returns the title displayed on the top of the dialog.
 	 */
 	public String getTitle() {
-		return StringUtils.capitalize(dataset.getType().getName()) + " dataset";
+		return "Dataset";
 	}
 
 	/**

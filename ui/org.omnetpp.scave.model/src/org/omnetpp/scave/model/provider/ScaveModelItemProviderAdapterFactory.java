@@ -98,28 +98,6 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	}
 
 	/**
-	 * This keeps track of the one adapter used for all {@link org.omnetpp.scave.model.Chart} instances.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected ChartItemProvider chartItemProvider;
-
-	/**
-	 * This creates an adapter for a {@link org.omnetpp.scave.model.Chart}.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public Adapter createChartAdapter() {
-		if (chartItemProvider == null) {
-			chartItemProvider = new ChartItemProvider(this);
-		}
-
-		return chartItemProvider;
-	}
-
-	/**
 	 * This keeps track of the one adapter used for all {@link org.omnetpp.scave.model.Add} instances.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -472,6 +450,72 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	}
 
 	/**
+	 * This keeps track of the one adapter used for all {@link org.omnetpp.scave.model.BarChart} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected BarChartItemProvider barChartItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link org.omnetpp.scave.model.BarChart}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Adapter createBarChartAdapter() {
+		if (barChartItemProvider == null) {
+			barChartItemProvider = new BarChartItemProvider(this);
+		}
+
+		return barChartItemProvider;
+	}
+
+	/**
+	 * This keeps track of the one adapter used for all {@link org.omnetpp.scave.model.LineChart} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected LineChartItemProvider lineChartItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link org.omnetpp.scave.model.LineChart}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Adapter createLineChartAdapter() {
+		if (lineChartItemProvider == null) {
+			lineChartItemProvider = new LineChartItemProvider(this);
+		}
+
+		return lineChartItemProvider;
+	}
+
+	/**
+	 * This keeps track of the one adapter used for all {@link org.omnetpp.scave.model.HistogramChart} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected HistogramChartItemProvider histogramChartItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link org.omnetpp.scave.model.HistogramChart}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Adapter createHistogramChartAdapter() {
+		if (histogramChartItemProvider == null) {
+			histogramChartItemProvider = new HistogramChartItemProvider(this);
+		}
+
+		return histogramChartItemProvider;
+	}
+
+	/**
 	 * This returns the root adapter factory that contains this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -568,7 +612,6 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 */
 	public void dispose() {
 		if (datasetItemProvider != null) datasetItemProvider.dispose();
-		if (chartItemProvider != null) chartItemProvider.dispose();
 		if (addItemProvider != null) addItemProvider.dispose();
 		if (applyItemProvider != null) applyItemProvider.dispose();
 		if (exceptItemProvider != null) exceptItemProvider.dispose();
@@ -585,6 +628,9 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 		if (datasetsItemProvider != null) datasetsItemProvider.dispose();
 		if (inputFileItemProvider != null) inputFileItemProvider.dispose();
 		if (computeItemProvider != null) computeItemProvider.dispose();
+		if (barChartItemProvider != null) barChartItemProvider.dispose();
+		if (lineChartItemProvider != null) lineChartItemProvider.dispose();
+		if (histogramChartItemProvider != null) histogramChartItemProvider.dispose();
 	}
 
 }

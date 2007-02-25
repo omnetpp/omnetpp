@@ -89,22 +89,13 @@ public interface ScaveModelPackage extends EPackage {
 	int DATASET__ITEMS = 1;
 
 	/**
-	 * The feature id for the '<em><b>Type</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DATASET__TYPE = 2;
-
-	/**
 	 * The feature id for the '<em><b>Based On</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int DATASET__BASED_ON = 3;
+	int DATASET__BASED_ON = 2;
 
 	/**
 	 * The number of structural features of the '<em>Dataset</em>' class.
@@ -113,7 +104,7 @@ public interface ScaveModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DATASET_FEATURE_COUNT = 4;
+	int DATASET_FEATURE_COUNT = 3;
 
 	/**
 	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.DatasetItemImpl <em>Dataset Item</em>}' class.
@@ -209,13 +200,22 @@ public interface ScaveModelPackage extends EPackage {
 	int SET_OPERATION__FILTER_PATTERN = 1;
 
 	/**
+	 * The feature id for the '<em><b>Type</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SET_OPERATION__TYPE = 2;
+
+	/**
 	 * The number of structural features of the '<em>Set Operation</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int SET_OPERATION_FEATURE_COUNT = 2;
+	int SET_OPERATION_FEATURE_COUNT = 3;
 
 	/**
 	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.AddDiscardOpImpl <em>Add Discard Op</em>}' class.
@@ -244,6 +244,15 @@ public interface ScaveModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int ADD_DISCARD_OP__FILTER_PATTERN = SET_OPERATION__FILTER_PATTERN;
+
+	/**
+	 * The feature id for the '<em><b>Type</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ADD_DISCARD_OP__TYPE = SET_OPERATION__TYPE;
 
 	/**
 	 * The number of structural features of the '<em>Add Discard Op</em>' class.
@@ -281,6 +290,15 @@ public interface ScaveModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int ADD__FILTER_PATTERN = ADD_DISCARD_OP__FILTER_PATTERN;
+
+	/**
+	 * The feature id for the '<em><b>Type</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ADD__TYPE = ADD_DISCARD_OP__TYPE;
 
 	/**
 	 * The feature id for the '<em><b>Excepts</b></em>' containment reference list.
@@ -421,6 +439,15 @@ public interface ScaveModelPackage extends EPackage {
 	int EXCEPT__FILTER_PATTERN = SET_OPERATION__FILTER_PATTERN;
 
 	/**
+	 * The feature id for the '<em><b>Type</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EXCEPT__TYPE = SET_OPERATION__TYPE;
+
+	/**
 	 * The number of structural features of the '<em>Except</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -530,6 +557,15 @@ public interface ScaveModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int DISCARD__FILTER_PATTERN = ADD_DISCARD_OP__FILTER_PATTERN;
+
+	/**
+	 * The feature id for the '<em><b>Type</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DISCARD__TYPE = ADD_DISCARD_OP__TYPE;
 
 	/**
 	 * The feature id for the '<em><b>Excepts</b></em>' containment reference list.
@@ -698,6 +734,15 @@ public interface ScaveModelPackage extends EPackage {
 	int SELECT_DESELECT_OP__FILTER_PATTERN = SET_OPERATION__FILTER_PATTERN;
 
 	/**
+	 * The feature id for the '<em><b>Type</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SELECT_DESELECT_OP__TYPE = SET_OPERATION__TYPE;
+
+	/**
 	 * The number of structural features of the '<em>Select Deselect Op</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -733,6 +778,15 @@ public interface ScaveModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int SELECT__FILTER_PATTERN = SELECT_DESELECT_OP__FILTER_PATTERN;
+
+	/**
+	 * The feature id for the '<em><b>Type</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SELECT__TYPE = SELECT_DESELECT_OP__TYPE;
 
 	/**
 	 * The feature id for the '<em><b>Excepts</b></em>' containment reference list.
@@ -779,6 +833,15 @@ public interface ScaveModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int DESELECT__FILTER_PATTERN = SELECT_DESELECT_OP__FILTER_PATTERN;
+
+	/**
+	 * The feature id for the '<em><b>Type</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DESELECT__TYPE = SELECT_DESELECT_OP__TYPE;
 
 	/**
 	 * The feature id for the '<em><b>Excepts</b></em>' containment reference list.
@@ -958,14 +1021,152 @@ public interface ScaveModelPackage extends EPackage {
 	int COMPUTE_FEATURE_COUNT = PROCESSING_OP_FEATURE_COUNT + 0;
 
 	/**
-	 * The meta object id for the '{@link org.omnetpp.scave.model.DatasetType <em>Dataset Type</em>}' enum.
+	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.BarChartImpl <em>Bar Chart</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.omnetpp.scave.model.DatasetType
-	 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getDatasetType()
+	 * @see org.omnetpp.scave.model.impl.BarChartImpl
+	 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getBarChart()
 	 * @generated
 	 */
-	int DATASET_TYPE = 23;
+	int BAR_CHART = 23;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int BAR_CHART__NAME = CHART__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Filters</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int BAR_CHART__FILTERS = CHART__FILTERS;
+
+	/**
+	 * The feature id for the '<em><b>Properties</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int BAR_CHART__PROPERTIES = CHART__PROPERTIES;
+
+	/**
+	 * The number of structural features of the '<em>Bar Chart</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int BAR_CHART_FEATURE_COUNT = CHART_FEATURE_COUNT + 0;
+
+	/**
+	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.LineChartImpl <em>Line Chart</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.omnetpp.scave.model.impl.LineChartImpl
+	 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getLineChart()
+	 * @generated
+	 */
+	int LINE_CHART = 24;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LINE_CHART__NAME = CHART__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Filters</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LINE_CHART__FILTERS = CHART__FILTERS;
+
+	/**
+	 * The feature id for the '<em><b>Properties</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LINE_CHART__PROPERTIES = CHART__PROPERTIES;
+
+	/**
+	 * The number of structural features of the '<em>Line Chart</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LINE_CHART_FEATURE_COUNT = CHART_FEATURE_COUNT + 0;
+
+	/**
+	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.HistogramChartImpl <em>Histogram Chart</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.omnetpp.scave.model.impl.HistogramChartImpl
+	 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getHistogramChart()
+	 * @generated
+	 */
+	int HISTOGRAM_CHART = 25;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int HISTOGRAM_CHART__NAME = CHART__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Filters</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int HISTOGRAM_CHART__FILTERS = CHART__FILTERS;
+
+	/**
+	 * The feature id for the '<em><b>Properties</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int HISTOGRAM_CHART__PROPERTIES = CHART__PROPERTIES;
+
+	/**
+	 * The number of structural features of the '<em>Histogram Chart</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int HISTOGRAM_CHART_FEATURE_COUNT = CHART_FEATURE_COUNT + 0;
+
+	/**
+	 * The meta object id for the '{@link org.omnetpp.scave.model.ResultType <em>Result Type</em>}' enum.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.omnetpp.scave.model.ResultType
+	 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getResultType()
+	 * @generated
+	 */
+	int RESULT_TYPE = 26;
 
 
 	/**
@@ -999,17 +1200,6 @@ public interface ScaveModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getDataset_Items();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.Dataset#getType <em>Type</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Type</em>'.
-	 * @see org.omnetpp.scave.model.Dataset#getType()
-	 * @see #getDataset()
-	 * @generated
-	 */
-	EAttribute getDataset_Type();
 
 	/**
 	 * Returns the meta object for the reference '{@link org.omnetpp.scave.model.Dataset#getBasedOn <em>Based On</em>}'.
@@ -1169,6 +1359,17 @@ public interface ScaveModelPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getSetOperation_FilterPattern();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.SetOperation#getType <em>Type</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Type</em>'.
+	 * @see org.omnetpp.scave.model.SetOperation#getType()
+	 * @see #getSetOperation()
+	 * @generated
+	 */
+	EAttribute getSetOperation_Type();
 
 	/**
 	 * Returns the meta object for class '{@link org.omnetpp.scave.model.Group <em>Group</em>}'.
@@ -1540,14 +1741,44 @@ public interface ScaveModelPackage extends EPackage {
 	EClass getCompute();
 
 	/**
-	 * Returns the meta object for enum '{@link org.omnetpp.scave.model.DatasetType <em>Dataset Type</em>}'.
+	 * Returns the meta object for class '{@link org.omnetpp.scave.model.BarChart <em>Bar Chart</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for enum '<em>Dataset Type</em>'.
-	 * @see org.omnetpp.scave.model.DatasetType
+	 * @return the meta object for class '<em>Bar Chart</em>'.
+	 * @see org.omnetpp.scave.model.BarChart
 	 * @generated
 	 */
-	EEnum getDatasetType();
+	EClass getBarChart();
+
+	/**
+	 * Returns the meta object for class '{@link org.omnetpp.scave.model.LineChart <em>Line Chart</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Line Chart</em>'.
+	 * @see org.omnetpp.scave.model.LineChart
+	 * @generated
+	 */
+	EClass getLineChart();
+
+	/**
+	 * Returns the meta object for class '{@link org.omnetpp.scave.model.HistogramChart <em>Histogram Chart</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Histogram Chart</em>'.
+	 * @see org.omnetpp.scave.model.HistogramChart
+	 * @generated
+	 */
+	EClass getHistogramChart();
+
+	/**
+	 * Returns the meta object for enum '{@link org.omnetpp.scave.model.ResultType <em>Result Type</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for enum '<em>Result Type</em>'.
+	 * @see org.omnetpp.scave.model.ResultType
+	 * @generated
+	 */
+	EEnum getResultType();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -1596,14 +1827,6 @@ public interface ScaveModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference DATASET__ITEMS = eINSTANCE.getDataset_Items();
-
-		/**
-		 * The meta object literal for the '<em><b>Type</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute DATASET__TYPE = eINSTANCE.getDataset_Type();
 
 		/**
 		 * The meta object literal for the '<em><b>Based On</b></em>' reference feature.
@@ -1736,6 +1959,14 @@ public interface ScaveModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute SET_OPERATION__FILTER_PATTERN = eINSTANCE.getSetOperation_FilterPattern();
+
+		/**
+		 * The meta object literal for the '<em><b>Type</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute SET_OPERATION__TYPE = eINSTANCE.getSetOperation_Type();
 
 		/**
 		 * The meta object literal for the '{@link org.omnetpp.scave.model.impl.GroupImpl <em>Group</em>}' class.
@@ -2050,14 +2281,44 @@ public interface ScaveModelPackage extends EPackage {
 		EClass COMPUTE = eINSTANCE.getCompute();
 
 		/**
-		 * The meta object literal for the '{@link org.omnetpp.scave.model.DatasetType <em>Dataset Type</em>}' enum.
+		 * The meta object literal for the '{@link org.omnetpp.scave.model.impl.BarChartImpl <em>Bar Chart</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see org.omnetpp.scave.model.DatasetType
-		 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getDatasetType()
+		 * @see org.omnetpp.scave.model.impl.BarChartImpl
+		 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getBarChart()
 		 * @generated
 		 */
-		EEnum DATASET_TYPE = eINSTANCE.getDatasetType();
+		EClass BAR_CHART = eINSTANCE.getBarChart();
+
+		/**
+		 * The meta object literal for the '{@link org.omnetpp.scave.model.impl.LineChartImpl <em>Line Chart</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.omnetpp.scave.model.impl.LineChartImpl
+		 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getLineChart()
+		 * @generated
+		 */
+		EClass LINE_CHART = eINSTANCE.getLineChart();
+
+		/**
+		 * The meta object literal for the '{@link org.omnetpp.scave.model.impl.HistogramChartImpl <em>Histogram Chart</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.omnetpp.scave.model.impl.HistogramChartImpl
+		 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getHistogramChart()
+		 * @generated
+		 */
+		EClass HISTOGRAM_CHART = eINSTANCE.getHistogramChart();
+
+		/**
+		 * The meta object literal for the '{@link org.omnetpp.scave.model.ResultType <em>Result Type</em>}' enum.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.omnetpp.scave.model.ResultType
+		 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getResultType()
+		 * @generated
+		 */
+		EEnum RESULT_TYPE = eINSTANCE.getResultType();
 
 	}
 

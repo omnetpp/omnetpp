@@ -35,15 +35,6 @@ public interface ScaveModelFactory extends EFactory {
 	Dataset createDataset();
 
 	/**
-	 * Returns a new object of class '<em>Chart</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Chart</em>'.
-	 * @generated
-	 */
-	Chart createChart();
-
-	/**
 	 * Returns a new object of class '<em>Add</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -186,6 +177,33 @@ public interface ScaveModelFactory extends EFactory {
 	 * @generated
 	 */
 	Compute createCompute();
+
+	/**
+	 * Returns a new object of class '<em>Bar Chart</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Bar Chart</em>'.
+	 * @generated
+	 */
+	BarChart createBarChart();
+
+	/**
+	 * Returns a new object of class '<em>Line Chart</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Line Chart</em>'.
+	 * @generated
+	 */
+	LineChart createLineChart();
+
+	/**
+	 * Returns a new object of class '<em>Histogram Chart</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Histogram Chart</em>'.
+	 * @generated
+	 */
+	HistogramChart createHistogramChart();
 
 	/**
 	 * Returns the package supported by this factory.

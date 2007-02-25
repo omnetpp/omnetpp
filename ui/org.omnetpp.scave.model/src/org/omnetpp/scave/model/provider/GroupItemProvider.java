@@ -160,11 +160,6 @@ public class GroupItemProvider
 		newChildDescriptors.add
 			(createChildParameter
 				(ScaveModelPackage.Literals.GROUP__ITEMS,
-				 ScaveModelFactory.eINSTANCE.createChart()));
-
-		newChildDescriptors.add
-			(createChildParameter
-				(ScaveModelPackage.Literals.GROUP__ITEMS,
 				 ScaveModelFactory.eINSTANCE.createAdd()));
 
 		newChildDescriptors.add
@@ -186,6 +181,21 @@ public class GroupItemProvider
 			(createChildParameter
 				(ScaveModelPackage.Literals.GROUP__ITEMS,
 				 ScaveModelFactory.eINSTANCE.createCompute()));
+
+		newChildDescriptors.add
+			(createChildParameter
+				(ScaveModelPackage.Literals.GROUP__ITEMS,
+				 ScaveModelFactory.eINSTANCE.createBarChart()));
+
+		newChildDescriptors.add
+			(createChildParameter
+				(ScaveModelPackage.Literals.GROUP__ITEMS,
+				 ScaveModelFactory.eINSTANCE.createLineChart()));
+
+		newChildDescriptors.add
+			(createChildParameter
+				(ScaveModelPackage.Literals.GROUP__ITEMS,
+				 ScaveModelFactory.eINSTANCE.createHistogramChart()));
 	}
 
 	/**

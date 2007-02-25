@@ -11,30 +11,31 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
-
 import org.eclipse.emf.ecore.impl.EPackageImpl;
-
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.AddDiscardOp;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Apply;
+import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.ChartSheets;
 import org.omnetpp.scave.model.Compute;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
-import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave.model.Datasets;
 import org.omnetpp.scave.model.Deselect;
 import org.omnetpp.scave.model.Discard;
 import org.omnetpp.scave.model.Except;
 import org.omnetpp.scave.model.Group;
+import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
+import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Param;
 import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model.Property;
+import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model.Select;
@@ -214,7 +215,28 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EEnum datasetTypeEEnum = null;
+	private EClass barChartEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass lineChartEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass histogramChartEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EEnum resultTypeEEnum = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -316,17 +338,8 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getDataset_Type() {
-		return (EAttribute)datasetEClass.getEStructuralFeatures().get(2);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public EReference getDataset_BasedOn() {
-		return (EReference)datasetEClass.getEStructuralFeatures().get(3);
+		return (EReference)datasetEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -453,6 +466,15 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 */
 	public EAttribute getSetOperation_FilterPattern() {
 		return (EAttribute)setOperationEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getSetOperation_Type() {
+		return (EAttribute)setOperationEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -775,8 +797,35 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EEnum getDatasetType() {
-		return datasetTypeEEnum;
+	public EClass getBarChart() {
+		return barChartEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getLineChart() {
+		return lineChartEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getHistogramChart() {
+		return histogramChartEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EEnum getResultType() {
+		return resultTypeEEnum;
 	}
 
 	/**
@@ -810,7 +859,6 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		datasetEClass = createEClass(DATASET);
 		createEAttribute(datasetEClass, DATASET__NAME);
 		createEReference(datasetEClass, DATASET__ITEMS);
-		createEAttribute(datasetEClass, DATASET__TYPE);
 		createEReference(datasetEClass, DATASET__BASED_ON);
 
 		chartEClass = createEClass(CHART);
@@ -832,6 +880,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		setOperationEClass = createEClass(SET_OPERATION);
 		createEReference(setOperationEClass, SET_OPERATION__SOURCE_DATASET);
 		createEAttribute(setOperationEClass, SET_OPERATION__FILTER_PATTERN);
+		createEAttribute(setOperationEClass, SET_OPERATION__TYPE);
 
 		groupEClass = createEClass(GROUP);
 		createEReference(groupEClass, GROUP__ITEMS);
@@ -884,8 +933,14 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 
 		computeEClass = createEClass(COMPUTE);
 
+		barChartEClass = createEClass(BAR_CHART);
+
+		lineChartEClass = createEClass(LINE_CHART);
+
+		histogramChartEClass = createEClass(HISTOGRAM_CHART);
+
 		// Create enums
-		datasetTypeEEnum = createEEnum(DATASET_TYPE);
+		resultTypeEEnum = createEEnum(RESULT_TYPE);
 	}
 
 	/**
@@ -925,15 +980,17 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		selectDeselectOpEClass.getESuperTypes().add(this.getSetOperation());
 		processingOpEClass.getESuperTypes().add(this.getDatasetItem());
 		computeEClass.getESuperTypes().add(this.getProcessingOp());
+		barChartEClass.getESuperTypes().add(this.getChart());
+		lineChartEClass.getESuperTypes().add(this.getChart());
+		histogramChartEClass.getESuperTypes().add(this.getChart());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(datasetEClass, Dataset.class, "Dataset", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getDataset_Name(), ecorePackage.getEString(), "name", null, 0, 1, Dataset.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getDataset_Items(), this.getDatasetItem(), null, "items", null, 0, -1, Dataset.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getDataset_Type(), this.getDatasetType(), "type", null, 0, 1, Dataset.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getDataset_BasedOn(), this.getDataset(), null, "basedOn", null, 0, 1, Dataset.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(chartEClass, Chart.class, "Chart", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEClass(chartEClass, Chart.class, "Chart", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getChart_Name(), ecorePackage.getEString(), "name", null, 0, 1, Chart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getChart_Filters(), this.getSelectDeselectOp(), null, "filters", null, 0, -1, Chart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getChart_Properties(), this.getProperty(), null, "properties", null, 0, -1, Chart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -952,6 +1009,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		initEClass(setOperationEClass, SetOperation.class, "SetOperation", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getSetOperation_SourceDataset(), this.getDataset(), null, "sourceDataset", null, 0, 1, SetOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getSetOperation_FilterPattern(), ecorePackage.getEString(), "filterPattern", null, 0, 1, SetOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getSetOperation_Type(), this.getResultType(), "type", null, 0, 1, SetOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(groupEClass, Group.class, "Group", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getGroup_Items(), this.getDatasetItem(), null, "items", null, 0, -1, Group.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -1004,11 +1062,17 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 
 		initEClass(computeEClass, Compute.class, "Compute", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
+		initEClass(barChartEClass, BarChart.class, "BarChart", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(lineChartEClass, LineChart.class, "LineChart", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(histogramChartEClass, HistogramChart.class, "HistogramChart", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
 		// Initialize enums and add enum literals
-		initEEnum(datasetTypeEEnum, DatasetType.class, "DatasetType");
-		addEEnumLiteral(datasetTypeEEnum, DatasetType.SCALAR_LITERAL);
-		addEEnumLiteral(datasetTypeEEnum, DatasetType.VECTOR_LITERAL);
-		addEEnumLiteral(datasetTypeEEnum, DatasetType.HISTOGRAM_LITERAL);
+		initEEnum(resultTypeEEnum, ResultType.class, "ResultType");
+		addEEnumLiteral(resultTypeEEnum, ResultType.SCALAR_LITERAL);
+		addEEnumLiteral(resultTypeEEnum, ResultType.VECTOR_LITERAL);
+		addEEnumLiteral(resultTypeEEnum, ResultType.HISTOGRAM_LITERAL);
 
 		// Create resource
 		createResource(eNS_URI);

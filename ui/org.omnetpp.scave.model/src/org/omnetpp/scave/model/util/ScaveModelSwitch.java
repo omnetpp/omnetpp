@@ -246,6 +246,30 @@ public class ScaveModelSwitch {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case ScaveModelPackage.BAR_CHART: {
+				BarChart barChart = (BarChart)theEObject;
+				Object result = caseBarChart(barChart);
+				if (result == null) result = caseChart(barChart);
+				if (result == null) result = caseDatasetItem(barChart);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case ScaveModelPackage.LINE_CHART: {
+				LineChart lineChart = (LineChart)theEObject;
+				Object result = caseLineChart(lineChart);
+				if (result == null) result = caseChart(lineChart);
+				if (result == null) result = caseDatasetItem(lineChart);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case ScaveModelPackage.HISTOGRAM_CHART: {
+				HistogramChart histogramChart = (HistogramChart)theEObject;
+				Object result = caseHistogramChart(histogramChart);
+				if (result == null) result = caseChart(histogramChart);
+				if (result == null) result = caseDatasetItem(histogramChart);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			default: return defaultCase(theEObject);
 		}
 	}
@@ -592,6 +616,51 @@ public class ScaveModelSwitch {
 	 * @generated
 	 */
 	public Object caseCompute(Compute object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpretting the object as an instance of '<em>Bar Chart</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpretting the object as an instance of '<em>Bar Chart</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public Object caseBarChart(BarChart object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpretting the object as an instance of '<em>Line Chart</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpretting the object as an instance of '<em>Line Chart</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public Object caseLineChart(LineChart object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpretting the object as an instance of '<em>Histogram Chart</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpretting the object as an instance of '<em>Histogram Chart</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public Object caseHistogramChart(HistogramChart object) {
 		return null;
 	}
 

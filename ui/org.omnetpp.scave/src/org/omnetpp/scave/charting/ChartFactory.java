@@ -25,31 +25,33 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
-import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
-import org.omnetpp.scave.model.DatasetType;
+import org.omnetpp.scave.model.HistogramChart;
+import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model2.ChartProperties;
 import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
- * Factory for scalar and vector charts. 
+ * Factory for scalar and vector charts.
  */
 public class ChartFactory {
-	
+
 	public static Control createChart(Composite parent, Chart chart, ResultFileManager manager) {
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
-		switch (dataset.getType().getValue()) {
-		case DatasetType.SCALAR: return createScalarChart2(parent, chart, dataset, manager);
-		case DatasetType.VECTOR: return createVectorChart2(parent, chart, dataset, manager);
-		case DatasetType.HISTOGRAM: return createHistogramChart(parent, chart, dataset, manager);
-		}
-		throw new RuntimeException("invalid or unset dataset 'type' attribute: "+dataset.getType()); //XXX proper error handling
+		if (chart instanceof BarChart)
+			return createScalarChart2(parent, chart, dataset, manager);
+		if (chart instanceof LineChart)
+			return createVectorChart2(parent, chart, dataset, manager);
+		if (chart instanceof HistogramChart)
+			return createHistogramChart(parent, chart, dataset, manager);
+		throw new RuntimeException("unknown chart type");
 	}
-	
+
 	private static InteractiveChart createScalarChart(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager) {
 		ScalarChart interactiveChart = new ScalarChart(parent, SWT.NONE);
 		JFreeChart jfreechart = createEmptyScalarJFreeChart(chart.getName(), "Category", "Value");
@@ -61,7 +63,7 @@ public class ChartFactory {
 		setChartProperties(chart, interactiveChart);
 		return interactiveChart;
 	}
-	
+
 	private static ScalarChart2 createScalarChart2(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager) {
 		ScalarChart2 scalarChart = new ScalarChart2(parent, SWT.NONE);
 		// set chart data
@@ -87,7 +89,7 @@ public class ChartFactory {
 			legend.setPosition(RectangleEdge.BOTTOM);
 			jfreechart.addSubtitle(legend);
 		}
-		
+
 		return interactiveChart;
 	}
 
@@ -109,7 +111,7 @@ public class ChartFactory {
 		// TODO: create JFreeChart
 		return interactiveChart;
 	}
-	
+
 	private static JFreeChart createEmptyScalarJFreeChart(String title, String categoryAxisLabel, String valueAxisLabel) {
 		DefaultCategoryDataset categorydataset = new DefaultCategoryDataset();
 		JFreeChart jfreechart = org.jfree.chart.ChartFactory.createBarChart3D(
@@ -121,10 +123,10 @@ public class ChartFactory {
 		categoryitemrenderer.setItemLabelsVisible(true);
 		BarRenderer barrenderer = (BarRenderer)categoryitemrenderer;
 		barrenderer.setMaximumBarWidth(0.05D);
-		
+
 		return jfreechart;
 	}
-	
+
 	private static JFreeChart createEmptyVectorJFreeChart(String title, String xAxisLabel, String yAxisLabel) {
 		XYSeriesCollection xyseriescollection = new XYSeriesCollection();
 		JFreeChart jfreechart = org.jfree.chart.ChartFactory.createXYLineChart(
@@ -145,7 +147,7 @@ public class ChartFactory {
 		numberaxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 		return jfreechart;
 	}
-	
+
 	private static void setChartProperties(Chart chart, ScalarChart chartView) {
 		ChartProperties chartProperties = ChartProperties.createPropertySource(chart, null/*XXX*/);
 		for (IPropertyDescriptor descriptor : chartProperties.getPropertyDescriptors()) {
@@ -154,7 +156,7 @@ public class ChartFactory {
 				chartView.setProperty(id, chartProperties.getStringProperty(id));
 		}
 	}
-	
+
 	private static void setChartProperties(Chart chart, ChartCanvas chartView) {
 		List<Property> properties = (List<Property>)chart.getProperties();
 		for (Property property : properties) {

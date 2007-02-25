@@ -45,6 +45,7 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 	// controls
 	private CCombo sourceDatasetCombo;
 	private Text filterPatternText;
+	//FIXME add also radiobutton or combo for ResultType
 	
 	public SetOperationEditForm(SetOperation setOperation, ResultFileManager manager) {
 		this.setOperation = setOperation;
@@ -52,12 +53,12 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		sourceDatasets = new java.util.ArrayList<Dataset>();
 		sourceDatasets.add(null);
 		Dataset dataset = ScaveModelUtil.findEnclosingObject(setOperation, Dataset.class);
-		java.util.List<Dataset> datasets = ScaveModelUtil.findDatasets(setOperation.eResource(), dataset.getType());
+		java.util.List<Dataset> datasets = ScaveModelUtil.findDatasets(setOperation.eResource());
 		for (Dataset ds : datasets)
 			if (!ds.equals(dataset))
 				sourceDatasets.add(ds);
 		
-		filterHints = new FilterHints(manager, dataset.getType());
+		filterHints = new FilterHints(manager, this.setOperation.getType());
 	}
 	
 	public String getTitle() {

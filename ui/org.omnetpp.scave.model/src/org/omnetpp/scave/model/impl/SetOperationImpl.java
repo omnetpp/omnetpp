@@ -15,6 +15,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 
 import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model.SetOperation;
 
@@ -27,6 +28,7 @@ import org.omnetpp.scave.model.SetOperation;
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.impl.SetOperationImpl#getSourceDataset <em>Source Dataset</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.SetOperationImpl#getFilterPattern <em>Filter Pattern</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.impl.SetOperationImpl#getType <em>Type</em>}</li>
  * </ul>
  * </p>
  *
@@ -62,6 +64,26 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
 	 * @ordered
 	 */
 	protected String filterPattern = FILTER_PATTERN_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getType() <em>Type</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getType()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final ResultType TYPE_EDEFAULT = ResultType.SCALAR_LITERAL;
+
+	/**
+	 * The cached value of the '{@link #getType() <em>Type</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getType()
+	 * @generated
+	 * @ordered
+	 */
+	protected ResultType type = TYPE_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -145,6 +167,27 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public ResultType getType() {
+		return type;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setType(ResultType newType) {
+		ResultType oldType = type;
+		type = newType == null ? TYPE_EDEFAULT : newType;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.SET_OPERATION__TYPE, oldType, type));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
 			case ScaveModelPackage.SET_OPERATION__SOURCE_DATASET:
@@ -152,6 +195,8 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
 				return basicGetSourceDataset();
 			case ScaveModelPackage.SET_OPERATION__FILTER_PATTERN:
 				return getFilterPattern();
+			case ScaveModelPackage.SET_OPERATION__TYPE:
+				return getType();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -168,6 +213,9 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
 				return;
 			case ScaveModelPackage.SET_OPERATION__FILTER_PATTERN:
 				setFilterPattern((String)newValue);
+				return;
+			case ScaveModelPackage.SET_OPERATION__TYPE:
+				setType((ResultType)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -186,6 +234,9 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
 			case ScaveModelPackage.SET_OPERATION__FILTER_PATTERN:
 				setFilterPattern(FILTER_PATTERN_EDEFAULT);
 				return;
+			case ScaveModelPackage.SET_OPERATION__TYPE:
+				setType(TYPE_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -201,6 +252,8 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
 				return sourceDataset != null;
 			case ScaveModelPackage.SET_OPERATION__FILTER_PATTERN:
 				return FILTER_PATTERN_EDEFAULT == null ? filterPattern != null : !FILTER_PATTERN_EDEFAULT.equals(filterPattern);
+			case ScaveModelPackage.SET_OPERATION__TYPE:
+				return type != TYPE_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -216,6 +269,8 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (filterPattern: ");
 		result.append(filterPattern);
+		result.append(", type: ");
+		result.append(type);
 		result.append(')');
 		return result.toString();
 	}

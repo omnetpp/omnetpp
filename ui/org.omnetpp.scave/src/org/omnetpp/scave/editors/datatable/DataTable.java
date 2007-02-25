@@ -32,7 +32,7 @@ import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
-import org.omnetpp.scave.model.DatasetType;
+import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model2.RunAttribute;
 
 /**
@@ -42,19 +42,19 @@ import org.omnetpp.scave.model2.RunAttribute;
  * for very large amounts of data. (Display time is constant,
  * so it can be used with even millions of table lines without
  * performance degradation).
- * 
+ *
  * The user is responsible to keep contents up-to-date in case
  * ResultFileManager or IDList contents change. Refreshing can be
  * done either by a call to setIDList(), or by refresh().
- *  
+ *
  * @author andras
  */
 public class DataTable extends Table {
-	
-	public static final int TYPE_SCALAR = 0;
+
+	public static final int TYPE_SCALAR = 0;  //FIXME could we use ResultType instead of this now?
 	public static final int TYPE_VECTOR = 1;
 	public static final int TYPE_HISTOGRAM = 2;
-	
+
 	/**
 	 * Keys used in getData(),setData()
 	 */
@@ -62,30 +62,30 @@ public class DataTable extends Table {
 	public static final String ITEM_KEY = "DataTable.Item";
 
 	static class Column {
-		
+
 		private String text;
 		private int weight;
 		private boolean visible;
-		
+
 		public Column(String text, int weight, boolean visible) {
 			this.text = text;
 			this.weight = weight;
 			this.visible = visible;
 		}
-		
+
 		public Column clone() {
 			return new Column(this.text, this.weight, this.visible);
 		}
-		
+
 		public boolean equals(Object other) {
 			return other instanceof Column && this.text.equals(((Column)other).text);
 		}
-		
+
 		public int hashCode() {
 			return text.hashCode();
 		}
 	}
-	
+
 	private static final Column COL_DIRECTORY = new Column("Directory", 60, true);
 	private static final Column COL_FILE_RUN = new Column("File name and run number", 100, true);
 	private static final Column COL_RUN_ID = new Column("Run id", 100, true);
@@ -100,7 +100,7 @@ public class DataTable extends Table {
 	private static final Column COL_EXPERIMENT = new Column("Experiment", 60, false);
 	private static final Column COL_MEASUREMENT = new Column("Measurement", 60, false);
 	private static final Column COL_REPLICATION = new Column("Replication", 60, false);
-	
+
 	private int type;
 	private ResultFileManagerEx manager;
 	private IDList idlist;
@@ -108,10 +108,10 @@ public class DataTable extends Table {
 	private List<Column> columns;
 	private IPreferenceStore preferences = ScavePlugin.getDefault().getPreferenceStore(); // XXX
 
-	// holds actions for the context menu for this data table 
-	private MenuManager contextMenuManager = new MenuManager("#PopupMenu"); 
+	// holds actions for the context menu for this data table
+	private MenuManager contextMenuManager = new MenuManager("#PopupMenu");
 
-	
+
 	public DataTable(Composite parent, int style, int type) {
 		super(parent, style | SWT.VIRTUAL | SWT.FULL_SELECTION);
 		Assert.isTrue(type==TYPE_SCALAR || type==TYPE_VECTOR || type==TYPE_HISTOGRAM);
@@ -133,33 +133,33 @@ public class DataTable extends Table {
 	}
 
 	/**
-	 * Override the ban on subclassing of Table, after having read the doc of 
+	 * Override the ban on subclassing of Table, after having read the doc of
 	 * checkSubclass(). In this class we only build upon the public interface
 	 * of Table, so there can be no unwanted side effects. We prefer subclassing
-	 * to delegating all 1,000,000 Table methods to an internal Table instance.    
+	 * to delegating all 1,000,000 Table methods to an internal Table instance.
 	 */
 	@Override
 	protected void checkSubclass() {
 	}
-	
+
 	public int getType() {
 		return type;
 	}
-	
-	public DatasetType getDataType() {
+
+	public ResultType getDataType() {
 		switch (type) {
-		case DataTable.TYPE_SCALAR: return DatasetType.SCALAR_LITERAL;
-		case DataTable.TYPE_VECTOR: return DatasetType.VECTOR_LITERAL;
-		case DataTable.TYPE_HISTOGRAM: return DatasetType.HISTOGRAM_LITERAL;
+		case DataTable.TYPE_SCALAR: return ResultType.SCALAR_LITERAL;
+		case DataTable.TYPE_VECTOR: return ResultType.VECTOR_LITERAL;
+		case DataTable.TYPE_HISTOGRAM: return ResultType.HISTOGRAM_LITERAL;
 		}
 		return null; // XXX
 	}
-	
+
 
 	public void setResultFileManager(ResultFileManagerEx manager) {
 		this.manager = manager;
 	}
-	
+
 	public ResultFileManagerEx getResultFileManager() {
 		return manager;
 	}
@@ -177,18 +177,18 @@ public class DataTable extends Table {
 	public IMenuManager getContextMenuManager() {
 		return contextMenuManager;
 	}
-	
+
 	public String[] getColumnNames() {
 		String[] columnNames = new String[columns.size()];
 		for (int i = 0; i < columns.size(); ++i)
 			columnNames[i] = columns.get(i).text;
 		return columnNames;
 	}
-	
+
 	public boolean isColumnVisible(int index) {
 		return columns.get(index).visible;
 	}
-	
+
 	public void setColumnVisible(int index, boolean visible) {
 		if (visible != columns.get(index).visible) {
 			Column column = columns.get(index);
@@ -197,15 +197,25 @@ public class DataTable extends Table {
 			layoutColumns();
 		}
 	}
-	
+
+	public IDList getSelectedIDs() {
+		int[] selectionIndices = getSelectionIndices();
+		IDList items = new IDList(selectionIndices.length);
+
+		for (int i = 0; i < selectionIndices.length; ++i)
+			items.set(i, idlist.get(selectionIndices[i]));
+		
+		return items;
+	}
+
 	public ResultItem[] getSelectedItems() {
 		int[] selectionIndices = getSelectionIndices();
 		ResultItem[] items = new ResultItem[selectionIndices.length];
-		
+
 		for (int i = 0; i < items.length; ++i) {
 			items[i] = manager.getItem(idlist.get(selectionIndices[i]));
 		}
-		
+
 		return items;
 	}
 
@@ -213,7 +223,7 @@ public class DataTable extends Table {
 		setItemCount((int)idlist.size());
 		clearAll();
 	}
-	
+
 	protected void initColumns() {
 		columns = new ArrayList<Column>();
 		addColumn(COL_DIRECTORY);
@@ -224,7 +234,7 @@ public class DataTable extends Table {
 		addColumn(COL_REPLICATION);
 		addColumn(COL_MODULE);
 		addColumn(COL_DATA);
-		
+
 		switch (type) {
 		case TYPE_SCALAR:
 			addColumn(COL_VALUE);
@@ -244,13 +254,13 @@ public class DataTable extends Table {
 			break;
 		}
 	}
-	
+
 	protected void addColumn(Column column) {
 		Column newColumn = column.clone();
 		initDefaultColumnState(column);
 		loadColumnState(newColumn);
 		columns.add(newColumn);
-		
+
 		TableColumn tableColumn = new TableColumn(this, SWT.NONE);
 		tableColumn.setText(newColumn.text);
 		tableColumn.setWidth(newColumn.visible ? newColumn.weight : 0);
@@ -266,7 +276,7 @@ public class DataTable extends Table {
 			}
 		});
 	}
-	
+
 	public void sortBy(Column column, int direction) {
 		boolean ascending = direction == SWT.UP;
 		if (COL_DIRECTORY.equals(column))
@@ -300,7 +310,7 @@ public class DataTable extends Table {
 		// TODO: min,max,mean,count,stddev
 		setIDList(idlist);
 	}
-	
+
 	protected void layoutColumns() {
 		double unit = getWidthUnit();
 		for (int i = 0; i < columns.size(); ++i) {
@@ -316,14 +326,14 @@ public class DataTable extends Table {
 
 		return (double)getSize().x / sumOfWeights;
 	}
-	
+
 	protected void fillTableLine(TableItem item, int lineNumber) {
 		long id = idlist.get(lineNumber);
 		ResultItem result = type == TYPE_SCALAR ? manager.getScalar(id) :
 							type == TYPE_VECTOR ? manager.getVector(id) :
 								manager.getItem(id);
 		item.setData(ITEM_KEY, result);
-							
+
 		for (int i = 0; i < columns.size(); ++i) {
 			Column column = columns.get(i);
 			if (COL_DIRECTORY.equals(column))
@@ -384,10 +394,10 @@ public class DataTable extends Table {
 			}
 		}
 	}
-	
+
 	protected void toCSV(CsvWriter writer, int lineNumber) {
 		ResultItem result = manager.getItem(idlist.get(lineNumber));
-		
+
 		for (int i = 0; i < columns.size(); ++i) {
 			Column column = columns.get(i);
 			if (!column.visible)
@@ -439,10 +449,10 @@ public class DataTable extends Table {
 				// TODO
 			}
 		}
-		
+
 		writer.endRecord();
 	}
-	
+
 	public void copySelectionToClipboard() {
 		CsvWriter writer = new CsvWriter();
 		// add header
@@ -454,44 +464,44 @@ public class DataTable extends Table {
 		int[] selection = getSelectionIndices();
 		for (int i = 0; i < selection.length; ++i)
 			toCSV(writer, selection[i]);
-		
+
 		Clipboard clipboard = new Clipboard(getDisplay());
 		clipboard.setContents(new Object[] {writer.toString()}, new Transfer[] {TextTransfer.getInstance()});
 		clipboard.dispose();
 	}
-	
+
 	public void addDataTableListener(IDataTableListener listener) {
 		if (listeners == null)
 			listeners = new ListenerList();
 		listeners.add(listener);
 	}
-	
+
 	public void removeDataTableListener(IDataTableListener listener) {
 		if (listeners != null)
 			listeners.remove(listener);
 	}
-	
+
 	protected void fireContentChangedEvent() {
 		if (listeners != null) {
 			for (Object listener : new ArrayList<Object>(Arrays.asList(this.listeners.getListeners())))
 				((IDataTableListener)listener).contentChanged(this);
 		}
 	}
-	
+
 	protected String getPreferenceStoreKey(Column column, String field) {
-		return "DataTable." + type + "." + column.text + "." + field; 
+		return "DataTable." + type + "." + column.text + "." + field;
 	}
-	
+
 	protected void initDefaultColumnState(Column column) {
 		if (preferences != null)
 			preferences.setDefault(getPreferenceStoreKey(column, "visible"), column.visible);
 	}
-	
+
 	protected void saveColumnState(Column column) {
 		if (preferences != null)
 			preferences.setValue(getPreferenceStoreKey(column, "visible"), column.visible);
 	}
-	
+
 	protected void loadColumnState(Column column) {
 		if (preferences != null)
 			column.visible = preferences.getBoolean(getPreferenceStoreKey(column, "visible"));

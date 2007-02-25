@@ -61,7 +61,6 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
 			case ScaveModelPackage.DATASET: return createDataset();
-			case ScaveModelPackage.CHART: return createChart();
 			case ScaveModelPackage.ADD: return createAdd();
 			case ScaveModelPackage.APPLY: return createApply();
 			case ScaveModelPackage.EXCEPT: return createExcept();
@@ -78,6 +77,9 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
 			case ScaveModelPackage.DATASETS: return createDatasets();
 			case ScaveModelPackage.INPUT_FILE: return createInputFile();
 			case ScaveModelPackage.COMPUTE: return createCompute();
+			case ScaveModelPackage.BAR_CHART: return createBarChart();
+			case ScaveModelPackage.LINE_CHART: return createLineChart();
+			case ScaveModelPackage.HISTOGRAM_CHART: return createHistogramChart();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -90,8 +92,8 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
 	 */
 	public Object createFromString(EDataType eDataType, String initialValue) {
 		switch (eDataType.getClassifierID()) {
-			case ScaveModelPackage.DATASET_TYPE:
-				return createDatasetTypeFromString(eDataType, initialValue);
+			case ScaveModelPackage.RESULT_TYPE:
+				return createResultTypeFromString(eDataType, initialValue);
 			default:
 				throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
 		}
@@ -104,8 +106,8 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
 	 */
 	public String convertToString(EDataType eDataType, Object instanceValue) {
 		switch (eDataType.getClassifierID()) {
-			case ScaveModelPackage.DATASET_TYPE:
-				return convertDatasetTypeToString(eDataType, instanceValue);
+			case ScaveModelPackage.RESULT_TYPE:
+				return convertResultTypeToString(eDataType, instanceValue);
 			default:
 				throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
 		}
@@ -119,16 +121,6 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
 	public Dataset createDataset() {
 		DatasetImpl dataset = new DatasetImpl();
 		return dataset;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public Chart createChart() {
-		ChartImpl chart = new ChartImpl();
-		return chart;
 	}
 
 	/**
@@ -296,8 +288,38 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public DatasetType createDatasetTypeFromString(EDataType eDataType, String initialValue) {
-		DatasetType result = DatasetType.get(initialValue);
+	public BarChart createBarChart() {
+		BarChartImpl barChart = new BarChartImpl();
+		return barChart;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public LineChart createLineChart() {
+		LineChartImpl lineChart = new LineChartImpl();
+		return lineChart;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public HistogramChart createHistogramChart() {
+		HistogramChartImpl histogramChart = new HistogramChartImpl();
+		return histogramChart;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public ResultType createResultTypeFromString(EDataType eDataType, String initialValue) {
+		ResultType result = ResultType.get(initialValue);
 		if (result == null) throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
 		return result;
 	}
@@ -307,7 +329,7 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public String convertDatasetTypeToString(EDataType eDataType, Object instanceValue) {
+	public String convertResultTypeToString(EDataType eDataType, Object instanceValue) {
 		return instanceValue == null ? null : instanceValue.toString();
 	}
 

@@ -20,7 +20,6 @@ import org.eclipse.emf.ecore.EObject;
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.Dataset#getName <em>Name</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.Dataset#getItems <em>Items</em>}</li>
- *   <li>{@link org.omnetpp.scave.model.Dataset#getType <em>Type</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.Dataset#getBasedOn <em>Based On</em>}</li>
  * </ul>
  * </p>
@@ -71,35 +70,6 @@ public interface Dataset extends EObject {
 	 * @generated
 	 */
 	EList getItems();
-
-	/**
-	 * Returns the value of the '<em><b>Type</b></em>' attribute.
-	 * The literals are from the enumeration {@link org.omnetpp.scave.model.DatasetType}.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Type</em>' attribute isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Type</em>' attribute.
-	 * @see org.omnetpp.scave.model.DatasetType
-	 * @see #setType(DatasetType)
-	 * @see org.omnetpp.scave.model.ScaveModelPackage#getDataset_Type()
-	 * @model
-	 * @generated
-	 */
-	DatasetType getType();
-
-	/**
-	 * Sets the value of the '{@link org.omnetpp.scave.model.Dataset#getType <em>Type</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Type</em>' attribute.
-	 * @see org.omnetpp.scave.model.DatasetType
-	 * @see #getType()
-	 * @generated
-	 */
-	void setType(DatasetType value);
 
 	/**
 	 * Returns the value of the '<em><b>Based On</b></em>' reference.

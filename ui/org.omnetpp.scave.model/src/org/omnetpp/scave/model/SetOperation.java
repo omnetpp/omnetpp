@@ -18,6 +18,7 @@ import org.eclipse.emf.ecore.EObject;
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.SetOperation#getSourceDataset <em>Source Dataset</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.SetOperation#getFilterPattern <em>Filter Pattern</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.SetOperation#getType <em>Type</em>}</li>
  * </ul>
  * </p>
  *
@@ -77,5 +78,34 @@ public interface SetOperation extends EObject {
 	 * @generated
 	 */
 	void setFilterPattern(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Type</b></em>' attribute.
+	 * The literals are from the enumeration {@link org.omnetpp.scave.model.ResultType}.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Type</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Type</em>' attribute.
+	 * @see org.omnetpp.scave.model.ResultType
+	 * @see #setType(ResultType)
+	 * @see org.omnetpp.scave.model.ScaveModelPackage#getSetOperation_Type()
+	 * @model
+	 * @generated
+	 */
+	ResultType getType();
+
+	/**
+	 * Sets the value of the '{@link org.omnetpp.scave.model.SetOperation#getType <em>Type</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Type</em>' attribute.
+	 * @see org.omnetpp.scave.model.ResultType
+	 * @see #getType()
+	 * @generated
+	 */
+	void setType(ResultType value);
 
 } // SetOperation

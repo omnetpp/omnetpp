@@ -10,21 +10,15 @@ import java.util.Collection;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
-
 import org.eclipse.emf.common.util.EList;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
-
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
-import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
 /**
@@ -36,7 +30,6 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.impl.DatasetImpl#getName <em>Name</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.DatasetImpl#getItems <em>Items</em>}</li>
- *   <li>{@link org.omnetpp.scave.model.impl.DatasetImpl#getType <em>Type</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.DatasetImpl#getBasedOn <em>Based On</em>}</li>
  * </ul>
  * </p>
@@ -73,26 +66,6 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
 	 * @ordered
 	 */
 	protected EList items = null;
-
-	/**
-	 * The default value of the '{@link #getType() <em>Type</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getType()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final DatasetType TYPE_EDEFAULT = DatasetType.SCALAR_LITERAL;
-
-	/**
-	 * The cached value of the '{@link #getType() <em>Type</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getType()
-	 * @generated
-	 * @ordered
-	 */
-	protected DatasetType type = TYPE_EDEFAULT;
 
 	/**
 	 * The cached value of the '{@link #getBasedOn() <em>Based On</em>}' reference.
@@ -160,27 +133,6 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public DatasetType getType() {
-		return type;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setType(DatasetType newType) {
-		DatasetType oldType = type;
-		type = newType == null ? TYPE_EDEFAULT : newType;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.DATASET__TYPE, oldType, type));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public Dataset getBasedOn() {
 		if (basedOn != null && basedOn.eIsProxy()) {
 			InternalEObject oldBasedOn = (InternalEObject)basedOn;
@@ -238,8 +190,6 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
 				return getName();
 			case ScaveModelPackage.DATASET__ITEMS:
 				return getItems();
-			case ScaveModelPackage.DATASET__TYPE:
-				return getType();
 			case ScaveModelPackage.DATASET__BASED_ON:
 				if (resolve) return getBasedOn();
 				return basicGetBasedOn();
@@ -261,9 +211,6 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
 				getItems().clear();
 				getItems().addAll((Collection)newValue);
 				return;
-			case ScaveModelPackage.DATASET__TYPE:
-				setType((DatasetType)newValue);
-				return;
 			case ScaveModelPackage.DATASET__BASED_ON:
 				setBasedOn((Dataset)newValue);
 				return;
@@ -284,9 +231,6 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
 			case ScaveModelPackage.DATASET__ITEMS:
 				getItems().clear();
 				return;
-			case ScaveModelPackage.DATASET__TYPE:
-				setType(TYPE_EDEFAULT);
-				return;
 			case ScaveModelPackage.DATASET__BASED_ON:
 				setBasedOn((Dataset)null);
 				return;
@@ -305,8 +249,6 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
 				return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
 			case ScaveModelPackage.DATASET__ITEMS:
 				return items != null && !items.isEmpty();
-			case ScaveModelPackage.DATASET__TYPE:
-				return type != TYPE_EDEFAULT;
 			case ScaveModelPackage.DATASET__BASED_ON:
 				return basedOn != null;
 		}
@@ -324,8 +266,6 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (name: ");
 		result.append(name);
-		result.append(", type: ");
-		result.append(type);
 		result.append(')');
 		return result.toString();
 	}

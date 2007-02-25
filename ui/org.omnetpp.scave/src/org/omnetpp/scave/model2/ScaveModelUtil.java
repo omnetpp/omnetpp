@@ -1,9 +1,5 @@
 package org.omnetpp.scave.model2;
 
-import static org.omnetpp.scave.model2.RunAttribute.EXPERIMENT;
-import static org.omnetpp.scave.model2.RunAttribute.MEASUREMENT;
-import static org.omnetpp.scave.model2.RunAttribute.REPLICATION;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,22 +16,24 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import org.omnetpp.scave.engine.FileRunList;
+import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.scave.engine.ResultFileList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
-import org.omnetpp.scave.engine.RunList;
-import org.omnetpp.scave.engine.StringMap;
+import org.omnetpp.scave.engine.ScalarResult;
+import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Analysis;
+import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.ChartSheets;
 import org.omnetpp.scave.model.Dataset;
-import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave.model.Group;
+import org.omnetpp.scave.model.HistogramChart;
+import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Property;
+import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
@@ -44,57 +42,78 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @author andras
  */
 public class ScaveModelUtil {
-	
+
 	private static final String DEFAULT_CHARTSHEET_NAME = "default";
-	
+
 	private static final ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
 	private static final ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
-	
+
 	public static ChartSheet createDefaultChartSheet() {
 		ChartSheet chartsheet = factory.createChartSheet();
 		chartsheet.setName(DEFAULT_CHARTSHEET_NAME);
 		return chartsheet;
 	}
-	
-	public static Dataset createDataset(String name, DatasetType type) {
+
+	public static Dataset createDataset(String name) {
 		Dataset dataset = factory.createDataset();
 		dataset.setName(name);
-		dataset.setType(type);
 		return dataset;
 	}
 
-	public static Dataset createDataset(String name, DatasetType type, Filter filter) {
+	public static Dataset createDataset(String name, Filter filter, ResultType type) {
 		Dataset dataset = factory.createDataset();
 		dataset.setName(name);
-		dataset.setType(type);
-		dataset.getItems().add(createAdd(filter));
+		dataset.getItems().add(createAdd(filter, type));
 		return dataset;
 	}
-	
-	public static Dataset createDataset(String name, DatasetType type, ResultItem[] items, String[] runidFields) {
+
+	public static Dataset createDataset(String name, ResultItem[] items, String[] runidFields) {
 		Dataset dataset = factory.createDataset();
 		dataset.setName(name);
-		dataset.setType(type);
 		dataset.getItems().addAll(createAdds(items, runidFields));
 		return dataset;
 	}
-	
-	public static Chart createChart(String name) {
-		Chart chart = factory.createChart();
+
+	public static Chart createChart(String name, ResultType type) {
+		if (type==ResultType.SCALAR_LITERAL)
+			return createBarChart(name);
+		else if (type==ResultType.VECTOR_LITERAL)
+			return createLineChart(name);
+		else if (type==ResultType.HISTOGRAM_LITERAL)
+			return createHistogramChart(name);
+		else
+			throw new IllegalArgumentException();
+	}
+
+	public static BarChart createBarChart(String name) {
+		BarChart chart = factory.createBarChart();
+		chart.setName(name);
+		return chart;
+	}
+
+	public static LineChart createLineChart(String name) {
+		LineChart chart = factory.createLineChart();
+		chart.setName(name);
+		return chart;
+	}
+
+	public static HistogramChart createHistogramChart(String name) {
+		HistogramChart chart = factory.createHistogramChart();
 		chart.setName(name);
 		return chart;
 	}
 	
-	public static Add createAdd(String filterString) {
+	public static Add createAdd(String filterString, ResultType type) {
 		Add add = factory.createAdd();
 		add.setFilterPattern(filterString);
+		add.setType(type);
 		return add;
 	}
 
-	public static Add createAdd(Filter filter) {
-		return createAdd(filter.getFilterPattern());
+	public static Add createAdd(Filter filter, ResultType type) {
+		return createAdd(filter.getFilterPattern(), type);
 	}
-	
+
 	/**
 	 * Generates Add commands with filter patterns that identify elements in items[].
 	 * @param runidFields  may be null (meaning autoselect)
@@ -105,7 +124,7 @@ public class ScaveModelUtil {
 			adds.add(createAdd(item, runidFields));
 		return adds;
 	}
-	
+
 	/**
 	 * Generates an Add command with filter pattern to identify item.
 	 * @param runidFields  may be null (meaning autoselect)
@@ -113,12 +132,20 @@ public class ScaveModelUtil {
 	public static Add createAdd(ResultItem item, String[] runidFields) {
 		Add add = factory.createAdd();
 		add.setFilterPattern(new FilterUtil(item, runidFields).getFilterPattern());
+		if (item instanceof ScalarResult)
+			add.setType(ResultType.SCALAR_LITERAL);
+		else if (item instanceof VectorResult)
+			add.setType(ResultType.VECTOR_LITERAL);
+		else if (item instanceof HistogramResult)
+			add.setType(ResultType.HISTOGRAM_LITERAL);
+		else
+			throw new RuntimeException("unknown result type");
 		return add;
 	}
-	
+
 	/**
 	 * Returns the analysis node of the specified resource.
-	 * It is assumed that the resource contains exactly one analysis node as 
+	 * It is assumed that the resource contains exactly one analysis node as
 	 * content.
 	 */
 	public static Analysis getAnalysis(Resource resource) {
@@ -126,16 +153,16 @@ public class ScaveModelUtil {
 				"Analysis node not found in: " + resource.getURI().toString());
 		return (Analysis)resource.getContents().get(0);
 	}
-	
+
 	/**
-	 * Returns the analysis node containing <code>eobject</code>. 
+	 * Returns the analysis node containing <code>eobject</code>.
 	 */
 	public static Analysis getAnalysis(EObject eobject) {
 		Assert.isTrue(eobject.eClass().getEPackage() == pkg,
 				"Scave model object expected, received: " + eobject.toString());
 		return getAnalysis(eobject.eResource());
 	}
-	
+
 	public static ChartSheet getDefaultChartSheet(Resource resource) {
 		Analysis analysis = getAnalysis(resource);
 		for (ChartSheet chartsheet : (List<ChartSheet>)analysis.getChartSheets().getChartSheets())
@@ -143,43 +170,37 @@ public class ScaveModelUtil {
 				return chartsheet;
 		return null;
 	}
-	
+
 	public static Dataset findEnclosingDataset(Chart chart) {
 		EObject parent = chart.eContainer();
 		while (parent != null && !(parent instanceof Dataset))
 			parent = parent.eContainer();
 		return (Dataset)parent;
 	}
-	
-	public static DatasetType getDatasetType(Chart chart) {
-		Dataset dataset = findEnclosingDataset(chart);
-		return dataset != null ? dataset.getType() : null;
-	}
 
 	/**
-	 * Returns the datasets in the resource having the specified type.
+	 * Returns the datasets in the resource.
 	 */
-	public static List<Dataset> findDatasets(Resource resource, DatasetType type) {
+	public static List<Dataset> findDatasets(Resource resource) {
 		List<Dataset> result = new ArrayList<Dataset>();
 		Analysis analysis = getAnalysis(resource);
 		if (analysis.getDatasets() != null) {
 			for (Object object : analysis.getDatasets().getDatasets()) {
 				Dataset dataset = (Dataset)object;
-				if (dataset.getType().equals(type))
-					result.add((Dataset)dataset);
+				result.add(dataset);
 			}
 		}
 		return result;
 	}
-	
+
 	public static <T extends EObject> T findEnclosingObject(EObject object, Class<T> type) {
 		while (object != null && !type.isInstance(object))
 			object = object.eContainer();
 		return (T)object;
 	}
-	
+
 	/**
-	 * Returns all object in the container having the specified type. 
+	 * Returns all object in the container having the specified type.
 	 */
 	public static <T extends EObject> List<T> findObjects(EObject container, Class<T> type) {
 		ArrayList<T> objects = new ArrayList<T>();
@@ -190,7 +211,7 @@ public class ScaveModelUtil {
 		}
 		return objects;
  	}
-	
+
 	/**
 	 * Returns all objects in the resource having the specified type.
 	 */
@@ -203,9 +224,9 @@ public class ScaveModelUtil {
 		}
 		return objects;
 	}
-	
+
 	/**
-	 * Collect charts from the given collection. 
+	 * Collect charts from the given collection.
 	 */
 	public static List<Chart> collectCharts(Collection items) {
 		List<Chart> charts = new ArrayList<Chart>();
@@ -224,9 +245,9 @@ public class ScaveModelUtil {
 			}
 		return charts;
 	}
-	
+
 	/**
-	 * Collect unreferenced charts from the given collection. 
+	 * Collect unreferenced charts from the given collection.
 	 */
 	public static Collection<Chart> collectUnreferencedCharts(Collection items) {
 		List<Chart> charts = collectCharts(items);
@@ -236,18 +257,18 @@ public class ScaveModelUtil {
 		}
 		return charts;
 	}
-	
+
 	/**
 	 * Collect references to scave objects.
 	 * Currently the only references are from chart sheets to charts,
-	 * so the scope of the search is limited to chart sheets. 
+	 * so the scope of the search is limited to chart sheets.
 	 */
 	static class ScaveCrossReferencer extends EcoreUtil.CrossReferencer {
 
 		protected ScaveCrossReferencer(Collection eobjects) {
 			super(eobjects);
 		}
-		
+
 		public static Map find(Resource resource) {
 			return EcoreUtil.CrossReferencer.find(Collections.singleton(resource));
 		}
@@ -260,7 +281,7 @@ public class ScaveModelUtil {
 				   eObject instanceof ChartSheet;
 		}
 	}
-	
+
 	public static Property getChartProperty(Chart chart, String propertyName) {
 		for (Object object : chart.getProperties()) {
 			Property property = (Property)object;
@@ -269,7 +290,7 @@ public class ScaveModelUtil {
 		}
 		return null;
 	}
-	
+
 	public static void setChartProperty(EditingDomain ed, Chart chart, String propertyName, String propertyValue) {
 		Property property = getChartProperty(chart, propertyName);
 		Command command;
@@ -292,18 +313,17 @@ public class ScaveModelUtil {
 		}
 		ed.getCommandStack().execute(command);
 	}
-	
-	public static IDList getAllIDs(ResultFileManager manager, DatasetType type) {
+
+	public static IDList getAllIDs(ResultFileManager manager, ResultType type) {
 		switch (type.getValue()) {
-		case DatasetType.SCALAR: 	return manager.getAllScalars();
-		case DatasetType.VECTOR:	return manager.getAllVectors();
-		case DatasetType.HISTOGRAM:	return new IDList(); // TODO
+		case ResultType.SCALAR: return manager.getAllScalars();
+		case ResultType.VECTOR:	return manager.getAllVectors();
+		case ResultType.HISTOGRAM: return manager.getAllHistograms();
 		}
-		
 		Assert.isTrue(false, "Unknown dataset type: " + type);
 		return null;
 	}
-	
+
 	public static ResultItem[] getResultItems(IDList idlist, ResultFileManager manager) {
 		int size = (int)idlist.size();
 		ResultItem[] items = new ResultItem[size];
@@ -311,17 +331,17 @@ public class ScaveModelUtil {
 			items[i] = manager.getItem(idlist.get(i));
 		return items;
 	}
-	
+
 	public static IDList filterIDList(IDList idlist, Filter filter, ResultFileManager manager) {
 		Assert.isTrue(filter.getFilterPattern()!=null);
 		return manager.filterIDList(idlist, filter.getFilterPattern());
 	}
-	
+
 	/**
 	 * Returns the default chart sheet.
 	 * When the resource did not contain default chart sheet a new one is created,
 	 * and a AddCommand is appended to the <code>command</command>, that adds
-	 * the new chart sheet to the resource. 
+	 * the new chart sheet to the resource.
 	 */
 	public static ChartSheet getOrCreateDefaultChartSheet(EditingDomain ed, CompoundCommand command, Resource resource) {
 		ChartSheet chartsheet = getDefaultChartSheet(resource);
@@ -337,7 +357,7 @@ public class ScaveModelUtil {
 		}
 		return chartsheet;
 	}
-	
+
 	public static void dumpIDList(String header, IDList idlist, ResultFileManager manager) {
 		System.out.print(header);
 		if (idlist.size() == 0)

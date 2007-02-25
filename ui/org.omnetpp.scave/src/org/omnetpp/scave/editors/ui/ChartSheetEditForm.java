@@ -129,7 +129,7 @@ public class ChartSheetEditForm implements IScaveObjectEditForm {
 	
 	private List<Chart> getCharts(String[] names) {
 		List<Chart> charts = new ArrayList<Chart>();
-		Chart chart = ScaveModelFactory.eINSTANCE.createChart();
+		Chart chart = ScaveModelFactory.eINSTANCE.createBarChart(); // temp chart object used as search key; concrete type (BarChart) is irrelevant as comparator looks at the name only
 		for (String name : names) {
 			chart.setName(name);
 			int index = Collections.binarySearch(allCharts, chart, comparator);

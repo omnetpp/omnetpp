@@ -32,7 +32,7 @@ import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
-import org.omnetpp.scave.model.DatasetType;
+import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ScaveModelUtil;
@@ -43,31 +43,31 @@ public class DatasetPage extends ScaveEditorPage {
 	private Dataset dataset; //backref to the model object we operate on
 	private DatasetPanel datasetPanel;
 	private FilteredDataPanel filterPanel;
-	
+
 	private IResultFilesChangeListener resultFilesChangeListener; // we'll need to unhook on dispose()
 	private INotifyChangedListener modelChangeListener; // we'll need to unhook on dispose()
-	
+
 	public DatasetPage(Composite parent, ScaveEditor scaveEditor, Dataset dataset) {
 		super(parent, SWT.V_SCROLL | SWT.H_SCROLL, scaveEditor);
 		this.dataset = dataset;
 		initialize();
 	}
-	
+
 	public void updatePage(Notification notification) {
 		if (ScaveModelPackage.eINSTANCE.getDataset_Name().equals(notification.getFeature())) {
 			setPageTitle("Dataset: " + dataset.getName());
 			setFormTitle("Dataset: " + dataset.getName());
 		}
 	}
-	
+
 	public TreeViewer getDatasetTreeViewer() {
 		return datasetPanel.getTreeViewer();
 	}
-	
+
 	public FilteredDataPanel getFilterPanel() {
 		return filterPanel;
 	}
-	
+
 	private void initialize() {
 		// set up UI
 		setPageTitle("Dataset: " + dataset.getName());
@@ -84,7 +84,7 @@ public class DatasetPage extends ScaveEditorPage {
 	      "Datasets may include processing steps, and one dataset can serve as input for another.");
 		label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL));
 		createFormContents();
-		
+
 		// configure dataset treeviewer
 		TreeViewer treeViewer = getDatasetTreeViewer();
 		scaveEditor.configureTreeViewer(treeViewer);
@@ -93,7 +93,7 @@ public class DatasetPage extends ScaveEditorPage {
 		// set up filtered data panel
 		filterPanel.setResultFileManager(scaveEditor.getResultFileManager());
 		updateDataTable();
-		
+
 		// add "Choose columns" action to data table
 		DataTable table = filterPanel.getTable();
 		table.getContextMenuManager().add(new ChooseTableColumnsAction(table));
@@ -106,7 +106,7 @@ public class DatasetPage extends ScaveEditorPage {
 		});
 		// update whenever files get loaded/unloaded
 		//XXX unregister listener when we get disposed
-		scaveEditor.getResultFileManager().addListener(resultFilesChangeListener = 
+		scaveEditor.getResultFileManager().addListener(resultFilesChangeListener =
 			new IResultFilesChangeListener() {
 			public void resultFileManagerChanged(ResultFileManager manager) {
 				updateDataTable();
@@ -120,7 +120,7 @@ public class DatasetPage extends ScaveEditorPage {
 				updateDataTable();
 			}
 		});
-		
+
 		// set up actions
 		configureViewerButton(
 				datasetPanel.getNewChildButton(),
@@ -131,24 +131,24 @@ public class DatasetPage extends ScaveEditorPage {
 				datasetPanel.getTreeViewer(),
 				new NewAction(dataset, false));
 		configureViewerButton(
-				datasetPanel.getRemoveButton(), 
+				datasetPanel.getRemoveButton(),
 				datasetPanel.getTreeViewer(),
 				new RemoveAction());
 		configureViewerButton(
 				datasetPanel.getEditButton(),
-				datasetPanel.getTreeViewer(), 
+				datasetPanel.getTreeViewer(),
 				new EditAction());
 		configureViewerButton(
 				datasetPanel.getGroupButton(),
-				datasetPanel.getTreeViewer(), 
+				datasetPanel.getTreeViewer(),
 				new GroupAction());
 		configureViewerButton(
 				datasetPanel.getUngroupButton(),
-				datasetPanel.getTreeViewer(), 
+				datasetPanel.getTreeViewer(),
 				new UngroupAction());
 		configureViewerDefaultButton(
 				datasetPanel.getOpenChartButton(),
-				datasetPanel.getTreeViewer(), 
+				datasetPanel.getTreeViewer(),
 				new OpenAction());
 	}
 
@@ -171,7 +171,7 @@ public class DatasetPage extends ScaveEditorPage {
 			DatasetItem item = ScaveModelUtil.findEnclosingObject((EObject)selected, DatasetItem.class);
 			if (dataset != null) {
 				ResultFileManagerEx manager = scaveEditor.getResultFileManager();
-				IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, item);
+				IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, item, ResultType.VECTOR_LITERAL); //FIXME ResultType.VECTOR_LITERAL is just temporary here. Panel type used to depend on dataset type, but now we have to use a tabfolder here, or what?
 				filterPanel.setIDList(idlist);
 			}
 		}
@@ -188,11 +188,12 @@ public class DatasetPage extends ScaveEditorPage {
 		datasetPanel = new DatasetPanel(sashform, SWT.NONE);
 
 		// create data panel
-		int datasetType = dataset.getType().getValue();
-		int type = datasetType==DatasetType.SCALAR ? DataTable.TYPE_SCALAR
-				 : datasetType==DatasetType.VECTOR ? DataTable.TYPE_VECTOR
-				 : datasetType==DatasetType.HISTOGRAM ? DataTable.TYPE_HISTOGRAM 
-				 : -1;
+//		int datasetType = dataset.getType().getValue();
+//		int type = datasetType==ResultType.SCALAR ? DataTable.TYPE_SCALAR
+//				 : datasetType==ResultType.VECTOR ? DataTable.TYPE_VECTOR
+//				 : datasetType==ResultType.HISTOGRAM ? DataTable.TYPE_HISTOGRAM
+//				 : -1;
+		int type = DataTable.TYPE_VECTOR; //FIXME panel type used to depend on dataset type, but now we have to use a tabfolder here, or what?
 		filterPanel = new FilteredDataPanel(sashform, SWT.NONE, type);
 		configureFilteredDataPanel(filterPanel);
 	}

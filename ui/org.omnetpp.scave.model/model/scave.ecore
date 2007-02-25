@@ -7,10 +7,9 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="items" upperBound="-1"
         eType="#//DatasetItem" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="#//DatasetType"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="basedOn" eType="#//Dataset"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Chart" eSuperTypes="#//DatasetItem">
+  <eClassifiers xsi:type="ecore:EClass" name="Chart" abstract="true" eSuperTypes="#//DatasetItem">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="filters" upperBound="-1"
         eType="#//SelectDeselectOp" containment="true"/>
@@ -36,6 +35,7 @@
   <eClassifiers xsi:type="ecore:EClass" name="SetOperation" abstract="true">
     <eStructuralFeatures xsi:type="ecore:EReference" name="sourceDataset" eType="#//Dataset"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="filterPattern" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="#//ResultType"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="DatasetItem" abstract="true"/>
   <eClassifiers xsi:type="ecore:EClass" name="Group" eSuperTypes="#//DatasetItem">
@@ -89,11 +89,14 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="datasets" upperBound="-1"
         eType="#//Dataset" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EEnum" name="DatasetType">
+  <eClassifiers xsi:type="ecore:EEnum" name="ResultType">
     <eLiterals name="scalar" value="1" literal="SCALAR"/>
     <eLiterals name="vector" value="2" literal="VECTOR"/>
     <eLiterals name="histogram" value="3" literal="HISTOGRAM"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Apply" eSuperTypes="#//ProcessingOp"/>
   <eClassifiers xsi:type="ecore:EClass" name="Compute" eSuperTypes="#//ProcessingOp"/>
+  <eClassifiers xsi:type="ecore:EClass" name="BarChart" eSuperTypes="#//Chart"/>
+  <eClassifiers xsi:type="ecore:EClass" name="LineChart" eSuperTypes="#//Chart"/>
+  <eClassifiers xsi:type="ecore:EClass" name="HistogramChart" eSuperTypes="#//Chart"/>
 </ecore:EPackage>

@@ -64,6 +64,7 @@ public class SetOperationItemProvider
 
 			addSourceDatasetPropertyDescriptor(object);
 			addFilterPatternPropertyDescriptor(object);
+			addTypePropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -109,6 +110,26 @@ public class SetOperationItemProvider
 	}
 
 	/**
+	 * This adds a property descriptor for the Type feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addTypePropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add
+			(createItemPropertyDescriptor
+				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+				 getResourceLocator(),
+				 getString("_UI_SetOperation_type_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_SetOperation_type_feature", "_UI_SetOperation_type"),
+				 ScaveModelPackage.Literals.SET_OPERATION__TYPE,
+				 true,
+				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
+				 null,
+				 null));
+	}
+
+	/**
 	 * This returns SetOperation.gif.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -144,6 +165,7 @@ public class SetOperationItemProvider
 		switch (notification.getFeatureID(SetOperation.class)) {
 			case ScaveModelPackage.SET_OPERATION__SOURCE_DATASET:
 			case ScaveModelPackage.SET_OPERATION__FILTER_PATTERN:
+			case ScaveModelPackage.SET_OPERATION__TYPE:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 				return;
 		}

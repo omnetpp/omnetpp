@@ -16,16 +16,15 @@ import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
-import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
- * Active on the "Browse Data" page. It adds the selected elements to 
- * a dataset. The dataset selection dialog also allows creating 
+ * Active on the "Browse Data" page. It adds the selected elements to
+ * a dataset. The dataset selection dialog also allows creating
  * a new dataset.
- * 
+ *
  * @author Andras
  */
 public class AddSelectedToDatasetAction extends AbstractScaveAction {
@@ -37,13 +36,13 @@ public class AddSelectedToDatasetAction extends AbstractScaveAction {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	protected void doRun(final ScaveEditor editor, IStructuredSelection selection) {
 		FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
 		if (activePanel == null)
 			return;
 
-		DatasetType datasetType = editor.getBrowseDataPage().getActivePanelType(); 
-		DatasetSelectionDialog dlg = new DatasetSelectionDialog(editor, datasetType); 
+		DatasetSelectionDialog dlg = new DatasetSelectionDialog(editor);
 		if (dlg.open() == Window.OK) {
 			Dataset dataset = (Dataset) dlg.getFirstResult();
 			if (dataset != null) {

@@ -64,7 +64,6 @@ public class DatasetItemProvider
 			super.getPropertyDescriptors(object);
 
 			addNamePropertyDescriptor(object);
-			addTypePropertyDescriptor(object);
 			addBasedOnPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
@@ -84,26 +83,6 @@ public class DatasetItemProvider
 				 getString("_UI_Dataset_name_feature"),
 				 getString("_UI_PropertyDescriptor_description", "_UI_Dataset_name_feature", "_UI_Dataset_type"),
 				 ScaveModelPackage.Literals.DATASET__NAME,
-				 true,
-				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
-				 null,
-				 null));
-	}
-
-	/**
-	 * This adds a property descriptor for the Type feature.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected void addTypePropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add
-			(createItemPropertyDescriptor
-				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
-				 getResourceLocator(),
-				 getString("_UI_Dataset_type_feature"),
-				 getString("_UI_PropertyDescriptor_description", "_UI_Dataset_type_feature", "_UI_Dataset_type"),
-				 ScaveModelPackage.Literals.DATASET__TYPE,
 				 true,
 				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
 				 null,
@@ -181,7 +160,6 @@ public class DatasetItemProvider
 
 		switch (notification.getFeatureID(Dataset.class)) {
 			case ScaveModelPackage.DATASET__NAME:
-			case ScaveModelPackage.DATASET__TYPE:
 			case ScaveModelPackage.DATASET__BASED_ON:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 				return;
@@ -201,11 +179,6 @@ public class DatasetItemProvider
 	 */
 	protected void collectNewChildDescriptors(Collection newChildDescriptors, Object object) {
 		super.collectNewChildDescriptors(newChildDescriptors, object);
-
-		newChildDescriptors.add
-			(createChildParameter
-				(ScaveModelPackage.Literals.DATASET__ITEMS,
-				 ScaveModelFactory.eINSTANCE.createChart()));
 
 		newChildDescriptors.add
 			(createChildParameter
@@ -231,6 +204,21 @@ public class DatasetItemProvider
 			(createChildParameter
 				(ScaveModelPackage.Literals.DATASET__ITEMS,
 				 ScaveModelFactory.eINSTANCE.createCompute()));
+
+		newChildDescriptors.add
+			(createChildParameter
+				(ScaveModelPackage.Literals.DATASET__ITEMS,
+				 ScaveModelFactory.eINSTANCE.createBarChart()));
+
+		newChildDescriptors.add
+			(createChildParameter
+				(ScaveModelPackage.Literals.DATASET__ITEMS,
+				 ScaveModelFactory.eINSTANCE.createLineChart()));
+
+		newChildDescriptors.add
+			(createChildParameter
+				(ScaveModelPackage.Literals.DATASET__ITEMS,
+				 ScaveModelFactory.eINSTANCE.createHistogramChart()));
 	}
 
 	/**

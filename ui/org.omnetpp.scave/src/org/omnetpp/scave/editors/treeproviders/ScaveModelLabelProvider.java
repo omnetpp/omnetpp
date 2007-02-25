@@ -7,6 +7,7 @@ import org.eclipse.swt.graphics.Image;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Apply;
+import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.ChartSheets;
@@ -17,8 +18,10 @@ import org.omnetpp.scave.model.Deselect;
 import org.omnetpp.scave.model.Discard;
 import org.omnetpp.scave.model.Except;
 import org.omnetpp.scave.model.Group;
+import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
+import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Param;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.Select;
@@ -74,13 +77,12 @@ public class ScaveModelLabelProvider extends LabelProvider {
 		} 
 		else if (element instanceof Dataset) {
 			Dataset o = (Dataset) element;
-			String res = (o.getType()==null ? "" : o.getType().getName())+" dataset "+fallback(o.getName(),"<unnamed>");
+			String res = "dataset "+fallback(o.getName(),"<unnamed>");
 			if (o.getBasedOn()!=null)
 				res += " based on dataset "+fallback(o.getBasedOn().getName(),"<unnamed>");
 			return res;
 		} 
 		else if (element instanceof SetOperation) {
-			
 			// Add, Discard, Select, Deselect, Except
 			SetOperation o = (SetOperation) element;
 			
@@ -99,7 +101,9 @@ public class ScaveModelLabelProvider extends LabelProvider {
 			else 
 				res = "???";
 
-			res += isEmpty(o.getFilterPattern()) ? " everything" : " "+o.getFilterPattern();
+			res += " " + (o.getType()==null ? "???" : o.getType().getName())+"s: ";
+			res += isEmpty(o.getFilterPattern()) ? "all" : o.getFilterPattern();
+
 			if (o.getSourceDataset()!=null)
 				res += " from dataset "+fallback(o.getSourceDataset().getName(),"<unnamed>");
 
@@ -116,9 +120,20 @@ public class ScaveModelLabelProvider extends LabelProvider {
 		else if (element instanceof Group) {
 			return "group";
 		}
-		else if (element instanceof Chart) {
+		else if (element instanceof BarChart) {
 			Chart o = (Chart) element;
-			return "chart "+fallback(o.getName(),"<unnamed>");
+			return "bar chart "+fallback(o.getName(),"<unnamed>");
+		}
+		else if (element instanceof LineChart) {
+			Chart o = (Chart) element;
+			return "line chart "+fallback(o.getName(),"<unnamed>");
+		}
+		else if (element instanceof HistogramChart) {
+			Chart o = (Chart) element;
+			return "histogram chart "+fallback(o.getName(),"<unnamed>");
+		}
+		else if (element instanceof Chart) {
+			throw new IllegalArgumentException("unrecognized chart type");
 		}
 		else if (element instanceof Param) {
 			Param o = (Param) element;

@@ -7,6 +7,7 @@ import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.FilterUtil;
 import org.omnetpp.scave.model2.ScaveModelUtil;
@@ -35,11 +36,11 @@ public class CreateTempChartAction extends AbstractScaveAction {
 			Dataset dataset =
 				ScaveModelUtil.createDataset(
 						datasetName,
-						activePanel.getTable().getDataType(),
 						activePanel.getTable().getSelectedItems(),
 						runidFields);
 			String chartName = "chart"; //FIXME generate proper name
-			Chart chart = ScaveModelUtil.createChart(chartName);
+			ResultType type = activePanel.getTable().getDataType();
+			Chart chart = ScaveModelUtil.createChart(chartName, type);
 			dataset.getItems().add(chart);
 
 			editor.executeCommand(AddCommand.create(

@@ -23,7 +23,7 @@ import org.eclipse.emf.common.util.EList;
  * </p>
  *
  * @see org.omnetpp.scave.model.ScaveModelPackage#getChart()
- * @model
+ * @model abstract="true"
  * @generated
  */
 public interface Chart extends DatasetItem {

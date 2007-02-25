@@ -43,7 +43,7 @@ import org.omnetpp.scave.model.SelectDeselectOp;
  *
  * @generated
  */
-public class ChartImpl extends DatasetItemImpl implements Chart {
+public abstract class ChartImpl extends DatasetItemImpl implements Chart {
 	/**
 	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
 	 * <!-- begin-user-doc -->

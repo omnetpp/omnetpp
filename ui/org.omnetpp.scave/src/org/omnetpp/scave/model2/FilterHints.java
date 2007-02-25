@@ -12,7 +12,7 @@ import org.omnetpp.scave.engine.ResultFileList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.StringVector;
-import org.omnetpp.scave.model.DatasetType;
+import org.omnetpp.scave.model.ResultType;
 
 /**
  * Given an IDList, produces hints for different filter fields such as
@@ -28,7 +28,7 @@ public class FilterHints {
 	public FilterHints() {
 	}
 
-	public FilterHints(ResultFileManager manager, DatasetType type) {
+	public FilterHints(ResultFileManager manager, ResultType type) {
 		this(manager, ScaveModelUtil.getAllIDs(manager, type));
 	}
 

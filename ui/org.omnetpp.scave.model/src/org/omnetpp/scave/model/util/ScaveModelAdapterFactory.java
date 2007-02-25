@@ -139,6 +139,15 @@ public class ScaveModelAdapterFactory extends AdapterFactoryImpl {
 			public Object caseCompute(Compute object) {
 				return createComputeAdapter();
 			}
+			public Object caseBarChart(BarChart object) {
+				return createBarChartAdapter();
+			}
+			public Object caseLineChart(LineChart object) {
+				return createLineChartAdapter();
+			}
+			public Object caseHistogramChart(HistogramChart object) {
+				return createHistogramChartAdapter();
+			}
 			public Object defaultCase(EObject object) {
 				return createEObjectAdapter();
 			}
@@ -476,6 +485,48 @@ public class ScaveModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createComputeAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.BarChart <em>Bar Chart</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.omnetpp.scave.model.BarChart
+	 * @generated
+	 */
+	public Adapter createBarChartAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.LineChart <em>Line Chart</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.omnetpp.scave.model.LineChart
+	 * @generated
+	 */
+	public Adapter createLineChartAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.HistogramChart <em>Histogram Chart</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.omnetpp.scave.model.HistogramChart
+	 * @generated
+	 */
+	public Adapter createHistogramChartAdapter() {
 		return null;
 	}
 

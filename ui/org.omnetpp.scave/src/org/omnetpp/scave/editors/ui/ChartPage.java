@@ -87,6 +87,7 @@ public class ChartPage extends ScaveEditorPage {
 		chartView.setMenu(contextMenuManager.createContextMenu(chartView));
 		ScaveEditorContributor editorContributor = ScaveEditorContributor.getDefault();
 		contextMenuManager.add(editorContributor.getZoomOutAction());
+		contextMenuManager.add(editorContributor.getZoomInAction());
 		contextMenuManager.add(new Separator());
 		contextMenuManager.add(editorContributor.getEditAction());
 		contextMenuManager.add(editorContributor.getCopyChartToClipboardAction());

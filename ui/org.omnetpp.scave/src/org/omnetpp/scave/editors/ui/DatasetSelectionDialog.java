@@ -12,14 +12,13 @@ import org.eclipse.jface.window.Window;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Dataset;
-import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave.model.Datasets;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 public class DatasetSelectionDialog extends ElementListSelectOrCreateDialog {
 
-	public DatasetSelectionDialog(final ScaveEditor editor, final DatasetType type) {
+	public DatasetSelectionDialog(final ScaveEditor editor) {
 		super(editor.getSite().getShell(), new AdapterFactoryLabelProvider(editor.getAdapterFactory()));
 		//XXX problem with this label provider: string begins with "dataset" (kills filter-by-typing)
 		//XXX make own labelprovider, but it should provide images too
@@ -35,9 +34,8 @@ public class DatasetSelectionDialog extends ElementListSelectOrCreateDialog {
 		List datasets = analysis.getDatasets().getDatasets();
 		if (datasets == null)
 			datasets = new ArrayList();
-		//FIXME should only present datasets with getType()==type?
 		setElements(datasets.toArray());
-		
+
 
 		// configure the "New" button to prompt for new dataset name
 		setCallback(new ElementListSelectOrCreateDialog.ICallback() {
@@ -47,18 +45,18 @@ public class DatasetSelectionDialog extends ElementListSelectOrCreateDialog {
 					String datasetName = dlg.getValue();
 					Analysis analysis = editor.getAnalysis();
 					Datasets datasets = analysis.getDatasets();
-					Dataset newDataset = ScaveModelUtil.createDataset(datasetName, type);
+					Dataset newDataset = ScaveModelUtil.createDataset(datasetName);
 					Command command = AddCommand.create(editor.getEditingDomain(), datasets,
 							ScaveModelPackage.eINSTANCE.getDatasetItem(), newDataset);
 					editor.executeCommand(command);
 					return newDataset;
 				}
 				return null;
-			} 
+			}
 		});
 	}
 
 	protected static String fallback(String string, String defaultString) {
-		return (string!=null && !string.equals("")) ? string : defaultString; 
+		return (string!=null && !string.equals("")) ? string : defaultString;
 	}
 }

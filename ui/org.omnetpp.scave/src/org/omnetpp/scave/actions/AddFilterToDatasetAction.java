@@ -16,16 +16,16 @@ import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
-import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave.model.Group;
+import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
- * Active on the "Browse Data" page. It adds the filter string to 
- * a dataset. The dataset selection dialog also allows creating 
+ * Active on the "Browse Data" page. It adds the filter string to
+ * a dataset. The dataset selection dialog also allows creating
  * a new dataset.
- * 
+ *
  * @author Andras
  */
 public class AddFilterToDatasetAction extends AbstractScaveAction {
@@ -37,6 +37,7 @@ public class AddFilterToDatasetAction extends AbstractScaveAction {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	protected void doRun(final ScaveEditor editor, IStructuredSelection selection) {
 		FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
 		if (activePanel == null)
@@ -46,21 +47,20 @@ public class AddFilterToDatasetAction extends AbstractScaveAction {
 			MessageDialog.openWarning(editor.getSite().getShell(), "Error in Filter Expression", "Current filter expression is invalid, please fix that first.");
 			return;
 		}
-		
+
 		String filterPattern = activePanel.getFilter().getFilterPattern();
-		
+
 		if (filterPattern.length()==0 || filterPattern.equals("*")) {
 			MessageDialog.openInformation(
-					editor.getSite().getShell(), 
-					"Filter is Empty", 
+					editor.getSite().getShell(),
+					"Filter is Empty",
 					"The filter expression is currently empty (matches everything), which means the resulting dataset "+
 					"would include all data from all input files. This is probably not what you intended. "+
 					"Please set some filter condition first.");
 			return;
 		}
-		
-		DatasetType datasetType = editor.getBrowseDataPage().getActivePanelType(); 
-		DatasetSelectionDialog dlg = new DatasetSelectionDialog(editor, datasetType); 
+
+		DatasetSelectionDialog dlg = new DatasetSelectionDialog(editor);
 		dlg.setMessage(
 				"Please select the target dataset below, or create new one.\n"+
 				"This dataset will be modified to include all data from Inputs\n"+
@@ -79,7 +79,8 @@ public class AddFilterToDatasetAction extends AbstractScaveAction {
 						break;
 				}
 
-				Add addItem = ScaveModelUtil.createAdd(filterPattern);
+				ResultType type = editor.getBrowseDataPage().getActivePanelType();
+				Add addItem = ScaveModelUtil.createAdd(filterPattern, type);
 				Command command = AddCommand.create(
 							editor.getEditingDomain(),
 							dataset,
@@ -87,7 +88,7 @@ public class AddFilterToDatasetAction extends AbstractScaveAction {
 							addItem,
 							index);
 				editor.executeCommand(command);
-				
+
 				// show the dataset
 				editor.showDatasetsPage(); // or: editor.openDataset(dataset);
 				editor.setSelection(new StructuredSelection(addItem));
