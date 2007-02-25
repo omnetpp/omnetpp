@@ -36,7 +36,7 @@ import org.eclipse.swt.widgets.Listener;
  * 
  * @author Andras
  */
-public class CanvasZoomSupport {
+public class ZoomableCanvasMouseSupport {
 	// the adapted canvas
 	protected ZoomableCachingCanvas canvas;
 
@@ -53,19 +53,25 @@ public class CanvasZoomSupport {
 	// remembers the previous mouse position during dragging
 	private int dragPrevX;
 	private int dragPrevY;
-	private boolean mousedMoved; 
+
+	// used tell apart click from drag; initialized to true to prevent initial
+	// stray button-up event (ie end of the double-click) to zoom the canvas
+	private boolean mousedMoved = true; 
+
+	// remembered because MouseMove doesn't send it
+	private int activeMouseButton;
 
     /**
      * Sets up mouse bindings on the given canvas.
      */
-	public CanvasZoomSupport(final ZoomableCachingCanvas canvas) {
+	public ZoomableCanvasMouseSupport(final ZoomableCachingCanvas canvas) {
 		this.canvas = canvas;
+		setupMouseHandling();
 		rubberBand = new RubberbandSupport(canvas, 0) {
 			public void rubberBandSelectionMade(Rectangle r) {
 				canvas.zoomToRectangle(new org.eclipse.draw2d.geometry.Rectangle(r));
 			}
 		};
-		setupMouseHandling();
 		setMouseMode(ZOOM_MODE);
 	}
     
@@ -102,6 +108,7 @@ public class CanvasZoomSupport {
 			public void mouseDoubleClick(MouseEvent event) {}
 			public void mouseDown(MouseEvent event) {
 				canvas.setFocus();
+				activeMouseButton = event.button;
 				if (event.button == 1) {
 					canvas.setCursor(mouseMode==ZOOM_MODE ? ZOOM_CURSOR : PAN_CURSOR);
 					dragPrevX = event.x;
@@ -112,13 +119,14 @@ public class CanvasZoomSupport {
 			public void mouseUp(MouseEvent event) {
 				canvas.setCursor(null); // restore cursor at end of drag
 				dragPrevX = dragPrevY = -1;
+				activeMouseButton = 0;
 				if (!mousedMoved) {  // just a click
 					int modifier = event.stateMask & SWT.MODIFIER_MASK;
 					if (event.button==1) {
 						if ((mouseMode==ZOOM_MODE && modifier==SWT.NONE) || (mouseMode==PAN_MODE && modifier==SWT.CTRL))
-							canvas.zoomBy(1.5, event.x, event.y); //zoom in around mouse
+							canvas.zoomBy(2.0, event.x, event.y); // zoom in around mouse
 						if ((mouseMode==ZOOM_MODE && modifier==SWT.SHIFT) || (mouseMode==PAN_MODE && modifier==(SWT.CTRL|SWT.SHIFT)))
-							canvas.zoomBy(1/1.5, event.x, event.y); //zoom out around mouse
+							canvas.zoomBy(1/2.0, event.x, event.y); // zoom out around mouse
 					}
 				}
 			}
@@ -128,14 +136,13 @@ public class CanvasZoomSupport {
 		canvas.addMouseMoveListener(new MouseMoveListener() {
 			public void mouseMove(MouseEvent event) {
 				int modifier = event.stateMask & SWT.MODIFIER_MASK;
-System.out.println(event.button); //FIXME problem: event.button is always zero!!!! we don't get the event properly!!!
-				if (event.button==1) { // drag with left mouse button being held down
+				if (activeMouseButton==1) { // drag with left mouse button being held down
 					if ((mouseMode==PAN_MODE && modifier==SWT.NONE) || (mouseMode==ZOOM_MODE && modifier==SWT.CTRL)) {
 						doPanning(event);
 					}
 					mousedMoved = true;
 				} 
-				else if (event.button==0) { // plain mouse move (no mouse button pressed) 
+				else if (activeMouseButton==0) { // plain mouse move (no mouse button pressed) 
 					// restore cursor at end of drag. (It is not enough to do it in the 
 					// "mouse released" event, because we don't receive it if user 
 					// releases mouse outside the canvas!)
