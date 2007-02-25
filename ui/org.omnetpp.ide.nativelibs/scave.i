@@ -47,23 +47,22 @@
 
 
 namespace std {
+   %typemap(javacode) vector<string> %{
+       public String[] toArray() {
+           int sz = (int) size();
+           String[] array = new String[sz];
+           for (int i=0; i<sz; i++)
+               array[i] = get(i);
+           return array;
+       }
+       public static StringVector fromArray(String[] array) {
+           StringVector vector = new StringVector();
+           for (int i=0; i<array.length; i++)
+               vector.add(array[i]);
+           return vector;
+       }
 
-%typemap(javacode) vector<string> %{
-    public String[] toArray() {
-        int sz = (int) size();
-        String[] array = new String[sz];
-        for (int i=0; i<sz; i++)
-            array[i] = get(i);
-        return array;
-    }
-    public static StringVector fromArray(String[] array) {
-        StringVector vector = new StringVector();
-        for (int i=0; i<array.length; i++)
-            vector.add(array[i]);
-        return vector;
-    }
-
-%}
+   %}
 
    %typemap(javacode) vector<Run*> %{
         public Run[] toArray() {
@@ -173,6 +172,26 @@ namespace std {
         for (int i=0; i<array.length; i++)
             list.add(array[i].longValue());
         return list;
+    }
+%}
+
+//
+// Add polymorphic return type to ResultFileManager::getItem(),
+// because plain ResultItem does not contain the type (VECTOR, SCALAR, etc).
+//
+%rename(_getItem) ResultFileManager::getItem;
+%javamethodmodifiers ResultFileManager::_getItem "protected";
+%typemap(javacode) ResultFileManager %{
+    public ResultItem getItem(long id) {
+        int type = getTypeOf(id);
+        if (type==SCALAR)
+            return getScalar(id);
+        else if (type==VECTOR)
+            return getVector(id);
+        else if (type==HISTOGRAM)
+            return getHistogram(id);
+        else
+            throw new RuntimeException("unknown ID type");
     }
 %}
 
