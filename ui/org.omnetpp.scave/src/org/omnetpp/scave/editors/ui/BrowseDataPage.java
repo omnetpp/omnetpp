@@ -197,7 +197,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 		}
 
 		// when they double-click in the vectors panel, open chart
-		//FIXME remembering selectionChangeListener, and unhooking it in unhookListeners() is probably redundant! remove it!
+		//FIXME remembering selectionChangeListener, and unhooking it in unhookListeners() is probably redundant
 		if (selectionChangeListener == null) {
 			selectionChangeListener = new SelectionAdapter() {
 				@Override

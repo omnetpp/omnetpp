@@ -12,7 +12,7 @@ import org.omnetpp.common.util.StringUtils;
 
 /**
  * Parser for filter texts with error recovery.
- * FIXME tomi: how does this thing signal errors? document!!!
+ * FIXME tomi: how does this thing signal errors? please document
  *
  * @author tomi
  */

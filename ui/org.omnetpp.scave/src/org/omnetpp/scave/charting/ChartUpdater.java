@@ -20,7 +20,7 @@ import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
- * FIXME Tomi: please write a class description! What does this thing do??
+ * FIXME Tomi: please write a class description! What does this thing do?
  *
  * @author tomi
  */
