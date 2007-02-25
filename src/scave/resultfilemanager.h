@@ -241,13 +241,16 @@ class SCAVE_API ResultFileManager
     // getting lists of data items
     IDList getAllScalars() const;
     IDList getAllVectors() const;
+    IDList getAllHistograms() const;
     IDList getScalarsInFileRun(FileRun *fileRun) const;
     IDList getVectorsInFileRun(FileRun *fileRun) const;
+    IDList getHistogramsInFileRun(FileRun *fileRun) const;
 
     // unchecked getters are only for internal use by IDList
     const ResultItem& uncheckedGetItem(ID id) const;
     const ScalarResult& uncheckedGetScalar(ID id) const;
     const VectorResult& uncheckedGetVector(ID id) const;
+    const HistogramResult& uncheckedGetHistogram(ID id) const;
 
     /**
      * Get a filtered subset of the input set (of scalars or vectors).
@@ -307,7 +310,8 @@ inline const ResultItem& ResultFileManager::uncheckedGetItem(ID id) const
     {
         case SCALAR: return fileList[_fileid(id)]->scalarResults[_pos(id)];
         case VECTOR: return fileList[_fileid(id)]->vectorResults[_pos(id)];
-        default: throw opp_runtime_error("");
+        case HISTOGRAM: return fileList[_fileid(id)]->histogramResults[_pos(id)];
+        default: throw opp_runtime_error("ResultFileManager: invalid ID: wrong type");
     }
 }
 
@@ -319,6 +323,11 @@ inline const ScalarResult& ResultFileManager::uncheckedGetScalar(ID id) const
 inline const VectorResult& ResultFileManager::uncheckedGetVector(ID id) const
 {
     return fileList[_fileid(id)]->vectorResults[_pos(id)];
+}
+
+inline const HistogramResult& ResultFileManager::uncheckedGetHistogram(ID id) const
+{
+    return fileList[_fileid(id)]->histogramResults[_pos(id)];
 }
 
 inline ResultFile *ResultFileManager::getFileForID(ID id) const

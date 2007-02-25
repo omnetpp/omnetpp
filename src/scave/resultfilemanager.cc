@@ -132,7 +132,8 @@ const ResultItem& ResultFileManager::getItem(ID id) const
         {
             case SCALAR: return getFileForID(id)->scalarResults.at(_pos(id));
             case VECTOR: return getFileForID(id)->vectorResults.at(_pos(id));
-            default: throw opp_runtime_error("ResultFileManager: invalid ID: bad type");
+            case HISTOGRAM: return getFileForID(id)->histogramResults.at(_pos(id));
+            default: throw opp_runtime_error("ResultFileManager: invalid ID: wrong type");
         }
     }
     catch (std::out_of_range e)
@@ -252,6 +253,21 @@ IDList ResultFileManager::getAllVectors() const
     return out;
 }
 
+IDList ResultFileManager::getAllHistograms() const
+{
+    IDList out;
+    for (int k=0; k<(int)fileList.size(); k++)
+    {
+        if (fileList[k]!=NULL)
+        {
+            HistogramResults& v = fileList[k]->histogramResults;
+            for (int i=0; i<(int)v.size(); i++)
+                out.uncheckedAdd(_mkID(HISTOGRAM,k,i));
+        }
+    }
+    return out;
+}
+
 IDList ResultFileManager::getScalarsInFileRun(FileRun *fileRun) const
 {
     IDList out;
@@ -271,6 +287,17 @@ IDList ResultFileManager::getVectorsInFileRun(FileRun *fileRun) const
     for (int i=0; i<(int)v.size(); i++)
         if (v[i].fileRunRef==fileRun)
             out.uncheckedAdd(_mkID(VECTOR,fileId,i));
+    return out;
+}
+
+IDList ResultFileManager::getHistogramsInFileRun(FileRun *fileRun) const
+{
+    IDList out;
+    int fileId = fileRun->fileRef->id;
+    HistogramResults& v = fileRun->fileRef->histogramResults;
+    for (int i=0; i<(int)v.size(); i++)
+        if (v[i].fileRunRef==fileRun)
+            out.uncheckedAdd(_mkID(HISTOGRAM,fileId,i));
     return out;
 }
 
@@ -337,6 +364,14 @@ ID ResultFileManager::getItemByName(FileRun *fileRunRef, const char *module, con
         const ResultItem& d = vectorResults[i];
         if (d.moduleNameRef==moduleNameRef && d.nameRef==nameRef && d.fileRunRef==fileRunRef)
             return _mkID(VECTOR, fileRunRef->fileRef->id, i);
+    }
+
+    HistogramResults& histogramResults = fileRunRef->fileRef->histogramResults;
+    for (int i=0; i<(int)histogramResults.size(); i++)
+    {
+        const ResultItem& d = histogramResults[i];
+        if (d.moduleNameRef==moduleNameRef && d.nameRef==nameRef && d.fileRunRef==fileRunRef)
+            return _mkID(HISTOGRAM, fileRunRef->fileRef->id, i);
     }
     return 0;
 }
