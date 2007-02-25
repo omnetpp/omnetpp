@@ -86,15 +86,12 @@ public class ChartPage extends ScaveEditorPage {
 		// add context menu to chart, and populate it
 		chartView.setMenu(contextMenuManager.createContextMenu(chartView));
 		ScaveEditorContributor editorContributor = ScaveEditorContributor.getDefault();
+		contextMenuManager.add(editorContributor.getZoomOutAction());
+		contextMenuManager.add(new Separator());
 		contextMenuManager.add(editorContributor.getEditAction());
+		contextMenuManager.add(editorContributor.getCopyChartToClipboardAction());
 		contextMenuManager.add(new Separator());
 		contextMenuManager.add(editorContributor.getCreateChartTemplateAction());
-		contextMenuManager.add(new Separator());
-		contextMenuManager.add(editorContributor.getCopyChartToClipboardAction());
-		contextMenuManager.add(editorContributor.getZoomInXAction());
-		contextMenuManager.add(editorContributor.getZoomOutXAction());
-		contextMenuManager.add(editorContributor.getZoomInYAction());
-		contextMenuManager.add(editorContributor.getZoomOutYAction());
 		contextMenuManager.add(new Separator());
 		contextMenuManager.add(editorContributor.getRefreshChartAction());
 	}

@@ -9,8 +9,10 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
+import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.scave.actions.AddFilterToDatasetAction;
 import org.omnetpp.scave.actions.AddSelectedToDatasetAction;
+import org.omnetpp.scave.actions.ChartMouseModeAction;
 import org.omnetpp.scave.actions.CopyChartToClipboardAction;
 import org.omnetpp.scave.actions.CopyToClipboardAction;
 import org.omnetpp.scave.actions.CreateChartTemplateAction;
@@ -43,11 +45,16 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	private IAction editAction;
 
 	// ChartPage actions
+//XXX
+//	private IAction zoomInXAction;
+//	private IAction zoomOutXAction;
+//	private IAction zoomInYAction;
+//	private IAction zoomOutYAction;
+	private IAction zoomInAction;
+	private IAction zoomOutAction;
+	private IAction switchChartToPanModeAction;
+	private IAction switchChartToZoomModeAction;
 	private IAction copyChartToClipboardAction;
-	private IAction zoomInXAction;
-	private IAction zoomOutXAction;
-	private IAction zoomInYAction;
-	private IAction zoomOutYAction;
 	private IAction refreshChartAction;
 	private IAction createChartTemplateAction;
 
@@ -71,11 +78,16 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
         editAction = registerAction(page, new EditAction());
 
         // ChartPage actions
+//XXX
+//        zoomInXAction = registerAction(page, new ZoomChartAction(true, false, 1.5));
+//        zoomOutXAction = registerAction(page, new ZoomChartAction(true, false, 1/1.5));
+//        zoomInYAction = registerAction(page, new ZoomChartAction(false, true, 1.5));
+//        zoomOutYAction = registerAction(page, new ZoomChartAction(false, true, 1/1.5));
+        zoomInAction = registerAction(page, new ZoomChartAction(true, true, 2.0));
+        zoomOutAction = registerAction(page, new ZoomChartAction(true, true, 1/2.0));
+        switchChartToPanModeAction = registerAction(page, new ChartMouseModeAction(ZoomableCanvasMouseSupport.PAN_MODE));
+        switchChartToZoomModeAction = registerAction(page, new ChartMouseModeAction(ZoomableCanvasMouseSupport.ZOOM_MODE));
         copyChartToClipboardAction = registerAction(page, new CopyChartToClipboardAction());
-        zoomInXAction = registerAction(page, new ZoomChartAction(true, 1.5));
-        zoomOutXAction = registerAction(page, new ZoomChartAction(true, 1/1.5));
-        zoomInYAction = registerAction(page, new ZoomChartAction(false, 1.5));
-        zoomOutYAction = registerAction(page, new ZoomChartAction(false, 1/1.5));
         refreshChartAction = registerAction(page, new RefreshChartAction());
         createChartTemplateAction = registerAction(page, new CreateChartTemplateAction());
 
@@ -120,10 +132,15 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 
 	public void contributeToToolBar(IToolBarManager manager) {
 		super.contributeToToolBar(manager);
-		manager.insertBefore("scavemodel-additions", zoomInXAction);
-		manager.insertBefore("scavemodel-additions", zoomOutXAction);
-		manager.insertBefore("scavemodel-additions", zoomInYAction);
-		manager.insertBefore("scavemodel-additions", zoomOutYAction);
+//XXX
+//		manager.insertBefore("scavemodel-additions", zoomInXAction);
+//		manager.insertBefore("scavemodel-additions", zoomOutXAction);
+//		manager.insertBefore("scavemodel-additions", zoomInYAction);
+//		manager.insertBefore("scavemodel-additions", zoomOutYAction);
+//		manager.insertBefore("scavemodel-additions", zoomInAction);
+//		manager.insertBefore("scavemodel-additions", zoomOutAction);
+		manager.insertBefore("scavemodel-additions", switchChartToPanModeAction);
+		manager.insertBefore("scavemodel-additions", switchChartToZoomModeAction);
 		manager.insertBefore("scavemodel-additions", refreshChartAction);
 		manager.insertBefore("scavemodel-additions", createChartTemplateAction);
 	}
@@ -141,17 +158,30 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	public IAction getEditAction() {
 		return editAction;
 	}
-    public IAction getZoomInXAction() {
-		return zoomInXAction;
+//XXX
+//    public IAction getZoomInXAction() {
+//		return zoomInXAction;
+//	}
+//    public IAction getZoomOutXAction() {
+//		return zoomOutXAction;
+//	}
+//    public IAction getZoomInYAction() {
+//		return zoomInYAction;
+//	}
+//    public IAction getZoomOutYAction() {
+//		return zoomOutYAction;
+//	}
+    public IAction getZoomInAction() {
+		return zoomInAction;
 	}
-    public IAction getZoomOutXAction() {
-		return zoomOutXAction;
+    public IAction getZoomOutAction() {
+		return zoomOutAction;
 	}
-    public IAction getZoomInYAction() {
-		return zoomInYAction;
+    public IAction getSwitchChartToPanModeAction() {
+		return switchChartToPanModeAction;
 	}
-    public IAction getZoomOutYAction() {
-		return zoomOutYAction;
+    public IAction getSwitchChartToZoomModeAction() {
+		return switchChartToZoomModeAction;
 	}
     public IAction getRefreshChartAction() {
 		return refreshChartAction;

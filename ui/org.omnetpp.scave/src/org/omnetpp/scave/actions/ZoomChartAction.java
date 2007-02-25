@@ -16,14 +16,18 @@ public class ZoomChartAction extends AbstractScaveAction {
 	
 	private double zoomFactor;
 	private boolean horizontally;
+	private boolean vertically;
 
-	public ZoomChartAction(boolean horizontally, double zoomFactor) {
+	public ZoomChartAction(boolean horizontally, boolean vertically, double zoomFactor) {
 		this.horizontally = horizontally;
+		this.vertically = vertically;
 		this.zoomFactor = zoomFactor;
 
-		String dir = (zoomFactor > 1.0 ? "in" : "out");
-		setText("Zoom " +  dir + (horizontally ? " X" : " Y"));
-		setDescription("Zoom " + dir + " chart " + (horizontally ? "horizontally" : "vertically"));
+		String inout = (zoomFactor > 1.0 ? "in" : "out");
+		String dir = (horizontally && vertically) ? "" : (horizontally ? " X" : " Y");
+		String dir2 = (horizontally && vertically) ? "" : (horizontally ? " horizontally" : " vertically");
+		setText("Zoom " +  inout + dir);
+		setDescription("Zoom " + inout + " chart " + dir2);
 		String imageId = zoomFactor > 1.0 ? ImageFactory.TOOLBAR_IMAGE_ZOOMPLUS : ImageFactory.TOOLBAR_IMAGE_ZOOMMINUS;
 		setImageDescriptor(ImageFactory.getDescriptor(imageId));
 	}
@@ -35,7 +39,7 @@ public class ZoomChartAction extends AbstractScaveAction {
 			ChartCanvas canvas = ((ChartPage)page).getChartView();
 			if (horizontally)
 				canvas.zoomXBy(zoomFactor);
-			else
+			if (vertically)
 				canvas.zoomYBy(zoomFactor);
 		}
 	}

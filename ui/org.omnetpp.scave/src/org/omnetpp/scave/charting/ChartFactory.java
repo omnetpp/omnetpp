@@ -25,7 +25,7 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
-import org.omnetpp.common.canvas.CanvasZoomSupport;
+import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
@@ -101,7 +101,6 @@ public class ChartFactory {
 		setChartProperties(chart, vectorChart);
 
 		vectorChart.setBackground(ColorConstants.white);
-		new CanvasZoomSupport(vectorChart); // add mouse handling
 		return vectorChart;
 	}
 

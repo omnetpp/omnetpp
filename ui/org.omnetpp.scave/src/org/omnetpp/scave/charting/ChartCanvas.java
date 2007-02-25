@@ -27,6 +27,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.image.ImageConverter;
@@ -51,8 +52,23 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	
 	private Runnable scheduledRedraw;
 	
+	private ZoomableCanvasMouseSupport mouseSupport;
+	
 	public ChartCanvas(Composite parent, int style) {
 		super(parent, style);
+		mouseSupport = new ZoomableCanvasMouseSupport(this); // add mouse handling; may be made optional
+	}
+
+	/**
+	 * Switches between zoom and pan mode. 
+	 * @param mouseMode should be ZoomableCanvasMouseSupport.PAN_MODE or ZoomableCanvasMouseSupport.ZOOM_MODE
+	 */
+	public void setMouseMode(int mouseMode) {
+		mouseSupport.setMouseMode(mouseMode);
+	}
+
+	public int getMouseMode() {
+		return mouseSupport.getMouseMode();
 	}
 	
 	public void setProperty(String name, String value) {

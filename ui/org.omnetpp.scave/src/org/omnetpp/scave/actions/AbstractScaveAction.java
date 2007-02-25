@@ -24,7 +24,13 @@ public abstract class AbstractScaveAction extends Action implements IScaveAction
 	 */
 	protected Viewer viewer;
 	
-	
+	public AbstractScaveAction() {
+	}
+
+	public AbstractScaveAction(int style) {
+		super("", style);
+	}
+
 	/**
 	 * Implements {@link IScaveAction#setViewer(Viewer)}.
 	 */
