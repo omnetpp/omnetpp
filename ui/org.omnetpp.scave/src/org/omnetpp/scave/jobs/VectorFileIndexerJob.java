@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.VectorFileIndexer;
 
 /**
@@ -115,7 +116,12 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 							indexer.generateIndex(file.getAbsolutePath());
 					}
 					catch (Exception e) {
-						e.printStackTrace(); // TODO: retry?
+						IStatus error =  new Status(Status.ERROR, ScavePlugin.PLUGIN_ID, 0,
+											String.format("Indexing of '%s' failed: %s",
+													file.getAbsolutePath(), e.getLocalizedMessage()),
+											e);
+						ScavePlugin.getDefault().getLog().log(error);
+						return error;
 					}
 					monitor.worked(1);
 				}

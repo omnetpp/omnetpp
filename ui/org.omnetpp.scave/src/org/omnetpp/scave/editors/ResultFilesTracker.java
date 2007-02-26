@@ -18,6 +18,7 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
@@ -219,7 +220,13 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 						public void done(IJobChangeEvent event) {
 							// load from the newly created index file
 		 				    // even if the workspace is not refreshed automatically
-							loadFile(file);
+							if (event.getResult().getSeverity() != IStatus.ERROR) {
+								String osPath = file.getLocation().toOSString();
+								manager.loadFile(file.getFullPath().toString(), osPath);
+							}
+							else {
+								unloadFile(file);
+							}
 						}
 					});
 					indexer.schedule();
