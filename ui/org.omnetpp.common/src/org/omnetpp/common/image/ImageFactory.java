@@ -27,7 +27,7 @@ public class ImageFactory {
     private final static String TOOL_IMAGE_DIR = INTERNAL_DIR + "toolbar/";
     private final static String MODEL_IMAGE_DIR = INTERNAL_DIR + "model/";
     private final static String DECORATORS_IMAGE_DIR = INTERNAL_DIR + "decorators/";
-    private final static String EVENTLOG_IMAGE_DIR = INTERNAL_DIR + "eventlog/";
+    public final static String EVENTLOG_IMAGE_DIR = INTERNAL_DIR + "eventlog/";
 
     public final static String EVENLOG_IMAGE_BUBBLE = EVENTLOG_IMAGE_DIR + "Bubble";
     public final static String EVENLOG_IMAGE_MODULE_METHOD_BEGIN = EVENTLOG_IMAGE_DIR + "ModuleMethodBegin";
@@ -39,7 +39,6 @@ public class ImageFactory {
     public final static String EVENLOG_IMAGE_CONNECTION_CREATED = EVENTLOG_IMAGE_DIR + "ConnectionCreated";
     public final static String EVENLOG_IMAGE_CONNECTION_DELETED = EVENTLOG_IMAGE_DIR + "ConnectionDeleted";
     public final static String EVENLOG_IMAGE_CONNECTION_DISPLAY_STRING_CHANGED = EVENTLOG_IMAGE_DIR + "ConnectionDisplayStringChanged";
-
     public final static String EVENLOG_IMAGE_EVENT = EVENTLOG_IMAGE_DIR + "Event";
     public final static String EVENLOG_IMAGE_CANCEL_EVENT = EVENTLOG_IMAGE_DIR + "CancelEvent";
     public final static String EVENLOG_IMAGE_BEGIN_SEND_EVENT = EVENTLOG_IMAGE_DIR + "BeginSendEvent";
