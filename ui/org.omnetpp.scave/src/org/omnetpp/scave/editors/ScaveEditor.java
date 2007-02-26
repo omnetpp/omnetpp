@@ -1,19 +1,23 @@
 package org.omnetpp.scave.editors;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.edit.command.AddCommand;
-import org.eclipse.emf.edit.command.CreateChildCommand;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -22,6 +26,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
@@ -29,25 +35,21 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
-import org.omnetpp.scave.editors.ui.BrowseVectorPage;
 import org.omnetpp.scave.editors.ui.ChartPage;
 import org.omnetpp.scave.editors.ui.ChartSheetPage;
 import org.omnetpp.scave.editors.ui.DatasetPage;
 import org.omnetpp.scave.editors.ui.DatasetsAndChartsPage;
 import org.omnetpp.scave.editors.ui.InputsPage;
 import org.omnetpp.scave.editors.ui.ScaveEditorPage;
-import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Dataset;
-import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
-import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * OMNeT++/OMNEST Analysis tool.
@@ -69,6 +71,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	private InputsPage inputsPage;
 	private BrowseDataPage browseDataPage;
 	private DatasetsAndChartsPage datasetsPage;
+	private Map<EObject,Control> closablePages = new HashMap<EObject,Control>();
 
 	/**
 	 *  ResultFileManager containing all files of the analysis.
@@ -301,42 +304,71 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	/**
      * Utility method: Returns the Analysis object from the resource.
      */
-    //XXX catch potential nullpointer- and classcast exceptions during resource magic
 	public Analysis getAnalysis() {
     	XMIResource resource = (XMIResource)editingDomain.getResourceSet().getResources().get(0);
     	Analysis analysis = (Analysis)resource.getContents().get(0);
     	return analysis;
     }
 
+	/**
+	 * Returns the temporary analysis object. 
+	 */
 	public Analysis getTempAnalysis() {
 		return (Analysis)tempResource.getContents().get(0);
 	}
-
+	
 	/**
-	 * Opens the given dataset on a new editor page, and switches to it.
+	 * Returns true if the object is a temporary object, i.e. it is not saved in
+	 * the analysis file. 
+	 */
+	public boolean isTemporaryObject(EObject object) {
+		return object.eResource() == tempResource;
+	}
+	
+	/**
+	 * Opens the given chart on a new editor page, or switches to it
+	 * if already opened.
+	 */
+	public void openChart(Chart chart) {
+		openClosablePage(chart);
+	}
+	
+	/**
+	 * Opens the given dataset on a new editor page, or switches to it
+	 * if already opened.
 	 */
 	public void openDataset(Dataset dataset) {
-		int pageIndex = createDatasetPage(dataset);  //FIXME if already open, just switch to it!
-		setActivePage(pageIndex);
+		openClosablePage(dataset);
 	}
-
+	
 	/**
-	 * Opens the given chart sheet on a new editor page, and switches to it.
+	 * Opens the given chart sheet on a new editor page, or switches to it
+	 * if already opened.
 	 */
 	public void openChartSheet(ChartSheet chartSheet) {
-		int pageIndex = createChartSheetPage(chartSheet);  //FIXME if already open, just switch to it!
-		setActivePage(pageIndex);
+		openClosablePage(chartSheet);
 	}
 
 	/**
-	 * Opens "Browse Vector Data" page for the given vector
+	 * Opens the given <code>object</code> (dataset/chart/chartsheet), or
+	 * switches to it if already opened.
 	 */
-	//FIXME currently not accessible from the UI -- maybe not even needed because we have a view for this already
-	public void openBrowseVectorDataPage(VectorResult vector) {
-		int pageIndex = createBrowseVectorDataPage(vector);
+	private void openClosablePage(EObject object) {
+		int pageIndex = getOrCreateClosablePage(object);
 		setActivePage(pageIndex);
 	}
-
+	
+	/**
+	 * Closes the page displaying the given <code>object</code>.
+	 * If no such page, nothing happens. 
+	 */
+	public void closePage(EObject object) {
+		Control page = closablePages.get(object);
+		if (page != null) {
+			removePage(page);
+		}
+	}
+	
 	public void showInputsPage() {
 		showPage(getInputsPage());
 	}
@@ -362,14 +394,6 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 			setPageText(pageIndex, title);
 	}
 
-	/**
-	 * Opens the given chart on a new editor page, and switches to it.
-	 */
-	public void openChart(Chart chart) {
-		int pageIndex = createChartPage(chart);
-		setActivePage(pageIndex);
-	}
-
 	private void createInputsPage() {
 		inputsPage = new InputsPage(getContainer(), this);
 		addScaveEditorPage(inputsPage);
@@ -384,31 +408,60 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		datasetsPage = new DatasetsAndChartsPage(getContainer(), this);
         addScaveEditorPage(datasetsPage);
 	}
+	
+	/**
+	 * Creates a closable page. These pages are closed automatically when the
+	 * displayed object (chart/dataset/chartsheet) is removed from the model.
+	 * Their tabs contain a small (x), so the user can also close them. 
+	 */
+	private int createClosablePage(EObject object) {
+		ScaveEditorPage page = null;
+		if (object instanceof Dataset)
+			page = new DatasetPage(getContainer(), this, (Dataset)object);
+		else if (object instanceof Chart)
+			page = new ChartPage(getContainer(), this, (Chart)object);
+		else if (object instanceof ChartSheet)
+			page = new ChartSheetPage(getContainer(), this, (ChartSheet)object);
 
-	private int createDatasetPage(Dataset dataset) {
-		DatasetPage page = new DatasetPage(getContainer(), this, dataset);
-		int index = addClosableScaveEditorPage(page);
-		return index;
+		if (page != null) {
+			int pageIndex = addClosableScaveEditorPage(page);
+			closablePages.put(object,page);
+			// Add a listener to remove the page from the map.
+			// The control is not disposed when the tab is closed, so
+			// add the listener to the tabitem. 
+			final Control finalPage = page;
+			if (finalPage != null) {
+				CTabItem tabItem = ((CTabFolder)getContainer()).getItem(pageIndex);
+				tabItem.addDisposeListener(new DisposeListener() {
+					public void widgetDisposed(DisposeEvent e) {
+						for (Map.Entry entry : closablePages.entrySet()) {
+							if (finalPage.equals(entry.getValue())) {
+								closablePages.remove(entry.getKey());
+								break;
+							}
+						}
+					}
+				});
+			}
+			return pageIndex;
+		}
+		else {
+			Assert.isTrue(false, "Don't know how to create page for " + object);
+			return -1;
+		}
 	}
-
-	private int createChartSheetPage(ChartSheet chartsheet) {
-		ChartSheetPage page = new ChartSheetPage(getContainer(), this, chartsheet);
-		int index = addClosableScaveEditorPage(page);
-		return index;
+	
+	/**
+	 * Returns the page displaying <code>object</code>. If the page already
+	 * opened it is returned, otherwise a new page created.
+	 */
+	private int getOrCreateClosablePage(EObject object) {
+		Control page = closablePages.get(object);
+		int pageIndex = page != null ? findPage(page) : createClosablePage(object);
+		Assert.isTrue(pageIndex >= 0);
+		return pageIndex;
 	}
-
-	private int createChartPage(Chart chart) {
-		ChartPage page = new ChartPage(getContainer(), this, chart);
-		int index = addClosableScaveEditorPage(page);
-		return index;
-	}
-
-	private int createBrowseVectorDataPage(VectorResult vector) {
-		BrowseVectorPage page = new BrowseVectorPage(getContainer(), this, vector);
-		int index = addClosableScaveEditorPage(page);
-		return index;
-	}
-
+	
 	@Override
 	public void handleSelectionChange(ISelection selection) {
 		super.handleSelectionChange(selection);
@@ -477,10 +530,46 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	 * Updates the pages.
 	 * Registered as a listener on model changes.
 	 */
-	private void updatePages(Notification notification) {
+ 	private void updatePages(Notification notification) {
 		if (notification.isTouch())
 			return;
+		
+		// close pages whose content was deleted, except temporary datasets/charts
+		// (temporary objects are not deleted, but they can be moved into the persistent analysis)
+		if (notification.getNotifier() instanceof EObject && !isTemporaryObject((EObject)notification.getNotifier())) {
+			List<EObject> deletedObjects = null;
+			switch (notification.getEventType()) {
+			case Notification.REMOVE: 
+				deletedObjects = new ArrayList<EObject>();
+				deletedObjects.add((EObject)notification.getOldValue());
+				break;
+			case Notification.REMOVE_MANY:
+				deletedObjects = (List<EObject>)notification.getOldValue();
+				break;
+			}
+		
+			if (deletedObjects != null) {
+				for (EObject object : deletedObjects) {
+					TreeIterator contents = object.eAllContents();
+					// iterate on contents including object
+					for (Object next = object; next != null; next = contents.hasNext() ? contents.next() : null) {
+						if (next instanceof Dataset) {
+							closePage((Dataset)next);
+						}
+						else if (next instanceof Chart) {
+							closePage((Chart)next);
+							contents.prune();
+						}
+						else if (next instanceof ChartSheet) {
+							closePage((ChartSheet)next);
+							contents.prune();
+						}
+					}
+				}
+			}
+		}
 
+		// update contents of pages
 		int pageCount = getPageCount();
 		for (int pageIndex = 0; pageIndex < pageCount; ++pageIndex) {
 			Control control = getControl(pageIndex);
@@ -490,7 +579,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 			}
 		}
 	}
-
+	
 	@Override
 	protected void pageChange(int newPageIndex) {
 		super.pageChange(newPageIndex);
