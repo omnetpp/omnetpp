@@ -2,7 +2,7 @@
 <genmodel:GenModel xmi:version="2.0"
     xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
     xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.omnetpp.scave.model/src"
-    editDirectory="/org.omnetpp.scave.model/src" editorDirectory="/org.omnetpp.scave.model/src"
+    creationIcons="false" editDirectory="/org.omnetpp.scave.model/src" editorDirectory="/org.omnetpp.scave.model/src"
     modelPluginID="org.omnetpp.scave.model" modelName="Scave" editPluginClass="org.omnetpp.scave.model.provider.ScaveEditPlugin"
     editorPluginClass="org.omnetpp.scave.model.presentation.ScaveEditorPlugin" rootImplementsInterface=""
     testsDirectory="/org.omnetpp.scave.model/src" testSuiteClass="org.omnetpp.scave.model.tests.ScaveAllTests"
@@ -10,15 +10,14 @@
   <foreignModel>scave.ecore</foreignModel>
   <genPackages prefix="ScaveModel" basePackage="org.omnetpp.scave" disposableProviderFactory="true"
       ecorePackage="scave.ecore#/">
-    <genEnums ecoreEnum="scave.ecore#//DatasetType">
-      <genEnumLiterals ecoreEnumLiteral="scave.ecore#//DatasetType/scalar"/>
-      <genEnumLiterals ecoreEnumLiteral="scave.ecore#//DatasetType/vector"/>
-      <genEnumLiterals ecoreEnumLiteral="scave.ecore#//DatasetType/histogram"/>
+    <genEnums ecoreEnum="scave.ecore#//ResultType">
+      <genEnumLiterals ecoreEnumLiteral="scave.ecore#//ResultType/scalar"/>
+      <genEnumLiterals ecoreEnumLiteral="scave.ecore#//ResultType/vector"/>
+      <genEnumLiterals ecoreEnumLiteral="scave.ecore#//ResultType/histogram"/>
     </genEnums>
     <genClasses ecoreClass="scave.ecore#//Dataset">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Dataset/name"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Dataset/items"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Dataset/type"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EReference scave.ecore#//Dataset/basedOn"/>
     </genClasses>
     <genClasses ecoreClass="scave.ecore#//Chart">
@@ -36,15 +35,9 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Property/value"/>
     </genClasses>
     <genClasses ecoreClass="scave.ecore#//SetOperation">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//SetOperation/filenamePattern"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//SetOperation/runNamePattern"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//SetOperation/experimentNamePattern"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//SetOperation/measurementNamePattern"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//SetOperation/replicationNamePattern"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//SetOperation/moduleNamePattern"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//SetOperation/namePattern"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EReference scave.ecore#//SetOperation/sourceDataset"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//SetOperation/fromRunsWhere"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//SetOperation/filterPattern"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//SetOperation/type"/>
     </genClasses>
     <genClasses ecoreClass="scave.ecore#//Group">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Group/items"/>
@@ -93,5 +86,8 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//ProcessingOp/params"/>
     </genClasses>
     <genClasses ecoreClass="scave.ecore#//Compute"/>
+    <genClasses ecoreClass="scave.ecore#//BarChart"/>
+    <genClasses ecoreClass="scave.ecore#//LineChart"/>
+    <genClasses ecoreClass="scave.ecore#//HistogramChart"/>
   </genPackages>
 </genmodel:GenModel>
