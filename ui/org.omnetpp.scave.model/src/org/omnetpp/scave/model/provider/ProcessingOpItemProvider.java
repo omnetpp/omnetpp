@@ -44,94 +44,92 @@ public class ProcessingOpItemProvider
 		ITreeItemContentProvider,	
 		IItemLabelProvider,	
 		IItemPropertySource {
-    /**
-     * This constructs an instance from a factory and a notifier.
-     * <!-- begin-user-doc -->
+	/**
+	 * This constructs an instance from a factory and a notifier.
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
 	public ProcessingOpItemProvider(AdapterFactory adapterFactory) {
-        super(adapterFactory);
-    }
+		super(adapterFactory);
+	}
 
-    /**
-     * This returns the property descriptors for the adapted class.
-     * <!-- begin-user-doc -->
+	/**
+	 * This returns the property descriptors for the adapted class.
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
 	public List getPropertyDescriptors(Object object) {
-        if (itemPropertyDescriptors == null) {
-            super.getPropertyDescriptors(object);
+		if (itemPropertyDescriptors == null) {
+			super.getPropertyDescriptors(object);
 
-            addOperationPropertyDescriptor(object);
-        }
-        return itemPropertyDescriptors;
-    }
+			addOperationPropertyDescriptor(object);
+		}
+		return itemPropertyDescriptors;
+	}
 
-    /**
-     * This adds a property descriptor for the Operation feature.
-     * <!-- begin-user-doc -->
+	/**
+	 * This adds a property descriptor for the Operation feature.
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
 	protected void addOperationPropertyDescriptor(Object object) {
-        itemPropertyDescriptors.add
-            (createItemPropertyDescriptor
-                (((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
-                 getResourceLocator(),
-                 getString("_UI_ProcessingOp_operation_feature"),
-                 getString("_UI_PropertyDescriptor_description", "_UI_ProcessingOp_operation_feature", "_UI_ProcessingOp_type"),
-                 ScaveModelPackage.Literals.PROCESSING_OP__OPERATION,
-                 true,
-                 false,
-                 false,
-                 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
-                 null,
-                 null));
-    }
+		itemPropertyDescriptors.add
+			(createItemPropertyDescriptor
+				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+				 getResourceLocator(),
+				 getString("_UI_ProcessingOp_operation_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_ProcessingOp_operation_feature", "_UI_ProcessingOp_type"),
+				 ScaveModelPackage.Literals.PROCESSING_OP__OPERATION,
+				 true,
+				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
+				 null,
+				 null));
+	}
 
-    /**
-     * This specifies how to implement {@link #getChildren} and is used to deduce an appropriate feature for an
-     * {@link org.eclipse.emf.edit.command.AddCommand}, {@link org.eclipse.emf.edit.command.RemoveCommand} or
-     * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}.
-     * <!-- begin-user-doc -->
+	/**
+	 * This specifies how to implement {@link #getChildren} and is used to deduce an appropriate feature for an
+	 * {@link org.eclipse.emf.edit.command.AddCommand}, {@link org.eclipse.emf.edit.command.RemoveCommand} or
+	 * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}.
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
 	public Collection getChildrenFeatures(Object object) {
-        if (childrenFeatures == null) {
-            super.getChildrenFeatures(object);
-            childrenFeatures.add(ScaveModelPackage.Literals.PROCESSING_OP__FILTERS);
-            childrenFeatures.add(ScaveModelPackage.Literals.PROCESSING_OP__PARAMS);
-        }
-        return childrenFeatures;
-    }
+		if (childrenFeatures == null) {
+			super.getChildrenFeatures(object);
+			childrenFeatures.add(ScaveModelPackage.Literals.PROCESSING_OP__FILTERS);
+			childrenFeatures.add(ScaveModelPackage.Literals.PROCESSING_OP__PARAMS);
+		}
+		return childrenFeatures;
+	}
 
-    /**
-     * <!-- begin-user-doc -->
+	/**
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
 	protected EStructuralFeature getChildFeature(Object object, Object child) {
-        // Check the type of the specified child object and return the proper feature to use for
-        // adding (see {@link AddCommand}) it as a child.
+		// Check the type of the specified child object and return the proper feature to use for
+		// adding (see {@link AddCommand}) it as a child.
 
-        return super.getChildFeature(object, child);
-    }
+		return super.getChildFeature(object, child);
+	}
 
-    /**
-     * This returns the label text for the adapted class.
-     * <!-- begin-user-doc -->
+	/**
+	 * This returns the label text for the adapted class.
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
 	public String getText(Object object) {
-        String label = ((ProcessingOp)object).getOperation();
-        return label == null || label.length() == 0 ?
-            getString("_UI_ProcessingOp_type") :
-            getString("_UI_ProcessingOp_type") + " " + label;
-    }
+		String label = ((ProcessingOp)object).getOperation();
+		return label == null || label.length() == 0 ?
+			getString("_UI_ProcessingOp_type") :
+			getString("_UI_ProcessingOp_type") + " " + label;
+	}
 
 	/**
 	 * This handles model notifications by calling {@link #updateChildren} to update any cached
@@ -160,40 +158,40 @@ public class ProcessingOpItemProvider
 		super.notifyChanged(notification);
 	}
 
-    /**
-     * This adds to the collection of {@link org.eclipse.emf.edit.command.CommandParameter}s
-     * describing all of the children that can be created under this object.
-     * <!-- begin-user-doc -->
+	/**
+	 * This adds to the collection of {@link org.eclipse.emf.edit.command.CommandParameter}s
+	 * describing all of the children that can be created under this object.
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
 	protected void collectNewChildDescriptors(Collection newChildDescriptors, Object object) {
-        super.collectNewChildDescriptors(newChildDescriptors, object);
+		super.collectNewChildDescriptors(newChildDescriptors, object);
 
-        newChildDescriptors.add
-            (createChildParameter
-                (ScaveModelPackage.Literals.PROCESSING_OP__FILTERS,
-                 ScaveModelFactory.eINSTANCE.createSelect()));
+		newChildDescriptors.add
+			(createChildParameter
+				(ScaveModelPackage.Literals.PROCESSING_OP__FILTERS,
+				 ScaveModelFactory.eINSTANCE.createSelect()));
 
-        newChildDescriptors.add
-            (createChildParameter
-                (ScaveModelPackage.Literals.PROCESSING_OP__FILTERS,
-                 ScaveModelFactory.eINSTANCE.createDeselect()));
+		newChildDescriptors.add
+			(createChildParameter
+				(ScaveModelPackage.Literals.PROCESSING_OP__FILTERS,
+				 ScaveModelFactory.eINSTANCE.createDeselect()));
 
-        newChildDescriptors.add
-            (createChildParameter
-                (ScaveModelPackage.Literals.PROCESSING_OP__PARAMS,
-                 ScaveModelFactory.eINSTANCE.createParam()));
-    }
+		newChildDescriptors.add
+			(createChildParameter
+				(ScaveModelPackage.Literals.PROCESSING_OP__PARAMS,
+				 ScaveModelFactory.eINSTANCE.createParam()));
+	}
 
-    /**
-     * Return the resource locator for this item provider's resources.
-     * <!-- begin-user-doc -->
+	/**
+	 * Return the resource locator for this item provider's resources.
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
 	public ResourceLocator getResourceLocator() {
-        return ScaveEditPlugin.INSTANCE;
-    }
+		return ScaveEditPlugin.INSTANCE;
+	}
 
 }

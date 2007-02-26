@@ -21,22 +21,22 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @generated
  */
 public class BarChartImpl extends ChartImpl implements BarChart {
-    /**
-     * <!-- begin-user-doc -->
+	/**
+	 * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
     protected BarChartImpl() {
-        super();
-    }
+		super();
+	}
 
-    /**
-     * <!-- begin-user-doc -->
+	/**
+	 * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
     protected EClass eStaticClass() {
-        return ScaveModelPackage.Literals.BAR_CHART;
-    }
+		return ScaveModelPackage.Literals.BAR_CHART;
+	}
 
 } //BarChartImpl

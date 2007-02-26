@@ -42,213 +42,213 @@ import org.omnetpp.scave.model.SelectDeselectOp;
  * @generated
  */
 public abstract class ProcessingOpImpl extends DatasetItemImpl implements ProcessingOp {
-    /**
-     * The default value of the '{@link #getOperation() <em>Operation</em>}' attribute.
-     * <!-- begin-user-doc -->
+	/**
+	 * The default value of the '{@link #getOperation() <em>Operation</em>}' attribute.
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-     * @see #getOperation()
-     * @generated
-     * @ordered
-     */
+	 * @see #getOperation()
+	 * @generated
+	 * @ordered
+	 */
 	protected static final String OPERATION_EDEFAULT = null;
 
-    /**
-     * The cached value of the '{@link #getOperation() <em>Operation</em>}' attribute.
-     * <!-- begin-user-doc -->
+	/**
+	 * The cached value of the '{@link #getOperation() <em>Operation</em>}' attribute.
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-     * @see #getOperation()
-     * @generated
-     * @ordered
-     */
+	 * @see #getOperation()
+	 * @generated
+	 * @ordered
+	 */
 	protected String operation = OPERATION_EDEFAULT;
 
-    /**
-     * The cached value of the '{@link #getFilters() <em>Filters</em>}' containment reference list.
-     * <!-- begin-user-doc -->
+	/**
+	 * The cached value of the '{@link #getFilters() <em>Filters</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-     * @see #getFilters()
-     * @generated
-     * @ordered
-     */
+	 * @see #getFilters()
+	 * @generated
+	 * @ordered
+	 */
 	protected EList filters = null;
 
-    /**
-     * The cached value of the '{@link #getParams() <em>Params</em>}' containment reference list.
-     * <!-- begin-user-doc -->
+	/**
+	 * The cached value of the '{@link #getParams() <em>Params</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-     * @see #getParams()
-     * @generated
-     * @ordered
-     */
+	 * @see #getParams()
+	 * @generated
+	 * @ordered
+	 */
 	protected EList params = null;
 
-    /**
-     * <!-- begin-user-doc -->
+	/**
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
 	protected ProcessingOpImpl() {
-        super();
-    }
+		super();
+	}
 
-    /**
-     * <!-- begin-user-doc -->
+	/**
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
 	protected EClass eStaticClass() {
-        return ScaveModelPackage.Literals.PROCESSING_OP;
-    }
+		return ScaveModelPackage.Literals.PROCESSING_OP;
+	}
 
-    /**
-     * <!-- begin-user-doc -->
+	/**
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
 	public String getOperation() {
-        return operation;
-    }
+		return operation;
+	}
 
-    /**
-     * <!-- begin-user-doc -->
+	/**
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
 	public void setOperation(String newOperation) {
-        String oldOperation = operation;
-        operation = newOperation;
-        if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.PROCESSING_OP__OPERATION, oldOperation, operation));
-    }
+		String oldOperation = operation;
+		operation = newOperation;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.PROCESSING_OP__OPERATION, oldOperation, operation));
+	}
 
-    /**
-     * <!-- begin-user-doc -->
+	/**
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
 	public EList getFilters() {
-        if (filters == null) {
-            filters = new EObjectContainmentEList(SelectDeselectOp.class, this, ScaveModelPackage.PROCESSING_OP__FILTERS);
-        }
-        return filters;
-    }
+		if (filters == null) {
+			filters = new EObjectContainmentEList(SelectDeselectOp.class, this, ScaveModelPackage.PROCESSING_OP__FILTERS);
+		}
+		return filters;
+	}
 
-    /**
-     * <!-- begin-user-doc -->
+	/**
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
 	public EList getParams() {
-        if (params == null) {
-            params = new EObjectContainmentEList(Param.class, this, ScaveModelPackage.PROCESSING_OP__PARAMS);
-        }
-        return params;
-    }
+		if (params == null) {
+			params = new EObjectContainmentEList(Param.class, this, ScaveModelPackage.PROCESSING_OP__PARAMS);
+		}
+		return params;
+	}
 
-    /**
-     * <!-- begin-user-doc -->
+	/**
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-        switch (featureID) {
-            case ScaveModelPackage.PROCESSING_OP__FILTERS:
-                return ((InternalEList)getFilters()).basicRemove(otherEnd, msgs);
-            case ScaveModelPackage.PROCESSING_OP__PARAMS:
-                return ((InternalEList)getParams()).basicRemove(otherEnd, msgs);
-        }
-        return super.eInverseRemove(otherEnd, featureID, msgs);
-    }
+		switch (featureID) {
+			case ScaveModelPackage.PROCESSING_OP__FILTERS:
+				return ((InternalEList)getFilters()).basicRemove(otherEnd, msgs);
+			case ScaveModelPackage.PROCESSING_OP__PARAMS:
+				return ((InternalEList)getParams()).basicRemove(otherEnd, msgs);
+		}
+		return super.eInverseRemove(otherEnd, featureID, msgs);
+	}
 
-    /**
-     * <!-- begin-user-doc -->
+	/**
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-        switch (featureID) {
-            case ScaveModelPackage.PROCESSING_OP__OPERATION:
-                return getOperation();
-            case ScaveModelPackage.PROCESSING_OP__FILTERS:
-                return getFilters();
-            case ScaveModelPackage.PROCESSING_OP__PARAMS:
-                return getParams();
-        }
-        return super.eGet(featureID, resolve, coreType);
-    }
+		switch (featureID) {
+			case ScaveModelPackage.PROCESSING_OP__OPERATION:
+				return getOperation();
+			case ScaveModelPackage.PROCESSING_OP__FILTERS:
+				return getFilters();
+			case ScaveModelPackage.PROCESSING_OP__PARAMS:
+				return getParams();
+		}
+		return super.eGet(featureID, resolve, coreType);
+	}
 
-    /**
-     * <!-- begin-user-doc -->
+	/**
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
 	public void eSet(int featureID, Object newValue) {
-        switch (featureID) {
-            case ScaveModelPackage.PROCESSING_OP__OPERATION:
-                setOperation((String)newValue);
-                return;
-            case ScaveModelPackage.PROCESSING_OP__FILTERS:
-                getFilters().clear();
-                getFilters().addAll((Collection)newValue);
-                return;
-            case ScaveModelPackage.PROCESSING_OP__PARAMS:
-                getParams().clear();
-                getParams().addAll((Collection)newValue);
-                return;
-        }
-        super.eSet(featureID, newValue);
-    }
+		switch (featureID) {
+			case ScaveModelPackage.PROCESSING_OP__OPERATION:
+				setOperation((String)newValue);
+				return;
+			case ScaveModelPackage.PROCESSING_OP__FILTERS:
+				getFilters().clear();
+				getFilters().addAll((Collection)newValue);
+				return;
+			case ScaveModelPackage.PROCESSING_OP__PARAMS:
+				getParams().clear();
+				getParams().addAll((Collection)newValue);
+				return;
+		}
+		super.eSet(featureID, newValue);
+	}
 
-    /**
-     * <!-- begin-user-doc -->
+	/**
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
 	public void eUnset(int featureID) {
-        switch (featureID) {
-            case ScaveModelPackage.PROCESSING_OP__OPERATION:
-                setOperation(OPERATION_EDEFAULT);
-                return;
-            case ScaveModelPackage.PROCESSING_OP__FILTERS:
-                getFilters().clear();
-                return;
-            case ScaveModelPackage.PROCESSING_OP__PARAMS:
-                getParams().clear();
-                return;
-        }
-        super.eUnset(featureID);
-    }
+		switch (featureID) {
+			case ScaveModelPackage.PROCESSING_OP__OPERATION:
+				setOperation(OPERATION_EDEFAULT);
+				return;
+			case ScaveModelPackage.PROCESSING_OP__FILTERS:
+				getFilters().clear();
+				return;
+			case ScaveModelPackage.PROCESSING_OP__PARAMS:
+				getParams().clear();
+				return;
+		}
+		super.eUnset(featureID);
+	}
 
-    /**
-     * <!-- begin-user-doc -->
+	/**
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
 	public boolean eIsSet(int featureID) {
-        switch (featureID) {
-            case ScaveModelPackage.PROCESSING_OP__OPERATION:
-                return OPERATION_EDEFAULT == null ? operation != null : !OPERATION_EDEFAULT.equals(operation);
-            case ScaveModelPackage.PROCESSING_OP__FILTERS:
-                return filters != null && !filters.isEmpty();
-            case ScaveModelPackage.PROCESSING_OP__PARAMS:
-                return params != null && !params.isEmpty();
-        }
-        return super.eIsSet(featureID);
-    }
+		switch (featureID) {
+			case ScaveModelPackage.PROCESSING_OP__OPERATION:
+				return OPERATION_EDEFAULT == null ? operation != null : !OPERATION_EDEFAULT.equals(operation);
+			case ScaveModelPackage.PROCESSING_OP__FILTERS:
+				return filters != null && !filters.isEmpty();
+			case ScaveModelPackage.PROCESSING_OP__PARAMS:
+				return params != null && !params.isEmpty();
+		}
+		return super.eIsSet(featureID);
+	}
 
-    /**
-     * <!-- begin-user-doc -->
+	/**
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
 	public String toString() {
-        if (eIsProxy()) return super.toString();
+		if (eIsProxy()) return super.toString();
 
-        StringBuffer result = new StringBuffer(super.toString());
-        result.append(" (operation: ");
-        result.append(operation);
-        result.append(')');
-        return result.toString();
-    }
+		StringBuffer result = new StringBuffer(super.toString());
+		result.append(" (operation: ");
+		result.append(operation);
+		result.append(')');
+		return result.toString();
+	}
 
 } //ProcessingOpImpl

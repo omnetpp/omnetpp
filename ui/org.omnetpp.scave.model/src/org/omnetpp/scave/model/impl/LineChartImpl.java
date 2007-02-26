@@ -21,22 +21,22 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @generated
  */
 public class LineChartImpl extends ChartImpl implements LineChart {
-    /**
-     * <!-- begin-user-doc -->
+	/**
+	 * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
     protected LineChartImpl() {
-        super();
-    }
+		super();
+	}
 
-    /**
-     * <!-- begin-user-doc -->
+	/**
+	 * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
     protected EClass eStaticClass() {
-        return ScaveModelPackage.Literals.LINE_CHART;
-    }
+		return ScaveModelPackage.Literals.LINE_CHART;
+	}
 
 } //LineChartImpl

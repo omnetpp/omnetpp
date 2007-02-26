@@ -21,22 +21,22 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @generated
  */
 public class HistogramChartImpl extends ChartImpl implements HistogramChart {
-    /**
-     * <!-- begin-user-doc -->
+	/**
+	 * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
     protected HistogramChartImpl() {
-        super();
-    }
+		super();
+	}
 
-    /**
-     * <!-- begin-user-doc -->
+	/**
+	 * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @generated
-     */
+	 * @generated
+	 */
     protected EClass eStaticClass() {
-        return ScaveModelPackage.Literals.HISTOGRAM_CHART;
-    }
+		return ScaveModelPackage.Literals.HISTOGRAM_CHART;
+	}
 
 } //HistogramChartImpl
