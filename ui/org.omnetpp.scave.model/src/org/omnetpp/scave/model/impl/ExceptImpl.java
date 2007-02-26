@@ -21,22 +21,22 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @generated
  */
 public class ExceptImpl extends SetOperationImpl implements Except {
-	/**
-	 * <!-- begin-user-doc -->
+    /**
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	protected ExceptImpl() {
-		super();
-	}
+        super();
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
+    /**
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	protected EClass eStaticClass() {
-		return ScaveModelPackage.Literals.EXCEPT;
-	}
+        return ScaveModelPackage.Literals.EXCEPT;
+    }
 
 } //ExceptImpl

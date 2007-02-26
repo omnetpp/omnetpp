@@ -36,112 +36,112 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @generated
  */
 public class DeselectImpl extends SelectDeselectOpImpl implements Deselect {
-	/**
-	 * The cached value of the '{@link #getExcepts() <em>Excepts</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
+    /**
+     * The cached value of the '{@link #getExcepts() <em>Excepts</em>}' containment reference list.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getExcepts()
-	 * @generated
-	 * @ordered
-	 */
+     * @see #getExcepts()
+     * @generated
+     * @ordered
+     */
 	protected EList excepts = null;
 
-	/**
-	 * <!-- begin-user-doc -->
+    /**
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	protected DeselectImpl() {
-		super();
-	}
+        super();
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
+    /**
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	protected EClass eStaticClass() {
-		return ScaveModelPackage.Literals.DESELECT;
-	}
+        return ScaveModelPackage.Literals.DESELECT;
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
+    /**
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public EList getExcepts() {
-		if (excepts == null) {
-			excepts = new EObjectContainmentEList(Except.class, this, ScaveModelPackage.DESELECT__EXCEPTS);
-		}
-		return excepts;
-	}
+        if (excepts == null) {
+            excepts = new EObjectContainmentEList(Except.class, this, ScaveModelPackage.DESELECT__EXCEPTS);
+        }
+        return excepts;
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
+    /**
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-			case ScaveModelPackage.DESELECT__EXCEPTS:
-				return ((InternalEList)getExcepts()).basicRemove(otherEnd, msgs);
-		}
-		return super.eInverseRemove(otherEnd, featureID, msgs);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.DESELECT__EXCEPTS:
+                return ((InternalEList)getExcepts()).basicRemove(otherEnd, msgs);
+        }
+        return super.eInverseRemove(otherEnd, featureID, msgs);
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
+    /**
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-			case ScaveModelPackage.DESELECT__EXCEPTS:
-				return getExcepts();
-		}
-		return super.eGet(featureID, resolve, coreType);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.DESELECT__EXCEPTS:
+                return getExcepts();
+        }
+        return super.eGet(featureID, resolve, coreType);
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
+    /**
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
-			case ScaveModelPackage.DESELECT__EXCEPTS:
-				getExcepts().clear();
-				getExcepts().addAll((Collection)newValue);
-				return;
-		}
-		super.eSet(featureID, newValue);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.DESELECT__EXCEPTS:
+                getExcepts().clear();
+                getExcepts().addAll((Collection)newValue);
+                return;
+        }
+        super.eSet(featureID, newValue);
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
+    /**
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public void eUnset(int featureID) {
-		switch (featureID) {
-			case ScaveModelPackage.DESELECT__EXCEPTS:
-				getExcepts().clear();
-				return;
-		}
-		super.eUnset(featureID);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.DESELECT__EXCEPTS:
+                getExcepts().clear();
+                return;
+        }
+        super.eUnset(featureID);
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
+    /**
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-			case ScaveModelPackage.DESELECT__EXCEPTS:
-				return excepts != null && !excepts.isEmpty();
-		}
-		return super.eIsSet(featureID);
-	}
+        switch (featureID) {
+            case ScaveModelPackage.DESELECT__EXCEPTS:
+                return excepts != null && !excepts.isEmpty();
+        }
+        return super.eIsSet(featureID);
+    }
 
 } //DeselectImpl

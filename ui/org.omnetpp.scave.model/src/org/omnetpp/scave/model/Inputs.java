@@ -27,20 +27,20 @@ import org.eclipse.emf.ecore.EObject;
  * @generated
  */
 public interface Inputs extends EObject {
-	/**
-	 * Returns the value of the '<em><b>Inputs</b></em>' containment reference list.
-	 * The list contents are of type {@link org.omnetpp.scave.model.InputFile}.
-	 * <!-- begin-user-doc -->
+    /**
+     * Returns the value of the '<em><b>Inputs</b></em>' containment reference list.
+     * The list contents are of type {@link org.omnetpp.scave.model.InputFile}.
+     * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Inputs</em>' containment reference list isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Inputs</em>' containment reference list.
-	 * @see org.omnetpp.scave.model.ScaveModelPackage#getInputs_Inputs()
-	 * @model type="org.omnetpp.scave.model.InputFile" containment="true"
-	 * @generated
-	 */
+     * @return the value of the '<em>Inputs</em>' containment reference list.
+     * @see org.omnetpp.scave.model.ScaveModelPackage#getInputs_Inputs()
+     * @model type="org.omnetpp.scave.model.InputFile" containment="true"
+     * @generated
+     */
 	EList getInputs();
 
 } // Inputs

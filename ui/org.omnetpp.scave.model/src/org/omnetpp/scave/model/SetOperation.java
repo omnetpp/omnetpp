@@ -27,85 +27,85 @@ import org.eclipse.emf.ecore.EObject;
  * @generated
  */
 public interface SetOperation extends EObject {
-	/**
-	 * Returns the value of the '<em><b>Source Dataset</b></em>' reference.
-	 * <!-- begin-user-doc -->
+    /**
+     * Returns the value of the '<em><b>Source Dataset</b></em>' reference.
+     * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Source Dataset</em>' reference isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Source Dataset</em>' reference.
-	 * @see #setSourceDataset(Dataset)
-	 * @see org.omnetpp.scave.model.ScaveModelPackage#getSetOperation_SourceDataset()
-	 * @model
-	 * @generated
-	 */
+     * @return the value of the '<em>Source Dataset</em>' reference.
+     * @see #setSourceDataset(Dataset)
+     * @see org.omnetpp.scave.model.ScaveModelPackage#getSetOperation_SourceDataset()
+     * @model
+     * @generated
+     */
 	Dataset getSourceDataset();
 
-	/**
-	 * Sets the value of the '{@link org.omnetpp.scave.model.SetOperation#getSourceDataset <em>Source Dataset</em>}' reference.
-	 * <!-- begin-user-doc -->
+    /**
+     * Sets the value of the '{@link org.omnetpp.scave.model.SetOperation#getSourceDataset <em>Source Dataset</em>}' reference.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Source Dataset</em>' reference.
-	 * @see #getSourceDataset()
-	 * @generated
-	 */
+     * @param value the new value of the '<em>Source Dataset</em>' reference.
+     * @see #getSourceDataset()
+     * @generated
+     */
 	void setSourceDataset(Dataset value);
 
-	/**
-	 * Returns the value of the '<em><b>Filter Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
+    /**
+     * Returns the value of the '<em><b>Filter Pattern</b></em>' attribute.
+     * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Filter Pattern</em>' attribute isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Filter Pattern</em>' attribute.
-	 * @see #setFilterPattern(String)
-	 * @see org.omnetpp.scave.model.ScaveModelPackage#getSetOperation_FilterPattern()
-	 * @model
-	 * @generated
-	 */
+     * @return the value of the '<em>Filter Pattern</em>' attribute.
+     * @see #setFilterPattern(String)
+     * @see org.omnetpp.scave.model.ScaveModelPackage#getSetOperation_FilterPattern()
+     * @model
+     * @generated
+     */
 	String getFilterPattern();
 
-	/**
-	 * Sets the value of the '{@link org.omnetpp.scave.model.SetOperation#getFilterPattern <em>Filter Pattern</em>}' attribute.
-	 * <!-- begin-user-doc -->
+    /**
+     * Sets the value of the '{@link org.omnetpp.scave.model.SetOperation#getFilterPattern <em>Filter Pattern</em>}' attribute.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Filter Pattern</em>' attribute.
-	 * @see #getFilterPattern()
-	 * @generated
-	 */
+     * @param value the new value of the '<em>Filter Pattern</em>' attribute.
+     * @see #getFilterPattern()
+     * @generated
+     */
 	void setFilterPattern(String value);
 
-	/**
-	 * Returns the value of the '<em><b>Type</b></em>' attribute.
-	 * The literals are from the enumeration {@link org.omnetpp.scave.model.ResultType}.
-	 * <!-- begin-user-doc -->
+    /**
+     * Returns the value of the '<em><b>Type</b></em>' attribute.
+     * The literals are from the enumeration {@link org.omnetpp.scave.model.ResultType}.
+     * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Type</em>' attribute isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Type</em>' attribute.
-	 * @see org.omnetpp.scave.model.ResultType
-	 * @see #setType(ResultType)
-	 * @see org.omnetpp.scave.model.ScaveModelPackage#getSetOperation_Type()
-	 * @model
-	 * @generated
-	 */
+     * @return the value of the '<em>Type</em>' attribute.
+     * @see org.omnetpp.scave.model.ResultType
+     * @see #setType(ResultType)
+     * @see org.omnetpp.scave.model.ScaveModelPackage#getSetOperation_Type()
+     * @model
+     * @generated
+     */
 	ResultType getType();
 
-	/**
-	 * Sets the value of the '{@link org.omnetpp.scave.model.SetOperation#getType <em>Type</em>}' attribute.
-	 * <!-- begin-user-doc -->
+    /**
+     * Sets the value of the '{@link org.omnetpp.scave.model.SetOperation#getType <em>Type</em>}' attribute.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Type</em>' attribute.
-	 * @see org.omnetpp.scave.model.ResultType
-	 * @see #getType()
-	 * @generated
-	 */
+     * @param value the new value of the '<em>Type</em>' attribute.
+     * @see org.omnetpp.scave.model.ResultType
+     * @see #getType()
+     * @generated
+     */
 	void setType(ResultType value);
 
 } // SetOperation

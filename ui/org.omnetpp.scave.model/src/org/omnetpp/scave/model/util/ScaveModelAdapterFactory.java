@@ -24,522 +24,522 @@ import org.omnetpp.scave.model.*;
  * @generated
  */
 public class ScaveModelAdapterFactory extends AdapterFactoryImpl {
-	/**
-	 * The cached model package.
-	 * <!-- begin-user-doc -->
+    /**
+     * The cached model package.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	protected static ScaveModelPackage modelPackage;
 
-	/**
-	 * Creates an instance of the adapter factory.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates an instance of the adapter factory.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	public ScaveModelAdapterFactory() {
-		if (modelPackage == null) {
-			modelPackage = ScaveModelPackage.eINSTANCE;
-		}
-	}
+        if (modelPackage == null) {
+            modelPackage = ScaveModelPackage.eINSTANCE;
+        }
+    }
 
-	/**
-	 * Returns whether this factory is applicable for the type of the object.
-	 * <!-- begin-user-doc -->
+    /**
+     * Returns whether this factory is applicable for the type of the object.
+     * <!-- begin-user-doc -->
 	 * This implementation returns <code>true</code> if the object is either the model's package or is an instance object of the model.
 	 * <!-- end-user-doc -->
-	 * @return whether this factory is applicable for the type of the object.
-	 * @generated
-	 */
+     * @return whether this factory is applicable for the type of the object.
+     * @generated
+     */
 	public boolean isFactoryForType(Object object) {
-		if (object == modelPackage) {
-			return true;
-		}
-		if (object instanceof EObject) {
-			return ((EObject)object).eClass().getEPackage() == modelPackage;
-		}
-		return false;
-	}
+        if (object == modelPackage) {
+            return true;
+        }
+        if (object instanceof EObject) {
+            return ((EObject)object).eClass().getEPackage() == modelPackage;
+        }
+        return false;
+    }
 
-	/**
-	 * The switch the delegates to the <code>createXXX</code> methods.
-	 * <!-- begin-user-doc -->
+    /**
+     * The switch the delegates to the <code>createXXX</code> methods.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
-	 */
+     * @generated
+     */
 	protected ScaveModelSwitch modelSwitch =
-		new ScaveModelSwitch() {
-			public Object caseDataset(Dataset object) {
-				return createDatasetAdapter();
-			}
-			public Object caseChart(Chart object) {
-				return createChartAdapter();
-			}
-			public Object caseAdd(Add object) {
-				return createAddAdapter();
-			}
-			public Object caseApply(Apply object) {
-				return createApplyAdapter();
-			}
-			public Object caseExcept(Except object) {
-				return createExceptAdapter();
-			}
-			public Object caseProperty(Property object) {
-				return createPropertyAdapter();
-			}
-			public Object caseSetOperation(SetOperation object) {
-				return createSetOperationAdapter();
-			}
-			public Object caseGroup(Group object) {
-				return createGroupAdapter();
-			}
-			public Object caseDiscard(Discard object) {
-				return createDiscardAdapter();
-			}
-			public Object caseDatasetItem(DatasetItem object) {
-				return createDatasetItemAdapter();
-			}
-			public Object caseParam(Param object) {
-				return createParamAdapter();
-			}
-			public Object caseChartSheet(ChartSheet object) {
-				return createChartSheetAdapter();
-			}
-			public Object caseAnalysis(Analysis object) {
-				return createAnalysisAdapter();
-			}
-			public Object caseSelect(Select object) {
-				return createSelectAdapter();
-			}
-			public Object caseDeselect(Deselect object) {
-				return createDeselectAdapter();
-			}
-			public Object caseAddDiscardOp(AddDiscardOp object) {
-				return createAddDiscardOpAdapter();
-			}
-			public Object caseSelectDeselectOp(SelectDeselectOp object) {
-				return createSelectDeselectOpAdapter();
-			}
-			public Object caseInputs(Inputs object) {
-				return createInputsAdapter();
-			}
-			public Object caseChartSheets(ChartSheets object) {
-				return createChartSheetsAdapter();
-			}
-			public Object caseDatasets(Datasets object) {
-				return createDatasetsAdapter();
-			}
-			public Object caseInputFile(InputFile object) {
-				return createInputFileAdapter();
-			}
-			public Object caseProcessingOp(ProcessingOp object) {
-				return createProcessingOpAdapter();
-			}
-			public Object caseCompute(Compute object) {
-				return createComputeAdapter();
-			}
-			public Object caseBarChart(BarChart object) {
-				return createBarChartAdapter();
-			}
-			public Object caseLineChart(LineChart object) {
-				return createLineChartAdapter();
-			}
-			public Object caseHistogramChart(HistogramChart object) {
-				return createHistogramChartAdapter();
-			}
-			public Object defaultCase(EObject object) {
-				return createEObjectAdapter();
-			}
-		};
+        new ScaveModelSwitch() {
+            public Object caseDataset(Dataset object) {
+                return createDatasetAdapter();
+            }
+            public Object caseChart(Chart object) {
+                return createChartAdapter();
+            }
+            public Object caseAdd(Add object) {
+                return createAddAdapter();
+            }
+            public Object caseApply(Apply object) {
+                return createApplyAdapter();
+            }
+            public Object caseExcept(Except object) {
+                return createExceptAdapter();
+            }
+            public Object caseProperty(Property object) {
+                return createPropertyAdapter();
+            }
+            public Object caseSetOperation(SetOperation object) {
+                return createSetOperationAdapter();
+            }
+            public Object caseGroup(Group object) {
+                return createGroupAdapter();
+            }
+            public Object caseDiscard(Discard object) {
+                return createDiscardAdapter();
+            }
+            public Object caseDatasetItem(DatasetItem object) {
+                return createDatasetItemAdapter();
+            }
+            public Object caseParam(Param object) {
+                return createParamAdapter();
+            }
+            public Object caseChartSheet(ChartSheet object) {
+                return createChartSheetAdapter();
+            }
+            public Object caseAnalysis(Analysis object) {
+                return createAnalysisAdapter();
+            }
+            public Object caseSelect(Select object) {
+                return createSelectAdapter();
+            }
+            public Object caseDeselect(Deselect object) {
+                return createDeselectAdapter();
+            }
+            public Object caseAddDiscardOp(AddDiscardOp object) {
+                return createAddDiscardOpAdapter();
+            }
+            public Object caseSelectDeselectOp(SelectDeselectOp object) {
+                return createSelectDeselectOpAdapter();
+            }
+            public Object caseInputs(Inputs object) {
+                return createInputsAdapter();
+            }
+            public Object caseChartSheets(ChartSheets object) {
+                return createChartSheetsAdapter();
+            }
+            public Object caseDatasets(Datasets object) {
+                return createDatasetsAdapter();
+            }
+            public Object caseInputFile(InputFile object) {
+                return createInputFileAdapter();
+            }
+            public Object caseProcessingOp(ProcessingOp object) {
+                return createProcessingOpAdapter();
+            }
+            public Object caseCompute(Compute object) {
+                return createComputeAdapter();
+            }
+            public Object caseBarChart(BarChart object) {
+                return createBarChartAdapter();
+            }
+            public Object caseLineChart(LineChart object) {
+                return createLineChartAdapter();
+            }
+            public Object caseHistogramChart(HistogramChart object) {
+                return createHistogramChartAdapter();
+            }
+            public Object defaultCase(EObject object) {
+                return createEObjectAdapter();
+            }
+        };
 
-	/**
-	 * Creates an adapter for the <code>target</code>.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates an adapter for the <code>target</code>.
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param target the object to adapt.
-	 * @return the adapter for the <code>target</code>.
-	 * @generated
-	 */
+     * @param target the object to adapt.
+     * @return the adapter for the <code>target</code>.
+     * @generated
+     */
 	public Adapter createAdapter(Notifier target) {
-		return (Adapter)modelSwitch.doSwitch((EObject)target);
-	}
+        return (Adapter)modelSwitch.doSwitch((EObject)target);
+    }
 
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Dataset <em>Dataset</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Dataset <em>Dataset</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.Dataset
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.Dataset
+     * @generated
+     */
 	public Adapter createDatasetAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Chart <em>Chart</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Chart <em>Chart</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.Chart
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.Chart
+     * @generated
+     */
 	public Adapter createChartAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Add <em>Add</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Add <em>Add</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.Add
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.Add
+     * @generated
+     */
 	public Adapter createAddAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Apply <em>Apply</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Apply <em>Apply</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.Apply
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.Apply
+     * @generated
+     */
 	public Adapter createApplyAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Except <em>Except</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Except <em>Except</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.Except
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.Except
+     * @generated
+     */
 	public Adapter createExceptAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Property <em>Property</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Property <em>Property</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.Property
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.Property
+     * @generated
+     */
 	public Adapter createPropertyAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.SetOperation <em>Set Operation</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.SetOperation <em>Set Operation</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.SetOperation
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.SetOperation
+     * @generated
+     */
 	public Adapter createSetOperationAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Group <em>Group</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Group <em>Group</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.Group
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.Group
+     * @generated
+     */
 	public Adapter createGroupAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Discard <em>Discard</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Discard <em>Discard</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.Discard
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.Discard
+     * @generated
+     */
 	public Adapter createDiscardAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.DatasetItem <em>Dataset Item</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.DatasetItem <em>Dataset Item</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.DatasetItem
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.DatasetItem
+     * @generated
+     */
 	public Adapter createDatasetItemAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Param <em>Param</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Param <em>Param</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.Param
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.Param
+     * @generated
+     */
 	public Adapter createParamAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.ChartSheet <em>Chart Sheet</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.ChartSheet <em>Chart Sheet</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.ChartSheet
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.ChartSheet
+     * @generated
+     */
 	public Adapter createChartSheetAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Analysis <em>Analysis</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Analysis <em>Analysis</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.Analysis
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.Analysis
+     * @generated
+     */
 	public Adapter createAnalysisAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Select <em>Select</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Select <em>Select</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.Select
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.Select
+     * @generated
+     */
 	public Adapter createSelectAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Deselect <em>Deselect</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Deselect <em>Deselect</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.Deselect
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.Deselect
+     * @generated
+     */
 	public Adapter createDeselectAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.AddDiscardOp <em>Add Discard Op</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.AddDiscardOp <em>Add Discard Op</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.AddDiscardOp
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.AddDiscardOp
+     * @generated
+     */
 	public Adapter createAddDiscardOpAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.SelectDeselectOp <em>Select Deselect Op</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.SelectDeselectOp <em>Select Deselect Op</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.SelectDeselectOp
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.SelectDeselectOp
+     * @generated
+     */
 	public Adapter createSelectDeselectOpAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Inputs <em>Inputs</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Inputs <em>Inputs</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.Inputs
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.Inputs
+     * @generated
+     */
 	public Adapter createInputsAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.ChartSheets <em>Chart Sheets</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.ChartSheets <em>Chart Sheets</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.ChartSheets
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.ChartSheets
+     * @generated
+     */
 	public Adapter createChartSheetsAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Datasets <em>Datasets</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Datasets <em>Datasets</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.Datasets
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.Datasets
+     * @generated
+     */
 	public Adapter createDatasetsAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.InputFile <em>Input File</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.InputFile <em>Input File</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.InputFile
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.InputFile
+     * @generated
+     */
 	public Adapter createInputFileAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.ProcessingOp <em>Processing Op</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.ProcessingOp <em>Processing Op</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.ProcessingOp
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.ProcessingOp
+     * @generated
+     */
 	public Adapter createProcessingOpAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Compute <em>Compute</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Compute <em>Compute</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.Compute
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.Compute
+     * @generated
+     */
 	public Adapter createComputeAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.BarChart <em>Bar Chart</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.BarChart <em>Bar Chart</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.BarChart
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.BarChart
+     * @generated
+     */
 	public Adapter createBarChartAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.LineChart <em>Line Chart</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.LineChart <em>Line Chart</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.LineChart
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.LineChart
+     * @generated
+     */
 	public Adapter createLineChartAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.HistogramChart <em>Histogram Chart</em>}'.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.HistogramChart <em>Histogram Chart</em>}'.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.omnetpp.scave.model.HistogramChart
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.HistogramChart
+     * @generated
+     */
 	public Adapter createHistogramChartAdapter() {
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Creates a new adapter for the default case.
-	 * <!-- begin-user-doc -->
+    /**
+     * Creates a new adapter for the default case.
+     * <!-- begin-user-doc -->
 	 * This default implementation returns null.
 	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @generated
-	 */
+     * @return the new adapter.
+     * @generated
+     */
 	public Adapter createEObjectAdapter() {
-		return null;
-	}
+        return null;
+    }
 
 } //ScaveModelAdapterFactory
