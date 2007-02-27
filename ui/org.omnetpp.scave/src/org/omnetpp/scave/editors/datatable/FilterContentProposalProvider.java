@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
-import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.FilterHints;
 import org.omnetpp.scave.model2.FilterSyntax;
 import org.omnetpp.scave.model2.FilterUtil;
@@ -15,6 +14,9 @@ import org.omnetpp.scave.model2.FilterSyntax.INodeVisitor;
 import org.omnetpp.scave.model2.FilterSyntax.Node;
 import org.omnetpp.scave.model2.FilterSyntax.Token;
 
+/**
+ * Content proposal provider for the filter text fields. 
+ */
 class FilterContentProposalProvider implements IContentProposalProvider
 {
 	private static final boolean debug = true;
@@ -24,7 +26,17 @@ class FilterContentProposalProvider implements IContentProposalProvider
 	private static ContentProposal[] unaryOperatorProposals;
 	private static ContentProposal noProposal = new ContentProposal("", "No proposal");
 	
+	// Maps fields names to patterns
 	private Map<String,ContentProposal[]> patternProposals = new HashMap<String,ContentProposal[]>();
+	
+	// decorators
+	private static final int DEC_NONE		= 0x00;
+	private static final int DEC_OP 		= 0x01;
+	private static final int DEC_CP 		= 0x02;
+	private static final int DEC_QUOTE		= 0x04;
+	private static final int DEC_SP_BEFORE	= 0x08;
+	private static final int DEC_SP_AFTER	= 0x10;
+	
 	
 	static {
 		String[] filterFields = FilterUtil.getFieldNames();
@@ -41,6 +53,12 @@ class FilterContentProposalProvider implements IContentProposalProvider
 		};
 	}
 	
+	/**
+	 * The proposals for pattern fields depends on the content of the analysis file,
+	 * and this method is used to pass the offered proposals for each field as a 
+	 * FilterHints object.
+	 * @param hints the hints for field patterns
+	 */
 	public void setFilterHints(FilterHints hints) {
 		// add pattern proposals for the filter hints
 		patternProposals.clear();
@@ -55,6 +73,17 @@ class FilterContentProposalProvider implements IContentProposalProvider
 		}
 	}
 
+	/**
+	 * Implementation of {@link IContentProposal.getProposals}.
+	 * If the cursor is at the right end of a token then completions offered,
+	 * otherwise if the cursor is in the middle or at the beginning of a token
+	 * then a replacement offered.
+	 * 
+	 * To execute the replacement, the decorated field should have
+	 * an IControlContentAdapter2.
+	 * 
+	 * The returned proposals are instances of FilterContentProposalProvider.ContentProposal.
+	 */
 	public IContentProposal[] getProposals(String contents, int position) {
 		List<IContentProposal> result = new ArrayList<IContentProposal>();
 		
@@ -64,74 +93,77 @@ class FilterContentProposalProvider implements IContentProposalProvider
 			if (parent != null) {
 				int type = parent.getType();
 				String prefix;
-				int startIndex, endIndex;
-				boolean addOpeningParen, addClosingParen;
+				int startIndex, endIndex, decorators;
 				boolean atEnd = token.getEndPos() <= position;
 
-				if (type == Node.FIELDPATTERN && token == parent.getField() && !atEnd) { // replace field name
-					prefix = "";
+				// inside field name: replace field name
+				if (type == Node.FIELDPATTERN && token == parent.getField() && !atEnd) {
 					startIndex = token.getStartPos();
 					endIndex = token.getEndPos();
-					addOpeningParen = parent.getOpeningParen().isEmpty();
-					addClosingParen = parent.getPattern().isEmpty() && parent.getClosingParen().isEmpty();
-					collectFilteredProposals(result, fieldProposals, prefix, startIndex, endIndex,
-							addOpeningParen, addClosingParen, false);
+					decorators = (parent.getOpeningParen().isEmpty() ? DEC_OP : DEC_NONE) |
+								 (parent.getPattern().isEmpty() && parent.getClosingParen().isEmpty() ? DEC_CP : DEC_NONE);
+					collectFilteredProposals(result, fieldProposals, "", startIndex, endIndex, decorators);
 				}
-				else if (type == Node.FIELDPATTERN && token == parent.getField() && atEnd) { // extend field name
+				// after field name: complete field name
+				else if (type == Node.FIELDPATTERN && token == parent.getField() && atEnd) {
 					prefix = parent.getFieldName();
-					startIndex = parent.getField().getStartPos();
-					endIndex = parent.getField().getEndPos();
-					collectFilteredProposals(result, fieldProposals, prefix, startIndex, endIndex,
-							false, false, true);
+					startIndex = token.getStartPos();
+					endIndex = token.getEndPos();
+					collectFilteredProposals(result, fieldProposals, prefix, startIndex, endIndex,	DEC_QUOTE);
 				}
-				else if (type == Node.FIELDPATTERN && token == parent.getPattern() && !atEnd) { // replace pattern
-					prefix = "";
+				// inside the pattern of a field pattern: replace pattern with filter hints of the field
+				else if (type == Node.FIELDPATTERN && token == parent.getPattern() && !atEnd) {
 					startIndex = parent.getPattern().getStartPos();
 					endIndex = parent.getPattern().getEndPos();
-					addClosingParen = parent.getClosingParen().isEmpty();
-					collectFilteredProposals(result, patternProposals.get(parent.getFieldName()), prefix, startIndex, endIndex,
-							false, addClosingParen, true);
+					decorators = DEC_QUOTE | (parent.getClosingParen().isEmpty() ? DEC_CP : DEC_NONE);
+					collectFilteredProposals(result, patternProposals.get(parent.getFieldName()), "", startIndex, endIndex,
+							decorators);
 				}
-				else if (type == Node.FIELDPATTERN && (token == parent.getPattern() || token == parent.getOpeningParen()) && atEnd) { // extend pattern
+				// after the '(' of a field pattern: complete the pattern with hints of the field
+				else if (type == Node.FIELDPATTERN && (token == parent.getPattern() || token == parent.getOpeningParen()) && atEnd) {
 					prefix = parent.getPatternString();
 					startIndex = parent.getPattern().getStartPos();
 					endIndex = parent.getPattern().getEndPos();
-					addClosingParen = parent.getClosingParen().isEmpty();
+					decorators = DEC_QUOTE | (parent.getClosingParen().isEmpty() ? DEC_CP : DEC_NONE);
 					collectFilteredProposals(result, patternProposals.get(parent.getFieldName()), prefix, startIndex, endIndex,
-							false, addClosingParen, true);
+							decorators);
 				}
-				else if (type == Node.FIELDPATTERN && token == parent.getClosingParen()) {
-					collectFilteredProposals(result, binaryOperatorProposals, "", position, position, false, false, false);
+				// after a ')' of a field pattern or parenthesised expression: insert binary operator
+				else if ((type == Node.FIELDPATTERN || type == Node.PARENTHESISED_EXPR)&& token == parent.getClosingParen()) {
+					int spaceBefore = (token.getEndPos() == position ? DEC_SP_BEFORE : DEC_NONE);
+					collectFilteredProposals(result, binaryOperatorProposals, "", position, position, spaceBefore);
 				}
-				else if (type == Node.PATTERN && token == parent.getPattern()) { // extend pattern or field name
+				// after pattern (may be a field name without '('): complete to field name, pattern, unary operator
+				else if (type == Node.PATTERN && token == parent.getPattern()) {
 					prefix = parent.getPatternString();
 					startIndex = parent.getPattern().getStartPos();
 					endIndex = parent.getPattern().getEndPos();
 					String field = FilterUtil.getDefaultField();
-					collectFilteredProposals(result, unaryOperatorProposals, prefix, startIndex, endIndex, false, false, false);
-					collectFilteredProposals(result, fieldProposals, prefix, startIndex, endIndex, true, true, false);
-					collectFilteredProposals(result, patternProposals.get(field), prefix, startIndex, endIndex, false, false, true);
+					collectFilteredProposals(result, unaryOperatorProposals, prefix, startIndex, endIndex, DEC_NONE);
+					collectFilteredProposals(result, fieldProposals, prefix, startIndex, endIndex, DEC_OP | DEC_CP);
+					collectFilteredProposals(result, patternProposals.get(field), prefix, startIndex, endIndex, DEC_QUOTE);
 				}
-				else if (type == Node.UNARY_OPERATOR_EXPR && !atEnd) { // replace unary operator
+				// inside unary operator: replace unary operator
+				else if (type == Node.UNARY_OPERATOR_EXPR && !atEnd) {
 					collectFilteredProposals(result, unaryOperatorProposals, "", token.getStartPos(), token.getEndPos(),
-							false, false, false);
+							DEC_NONE);
 				}
-				else if (type == Node.BINARY_OPERATOR_EXPR && !atEnd) { // replace binary operator
+				// inside binary operator: replace the binary operator
+				else if (type == Node.BINARY_OPERATOR_EXPR && !atEnd) {
 					collectFilteredProposals(result, binaryOperatorProposals, "", token.getStartPos(), token.getEndPos(),
-							false, false, false);
+							DEC_NONE);
 				}
-				else if ((type == Node.BINARY_OPERATOR_EXPR  || type == Node.UNARY_OPERATOR_EXPR || type == Node.PARENTHESISED_EXPR) && atEnd) { // insert after unary or binary operator
-					collectFilteredProposals(result, unaryOperatorProposals, "", position, position, false, false, false);
-					collectFilteredProposals(result, fieldProposals, "", position, position, true, true, false);
-					collectFilteredProposals(result, patternProposals.get(FilterUtil.getDefaultField()), "", position, position, false, false, true);
+				// incomplete binary operator
+				else if ((type == Node.BINARY_OPERATOR_EXPR && token.isIncomplete())) {
+					collectFilteredProposals(result, binaryOperatorProposals, token.getValue(), token.getStartPos(), token.getEndPos(), DEC_NONE);
 				}
-				else if (type == Node.ROOT && token.getType() == FilterSyntax.TokenType.END) {
-					prefix = "";
-					startIndex = position;
-					endIndex = position;
-					//collectFilteredProposals(result, operatorProposals, prefix, startIndex, endIndex, false, false, false);
-					collectFilteredProposals(result, fieldProposals, prefix, startIndex, endIndex, true, true, false);
-					collectFilteredProposals(result, patternProposals.get(FilterUtil.getDefaultField()), prefix, startIndex, endIndex, false, false, true);
+				// after unary or binary operator or empty input: insert unary operator, field name or default pattern
+				else if (((type == Node.BINARY_OPERATOR_EXPR  || type == Node.UNARY_OPERATOR_EXPR) && atEnd) ||
+						 (type == Node.ROOT && token.getType() == FilterSyntax.TokenType.END)) {
+					int spaceBefore = (token.getEndPos() == position ? DEC_SP_BEFORE : DEC_NONE);
+					collectFilteredProposals(result, unaryOperatorProposals, "", position, position, spaceBefore);
+					collectFilteredProposals(result, fieldProposals, "", position, position, spaceBefore | DEC_OP | DEC_CP);
+					collectFilteredProposals(result, patternProposals.get(FilterUtil.getDefaultField()), "", position, position, spaceBefore | DEC_QUOTE);
 				}
 			}
 		} 
@@ -149,7 +181,17 @@ class FilterContentProposalProvider implements IContentProposalProvider
 		return result.toArray(new IContentProposal[result.size()]);
 	}
 	
+	/**
+	 * Finds the leaf node (token) in the parse tree that contains the {@code position}
+	 * either in the middle or at the right end.
+	 * 
+	 * @param contents the content of the filter field
+	 * @param position a position within the {@code contents}
+	 * @return the token containing the position or null if no such token 
+	 */
 	private Token getContainingOrPrecedingToken(String contents, final int position) {
+		// Visitor for the parse tree which remembers the last visited node
+		// before position
 		class Visitor implements INodeVisitor
 		{
 			boolean found;
@@ -186,35 +228,52 @@ class FilterContentProposalProvider implements IContentProposalProvider
 	}
 	
 	
+	/**
+	 * Collects the items from {@code proposals} starting with {@code prefix} into {@result}.
+	 * The proposals are modified according to the other parameters.
+	 * 
+	 * @param result the list of the collected proposals
+	 * @param proposals	the list of proposals to be filtered
+	 * @param prefix the required prefix of the proposals
+	 * @param startIndex the start index of the range to be replaced
+	 * @param endIndex the end index of the range to be replaced
+	 * @param addOpeningParen if true '(' appended
+	 * @param addClosingParen if true ") " appended
+	 * @param addQuotes if true '"' are added around
+	 * @param addSpace if true ' ' appended 
+	 */
 	private void collectFilteredProposals(List<IContentProposal> result, ContentProposal[] proposals, String prefix,
-			int startIndex, int endIndex, boolean addOpeningParen, boolean addClosingParen, boolean addQuotes) {
+			int startIndex, int endIndex, int decorators) {
 		if (proposals != null) {
 			for (ContentProposal proposal : proposals) {
 				if (proposal.startsWith(prefix)) {
 					proposal.setStartIndex(startIndex);
 					proposal.setEndIndex(endIndex);
-					proposal.setOpeningParenNeeded(addOpeningParen);
-					proposal.setClosingParenNeeded(addClosingParen);
-					proposal.setQuotesNeeded(addQuotes);
+					proposal.setDecorators(decorators);
 					result.add(proposal);
 				}
 			}
 		}
 	}
 	
+	/**
+	 * Content proposal for the filter field.
+	 * 
+	 * The proposal specify a replacement of a range of text in the field
+	 * with the new content. The content can be decorated to add quotes,
+	 * parenthesis.
+	 * 
+	 * The class implemented as mutable data.
+	 */
 	public static class ContentProposal implements IContentProposal {
 		
-		private int startIndex;
-		private int endIndex;
-		private String content;
-		private int cursorPosition;
-		private String label;
-		private String description;
-		private boolean quotesNeeded;       // if true surrounds the content with '"' characters
-		private boolean openingParenNeeded; // if true puts an '(' after the content
-		private boolean closingParenNeeded; // if true puts a ')' after the content and opening parenthesis
-		private boolean containsWhitespace; // true if the content should be quoted
-		
+		private int startIndex;				// start of the replaced range
+		private int endIndex;				// end of the replaced range
+		private String content;				// replacement
+		private int cursorPosition;			// position of the cursor relative to content after the proposal accepted
+		private String label;				// text displayed in the proposal popup
+		private String description;			// desciption the proposal, TODO: fill this field
+		private int decorators;				// additional characters added to the content
 		
 		public ContentProposal(String proposal) {
 			this(proposal, proposal);
@@ -224,15 +283,16 @@ class FilterContentProposalProvider implements IContentProposalProvider
 			this.content = content;
 			this.label = label;
 			this.cursorPosition = content.length();
-			this.containsWhitespace = content.indexOf(' ') >= 0;
 		}
 		
 		public String getContent() {
-			String result  = content;
-			if (quotesNeeded) result = "\"" + result + "\"";
-			if (openingParenNeeded) result += "(";
-			if (closingParenNeeded) result += ") ";
-			return result;
+			StringBuffer result = new StringBuffer(
+					((decorators & DEC_QUOTE) != 0 ? FilterUtil.quoteStringIfNeeded(content) : content));
+			if ((decorators & DEC_SP_BEFORE) != 0) result.insert(0, ' ');
+			if ((decorators & DEC_OP) != 0) result.append('(');
+			if ((decorators & DEC_CP) != 0) result.append(") ");
+			if ((decorators & DEC_SP_AFTER) != 0) result.append(' ');
+			return result.toString(); 
 		}
 		
 		public int getStartIndex() {
@@ -245,9 +305,11 @@ class FilterContentProposalProvider implements IContentProposalProvider
 		
 		public int getCursorPosition() {
 			int position = cursorPosition;
-			if (quotesNeeded) position+=2; // put cursor after the ending '"'
-			if (openingParenNeeded)	position++; // put cursor after the '('
-			else if (closingParenNeeded) position += 2; // put cursor after the ')' if no opening inserted
+			if ((decorators & DEC_QUOTE) != 0) position+= FilterUtil.quoteStringIfNeeded(content).length() - content.length(); // put cursor after the ending '"'
+			if ((decorators & DEC_SP_BEFORE) != 0) position++;
+			if ((decorators & DEC_OP) != 0)	position++; // put cursor after the '('
+			else if ((decorators & DEC_CP) != 0) position += 2; // put cursor after the ')' if no opening inserted
+			if ((decorators & DEC_SP_AFTER) != 0) position++;
 			return position;
 		}
 		public String getDescription() {
@@ -265,16 +327,8 @@ class FilterContentProposalProvider implements IContentProposalProvider
 			endIndex = index;
 		}
 		
-		public void setOpeningParenNeeded(boolean openingParenNeeded) {
-			this.openingParenNeeded = openingParenNeeded;
-		}
-		
-		public void setClosingParenNeeded(boolean closingParenNeeded) {
-			this.closingParenNeeded = closingParenNeeded;
-		}
-		
-		public void setQuotesNeeded(boolean quotesNeeded) {
-			this.quotesNeeded = quotesNeeded && containsWhitespace;
+		public void setDecorators(int decorators) {
+			this.decorators = decorators;
 		}
 		
 		public boolean startsWith(String prefix) {
@@ -286,6 +340,4 @@ class FilterContentProposalProvider implements IContentProposalProvider
 		FilterContentProposalProvider provider = new FilterContentProposalProvider();
 		provider.getProposals("", 0);
 	}
-	
-	
 }

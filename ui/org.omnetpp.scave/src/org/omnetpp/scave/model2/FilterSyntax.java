@@ -6,14 +6,24 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.util.StringUtils;
 
 /**
  * Parser for filter texts with error recovery.
- * FIXME tomi: how does this thing signal errors? please document
- *
+ * 
+ * A filter expression is called simple if it is a conjunction of field matchers.
+ * E.g: name("n") AND replication("r10") AND module(sink).
+ * 
+ * The purpose of this parser is to build a parse tree even if the input
+ * is incomplete, erronous. The parse tree can be used to split a simple filter
+ * expression into separate field matchers or to offer completions at a given position.
+ * 
+ * Therefore the language it accepts is an extension of the language that can be used
+ * as a filter in {@link ScaveModelUtil.filterIDList}.
+ * 
  * @author tomi
  */
 public class FilterSyntax {
@@ -38,12 +48,16 @@ public class FilterSyntax {
 		END,
 	}
 	
+	/**
+	 * Leaf nodes of the parse tree.
+	 */
 	public static class Token
 	{
 		TokenType type;
 		String value;
 		int startPos, endPos;
 		Node parent;
+		boolean incomplete;
 		
 		public Token(TokenType type, int startPos, int endPos) {
 			this(type, null, startPos, endPos);
@@ -80,6 +94,10 @@ public class FilterSyntax {
 			return startPos == endPos;
 		}
 		
+		public boolean isIncomplete() {
+			return incomplete;
+		}
+		
 		public String toString() {
 			if (value == null)
 				return String.format("%s<%d,%d>", type.name(), startPos, endPos);
@@ -96,6 +114,9 @@ public class FilterSyntax {
 		void visit(Token token);
 	}
 	
+	/**
+	 * Internal nodes of the parse tree. 
+	 */
 	public static class Node
 	{
 		public static final int ROOT = 0;
@@ -217,13 +238,13 @@ public class FilterSyntax {
 		}
 		
 		public Token getOpeningParen() {
-			Assert.isTrue(type == FIELDPATTERN);
-			return (Token)content[1];
+			Assert.isTrue(type == FIELDPATTERN || type == PARENTHESISED_EXPR);
+			return type == FIELDPATTERN ? (Token)content[1] : (Token)content[0];
 		}
 		
 		public Token getClosingParen() {
-			Assert.isTrue(type == FIELDPATTERN);
-			return (Token)content[3];
+			Assert.isTrue(type == FIELDPATTERN || type == PARENTHESISED_EXPR);
+			return type == FIELDPATTERN ? (Token)content[3] : (Token)content[2];
 		}
 		
 		public Token getPattern() {
@@ -293,10 +314,15 @@ public class FilterSyntax {
 		}
 	}
 	
+	/**
+	 * Lexer for filter expression.
+	 * 
+	 * TODO: \\ and \" within patterns
+	 */
 	static class Lexer
 	{
 		public static final int EOF = -1;
-		public static final Map<String, TokenType> keywords = new HashMap<String, TokenType>(3);
+		public static final Map<String, TokenType> keywords = new HashMap<String, TokenType>(6);
 		
 		static {
 			keywords.put("OR", TokenType.OR);
@@ -320,8 +346,15 @@ public class FilterSyntax {
 			this.pos = 0;
 		}
 		
+		public TokenType getKeywordByPrefix(String prefix) { // XXX assumes that keyword prefixes are unique
+			for (Map.Entry<String,TokenType> entry : keywords.entrySet())
+				if (entry.getKey().startsWith(prefix))
+					return entry.getValue();
+			return null;
+		}
+		
 		public Token getNextToken() {
-			int ch;
+			int ch, la;
 			StringBuffer value;
 			
 			if (finished)
@@ -340,6 +373,14 @@ public class FilterSyntax {
 						switch (ch = getChar()) {
 						case '"': return new Token(TokenType.STRING_LITERAL, value.toString(), startPos, pos);
 						case EOF: return new Token(TokenType.STRING_LITERAL, value.toString(), startPos, pos);
+						case '\\': la = getChar();
+								 if (la == '\\' || la == '"')
+									 value.append(la);
+								 else {
+									 value.append(ch);
+									 ungetChar(la);
+								 }
+								 break;
 						default: value.append((char)ch);
 						}
 					}
@@ -387,6 +428,10 @@ public class FilterSyntax {
 		}
 	}
 	
+	/**
+	 * Parser for filter expressions. 
+	 * 
+	 */
 	static class Parser
 	{
 		Lexer lexer;
@@ -424,6 +469,19 @@ public class FilterSyntax {
 		
 		public Node expression() {
 			Node expr = expr();
+			// when there is something extra at the end,
+			// if it is a prefix for OR or AND try to continue, otherwise ignore
+			while (lookAhead1.type == TokenType.STRING_LITERAL) {
+				Token literal = getNextToken();
+				TokenType keyword = lexer.getKeywordByPrefix(literal.value);
+				if (keyword != TokenType.AND && keyword != TokenType.OR)
+					break;
+				Token operator = literal;
+				operator.type = keyword;
+				operator.incomplete = true;
+				Node expr2 = expr();
+				expr = new Node(operator, expr, expr2);
+			}
 			Token end = match(TokenType.END);
 			return new Node(expr, end);
 		}

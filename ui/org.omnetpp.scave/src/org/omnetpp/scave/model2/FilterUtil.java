@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
+import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -184,20 +185,16 @@ public class FilterUtil {
 		if (attrPattern != null && attrPattern.length() > 0) {
 			if (sb.length() > 0)
 				sb.append(" AND ");
-			sb.append(quote(attrName)).append("(").append(quote(attrPattern)).append(")");
+			sb.append(quoteStringIfNeeded(attrName)).append("(").append(quoteStringIfNeeded(attrPattern)).append(")");
 		}
 	}
-
-	private String quote(String str) {
-		//FIXME tomi: what if str contains quote??
-		if (StringUtils.containsNone(str, " \t\n()")) {
-			return str;
-		}
-		else {
-			StringBuffer sb = new StringBuffer(str.length()+2);
-			sb.append('"').append(str).append('"');
-			return sb.toString();
-		}
+	
+	public static boolean needsQuotes(String pattern) {
+		return Common.needsQuotes(pattern) || StringUtils.indexOfAny(pattern, " \t\n()") >= 0;
+	}
+	
+	public static String quoteStringIfNeeded(String str) {
+		return needsQuotes(str) ? Common.quoteString(str) : str;
 	}
 
 	public static boolean isValidPattern(String pattern) {
