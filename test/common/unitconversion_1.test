@@ -11,9 +11,8 @@ static void parseAndPrint(const char *text, const char *expectedUnit=NULL)
     if (expectedUnit) ev << " (as " << expectedUnit << ")";
     ev << " ==> ";
     try {
-        double d = UnitConversion().parseQuantity(text, expectedUnit);
+        double d = UnitConversion::parseQuantity(text, expectedUnit);
         ev << d << "\n";
-    }
     } catch (std::exception& e) {
         ev << "ERROR: " << e.what() << "\n";
     }
@@ -77,9 +76,9 @@ ev << ".\n";
 '2 33 ' ==> ERROR: syntax error parsing quantity '2 33 ': garbage after first number
 '2 33s ' ==> ERROR: syntax error parsing quantity '2 33s ': garbage after first number
 '1.5s 33' ==> ERROR: syntax error parsing quantity '1.5s 33': missing unit
-'1s 99 Kbps' ==> ERROR: error in quantity '1s 99 Kbps': unit 'Kbps' does not match 's'
-'1s 1mi 99 Kbps' ==> ERROR: error in quantity '1s 1mi 99 Kbps': unit 'Kbps' does not match 's'
-'1s 99 bogomips' ==> ERROR: error in quantity '1s 99 bogomips': unit 'bogomips' does not match 's'
+'1s 99 Kbps' ==> ERROR: error in quantity '1s 99 Kbps': unit 'Kbps' (kilobit/sec) does not match 's' (second)
+'1s 1mi 99 Kbps' ==> ERROR: error in quantity '1s 1mi 99 Kbps': unit 'Kbps' (kilobit/sec) does not match 's' (second)
+'1s 99 bogomips' ==> ERROR: error in quantity '1s 99 bogomips': unit 'bogomips' does not match 's' (second)
 '3 bogomips 99' ==> ERROR: syntax error parsing quantity '3 bogomips 99': missing unit
 '3 bogomips 3 gallons' ==> ERROR: error in quantity '3 bogomips 3 gallons': unit 'gallons' does not match 'bogomips'
 '3.14' ==> 3.14
@@ -98,6 +97,7 @@ ev << ".\n";
 '1h 2mi 2s 520ms' ==> 3722.52
 '1s 550ms 700us ' ==> 1.5507
 ' 1s 550ms 700us ' ==> 1.5507
+'17s 71ggg' ==> ERROR: error in quantity '17s 71ggg': unit 'ggg' does not match 's' (second)
 
 '' (as s) ==> ERROR: syntax error parsing quantity '': must begin with a number
 '  ' (as s) ==> ERROR: syntax error parsing quantity '  ': must begin with a number
@@ -105,11 +105,11 @@ ev << ".\n";
 '2 33 ' (as s) ==> ERROR: syntax error parsing quantity '2 33 ': garbage after first number
 '2 33s ' (as s) ==> ERROR: syntax error parsing quantity '2 33s ': garbage after first number
 '1.5s 33' (as s) ==> ERROR: syntax error parsing quantity '1.5s 33': missing unit
-'1s 99 Kbps' (as s) ==> ERROR: error in quantity '1s 99 Kbps': unit 'Kbps' does not match 's'
-'1s 1mi 99 Kbps' (as s) ==> ERROR: error in quantity '1s 1mi 99 Kbps': unit 'Kbps' does not match 's'
-'1s 99 bogomips' (as s) ==> ERROR: error in quantity '1s 99 bogomips': unit 'bogomips' does not match 's'
-'3 bogomips 99' (as s) ==> ERROR: error in quantity '3 bogomips 99': supplied unit 'bogomips' does not match expected unit 's'
-'3 bogomips 3 gallons' (as s) ==> ERROR: error in quantity '3 bogomips 3 gallons': supplied unit 'bogomips' does not match expected unit 's'
+'1s 99 Kbps' (as s) ==> ERROR: error in quantity '1s 99 Kbps': unit 'Kbps' (kilobit/sec) does not match 's' (second)
+'1s 1mi 99 Kbps' (as s) ==> ERROR: error in quantity '1s 1mi 99 Kbps': unit 'Kbps' (kilobit/sec) does not match 's' (second)
+'1s 99 bogomips' (as s) ==> ERROR: error in quantity '1s 99 bogomips': unit 'bogomips' does not match 's' (second)
+'3 bogomips 99' (as s) ==> ERROR: error in quantity '3 bogomips 99': supplied unit 'bogomips' does not match expected unit 's' (second)
+'3 bogomips 3 gallons' (as s) ==> ERROR: error in quantity '3 bogomips 3 gallons': supplied unit 'bogomips' does not match expected unit 's' (second)
 '3.14' (as s) ==> 3.14
 '6e23' (as s) ==> 6e+023
 ' 3.14 ' (as s) ==> 3.14
@@ -117,98 +117,102 @@ ev << ".\n";
 ' 1.5s ' (as s) ==> 1.5
 ' 1.5 s ' (as s) ==> 1.5
 '1500ms' (as s) ==> 1.5
-'64 Kbps' (as s) ==> ERROR: error in quantity '64 Kbps': supplied unit 'Kbps' does not match expected unit 's'
-'64000 bps' (as s) ==> ERROR: error in quantity '64000 bps': supplied unit 'bps' does not match expected unit 's'
-' 200mW' (as s) ==> ERROR: error in quantity ' 200mW': supplied unit 'mW' does not match expected unit 's'
-' 1W 100mW' (as s) ==> ERROR: error in quantity ' 1W 100mW': supplied unit 'W' does not match expected unit 's'
-'99 bogomips' (as s) ==> ERROR: error in quantity '99 bogomips': supplied unit 'bogomips' does not match expected unit 's'
+'64 Kbps' (as s) ==> ERROR: error in quantity '64 Kbps': supplied unit 'Kbps' (kilobit/sec) does not match expected unit 's' (second)
+'64000 bps' (as s) ==> ERROR: error in quantity '64000 bps': supplied unit 'bps' (bit/sec) does not match expected unit 's' (second)
+' 200mW' (as s) ==> ERROR: error in quantity ' 200mW': supplied unit 'mW' (milliwatt) does not match expected unit 's' (second)
+' 1W 100mW' (as s) ==> ERROR: error in quantity ' 1W 100mW': supplied unit 'W' (watt) does not match expected unit 's' (second)
+'99 bogomips' (as s) ==> ERROR: error in quantity '99 bogomips': supplied unit 'bogomips' does not match expected unit 's' (second)
 '1h 0.1s' (as s) ==> 3600.1
 '1h 2mi 2s 520ms' (as s) ==> 3722.52
 '1s 550ms 700us ' (as s) ==> 1.5507
 ' 1s 550ms 700us ' (as s) ==> 1.5507
+'17s 71ggg' (as s) ==> ERROR: error in quantity '17s 71ggg': unit 'ggg' does not match 's' (second)
 
 '' (as ms) ==> ERROR: syntax error parsing quantity '': must begin with a number
 '  ' (as ms) ==> ERROR: syntax error parsing quantity '  ': must begin with a number
 '2 33' (as ms) ==> ERROR: syntax error parsing quantity '2 33': garbage after first number
 '2 33 ' (as ms) ==> ERROR: syntax error parsing quantity '2 33 ': garbage after first number
 '2 33s ' (as ms) ==> ERROR: syntax error parsing quantity '2 33s ': garbage after first number
-'1.5s 33' (as ms) ==> ERROR: error in quantity '1.5s 33': supplied unit 's' does not match expected unit 'ms' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-'1s 99 Kbps' (as ms) ==> ERROR: error in quantity '1s 99 Kbps': supplied unit 's' does not match expected unit 'ms' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-'1s 1mi 99 Kbps' (as ms) ==> ERROR: error in quantity '1s 1mi 99 Kbps': supplied unit 's' does not match expected unit 'ms' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-'1s 99 bogomips' (as ms) ==> ERROR: error in quantity '1s 99 bogomips': supplied unit 's' does not match expected unit 'ms' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-'3 bogomips 99' (as ms) ==> ERROR: error in quantity '3 bogomips 99': supplied unit 'bogomips' does not match expected unit 'ms' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-'3 bogomips 3 gallons' (as ms) ==> ERROR: error in quantity '3 bogomips 3 gallons': supplied unit 'bogomips' does not match expected unit 'ms' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'1.5s 33' (as ms) ==> ERROR: error in quantity '1.5s 33': supplied unit 's' (second) does not match expected unit 'ms' (millisecond) (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'1s 99 Kbps' (as ms) ==> ERROR: error in quantity '1s 99 Kbps': supplied unit 's' (second) does not match expected unit 'ms' (millisecond) (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'1s 1mi 99 Kbps' (as ms) ==> ERROR: error in quantity '1s 1mi 99 Kbps': supplied unit 's' (second) does not match expected unit 'ms' (millisecond) (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'1s 99 bogomips' (as ms) ==> ERROR: error in quantity '1s 99 bogomips': supplied unit 's' (second) does not match expected unit 'ms' (millisecond) (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'3 bogomips 99' (as ms) ==> ERROR: error in quantity '3 bogomips 99': supplied unit 'bogomips' does not match expected unit 'ms' (millisecond) (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'3 bogomips 3 gallons' (as ms) ==> ERROR: error in quantity '3 bogomips 3 gallons': supplied unit 'bogomips' does not match expected unit 'ms' (millisecond) (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
 '3.14' (as ms) ==> 3.14
 '6e23' (as ms) ==> 6e+023
 ' 3.14 ' (as ms) ==> 3.14
-'1.5s' (as ms) ==> ERROR: error in quantity '1.5s': supplied unit 's' does not match expected unit 'ms' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-' 1.5s ' (as ms) ==> ERROR: error in quantity ' 1.5s ': supplied unit 's' does not match expected unit 'ms' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-' 1.5 s ' (as ms) ==> ERROR: error in quantity ' 1.5 s ': supplied unit 's' does not match expected unit 'ms' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'1.5s' (as ms) ==> ERROR: error in quantity '1.5s': supplied unit 's' (second) does not match expected unit 'ms' (millisecond) (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+' 1.5s ' (as ms) ==> ERROR: error in quantity ' 1.5s ': supplied unit 's' (second) does not match expected unit 'ms' (millisecond) (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+' 1.5 s ' (as ms) ==> ERROR: error in quantity ' 1.5 s ': supplied unit 's' (second) does not match expected unit 'ms' (millisecond) (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
 '1500ms' (as ms) ==> 1500
-'64 Kbps' (as ms) ==> ERROR: error in quantity '64 Kbps': supplied unit 'Kbps' does not match expected unit 'ms' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-'64000 bps' (as ms) ==> ERROR: error in quantity '64000 bps': supplied unit 'bps' does not match expected unit 'ms' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-' 200mW' (as ms) ==> ERROR: error in quantity ' 200mW': supplied unit 'mW' does not match expected unit 'ms' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-' 1W 100mW' (as ms) ==> ERROR: error in quantity ' 1W 100mW': supplied unit 'W' does not match expected unit 'ms' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-'99 bogomips' (as ms) ==> ERROR: error in quantity '99 bogomips': supplied unit 'bogomips' does not match expected unit 'ms' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-'1h 0.1s' (as ms) ==> ERROR: error in quantity '1h 0.1s': supplied unit 'h' does not match expected unit 'ms' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-'1h 2mi 2s 520ms' (as ms) ==> ERROR: error in quantity '1h 2mi 2s 520ms': supplied unit 'h' does not match expected unit 'ms' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-'1s 550ms 700us ' (as ms) ==> ERROR: error in quantity '1s 550ms 700us ': supplied unit 's' does not match expected unit 'ms' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-' 1s 550ms 700us ' (as ms) ==> ERROR: error in quantity ' 1s 550ms 700us ': supplied unit 's' does not match expected unit 'ms' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'64 Kbps' (as ms) ==> ERROR: error in quantity '64 Kbps': supplied unit 'Kbps' (kilobit/sec) does not match expected unit 'ms' (millisecond) (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'64000 bps' (as ms) ==> ERROR: error in quantity '64000 bps': supplied unit 'bps' (bit/sec) does not match expected unit 'ms' (millisecond) (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+' 200mW' (as ms) ==> ERROR: error in quantity ' 200mW': supplied unit 'mW' (milliwatt) does not match expected unit 'ms' (millisecond) (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+' 1W 100mW' (as ms) ==> ERROR: error in quantity ' 1W 100mW': supplied unit 'W' (watt) does not match expected unit 'ms' (millisecond) (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'99 bogomips' (as ms) ==> ERROR: error in quantity '99 bogomips': supplied unit 'bogomips' does not match expected unit 'ms' (millisecond) (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'1h 0.1s' (as ms) ==> ERROR: error in quantity '1h 0.1s': supplied unit 'h' (hour) does not match expected unit 'ms' (millisecond) (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'1h 2mi 2s 520ms' (as ms) ==> ERROR: error in quantity '1h 2mi 2s 520ms': supplied unit 'h' (hour) does not match expected unit 'ms' (millisecond) (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'1s 550ms 700us ' (as ms) ==> ERROR: error in quantity '1s 550ms 700us ': supplied unit 's' (second) does not match expected unit 'ms' (millisecond) (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+' 1s 550ms 700us ' (as ms) ==> ERROR: error in quantity ' 1s 550ms 700us ': supplied unit 's' (second) does not match expected unit 'ms' (millisecond) (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'17s 71ggg' (as ms) ==> ERROR: error in quantity '17s 71ggg': supplied unit 's' (second) does not match expected unit 'ms' (millisecond) (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
 
 '' (as W) ==> ERROR: syntax error parsing quantity '': must begin with a number
 '  ' (as W) ==> ERROR: syntax error parsing quantity '  ': must begin with a number
 '2 33' (as W) ==> ERROR: syntax error parsing quantity '2 33': garbage after first number
 '2 33 ' (as W) ==> ERROR: syntax error parsing quantity '2 33 ': garbage after first number
 '2 33s ' (as W) ==> ERROR: syntax error parsing quantity '2 33s ': garbage after first number
-'1.5s 33' (as W) ==> ERROR: error in quantity '1.5s 33': supplied unit 's' does not match expected unit 'W'
-'1s 99 Kbps' (as W) ==> ERROR: error in quantity '1s 99 Kbps': supplied unit 's' does not match expected unit 'W'
-'1s 1mi 99 Kbps' (as W) ==> ERROR: error in quantity '1s 1mi 99 Kbps': supplied unit 's' does not match expected unit 'W'
-'1s 99 bogomips' (as W) ==> ERROR: error in quantity '1s 99 bogomips': supplied unit 's' does not match expected unit 'W'
-'3 bogomips 99' (as W) ==> ERROR: error in quantity '3 bogomips 99': supplied unit 'bogomips' does not match expected unit 'W'
-'3 bogomips 3 gallons' (as W) ==> ERROR: error in quantity '3 bogomips 3 gallons': supplied unit 'bogomips' does not match expected unit 'W'
+'1.5s 33' (as W) ==> ERROR: error in quantity '1.5s 33': supplied unit 's' (second) does not match expected unit 'W' (watt)
+'1s 99 Kbps' (as W) ==> ERROR: error in quantity '1s 99 Kbps': supplied unit 's' (second) does not match expected unit 'W' (watt)
+'1s 1mi 99 Kbps' (as W) ==> ERROR: error in quantity '1s 1mi 99 Kbps': supplied unit 's' (second) does not match expected unit 'W' (watt)
+'1s 99 bogomips' (as W) ==> ERROR: error in quantity '1s 99 bogomips': supplied unit 's' (second) does not match expected unit 'W' (watt)
+'3 bogomips 99' (as W) ==> ERROR: error in quantity '3 bogomips 99': supplied unit 'bogomips' does not match expected unit 'W' (watt)
+'3 bogomips 3 gallons' (as W) ==> ERROR: error in quantity '3 bogomips 3 gallons': supplied unit 'bogomips' does not match expected unit 'W' (watt)
 '3.14' (as W) ==> 3.14
 '6e23' (as W) ==> 6e+023
 ' 3.14 ' (as W) ==> 3.14
-'1.5s' (as W) ==> ERROR: error in quantity '1.5s': supplied unit 's' does not match expected unit 'W'
-' 1.5s ' (as W) ==> ERROR: error in quantity ' 1.5s ': supplied unit 's' does not match expected unit 'W'
-' 1.5 s ' (as W) ==> ERROR: error in quantity ' 1.5 s ': supplied unit 's' does not match expected unit 'W'
-'1500ms' (as W) ==> ERROR: error in quantity '1500ms': supplied unit 'ms' does not match expected unit 'W'
-'64 Kbps' (as W) ==> ERROR: error in quantity '64 Kbps': supplied unit 'Kbps' does not match expected unit 'W'
-'64000 bps' (as W) ==> ERROR: error in quantity '64000 bps': supplied unit 'bps' does not match expected unit 'W'
+'1.5s' (as W) ==> ERROR: error in quantity '1.5s': supplied unit 's' (second) does not match expected unit 'W' (watt)
+' 1.5s ' (as W) ==> ERROR: error in quantity ' 1.5s ': supplied unit 's' (second) does not match expected unit 'W' (watt)
+' 1.5 s ' (as W) ==> ERROR: error in quantity ' 1.5 s ': supplied unit 's' (second) does not match expected unit 'W' (watt)
+'1500ms' (as W) ==> ERROR: error in quantity '1500ms': supplied unit 'ms' (millisecond) does not match expected unit 'W' (watt)
+'64 Kbps' (as W) ==> ERROR: error in quantity '64 Kbps': supplied unit 'Kbps' (kilobit/sec) does not match expected unit 'W' (watt)
+'64000 bps' (as W) ==> ERROR: error in quantity '64000 bps': supplied unit 'bps' (bit/sec) does not match expected unit 'W' (watt)
 ' 200mW' (as W) ==> 0.2
 ' 1W 100mW' (as W) ==> 1.1
-'99 bogomips' (as W) ==> ERROR: error in quantity '99 bogomips': supplied unit 'bogomips' does not match expected unit 'W'
-'1h 0.1s' (as W) ==> ERROR: error in quantity '1h 0.1s': supplied unit 'h' does not match expected unit 'W'
-'1h 2mi 2s 520ms' (as W) ==> ERROR: error in quantity '1h 2mi 2s 520ms': supplied unit 'h' does not match expected unit 'W'
-'1s 550ms 700us ' (as W) ==> ERROR: error in quantity '1s 550ms 700us ': supplied unit 's' does not match expected unit 'W'
-' 1s 550ms 700us ' (as W) ==> ERROR: error in quantity ' 1s 550ms 700us ': supplied unit 's' does not match expected unit 'W'
+'99 bogomips' (as W) ==> ERROR: error in quantity '99 bogomips': supplied unit 'bogomips' does not match expected unit 'W' (watt)
+'1h 0.1s' (as W) ==> ERROR: error in quantity '1h 0.1s': supplied unit 'h' (hour) does not match expected unit 'W' (watt)
+'1h 2mi 2s 520ms' (as W) ==> ERROR: error in quantity '1h 2mi 2s 520ms': supplied unit 'h' (hour) does not match expected unit 'W' (watt)
+'1s 550ms 700us ' (as W) ==> ERROR: error in quantity '1s 550ms 700us ': supplied unit 's' (second) does not match expected unit 'W' (watt)
+' 1s 550ms 700us ' (as W) ==> ERROR: error in quantity ' 1s 550ms 700us ': supplied unit 's' (second) does not match expected unit 'W' (watt)
+'17s 71ggg' (as W) ==> ERROR: error in quantity '17s 71ggg': supplied unit 's' (second) does not match expected unit 'W' (watt)
 
 '' (as bogomips) ==> ERROR: syntax error parsing quantity '': must begin with a number
 '  ' (as bogomips) ==> ERROR: syntax error parsing quantity '  ': must begin with a number
 '2 33' (as bogomips) ==> ERROR: syntax error parsing quantity '2 33': garbage after first number
 '2 33 ' (as bogomips) ==> ERROR: syntax error parsing quantity '2 33 ': garbage after first number
 '2 33s ' (as bogomips) ==> ERROR: syntax error parsing quantity '2 33s ': garbage after first number
-'1.5s 33' (as bogomips) ==> ERROR: error in quantity '1.5s 33': supplied unit 's' does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-'1s 99 Kbps' (as bogomips) ==> ERROR: error in quantity '1s 99 Kbps': supplied unit 's' does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-'1s 1mi 99 Kbps' (as bogomips) ==> ERROR: error in quantity '1s 1mi 99 Kbps': supplied unit 's' does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-'1s 99 bogomips' (as bogomips) ==> ERROR: error in quantity '1s 99 bogomips': supplied unit 's' does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'1.5s 33' (as bogomips) ==> ERROR: error in quantity '1.5s 33': supplied unit 's' (second) does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'1s 99 Kbps' (as bogomips) ==> ERROR: error in quantity '1s 99 Kbps': supplied unit 's' (second) does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'1s 1mi 99 Kbps' (as bogomips) ==> ERROR: error in quantity '1s 1mi 99 Kbps': supplied unit 's' (second) does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'1s 99 bogomips' (as bogomips) ==> ERROR: error in quantity '1s 99 bogomips': supplied unit 's' (second) does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
 '3 bogomips 99' (as bogomips) ==> ERROR: syntax error parsing quantity '3 bogomips 99': missing unit
 '3 bogomips 3 gallons' (as bogomips) ==> ERROR: error in quantity '3 bogomips 3 gallons': unit 'gallons' does not match 'bogomips'
 '3.14' (as bogomips) ==> 3.14
 '6e23' (as bogomips) ==> 6e+023
 ' 3.14 ' (as bogomips) ==> 3.14
-'1.5s' (as bogomips) ==> ERROR: error in quantity '1.5s': supplied unit 's' does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-' 1.5s ' (as bogomips) ==> ERROR: error in quantity ' 1.5s ': supplied unit 's' does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-' 1.5 s ' (as bogomips) ==> ERROR: error in quantity ' 1.5 s ': supplied unit 's' does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-'1500ms' (as bogomips) ==> ERROR: error in quantity '1500ms': supplied unit 'ms' does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-'64 Kbps' (as bogomips) ==> ERROR: error in quantity '64 Kbps': supplied unit 'Kbps' does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-'64000 bps' (as bogomips) ==> ERROR: error in quantity '64000 bps': supplied unit 'bps' does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-' 200mW' (as bogomips) ==> ERROR: error in quantity ' 200mW': supplied unit 'mW' does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-' 1W 100mW' (as bogomips) ==> ERROR: error in quantity ' 1W 100mW': supplied unit 'W' does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'1.5s' (as bogomips) ==> ERROR: error in quantity '1.5s': supplied unit 's' (second) does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+' 1.5s ' (as bogomips) ==> ERROR: error in quantity ' 1.5s ': supplied unit 's' (second) does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+' 1.5 s ' (as bogomips) ==> ERROR: error in quantity ' 1.5 s ': supplied unit 's' (second) does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'1500ms' (as bogomips) ==> ERROR: error in quantity '1500ms': supplied unit 'ms' (millisecond) does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'64 Kbps' (as bogomips) ==> ERROR: error in quantity '64 Kbps': supplied unit 'Kbps' (kilobit/sec) does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'64000 bps' (as bogomips) ==> ERROR: error in quantity '64000 bps': supplied unit 'bps' (bit/sec) does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+' 200mW' (as bogomips) ==> ERROR: error in quantity ' 200mW': supplied unit 'mW' (milliwatt) does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+' 1W 100mW' (as bogomips) ==> ERROR: error in quantity ' 1W 100mW': supplied unit 'W' (watt) does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
 '99 bogomips' (as bogomips) ==> 99
-'1h 0.1s' (as bogomips) ==> ERROR: error in quantity '1h 0.1s': supplied unit 'h' does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-'1h 2mi 2s 520ms' (as bogomips) ==> ERROR: error in quantity '1h 2mi 2s 520ms': supplied unit 'h' does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-'1s 550ms 700us ' (as bogomips) ==> ERROR: error in quantity '1s 550ms 700us ': supplied unit 's' does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
-' 1s 550ms 700us ' (as bogomips) ==> ERROR: error in quantity ' 1s 550ms 700us ': supplied unit 's' does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'1h 0.1s' (as bogomips) ==> ERROR: error in quantity '1h 0.1s': supplied unit 'h' (hour) does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'1h 2mi 2s 520ms' (as bogomips) ==> ERROR: error in quantity '1h 2mi 2s 520ms': supplied unit 'h' (hour) does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'1s 550ms 700us ' (as bogomips) ==> ERROR: error in quantity '1s 550ms 700us ': supplied unit 's' (second) does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+' 1s 550ms 700us ' (as bogomips) ==> ERROR: error in quantity ' 1s 550ms 700us ': supplied unit 's' (second) does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+'17s 71ggg' (as bogomips) ==> ERROR: error in quantity '17s 71ggg': supplied unit 's' (second) does not match expected unit 'bogomips' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
 .
 
