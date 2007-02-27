@@ -72,7 +72,7 @@ public class ZoomableCanvasMouseSupport {
 				canvas.zoomToRectangle(new org.eclipse.draw2d.geometry.Rectangle(r));
 			}
 		};
-		setMouseMode(ZOOM_MODE);
+		setMouseMode(PAN_MODE);
 	}
     
 	public int getMouseMode() {

@@ -1,6 +1,4 @@
-package org.omnetpp.scave.editors;
-
-import java.util.Map;
+package org.omnetpp.common.ui;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;

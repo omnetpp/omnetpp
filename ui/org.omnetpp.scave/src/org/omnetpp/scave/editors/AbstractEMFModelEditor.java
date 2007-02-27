@@ -103,6 +103,7 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheet;
 import org.eclipse.ui.views.properties.PropertySheetPage;
+import org.omnetpp.common.ui.MultiPageEditorPartExt;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
 import org.omnetpp.scave.model.provider.ScaveEditPlugin;
 import org.omnetpp.scave.model2.provider.ScaveModelItemProviderAdapterFactory;
