@@ -6,6 +6,10 @@
  */
 package org.omnetpp.scave.model.provider;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+
 import org.eclipse.emf.common.EMFPlugin;
 
 import org.eclipse.emf.common.ui.EclipseUIPlugin;
