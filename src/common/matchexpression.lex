@@ -15,11 +15,15 @@
 *--------------------------------------------------------------*/
 
 
+%x stringliteral
+
 /* the following option keeps isatty() out */
 %option never-interactive
 
 %{
 #include <string.h>
+#include <string>
+#include "stringutil.h"
 
 #define YYSTYPE  char *
 #define yylval  matchexpressionyylval
@@ -27,11 +31,25 @@ extern YYSTYPE yylval;
 
 #include "matchexpression.tab.h"
 
+// buffer to collect characters while in stringliteral mode
+static std::string extendbuf;
+
 static char *matchexpr_strdup(const char *s)
 {
     char *d = new char[strlen(s)+1];
     strcpy(d, s);
     return d;
+}
+
+static void extend()
+{
+    extendbuf += yytext;
+}
+
+static char *unquote()
+{
+    std::string unquoted = opp_parsequotedstr(extendbuf.c_str());
+    return matchexpr_strdup(unquoted.c_str());
 }
 
 %}
@@ -48,10 +66,19 @@ static char *matchexpr_strdup(const char *s)
 "AND"                   { return AND_; }
 "OR"                    { return OR_;  }
 
-\"[^\"]*\"              { yylval = matchexpr_strdup(yytext+1); yylval[strlen(yylval)-1] = '\0'; return STRINGLITERAL; }
-[^ \t\n()]*             { yylval = matchexpr_strdup(yytext); return STRINGLITERAL; }
+\"                      { BEGIN(stringliteral); extendbuf=yytext; }
+<stringliteral>{
+      \n                { BEGIN(INITIAL); throw std::runtime_error("unterminated string constant"); /* NOTE: BEGIN(INITIAL) is important, otherwise parsing of the next file will start from the <stringliteral> state! */  }
+      \\\n              { extend(); /* line continuation */ }
+      \\\"              { extend(); /* quoted quote */ }
+      \\[^\n\"]         { extend(); /* quoted char */ }
+      [^\\\n\"]+        { extend(); /* character inside string literal */ }
+      \"                { extend(); BEGIN(INITIAL); yylval = unquote(); return STRINGLITERAL; /* closing quote */ }
+}
 
-.                       { }
+[^ \t\n()"]*            { yylval = matchexpr_strdup(yytext); return STRINGLITERAL; }
+
+.                       {  }
 
 %%
 
@@ -59,3 +86,5 @@ int yywrap(void)
 {
      return 1;
 }
+
+
