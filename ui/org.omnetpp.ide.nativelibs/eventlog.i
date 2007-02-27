@@ -196,6 +196,14 @@ import java.lang.reflect.Constructor;
 %typemap(javacode) EventLogEntry %{
    private static Constructor[] eventLogConstructors = new Constructor[100];
 
+   public boolean equals(Object obj) {
+      return (obj instanceof EventLogEntry) && getCPtr(this)==getCPtr((EventLogEntry)obj);
+   }
+
+   public int hashCode() {
+      return (int)getCPtr(this);
+   }
+
    public static EventLogEntry newEventLogEntry(long cPtr, boolean isOwner) {
       try {
          if (cPtr == 0)
