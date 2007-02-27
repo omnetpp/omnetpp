@@ -23,7 +23,6 @@ import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.DisposeEvent;
@@ -252,41 +251,6 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		return index;
 	}
 
-	/**
-	 * Adds a closable page to the multi-page editor. This is a variant of
-	 * addPage(int index, Control control).
-	 */
-	public void addClosablePage(int index, Control control) {
-		// hack: add it in the normal way, then replace CTabItem with one with SWT.CLOSE set
-		super.addPage(index, control);
-		CTabFolder ctabFolder = (CTabFolder) control.getParent();
-		ctabFolder.getItem(index).dispose();
-		CTabItem item = new CTabItem(ctabFolder, SWT.CLOSE, index);
-		item.setControl(control);
-	}
-
-	/**
-	 * Closes the page of the multi-page editor page which holds
-	 * the given control. The request is ignored if the control is
-	 * not found among the pages.
-	 */
-	public void removePage(Control control) {
-		int index = findPage(control);
-		if (index!=-1)
-			removePage(index);
-	}
-
-	/**
-	 * Returns the index of the multi-page editor page which holds
-	 * the given control (typically some Composite). Returns -1 if not found.
-	 */
-	public int findPage(Control control) {
-		for (int i=0; i<getPageCount(); i++)
-			if (getControl(i)==control)
-				return i;
-		return -1;
-	}
-
 	public ScaveEditorPage getActiveEditorPage() {
 		int i = getActivePage();
 		if (i >= 0) {
@@ -423,26 +387,17 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 
 		int pageIndex = addClosableScaveEditorPage(page);
 		closablePages.put(object, page);
-
-		// Add a listener to remove the page from the map.
-		// The control is not disposed when the tab is closed, so
-		// add the listener to the tabitem. 
-		final Control finalPage = page;
-		if (finalPage != null) {
-			CTabItem tabItem = ((CTabFolder)getContainer()).getItem(pageIndex);
-			tabItem.addDisposeListener(new DisposeListener() {
-				public void widgetDisposed(DisposeEvent e) {
-					for (Map.Entry entry : closablePages.entrySet()) {
-						if (finalPage.equals(entry.getValue())) {
-							closablePages.remove(entry.getKey()); //FIXME error if not in the map
-							finalPage.dispose();  //FIXME factor this out into a base class
-							break;
-						}
-					}
-				}
-			});
-		}
 		return pageIndex;
+	}
+
+	@Override
+	protected void pageClosed(Control control) {
+		Assert.isTrue(closablePages.containsValue(control));
+
+		// remove it from the map
+		for (Map.Entry entry : closablePages.entrySet())
+			if (control.equals(entry.getValue()))
+				closablePages.remove(entry.getKey());
 	}
 	
 	/**

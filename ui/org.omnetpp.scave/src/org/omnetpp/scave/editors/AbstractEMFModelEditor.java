@@ -97,7 +97,6 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
-import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
@@ -115,9 +114,9 @@ import org.omnetpp.scave.model2.provider.ScaveModelItemProviderAdapterFactory;
  */
 //FIXME "New Children" etc context menu is only available after clicking in the outline page at least once
 //FIXME if Datasets is empty, context menu offers "New Input File" if Inputs is selected in the content outline
-public abstract class AbstractEMFModelEditor
-	extends MultiPageEditorPart
-	implements IEditingDomainProvider, ISelectionProvider, IMenuListener, /*IViewerProvider,*/ IGotoMarker {
+public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
+	implements IEditingDomainProvider, ISelectionProvider, IMenuListener, IGotoMarker {
+
 	/**
 	 * This keeps track of the editing domain that is used to track all changes to the model.
 	 */
