@@ -113,7 +113,7 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 					monitor.subTask("Indexing "+file.getName());
 					try {
 						if (file.exists() && !isIndexFileUpToDate(file))
-							indexer.generateIndex(file.getAbsolutePath());
+							indexer.generateIndex(file.getAbsolutePath()); //TODO add ERROR and WARNING markers if possible
 					}
 					catch (Exception e) {
 						IStatus error =  new Status(Status.ERROR, ScavePlugin.PLUGIN_ID, 0,

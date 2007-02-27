@@ -141,6 +141,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 //		manager.insertBefore("scavemodel-additions", zoomOutAction);
 		manager.insertBefore("scavemodel-additions", switchChartToPanModeAction);
 		manager.insertBefore("scavemodel-additions", switchChartToZoomModeAction);
+		manager.insertBefore("scavemodel-additions", zoomInAction);
 		manager.insertBefore("scavemodel-additions", zoomOutAction);
 		manager.insertBefore("scavemodel-additions", refreshChartAction);
 		manager.insertBefore("scavemodel-additions", createChartTemplateAction);

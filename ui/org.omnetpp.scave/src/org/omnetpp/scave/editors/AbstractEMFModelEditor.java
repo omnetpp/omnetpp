@@ -115,7 +115,6 @@ import org.omnetpp.scave.model2.provider.ScaveModelItemProviderAdapterFactory;
  */
 //FIXME "New Children" etc context menu is only available after clicking in the outline page at least once
 //FIXME if Datasets is empty, context menu offers "New Input File" if Inputs is selected in the content outline
-//TODO review and customize context menu (e.g. do we need "Validate" or "Load resource"?) 
 public abstract class AbstractEMFModelEditor
 	extends MultiPageEditorPart
 	implements IEditingDomainProvider, ISelectionProvider, IMenuListener, /*IViewerProvider,*/ IGotoMarker {
@@ -162,7 +161,7 @@ public abstract class AbstractEMFModelEditor
 	 * This keeps track of all the {@link org.eclipse.jface.viewers.ISelectionChangedListener}s that are listening to this editor.
 	 * We need this because we implement ISelectionProvider which includes having to manage a listener list.
 	 */
-	protected Collection selectionChangedListeners = new ArrayList();
+	protected Collection<ISelectionChangedListener> selectionChangedListeners = new ArrayList<ISelectionChangedListener>();
 
 	/**
 	 * This keeps track of the selection of the editor as a whole.
@@ -554,23 +553,26 @@ public abstract class AbstractEMFModelEditor
 			target.addSelectionChangedListener(selectionChangedListener);
 		}
 	}
+
+	boolean selectionChangeInProgress = false; // to prevent recursive notifications
 	
 	/**
 	 * Propagates the selection everywhere. Override if you have more widgets to update!
 	 */
 	protected void handleSelectionChange(ISelection selection) {
-		// Note: despite the check below, we still may get double notifications
-		// because TreeSelection compares its internal TreePaths instead of the 
-		// content objects, and it'll mismatch for treeviewers with different roots.
-		// But it's OK.
-		if (selection!=editorSelection && !selection.equals(editorSelection)) {
-			//System.out.println("handleSelectionChange(), size="+((IStructuredSelection)selection).size()+" first:"+((IStructuredSelection)selection).getFirstElement());
-			//System.out.println("        editorSelection: size="+((IStructuredSelection)editorSelection).size()+" first:"+((IStructuredSelection)editorSelection).getFirstElement());
-			editorSelection = selection;
-			setViewerSelectionNoNotify(contentOutlineViewer, selection);
-			updateStatusLineManager(contentOutlineStatusLineManager, selection);
-			updateStatusLineManager(getActionBars().getStatusLineManager(), selection);
-			fireSelectionChangedEvent(selection);
+		//FIXME merge this method into fireSelectionChangedEvent()!!! that's where the guard should be as well!
+		boolean selectionReallyChanged = selection!=editorSelection && !selection.equals(editorSelection);
+		if (!selectionChangeInProgress || selectionReallyChanged) {
+			try {
+				selectionChangeInProgress = true; // "finally" ensures this gets reset in any case
+				editorSelection = selection;
+				setViewerSelectionNoNotify(contentOutlineViewer, selection);
+				updateStatusLineManager(contentOutlineStatusLineManager, selection);
+				updateStatusLineManager(getActionBars().getStatusLineManager(), selection);
+				fireSelectionChangedEvent(selection);
+			} finally {
+				selectionChangeInProgress = false;
+			}
 		}
 	}
 
@@ -578,10 +580,8 @@ public abstract class AbstractEMFModelEditor
 	 * Notify listeners on {@link org.eclipse.jface.viewers.ISelectionProvider} about a selection change.
 	 */
 	protected void fireSelectionChangedEvent(ISelection selection) {
-		for (Iterator listeners = selectionChangedListeners.iterator(); listeners.hasNext(); ) {
-			ISelectionChangedListener listener = (ISelectionChangedListener)listeners.next();
+		for (ISelectionChangedListener listener : selectionChangedListeners)
 			listener.selectionChanged(new SelectionChangedEvent(this, selection));
-		}
 	}
 	
 	/**
@@ -780,11 +780,7 @@ public abstract class AbstractEMFModelEditor
 
 			// Listen to selection so that we can handle it is a special way.
 			//
-			contentOutlinePage.addSelectionChangedListener(new ISelectionChangedListener() {
-				public void selectionChanged(SelectionChangedEvent event) {
-					handleSelectionChange(event.getSelection());
-				}
-			});
+			contentOutlinePage.addSelectionChangedListener(selectionChangedListener);
 		}
 
 		return contentOutlinePage;

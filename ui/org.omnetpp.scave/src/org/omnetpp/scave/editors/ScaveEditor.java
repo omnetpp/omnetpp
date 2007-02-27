@@ -58,20 +58,16 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  */
 //FIXME merge ChartPage and ChartPage2
 
-//TODO add flag into InputFile: "name" is OS path or workspace-relative path
 //TODO copy/paste doesn't work on the model
-//TODO Browse page, Add To Dataset button: offer tree to select insertion point
-//TODO Browse page: add a "Preview selected items on a chart" button
 //TODO Chart sheet: should modify order of charts in the ChartSheet#getCharts collection
 //TODO chart page: "view numbers" feature
-//TODO "view numbers in a vector" feature (ie is this the same feature as "view numbers in chart"?)
 //TODO label provider: print attributes in "quotes"
 public class ScaveEditor extends AbstractEMFModelEditor {
 
 	private InputsPage inputsPage;
 	private BrowseDataPage browseDataPage;
 	private DatasetsAndChartsPage datasetsPage;
-	private Map<EObject,Control> closablePages = new HashMap<EObject,Control>();
+	private Map<EObject,ScaveEditorPage> closablePages = new HashMap<EObject,ScaveEditorPage>();
 
 	/**
 	 *  ResultFileManager containing all files of the analysis.
@@ -282,7 +278,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 
 	/**
 	 * Returns the index of the multi-page editor page which holds
-	 * the given control (typeically some Composite). Returns -1 if not found.
+	 * the given control (typically some Composite). Returns -1 if not found.
 	 */
 	public int findPage(Control control) {
 		for (int i=0; i<getPageCount(); i++)
@@ -415,45 +411,43 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	 * Their tabs contain a small (x), so the user can also close them. 
 	 */
 	private int createClosablePage(EObject object) {
-		ScaveEditorPage page = null;
+		ScaveEditorPage page;
 		if (object instanceof Dataset)
 			page = new DatasetPage(getContainer(), this, (Dataset)object);
 		else if (object instanceof Chart)
 			page = new ChartPage(getContainer(), this, (Chart)object);
 		else if (object instanceof ChartSheet)
 			page = new ChartSheetPage(getContainer(), this, (ChartSheet)object);
+		else
+			throw new IllegalArgumentException("Cannot create editor page for " + object);
 
-		if (page != null) {
-			int pageIndex = addClosableScaveEditorPage(page);
-			closablePages.put(object,page);
-			// Add a listener to remove the page from the map.
-			// The control is not disposed when the tab is closed, so
-			// add the listener to the tabitem. 
-			final Control finalPage = page;
-			if (finalPage != null) {
-				CTabItem tabItem = ((CTabFolder)getContainer()).getItem(pageIndex);
-				tabItem.addDisposeListener(new DisposeListener() {
-					public void widgetDisposed(DisposeEvent e) {
-						for (Map.Entry entry : closablePages.entrySet()) {
-							if (finalPage.equals(entry.getValue())) {
-								closablePages.remove(entry.getKey());
-								break;
-							}
+		int pageIndex = addClosableScaveEditorPage(page);
+		closablePages.put(object, page);
+
+		// Add a listener to remove the page from the map.
+		// The control is not disposed when the tab is closed, so
+		// add the listener to the tabitem. 
+		final Control finalPage = page;
+		if (finalPage != null) {
+			CTabItem tabItem = ((CTabFolder)getContainer()).getItem(pageIndex);
+			tabItem.addDisposeListener(new DisposeListener() {
+				public void widgetDisposed(DisposeEvent e) {
+					for (Map.Entry entry : closablePages.entrySet()) {
+						if (finalPage.equals(entry.getValue())) {
+							closablePages.remove(entry.getKey()); //FIXME error if not in the map
+							finalPage.dispose();  //FIXME factor this out into a base class
+							break;
 						}
 					}
-				});
-			}
-			return pageIndex;
+				}
+			});
 		}
-		else {
-			Assert.isTrue(false, "Don't know how to create page for " + object);
-			return -1;
-		}
+		return pageIndex;
 	}
 	
 	/**
-	 * Returns the page displaying <code>object</code>. If the page already
-	 * opened it is returned, otherwise a new page created.
+	 * Returns the page displaying <code>object</code>. If the object already has a page
+	 * it is returned, otherwise a new page created.
 	 */
 	private int getOrCreateClosablePage(EObject object) {
 		Control page = closablePages.get(object);
@@ -466,10 +460,16 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	public void handleSelectionChange(ISelection selection) {
 		super.handleSelectionChange(selection);
 
+		//FIXME all pages should implement a selectionChanged() method, and move all the following stuff in there!
 		// propagate selection to the following viewers
 		setViewerSelectionNoNotify(inputsPage.getInputFilesTreeViewer(), selection);
 		setViewerSelectionNoNotify(datasetsPage.getDatasetsTreeViewer(), selection);
 		setViewerSelectionNoNotify(datasetsPage.getChartSheetsTreeViewer(), selection);
+		for (Control page : closablePages.values()) {
+			if (page instanceof DatasetPage) {
+				setViewerSelectionNoNotify(((DatasetPage)page).getDatasetTreeViewer(), selection);
+			}
+		}
 	}
 
 	/**
@@ -586,6 +586,17 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		Control page = getControl(newPageIndex);
 		if (page instanceof ScaveEditorPage)
 			((ScaveEditorPage)page).pageSelected();
+		
+		fakeSelectionChange();
+	}
+
+	/**
+	 * Pretends that a selection change has taken place. This is e.g. useful for updating
+	 * the enabled/disabled/pushed etc state of actions (AbstractScaveAction) whose 
+	 * isApplicable() method is hooked on selection changes.
+	 */
+	public void fakeSelectionChange() {
+		setSelection(getSelection());
 	}
 }
 

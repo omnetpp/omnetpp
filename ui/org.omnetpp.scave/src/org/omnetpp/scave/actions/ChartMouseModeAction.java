@@ -42,7 +42,8 @@ public class ChartMouseModeAction extends AbstractScaveAction {
 		if (page != null && page instanceof ChartPage) {
 			ChartCanvas canvas = ((ChartPage)page).getChartView();
 			canvas.setMouseMode(destMode);
-			this.setChecked(true); //FIXME fire an update so that the other tool gets unchecked
+			this.setChecked(true); 
+			scaveEditor.fakeSelectionChange(); // fire an update so that the other tool gets unchecked
 		}
 	}
 
