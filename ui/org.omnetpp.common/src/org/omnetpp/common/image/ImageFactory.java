@@ -43,6 +43,8 @@ public class ImageFactory {
     public final static String EVENLOG_IMAGE_CANCEL_EVENT = EVENTLOG_IMAGE_DIR + "CancelEvent";
     public final static String EVENLOG_IMAGE_BEGIN_SEND_EVENT = EVENTLOG_IMAGE_DIR + "BeginSendEvent";
     public final static String EVENLOG_IMAGE_END_SEND_EVENT = EVENTLOG_IMAGE_DIR + "EndSendEvent";
+    public final static String EVENLOG_IMAGE_SEND_MESSAGE = EVENTLOG_IMAGE_DIR + "SendMessage";
+    public final static String EVENLOG_IMAGE_SCHEDULE_AT = EVENTLOG_IMAGE_DIR + "ScheduleAt";
     public final static String EVENLOG_IMAGE_SEND_DIRECT = EVENTLOG_IMAGE_DIR + "SendDirect";
     public final static String EVENLOG_IMAGE_SEND_HOP = EVENTLOG_IMAGE_DIR + "SendHop";
     public final static String EVENLOG_IMAGE_DELETE_MESSAGE = EVENTLOG_IMAGE_DIR + "DeleteMessage";
