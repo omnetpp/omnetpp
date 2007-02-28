@@ -26,19 +26,19 @@ public class LinearAxis {
 	public static final Color AXIS_COLOR = ColorFactory.asColor("black");
 	public static final Color GRID_COLOR = ColorFactory.asColor("grey80");
 	
-	protected Rectangle bounds;
-	protected Insets insets;  // plot area = bounds minus insets 
-	protected boolean vertical;
-	protected boolean gridEnabled = true;
-	protected int gap = 0;  // space between axis line and plot area (usually 0)
-	protected int majorTickLength = 4;
-	protected int minorTickLength = 2;
+	private Rectangle bounds;
+	private Insets insets;  // plot area = bounds minus insets 
+	private boolean vertical;
+	private boolean gridVisible = true;
+	private int gap = 0;  // space between axis line and plot area (usually 0)
+	private int majorTickLength = 4;
+	private int minorTickLength = 2;
 
-	protected ICoordsMapping mapping;
+	private ICoordsMapping mapping;
 	
-	protected String title = "";
-	protected Font titleFont = DEFAULT_AXIS_TITLE_FONT;
-	protected Font tickFont = DEFAULT_TICK_FONT;
+	private String title = "";
+	private Font titleFont = DEFAULT_AXIS_TITLE_FONT;
+	private Font tickFont = DEFAULT_TICK_FONT;
 
 	public LinearAxis(ICoordsMapping mapping, boolean vertical) {
 		this.mapping = mapping;
@@ -142,7 +142,7 @@ public class LinearAxis {
 							graphics.drawText(label, plotArea.right() + gap + tickLen + 3, y - size.y / 2);
 						}
 					}
-					if (doGrid && gridEnabled) {
+					if (doGrid && gridVisible) {
 						graphics.setLineStyle(Graphics.LINE_DOT);
 						graphics.setForegroundColor(GRID_COLOR);
 						graphics.drawLine(plotArea.x, y, plotArea.right(), y);
@@ -162,7 +162,7 @@ public class LinearAxis {
 							graphics.drawText(label, x - size.x / 2 + 1, plotArea.bottom() + gap + tickLen + 1);
 						}
 					}
-					if (doGrid && gridEnabled) {
+					if (doGrid && gridVisible) {
 						graphics.setLineStyle(Graphics.LINE_DOT);
 						graphics.setForegroundColor(GRID_COLOR);
 						graphics.drawLine(x, plotArea.y, x, plotArea.bottom());
@@ -229,11 +229,11 @@ public class LinearAxis {
 		this.titleFont = titleFont;
 	}
 
-	public boolean isGridEnabled() {
-		return gridEnabled;
+	public boolean isGridVisible() {
+		return gridVisible;
 	}
 
-	public void setGridEnabled(boolean gridEnabled) {
-		this.gridEnabled = gridEnabled;
+	public void setGridVisible(boolean gridEnabled) {
+		this.gridVisible = gridEnabled;
 	}
 }

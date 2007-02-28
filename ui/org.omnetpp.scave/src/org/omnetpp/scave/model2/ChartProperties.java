@@ -195,13 +195,11 @@ public class ChartProperties extends PropertySource {
 	public boolean getYAxisLogarithmic() { return getBooleanProperty(PROP_Y_AXIS_LOGARITHMIC); }
 	public void setYAxisLogarithmic(boolean flag) { setProperty(PROP_Y_AXIS_LOGARITHMIC, flag); }
 
-	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_XY_INVERT,
-			displayName="invert x y")
+	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_XY_INVERT,displayName="invert x y")
 	public boolean getXYInvert() { return getBooleanProperty(PROP_XY_INVERT); }
 	public void setXYInvert(boolean flag) { setProperty(PROP_XY_INVERT, flag); }
 
-	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_XY_GRID,
-			displayName="grid")
+	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_XY_GRID,displayName="grid")
 	public boolean getXYGrid() { return getBooleanProperty(PROP_XY_GRID); }
 	public void setXYGrid(boolean showgrid) { setProperty(PROP_XY_GRID, showgrid); }
 

@@ -26,6 +26,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.jfree.chart.axis.Axis;
 import org.jfree.data.category.CategoryDataset;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
@@ -33,14 +34,10 @@ import org.omnetpp.common.util.GeomUtils;
 import org.omnetpp.scave.model2.ChartProperties.BarPlacement;
 
 public class ScalarChart2 extends ChartCanvas {
-
-	private static final boolean DEFAULT_Y_LOGARITHMIC = false;
-	
 	private CategoryDataset dataset;
 
-	private ValueAxis valueAxis = new ValueAxis();
+	private LinearAxis valueAxis = new LinearAxis(this, true);
 	private DomainAxis domainAxis = new DomainAxis();
-	private Grid grid = new Grid();
 	private BarPlot plot = new BarPlot();
 
 	private Double yMin;
@@ -57,14 +54,6 @@ public class ScalarChart2 extends ChartCanvas {
 		updateLegend();
 		updateArea();
 		scheduleRedraw();
-	}
-	
-	public Axis getHorizontalAxis() {
-		return domainAxis;
-	}
-	
-	public Axis getVerticalAxis() {
-		return valueAxis;
 	}
 	
 	private void updateLegend() {
@@ -109,7 +98,7 @@ public class ScalarChart2 extends ChartCanvas {
 		else if (PROP_XY_GRID.equals(name))
 			setGridVisible(Converter.stringToBoolean(value));
 		else if (PROP_Y_AXIS_LOGARITHMIC.equals(name))
-			setYLogarithmic(Converter.stringToBoolean(value));
+			throw new IllegalArgumentException("Logarithmic axis not yet supported"); //TODO
 		else
 			super.setProperty(name, value);
 	}
@@ -135,14 +124,11 @@ public class ScalarChart2 extends ChartCanvas {
 	}
 
 	public String getYAxisTitle() {
-		return valueAxis.title;
+		return valueAxis.getTitle();
 	}
 
 	public void setYAxisTitle(String title) {
-		if (title == null)
-			title = DEFAULT_Y_AXIS_TITLE;
-
-		valueAxis.title = title;
+		valueAxis.setTitle(title==null ? DEFAULT_Y_AXIS_TITLE : title);
 		scheduleRedraw();
 	}
 
@@ -151,19 +137,18 @@ public class ScalarChart2 extends ChartCanvas {
 	}
 
 	public void setAxisTitleFont(Font font) {
-		if (font == null)
-			return;
-
-		domainAxis.titleFont = font;
-		valueAxis.font = font;
-		scheduleRedraw();
+		if (font != null) {
+			domainAxis.titleFont = font;
+			valueAxis.setTitleFont(font);
+			scheduleRedraw();
+		}
 	}
 
 	public void setLabelFont(Font font) {
 		if (font == null)
 			font = DEFAULT_LABELS_FONT;
 		domainAxis.labelsFont = font;
-		valueAxis.labelsFont = font;
+		valueAxis.setTickFont(font);
 		scheduleRedraw();
 	}
 
@@ -229,23 +214,17 @@ public class ScalarChart2 extends ChartCanvas {
 	}
 
 	public Boolean getGridVisible() {
-		return grid.visible;
+		return valueAxis.isGridVisible();
 	}
 
 	public void setGridVisible(Boolean value) {
 		if (value == null)
 			value = DEFAULT_SHOW_GRID;
 
-		grid.visible = value;
+		valueAxis.setGridVisible(value);
 		scheduleRedraw();
 	}
 
-	private void setYLogarithmic(Boolean value) {
-		if (value == null)
-			value = DEFAULT_Y_LOGARITHMIC;
-		scheduleRedraw();
-	}
-	
 	/*=============================================
 	 *               Drawing
 	 *=============================================*/
@@ -256,12 +235,13 @@ public class ScalarChart2 extends ChartCanvas {
 		Rectangle area = new Rectangle(getClientArea());
 		Rectangle remaining = title.layout(gc, area);
 		remaining = legend.layout(gc, remaining);
-		remaining = valueAxis.layout(gc, remaining);
+		
+		Rectangle areaMinusLegend = remaining.getCopy();
+		Insets insets = new Insets();
+		valueAxis.layout(gc, areaMinusLegend, insets);
 		remaining = domainAxis.layout(gc, remaining);
-		remaining = grid.layout(gc, remaining);
 		remaining = plot.layout(gc, remaining);
 
-		Insets insets = GeomUtils.subtract(area, remaining);
 		setInsets(insets);
 		super.beforePaint(gc);
 	}
@@ -269,6 +249,7 @@ public class ScalarChart2 extends ChartCanvas {
 	
 	@Override
 	protected void paintCachableLayer(GC gc) {
+		valueAxis.drawGrid(gc);
 		plot.draw(gc);
 	}
 	
@@ -280,9 +261,8 @@ public class ScalarChart2 extends ChartCanvas {
 	protected void paintNoncachableLayer(GC gc) {
 		title.draw(gc);
 		legend.draw(gc);
-		valueAxis.draw(gc);
+		valueAxis.drawAxis(gc);
 		domainAxis.draw(gc);
-		grid.draw(gc);
 	}
 
 	private static final double DEFAULT_BAR_BASELINE = 0.0;
@@ -411,7 +391,7 @@ public class ScalarChart2 extends ChartCanvas {
 	private static final Font DEFAULT_LABELS_FONT = new Font(null, "Arial", 8, SWT.NORMAL);
 	private static final double DEFAULT_X_LABELS_ROTATED_BY = 0.0;
 	
-	class DomainAxis extends Axis {
+	class DomainAxis {
 		private Rectangle rect;
 		private int labelsHeight;
 		private String title = DEFAULT_X_AXIS_TITLE;
@@ -419,8 +399,6 @@ public class ScalarChart2 extends ChartCanvas {
 		private Font labelsFont = DEFAULT_LABELS_FONT;
 		private double rotation = DEFAULT_X_LABELS_ROTATED_BY;
 		
-		
-		@Override
 		public Ticks getTicks() {
 			return new Ticks(1.0, 0.0, 1.0); // TODO
 		}
@@ -480,65 +458,6 @@ public class ScalarChart2 extends ChartCanvas {
 			graphics.setFont(titleFont);
 			Point size = gc.textExtent(title);
 			graphics.drawText(title, plotRect.x + (plotRect.width - size.x) / 2, rect.y + 10);
-
-			graphics.popState();
-			graphics.dispose();
-		}
-	}
-	
-	class ValueAxis extends Axis {
-		private Rectangle rect;
-		Point axisStart, axisEnd;
-		Point titleSize;
-		
-		private String title = DEFAULT_Y_AXIS_TITLE;
-		private Font font = DEFAULT_AXIS_TITLE_FONT;
-		private Font labelsFont = DEFAULT_LABELS_FONT;
-		
-		
-		@Override
-		public Ticks getTicks() {
-			return new Ticks(fromCanvasY(rect.bottom()), fromCanvasY(rect.y), 100 / getZoomY());
-		}
-
-		public Rectangle layout(GC gc, Rectangle rect) {
-			gc.setFont(font);
-			titleSize = gc.textExtent(title);
-			int width = titleSize.y + 30 + 10;
-			axisStart = new Point(rect.x + width - 5, rect.y);
-			axisEnd = new Point(rect.x + width - 5, rect.y + rect.height);
-			this.rect = new Rectangle(rect.x, rect.y, width, rect.height);
-			return new Rectangle(rect.x + width, rect.y, Math.max(rect.width - width, 0), rect.height);
-		}
-		
-		public void draw(GC gc) {
-			Graphics graphics = new SWTGraphics(gc);
-			graphics.pushState();
-
-			// synchronize layout rectangle with plot's rectangle
-			Rectangle plotRect = getPlotRectagle();
-			layout(gc, new Rectangle(rect.x, plotRect.y, rect.width, plotRect.height));
-			// draw line
-			graphics.setLineStyle(SWT.LINE_SOLID);
-			graphics.setLineWidth(1);
-			graphics.setForegroundColor(ColorFactory.asColor("black"));
-			graphics.drawLine(axisStart.x, axisStart.y, axisEnd.x, axisEnd.y);
-			// draw ticks and labels
-			graphics.setFont(labelsFont);
-			for (BigDecimal tick : getTicks()) {
-				int y = toCanvasY(tick.doubleValue());
-				if (y >= plotRect.y && y <= plotRect.y + plotRect.height) {
-					graphics.drawLine(axisStart.x - 3, y, axisStart.x, y);
-					String label = tick.toPlainString();
-					Point size = gc.textExtent(label);
-					graphics.drawText(label, axisStart.x - 2 - size.x, y - size.y / 2);
-				}
-			}
-			// draw title
-			graphics.setFont(font);
-			graphics.translate(rect.x + titleSize.y / 2, rect.y + rect.height / 2);
-			graphics.rotate(-90);
-			graphics.drawText(title, - titleSize.x / 2, - titleSize.y / 2);
 
 			graphics.popState();
 			graphics.dispose();

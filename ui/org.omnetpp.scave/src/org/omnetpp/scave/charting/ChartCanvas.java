@@ -92,15 +92,6 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoor
 			ScavePlugin.logError(new RuntimeException("unrecognized chart property: "+name));
 	}
 	
-	
-	public Axis getHorizontalAxis() {
-		return null;
-	}
-	
-	public Axis getVerticalAxis() {
-		return null;
-	}
-	
 	public boolean getAntialias() {
 		return antialias;
 	}
@@ -226,53 +217,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoor
 		return image;
 	}
 	
-	protected abstract class Axis {
-		public abstract Ticks getTicks();
-	}
-	
 	protected static final boolean DEFAULT_SHOW_GRID = false;
-	
-	protected class Grid {
-		private Rectangle rect;
-		protected boolean visible = DEFAULT_SHOW_GRID;
-		
-		public Rectangle layout(GC gc, Rectangle rect) {
-			this.rect = rect;
-			return rect;
-		}
-		
-		public void draw(GC gc) {
-			if (visible) {
-				Graphics graphics = new SWTGraphics(gc);
-				graphics.pushState();
-				
-				graphics.setClip(rect);
-				//graphics.setForegroundColor(ColorFactory.asColor("red"));
-				//graphics.drawRectangle(rect);
-				
-				Axis axis;
-				graphics.setForegroundColor(ColorFactory.asColor("black"));
-				graphics.setLineStyle(SWT.LINE_DOT);
-				graphics.setLineWidth(1);
-				
-				if ((axis = getHorizontalAxis()) != null) {
-					for (BigDecimal tick : axis.getTicks()) {
-						int x = toCanvasX(tick.doubleValue());
-						graphics.drawLine(x, rect.y, x, rect.y + rect.height);
-					}
-				}
-				if ((axis = getVerticalAxis()) != null) {
-					for (BigDecimal tick : axis.getTicks()) {
-						int y = toCanvasY(tick.doubleValue());
-						graphics.drawLine(rect.x, y, rect.x + rect.width, y);
-					}
-				}
-				
-				graphics.popState();
-				graphics.dispose();
-			}
-		}
-	}
 	
 	protected static class PlotArea {
 		public double minX;

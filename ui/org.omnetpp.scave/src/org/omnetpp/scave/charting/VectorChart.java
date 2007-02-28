@@ -19,7 +19,6 @@ import static org.omnetpp.scave.model2.ChartProperties.PROP_Y_AXIS_MAX;
 import static org.omnetpp.scave.model2.ChartProperties.PROP_Y_AXIS_MIN;
 import static org.omnetpp.scave.model2.ChartProperties.PROP_Y_AXIS_TITLE;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,12 +58,8 @@ import org.omnetpp.scave.model2.ChartProperties.SymbolType;
 
 //XXX strange effects when resized and vertical scrollbar pulled...
 public class VectorChart extends ChartCanvas {
-
-	private static final Color DEFAULT_TICK_LINE_COLOR = new Color(null, 160, 160, 160);
-	private static final Color DEFAULT_TICK_LABEL_COLOR = new Color(null, 0, 0, 0);
 	private static final Color DEFAULT_INSETS_BACKGROUND_COLOR = new Color(null, 236, 233, 216);
 	private static final Color DEFAULT_INSETS_LINE_COLOR = new Color(null, 0, 0, 0);
-	private static final int DEFAULT_TICK_SPACING = 100; // space between ticks in pixels
 	
 	private static final String DEFAULT_X_TITLE = "";
 	private static final String DEFAULT_Y_TITLE = "";
@@ -73,8 +68,8 @@ public class VectorChart extends ChartCanvas {
 	private Color insetsBackgroundColor = DEFAULT_INSETS_BACKGROUND_COLOR;
 	private Color insetsLineColor = DEFAULT_INSETS_LINE_COLOR;
 	
-	private LinearAxis xAxis = new LinearAxis(this, false); //XXX experimental
-	private LinearAxis yAxis = new LinearAxis(this, true); //XXX experimental
+	private LinearAxis xAxis = new LinearAxis(this, false);
+	private LinearAxis yAxis = new LinearAxis(this, true);
 	
 	static class LineProperties {
 		
@@ -97,8 +92,6 @@ public class VectorChart extends ChartCanvas {
 	private static final String KEY_ALL = null;
 	
 	private Map<String, LineProperties> lineProperties = new HashMap<String,LineProperties>();
-	private Axes axes = new Axes(DEFAULT_X_TITLE, DEFAULT_Y_TITLE, null);
-	private TickLabels tickLabels = new TickLabels(DEFAULT_TICK_LINE_COLOR, DEFAULT_TICK_LABEL_COLOR, null, DEFAULT_TICK_SPACING);
 	private CrossHair crosshair = new CrossHair();
 	
 	public VectorChart(Composite parent, int style) {
@@ -195,18 +188,19 @@ public class VectorChart extends ChartCanvas {
 	}
 
 	public void setXAxisTitle(String value) {
-		axes.setXTitle(value != null ? value : DEFAULT_X_TITLE);
+		xAxis.setTitle(value != null ? value : DEFAULT_X_TITLE);
 		scheduleRedraw();
 	}
 	
 	public void setYAxisTitle(String value) {
-		axes.setYTitle(value != null ? value : DEFAULT_Y_TITLE);
+		yAxis.setTitle(value != null ? value : DEFAULT_Y_TITLE);
 		scheduleRedraw();
 	}
 	
 	public void setAxisTitleFont(Font value) {
 		if (value != null) {
-			axes.setFont(value);
+			xAxis.setTitleFont(value);
+			yAxis.setTitleFont(value);
 			scheduleRedraw();
 		}
 	}
@@ -275,13 +269,17 @@ public class VectorChart extends ChartCanvas {
 	}
 	
 	public void setGridVisibility(Boolean value) {
-		tickLabels.setGridVisible(value != null ? value : false);
+		boolean b = value != null ? value : false;
+		xAxis.setGridVisible(b);
+		yAxis.setGridVisible(b);
 		scheduleRedraw();
 	}
 	
 	public void setTickLabelFont(Font font) {
-		if (font != null)
-			tickLabels.setFont(font);
+		if (font != null) {
+			xAxis.setTickFont(font);
+			yAxis.setTickFont(font);
+		}
 		scheduleRedraw();
 	}
 	
@@ -323,6 +321,7 @@ public class VectorChart extends ChartCanvas {
 		Rectangle remaining = title.layout(gc, area);
 		remaining = legend.layout(gc, remaining);
 		
+		//FIXME reorganize this. LinearAxis to get bounds and insets at draw time? (here it would only provide a hint)
 		Rectangle areaMinusLegend = remaining.getCopy();
 		Insets insets = new Insets();
 		xAxis.layout(gc, areaMinusLegend, insets);
@@ -409,114 +408,11 @@ public class VectorChart extends ChartCanvas {
 
 		title.draw(gc);
 		legend.draw(gc);
-		//XXX tickLabels.draw(gc);
-		//XXX axes.draw(gc);
 		xAxis.drawAxis(gc);
 		yAxis.drawAxis(gc);
 		crosshair.draw(gc);
 	}
 
-	//XXX may be removed
-	class TickLabels {
-		private Color lineColor;
-		private Color labelColor;
-		private Font font;
-		private int spacing;
-		private boolean showGrid;
-		
-		private Rectangle bounds; // bounds of the plot (including ticks)
-		private Rectangle plotBounds; // bounds of the plot (without tick area)
-
-		public TickLabels(Color lineColor, Color labelColor, Font font, int spacing) {
-			this.lineColor = lineColor;
-			this.labelColor = labelColor;
-			this.font = font;
-			this.spacing = spacing;
-		}
-		
-		public Font getFont() {
-			return font;
-		}
-		
-		public void setFont(Font font) {
-			this.font = font;
-		}
-		
-		public boolean isGridVisible() {
-			return showGrid;
-		}
-		
-		public void setGridVisible(boolean visible) {
-			showGrid = visible;
-		}
-		
-		public Rectangle layout(GC gc, Rectangle constraint) {
-			Font saveFont = gc.getFont();
-			if (font != null)
-				gc.setFont(font);
-			
-			bounds = constraint;
-			int height = gc.getFontMetrics().getHeight();
-			Insets insets = new Insets(height + 4, 40, height + 4, 40);
-			plotBounds = constraint.getCropped(insets);
-
-			gc.setFont(saveFont);
-			
-			return plotBounds;
-		}
-		
-		public void draw(GC gc) {
-			Font saveFont = gc.getFont();
-			if (font != null)
-				gc.setFont(font);
-			
-			//draw X ticks
-			Ticks ticks = new Ticks(fromCanvasX(plotBounds.x),
-									fromCanvasX(plotBounds.x + plotBounds.width),
-									spacing / getZoomX());
-			for (BigDecimal t : ticks) {
-				int x = toCanvasX(t.doubleValue());
-				if (x < plotBounds.x || x > plotBounds.x + plotBounds.width)
-					continue;
-				if (showGrid) {
-					gc.setLineStyle(SWT.LINE_DOT);
-					gc.setForeground(lineColor);
-					gc.drawLine(x, plotBounds.y, x, plotBounds.y + plotBounds.height);
-				}
-				gc.setForeground(labelColor);
-				gc.setBackground(insetsBackgroundColor);
-				String str = t.toPlainString() + "s";
-				gc.drawText(str, x + 3, bounds.y + 2);
-				gc.drawText(str, x + 3, bounds.y + bounds.height - 16);
-			}
-
-			//draw Y ticks
-			//XXX factor out common code with X axis ticks
-			ticks = new Ticks(fromCanvasY(plotBounds.y + plotBounds.height),
-							  fromCanvasY(plotBounds.y),
-							  spacing / getZoomY());
-			for (BigDecimal t : ticks) {
-				int y = toCanvasY(t.doubleValue());
-				if (y < plotBounds.y || y > plotBounds.y + plotBounds.height)
-					continue;
-				if (showGrid) {
-					gc.setLineStyle(SWT.LINE_DOT);
-					gc.setForeground(lineColor);
-					gc.drawLine(plotBounds.x, y, plotBounds.x + plotBounds.width, y);
-				}
-
-				gc.setForeground(labelColor);
-				gc.setBackground(insetsBackgroundColor);
-				String str = t.toPlainString();
-				gc.drawText(str, bounds.x + 2, y+3);
-				gc.drawText(str, bounds.x + bounds.width - 16, y+3);
-			}
-			
-			gc.setFont(saveFont);
-		}
-	}
-	
-	
 	private static final Cursor CROSS_CURSOR = new Cursor(null, SWT.CURSOR_CROSS);
 	private static final Font CROSS_HAIR_NORMAL_FONT = new Font(null, "Arial", 8, SWT.NORMAL);
 	private static final Font CROSS_HAIR_BOLD_FONT = new Font(null, "Arial", 8, SWT.BOLD);
@@ -646,70 +542,4 @@ public class VectorChart extends ChartCanvas {
 			return null;
 		}
 	}
-	
-	//XXX may be removed
-	class Axes {
-		
-		private String xAxisTitle;
-		private String yAxisTitle;
-		private Font axisTitleFont;
-		
-		private Rectangle bounds;
-		
-		public Axes(String xTitle, String yTitle, Font font) {
-			this.xAxisTitle = xTitle;
-			this.yAxisTitle = yTitle;
-			this.axisTitleFont = font;
-		}
-		
-		public String getXTitle() {
-			return xAxisTitle;
-		}
-		
-		public void setXTitle(String title) {
-			xAxisTitle = title;
-		}
-		
-		public String getYTitle() {
-			return yAxisTitle;
-		}
-		
-		public void setYTitle(String title) {
-			yAxisTitle = title;
-		}
-		
-		public Font getFont() {
-			return axisTitleFont;
-		}
-		
-		public void setFont(Font font) {
-			this.axisTitleFont = font;
-		}
-		
-		public Rectangle layout(GC gc, Rectangle area) {
-			bounds = area;
-			return area;
-		}
-		
-		public void draw(GC gc) {
-			int left = bounds.x, top = bounds.y, right = bounds.x + bounds.width, bottom = bounds.y + bounds.height;
-
-			// X axis
-			double startY = fromCanvasY(bottom);
-			double endY = fromCanvasY(top);
-			if (startY<=0 && endY>=0) {
-				gc.setLineStyle(SWT.LINE_SOLID);
-				gc.drawLine(left, toCanvasY(0), right, toCanvasY(0));
-			}
-
-			// Y axis
-			double startX = fromCanvasX(left);
-			double endX = fromCanvasX(right);
-			if (startX<=0 && endX>=0) {
-				gc.setLineStyle(SWT.LINE_SOLID);
-				gc.drawLine(toCanvasX(0), top, toCanvasX(0), bottom);
-			}
-		}
-	}
-
 }
