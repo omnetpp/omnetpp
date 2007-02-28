@@ -9,11 +9,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.omnetpp.scave.editors.datatable.FilterField;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model.SetOperation;
-import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.FilterHints;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
@@ -103,8 +103,10 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		label = new Label(group, SWT.NONE);
 		label.setText("Filter pattern:");
 		label.setLayoutData(new GridData());
-		filterPatternText = new Text(group, SWT.BORDER);
-		filterPatternText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		FilterField filterField = new FilterField(group, SWT.SINGLE | SWT.BORDER);
+		filterField.getLayoutControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		filterField.setFilterHints(filterHints);
+		filterPatternText = filterField.getText();
 	}
 	
 	public Object getValue(EStructuralFeature feature) {

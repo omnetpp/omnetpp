@@ -1,9 +1,5 @@
 package org.omnetpp.scave.editors.datatable;
 
-import org.eclipse.jface.fieldassist.ContentProposalAdapter;
-import org.eclipse.jface.fieldassist.IContentProposal;
-import org.eclipse.jface.fieldassist.IContentProposalListener;
-import org.eclipse.jface.fieldassist.TextControlCreator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.SashForm;
@@ -14,10 +10,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
-import org.eclipse.ui.fieldassist.ContentAssistField;
-import org.eclipse.ui.keys.IBindingService;
 import org.omnetpp.scave.model2.FilterHints;
 import org.omnetpp.scave.model2.FilterUtil;
 
@@ -35,8 +27,7 @@ public class FilteringPanel extends Composite {
 
 	// Edit field for the "Advanced" mode
 	private Composite advancedFilterPanel;
-	private Text advancedFilterText;
-	private FilterContentProposalProvider proposalProvider;
+	private FilterField advancedFilter;
 
 	// Combo boxes for the "Simple" mode
 	private SashForm simpleFilterPanel;
@@ -53,7 +44,7 @@ public class FilteringPanel extends Composite {
 	}
 
 	public Text getAdvancedFilterText() {
-		return advancedFilterText;
+		return advancedFilter.getText();
 	}
 
 	public CCombo getModuleNameCombo() {
@@ -80,7 +71,7 @@ public class FilteringPanel extends Composite {
 		runCombo.setItems(hints.getHints(FilterUtil.FIELD_RUNNAME));
 		moduleCombo.setItems(hints.getHints(FilterUtil.FIELD_MODULENAME));
 		dataCombo.setItems(hints.getHints(FilterUtil.FIELD_DATANAME));
-		proposalProvider.setFilterHints(hints);
+		advancedFilter.setFilterHints(hints);
 	}
 
 	public void showSimpleFilter() {
@@ -125,26 +116,8 @@ public class FilteringPanel extends Composite {
 		filterLabel.setText("Filter:");
 		filterLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 
-		final IControlContentAdapter2 contentAdapter = new TextContentAdapter2();
-		proposalProvider = new FilterContentProposalProvider();
-		ContentAssistField advancedFilter = new ContentAssistField(
-				advancedFilterPanel, 
-				SWT.SINGLE | SWT.BORDER,
-				new TextControlCreator(), 
-				contentAdapter, 
-				proposalProvider, 
-				null, /*commandId. XXX no binding is found for the default command "org.eclipse.ui.edit.text.contentAssist.proposals", that's why it says "null" in the bubble. how to fix it? */ 
-				"( ".toCharArray() /*auto-activation*/);
+		advancedFilter = new FilterField(advancedFilterPanel, SWT.SINGLE | SWT.BORDER);
 		advancedFilter.getLayoutControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		ContentAssistCommandAdapter adapter = advancedFilter.getContentAssistCommandAdapter();
-		advancedFilterText = (Text)adapter.getControl();
-		adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_IGNORE);
-		adapter.addContentProposalListener(new IContentProposalListener() {
-			public void proposalAccepted(IContentProposal proposal) {
-				FilterContentProposalProvider.ContentProposal filterProposal = (FilterContentProposalProvider.ContentProposal)proposal;
-				contentAdapter.replaceControlContents(advancedFilterText, filterProposal.getStartIndex(), filterProposal.getEndIndex(),  filterProposal.getContent(), filterProposal.getCursorPosition());
-			}
-		});
 
 		// the "Basic" view with a series of combo boxes
 		simpleFilterPanel = new SashForm(filterContainer, SWT.SMOOTH);
