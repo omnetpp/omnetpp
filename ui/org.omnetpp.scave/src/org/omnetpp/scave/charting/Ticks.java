@@ -16,24 +16,27 @@ public class Ticks implements Iterable<BigDecimal> {
 	private BigDecimal majorTickDelta;
 	private BigDecimal delta;
 	
-	public Ticks(double start, double end, double delta) {
-		int scale = (int)Math.ceil(Math.log10(delta));
+	public Ticks(double start, double end, double approxDelta) {
+		int scale = (int)Math.ceil(Math.log10(approxDelta));
 		this.start = new BigDecimal(start).setScale(-scale, RoundingMode.FLOOR);
 		this.end = new BigDecimal(end).setScale(-scale, RoundingMode.CEILING);
-		BigDecimal spacing = BigDecimal.valueOf(delta);
-		this.delta = new BigDecimal(1).scaleByPowerOfTen(scale);
-		//this.majorTickDelta = this.delta; XXX this does not work so well, so see below
+		BigDecimal spacing = BigDecimal.valueOf(approxDelta);
+		BigDecimal delta = new BigDecimal(1).scaleByPowerOfTen(scale);
 		
-		// use 2, 4, 6, 8, etc. if possible
-		if (this.delta.divide(BigDecimal.valueOf(5)).compareTo(spacing) > 0)
-			this.delta = this.delta.divide(BigDecimal.valueOf(5));
-		// use 5, 10, 15, 20, etc. if possible
-		else if (this.delta.divide(BigDecimal.valueOf(2)).compareTo(spacing) > 0)
-			this.delta = this.delta.divide(BigDecimal.valueOf(2));
-		
-		// for now, every tick is major tick (XXX until we find out a good algorithm)
-		this.majorTickDelta = this.delta;
-		System.out.println("MajorDelta="+majorTickDelta+" minorDelta="+this.delta);
+		if (delta.divide(BigDecimal.valueOf(5)).compareTo(spacing) > 0) {
+			// use 2, 4, 6, 8, etc. if possible
+			this.majorTickDelta = delta.divide(BigDecimal.valueOf(5));
+			this.delta = delta.divide(BigDecimal.TEN);
+		}
+		else if (delta.divide(BigDecimal.valueOf(2)).compareTo(spacing) > 0) {
+			// use 5, 10, 15, 20, etc. if possible
+			this.majorTickDelta = delta.divide(BigDecimal.valueOf(2));
+			this.delta = delta.divide(BigDecimal.TEN);
+		}
+		else {
+			this.majorTickDelta = delta;
+			this.delta = delta.divide(BigDecimal.valueOf(5));
+		}
 	}
 
 	public boolean isMajorTick(BigDecimal d) {
