@@ -39,8 +39,14 @@ public class VectorResultContentProvider implements IVirtualTableContentProvider
 	}
 
 	public long getDistanceToElement(OutputVectorEntry sourceElement, OutputVectorEntry targetElement, long limit) {
-		if (reader != null)
-			return Math.min(Math.abs(sourceElement.getSerial() - targetElement.getSerial()), limit);
+		if (reader != null) {
+			long delta = targetElement.getSerial() - sourceElement.getSerial();
+
+			if (Math.abs(delta) > Math.abs(limit) || Math.signum(delta) != Math.signum(limit))
+				return limit;
+			else
+				return delta;
+		}
 		else 
 			return 0;
 	}

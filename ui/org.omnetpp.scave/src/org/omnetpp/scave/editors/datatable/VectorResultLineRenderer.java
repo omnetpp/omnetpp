@@ -17,6 +17,8 @@ import org.omnetpp.scave.engine.OutputVectorEntry;
  */
 public class VectorResultLineRenderer extends LabelProvider implements IVirtualTableLineRenderer<OutputVectorEntry> {
 
+	private static final int HORIZONTAL_SPACING = 4;
+
 	private static final Color DATA_COLOR = ColorFactory.asColor("black");
 
 	protected Font font = JFaceResources.getDefaultFont();
@@ -41,16 +43,16 @@ public class VectorResultLineRenderer extends LabelProvider implements IVirtualT
 
 		switch (index) {
 			case 0:
-				gc.drawText(String.valueOf(entry.getSerial()), 0, 0);
+				gc.drawText(String.valueOf(entry.getSerial()), HORIZONTAL_SPACING, 0);
 				break;
 			case 1:
-				gc.drawText(String.valueOf(entry.getSimtime()), 0, 0);
+				gc.drawText(String.valueOf(entry.getSimtime()), HORIZONTAL_SPACING, 0);
 				break;
 			case 2:
-				gc.drawText(String.valueOf(entry.getValue()), 0, 0);
+				gc.drawText(String.valueOf(entry.getValue()), HORIZONTAL_SPACING, 0);
 				break;
 			case 3:
-				gc.drawText(String.valueOf(entry.getEventNumber()), 0, 0);
+				gc.drawText(String.valueOf(entry.getEventNumber()), HORIZONTAL_SPACING, 0);
 				break;
 		}
 	}
