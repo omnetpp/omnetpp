@@ -2,7 +2,6 @@ package org.omnetpp.scave.charting;
 
 import java.util.List;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.widgets.Control;
@@ -13,23 +12,25 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.LineChart;
-import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
- * FIXME Tomi: please write a class description! What does this thing do?
+ * This class listens on changes in the model, and refreshes the chart accordingly.
+ * Currently it only listens on chart property changes. 
+ * 
+ * TODO Should also listen on changes that might affect chart contents, and recalculate the chart. 
  *
  * @author tomi
  */
 public class ChartUpdater {
 	private Chart chart;
-	private Control view;
+	private ChartCanvas view;
 	private ResultFileManager manager;
 
-	public ChartUpdater(Chart chart, Control view, ResultFileManager manager) {
+	public ChartUpdater(Chart chart, ChartCanvas view, ResultFileManager manager) {
 		this.chart = chart;
 		this.view = view;
 		this.manager = manager;
@@ -37,10 +38,11 @@ public class ChartUpdater {
 
 	@SuppressWarnings("unchecked")
 	public void updateChart(Notification notification) {
+		// we are only interested in changes within our Chart object (otherwise return) 
 		if (!(notification.getNotifier() instanceof EObject) ||
 				(notification.getNotifier() != chart &&
 						((EObject)notification.getNotifier()).eContainer() != chart))
-				return;
+				return; 
 
 		ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
 		if (pkg.getChart_Properties().equals(notification.getFeature())) {
@@ -84,17 +86,12 @@ public class ChartUpdater {
 	}
 
 	private void setChartProperty(String name, String value) {
-		if (view instanceof ScalarChart)
-			((ScalarChart)view).setProperty(name, value);
-		else if (view instanceof ChartCanvas)
-			((ChartCanvas)view).setProperty(name, value);
+		view.setProperty(name, value);
 	}
 
 	private void setDataset(CategoryDataset dataset) {
 		if (view instanceof ScalarChart)
 			((ScalarChart)view).setDataset(dataset);
-		else if (view instanceof ScalarChart2)
-			((ScalarChart2)view).setDataset(dataset);
 
 	}
 

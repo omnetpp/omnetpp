@@ -256,7 +256,7 @@ public class ScaveEditorPage extends ScrolledForm {
 	 * will select the chart object in the model.
 	 */
 	//FIXME find a better place for this method
-	public void configureChartView(final Control view, final Chart chart) {
+	public void configureChartView(final ChartCanvas view, final Chart chart) {
 		// mouse click on the view selects the chart object in the model
 		view.addMouseListener(new MouseAdapter() {
 			public void mouseUp(MouseEvent e) {

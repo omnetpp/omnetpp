@@ -16,12 +16,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.charting.ChartFactory;
 import org.omnetpp.scave.charting.ChartUpdater;
-import org.omnetpp.scave.charting.ScalarChart;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
@@ -55,7 +53,7 @@ public class ChartSheetPage extends ScaveEditorPage {
 		return chartsArea;
 	}
 	
-	public void addChart(Chart chart, Control view) {
+	public void addChart(Chart chart, ChartCanvas view) {
 		view.setLayoutData(new GridData(320,200));
 		chartsArea.configureChild(view);
 		updaters.add(new ChartUpdater(chart, view, scaveEditor.getResultFileManager()));
@@ -101,22 +99,16 @@ public class ChartSheetPage extends ScaveEditorPage {
 		Collection<Chart> charts = chartsheet.getCharts();
 		Composite parent = getChartSheetComposite();
 		for (final Chart chart : charts) {
-			Control swtChart = ChartFactory.createChart(parent, chart, scaveEditor.getResultFileManager());
-			addChart(chart, swtChart);
-			configureChartView(swtChart, chart);
+			ChartCanvas chartControl = ChartFactory.createChart(parent, chart, scaveEditor.getResultFileManager());
+			addChart(chart, chartControl);
+			configureChartView(chartControl, chart);
 
 		}
 	}
 	
 	@Override
-	public void configureChartView(Control view, final Chart chart) {
-		
-		if (view instanceof ScalarChart) {
-			((ScalarChart)view).setDisplayLegend(false);
-		}
-		else if (view instanceof ChartCanvas) {
-			((ChartCanvas)view).setProperty(ChartProperties.PROP_DISPLAY_LEGEND, "false");
-		}
+	public void configureChartView(ChartCanvas view, final Chart chart) {
+		view.setProperty(ChartProperties.PROP_DISPLAY_LEGEND, "false");
 		
 		view.addMouseListener(new MouseAdapter() { //FIXME this is a hack to get chart opened by double-click; to be done properly (SelectionListener, ask chart from widget)
 			public void mouseDoubleClick(MouseEvent e) {

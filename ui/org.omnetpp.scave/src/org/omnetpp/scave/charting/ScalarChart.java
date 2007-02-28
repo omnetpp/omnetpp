@@ -3,14 +3,7 @@ package org.omnetpp.scave.charting;
 import static org.omnetpp.scave.model2.ChartProperties.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.model2.ChartProperties.PROP_BAR_BASELINE;
 import static org.omnetpp.scave.model2.ChartProperties.PROP_BAR_PLACEMENT;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_DISPLAY_LEGEND;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_GRAPH_TITLE;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_GRAPH_TITLE_FONT;
 import static org.omnetpp.scave.model2.ChartProperties.PROP_LABEL_FONT;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_LEGEND_ANCHORING;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_LEGEND_BORDER;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_LEGEND_FONT;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_LEGEND_POSITION;
 import static org.omnetpp.scave.model2.ChartProperties.PROP_XY_GRID;
 import static org.omnetpp.scave.model2.ChartProperties.PROP_XY_INVERT;
 import static org.omnetpp.scave.model2.ChartProperties.PROP_X_AXIS_TITLE;
@@ -20,117 +13,76 @@ import static org.omnetpp.scave.model2.ChartProperties.PROP_Y_AXIS_MAX;
 import static org.omnetpp.scave.model2.ChartProperties.PROP_Y_AXIS_MIN;
 import static org.omnetpp.scave.model2.ChartProperties.PROP_Y_AXIS_TITLE;
 
-import java.awt.Font;
+import java.math.BigDecimal;
 
-import org.eclipse.core.runtime.Assert;
+import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.SWTGraphics;
+import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.draw2d.geometry.Insets;
+import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
-import org.jfree.chart.axis.CategoryLabelPositions;
-import org.jfree.chart.axis.LogarithmicAxis;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.block.BlockBorder;
-import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.chart.renderer.category.LayeredBarRenderer;
-import org.jfree.chart.renderer.category.StackedBarRenderer;
-import org.jfree.chart.title.LegendTitle;
-import org.jfree.chart.title.TextTitle;
+import org.jfree.chart.axis.Axis;
 import org.jfree.data.category.CategoryDataset;
-import org.jfree.data.general.Dataset;
-import org.jfree.ui.RectangleEdge;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
+import org.omnetpp.common.util.GeomUtils;
 import org.omnetpp.scave.model2.ChartProperties.BarPlacement;
-import org.omnetpp.scave.model2.ChartProperties.LegendAnchor;
-import org.omnetpp.scave.model2.ChartProperties.LegendPosition;
 
-public class ScalarChart extends InteractiveChart {
+public class ScalarChart extends ChartCanvas {
+	private CategoryDataset dataset;
 
-	private static final String DEFAULT_TITLE = "";
-	private static final String DEFAULT_X_AXIS_TITLE = "";
-	private static final String DEFAULT_Y_AXIS_TITLE = "";
-
-	private static final double DEFAULT_BAR_BASELINE = 0.0;
-	private static final BarPlacement DEFAULT_BAR_PLACEMENT = BarPlacement.Aligned;
-
-	private static final boolean DEFAULT_DISPLAY_LEGEND = false;
-	private static final boolean DEFAULT_LEGEND_BORDER = false;
-	private static final LegendPosition DEFAULT_LEGEND_POSITION = LegendPosition.Below;
-	private static final LegendAnchor DEFAULT_LEGEND_ANCHOR = LegendAnchor.North;
-
-	private static final boolean DEFAULT_INVERT_XY = false;
-	private static final boolean DEFAULT_SHOW_GRID = false;
-	private static final double DEFAULT_X_LABELS_ROTATED_BY = 0.0;
-	private static final boolean DEFAULT_Y_LOGARITHMIC = false;
-
-	private String title;
-	private Font titleFont;
-	private String xAxisTitle;
-	private String yAxisTitle;
-	private Font axisTitleFont;
-	private Font tickLabelFont;
-	private double xAxisLabelsRotatedBy;
-
-	private boolean displayLegend;
-	private Font legendFont;
-	private boolean legendBorder;
-	private LegendPosition legendPosition;
-	private LegendAnchor legendAnchor;
-
-	private Double barBaseline;
-	private BarPlacement barPlacement;
+	private LinearAxis valueAxis = new LinearAxis(this, true);
+	private DomainAxis domainAxis = new DomainAxis();
+	private BarPlot plot = new BarPlot();
 
 	private Double yMin;
 	private Double yMax;
-	private Boolean invertXY;
-	private Boolean gridVisible;
-
+	
 	public ScalarChart(Composite parent, int style) {
-		super(parent, style);
-	}
-
-	public Dataset getDataset() {
-		return getPlot() != null ? getPlot().getDataset() : null;
+		super(parent, style | SWT.DOUBLE_BUFFERED);
+		setCaching(true);
+		setInsets(new Insets(0,0,0,0));
 	}
 
 	public void setDataset(CategoryDataset dataset) {
-		if (getPlot() != null) {
-			getPlot().setDataset(dataset);
-			scheduleRefresh();
+		this.dataset = dataset;
+		updateLegend();
+		updateArea();
+		scheduleRedraw();
+	}
+	
+	private void updateLegend() {
+		legend.clearLegendItems();
+		for (int i = 0; i < dataset.getColumnCount(); ++i) {
+			legend.addLegendItem(plot.getBarColor(i), dataset.getColumnKey(i).toString());
 		}
+	}
+	
+	private void updateArea() {
+		PlotArea area = plot.getPlotArea();
+		setArea(area.minX, area.minY, area.maxX, area.maxY);
 	}
 
 	/*=============================================
 	 *               Properties
 	 *=============================================*/
 	public void setProperty(String name, String value) {
-		if (chart == null)
-			return;
 		// Titles
-		if (PROP_GRAPH_TITLE.equals(name))
-			setTitle(value);
-		else if (PROP_GRAPH_TITLE_FONT.equals(name))
-			setTitleFont(Converter.stringToAwtfont(value));
-		else if (PROP_X_AXIS_TITLE.equals(name))
+		if (PROP_X_AXIS_TITLE.equals(name))
 			setXAxisTitle(value);
 		else if (PROP_Y_AXIS_TITLE.equals(name))
 			setYAxisTitle(value);
 		else if (PROP_AXIS_TITLE_FONT.equals(name))
-			setAxisTitleFont(Converter.stringToAwtfont(value));
+			setAxisTitleFont(Converter.stringToSwtfont(value));
 		else if (PROP_LABEL_FONT.equals(name))
-			setLabelFont(Converter.stringToAwtfont(value));
+			setLabelFont(Converter.stringToSwtfont(value));
 		else if (PROP_X_LABELS_ROTATE_BY.equals(name))
 			setXAxisLabelsRotatedBy(Converter.stringToDouble(value));
-		// Legend
-		else if (PROP_DISPLAY_LEGEND.equals(name))
-			setDisplayLegend(Converter.stringToBoolean(value));
-		else if (PROP_LEGEND_BORDER.equals(name))
-			setLegendBorder(Converter.stringToBoolean(value));
-		else if (PROP_LEGEND_FONT.equals(name))
-			setLegendFont(Converter.stringToAwtfont(value));
-		else if (PROP_LEGEND_POSITION.equals(name))
-			setLegendPosition(Converter.stringToEnum(value, LegendPosition.class));
-		else if (PROP_LEGEND_ANCHORING.equals(name))
-			setLegendAnchoring(Converter.stringToEnum(value, LegendAnchor.class));
 		// Bars
 		else if (PROP_BAR_BASELINE.equals(name))
 			setBarBaseline(Converter.stringToDouble(value));
@@ -146,273 +98,89 @@ public class ScalarChart extends InteractiveChart {
 		else if (PROP_XY_GRID.equals(name))
 			setGridVisible(Converter.stringToBoolean(value));
 		else if (PROP_Y_AXIS_LOGARITHMIC.equals(name))
-			setYLogarithmic(Converter.stringToBoolean(value));
+			throw new IllegalArgumentException("Logarithmic axis not yet supported"); //TODO
+		else
+			super.setProperty(name, value);
 	}
 
 	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String value) {
-		if (value == null)
-			value = DEFAULT_TITLE;
-
-		title = value;
-
-		if (chart != null) {
-			chart.setTitle(value);
-			scheduleRefresh();
-		}
+		return title.getText();
 	}
 
 	public Font getTitleFont() {
-		return titleFont;
-	}
-
-	public void setTitleFont(Font font) {
-		if (font == null)
-			return;
-
-		titleFont = font;
-
-		if (chart != null) {
-			if (chart.getTitle() != null)
-				chart.getTitle().setFont(font);
-			else
-				chart.setTitle(new TextTitle("", font));
-			scheduleRefresh();
-		}
+		return title.getFont();
 	}
 
 	public String getXAxisTitle() {
-		return xAxisTitle;
+		return domainAxis.title;
 	}
 
 	public void setXAxisTitle(String title) {
 		if (title == null)
 			title = DEFAULT_X_AXIS_TITLE;
 
-		xAxisTitle = title;
-
-		if (chart != null) {
-			getPlot().getDomainAxis().setLabel(title);
-			scheduleRefresh();
-		}
+		domainAxis.title = title;
+		scheduleRedraw();
 	}
 
 	public String getYAxisTitle() {
-		return yAxisTitle;
+		return valueAxis.getTitle();
 	}
 
 	public void setYAxisTitle(String title) {
-		if (title == null)
-			title = DEFAULT_Y_AXIS_TITLE;
-
-		yAxisTitle = title;
-
-		if (chart != null) {
-			getPlot().getRangeAxis().setLabel(title);
-			scheduleRefresh();
-		}
+		valueAxis.setTitle(title==null ? DEFAULT_Y_AXIS_TITLE : title);
+		scheduleRedraw();
 	}
 
 	public Font getAxisTitleFont() {
-		return axisTitleFont;
+		return domainAxis.titleFont;
 	}
 
 	public void setAxisTitleFont(Font font) {
-		if (font == null)
-			return;
-
-		axisTitleFont = font;
-
-		if (chart != null) {
-			getPlot().getDomainAxis().setLabelFont(font);
-			getPlot().getRangeAxis().setLabelFont(font);
-			scheduleRefresh();
+		if (font != null) {
+			domainAxis.titleFont = font;
+			valueAxis.setTitleFont(font);
+			scheduleRedraw();
 		}
-	}
-
-	public Font getLabelFont() {
-		return tickLabelFont;
 	}
 
 	public void setLabelFont(Font font) {
 		if (font == null)
-			return;
-
-		tickLabelFont = font;
-
-		if (chart != null) {
-			getPlot().getDomainAxis().setTickLabelFont(font);
-			getPlot().getRangeAxis().setTickLabelFont(font);
-			scheduleRefresh();
-		}
-	}
-
-	public Double getXAxisLabelsRotatedBy() {
-		return xAxisLabelsRotatedBy;
+			font = DEFAULT_LABELS_FONT;
+		domainAxis.labelsFont = font;
+		valueAxis.setTickFont(font);
+		scheduleRedraw();
 	}
 
 	public void setXAxisLabelsRotatedBy(Double angle) {
 		if (angle == null)
 			angle = DEFAULT_X_LABELS_ROTATED_BY;
-
-		xAxisLabelsRotatedBy = angle;
-
-		if (chart != null) {
-			getPlot().getDomainAxis().setCategoryLabelPositions(
-				CategoryLabelPositions.createDownRotationLabelPositions(Math.toRadians(angle)));
-			scheduleRefresh();
-		}
-	}
-
-	public Boolean getDisplayLegend() {
-		return displayLegend;
-	}
-
-	public void setDisplayLegend(Boolean value) {
-		if (value == null)
-			value = DEFAULT_DISPLAY_LEGEND;
-
-		displayLegend = value;
-
-		if (chart != null) {
-			if (value) {
-				chart.removeLegend();
-				chart.addLegend(new LegendTitle(chart.getPlot()));
-				setLegendBorder(legendBorder);
-				setLegendFont(legendFont);
-				setLegendPosition(legendPosition);
-				setLegendAnchoring(legendAnchor);
-			}
-			else
-				chart.removeLegend();
-			scheduleRefresh();
-		}
-	}
-
-	public Boolean getLegendBorder() {
-		return legendBorder;
-	}
-
-	public void setLegendBorder(Boolean value) {
-		if (value == null)
-			value = DEFAULT_LEGEND_BORDER;
-
-		legendBorder = value;
-
-		if (chart != null && chart.getLegend() != null) {
-			chart.getLegend().setBorder(value ? new BlockBorder() : BlockBorder.NONE);
-			scheduleRefresh();
-		}
-	}
-
-	public Font getLegendFont() {
-		return legendFont;
-	}
-
-	public void setLegendFont(Font font) {
-		if (font == null)
-			return;
-
-		legendFont = font;
-
-		if (chart != null && chart.getLegend() != null) {
-			chart.getLegend().setItemFont(font);
-			scheduleRefresh();
-		}
-	}
-
-	public LegendPosition getLegendPosition() {
-		return legendPosition;
-	}
-
-	public void setLegendPosition(LegendPosition value) {
-		if (value == null)
-			value = DEFAULT_LEGEND_POSITION;
-
-		legendPosition = value;
-
-		if (chart != null && chart.getLegend() != null) {
-			RectangleEdge position = null;
-			switch (value) {
-			case Inside: /*not supported?*/ break;
-			case Above: position = RectangleEdge.TOP; break;
-			case Below: position = RectangleEdge.BOTTOM; break;
-			case Left: position = RectangleEdge.LEFT; break;
-			case Right: position = RectangleEdge.RIGHT; break;
-			default: Assert.isLegal(false, "Unknown LegendPosition: " + value);
-			}
-
-			if (position != null)
-				chart.getLegend().setPosition(position);
-			scheduleRefresh();
-		}
-	}
-
-	public LegendAnchor getLegendAnchoring() {
-		return legendAnchor;
-	}
-
-	public void setLegendAnchoring(LegendAnchor value) {
-		if (value == null)
-			value = DEFAULT_LEGEND_ANCHOR;
-
-		legendAnchor = value;
-
-		if (chart != null && chart.getLegend() != null) {
-			// TODO
-			scheduleRefresh();
-		}
+		domainAxis.rotation = angle;
+		scheduleRedraw();
 	}
 
 	public Double getBarBaseline() {
-		return barBaseline;
+		return plot.barBaseline;
 	}
 
 	public void setBarBaseline(Double value) {
 		if (value == null)
 			value = DEFAULT_BAR_BASELINE;
 
-		barBaseline = value;
-
-		if (chart != null) {
-			CategoryPlot plot = (CategoryPlot)chart.getPlot();
-			if (plot.getRenderer() instanceof BarRenderer) {
-				BarRenderer renderer = (BarRenderer)plot.getRenderer();
-				renderer.setBase(value);
-			}
-			scheduleRefresh();
-		}
+		plot.barBaseline = value;
+		scheduleRedraw();
 	}
 
 	public BarPlacement getBarPlacement() {
-		return barPlacement;
+		return plot.barPlacement;
 	}
 
 	public void setBarPlacement(BarPlacement value) {
 		if (value == null)
 			value = DEFAULT_BAR_PLACEMENT;
 
-		barPlacement = value;
-
-		if (chart != null) {
-			BarRenderer renderer = null;
-			switch (value) {
-			case Aligned: renderer = new BarRenderer(); break;
-			case Overlap: renderer = new LayeredBarRenderer(); break;
-			case InFront: renderer = new LayeredBarRenderer(); break;
-			case Stacked: renderer = new StackedBarRenderer(); break;
-			default: Assert.isLegal(false, "Unknown BarPlacement value: " + value); break;
-			}
-
-			if (renderer != null) {
-				CategoryPlot plot = (CategoryPlot)chart.getPlot();
-				plot.setRenderer(renderer);
-			}
-			scheduleRefresh();
-		}
+		plot.barPlacement = value;
+		scheduleRedraw();
 	}
 
 	public Double getYMin() {
@@ -421,14 +189,7 @@ public class ScalarChart extends InteractiveChart {
 
 	public void setYMin(Double value) {
 		yMin = value;
-
-		if (chart != null) {
-			if (value != null)
-				getPlot().getRangeAxis().setLowerBound(value);
-			else
-				getPlot().getRangeAxis().setAutoRange(true);
-			scheduleRefresh();
-		}
+		scheduleRedraw();
 	}
 
 	public Double getYMax() {
@@ -437,74 +198,269 @@ public class ScalarChart extends InteractiveChart {
 
 	public void setYMax(Double value) {
 		yMax = value;
-
-		if (chart != null) {
-			if (value != null)
-				getPlot().getRangeAxis().setUpperBound(value);
-			else
-				getPlot().getRangeAxis().setAutoRange(true);
-			scheduleRefresh();
-		}
+		scheduleRedraw();
 	}
 
 	public Boolean getInvertXY() {
-		return invertXY;
+		return plot.invertXY;
 	}
 
 	public void setInvertXY(Boolean value) {
 		if (value == null)
 			value = DEFAULT_INVERT_XY;
 
-		invertXY = value;
-
-		if (chart != null) {
-			getPlot().setOrientation(value ? PlotOrientation.HORIZONTAL : PlotOrientation.VERTICAL);
-			scheduleRefresh();
-		}
+		plot.invertXY = value;
+		scheduleRedraw();
 	}
 
 	public Boolean getGridVisible() {
-		return gridVisible;
+		return valueAxis.isGridVisible();
 	}
 
 	public void setGridVisible(Boolean value) {
 		if (value == null)
 			value = DEFAULT_SHOW_GRID;
 
-		gridVisible = value;
+		valueAxis.setGridVisible(value);
+		scheduleRedraw();
+	}
 
-		if (chart != null) {
-			CategoryPlot plot = getPlot();
-			if (gridVisible) {
-				plot.setDomainGridlinesVisible(true);
-				plot.setRangeGridlinesVisible(true);
+	/*=============================================
+	 *               Drawing
+	 *=============================================*/
+
+	@Override
+	protected void beforePaint(GC gc) {
+		// Calculate space occupied by title and legend and set insets accordingly
+		Rectangle area = new Rectangle(getClientArea());
+		Rectangle remaining = title.layout(gc, area);
+		remaining = legend.layout(gc, remaining);
+		
+		Rectangle areaMinusLegend = remaining.getCopy();
+		Insets insets = new Insets();
+		valueAxis.layout(gc, areaMinusLegend, insets);
+		remaining = domainAxis.layout(gc, remaining);
+		remaining = plot.layout(gc, remaining);
+
+		setInsets(insets);
+		super.beforePaint(gc);
+	}
+	
+	
+	@Override
+	protected void paintCachableLayer(GC gc) {
+		valueAxis.drawGrid(gc);
+		plot.draw(gc);
+	}
+	
+	private Rectangle getPlotRectagle() {
+		return plot.getRectangle();
+	}
+
+	@Override
+	protected void paintNoncachableLayer(GC gc) {
+		title.draw(gc);
+		legend.draw(gc);
+		valueAxis.drawAxis(gc);
+		domainAxis.draw(gc);
+	}
+
+	private static final double DEFAULT_BAR_BASELINE = 0.0;
+	private static final BarPlacement DEFAULT_BAR_PLACEMENT = BarPlacement.Aligned;
+	private static final Color DEFAULT_BAR_OUTLINE_COLOR = ColorFactory.asColor("grey80");
+	private static final Color DEFAULT_BACKGROUND_COLOR = ColorFactory.asColor("white");
+	private static final boolean DEFAULT_INVERT_XY = false;
+	
+	class BarPlot {
+		private Rectangle rect;
+		private int widthBar = 10;
+		private int hgapMinor = 5;
+		private int hgapMajor = 20;
+		private int inset = 10;
+		
+		private double barBaseline = DEFAULT_BAR_BASELINE;
+		private BarPlacement barPlacement = DEFAULT_BAR_PLACEMENT;
+		private Color barOutlineColor = DEFAULT_BAR_OUTLINE_COLOR;
+		private Color backgroundColor = DEFAULT_BACKGROUND_COLOR;
+		private Boolean invertXY = DEFAULT_INVERT_XY;
+		
+		public Rectangle getRectangle() {
+			return rect;
+		}
+		
+		public Rectangle layout(GC gc, Rectangle rect) {
+			this.rect = rect;
+			return rect;
+		}
+		
+		public void draw(GC gc) {
+			Graphics graphics = new SWTGraphics(gc);
+			graphics.pushState();
+			
+			Rectangle clip = graphics.getClip(new Rectangle());
+			graphics.setBackgroundColor(backgroundColor);
+			graphics.fillRectangle(clip);
+			
+			int cColumns = dataset.getColumnCount();
+			int[] indeces = getRowColumnsInRectangle(clip);
+			for (int i = indeces[0]; i <= indeces[1]; ++i) {
+				int row = i / cColumns;
+				int column = i % cColumns;
+				drawBar(graphics, row, column);
 			}
-			else {
-				plot.setDomainGridlinesVisible(false);
-				plot.setRangeGridlinesVisible(false);
+			graphics.popState();
+			graphics.dispose();
+		}
+		
+		protected void drawBar(Graphics graphics, int row, int column) {
+			Rectangle rect = getBarRectangle(row, column);
+			graphics.setForegroundColor(barOutlineColor);
+			graphics.drawRectangle(rect);
+			if (rect.width > 1 && rect.height > 1) {
+				graphics.setBackgroundColor(getBarColor(column));
+				graphics.fillRectangle(rect.getCropped(new Insets(1,1,1,1)));
 			}
-			scheduleRefresh();
+		}
+		
+		protected int[] getRowColumnsInRectangle(org.eclipse.draw2d.geometry.Rectangle rect) {
+			int[] result = new int[2];
+			result[0] = getRowColumn(rect.x, true);
+			result[1] = getRowColumn(rect.x + rect.width, false);
+			return result;
+		}
+		
+		private int getRowColumn(double x, boolean before) {
+			int cRows = dataset.getRowCount();
+			int cColumns = dataset.getColumnCount();
+			return before ? 0 : (cRows*cColumns-1);
+		}
+		
+		protected Color getBarColor(int column) {
+			return ColorFactory.getGoodColor(column);
+		}
+		
+		protected Rectangle getBarRectangle(int row, int column) {
+			int x = toCanvasX(getLeftX(row, column));
+			int y = toCanvasY(getTopY(row, column));
+			int width = toCanvasDistX(getRightX(row,column) - getLeftX(row, column));
+			int height = toCanvasDistY(getTopY(row, column) - getBottomY(row, column));
+			return new Rectangle(x, y, width, height);
+		}
+		
+		public PlotArea getPlotArea() {
+			int cRows = dataset.getRowCount();
+			int cColumns = dataset.getColumnCount();
+			double minX = getLeftX(0, 0);
+			double maxX = getRightX(cRows - 1, cColumns - 1);
+			double minY = Double.MAX_VALUE;
+			double maxY = Double.MIN_VALUE;
+			for (int row = 0; row < cRows; ++row)
+				for (int column = 0; column < cColumns; ++column) {
+					minY = Math.min(minY, plot.getBottomY(row, column));
+					maxY = Math.max(maxY, plot.getTopY(row, column));
+				}
+			return new PlotArea(minX - inset, maxX + inset, minY, maxY + inset);
+		}
+		
+		
+		
+		protected double getLeftX(int row, int column) {
+			int cColumns = dataset.getColumnCount();
+			double rowWidth = cColumns * widthBar + (cColumns - 1) * hgapMinor;
+			return inset + row * (rowWidth + hgapMajor) + column * (widthBar + hgapMinor); 
+		}
+		
+		protected double getRightX(int row, int column) {
+			return getLeftX(row, column) + widthBar;
+		}
+		
+		protected double getTopY(int row, int column) {
+			double value = dataset.getValue(row, column).doubleValue();
+			return (value > barBaseline ? value : barBaseline);
+		}
+		
+		protected double getBottomY(int row, int column) {
+			double value = dataset.getValue(row, column).doubleValue();
+			return (value < barBaseline ? value : barBaseline);
 		}
 	}
 
-	private void setYLogarithmic(Boolean value) {
-		if (value == null)
-			value = DEFAULT_Y_LOGARITHMIC;
-
-		if (chart != null) {
-			if (value) {
-				LogarithmicAxis axis = new LogarithmicAxis(yAxisTitle);
-				axis.setStrictValuesFlag(false);
-				getPlot().setRangeAxis(axis);
-			}
-			else
-				getPlot().setRangeAxis(new NumberAxis(yAxisTitle));
-			scheduleRefresh();
+	private static final String DEFAULT_X_AXIS_TITLE = "";
+	private static final String DEFAULT_Y_AXIS_TITLE = "";
+	private static final Font DEFAULT_AXIS_TITLE_FONT = new Font(null, "Arial", 10, SWT.NORMAL);
+	private static final Font DEFAULT_LABELS_FONT = new Font(null, "Arial", 8, SWT.NORMAL);
+	private static final double DEFAULT_X_LABELS_ROTATED_BY = 0.0;
+	
+	class DomainAxis {
+		private Rectangle rect;
+		private int labelsHeight;
+		private String title = DEFAULT_X_AXIS_TITLE;
+		private Font titleFont = DEFAULT_AXIS_TITLE_FONT;
+		private Font labelsFont = DEFAULT_LABELS_FONT;
+		private double rotation = DEFAULT_X_LABELS_ROTATED_BY;
+		
+		public Ticks getTicks() {
+			return new Ticks(1.0, 0.0, 1.0); // TODO
 		}
-	}
 
-	private CategoryPlot getPlot() {
-		Assert.isTrue(chart != null);
-		return (CategoryPlot)chart.getPlot();
+		public Rectangle layout(GC gc, Rectangle rect) {
+			Graphics graphics = new SWTGraphics(gc);
+			graphics.pushState();
+			//
+			graphics.setFont(titleFont);
+			int titleHeight = gc.textExtent(title).y;
+			//
+			gc.setFont(labelsFont);
+			labelsHeight = 0;
+			for (int row = 0; row < dataset.getRowCount(); ++row) {
+				String label = dataset.getRowKey(row).toString();
+				Dimension size = GeomUtils.rotatedSize(new Dimension(gc.textExtent(label)), rotation);
+				labelsHeight = Math.max(labelsHeight, size.height);
+			}
+			
+			int height = 10 + labelsHeight + titleHeight;
+			graphics.popState();
+			graphics.dispose();
+			
+			this.rect = new Rectangle(rect.x, rect.bottom() - height, rect.width, height);
+			return new Rectangle(rect.x, rect.y, rect.width, Math.max(rect.height - height, 0));
+		}
+		
+		public void draw(GC gc) {
+			Graphics graphics = new SWTGraphics(gc);
+			graphics.pushState();
+			graphics.setClip(rect);
+			// draw axis
+			graphics.setLineStyle(SWT.LINE_SOLID);
+			graphics.setLineWidth(1);
+			graphics.setForegroundColor(ColorFactory.asColor("black"));
+			Rectangle plotRect = getPlotRectagle();
+			//graphics.drawLine(plotRect.x, rect.y + 5, plotRect.x + plotRect.width, rect.y + 5);
+			// draw labels
+			int cColumns = dataset.getColumnCount();
+			graphics.setFont(labelsFont);
+			graphics.pushState();
+			for (int row = 0; row < dataset.getRowCount(); ++row) {
+				String label = dataset.getRowKey(row).toString();
+				Point size = gc.textExtent(label);
+				int left = plot.getBarRectangle(row, 0).x;
+				int right = plot.getBarRectangle(row, cColumns - 1).right();
+				
+				graphics.restoreState();
+				graphics.drawLine(left, rect.y + 5, right, rect.y + 5);
+				graphics.translate((left + right) / 2, rect.y + 10);
+				graphics.rotate((float)rotation);
+				graphics.drawText(label, -size.x / 2, - labelsHeight / 2);
+			}
+			graphics.popState();
+			
+			// draw axis title
+			graphics.setFont(titleFont);
+			Point size = gc.textExtent(title);
+			graphics.drawText(title, plotRect.x + (plotRect.width - size.x) / 2, rect.y + 10);
+
+			graphics.popState();
+			graphics.dispose();
+		}
 	}
 }
