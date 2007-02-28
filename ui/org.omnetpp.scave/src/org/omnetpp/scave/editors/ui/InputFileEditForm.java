@@ -1,5 +1,6 @@
 package org.omnetpp.scave.editors.ui;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -32,7 +33,7 @@ public class InputFileEditForm implements IScaveObjectEditForm {
 	// edit controls of the features
 	private Text nameText;
 
-	public InputFileEditForm(InputFile inputFile) {
+	public InputFileEditForm(InputFile inputFile, EObject parent) {
 		this.inputFile = inputFile;
 	}
 	

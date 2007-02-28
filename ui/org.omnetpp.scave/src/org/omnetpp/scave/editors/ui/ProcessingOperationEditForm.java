@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
@@ -71,7 +72,7 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 		COLUMN_VALUE = 1,
 		COLUMN_DESC = 2;
 	
-	public ProcessingOperationEditForm(ProcessingOp processingOp) {
+	public ProcessingOperationEditForm(ProcessingOp processingOp, EObject parent) {
 		this.processingOp = processingOp;
 		NodeTypeVector types = NodeTypeRegistry.instance().getNodeTypes();
 		List<NodeType> filterTypes = new ArrayList<NodeType>();

@@ -1,5 +1,6 @@
 package org.omnetpp.scave.editors.ui;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -33,19 +34,29 @@ public class ScaveObjectEditFormFactory {
 	 * @param object  the edited object
 	 */
 	public IScaveObjectEditForm createForm(EObject object, ResultFileManager manager) {
+		Assert.isTrue(object != null && object.eContainer() != null);
+		return createForm(object, object.eContainer(), manager);
+	}
+
+	/**
+	 * Creates a form containing all editable features of the object.
+	 * @param object the edited object
+	 * @param parent the parent node of the object where it is placed or will be placed 
+	 */
+	public IScaveObjectEditForm createForm(EObject object, EObject parent, ResultFileManager manager) {
 		
 		if (object instanceof Chart)
-			return new ChartEditForm((Chart)object, manager);
+			return new ChartEditForm((Chart)object, parent, manager);
 		else if (object instanceof ChartSheet)
-			return new ChartSheetEditForm((ChartSheet)object);
+			return new ChartSheetEditForm((ChartSheet)object, parent);
 		else if (object instanceof Dataset)
-			return new DatasetEditForm((Dataset)object);
+			return new DatasetEditForm((Dataset)object, parent);
 		else if (object instanceof InputFile)
-			return new InputFileEditForm((InputFile)object);
+			return new InputFileEditForm((InputFile)object, parent);
 		else if (object instanceof ProcessingOp)
-			return new ProcessingOperationEditForm((ProcessingOp)object);
+			return new ProcessingOperationEditForm((ProcessingOp)object, parent);
 		else if (object instanceof SetOperation)
-			return new SetOperationEditForm((SetOperation)object, manager);
+			return new SetOperationEditForm((SetOperation)object, parent, manager);
 		else
 			return new GenericScaveObjectEditForm(object);
 	}

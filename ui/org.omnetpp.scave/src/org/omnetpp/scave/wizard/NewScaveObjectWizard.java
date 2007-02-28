@@ -1,14 +1,12 @@
 package org.omnetpp.scave.wizard;
 
-import java.util.Arrays;
 import java.util.Collection;
 
-import org.eclipse.emf.common.command.Command;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.command.CommandParameter;
-import org.eclipse.emf.edit.command.CreateChildCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
@@ -42,10 +40,11 @@ public class NewScaveObjectWizard extends Wizard {
 	private ScaveEditor editor;
 	private EditingDomain domain;
 	private EObject parent;
+	private CommandParameter[] childDescriptors;
 	private CommandParameter newChildDescriptor;
 
 	// command to add the new node temporarily (see class comment above)
-	private Command addNewChildCommand;
+	//private Command addNewChildCommand;
 
 	private TypeSelectionWizardPage typeSelectionPage;
 	private EditFieldsWizardPage editFieldsPage;
@@ -57,6 +56,9 @@ public class NewScaveObjectWizard extends Wizard {
 		setWindowTitle("Create new item");
 		setHelpAvailable(false);
 		setNeedsProgressMonitor(false);
+		Collection descriptors = domain.getNewChildDescriptors(parent, null);
+		childDescriptors = (CommandParameter[])descriptors.toArray(new CommandParameter[descriptors.size()]);
+		Assert.isTrue(childDescriptors.length > 0);
 	}
 
 	/**
@@ -72,17 +74,25 @@ public class NewScaveObjectWizard extends Wizard {
 			editFieldsPage.clearControl();
 
 			// remove previous child, add new child
-			removeNewChild();
-			addNewChildCommand = CreateChildCommand.create(domain, parent, newChildDescriptor, Arrays.asList(parent));
-			if (addNewChildCommand.canExecute())
-				addNewChildCommand.execute();
+//			removeNewChild();
+//			addNewChildCommand = CreateChildCommand.create(domain, parent, newChildDescriptor, Arrays.asList(parent));
+//			if (addNewChildCommand.canExecute())
+//				addNewChildCommand.execute();
 		}
 	}
-
+	
 	@Override
 	public void addPages() {
-		typeSelectionPage = new TypeSelectionWizardPage("Select type");
-		addPage(typeSelectionPage);
+		if (childDescriptors.length > 1) {
+			typeSelectionPage = new TypeSelectionWizardPage("Select type", childDescriptors);
+			addPage(typeSelectionPage);
+		}
+		else if (childDescriptors.length == 1) {
+			newChildDescriptor = childDescriptors[0];
+//			addNewChildCommand = CreateChildCommand.create(domain, parent, newChildDescriptor, Arrays.asList(parent));
+//			if (addNewChildCommand.canExecute())
+//				addNewChildCommand.execute();
+		}
 
 		editFieldsPage = new EditFieldsWizardPage("Set attributes");
 		addPage(editFieldsPage);
@@ -93,7 +103,10 @@ public class NewScaveObjectWizard extends Wizard {
      */
 	@Override
 	public void createPageControls(Composite pageContainer) {
-    	typeSelectionPage.createControl(pageContainer);
+		if (typeSelectionPage != null)
+			typeSelectionPage.createControl(pageContainer);
+		else
+			editFieldsPage.createControl(pageContainer);
     }
 
 	@Override
@@ -116,12 +129,12 @@ public class NewScaveObjectWizard extends Wizard {
 	}
 
 	private void removeNewChild() {
-		try {
-			if (addNewChildCommand != null && addNewChildCommand.canUndo())
-				addNewChildCommand.undo();
-		} catch (Exception e) {
-			e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
-		}
+//		try {
+//			if (addNewChildCommand != null && addNewChildCommand.canUndo())
+//				addNewChildCommand.undo();
+//		} catch (Exception e) {
+//			e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
+//		}
 	}
 
 	/**
@@ -134,7 +147,7 @@ public class NewScaveObjectWizard extends Wizard {
 
 		private CommandParameter[] childrenDescriptors;
 
-		protected TypeSelectionWizardPage(String pageName) {
+		protected TypeSelectionWizardPage(String pageName, CommandParameter[] childrenDescriptors) {
 			super(pageName);
 			setTitle("Select type");
 			setDescription("Select the type of the object to be created");
@@ -142,7 +155,7 @@ public class NewScaveObjectWizard extends Wizard {
 
 			// set descriptors of new children
 			Collection descriptors = domain.getNewChildDescriptors(parent, null);
-			childrenDescriptors = (CommandParameter[])descriptors.toArray(new CommandParameter[descriptors.size()]);
+			this.childrenDescriptors = childrenDescriptors;
 		}
 
 		/**
@@ -203,7 +216,7 @@ public class NewScaveObjectWizard extends Wizard {
 			Composite panel = new Composite(parentComposite, SWT.NONE);
 			panel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 			ScaveObjectEditFormFactory factory = ScaveObjectEditFormFactory.instance();
-			form = factory.createForm((EObject)newChildDescriptor.value, editor.getResultFileManager());
+			form = factory.createForm((EObject)newChildDescriptor.value, parent, editor.getResultFileManager());
 			form.populatePanel(panel);
 			setControl(panel);
 		}

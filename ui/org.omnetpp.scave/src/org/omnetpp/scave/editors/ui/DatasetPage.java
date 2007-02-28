@@ -167,8 +167,8 @@ public class DatasetPage extends ScaveEditorPage {
 		IStructuredSelection selection = (IStructuredSelection)treeViewer.getSelection(); // tree selection is always IStructuredSelection
 		Object selected = selection.getFirstElement();
 		if (selected instanceof EObject) {
-			Dataset dataset = ScaveModelUtil.findEnclosingObject((EObject)selected, Dataset.class);
-			DatasetItem item = ScaveModelUtil.findEnclosingObject((EObject)selected, DatasetItem.class);
+			Dataset dataset = ScaveModelUtil.findEnclosingOrSelf((EObject)selected, Dataset.class);
+			DatasetItem item = ScaveModelUtil.findEnclosingOrSelf((EObject)selected, DatasetItem.class);
 			if (dataset != null) {
 				ResultFileManagerEx manager = scaveEditor.getResultFileManager();
 				IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, item, ResultType.VECTOR_LITERAL); //FIXME ResultType.VECTOR_LITERAL is just temporary here. Panel type used to depend on dataset type, but now we have to use a tabfolder here, or what?

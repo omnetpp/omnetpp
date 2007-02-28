@@ -117,40 +117,34 @@ public class ChartProperties extends PropertySource {
 		NorthWest,
 	}
 
+	
+	@SuppressWarnings("unchecked")
 	public static ChartProperties createPropertySource(Chart chart, ResultFileManager manager) {
+		return createPropertySource(chart, chart.getProperties(), manager);
+	}
+	
+	public static ChartProperties createPropertySource(Chart chart, List<Property> properties, ResultFileManager manager) {
 		if (chart instanceof BarChart)
-			return new ScalarChartProperties(chart, manager);
+			return new ScalarChartProperties(chart, properties, manager);
 		else if (chart instanceof LineChart)
-			return new VectorChartProperties(chart, manager);
+			return new VectorChartProperties(chart, properties, manager);
 		else if (chart instanceof HistogramChart)
-			return new HistogramChartProperties(chart, manager);
+			return new HistogramChartProperties(chart, properties, manager);
 		ScavePlugin.logError(new IllegalArgumentException("chart type unrecognized"));
-		return new ChartProperties(chart, manager);
+		return new ChartProperties(chart, properties, manager);
 	}
 
-	public static ChartProperties createPropertySource(ResultType type, List<Property> properties) {
-		switch (type.getValue()) {
-		case ResultType.SCALAR: return new ScalarChartProperties(properties);
-		case ResultType.VECTOR: return new VectorChartProperties(properties);
-		case ResultType.HISTOGRAM: return new HistogramChartProperties(properties);
-		default: return new ChartProperties(properties);
-		}
-	}
-
-	protected List<Property> properties;
-	protected Chart owner;
-	protected ResultFileManager manager;
-
-	public ChartProperties(List<Property> properties) {
-		this.properties = properties;
-		this.owner = null;
-	}
+	protected Chart chart; 				 // the chart what the properties belongs to
+	protected List<Property> properties; // the chart properties, might not be contained by the chart yet
+	protected ResultFileManager manager; // result file manager to access chart content (for line properties)
+	protected EditingDomain domain;		 // editing domain to execute changes, if null the property list changed directly
 
 	@SuppressWarnings("unchecked")
-	public ChartProperties(Chart chart, ResultFileManager manager) {
-		this.properties = chart.getProperties();
-		this.owner = chart;
+	public ChartProperties(Chart chart, List<Property> properties, ResultFileManager manager) {
+		this.properties = properties;
+		this.chart = chart;
 		this.manager = manager;
+		this.domain = properties == chart.getProperties() ? AdapterFactoryEditingDomain.getEditingDomainFor(chart) : null;
 	}
 
 	public List<Property> getProperties() {
@@ -241,12 +235,8 @@ public class ChartProperties extends PropertySource {
 
 	public static class VectorChartProperties extends ChartProperties
 	{
-		public VectorChartProperties(List<Property> properties) {
-			super(properties);
-		}
-
-		public VectorChartProperties(Chart chart, ResultFileManager manager) {
-			super(chart, manager);
+		public VectorChartProperties(Chart chart, List<Property> properties, ResultFileManager manager) {
+			super(chart, properties, manager);
 		}
 		/*======================================================================
 		 *                             Axes
@@ -285,9 +275,9 @@ public class ChartProperties extends PropertySource {
 
 			public LinesPropertySource() {
 				Dataset dataset;
-				if (owner != null && manager != null &&
-						(dataset = ScaveModelUtil.findEnclosingDataset(owner)) != null) {
-					IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, owner, ResultType.VECTOR_LITERAL);
+				if (chart != null && manager != null &&
+						(dataset = ScaveModelUtil.findEnclosingDataset(chart)) != null) {
+					IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.VECTOR_LITERAL);
 					String[] names = DatasetManager.getResultItemNames(idlist, manager);
 					descriptors = new IPropertyDescriptor[names.length + 1];
 					descriptors[0] = new PropertyDescriptor(DEFAULT_LINE_PROPERTIES_ID, "default");
@@ -336,12 +326,8 @@ public class ChartProperties extends PropertySource {
 
 	public static class ScalarChartProperties extends ChartProperties
 	{
-		public ScalarChartProperties(List<Property> properties) {
-			super(properties);
-		}
-
-		public ScalarChartProperties(Chart chart, ResultFileManager manager) {
-			super(chart, manager);
+		public ScalarChartProperties(Chart chart, List<Property> properties, ResultFileManager manager) {
+			super(chart, properties, manager);
 		}
 
 		/*======================================================================
@@ -358,12 +344,8 @@ public class ChartProperties extends PropertySource {
 
 	public static class HistogramChartProperties extends ChartProperties
 	{
-		public HistogramChartProperties(List<Property> properties) {
-			super(properties);
-		}
-
-		public HistogramChartProperties(Chart chart, ResultFileManager manager) {
-			super(chart, manager);
+		public HistogramChartProperties(Chart chart, List<Property> properties, ResultFileManager manager) {
+			super(chart, properties, manager);
 		}
 
 		// TODO
@@ -401,7 +383,6 @@ public class ChartProperties extends PropertySource {
 	}
 
 	public void setProperty(String propertyName, String propertyValue) {
-		EditingDomain domain = getEditingDomain();
 		ScaveModelPackage model = ScaveModelPackage.eINSTANCE;
 		ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
 		Property property = getProperty(propertyName);
@@ -409,7 +390,7 @@ public class ChartProperties extends PropertySource {
 		if ("".equals(propertyValue))
 			propertyValue = null;
 
-		if (property == null && propertyValue != null ) {
+		if (property == null && propertyValue != null ) { // add new property
 			property = factory.createProperty();
 			property.setName(propertyName);
 			property.setValue(propertyValue);
@@ -417,16 +398,16 @@ public class ChartProperties extends PropertySource {
 				properties.add(property);
 			else
 				domain.getCommandStack().execute(
-					AddCommand.create(domain, owner, model.getChart_Properties(), property));
+					AddCommand.create(domain, chart, model.getChart_Properties(), property));
 		}
-		else if (property != null && propertyValue != null) {
+		else if (property != null && propertyValue != null) { // change existing property
 			if (domain == null)
 				property.setValue(propertyValue);
 			else
 				domain.getCommandStack().execute(
 					SetCommand.create(domain, property,	model.getProperty_Value(), propertyValue));
 		}
-		else if (property != null && propertyValue == null){
+		else if (property != null && propertyValue == null){ // delete existing property
 			if (domain == null)
 				properties.remove(property);
 			else
@@ -445,9 +426,5 @@ public class ChartProperties extends PropertySource {
 
 	public void setProperty(String propertyName, FontData propertyValue) {
 		setProperty(propertyName, Converter.fontdataToString(propertyValue));
-	}
-
-	private EditingDomain getEditingDomain() {
-		return owner != null ? AdapterFactoryEditingDomain.getEditingDomainFor(owner) : null;
 	}
 }

@@ -3,6 +3,7 @@ package org.omnetpp.scave.editors.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -51,13 +52,13 @@ public class DatasetEditForm implements IScaveObjectEditForm {
 	private static final int VISIBLE_ITEM_COUNT = 15;
 
 	
-	public DatasetEditForm(Dataset dataset) {
+	public DatasetEditForm(Dataset dataset, EObject parent) {
 		this.dataset = dataset;
 		// collect datasets that can be the base of this dataset
 		// XXX: circularity check is missing
 		baseDatasets = new ArrayList<Dataset>();
 		baseDatasets.add(null);
-		for (Dataset ds : ScaveModelUtil.findObjects(dataset.eResource(), Dataset.class))
+		for (Dataset ds : ScaveModelUtil.findObjects(parent.eResource(), Dataset.class))
 			if (ds != dataset)
 				baseDatasets.add(ds);
 	}

@@ -87,7 +87,7 @@ public class CreateChartTemplateAction extends AbstractScaveAction {
 	}
 	
 	private boolean isTemporaryChart(Chart chart, ScaveEditor editor) {
-		return ScaveModelUtil.findEnclosingObject(chart, Analysis.class) == editor.getTempAnalysis();
+		return ScaveModelUtil.findEnclosingOrSelf(chart, Analysis.class) == editor.getTempAnalysis();
 	}
 	
 	private Collection<Add> getOriginalAdds(Dataset dataset) {

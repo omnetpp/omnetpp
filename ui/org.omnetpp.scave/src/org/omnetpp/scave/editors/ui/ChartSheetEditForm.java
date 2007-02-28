@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -56,9 +57,9 @@ public class ChartSheetEditForm implements IScaveObjectEditForm {
 		}
 	};
 	
-	public ChartSheetEditForm(ChartSheet chartSheet) {
+	public ChartSheetEditForm(ChartSheet chartSheet, EObject parent) {
 		this.chartSheet = chartSheet;
-		allCharts = ScaveModelUtil.findObjects(chartSheet.eResource(), Chart.class);
+		allCharts = ScaveModelUtil.findObjects(parent.eResource(), Chart.class);
 		Collections.sort(allCharts, comparator);
 	}
 	

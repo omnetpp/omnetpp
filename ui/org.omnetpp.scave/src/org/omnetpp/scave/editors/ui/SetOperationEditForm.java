@@ -1,5 +1,6 @@
 package org.omnetpp.scave.editors.ui;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -12,6 +13,7 @@ import org.eclipse.swt.widgets.Text;
 import org.omnetpp.scave.editors.datatable.FilterField;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model.SetOperation;
 import org.omnetpp.scave.model2.FilterHints;
@@ -27,6 +29,7 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 	protected static final EStructuralFeature[] features = new EStructuralFeature[] {
 		ScaveModelPackage.eINSTANCE.getSetOperation_FilterPattern(),
 		ScaveModelPackage.eINSTANCE.getSetOperation_SourceDataset(),
+		ScaveModelPackage.eINSTANCE.getSetOperation_Type(),
 	};
 	
 	/**
@@ -44,16 +47,17 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 	
 	// controls
 	private CCombo sourceDatasetCombo;
+	private CCombo datatypeCombo;
 	private Text filterPatternText;
 	//FIXME add also radiobutton or combo for ResultType
 	
-	public SetOperationEditForm(SetOperation setOperation, ResultFileManager manager) {
+	public SetOperationEditForm(SetOperation setOperation, EObject parent, ResultFileManager manager) {
 		this.setOperation = setOperation;
 		
 		sourceDatasets = new java.util.ArrayList<Dataset>();
 		sourceDatasets.add(null);
-		Dataset dataset = ScaveModelUtil.findEnclosingObject(setOperation, Dataset.class);
-		java.util.List<Dataset> datasets = ScaveModelUtil.findDatasets(setOperation.eResource());
+		Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
+		java.util.List<Dataset> datasets = ScaveModelUtil.findDatasets(parent.eResource());
 		for (Dataset ds : datasets)
 			if (!ds.equals(dataset))
 				sourceDatasets.add(ds);
@@ -95,10 +99,18 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		for (int i = 1; i < sourceDatasets.size(); ++i)
 			datasetNames[i] = sourceDatasets.get(i).getName();
 		sourceDatasetCombo.setItems(datasetNames);
-
+		
 		group = new Group(panel, SWT.NONE);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		group.setLayout(new GridLayout(2, false));
+
+		label = new Label(group, SWT.NONE);
+		label.setText("Data type:");
+		label.setLayoutData(new GridData());
+		datatypeCombo = new CCombo(group, SWT.BORDER | SWT.READ_ONLY);
+		datatypeCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		datatypeCombo.setItems(ScaveModelUtil.getResultTypeNames());
+		datatypeCombo.setText(ResultType.SCALAR_LITERAL.getName());
 		
 		label = new Label(group, SWT.NONE);
 		label.setText("Filter pattern:");
@@ -116,6 +128,9 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		case ScaveModelPackage.SET_OPERATION__SOURCE_DATASET:
 			int index = sourceDatasetCombo.getSelectionIndex();
 			return index >= 0 ? sourceDatasets.get(index) : null;
+		case ScaveModelPackage.SET_OPERATION__TYPE:
+			String text = datatypeCombo.getText();
+			return text != null ? ResultType.getByName(text) : null;
 		default:
 			throw new IllegalArgumentException("Unexpected feature: " + feature.getName());
 		}
@@ -129,6 +144,10 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 			break;
 		case ScaveModelPackage.SET_OPERATION__SOURCE_DATASET:
 			sourceDatasetCombo.setText(value != null ? ((Dataset)value).getName() : "All");
+			break;
+		case ScaveModelPackage.SET_OPERATION__TYPE:
+			ResultType datatype = value != null ? (ResultType)value : ResultType.SCALAR_LITERAL;
+			datatypeCombo.setText(datatype.getName());
 			break;
 		default:
 			throw new IllegalArgumentException("Unexpected feature: " + feature.getName());

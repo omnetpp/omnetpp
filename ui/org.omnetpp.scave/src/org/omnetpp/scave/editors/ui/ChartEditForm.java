@@ -14,6 +14,7 @@ import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_MIN;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -39,6 +40,7 @@ import org.omnetpp.scave.charting.ChartProperties.VectorChartProperties;
 import org.omnetpp.scave.charting.ChartProperties.VectorChartProperties.LineProperties;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.LineChart;
@@ -69,7 +71,8 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	 * The edited chart.
 	 */
 	private Chart chart;
-	private ResultType type;
+	private EObject parent;
+	private ResultFileManager manager;
 	private ChartProperties properties;
 
 	private String[] lineNames;
@@ -124,10 +127,12 @@ public class ChartEditForm implements IScaveObjectEditForm {
 
 	private static final String USER_DATA_KEY = "ChartEditForm";
 
-	public ChartEditForm(Chart chart, ResultFileManager manager) {
-		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
+	public ChartEditForm(Chart chart, EObject parent, ResultFileManager manager) {
+		Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
 		this.chart = chart;
-		this.properties = ChartProperties.createPropertySource(chart, null);
+		this.parent = parent;
+		this.manager = manager;
+		this.properties = ChartProperties.createPropertySource(chart, manager);
 		if (chart instanceof LineChart) {
 			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.VECTOR_LITERAL);
 			String[] names = DatasetManager.getResultItemIDs(idlist, manager);
@@ -202,7 +207,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		group = createGroup("Grid", panel, 1);
 		showGridCheckbox = createCheckboxField("show grid", group);
 		// Lines
-		if (type == ResultType.VECTOR_LITERAL) {
+		if (chart instanceof LineChart) {
 			panel = createTab("Lines", tabfolder, 2);
 			applyToLinesCombo = createComboField("Apply to lines", panel, lineNames);
 			applyToLinesCombo.addSelectionListener(new SelectionAdapter() {
@@ -220,7 +225,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			lineStyleRadios = createRadioGroup("Lines", subpanel, 1, LineStyle.class, true);
 		}
 		// Bars
-		else if (type == ResultType.SCALAR_LITERAL) {
+		else if (chart instanceof BarChart) {
 			panel = createTab("Bars", tabfolder, 2);
 			baselineText = createTextField("Baseline", panel);
 			barPlacementCombo = createComboField("Bar placement", panel, BarPlacement.class, false);
@@ -285,7 +290,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	private CCombo createComboField(String labelText, Composite parent, String[] items, boolean optional) {
 		Label label = new Label(parent, SWT.NONE);
 		label.setText(labelText);
-		int style = type == null ? SWT.BORDER : SWT.BORDER | SWT.READ_ONLY;
+		int style = SWT.BORDER; //type == null ? SWT.BORDER : SWT.BORDER | SWT.READ_ONLY;
 		CCombo combo = new CCombo(parent, style);
 		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		combo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
@@ -359,7 +364,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	}
 
 	private List<Property> getProperties() {
-		ChartProperties newProps = ChartProperties.createPropertySource(type, new ArrayList<Property>());
+		ChartProperties newProps = ChartProperties.createPropertySource(chart, new ArrayList<Property>(), manager);
 
 		// Titles
 		newProps.setGraphTitle(graphTitleText.getText());
@@ -379,13 +384,13 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		newProps.setXYInvert(invertAxesCheckbox.getSelection());
 		newProps.setXYGrid(showGridCheckbox.getSelection());
 		// Lines
-		if (type == ResultType.VECTOR_LITERAL) {
+		if (chart instanceof LineChart) {
 			int index = applyToLinesCombo.getSelectionIndex();
-			String lineId = index == 0 ? null : lineNames[index];
+			String lineId = index <= 0 ? null : lineNames[index];
 			getLineProperties((VectorChartProperties)newProps, lineId);
 		}
 		// Bars
-		else if (type == ResultType.SCALAR_LITERAL) {
+		else if (chart instanceof BarChart) {
 			ScalarChartProperties props = (ScalarChartProperties)newProps;
 			props.setBarBaseline(baselineText.getText());
 			props.setBarPlacement(getSelection(barPlacementCombo, BarPlacement.class));
@@ -461,7 +466,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	}
 
 	private void setProperties(List<Property> properties) {
-		ChartProperties props = ChartProperties.createPropertySource(chart, null);
+		ChartProperties props = ChartProperties.createPropertySource(chart, properties, manager);
 		// Titles
 		graphTitleText.setText(props.getGraphTitle());
 		graphTitleFontText.setText(props.getStringProperty(PROP_GRAPH_TITLE_FONT)); // XXX font
@@ -480,12 +485,12 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		invertAxesCheckbox.setSelection(props.getXYInvert());
 		showGridCheckbox.setSelection(props.getXYGrid());
 		// Lines
-		if (type == ResultType.VECTOR_LITERAL) {
+		if (chart instanceof LineChart) {
 			applyToLinesCombo.select(0);
 			updateLinePropertyEditFields((VectorChartProperties)props);
 		}
 		// Bars
-		else if (type == ResultType.SCALAR_LITERAL) {
+		else if (chart instanceof BarChart) {
 			ScalarChartProperties scalarProps = (ScalarChartProperties)props;
 			baselineText.setText(scalarProps.getBarBaseline());
 			setSelection(barPlacementCombo, scalarProps.getBarPlacement());

@@ -9,6 +9,7 @@ import java.util.Map;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CompoundCommand;
+import org.eclipse.emf.common.util.Enumerator;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -142,6 +143,26 @@ public class ScaveModelUtil {
 			throw new RuntimeException("unknown result type");
 		return add;
 	}
+	
+	/**
+	 * Returns the names of result types.
+	 */
+	@SuppressWarnings("unchecked")
+	public static String[] getResultTypeNames() {
+		return getEnumNames((List<ResultType>)ResultType.VALUES);
+	}
+
+	/**
+	 * Returns the names of an EMF enum members. 
+	 */
+	public static String[] getEnumNames(List<? extends Enumerator> enumValues) {
+		String[] names = new String[enumValues.size()];
+		int i = 0;
+		for (Enumerator value : enumValues) {
+			names[i++] = value.getName();
+		}
+		return names;
+	}
 
 	/**
 	 * Returns the analysis node of the specified resource.
@@ -193,7 +214,11 @@ public class ScaveModelUtil {
 		return result;
 	}
 
-	public static <T extends EObject> T findEnclosingObject(EObject object, Class<T> type) {
+	/**
+	 * Finds an enclosing object having type {@code type}.
+	 * If the {@code object} itself has the type, it is returned.
+	 */
+	public static <T extends EObject> T findEnclosingOrSelf(EObject object, Class<T> type) {
 		while (object != null && !type.isInstance(object))
 			object = object.eContainer();
 		return (T)object;

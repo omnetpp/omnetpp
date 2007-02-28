@@ -1,8 +1,11 @@
 package org.omnetpp.scave.actions;
 
+import java.util.Collection;
+
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.command.CreateChildCommand;
+import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -38,7 +41,7 @@ public class NewAction extends AbstractScaveAction {
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
 		EObject parent = getParent(selection);
-		if (parent != null) {
+		if (isApplicable(editor, selection)) {
 			NewScaveObjectWizard wizard = new NewScaveObjectWizard(editor, parent);
 			WizardDialog dialog = new WizardDialog(editor.getSite().getShell(), wizard);
 			if (dialog.open() == Window.OK) {
@@ -54,7 +57,13 @@ public class NewAction extends AbstractScaveAction {
 
 	@Override
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		return getParent(selection) != null;
+		EObject parent = getParent(selection);
+		if (parent != null) {
+			EditingDomain domain = editor.getEditingDomain();
+			Collection childDescriptors = domain.getNewChildDescriptors(parent, null);
+			return childDescriptors.size() > 0;
+		}
+		return false;
 	}
 	
 	private EObject getParent(IStructuredSelection selection) {
