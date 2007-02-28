@@ -130,18 +130,17 @@ EventLogEntry *EventLogTableFacade::getEntryAndDistance(EventLogEntry *sourceEve
         if (distance > 0) {
             eventLogEntry = getNextEntry(eventLogEntry, index);
             distance--;
-
-            if (eventLogEntry)
-                reachedDistance++;
+            reachedDistance++;
         }
         else {
             eventLogEntry = getPreviousEntry(eventLogEntry, index);
             distance++;
-
-            if (eventLogEntry)
-                reachedDistance--;
+            reachedDistance--;
         }
     }
+
+    if (!eventLogEntry)
+        reachedDistance += distance;
 
     return eventLogEntry;
 }
@@ -237,14 +236,14 @@ long EventLogTableFacade::getDistanceToEntry(EventLogEntry *sourceEventLogEntry,
 long EventLogTableFacade::getDistanceToFirstEntry(EventLogEntry *eventLogEntry, long limit)
 {
     long reachedDistance;
-    getEntryAndDistance(eventLogEntry, NULL, -limit, reachedDistance);
+    getEntryAndDistance(eventLogEntry, getFirstEntry(), -limit, reachedDistance);
     return -reachedDistance;
 }
 
 long EventLogTableFacade::getDistanceToLastEntry(EventLogEntry *eventLogEntry, long limit)
 {
     long reachedDistance;
-    getEntryAndDistance(eventLogEntry, NULL, limit, reachedDistance);
+    getEntryAndDistance(eventLogEntry, getLastEntry(), limit, reachedDistance);
     return reachedDistance;
 }
 
@@ -291,13 +290,13 @@ long EventLogTableFacade::getApproximateNumberOfEntries()
             for (int i = 0; i < eventCount; i++)
             {
                 if (firstEvent) {
-                    sum += getNumMatchingEventLogEntries(firstEvent) + 1;
+                    sum += getNumMatchingEventLogEntries(firstEvent);
                     count++;
                     firstEvent = firstEvent->getNextEvent();
                 }
 
                 if (lastEvent) {
-                    sum += getNumMatchingEventLogEntries(lastEvent) + 1;
+                    sum += getNumMatchingEventLogEntries(lastEvent);
                     count++;
                     lastEvent = lastEvent->getPreviousEvent();
                 }
