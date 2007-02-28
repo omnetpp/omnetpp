@@ -160,10 +160,10 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 				drawText(event.getSimulationTime() + "s", isEventLogEntry ? EVENT_ENTRY_SIMULATION_TIME_COLOR : EVENT_LOG_ENTRY_SIMULATION_TIME_COLOR, true); 
 				break;
 			case 2:
-				StringBuilder indent = new StringBuilder();
-				for (int i = 0; i < eventLogEntry.getLevel(); i++)
-					indent.append("   ");
-				drawText(indent.toString());
+				x += eventLogEntry.getLevel() * HORIZONTAL_SPACING * 5;
+
+				if (eventLogEntry instanceof SendHopEntry || eventLogEntry instanceof SendDirectEntry)
+					x += HORIZONTAL_SPACING;
 
 				Image image = getEventLogEntryImage(eventLogEntry);
 				gc.drawImage(image, x, 0);
@@ -325,9 +325,6 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 			drawText(name + " ", CONSTANT_TEXT_COLOR);
 			drawText(eventLogEntry.getAttribute(name) + " ", RAW_VALUE_COLOR);
 		}
-	}
-	private void drawText(String text) {
-		drawText(text, null, false);
 	}
 	
 	private void drawText(String text, Color color) {
