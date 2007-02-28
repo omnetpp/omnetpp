@@ -705,39 +705,10 @@ public class VirtualTable<T> extends Composite {
 
 		return lineHeight;
 	}
-	
-	/**
-	 * This is a test method which walks through the virtual table going down one line at a time.
-	 */
-	public void test() {
-		long i = (Long)getSelectionElement();
-
-		while (i != (Long)contentProvider.getApproximateNumberOfElements() - 1) {
-			Event event = new Event();
-			event.type = SWT.KeyDown;
-			event.keyCode = SWT.ARROW_DOWN;
-			event.item = this;
-			event.widget = this;
-			
-			Display.getDefault().post(event);
-			while (Display.getDefault().readAndDispatch());
-
-			i++;
-			long selection = (Long)getSelectionElement();
-
-			if (debug)
-				System.out.println("*** Selection: " + selection + " should be: " + i);
-
-			if (i != selection)
-			{
-				throw new Error();
-			}
-		}
-	}
 }
 
 class VirtualTableCompositeLayout extends Layout {
-	private final static boolean debug = true;
+	private final static boolean debug = false;
 
 	@Override
 	protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
