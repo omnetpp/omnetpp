@@ -12,9 +12,11 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.scave.editors.datatable.FilterField;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScaveModelPackage;
+import org.omnetpp.scave.model.SelectDeselectOp;
 import org.omnetpp.scave.model.SetOperation;
 import org.omnetpp.scave.model2.FilterHints;
 import org.omnetpp.scave.model2.ScaveModelUtil;
@@ -38,6 +40,12 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 	protected SetOperation setOperation;
 	
 	/**
+	 * The parent of the setOperation.
+	 * It is always included in the model.
+	 */
+	protected EObject parent;
+	
+	/**
 	 * List of datasets that can be the source of this operation.
 	 * First elements is <code>null</code> corresponding to "All".
 	 */
@@ -49,15 +57,15 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 	private CCombo sourceDatasetCombo;
 	private CCombo datatypeCombo;
 	private Text filterPatternText;
-	//FIXME add also radiobutton or combo for ResultType
 	
 	public SetOperationEditForm(SetOperation setOperation, EObject parent, ResultFileManager manager) {
 		this.setOperation = setOperation;
+		this.parent = parent;
 		
 		sourceDatasets = new java.util.ArrayList<Dataset>();
 		sourceDatasets.add(null);
 		Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
-		java.util.List<Dataset> datasets = ScaveModelUtil.findDatasets(parent.eResource());
+		java.util.List<Dataset> datasets = ScaveModelUtil.findDatasets(parent);
 		for (Dataset ds : datasets)
 			if (!ds.equals(dataset))
 				sourceDatasets.add(ds);
@@ -100,22 +108,20 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 			datasetNames[i] = sourceDatasets.get(i).getName();
 		sourceDatasetCombo.setItems(datasetNames);
 		
-		group = new Group(panel, SWT.NONE);
-		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-		group.setLayout(new GridLayout(2, false));
-
-		label = new Label(group, SWT.NONE);
+		label = new Label(panel, SWT.NONE);
 		label.setText("Data type:");
 		label.setLayoutData(new GridData());
-		datatypeCombo = new CCombo(group, SWT.BORDER | SWT.READ_ONLY);
+		datatypeCombo = new CCombo(panel, SWT.BORDER | SWT.READ_ONLY);
 		datatypeCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		datatypeCombo.setItems(ScaveModelUtil.getResultTypeNames());
-		datatypeCombo.setText(ResultType.SCALAR_LITERAL.getName());
+		ResultType selected = (setOperation instanceof SelectDeselectOp && parent instanceof Chart ?
+									ScaveModelUtil.getDataTypeOfChart((Chart)parent) : ResultType.SCALAR_LITERAL);
+		datatypeCombo.setText(selected.getName());
 		
-		label = new Label(group, SWT.NONE);
+		label = new Label(panel, SWT.NONE);
 		label.setText("Filter pattern:");
 		label.setLayoutData(new GridData());
-		FilterField filterField = new FilterField(group, SWT.SINGLE | SWT.BORDER);
+		FilterField filterField = new FilterField(panel, SWT.SINGLE | SWT.BORDER);
 		filterField.getLayoutControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		filterField.setFilterHints(filterHints);
 		filterPatternText = filterField.getText();

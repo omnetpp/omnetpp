@@ -145,6 +145,21 @@ public class ScaveModelUtil {
 	}
 	
 	/**
+	 * Returns the data type displayed on the chart.
+	 */
+	public static ResultType getDataTypeOfChart(Chart chart) {
+		if (chart instanceof BarChart)
+			return ResultType.SCALAR_LITERAL;
+		else if (chart instanceof LineChart)
+			return ResultType.VECTOR_LITERAL;
+		else if (chart instanceof HistogramChart)
+			return ResultType.HISTOGRAM_LITERAL;
+
+		Assert.isTrue(false, "Unknown chart type: " + chart.getClass().getName());
+		return ResultType.SCALAR_LITERAL;
+	}
+	
+	/**
 	 * Returns the names of result types.
 	 */
 	@SuppressWarnings("unchecked")
@@ -181,7 +196,7 @@ public class ScaveModelUtil {
 	public static Analysis getAnalysis(EObject eobject) {
 		Assert.isTrue(eobject.eClass().getEPackage() == pkg,
 				"Scave model object expected, received: " + eobject.toString());
-		return getAnalysis(eobject.eResource());
+		return findEnclosingOrSelf(eobject, Analysis.class);
 	}
 
 	public static ChartSheet getDefaultChartSheet(Resource resource) {
@@ -202,10 +217,10 @@ public class ScaveModelUtil {
 	/**
 	 * Returns the datasets in the resource.
 	 */
-	public static List<Dataset> findDatasets(Resource resource) {
+	public static List<Dataset> findDatasets(EObject eobject) {
 		List<Dataset> result = new ArrayList<Dataset>();
-		Analysis analysis = getAnalysis(resource);
-		if (analysis.getDatasets() != null) {
+		Analysis analysis = getAnalysis(eobject);
+		if (analysis != null && analysis.getDatasets() != null) {
 			for (Object object : analysis.getDatasets().getDatasets()) {
 				Dataset dataset = (Dataset)object;
 				result.add(dataset);

@@ -20,6 +20,15 @@ public class ScaveModelItemProviderAdapterFactory extends
 	}
 
 	@Override
+	public Adapter createBarChartAdapter() {
+		if (barChartItemProvider == null) {
+			barChartItemProvider = new BarChartItemProvider(this);
+		}
+
+		return barChartItemProvider;
+	}
+
+	@Override
 	public Adapter createChartSheetAdapter() {
 		if (chartSheetItemProvider == null) {
 			chartSheetItemProvider = new ChartSheetItemProvider(this);
@@ -52,5 +61,23 @@ public class ScaveModelItemProviderAdapterFactory extends
 			groupItemProvider = new GroupItemProvider(this);
 		}
 		return groupItemProvider;
+	}
+
+	@Override
+	public Adapter createHistogramChartAdapter() {
+		if (histogramChartItemProvider == null) {
+			histogramChartItemProvider = new HistogramChartItemProvider(this);
+		}
+
+		return histogramChartItemProvider;
+	}
+
+	@Override
+	public Adapter createLineChartAdapter() {
+		if (lineChartItemProvider == null) {
+			lineChartItemProvider = new LineChartItemProvider(this);
+		}
+
+		return lineChartItemProvider;
 	}
 }

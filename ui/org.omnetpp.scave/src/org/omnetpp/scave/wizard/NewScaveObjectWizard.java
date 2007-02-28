@@ -32,9 +32,6 @@ import org.omnetpp.scave.editors.ui.ScaveObjectEditFormFactory;
  *
  * @author tomi
  */
-// XXX: The new node is temporarily added to the parent, because
-//      edit forms do not work if the edited object is not added to the analysis.
-//      The new node is removed when the dialog is closed.
 public class NewScaveObjectWizard extends Wizard {
 
 	private ScaveEditor editor;
@@ -42,9 +39,6 @@ public class NewScaveObjectWizard extends Wizard {
 	private EObject parent;
 	private CommandParameter[] childDescriptors;
 	private CommandParameter newChildDescriptor;
-
-	// command to add the new node temporarily (see class comment above)
-	//private Command addNewChildCommand;
 
 	private TypeSelectionWizardPage typeSelectionPage;
 	private EditFieldsWizardPage editFieldsPage;
@@ -72,12 +66,6 @@ public class NewScaveObjectWizard extends Wizard {
 		if (this.newChildDescriptor != newChildDescriptor) {
 			this.newChildDescriptor = newChildDescriptor;
 			editFieldsPage.clearControl();
-
-			// remove previous child, add new child
-//			removeNewChild();
-//			addNewChildCommand = CreateChildCommand.create(domain, parent, newChildDescriptor, Arrays.asList(parent));
-//			if (addNewChildCommand.canExecute())
-//				addNewChildCommand.execute();
 		}
 	}
 	
@@ -89,9 +77,6 @@ public class NewScaveObjectWizard extends Wizard {
 		}
 		else if (childDescriptors.length == 1) {
 			newChildDescriptor = childDescriptors[0];
-//			addNewChildCommand = CreateChildCommand.create(domain, parent, newChildDescriptor, Arrays.asList(parent));
-//			if (addNewChildCommand.canExecute())
-//				addNewChildCommand.execute();
 		}
 
 		editFieldsPage = new EditFieldsWizardPage("Set attributes");
@@ -111,7 +96,6 @@ public class NewScaveObjectWizard extends Wizard {
 
 	@Override
 	public boolean performCancel() {
-		removeNewChild();
 		if (newChildDescriptor != null) {
 			newChildDescriptor = null;
 		}
@@ -120,21 +104,11 @@ public class NewScaveObjectWizard extends Wizard {
 
 	@Override
 	public boolean performFinish() {
-		removeNewChild();
 		if (newChildDescriptor != null) {
 			editFieldsPage.setNewChildFeatures();
 			return true;
 		}
 		return false;
-	}
-
-	private void removeNewChild() {
-//		try {
-//			if (addNewChildCommand != null && addNewChildCommand.canUndo())
-//				addNewChildCommand.undo();
-//		} catch (Exception e) {
-//			e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
-//		}
 	}
 
 	/**
