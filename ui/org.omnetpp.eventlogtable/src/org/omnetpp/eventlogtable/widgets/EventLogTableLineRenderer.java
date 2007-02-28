@@ -26,7 +26,7 @@ import org.omnetpp.eventlog.engine.EndSendEntry;
 import org.omnetpp.eventlog.engine.Event;
 import org.omnetpp.eventlog.engine.EventEntry;
 import org.omnetpp.eventlog.engine.EventLogEntry;
-import org.omnetpp.eventlog.engine.EventLogMessage;
+import org.omnetpp.eventlog.engine.EventLogMessageEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.MessageDependency;
@@ -192,14 +192,19 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 							}
 						}
 						else {
-							if (eventLogEntry instanceof EventLogMessage) {
-								EventLogMessage eventLogMessage = (EventLogMessage)eventLogEntry;
-								drawText(eventLogMessage.getText(), EVENT_LOG_MESSAGE_COLOR);
+							if (eventLogEntry instanceof EventLogMessageEntry) {
+								EventLogMessageEntry eventLogMessageEntry = (EventLogMessageEntry)eventLogEntry;
+								drawText(eventLogMessageEntry.getText(), EVENT_LOG_MESSAGE_COLOR);
 							}
 							else if (eventLogEntry instanceof BubbleEntry) {
 								BubbleEntry bubbleEntry = (BubbleEntry)eventLogEntry;
-								drawText("Bubble in ", CONSTANT_TEXT_COLOR);
-								drawModuleDescription(eventLog.getModuleCreatedEntry(bubbleEntry.getContextModuleId()));
+								drawText("Bubble", CONSTANT_TEXT_COLOR);
+
+								if (event.getModuleId() != bubbleEntry.getContextModuleId()) {
+									drawText(" in ", CONSTANT_TEXT_COLOR);
+									drawModuleDescription(eventLog.getModuleCreatedEntry(bubbleEntry.getContextModuleId()));
+								}
+
 								drawText(" : ", CONSTANT_TEXT_COLOR);
 								drawText(bubbleEntry.getText(), BUBBLE_ENTRY_COLOR);
 							}
@@ -209,26 +214,36 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 								drawText(moduleMethodBeginEntry.getMethod(), DATA_COLOR);
 								drawText(" in ", CONSTANT_TEXT_COLOR);
 								drawModuleDescription(eventLog.getModuleCreatedEntry(moduleMethodBeginEntry.getToModuleId()));
-								drawText(" from ", CONSTANT_TEXT_COLOR);
-								drawModuleDescription(eventLog.getModuleCreatedEntry(moduleMethodBeginEntry.getFromModuleId()));
+
+								if (event.getModuleId() != moduleMethodBeginEntry.getContextModuleId()) {
+									drawText(" from ", CONSTANT_TEXT_COLOR);
+									drawModuleDescription(eventLog.getModuleCreatedEntry(moduleMethodBeginEntry.getFromModuleId()));
+								}
 							}
 							else if (eventLogEntry instanceof ModuleMethodEndEntry) {
 								drawText("End calling module", CONSTANT_TEXT_COLOR);
 							}
 							else if (eventLogEntry instanceof ModuleCreatedEntry) {
-								// TODO:
-								drawText("Module created...", CONSTANT_TEXT_COLOR);
+								ModuleCreatedEntry moduleCreatedEntry = (ModuleCreatedEntry)eventLogEntry;
+								drawText("Module ", CONSTANT_TEXT_COLOR);
+								drawModuleDescription(moduleCreatedEntry);
+								drawText(" created under ", CONSTANT_TEXT_COLOR);
+								drawModuleDescription(eventLog.getModuleCreatedEntry(moduleCreatedEntry.getParentModuleId()));
 							}
 							else if (eventLogEntry instanceof ModuleDeletedEntry) {
-								// TODO:
-								drawText("Module deleted...", CONSTANT_TEXT_COLOR);
+								ModuleDeletedEntry moduleDeletedEntry = (ModuleDeletedEntry)eventLogEntry;
+								drawText("Module ", CONSTANT_TEXT_COLOR);
+								drawModuleDescription(eventLog.getModuleCreatedEntry(moduleDeletedEntry.getModuleId()));
+								drawText(" deleted", CONSTANT_TEXT_COLOR);
 							}
 							else if (eventLogEntry instanceof ModuleReparentedEntry) {
-								// TODO:
-								drawText("Module reparented...", CONSTANT_TEXT_COLOR);
+								ModuleReparentedEntry moduleReparentedEntry = (ModuleReparentedEntry)eventLogEntry;
+								drawText("Module ", CONSTANT_TEXT_COLOR);
+								drawModuleDescription(eventLog.getModuleCreatedEntry(moduleReparentedEntry.getModuleId()));
+								drawText(" reparented under ", CONSTANT_TEXT_COLOR);
+								drawModuleDescription(eventLog.getModuleCreatedEntry(moduleReparentedEntry.getNewParentModuleId()));
 							}
 							else if (eventLogEntry instanceof ConnectionCreatedEntry) {
-								// TODO:
 								drawText("Connection created...", CONSTANT_TEXT_COLOR);
 							}
 							else if (eventLogEntry instanceof ConnectionDeletedEntry) {
@@ -236,22 +251,37 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 								drawText("Connection deleted...", CONSTANT_TEXT_COLOR);
 							}
 							else if (eventLogEntry instanceof ConnectionDisplayStringChangedEntry) {
-								// TODO:
-								drawText("Connection display string changed...", CONSTANT_TEXT_COLOR);
+								// TODO: print connection info
+								ConnectionDisplayStringChangedEntry connectionDisplayStringChangedEntry = (ConnectionDisplayStringChangedEntry)eventLogEntry;
+								drawText("Connection display string changed to ", CONSTANT_TEXT_COLOR);
+								drawText(connectionDisplayStringChangedEntry.getDisplayString(), DATA_COLOR);
 							}
 							else if (eventLogEntry instanceof ModuleDisplayStringChangedEntry) {
-								// TODO:
-								drawText("Module display string changed...", CONSTANT_TEXT_COLOR);
+								ModuleDisplayStringChangedEntry moduleDisplayStringChangedEntry = (ModuleDisplayStringChangedEntry)eventLogEntry;
+								drawText("Display string changed", CONSTANT_TEXT_COLOR);
+
+								if (event.getModuleId() != moduleDisplayStringChangedEntry.getContextModuleId())	{
+									drawText("for ", CONSTANT_TEXT_COLOR);
+									drawModuleDescription(eventLog.getModuleCreatedEntry(moduleDisplayStringChangedEntry.getContextModuleId()));
+								}
+
+								drawText(" to ", CONSTANT_TEXT_COLOR);							
+								drawText(moduleDisplayStringChangedEntry.getDisplayString(), DATA_COLOR);
 							}
 							else if (eventLogEntry instanceof CancelEventEntry) {
-								// TODO:
-								drawText("Cancelling event caused by message ...", CONSTANT_TEXT_COLOR);
+								CancelEventEntry cancelEventEntry = (CancelEventEntry)eventLogEntry;
+								drawText("Cancelling self message ", CONSTANT_TEXT_COLOR);
+								drawMessageDescription(findBeginSendEntry(cancelEventEntry.getPreviousEventNumber(), cancelEventEntry.getMessageId()));
 							}
 							else if (eventLogEntry instanceof BeginSendEntry) {
-								// TODO: add message stuff
+								// TODO: complete message stuff, tooltip with all data?
 								BeginSendEntry beginSendEntry = (BeginSendEntry)eventLogEntry;
 								drawText("Begin sending of ", CONSTANT_TEXT_COLOR);
 								drawMessageDescription(beginSendEntry);
+								drawText(" kind = ", CONSTANT_TEXT_COLOR);
+								drawText(String.valueOf(beginSendEntry.getMessageKind()), DATA_COLOR);
+								drawText(" length = ", CONSTANT_TEXT_COLOR);
+								drawText(String.valueOf(beginSendEntry.getMessageLength()), DATA_COLOR);
 							}
 							else if (eventLogEntry instanceof EndSendEntry) {
 								EndSendEntry endSendEntry = (EndSendEntry)eventLogEntry;
@@ -269,10 +299,15 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 								drawText(sendHopEntry.getPropagationDelay() + "s", DATA_COLOR);
 							}
 							else if (eventLogEntry instanceof SendDirectEntry) {
-								// TODO: add destGateId
+								// TODO: add destGate name
 								SendDirectEntry sendDirectEntry = (SendDirectEntry)eventLogEntry;
-								drawText("Sending direct message from ", CONSTANT_TEXT_COLOR);
-								drawModuleDescription(eventLog.getModuleCreatedEntry(sendDirectEntry.getSenderModuleId()));
+								drawText("Sending direct message ", CONSTANT_TEXT_COLOR);
+
+								if (event.getModuleId() != sendDirectEntry.getContextModuleId())	{
+									drawText("from ", CONSTANT_TEXT_COLOR);
+									drawModuleDescription(eventLog.getModuleCreatedEntry(sendDirectEntry.getSenderModuleId()));
+								}
+
 								drawText(" to ", CONSTANT_TEXT_COLOR);
 								drawModuleDescription(eventLog.getModuleCreatedEntry(sendDirectEntry.getDestModuleId()));
 								drawText(" with transmission delay ", CONSTANT_TEXT_COLOR);
@@ -281,8 +316,9 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 								drawText(sendDirectEntry.getPropagationDelay() + "s", DATA_COLOR);
 							}
 							else if (eventLogEntry instanceof DeleteMessageEntry) {
-								// TODO:
+								DeleteMessageEntry deleteMessageEntry = (DeleteMessageEntry)eventLogEntry;
 								drawText("Deleting message ...", CONSTANT_TEXT_COLOR);
+								drawMessageDescription(findBeginSendEntry(deleteMessageEntry.getPreviousEventNumber(), deleteMessageEntry.getMessageId()));
 							}
 							else
 								throw new RuntimeException("Unknown event log entry: " + eventLogEntry.getClassName());
@@ -297,24 +333,34 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 		}
 	}
 
+	private BeginSendEntry findBeginSendEntry(int previousEventNumber, int messageId) {
+		// TODO:
+		return null;
+	}
+
 	private void drawModuleDescription(ModuleCreatedEntry moduleCreatedEntry) {
 		if (moduleCreatedEntry != null) {
+			// TODO: print submodule (fullName), parent (fullName) or module (fullPath)
 			drawText("module ", CONSTANT_TEXT_COLOR);
 			drawText("(" + moduleCreatedEntry.getModuleClassName() + ") ", TYPE_COLOR);
-			drawText(moduleCreatedEntry.getFullName(), NAME_COLOR, true); // TODO: full path
+			drawText(moduleCreatedEntry.getFullName(), NAME_COLOR, true);
 		}
 		else
 			drawText("module <unknown>", CONSTANT_TEXT_COLOR);
 	}
 	
 	private void drawMessageDescription(BeginSendEntry beginSendEntry) {
-		drawText("(" + beginSendEntry.getMessageClassName() + ") ", TYPE_COLOR);
-		drawText(beginSendEntry.getMessageFullName(), NAME_COLOR, true);
+		if (beginSendEntry != null) {
+			drawText("(" + beginSendEntry.getMessageClassName() + ") ", TYPE_COLOR);
+			drawText(beginSendEntry.getMessageFullName(), NAME_COLOR, true);
+		}
+		else
+			drawText("message <unknown>", CONSTANT_TEXT_COLOR);
 	}
 	
 	private void drawRawEntry(EventLogEntry eventLogEntry) {
 
-		if (!(eventLogEntry instanceof EventLogMessage)) {
+		if (!(eventLogEntry instanceof EventLogMessageEntry)) {
 			drawText(eventLogEntry.getDefaultAttribute() + " ", CONSTANT_TEXT_COLOR, true);
 		}
 
@@ -337,7 +383,7 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 		Font newFont = new Font(oldFont.getDevice(), fontData.getName(), fontData.getHeight(), bold ? SWT.BOLD : SWT.NORMAL);
 		gc.setFont(newFont);
 
-		if (color != null)
+		if (color != null && !gc.getForeground().equals(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT)))
 			gc.setForeground(color);
 
 		gc.drawText(text, x, 0);
