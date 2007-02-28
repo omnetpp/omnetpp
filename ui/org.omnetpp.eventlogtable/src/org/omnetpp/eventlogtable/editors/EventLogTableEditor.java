@@ -32,6 +32,10 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 
 	protected EventLogTable eventLogTable;
 
+	public EventLogTable getEventLogTable() {
+		return eventLogTable;
+	}
+	
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
