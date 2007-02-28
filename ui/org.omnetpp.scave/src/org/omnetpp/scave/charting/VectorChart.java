@@ -40,7 +40,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.jfree.data.xy.XYDataset;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
-import org.omnetpp.common.util.GeomUtils;
 import org.omnetpp.scave.charting.plotter.ChartSymbol;
 import org.omnetpp.scave.charting.plotter.CrossSymbol;
 import org.omnetpp.scave.charting.plotter.DiamondSymbol;
@@ -74,6 +73,9 @@ public class VectorChart extends ChartCanvas {
 	private Color insetsBackgroundColor = DEFAULT_INSETS_BACKGROUND_COLOR;
 	private Color insetsLineColor = DEFAULT_INSETS_LINE_COLOR;
 	
+	private LinearAxis xAxis = new LinearAxis(this, false); //XXX experimental
+	private LinearAxis yAxis = new LinearAxis(this, true); //XXX experimental
+	
 	static class LineProperties {
 		
 		static final SymbolType DEFAULT_SYMBOL_TYPE = SymbolType.Square;
@@ -84,7 +86,7 @@ public class VectorChart extends ChartCanvas {
 			public void drawSymbol(Graphics graphics, int x, int y) {}
 		};
 		private static final IVectorPlotter NULL_PLOTTER = new VectorPlotter() {
-			public void plot(XYDataset dataset, int series, Graphics graphics, VectorChart chart, IChartSymbol symbol) {}
+			public void plot(XYDataset dataset, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol) {}
 		};
 		
 		SymbolType symbolType;
@@ -320,19 +322,29 @@ public class VectorChart extends ChartCanvas {
 		Rectangle area = new Rectangle(getClientArea());
 		Rectangle remaining = title.layout(gc, area);
 		remaining = legend.layout(gc, remaining);
-		remaining = tickLabels.layout(gc, remaining);
-		remaining = axes.layout(gc, remaining);
-		remaining = crosshair.layout(gc, remaining);
-
-		Insets insets = GeomUtils.subtract(area, remaining);
+		
+		Rectangle areaMinusLegend = remaining.getCopy();
+		Insets insets = new Insets();
+		xAxis.layout(gc, areaMinusLegend, insets);
+		yAxis.layout(gc, areaMinusLegend, insets);
+		
+//		remaining = tickLabels.layout(gc, remaining);
+//		remaining = axes.layout(gc, remaining);
+//		remaining = crosshair.layout(gc, remaining);
+//
+//		Insets insets = GeomUtils.subtract(area, remaining);
 		setInsets(insets);
 		super.beforePaint(gc);
 	}
 	
 	@Override
 	protected void paintCachableLayer(GC gc) {
+		xAxis.drawGrid(gc);
+		yAxis.drawGrid(gc);
+
 		Graphics graphics = new SWTGraphics(gc);
 		graphics.setAntialias(antialias ? SWT.ON : SWT.OFF);
+		graphics.setLineStyle(Graphics.LINE_SOLID);
 		for (int series=0; series<dataset.getSeriesCount(); series++) {
 			String key = dataset.getSeriesKey(series).toString();
 			IVectorPlotter plotter = getPlotter(key);
@@ -393,15 +405,18 @@ public class VectorChart extends ChartCanvas {
 		gc.fillRectangle(0, 0, insets.left, canvasRect.height); // left
 		gc.fillRectangle(canvasRect.right()-insets.right, 0, insets.right, canvasRect.height); // right
 		gc.setForeground(insetsLineColor);
-		gc.drawRectangle(insets.left-1, insets.top-1, getViewportWidth()+1, getViewportHeight()+1);
+		//XXX gc.drawRectangle(insets.left-1, insets.top-1, getViewportWidth()+1, getViewportHeight()+1);
 
 		title.draw(gc);
 		legend.draw(gc);
-		tickLabels.draw(gc);
-		axes.draw(gc);
+		//XXX tickLabels.draw(gc);
+		//XXX axes.draw(gc);
+		xAxis.drawAxis(gc);
+		yAxis.drawAxis(gc);
 		crosshair.draw(gc);
 	}
 
+	//XXX may be removed
 	class TickLabels {
 		private Color lineColor;
 		private Color labelColor;
@@ -632,6 +647,7 @@ public class VectorChart extends ChartCanvas {
 		}
 	}
 	
+	//XXX may be removed
 	class Axes {
 		
 		private String xAxisTitle;
@@ -695,4 +711,5 @@ public class VectorChart extends ChartCanvas {
 			}
 		}
 	}
+
 }

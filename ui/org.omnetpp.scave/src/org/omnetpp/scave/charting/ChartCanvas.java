@@ -36,7 +36,7 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.model2.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.model2.ChartProperties.LegendPosition;
 
-public abstract class ChartCanvas extends ZoomableCachingCanvas {
+public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoordsMapping {
 
 	protected static final String DEFAULT_TITLE = "";
 	protected static final Font DEFAULT_TITLE_FONT = new Font(null, "Arial", 10, SWT.NORMAL);
@@ -224,56 +224,6 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		paint(gc);
 		gc.dispose();
 		return image;
-	}
-	
-	
-	class Ticks implements Iterable<BigDecimal> {
-		
-		private BigDecimal start;
-		private BigDecimal end;
-		private BigDecimal delta;
-		
-		public Ticks(double start, double end, double delta) {
-			int scale = (int)Math.ceil(Math.log10(delta));
-			this.start = new BigDecimal(start).setScale(-scale, RoundingMode.FLOOR);
-			this.end = new BigDecimal(end).setScale(-scale, RoundingMode.CEILING);
-			BigDecimal spacing = BigDecimal.valueOf(delta);
-			this.delta = new BigDecimal(1).scaleByPowerOfTen(scale);
-			// use 2, 4, 6, 8, etc. if possible
-			if (this.delta.divide(BigDecimal.valueOf(5)).compareTo(spacing) > 0)
-				this.delta = this.delta.divide(BigDecimal.valueOf(5));
-			// use 5, 10, 15, 20, etc. if possible
-			else if (this.delta.divide(BigDecimal.valueOf(2)).compareTo(spacing) > 0)
-				this.delta = this.delta.divide(BigDecimal.valueOf(2));
-		}
-
-		public Iterator<BigDecimal> iterator() {
-			class TickIterator implements Iterator<BigDecimal> {
-				BigDecimal current;
-				
-				public TickIterator() {
-					current = start;
-				}
-				
-				public boolean hasNext() {
-					return current.compareTo(end) < 0;
-				}
-
-				public BigDecimal next() {
-					if (!hasNext())
-						throw new NoSuchElementException();
-					BigDecimal result = current;
-					current = current.add(delta);
-					return result;
-				}
-
-				public void remove() {
-					throw new UnsupportedOperationException();
-				}
-			};
-			
-			return new TickIterator();
-		}
 	}
 	
 	protected abstract class Axis {

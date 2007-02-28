@@ -99,7 +99,8 @@ public class ChartFactory {
 		final VectorChart vectorChart = new VectorChart(parent, SWT.DOUBLE_BUFFERED);
 		vectorChart.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
 		vectorChart.setDataset(data);
-		vectorChart.setCaching(true);
+		vectorChart.setCaching(false); //XXX
+		vectorChart.setAntialias(true);
 		setChartProperties(chart, vectorChart);
 
 		vectorChart.setBackground(ColorConstants.white);
