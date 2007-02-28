@@ -44,6 +44,7 @@ public class ImageFactory {
     public final static String EVENLOG_IMAGE_CONNECTION_DISPLAY_STRING_CHANGED = EVENTLOG_IMAGE_DIR + "ConnectionDisplayStringChanged";
     
     public final static String EVENLOG_IMAGE_EVENT = EVENTLOG_IMAGE_DIR + "Event";
+    public final static String EVENLOG_IMAGE_SELF_EVENT = EVENTLOG_IMAGE_DIR + "SelfEvent";
     public final static String EVENLOG_IMAGE_CANCEL_EVENT = EVENTLOG_IMAGE_DIR + "CancelEvent";
 
     public final static String EVENLOG_IMAGE_BEGIN_SEND = EVENTLOG_IMAGE_DIR + "BeginSend";
