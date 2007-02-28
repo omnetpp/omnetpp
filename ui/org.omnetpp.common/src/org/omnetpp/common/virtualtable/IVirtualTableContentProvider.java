@@ -11,6 +11,7 @@ public interface IVirtualTableContentProvider<T> extends IContentProvider {
 	public long getDistanceToLastElement(T element, long limit);
 
 	public T getNeighbourElement(T element, long distance);
+	public T getClosestElement(T element);
 
 	public long getApproximateNumberOfElements();
 	public T getApproximateElementAt(double percentage);
