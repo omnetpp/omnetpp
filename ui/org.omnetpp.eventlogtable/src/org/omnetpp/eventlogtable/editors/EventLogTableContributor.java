@@ -95,8 +95,7 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 			}
 		};
 
-		// TODO: find correct icon
-		action.setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_TEMPLATE));
+		action.setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE));
 		toolBarManager.add(action);
 	}
 
@@ -178,8 +177,7 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 			}
 		};
 
-		// TODO: find correct icon
-		action.setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_TEMPLATE));
+		action.setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER));
 		toolBarManager.add(action);
 	}
 }
