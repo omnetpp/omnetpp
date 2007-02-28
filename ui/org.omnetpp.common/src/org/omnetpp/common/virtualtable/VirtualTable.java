@@ -47,7 +47,7 @@ import org.omnetpp.common.color.ColorFactory;
 public class VirtualTable<T> extends Composite {
 	private static final Color LINE_COLOR = ColorFactory.asColor("grey95");
 
-	private final static boolean debug = true;
+	private final static boolean debug = false;
 
 	/**
 	 * This is an element close enough to the top of the visible area.

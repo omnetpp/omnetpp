@@ -43,9 +43,9 @@ public class LongVirtualTableContentProvider implements IVirtualTableContentProv
 
 		long sourceValue = sourceElement;
 		long targetValue = targetElement;
-		long delta = Math.abs(targetValue - sourceValue);
-		
-		if (delta > limit)
+		long delta = targetValue - sourceValue;
+
+		if (Math.abs(delta) > Math.abs(limit) || Math.signum(delta) != Math.signum(limit))
 			return sleep(limit);
 		else
 			return sleep(delta);
