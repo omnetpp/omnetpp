@@ -312,6 +312,16 @@ FIX_STRING_MEMBER(VectorResult, columns, Columns);
     }
 %}
 
+%typemap(javacode) OutputVectorEntry %{
+   public boolean equals(Object obj) {
+      return (obj instanceof OutputVectorEntry) && getSerial() == ((OutputVectorEntry)obj).getSerial();
+   }
+
+   public int hashCode() {
+      return (int)getCPtr(this);
+   }
+%}
+
 // Java doesn't appear to have dictionary sort, export it
 int strdictcmp(const char *s1, const char *s2);
 
