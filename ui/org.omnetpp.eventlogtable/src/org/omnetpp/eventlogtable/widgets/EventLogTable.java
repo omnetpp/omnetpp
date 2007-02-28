@@ -16,39 +16,36 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IActionBars;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.common.virtualtable.VirtualTable;
+import org.omnetpp.common.virtualtable.VirtualTableViewer;
 import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlogtable.editors.EventLogInput;
 
-public class EventLogTable extends VirtualTable<EventLogEntry> {
+public class EventLogTable extends VirtualTableViewer<EventLogEntry> {
 	public EventLogTable(Composite parent, IActionBars actionBars) {
-		super(new Table(parent, SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI));
-		
-		table.setHeaderVisible(true);
-		table.setLinesVisible(false);
+		super(parent);
 
-		TableColumn tableColumn = new TableColumn(table, SWT.NONE);
+		setContentProvider(new EventLogTableContentProvider());
+		setLineRenderer(new EventLogTableLineRenderer());
+
+		TableColumn tableColumn = virtualTable.createColumn();
 		tableColumn.setWidth(60);
-		tableColumn.setText("Event#");
+		tableColumn.setText("Event #");
 
-		tableColumn = new TableColumn(table, SWT.NONE);
+		tableColumn = virtualTable.createColumn();
 		tableColumn.setWidth(140);
 		tableColumn.setText("Time");
 
-		tableColumn = new TableColumn(table, SWT.NONE);
-		tableColumn.setWidth(800);
-		tableColumn.setText("Details / log message");
+		tableColumn = virtualTable.createColumn();
+		tableColumn.setWidth(2000);
+		tableColumn.setText("Details");
 
-		setContentProvider(new EventLogTableContentProvider());
-		setInput(null);
-		setLabelProvider(new EventLogTableItemProvider());
-
+		// TODO: create new contributor class so that actions do not appear multiple times, see ScaveEditorContributor
+		// TODO: get active eventlogtable each time an action is selected
 		IToolBarManager toolBarManager = actionBars.getToolBarManager();
 		addSetFilterModeAction(toolBarManager);
 		addSetDisplayModeAction(toolBarManager);
@@ -60,6 +57,7 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 			@Override
 			public void run() {
 				setFilterMode((getFilterMode() + 1) % 5);
+				virtualTable.updateVerticalBarParameters();
 			}
 			
 			@Override
@@ -131,6 +129,7 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 				};
 			}
 		};
+
 		// TODO: find correct icon
 		action.setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_TEMPLATE));
 		toolBarManager.add(action);
@@ -140,8 +139,8 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 		Action action = new Action("Display", Action.AS_DROP_DOWN_MENU) {
 			@Override
 			public void run() {
-				EventLogTableItemProvider eventLogTableItemProvider = (EventLogTableItemProvider)getLabelProvider();
-				eventLogTableItemProvider.setDisplayMode(EventLogTableItemProvider.DisplayMode.values()[(eventLogTableItemProvider.getDisplayMode().ordinal() + 1) % EventLogTableItemProvider.DisplayMode.values().length]);
+				EventLogTableLineRenderer eventLogTableItemProvider = (EventLogTableLineRenderer)getLineRenderer();
+				eventLogTableItemProvider.setDisplayMode(EventLogTableLineRenderer.DisplayMode.values()[(eventLogTableItemProvider.getDisplayMode().ordinal() + 1) % EventLogTableLineRenderer.DisplayMode.values().length]);
 				refresh();
 			}
 			
@@ -180,16 +179,16 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 					}
 
 					private void createMenu(Menu menu) {
-						addSubMenuItem(menu, "Descriptive", EventLogTableItemProvider.DisplayMode.DESCRIPTIVE);
-						addSubMenuItem(menu, "Raw", EventLogTableItemProvider.DisplayMode.RAW);
+						addSubMenuItem(menu, "Descriptive", EventLogTableLineRenderer.DisplayMode.DESCRIPTIVE);
+						addSubMenuItem(menu, "Raw", EventLogTableLineRenderer.DisplayMode.RAW);
 					}
 
-					private void addSubMenuItem(Menu menu, String text, final EventLogTableItemProvider.DisplayMode displayMode) {
+					private void addSubMenuItem(Menu menu, String text, final EventLogTableLineRenderer.DisplayMode displayMode) {
 						MenuItem subMenuItem = new MenuItem(menu, SWT.PUSH);
 						subMenuItem.setText(text);
 						subMenuItem.addSelectionListener( new SelectionAdapter() {
 							public void widgetSelected(SelectionEvent e) {
-								EventLogTableItemProvider eventLogTableItemProvider = (EventLogTableItemProvider)getLabelProvider();
+								EventLogTableLineRenderer eventLogTableItemProvider = (EventLogTableLineRenderer)getLineRenderer();
 								eventLogTableItemProvider.setDisplayMode(displayMode);
 								refresh();
 							}
@@ -198,13 +197,14 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 				};
 			}
 		};
+
 		// TODO: find correct icon
 		action.setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_TEMPLATE));
 		toolBarManager.add(action);		
 	}
 
 	private void addPopupMenu() {
-		Menu popupMenu = new Menu(getControl());
+		Menu popupMenu = new Menu(virtualTable);
 
 		// search menu item
 		MenuItem subMenuItem = new MenuItem(popupMenu, SWT.PUSH);
@@ -240,7 +240,7 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 				EventLogInput eventLogInput = (EventLogInput)getInput();
 				try {
 					IMarker marker = eventLogInput.getFile().createMarker(IMarker.BOOKMARK);
-					IEvent event = ((EventLogEntry)getSelectionElement()).getEvent();
+					IEvent event = ((EventLogEntry)virtualTable.getSelectionElement()).getEvent();
 					marker.setAttribute(IMarker.LOCATION, "# " + event.getEventNumber());
 					marker.setAttribute("EventNumber", event.getEventNumber());
 					refresh();
@@ -251,7 +251,16 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 			}
 		});
 
-		getControl().setMenu(popupMenu);
+		// goto event menu item
+		subMenuItem = new MenuItem(popupMenu, SWT.PUSH);
+		subMenuItem.setText("Test");
+		subMenuItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent ev) {
+				virtualTable.test();
+			}
+		});
+
+		virtualTable.setMenu(popupMenu);
 	}
 
 	private void activateSearchText() {
@@ -288,7 +297,7 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 			IEvent event = eventLog.getEventForEventNumber(eventNumber);
 
 			if (event != null)
-				gotoElement(event.getEventEntry());
+				virtualTable.gotoElement(event.getEventEntry());
 			else
 				MessageDialog.openError(null, "Goto event" , "No such event: " + eventNumber);
 		}
@@ -300,21 +309,17 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 	@Override
 	public void setInput(Object input) {
 		super.setInput(input);
-		
+
 		if (input != null)
-			getEventLogTableLabelProvider().setResource(((EventLogInput)input).getFile());
+			((EventLogTableLineRenderer)getLineRenderer()).setResource(((EventLogInput)input).getFile());
 	}
 
 	public IEventLog getEventLog() {
-		return (IEventLog)getInput();
+		return ((EventLogInput)getInput()).getEventLog();
 	}
 
 	public EventLogTableContentProvider getEventLogTableContentProvider() {
 		return (EventLogTableContentProvider)getContentProvider();
-	}
-
-	public EventLogTableItemProvider getEventLogTableLabelProvider() {
-		return (EventLogTableItemProvider)getLabelProvider();
 	}
 
 	public int getFilterMode() {
@@ -323,11 +328,6 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 
 	public void setFilterMode(int i) {
 		getEventLogTableContentProvider().setFilterMode(i);
-		fixPointElement = getEventLogTableContentProvider().getClosestElement(fixPointElement);
-		refresh();
-	}
-
-	public Table getTable() {
-		return table;
+		virtualTable.stayNear();
 	}
 }

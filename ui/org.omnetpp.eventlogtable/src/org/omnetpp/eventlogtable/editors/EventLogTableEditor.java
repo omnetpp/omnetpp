@@ -4,7 +4,9 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.widgets.Composite;
@@ -21,22 +23,24 @@ import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 
-public class EventLogTableEditor extends EventLogEditor implements IResourceChangeListener, INavigationLocationProvider, IGotoMarker {
-	protected Runnable locationTimer;
+public class EventLogTableEditor extends EventLogEditor implements INavigationLocationProvider, IGotoMarker {
+	private Runnable locationTimer;
 
 	private int lastLocationEventNumber;
+	
+	private ResourceChangeListener resourceChangeListener = new ResourceChangeListener();
 
 	protected EventLogTable eventLogTable;
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener);
 	}
 
 	@Override
 	public void dispose() {
-		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
+		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
 	}
 
 	@Override
@@ -51,9 +55,9 @@ public class EventLogTableEditor extends EventLogEditor implements IResourceChan
 			}
 		};
 
-		eventLogTable.getTable().addPaintListener(new PaintListener() {
+		eventLogTable.getVirtualTable().addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
-				int eventNumber = eventLogTable.getTopVisibleElement().getEvent().getEventNumber();
+				int eventNumber = eventLogTable.getVirtualTable().getTopVisibleElement().getEvent().getEventNumber();
 
 				if (eventNumber != lastLocationEventNumber) {
 					lastLocationEventNumber = eventNumber;
@@ -61,7 +65,6 @@ public class EventLogTableEditor extends EventLogEditor implements IResourceChan
 				}
 			}
 		});
-
 	}
 
 	@Override
@@ -108,7 +111,8 @@ public class EventLogTableEditor extends EventLogEditor implements IResourceChan
 			
 			if (eventLogEntry != null) {
 				lastLocationEventNumber = event.getEventNumber();
-				eventLogTable.gotoElement(eventLogEntry);
+				// TODO:
+				eventLogTable.getVirtualTable().gotoElement(eventLogEntry);
 			}
 		}
 
@@ -137,17 +141,42 @@ public class EventLogTableEditor extends EventLogEditor implements IResourceChan
 	}
 
 	public INavigationLocation createNavigationLocation() {
-		return new EventLogTableLocation(eventLogTable.getTopVisibleElement().getEvent().getEventNumber());
+		EventLogEntry topElement = eventLogTable.getVirtualTable().getTopVisibleElement();
+		
+		if (topElement == null)
+			return null;
+		else
+			return new EventLogTableLocation(topElement.getEvent().getEventNumber());
 	}
 
 	public void gotoMarker(IMarker marker) {
 		int eventNumber = marker.getAttribute("EventNumber", -1);
-		eventLogTable.gotoElement(eventLogInput.getEventLog().getEventForEventNumber(eventNumber).getEventEntry());
+		eventLogTable.getVirtualTable().gotoElement(eventLogInput.getEventLog().getEventForEventNumber(eventNumber).getEventEntry());
 	}
 
-	public void resourceChanged(IResourceChangeEvent event) {
-		// TODO: check if the affected resource is ours
-		if (event.getDelta().getKind() == IResourceDelta.CHANGED)
-			eventLogTable.refresh();
+	private class ResourceChangeListener implements IResourceChangeListener, IResourceDeltaVisitor {
+		public void resourceChanged(IResourceChangeEvent event) {
+            try {
+                IResourceDelta delta = event.getDelta();
+
+                if (delta != null)
+                	delta.accept(this);
+            }
+            catch (CoreException e) {
+            	throw new RuntimeException(e);
+            }
+		}
+		
+        public boolean visit(IResourceDelta delta) {
+            if (delta != null && delta.getResource() != null && delta.getResource().equals(eventLogInput.getFile())) {
+            	Display.getCurrent().asyncExec(new Runnable() {
+					public void run() {
+	    				eventLogTable.refresh();
+					}            		
+            	});
+            }
+
+            return true;
+        }	
 	}
 }
