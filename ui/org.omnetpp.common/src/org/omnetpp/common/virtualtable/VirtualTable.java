@@ -118,7 +118,15 @@ public class VirtualTable<T> extends Composite {
 				ScrollBar scrollBar = (ScrollBar)e.widget;
 				double percentage = (double)scrollBar.getSelection() / (scrollBar.getMaximum() - scrollBar.getThumb());
 
-				if (percentage == 0)
+				if (e.detail == SWT.ARROW_UP)
+					scroll(1);
+				else if (e.detail == SWT.ARROW_DOWN)
+					scroll(-1);
+				else if (e.detail == SWT.PAGE_UP)
+					scroll(getPageJumpCount());
+				else if (e.detail == SWT.PAGE_DOWN)
+					scroll(-getPageJumpCount());
+				else if (percentage == 0)
 					gotoBegin();
 				else if (percentage == 1)
 					gotoEnd();
@@ -567,13 +575,15 @@ public class VirtualTable<T> extends Composite {
 				int[] columnOrder = table.getColumnOrder();
 
 				if (element != null) {
-					if (selectionElements != null && selectionElements.contains(element)) {
+					boolean isSelectedElement = selectionElements != null && selectionElements.contains(element);
+					
+					if (isSelectedElement) {
 						gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION));
 						gc.fillRectangle(new Rectangle(0, i * getLineHeight(), clipping.x + clipping.width, getLineHeight()));
 					}
 					else
 						gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
-	
+
 					if (drawLines) {
 						gc.setForeground(LINE_COLOR);
 						gc.drawLine(0, i *getLineHeight() - 1, clipping.x + clipping.width, i * getLineHeight() - 1);
@@ -585,7 +595,10 @@ public class VirtualTable<T> extends Composite {
 						lineTransform.translate(x, i * getLineHeight());
 						gc.setTransform(lineTransform);
 						gc.setClipping(new Rectangle(0, 0, column.getWidth(), getLineHeight()));
-	
+
+						if (isSelectedElement)
+							gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
+
 						lineRenderer.drawCell(gc, element, columnOrder[j]);
 						x += column.getWidth();
 						
