@@ -2,9 +2,11 @@ package org.omnetpp.scave.editors.datatable;
 
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.virtualtable.IVirtualTableLineRenderer;
 import org.omnetpp.scave.engine.OutputVectorEntry;
@@ -38,8 +40,9 @@ public class VectorResultLineRenderer extends LabelProvider implements IVirtualT
 
 	public void drawCell(GC gc, OutputVectorEntry element, int index) {
 		OutputVectorEntry entry = (OutputVectorEntry)element;
-		
-		gc.setForeground(DATA_COLOR);
+
+		if (!gc.getForeground().equals(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT)))
+			gc.setForeground(DATA_COLOR);
 
 		switch (index) {
 			case 0:
