@@ -53,7 +53,7 @@ envir.dll : $(OBJS)
 eventlogwriter.cc eventlogwriter.h : eventlogentries.pl ../eventlog/eventlogentries.txt
 	$(PERL) eventlogentries.pl
 
-omnetapp.o: eventlogwriter.h
+omnetapp.obj: eventlogwriter.h
 
 depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc
@@ -181,6 +181,7 @@ cinifile.obj: cinifile.cc \
   ../../include/cexception.h \
   fsutils.h \
   ../../include/cstrtokenizer.h \
+  ../../include/globals.h \
   ../../include/simkerneldefs.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
@@ -196,7 +197,10 @@ cinifile.obj: cinifile.cc \
   ../../include/regmacros.h \
   ../../include/cownedobject.h \
   ../../include/cnamedobject.h \
-  ../../include/cstringpool.h
+  ../../include/cstringpool.h \
+  ../../include/onstartup.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h
 cxmldoccache.obj: cxmldoccache.cc \
   ../../include/cobject.h \
   cxmldoccache.h \
@@ -215,53 +219,6 @@ cxmldoccache.obj: cxmldoccache.cc \
   ../../include/cenvir.h \
   ../../include/opp_string.h \
   ../nedxml/nedxmldefs.h
-eventlog.obj: eventlog.cc \
-  eventlogwriter.h \
-  eventlog.h \
-  ../../include/csimulation.h \
-  ../../include/cmodule.h \
-  ../../include/cmessage.h \
-  ../../include/cdisplaystring.h \
-  envdefs.h \
-  ../../include/cexception.h \
-  ../../include/simkerneldefs.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h \
-  ../../include/errmsg.h \
-  ../../include/opp_string.h \
-  ../../include/util.h \
-  ../../include/globals.h \
-  ../../include/cmsgheap.h \
-  ../../include/ccoroutine.h \
-  ../../include/onstartup.h \
-  ../../include/carray.h \
-  ../../include/cclassfactory.h \
-  ../../include/cownedobject.h \
-  ../../include/cenvir.h \
-  ../../include/cnamedobject.h \
-  ../../include/cobject.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
-  ../../include/regmacros.h \
-  ../../include/ccomponent.h \
-  ../../include/cgate.h \
-  ../../include/cpar.h \
-  ../../include/cdefaultlist.h \
-  ../../include/cexpression.h \
-  ../../include/cmsgpar.h \
-  ../../include/cfunction.h
-eventlogwriter.obj: eventlogwriter.cc \
-  eventlogwriter.h \
-  envdefs.h \
-  ../../include/cexception.h \
-  ../../include/simkerneldefs.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h \
-  ../../include/errmsg.h \
-  ../../include/opp_string.h \
-  ../../include/util.h
 filemgrs.obj: filemgrs.cc \
   ../../include/simkerneldefs.h \
   ../../include/cenvir.h \
@@ -398,7 +355,6 @@ omnetapp.obj: omnetapp.cc \
   args.h \
   omnetapp.h \
   fsutils.h \
-  eventlogwriter.h \
   ../../include/ccoroutine.h \
   ../../include/csimulation.h \
   ../../include/cscheduler.h \

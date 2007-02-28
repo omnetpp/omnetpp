@@ -84,6 +84,7 @@ filereader.obj: filereader.cc \
   exception.h \
   commondefs.h
 fileutil.obj: fileutil.cc \
+  ./unistd.h \
   fileutil.h \
   commondefs.h
 fnamelisttokenizer.obj: fnamelisttokenizer.cc \

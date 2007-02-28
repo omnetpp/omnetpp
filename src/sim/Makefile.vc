@@ -418,6 +418,23 @@ ccompoundmodule.obj: ccompoundmodule.cc \
   ../../include/cparvalue.h \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h
+cconfigentry.obj: cconfigentry.cc \
+  ../../include/cconfigentry.h \
+  ../../include/cownedobject.h \
+  ../../include/cenvir.h \
+  ../../include/simkerneldefs.h \
+  ../../include/util.h \
+  ../../include/cnamedobject.h \
+  ../../include/cexception.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/opp_string.h
 ccoroutine.obj: ccoroutine.cc \
   ../../include/ccoroutine.h \
   task.h \
@@ -1429,6 +1446,7 @@ csimulation.obj: csimulation.cc \
   ../../include/cexception.h \
   ../../include/cparvalue.h \
   ../../include/chasher.h \
+  ../../include/cconfig.h \
   ../../include/ccommbuffer.h \
   netbuilder/cnedloader.h \
   ../../include/ccomponent.h \
@@ -1459,6 +1477,7 @@ csimulation.obj: csimulation.cc \
   ../../include/platdep/timeutil.h \
   ../../include/cneddeclarationbase.h \
   ../../include/opp_string.h \
+  ../../include/cconfigentry.h \
   netbuilder/cneddeclaration.h \
   ../../include/cproperties.h \
   ../../include/cproperty.h
