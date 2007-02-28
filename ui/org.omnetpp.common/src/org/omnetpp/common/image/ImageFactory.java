@@ -30,20 +30,23 @@ public class ImageFactory {
     public final static String EVENTLOG_IMAGE_DIR = INTERNAL_DIR + "eventlog/";
 
     public final static String EVENLOG_IMAGE_BUBBLE = EVENTLOG_IMAGE_DIR + "Bubble";
+    
     public final static String EVENLOG_IMAGE_MODULE_METHOD_BEGIN = EVENTLOG_IMAGE_DIR + "ModuleMethodBegin";
     public final static String EVENLOG_IMAGE_MODULE_METHOD_END = EVENTLOG_IMAGE_DIR + "ModuleMethodEnd";
     public final static String EVENLOG_IMAGE_MODULE_CREATED = EVENTLOG_IMAGE_DIR + "ModuleCreated";
     public final static String EVENLOG_IMAGE_MODULE_DELETED = EVENTLOG_IMAGE_DIR + "ModuleDeleted";
     public final static String EVENLOG_IMAGE_MODULE_REPARENTED = EVENTLOG_IMAGE_DIR + "ModuleReparented";
     public final static String EVENLOG_IMAGE_MODULE_DISPLAY_STRING_CHANGED = EVENTLOG_IMAGE_DIR + "ModuleDisplayStringChanged";
+    
     public final static String EVENLOG_IMAGE_CONNECTION_CREATED = EVENTLOG_IMAGE_DIR + "ConnectionCreated";
     public final static String EVENLOG_IMAGE_CONNECTION_DELETED = EVENTLOG_IMAGE_DIR + "ConnectionDeleted";
     public final static String EVENLOG_IMAGE_CONNECTION_DISPLAY_STRING_CHANGED = EVENTLOG_IMAGE_DIR + "ConnectionDisplayStringChanged";
+    
     public final static String EVENLOG_IMAGE_EVENT = EVENTLOG_IMAGE_DIR + "Event";
     public final static String EVENLOG_IMAGE_CANCEL_EVENT = EVENTLOG_IMAGE_DIR + "CancelEvent";
-    public final static String EVENLOG_IMAGE_BEGIN_SEND_EVENT = EVENTLOG_IMAGE_DIR + "BeginSendEvent";
-    public final static String EVENLOG_IMAGE_END_SEND_EVENT = EVENTLOG_IMAGE_DIR + "EndSendEvent";
-    public final static String EVENLOG_IMAGE_SEND_MESSAGE = EVENTLOG_IMAGE_DIR + "SendMessage";
+
+    public final static String EVENLOG_IMAGE_BEGIN_SEND = EVENTLOG_IMAGE_DIR + "BeginSend";
+    public final static String EVENLOG_IMAGE_END_SEND = EVENTLOG_IMAGE_DIR + "EndSend";
     public final static String EVENLOG_IMAGE_SCHEDULE_AT = EVENTLOG_IMAGE_DIR + "ScheduleAt";
     public final static String EVENLOG_IMAGE_SEND_DIRECT = EVENTLOG_IMAGE_DIR + "SendDirect";
     public final static String EVENLOG_IMAGE_SEND_HOP = EVENTLOG_IMAGE_DIR + "SendHop";
