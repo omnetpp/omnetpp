@@ -128,7 +128,7 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
             contextModuleIds.push_front(moduleMethodBeginEntry->toModuleId);
 
         // count message entry
-        if (dynamic_cast<EventLogMessage *>(eventLogEntry))
+        if (dynamic_cast<EventLogMessageEntry *>(eventLogEntry))
             numEventLogMessages++;
 
         // count begin send entry
@@ -145,18 +145,18 @@ void Event::print(FILE *file, bool outputEventLogMessages)
     {
         EventLogEntry *eventLogEntry = *it;
 
-        if (outputEventLogMessages || !dynamic_cast<EventLogMessage *>(eventLogEntry))
+        if (outputEventLogMessages || !dynamic_cast<EventLogMessageEntry *>(eventLogEntry))
             eventLogEntry->print(file);
     }
 }
 
-EventLogMessage *Event::getEventLogMessage(int index)
+EventLogMessageEntry *Event::getEventLogMessage(int index)
 {
     Assert(index >= 0);
 
     for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++)
     {
-        EventLogMessage *eventLogMessage = dynamic_cast<EventLogMessage *>(*it);
+        EventLogMessageEntry *eventLogMessage = dynamic_cast<EventLogMessageEntry *>(*it);
 
         if (eventLogMessage) {
             if (index == 0)

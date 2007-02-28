@@ -77,7 +77,7 @@ class EVENTLOG_API Event : public IEvent
 
         virtual int getNumEventLogMessages() { return numEventLogMessages; }
         virtual int getNumBeginSendEntries() { return numBeginSendEntries; }
-        virtual EventLogMessage *getEventLogMessage(int index);
+        virtual EventLogMessageEntry *getEventLogMessage(int index);
 
         virtual long getEventNumber() { return eventEntry->eventNumber; }
         virtual simtime_t getSimulationTime() { return eventEntry->simulationTime; }

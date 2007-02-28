@@ -67,7 +67,7 @@ class EVENTLOG_API IEvent
         // simple text lines
         virtual int getNumEventLogMessages() = 0;
         virtual int getNumBeginSendEntries() = 0;
-        virtual EventLogMessage *getEventLogMessage(int index) = 0;
+        virtual EventLogMessageEntry *getEventLogMessage(int index) = 0;
 
         // some of the data found in the 'E' entry (line), to get additional data query the entries
         virtual long getEventNumber() = 0;

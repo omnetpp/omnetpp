@@ -42,11 +42,11 @@ bool EventLogTableFacade::matchesFilter(EventLogEntry *eventLogEntry)
             return
                 dynamic_cast<EventEntry *>(eventLogEntry) ||
                 dynamic_cast<BeginSendEntry *>(eventLogEntry) ||
-                dynamic_cast<EventLogMessage *>(eventLogEntry);
+                dynamic_cast<EventLogMessageEntry *>(eventLogEntry);
         case EVENT_AND_MESSAGE_ENTRIES:
             return
                 dynamic_cast<EventEntry *>(eventLogEntry) ||
-                dynamic_cast<EventLogMessage *>(eventLogEntry);
+                dynamic_cast<EventLogMessageEntry *>(eventLogEntry);
         case EVENT_ENTRIES:
             return dynamic_cast<EventEntry *>(eventLogEntry);
         case CUSTOM_ENTRIES:

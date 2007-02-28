@@ -46,6 +46,7 @@ class EVENTLOG_API EventLogEntry : public MatchExpression::Matchable
         virtual const char *getClassName() = 0;
 
         Event *getEvent() { return event; }
+        int getIndex();
         bool isMessageSend();
 
         virtual const std::vector<const char *> getAttributeNames() const = 0;
@@ -75,17 +76,17 @@ class EVENTLOG_API EventLogTokenBasedEntry : public EventLogEntry
 /**
  * One line log message entry.
  */
-class EVENTLOG_API EventLogMessage : public EventLogEntry
+class EVENTLOG_API EventLogMessageEntry : public EventLogEntry
 {
     public:
         const char *text;
 
     public:
-        EventLogMessage(Event *event);
+        EventLogMessageEntry(Event *event);
         virtual void parse(char *line, int length);
         virtual void print(FILE *fout);
         virtual int getClassIndex() { return 0; }
-        virtual const char *getClassName() { return "EventLogMessage"; }
+        virtual const char *getClassName() { return "EventLogMessageEntry"; }
 
         virtual const std::vector<const char *> getAttributeNames() const;
         virtual const char *getDefaultAttribute() const { return "-"; }

@@ -28,7 +28,7 @@ EventLogEntry *EventLogEntry::parseEntry(Event *event, char *line, int length)
 {
     if (*line == '-')
     {
-        EventLogMessage *eventLogMessage = new EventLogMessage(event);
+        EventLogMessageEntry *eventLogMessage = new EventLogMessageEntry(event);
         eventLogMessage->parse(line, length);
         return eventLogMessage;
     }
@@ -38,6 +38,15 @@ EventLogEntry *EventLogEntry::parseEntry(Event *event, char *line, int length)
         tokenizer.tokenize(line, length);
         return factory.parseEntry(event, tokenizer.tokens(), tokenizer.numTokens());
     }
+}
+
+int EventLogEntry::getIndex()
+{
+    for (int i = 0; i < event->getNumEventLogEntries(); i++)
+        if (this == event->getEventLogEntry(i))
+            return i;
+
+    Assert(false);
 }
 
 bool EventLogEntry::isMessageSend()
@@ -89,13 +98,13 @@ void EventLogTokenBasedEntry::parse(char *line, int length)
 
 /***********************************************/
 
-EventLogMessage::EventLogMessage(Event *event)
+EventLogMessageEntry::EventLogMessageEntry(Event *event)
 {
     this->event = event;
     text = NULL;
 }
 
-void EventLogMessage::parse(char *line, int length)
+void EventLogMessageEntry::parse(char *line, int length)
 {
     char *s = line + length - 1;
     char ch = '\0';
@@ -117,12 +126,12 @@ void EventLogMessage::parse(char *line, int length)
         *(s - 1) = '\r';
 }
 
-void EventLogMessage::print(FILE *fout)
+void EventLogMessageEntry::print(FILE *fout)
 {
     ::fprintf(fout, "- %s\n", text);
 }
 
-const std::vector<const char *> EventLogMessage::getAttributeNames() const
+const std::vector<const char *> EventLogMessageEntry::getAttributeNames() const
 {
     std::vector<const char *> names;
     names.push_back("-");
@@ -130,7 +139,7 @@ const std::vector<const char *> EventLogMessage::getAttributeNames() const
     return names;
 }
 
-const char *EventLogMessage::getAttribute(const char *name) const
+const char *EventLogMessageEntry::getAttribute(const char *name) const
 {
     if (!strcmp(name, "type"))
         return "-";
