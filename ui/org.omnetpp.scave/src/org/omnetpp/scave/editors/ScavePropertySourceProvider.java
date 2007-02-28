@@ -5,9 +5,9 @@ import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySourceProvider;
 import org.omnetpp.common.properties.PropertySource;
+import org.omnetpp.scave.charting.ChartProperties;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model2.ChartProperties;
 
 /**
  * Provides properties of scave model objects and charts.

@@ -1,15 +1,15 @@
 package org.omnetpp.scave.editors.ui;
 
-import static org.omnetpp.scave.model2.ChartProperties.PROP_AXIS_TITLE_FONT;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_GRAPH_TITLE_FONT;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_LABEL_FONT;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_LEGEND_FONT;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_LINE_TYPE;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_SYMBOL_SIZE;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_SYMBOL_TYPE;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_X_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_X_AXIS_MAX;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_X_AXIS_MIN;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_AXIS_TITLE_FONT;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_GRAPH_TITLE_FONT;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_LABEL_FONT;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_LEGEND_FONT;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_LINE_TYPE;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_SYMBOL_SIZE;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_SYMBOL_TYPE;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_MAX;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_MIN;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +28,15 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
+import org.omnetpp.scave.charting.ChartProperties;
+import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
+import org.omnetpp.scave.charting.ChartProperties.LegendAnchor;
+import org.omnetpp.scave.charting.ChartProperties.LegendPosition;
+import org.omnetpp.scave.charting.ChartProperties.LineStyle;
+import org.omnetpp.scave.charting.ChartProperties.ScalarChartProperties;
+import org.omnetpp.scave.charting.ChartProperties.SymbolType;
+import org.omnetpp.scave.charting.ChartProperties.VectorChartProperties;
+import org.omnetpp.scave.charting.ChartProperties.VectorChartProperties.LineProperties;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
@@ -36,17 +45,8 @@ import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScaveModelPackage;
-import org.omnetpp.scave.model2.ChartProperties;
 import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ScaveModelUtil;
-import org.omnetpp.scave.model2.ChartProperties.BarPlacement;
-import org.omnetpp.scave.model2.ChartProperties.LegendAnchor;
-import org.omnetpp.scave.model2.ChartProperties.LegendPosition;
-import org.omnetpp.scave.model2.ChartProperties.LineStyle;
-import org.omnetpp.scave.model2.ChartProperties.ScalarChartProperties;
-import org.omnetpp.scave.model2.ChartProperties.SymbolType;
-import org.omnetpp.scave.model2.ChartProperties.VectorChartProperties;
-import org.omnetpp.scave.model2.ChartProperties.VectorChartProperties.LineProperties;
 
 /**
  * Edit form of charts.

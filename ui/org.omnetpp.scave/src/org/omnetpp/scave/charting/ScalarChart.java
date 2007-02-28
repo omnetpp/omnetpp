@@ -1,17 +1,17 @@
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.model2.ChartProperties.PROP_AXIS_TITLE_FONT;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_BAR_BASELINE;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_BAR_PLACEMENT;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_LABEL_FONT;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_XY_GRID;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_XY_INVERT;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_X_AXIS_TITLE;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_X_LABELS_ROTATE_BY;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_Y_AXIS_MAX;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_Y_AXIS_MIN;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_Y_AXIS_TITLE;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_AXIS_TITLE_FONT;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_BAR_BASELINE;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_BAR_PLACEMENT;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_LABEL_FONT;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_XY_GRID;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_XY_INVERT;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_TITLE;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_X_LABELS_ROTATE_BY;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_MAX;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_MIN;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_TITLE;
 
 import java.math.BigDecimal;
 
@@ -31,7 +31,7 @@ import org.jfree.data.category.CategoryDataset;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GeomUtils;
-import org.omnetpp.scave.model2.ChartProperties.BarPlacement;
+import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
 
 public class ScalarChart extends ChartCanvas {
 	private CategoryDataset dataset;

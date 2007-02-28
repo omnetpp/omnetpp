@@ -1,4 +1,4 @@
-package org.omnetpp.scave.model2;
+package org.omnetpp.scave.charting;
 
 import java.util.List;
 
@@ -26,6 +26,8 @@ import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
+import org.omnetpp.scave.model2.DatasetManager;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 public class ChartProperties extends PropertySource {
 

@@ -19,12 +19,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.charting.ChartFactory;
+import org.omnetpp.scave.charting.ChartProperties;
 import org.omnetpp.scave.charting.ChartUpdater;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.ScaveModelPackage;
-import org.omnetpp.scave.model2.ChartProperties;
 
 public class ChartSheetPage extends ScaveEditorPage {
 

@@ -1,12 +1,12 @@
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.model2.ChartProperties.PROP_DISPLAY_LEGEND;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_GRAPH_TITLE;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_GRAPH_TITLE_FONT;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_LEGEND_ANCHORING;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_LEGEND_BORDER;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_LEGEND_FONT;
-import static org.omnetpp.scave.model2.ChartProperties.PROP_LEGEND_POSITION;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_DISPLAY_LEGEND;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_GRAPH_TITLE;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_GRAPH_TITLE_FONT;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_LEGEND_ANCHORING;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_LEGEND_BORDER;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_LEGEND_FONT;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_LEGEND_POSITION;
 
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
@@ -33,8 +33,8 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.image.ImageConverter;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.model2.ChartProperties.LegendAnchor;
-import org.omnetpp.scave.model2.ChartProperties.LegendPosition;
+import org.omnetpp.scave.charting.ChartProperties.LegendAnchor;
+import org.omnetpp.scave.charting.ChartProperties.LegendPosition;
 
 public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoordsMapping {
 
