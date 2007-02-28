@@ -30,6 +30,7 @@ public class ImageFactory {
     public final static String EVENTLOG_IMAGE_DIR = INTERNAL_DIR + "eventlog/";
 
     public final static String EVENLOG_IMAGE_BUBBLE = EVENTLOG_IMAGE_DIR + "Bubble";
+    public final static String EVENLOG_IMAGE_EVENT_LOG_MESSAGE = EVENTLOG_IMAGE_DIR + "EventLogMessage";
     
     public final static String EVENLOG_IMAGE_MODULE_METHOD_BEGIN = EVENTLOG_IMAGE_DIR + "ModuleMethodBegin";
     public final static String EVENLOG_IMAGE_MODULE_METHOD_END = EVENTLOG_IMAGE_DIR + "ModuleMethodEnd";
