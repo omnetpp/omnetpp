@@ -6,7 +6,6 @@ import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.jfree.data.category.CategoryDataset;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.BarChart;
@@ -50,8 +49,6 @@ public class ChartFactory {
 		final VectorChart vectorChart = new VectorChart(parent, SWT.DOUBLE_BUFFERED);
 		vectorChart.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
 		vectorChart.setDataset(data);
-		vectorChart.setCaching(false); //XXX
-		vectorChart.setAntialias(true);
 		setChartProperties(chart, vectorChart);
 
 		vectorChart.setBackground(ColorConstants.white);

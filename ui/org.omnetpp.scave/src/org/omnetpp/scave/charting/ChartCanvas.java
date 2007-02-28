@@ -1,5 +1,14 @@
 package org.omnetpp.scave.charting;
 
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_ANTIALIAS;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_CACHED;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_DISPLAY_LEGEND;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LEGEND_ANCHOR;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LEGEND_BORDER;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LEGEND_FONT;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LEGEND_POSITION;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_TITLE;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_TITLE_FONT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_DISPLAY_LEGEND;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_GRAPH_TITLE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_GRAPH_TITLE_FONT;
@@ -14,48 +23,36 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 
-import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.SWTGraphics;
-import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
-import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.image.ImageConverter;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.ChartProperties.LegendPosition;
 
+/**
+ * Base class for all chart widgets.
+ * 
+ * @author tomi
+ */
 public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoordsMapping {
-
-	protected static final String DEFAULT_TITLE = "";
-	protected static final Font DEFAULT_TITLE_FONT = new Font(null, "Arial", 10, SWT.NORMAL);
-	protected static final boolean DEFAULT_DISPLAY_LEGEND = false;
-	protected static final boolean DEFAULT_LEGEND_BORDER = false;
-	protected static final LegendPosition DEFAULT_LEGEND_POSITION = LegendPosition.Above;
-	protected static final LegendAnchor DEFAULT_LEGEND_ANCHOR = LegendAnchor.North;
-	protected static final Font DEFAULT_LEGEND_FONT = new Font(null, "Arial", 8, SWT.NORMAL);
-	
-	protected boolean antialias = true;
+	protected boolean antialias = DEFAULT_ANTIALIAS;
 	protected Title title = new Title(DEFAULT_TITLE, DEFAULT_TITLE_FONT);
 	protected Legend legend = new Legend(DEFAULT_DISPLAY_LEGEND, DEFAULT_LEGEND_BORDER, DEFAULT_LEGEND_FONT, DEFAULT_LEGEND_POSITION, DEFAULT_LEGEND_ANCHOR);
-	
+
 	private Runnable scheduledRedraw;
-	
+
 	private ZoomableCanvasMouseSupport mouseSupport;
 	
 	public ChartCanvas(Composite parent, int style) {
 		super(parent, style);
+		setCaching(DEFAULT_CACHED);
 		mouseSupport = new ZoomableCanvasMouseSupport(this); // add mouse handling; may be made optional
 	}
 
@@ -216,8 +213,6 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoor
 		gc.dispose();
 		return image;
 	}
-	
-	protected static final boolean DEFAULT_SHOW_GRID = false;
 	
 	protected static class PlotArea {
 		public double minX;

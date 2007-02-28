@@ -1,5 +1,16 @@
 package org.omnetpp.scave.charting;
 
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_AXIS_TITLE_FONT;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_BACKGROUND_COLOR;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_BAR_BASELINE;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_BAR_OUTLINE_COLOR;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_BAR_PLACEMENT;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_INVERT_XY;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LABELS_FONT;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_SHOW_GRID;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_X_AXIS_TITLE;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_X_LABELS_ROTATED_BY;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_BAR_BASELINE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_BAR_PLACEMENT;
@@ -13,8 +24,6 @@ import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_MAX;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_MIN;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_TITLE;
 
-import java.math.BigDecimal;
-
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Dimension;
@@ -26,13 +35,17 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
-import org.jfree.chart.axis.Axis;
 import org.jfree.data.category.CategoryDataset;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GeomUtils;
 import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
 
+/**
+ * Bar chart.
+ *
+ * @author tomi
+ */
 public class ScalarChart extends ChartCanvas {
 	private CategoryDataset dataset;
 
@@ -265,12 +278,6 @@ public class ScalarChart extends ChartCanvas {
 		domainAxis.draw(gc);
 	}
 
-	private static final double DEFAULT_BAR_BASELINE = 0.0;
-	private static final BarPlacement DEFAULT_BAR_PLACEMENT = BarPlacement.Aligned;
-	private static final Color DEFAULT_BAR_OUTLINE_COLOR = ColorFactory.asColor("grey80");
-	private static final Color DEFAULT_BACKGROUND_COLOR = ColorFactory.asColor("white");
-	private static final boolean DEFAULT_INVERT_XY = false;
-	
 	class BarPlot {
 		private Rectangle rect;
 		private int widthBar = 10;
@@ -385,12 +392,7 @@ public class ScalarChart extends ChartCanvas {
 		}
 	}
 
-	private static final String DEFAULT_X_AXIS_TITLE = "";
-	private static final String DEFAULT_Y_AXIS_TITLE = "";
-	private static final Font DEFAULT_AXIS_TITLE_FONT = new Font(null, "Arial", 10, SWT.NORMAL);
-	private static final Font DEFAULT_LABELS_FONT = new Font(null, "Arial", 8, SWT.NORMAL);
-	private static final double DEFAULT_X_LABELS_ROTATED_BY = 0.0;
-	
+
 	class DomainAxis {
 		private Rectangle rect;
 		private int labelsHeight;

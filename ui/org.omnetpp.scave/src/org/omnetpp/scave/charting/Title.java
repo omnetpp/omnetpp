@@ -7,7 +7,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 
 
 /**
- * This class layouts and draws a title on a vector chart.
+ * This class layouts and draws a title on a chart.
  *
  * @author tomi
  */

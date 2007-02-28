@@ -1,5 +1,10 @@
 package org.omnetpp.scave.charting;
 
+import static org.omnetpp.scave.charting.ChartDefaults.*;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_AXIS_TITLE_FONT;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_TICK_FONT;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_GRID_COLOR;
+
 import java.math.BigDecimal;
 
 import org.eclipse.draw2d.Graphics;
@@ -7,12 +12,9 @@ import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
-import org.omnetpp.common.color.ColorFactory;
-
 
 /**
  * Draws a (horizontal or vertical) chart axis, with the corresponding axis 
@@ -21,28 +23,25 @@ import org.omnetpp.common.color.ColorFactory;
  * @author andras
  */
 public class LinearAxis {
-	public static final Font DEFAULT_AXIS_TITLE_FONT = new Font(null, "Arial", 10, SWT.NORMAL);
-	public static final Font DEFAULT_TICK_FONT = new Font(null, "Arial", 8, SWT.NORMAL);
-	public static final Color AXIS_COLOR = ColorFactory.asColor("black");
-	public static final Color GRID_COLOR = ColorFactory.asColor("grey80");
-	
-	private Rectangle bounds;
-	private Insets insets;  // plot area = bounds minus insets 
-	private boolean vertical;
-	private boolean gridVisible = true;
+	private boolean vertical; // horizontal or vertical axis
 	private int gap = 0;  // space between axis line and plot area (usually 0)
 	private int majorTickLength = 4;
 	private int minorTickLength = 2;
+	private boolean gridVisible = DEFAULT_SHOW_GRID;
+
+	private Rectangle bounds;
+	private Insets insets;  // plot area = bounds minus insets 
 
 	private ICoordsMapping mapping;
 	
-	private String title = "";
+	private String title; 
 	private Font titleFont = DEFAULT_AXIS_TITLE_FONT;
 	private Font tickFont = DEFAULT_TICK_FONT;
 
 	public LinearAxis(ICoordsMapping mapping, boolean vertical) {
 		this.mapping = mapping;
 		this.vertical = vertical;
+		this.title = vertical ? DEFAULT_Y_AXIS_TITLE : DEFAULT_X_AXIS_TITLE;
 	}
 
 	public void layout(GC gc, Rectangle bounds, Insets insets) {
@@ -97,7 +96,7 @@ public class LinearAxis {
 		// draw axis line and title
 		graphics.setLineWidth(1);
 		graphics.setLineStyle(SWT.LINE_SOLID);
-		graphics.setForegroundColor(AXIS_COLOR);
+		graphics.setForegroundColor(DEFAULT_AXIS_COLOR);
 		graphics.setFont(titleFont);
 		Point titleSize = gc.textExtent(title);
 		if (doAxis) {
@@ -144,10 +143,10 @@ public class LinearAxis {
 					}
 					if (doGrid && gridVisible) {
 						graphics.setLineStyle(Graphics.LINE_DOT);
-						graphics.setForegroundColor(GRID_COLOR);
+						graphics.setForegroundColor(DEFAULT_GRID_COLOR);
 						graphics.drawLine(plotArea.x, y, plotArea.right(), y);
 						graphics.setLineStyle(Graphics.LINE_SOLID);
-						graphics.setForegroundColor(AXIS_COLOR);
+						graphics.setForegroundColor(DEFAULT_AXIS_COLOR);
 					}
 				}
 			}
@@ -164,10 +163,10 @@ public class LinearAxis {
 					}
 					if (doGrid && gridVisible) {
 						graphics.setLineStyle(Graphics.LINE_DOT);
-						graphics.setForegroundColor(GRID_COLOR);
+						graphics.setForegroundColor(DEFAULT_GRID_COLOR);
 						graphics.drawLine(x, plotArea.y, x, plotArea.bottom());
 						graphics.setLineStyle(Graphics.LINE_SOLID);
-						graphics.setForegroundColor(AXIS_COLOR);
+						graphics.setForegroundColor(DEFAULT_AXIS_COLOR);
 					}
 				}
 			}

@@ -56,14 +56,10 @@ import org.omnetpp.scave.charting.plotter.SquareSymbol;
 import org.omnetpp.scave.charting.plotter.TriangleSymbol;
 import org.omnetpp.scave.charting.plotter.VectorPlotter;
 
+import static org.omnetpp.scave.charting.ChartDefaults.*; 
+
 //XXX strange effects when resized and vertical scrollbar pulled...
 public class VectorChart extends ChartCanvas {
-	private static final Color DEFAULT_INSETS_BACKGROUND_COLOR = new Color(null, 236, 233, 216);
-	private static final Color DEFAULT_INSETS_LINE_COLOR = new Color(null, 0, 0, 0);
-	
-	private static final String DEFAULT_X_TITLE = "";
-	private static final String DEFAULT_Y_TITLE = "";
-	
 	private OutputVectorDataset dataset;
 	private Color insetsBackgroundColor = DEFAULT_INSETS_BACKGROUND_COLOR;
 	private Color insetsLineColor = DEFAULT_INSETS_LINE_COLOR;
@@ -188,12 +184,12 @@ public class VectorChart extends ChartCanvas {
 	}
 
 	public void setXAxisTitle(String value) {
-		xAxis.setTitle(value != null ? value : DEFAULT_X_TITLE);
+		xAxis.setTitle(value != null ? value : DEFAULT_X_AXIS_TITLE);
 		scheduleRedraw();
 	}
 	
 	public void setYAxisTitle(String value) {
-		yAxis.setTitle(value != null ? value : DEFAULT_Y_TITLE);
+		yAxis.setTitle(value != null ? value : DEFAULT_Y_AXIS_TITLE);
 		scheduleRedraw();
 	}
 	
