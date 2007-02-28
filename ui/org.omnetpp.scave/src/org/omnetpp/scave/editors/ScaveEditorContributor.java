@@ -127,7 +127,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
     }
 
 	public void contributeToMenu(IMenuManager manager) {
-		super.contributeToMenu(manager);
+		// super.contributeToMenu(manager);
 	}
 
 	public void contributeToToolBar(IToolBarManager manager) {
