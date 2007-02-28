@@ -81,6 +81,10 @@ public class VectorResultContentProvider implements IVirtualTableContentProvider
 		else
 			return null;
 	}
+
+	public OutputVectorEntry getClosestElement(OutputVectorEntry element) {
+		return element;
+	}
 	
 	public OutputVectorEntry getElementBySerial(int serial) {
 		return reader != null ? reader.getEntryBySerial(serial) : null;

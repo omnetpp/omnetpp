@@ -15,7 +15,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
@@ -23,7 +22,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.virtualtable.VirtualTable;
 import org.omnetpp.scave.editors.datatable.VectorResultContentProvider;
-import org.omnetpp.scave.editors.datatable.VectorResultLabelProvider;
+import org.omnetpp.scave.editors.datatable.VectorResultLineRenderer;
 import org.omnetpp.scave.engine.IndexFile;
 import org.omnetpp.scave.engine.OutputVectorEntry;
 import org.omnetpp.scave.engine.VectorResult;
@@ -37,7 +36,6 @@ public class VectorBrowserView extends ViewPart {
 	public static final String ID = "org.omnetpp.scave.VectorBrowserView";
 	
 	protected Composite panel;
-	protected Table table;
 	protected TableColumn eventNumberColumn;
 	protected Composite messagePanel;
 	protected Label message;
@@ -57,8 +55,7 @@ public class VectorBrowserView extends ViewPart {
 		layout.marginWidth = layout.marginHeight = 0;
 		panel.setLayout(layout);
 		createMessage(panel);
-		createTable(panel);
-		createTableViewer(table);
+		createTableViewer(panel);
 		hookSelectionChangedListener();
 	}
 	
@@ -73,29 +70,23 @@ public class VectorBrowserView extends ViewPart {
 		message.setBackground(ColorFactory.asColor("white"));
 	}
 
-	private void createTable(Composite parent) {
-		// create pages
-		table = new Table(parent, SWT.VIRTUAL | SWT.MULTI | SWT.FULL_SELECTION);
-		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		table.setHeaderVisible(true);
-		table.setLinesVisible(true);
-		TableColumn tableColumn = new TableColumn(table, SWT.NONE);
+	private void createTableViewer(Composite parent) {
+		contentProvider = new VectorResultContentProvider();
+		viewer = new VirtualTable<OutputVectorEntry>(parent, SWT.NONE);
+		viewer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		viewer.setContentProvider(contentProvider);
+		viewer.setLineRenderer(new VectorResultLineRenderer());
+		setViewerInput(getSite().getPage().getSelection());
+
+		TableColumn tableColumn = viewer.createColumn();
 		tableColumn.setWidth(60);
 		tableColumn.setText("Item#");
-		tableColumn = new TableColumn(table, SWT.NONE);
+		tableColumn = viewer.createColumn();
 		tableColumn.setWidth(140);
 		tableColumn.setText("Time");
-		tableColumn = new TableColumn(table, SWT.NONE);
+		tableColumn = viewer.createColumn();
 		tableColumn.setWidth(140);
 		tableColumn.setText("Value");
-	}
-
-	private void createTableViewer(Table table) {
-		contentProvider = new VectorResultContentProvider();
-		viewer = new VirtualTable<OutputVectorEntry>(table);
-		viewer.setContentProvider(contentProvider);
-		viewer.setLabelProvider(new VectorResultLabelProvider());
-		setViewerInput(getSite().getPage().getSelection());
 	}
 	
 	private void createPulldownMenu() {
@@ -150,7 +141,7 @@ public class VectorBrowserView extends ViewPart {
 	
 	@Override
 	public void setFocus() {
-		table.setFocus();
+		viewer.setFocus();
 	}
 
 	public void setViewerInput(ISelection selection) {
@@ -191,22 +182,22 @@ public class VectorBrowserView extends ViewPart {
 			String file = input.getFileRun().getFile().getFileSystemFilePath();
 			if (IndexFile.isIndexFileUpToDate(file)) {
 				setVisible(messagePanel, false);
-				setVisible(table, true);
+				setVisible(viewer, true);
 				if (eventNumberColumn != null && input.getColumns().indexOf('E') < 0) {
 					eventNumberColumn.dispose();
 					eventNumberColumn = null;
 				}
 				else if (eventNumberColumn == null && input.getColumns().indexOf('E') >= 0) {
-					eventNumberColumn = new TableColumn(table, SWT.NONE);
+					eventNumberColumn = viewer.createColumn();
 					eventNumberColumn.setWidth(60);
 					eventNumberColumn.setText("Event#");
-					table.setColumnOrder(new int[] {0,3,1,2});
+					viewer.setColumnOrder(new int[] {0,3,1,2});
 				}
 			} else {
 				message.setText("The vector content can not be browsed," +
 						" because the index for \""+file+"\" is not up to date.");
 				setVisible(messagePanel, true);
-				setVisible(table, false);
+				setVisible(viewer, false);
 				
 			}
 		}
@@ -228,10 +219,10 @@ public class VectorBrowserView extends ViewPart {
 			eventNumberColumn = null;
 		}
 		else if (eventNumberColumn == null && visible) {
-			eventNumberColumn = new TableColumn(table, SWT.NONE);
+			eventNumberColumn = viewer.createColumn();
 			eventNumberColumn.setWidth(60);
 			eventNumberColumn.setText("Event#");
-			table.setColumnOrder(ColumnOrder);
+			viewer.setColumnOrder(ColumnOrder);
 		}
 	}
 	
