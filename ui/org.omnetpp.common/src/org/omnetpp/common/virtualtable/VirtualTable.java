@@ -127,11 +127,11 @@ public class VirtualTable<T> extends Composite {
 				else if (e.detail == SWT.PAGE_DOWN)
 					scroll(-getPageJumpCount());
 				else if (percentage == 0)
-					gotoBegin();
+					scrollToBegin();
 				else if (percentage == 1)
-					gotoEnd();
+					scrollToEnd();
 				else
-					gotoElement(contentProvider.getApproximateElementAt(percentage));
+					scrollToElement(contentProvider.getApproximateElementAt(percentage));
 			}
 		});
 
@@ -184,14 +184,10 @@ public class VirtualTable<T> extends Composite {
 					moveSelection(-getPageJumpCount());
 				else if (e.keyCode == SWT.PAGE_DOWN)
 					moveSelection(getPageJumpCount());
-				else if (e.keyCode == SWT.HOME) {
-					setSelectionElement(contentProvider.getFirstElement());
+				else if (e.keyCode == SWT.HOME)
 					gotoBegin();
-				}
-				else if (e.keyCode == SWT.END) {
-					setSelectionElement(contentProvider.getLastElement());
+				else if (e.keyCode == SWT.END)
 					gotoEnd();
-				}
 			}
 
 			public void keyReleased(KeyEvent e) {
@@ -318,7 +314,7 @@ public class VirtualTable<T> extends Composite {
 					setInput(virtualTableSelection.getInput());
 	
 				setSelectionElements(virtualTableSelection.getElements());
-				gotoFirstSelectionElement();
+				scrollToSelectionElement();
 			}
 		}
 		else {
@@ -329,7 +325,7 @@ public class VirtualTable<T> extends Composite {
 				
 				if (virtualTableSelection.getInput() == getInput()) {
 					setSelectionElements(virtualTableSelection.getElements());
-					gotoFirstSelectionElement();
+					scrollToSelectionElement();
 				}
 			}
 		}
@@ -384,51 +380,27 @@ public class VirtualTable<T> extends Composite {
 	}
 
 	/**
-	 * Jumps to the first selected element.
-	 */
-	public void gotoFirstSelectionElement() {
-		T element = getSelectionElement();
-
-		if (element != null)
-			gotoElement(element);
-	}
-
-	/**
-	 * Position the table selection to the given element or nearby.
+	 * Position the selection to the given element and make it visible.
 	 */
 	public void gotoElement(T element) {
-		T topElement = getTopVisibleElement();
-
-		int maxDistance = getVisibleElementCount() + 1;
-		long distance = contentProvider.getDistanceToElement(topElement, element, maxDistance);
-
-		if (distance == maxDistance) {
-			T bottomElement = getBottomFullyVisibleElement();
-			distance = contentProvider.getDistanceToElement(bottomElement, element, maxDistance);
-
-			if (distance == maxDistance)
-				relocateFixPoint(element, 0);
-			else
-				relocateFixPoint(element, getFullyVisibleElementCount() - 1);
-		}
-
-		redraw();
+		setSelectionElement(element);		
+		scrollToElement(element);
 	}
 
 	/**
-	 * Jumps to the very beginning of the table.
+	 * Position the selection to the very beginning of the table.
 	 */
 	public void gotoBegin() {
-		relocateFixPoint(contentProvider.getFirstElement(), 0);
-		redraw();
+		setSelectionElement(contentProvider.getFirstElement());
+		scrollToBegin();
 	}
 
 	/**
-	 * Jumps to the very end of the table.
+	 * Position the selection to the very end of the table.
 	 */
 	public void gotoEnd() {
-		relocateFixPoint(contentProvider.getLastElement(), getFullyVisibleElementCount() - 1);
-		redraw();
+		setSelectionElement(contentProvider.getLastElement());
+		scrollToEnd();
 	}
 
 	/**
@@ -502,7 +474,7 @@ public class VirtualTable<T> extends Composite {
 		}
 
 		setSelectionElement(element);
-		gotoElement(element);
+		scrollToElement(element);
 	}
 	
 	/**
@@ -510,6 +482,54 @@ public class VirtualTable<T> extends Composite {
 	 */
 	public void scroll(int numberOfElements) {
 		relocateFixPoint(fixPointElement, fixPointDistance + numberOfElements);
+		redraw();
+	}
+
+	/**
+	 * Scroll to the given element making it visible.
+	 */
+	public void scrollToElement(T element) {
+		T topElement = getTopVisibleElement();
+
+		int maxDistance = getVisibleElementCount() + 1;
+		long distance = contentProvider.getDistanceToElement(topElement, element, maxDistance);
+
+		if (distance == maxDistance) {
+			T bottomElement = getBottomFullyVisibleElement();
+			distance = contentProvider.getDistanceToElement(bottomElement, element, maxDistance);
+
+			if (distance == maxDistance)
+				relocateFixPoint(element, 0);
+			else
+				relocateFixPoint(element, getFullyVisibleElementCount() - 1);
+		}
+
+		redraw();
+	}
+	
+	/**
+	 * Scroll to the selection element making it visible.
+	 */
+	public void scrollToSelectionElement() {
+		T element = getSelectionElement();
+
+		if (element != null)
+			scrollToElement(element);
+	}
+
+	/**
+	 * Scroll to the very beginning making it visible.
+	 */
+	public void scrollToBegin() {
+		relocateFixPoint(contentProvider.getFirstElement(), 0);
+		redraw();
+	}
+
+	/**
+	 * Scroll to the very end making it visible.
+	 */
+	public void scrollToEnd() {
+		relocateFixPoint(contentProvider.getLastElement(), getFullyVisibleElementCount() - 1);
 		redraw();
 	}
 
