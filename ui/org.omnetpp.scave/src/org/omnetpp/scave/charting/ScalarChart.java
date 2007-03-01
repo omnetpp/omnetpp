@@ -252,14 +252,18 @@ public class ScalarChart extends ChartCanvas {
 		Rectangle remaining = title.layout(gc, area);
 		remaining = legend.layout(gc, remaining);
 		
-		Rectangle areaMinusLegend = remaining.getCopy();
-		Insets insets = new Insets();
-		valueAxis.layoutHint(gc, areaMinusLegend, insets);
-		remaining = domainAxis.layout(gc, remaining);
-		remaining = plot.layout(gc, remaining);
+		Rectangle mainArea = remaining.getCopy();
+		Insets insetsToMainArea = new Insets(10, 0, 10, 0);
+		
+		valueAxis.layoutHint(gc, mainArea, insetsToMainArea);
+		domainAxis.layoutHint(gc, remaining, insetsToMainArea);
 
-		setInsets(insets);
-		super.beforePaint(gc);
+		valueAxis.setLayout(mainArea, insetsToMainArea);
+		domainAxis.setLayout(mainArea, insetsToMainArea);
+		Rectangle plotArea = mainArea.crop(insetsToMainArea);
+		plot.layout(gc, plotArea);
+
+		setInsets(GeomUtils.subtract(area, plotArea));
 	}
 	
 	
@@ -269,7 +273,7 @@ public class ScalarChart extends ChartCanvas {
 		plot.draw(gc);
 	}
 	
-	private Rectangle getPlotRectagle() {
+	private Rectangle getPlotRectangle() {
 		return plot.getRectangle();
 	}
 
@@ -394,8 +398,11 @@ public class ScalarChart extends ChartCanvas {
 	}
 
 
+	/**
+	 * Domain axis for bar chart.
+	 */
 	class DomainAxis {
-		private Rectangle rect;
+		private Rectangle rect; // strip below the plotArea where the axis text etc goes
 		private int labelsHeight;
 		private String title = DEFAULT_X_AXIS_TITLE;
 		private Font titleFont = DEFAULT_AXIS_TITLE_FONT;
@@ -406,13 +413,17 @@ public class ScalarChart extends ChartCanvas {
 			return new Ticks(1.0, 0.0, 1.0); // TODO
 		}
 
-		public Rectangle layout(GC gc, Rectangle rect) {
+		/**
+		 * Modifies insets to accomodate room for axis title, ticks, tick labels etc.
+		 * Also returns insets for convenience. 
+		 */
+		public Insets layoutHint(GC gc, Rectangle rect, Insets insets) {
+
+			// measure title height and labels height
 			Graphics graphics = new SWTGraphics(gc);
 			graphics.pushState();
-			//
-			graphics.setFont(titleFont);
+			gc.setFont(titleFont);
 			int titleHeight = gc.textExtent(title).y;
-			//
 			gc.setFont(labelsFont);
 			labelsHeight = 0;
 			for (int row = 0; row < dataset.getRowCount(); ++row) {
@@ -420,13 +431,24 @@ public class ScalarChart extends ChartCanvas {
 				Dimension size = GeomUtils.rotatedSize(new Dimension(gc.textExtent(label)), rotation);
 				labelsHeight = Math.max(labelsHeight, size.height);
 			}
-			
-			int height = 10 + labelsHeight + titleHeight;
 			graphics.popState();
 			graphics.dispose();
 			
-			this.rect = new Rectangle(rect.x, rect.bottom() - height, rect.width, height);
-			return new Rectangle(rect.x, rect.y, rect.width, Math.max(rect.height - height, 0));
+			// modify insets with space required
+			int height = 10 + labelsHeight + titleHeight;
+			insets.bottom = Math.max(insets.bottom, height);
+			
+			return insets;
+		}
+
+		/**
+		 * Sets geometry info used for drawing. Plot area = bounds minus insets.
+		 */
+		public void setLayout(Rectangle bounds, Insets insets) {
+			rect = bounds.getCopy();
+			int bottom = rect.bottom();
+			rect.height = insets.bottom;
+			rect.y = bottom - rect.height;
 		}
 		
 		public void draw(GC gc) {
@@ -437,7 +459,7 @@ public class ScalarChart extends ChartCanvas {
 			graphics.setLineStyle(SWT.LINE_SOLID);
 			graphics.setLineWidth(1);
 			graphics.setForegroundColor(ColorFactory.asColor("black"));
-			Rectangle plotRect = getPlotRectagle();
+			Rectangle plotRect = getPlotRectangle();
 			//graphics.drawLine(plotRect.x, rect.y + 5, plotRect.x + plotRect.width, rect.y + 5);
 			// draw labels
 			int cColumns = dataset.getColumnCount();

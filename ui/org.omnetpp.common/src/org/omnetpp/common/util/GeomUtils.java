@@ -21,21 +21,16 @@ public class GeomUtils {
 	}
 	
 	public static Rectangle add(Rectangle rect, Insets insets) {
-		return new Rectangle(
-				rect.x - insets.left,
-				rect.y - insets.top,
-				rect.width + insets.getWidth(),
-				rect.height + insets.getHeight());
+		return rect.getCopy().expand(insets);
 	}
 	
 	public static Rectangle subtract(Rectangle rect, Insets insets) {
-		return new Rectangle(
-				rect.x + insets.left,
-				rect.y + insets.top,
-				rect.width - insets.getWidth(),
-				rect.height - insets.getHeight());
+		return rect.getCopy().crop(insets);
 	}
 	
+	/**
+	 * Calculates bounding box of a rotated rectangle. Rotation is in *degrees*.
+	 */
 	public static Dimension rotatedSize(Dimension size, double rotation) {
 		Transform transform = new Transform();
 		transform.setRotation(Math.toRadians(rotation));

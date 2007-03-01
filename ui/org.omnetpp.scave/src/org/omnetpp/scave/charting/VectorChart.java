@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.jfree.data.xy.XYDataset;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
+import org.omnetpp.common.util.GeomUtils;
 import org.omnetpp.scave.charting.ChartProperties.LineStyle;
 import org.omnetpp.scave.charting.ChartProperties.SymbolType;
 import org.omnetpp.scave.charting.plotter.ChartSymbol;
@@ -323,14 +324,14 @@ public class VectorChart extends ChartCanvas {
 		remaining = legend.layout(gc, remaining);
 		
 		Rectangle mainArea = remaining.getCopy();
-		Insets insets = new Insets();
-		xAxis.layoutHint(gc, mainArea, insets);
-		yAxis.layoutHint(gc, mainArea, insets);
-		xAxis.setLayout(mainArea, insets);
-		yAxis.setLayout(mainArea, insets);
-		setInsets(insets);
+		Insets insetsToMainArea = new Insets();
+		xAxis.layoutHint(gc, mainArea, insetsToMainArea);
+		yAxis.layoutHint(gc, mainArea, insetsToMainArea);
+		xAxis.setLayout(mainArea, insetsToMainArea);
+		yAxis.setLayout(mainArea, insetsToMainArea);
 
-		//super.beforePaint(gc);
+		Rectangle plotArea = mainArea.crop(insetsToMainArea);
+		setInsets(GeomUtils.subtract(area, plotArea));
 	}
 	
 	@Override
