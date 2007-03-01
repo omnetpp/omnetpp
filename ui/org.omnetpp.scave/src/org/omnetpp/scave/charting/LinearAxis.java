@@ -51,19 +51,31 @@ public class LinearAxis {
 		
 		this.bounds = bounds.getCopy();
 		this.insets = insets;  
-		
-		// grow insets according to our needs
-		if (insets.top < 30) insets.top = 30;
-		if (insets.bottom < 30) insets.bottom = 30;
-		if (insets.left < 50) insets.left = 50;
-		if (insets.right < 50) insets.right = 50;
 
-//TODO modify insets along the following lines:
-//		gc.setFont(titleFont);
-//		Point titleSize = gc.textExtent(title);
-//		int width = titleSize.y + 30 + 10;
-//		this.rect = recnew Rectangle(bounds.x, bounds.y, width, bounds.height);
-//		return new Rectangle(bounds.x + width, bounds.y, Math.max(bounds.width - width, 0), bounds.height);
+		gc.setFont(tickFont);
+		if (vertical) {
+			// calculate tick label length
+			Ticks ticks = createTicks(bounds);
+			int labelWidth = 0;
+			gc.setFont(tickFont);
+			for (BigDecimal tick : ticks) {
+				if (ticks.isMajorTick(tick)) {
+					labelWidth = Math.max(labelWidth, gc.textExtent(tick.toPlainString()).x);
+				}						
+			}
+			gc.setFont(titleFont);
+			int titleWidth = title.equals("") ? 0 : gc.textExtent(title).y;  // "y" because we'll print it rotated 90 degrees
+			insets.left = Math.max(insets.left, gap + majorTickLength + labelWidth + titleWidth + 4);
+			insets.right = Math.max(insets.right, gap + majorTickLength + labelWidth + 4);
+		}
+		else {
+			gc.setFont(tickFont);
+			int labelHeight = gc.textExtent("999").y;
+			gc.setFont(titleFont);
+			int titleHeight = title.equals("") ? 0 : gc.textExtent(title).y;
+			insets.top = Math.max(insets.top, gap + majorTickLength + labelHeight + titleHeight + 4);
+			insets.bottom = Math.max(insets.bottom, gap + majorTickLength + labelHeight + 4);
+		}
 	}
 
 	/**
@@ -101,6 +113,8 @@ public class LinearAxis {
 		Point titleSize = gc.textExtent(title);
 		if (doAxis) {
 			if (vertical) {
+				if (mapping.fromCanvasY(plotArea.bottom()) < 0 && mapping.fromCanvasY(plotArea.y) > 0)
+					graphics.drawLine(plotArea.x, mapping.toCanvasY(0), plotArea.right(), mapping.toCanvasY(0)); // x axis
 				graphics.drawLine(plotArea.x - gap, plotArea.y, plotArea.x - gap, plotArea.bottom());
 				graphics.drawLine(plotArea.right() + gap, plotArea.y, plotArea.right() + gap, plotArea.bottom());
 				graphics.rotate(-90);
@@ -110,6 +124,8 @@ public class LinearAxis {
 				graphics.rotate(90);
 			}
 			else {
+				if (mapping.fromCanvasX(plotArea.x) < 0 && mapping.fromCanvasX(plotArea.right()) > 0)
+					graphics.drawLine(mapping.toCanvasX(0), plotArea.y, mapping.toCanvasX(0), plotArea.bottom()); // y axis
 				graphics.drawLine(plotArea.x, plotArea.y - gap, plotArea.right(), plotArea.y - gap);
 				graphics.drawLine(plotArea.x, plotArea.bottom() + gap, plotArea.right(), plotArea.bottom() + gap);
 				graphics.drawText(title, 
@@ -119,12 +135,7 @@ public class LinearAxis {
 		}
 
 		// draw ticks and labels
-		Ticks ticks;
-		if (vertical)
-			ticks = createTicks(mapping.fromCanvasY(plotArea.bottom()), mapping.fromCanvasY(plotArea.y), plotArea.height);
-		else
-			ticks = createTicks(mapping.fromCanvasX(plotArea.x), mapping.fromCanvasX(plotArea.right()), plotArea.width);
-
+		Ticks ticks = createTicks(plotArea);
 		graphics.setFont(tickFont);
 		for (BigDecimal tick : ticks) {
 			String label = tick.toPlainString();
@@ -174,6 +185,13 @@ public class LinearAxis {
 
 		graphics.popState();
 		graphics.dispose();
+	}
+
+	protected Ticks createTicks(Rectangle plotArea) {
+		if (vertical)
+			return createTicks(mapping.fromCanvasY(plotArea.bottom()), mapping.fromCanvasY(plotArea.y), plotArea.height);
+		else
+			return createTicks(mapping.fromCanvasX(plotArea.x), mapping.fromCanvasX(plotArea.right()), plotArea.width);
 	}
 
 	protected static Ticks createTicks(double start, double end, int pixels) {

@@ -152,8 +152,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoor
 		scheduleRedraw();
 	}
 	
-
-	protected void scheduleRedraw() {
+	public void scheduleRedraw() {
 		if (scheduledRedraw == null) {
 			scheduledRedraw = new Runnable() {
 				public void run() {

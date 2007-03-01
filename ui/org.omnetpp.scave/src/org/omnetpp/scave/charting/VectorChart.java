@@ -129,7 +129,7 @@ public class VectorChart extends ChartCanvas {
 		else if (PROP_LABEL_FONT.equals(name))
 			setTickLabelFont(Converter.stringToSwtfont(value));
 		else if (PROP_X_LABELS_ROTATE_BY.equals(name))
-			;
+			; //TODO
 		// Axes
 		else if (PROP_X_AXIS_MIN.equals(name))
 			setXMin(Converter.stringToDouble(value));
@@ -140,11 +140,11 @@ public class VectorChart extends ChartCanvas {
 		else if (PROP_Y_AXIS_MAX.equals(name))
 			setYMax(Converter.stringToDouble(value));
 		else if (PROP_X_AXIS_LOGARITHMIC.equals(name))
-			;
+			; //TODO
 		else if (PROP_Y_AXIS_LOGARITHMIC.equals(name))
-			;
+			; //TODO
 		else if (PROP_XY_INVERT.equals(name))
-			;
+			; //TODO
 		else if (PROP_XY_GRID.equals(name))
 			setGridVisibility(Converter.stringToBoolean(value));
 		// Plot
@@ -296,7 +296,7 @@ public class VectorChart extends ChartCanvas {
 				// X must be increasing
 				minX = Math.min(minX, dataset.getXValue(series, 0));
 				maxX = Math.max(maxX, dataset.getXValue(series, n-1));
-				for (int i=0; i<n; i++) {
+				for (int i=0; i<n; i++) { //XXX potential bottleneck, consider moving to C++
 					double y = dataset.getYValue(series, i);
 					minY = Math.min(minY, y);
 					maxY = Math.max(maxY, y);
@@ -305,13 +305,18 @@ public class VectorChart extends ChartCanvas {
 		}
         double width = maxX - minX;
         double height = maxY - minY;
-
-        setArea(minX-width/80, minY-height/5, maxX+width/80, maxY+height/3); // leave some extra space
+        
+        // set the chart area, leaving some room around the data lines
+        setArea((minX>=0 ? 0 : minX-width/80), (minY>=0 ? 0 : minY-height/3), 
+        		(maxX<=0 ? 0 : maxX+width/80), (maxY<=0 ? 0 : maxY+height/3));
         zoomToFit(); // zoom out completely
 	}
 
 	@Override
 	protected void beforePaint(GC gc) {
+		// ZoomableCachingCanvas's beforePaint() must be called, as it does zoom validation etc.
+		super.beforePaint(gc);
+		
 		// Calculate space occupied by title and legend and set insets accordingly
 		Rectangle area = new Rectangle(getClientArea());
 		Rectangle remaining = title.layout(gc, area);
@@ -423,6 +428,9 @@ public class VectorChart extends ChartCanvas {
 		}
 	}
 	
+	/**
+	 * Displays crosshair mouse cursor.
+	 */
 	class CrossHair {
 		
 		Rectangle rect;
