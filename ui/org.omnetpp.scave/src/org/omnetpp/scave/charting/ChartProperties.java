@@ -284,7 +284,7 @@ public class ChartProperties extends PropertySource {
 		@org.omnetpp.common.properties.Property(category="Plot",id=PROP_CACHING,displayName="caching")
 		public boolean getCaching() { return getBooleanProperty(PROP_CACHING); }
 		public void setCaching(boolean flag) { setProperty(PROP_CACHING, flag); }
-		public boolean defaultCaching() { return ChartDefaults.DEFAULT_CACHED; }
+		public boolean defaultCaching() { return ChartDefaults.DEFAULT_CANVAS_CACHING; }
 
 		public LineProperties getLineProperties(String lineId) { return new LineProperties(lineId); }
 
@@ -359,7 +359,7 @@ public class ChartProperties extends PropertySource {
 		@org.omnetpp.common.properties.Property(category="Bars",id=PROP_CACHING,displayName="caching")
 		public boolean getCaching() { return getBooleanProperty(PROP_CACHING); }
 		public void setCaching(boolean flag) { setProperty(PROP_CACHING, flag); }
-		public boolean defaultCaching() { return ChartDefaults.DEFAULT_CACHED; }
+		public boolean defaultCaching() { return ChartDefaults.DEFAULT_CANVAS_CACHING; }
 		
 		@org.omnetpp.common.properties.Property(category="Bars",id=PROP_BAR_BASELINE)
 		public String getBarBaseline() { return getStringProperty(PROP_BAR_BASELINE); } // XXX return Double

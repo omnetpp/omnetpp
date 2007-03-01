@@ -66,7 +66,7 @@ public class ChartDefaults {
 		defaults = new HashMap<String,Object>();
 		
 		defaults.put(PROP_ANTIALIAS, DEFAULT_ANTIALIAS);
-		defaults.put(PROP_CACHING, DEFAULT_CACHED);
+		defaults.put(PROP_CACHING, DEFAULT_CANVAS_CACHING);
 		
 		defaults.put(PROP_GRAPH_TITLE, DEFAULT_TITLE);
 		defaults.put(PROP_GRAPH_TITLE_FONT, DEFAULT_TITLE_FONT);
