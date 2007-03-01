@@ -4,10 +4,11 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.scave.editors.datatable.FilterField;
@@ -51,16 +52,21 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 	 */
 	protected java.util.List<Dataset> sourceDatasets;
 
-	protected FilterHints filterHints; 
+	/**
+	 * ResultFileManager used to get the filter hints.
+	 */
+	protected ResultFileManager manager;
 	
 	// controls
 	private CCombo sourceDatasetCombo;
 	private CCombo datatypeCombo;
-	private Text filterPatternText;
+	private FilterField filterField;
+	private Text filterText;
 	
 	public SetOperationEditForm(SetOperation setOperation, EObject parent, ResultFileManager manager) {
 		this.setOperation = setOperation;
 		this.parent = parent;
+		this.manager = manager;
 		
 		sourceDatasets = new java.util.ArrayList<Dataset>();
 		sourceDatasets.add(null);
@@ -69,8 +75,6 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		for (Dataset ds : datasets)
 			if (!ds.equals(dataset))
 				sourceDatasets.add(ds);
-		
-		filterHints = new FilterHints(manager, this.setOperation.getType());
 	}
 	
 	public String getTitle() {
@@ -91,7 +95,6 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 
 	public void populatePanel(Composite panel) {
 		Label label;
-		Group group;
 
 		panel.setLayout(new GridLayout(2, false));
 		
@@ -114,23 +117,46 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		datatypeCombo = new CCombo(panel, SWT.BORDER | SWT.READ_ONLY);
 		datatypeCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		datatypeCombo.setItems(ScaveModelUtil.getResultTypeNames());
-		ResultType selected = (setOperation instanceof SelectDeselectOp && parent instanceof Chart ?
-									ScaveModelUtil.getDataTypeOfChart((Chart)parent) : ResultType.SCALAR_LITERAL);
-		datatypeCombo.setText(selected.getName());
 		
 		label = new Label(panel, SWT.NONE);
 		label.setText("Filter pattern:");
 		label.setLayoutData(new GridData());
-		FilterField filterField = new FilterField(panel, SWT.SINGLE | SWT.BORDER);
+		filterField = new FilterField(panel, SWT.SINGLE | SWT.BORDER);
 		filterField.getLayoutControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		filterField.setFilterHints(filterHints);
-		filterPatternText = filterField.getText();
+		filterText = filterField.getText();
+		
+		// update the filterhints when the type selection change
+		datatypeCombo.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				updateFilterHints();
+			}
+		});
+
+		// set default selection in the type combo
+		ResultType datatype = (setOperation instanceof SelectDeselectOp && parent instanceof Chart ?
+				ScaveModelUtil.getDataTypeOfChart((Chart)parent) : ResultType.SCALAR_LITERAL);
+		selectDatatype(datatype);
+	}
+	
+	private void selectDatatype(ResultType datatype) {
+		int index = datatypeCombo.indexOf(datatype.getName());
+		if (index >= 0) {
+			datatypeCombo.select(index);
+			// the listener is not called by CCombo.select() so update the filter hints manually
+			updateFilterHints();
+		}
+	}
+	
+	private void updateFilterHints() {
+		String datatypeName = datatypeCombo.getText();
+		ResultType datatype = datatypeName != null ? ResultType.getByName(datatypeName) : ResultType.SCALAR_LITERAL;
+		filterField.setFilterHints(new FilterHints(manager, datatype));
 	}
 	
 	public Object getValue(EStructuralFeature feature) {
 		switch (feature.getFeatureID()) {
 		case ScaveModelPackage.SET_OPERATION__FILTER_PATTERN:
-			return filterPatternText.getText();
+			return filterText.getText();
 		case ScaveModelPackage.SET_OPERATION__SOURCE_DATASET:
 			int index = sourceDatasetCombo.getSelectionIndex();
 			return index >= 0 ? sourceDatasets.get(index) : null;
@@ -146,14 +172,14 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 	public void setValue(EStructuralFeature feature, Object value) {
 		switch (feature.getFeatureID()) {
 		case ScaveModelPackage.SET_OPERATION__FILTER_PATTERN:
-			if (value != null) filterPatternText.setText((String)value);
+			if (value != null) filterText.setText((String)value);
 			break;
 		case ScaveModelPackage.SET_OPERATION__SOURCE_DATASET:
 			sourceDatasetCombo.setText(value != null ? ((Dataset)value).getName() : "All");
 			break;
 		case ScaveModelPackage.SET_OPERATION__TYPE:
 			ResultType datatype = value != null ? (ResultType)value : ResultType.SCALAR_LITERAL;
-			datatypeCombo.setText(datatype.getName());
+			selectDatatype(datatype);
 			break;
 		default:
 			throw new IllegalArgumentException("Unexpected feature: " + feature.getName());
