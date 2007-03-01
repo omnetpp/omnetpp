@@ -46,39 +46,45 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 		RAW
 	}
 
+	private static final Color DARKBLUE = new Color(null, 0, 0, 192);
+	private static final Color DARKRED = new Color(null, 127, 0, 85);
+	private static final Color RED = new Color(null, 240, 0, 0);
+	private static final Color BLACK = new Color(null, 0, 0, 0);
+	private static final Color LIGHTGREY = new Color(null, 211, 211, 211);
+	
 	private static final Color BOOKMARK_COLOR = ColorFactory.asColor("lightCyan");
 
-	private static final Color EVENT_ENTRY_EVENT_NUMBER_COLOR = ColorFactory.asColor("red");
+	private static final Color EVENT_ENTRY_EVENT_NUMBER_COLOR = BLACK;
 
-	private static final Color EVENT_LOG_ENTRY_EVENT_NUMBER_COLOR = ColorFactory.asColor("lightPink");
+	private static final Color EVENT_LOG_ENTRY_EVENT_NUMBER_COLOR = LIGHTGREY;
 
-	private static final Color EVENT_ENTRY_SIMULATION_TIME_COLOR = ColorFactory.asColor("black");
+	private static final Color EVENT_ENTRY_SIMULATION_TIME_COLOR = BLACK;
 
-	private static final Color EVENT_LOG_ENTRY_SIMULATION_TIME_COLOR = ColorFactory.asColor("lightGrey");
+	private static final Color EVENT_LOG_ENTRY_SIMULATION_TIME_COLOR = LIGHTGREY;
 
-	private static final Color CONSTANT_TEXT_COLOR = ColorFactory.asColor("black");
+	private static final Color CONSTANT_TEXT_COLOR = BLACK;
 
-	private static final Color RAW_VALUE_COLOR = ColorFactory.asColor("darkGreen");
+	private static final Color RAW_VALUE_COLOR = DARKBLUE;
 
-	private static final Color TYPE_COLOR = ColorFactory.asColor("blue");
+	private static final Color TYPE_COLOR = DARKBLUE;
 
-	private static final Color NAME_COLOR = ColorFactory.asColor("blue");
+	private static final Color NAME_COLOR = DARKBLUE;
 
-	private static final Color EVENT_LOG_MESSAGE_COLOR = ColorFactory.asColor("darkRed");
+	private static final Color EVENT_LOG_MESSAGE_COLOR = DARKRED;
 
-	private static final Color BUBBLE_ENTRY_COLOR = ColorFactory.asColor("red");
+	private static final Color BUBBLE_ENTRY_COLOR = RED;
 
-	private static final Color DATA_COLOR = ColorFactory.asColor("darkGreen");
+	private static final Color DATA_COLOR = DARKBLUE;
 
 	private static final int HORIZONTAL_SPACING = 4;
 
-	private static final int VERTICAL_SPACING = 1;
+	private static final int VERTICAL_SPACING = 3;
 
 	protected DisplayMode displayMode = DisplayMode.DESCRIPTIVE;
 
 	protected IResource resource;
 
-	protected Font font = JFaceResources.getTextFont();
+	protected Font font = JFaceResources.getDefaultFont();
 
 	protected int fontHeight;
 
@@ -154,10 +160,10 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 		
 		switch (index) {
 			case 0:
-				drawText("#" + event.getEventNumber(), isEventLogEntry ? EVENT_ENTRY_EVENT_NUMBER_COLOR : EVENT_LOG_ENTRY_EVENT_NUMBER_COLOR, true);
+				drawText("#" + event.getEventNumber(), isEventLogEntry ? EVENT_ENTRY_EVENT_NUMBER_COLOR : EVENT_LOG_ENTRY_EVENT_NUMBER_COLOR, false);
 				break;
 			case 1:
-				drawText(event.getSimulationTime() + "s", isEventLogEntry ? EVENT_ENTRY_SIMULATION_TIME_COLOR : EVENT_LOG_ENTRY_SIMULATION_TIME_COLOR, true); 
+				drawText(event.getSimulationTime() + "s", isEventLogEntry ? EVENT_ENTRY_SIMULATION_TIME_COLOR : EVENT_LOG_ENTRY_SIMULATION_TIME_COLOR, false); 
 				break;
 			case 2:
 				x += eventLogEntry.getLevel() * HORIZONTAL_SPACING * 5;
@@ -174,7 +180,7 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 						if (eventLogEntry instanceof EventEntry) {
 							MessageDependency cause = event.getCause();
 				
-							drawText("in ", CONSTANT_TEXT_COLOR);
+							drawText("Event in ", CONSTANT_TEXT_COLOR);
 							drawModuleDescription(eventLog.getModuleCreatedEntry(event.getModuleId()));
 							
 							BeginSendEntry beginSendEntry = cause != null ? cause.getCauseBeginSendEntry() : null;
@@ -205,7 +211,7 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 									drawModuleDescription(eventLog.getModuleCreatedEntry(bubbleEntry.getContextModuleId()));
 								}
 
-								drawText(" : ", CONSTANT_TEXT_COLOR);
+								drawText(": ", CONSTANT_TEXT_COLOR);
 								drawText(bubbleEntry.getText(), BUBBLE_ENTRY_COLOR);
 							}
 							else if (eventLogEntry instanceof ModuleMethodBeginEntry) {
@@ -386,7 +392,7 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 		if (color != null && !gc.getForeground().equals(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT)))
 			gc.setForeground(color);
 
-		gc.drawText(text, x, 0);
+		gc.drawText(text, x, VERTICAL_SPACING/2);
 		x += gc.textExtent(text).x;
 		newFont.dispose();
 		gc.setFont(oldFont);
