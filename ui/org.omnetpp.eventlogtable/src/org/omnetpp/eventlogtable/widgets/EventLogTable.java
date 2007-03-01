@@ -271,7 +271,7 @@ public class EventLogTable extends VirtualTableViewer<EventLogEntry> {
 		super.setInput(input);
 
 		if (input != null)
-			((EventLogTableLineRenderer)getLineRenderer()).setResource(((EventLogInput)input).getFile());
+			((EventLogTableLineRenderer)getLineRenderer()).setInput((EventLogInput)input);
 	}
 
 	public IEventLog getEventLog() {

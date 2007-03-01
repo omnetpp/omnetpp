@@ -39,6 +39,7 @@ import org.omnetpp.eventlog.engine.ModuleReparentedEntry;
 import org.omnetpp.eventlog.engine.PStringVector;
 import org.omnetpp.eventlog.engine.SendDirectEntry;
 import org.omnetpp.eventlog.engine.SendHopEntry;
+import org.omnetpp.eventlogtable.editors.EventLogInput;
 
 public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<EventLogEntry> {
 	public enum DisplayMode {
@@ -84,7 +85,7 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 
 	protected DisplayMode displayMode = DisplayMode.DESCRIPTIVE;
 
-	protected IResource resource;
+	protected EventLogInput eventLogInput;
 
 	protected Font font = JFaceResources.getDefaultFont();
 
@@ -108,12 +109,8 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 		this.displayMode = displayMode;
 	}
 	
-	public IResource getResource() {
-		return resource;
-	}
-	
-	public void setResource(IResource resource) {
-		this.resource = resource;
+	public void setInput(EventLogInput eventLogInput) {
+		this.eventLogInput = eventLogInput;
 	}
 
 	public int getLineHeight(GC gc) {
@@ -140,8 +137,8 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 		boolean isEventLogEntry = eventLogEntry instanceof EventEntry;
 
 		try {
-			if (resource != null) {
-				IMarker[] markers = resource.findMarkers(IMarker.BOOKMARK, true, IResource.DEPTH_ZERO);
+			if (eventLogInput.getFile() != null) {
+				IMarker[] markers = eventLogInput.getFile().findMarkers(IMarker.BOOKMARK, true, IResource.DEPTH_ZERO);
 				boolean marked = false;
 				for (int i = 0; i < markers.length; i++)
 					if (markers[i].getAttribute("EventNumber", -1) == event.getEventNumber()) {
@@ -158,6 +155,7 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 			}
 		}
 		catch (CoreException e) {
+			throw new RuntimeException(e);
 		}
 		
 		switch (index) {
@@ -354,7 +352,17 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 	}
 
 	private BeginSendEntry findBeginSendEntry(int previousEventNumber, int messageId) {
-		// TODO:
+		if (previousEventNumber != -1) {
+			IEvent event = eventLogInput.getEventLog().getEventForEventNumber(previousEventNumber);
+	
+			if (event != null) {
+				int index = event.findBeginSendEntryIndex(messageId);
+				
+				if (index != -1)
+					return (BeginSendEntry)event.getEventLogEntry(index);
+			}
+		}
+		
 		return null;
 	}
 
