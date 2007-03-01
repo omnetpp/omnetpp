@@ -77,6 +77,11 @@ class EVENTLOG_API IEvent
         virtual long getCauseEventNumber() = 0;
 
         /**
+         * Returns true if the received message was a self message.
+         */
+        virtual bool isSelfEvent();
+
+        /**
          * Returns the immediately preceding event or NULL if there's no such event.
          */
         virtual IEvent *getPreviousEvent() = 0;

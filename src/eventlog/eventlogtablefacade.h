@@ -35,7 +35,7 @@ enum EventLogTableMode {
  * pointer value inside. This has disastrous effect on performance
  * when dealing with huge amounts of data).
  */
-class EVENTLOG_API EventLogTableFacade : EventLogFacade
+class EVENTLOG_API EventLogTableFacade : public EventLogFacade
 {
     protected:
         long approximateNumberOfEntries;

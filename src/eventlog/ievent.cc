@@ -23,6 +23,12 @@ IEvent::IEvent()
     cachedTimelineCoordinateSystemVersion = -1;
 }
 
+bool IEvent::isSelfEvent()
+{
+    BeginSendEntry *beginSendEntry = getCauseBeginSendEntry();
+    return beginSendEntry && dynamic_cast<EndSendEntry *>(getCauseEvent()->getEventLogEntry(beginSendEntry->getIndex() + 1));
+}
+
 void IEvent::linkEvents(IEvent *previousEvent, IEvent *nextEvent)
 {
     // used to build the linked list
