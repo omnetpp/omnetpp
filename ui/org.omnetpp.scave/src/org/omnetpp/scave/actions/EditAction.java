@@ -11,8 +11,8 @@ import org.omnetpp.scave.editors.ui.EditDialog;
  */
 public class EditAction extends AbstractScaveAction {
 	public EditAction() {
-        setText("Edit...");
-        setToolTipText("Edit selected item");
+        setText("Properties...");
+        setToolTipText("Edit the properties of the selected item");
 	}
 
 	@Override
