@@ -2,6 +2,7 @@ package org.omnetpp.scave.editors;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -395,9 +396,12 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		Assert.isTrue(closablePages.containsValue(control));
 
 		// remove it from the map
-		for (Map.Entry entry : closablePages.entrySet())
+		Iterator<Map.Entry<EObject,ScaveEditorPage>> entries = closablePages.entrySet().iterator();
+		while (entries.hasNext()) {
+			Map.Entry entry = entries.next();
 			if (control.equals(entry.getValue()))
-				closablePages.remove(entry.getKey());
+				entries.remove();
+		}
 	}
 	
 	/**
