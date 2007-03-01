@@ -115,8 +115,7 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 			
 			if (eventLogEntry != null) {
 				lastLocationEventNumber = event.getEventNumber();
-				// TODO:
-				eventLogTable.getVirtualTable().gotoElement(eventLogEntry);
+				eventLogTable.getVirtualTable().scrollToElement(eventLogEntry);
 			}
 		}
 

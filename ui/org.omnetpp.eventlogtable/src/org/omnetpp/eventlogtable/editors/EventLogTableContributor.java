@@ -145,7 +145,7 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 						addSubMenuItem(menu, "Events, message sends and log messages", 1);
 						addSubMenuItem(menu, "Events and log messages", 2);
 						addSubMenuItem(menu, "Events", 3);
-						addSubMenuItem(menu, "Custom filter", new SelectionAdapter() {
+						addSubMenuItem(menu, "Custom filter...", new SelectionAdapter() {
 							public void widgetSelected(SelectionEvent e) {
 								InputDialog dialog = new InputDialog(null, "Search patter", "Please enter the search pattern such as (BS and c(MyMessage))", null, null);
 								dialog.open();
@@ -153,14 +153,14 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 								String pattern = dialog.getValue();
 								if (pattern == null || pattern.equals(""))
 									pattern = "*";
-									
+
 								eventLogTable.getEventLogTableContentProvider().setCustomFilter(pattern);
 								eventLogTable.setFilterMode(4);
 							}
 						});
 					}
 
-					private void addSubMenuItem(Menu menu, String text, final int filterMode) {
+					private void addSubMenuItem(final Menu menu, String text, final int filterMode) {
 						addSubMenuItem(menu, text, new SelectionAdapter() {
 							public void widgetSelected(SelectionEvent e) {
 								eventLogTable.setFilterMode(filterMode);
@@ -169,7 +169,7 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 					}
 
 					private void addSubMenuItem(Menu menu, String text, SelectionListener adapter) {
-						MenuItem subMenuItem = new MenuItem(menu, SWT.PUSH);
+						MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
 						subMenuItem.setText(text);
 						subMenuItem.addSelectionListener(adapter);
 					}

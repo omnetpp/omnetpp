@@ -145,7 +145,7 @@ public class EventLogTableContentProvider implements IVirtualTableContentProvide
 		if (eventLogInput == null)
 			eventLogTableFacade = null;
 		else
-			eventLogTableFacade = new EventLogTableFacade(eventLogInput.getEventLog());
+			eventLogTableFacade = eventLogInput.getEventLogTableFacade();
 	}
 
 	public EventLogTableFacade getEventLogTableFacade() {
