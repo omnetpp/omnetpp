@@ -104,14 +104,14 @@ public class NEDResources implements INEDTypeResolver {
 	 */
 	//FIXME should use built-in NED text from nedxml lib!!!
 	protected void createBuiltInNEDTypes() {
-		// create built-in channel type NullChannel
+		// create built-in channel type cIdealChannel
 		ChannelNode nullChannel = (ChannelNode)NEDElementFactoryEx
                                     .getInstance().createNodeWithTag(NEDElementTags.NED_CHANNEL);
 		nullChannel.setName("cIdealChannel");
 		nullChannel.setIsWithcppclass(true);
 		nullChannelType = new NEDComponent(nullChannel, null, this); 
 
-		// create built-in channel type BasicChannel
+		// create built-in channel ctype BasicChannel
 		ChannelNode basicChannel = (ChannelNode) NEDElementFactoryEx
                                     .getInstance().createNodeWithTag(NEDElementTags.NED_CHANNEL);
 		basicChannel.setName("cBasicChannel");
