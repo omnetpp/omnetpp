@@ -1,14 +1,19 @@
 package org.omnetpp.ned.editor.graph.edit;
 
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
+import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.TopLevelFigure;
 import org.omnetpp.ned.model.interfaces.IHasAncestors;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
+import org.omnetpp.ned.model.pojo.ChannelNode;
+import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
 
 /**
  * @author rhornig
@@ -60,15 +65,37 @@ public class TopLevelEditPart extends BaseEditPart
     	if (getModel() instanceof IHasName) {
     		// set module name and vector size
     		String nameToDisplay = ((IHasName)getModel()).getName();
-    		((TopLevelFigure)getFigure()).setText(nameToDisplay);
+            
+            if (getModel() instanceof ChannelInterfaceNode)
+                nameToDisplay = "Channel interface: " + nameToDisplay;
+            else if (getModel() instanceof ChannelNode)
+                nameToDisplay = "Channel: " + nameToDisplay;
+            else if (getModel() instanceof ModuleInterfaceNode)
+                nameToDisplay = "Interface: " + nameToDisplay;
+
+            ((TopLevelFigure)getFigure()).setText(nameToDisplay);
     	}
 
     	// parse a dispaly string, so it's easier to get values from it.
     	// for other visula properties
     	if (getModel() instanceof IHasDisplayString) {
     		DisplayString dps = ((IHasDisplayString)getModel()).getEffectiveDisplayString();
-
+            
     		((TopLevelFigure)getFigure()).setDisplayString(dps);
+
+            // set icon names for the channel and module/channel interface figures
+            // we use special icons for these types
+            Image image = null;
+            if (getModel() instanceof ChannelInterfaceNode)
+                image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE);
+            else if (getModel() instanceof ChannelNode)
+                image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CHANNEL);
+            else if (getModel() instanceof ModuleInterfaceNode)
+                image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_INTERFACE);
+            
+            if (image != null)
+                ((TopLevelFigure)getFigure()).setIcon(image);
+            
     	}
         
 	}
