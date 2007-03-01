@@ -44,14 +44,15 @@ public class LinearAxis {
 		this.title = vertical ? DEFAULT_Y_AXIS_TITLE : DEFAULT_X_AXIS_TITLE;
 	}
 
-	public void layout(GC gc, Rectangle bounds, Insets insets) {
-		// note: the "bounds" and "insets" rectangle objects are shared among the
-		// horizontal and vertical axis objects and possibly other objects;
-		// this is how we keep them consistent.
+	/**
+	 * Modifies insets to accomodate room for axis title, ticks, tick labels etc.
+	 * Also returns insets for convenience. 
+	 */
+	public Insets layoutHint(GC gc, Rectangle bounds, Insets insets) {
+		// invalidate: they will have to be set via setLayout()
+		this.bounds = null;
+		this.insets = null;
 		
-		this.bounds = bounds.getCopy();
-		this.insets = insets;  
-
 		gc.setFont(tickFont);
 		if (vertical) {
 			// calculate tick label length
@@ -73,11 +74,20 @@ public class LinearAxis {
 			int labelHeight = gc.textExtent("999").y;
 			gc.setFont(titleFont);
 			int titleHeight = title.equals("") ? 0 : gc.textExtent(title).y;
-			insets.top = Math.max(insets.top, gap + majorTickLength + labelHeight + titleHeight + 4);
-			insets.bottom = Math.max(insets.bottom, gap + majorTickLength + labelHeight + 4);
+			insets.top = Math.max(insets.top, gap + majorTickLength + labelHeight + 4);
+			insets.bottom = Math.max(insets.bottom, gap + majorTickLength + labelHeight + titleHeight + 4);
 		}
+		return insets;
 	}
 
+	/**
+	 * Sets geometry info used for drawing. Plot area = bounds minus insets.
+	 */
+	public void setLayout(Rectangle bounds, Insets insets) {
+		this.bounds = bounds.getCopy();
+		this.insets = new Insets(insets);  
+	}
+	
 	/**
 	 * Draw both axis and grid. 
 	 */
@@ -109,8 +119,10 @@ public class LinearAxis {
 		graphics.setLineWidth(1);
 		graphics.setLineStyle(SWT.LINE_SOLID);
 		graphics.setForegroundColor(DEFAULT_AXIS_COLOR);
-		graphics.setFont(titleFont);
-		Point titleSize = gc.textExtent(title);
+		graphics.setFont(titleFont); 
+
+		graphics.drawText("", 0,0); //XXX propagate font into underlying gc (otherwise gc.textExtent() won't work)
+		Point titleSize = gc.textExtent(title); //XXX should be graphics.textExtent(), wish it existed
 		if (doAxis) {
 			if (vertical) {
 				if (mapping.fromCanvasY(plotArea.bottom()) < 0 && mapping.fromCanvasY(plotArea.y) > 0)
@@ -137,9 +149,10 @@ public class LinearAxis {
 		// draw ticks and labels
 		Ticks ticks = createTicks(plotArea);
 		graphics.setFont(tickFont);
+		graphics.drawText("", 0,0); //XXX propagate font into underlying gc (otherwise gc.textExtent() won't work)
 		for (BigDecimal tick : ticks) {
 			String label = tick.toPlainString();
-			Point size = gc.textExtent(label);
+			Point size = gc.textExtent(label); //XXX should be graphics.textExtent(), wish it existed
 			int tickLen = ticks.isMajorTick(tick) ? majorTickLength : minorTickLength; 
 			if (vertical) {
 				int y = mapping.toCanvasY(tick.doubleValue()); 

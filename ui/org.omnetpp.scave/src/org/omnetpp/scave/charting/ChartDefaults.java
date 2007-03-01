@@ -17,7 +17,7 @@ import org.omnetpp.scave.charting.ChartProperties.LegendPosition;
 public interface ChartDefaults {
 	// general
 	public static final boolean DEFAULT_ANTIALIAS = true;
-	public static final boolean DEFAULT_CACHED = true;
+	public static final boolean DEFAULT_CANVAS_CACHING = true;
 
 	// title
 	public static final String DEFAULT_TITLE = "";

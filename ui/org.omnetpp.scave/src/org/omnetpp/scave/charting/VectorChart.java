@@ -322,19 +322,15 @@ public class VectorChart extends ChartCanvas {
 		Rectangle remaining = title.layout(gc, area);
 		remaining = legend.layout(gc, remaining);
 		
-		//FIXME reorganize this. LinearAxis to get bounds and insets at draw time? (here it would only provide a hint)
-		Rectangle areaMinusLegend = remaining.getCopy();
+		Rectangle mainArea = remaining.getCopy();
 		Insets insets = new Insets();
-		xAxis.layout(gc, areaMinusLegend, insets);
-		yAxis.layout(gc, areaMinusLegend, insets);
-		
-//		remaining = tickLabels.layout(gc, remaining);
-//		remaining = axes.layout(gc, remaining);
-//		remaining = crosshair.layout(gc, remaining);
-//
-//		Insets insets = GeomUtils.subtract(area, remaining);
+		xAxis.layoutHint(gc, mainArea, insets);
+		yAxis.layoutHint(gc, mainArea, insets);
+		xAxis.setLayout(mainArea, insets);
+		yAxis.setLayout(mainArea, insets);
 		setInsets(insets);
-		super.beforePaint(gc);
+
+		//super.beforePaint(gc);
 	}
 	
 	@Override

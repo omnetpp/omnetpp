@@ -1,7 +1,7 @@
 package org.omnetpp.scave.charting;
 
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_ANTIALIAS;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_CACHED;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_CANVAS_CACHING;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_DISPLAY_LEGEND;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LEGEND_ANCHOR;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LEGEND_BORDER;
@@ -52,7 +52,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoor
 	
 	public ChartCanvas(Composite parent, int style) {
 		super(parent, style);
-		setCaching(DEFAULT_CACHED);
+		setCaching(DEFAULT_CANVAS_CACHING);
 		mouseSupport = new ZoomableCanvasMouseSupport(this); // add mouse handling; may be made optional
 	}
 

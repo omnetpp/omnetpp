@@ -254,7 +254,7 @@ public class ScalarChart extends ChartCanvas {
 		
 		Rectangle areaMinusLegend = remaining.getCopy();
 		Insets insets = new Insets();
-		valueAxis.layout(gc, areaMinusLegend, insets);
+		valueAxis.layoutHint(gc, areaMinusLegend, insets);
 		remaining = domainAxis.layout(gc, remaining);
 		remaining = plot.layout(gc, remaining);
 
