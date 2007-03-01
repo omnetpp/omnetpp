@@ -2,6 +2,9 @@ package org.omnetpp.common.canvas;
 
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 
@@ -11,7 +14,6 @@ import org.eclipse.swt.widgets.Composite;
  *
  * @author andras
  */
-//FIXME while zooming with Ctrl+wheel too fast, one can get "event loop exception: SWTError: No more handles"
 //FIXME add tooltip support
 public abstract class ZoomableCachingCanvas extends CachingCanvas {
 
@@ -31,6 +33,25 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
      */
 	public ZoomableCachingCanvas(Composite parent, int style) {
 		super(parent, style);
+		
+		addControlListener(new ControlAdapter() {
+			public void controlResized(ControlEvent e) {
+				// validate zoom, so that one cannot zoom out too much (the content (getArea()) must cover full canvas)
+				double w = maxX - minX;
+				double minZoomX = (getViewportWidth()) / (w==0 ? 1.0 : w); 
+				if (zoomX < minZoomX) {
+					zoomX = minZoomX;
+					calculateVirtualSize();
+				}
+
+				double h = maxY - minY;
+				double minZoomY = (getViewportHeight()) / (h==0 ? 1.0 : h); 
+				if (zoomY < minZoomY){
+					zoomY = minZoomY;
+					calculateVirtualSize();
+				}
+			}
+		});
 	}
 
 	public double fromCanvasX(int x) {
@@ -125,7 +146,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 		zoomX = zoom;
 		calculateVirtualSize();
 		centerXOn(x);
-		clearCanvasCacheAndRedraw();
+		redraw();
 	}
 
 	public void setZoomY(double zoom) {
@@ -133,7 +154,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 		zoomY  = zoom;
 		calculateVirtualSize();
 		centerYOn(y);
-		clearCanvasCacheAndRedraw();
+		redraw();
 	}
 	
 	public double getZoomX() {
@@ -201,6 +222,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 		double w = (maxX - minX)*zoomX;
 		double h = (maxY - minY)*zoomY;
 		setVirtualSize((long)w, (long)h);
+		clearCanvasCache();
 	}
 
 	public Insets getInsets() {
@@ -214,23 +236,5 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	public void clearCanvasCacheAndRedraw() {
 		clearCanvasCache();
 		redraw();
-	}
-
-	@Override
-	protected void beforePaint(GC gc) {
-		// validate zoom, so that one cannot zoom out too much (the content (getArea()) must cover full canvas)
-		double w = maxX - minX;
-		double minZoomX = (getViewportWidth()) / (w==0 ? 1.0 : w); 
-		if (zoomX < minZoomX) {
-			zoomX = minZoomX;
-			calculateVirtualSize();
-		}
-
-		double h = maxY - minY;
-		double minZoomY = (getViewportHeight()) / (h==0 ? 1.0 : h); 
-		if (zoomY < minZoomY){
-			zoomY = minZoomY;
-			calculateVirtualSize();
-		}
 	}
 }

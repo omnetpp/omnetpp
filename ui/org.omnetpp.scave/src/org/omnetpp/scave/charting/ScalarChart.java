@@ -244,9 +244,6 @@ public class ScalarChart extends ChartCanvas {
 
 	@Override
 	protected void beforePaint(GC gc) {
-		// ZoomableCachingCanvas's beforePaint() must be called, as it does zoom validation etc.
-		super.beforePaint(gc);
-		
 		// Calculate space occupied by title and legend and set insets accordingly
 		Rectangle area = new Rectangle(getClientArea());
 		Rectangle remaining = title.layout(gc, area);
