@@ -100,9 +100,10 @@ public class ChartSheetPage extends ScaveEditorPage {
 		Composite parent = getChartSheetComposite();
 		for (final Chart chart : charts) {
 			ChartCanvas chartControl = ChartFactory.createChart(parent, chart, scaveEditor.getResultFileManager());
-			addChart(chart, chartControl);
-			configureChartView(chartControl, chart);
-
+			if (chartControl != null) {
+				addChart(chart, chartControl);
+				configureChartView(chartControl, chart);
+			}
 		}
 	}
 	

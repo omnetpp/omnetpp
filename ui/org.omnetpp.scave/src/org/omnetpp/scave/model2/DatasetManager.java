@@ -93,12 +93,14 @@ public class DatasetManager {
 		}
 
 		public Object caseAdd(Add add) {
-			idlist.merge(select(null, add));
+			if (add.getType() == type)
+				idlist.merge(select(null, add));
 			return this;
 		}
 
 		public Object caseDiscard(Discard discard) {
-			idlist.substract(select(idlist, discard));
+			if (discard.getType() == type)
+				idlist.substract(select(idlist, discard));
 			return this;
 		}
 
@@ -110,7 +112,7 @@ public class DatasetManager {
 		}
 
 		public Object caseApply(Apply apply) {
-			// TODO
+			// IDs are not changed
 			return this;
 		}
 
