@@ -243,6 +243,10 @@ public class VirtualTable<T> extends Composite {
 		
 		return tableColumn;
 	}
+
+	public Canvas getCanvas() {
+		return canvas;
+	}
 	
 	public boolean getDrawLines() {
 		return drawLines;
