@@ -59,7 +59,7 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 			}
 		};
 
-		eventLogTable.getVirtualTable().addPaintListener(new PaintListener() {
+		eventLogTable.getVirtualTable().getCanvas().addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
 				int eventNumber = eventLogTable.getVirtualTable().getTopVisibleElement().getEvent().getEventNumber();
 
