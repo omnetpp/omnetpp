@@ -29,6 +29,20 @@ bool IEvent::isSelfEvent()
     return beginSendEntry && dynamic_cast<EndSendEntry *>(getCauseEvent()->getEventLogEntry(beginSendEntry->getIndex() + 1));
 }
 
+int IEvent::findBeginSendEntryIndex(int messageId)
+{
+    // find the "BS" or "SA" line in the cause event
+    for (int beginSendEntryNumber = 0; beginSendEntryNumber < getNumEventLogEntries(); beginSendEntryNumber++)
+    {
+        BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(getEventLogEntry(beginSendEntryNumber));
+
+        if (beginSendEntry && beginSendEntry->messageId == messageId)
+            return beginSendEntryNumber;
+    }
+
+    return -1;
+}
+
 void IEvent::linkEvents(IEvent *previousEvent, IEvent *nextEvent)
 {
     // used to build the linked list

@@ -77,11 +77,6 @@ class EVENTLOG_API IEvent
         virtual long getCauseEventNumber() = 0;
 
         /**
-         * Returns true if the received message was a self message.
-         */
-        virtual bool isSelfEvent();
-
-        /**
          * Returns the immediately preceding event or NULL if there's no such event.
          */
         virtual IEvent *getPreviousEvent() = 0;
@@ -108,6 +103,16 @@ class EVENTLOG_API IEvent
          * Returns the log entry which describes the event's module.
          */
         virtual ModuleCreatedEntry *getModuleCreatedEntry() = 0;
+
+        /**
+         * Returns the index of the begin send entry where the give message was sent.
+         */
+        virtual int findBeginSendEntryIndex(int messageId);
+
+        /**
+         * Returns true if the received message was a self message.
+         */
+        virtual bool isSelfEvent();
 
         /**
          * Used to maintain the double linked list.

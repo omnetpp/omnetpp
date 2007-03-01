@@ -219,17 +219,10 @@ MessageSend *Event::getCause()
 
         if (event)
         {
-            // find the "BS" or "SA" line in the cause event
-            for (int beginSendEntryNumber = 0; beginSendEntryNumber < (int)event->eventLogEntries.size(); beginSendEntryNumber++)
-            {
-                BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(event->eventLogEntries[beginSendEntryNumber]);
+            int beginSendEntryNumber = event->findBeginSendEntryIndex(getMessageId());
 
-                if (beginSendEntry && beginSendEntry->messageId == getMessageId())
-                {
-                    cause = new MessageSend(eventLog, getCauseEventNumber(), beginSendEntryNumber);
-                    break;
-                }
-            }
+            if (beginSendEntryNumber != -1)
+                cause = new MessageSend(eventLog, getCauseEventNumber(), beginSendEntryNumber);
         }
     }
 
