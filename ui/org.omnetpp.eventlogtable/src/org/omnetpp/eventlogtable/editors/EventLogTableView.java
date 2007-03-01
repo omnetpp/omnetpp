@@ -24,7 +24,7 @@ public class EventLogTableView extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		IViewSite viewSite = (IViewSite)getSite();
-		eventLogTable = new EventLogTable(parent, viewSite.getActionBars());
+		eventLogTable = new EventLogTable(parent);
 
 		// we want to provide selection for the sequence chart tool (an IEditPart)
 		viewSite.setSelectionProvider(eventLogTable);

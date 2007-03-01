@@ -1,9 +1,15 @@
 package org.omnetpp.eventlogtable.editors;
 
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuCreator;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -14,6 +20,13 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.eventlog.engine.BeginSendEntry;
+import org.omnetpp.eventlog.engine.EventLogEntry;
+import org.omnetpp.eventlog.engine.IEvent;
+import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlog.engine.MatchKind;
+import org.omnetpp.eventlog.engine.MessageDependency;
+import org.omnetpp.eventlog.engine.MessageDependencyList;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 import org.omnetpp.eventlogtable.widgets.EventLogTableLineRenderer;
 
@@ -21,10 +34,30 @@ import org.omnetpp.eventlogtable.widgets.EventLogTableLineRenderer;
 public class EventLogTableContributor extends EditorActionBarContributor {
 	protected EventLogTable eventLogTable;
 	
+	public EventLogTableContributor() {
+	}
+	
+	public EventLogTableContributor(EventLogTable eventLogTable) {
+		this.eventLogTable = eventLogTable;
+	}
+
+	public void contributeToPopupMenu(IMenuManager menuManager) {
+		menuManager.add(getSearchTextAction());
+		menuManager.add(getSeparatorAction());
+		menuManager.add(getGotoEventAction());
+		menuManager.add(getGotoSimulationTimeAction());
+		menuManager.add(getSeparatorAction());
+		menuManager.add(getGotoEventCauseAction());
+		menuManager.add(getGotoMessageArrivalAction());
+		menuManager.add(getGotoMessageOriginAction());
+		menuManager.add(getGotoMessageReuseAction());
+		menuManager.add(getSeparatorAction());
+		menuManager.add(getBookmarkAction());
+	}
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
-		addFilterModeAction(toolBarManager);
-		addDisplayModeAction(toolBarManager);		
+		toolBarManager.add(getFilterModeAction());
+		toolBarManager.add(getDisplayModeAction());		
 	}
 	
 	@Override
@@ -32,7 +65,195 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 		eventLogTable = ((EventLogTableEditor)targetEditor).getEventLogTable();
 	}
 
-	private void addDisplayModeAction(IToolBarManager toolBarManager) {
+	private Separator getSeparatorAction() {
+		return new Separator();
+	}
+
+	private Action getSearchTextAction() {
+		return new Action("Search raw text...") {
+			public void run() {
+				InputDialog dialog = new InputDialog(null, "Search raw text", "Please enter the search text", null, null);
+				dialog.open();
+				
+				// TODO: add case sensitivity, forward/backward search, etc.
+
+				String searchText = dialog.getValue();
+				EventLogEntry foundEventLogEntry = getEventLog().findEventLogEntry(eventLogTable.getVirtualTable().getSelectionElement(), searchText, true);
+				
+				if (foundEventLogEntry != null)
+					eventLogTable.getVirtualTable().gotoElement(foundEventLogEntry);
+				else
+					MessageDialog.openInformation(null, "Search raw text", "No matches found!");
+			}
+		};
+	}
+
+	private Action getGotoEventCauseAction() {
+		return new Action("Goto event cause") {
+			public void run() {
+				BeginSendEntry beginSendEntry = eventLogTable.getVirtualTable().getSelectionElement().getEvent().getCause().getCauseBeginSendEntry();
+				
+				if (beginSendEntry != null)
+					eventLogTable.getVirtualTable().gotoElement(beginSendEntry);
+			}
+		};
+	}
+
+	private Action getGotoMessageArrivalAction() {
+		return new Action("Goto message arrival") {
+			public void run() {
+				IEvent event = eventLogTable.getVirtualTable().getSelectionElement().getEvent();
+				MessageDependencyList consequences = event.getConsequences();
+				EventLogEntry eventLogEntry = eventLogTable.getVirtualTable().getSelectionElement();
+				
+				for (int i = 0; i < consequences.size(); i++) {
+					MessageDependency consequence = consequences.get(i);
+					if (consequence.getCauseBeginSendEntry().equals(eventLogEntry)) {
+						IEvent consequenceEvent = consequence.getConsequenceEvent();
+						
+						if (consequenceEvent != null)
+							eventLogTable.getVirtualTable().gotoElement(consequenceEvent.getEventEntry());
+					}
+				}
+			}
+		};
+	}
+
+	private Action getGotoMessageOriginAction() {
+		return new Action("Goto message origin") {
+			public void run() {
+				IEvent event = eventLogTable.getVirtualTable().getSelectionElement().getEvent();
+				MessageDependencyList causes = event.getCauses();
+				EventLogEntry eventLogEntry = eventLogTable.getVirtualTable().getSelectionElement();
+				
+				for (int i = 0; i < causes.size(); i++) {
+					MessageDependency cause = causes.get(i);
+					if (eventLogTable.getEventLogTableFacade().MessageDependency_isMessageReuse(cause.getCPtr()) &&
+						cause.getConsequenceBeginSendEntry().equals(eventLogEntry)) {
+						IEvent causeEvent = cause.getCauseEvent();
+						
+						if (causeEvent != null)
+							eventLogTable.getVirtualTable().gotoElement(causeEvent.getEventEntry());
+					}
+				}
+			}
+		};
+	}
+
+	private Action getGotoMessageReuseAction() {
+		return new Action("Goto message reuse") {
+			public void run() {
+				IEvent event = eventLogTable.getVirtualTable().getSelectionElement().getEvent();
+				MessageDependencyList consequences = event.getConsequences();
+				
+				for (int i = 0; i < consequences.size(); i++) {
+					MessageDependency consequence = consequences.get(i);
+					if (eventLogTable.getEventLogTableFacade().MessageDependency_isMessageReuse(consequence.getCPtr())) {
+						BeginSendEntry beginSendEntry = consequence.getConsequenceBeginSendEntry();
+						
+						if (beginSendEntry != null)
+							eventLogTable.getVirtualTable().gotoElement(beginSendEntry);
+					}
+				}
+			}
+		};
+	}
+
+	private Action getGotoEventAction() {
+		return new Action("Goto event...") {
+			public void run() {
+				InputDialog dialog = new InputDialog(null, "Goto event", "Please enter the event number to go to", null, new IInputValidator() {
+					public String isValid(String newText) {
+						try {
+							int eventNumber = Integer.parseInt(newText);
+							
+							if (eventNumber >= 0)
+								return null;
+							else
+								return "Negative event number";
+						}
+						catch (Exception e) {
+							return "Not a number";
+						}
+					}
+				});
+
+				dialog.open();
+
+				try {
+					int eventNumber = Integer.parseInt(dialog.getValue());
+					IEventLog eventLog = getEventLog();
+					IEvent event = eventLog.getEventForEventNumber(eventNumber);
+
+					if (event != null)
+						eventLogTable.getVirtualTable().gotoElement(event.getEventEntry());
+					else
+						MessageDialog.openError(null, "Goto event" , "No such event: " + eventNumber);
+				}
+				catch (Exception x) {
+					// void
+				}
+			}
+		};
+	}
+
+	private Action getGotoSimulationTimeAction() {
+		return new Action("Goto simulation time...") {
+			public void run() {
+				InputDialog dialog = new InputDialog(null, "Goto simulation time", "Please enter the simulation time to go to", null, new IInputValidator() {
+					public String isValid(String newText) {
+						try {
+							double simulationTime = Double.parseDouble(newText);
+							
+							if (simulationTime >= 0)
+								return null;
+							else
+								return "Negative simulation time";
+						}
+						catch (Exception e) {
+							return "Not a number";
+						}
+					}
+				});
+
+				dialog.open();
+
+				try {
+					double simulationTime = Double.parseDouble(dialog.getValue());
+					IEventLog eventLog = getEventLog();
+					IEvent event = eventLog.getEventForSimulationTime(simulationTime, MatchKind.FIRST_OR_NEXT);
+
+					if (event != null)
+						eventLogTable.getVirtualTable().gotoElement(event.getEventEntry());
+					else
+						MessageDialog.openError(null, "Goto simulation time" , "No such simulation time: " + simulationTime);
+				}
+				catch (Exception x) {
+					// void
+				}
+			}
+		};
+	}
+
+	private Action getBookmarkAction() {
+		return new Action("Bookmark") {
+			public void run() {
+				try {
+					EventLogInput eventLogInput = (EventLogInput)eventLogTable.getInput();
+					IMarker marker = eventLogInput.getFile().createMarker(IMarker.BOOKMARK);
+					IEvent event = ((EventLogEntry)eventLogTable.getVirtualTable().getSelectionElement()).getEvent();
+					marker.setAttribute(IMarker.LOCATION, "# " + event.getEventNumber());
+					marker.setAttribute("EventNumber", event.getEventNumber());
+					eventLogTable.refresh();
+				}
+				catch (CoreException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		};
+	}
+
+	private Action getDisplayModeAction() {
 		Action action = new Action("Display", Action.AS_DROP_DOWN_MENU) {
 			@Override
 			public void run() {
@@ -96,10 +317,10 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 		};
 
 		action.setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE));
-		toolBarManager.add(action);
+		return action;
 	}
 
-	private void addFilterModeAction(IToolBarManager toolBarManager) {
+	private Action getFilterModeAction() {
 		Action action = new Action("Show", Action.AS_DROP_DOWN_MENU) {
 			@Override
 			public void run() {
@@ -178,6 +399,10 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 		};
 
 		action.setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER));
-		toolBarManager.add(action);
+		return action;
+	}
+	
+	private IEventLog getEventLog() {
+		return eventLogTable.getEventLog();
 	}
 }

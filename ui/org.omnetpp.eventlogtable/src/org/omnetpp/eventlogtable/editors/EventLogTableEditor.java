@@ -49,8 +49,7 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 
 	@Override
 	public void createPartControl(Composite parent) {
-		IEditorSite editorSite = (IEditorSite)getSite();
-		eventLogTable = new EventLogTable(parent, editorSite.getActionBars());
+		eventLogTable = new EventLogTable(parent);
 		eventLogTable.setInput(eventLogInput);
 
 		locationTimer = new Runnable() {
