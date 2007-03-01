@@ -148,11 +148,6 @@ public class VectorChart extends ChartCanvas {
 			; //TODO
 		else if (PROP_XY_GRID.equals(name))
 			setGridVisibility(Converter.stringToBoolean(value));
-		// Plot
-		else if (PROP_ANTIALIAS.equals(name))
-			setAntialias(Converter.stringToBoolean(value));
-		else if (PROP_CACHING.equals(name))
-			setCaching(Converter.stringToBoolean(value));
 		// Lines
 		else if (name.startsWith(PROP_SYMBOL_TYPE))
 			setSymbolType(getKey(name), Converter.stringToEnum(value, SymbolType.class));

@@ -7,6 +7,7 @@ import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
@@ -157,30 +158,38 @@ public class ChartProperties extends PropertySource {
 	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_GRAPH_TITLE)
 	public String getGraphTitle() { return getStringProperty(PROP_GRAPH_TITLE); }
 	public void setGraphTitle(String title) { setProperty(PROP_GRAPH_TITLE, title); }
+	public String defaultGraphTitle() { return ChartDefaults.DEFAULT_TITLE; }
 
 	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_GRAPH_TITLE_FONT)
 	public FontData getGraphTitleFont() { return getFontProperty(PROP_GRAPH_TITLE_FONT); }
 	public void setGraphTitleFont(FontData font) { setProperty(PROP_GRAPH_TITLE_FONT, font); }
+	public FontData getDefaultTitleFont() { return getDefaultFontProperty(PROP_GRAPH_TITLE_FONT); }
 
 	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_X_AXIS_TITLE)
 	public String getXAxisTitle() { return getStringProperty(PROP_X_AXIS_TITLE); }
 	public void setXAxisTitle(String title) { setProperty(PROP_X_AXIS_TITLE, title); }
+	public String defaultXAxisTitle() { return ChartDefaults.DEFAULT_X_AXIS_TITLE; }
 
 	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_Y_AXIS_TITLE)
 	public String getYAxisTitle() { return getStringProperty(PROP_Y_AXIS_TITLE); }
 	public void setYAxisTitle(String title) { setProperty(PROP_Y_AXIS_TITLE, title); }
+	public String defaultYAxisTitle() { return ChartDefaults.DEFAULT_Y_AXIS_TITLE; }
 
 	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_AXIS_TITLE_FONT)
 	public FontData getAxisTitleFont() { return getFontProperty(PROP_AXIS_TITLE_FONT); }
 	public void setAxisTitleFont(FontData font) { setProperty(PROP_AXIS_TITLE_FONT, font); }
+	public FontData defaultAxisTitleFont() { return getDefaultFontProperty(PROP_AXIS_TITLE_FONT); }
 
 	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_LABEL_FONT)
 	public FontData getLabelsFont() { return getFontProperty(PROP_LABEL_FONT); }
 	public void setLabelsFont(FontData font) { setProperty(PROP_LABEL_FONT, font); }
-
+	public FontData defaultLabelsFont() { return getDefaultFontProperty(PROP_LABEL_FONT); }
+	
 	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_X_LABELS_ROTATE_BY,displayName="x labels rotated by")
 	public String getXLabelsRotate() { return getStringProperty(PROP_X_LABELS_ROTATE_BY); }
 	public void setXLabelsRotate(String title) { setProperty(PROP_X_LABELS_ROTATE_BY, title); }
+	public String defaultXLabelsRotate() { return String.valueOf(ChartDefaults.DEFAULT_X_LABELS_ROTATED_BY); } // XXX: use Double
+
 	/*======================================================================
 	 *                             Axes
 	 *======================================================================*/
@@ -199,10 +208,12 @@ public class ChartProperties extends PropertySource {
 	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_XY_INVERT,displayName="invert x y")
 	public boolean getXYInvert() { return getBooleanProperty(PROP_XY_INVERT); }
 	public void setXYInvert(boolean flag) { setProperty(PROP_XY_INVERT, flag); }
+	public boolean defaultXYInvert() { return ChartDefaults.DEFAULT_INVERT_XY; }
 
 	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_XY_GRID,displayName="grid")
 	public boolean getXYGrid() { return getBooleanProperty(PROP_XY_GRID); }
 	public void setXYGrid(boolean showgrid) { setProperty(PROP_XY_GRID, showgrid); }
+	public boolean defaultXYGrid() { return ChartDefaults.DEFAULT_SHOW_GRID; }
 
 	/*======================================================================
 	 *                             Legend
@@ -211,26 +222,31 @@ public class ChartProperties extends PropertySource {
 			displayName="display")
 	public boolean getDisplayLegend() { return getBooleanProperty(PROP_DISPLAY_LEGEND); }
 	public void setDisplayLegend(boolean flag) { setProperty(PROP_DISPLAY_LEGEND, flag); }
+	public boolean defaultDisplayLegend() { return ChartDefaults.DEFAULT_DISPLAY_LEGEND; }
 
 	@org.omnetpp.common.properties.Property(category="Legend", id=PROP_LEGEND_BORDER,
 			displayName="border")
 	public boolean getLegendBorder() { return getBooleanProperty(PROP_LEGEND_BORDER); }
 	public void setLegendBorder(boolean flag) { setProperty(PROP_LEGEND_BORDER, flag); }
+	public boolean defaultLegendBorder() { return ChartDefaults.DEFAULT_LEGEND_BORDER; }
 
 	@org.omnetpp.common.properties.Property(category="Legend", id=PROP_LEGEND_FONT,
 			displayName="font")
 	public FontData getLegendFont() { return getFontProperty(PROP_LEGEND_FONT); }
 	public void setLegendFont(FontData font) { setProperty(PROP_LEGEND_FONT, font); }
+	public FontData defaultLegendFont() { return getDefaultFontProperty(PROP_LEGEND_FONT); }
 
 	@org.omnetpp.common.properties.Property(category="Legend", id=PROP_LEGEND_POSITION,
 			displayName="position")
 	public LegendPosition getLegendPosition() { return getEnumProperty(PROP_LEGEND_POSITION, LegendPosition.class); }
 	public void setLegendPosition(LegendPosition position) { setProperty(PROP_LEGEND_POSITION, position); }
+	public LegendPosition defaultLegendPosition() { return ChartDefaults.DEFAULT_LEGEND_POSITION; }
 
 	@org.omnetpp.common.properties.Property(category="Legend",id=PROP_LEGEND_ANCHORING,
 			displayName="anchor point")
 	public LegendAnchor getLegendAnchoring() { return getEnumProperty(PROP_LEGEND_ANCHORING, LegendAnchor.class); }
 	public void setLegendAnchoring(LegendAnchor anchoring) { setProperty(PROP_LEGEND_ANCHORING, anchoring); }
+	public LegendAnchor defaultLegendAnchor() { return ChartDefaults.DEFAULT_LEGEND_ANCHOR; }
 
 
 	public static class VectorChartProperties extends ChartProperties
@@ -263,10 +279,12 @@ public class ChartProperties extends PropertySource {
 		@org.omnetpp.common.properties.Property(category="Plot",id=PROP_ANTIALIAS,displayName="antialias")
 		public boolean getAntialias() { return getBooleanProperty(PROP_ANTIALIAS); }
 		public void setAntialias(boolean flag) { setProperty(PROP_ANTIALIAS, flag); }
+		public boolean defaultAntialias() { return ChartDefaults.DEFAULT_ANTIALIAS; }
 
 		@org.omnetpp.common.properties.Property(category="Plot",id=PROP_CACHING,displayName="caching")
 		public boolean getCaching() { return getBooleanProperty(PROP_CACHING); }
 		public void setCaching(boolean flag) { setProperty(PROP_CACHING, flag); }
+		public boolean defaultCaching() { return ChartDefaults.DEFAULT_CACHED; }
 
 		public LineProperties getLineProperties(String lineId) { return new LineProperties(lineId); }
 
@@ -333,13 +351,25 @@ public class ChartProperties extends PropertySource {
 		/*======================================================================
 		 *                             Bars
 		 *======================================================================*/
+		@org.omnetpp.common.properties.Property(category="Bars",id=PROP_ANTIALIAS,displayName="antialias")
+		public boolean getAntialias() { return getBooleanProperty(PROP_ANTIALIAS); }
+		public void setAntialias(boolean flag) { setProperty(PROP_ANTIALIAS, flag); }
+		public boolean defaultAntialias() { return ChartDefaults.DEFAULT_ANTIALIAS; }
+
+		@org.omnetpp.common.properties.Property(category="Bars",id=PROP_CACHING,displayName="caching")
+		public boolean getCaching() { return getBooleanProperty(PROP_CACHING); }
+		public void setCaching(boolean flag) { setProperty(PROP_CACHING, flag); }
+		public boolean defaultCaching() { return ChartDefaults.DEFAULT_CACHED; }
+		
 		@org.omnetpp.common.properties.Property(category="Bars",id=PROP_BAR_BASELINE)
-		public String getBarBaseline() { return getStringProperty(PROP_BAR_BASELINE); }
+		public String getBarBaseline() { return getStringProperty(PROP_BAR_BASELINE); } // XXX return Double
 		public void setBarBaseline(String baseline) { setProperty(PROP_BAR_BASELINE, baseline); }
+		public String defaultBarBaseline() { return String.valueOf(ChartDefaults.DEFAULT_BAR_BASELINE); }
 
 		@org.omnetpp.common.properties.Property(category="Bars",id=PROP_BAR_PLACEMENT)
 		public BarPlacement getBarPlacement() { return getEnumProperty(PROP_BAR_PLACEMENT, BarPlacement.class); }
 		public void setBarPlacement(BarPlacement placement) { setProperty(PROP_BAR_PLACEMENT, placement); }
+		public BarPlacement defaultBarPlacement() { return ChartDefaults.DEFAULT_BAR_PLACEMENT; }
 	}
 
 	public static class HistogramChartProperties extends ChartProperties
@@ -364,31 +394,38 @@ public class ChartProperties extends PropertySource {
 
 	public String getStringProperty(String propertyName) {
 		Property property = getProperty(propertyName);
-		return property != null ? StringUtils.defaultString(property.getValue()) : StringUtils.EMPTY;
+		return property != null ? StringUtils.defaultString(property.getValue()) : 
+								  getDefaultStringProperty(propertyName);
 	}
 
 	public Boolean getBooleanProperty(String propertyName) {
 		Property property = getProperty(propertyName);
-		return property != null ? Boolean.valueOf(property.getValue()) : Boolean.FALSE;
+		return property != null ? Boolean.valueOf(property.getValue()) :
+								  getDefaultBooleanProperty(propertyName);
 	}
 
 	public <T extends Enum<T>> T getEnumProperty(String propertyName, Class<T> type) {
 		Property property = getProperty(propertyName);
-		return property != null && property.getValue() != null ? Enum.valueOf(type, property.getValue()) : null;
+		return property != null && property.getValue() != null ? Enum.valueOf(type, property.getValue()) :
+																 getDefaultEnumProperty(propertyName, type);
 	}
 
 	public FontData getFontProperty(String propertyName) {
 		Property property = getProperty(propertyName);
-		return property != null ? Converter.stringToFontdata(property.getValue()) : null;
+		return property != null ? Converter.stringToFontdata(property.getValue()) :
+			                      getDefaultFontProperty(propertyName);
 	}
 
-	public void setProperty(String propertyName, String propertyValue) {
+	/**
+	 * Sets the property value in the property list.
+	 * If the value is null then the property node is deleted.
+	 * If the editing domain was set it will change the list by executing a command,
+	 * otherwise it modifies the list directly.
+	 */
+	protected void doSetProperty(String propertyName, String propertyValue) {
 		ScaveModelPackage model = ScaveModelPackage.eINSTANCE;
 		ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
 		Property property = getProperty(propertyName);
-
-		if ("".equals(propertyValue))
-			propertyValue = null;
 
 		if (property == null && propertyValue != null ) { // add new property
 			property = factory.createProperty();
@@ -415,16 +452,66 @@ public class ChartProperties extends PropertySource {
 					RemoveCommand.create(domain, property));
 		}
 	}
-
-	public void setProperty(String propertyName, Boolean propertyValue) {
-		setProperty(propertyName, propertyValue == null || propertyValue == Boolean.FALSE ?  null : String.valueOf(propertyValue));
+	
+	public void setProperty(String propertyName, String propertyValue) {
+		String defaultValue = getDefaultStringProperty(propertyName);
+		if (defaultValue != null && defaultValue.equals(propertyValue))
+			propertyValue = null;
+		doSetProperty(propertyName, propertyValue);
 	}
 
+	public void setProperty(String propertyName, Boolean propertyValue) {
+		Boolean defaultValue = getDefaultBooleanProperty(propertyName);
+		if (defaultValue != null && defaultValue.equals(propertyValue))
+			propertyValue = null;
+		doSetProperty(propertyName, propertyValue == null ? null : String.valueOf(propertyValue));
+	}
+
+	@SuppressWarnings("unchecked")
 	public void setProperty(String propertyName, Enum<?> propertyValue) {
-		setProperty(propertyName, propertyValue == null ? null : String.valueOf(propertyValue));
+		Enum<?> defaultValue = getDefaultEnumProperty(propertyName, propertyValue.getClass());
+		if (defaultValue != null && defaultValue.equals(propertyValue))
+			propertyValue = null;
+		doSetProperty(propertyName, propertyValue == null ? null : String.valueOf(propertyValue));
 	}
 
 	public void setProperty(String propertyName, FontData propertyValue) {
-		setProperty(propertyName, Converter.fontdataToString(propertyValue));
+		FontData defaultValue = getDefaultFontProperty(propertyName);
+		if (defaultValue != null && defaultValue.equals(propertyValue))
+			propertyValue = null;
+		doSetProperty(propertyName, Converter.fontdataToString(propertyValue));
+	}
+
+	public String getDefaultStringProperty(String propertyName) {
+		Object defaultValue = ChartDefaults.getDefaultPropertyValue(propertyName);
+		if (defaultValue instanceof String)
+			return (String)defaultValue;
+		else
+			return StringUtils.EMPTY;
+	}
+	
+	public boolean getDefaultBooleanProperty(String propertyName) {
+		Object defaultValue = ChartDefaults.getDefaultPropertyValue(propertyName);
+		if (defaultValue instanceof Boolean)
+			return (Boolean)defaultValue;
+		else
+			return false;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T extends Enum<T>> T getDefaultEnumProperty(String propertyName, Class<T> type) {
+		Object defaultValue = ChartDefaults.getDefaultPropertyValue(propertyName);
+		if (defaultValue != null && type.isInstance(defaultValue))
+			return (T)defaultValue;
+		else
+			return null;
+	}
+	
+	public FontData getDefaultFontProperty(String propertyName) {
+		Object defaultValue = ChartDefaults.getDefaultPropertyValue(propertyName);
+		if (defaultValue instanceof Font)
+			return Converter.swtfontToFontdata((Font)defaultValue);
+		else
+			return null;
 	}
 }

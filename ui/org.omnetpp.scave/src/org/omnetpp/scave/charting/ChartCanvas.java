@@ -9,6 +9,8 @@ import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LEGEND_FONT;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LEGEND_POSITION;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_TITLE;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_TITLE_FONT;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_ANTIALIAS;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_CACHING;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_DISPLAY_LEGEND;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_GRAPH_TITLE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_GRAPH_TITLE_FONT;
@@ -85,6 +87,11 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoor
 			setLegendPosition(Converter.stringToEnum(value, LegendPosition.class));
 		else if (PROP_LEGEND_ANCHORING.equals(name))
 			setLegendAnchor(Converter.stringToEnum(value, LegendAnchor.class));
+		// Plot
+		else if (PROP_ANTIALIAS.equals(name))
+			setAntialias(Converter.stringToBoolean(value));
+		else if (PROP_CACHING.equals(name))
+			setCaching(Converter.stringToBoolean(value));
 		else
 			ScavePlugin.logError(new RuntimeException("unrecognized chart property: "+name));
 	}
