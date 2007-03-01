@@ -14,6 +14,7 @@
 
 
 #include <sstream>
+#include <tchar.h>
 #include "commonutil.h"
 #include "filereader.h"
 #include "exception.h"
@@ -310,6 +311,64 @@ char *FileReader::getPreviousLineBufferPointer()
 
         return NULL;
     }
+}
+
+template <typename CHAR_TYPE>
+CHAR_TYPE *strnistr
+(
+   CHAR_TYPE *szStringToBeSearched,
+   const CHAR_TYPE *szSubstringToSearchFor,
+   const int nStringLen
+)
+{
+   int nLen;
+   int nOffset;
+   int nMaxOffset;
+   CHAR_TYPE *pPos;
+
+   // verify parameters
+   if (szStringToBeSearched == NULL || szSubstringToSearchFor == NULL )
+      return szStringToBeSearched;
+
+   // get length of the substring
+   nLen = _tcslen(szSubstringToSearchFor);
+
+   // empty substring-return input (consistent w/ strstr)
+   if (nLen == 0)
+      return szStringToBeSearched;
+
+   nMaxOffset = nStringLen - nLen;
+   pPos = szStringToBeSearched;
+
+   for (nOffset = 0; nOffset <= nMaxOffset; nOffset++) {
+      if (_tcsnicmp(pPos, szSubstringToSearchFor, nLen) == 0)
+         return pPos;
+
+      // move on to the next character
+      pPos++; //_tcsinc was causing problems :(
+   }
+
+   return NULL;
+}
+
+char *FileReader::findNextLineBufferPointer(const char *search)
+{
+    char *line;
+    while (line = getNextLineBufferPointer())
+        if (strnistr(line, search, getLastLineLength()))
+            return line;
+
+    return NULL;
+}
+
+char *FileReader::findPreviousLineBufferPointer(const char *search)
+{
+    char *line;
+    while (line = getPreviousLineBufferPointer())
+        if (strnistr(line, search, getLastLineLength()))
+            return line;
+
+    return NULL;
 }
 
 int64 FileReader::getFileSize()

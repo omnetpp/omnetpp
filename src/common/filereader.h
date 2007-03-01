@@ -147,6 +147,16 @@ class COMMON_API FileReader
     char *getPreviousLineBufferPointer();
 
     /**
+     * Searches through the file from the current position for the given text and returns the first matching line.
+     */
+    char *findNextLineBufferPointer(const char *search);
+
+    /**
+     * Searches through the file from the current position for the given text and returns the first matching line.
+     */
+    char *findPreviousLineBufferPointer(const char *search);
+
+    /**
      * Returns the start offset of the line last parsed with readNextLine() or readPreviousLine().
      */
     file_offset_t getLastLineStartOffset() { return lastLineStartOffset; }
