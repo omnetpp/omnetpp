@@ -84,7 +84,6 @@ filereader.obj: filereader.cc \
   exception.h \
   commondefs.h
 fileutil.obj: fileutil.cc \
-  ./unistd.h \
   fileutil.h \
   commondefs.h
 fnamelisttokenizer.obj: fnamelisttokenizer.cc \
@@ -96,7 +95,11 @@ lcgrandom.obj: lcgrandom.cc \
   lcgrandom.h \
   commondefs.h
 lex.matchexpressionyy.obj: lex.matchexpressionyy.cc \
-  matchexpression.tab.h
+  stringutil.h \
+  matchexpression.tab.h \
+  commondefs.h \
+  commonutil.h \
+  exception.h
 linetokenizer.obj: linetokenizer.cc \
   exception.h \
   linetokenizer.h \
