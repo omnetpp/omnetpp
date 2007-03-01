@@ -12,8 +12,9 @@
 TARGET = stress.exe
 
 # User interface (uncomment one) (-u option)
+USERIF_LIBS=$(TKENV_LIBS) $(CMDENV_LIBS)
 # USERIF_LIBS=$(CMDENV_LIBS)
-USERIF_LIBS=$(TKENV_LIBS)
+# USERIF_LIBS=$(TKENV_LIBS)
 
 # .ned or .h include paths with -I
 INCLUDE_PATH=
@@ -36,8 +37,8 @@ LIBS=
 !include "../../configuser.vc"
 
 # User interface libs
-CMDENV_LIBS=envir.lib cmdenv.lib
-TKENV_LIBS=envir.lib tkenv.lib layout.lib $(TK_LIBS)
+CMDENV_LIBS=/include:_cmdenv_lib envir.lib cmdenv.lib
+TKENV_LIBS=/include:_tkenv_lib envir.lib tkenv.lib layout.lib $(TK_LIBS)
 
 # Simulation kernel
 KERNEL_LIBS=common.lib sim_std.lib
@@ -59,7 +60,7 @@ MSGCOPTS= $(INCLUDE_PATH)
 
 #------------------------------------------------------------------------------
 # object files in this directory
-OBJS= stress_m.obj node.obj
+OBJS= stress_m.obj stresscapsulate.obj stresschannel.obj stressdirect.obj stressduplicate.obj stressnode.obj stressqueue.obj stresssink.obj stresssource.obj
 
 # header files generated (from msg files)
 GENERATEDHEADERS= stress_m.h
@@ -85,8 +86,29 @@ stress_m.obj: stress_m.cc
 stress_m.cc stress_m.h: stress.msg
 	$(MSGC:/=\) -s _m.cc $(MSGCOPTS) stress.msg
 
-node.obj: node.cc
-	$(CXX) -c $(COPTS) /Tp node.cc
+stresscapsulate.obj: stresscapsulate.cc
+	$(CXX) -c $(COPTS) /Tp stresscapsulate.cc
+
+stresschannel.obj: stresschannel.cc
+	$(CXX) -c $(COPTS) /Tp stresschannel.cc
+
+stressdirect.obj: stressdirect.cc
+	$(CXX) -c $(COPTS) /Tp stressdirect.cc
+
+stressduplicate.obj: stressduplicate.cc
+	$(CXX) -c $(COPTS) /Tp stressduplicate.cc
+
+stressnode.obj: stressnode.cc
+	$(CXX) -c $(COPTS) /Tp stressnode.cc
+
+stressqueue.obj: stressqueue.cc
+	$(CXX) -c $(COPTS) /Tp stressqueue.cc
+
+stresssink.obj: stresssink.cc
+	$(CXX) -c $(COPTS) /Tp stresssink.cc
+
+stresssource.obj: stresssource.cc
+	$(CXX) -c $(COPTS) /Tp stresssource.cc
 
 
 #doc: neddoc doxy
