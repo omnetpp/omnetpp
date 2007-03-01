@@ -117,10 +117,10 @@ public class NEDResources implements INEDTypeResolver {
 		basicChannel.setName("cBasicChannel");
 		basicChannel.setIsWithcppclass(true);
 		ParametersNode params = (ParametersNode) NEDElementFactoryEx
-		                    .getInstance().createNodeWithTag(NEDElementTags.NED_PARAMETERS);
-		createImplicitChannelParameter(params, "delay", NEDElementUtil.NED_PARTYPE_DOUBLE);
-		createImplicitChannelParameter(params, "error", NEDElementUtil.NED_PARTYPE_DOUBLE);
-		createImplicitChannelParameter(params, "datarate", NEDElementUtil.NED_PARTYPE_DOUBLE);
+		                    .getInstance().createNodeWithTag(NEDElementTags.NED_PARAMETERS, basicChannel);
+		params.appendChild(createImplicitChannelParameter("delay", NEDElementUtil.NED_PARTYPE_DOUBLE));
+        params.appendChild(createImplicitChannelParameter("error", NEDElementUtil.NED_PARTYPE_DOUBLE));
+        params.appendChild(createImplicitChannelParameter("datarate", NEDElementUtil.NED_PARTYPE_DOUBLE));
 		basicChannelType = new NEDComponent(basicChannel, null, this); 
 		
         //
@@ -132,23 +132,23 @@ public class NEDResources implements INEDTypeResolver {
                                 .getInstance().createNodeWithTag(NEDElementTags.NED_MODULE_INTERFACE);
 		bidirChannel.setName("IBidirectionalChannel");
 		GatesNode gates = (GatesNode) NEDElementFactoryEx
-                                .getInstance().createNodeWithTag(NEDElementTags.NED_GATES);
-		createGate(gates, "a", NEDElementUtil.NED_GATETYPE_INOUT);
-		createGate(gates, "b", NEDElementUtil.NED_GATETYPE_INOUT);
+                                .getInstance().createNodeWithTag(NEDElementTags.NED_GATES, bidirChannel);
+		gates.appendChild(createGate("a", NEDElementUtil.NED_GATETYPE_INOUT));
+        gates.appendChild(createGate("b", NEDElementUtil.NED_GATETYPE_INOUT));
 		bidirChannelType = new NEDComponent(bidirChannel, null, this); 
 		
 		ModuleInterfaceNode unidirChannel = (ModuleInterfaceNode) NEDElementFactoryEx
                                 .getInstance().createNodeWithTag(NEDElementTags.NED_MODULE_INTERFACE);
 		unidirChannel.setName("IUnidirectionalChannel");
         GatesNode gates2 = (GatesNode) NEDElementFactoryEx
-                                        .getInstance().createNodeWithTag(NEDElementTags.NED_GATES);
-		createGate(gates2, "i", NEDElementUtil.NED_GATETYPE_INPUT);
-		createGate(gates2, "o", NEDElementUtil.NED_GATETYPE_OUTPUT);
+                                        .getInstance().createNodeWithTag(NEDElementTags.NED_GATES, unidirChannel);
+		gates2.appendChild(createGate("i", NEDElementUtil.NED_GATETYPE_INPUT));
+        gates2.appendChild(createGate("o", NEDElementUtil.NED_GATETYPE_OUTPUT));
 		unidirChannelType = new NEDComponent(unidirChannel, null, this);
 	}	
 
 	/* utility method */
-	protected NEDElement createGate(GatesNode gates, String name, int type) {
+	protected NEDElement createGate(String name, int type) {
 		GateNode g = (GateNode) NEDElementFactoryEx
                             .getInstance().createNodeWithTag(NEDElementTags.NED_GATE);
 		g.setName(name);
@@ -157,7 +157,7 @@ public class NEDResources implements INEDTypeResolver {
 	}
 
 	/* utility method */
-	protected NEDElement createImplicitChannelParameter(NEDElement parent, String name, int type) {
+	protected NEDElement createImplicitChannelParameter(String name, int type) {
 		ParamNode param = (ParamNode) NEDElementFactoryEx
                                 .getInstance().createNodeWithTag(NEDElementTags.NED_PARAM);
 		param.setName(name);
