@@ -51,7 +51,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 		});
 		addControlListener(new ControlAdapter() {
 			public void controlResized(ControlEvent e) {
-				configureScrollbars();
+				updateScrollbars();
 			}
 		});
 	}
@@ -64,7 +64,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	public void setVirtualSize(long width, long height) {
 		this.virtualWidth = width;
 		this.virtualHeight = height;
-		configureScrollbars();
+		updateScrollbars();
 		redraw();
 	}
 
@@ -74,7 +74,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 
 	public void setVirtualHeight(long height) {
 		this.virtualHeight = height;
-		configureScrollbars();
+		updateScrollbars();
 		redraw();
 	}
 
@@ -84,7 +84,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 
 	public void setVirtualWidth(long width) {
 		this.virtualWidth = width;
-		configureScrollbars();
+		updateScrollbars();
 		redraw();
 	}
 
@@ -144,7 +144,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	 * Returns the height of the client area (see {@link Canvas#getClientArea()}.
 	 */
 	public int getViewportHeight() {
-		return getClientArea().height;
+		return getClientArea().height; //FIXME this is not good: replace this stuff with setInsets()
 	}
 	
 	private void horizontalBarChanged() {
@@ -157,7 +157,10 @@ public abstract class LargeScrollableCanvas extends Canvas {
 		redraw();
 	}
 	
-	private void configureScrollbars() {
+	/**
+	 * Should be called when viewport or virtual size changes.
+	 */
+	public void updateScrollbars() {
 		viewX = clipX(viewX);
 		viewY = clipY(viewY);
 		hShift = configureScrollbar(getHorizontalBar(), virtualWidth, viewX, /*getSize().x*/getViewportWidth());

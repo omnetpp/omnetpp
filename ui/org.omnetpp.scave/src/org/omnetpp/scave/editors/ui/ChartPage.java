@@ -74,7 +74,7 @@ public class ChartPage extends ScaveEditorPage {
 		setFormTitle("Chart: " + getChartName(chart));
 		setExpandHorizontal(true);
 		setExpandVertical(true);
-		setBackground(ColorFactory.asColor("white"));
+		//setBackground(ColorFactory.asColor("lightGray"));
 		getBody().setLayout(new GridLayout(2,false));
 
 		// set up contents

@@ -34,25 +34,47 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	public ZoomableCachingCanvas(Composite parent, int style) {
 		super(parent, style);
 		
-		addControlListener(new ControlAdapter() {
-			public void controlResized(ControlEvent e) {
-				// validate zoom, so that one cannot zoom out too much (the content (getArea()) must cover full canvas)
-				double w = maxX - minX;
-				double minZoomX = (getViewportWidth()) / (w==0 ? 1.0 : w); 
-				if (zoomX < minZoomX) {
-					zoomX = minZoomX;
-					calculateVirtualSize();
-				}
-
-				double h = maxY - minY;
-				double minZoomY = (getViewportHeight()) / (h==0 ? 1.0 : h); 
-				if (zoomY < minZoomY){
-					zoomY = minZoomY;
-					calculateVirtualSize();
-				}
-			}
-		});
+//		addControlListener(new ControlAdapter() {
+//			public void controlResized(ControlEvent e) {
+//				System.out.println("RESIZED");
+//				// validate zoom, so that one cannot zoom out too much (the content (getArea()) must cover full canvas)
+//				double w = maxX - minX;
+//				double minZoomX = (getViewportWidth()) / (w==0 ? 1.0 : w); 
+//				if (zoomX < minZoomX) {
+//					zoomX = minZoomX;
+//					calculateVirtualSize();
+//				}
+//
+//				double h = maxY - minY;
+//				double minZoomY = (getViewportHeight()) / (h==0 ? 1.0 : h); 
+//				if (zoomY < minZoomY){
+//					zoomY = minZoomY;
+//					calculateVirtualSize();
+//				}
+//			}
+//		});
 	}
+
+	
+	@Override
+	protected void beforePaint(GC gc) {
+		System.out.println("RESIZED");
+		// validate zoom, so that one cannot zoom out too much (the content (getArea()) must cover full canvas)
+		double w = maxX - minX;
+		double minZoomX = (getViewportWidth()) / (w==0 ? 1.0 : w); 
+		if (zoomX < minZoomX) {
+			zoomX = minZoomX;
+			calculateVirtualSize();
+		}
+
+		double h = maxY - minY;
+		double minZoomY = (getViewportHeight()) / (h==0 ? 1.0 : h); 
+		if (zoomY < minZoomY){
+			zoomY = minZoomY;
+			calculateVirtualSize();
+		}
+	}
+
 
 	public double fromCanvasX(int x) {
 		return (x + getViewportLeft() - insets.left) / zoomX + minX;
@@ -216,6 +238,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 		this.maxX = Math.max(minX, maxX);
 		this.maxY = Math.max(minY, maxY);
 		calculateVirtualSize();
+		System.out.printf("Area set: (%g, %g, %g, %g) - virtual size: (%d, %d)\n", this.minX, this.maxX, this.minY, this.maxY, getVirtualWidth(), getVirtualHeight());
 	}
 
 	protected void calculateVirtualSize() {
@@ -231,6 +254,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 
 	public void setInsets(Insets insets) {
 		this.insets = insets;
+		System.out.println("Insets:"+insets);
 	}
 
 	public void clearCanvasCacheAndRedraw() {

@@ -310,20 +310,24 @@ public class VectorChart extends ChartCanvas {
 
 	@Override
 	protected void beforePaint(GC gc) {
+
 		// Calculate space occupied by title and legend and set insets accordingly
 		Rectangle area = new Rectangle(getClientArea());
 		Rectangle remaining = title.layout(gc, area);
 		remaining = legend.layout(gc, remaining);
 		
 		Rectangle mainArea = remaining.getCopy();
-		Insets insetsToMainArea = new Insets();
-		xAxis.layoutHint(gc, mainArea, insetsToMainArea);
-		yAxis.layoutHint(gc, mainArea, insetsToMainArea);
+//		Insets insetsToMainArea = new Insets();
+//		xAxis.layoutHint(gc, mainArea, insetsToMainArea);
+//		yAxis.layoutHint(gc, mainArea, insetsToMainArea);
+		Insets insetsToMainArea = new Insets(30, 30, 30, 30);
 		xAxis.setLayout(mainArea, insetsToMainArea);
 		yAxis.setLayout(mainArea, insetsToMainArea);
 
 		Rectangle plotArea = mainArea.crop(insetsToMainArea);
 		setInsets(GeomUtils.subtract(area, plotArea));
+		
+		super.beforePaint(gc);
 	}
 	
 	@Override

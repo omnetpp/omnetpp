@@ -250,10 +250,10 @@ public class ScalarChart extends ChartCanvas {
 		remaining = legend.layout(gc, remaining);
 		
 		Rectangle mainArea = remaining.getCopy();
-		Insets insetsToMainArea = new Insets(10, 0, 10, 0);
+		Insets insetsToMainArea = new Insets(30, 30, 30, 30);
 		
-		valueAxis.layoutHint(gc, mainArea, insetsToMainArea);
-		domainAxis.layoutHint(gc, remaining, insetsToMainArea);
+		//XXX valueAxis.layoutHint(gc, mainArea, insetsToMainArea);
+		//XXX domainAxis.layoutHint(gc, remaining, insetsToMainArea);
 
 		valueAxis.setLayout(mainArea, insetsToMainArea);
 		domainAxis.setLayout(mainArea, insetsToMainArea);
@@ -261,6 +261,8 @@ public class ScalarChart extends ChartCanvas {
 		plot.layout(gc, plotArea);
 
 		setInsets(GeomUtils.subtract(area, plotArea));
+		
+		super.beforePaint(gc);
 	}
 	
 	
@@ -398,6 +400,7 @@ public class ScalarChart extends ChartCanvas {
 	/**
 	 * Domain axis for bar chart.
 	 */
+	//TODO factor out as separate class, or at least make it static (to reduce interdependencies)
 	class DomainAxis {
 		private Rectangle rect; // strip below the plotArea where the axis text etc goes
 		private int labelsHeight;
@@ -457,7 +460,8 @@ public class ScalarChart extends ChartCanvas {
 			graphics.setLineWidth(1);
 			graphics.setForegroundColor(ColorFactory.asColor("black"));
 			Rectangle plotRect = getPlotRectangle();
-			//graphics.drawLine(plotRect.x, rect.y + 5, plotRect.x + plotRect.width, rect.y + 5);
+			graphics.drawLine(plotRect.x, rect.y, plotRect.right(), rect.y);
+
 			// draw labels
 			int cColumns = dataset.getColumnCount();
 			graphics.setFont(labelsFont);
