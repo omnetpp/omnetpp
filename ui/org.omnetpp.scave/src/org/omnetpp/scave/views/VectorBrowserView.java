@@ -103,19 +103,19 @@ public class VectorBrowserView extends ViewPart {
 	public void gotoLine(int lineNumber) {
 		OutputVectorEntry entry = contentProvider.getElementBySerial(lineNumber);
 		if (entry != null)
-			viewer.gotoElement(entry);
+			viewer.scrollToElement(entry);
 	}
 	
 	public void gotoEvent(int eventNumber) {
 		OutputVectorEntry entry = contentProvider.getElementByEventNumber(eventNumber, true);
 		if (entry != null)
-			viewer.gotoElement(entry);
+			viewer.scrollToElement(entry);
 	}
 	
 	public void gotoTime(double time) {
 		OutputVectorEntry entry = contentProvider.getElementBySimulationTime(time, true);
 		if (entry != null)
-			viewer.gotoElement(entry);
+			viewer.scrollToElement(entry);
 	}
 	
 	
