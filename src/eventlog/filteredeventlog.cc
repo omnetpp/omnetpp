@@ -295,6 +295,12 @@ FilteredEvent *FilteredEventLog::getEventForSimulationTime(simtime_t simulationT
     throw opp_runtime_error("Not yet implemented");
 }
 
+EventLogEntry *FilteredEventLog::findEventLogEntry(EventLogEntry *start, const char *search, bool forward)
+{
+    // TODO:
+    throw opp_runtime_error("Not yet implemented");
+}
+
 FilteredEvent* FilteredEventLog::getMatchingEventInDirection(long eventNumber, bool forward)
 {
     Assert(eventNumber >= 0);

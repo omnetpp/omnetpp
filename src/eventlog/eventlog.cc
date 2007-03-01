@@ -190,6 +190,37 @@ Event *EventLog::getEventForSimulationTime(simtime_t simulationTime, MatchKind m
         return getEventForBeginOffset(offset);
 }
 
+EventLogEntry *EventLog::findEventLogEntry(EventLogEntry *start, const char *search, bool forward)
+{
+    char *line;
+    reader->seekTo(start->getEvent()->getBeginOffset());
+    int index = start->getIndex();
+
+    for (int i = 0; i < index; i++)
+        reader->getNextLineBufferPointer();
+
+    if (forward) {
+        reader->getNextLineBufferPointer();
+        line = reader->findNextLineBufferPointer(search);
+    }
+    else
+        line = reader->findPreviousLineBufferPointer(search);
+
+    if (line) {
+        index = 0;
+
+        do {
+            if (line[0] == 'E' && line[1] == ' ')
+                return getEventForBeginOffset(reader->getLastLineStartOffset())->getEventLogEntry(index - 1);
+            else if (line[0] != '\r' && line[0] != '\n')
+                index++;
+        }
+        while (line = reader->getPreviousLineBufferPointer());
+    }
+
+    return NULL;
+}
+
 Event *EventLog::getEventForBeginOffset(file_offset_t beginOffset)
 {
     Assert(beginOffset >= 0);

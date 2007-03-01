@@ -65,6 +65,11 @@ class EVENTLOG_API IEventLog
         virtual IEvent *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT) = 0;
 
         /**
+         * Finds the closest event log entry containing the given text.
+         */
+        virtual EventLogEntry *findEventLogEntry(EventLogEntry *start, const char *search, bool forward) = 0;
+
+        /**
          * Returns the approximate number of events present in the log.
          * This value may be less, equal or greater than the real number of events.
          */
