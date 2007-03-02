@@ -85,11 +85,13 @@ void VectorFileIndexer::generateIndex(const char* fileName)
         // create filewriter node
         NodeType *writerNodeType=NodeTypeRegistry::instance()->getNodeType("indexedvectorfilewriter");
         std::string tmpFileName=createTempFileName(fileName);
+        std::string indexFileName=IndexFile::getIndexFileName(fileName);
+        std::string tmpIndexFileName=createTempFileName(indexFileName);
         attrs.clear();
         attrs["fileheader"]= generateHeader(runRef);
         attrs["blocksize"]="65536";
         attrs["filename"]=tmpFileName;
-        attrs["indexfilename"]=IndexFile::getIndexFileName(fileName);
+        attrs["indexfilename"]=tmpIndexFileName;
         IndexedVectorFileWriterNode *writer = (IndexedVectorFileWriterNode*)writerNodeType->create(dataflowManager, attrs);
         writer->setRun(runRef->runName.c_str(), runRef->attributes, runRef->moduleParams);
 
@@ -104,13 +106,31 @@ void VectorFileIndexer::generateIndex(const char* fileName)
         }
 
         // run!
-        dataflowManager->execute();
+        try
+        {
+            dataflowManager->execute();
+        }
+        catch (std::exception &e)
+        {
+            fprintf(stderr, "Exception during indexing: %s\n", e.what());
+            if (unlink(tmpFileName.c_str())!=0 && errno!=ENOENT)
+                fprintf(stderr, "Cannot remove temporary file: %s\n", tmpFileName.c_str());
+            if (unlink(tmpIndexFileName.c_str())!=0 && errno!=ENOENT)
+                fprintf(stderr, "Cannot remove temporary index file: %s\n", tmpIndexFileName.c_str());
+            delete dataflowManager;
+            throw e;
+        }
+
         delete dataflowManager;
 
-        // rename
+        // rename vector file and index file
         if (unlink(fileName)!=0 && errno!=ENOENT)
-            throw opp_runtime_error("Cannot remove original file `%s': %s", fileName, strerror(errno));
-        else if (rename(tmpFileName.c_str(), fileName)!=0)
+            throw opp_runtime_error("Cannot remove original vector file `%s': %s", fileName, strerror(errno));
+        if (unlink(indexFileName.c_str())!=0 && errno!=ENOENT)
+            throw opp_runtime_error("Cannot remove original index file `%s': %s", indexFileName, strerror(errno));
+        if (rename(tmpIndexFileName.c_str(), indexFileName.c_str())!=0)
+            throw opp_runtime_error("Cannot rename index file from '%s' to '%s': %s", tmpIndexFileName.c_str(), indexFileName.c_str(), strerror(errno));
+        if (rename(tmpFileName.c_str(), fileName)!=0)
             throw opp_runtime_error("Cannot rename vector file from '%s' to '%s': %s", tmpFileName.c_str(), fileName, strerror(errno));
 }
 
