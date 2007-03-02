@@ -41,8 +41,8 @@ public class FilterHints {
 		setHints(FilterUtil.FIELD_MODULENAME, manager.getModuleFilterHints(idlist).toArray());
 		setHints(FilterUtil.FIELD_DATANAME, manager.getNameFilterHints(idlist).toArray());
 		setHints(FilterUtil.FIELD_EXPERIMENT, getFilterHintsForRunAttribute(manager, runList, EXPERIMENT));
-		setHints(FilterUtil.FIELD_REPLICATION, getFilterHintsForRunAttribute(manager, runList, MEASUREMENT));
-		setHints(FilterUtil.FIELD_MEASUREMENT, getFilterHintsForRunAttribute(manager, runList, REPLICATION));
+		setHints(FilterUtil.FIELD_MEASUREMENT, getFilterHintsForRunAttribute(manager, runList, MEASUREMENT));
+		setHints(FilterUtil.FIELD_REPLICATION, getFilterHintsForRunAttribute(manager, runList, REPLICATION));
 	}
 
 	public String[] getHints(String fieldName) {
