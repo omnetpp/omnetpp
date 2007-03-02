@@ -100,8 +100,8 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 						if (inputsMatches(file))
 							loadFile(file);
 					}
-					else if (isIndexFile(file))
-						reloadFile(getVectorFile(file));
+					//else if (isIndexFile(file))
+					//	reloadFile(getVectorFile(file));
 					break;
 			case IResourceDelta.REMOVED:
 					if (isResultFile(file))
@@ -111,8 +111,8 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 					if ((delta.getFlags() & ~IResourceDelta.MARKERS) != 0) {
 						if (isResultFile(file))
 							reloadFile(file);
-						else if (isIndexFile(file))
-							reloadFile(getVectorFile(file));
+						//else if (isIndexFile(file))
+						//	reloadFile(getVectorFile(file));
 					}
 					break;
 			}
