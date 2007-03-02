@@ -1,3 +1,24 @@
+2007-03-02
+----------
+
+Fixes:
+
+   + Only one page can be opened for a chart/dataset. If the page already exists it will
+     be activated when the user double-click on the chart/dataset. The pages are closed
+     when the chart/dataset is deleted from the model.
+
+   + Fixed minor issues in the content assist (missing spaces,AN+AND=ANAND). The content
+     assist is available in the filter fields of edit dialogs too.
+
+   + Fixed exceptions in New... dialogs. The new node is not added to the model until
+     the OK is not pressed.
+
+   + Add a combo for selecting the data type of Add/Discard/Select/Deselect operations.
+     For Select/Deselect it is set according to the chart type.
+
+   + Default properties are specified for charts. The properties having a default value
+     can be reset on the property sheet.
+
 2007-02-16
 ----------
 
