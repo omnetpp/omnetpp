@@ -7,12 +7,10 @@ import org.omnetpp.scave.charting.ICoordsMapping;
 public class PointsVectorPlotter extends VectorPlotter {
 
 	public void plot(XYDataset dataset, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
-		int n = dataset.getItemCount(series);
-		//XXX paint cliprect only
-		for (int i=0; i<n; i++) {
-			int x = mapping.toCanvasX(dataset.getXValue(series, i));
-			int y = mapping.toCanvasY(dataset.getYValue(series, i));
-			gc.drawPoint(x,y);
-		}
+		plotSymbols(dataset, series, gc, mapping, new ChartSymbol() {
+			public void drawSymbol(GC gc, int x, int y) {
+				gc.drawPoint(x, y);
+			}
+		});
 	}
 }

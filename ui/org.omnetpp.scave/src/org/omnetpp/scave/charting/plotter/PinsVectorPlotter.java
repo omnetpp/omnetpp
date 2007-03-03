@@ -6,17 +6,47 @@ import org.omnetpp.scave.charting.ICoordsMapping;
 
 public class PinsVectorPlotter extends VectorPlotter {
 
-	public double referenceLevel = 0;  // baseline for the pins
+	protected double referenceLevel = 0;  // baseline for the pins
 	
+	public double getReferenceLevel() {
+		return referenceLevel;
+	}
+
+	public void setReferenceLevel(double referenceLevel) {
+		this.referenceLevel = referenceLevel;
+	}
+
 	public void plot(XYDataset dataset, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
-		int refy = mapping.toCanvasY(referenceLevel);
+		//
+		// Performance optimization: avoid painting the same pixels over and over,
+		// by maintaining prevX, minY and maxY. This results in magnitudes faster
+		// execution for large datasets.
+		//
+		int refY = mapping.toCanvasY(referenceLevel);
 		int n = dataset.getItemCount(series);
-		//XXX paint cliprect only
-		for (int i=0; i<n; i++) {
+		int prevX = -1;
+		int maxY = refY;
+		int minY = refY;
+		for (int i=0; i<n; i++) { //XXX paint cliprect only 
 			int x = mapping.toCanvasX(dataset.getXValue(series, i));
 			int y = mapping.toCanvasY(dataset.getYValue(series, i));
-			gc.drawLine(x, refy, x, y);
-			symbol.drawSymbol(gc, x, y);
+
+			if (prevX != x) {
+				gc.drawLine(x, refY, x, y);
+				prevX = x;
+				minY = Math.min(y, refY);
+				maxY = Math.max(y, refY);
+			}
+			else if (y < minY) {
+				gc.drawLine(x, minY, x, y);
+				minY = y;
+			}
+			else if (y > maxY) {
+				gc.drawLine(x, maxY, x, y);
+				maxY = y;
+			}
 		}
+
+		plotSymbols(dataset, series, gc, mapping, symbol);
 	}
 }

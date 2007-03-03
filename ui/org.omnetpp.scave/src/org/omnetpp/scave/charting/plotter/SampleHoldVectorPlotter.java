@@ -14,7 +14,6 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		
 		int prevX = mapping.toCanvasX(dataset.getXValue(series, 0));
 		int prevY = mapping.toCanvasY(dataset.getYValue(series, 0));
-		symbol.drawSymbol(gc, prevX, prevY);
 
 		// n>1
 		//XXX paint cliprect only
@@ -24,7 +23,6 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 			int currentY = mapping.toCanvasY(dataset.getYValue(series, i));
 			
 			gc.setLineStyle(SWT.LINE_SOLID);
-			symbol.drawSymbol(gc, currentX, currentY);
 			gc.drawLine(prevX, prevY, currentX, prevY);
 			//graphics.setLineStyle(SWT.LINE_DOT);
 			//graphics.setLineStyle(SWT.LINE_DASHDOTDOT);
@@ -35,5 +33,7 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 			prevY = currentY;
 		}
 		//graphics.drawPoint(prevX, prevY); XXX needed?
+
+		plotSymbols(dataset, series, gc, mapping, symbol);
 	}
 }

@@ -13,17 +13,16 @@ public class LinesVectorPlotter extends VectorPlotter {
 		
 		int prevX = mapping.toCanvasX(dataset.getXValue(series, 0));
 		int prevY = mapping.toCanvasY(dataset.getYValue(series, 0));
-		symbol.drawSymbol(gc, prevX, prevY);
 
 		// n>1
-		//XXX paint cliprect only
-		for (int i=1; i<n; i++) {
+		for (int i=1; i<n; i++) { //XXX paint cliprect only
 			int currentX = mapping.toCanvasX(dataset.getXValue(series, i));
 			int currentY = mapping.toCanvasY(dataset.getYValue(series, i));
 			gc.drawLine(prevX, prevY, currentX, currentY);
-			symbol.drawSymbol(gc, currentX, currentY);
 			prevX = currentX;
 			prevY = currentY;
 		}
+
+		plotSymbols(dataset, series, gc, mapping, symbol);
 	}
 }
