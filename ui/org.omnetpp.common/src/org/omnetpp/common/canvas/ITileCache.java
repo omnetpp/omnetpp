@@ -45,7 +45,7 @@ public interface ITileCache {
 			List<Tile> outCachedTiles, 
 			List<LargeRect> outMissingAreas);
 
-	public Tile add(LargeRect rect, Image image);
+	public void add(LargeRect rect, Image image);
 
 	public void clear();
 	

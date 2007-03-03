@@ -31,15 +31,14 @@ public class ColumnTileCache implements ITileCache {
 		discardOldTiles();
 	}
 
-	public Tile add(LargeRect rect, Image image) {
+	public void add(LargeRect rect, Image image) {
 		Tile tile = new Tile(rect, image);
 		cache.add(tile);
 		int imageSize = imageSize(image);
-		Assert.isTrue(imageSize < memoryUsageLimit, "memory usage limit set too small");
+		Assert.isTrue(imageSize < memoryUsageLimit, "memory usage limit set too small, even a single column image won't fit");
 		memoryUsage += imageSize;
 		//System.out.printf("cache: added image %d x %d, size %dk\n", rect.width, rect.height, imageSize/1024);
 		discardOldTiles();
-		return tile;
 	}
 
 	public void printCache() {
