@@ -15,6 +15,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Transform;
 
 /**
  * Draws a (horizontal or vertical) chart axis, with the corresponding axis 
@@ -102,75 +103,72 @@ public class LinearAxis {
 		draw(gc, true, false);
 	}
 
-	/**
-	 * Draw grid only. 
-	 */
 	public void drawGrid(GC gc) {
 		draw(gc, false, true);
 	}
-	
-	protected void draw(GC gc, boolean doAxis, boolean doGrid) {
-		Graphics graphics = new SWTGraphics(gc);
-		graphics.pushState();
 
+	protected void draw(GC gc, boolean doAxis, boolean doGrid) {
 		Rectangle plotArea = bounds.getCopy().crop(insets);
+
+		Transform rotate90 = new Transform(gc.getDevice());
+		rotate90.rotate(-90);
 		
 		// draw axis line and title
-		graphics.setLineWidth(1);
-		graphics.setLineStyle(SWT.LINE_SOLID);
-		graphics.setForegroundColor(DEFAULT_AXIS_COLOR);
-		graphics.setFont(titleFont); 
+		gc.setLineWidth(1);
+		gc.setLineStyle(SWT.LINE_SOLID);
+		gc.setForeground(DEFAULT_AXIS_COLOR);
+		gc.setFont(titleFont); 
 
-		graphics.drawText("", 0,0); //XXX propagate font into underlying gc (otherwise gc.textExtent() won't work)
-		Point titleSize = gc.textExtent(title); //XXX should be graphics.textExtent(), wish it existed
+		Point titleSize = gc.textExtent(title);
 		if (doAxis) {
 			if (vertical) {
 				if (mapping.fromCanvasY(plotArea.bottom()) < 0 && mapping.fromCanvasY(plotArea.y) > 0)
-					graphics.drawLine(plotArea.x, mapping.toCanvasY(0), plotArea.right(), mapping.toCanvasY(0)); // x axis
-				graphics.drawLine(plotArea.x - gap, plotArea.y, plotArea.x - gap, plotArea.bottom());
-				graphics.drawLine(plotArea.right() + gap, plotArea.y, plotArea.right() + gap, plotArea.bottom());
-				graphics.rotate(-90);
-				graphics.drawText(title, 
-						plotArea.x - gap - titleSize.y / 2, 
-						plotArea.y + plotArea.height / 2 - titleSize.x / 2);
-				graphics.rotate(90);
+					gc.drawLine(plotArea.x, mapping.toCanvasY(0), plotArea.right(), mapping.toCanvasY(0)); // x axis
+				gc.drawLine(plotArea.x - gap, plotArea.y, plotArea.x - gap, plotArea.bottom());
+				gc.drawLine(plotArea.right() + gap, plotArea.y, plotArea.right() + gap, plotArea.bottom());
+				gc.setTransform(rotate90);
+				gc.drawText(title, 
+						-(plotArea.y + plotArea.height / 2 + titleSize.x / 2),
+						plotArea.x - gap - titleSize.y - majorTickLength - 10); //FIXME "10": labelLength
+				gc.setTransform(null);
 			}
 			else {
 				if (mapping.fromCanvasX(plotArea.x) < 0 && mapping.fromCanvasX(plotArea.right()) > 0)
-					graphics.drawLine(mapping.toCanvasX(0), plotArea.y, mapping.toCanvasX(0), plotArea.bottom()); // y axis
-				graphics.drawLine(plotArea.x, plotArea.y - gap, plotArea.right(), plotArea.y - gap);
-				graphics.drawLine(plotArea.x, plotArea.bottom() + gap, plotArea.right(), plotArea.bottom() + gap);
-				graphics.drawText(title, 
+					gc.drawLine(mapping.toCanvasX(0), plotArea.y, mapping.toCanvasX(0), plotArea.bottom()); // y axis
+				gc.drawLine(plotArea.x, plotArea.y - gap, plotArea.right(), plotArea.y - gap);
+				gc.drawLine(plotArea.x, plotArea.bottom() + gap, plotArea.right(), plotArea.bottom() + gap);
+				gc.drawText(title, 
 						plotArea.x + plotArea.width / 2 - titleSize.x / 2,
 						plotArea.bottom() + gap);
 			}
 		}
+		
+		rotate90.dispose();
 
 		// draw ticks and labels
 		Ticks ticks = createTicks(plotArea);
-		graphics.setFont(tickFont);
-		graphics.drawText("", 0,0); //XXX propagate font into underlying gc (otherwise gc.textExtent() won't work)
+		gc.setFont(tickFont);
 		for (BigDecimal tick : ticks) {
 			String label = tick.toPlainString();
-			Point size = gc.textExtent(label); //XXX should be graphics.textExtent(), wish it existed
+			Point size = gc.textExtent(label);
 			int tickLen = ticks.isMajorTick(tick) ? majorTickLength : minorTickLength; 
 			if (vertical) {
 				int y = mapping.toCanvasY(tick.doubleValue()); 
 				if (y >= plotArea.y && y <= plotArea.bottom()) {
 					if (doAxis) {
-						graphics.drawLine(plotArea.x - gap - tickLen, y, plotArea.x - gap, y);
-						graphics.drawLine(plotArea.right() + gap + tickLen, y, plotArea.right() + gap, y);
+						gc.drawLine(plotArea.x - gap - tickLen, y, plotArea.x - gap, y);
+						gc.drawLine(plotArea.right() + gap + tickLen, y, plotArea.right() + gap, y);
 						if (ticks.isMajorTick(tick)) {
-							graphics.drawText(label, plotArea.x - gap - tickLen - size.x - 1, y - size.y / 2);
-							graphics.drawText(label, plotArea.right() + gap + tickLen + 3, y - size.y / 2);
+							gc.drawText(label, plotArea.x - gap - tickLen - size.x - 1, y - size.y / 2);
+							gc.drawText(label, plotArea.right() + gap + tickLen + 3, y - size.y / 2);
 						}
 					}
 					if (doGrid && gridVisible) {
-						graphics.setLineStyle(Graphics.LINE_DOT);
-						graphics.setForegroundColor(DEFAULT_GRID_COLOR);
-						graphics.drawLine(plotArea.x, y, plotArea.right(), y);
-						graphics.setLineStyle(Graphics.LINE_SOLID);
-						graphics.setForegroundColor(DEFAULT_AXIS_COLOR);
+						gc.setLineStyle(Graphics.LINE_DOT);
+						gc.setForeground(DEFAULT_GRID_COLOR);
+						gc.drawLine(plotArea.x, y, plotArea.right(), y);
+						gc.setLineStyle(Graphics.LINE_SOLID);
+						gc.setForeground(DEFAULT_AXIS_COLOR);
 					}
 				}
 			}
@@ -178,26 +176,23 @@ public class LinearAxis {
 				int x = mapping.toCanvasX(tick.doubleValue()); 
 				if (x >= plotArea.x && x <= plotArea.right()) {
 					if (doAxis) {
-						graphics.drawLine(x, plotArea.y - gap - tickLen, x, plotArea.y - gap);
-						graphics.drawLine(x, plotArea.bottom() + gap + tickLen, x, plotArea.bottom() + gap);
+						gc.drawLine(x, plotArea.y - gap - tickLen, x, plotArea.y - gap);
+						gc.drawLine(x, plotArea.bottom() + gap + tickLen, x, plotArea.bottom() + gap);
 						if (ticks.isMajorTick(tick)) {
-							graphics.drawText(label, x - size.x / 2 + 1, plotArea.y - gap - tickLen - size.y - 1);
-							graphics.drawText(label, x - size.x / 2 + 1, plotArea.bottom() + gap + tickLen + 1);
+							gc.drawText(label, x - size.x / 2 + 1, plotArea.y - gap - tickLen - size.y - 1);
+							gc.drawText(label, x - size.x / 2 + 1, plotArea.bottom() + gap + tickLen + 1);
 						}
 					}
 					if (doGrid && gridVisible) {
-						graphics.setLineStyle(Graphics.LINE_DOT);
-						graphics.setForegroundColor(DEFAULT_GRID_COLOR);
-						graphics.drawLine(x, plotArea.y, x, plotArea.bottom());
-						graphics.setLineStyle(Graphics.LINE_SOLID);
-						graphics.setForegroundColor(DEFAULT_AXIS_COLOR);
+						gc.setLineStyle(Graphics.LINE_DOT);
+						gc.setForeground(DEFAULT_GRID_COLOR);
+						gc.drawLine(x, plotArea.y, x, plotArea.bottom());
+						gc.setLineStyle(Graphics.LINE_SOLID);
+						gc.setForeground(DEFAULT_AXIS_COLOR);
 					}
 				}
 			}
 		}
-
-		graphics.popState();
-		graphics.dispose();
 	}
 
 	protected Ticks createTicks(Rectangle plotArea) {
