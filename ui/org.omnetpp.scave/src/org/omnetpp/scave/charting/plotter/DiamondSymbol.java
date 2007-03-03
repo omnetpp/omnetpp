@@ -1,6 +1,6 @@
 package org.omnetpp.scave.charting.plotter;
 
-import org.eclipse.draw2d.Graphics;
+import org.eclipse.swt.graphics.GC;
 
 /**
  * Draws a diamond symbol.
@@ -10,6 +10,7 @@ import org.eclipse.draw2d.Graphics;
 public class DiamondSymbol extends ChartSymbol {
 	private int size;
 	private int[] poly;
+	private int[] work = new int[8];
 	
 	public DiamondSymbol() {
 	}
@@ -29,25 +30,32 @@ public class DiamondSymbol extends ChartSymbol {
 		//poly = new int[] {-d,0,0,-d,d,0,0,d}; XXX this will be asymmetric too, but WHY? 
 	}
 	
-	public void drawSymbol(Graphics graphics, int x, int y) {
+	public void drawSymbol(GC gc, int x, int y) {
 		if (size<=0) {
 			// nothing
 		}
 		else if (size==1) {
-			graphics.drawPoint(x, y);
+			gc.drawPoint(x, y);
 		}
 		else if (size==2 || size==3) {
-			graphics.drawPoint(x, y);
-			graphics.drawPoint(x-1, y);
-			graphics.drawPoint(x+1, y);
-			graphics.drawPoint(x, y-1);
-			graphics.drawPoint(x, y+1);
+			gc.drawPoint(x, y);
+			gc.drawPoint(x-1, y);
+			gc.drawPoint(x+1, y);
+			gc.drawPoint(x, y-1);
+			gc.drawPoint(x, y+1);
 		}
 		else {
-			graphics.translate(x, y);
-			graphics.setBackgroundColor(graphics.getForegroundColor());
-			graphics.fillPolygon(poly);
-			graphics.translate(-x, -y);
+			// manual translation; XXX try gc.setTransform(), maybe it's faster?
+			work[0] = x + poly[0];
+			work[1] = y + poly[1];
+			work[2] = x + poly[2];
+			work[3] = y + poly[3];
+			work[4] = x + poly[4];
+			work[5] = y + poly[5];
+			work[6] = x + poly[6];
+			work[7] = y + poly[7];
+			gc.setBackground(gc.getForeground());
+			gc.fillPolygon(work);
 		}
 	}
 }

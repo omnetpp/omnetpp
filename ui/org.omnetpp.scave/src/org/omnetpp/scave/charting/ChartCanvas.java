@@ -26,6 +26,8 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -157,6 +159,29 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoor
 			value = DEFAULT_LEGEND_ANCHOR;
 		legend.setAnchor(value);
 		scheduleRedraw();
+	}
+	
+	/**
+	 * Resets all GC settings except clipping.
+	 */
+	public static void resetGC(GC gc) {
+		gc.setAntialias(SWT.DEFAULT);
+		gc.setAlpha(255);
+		gc.setBackground(new Color(gc.getDevice(), 255, 255, 255));
+		gc.setBackgroundPattern(null);
+		//gc.setFillRule();
+		gc.setFont(null);
+		gc.setForeground(new Color(gc.getDevice(), 0, 0, 0));
+		gc.setForegroundPattern(null);
+		gc.setInterpolation(SWT.DEFAULT);
+		//gc.setLineCap();
+		gc.setLineDash(null);
+		//gc.setLineJoin();
+		gc.setLineStyle(SWT.LINE_SOLID);
+		gc.setLineWidth(1);
+		gc.setXORMode(false);
+		gc.setTextAntialias(SWT.DEFAULT);
+		gc.setTransform(null);
 	}
 	
 	public void scheduleRedraw() {

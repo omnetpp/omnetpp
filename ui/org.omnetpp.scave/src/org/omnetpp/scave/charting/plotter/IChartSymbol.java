@@ -1,6 +1,6 @@
 package org.omnetpp.scave.charting.plotter;
 
-import org.eclipse.draw2d.Graphics;
+import org.eclipse.swt.graphics.GC;
 
 /**
  * Interface for chart symbol drawing classes
@@ -29,5 +29,5 @@ public interface IChartSymbol {
 
 	public int getSizeHint();
 	public void setSizeHint(int size);
-	public void drawSymbol(Graphics graphics, int x, int y);
+	public void drawSymbol(GC gc, int x, int y);
 }

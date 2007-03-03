@@ -22,7 +22,7 @@ import static org.omnetpp.scave.charting.ChartProperties.*;
 public class ChartDefaults {
 	// general
 	public static final boolean DEFAULT_ANTIALIAS = true;
-	public static final boolean DEFAULT_CANVAS_CACHING = true;
+	public static final boolean DEFAULT_CANVAS_CACHING = false; //XXX for testing
 
 	// title
 	public static final String DEFAULT_TITLE = "";

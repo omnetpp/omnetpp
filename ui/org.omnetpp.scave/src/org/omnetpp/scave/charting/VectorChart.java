@@ -25,8 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
@@ -54,6 +52,7 @@ import org.omnetpp.scave.charting.plotter.LinesVectorPlotter;
 import org.omnetpp.scave.charting.plotter.OvalSymbol;
 import org.omnetpp.scave.charting.plotter.PinsVectorPlotter;
 import org.omnetpp.scave.charting.plotter.PlusSymbol;
+import org.omnetpp.scave.charting.plotter.PointsVectorPlotter;
 import org.omnetpp.scave.charting.plotter.SampleHoldVectorPlotter;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
 import org.omnetpp.scave.charting.plotter.TriangleSymbol;
@@ -75,10 +74,10 @@ public class VectorChart extends ChartCanvas {
 		static final LineStyle DEFAULT_LINE_STYLE = LineStyle.Linear;
 		
 		private static final IChartSymbol NULL_SYMBOL = new ChartSymbol() {
-			public void drawSymbol(Graphics graphics, int x, int y) {}
+			public void drawSymbol(GC gc, int x, int y) {}
 		};
 		private static final IVectorPlotter NULL_PLOTTER = new VectorPlotter() {
-			public void plot(XYDataset dataset, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol) {}
+			public void plot(XYDataset dataset, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {}
 		};
 		
 		SymbolType symbolType;
@@ -282,6 +281,7 @@ public class VectorChart extends ChartCanvas {
 		}
 		
 		// calculate bounding box
+		long startTime = System.currentTimeMillis();
 		double minX = Double.MAX_VALUE;
 		double minY = Double.MAX_VALUE;
 		double maxX = Double.MIN_VALUE;
@@ -301,6 +301,8 @@ public class VectorChart extends ChartCanvas {
 		}
         double width = maxX - minX;
         double height = maxY - minY;
+		long duration = System.currentTimeMillis() - startTime;
+		System.out.println("calculateArea(): "+duration+" ms");
         
         // set the chart area, leaving some room around the data lines
         setArea((minX>=0 ? 0 : minX-width/80), (minY>=0 ? 0 : minY-height/3), 
@@ -336,19 +338,28 @@ public class VectorChart extends ChartCanvas {
 		xAxis.drawGrid(gc);
 		yAxis.drawGrid(gc);
 
-		Graphics graphics = new SWTGraphics(gc);
-		graphics.setAntialias(antialias ? SWT.ON : SWT.OFF);
-		graphics.setLineStyle(Graphics.LINE_SOLID);
+		resetGC(gc);
+		gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
+		gc.setLineStyle(SWT.LINE_SOLID);
 		for (int series=0; series<dataset.getSeriesCount(); series++) {
 			String key = dataset.getSeriesKey(series).toString();
 			IVectorPlotter plotter = getPlotter(key);
 			IChartSymbol symbol = getSymbol(key);
 			Color color = getLineColor(series);
-			graphics.setForegroundColor(color);
-			graphics.setBackgroundColor(color);
-			plotter.plot(dataset, series, graphics, this, symbol);
+			gc.setForeground(color);
+			gc.setBackground(color);
+
+			IChartSymbol nullSymbol = LineProperties.NULL_SYMBOL; //XXX temp code
+			//symbol = nullSymbol;
+			gc.setAntialias(SWT.OFF); //XXX temp code
+			//plotter = new PointsVectorPlotter();
+			plotter = new DotsVectorPlotter();
+			System.out.println("symbol:"+symbol+" size="+symbol.getSizeHint());
+
+			long startTime = System.currentTimeMillis();
+			plotter.plot(dataset, series, gc, this, symbol);
+			System.out.println("plotting: "+(System.currentTimeMillis()-startTime)+" ms");
 		}
-		graphics.dispose();
 	}
 	
 	private IVectorPlotter getPlotter(String key) {

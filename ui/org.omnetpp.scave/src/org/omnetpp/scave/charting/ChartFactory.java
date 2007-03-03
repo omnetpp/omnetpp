@@ -46,7 +46,7 @@ public class ChartFactory {
 	private static VectorChart createVectorChart(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager) {
 		OutputVectorDataset data = DatasetManager.createVectorDataset(chart, dataset, manager);
 
-		final VectorChart vectorChart = new VectorChart(parent, SWT.DOUBLE_BUFFERED);
+		final VectorChart vectorChart = new VectorChart(parent, SWT.NONE); //XXX DOUBLE_BUFFERED);
 		vectorChart.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
 		vectorChart.setDataset(data);
 		setChartProperties(chart, vectorChart);
