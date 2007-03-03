@@ -10,6 +10,10 @@ import org.eclipse.swt.graphics.Image;
  * A tile cache that works with tiles that cover the full vertical range
  * of the "virtual canvas area". 
  *
+ * Currently not used. We use XYTileCache instead, because ColumnTileCache
+ * fails if canvas virtual height becomes too big (e.g as a result of 
+ * zooming), as it runs out of memory to store a full column.
+ *  
  * @author andras
  */
 public class ColumnTileCache implements ITileCache {

@@ -22,7 +22,7 @@ import org.omnetpp.common.canvas.ITileCache.Tile;
 public abstract class CachingCanvas extends LargeScrollableCanvas {
 
 	private boolean doCaching = true;
-	private ITileCache tileCache = new ColumnTileCache();
+	private ITileCache tileCache = new XYTileCache();
 	private boolean debug = false;
 	
 

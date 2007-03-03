@@ -11,6 +11,10 @@ import org.eclipse.swt.graphics.Image;
  */
 public interface ITileCache {
 	
+	/**
+	 * Represents a tile. Tiles should only be manipulated by the tile cache
+	 * and not by any other class.
+	 */
 	public static class Tile {
 		public LargeRect rect = null;
 		public Image image = null;
@@ -45,8 +49,17 @@ public interface ITileCache {
 			List<Tile> outCachedTiles, 
 			List<LargeRect> outMissingAreas);
 
+	/**
+	 * Puts the given image (or parts of it) into the cache.
+	 * 
+	 * @param rect   virtual coordinates of the image (top left)
+	 * @param image  should be either stored or disposed of by this method
+	 */
 	public void add(LargeRect rect, Image image);
 
+	/**
+	 * Clears the cache.
+	 */
 	public void clear();
 	
 }

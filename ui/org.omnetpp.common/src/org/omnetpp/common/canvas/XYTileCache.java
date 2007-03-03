@@ -1,6 +1,5 @@
 package org.omnetpp.common.canvas;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -14,13 +13,15 @@ import org.eclipse.swt.graphics.Image;
  * @author andras
  */
 public class XYTileCache implements ITileCache {
-	private static final int TILE_WIDTH = 100;
-	private static final int TILE_HEIGHT = 100;
-	private static final int TILESIZE_BYTES = TILE_HEIGHT*TILE_WIDTH*4; //XXX assumption - refine
+	// we use narrow tall tiles to ensure smoother scrolling, as our canvases are typically drawn with a loop along the x axis
+	private static final int TILE_WIDTH = 30;
+	private static final int TILE_HEIGHT = 200;
+	private static final int TILE_SIZE_BYTES = TILE_HEIGHT*TILE_WIDTH*4; // assumption: RGBA true color
+	
+	private static final boolean debug = false;
 	
 	private int memoryUsageLimit = 32*1024*1024; // 32Meg by default
 	private int memoryUsage = 0;
-
 	
 	// use coords of tile's top-left corner as key into the hashmap; "linked" is used for LRU cache mgmt
 	private LinkedHashMap<LargePoint,Tile> cache = new LinkedHashMap<LargePoint,Tile>();
@@ -39,35 +40,36 @@ public class XYTileCache implements ITileCache {
 	}
 
 	public void add(LargeRect rect, Image image) {
-		// extract tiles (whole tiles only!) from the image
-		
+		// find WHOLE tiles in the image, and extract them
 		GC gc = new GC(image);
 		long startX = rect.x%TILE_WIDTH==0 ? rect.x : rect.x - rect.x%TILE_WIDTH + TILE_WIDTH;
 		long startY = rect.y%TILE_HEIGHT==0 ? rect.y : rect.y - rect.y%TILE_HEIGHT + TILE_HEIGHT;
 		for (long x = startX; x+TILE_WIDTH<=rect.right(); x+=TILE_WIDTH) {
 			for (long y = startY; y+TILE_HEIGHT<=rect.bottom(); y+=TILE_HEIGHT) {
 				LargePoint key = new LargePoint(x,y);
-				if (cache.containsKey(key))
-					System.out.println("INCONSISTENCY in add()! cache already contains cache "+x+","+y);
-				Image tileImage = new Image(null, TILE_WIDTH, TILE_HEIGHT);
-				gc.copyArea(tileImage, (int)(x - rect.x), (int)(y - rect.y));
-				Tile tile = new Tile(new LargeRect(x, y, TILE_WIDTH, TILE_HEIGHT), tileImage);
-				cache.put(key, tile);
-				memoryUsage += TILESIZE_BYTES;
-				if (memoryUsage > memoryUsageLimit)
-					break;
+				Assert.isTrue(!cache.containsKey(key)); // because CachingCanvas only calls us with tiles we reported missing
+				if (!cache.containsKey(key)) {
+					Image tileImage = new Image(null, TILE_WIDTH, TILE_HEIGHT);
+					gc.copyArea(tileImage, (int)(x - rect.x), (int)(y - rect.y));
+					Tile tile = new Tile(new LargeRect(x, y, TILE_WIDTH, TILE_HEIGHT), tileImage);
+					cache.put(key, tile);
+					memoryUsage += TILE_SIZE_BYTES;
+					if (memoryUsage > memoryUsageLimit)
+						break;
+				} 
 			}
 			if (memoryUsage > memoryUsageLimit)
 				break;
 		}
 		gc.dispose();
+		image.dispose();
 		discardOldTiles();
 	}
 
 	public void printCache() {
 		System.out.printf("Cache: %d tiles, memory usage %dk, limit %dk\n", cache.size(), memoryUsage/1024, memoryUsageLimit/1024);
 		for (LargePoint p : cache.keySet()) {
-			System.out.printf(" - tile (%d,%d) at (%d,%d), size %dk\n", p.x/TILE_WIDTH, p.y/TILE_HEIGHT, p.x, p.y, TILESIZE_BYTES/1024);
+			System.out.printf(" - tile (%d,%d) at (%d,%d), size %dk\n", p.x/TILE_WIDTH, p.y/TILE_HEIGHT, p.x, p.y, TILE_SIZE_BYTES/1024);
 		}
 	}
 
@@ -79,7 +81,7 @@ public class XYTileCache implements ITileCache {
 			LargePoint key = cache.keySet().iterator().next(); // get first element's key
 			Tile tile = cache.remove(key);
 			tile.image.dispose();
-			memoryUsage -= TILESIZE_BYTES;
+			memoryUsage -= TILE_SIZE_BYTES;
 			count++;
 		}
 		if (count>0)
@@ -94,50 +96,57 @@ public class XYTileCache implements ITileCache {
 	}
 
 	public void getTiles(LargeRect rect, long virtualWidth, long virtualHeight, List<Tile> outCachedTiles, List<LargeRect> outMissingAreas) {
-		long startX = rect.x%TILE_WIDTH==0 ? rect.x : rect.x - rect.x%TILE_WIDTH + TILE_WIDTH;
-		long startY = rect.y%TILE_HEIGHT==0 ? rect.y : rect.y - rect.y%TILE_HEIGHT + TILE_HEIGHT;
-		LargePoint key = new LargePoint();
-		for (long x = startX; x+TILE_WIDTH<=rect.right(); x+=TILE_WIDTH) {
-			LargeRect missingColumn = null; // will try to merge missing tiles vertically
-			for (long y = startY; y+TILE_HEIGHT<=rect.bottom(); y+=TILE_HEIGHT) {
-				key.x = x;
-				key.y = y;
-				if (cache.containsKey(key)) {
-					outCachedTiles.add(cache.get(key));
-					if (missingColumn!=null) {
-						outMissingAreas.add(missingColumn);
-						missingColumn = null;
-					}
+		// Return tiles that overlap with "rect"; missing areas are rounded up to form
+		// whole tiles for better caching, and possibly also merged (so that fewer paint() calls
+		// are needed)
+		long startX = rect.x - rect.x%TILE_WIDTH;
+		long startY = rect.y - rect.y%TILE_HEIGHT;
+		LargePoint lookupKey = new LargePoint();
+		for (long x = startX; x<rect.right(); x+=TILE_WIDTH) {
+			for (long y = startY; y<rect.bottom(); y+=TILE_HEIGHT) {
+				lookupKey.set(x,y);
+				if (cache.containsKey(lookupKey)) {
+					outCachedTiles.add(cache.get(lookupKey));
 				}
 				else {
-					if (missingColumn==null) {
-						missingColumn = new LargeRect(x, y, TILE_WIDTH, TILE_HEIGHT);
-					}
-					else {
-						missingColumn.height += TILE_HEIGHT;
-					}
-				}
-			}
-			if (missingColumn!=null) {
-				LargeRect lastMissingColumn = outMissingAreas.size()>0 ? outMissingAreas.get(outMissingAreas.size()-1) : null;
-				if (lastMissingColumn!=null && lastMissingColumn.y == missingColumn.y && lastMissingColumn.height == missingColumn.height && lastMissingColumn.right()==missingColumn.x) {
-					// merge
-					lastMissingColumn.width += missingColumn.width;
-					missingColumn = null;
-				}
-				else {
-					// cannot be merged, add
-					outMissingAreas.add(missingColumn);
-					missingColumn = null;
+					mergeOrAdd(outMissingAreas, new LargeRect(x, y, TILE_WIDTH, TILE_HEIGHT));
 				}
 			}
 		}
 		
-		// add border
-		//XXX
-		
-		System.out.println("***** GETTILES *****");
-		printCache();
-		System.out.printf("For rect %s, returning %d tiles and %d missing rectangles\n\n", rect.toString(), outCachedTiles.size(), outMissingAreas.size());
+		if (debug) {
+			System.out.printf("For rect %s, returning %d tiles", rect.toString(), outCachedTiles.size());
+			if (outMissingAreas.size()>0) {
+				System.out.printf(" and %d missing areas:\n", outMissingAreas.size());
+				for (LargeRect r : outMissingAreas) {
+					System.out.println(" - "+r);
+				}
+			}
+			System.out.println();
+		}
+	}
+
+	/**
+	 * Merges the given rectangle to the rectangles in areas[], or adds it if cannot be merged.
+	 */
+	private void mergeOrAdd(List<LargeRect> areas, LargeRect r) {
+		// search a rectangle to which r could be merged. The way XYTileCache works,
+		// we have better chance starting with the most recently added rectangles, 
+		// i.e. iterate backwards
+		for (int i=areas.size()-1; i>=0; i--) {
+			LargeRect area = areas.get(i);
+			if (area.y == r.y && area.height == r.height && area.right()==r.x) {
+				area.width += r.width; // merge horizontally (on the right)
+				mergeOrAdd(areas, areas.remove(i)); // try our luck recursively with the new rectangle as well
+				return;
+			}
+			if (area.x == r.x && area.width == r.width && area.bottom()==r.y) {
+				area.height += r.height; // merge vertically (below) 
+				mergeOrAdd(areas, areas.remove(i)); // try our luck recursively with the new rectangle as well
+				return;
+			}
+		}
+		// could not be merged: just add
+		areas.add(r);
 	}
 }

@@ -32,6 +32,11 @@ public final class LargePoint {
 		this.y = p.y;
 	}
 
+	public void set(long x, long y) {
+		this.x = x;
+		this.y = y;
+	}
+
 	@Override
 	public int hashCode() {
 		final int PRIME = 31;

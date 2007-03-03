@@ -2,9 +2,6 @@ package org.omnetpp.common.canvas;
 
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 
@@ -58,7 +55,6 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	
 	@Override
 	protected void beforePaint(GC gc) {
-		System.out.println("RESIZED");
 		// validate zoom, so that one cannot zoom out too much (the content (getArea()) must cover full canvas)
 		double w = maxX - minX;
 		double minZoomX = (getViewportWidth()) / (w==0 ? 1.0 : w); 
@@ -254,7 +250,6 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 
 	public void setInsets(Insets insets) {
 		this.insets = insets;
-		System.out.println("Insets:"+insets);
 	}
 
 	public void clearCanvasCacheAndRedraw() {
