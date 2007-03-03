@@ -1,8 +1,10 @@
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.charting.ChartProperties.PROP_ANTIALIAS;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_INSETS_BACKGROUND_COLOR;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_INSETS_LINE_COLOR;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_X_AXIS_TITLE;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_AXIS_TITLE_FONT;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_CACHING;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LABEL_FONT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LINE_TYPE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_SYMBOL_SIZE;
@@ -56,8 +58,6 @@ import org.omnetpp.scave.charting.plotter.SampleHoldVectorPlotter;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
 import org.omnetpp.scave.charting.plotter.TriangleSymbol;
 import org.omnetpp.scave.charting.plotter.VectorPlotter;
-
-import static org.omnetpp.scave.charting.ChartDefaults.*; 
 
 //XXX strange effects when resized and vertical scrollbar pulled...
 public class VectorChart extends ChartCanvas {
@@ -325,6 +325,7 @@ public class VectorChart extends ChartCanvas {
 		yAxis.setLayout(mainArea, insetsToMainArea);
 
 		Rectangle plotArea = mainArea.crop(insetsToMainArea);
+		crosshair.layout(gc, plotArea);
 		setInsets(GeomUtils.subtract(area, plotArea));
 		
 		super.beforePaint(gc);
@@ -398,7 +399,7 @@ public class VectorChart extends ChartCanvas {
 		gc.fillRectangle(0, 0, insets.left, canvasRect.height); // left
 		gc.fillRectangle(canvasRect.right()-insets.right, 0, insets.right, canvasRect.height); // right
 		gc.setForeground(insetsLineColor);
-		//XXX gc.drawRectangle(insets.left-1, insets.top-1, getViewportWidth()+1, getViewportHeight()+1);
+		gc.drawRectangle(insets.left, insets.top, getViewportWidth(), getViewportHeight());
 
 		title.draw(gc);
 		legend.draw(gc);
@@ -438,7 +439,7 @@ public class VectorChart extends ChartCanvas {
 					y = e.y;
 					
 					// snap to data point
-					dataPoint = dataPointNearTo(x, y, 5);
+					dataPoint = dataPointNear(x, y, 5);
 					if (dataPoint != null) {
 						x = toCanvasX(dataPoint.x);
 						y = toCanvasY(dataPoint.y);
@@ -488,7 +489,7 @@ public class VectorChart extends ChartCanvas {
 				gc.setBackground(getBackground());
 				gc.setLineStyle(SWT.LINE_SOLID);
 				gc.drawRectangle(left, top, size.x + 3, size.y + 1);
-				gc.drawText(coordinates, left + 2, top + 1);
+				gc.drawText(coordinates, left + 2, top + 1, false);
 				
 				gc.setLineDash(saveLineDash);
 				gc.setLineWidth(saveLineWidth);
@@ -496,7 +497,8 @@ public class VectorChart extends ChartCanvas {
 			}
 		}
 		
-		private DPoint dataPointNearTo(int x, int y, int d) {
+		private DPoint dataPointNear(int x, int y, int d) {
+			// for each series, perform binary search on the x axis
 			for (int series = 0; series < dataset.getSeriesCount(); ++series) {
 				int start = 0;
 				int end = dataset.getItemCount(series) - 1;

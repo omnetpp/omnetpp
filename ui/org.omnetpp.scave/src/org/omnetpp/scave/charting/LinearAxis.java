@@ -1,14 +1,16 @@
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.charting.ChartDefaults.*;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_AXIS_COLOR;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_AXIS_TITLE_FONT;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_TICK_FONT;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_GRID_COLOR;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_SHOW_GRID;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_TICK_FONT;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_X_AXIS_TITLE;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
 
 import java.math.BigDecimal;
 
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
@@ -25,7 +27,7 @@ import org.eclipse.swt.graphics.Transform;
  */
 public class LinearAxis {
 	private boolean vertical; // horizontal or vertical axis
-	private int gap = 0;  // space between axis line and plot area (usually 0)
+	private int gap = 2;  // space between axis line and plot area (usually 0)
 	private int majorTickLength = 4;
 	private int minorTickLength = 2;
 	private boolean gridVisible = DEFAULT_SHOW_GRID;
@@ -89,27 +91,34 @@ public class LinearAxis {
 		this.insets = new Insets(insets);  
 	}
 	
-	/**
-	 * Draw both axis and grid. 
-	 */
-	public void draw(GC gc) {
-		draw(gc, true, true);
-	}
-
-	/**
-	 * Draw axis only. 
-	 */
-	public void drawAxis(GC gc) {
-		draw(gc, true, false);
-	}
-
 	public void drawGrid(GC gc) {
-		draw(gc, false, true);
+		if (!gridVisible)
+			return;
+
+		// Note: when canvas caching is on, gc is the cached image, so the grid must be drawn 
+		// to the whole clipping region (cached image area) not just the plot area    
+		Rectangle rect = new Rectangle(gc.getClipping());
+		Ticks ticks = createTicks(rect);
+		gc.setLineStyle(Graphics.LINE_DOT);
+		gc.setForeground(DEFAULT_GRID_COLOR);
+		for (BigDecimal tick : ticks) {
+			if (vertical) {
+				int y = mapping.toCanvasY(tick.doubleValue()); 
+				if (y >= rect.y && y <= rect.bottom()) {
+					gc.drawLine(rect.x, y, rect.right(), y);
+				}
+			}
+			else {
+				int x = mapping.toCanvasX(tick.doubleValue()); 
+				if (x >= rect.x && x <= rect.right()) {
+					gc.drawLine(x, rect.y, x, rect.bottom());
+				}
+			}
+		}
 	}
 
-	protected void draw(GC gc, boolean doAxis, boolean doGrid) {
+	public void drawAxis(GC gc) {
 		Rectangle plotArea = bounds.getCopy().crop(insets);
-
 		Transform rotate90 = new Transform(gc.getDevice());
 		rotate90.rotate(-90);
 		
@@ -120,29 +129,27 @@ public class LinearAxis {
 		gc.setFont(titleFont); 
 
 		Point titleSize = gc.textExtent(title);
-		if (doAxis) {
-			if (vertical) {
-				if (mapping.fromCanvasY(plotArea.bottom()) < 0 && mapping.fromCanvasY(plotArea.y) > 0)
-					gc.drawLine(plotArea.x, mapping.toCanvasY(0), plotArea.right(), mapping.toCanvasY(0)); // x axis
-				gc.drawLine(plotArea.x - gap, plotArea.y, plotArea.x - gap, plotArea.bottom());
-				gc.drawLine(plotArea.right() + gap, plotArea.y, plotArea.right() + gap, plotArea.bottom());
-				gc.setTransform(rotate90);
-				gc.drawText(title, 
-						-(plotArea.y + plotArea.height / 2 + titleSize.x / 2),
-						plotArea.x - gap - titleSize.y - majorTickLength - 10); //FIXME "10": labelLength
-				gc.setTransform(null);
-			}
-			else {
-				if (mapping.fromCanvasX(plotArea.x) < 0 && mapping.fromCanvasX(plotArea.right()) > 0)
-					gc.drawLine(mapping.toCanvasX(0), plotArea.y, mapping.toCanvasX(0), plotArea.bottom()); // y axis
-				gc.drawLine(plotArea.x, plotArea.y - gap, plotArea.right(), plotArea.y - gap);
-				gc.drawLine(plotArea.x, plotArea.bottom() + gap, plotArea.right(), plotArea.bottom() + gap);
-				gc.drawText(title, 
-						plotArea.x + plotArea.width / 2 - titleSize.x / 2,
-						plotArea.bottom() + gap);
-			}
+		if (vertical) {
+			if (mapping.fromCanvasY(plotArea.bottom()) < 0 && mapping.fromCanvasY(plotArea.y) > 0)
+				gc.drawLine(plotArea.x, mapping.toCanvasY(0), plotArea.right(), mapping.toCanvasY(0)); // x axis
+			gc.drawLine(plotArea.x - gap, plotArea.y, plotArea.x - gap, plotArea.bottom());
+			gc.drawLine(plotArea.right() + gap, plotArea.y, plotArea.right() + gap, plotArea.bottom());
+			gc.setTransform(rotate90);
+			gc.drawText(title, 
+					-(plotArea.y + plotArea.height / 2 + titleSize.x / 2),
+					plotArea.x - gap - titleSize.y - majorTickLength - 10); //FIXME "10": labelLength
+			gc.setTransform(null);
 		}
-		
+		else {
+			if (mapping.fromCanvasX(plotArea.x) < 0 && mapping.fromCanvasX(plotArea.right()) > 0)
+				gc.drawLine(mapping.toCanvasX(0), plotArea.y, mapping.toCanvasX(0), plotArea.bottom()); // y axis
+			gc.drawLine(plotArea.x, plotArea.y - gap, plotArea.right(), plotArea.y - gap);
+			gc.drawLine(plotArea.x, plotArea.bottom() + gap, plotArea.right(), plotArea.bottom() + gap);
+			gc.drawText(title, 
+					plotArea.x + plotArea.width / 2 - titleSize.x / 2,
+					plotArea.bottom() + gap);
+		}
+
 		rotate90.dispose();
 
 		// draw ticks and labels
@@ -155,40 +162,22 @@ public class LinearAxis {
 			if (vertical) {
 				int y = mapping.toCanvasY(tick.doubleValue()); 
 				if (y >= plotArea.y && y <= plotArea.bottom()) {
-					if (doAxis) {
-						gc.drawLine(plotArea.x - gap - tickLen, y, plotArea.x - gap, y);
-						gc.drawLine(plotArea.right() + gap + tickLen, y, plotArea.right() + gap, y);
-						if (ticks.isMajorTick(tick)) {
-							gc.drawText(label, plotArea.x - gap - tickLen - size.x - 1, y - size.y / 2);
-							gc.drawText(label, plotArea.right() + gap + tickLen + 3, y - size.y / 2);
-						}
-					}
-					if (doGrid && gridVisible) {
-						gc.setLineStyle(Graphics.LINE_DOT);
-						gc.setForeground(DEFAULT_GRID_COLOR);
-						gc.drawLine(plotArea.x, y, plotArea.right(), y);
-						gc.setLineStyle(Graphics.LINE_SOLID);
-						gc.setForeground(DEFAULT_AXIS_COLOR);
+					gc.drawLine(plotArea.x - gap - tickLen, y, plotArea.x - gap, y);
+					gc.drawLine(plotArea.right() + gap + tickLen, y, plotArea.right() + gap, y);
+					if (ticks.isMajorTick(tick)) {
+						gc.drawText(label, plotArea.x - gap - tickLen - size.x - 1, y - size.y / 2);
+						gc.drawText(label, plotArea.right() + gap + tickLen + 3, y - size.y / 2);
 					}
 				}
 			}
 			else {
 				int x = mapping.toCanvasX(tick.doubleValue()); 
 				if (x >= plotArea.x && x <= plotArea.right()) {
-					if (doAxis) {
-						gc.drawLine(x, plotArea.y - gap - tickLen, x, plotArea.y - gap);
-						gc.drawLine(x, plotArea.bottom() + gap + tickLen, x, plotArea.bottom() + gap);
-						if (ticks.isMajorTick(tick)) {
-							gc.drawText(label, x - size.x / 2 + 1, plotArea.y - gap - tickLen - size.y - 1);
-							gc.drawText(label, x - size.x / 2 + 1, plotArea.bottom() + gap + tickLen + 1);
-						}
-					}
-					if (doGrid && gridVisible) {
-						gc.setLineStyle(Graphics.LINE_DOT);
-						gc.setForeground(DEFAULT_GRID_COLOR);
-						gc.drawLine(x, plotArea.y, x, plotArea.bottom());
-						gc.setLineStyle(Graphics.LINE_SOLID);
-						gc.setForeground(DEFAULT_AXIS_COLOR);
+					gc.drawLine(x, plotArea.y - gap - tickLen, x, plotArea.y - gap);
+					gc.drawLine(x, plotArea.bottom() + gap + tickLen, x, plotArea.bottom() + gap);
+					if (ticks.isMajorTick(tick)) {
+						gc.drawText(label, x - size.x / 2 + 1, plotArea.y - gap - tickLen - size.y - 1);
+						gc.drawText(label, x - size.x / 2 + 1, plotArea.bottom() + gap + tickLen + 1);
 					}
 				}
 			}

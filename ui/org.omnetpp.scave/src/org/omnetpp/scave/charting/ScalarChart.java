@@ -315,8 +315,8 @@ public class ScalarChart extends ChartCanvas {
 			graphics.fillRectangle(clip);
 			
 			int cColumns = dataset.getColumnCount();
-			int[] indeces = getRowColumnsInRectangle(clip);
-			for (int i = indeces[0]; i <= indeces[1]; ++i) {
+			int[] indices = getRowColumnsInRectangle(clip);
+			for (int i = indices[0]; i <= indices[1]; ++i) {
 				int row = i / cColumns;
 				int column = i % cColumns;
 				drawBar(graphics, row, column);
