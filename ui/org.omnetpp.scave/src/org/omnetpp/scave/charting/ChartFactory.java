@@ -34,7 +34,7 @@ public class ChartFactory {
 	}
 
 	private static ScalarChart createScalarChart(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager) {
-		ScalarChart scalarChart = new ScalarChart(parent, SWT.NONE);
+		ScalarChart scalarChart = new ScalarChart(parent, SWT.DOUBLE_BUFFERED);
 		// set chart data
 		CategoryDataset categoryDataset = DatasetManager.createScalarDataset(chart, dataset, manager);
 		scalarChart.setDataset(categoryDataset);

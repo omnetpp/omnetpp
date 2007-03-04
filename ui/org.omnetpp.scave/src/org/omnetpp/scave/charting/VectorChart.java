@@ -36,10 +36,10 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.jfree.data.xy.XYDataset;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
-import org.omnetpp.common.util.GeomUtils;
 import org.omnetpp.scave.charting.ChartProperties.LineStyle;
 import org.omnetpp.scave.charting.ChartProperties.SymbolType;
 import org.omnetpp.scave.charting.plotter.ChartSymbol;
@@ -52,12 +52,15 @@ import org.omnetpp.scave.charting.plotter.LinesVectorPlotter;
 import org.omnetpp.scave.charting.plotter.OvalSymbol;
 import org.omnetpp.scave.charting.plotter.PinsVectorPlotter;
 import org.omnetpp.scave.charting.plotter.PlusSymbol;
-import org.omnetpp.scave.charting.plotter.PointsVectorPlotter;
 import org.omnetpp.scave.charting.plotter.SampleHoldVectorPlotter;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
 import org.omnetpp.scave.charting.plotter.TriangleSymbol;
 import org.omnetpp.scave.charting.plotter.VectorPlotter;
 
+
+/**
+ * Line chart.
+ */
 //XXX strange effects when resized and vertical scrollbar pulled...
 public class VectorChart extends ChartCanvas {
 	private OutputVectorDataset dataset;
@@ -92,7 +95,6 @@ public class VectorChart extends ChartCanvas {
 	
 	public VectorChart(Composite parent, int style) {
 		super(parent, style);
-		super.setInsets(new Insets(18,40,18,40));
 		lineProperties.put(KEY_ALL, new LineProperties());
 	}
 	
@@ -237,25 +239,25 @@ public class VectorChart extends ChartCanvas {
 	
 	public void setXMin(Double value) {
 		if (value != null)
-			setArea(value, minY, maxX, maxY);
+			setArea(value, getMinY(), getMaxX(), getMaxY());
 		scheduleRedraw();
 	}
 	
 	public void setXMax(Double value) {
 		if (value != null)
-			setArea(minX, minY, value, maxY);
+			setArea(getMinX(), getMinY(), value, getMaxY());
 		scheduleRedraw();
 	}
 	
 	public void setYMin(Double value) {
 		if (value != null)
-			setArea(minX, value, maxX, maxY);
+			setArea(getMinX(), value, getMaxX(), getMaxY());
 		scheduleRedraw();
 	}
 	
 	public void setYMax(Double value) {
 		if (value != null)
-			setArea(minX, minY, maxX, value);
+			setArea(getMinX(), getMinY(), getMaxX(), value);
 		scheduleRedraw();
 	}
 	
@@ -307,11 +309,12 @@ public class VectorChart extends ChartCanvas {
         // set the chart area, leaving some room around the data lines
         setArea((minX>=0 ? 0 : minX-width/80), (minY>=0 ? 0 : minY-height/3), 
         		(maxX<=0 ? 0 : maxX+width/80), (maxY<=0 ? 0 : maxY+height/3));
-        zoomToFit(); // zoom out completely
 	}
 
 	@Override
-	protected void beforePaint(GC gc) {
+	protected void layoutChart() {
+		System.out.println("layoutChart()");
+		GC gc = new GC(Display.getCurrent());
 
 		// Calculate space occupied by title and legend and set insets accordingly
 		Rectangle area = new Rectangle(getClientArea());
@@ -319,18 +322,38 @@ public class VectorChart extends ChartCanvas {
 		remaining = legend.layout(gc, remaining);
 		
 		Rectangle mainArea = remaining.getCopy();
-//		Insets insetsToMainArea = new Insets();
-//		xAxis.layoutHint(gc, mainArea, insetsToMainArea);
-//		yAxis.layoutHint(gc, mainArea, insetsToMainArea);
-		Insets insetsToMainArea = new Insets(30, 30, 30, 30);
+		Insets insetsToMainArea = new Insets();
+		xAxis.layoutHint(gc, mainArea, insetsToMainArea);
+		insetsToMainArea.left = 50; insetsToMainArea.right = 30; // initial estimate for y axis
+
+		Rectangle plotArea = mainArea.getCopy().crop(insetsToMainArea);
+		setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
+
+		boolean isInitialLayout = (getZoomX()==0 || getZoomY()==0);
+		if (isInitialLayout)
+			zoomToFit();
+
+		// now the coordinate mapping is set up, so the y axis knows what tick labels
+		// will appear, and can calculate the occupied space from the longest tick label.
+		yAxis.layoutHint(gc, mainArea, insetsToMainArea);   //XXX this wants to use coordinate mapping (zoom)
 		xAxis.setLayout(mainArea, insetsToMainArea);
 		yAxis.setLayout(mainArea, insetsToMainArea);
-
-		Rectangle plotArea = mainArea.crop(insetsToMainArea);
 		crosshair.layout(gc, plotArea);
-		setInsets(GeomUtils.subtract(area, plotArea));
+
+		plotArea = mainArea.getCopy().crop(insetsToMainArea);
+		setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
+		if (isInitialLayout)
+			zoomToFit();
+
+		gc.dispose();
 		
-		super.beforePaint(gc);
+		// Workaround: on Windows, sometimes the vertical scroll bar does not appear
+		// on zooming, even though it set to be visible (setVisible(true)). It appears
+		// that Scrollable somehow does not know about it. When the widget is resized 
+		// just a little, the scrollbar mysteriously jumps into existence. The workaround 
+		// is to fake a resize event. 
+		if (getVerticalBar().isVisible() && getClientArea().width==getSize().x)
+			setSize(getSize());
 	}
 	
 	@Override
@@ -349,9 +372,9 @@ public class VectorChart extends ChartCanvas {
 			gc.setForeground(color);
 			gc.setBackground(color);
 
-			long startTime = System.currentTimeMillis();
+			//long startTime = System.currentTimeMillis();
 			plotter.plot(dataset, series, gc, this, symbol);
-			System.out.println("plotting: "+(System.currentTimeMillis()-startTime)+" ms");
+			//System.out.println("plotting: "+(System.currentTimeMillis()-startTime)+" ms");
 		}
 	}
 	
@@ -409,7 +432,7 @@ public class VectorChart extends ChartCanvas {
 		legend.draw(gc);
 		xAxis.drawAxis(gc);
 		yAxis.drawAxis(gc);
-		//XXX crosshair.draw(gc);
+		crosshair.draw(gc);
 	}
 
 	private static final Cursor CROSS_CURSOR = new Cursor(null, SWT.CURSOR_CROSS);
@@ -437,6 +460,7 @@ public class VectorChart extends ChartCanvas {
 		DPoint dataPoint;
 		
 		public CrossHair() {
+			if (false) //XXX
 			addMouseMoveListener(new MouseMoveListener() {
 				public void mouseMove(MouseEvent e) {
 					x = e.x;

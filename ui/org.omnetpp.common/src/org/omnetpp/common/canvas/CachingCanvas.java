@@ -15,7 +15,7 @@ import org.omnetpp.common.canvas.ITileCache.Tile;
  * A scrollable canvas that supports caching of (part of) the drawing 
  * in off-screen image buffers for performance improvement.
  */
-//TODO redraw chart with antialias while user is idle? hints: new SafeRunnable(); or:
+//TODO redraw chart with antialias while user is idle? hint:
 //getDisplay().asyncExec(new Runnable() {
 //	public void run() { ... }
 //};
@@ -34,7 +34,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	}
 
 	/**
-	 * Returns whether caching is on or off.
+	 * Returns whether caching is on.
 	 */
 	public boolean getCaching() {
 		return doCaching;
@@ -140,18 +140,11 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	}
 
 	/**
-	 * Returns the position of the viewport relative to the canvas. 
-	 */
-	public Rectangle getViewportRectangle() {
-		return new Rectangle(0, 0, getViewportWidth(), getViewportHeight());
-	}
-	
-	/**
 	 * Called in every repaint request, before any call to paintCachables() and
 	 * paintNoncachables(). This is a good place for pre-paint calculations
 	 * whose result is needed by both paintCachables() and paintNoncachables().
 	 */
-	protected abstract void beforePaint(GC gc);
+	protected void beforePaint(GC gc) {}
 
 	/**
 	 * Paint everything in this method that can be cached. This may be called several

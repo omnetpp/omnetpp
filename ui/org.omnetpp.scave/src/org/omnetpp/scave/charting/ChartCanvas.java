@@ -27,6 +27,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
@@ -58,7 +60,19 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoor
 		super(parent, style);
 		setCaching(DEFAULT_CANVAS_CACHING);
 		mouseSupport = new ZoomableCanvasMouseSupport(this); // add mouse handling; may be made optional
+		
+		addControlListener(new ControlAdapter() {
+			@Override
+			public void controlResized(ControlEvent e) {
+				layoutChart();
+			}
+		});
 	}
+
+	/**
+	 * Calculate positions of chart elements such as title, legend, axis labels, plot area. 
+	 */
+	abstract protected void layoutChart();
 
 	/**
 	 * Switches between zoom and pan mode. 

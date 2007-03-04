@@ -4,6 +4,7 @@ import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
+import org.omnetpp.common.util.GeomUtils;
 
 /**
  * Extends CachingCanvas with zoom handling capabilities. Dragging and
@@ -19,65 +20,65 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	private double zoomX = 0; // pixels per coordinate unit
 	private double zoomY = 0; // pixels per coordinate unit
 	
+	private double minX, maxX;
+	private double minY, maxY;
 
-	protected double minX, maxX;  //XXX make private and add getArea()
-	protected double minY, maxY;  //XXX make private and add getArea()
-
-	private Insets insets;  // size of margins used for axis drawing
-	
 	/**
      * Constructor.
      */
 	public ZoomableCachingCanvas(Composite parent, int style) {
 		super(parent, style);
-		
-//		addControlListener(new ControlAdapter() {
-//			public void controlResized(ControlEvent e) {
-//				System.out.println("RESIZED");
-//				// validate zoom, so that one cannot zoom out too much (the content (getArea()) must cover full canvas)
-//				double w = maxX - minX;
-//				double minZoomX = (getViewportWidth()) / (w==0 ? 1.0 : w); 
-//				if (zoomX < minZoomX) {
-//					zoomX = minZoomX;
-//					calculateVirtualSize();
-//				}
-//
-//				double h = maxY - minY;
-//				double minZoomY = (getViewportHeight()) / (h==0 ? 1.0 : h); 
-//				if (zoomY < minZoomY){
-//					zoomY = minZoomY;
-//					calculateVirtualSize();
-//				}
-//			}
-//		});
 	}
 
+	public void setArea(double minX, double minY, double maxX, double maxY) {
+		this.minX = minX;
+		this.minY = minY;
+		this.maxX = Math.max(minX, maxX);
+		this.maxY = Math.max(minY, maxY);
+		updateVirtualSize();
+		System.out.printf("Area set: (%g, %g, %g, %g) - virtual size: (%d, %d)\n", this.minX, this.maxX, this.minY, this.maxY, getVirtualWidth(), getVirtualHeight());
+	}
+
+	public double getMaxX() {
+		return maxX;
+	}
+
+	public double getMaxY() {
+		return maxY;
+	}
+
+	public double getMinX() {
+		return minX;
+	}
+
+	public double getMinY() {
+		return minY;
+	}
+
+	protected int getLeftInset() {
+		return getViewportRectangle().x - getClientArea().x;
+	}
+
+	protected int getTopInset() {
+		return getViewportRectangle().y - getClientArea().y;
+	}
 	
-	@Override
-	protected void beforePaint(GC gc) {
-		// validate zoom, so that one cannot zoom out too much (the content (getArea()) must cover full canvas)
-		double w = maxX - minX;
-		double minZoomX = (getViewportWidth()) / (w==0 ? 1.0 : w); 
-		if (zoomX < minZoomX) {
-			zoomX = minZoomX;
-			calculateVirtualSize();
-		}
-
-		double h = maxY - minY;
-		double minZoomY = (getViewportHeight()) / (h==0 ? 1.0 : h); 
-		if (zoomY < minZoomY){
-			zoomY = minZoomY;
-			calculateVirtualSize();
-		}
+	protected Insets getInsets() {
+		org.eclipse.swt.graphics.Rectangle clientArea = getClientArea();
+		org.eclipse.swt.graphics.Rectangle viewport = getViewportRectangle();
+		return new Insets(
+				viewport.y - clientArea.y, 
+				viewport.x - clientArea.x,
+				clientArea.y + clientArea.height - viewport.y - viewport.height,
+				clientArea.x + clientArea.width - viewport.x - viewport.width);
 	}
-
 
 	public double fromCanvasX(int x) {
-		return (x + getViewportLeft() - insets.left) / zoomX + minX;
+		return (x + getViewportLeft() - getLeftInset()) / zoomX + minX;
 	}
 
 	public double fromCanvasY(int y) {
-		return maxY - (y + getViewportTop() - insets.top) / zoomY;
+		return maxY - (y + getViewportTop() - getTopInset()) / zoomY;
 	}
 
 	public double fromCanvasDistX(int x) {
@@ -89,12 +90,12 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	}
 	
 	public int toCanvasX(double xCoord) {
-		double x = (xCoord - minX)*zoomX - getViewportLeft() + insets.left;
+		double x = (xCoord - minX)*zoomX - getViewportLeft() + getLeftInset();
 		return x<-MAXPIX ? -MAXPIX : x>MAXPIX ? MAXPIX : (int)x;
 	}
 
 	public int toCanvasY(double yCoord) {
-		double y = (maxY - yCoord)*zoomY - getViewportTop() + insets.top;
+		double y = (maxY - yCoord)*zoomY - getViewportTop() + getTopInset();
 		return y<-MAXPIX ? -MAXPIX : y>MAXPIX ? MAXPIX : (int)y;
 	}
 
@@ -126,29 +127,14 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 		return maxY - y / zoomY;
 	}
 	
-	@Override
-	public org.eclipse.swt.graphics.Rectangle getViewportRectangle() {
-		Rectangle rect = new Rectangle(getClientArea()).crop(insets);
-		return new org.eclipse.swt.graphics.Rectangle(
-				rect.x, rect.y, rect.width, rect.height);
-	}
-
-	public int getViewportWidth() {
-		return getClientArea().width - insets.getWidth();
-	}
-	
-	public int getViewportHeight() {
-		return getClientArea().height - insets.getHeight();
-	}
-	
 	public double getViewportCenterCoordX() {
 		int middleX = getViewportWidth() / 2;
-		return fromCanvasX(middleX + insets.left);
+		return fromCanvasX(middleX + getLeftInset());
 	}
 
 	public double getViewportCenterCoordY() {
 		int middleY = getViewportHeight() / 2;
-		return fromCanvasY(middleY + insets.top);
+		return fromCanvasY(middleY + getTopInset());
 	}
 	
 	public void centerXOn(double xCoord) {
@@ -162,17 +148,19 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	public void setZoomX(double zoom) {
 		double x = getViewportCenterCoordX();
 		zoomX = zoom;
-		calculateVirtualSize();
+		updateVirtualSize();
 		centerXOn(x);
 		redraw();
+		System.out.println("zoomX set to "+zoomX);
 	}
 
 	public void setZoomY(double zoom) {
 		double y = getViewportCenterCoordY();
 		zoomY  = zoom;
-		calculateVirtualSize();
+		updateVirtualSize();
 		centerYOn(y);
 		redraw();
+		System.out.println("zoomY set to "+zoomY);
 	}
 	
 	public double getZoomX() {
@@ -202,11 +190,19 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	}
 	
 	public void zoomToFitX() {
-		zoomX = 0;  // means "zoom out completely"; will be done by zoom validation in beforePaint()
+		checkViewportSize();
+		double w = maxX - minX;
+		zoomX = getViewportWidth() / (w==0 ? 1.0 : w);
+		updateVirtualSize();
+		scrollHorizontalTo(0);
 	}
 
 	public void zoomToFitY() {
-		zoomY = 0;  // means "zoom out completely"; will be done by zoom validation in beforePaint()
+		checkViewportSize();
+		double h = maxY - minY;
+		zoomY = getViewportHeight() / (h==0 ? 1.0 : h);
+		updateVirtualSize();
+		scrollVerticalTo(0);
 	}
 	
 	public void zoomToFit() {
@@ -228,32 +224,28 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 		scrollVerticalTo(toVirtualY(y));
 	}
 	
-	public void setArea(double minX, double minY, double maxX, double maxY) {
-		this.minX = minX;
-		this.minY = minY;
-		this.maxX = Math.max(minX, maxX);
-		this.maxY = Math.max(minY, maxY);
-		calculateVirtualSize();
-		System.out.printf("Area set: (%g, %g, %g, %g) - virtual size: (%d, %d)\n", this.minX, this.maxX, this.minY, this.maxY, getVirtualWidth(), getVirtualHeight());
+	private void checkSize() {
+		if (getVirtualWidth() == 0 || getVirtualHeight() == 0)
+			throw new IllegalStateException("virtual size is zero (not yet set?)");
+		if (zoomX == 0 || zoomY == 0)
+			throw new IllegalStateException("zoomX or zoomY is zero");
 	}
 
-	protected void calculateVirtualSize() {
+	private void checkViewportSize() {
+		if (getViewportWidth() == 0 || getViewportHeight() == 0)
+			throw new IllegalStateException("viewport size is zero (not yet set?)");
+	}
+
+	protected void updateVirtualSize() {
 		double w = (maxX - minX)*zoomX;
 		double h = (maxY - minY)*zoomY;
 		setVirtualSize((long)w, (long)h);
 		clearCanvasCache();
 	}
 
-	public Insets getInsets() {
-		return insets;
-	}
-
-	public void setInsets(Insets insets) {
-		this.insets = insets;
-	}
-
 	public void clearCanvasCacheAndRedraw() {
 		clearCanvasCache();
 		redraw();
 	}
+
 }

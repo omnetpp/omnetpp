@@ -35,6 +35,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.jfree.data.category.CategoryDataset;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
@@ -57,9 +58,7 @@ public class ScalarChart extends ChartCanvas {
 	private Double yMax;
 	
 	public ScalarChart(Composite parent, int style) {
-		super(parent, style | SWT.DOUBLE_BUFFERED);
-		setCaching(true);
-		setInsets(new Insets(0,0,0,0));
+		super(parent, style);
 	}
 
 	public void setDataset(CategoryDataset dataset) {
@@ -243,7 +242,9 @@ public class ScalarChart extends ChartCanvas {
 	 *=============================================*/
 
 	@Override
-	protected void beforePaint(GC gc) {
+	protected void layoutChart() {
+		GC gc = new GC(Display.getCurrent());
+		
 		// Calculate space occupied by title and legend and set insets accordingly
 		Rectangle area = new Rectangle(getClientArea());
 		Rectangle remaining = title.layout(gc, area);
@@ -260,9 +261,9 @@ public class ScalarChart extends ChartCanvas {
 		Rectangle plotArea = mainArea.crop(insetsToMainArea);
 		plot.layout(gc, plotArea);
 
-		setInsets(GeomUtils.subtract(area, plotArea));
+		setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
 		
-		super.beforePaint(gc);
+		gc.dispose();
 	}
 	
 	

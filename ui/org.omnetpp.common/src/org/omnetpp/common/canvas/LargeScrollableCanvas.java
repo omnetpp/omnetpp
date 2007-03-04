@@ -1,13 +1,12 @@
 package org.omnetpp.common.canvas;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ScrollBar;
@@ -24,6 +23,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	private long virtualWidth, virtualHeight; // 64-bit size of the "virtual canvas"
 	private long viewX, viewY; // 64-bit coordinates of top-left corner of the viewport
 	private int hShift, vShift; // used for scrollbar mapping 
+	private Rectangle viewportRect; // the scrolled area within the canvas
 
 	public LargeScrollableCanvas(Composite parent, int style) {
 		super(parent, style | SWT.H_SCROLL | SWT.V_SCROLL);
@@ -34,6 +34,19 @@ public abstract class LargeScrollableCanvas extends Canvas {
 		getHorizontalBar().setIncrement(10);
 		getVerticalBar().setIncrement(10);
 		
+		// set an initial viewport rectangle to prevent null pointer exceptions;
+		// clients are expected to set a proper viewport rectangle inside Resize events.
+		setViewportRectangle(new Rectangle(0,0,0,0));
+		
+		//
+		// Note: there is no need to reconfigure the scrollbars on Resize events,
+		// because scrollbar state only depends on virtualWidth/Height and viewportRect,
+		// and both of them have explicit setter methods.
+		//
+		// Rather, users of this class are expected to hook on resize events and
+		// adjust viewportRect from there.
+		//
+
 		getHorizontalBar().addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				horizontalBarChanged();
@@ -49,11 +62,6 @@ public abstract class LargeScrollableCanvas extends Canvas {
 				paint(e.gc);
 			}
 		});
-		addControlListener(new ControlAdapter() {
-			public void controlResized(ControlEvent e) {
-				updateScrollbars();
-			}
-		});
 	}
 
 	/**
@@ -64,8 +72,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	public void setVirtualSize(long width, long height) {
 		this.virtualWidth = width;
 		this.virtualHeight = height;
-		updateScrollbars();
-		redraw();
+		configureScrollbars();
 	}
 
 	public long getVirtualHeight() {
@@ -74,8 +81,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 
 	public void setVirtualHeight(long height) {
 		this.virtualHeight = height;
-		updateScrollbars();
-		redraw();
+		configureScrollbars();
 	}
 
 	public long getVirtualWidth() {
@@ -84,12 +90,21 @@ public abstract class LargeScrollableCanvas extends Canvas {
 
 	public void setVirtualWidth(long width) {
 		this.virtualWidth = width;
-		updateScrollbars();
-		redraw();
+		configureScrollbars();
 	}
 
+	/**
+	 * The virtual coordinate of the left of the viewport (clientArea minus insets).
+	 */
 	public long getViewportLeft() {
 		return viewX;
+	}
+
+	/**
+	 * The virtual coordinate of the top of the viewport (clientArea minus insets).
+	 */
+	public long getViewportTop() {
+		return viewY;
 	}
 
 	/**
@@ -99,10 +114,6 @@ public abstract class LargeScrollableCanvas extends Canvas {
 		this.viewX = clipX(x);
 		adjustScrollbars();
 		redraw();
-	}
-
-	public long getViewportTop() {
-		return viewY;
 	}
 
 	/**
@@ -134,19 +145,31 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	}
 
 	/**
-	 * Returns the width of the client area (see {@link Canvas#getClientArea()}.
+	 * Returns the viewport (clientArea minus insets) in canvas coordinates. 
 	 */
-	public int getViewportWidth() {
-		return getClientArea().width;
+	public Rectangle getViewportRectangle() {
+		return new Rectangle(viewportRect.x, viewportRect.y, viewportRect.width, viewportRect.height);
+	}
+
+	public void setViewportRectangle(Rectangle r) {
+		viewportRect = new Rectangle(r.x, r.y, r.width, r.height);
+		configureScrollbars();
 	}
 
 	/**
-	 * Returns the height of the client area (see {@link Canvas#getClientArea()}.
+	 * Returns the width of the viewport (clientArea minus insets).
+	 */
+	public int getViewportWidth() {
+		return viewportRect.width;
+	}
+
+	/**
+	 * Returns the height of the viewport (clientArea minus insets).
 	 */
 	public int getViewportHeight() {
-		return getClientArea().height; //FIXME this is not good: replace this stuff with setInsets()
+		return viewportRect.height;
 	}
-	
+
 	private void horizontalBarChanged() {
 		viewX = clipX(((long)getHorizontalBar().getSelection()) << hShift);
 		redraw();
@@ -160,11 +183,12 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	/**
 	 * Should be called when viewport or virtual size changes.
 	 */
-	public void updateScrollbars() {
+	protected void configureScrollbars() {
 		viewX = clipX(viewX);
 		viewY = clipY(viewY);
-		hShift = configureScrollbar(getHorizontalBar(), virtualWidth, viewX, /*getSize().x*/getViewportWidth());
-		vShift = configureScrollbar(getVerticalBar(), virtualHeight, viewY, /*getSize().y*/getViewportHeight());
+		hShift = configureScrollbar(getHorizontalBar(), virtualWidth, viewX, getViewportWidth());
+		vShift = configureScrollbar(getVerticalBar(), virtualHeight, viewY, getViewportHeight());
+		System.out.println("scrollbars configured, clientarea="+getClientArea());
 	}
 
 	private int configureScrollbar(ScrollBar sb, long virtualSize, long virtualPos, int widgetSize) {
