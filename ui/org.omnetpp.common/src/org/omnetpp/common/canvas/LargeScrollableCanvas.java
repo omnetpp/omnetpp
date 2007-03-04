@@ -188,7 +188,6 @@ public abstract class LargeScrollableCanvas extends Canvas {
 		viewY = clipY(viewY);
 		hShift = configureScrollbar(getHorizontalBar(), virtualWidth, viewX, getViewportWidth());
 		vShift = configureScrollbar(getVerticalBar(), virtualHeight, viewY, getViewportHeight());
-		System.out.println("scrollbars configured, clientarea="+getClientArea());
 	}
 
 	private int configureScrollbar(ScrollBar sb, long virtualSize, long virtualPos, int widgetSize) {

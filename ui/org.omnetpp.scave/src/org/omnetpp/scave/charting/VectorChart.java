@@ -324,26 +324,36 @@ public class VectorChart extends ChartCanvas {
 		Rectangle mainArea = remaining.getCopy();
 		Insets insetsToMainArea = new Insets();
 		xAxis.layoutHint(gc, mainArea, insetsToMainArea);
+		// postpone yAxis.layoutHint() as it wants to use coordinate mapping which is not yet set up (to calculate ticks)
 		insetsToMainArea.left = 50; insetsToMainArea.right = 30; // initial estimate for y axis
 
+		// tentative plotArea calculation (y axis ticks width missing from the picture yet)
 		Rectangle plotArea = mainArea.getCopy().crop(insetsToMainArea);
 		setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
 
 		boolean isInitialLayout = (getZoomX()==0 || getZoomY()==0);
 		if (isInitialLayout)
 			zoomToFit();
-
+		else
+			validateZoom();
+		
 		// now the coordinate mapping is set up, so the y axis knows what tick labels
 		// will appear, and can calculate the occupied space from the longest tick label.
-		yAxis.layoutHint(gc, mainArea, insetsToMainArea);   //XXX this wants to use coordinate mapping (zoom)
+		yAxis.layoutHint(gc, mainArea, insetsToMainArea);
+
+		// now we have the final insets, set it everywhere again 
 		xAxis.setLayout(mainArea, insetsToMainArea);
 		yAxis.setLayout(mainArea, insetsToMainArea);
 		crosshair.layout(gc, plotArea);
 
 		plotArea = mainArea.getCopy().crop(insetsToMainArea);
+		//FIXME how to handle it when plotArea.height/width comes out negative??
+		System.out.println("plotarea: "+plotArea);
 		setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
 		if (isInitialLayout)
 			zoomToFit();
+		else
+			validateZoom();
 
 		gc.dispose();
 		
@@ -353,7 +363,7 @@ public class VectorChart extends ChartCanvas {
 		// just a little, the scrollbar mysteriously jumps into existence. The workaround 
 		// is to fake a resize event. 
 		if (getVerticalBar().isVisible() && getClientArea().width==getSize().x)
-			setSize(getSize());
+			setSize(getSize()); //FIXME this only converges after 20 recursions! Display.asyncExec() does not really help it
 	}
 	
 	@Override
