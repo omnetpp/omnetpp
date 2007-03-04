@@ -40,7 +40,6 @@ public abstract class VectorPlotter implements IVectorPlotter {
 		// symbols painted at the last x pixel coordinate. This easily results in 10x
 		// or more performance improvement.
 		//
-		int n = dataset.getItemCount(series);
 		HashSet<Integer> yset = new HashSet<Integer>();
 		int prevX = -1;
 		for (int i=first; i<=last; i++) {

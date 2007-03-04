@@ -409,7 +409,7 @@ public class VectorChart extends ChartCanvas {
 		legend.draw(gc);
 		xAxis.drawAxis(gc);
 		yAxis.drawAxis(gc);
-		crosshair.draw(gc);
+		//XXX crosshair.draw(gc);
 	}
 
 	private static final Cursor CROSS_CURSOR = new Cursor(null, SWT.CURSOR_CROSS);

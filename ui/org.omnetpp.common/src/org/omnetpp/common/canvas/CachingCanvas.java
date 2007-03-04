@@ -23,7 +23,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 
 	private boolean doCaching = true;
 	private ITileCache tileCache = new XYTileCache();
-	private boolean debug = false;
+	private boolean debug = true;
 	
 
 	/**
