@@ -14,24 +14,41 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		
 		int prevX = mapping.toCanvasX(dataset.getXValue(series, 0));
 		int prevY = mapping.toCanvasY(dataset.getYValue(series, 0));
+		int maxY = prevY;
+		int minY = prevY;
+
+		int[] dots = new int[] {1,2};
+		//graphics.setLineStyle(SWT.LINE_DOT);
+		gc.setLineDash(dots); // looks better, but much slower
 
 		// n>1
 		//XXX paint cliprect only
-		int[] dots = new int[] {1,2};
 		for (int i=1; i<n; i++) {
-			int currentX = mapping.toCanvasX(dataset.getXValue(series, i));
-			int currentY = mapping.toCanvasY(dataset.getYValue(series, i));
+			int x = mapping.toCanvasX(dataset.getXValue(series, i));
+			int y = mapping.toCanvasY(dataset.getYValue(series, i));
 			
-			gc.setLineStyle(SWT.LINE_SOLID);
-			gc.drawLine(prevX, prevY, currentX, prevY);
-			//graphics.setLineStyle(SWT.LINE_DOT);
-			//graphics.setLineStyle(SWT.LINE_DASHDOTDOT);
-			gc.setLineDash(dots); // looks better, but much slower
-			gc.drawLine(currentX, prevY, currentX, currentY);
+			if (x != prevX) {
+				gc.setLineStyle(SWT.LINE_SOLID);
+				gc.drawLine(prevX, prevY, x, prevY);
+
+				gc.setLineDash(dots); 
+				gc.drawLine(x, prevY, x, y);
+				
+				minY = maxY = y;
+			}
+			else if (y < minY) {
+				gc.drawLine(x, minY, x, y);  // in "dots" mode
+				minY = y;
+			}
+			else if (y > maxY) {
+				gc.drawLine(x, maxY, x, y);  // in "dots" mode
+				maxY = y;
+			}
 			
-			prevX = currentX;
-			prevY = currentY;
+			prevX = x;
+			prevY = y;
 		}
+		
 		//graphics.drawPoint(prevX, prevY); XXX needed?
 
 		plotSymbols(dataset, series, gc, mapping, symbol);
