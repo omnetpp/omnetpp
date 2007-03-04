@@ -156,6 +156,30 @@ public abstract class LargeScrollableCanvas extends Canvas {
 		configureScrollbars();
 	}
 
+	public int virtualToCanvasX(long x) {
+		return (int)(x - getViewportLeft() + viewportRect.x);
+	}
+	
+	public int virtualToCanvasY(long y) {
+		return (int)(y - getViewportTop() + viewportRect.y);
+	}
+
+	public Rectangle virtualToCanvasRect(LargeRect r) {
+		return new Rectangle(virtualToCanvasX(r.x), virtualToCanvasY(r.y), (int)r.width, (int)r.height);
+	}
+
+	public long canvasToVirtualX(int x) {
+		return x + getViewportLeft() - viewportRect.x;
+	}
+	
+	public long canvasToVirtualY(int y) {
+		return y + getViewportTop() - viewportRect.y;
+	}
+
+	public LargeRect canvasToVirtualRect(Rectangle r) {
+		return new LargeRect(r.x - viewportRect.x + getViewportLeft(), r.y - viewportRect.y + getViewportTop(), r.width, r.height);
+	}
+
 	/**
 	 * Returns the width of the viewport (clientArea minus insets).
 	 */

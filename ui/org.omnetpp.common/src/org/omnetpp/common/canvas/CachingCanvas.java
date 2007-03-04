@@ -2,6 +2,7 @@ package org.omnetpp.common.canvas;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
@@ -10,6 +11,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.canvas.ITileCache.Tile;
+import org.omnetpp.common.color.ColorFactory;
 
 /**
  * A scrollable canvas that supports caching of (part of) the drawing 
@@ -23,7 +25,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 
 	private boolean doCaching = true;
 	private ITileCache tileCache = new XYTileCache();
-	private boolean debug = true;
+	private boolean debug = false;
 	
 
 	/**
@@ -68,11 +70,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 			Rectangle viewportRect = getViewportRectangle();
 			clip = clip.intersection(viewportRect);
 			gc.setClipping(clip);
-			LargeRect lclip = new LargeRect(
-					clip.x - viewportRect.x + getViewportLeft(),
-					clip.y - viewportRect.y + getViewportTop(), 
-					Math.min(clip.width, getVirtualWidth()), 
-					Math.min(clip.height, getVirtualHeight()));
+			LargeRect lclip = canvasToVirtualRect(clip);
 			
 			ArrayList<Tile> cachedTiles = new ArrayList<Tile>();
 			ArrayList<LargeRect> missingAreas = new ArrayList<LargeRect>();
@@ -82,39 +80,31 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 
 			// display cached tiles
 			for (Tile tile : cachedTiles) {
-				gc.drawImage(tile.image,
-						(int)(tile.rect.x - getViewportLeft() + viewportRect.x),
-						(int)(tile.rect.y - getViewportTop() + viewportRect.y));
+				gc.drawImage(tile.image, virtualToCanvasX(tile.rect.x), virtualToCanvasY(tile.rect.y));
 				debugDrawTile(gc, tile.rect, new Color(null,0,255,0));
 			}
 
 			// draw missing tiles
 			for (LargeRect lrect : missingAreas) {
-				Rectangle rect = new Rectangle(
-						(int)(lrect.x - getViewportLeft() + viewportRect.x),
-						(int)(lrect.y - getViewportTop() + viewportRect.y),
-						(int)lrect.width, (int)lrect.height);
+				Rectangle rect = virtualToCanvasRect(lrect);
+				Assert.isTrue(!rect.isEmpty()); // tile cache should not return empty rectangles
 
-				if (!rect.isEmpty())
-				{
-					Image image = new Image(getDisplay(), rect);
-					GC imgc = new GC(image);
-					Transform transform = new Transform(getDisplay());
-					imgc.getTransform(transform);
-					transform.translate(-rect.x, -rect.y);
-					imgc.setTransform(transform);
-					imgc.setClipping(rect);
-					
-					paintCachableLayer(imgc);
-	
-					transform.dispose();
-					imgc.dispose();
-					
-					// draw the image on the screen, and also add it to the cache
-					gc.drawImage(image, rect.x, rect.y);
-					tileCache.add(lrect, image);
-					debugDrawTile(gc, lrect, new Color(null,255,0,0));
-				}
+				Image image = new Image(getDisplay(), rect);
+				GC imgc = new GC(image);
+				Transform transform = new Transform(imgc.getDevice());
+				transform.translate(-rect.x, -rect.y);
+				imgc.setTransform(transform);
+				imgc.setClipping(rect);
+
+				paintCachableLayer(imgc);
+
+				transform.dispose();
+				imgc.dispose();
+
+				// draw the image on the screen, and also add it to the cache
+				gc.drawImage(image, rect.x, rect.y);
+				tileCache.add(lrect, image);
+				debugDrawTile(gc, lrect, new Color(null,255,0,0));
 			}
 
 			// paint items that we don't want to cache
@@ -149,6 +139,9 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	/**
 	 * Paint everything in this method that can be cached. This may be called several
 	 * times during a repaint, with different clip rectangles.
+	 * 
+	 * IMPORTANT: A transform (translate) is set on the gc, DO NOT OVERWRITE IT,
+	 * or caching will be messed up. 
 	 */
 	protected abstract void paintCachableLayer(GC gc);
 
@@ -163,5 +156,6 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	 */
 	public void clearCanvasCache() {
 		tileCache.clear();
+		System.out.println("canvas cache cleared");
 	}
 }

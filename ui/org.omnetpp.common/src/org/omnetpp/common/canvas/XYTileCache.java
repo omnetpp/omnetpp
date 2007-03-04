@@ -49,6 +49,10 @@ public class XYTileCache implements ITileCache {
 				LargePoint key = new LargePoint(x,y);
 				Assert.isTrue(!cache.containsKey(key)); // because CachingCanvas only calls us with tiles we reported missing
 				if (!cache.containsKey(key)) {
+					if (debug) {
+						gc.drawLine((int)(x - rect.x), (int)(y - rect.y), (int)(x - rect.x)+10, (int)(y - rect.y)+10);
+						gc.drawText("tile ("+x+","+y+")", (int)(x - rect.x)+10, (int)(y - rect.y)+5);
+					}
 					Image tileImage = new Image(null, TILE_WIDTH, TILE_HEIGHT);
 					gc.copyArea(tileImage, (int)(x - rect.x), (int)(y - rect.y));
 					Tile tile = new Tile(new LargeRect(x, y, TILE_WIDTH, TILE_HEIGHT), tileImage);
@@ -106,6 +110,7 @@ public class XYTileCache implements ITileCache {
 			for (long y = startY; y<rect.bottom(); y+=TILE_HEIGHT) {
 				lookupKey.set(x,y);
 				if (cache.containsKey(lookupKey)) {
+					Assert.isTrue(cache.get(lookupKey).rect.x==lookupKey.x && cache.get(lookupKey).rect.y==lookupKey.y);
 					outCachedTiles.add(cache.get(lookupKey));
 				}
 				else {
@@ -130,7 +135,7 @@ public class XYTileCache implements ITileCache {
 	 * Merges the given rectangle to the rectangles in areas[], or adds it if cannot be merged.
 	 */
 	private void mergeOrAdd(List<LargeRect> areas, LargeRect r) {
-		// search a rectangle to which r could be merged. The way XYTileCache works,
+		// search for a rectangle to which r could be merged. The way XYTileCache works,
 		// we have better chance starting with the most recently added rectangles, 
 		// i.e. iterate backwards
 		for (int i=areas.size()-1; i>=0; i--) {

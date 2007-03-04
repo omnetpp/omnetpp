@@ -70,6 +70,9 @@ public class VectorChart extends ChartCanvas {
 	private LinearAxis xAxis = new LinearAxis(this, false);
 	private LinearAxis yAxis = new LinearAxis(this, true);
 	
+	private int repaintCounter;
+	private boolean debug = false;
+	
 	static class LineProperties {
 		
 		static final SymbolType DEFAULT_SYMBOL_TYPE = SymbolType.Square;
@@ -92,6 +95,7 @@ public class VectorChart extends ChartCanvas {
 	
 	private Map<String, LineProperties> lineProperties = new HashMap<String,LineProperties>();
 	private CrossHair crosshair = new CrossHair();
+
 	
 	public VectorChart(Composite parent, int style) {
 		super(parent, style);
@@ -334,8 +338,8 @@ public class VectorChart extends ChartCanvas {
 		boolean isInitialLayout = (getZoomX()==0 || getZoomY()==0);
 		if (isInitialLayout)
 			zoomToFit();
-		else
-			validateZoom();
+//		else
+//			validateZoom();  //FIXME scrollbar.setVisible() triggers Resize events --> infinite loop!
 		
 		// now the coordinate mapping is set up, so the y axis knows what tick labels
 		// will appear, and can calculate the occupied space from the longest tick label.
@@ -348,12 +352,11 @@ public class VectorChart extends ChartCanvas {
 
 		plotArea = mainArea.getCopy().crop(insetsToMainArea);
 		//FIXME how to handle it when plotArea.height/width comes out negative??
-		System.out.println("plotarea: "+plotArea);
 		setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
 		if (isInitialLayout)
 			zoomToFit();
-		else
-			validateZoom();
+//		else
+//			validateZoom(); //FIXME scrollbar.setVisible() triggers Resize events --> infinite loop!
 
 		gc.dispose();
 		
@@ -368,10 +371,11 @@ public class VectorChart extends ChartCanvas {
 	
 	@Override
 	protected void paintCachableLayer(GC gc) {
+		resetDrawingStylesAndColors(gc);
 		xAxis.drawGrid(gc);
 		yAxis.drawGrid(gc);
 
-		resetGC(gc);
+		resetDrawingStylesAndColors(gc);
 		gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
 		gc.setLineStyle(SWT.LINE_SOLID);
 		for (int series=0; series<dataset.getSeriesCount(); series++) {
@@ -382,9 +386,22 @@ public class VectorChart extends ChartCanvas {
 			gc.setForeground(color);
 			gc.setBackground(color);
 
-			//long startTime = System.currentTimeMillis();
+			long startTime = System.currentTimeMillis();
 			plotter.plot(dataset, series, gc, this, symbol);
-			//System.out.println("plotting: "+(System.currentTimeMillis()-startTime)+" ms");
+			System.out.println("plotting: "+(System.currentTimeMillis()-startTime)+" ms");
+		}
+
+		if (debug) {
+			repaintCounter++;
+			gc.setForeground(ColorFactory.getGoodColor(repaintCounter));
+			gc.setBackground(ChartDefaults.DEFAULT_BACKGROUND_COLOR);
+			Rectangle clip = new Rectangle(gc.getClipping());
+			for (int x = clip.x - clip.x%100; x<clip.right(); x+=100) {
+				for (int y = clip.y - clip.y%100; y<clip.bottom(); y+=100) {
+					gc.drawLine(x, y, x+10, y+20);
+					gc.drawText("paint#"+repaintCounter+" ("+canvasToVirtualX(x)+","+canvasToVirtualY(y)+")", x+10, y+15);
+				}
+			}
 		}
 	}
 	

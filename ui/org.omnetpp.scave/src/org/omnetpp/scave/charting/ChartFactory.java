@@ -44,7 +44,9 @@ public class ChartFactory {
 	}
 
 	private static VectorChart createVectorChart(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager) {
+		long startTime = System.currentTimeMillis();
 		OutputVectorDataset data = DatasetManager.createVectorDataset(chart, dataset, manager);
+		System.out.println("total dataset creation: "+(System.currentTimeMillis()-startTime)+" ms");
 
 		final VectorChart vectorChart = new VectorChart(parent, SWT.NONE); //XXX DOUBLE_BUFFERED);
 		vectorChart.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));

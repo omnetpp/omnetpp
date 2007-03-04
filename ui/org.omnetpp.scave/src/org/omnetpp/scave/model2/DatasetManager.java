@@ -155,8 +155,10 @@ public class DatasetManager {
 
 		builder.getDataflowManager().dump();
 
+		long startTime = System.currentTimeMillis();
 		if (outputs.size() > 0) // XXX DataflowManager crashes when there are no sinks
 			builder.getDataflowManager().execute();
+		System.out.println("dataflow network: "+(System.currentTimeMillis()-startTime)+" ms");
 
 		XYArray[] result = new XYArray[outputs.size()];
 		for (int i = 0; i < result.length; ++i)

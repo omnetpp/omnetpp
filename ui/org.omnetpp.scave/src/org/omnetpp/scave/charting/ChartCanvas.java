@@ -176,9 +176,9 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoor
 	}
 	
 	/**
-	 * Resets all GC settings except clipping.
+	 * Resets all GC settings except clipping and transform.
 	 */
-	public static void resetGC(GC gc) {
+	public static void resetDrawingStylesAndColors(GC gc) {
 		gc.setAntialias(SWT.DEFAULT);
 		gc.setAlpha(255);
 		gc.setBackground(new Color(gc.getDevice(), 255, 255, 255));
@@ -195,7 +195,6 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoor
 		gc.setLineWidth(1);
 		gc.setXORMode(false);
 		gc.setTextAntialias(SWT.DEFAULT);
-		gc.setTransform(null);
 	}
 	
 	public void scheduleRedraw() {
