@@ -349,13 +349,6 @@ public class VectorChart extends ChartCanvas {
 			gc.setForeground(color);
 			gc.setBackground(color);
 
-			IChartSymbol nullSymbol = LineProperties.NULL_SYMBOL; //XXX temp code
-			//symbol = nullSymbol;
-			gc.setAntialias(SWT.OFF); //XXX temp code
-			//plotter = new PointsVectorPlotter();
-			plotter = new DotsVectorPlotter();
-			System.out.println("symbol:"+symbol+" size="+symbol.getSizeHint());
-
 			long startTime = System.currentTimeMillis();
 			plotter.plot(dataset, series, gc, this, symbol);
 			System.out.println("plotting: "+(System.currentTimeMillis()-startTime)+" ms");

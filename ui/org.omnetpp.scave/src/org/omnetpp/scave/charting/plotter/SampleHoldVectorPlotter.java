@@ -12,8 +12,16 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		if (n==0)
 			return;
 		
-		int prevX = mapping.toCanvasX(dataset.getXValue(series, 0));
-		int prevY = mapping.toCanvasY(dataset.getYValue(series, 0));
+		// dataset index range to iterate over 
+		int[] range = indexRange(dataset, series, gc, mapping);
+		int first = range[0], last = range[1];
+
+		//
+		// Performance optimization: avoid painting the same pixels over and over,
+		// by maintaining prevX, minY and maxY.
+		//
+		int prevX = mapping.toCanvasX(dataset.getXValue(series, first));
+		int prevY = mapping.toCanvasY(dataset.getYValue(series, first));
 		int maxY = prevY;
 		int minY = prevY;
 
@@ -23,7 +31,7 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 
 		// n>1
 		//XXX paint cliprect only
-		for (int i=1; i<n; i++) {
+		for (int i=first+1; i<=last; i++) {
 			int x = mapping.toCanvasX(dataset.getXValue(series, i));
 			int y = mapping.toCanvasY(dataset.getYValue(series, i));
 			
@@ -49,7 +57,7 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 			prevY = y;
 		}
 		
-		//graphics.drawPoint(prevX, prevY); XXX needed?
+		gc.drawPoint(prevX, prevY);
 
 		plotSymbols(dataset, series, gc, mapping, symbol);
 	}

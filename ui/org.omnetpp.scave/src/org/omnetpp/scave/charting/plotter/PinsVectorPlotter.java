@@ -17,17 +17,22 @@ public class PinsVectorPlotter extends VectorPlotter {
 	}
 
 	public void plot(XYDataset dataset, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
+		// dataset index range to iterate over 
+		int[] range = indexRange(dataset, series, gc, mapping);
+		int first = range[0], last = range[1];
+
 		//
 		// Performance optimization: avoid painting the same pixels over and over,
 		// by maintaining prevX, minY and maxY. This results in magnitudes faster
 		// execution for large datasets.
 		//
 		int refY = mapping.toCanvasY(referenceLevel);
-		int n = dataset.getItemCount(series);
+		
 		int prevX = -1;
 		int maxY = refY;
 		int minY = refY;
-		for (int i=0; i<n; i++) { //XXX paint cliprect only 
+		
+		for (int i=first; i<=last; i++) { 
 			int x = mapping.toCanvasX(dataset.getXValue(series, i));
 			int y = mapping.toCanvasY(dataset.getYValue(series, i));
 

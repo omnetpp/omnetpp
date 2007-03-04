@@ -10,19 +10,23 @@ public class LinesVectorPlotter extends VectorPlotter {
 		int n = dataset.getItemCount(series);
 		if (n==0)
 			return;
+
+		// dataset index range to iterate over 
+		int[] range = indexRange(dataset, series, gc, mapping);
+		int first = range[0], last = range[1];
 		
 		//
 		// Performance optimization: avoid painting the same pixels over and over 
 		// when drawing vertical lines. This results in magnitudes faster
 		// execution for large datasets.
 		//
-		int prevX = mapping.toCanvasX(dataset.getXValue(series, 0));
-		int prevY = mapping.toCanvasY(dataset.getYValue(series, 0));
+		int prevX = mapping.toCanvasX(dataset.getXValue(series, first));
+		int prevY = mapping.toCanvasY(dataset.getYValue(series, first));
 		int maxY = prevY;
 		int minY = prevY;
 
 		// n>1
-		for (int i=1; i<n; i++) { //XXX paint cliprect only
+		for (int i=first+1; i<=last; i++) {
 			int x = mapping.toCanvasX(dataset.getXValue(series, i));
 			int y = mapping.toCanvasY(dataset.getYValue(series, i));
 
