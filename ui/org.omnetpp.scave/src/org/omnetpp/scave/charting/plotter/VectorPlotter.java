@@ -26,6 +26,14 @@ public abstract class VectorPlotter implements IVectorPlotter {
 		return new int[] {first, last};
 	}
 	
+	public double[] valueRange(GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
+		Rectangle clip = gc.getClipping();
+		int extra = 2*symbol.getSizeHint(); // to be safe
+		double hi = mapping.fromCanvasY(clip.y - extra);
+		double lo = mapping.fromCanvasY(clip.y + clip.height + extra);
+		return new double[] {lo, hi};
+	}
+	              
 	/**
 	 * Utility function to plot the symbols
 	 */
@@ -34,6 +42,10 @@ public abstract class VectorPlotter implements IVectorPlotter {
 		int[] range = indexRange(dataset, series, gc, mapping);
 		int first = range[0], last = range[1];
 
+		// value range on the chart
+		double[] valueRange = valueRange(gc, mapping, symbol);
+		double lo = valueRange[0], hi = valueRange[1];
+		
 		//
 		// Performance optimization: with large datasets it occurs that the same symbol
 		// on the screen is painted over and over. We eliminate this by keeping track of
@@ -42,7 +54,11 @@ public abstract class VectorPlotter implements IVectorPlotter {
 		//
 		HashSet<Integer> yset = new HashSet<Integer>();
 		int prevX = -1;
-		for (int i=first; i<=last; i++) {
+		for (int i = first; i <= last; i++) {
+			double value = dataset.getYValue(series, i);
+			if (value < lo || value > hi) 
+				continue; // value off the screen
+			
 			int x = mapping.toCanvasX(dataset.getXValue(series, i));
 			int y = mapping.toCanvasY(dataset.getYValue(series, i));
 			

@@ -16,6 +16,10 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		int[] range = indexRange(dataset, series, gc, mapping);
 		int first = range[0], last = range[1];
 
+		// value range on the chart
+		double[] valueRange = valueRange(gc, mapping, symbol);
+		double lo = valueRange[0], hi = valueRange[1];
+
 		//
 		// Performance optimization: avoid painting the same pixels over and over,
 		// by maintaining prevX, minY and maxY.
@@ -30,8 +34,9 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		gc.setLineDash(dots); // looks better, but much slower
 
 		// n>1
-		//XXX paint cliprect only
 		for (int i=first+1; i<=last; i++) {
+			//XXX note: the next 2 lines is about 90% of the runtime, gc.drawLine() is only 10%!
+			//XXX so try to optimize using valueRange!
 			int x = mapping.toCanvasX(dataset.getXValue(series, i));
 			int y = mapping.toCanvasY(dataset.getYValue(series, i));
 			

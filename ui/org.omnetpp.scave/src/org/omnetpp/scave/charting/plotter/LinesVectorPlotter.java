@@ -1,6 +1,7 @@
 package org.omnetpp.scave.charting.plotter;
 
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 import org.jfree.data.xy.XYDataset;
 import org.omnetpp.scave.charting.ICoordsMapping;
 
@@ -14,7 +15,7 @@ public class LinesVectorPlotter extends VectorPlotter {
 		// dataset index range to iterate over 
 		int[] range = indexRange(dataset, series, gc, mapping);
 		int first = range[0], last = range[1];
-		
+
 		//
 		// Performance optimization: avoid painting the same pixels over and over 
 		// when drawing vertical lines. This results in magnitudes faster
@@ -27,6 +28,8 @@ public class LinesVectorPlotter extends VectorPlotter {
 
 		// n>1
 		for (int i=first+1; i<=last; i++) {
+			//XXX note: the next 2 lines is about 90% of the runtime, gc.drawLine() is only 10%!
+			//XXX so try to optimize using valueRange!
 			int x = mapping.toCanvasX(dataset.getXValue(series, i));
 			int y = mapping.toCanvasY(dataset.getYValue(series, i));
 
