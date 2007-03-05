@@ -57,17 +57,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 				verticalBarChanged();
 			}
 		});
-		addPaintListener(new PaintListener() {
-			public void paintControl(PaintEvent e) {
-				paint(e.gc);
-			}
-		});
 	}
-
-	/**
-	 * Override this to do your own drawing. 
-	 */
-	protected abstract void paint(GC graphics);
 
 	public void setVirtualSize(long width, long height) {
 		this.virtualWidth = width;

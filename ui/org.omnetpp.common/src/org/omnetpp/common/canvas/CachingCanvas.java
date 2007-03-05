@@ -4,14 +4,18 @@ import java.util.ArrayList;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.BusyIndicator;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Sash;
 import org.omnetpp.common.canvas.ITileCache.Tile;
-import org.omnetpp.common.color.ColorFactory;
 
 /**
  * A scrollable canvas that supports caching of (part of) the drawing 
@@ -29,6 +33,25 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	 */
 	public CachingCanvas(Composite parent, int style) {
 		super(parent, style);
+
+		addPaintListener(new PaintListener() {
+			public void paintControl(final PaintEvent e) {
+				// just call paint(), possibly with busy cursor
+				if (Display.getCurrent().getCursorControl() instanceof Sash) {
+					// if the user is resizing the chart (mouse is over a Sash),
+					// don't override the "resize" mouse cursor
+					paint(e.gc);
+				}
+				else { 
+					// otherwise, show busy cursor during painting
+					BusyIndicator.showWhile(null, new Runnable() {
+						public void run() {
+							paint(e.gc);
+						}
+					});
+				}
+			}
+		});
 	}
 
 	/**
@@ -49,7 +72,6 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	/**
 	 * Paints the canvas, making use of the cache.
 	 */
-	@Override
 	protected void paint(GC gc) {
 		// call any code subclass wants to run before painting
 		beforePaint(gc);
