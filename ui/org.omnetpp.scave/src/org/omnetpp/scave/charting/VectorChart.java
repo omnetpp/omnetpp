@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.Display;
 import org.jfree.data.xy.XYDataset;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartProperties.LineStyle;
 import org.omnetpp.scave.charting.ChartProperties.SymbolType;
 import org.omnetpp.scave.charting.plotter.ChartSymbol;
@@ -70,6 +71,7 @@ public class VectorChart extends ChartCanvas {
 	private LinearAxis xAxis = new LinearAxis(this, false);
 	private LinearAxis yAxis = new LinearAxis(this, true);
 	
+	private int layoutDepth = 0; // how many layoutChart() calls are on the stack
 	private int repaintCounter;
 	private boolean debug = false;
 	
@@ -317,56 +319,68 @@ public class VectorChart extends ChartCanvas {
 
 	@Override
 	protected void layoutChart() {
-		System.out.println("layoutChart()");
+		// prevent nasty infinite layout recursions
+		if (layoutDepth>0)
+			return; 
+		
+		layoutDepth++;
 		GC gc = new GC(Display.getCurrent());
 
-		// Calculate space occupied by title and legend and set insets accordingly
-		Rectangle area = new Rectangle(getClientArea());
-		Rectangle remaining = title.layout(gc, area);
-		remaining = legend.layout(gc, remaining);
-		
-		Rectangle mainArea = remaining.getCopy();
-		Insets insetsToMainArea = new Insets();
-		xAxis.layoutHint(gc, mainArea, insetsToMainArea);
-		// postpone yAxis.layoutHint() as it wants to use coordinate mapping which is not yet set up (to calculate ticks)
-		insetsToMainArea.left = 50; insetsToMainArea.right = 30; // initial estimate for y axis
+		String spaces="                                                    ";
+		System.out.println(spaces.substring(0,layoutDepth)+"layoutChart() #"+layoutDepth);
 
-		// tentative plotArea calculation (y axis ticks width missing from the picture yet)
-		Rectangle plotArea = mainArea.getCopy().crop(insetsToMainArea);
-		setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
+		try {
+			// preserve zoomed-out state while resizing
+			boolean shouldZoomOutX = getZoomX()==0 || isZoomedOutX();
+			boolean shouldZoomOutY = getZoomY()==0 || isZoomedOutY();
 
-		boolean isInitialLayout = (getZoomX()==0 || getZoomY()==0);
-		if (isInitialLayout)
-			zoomToFit();
-//		else
-//			validateZoom();  //FIXME scrollbar.setVisible() triggers Resize events --> infinite loop!
-		
-		// now the coordinate mapping is set up, so the y axis knows what tick labels
-		// will appear, and can calculate the occupied space from the longest tick label.
-		yAxis.layoutHint(gc, mainArea, insetsToMainArea);
+			// Calculate space occupied by title and legend and set insets accordingly
+			Rectangle area = new Rectangle(getClientArea());
+			Rectangle remaining = title.layout(gc, area);
+			remaining = legend.layout(gc, remaining);
 
-		// now we have the final insets, set it everywhere again 
-		xAxis.setLayout(mainArea, insetsToMainArea);
-		yAxis.setLayout(mainArea, insetsToMainArea);
-		crosshair.layout(gc, plotArea);
+			Rectangle mainArea = remaining.getCopy();
+			Insets insetsToMainArea = new Insets();
+			xAxis.layoutHint(gc, mainArea, insetsToMainArea);
+			// postpone yAxis.layoutHint() as it wants to use coordinate mapping which is not yet set up (to calculate ticks)
+			insetsToMainArea.left = 50; insetsToMainArea.right = 30; // initial estimate for y axis
 
-		plotArea = mainArea.getCopy().crop(insetsToMainArea);
-		//FIXME how to handle it when plotArea.height/width comes out negative??
-		setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
-		if (isInitialLayout)
-			zoomToFit();
-//		else
-//			validateZoom(); //FIXME scrollbar.setVisible() triggers Resize events --> infinite loop!
+			// tentative plotArea calculation (y axis ticks width missing from the picture yet)
+			Rectangle plotArea = mainArea.getCopy().crop(insetsToMainArea);
+			setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
 
-		gc.dispose();
-		
-		// Workaround: on Windows, sometimes the vertical scroll bar does not appear
-		// on zooming, even though it set to be visible (setVisible(true)). It appears
-		// that Scrollable somehow does not know about it. When the widget is resized 
-		// just a little, the scrollbar mysteriously jumps into existence. The workaround 
-		// is to fake a resize event. 
-		if (getVerticalBar().isVisible() && getClientArea().width==getSize().x)
-			setSize(getSize()); //FIXME this only converges after 20 recursions! Display.asyncExec() does not really help it
+			if (shouldZoomOutX)
+				zoomToFitX();
+			if (shouldZoomOutY)
+				zoomToFitY();
+			validateZoom(); //Note: scrollbar.setVisible() triggers Resize too
+
+			// now the coordinate mapping is set up, so the y axis knows what tick labels
+			// will appear, and can calculate the occupied space from the longest tick label.
+			yAxis.layoutHint(gc, mainArea, insetsToMainArea);
+
+			// now we have the final insets, set it everywhere again 
+			xAxis.setLayout(mainArea, insetsToMainArea);
+			yAxis.setLayout(mainArea, insetsToMainArea);
+			crosshair.layout(gc, plotArea);
+
+			plotArea = mainArea.getCopy().crop(insetsToMainArea);
+			//FIXME how to handle it when plotArea.height/width comes out negative??
+			setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
+
+			if (shouldZoomOutX)
+				zoomToFitX();
+			if (shouldZoomOutY)
+				zoomToFitY();
+			validateZoom(); //Note: scrollbar.setVisible() triggers Resize too
+		} 
+		catch (Throwable e) {
+			ScavePlugin.logError(e);
+		}
+		finally {
+			gc.dispose();
+			layoutDepth--;
+		}
 	}
 	
 	@Override

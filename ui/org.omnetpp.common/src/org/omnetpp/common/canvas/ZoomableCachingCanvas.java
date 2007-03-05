@@ -18,8 +18,8 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	private double zoomX = 0; // pixels per coordinate unit
 	private double zoomY = 0; // pixels per coordinate unit
 	
-	private double minX, maxX;
-	private double minY, maxY;
+	private double minX = 0, maxX = 1;
+	private double minY = 0, maxY = 1;
 
 	/**
      * Constructor.
@@ -153,7 +153,6 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 		double oldX = getViewportCenterCoordX();
 		zoomX = zoom;
 		validateZoom();
-		updateVirtualSize();
 		centerXOn(oldX);
 		redraw();
 		System.out.println("zoomX set to "+zoomX);
@@ -164,22 +163,11 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 		double oldY = getViewportCenterCoordY();
 		zoomY = zoom;
 		validateZoom();
-		updateVirtualSize();
 		centerYOn(oldY);
 		redraw();
 		System.out.println("zoomY set to "+zoomY);
 	}
 
-	/**
-	 * Ensure canvas is not zoomed out more than possible (area must fill viewport).  
-	 */
-	public void validateZoom() {
-		double minZoomX = getViewportWidth() / (maxX - minX);
-		zoomX = Math.max(zoomX, minZoomX);
-		double minZoomY = getViewportHeight() / (maxY - minY);
-		zoomY = Math.max(zoomY, minZoomY);
-	}
-	
 	public double getZoomX() {
 		return zoomX;
 	}
@@ -239,20 +227,25 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 		scrollVerticalTo(toVirtualY(y));
 	}
 	
-	private void checkSize() {
-		if (getVirtualWidth() == 0 || getVirtualHeight() == 0)
-			throw new IllegalStateException("virtual size is zero (not yet set?)");
-		if (zoomX == 0 || zoomY == 0)
-			throw new IllegalStateException("zoomX or zoomY is zero");
+	public boolean isZoomedOutX() {
+		return zoomX == getViewportWidth() / (maxX - minX);
 	}
 
-	private void checkAreaAndViewPort() {
-		if (minX == maxX || minY == maxY)
-			throw new IllegalStateException("area width/height is zero (setArea() not called yet?)");
-		if (getViewportWidth() == 0 || getViewportHeight() == 0)
-			throw new IllegalStateException("viewport size is zero (not yet set?)");
+	public boolean isZoomedOutY() {
+		return zoomY == getViewportHeight() / (maxY - minY);
 	}
 
+	/**
+	 * Ensure canvas is not zoomed out more than possible (area must fill viewport).  
+	 */
+	public void validateZoom() {
+		double minZoomX = getViewportWidth() / (maxX - minX);
+		zoomX = Math.max(zoomX, minZoomX);
+		double minZoomY = getViewportHeight() / (maxY - minY);
+		zoomY = Math.max(zoomY, minZoomY);
+		updateVirtualSize();
+	}
+	
 	protected void updateVirtualSize() {
 		double w = (maxX - minX)*zoomX;
 		double h = (maxY - minY)*zoomY;
@@ -265,4 +258,10 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 		redraw();
 	}
 
+	private void checkAreaAndViewPort() {
+		if (minX == maxX || minY == maxY)
+			throw new IllegalStateException("area width/height is zero (setArea() not called yet?)");
+		if (getViewportWidth() == 0 || getViewportHeight() == 0)
+			throw new IllegalStateException("viewport size is zero (not yet set?)");
+	}
 }
