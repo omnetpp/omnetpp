@@ -2,18 +2,18 @@ package org.omnetpp.scave.charting;
 
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.jfree.data.category.CategoryDataset;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
@@ -51,13 +51,9 @@ public class ChartFactory {
 	}
 
 	private static VectorChart createVectorChart(Composite parent, final Chart chart, final Dataset dataset, final ResultFileManager resultFileManager) {
-//		long startTime = System.currentTimeMillis();
-//		OutputVectorDataset data = DatasetManager.createVectorDataset(chart, dataset, manager);
-//		System.out.println("total dataset creation: "+(System.currentTimeMillis()-startTime)+" ms");
-
-		final VectorChart vectorChart = new VectorChart(parent, SWT.NONE); //XXX DOUBLE_BUFFERED);
-		vectorChart.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
-//		vectorChart.setDataset(data);
+		final VectorChart vectorChart = new VectorChart(parent, SWT.DOUBLE_BUFFERED);
+		vectorChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		vectorChart.setStatusText("Please wait...");
 		setChartProperties(chart, vectorChart);
 
 		vectorChart.setBackground(ColorConstants.white);  //XXX why here?
@@ -66,33 +62,29 @@ public class ChartFactory {
 		// the background job is working with the dataset. Build locking into CommandStack.execute()?
 		// Making the model temporarily readonly could also be a solution, but didn't find such method.
 		//
-		class MyJob extends Job {
-			private OutputVectorDataset data;
-
-			MyJob(String name) {
-				super(name);
-			}
-			
-			@Override
+		Job job = new Job("Evaluating dataset...") {
 			protected IStatus run(IProgressMonitor monitor) {
-				long startTime = System.currentTimeMillis();
-				//XXX update progress monitor
-				data = DatasetManager.createVectorDataset(chart, dataset, resultFileManager);
-				System.out.println("total dataset creation: "+(System.currentTimeMillis()-startTime)+" ms");
-				return Status.OK_STATUS;
-			}
-
-			public OutputVectorDataset getData() {
-				return data;
+				try {
+					long startTime = System.currentTimeMillis();
+					//XXX update progress monitor
+					final OutputVectorDataset data = DatasetManager.createVectorDataset(chart, dataset, resultFileManager);
+					System.out.println("total dataset creation: "+(System.currentTimeMillis()-startTime)+" ms");
+					Assert.isTrue(false);
+					Display.getDefault().asyncExec(new Runnable() {
+						public void run() {
+							vectorChart.setDataset(data);
+						}});
+					return Status.OK_STATUS;
+				} 
+				catch (Throwable e) {
+					Display.getDefault().asyncExec(new Runnable() {
+						public void run() {
+							vectorChart.setStatusText("An error occurred during dataset processing.");
+						}});
+					return new Status(IStatus.ERROR, ScavePlugin.PLUGIN_ID, 0, "An error occurred during dataset processing.", e);
+				}
 			}
 		};
-		final MyJob job = new MyJob("Evaluating dataset...");
-		job.addJobChangeListener(new JobChangeAdapter() {
-			public void done(IJobChangeEvent event) {
-				vectorChart.setDataset(job.getData());
-				System.out.println("DATASET CALCULATION: status="+event.getResult().getSeverity());
-			}
-		});
 		job.setPriority(Job.SHORT);
 		job.schedule();
 

@@ -62,18 +62,23 @@ import org.omnetpp.scave.charting.plotter.VectorPlotter;
 /**
  * Line chart.
  */
-//XXX strange effects when resized and vertical scrollbar pulled...
 public class VectorChart extends ChartCanvas {
-	private OutputVectorDataset dataset = new OutputVectorDataset();
-	private Color insetsBackgroundColor = DEFAULT_INSETS_BACKGROUND_COLOR;
-	private Color insetsLineColor = DEFAULT_INSETS_LINE_COLOR;
 	
+	private OutputVectorDataset dataset = null;
+
 	private LinearAxis xAxis = new LinearAxis(this, false);
 	private LinearAxis yAxis = new LinearAxis(this, true);
+	private Map<String, LineProperties> lineProperties = new HashMap<String,LineProperties>();
+	private CrossHair crosshair = new CrossHair();
+
+	private Color insetsBackgroundColor = DEFAULT_INSETS_BACKGROUND_COLOR;
+	private Color insetsLineColor = DEFAULT_INSETS_LINE_COLOR;
 	
 	private int layoutDepth = 0; // how many layoutChart() calls are on the stack
 	private int repaintCounter;
 	private boolean debug = false;
+
+	private static final String KEY_ALL = null;
 	
 	static class LineProperties {
 		
@@ -92,11 +97,6 @@ public class VectorChart extends ChartCanvas {
 		Integer symbolSize;
 		LineStyle lineStyle;
 	}
-	
-	private static final String KEY_ALL = null;
-	
-	private Map<String, LineProperties> lineProperties = new HashMap<String,LineProperties>();
-	private CrossHair crosshair = new CrossHair();
 
 	
 	public VectorChart(Composite parent, int style) {
@@ -283,23 +283,22 @@ public class VectorChart extends ChartCanvas {
 	}
 	
 	private void calculateArea() {
-		if (dataset==null || dataset.getSeriesCount()==0) {
+		if (dataset==null || dataset.getSeriesCount()==0)
 			return;
-		}
-		
+	
 		// calculate bounding box
 		long startTime = System.currentTimeMillis();
 		double minX = Double.MAX_VALUE;
 		double minY = Double.MAX_VALUE;
 		double maxX = Double.MIN_VALUE;
 		double maxY = Double.MIN_VALUE;
-		for (int series=0; series<dataset.getSeriesCount(); series++) {
+		for (int series = 0; series < dataset.getSeriesCount(); series++) {
 			int n = dataset.getItemCount(series);
-			if (n>0) {
+			if (n > 0) {
 				// X must be increasing
 				minX = Math.min(minX, dataset.getXValue(series, 0));
 				maxX = Math.max(maxX, dataset.getXValue(series, n-1));
-				for (int i=0; i<n; i++) { //XXX potential bottleneck, consider moving to C++
+				for (int i = 0; i < n; i++) {
 					double y = dataset.getYValue(series, i);
 					minY = Math.min(minY, y);
 					maxY = Math.max(maxY, y);
@@ -386,31 +385,38 @@ public class VectorChart extends ChartCanvas {
 		xAxis.drawGrid(gc);
 		yAxis.drawGrid(gc);
 
-		resetDrawingStylesAndColors(gc);
-		gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
-		gc.setLineStyle(SWT.LINE_SOLID);
-		for (int series=0; series<dataset.getSeriesCount(); series++) {
-			String key = dataset.getSeriesKey(series).toString();
-			IVectorPlotter plotter = getPlotter(key);
-			IChartSymbol symbol = getSymbol(key);
-			Color color = getLineColor(series);
-			gc.setForeground(color);
-			gc.setBackground(color);
-
-			long startTime = System.currentTimeMillis();
-			plotter.plot(dataset, series, gc, this, symbol);
-			System.out.println("plotting: "+(System.currentTimeMillis()-startTime)+" ms");
+		if (dataset==null) {
+			resetDrawingStylesAndColors(gc);
+			org.eclipse.swt.graphics.Rectangle rect = getViewportRectangle();
+			gc.drawText(getStatusText(), rect.x+10, rect.y+10);
 		}
+		else {
+			resetDrawingStylesAndColors(gc);
+			gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
+			gc.setLineStyle(SWT.LINE_SOLID);
+			for (int series=0; series<dataset.getSeriesCount(); series++) {
+				String key = dataset.getSeriesKey(series).toString();
+				IVectorPlotter plotter = getPlotter(key);
+				IChartSymbol symbol = getSymbol(key);
+				Color color = getLineColor(series);
+				gc.setForeground(color);
+				gc.setBackground(color);
 
-		if (debug) {
-			repaintCounter++;
-			gc.setForeground(ColorFactory.getGoodColor(repaintCounter));
-			gc.setBackground(ChartDefaults.DEFAULT_BACKGROUND_COLOR);
-			Rectangle clip = new Rectangle(gc.getClipping());
-			for (int x = clip.x - clip.x%100; x<clip.right(); x+=100) {
-				for (int y = clip.y - clip.y%100; y<clip.bottom(); y+=100) {
-					gc.drawLine(x, y, x+10, y+20);
-					gc.drawText("paint#"+repaintCounter+" ("+canvasToVirtualX(x)+","+canvasToVirtualY(y)+")", x+10, y+15);
+				long startTime = System.currentTimeMillis();
+				plotter.plot(dataset, series, gc, this, symbol);
+				System.out.println("plotting: "+(System.currentTimeMillis()-startTime)+" ms");
+			}
+
+			if (debug) {
+				repaintCounter++;
+				gc.setForeground(ColorFactory.getGoodColor(repaintCounter));
+				gc.setBackground(ChartDefaults.DEFAULT_BACKGROUND_COLOR);
+				Rectangle clip = new Rectangle(gc.getClipping());
+				for (int x = clip.x - clip.x%100; x<clip.right(); x+=100) {
+					for (int y = clip.y - clip.y%100; y<clip.bottom(); y+=100) {
+						gc.drawLine(x, y, x+10, y+20);
+						gc.drawText("paint#"+repaintCounter+" ("+canvasToVirtualX(x)+","+canvasToVirtualY(y)+")", x+10, y+15);
+					}
 				}
 			}
 		}
@@ -565,6 +571,9 @@ public class VectorChart extends ChartCanvas {
 		}
 		
 		private DPoint dataPointNear(int x, int y, int d) {
+			if (dataset==null)
+				return null;
+			
 			// for each series, perform binary search on the x axis
 			for (int series = 0; series < dataset.getSeriesCount(); ++series) {
 				int start = 0;

@@ -48,11 +48,12 @@ import org.omnetpp.scave.charting.ChartProperties.LegendPosition;
  * @author tomi
  */
 public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoordsMapping {
+
 	protected boolean antialias = DEFAULT_ANTIALIAS;
 	protected Title title = new Title(DEFAULT_TITLE, DEFAULT_TITLE_FONT);
 	protected Legend legend = new Legend(DEFAULT_DISPLAY_LEGEND, DEFAULT_LEGEND_BORDER, DEFAULT_LEGEND_FONT, DEFAULT_LEGEND_POSITION, DEFAULT_LEGEND_ANCHOR);
-
-	private Runnable scheduledRedraw;
+	
+	private String statusText = "No data available"; // displayed when there's no dataset 
 
 	private ZoomableCanvasMouseSupport mouseSupport;
 	
@@ -84,6 +85,15 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoor
 
 	public int getMouseMode() {
 		return mouseSupport.getMouseMode();
+	}
+
+	public String getStatusText() {
+		return statusText;
+	}
+
+	public void setStatusText(String statusText) {
+		this.statusText = statusText;
+		chartChanged();
 	}
 	
 	public void setProperty(String name, String value) {
@@ -264,4 +274,5 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoor
 		}
 		
 	}
+
 }
