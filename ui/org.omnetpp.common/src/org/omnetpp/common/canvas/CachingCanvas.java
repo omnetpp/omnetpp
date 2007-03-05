@@ -13,8 +13,10 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Sash;
+import org.eclipse.swt.widgets.ScrollBar;
 import org.omnetpp.common.canvas.ITileCache.Tile;
 
 /**
@@ -37,9 +39,11 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 		addPaintListener(new PaintListener() {
 			public void paintControl(final PaintEvent e) {
 				// just call paint(), possibly with busy cursor
-				if (Display.getCurrent().getCursorControl() instanceof Sash) {
+				Control control = Display.getCurrent().getCursorControl();
+				if (control instanceof Sash) { //TODO or control instanceof ScrollBar
 					// if the user is resizing the chart (mouse is over a Sash),
 					// don't override the "resize" mouse cursor
+					//TODO also when user is dragging the scrollbar...
 					paint(e.gc);
 				}
 				else { 

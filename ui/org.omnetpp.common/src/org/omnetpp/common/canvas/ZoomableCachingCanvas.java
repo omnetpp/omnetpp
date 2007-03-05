@@ -38,9 +38,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 		if (this.minX == this.maxX)  this.maxX = this.minX + 1;
 		if (this.minY == this.maxY)  this.maxY = this.minY + 1;
 		
-		updateVirtualSize();
-		clearCanvasCache();
-		redraw();
+		zoomToFit(); // includes updateVirtualSize(), clearCanvasCache(), redraw() etc.
 		//System.out.printf("Area set: (%g, %g, %g, %g) - virtual size: (%d, %d)\n", this.minX, this.maxX, this.minY, this.maxY, getVirtualWidth(), getVirtualHeight());
 	}
 
