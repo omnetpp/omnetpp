@@ -11,7 +11,7 @@ import org.osgi.framework.BundleContext;
 public class Activator extends AbstractUIPlugin {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "org.omnetpp.ide";
+	public static String PLUGIN_ID;
 
 	// The shared instance
 	private static Activator plugin;
@@ -29,6 +29,7 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+        PLUGIN_ID = getBundle().getSymbolicName();
 	}
 
 	/*

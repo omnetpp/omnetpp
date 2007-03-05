@@ -2,6 +2,7 @@ package org.omnetpp.ned.editor.text;
 
 import java.io.IOException;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -11,6 +12,7 @@ import org.eclipse.ui.editors.text.templates.ContributionContextTypeRegistry;
 import org.eclipse.ui.editors.text.templates.ContributionTemplateStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.ned.editor.text.assist.NedContextType;
+import org.osgi.framework.BundleContext;
 
 /**
  * Plugin implementing text based NED editor for OMNeT++.
@@ -18,7 +20,7 @@ import org.omnetpp.ned.editor.text.assist.NedContextType;
  */
 public class TextualNedEditorPlugin extends AbstractUIPlugin {
 	
-    public final static String PLUGIN_ID = "org.omnetpp.ned.editor.text";
+    public static String PLUGIN_ID;
 
     /** Key to store custom templates. */
     private static final String CUSTOM_TEMPLATES_KEY = "org.omnetpp.ned.editor.text.customtemplates"; //$NON-NLS-1$
@@ -36,15 +38,18 @@ public class TextualNedEditorPlugin extends AbstractUIPlugin {
 	 * 
 	 * @param descriptor
 	 */
-//	public TextualNedEditorPlugin(IPluginDescriptor descriptor) {
-//		super(descriptor);
-//		fgInstance= this;
-//	}
     public TextualNedEditorPlugin() {
         super();
         fgInstance= this;
     }
 	
+    @Override
+    public void start(BundleContext context) throws Exception {
+        super.start(context);
+        PLUGIN_ID = getBundle().getSymbolicName();
+    }
+    
+    
 	/**
 	 * Returns the default plugin instance.
 	 * 

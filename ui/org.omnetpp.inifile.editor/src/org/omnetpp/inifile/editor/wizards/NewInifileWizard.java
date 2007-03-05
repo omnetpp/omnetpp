@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.CoreException;
 import java.io.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.ide.IDE;
+import org.omnetpp.inifile.editor.InifileEditorPlugin;
 
 /**
  * This is a sample new wizard. Its role is to create a new file 
@@ -133,7 +134,7 @@ public class NewInifileWizard extends Wizard implements INewWizard {
 
 	private void throwCoreException(String message) throws CoreException {
 		IStatus status =
-			new Status(IStatus.ERROR, "org.omnetpp.inifile.editor", IStatus.OK, message, null);
+			new Status(IStatus.ERROR, InifileEditorPlugin.PLUGIN_ID, IStatus.OK, message, null);
 		throw new CoreException(status);
 	}
 

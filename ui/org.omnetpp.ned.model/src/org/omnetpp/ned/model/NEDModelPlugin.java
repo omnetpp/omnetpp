@@ -10,7 +10,7 @@ import org.osgi.framework.BundleContext;
  * The main plugin class to be used in the desktop.
  */
 public class NEDModelPlugin extends AbstractUIPlugin {
-    public static final String PLUGIN_ID = "org.omnetpp.ned.model"; 
+    public static String PLUGIN_ID; 
     
 	//The shared instance.
 	private static NEDModelPlugin plugin;
@@ -32,6 +32,7 @@ public class NEDModelPlugin extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+        PLUGIN_ID = getBundle().getSymbolicName();
 	}
 
 	/**

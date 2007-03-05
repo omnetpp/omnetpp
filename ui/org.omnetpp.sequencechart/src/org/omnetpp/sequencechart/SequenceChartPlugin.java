@@ -12,7 +12,7 @@ import org.osgi.framework.BundleContext;
 public class SequenceChartPlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "org.omnetpp.sequencechart";
+	public static String PLUGIN_ID;
 
 	// The shared instance
 	private static SequenceChartPlugin plugin;
@@ -30,6 +30,7 @@ public class SequenceChartPlugin extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+        PLUGIN_ID = getBundle().getSymbolicName();
 	}
 
 	/*

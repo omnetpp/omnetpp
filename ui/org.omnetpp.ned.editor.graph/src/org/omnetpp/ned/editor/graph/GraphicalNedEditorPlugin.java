@@ -39,10 +39,11 @@ import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.pojo.PropertyNode;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
+import org.osgi.framework.BundleContext;
 
 public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
 
-    public final static String PLUGIN_ID = "org.omnetpp.ned.editor.graph";
+    public static String PLUGIN_ID;
 
     private static GraphicalNedEditorPlugin singleton;
     
@@ -51,10 +52,15 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         if (singleton == null) {
             singleton = this;
         }
-        
         // initialize the property source factory
         Platform.getAdapterManager().registerAdapters(new NedPropertySourceAdapterFactory(), 
                 IPropertySourceSupport.class);
+    }
+    
+    @Override
+    public void start(BundleContext context) throws Exception {
+        super.start(context);
+        PLUGIN_ID = getBundle().getSymbolicName();
     }
 
     public static GraphicalNedEditorPlugin getDefault() {

@@ -10,6 +10,7 @@ import org.osgi.framework.BundleContext;
  */
 public class NEDResourcesPlugin extends AbstractUIPlugin {
 
+    public static String PLUGIN_ID;
 	//The shared instance.
 	private static NEDResourcesPlugin plugin;
 
@@ -29,7 +30,9 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 
-		// XXX this is most probably NOT the way to archieve that
+        PLUGIN_ID = getBundle().getSymbolicName();
+
+        // XXX this is most probably NOT the way to archieve that
 		// all NED files get parsed on startup. At minimum, this should
 		// be done in the background, as a long-running operation with an 
 		// IProgressMonitor...
@@ -73,6 +76,6 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 	 * @return the image descriptor
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
-		return AbstractUIPlugin.imageDescriptorFromPlugin("org.omnetpp.ned.resources", path);
+		return AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 }

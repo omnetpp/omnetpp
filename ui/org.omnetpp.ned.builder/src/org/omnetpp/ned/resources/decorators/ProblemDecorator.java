@@ -24,7 +24,7 @@ public class ProblemDecorator implements ILightweightLabelDecorator {
     private static ImageDescriptor errorImageDesc = NEDResourcesPlugin.getImageDescriptor("/icons/error.gif");
     private static ImageDescriptor warningImageDesc = NEDResourcesPlugin.getImageDescriptor("/icons/warning.gif");
     
-    // TODO this chould come from a configuration (compute recursive error markers)
+    // TODO this should come from a configuration (compute recursive error markers)
     private int checkDepth = IResource.DEPTH_INFINITE; 
     
     private int maxSeverityLevel(IResource resource, int depth) {

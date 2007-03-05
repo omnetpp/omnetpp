@@ -31,16 +31,16 @@
           value="000000"/>
     <property
           name="startupMessageRect"
-          value="10,30,500,25"/>
+          value="10,20,500,25"/>
     <property
           name="startupProgressRect"
           value="10,10,300,10"/>
     <property
           name="aboutText"
-          value="OMNEST/OMNeT++ IDE, based on the Eclipse platform."/>
+          value="OMNEST/OMNeT++ Integrated Development Environment, based on Eclipse platform."/>
     <property
           name="aboutImage"
-          value="icons/logo128.gif"/>
+          value="icons/omnest128.gif"/>
     <property
           name="windowImages"
           value="icons/omnest16.gif,icons/omnest32.gif,icons/omnest48.gif,icons/omnest64.gif,icons/omnest128.gif"/>
