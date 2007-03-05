@@ -64,7 +64,7 @@ import org.omnetpp.scave.charting.plotter.VectorPlotter;
  */
 //XXX strange effects when resized and vertical scrollbar pulled...
 public class VectorChart extends ChartCanvas {
-	private OutputVectorDataset dataset;
+	private OutputVectorDataset dataset = new OutputVectorDataset();
 	private Color insetsBackgroundColor = DEFAULT_INSETS_BACKGROUND_COLOR;
 	private Color insetsLineColor = DEFAULT_INSETS_LINE_COLOR;
 	
@@ -112,7 +112,7 @@ public class VectorChart extends ChartCanvas {
 		this.dataset = dataset;
 		updateLegend();
 		calculateArea();
-		scheduleRedraw();
+		chartChanged();
 	}
 	
 	private void updateLegend() {
@@ -188,19 +188,19 @@ public class VectorChart extends ChartCanvas {
 
 	public void setXAxisTitle(String value) {
 		xAxis.setTitle(value != null ? value : DEFAULT_X_AXIS_TITLE);
-		scheduleRedraw();
+		chartChanged();
 	}
 	
 	public void setYAxisTitle(String value) {
 		yAxis.setTitle(value != null ? value : DEFAULT_Y_AXIS_TITLE);
-		scheduleRedraw();
+		chartChanged();
 	}
 	
 	public void setAxisTitleFont(Font value) {
 		if (value != null) {
 			xAxis.setTitleFont(value);
 			yAxis.setTitleFont(value);
-			scheduleRedraw();
+			chartChanged();
 		}
 	}
 
@@ -214,7 +214,7 @@ public class VectorChart extends ChartCanvas {
 	public void setLineStyle(String key, LineStyle type) {
 		LineProperties props = getOrCreateLineProperties(key);
 		props.lineStyle = type;
-		scheduleRedraw();
+		chartChanged();
 	}
 
 	public SymbolType getSymbolType(String key) {
@@ -227,7 +227,7 @@ public class VectorChart extends ChartCanvas {
 	public void setSymbolType(String key, SymbolType symbolType) {
 		LineProperties props = getOrCreateLineProperties(key);
 		props.symbolType = symbolType;
-		scheduleRedraw();
+		chartChanged();
 	}
 	
 	public int getSymbolSize(String key) {
@@ -240,38 +240,38 @@ public class VectorChart extends ChartCanvas {
 	public void setSymbolSize(String key, Integer size) {
 		LineProperties props = getOrCreateLineProperties(key);
 		props.symbolSize = size;
-		scheduleRedraw();
+		chartChanged();
 	}
 	
 	public void setXMin(Double value) {
 		if (value != null)
 			setArea(value, getMinY(), getMaxX(), getMaxY());
-		scheduleRedraw();
+		chartChanged();
 	}
 	
 	public void setXMax(Double value) {
 		if (value != null)
 			setArea(getMinX(), getMinY(), value, getMaxY());
-		scheduleRedraw();
+		chartChanged();
 	}
 	
 	public void setYMin(Double value) {
 		if (value != null)
 			setArea(getMinX(), value, getMaxX(), getMaxY());
-		scheduleRedraw();
+		chartChanged();
 	}
 	
 	public void setYMax(Double value) {
 		if (value != null)
 			setArea(getMinX(), getMinY(), getMaxX(), value);
-		scheduleRedraw();
+		chartChanged();
 	}
 	
 	public void setGridVisibility(Boolean value) {
 		boolean b = value != null ? value : false;
 		xAxis.setGridVisible(b);
 		yAxis.setGridVisible(b);
-		scheduleRedraw();
+		chartChanged();
 	}
 	
 	public void setTickLabelFont(Font font) {
@@ -279,12 +279,11 @@ public class VectorChart extends ChartCanvas {
 			xAxis.setTickFont(font);
 			yAxis.setTickFont(font);
 		}
-		scheduleRedraw();
+		chartChanged();
 	}
 	
 	private void calculateArea() {
 		if (dataset==null || dataset.getSeriesCount()==0) {
-			setArea(0,0,0,0);
 			return;
 		}
 		

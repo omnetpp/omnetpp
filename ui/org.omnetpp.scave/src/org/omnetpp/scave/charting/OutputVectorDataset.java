@@ -14,6 +14,11 @@ public class OutputVectorDataset extends AbstractSeriesDataset implements XYData
 	private String[] seriesKeys;
 	private XYArray[] seriesData;
 
+	public OutputVectorDataset() {
+		this.seriesKeys = new String[] {};
+		this.seriesData = new XYArray[] {};
+	}
+
 	public OutputVectorDataset(String[] seriesKeys, XYArray[] seriesData) {
 		Assert.isTrue(seriesKeys.length == seriesData.length);
 		this.seriesKeys = seriesKeys;

@@ -65,7 +65,7 @@ public class ScalarChart extends ChartCanvas {
 		this.dataset = dataset;
 		updateLegend();
 		updateArea();
-		scheduleRedraw();
+		chartChanged();
 	}
 	
 	private void updateLegend() {
@@ -132,7 +132,7 @@ public class ScalarChart extends ChartCanvas {
 			title = DEFAULT_X_AXIS_TITLE;
 
 		domainAxis.title = title;
-		scheduleRedraw();
+		chartChanged();
 	}
 
 	public String getYAxisTitle() {
@@ -141,7 +141,7 @@ public class ScalarChart extends ChartCanvas {
 
 	public void setYAxisTitle(String title) {
 		valueAxis.setTitle(title==null ? DEFAULT_Y_AXIS_TITLE : title);
-		scheduleRedraw();
+		chartChanged();
 	}
 
 	public Font getAxisTitleFont() {
@@ -152,7 +152,7 @@ public class ScalarChart extends ChartCanvas {
 		if (font != null) {
 			domainAxis.titleFont = font;
 			valueAxis.setTitleFont(font);
-			scheduleRedraw();
+			chartChanged();
 		}
 	}
 
@@ -161,14 +161,14 @@ public class ScalarChart extends ChartCanvas {
 			font = DEFAULT_LABELS_FONT;
 		domainAxis.labelsFont = font;
 		valueAxis.setTickFont(font);
-		scheduleRedraw();
+		chartChanged();
 	}
 
 	public void setXAxisLabelsRotatedBy(Double angle) {
 		if (angle == null)
 			angle = DEFAULT_X_LABELS_ROTATED_BY;
 		domainAxis.rotation = angle;
-		scheduleRedraw();
+		chartChanged();
 	}
 
 	public Double getBarBaseline() {
@@ -180,7 +180,7 @@ public class ScalarChart extends ChartCanvas {
 			value = DEFAULT_BAR_BASELINE;
 
 		plot.barBaseline = value;
-		scheduleRedraw();
+		chartChanged();
 	}
 
 	public BarPlacement getBarPlacement() {
@@ -192,7 +192,7 @@ public class ScalarChart extends ChartCanvas {
 			value = DEFAULT_BAR_PLACEMENT;
 
 		plot.barPlacement = value;
-		scheduleRedraw();
+		chartChanged();
 	}
 
 	public Double getYMin() {
@@ -201,7 +201,7 @@ public class ScalarChart extends ChartCanvas {
 
 	public void setYMin(Double value) {
 		yMin = value;
-		scheduleRedraw();
+		chartChanged();
 	}
 
 	public Double getYMax() {
@@ -210,7 +210,7 @@ public class ScalarChart extends ChartCanvas {
 
 	public void setYMax(Double value) {
 		yMax = value;
-		scheduleRedraw();
+		chartChanged();
 	}
 
 	public Boolean getInvertXY() {
@@ -222,7 +222,7 @@ public class ScalarChart extends ChartCanvas {
 			value = DEFAULT_INVERT_XY;
 
 		plot.invertXY = value;
-		scheduleRedraw();
+		chartChanged();
 	}
 
 	public Boolean getGridVisible() {
@@ -234,7 +234,7 @@ public class ScalarChart extends ChartCanvas {
 			value = DEFAULT_SHOW_GRID;
 
 		valueAxis.setGridVisible(value);
-		scheduleRedraw();
+		chartChanged();
 	}
 
 	/*=============================================

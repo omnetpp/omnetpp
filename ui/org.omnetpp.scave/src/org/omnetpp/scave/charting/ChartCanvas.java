@@ -118,61 +118,61 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoor
 
 	public void setAntialias(Boolean antialias) {
 		this.antialias = antialias != null && antialias.booleanValue();
-		scheduleRedraw();
+		chartChanged();
 	}
 	
 	public void setCaching(Boolean caching) {
 		super.setCaching(caching != null && caching.booleanValue());
-		scheduleRedraw();
+		chartChanged();
 	}
 	
 	public void setTitle(String value) {
 		if (value == null)
 			value = DEFAULT_TITLE;
 		title.setText(value);
-		scheduleRedraw();
+		chartChanged();
 	}
 
 	public void setTitleFont(Font value) {
 		if (value == null)
 			value = DEFAULT_TITLE_FONT;
 		title.setFont(value);
-		scheduleRedraw();
+		chartChanged();
 	}
 	
 	public void setDisplayLegend(Boolean value) {
 		if (value == null)
 			value = DEFAULT_DISPLAY_LEGEND;
 		legend.setVisible(value);
-		scheduleRedraw();
+		chartChanged();
 	}
 	
 	public void setLegendBorder(Boolean value) {
 		if (value == null)
 			value = DEFAULT_LEGEND_BORDER;
 		legend.setDrawBorder(value);
-		scheduleRedraw();
+		chartChanged();
 	}
 	
 	public void setLegendFont(Font value) {
 		if (value == null)
 			value = DEFAULT_LEGEND_FONT;
 		legend.setFont(value);
-		scheduleRedraw();
+		chartChanged();
 	}
 	
 	public void setLegendPosition(LegendPosition value) {
 		if (value == null)
 			value = DEFAULT_LEGEND_POSITION;
 		legend.setPosition(value);
-		scheduleRedraw();
+		chartChanged();
 	}
 	
 	public void setLegendAnchor(LegendAnchor value) {
 		if (value == null)
 			value = DEFAULT_LEGEND_ANCHOR;
 		legend.setAnchor(value);
-		scheduleRedraw();
+		chartChanged();
 	}
 	
 	/**
@@ -193,20 +193,12 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoor
 		//gc.setLineJoin();
 		gc.setLineStyle(SWT.LINE_SOLID);
 		gc.setLineWidth(1);
-		gc.setXORMode(false);
+		//gc.setXORMode(false);
 		gc.setTextAntialias(SWT.DEFAULT);
 	}
 	
-	public void scheduleRedraw() {
-		if (scheduledRedraw == null) {
-			scheduledRedraw = new Runnable() {
-				public void run() {
-					scheduledRedraw = null;
-					clearCanvasCacheAndRedraw();
-				}
-			};
-			getDisplay().asyncExec(scheduledRedraw);
-		}
+	protected void chartChanged() {
+		clearCanvasCacheAndRedraw();
 	}
 	
 	/**
