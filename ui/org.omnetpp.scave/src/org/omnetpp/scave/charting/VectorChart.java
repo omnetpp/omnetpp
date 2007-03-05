@@ -454,6 +454,7 @@ public class VectorChart extends ChartCanvas {
 	@Override
 	protected void paintNoncachableLayer(GC gc) {
 		Insets insets = getInsets();
+		resetDrawingStylesAndColors(gc);
 		gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
 
 		// draw insets border
