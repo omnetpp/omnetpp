@@ -325,9 +325,7 @@ public class VectorChart extends ChartCanvas {
 		
 		layoutDepth++;
 		GC gc = new GC(Display.getCurrent());
-
-		String spaces="                                                    ";
-		System.out.println(spaces.substring(0,layoutDepth)+"layoutChart() #"+layoutDepth);
+		System.out.println("layoutChart(), level "+layoutDepth);
 
 		try {
 			// preserve zoomed-out state while resizing
