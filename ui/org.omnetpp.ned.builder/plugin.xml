@@ -26,15 +26,4 @@
       <persistent value="false"/> 
       <super type="org.eclipse.core.resources.problemmarker"/> 
    </extension>
-   <extension
-         point="org.eclipse.ui.decorators">
-      <decorator
-            adaptable="true"
-            class="org.omnetpp.ned.resources.decorators.ProblemDecorator"
-            id="org.omnetpp.resources.decorators.ProblemDecorator"
-            label="NED Problem Decorator"
-            lightweight="true"
-            state="true">
-      </decorator>
-   </extension>
 </plugin>
