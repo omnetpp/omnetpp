@@ -197,9 +197,19 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 		zoomYBy(zoomFactor);
 	}
 
-	public void zoomBy(double zoomFactor, int aroundCanvasX, int aroundCanvasY) {
-		System.out.println("zoom around point not implemented. x="+aroundCanvasX+", y="+aroundCanvasY); //FIXME
-		zoomBy(zoomFactor);
+	public void zoomXBy(double zoomFactor, int canvasX) {
+		zoomXBy(zoomFactor);
+		centerXOn(fromCanvasX(canvasX));
+	}
+
+	public void zoomYBy(double zoomFactor, int canvasY) {
+		zoomYBy(zoomFactor);
+		centerYOn(fromCanvasY(canvasY));
+	}
+	
+	public void zoomBy(double zoomFactor, int canvasX, int canvasY) {
+		zoomXBy(zoomFactor, canvasX);
+		zoomYBy(zoomFactor, canvasY);
 	}
 	
 	public void zoomToFitX() {
