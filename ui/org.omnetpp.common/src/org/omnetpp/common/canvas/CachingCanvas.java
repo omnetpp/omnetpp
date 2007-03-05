@@ -17,10 +17,6 @@ import org.omnetpp.common.color.ColorFactory;
  * A scrollable canvas that supports caching of (part of) the drawing 
  * in off-screen image buffers for performance improvement.
  */
-//TODO redraw chart with antialias while user is idle? hint:
-//getDisplay().asyncExec(new Runnable() {
-//	public void run() { ... }
-//};
 public abstract class CachingCanvas extends LargeScrollableCanvas {
 
 	private boolean doCaching = true;

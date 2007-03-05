@@ -39,6 +39,8 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 		if (this.minY == this.maxY)  this.maxY = this.minY + 1;
 		
 		updateVirtualSize();
+		clearCanvasCache();
+		redraw();
 		//System.out.printf("Area set: (%g, %g, %g, %g) - virtual size: (%d, %d)\n", this.minX, this.maxX, this.minY, this.maxY, getVirtualWidth(), getVirtualHeight());
 	}
 
@@ -148,24 +150,30 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 		scrollVerticalTo(toVirtualY(yCoord) - getViewportHeight()/2);
 	}
 	
-	public void setZoomX(double zoom) {
+	public void setZoomX(double zoomX) {
 		checkAreaAndViewPort();
-		double oldX = getViewportCenterCoordX();
-		zoomX = zoom;
-		validateZoom();
-		centerXOn(oldX);
-		redraw();
-		System.out.println("zoomX set to "+zoomX);
+		double minZoomX = getViewportWidth() / (maxX - minX);
+		double newZoomX = Math.max(zoomX, minZoomX);
+		if (newZoomX != this.zoomX) {
+			double oldX = getViewportCenterCoordX();
+			this.zoomX = newZoomX;
+			updateVirtualSize(); // includes clearCache + redraw
+			centerXOn(oldX);
+			System.out.println("zoomX set to "+zoomX);
+		}
 	}
 
-	public void setZoomY(double zoom) {
+	public void setZoomY(double zoomY) {
 		checkAreaAndViewPort();
-		double oldY = getViewportCenterCoordY();
-		zoomY = zoom;
-		validateZoom();
-		centerYOn(oldY);
-		redraw();
-		System.out.println("zoomY set to "+zoomY);
+		double minZoomY = getViewportHeight() / (maxY - minY);
+		double newZoomY = Math.max(zoomY, minZoomY);
+		if (newZoomY != this.zoomY) {
+			double oldY = getViewportCenterCoordY();
+			this.zoomY = newZoomY;
+			updateVirtualSize(); // includes clearCache + redraw
+			centerYOn(oldY);
+			System.out.println("zoomY set to "+zoomY);
+		}
 	}
 
 	public double getZoomX() {
@@ -195,17 +203,11 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	}
 	
 	public void zoomToFitX() {
-		checkAreaAndViewPort();
-		zoomX = getViewportWidth() / (maxX - minX);
-		updateVirtualSize();
-		scrollHorizontalTo(0);
+		setZoomX(getViewportWidth() / (maxX - minX));
 	}
 
 	public void zoomToFitY() {
-		checkAreaAndViewPort();
-		zoomY = getViewportHeight() / (maxY - minY);
-		updateVirtualSize();
-		scrollVerticalTo(0);
+		setZoomY(getViewportHeight() / (maxY - minY));
 	}
 	
 	public void zoomToFit() {
@@ -239,18 +241,19 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	 * Ensure canvas is not zoomed out more than possible (area must fill viewport).  
 	 */
 	public void validateZoom() {
-		double minZoomX = getViewportWidth() / (maxX - minX);
-		zoomX = Math.max(zoomX, minZoomX);
-		double minZoomY = getViewportHeight() / (maxY - minY);
-		zoomY = Math.max(zoomY, minZoomY);
-		updateVirtualSize();
+		setZoomX(getZoomX());
+		setZoomY(getZoomY());
 	}
 	
-	protected void updateVirtualSize() {
+	/**
+	 * Called internally whenever zoom or the area changes.
+	 */
+	private void updateVirtualSize() {
 		double w = (maxX - minX)*zoomX;
 		double h = (maxY - minY)*zoomY;
 		setVirtualSize((long)w, (long)h);
 		clearCanvasCache();
+		redraw();
 	}
 
 	public void clearCanvasCacheAndRedraw() {
