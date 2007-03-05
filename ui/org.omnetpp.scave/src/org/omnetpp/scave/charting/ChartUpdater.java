@@ -74,11 +74,12 @@ public class ChartUpdater {
 	}
 
 	public void updateDataset() {
+		//FIXME make this a background job! make use of ChartFactory.startDatasetEvaluationJob()!
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		if (chart instanceof BarChart)
-			setDataset(DatasetManager.createScalarDataset(chart, dataset, manager));
+			setDataset(DatasetManager.createScalarDataset(chart, dataset, manager, null));
 		if (chart instanceof LineChart)
-			setDataset(DatasetManager.createVectorDataset(chart, dataset, manager));
+			setDataset(DatasetManager.createVectorDataset(chart, dataset, manager, null));
 		if (chart instanceof HistogramChart)
 			; //TODO
 		throw new RuntimeException("unknown chart type");
@@ -91,7 +92,6 @@ public class ChartUpdater {
 	private void setDataset(CategoryDataset dataset) {
 		if (view instanceof ScalarChart)
 			((ScalarChart)view).setDataset(dataset);
-
 	}
 
 	private void setDataset(OutputVectorDataset dataset) {

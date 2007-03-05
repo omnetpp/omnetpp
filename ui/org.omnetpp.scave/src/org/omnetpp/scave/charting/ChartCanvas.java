@@ -26,14 +26,15 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
+import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.jfree.data.general.Dataset;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.image.ImageConverter;
@@ -45,7 +46,7 @@ import org.omnetpp.scave.charting.ChartProperties.LegendPosition;
 /**
  * Base class for all chart widgets.
  * 
- * @author tomi
+ * @author tomi, andras
  */
 public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoordsMapping {
 
@@ -60,6 +61,8 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoor
 	public ChartCanvas(Composite parent, int style) {
 		super(parent, style);
 		setCaching(DEFAULT_CANVAS_CACHING);
+		setBackground(ColorConstants.white);
+
 		mouseSupport = new ZoomableCanvasMouseSupport(this); // add mouse handling; may be made optional
 		
 		addControlListener(new ControlAdapter() {
@@ -70,6 +73,11 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoor
 		});
 	}
 
+	/**
+	 * Sets the data to be visualized by the chart.
+	 */
+	abstract void setDataset(Dataset dataset);
+	
 	/**
 	 * Calculate positions of chart elements such as title, legend, axis labels, plot area. 
 	 */
@@ -191,11 +199,11 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoor
 	public static void resetDrawingStylesAndColors(GC gc) {
 		gc.setAntialias(SWT.DEFAULT);
 		gc.setAlpha(255);
-		gc.setBackground(new Color(gc.getDevice(), 255, 255, 255));
+		gc.setBackground(ColorConstants.white);
 		gc.setBackgroundPattern(null);
 		//gc.setFillRule();
 		gc.setFont(null);
-		gc.setForeground(new Color(gc.getDevice(), 0, 0, 0));
+		gc.setForeground(ColorConstants.black);
 		gc.setForegroundPattern(null);
 		gc.setInterpolation(SWT.DEFAULT);
 		//gc.setLineCap();

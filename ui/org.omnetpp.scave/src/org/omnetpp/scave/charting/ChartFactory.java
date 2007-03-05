@@ -2,12 +2,10 @@ package org.omnetpp.scave.charting;
 
 import java.util.List;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -40,55 +38,80 @@ public class ChartFactory {
 		throw new RuntimeException("unknown chart type");
 	}
 
-	private static ScalarChart createScalarChart(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager) {
+	private static ScalarChart createScalarChart(Composite parent, final Chart chart, final Dataset dataset, final ResultFileManager manager) {
 		ScalarChart scalarChart = new ScalarChart(parent, SWT.DOUBLE_BUFFERED);
-		// set chart data
-		CategoryDataset categoryDataset = DatasetManager.createScalarDataset(chart, dataset, manager);
-		scalarChart.setDataset(categoryDataset);
-		// set chart properties
 		setChartProperties(chart, scalarChart);
+
+		// set chart data:
+		// scalarChart.setDataset(DatasetManager.createScalarDataset(chart, dataset, manager));
+		// but as a background job:
+		//
+		startDatasetEvaluationJob(scalarChart, new IDatasetCalculation() {
+			public org.jfree.data.general.Dataset run(IProgressMonitor progressMonitor) {
+				return DatasetManager.createScalarDataset(chart, dataset, manager, progressMonitor);
+			}
+		});
+		
 		return scalarChart;
 	}
 
-	private static VectorChart createVectorChart(Composite parent, final Chart chart, final Dataset dataset, final ResultFileManager resultFileManager) {
+	private static VectorChart createVectorChart(Composite parent, final Chart chart, final Dataset dataset, final ResultFileManager manager) {
 		final VectorChart vectorChart = new VectorChart(parent, SWT.DOUBLE_BUFFERED);
 		vectorChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		vectorChart.setStatusText("Please wait...");
 		setChartProperties(chart, vectorChart);
 
-		vectorChart.setBackground(ColorConstants.white);  //XXX why here?
-		
+		// set chart data:
+		// vectorChart.setDataset(DatasetManager.createVectorDataset(chart, dataset, manager));
+		// but as a background job:
+		//
+		startDatasetEvaluationJob(vectorChart, new IDatasetCalculation() {
+			public org.jfree.data.general.Dataset run(IProgressMonitor progressMonitor) {
+				return DatasetManager.createVectorDataset(chart, dataset, manager, progressMonitor);
+			}
+		});
+
+		return vectorChart;
+	}
+
+	interface IDatasetCalculation {
+		public org.jfree.data.general.Dataset run(IProgressMonitor progressMonitor);
+	}
+	
+	protected static void startDatasetEvaluationJob(final ChartCanvas chartCanvas, final IDatasetCalculation calc) {
+		//
 		// FIXME Handle concurrency issues! Model must be locked against modification while 
 		// the background job is working with the dataset. Build locking into CommandStack.execute()?
-		// Making the model temporarily readonly could also be a solution, but didn't find such method.
+		// Making the model temporarily readonly could also be a solution, but I didn't find such 
+		// method. (Andras)
 		//
+		// TODO handle cancellation too
+		//
+		chartCanvas.setStatusText("Please wait...");
 		Job job = new Job("Evaluating dataset...") {
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
 					long startTime = System.currentTimeMillis();
-					//XXX update progress monitor
-					final OutputVectorDataset data = DatasetManager.createVectorDataset(chart, dataset, resultFileManager);
+					final org.jfree.data.general.Dataset data = calc.run(monitor);
 					System.out.println("total dataset creation: "+(System.currentTimeMillis()-startTime)+" ms");
-					Assert.isTrue(false);
+
+					// we're a non-UI thread, so we need asyncExec() to put the results into the chart widget
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
-							vectorChart.setDataset(data);
+							chartCanvas.setDataset(data);
 						}});
 					return Status.OK_STATUS;
 				} 
 				catch (Throwable e) {
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
-							vectorChart.setStatusText("An error occurred during dataset processing.");
+							chartCanvas.setStatusText("An error occurred during dataset processing.");
 						}});
 					return new Status(IStatus.ERROR, ScavePlugin.PLUGIN_ID, 0, "An error occurred during dataset processing.", e);
 				}
 			}
 		};
-		job.setPriority(Job.SHORT);
+		job.setPriority(Job.INTERACTIVE); // high priority
 		job.schedule();
-
-		return vectorChart;
 	}
 
 	private static ChartCanvas createHistogramChart(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager) {

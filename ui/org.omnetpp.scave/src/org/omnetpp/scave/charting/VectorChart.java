@@ -37,6 +37,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.jfree.data.general.Dataset;
 import org.jfree.data.xy.XYDataset;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
@@ -108,8 +109,12 @@ public class VectorChart extends ChartCanvas {
 		return dataset;
 	}
 
-	public void setDataset(OutputVectorDataset dataset) {
-		this.dataset = dataset;
+	@Override
+	public void setDataset(Dataset dataset) {
+		if (!(dataset instanceof OutputVectorDataset))
+			throw new IllegalArgumentException("must be an OutputVectorDataset");
+
+		this.dataset = (OutputVectorDataset)dataset;
 		updateLegend();
 		calculateArea();
 		chartChanged();

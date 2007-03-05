@@ -37,6 +37,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.general.Dataset;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GeomUtils;
@@ -61,8 +62,12 @@ public class ScalarChart extends ChartCanvas {
 		super(parent, style);
 	}
 
-	public void setDataset(CategoryDataset dataset) {
-		this.dataset = dataset;
+	@Override
+	public void setDataset(Dataset dataset) {
+		if (!(dataset instanceof CategoryDataset))
+			throw new IllegalArgumentException("must be an CategoryDataset");
+		
+		this.dataset = (CategoryDataset)dataset;
 		updateLegend();
 		updateArea();
 		chartChanged();

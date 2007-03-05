@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.jfree.data.category.CategoryDataset;
@@ -166,9 +167,10 @@ public class DatasetManager {
 		return result;
 	}
 
-	public static CategoryDataset createScalarDataset(Chart chart, Dataset dataset, ResultFileManager manager) {
+	public static CategoryDataset createScalarDataset(Chart chart, Dataset dataset, ResultFileManager manager, IProgressMonitor progressMonitor) {
 		IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
 		DefaultCategoryDataset ds = new DefaultCategoryDataset();
+		//TODO update progressMonitor
 		for (int i = 0; i < idlist.size(); ++i) {
 			ScalarResult scalar = manager.getScalar(idlist.get(i));
 			ds.addValue(scalar.getValue(),
@@ -178,7 +180,8 @@ public class DatasetManager {
 		return ds;
 	}
 
-	public static OutputVectorDataset createVectorDataset(Chart chart, Dataset dataset, ResultFileManager manager) {
+	public static OutputVectorDataset createVectorDataset(Chart chart, Dataset dataset, ResultFileManager manager, IProgressMonitor progressMonitor) {
+		//TODO update progressMonitor
 		XYArray[] dataValues = getDataFromDataset(manager, dataset, chart);
 		IDList idlist = getIDListFromDataset(manager, dataset, chart, ResultType.VECTOR_LITERAL);
 		String[] dataNames = getResultItemIDs(idlist, manager);
