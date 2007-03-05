@@ -16,4 +16,15 @@
             name="OMNEST/OMNeT++"/>
    </extension>
 
+   <extension
+         point="org.eclipse.ui.decorators">
+      <decorator
+            adaptable="true"
+            class="org.omnetpp.common.decorators.ProblemDecorator"
+            id="org.omnetpp.common.decorators.ProblemDecorator"
+            label="NED Problem Decorator"
+            lightweight="true"
+            state="true">
+      </decorator>
+   </extension>
 </plugin>
