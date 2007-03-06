@@ -14,18 +14,25 @@
       </editor>
       <editor
             default="true"
+            extensions="vci"
+            icon="icons/vcifile.png"
+            id="org.omnetpp.scave.editors.ResultFileOpener.vci"
+            launcher="org.omnetpp.scave.editors.ResultFileEditorLauncher"
+            name="New Analysis"/>
+      <editor
+            default="true"
             extensions="sca"
             icon="icons/scafile.png"
             id="org.omnetpp.scave.editors.ResultFileOpener.sca"
             launcher="org.omnetpp.scave.editors.ResultFileEditorLauncher"
-            name="Scalar Analysis Editor"/>
+            name="New Analysis"/>
       <editor
             default="true"
             extensions="vec"
             icon="icons/vecfile.png"
             id="org.omnetpp.scave.editors.ResultFileOpener.vec"
             launcher="org.omnetpp.scave.editors.ResultFileEditorLauncher"
-            name="Vector Analysis Editor"/>
+            name="New Analysis"/>
    </extension>
    
    <extension

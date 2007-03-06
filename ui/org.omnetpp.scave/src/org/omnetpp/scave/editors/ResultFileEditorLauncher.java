@@ -5,6 +5,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.window.Window;
@@ -24,12 +25,14 @@ import org.omnetpp.scave.wizard.ScaveModelWizard;
  * If the analysis file not yet exists, it opens the "New Analysis" wizard
  * to create it.
  * 
+ * This launcher currently also opens for vci files.
+ * 
  * @author tomi
  */
 public class ResultFileEditorLauncher implements IEditorLauncher {
 
 	/**
-	 * Opens the analysis file belongs to <code>resultFile</code>.
+	 * Opens the analysis file that belongs to <code>resultFile</code>.
 	 * The result file is specified by its OS path.
 	 */
 	public void open(IPath resultFile) {
@@ -37,6 +40,12 @@ public class ResultFileEditorLauncher implements IEditorLauncher {
 		IWorkbenchWindow workbenchWindow = workbench.getActiveWorkbenchWindow();
 		IWorkbenchPage page = workbenchWindow.getActivePage();
 		try {
+			if (resultFile.getFileExtension().equals("vci")) {
+				MessageDialog.openInformation(workbenchWindow.getShell(), "Vector Index File", 
+						"This file ("+resultFile.toString()+") is an index file for an output vector file (.vec), "+
+						"and cannot be opened by itself. Please open the corresponding .vec file.");
+				return;
+			}
 			IFile file = getAnalysisFileForResultFile(resultFile);
 			if (file != null)
 				IDE.openEditor(page, file);
