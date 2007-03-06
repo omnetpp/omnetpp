@@ -25,7 +25,12 @@ public abstract class VectorPlotter implements IVectorPlotter {
 		last = last>=n-1 ? n-1 : last+1;
 		return new int[] {first, last};
 	}
-	
+
+	public int getNumPointsInXRange(XYDataset dataset, int series, GC gc, ICoordsMapping mapping) {
+		int range[] = indexRange(dataset, series, gc, mapping);
+		return range[1] - range[0] + 1;
+	}
+
 	public int[] canvasYRange(GC gc, IChartSymbol symbol) {
 		Rectangle clip = gc.getClipping();
 		int extra = symbol==null ? 0 : 2*symbol.getSizeHint(); // to be safe

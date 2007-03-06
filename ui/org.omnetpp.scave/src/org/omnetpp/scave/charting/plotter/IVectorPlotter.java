@@ -6,5 +6,7 @@ import org.omnetpp.scave.charting.ICoordsMapping;
 
 public interface IVectorPlotter {
 
+	public int getNumPointsInXRange(XYDataset dataset, int series, GC gc, ICoordsMapping mapping);
+
 	public void plot(XYDataset dataset, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol); 
 }

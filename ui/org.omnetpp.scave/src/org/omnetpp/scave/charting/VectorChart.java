@@ -76,6 +76,9 @@ public class VectorChart extends ChartCanvas {
 	private Color insetsBackgroundColor = DEFAULT_INSETS_BACKGROUND_COLOR;
 	private Color insetsLineColor = DEFAULT_INSETS_LINE_COLOR;
 	
+	private boolean smartMode = true; // whether smartModeLimit is enabled
+	private int smartModeLimit = 10000; // turn off symbols if there're more than this amount of points on the plot
+	
 	private int layoutDepth = 0; // how many layoutChart() calls are on the stack
 	private int repaintCounter;
 	private boolean debug = false;
@@ -389,11 +392,19 @@ public class VectorChart extends ChartCanvas {
 				String key = dataset.getSeriesKey(series).toString();
 				IVectorPlotter plotter = getPlotter(key);
 				IChartSymbol symbol = getSymbol(key);
+				ICoordsMapping mapper = getOptimizedCoordinateMapper();
 				Color color = getLineColor(series);
 				gc.setForeground(color);
 				gc.setBackground(color);
 
-				plotter.plot(dataset, series, gc, getOptimizedCoordinateMapper(), symbol);
+				if (smartMode && plotter.getNumPointsInXRange(dataset, series, gc, mapper) >= smartModeLimit) {
+					//XXX this may have unwanted effects when caching is on,
+					// i.e. parts of a line w/ symbols, other parts the SAME line w/o symbols....
+					System.out.println("\"smart mode\": turning off symbols");
+					symbol = null;
+				}
+				
+				plotter.plot(dataset, series, gc, mapper, symbol);
 			}
 			System.out.println("plotting: "+(System.currentTimeMillis()-startTime)+" ms");
 
