@@ -10,6 +10,8 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
 import org.omnetpp.scave.charting.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.ChartProperties.LegendPosition;
+import org.omnetpp.scave.charting.ChartProperties.LineStyle;
+import org.omnetpp.scave.charting.ChartProperties.SymbolType;
 
 import static org.omnetpp.scave.charting.ChartProperties.*;
 
@@ -58,6 +60,12 @@ public class ChartDefaults {
 	public static final double DEFAULT_BAR_BASELINE = 0.0;
 	public static final BarPlacement DEFAULT_BAR_PLACEMENT = BarPlacement.Aligned;
 	public static final Color DEFAULT_BAR_OUTLINE_COLOR = ColorFactory.asColor("grey80");
+
+	// lines
+	public static final LineStyle DEFAULT_LINE_STYLE = LineStyle.Linear;
+	public static final Integer DEFAULT_SYMBOL_SIZE = Integer.valueOf(3);
+	public static final SymbolType DEFAULT_SYMBOL_TYPE = SymbolType.Square;
+	
 	
 	// Maps property names to default values
 	static Map<String,Object> defaults;
@@ -95,9 +103,10 @@ public class ChartDefaults {
 		defaults.put(PROP_BAR_BASELINE, DEFAULT_BAR_BASELINE);
 		defaults.put(PROP_BAR_PLACEMENT, DEFAULT_BAR_PLACEMENT);
 		// TODO: BAR_OUTLINE_COLOR
+		// TODO: DEFAULT_LINE_STYLE, DEFAULT_SYMBOL_SIZE
 	}
 	
 	public static Object getDefaultPropertyValue(String propertyName) {
-		return defaults.get(propertyName);
+		return defaults.get(propertyName); //XXX Assert if not found?
 	}
 }

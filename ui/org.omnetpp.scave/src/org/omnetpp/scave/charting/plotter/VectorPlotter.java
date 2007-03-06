@@ -26,9 +26,17 @@ public abstract class VectorPlotter implements IVectorPlotter {
 		return new int[] {first, last};
 	}
 	
+	public int[] canvasYRange(GC gc, IChartSymbol symbol) {
+		Rectangle clip = gc.getClipping();
+		int extra = symbol==null ? 0 : 2*symbol.getSizeHint(); // to be safe
+		int top = clip.y - extra;
+		int bottom = clip.y + clip.height + extra;
+		return new int[] {top, bottom};
+	}
+
 	public double[] valueRange(GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
 		Rectangle clip = gc.getClipping();
-		int extra = 2*symbol.getSizeHint(); // to be safe
+		int extra = symbol==null ? 0 : 2*symbol.getSizeHint(); // to be safe
 		double hi = mapping.fromCanvasY(clip.y - extra);
 		double lo = mapping.fromCanvasY(clip.y + clip.height + extra);
 		return new double[] {lo, hi};
@@ -38,6 +46,9 @@ public abstract class VectorPlotter implements IVectorPlotter {
 	 * Utility function to plot the symbols
 	 */
 	protected void plotSymbols(XYDataset dataset, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
+		if (symbol == null)
+			return;
+		
 		// dataset index range to iterate over 
 		int[] range = indexRange(dataset, series, gc, mapping);
 		int first = range[0], last = range[1];
@@ -60,7 +71,7 @@ public abstract class VectorPlotter implements IVectorPlotter {
 				continue; // value off the screen
 			
 			int x = mapping.toCanvasX(dataset.getXValue(series, i));
-			int y = mapping.toCanvasY(dataset.getYValue(series, i));
+			int y = mapping.toCanvasY(value);
 			
 			if (prevX != x) {
 				yset.clear();

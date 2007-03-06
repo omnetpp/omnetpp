@@ -2,6 +2,9 @@ package org.omnetpp.scave.charting;
 
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_INSETS_BACKGROUND_COLOR;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_INSETS_LINE_COLOR;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LINE_STYLE;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_SYMBOL_SIZE;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_SYMBOL_TYPE;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_AXIS_TITLE_FONT;
@@ -38,13 +41,11 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.jfree.data.general.Dataset;
-import org.jfree.data.xy.XYDataset;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartProperties.LineStyle;
 import org.omnetpp.scave.charting.ChartProperties.SymbolType;
-import org.omnetpp.scave.charting.plotter.ChartSymbol;
 import org.omnetpp.scave.charting.plotter.CrossSymbol;
 import org.omnetpp.scave.charting.plotter.DiamondSymbol;
 import org.omnetpp.scave.charting.plotter.DotsVectorPlotter;
@@ -54,10 +55,10 @@ import org.omnetpp.scave.charting.plotter.LinesVectorPlotter;
 import org.omnetpp.scave.charting.plotter.OvalSymbol;
 import org.omnetpp.scave.charting.plotter.PinsVectorPlotter;
 import org.omnetpp.scave.charting.plotter.PlusSymbol;
+import org.omnetpp.scave.charting.plotter.PointsVectorPlotter;
 import org.omnetpp.scave.charting.plotter.SampleHoldVectorPlotter;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
 import org.omnetpp.scave.charting.plotter.TriangleSymbol;
-import org.omnetpp.scave.charting.plotter.VectorPlotter;
 
 
 /**
@@ -82,23 +83,10 @@ public class VectorChart extends ChartCanvas {
 	private static final String KEY_ALL = null;
 	
 	static class LineProperties {
-		
-		static final SymbolType DEFAULT_SYMBOL_TYPE = SymbolType.Square;
-		static final Integer DEFAULT_SYMBOL_SIZE = Integer.valueOf(3);
-		static final LineStyle DEFAULT_LINE_STYLE = LineStyle.Linear;
-		
-		private static final IChartSymbol NULL_SYMBOL = new ChartSymbol() {
-			public void drawSymbol(GC gc, int x, int y) {}
-		};
-		private static final IVectorPlotter NULL_PLOTTER = new VectorPlotter() {
-			public void plot(XYDataset dataset, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {}
-		};
-		
 		SymbolType symbolType;
 		Integer symbolSize;
 		LineStyle lineStyle;
 	}
-
 	
 	public VectorChart(Composite parent, int style) {
 		super(parent, style);
@@ -215,7 +203,7 @@ public class VectorChart extends ChartCanvas {
 		LineProperties props = getLineProperties(key);
 		if (props == null || props.lineStyle == null)
 			props = getDefaultLineProperties();
-		return props.lineStyle != null ? props.lineStyle : LineProperties.DEFAULT_LINE_STYLE;
+		return props.lineStyle != null ? props.lineStyle : DEFAULT_LINE_STYLE;
 	}
 
 	public void setLineStyle(String key, LineStyle type) {
@@ -228,7 +216,7 @@ public class VectorChart extends ChartCanvas {
 		LineProperties props = getLineProperties(key);
 		if (props == null || props.symbolType == null)
 			props = getDefaultLineProperties();
-		return props.symbolType != null ? props.symbolType : LineProperties.DEFAULT_SYMBOL_TYPE;
+		return props.symbolType != null ? props.symbolType : DEFAULT_SYMBOL_TYPE;
 	}
 	
 	public void setSymbolType(String key, SymbolType symbolType) {
@@ -241,7 +229,7 @@ public class VectorChart extends ChartCanvas {
 		LineProperties props = getLineProperties(key);
 		if (props == null || props.symbolSize == null)
 			props = getDefaultLineProperties();
-		return props.symbolSize != null ? props.symbolSize : LineProperties.DEFAULT_SYMBOL_SIZE;
+		return props.symbolSize != null ? props.symbolSize : DEFAULT_SYMBOL_SIZE;
 	}
 	
 	public void setSymbolSize(String key, Integer size) {
@@ -396,6 +384,7 @@ public class VectorChart extends ChartCanvas {
 			resetDrawingStylesAndColors(gc);
 			gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
 			gc.setLineStyle(SWT.LINE_SOLID);
+			long startTime = System.currentTimeMillis();
 			for (int series=0; series<dataset.getSeriesCount(); series++) {
 				String key = dataset.getSeriesKey(series).toString();
 				IVectorPlotter plotter = getPlotter(key);
@@ -404,10 +393,9 @@ public class VectorChart extends ChartCanvas {
 				gc.setForeground(color);
 				gc.setBackground(color);
 
-				long startTime = System.currentTimeMillis();
 				plotter.plot(dataset, series, gc, getOptimizedCoordinateMapper(), symbol);
-				System.out.println("plotting: "+(System.currentTimeMillis()-startTime)+" ms");
 			}
+			System.out.println("plotting: "+(System.currentTimeMillis()-startTime)+" ms");
 
 			if (debug) {
 				repaintCounter++;
@@ -431,9 +419,9 @@ public class VectorChart extends ChartCanvas {
 		case Linear: return new LinesVectorPlotter();
 		case Step: return new SampleHoldVectorPlotter();
 		case Pins: return new PinsVectorPlotter();
-		default:
-			Assert.isTrue(false, "Unknown LineStyle: " + style);
-			return LineProperties.NULL_PLOTTER;
+		case Points: return new PointsVectorPlotter();
+		case Dots: return new DotsVectorPlotter();
+		default: throw new IllegalArgumentException("unknown line style: " + style);
 		}
 	}
 	
@@ -441,16 +429,14 @@ public class VectorChart extends ChartCanvas {
 		SymbolType type = getSymbolType(key);
 		int size = getSymbolSize(key);
 		switch (type) {
-		case None: return LineProperties.NULL_SYMBOL;
+		case None: return null;
 		case Cross: return new CrossSymbol(size);
 		case Diamond: return new DiamondSymbol(size);
 		case Oval: return new OvalSymbol(size);
 		case Plus: return new PlusSymbol(size);
 		case Square: return new SquareSymbol(size);
 		case Triangle: return new TriangleSymbol(size);
-		default:
-			Assert.isTrue(false, "Unknown SymbolType: " + type);
-			return LineProperties.NULL_SYMBOL;
+		default: throw new IllegalArgumentException("unknown symbol type: " + type);
 		}
 	}
 	

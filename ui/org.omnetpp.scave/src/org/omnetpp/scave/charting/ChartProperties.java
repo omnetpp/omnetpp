@@ -89,7 +89,9 @@ public class ChartProperties extends PropertySource {
 		None,
 		Linear,
 		Step,
-		Pins,
+		Pins, 
+		Points, 
+		Dots,
 	}
 
 	public enum BarPlacement {
