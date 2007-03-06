@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -24,7 +25,7 @@ import org.omnetpp.scave.engine.VectorFileIndexer;
  */
 public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 	
-	private static final String MARKERTYPE_SCAVEPROBLEM = IMarker.PROBLEM; //XXX for now
+	private static final String MARKERTYPE_SCAVEPROBLEM = "org.omnetpp.scave.builder.scaveproblem";
 
 	/**
 	 * Returns true, if <code>file</code> is an index file.
@@ -167,8 +168,9 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 			//TODO refine: 
 			// - if vector file is garbage, add ERROR marker
 			// - if indexing failed (e.g. readonly filesystem), add WARNING marker
-			// - if alles in Ordnung, remove all scave markers
 			//
+			vectorFile.deleteMarkers(MARKERTYPE_SCAVEPROBLEM, true, IResource.DEPTH_ZERO);
+
 			VectorFileIndexer indexer = new VectorFileIndexer();
 			String osFileName = vectorFile.getLocation().toFile().getAbsolutePath();
 
