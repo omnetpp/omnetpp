@@ -56,8 +56,6 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  *
  * @author andras, tomi
  */
-//FIXME merge ChartPage and ChartPage2
-
 //TODO copy/paste doesn't work on the model
 //TODO Chart sheet: should modify order of charts in the ChartSheet#getCharts collection
 //TODO chart page: "view numbers" feature

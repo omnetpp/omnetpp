@@ -38,21 +38,21 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 
 		addPaintListener(new PaintListener() {
 			public void paintControl(final PaintEvent e) {
-				// just call paint(), possibly with busy cursor
-				Control control = Display.getCurrent().getCursorControl();
-				if (control instanceof Sash) { //TODO or control instanceof ScrollBar
-					// if the user is resizing the chart (mouse is over a Sash),
-					// don't override the "resize" mouse cursor
-					//TODO also when user is dragging the scrollbar...
-					paint(e.gc);
-				}
-				else { 
-					// otherwise, show busy cursor during painting
+				// show the busy mouse cursor during drawing, except if the user is resizing the
+				// chart (resize cursor <-->) or is dragging the scrollbar. Solution: only show
+				// busy cursor if display.getCursorControl() is the canvas, and the cursor
+				// location is inside the *client area* of the canvas (ie not over a scrollbar).
+				// Display.getCurrent().getCursorControl()==CachingCanvas.this -- not needed after all
+				if (CachingCanvas.this.getClientArea().contains(Display.getCurrent().getCursorLocation())) {
+					// show busy cursor during painting
 					BusyIndicator.showWhile(null, new Runnable() {
 						public void run() {
 							paint(e.gc);
 						}
 					});
+				}
+				else {
+					paint(e.gc);
 				}
 			}
 		});
