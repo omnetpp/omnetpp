@@ -38,11 +38,42 @@ public class ChartFactory {
 		throw new RuntimeException("unknown chart type");
 	}
 
-	private static ScalarChart createScalarChart(Composite parent, final Chart chart, final Dataset dataset, final ResultFileManager manager) {
+	public static void populateChart(ChartCanvas chartCanvas, Chart chart, Dataset dataset, ResultFileManager manager) {
+		if (chart instanceof BarChart)
+			populateScalarChart(chart, dataset, manager, (ScalarChart)chartCanvas);
+		else if (chart instanceof LineChart)
+			populateVectorChart(chart, dataset, manager, (VectorChart)chartCanvas);
+		else if (chart instanceof HistogramChart)
+			;//TODO
+		else
+			throw new RuntimeException("unknown chart type");
+	}
+	
+	public static ScalarChart createScalarChart(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager) {
 		ScalarChart scalarChart = new ScalarChart(parent, SWT.DOUBLE_BUFFERED);
 		setChartProperties(chart, scalarChart);
 
-		// set chart data:
+		populateScalarChart(chart, dataset, manager, scalarChart);
+		
+		return scalarChart;
+	}
+
+	public static VectorChart createVectorChart(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager) {
+		final VectorChart vectorChart = new VectorChart(parent, SWT.DOUBLE_BUFFERED);
+		vectorChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		setChartProperties(chart, vectorChart);
+
+		populateVectorChart(chart, dataset, manager, vectorChart);
+
+		return vectorChart;
+	}
+
+	public static ChartCanvas createHistogramChart(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager) {
+		return null; //TODO
+	}
+
+	public static void populateScalarChart(final Chart chart, final Dataset dataset, final ResultFileManager manager, ScalarChart scalarChart) {
+		// perform:
 		// scalarChart.setDataset(DatasetManager.createScalarDataset(chart, dataset, manager));
 		// but as a background job:
 		//
@@ -51,16 +82,10 @@ public class ChartFactory {
 				return DatasetManager.createScalarDataset(chart, dataset, manager, progressMonitor);
 			}
 		});
-		
-		return scalarChart;
 	}
 
-	private static VectorChart createVectorChart(Composite parent, final Chart chart, final Dataset dataset, final ResultFileManager manager) {
-		final VectorChart vectorChart = new VectorChart(parent, SWT.DOUBLE_BUFFERED);
-		vectorChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		setChartProperties(chart, vectorChart);
-
-		// set chart data:
+	public static void populateVectorChart(final Chart chart, final Dataset dataset, final ResultFileManager manager, final VectorChart vectorChart) {
+		// perform:
 		// vectorChart.setDataset(DatasetManager.createVectorDataset(chart, dataset, manager));
 		// but as a background job:
 		//
@@ -69,8 +94,6 @@ public class ChartFactory {
 				return DatasetManager.createVectorDataset(chart, dataset, manager, progressMonitor);
 			}
 		});
-
-		return vectorChart;
 	}
 
 	interface IDatasetCalculation {
@@ -87,35 +110,44 @@ public class ChartFactory {
 		// TODO handle cancellation too
 		//
 		chartCanvas.setStatusText("Please wait...");
+		chartCanvas.setDataset(null);
 		Job job = new Job("Evaluating dataset...") {
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
+					// calculate
 					long startTime = System.currentTimeMillis();
 					final org.jfree.data.general.Dataset data = calc.run(monitor);
 					System.out.println("total dataset creation: "+(System.currentTimeMillis()-startTime)+" ms");
 
-					// we're a non-UI thread, so we need asyncExec() to put the results into the chart widget
+					if (monitor.isCanceled()) {
+						setChartStatusText(chartCanvas, "Chart update cancelled.");
+						return Status.CANCEL_STATUS;
+					}
+					
+					// we're a non-UI thread, so we need to use display.asyncExec()...
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
+							chartCanvas.setStatusText(null);
 							chartCanvas.setDataset(data);
 						}});
 					return Status.OK_STATUS;
 				} 
 				catch (Throwable e) {
-					Display.getDefault().asyncExec(new Runnable() {
-						public void run() {
-							chartCanvas.setStatusText("An error occurred during dataset processing.");
-						}});
+					setChartStatusText(chartCanvas, "An error occurred during dataset processing.");
 					return new Status(IStatus.ERROR, ScavePlugin.PLUGIN_ID, 0, "An error occurred during dataset processing.", e);
 				}
+			}
+
+			private void setChartStatusText(final ChartCanvas chartCanvas, final String text) {
+				// we're a non-UI thread, so we need to use display.asyncExec()...
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						chartCanvas.setStatusText(text);
+					}});
 			}
 		};
 		job.setPriority(Job.INTERACTIVE); // high priority
 		job.schedule();
-	}
-
-	private static ChartCanvas createHistogramChart(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager) {
-		return null; //TODO
 	}
 
 	private static void setChartProperties(Chart chart, ChartCanvas chartView) {

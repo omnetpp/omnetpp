@@ -39,7 +39,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 		addPaintListener(new PaintListener() {
 			public void paintControl(final PaintEvent e) {
 				// show the busy mouse cursor during drawing, except if the user is resizing the
-				// chart (resize cursor <-->) or is dragging the scrollbar. Solution: only show
+				// chart (resize mouse cursor) or is dragging the scrollbar. Solution: only show
 				// busy cursor if display.getCursorControl() is the canvas, and the cursor
 				// location is inside the *client area* of the canvas (ie not over a scrollbar).
 				// Display.getCurrent().getCursorControl()==CachingCanvas.this -- not needed after all

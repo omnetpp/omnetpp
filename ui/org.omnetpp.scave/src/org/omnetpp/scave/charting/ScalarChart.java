@@ -64,7 +64,7 @@ public class ScalarChart extends ChartCanvas {
 
 	@Override
 	public void setDataset(Dataset dataset) {
-		if (!(dataset instanceof CategoryDataset))
+		if (dataset != null && !(dataset instanceof CategoryDataset))
 			throw new IllegalArgumentException("must be an CategoryDataset");
 		
 		this.dataset = (CategoryDataset)dataset;
@@ -75,8 +75,10 @@ public class ScalarChart extends ChartCanvas {
 	
 	private void updateLegend() {
 		legend.clearLegendItems();
-		for (int i = 0; i < dataset.getColumnCount(); ++i) {
-			legend.addLegendItem(plot.getBarColor(i), dataset.getColumnKey(i).toString());
+		if (dataset != null) {
+			for (int i = 0; i < dataset.getColumnCount(); ++i) {
+				legend.addLegendItem(plot.getBarColor(i), dataset.getColumnKey(i).toString());
+			}
 		}
 	}
 	
@@ -367,6 +369,9 @@ public class ScalarChart extends ChartCanvas {
 		}
 		
 		public PlotArea getPlotArea() {
+			if (dataset == null)
+				return new PlotArea(0, 1, 0, 1);
+			
 			int cRows = dataset.getRowCount();
 			int cColumns = dataset.getColumnCount();
 			double minX = getLeftX(0, 0);

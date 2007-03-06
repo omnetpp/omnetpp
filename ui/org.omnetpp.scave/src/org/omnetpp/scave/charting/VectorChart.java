@@ -111,7 +111,7 @@ public class VectorChart extends ChartCanvas {
 
 	@Override
 	public void setDataset(Dataset dataset) {
-		if (!(dataset instanceof OutputVectorDataset))
+		if (dataset != null && !(dataset instanceof OutputVectorDataset))
 			throw new IllegalArgumentException("must be an OutputVectorDataset");
 
 		this.dataset = (OutputVectorDataset)dataset;
@@ -122,8 +122,10 @@ public class VectorChart extends ChartCanvas {
 	
 	private void updateLegend() {
 		legend.clearLegendItems();
-		for (int i = 0; i < dataset.getSeriesCount(); ++i) {
-			legend.addLegendItem(getLineColor(i), dataset.getSeriesKey(i).toString());
+		if (dataset != null) {
+			for (int i = 0; i < dataset.getSeriesCount(); ++i) {
+				legend.addLegendItem(getLineColor(i), dataset.getSeriesKey(i).toString());
+			}
 		}
 	}
 	
@@ -390,12 +392,7 @@ public class VectorChart extends ChartCanvas {
 		xAxis.drawGrid(gc);
 		yAxis.drawGrid(gc);
 
-		if (dataset==null) {
-			resetDrawingStylesAndColors(gc);
-			org.eclipse.swt.graphics.Rectangle rect = getViewportRectangle();
-			gc.drawText(getStatusText(), rect.x+10, rect.y+10);
-		}
-		else {
+		if (dataset != null) {
 			resetDrawingStylesAndColors(gc);
 			gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
 			gc.setLineStyle(SWT.LINE_SOLID);
@@ -483,6 +480,13 @@ public class VectorChart extends ChartCanvas {
 		xAxis.drawAxis(gc);
 		yAxis.drawAxis(gc);
 		crosshair.draw(gc);
+
+		// draw status text
+		if (getStatusText() != null) {
+			resetDrawingStylesAndColors(gc);
+			org.eclipse.swt.graphics.Rectangle rect = getViewportRectangle();
+			gc.drawText(getStatusText(), rect.x+10, rect.y+10);
+		}
 	}
 
 	private static final Cursor CROSS_CURSOR = new Cursor(null, SWT.CURSOR_CROSS);
@@ -510,14 +514,16 @@ public class VectorChart extends ChartCanvas {
 		DPoint dataPoint;
 		
 		public CrossHair() {
-			if (false) //XXX
 			addMouseMoveListener(new MouseMoveListener() {
 				public void mouseMove(MouseEvent e) {
 					x = e.x;
 					y = e.y;
 					
 					// snap to data point
+					long startTime = System.currentTimeMillis();
 					dataPoint = dataPointNear(x, y, 5);
+					System.out.println("crosshair: "+(System.currentTimeMillis()-startTime)+" ms");
+					
 					if (dataPoint != null) {
 						x = toCanvasX(dataPoint.x);
 						y = toCanvasY(dataPoint.y);

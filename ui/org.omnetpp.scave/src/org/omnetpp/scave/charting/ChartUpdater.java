@@ -35,6 +35,9 @@ public class ChartUpdater {
 		this.manager = manager;
 	}
 
+	/**
+	 * Propagate changes on the "Chart" model object to the chart view. 
+	 */
 	@SuppressWarnings("unchecked")
 	public void updateChart(Notification notification) {
 		// we are only interested in changes within our Chart object (otherwise return) 
@@ -73,29 +76,16 @@ public class ChartUpdater {
 		}
 	}
 
-	public void updateDataset() {
-		//FIXME make this a background job! make use of ChartFactory.startDatasetEvaluationJob()!
-		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
-		if (chart instanceof BarChart)
-			setDataset(DatasetManager.createScalarDataset(chart, dataset, manager, null));
-		if (chart instanceof LineChart)
-			setDataset(DatasetManager.createVectorDataset(chart, dataset, manager, null));
-		if (chart instanceof HistogramChart)
-			; //TODO
-		throw new RuntimeException("unknown chart type");
-	}
-
 	private void setChartProperty(String name, String value) {
 		view.setProperty(name, value);
 	}
 
-	private void setDataset(CategoryDataset dataset) {
-		if (view instanceof ScalarChart)
-			((ScalarChart)view).setDataset(dataset);
+	/**
+	 * Recalculate chart contents. (Currently called on "Refresh" actions)
+	 */
+	public void updateDataset() {
+		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
+		ChartFactory.populateChart(view, chart, dataset, manager);
 	}
 
-	private void setDataset(OutputVectorDataset dataset) {
-		if (view instanceof VectorChart)
-			((VectorChart)view).setDataset(dataset);
-	}
 }

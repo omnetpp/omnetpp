@@ -54,7 +54,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoor
 	protected Title title = new Title(DEFAULT_TITLE, DEFAULT_TITLE_FONT);
 	protected Legend legend = new Legend(DEFAULT_DISPLAY_LEGEND, DEFAULT_LEGEND_BORDER, DEFAULT_LEGEND_FONT, DEFAULT_LEGEND_POSITION, DEFAULT_LEGEND_ANCHOR);
 	
-	private String statusText = "No data available"; // displayed when there's no dataset 
+	private String statusText = "No data available."; // displayed when there's no dataset 
 
 	private ZoomableCanvasMouseSupport mouseSupport;
 	
