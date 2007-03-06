@@ -15,7 +15,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.engine.VectorFileIndexer;
+import org.omnetpp.scave.engineext.IndexFile;
 
 /**
  * This job generates index files for vector files in the workspace.
@@ -26,17 +26,16 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 	
 	private static final boolean debug = false;
 	
-	private VectorFileIndexer indexer = new VectorFileIndexer();
-	private List<File> filesToBeIndexed;
+	private List<IFile> filesToBeIndexed;
 
 	public VectorFileIndexerJob(String name, IFile[] filesToBeIndexed) {
 		super(name);
 		setRule(ResourcesPlugin.getWorkspace().getRuleFactory().buildRule());
 		
-		this.filesToBeIndexed = new ArrayList<File>();
+		this.filesToBeIndexed = new ArrayList<IFile>();
 		for (IFile file : filesToBeIndexed)
 			if (toBeIndexed(file))
-				this.filesToBeIndexed.add(file.getLocation().toFile());
+				this.filesToBeIndexed.add(file);
 	}
 
 	/**
@@ -50,29 +49,14 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 			try {
 				monitor.beginTask(getName(), filesToBeIndexed.size());
 
-				for (File file : filesToBeIndexed) {
+				for (IFile file : filesToBeIndexed) {
 					if (monitor.isCanceled())
 						return Status.CANCEL_STATUS;
 
 					monitor.subTask("Indexing "+file.getName());
-					if (debug)
-						System.out.println("Start indexing: " + file.getName());
-					try {
-						if (file.exists() && !isIndexFileUpToDate(file))
-							indexer.generateIndex(file.getAbsolutePath()); //TODO add ERROR and WARNING markers if possible
+					if (file.exists() && !isIndexFileUpToDate(file)) {
+						IndexFile.performIndexing(file);
 					}
-					catch (Exception e) {
-						IStatus error =  new Status(Status.ERROR, ScavePlugin.PLUGIN_ID, 0,
-											String.format("Indexing of '%s' failed: %s",
-													file.getAbsolutePath(), e.getLocalizedMessage()),
-											e);
-						ScavePlugin.getDefault().getLog().log(error);
-						if (debug)
-							System.out.println("Error during indexing: " + file.getName());
-						return error;
-					}
-					if (debug)
-						System.out.println("End indexing: " + file.getName());
 					monitor.worked(1);
 				}
 			}

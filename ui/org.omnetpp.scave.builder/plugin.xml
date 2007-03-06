@@ -6,7 +6,7 @@
          name="OMNet++ Scave Builders"
          point="org.eclipse.core.resources.builders">
       <builder hasNature="true">
-         <run class="org.omnetpp.scave.builder.VectorFileIndexer"/>
+         <run class="org.omnetpp.scave.builder.VectorFileIndexBuilder"/>
       </builder>
    </extension>
 

@@ -6,7 +6,7 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.ned.resources.builder.NEDBuilder;
-import org.omnetpp.scave.builder.VectorFileIndexer;
+import org.omnetpp.scave.builder.VectorFileIndexBuilder;
 
 public class OmnetppNature implements IProjectNature {
 
@@ -31,7 +31,7 @@ public class OmnetppNature implements IProjectNature {
 		for (int i = 0; i < commands.length; ++i) {
 			if (commands[i].getBuilderName().equals(NEDBuilder.BUILDER_ID))
 				hasNEDBuidler = true;
-			else if (commands[i].getBuilderName().equals(VectorFileIndexer.BUILDER_ID))
+			else if (commands[i].getBuilderName().equals(VectorFileIndexBuilder.BUILDER_ID))
 				hasIndexer = true;
 			if (hasNEDBuidler && hasIndexer)
 				break;
@@ -40,7 +40,7 @@ public class OmnetppNature implements IProjectNature {
 		if (!hasNEDBuidler)
 			addBuilderToProject(NEDBuilder.BUILDER_ID);
 		if (!hasIndexer)
-			addBuilderToProject(VectorFileIndexer.BUILDER_ID);
+			addBuilderToProject(VectorFileIndexBuilder.BUILDER_ID);
 	}
 
 	/*
@@ -50,7 +50,7 @@ public class OmnetppNature implements IProjectNature {
 	 */
 	public void deconfigure() throws CoreException {
 		removeBuilderFromProject(NEDBuilder.BUILDER_ID);
-		removeBuilderFromProject(VectorFileIndexer.BUILDER_ID);
+		removeBuilderFromProject(VectorFileIndexBuilder.BUILDER_ID);
 	}
 	
 	public void addBuilderToProject(String id) throws CoreException {

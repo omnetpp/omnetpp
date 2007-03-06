@@ -1,7 +1,5 @@
 package org.omnetpp.scave.editors;
 
-import static org.omnetpp.scave.engineext.IndexFile.getVectorFile;
-import static org.omnetpp.scave.engineext.IndexFile.isIndexFile;
 import static org.omnetpp.scave.engineext.IndexFile.isIndexFileUpToDate;
 import static org.omnetpp.scave.engineext.IndexFile.isVectorFile;
 
@@ -25,8 +23,8 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
-import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.ContentTypes;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.jobs.VectorFileIndexerJob;

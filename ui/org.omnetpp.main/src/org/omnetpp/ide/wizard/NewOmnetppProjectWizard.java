@@ -27,7 +27,7 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.omnetpp.ide.Activator;
 import org.omnetpp.ide.OmnetppNature;
 import org.omnetpp.ned.resources.builder.NEDBuilder;
-import org.omnetpp.scave.builder.VectorFileIndexer;
+import org.omnetpp.scave.builder.VectorFileIndexBuilder;
 
 public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
 	
@@ -74,7 +74,7 @@ public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
         ICommand nedBuildSpec = description.newCommand();
         nedBuildSpec.setBuilderName(NEDBuilder.BUILDER_ID);
         ICommand vciBuildSpec = description.newCommand();
-        vciBuildSpec.setBuilderName(VectorFileIndexer.BUILDER_ID);
+        vciBuildSpec.setBuilderName(VectorFileIndexBuilder.BUILDER_ID);
         description.setBuildSpec(new ICommand[] {nedBuildSpec, vciBuildSpec});
 		
         // define the operation to create a new project

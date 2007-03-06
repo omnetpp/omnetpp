@@ -1,13 +1,20 @@
 package org.omnetpp.scave.engineext;
 
 import java.io.File;
+import java.util.HashMap;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.omnetpp.scave.builder.Activator;
+import org.omnetpp.scave.engine.VectorFileIndexer;
 
 /**
  * Augments org.omnetpp.scave.engine.IndexFile with methods
@@ -17,6 +24,8 @@ import org.eclipse.core.runtime.Path;
  */
 public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 	
+	private static final String MARKERTYPE_SCAVEPROBLEM = IMarker.PROBLEM; //XXX for now
+
 	/**
 	 * Returns true, if <code>file</code> is an index file.
 	 * The file need not exist.
@@ -72,47 +81,47 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 	/**
 	 * Returns the index file belongs to the specified vector file.
 	 * 
-	 * @param file the vector file
+	 * @param vectorFile the vector file
 	 * @return the index file
 	 */
-	public static IFile getIndexFile(IFile file) {
-		Assert.isLegal(isVectorFile(file));
-		String path = getIndexFileName(file.getLocation().toOSString());
+	public static IFile getIndexFileFor(IFile vectorFile) {
+		Assert.isLegal(isVectorFile(vectorFile));
+		String path = getIndexFileName(vectorFile.getLocation().toOSString());
 		return getWorkspaceFileForOsPath(path); 
 	}
 	
 	/**
 	 * Returns the index file belongs to the specified vector file.
 	 * 
-	 * @param file the vector file
+	 * @param vectorFile the vector file
 	 * @return the index file
 	 */
-	public static File getIndexFile(File file) {
-		Assert.isLegal(isVectorFile(file));
-		return new File(getIndexFileName(file.getAbsolutePath()));
+	public static File getIndexFileFor(File vectorFile) {
+		Assert.isLegal(isVectorFile(vectorFile));
+		return new File(getIndexFileName(vectorFile.getAbsolutePath()));
 	}
 	
 	/**
 	 * Returns the vector file belongs to the specified index file.
 	 * 
-	 * @param file the index file
+	 * @param indexFile the index file
 	 * @return the vector file
 	 */
-	public static IFile getVectorFile(IFile file) {
-		Assert.isLegal(isIndexFile(file));
-		String path = getVectorFileName(file.getLocation().toOSString());
+	public static IFile getVectorFileFor(IFile indexFile) {
+		Assert.isLegal(isIndexFile(indexFile));
+		String path = getVectorFileName(indexFile.getLocation().toOSString());
 		return getWorkspaceFileForOsPath(path);
 	}
 
 	/**
 	 * Returns the vector file belongs to the specified index file.
 	 * 
-	 * @param file the index file
+	 * @param indexFile the index file
 	 * @return the vector file
 	 */
-	public static File getVectorFile(File file) {
-		Assert.isLegal(isIndexFile(file));
-		return new File(getVectorFileName(file.getAbsolutePath()));
+	public static File getVectorFileFor(File indexFile) {
+		Assert.isLegal(isIndexFile(indexFile));
+		return new File(getVectorFileName(indexFile.getAbsolutePath()));
 	}
 	
 	/**
@@ -147,5 +156,58 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 		IPath fullPath = getWorkspacePathForOsPath(path);
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		return fullPath != null ? root.getFile(fullPath) : null; 
+	}
+
+	/**
+	 * Perform indexing the given vector file, and add error/warning
+	 * markers to the file if there's any problem. 
+	 */
+	public static void performIndexing(IFile vectorFile) {
+		try {
+			//TODO refine: 
+			// - if vector file is garbage, add ERROR marker
+			// - if indexing failed (e.g. readonly filesystem), add WARNING marker
+			// - if alles in Ordnung, remove all scave markers
+			//
+			VectorFileIndexer indexer = new VectorFileIndexer();
+			String osFileName = vectorFile.getLocation().toFile().getAbsolutePath();
+
+			System.out.println("started indexing " + vectorFile);
+			long startTime = System.currentTimeMillis();
+			indexer.generateIndex(osFileName);
+			System.out.println("finished indexing " + vectorFile + ", " + (System.currentTimeMillis()-startTime) + "ms");
+		}
+		catch (Throwable e) {
+			addMarker(vectorFile, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_WARNING, "Indexing failed: "+e.getMessage(), -1);
+			Activator.logError("Cannot create index file for: "+vectorFile.toString(), e);
+		}
+	}
+	
+	/**
+	 * Utility function to add markers to a file.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void addMarker(final IFile file, final String type, int severity, String message, int line) {
+
+        // taken from MarkerUtilities see. Eclipse FAQ 304
+        final HashMap map = new HashMap();
+        map.put(IMarker.MESSAGE, message);
+        map.put(IMarker.SEVERITY, severity);
+        if (line > 0)
+        	map.put(IMarker.LINE_NUMBER, line);
+
+        IWorkspaceRunnable r = new IWorkspaceRunnable() {
+            public void run(IProgressMonitor monitor) throws CoreException {
+                IMarker marker = file.createMarker(type);
+                marker.setAttributes(map);
+            }
+        };
+
+        try {
+			file.getWorkspace().run(r, null, 0, null);
+			System.out.println("marker added: "+type+" on "+file+" line "+line+": "+message);
+		} catch (CoreException e) {
+			Activator.logError("cannot add marker", e);
+		}
 	}
 }
