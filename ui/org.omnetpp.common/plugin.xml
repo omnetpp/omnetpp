@@ -22,9 +22,12 @@
             adaptable="true"
             class="org.omnetpp.common.decorators.ProblemDecorator"
             id="org.omnetpp.common.decorators.ProblemDecorator"
-            label="NED Problem Decorator"
+            label="Problem Decorator"
             lightweight="true"
             state="true">
+         <enablement>
+            <objectClass name="org.eclipse.core.resources.IResource"/>
+         </enablement>
       </decorator>
    </extension>
 </plugin>

@@ -1,10 +1,14 @@
 package org.omnetpp.common.decorators;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ListenerList;
@@ -16,22 +20,17 @@ import org.omnetpp.common.image.ImageFactory;
 
 /**
  * @author rhornig
- * Decorates IResources if they have error or warning markerts
- * 
+ * Decorates IResources if they have error or warning markers.
  */
-// FIXME if the markers are removed, the decorations are not removed. we should
-// somehow redraw the decorations if the annotation model of the file has changed
-public class ProblemDecorator implements ILightweightLabelDecorator  , IResourceChangeListener {
+public class ProblemDecorator implements ILightweightLabelDecorator, IResourceChangeListener {
     
     private ListenerList fListeners;
-	/** The integer value representing the placement options */
-	private int quadrant = IDecoration.BOTTOM_LEFT;
-    
-    // TODO this should come from a configuration (compute recursive error markers)
-    private int checkDepth = IResource.DEPTH_INFINITE; 
+	private final static int quadrant = IDecoration.BOTTOM_LEFT;
+    private final static int checkDepth = IResource.DEPTH_INFINITE; 
     
     public ProblemDecorator() {
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
+        // we want to listen for workspce changes
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(this, IResourceChangeEvent.POST_CHANGE);
     }
     
     /* (non-Javadoc)
@@ -41,6 +40,12 @@ public class ProblemDecorator implements ILightweightLabelDecorator  , IResource
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
     }
     
+    /**
+     * Calculates the max severity of the given resource
+     * @param resource
+     * @param depth
+     * @return the max severity or -1 if no marker found on the resource
+     */
     private int maxSeverityLevel(IResource resource, int depth) {
         int maxLevel = -1;
         try {
@@ -54,12 +59,11 @@ public class ProblemDecorator implements ILightweightLabelDecorator  , IResource
         return maxLevel;
     }
     
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.viewers.ILightweightLabelDecorator#decorate(java.lang.Object, org.eclipse.jface.viewers.IDecoration)
+     * checks the resource for warning and error markers and decorates the image 
+	 */
 	public void decorate(Object element, IDecoration decoration) {
-		/**
-		 * Checks that the element is an IResource with the 'Read-only' attribute
-		 * and adds the decorator based on the specified image description and the
-		 * integer representation of the placement option.
-		 */
         if (element instanceof IResource) {
             IResource resource = (IResource)element;
             int sevLevel = maxSeverityLevel(resource, checkDepth);
@@ -95,17 +99,30 @@ public class ProblemDecorator implements ILightweightLabelDecorator  , IResource
         }
     }
 
-    
+    /* (non-Javadoc)
+     * @see org.eclipse.core.resources.IResourceChangeListener#resourceChanged(org.eclipse.core.resources.IResourceChangeEvent)
+     * react to any change in the workspace
+     */
     public void resourceChanged(IResourceChangeEvent event) {
         if (fListeners != null && !fListeners.isEmpty()) {
-            // get all marker changes
-            IMarkerDelta[] markerDeltas = event.findMarkerDeltas(IMarker.PROBLEM, true);
-            // and put all sources belonging to the marker into an array
-            IResource[] resources = new IResource[markerDeltas.length];
-            for(int i=0; i<markerDeltas.length; ++i)
-                resources[i] = markerDeltas[i].getResource();
-            
-            LabelProviderChangedEvent lpevent= new LabelProviderChangedEvent(this, resources);
+            // gather all resources affected by a (marker) change
+            final List<IResource> resourceList = new ArrayList<IResource>(5);
+            try {
+                event.getDelta().accept(            
+                        new IResourceDeltaVisitor() {
+                            public boolean visit(IResourceDelta delta) {
+                                resourceList.add(delta.getResource());
+                                return true;
+                            }
+                        }
+                );
+            } catch (CoreException e) {
+                // error during visit. project is close or does not exist, no need for notification
+                return;
+            }
+
+            // notify the listeners about the change in the decorator
+            LabelProviderChangedEvent lpevent= new LabelProviderChangedEvent(this, resourceList.toArray());
             Object[] listeners= fListeners.getListeners();
             for (int i= 0; i < listeners.length; i++) {
                 ((ILabelProviderListener) listeners[i]).labelProviderChanged(lpevent);
