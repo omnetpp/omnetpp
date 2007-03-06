@@ -426,7 +426,7 @@ public class NEDResources implements INEDTypeResolver {
             }
         };
 
-        file.getWorkspace().run(r, null,IWorkspace.AVOID_UPDATE, null);
+        file.getWorkspace().run(r, null,IWorkspace.AVOID_UPDATE , null);
         //System.out.println("marker added: "+type+" on "+file+" line "+line+": "+message);
 	}
 

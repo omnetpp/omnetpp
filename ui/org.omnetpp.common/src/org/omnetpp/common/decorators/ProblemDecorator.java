@@ -1,11 +1,17 @@
 package org.omnetpp.common.decorators;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ILightweightLabelDecorator;
+import org.eclipse.jface.viewers.LabelProviderChangedEvent;
 import org.omnetpp.common.image.ImageFactory;
 
 /**
@@ -15,19 +21,30 @@ import org.omnetpp.common.image.ImageFactory;
  */
 // FIXME if the markers are removed, the decorations are not removed. we should
 // somehow redraw the decorations if the annotation model of the file has changed
-public class ProblemDecorator implements ILightweightLabelDecorator {
-    public final static String BASE_PROBLEM_MARKER_ID = "org.eclipse.core.resources.problemmarker";
+public class ProblemDecorator implements ILightweightLabelDecorator  , IResourceChangeListener {
     
+    private ListenerList fListeners;
 	/** The integer value representing the placement options */
 	private int quadrant = IDecoration.BOTTOM_LEFT;
     
     // TODO this should come from a configuration (compute recursive error markers)
     private int checkDepth = IResource.DEPTH_INFINITE; 
     
+    public ProblemDecorator() {
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
+     */
+    public void dispose() {
+        ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
+    }
+    
     private int maxSeverityLevel(IResource resource, int depth) {
         int maxLevel = -1;
         try {
-          IMarker problems[] = resource.findMarkers(BASE_PROBLEM_MARKER_ID, true, depth);
+          IMarker problems[] = resource.findMarkers(IMarker.PROBLEM, true, depth);
             for (IMarker marker : problems)
                 maxLevel = Math.max(maxLevel, marker.getAttribute(IMarker.SEVERITY, -1));
         } catch (CoreException e) {
@@ -56,27 +73,43 @@ public class ProblemDecorator implements ILightweightLabelDecorator {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers.ILabelProviderListener)
-	 */
-	public void addListener(ILabelProviderListener listener) {
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
-	 */
-	public void dispose() {
-	}
-
-	/* (non-Javadoc)
 	 * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
 	 */
 	public boolean isLabelProperty(Object element, String property) {
-		return true;
+		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse.jface.viewers.ILabelProviderListener)
-	 */
-	public void removeListener(ILabelProviderListener listener) {
-	}
+    public void addListener(ILabelProviderListener listener) {
+        if (fListeners == null) {
+            fListeners= new ListenerList();
+        }
+        fListeners.add(listener);
+    }   
+
+    /* (non-Javadoc)
+     * @see IBaseLabelProvider#removeListener(ILabelProviderListener)
+     */
+    public void removeListener(ILabelProviderListener listener) {
+        if (fListeners != null) {
+            fListeners.remove(listener);
+        }
+    }
+
+    
+    public void resourceChanged(IResourceChangeEvent event) {
+        if (fListeners != null && !fListeners.isEmpty()) {
+            // get all marker changes
+            IMarkerDelta[] markerDeltas = event.findMarkerDeltas(IMarker.PROBLEM, true);
+            // and put all sources belonging to the marker into an array
+            IResource[] resources = new IResource[markerDeltas.length];
+            for(int i=0; i<markerDeltas.length; ++i)
+                resources[i] = markerDeltas[i].getResource();
+            
+            LabelProviderChangedEvent lpevent= new LabelProviderChangedEvent(this, resources);
+            Object[] listeners= fListeners.getListeners();
+            for (int i= 0; i < listeners.length; i++) {
+                ((ILabelProviderListener) listeners[i]).labelProviderChanged(lpevent);
+            }
+        }
+    }
 }
