@@ -521,7 +521,7 @@ public class VectorChart extends ChartCanvas {
 					
 					// snap to data point
 					long startTime = System.currentTimeMillis();
-					dataPoint = dataPointNear(x, y, 5);
+					dataPoint = dataPointNear(x, y, 2);
 					System.out.println("crosshair: "+(System.currentTimeMillis()-startTime)+" ms");
 					
 					if (dataPoint != null) {
@@ -529,7 +529,7 @@ public class VectorChart extends ChartCanvas {
 						y = toCanvasY(dataPoint.y);
 					}
 						
-					redraw();
+					redraw();  //XXX this is killer if canvas is not cached. unfortunately, gc.setXORMode() cannot be used
 					
 					if (rect != null && rect.contains(x,y))
 						setCursor(CROSS_CURSOR);
@@ -573,7 +573,7 @@ public class VectorChart extends ChartCanvas {
 				gc.setBackground(getBackground());
 				gc.setLineStyle(SWT.LINE_SOLID);
 				gc.drawRectangle(left, top, size.x + 3, size.y + 1);
-				gc.drawText(coordinates, left + 2, top + 1, false);
+				gc.drawText(coordinates, left + 2, top + 1, false); // XXX set as tooltip, rather than draw it on the canvas!
 				
 				gc.setLineDash(saveLineDash);
 				gc.setLineWidth(saveLineWidth);
