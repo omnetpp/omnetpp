@@ -1,9 +1,10 @@
 package org.omnetpp.scave.builder;
 
-import static org.omnetpp.scave.engineext.IndexFile.getVectorFile;
+import static org.omnetpp.scave.engineext.IndexFile.getVectorFileFor;
 import static org.omnetpp.scave.engineext.IndexFile.isIndexFile;
 import static org.omnetpp.scave.engineext.IndexFile.isIndexFileUpToDate;
 import static org.omnetpp.scave.engineext.IndexFile.isVectorFile;
+import static org.omnetpp.scave.engineext.IndexFile.performIndexing;
 
 import java.io.File;
 import java.util.Map;
@@ -21,12 +22,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 
-public class VectorFileIndexer extends IncrementalProjectBuilder {
+public class VectorFileIndexBuilder extends IncrementalProjectBuilder {
 
 	public static final String BUILDER_ID = "org.omnetpp.scave.builder.vectorfileindexer";
-	
-	private org.omnetpp.scave.engine.VectorFileIndexer indexer = 
-				new org.omnetpp.scave.engine.VectorFileIndexer();
 	
 	private Queue<IFile> filesToBeIndexed = new ConcurrentLinkedQueue<IFile>();
 	
@@ -79,7 +77,7 @@ public class VectorFileIndexer extends IncrementalProjectBuilder {
 						break;
 					case IResourceDelta.REMOVED:
 						if (isIndexFile(file))
-							filesToBeIndexed.offer(getVectorFile(file));
+							filesToBeIndexed.offer(getVectorFileFor(file));
 					}
 				}
 				return true;
@@ -90,11 +88,11 @@ public class VectorFileIndexer extends IncrementalProjectBuilder {
 	}
 	
 	protected void doBuild(IProgressMonitor monitor) {
-		IFile file;
 		try {
 			monitor.beginTask("Indexing vector files", filesToBeIndexed.size());
 
-			while ((file=filesToBeIndexed.peek()) != null) {
+			IFile file;
+			while ((file = filesToBeIndexed.peek()) != null) {
 				if (monitor.isCanceled())
 					throw new OperationCanceledException();
 				if (isInterrupted())
@@ -105,10 +103,10 @@ public class VectorFileIndexer extends IncrementalProjectBuilder {
 				try {
 					File path = file.getLocation().toFile();
 					if (path.exists() && !isIndexFileUpToDate(path))
-						indexer.generateIndex(path.getAbsolutePath());
+						performIndexing(file);
 				}
 				catch (Exception e) {
-					Activator.logError(e); // TODO: retry?
+					Activator.logError(e);
 				}
 				monitor.worked(1);
 			}
@@ -124,9 +122,5 @@ public class VectorFileIndexer extends IncrementalProjectBuilder {
 		}
 		else
 			return false;
-	}
-	
-	protected void generateIndex(IFile vectorFile) {
-		indexer.generateIndex(vectorFile.getLocation().toFile().getAbsolutePath());
 	}
 }
