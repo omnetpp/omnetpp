@@ -405,7 +405,7 @@ public class VectorChart extends ChartCanvas {
 				gc.setBackground(color);
 
 				long startTime = System.currentTimeMillis();
-				plotter.plot(dataset, series, gc, this, symbol);
+				plotter.plot(dataset, series, gc, getOptimizedCoordinateMapper(), symbol);
 				System.out.println("plotting: "+(System.currentTimeMillis()-startTime)+" ms");
 			}
 

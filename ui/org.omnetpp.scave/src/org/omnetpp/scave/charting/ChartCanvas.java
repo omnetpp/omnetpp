@@ -26,6 +26,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
@@ -33,6 +34,7 @@ import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.jfree.data.general.Dataset;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
@@ -218,6 +220,81 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoor
 	protected void chartChanged() {
 		clearCanvasCacheAndRedraw();
 	}
+	
+	/**
+	 * Returns an object for efficient plot-to-canvas coordinate mapping. The returned 
+	 * object is intended for *one-time* plotting the chart: it SHOULD BE DISCARDED
+	 * at the end of the paint() method, because it captures chart geometry in "final" 
+	 * variables which become obsolete once the user scrolls/resizes the chart.
+	 */
+	protected ICoordsMapping getOptimizedCoordinateMapper() {
+		// Unoptimized version (for testing): 
+		// return this;
+		
+		// how this method was created (also hints for maintenance): copy the corresponding
+		// methods from ZoomableCachingCanvas, and create "final" variables for all 
+		// member accesses and method calls in it.
+		final double zoomX = getZoomX();
+		final double zoomY = getZoomY();
+		final double minX = this.getMinX();
+		final double maxX = this.getMaxX();
+		final double minY = this.getMinY();
+		final double maxY = this.getMaxY();
+		final long viewportLeftMinusLeftInset = getViewportLeft() - getLeftInset();
+		final long viewportTopMinusTopInset = getViewportTop() - getTopInset();
+
+		ICoordsMapping mapping = new ICoordsMapping() {
+			public double fromCanvasX(int x) {
+				return (x + viewportLeftMinusLeftInset) / zoomX + minX;
+			}
+
+			public double fromCanvasY(int y) {
+				return maxY - (y + viewportTopMinusTopInset) / zoomY;
+			}
+
+			public double fromCanvasDistX(int x) {
+				return x / zoomX;
+			}
+
+			public double fromCanvasDistY(int y) {
+				return y / zoomY;
+			}
+			
+			public int toCanvasX(double xCoord) {
+				double x = (xCoord - minX)*zoomX - viewportLeftMinusLeftInset;
+				return x<-MAXPIX ? -MAXPIX : x>MAXPIX ? MAXPIX : (int)x;
+			}
+
+			public int toCanvasY(double yCoord) {
+				double y = (maxY - yCoord)*zoomY - viewportTopMinusTopInset;
+				return y<-MAXPIX ? -MAXPIX : y>MAXPIX ? MAXPIX : (int)y;
+			}
+
+			public int toCanvasDistX(double xCoord) {
+				double x = xCoord * zoomX;
+				return x<-MAXPIX ? -MAXPIX : x>MAXPIX ? MAXPIX : (int)x;
+			}
+
+			public int toCanvasDistY(double yCoord) {
+				double y = yCoord * zoomY;
+				return y<-MAXPIX ? -MAXPIX : y>MAXPIX ? MAXPIX : (int)y;
+			}
+		};
+		
+		// run a mini regression test before we return it
+		Assert.isTrue(toCanvasX(minX)==mapping.toCanvasX(minX) && toCanvasX(maxX)==mapping.toCanvasX(maxX));
+		Assert.isTrue(toCanvasY(minY)==mapping.toCanvasY(minY) && toCanvasY(maxY)==mapping.toCanvasY(maxY));
+		Assert.isTrue(toCanvasDistX(maxX-minX)==mapping.toCanvasDistX(maxX-minX));
+		Assert.isTrue(toCanvasDistY(maxY-minY)==mapping.toCanvasDistY(maxY-minY));
+		Rectangle r = getViewportRectangle();
+		Assert.isTrue(fromCanvasX(r.x)==mapping.fromCanvasX(r.x) && fromCanvasX(r.x+r.width)==mapping.fromCanvasX(r.x+r.width));
+		Assert.isTrue(fromCanvasY(r.y)==mapping.fromCanvasY(r.y) && fromCanvasY(r.y+r.height)==mapping.fromCanvasY(r.y+r.height));
+		Assert.isTrue(fromCanvasDistX(r.width)==mapping.fromCanvasDistX(r.width));
+		Assert.isTrue(fromCanvasDistY(r.height)==mapping.fromCanvasDistY(r.height));
+
+		return mapping;
+	}
+
 	
 	/**
 	 * Copies the image of the chart to the clipboard.
