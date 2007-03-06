@@ -40,7 +40,7 @@ public class OvalSymbol extends ChartSymbol {
 		}
 		else {
 			gc.setBackground(gc.getForeground());
-			gc.fillOval(x-size/2, y-size/2, size, size);
+			gc.fillOval(x-size/2, y-size/2, size, size); //XXX make filled/unfilled version
 		}
 	}
 }

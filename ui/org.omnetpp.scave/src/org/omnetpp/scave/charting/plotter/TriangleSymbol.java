@@ -51,7 +51,7 @@ public class TriangleSymbol extends ChartSymbol {
 			work[4] = x + poly[4];
 			work[5] = y + poly[5];
 			gc.setBackground(gc.getForeground());
-			gc.fillPolygon(work);
+			gc.fillPolygon(work);  //XXX make filled/unfilled version
 		}
 	}
 }

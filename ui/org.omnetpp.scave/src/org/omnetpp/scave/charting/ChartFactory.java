@@ -107,8 +107,6 @@ public class ChartFactory {
 		// Making the model temporarily readonly could also be a solution, but I didn't find such 
 		// method. (Andras)
 		//
-		// TODO handle cancellation too
-		//
 		chartCanvas.setStatusText("Please wait...");
 		chartCanvas.setDataset(null);
 		Job job = new Job("Evaluating dataset...") {
@@ -124,11 +122,14 @@ public class ChartFactory {
 						return Status.CANCEL_STATUS;
 					}
 					
-					// we're a non-UI thread, so we need to use display.asyncExec()...
+					// we're a non-UI thread, so we need to use display.asyncExec() to set the results.
+					// Note that the chart page may have been close since, so we need to check isDisposed() too.
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
-							chartCanvas.setStatusText(null);
-							chartCanvas.setDataset(data);
+							if (!chartCanvas.isDisposed()) {
+								chartCanvas.setStatusText(null);
+								chartCanvas.setDataset(data);
+							}
 						}});
 					return Status.OK_STATUS;
 				} 
@@ -142,7 +143,8 @@ public class ChartFactory {
 				// we're a non-UI thread, so we need to use display.asyncExec()...
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						chartCanvas.setStatusText(text);
+						if (!chartCanvas.isDisposed())
+							chartCanvas.setStatusText(text);
 					}});
 			}
 		};

@@ -32,7 +32,7 @@ public class SquareSymbol extends ChartSymbol {
 			gc.drawPoint(x, y);
 		}
 		else {
-			gc.setBackground(gc.getForeground()); //XXX runtime cost: ~15%. move out of the loop?
+			gc.setBackground(gc.getForeground());
 			gc.fillRectangle(x-size/2, y-size/2, size, size); //XXX make filled/unfilled version
 		}
 	}

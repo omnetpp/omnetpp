@@ -55,7 +55,7 @@ public class DiamondSymbol extends ChartSymbol {
 			work[6] = x + poly[6];
 			work[7] = y + poly[7];
 			gc.setBackground(gc.getForeground());
-			gc.fillPolygon(work);
+			gc.fillPolygon(work); //XXX make filled/unfilled version
 		}
 	}
 }
