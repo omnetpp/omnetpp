@@ -209,6 +209,7 @@ void ModuloNode::process()
     int n = in()->length();
     for (int i=0; i<n; i++)
     {
+        //TODO: when floor(y/a)!=floor(prevy/a), insert a NaN! so they won't get connected on the line chart
         Datum d;
         in()->read(&d,1);
         d.y -= floor(d.y/a)*a;
