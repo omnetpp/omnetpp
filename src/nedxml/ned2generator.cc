@@ -562,7 +562,7 @@ void NED2Generator::doSubmodule(SubmoduleNode *node, const char *indent, bool is
         OUT << " {" << getRightComment(node);
         generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
         generateChildrenWithType(node, NED_GATES, increaseIndent(indent));
-        OUT << indent << "};" << getTrailingComment(node);
+        OUT << indent << "}" << getTrailingComment(node);
     }
 }
 
@@ -666,7 +666,7 @@ void NED2Generator::doConnectionGroup(ConnectionGroupNode *node, const char *ind
 
     OUT << " {" << getRightComment(node);
     generateChildrenWithType(node, NED_CONNECTION, increaseIndent(indent));
-    OUT << indent << "};" << getTrailingComment(node);
+    OUT << indent << "}" << getTrailingComment(node);
 }
 
 void NED2Generator::doLoop(LoopNode *node, const char *indent, bool islast, const char *sep)
@@ -962,7 +962,7 @@ void NED2Generator::doEnum(EnumNode *node, const char *indent, bool islast, cons
     OUT << getRightComment(node);
     OUT << indent << "{\n";
     generateChildren(node, increaseIndent(indent));
-    OUT << indent << "};";
+    OUT << indent << "}";
     OUT << getTrailingComment(node);
 }
 
@@ -991,7 +991,7 @@ void NED2Generator::doMessage(MessageNode *node, const char *indent, bool islast
     OUT << getRightComment(node);
     OUT << indent << "{\n";
     generateChildren(node, increaseIndent(indent));
-    OUT << indent << "};";
+    OUT << indent << "}";
     OUT << getTrailingComment(node);
 }
 
@@ -1004,7 +1004,7 @@ void NED2Generator::doClass(ClassNode *node, const char *indent, bool islast, co
     OUT << getRightComment(node);
     OUT << indent << "{\n";
     generateChildren(node, increaseIndent(indent));
-    OUT << indent << "};";
+    OUT << indent << "}";
     OUT << getTrailingComment(node);
 }
 
@@ -1017,7 +1017,7 @@ void NED2Generator::doStruct(StructNode *node, const char *indent, bool islast, 
     OUT << getRightComment(node);
     OUT << indent << "{\n";
     generateChildren(node, increaseIndent(indent));
-    OUT << indent << "};" << getTrailingComment(node);
+    OUT << indent << "}" << getTrailingComment(node);
 }
 
 void NED2Generator::doFields(FieldsNode *node, const char *indent, bool islast, const char *)
