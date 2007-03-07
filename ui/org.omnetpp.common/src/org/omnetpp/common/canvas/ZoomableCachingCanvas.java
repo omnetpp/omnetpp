@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.Composite;
 //FIXME add tooltip support
 public abstract class ZoomableCachingCanvas extends CachingCanvas {
 
-	private static final int MAXPIX = Integer.MAX_VALUE / 2;
+	public static final int MAXPIX = Integer.MAX_VALUE / 2;  // largest pixel coordinate we handle
 	
 	private double zoomX = 0; // pixels per coordinate unit
 	private double zoomY = 0; // pixels per coordinate unit
