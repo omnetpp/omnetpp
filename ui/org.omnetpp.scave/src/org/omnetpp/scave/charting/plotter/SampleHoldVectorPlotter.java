@@ -41,7 +41,6 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		int maxY = prevY;
 		int minY = prevY;
 		
-
 		int[] dots = new int[] {1,2};
 		gc.setLineDash(dots);
 		//gc.setLineStyle(SWT.LINE_DOT);  // faster, but doesn't look as good
@@ -49,9 +48,6 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		// n>1
 		for (int i = first+1; i <= last; i++) {
 			double value = dataset.getYValue(series, i);
-			
-			if (i%5==0) value = 0.0/0.0;
-			
 			boolean isNaN = Double.isNaN(value); // see isNaN handling later
 
 			int x = mapping.toCanvasX(dataset.getXValue(series, i));
@@ -69,8 +65,6 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 				minY = maxY = y;
 			}
 			else if (!isNaN) {
-				System.out.println("minY="+minY+"  maxY="+maxY); //FIXME sometimes minY/maxY is invalid (=0)!!! (if first value on this Y is NaN) This is to be handled 
-				
 				// same x coord, only vertical line needs to be drawn
 				if (y < minY) {
 					gc.drawLine(x, minY, x, y);  // in lineDash(dots) mode 
@@ -82,9 +76,11 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 				}
 			}
 			
-			prevX = x;
-			prevY = y;
 			prevIsNaN = isNaN;
+			if (!isNaN) {  // condition is to handle case when first value on this x is NaN
+				prevX = x;
+				prevY = y;
+			}
 		}
 
 		if (!prevIsNaN)
