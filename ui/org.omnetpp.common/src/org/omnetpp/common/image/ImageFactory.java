@@ -19,6 +19,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Display;
 
 public class ImageFactory {
     private final static String IMAGE_DIR = "/images/";
@@ -90,7 +91,7 @@ public class ImageFactory {
     public final static String DEFAULT_PIN = DECORATORS_IMAGE_DIR + "pin";
     public final static String DEFAULT_KEY = "__default__";
 
-    private static ImageRegistry imageRegistry = new ImageRegistry();
+    private static ImageRegistry imageRegistry = new ImageRegistry(Display.getDefault());
     private static String[] imageDirs;
 
     static {

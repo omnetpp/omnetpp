@@ -47,7 +47,6 @@ import org.omnetpp.ned.engine.NEDErrorStore;
  *  
  * Its readNEDFile(IFile file) method gets invoked by NEDBuilder.
  * 
- * XXX display error markers in the Explorer view: see org.eclipse.jdt.ui.ProblemsLabelDecorator
  * XXX should do full rebuild when Eclipse starts up!!!
  * XXX default installation should have "workspace auto refresh" enabled, and "Problems view" shown!!! 
  * XXX when something changes, we always rebuild INEDComponents. This is not needed -- rather, we
@@ -530,8 +529,13 @@ public class NEDResources implements INEDTypeResolver {
 							else {
                                 // add it to the duplicate set so we can remove them before the end
                                 duplicates.add(name);
-								String message = node.getTagName()+" '"+name+"' already defined in "+otherFile.getLocation().toOSString();
+								String message = node.getTagName()+" '"+name+"' already defined in "+otherFile.getFullPath().toString();
 							    addMarker(file, NEDCONSISTENCYPROBLEM_MARKERID, IMarker.SEVERITY_ERROR, message, line);
+                                // add the same error message to the other file too
+                                String otherMessage = node.getTagName()+" '"+name+"' already defined in "+file.getFullPath().toString();
+                                int otherLine = parseLineNumber(components.get(name).getNEDElement().getSourceLocation());
+                                addMarker(otherFile, NEDCONSISTENCYPROBLEM_MARKERID, IMarker.SEVERITY_ERROR, otherMessage, otherLine);
+                                
 							}
 						} catch (CoreException e) {
 						}
