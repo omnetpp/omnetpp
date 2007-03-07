@@ -107,5 +107,13 @@
               value="7,220,441,20"/>
      </product>
   </extension>
+  <extension
+        id="recourcefilter"
+        name="Scave Resource Filter"
+        point="org.eclipse.ui.ide.resourceFilters">
+     <filter
+           pattern="*.vci"
+           selected="false"/>
+  </extension>
 
 </plugin>

@@ -72,8 +72,8 @@ public abstract class VectorPlotter implements IVectorPlotter {
 		int prevX = -1;
 		for (int i = first; i <= last; i++) {
 			double value = dataset.getYValue(series, i);
-			if (value < lo || value > hi) 
-				continue; // value off the screen
+			if (value < lo || value > hi || Double.isNaN(value) || Double.isInfinite(value)) 
+				continue; // value off-screen
 			
 			int x = mapping.toCanvasX(dataset.getXValue(series, i));
 			int y = mapping.toCanvasY(value);

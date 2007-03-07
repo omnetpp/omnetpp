@@ -25,7 +25,7 @@ public class LinesVectorPlotter extends VectorPlotter {
 		int[] range = indexRange(dataset, series, gc, mapping);
 		int first = range[0], last = range[1];
 
-		// calculating y range 
+		// chart y range in canvas coordinates 
 		int[] yrange = canvasYRange(gc, symbol);
 		int top = yrange[0], bottom = yrange[1];  // top < bottom
 		
@@ -44,8 +44,13 @@ public class LinesVectorPlotter extends VectorPlotter {
 		
 		// n>1
 		for (int i=first+1; i<=last; i++) {
+			double value = dataset.getYValue(series, i);
+			if (Double.isNaN(value)) {
+				// FIXME handle this case... skip line before/after a NaN value
+				continue;  //XXX temp code
+			}
 			int x = mapping.toCanvasX(dataset.getXValue(series, i));
-			int y = mapping.toCanvasY(dataset.getYValue(series, i));
+			int y = mapping.toCanvasY(value); // note: this maps +-INF to +-MAXPIX, which works out just fine here
 
  			// draw line
 			if (x != prevX) {

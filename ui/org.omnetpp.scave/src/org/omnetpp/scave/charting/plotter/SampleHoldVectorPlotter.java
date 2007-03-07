@@ -10,6 +10,7 @@ import org.omnetpp.scave.charting.ICoordsMapping;
  * 
  * @author Andras
  */
+//TODO: backward-sample-hold
 public class SampleHoldVectorPlotter extends VectorPlotter {
 
 	public void plot(XYDataset dataset, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
@@ -33,44 +34,64 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		// (instead of calling drawSymbols()), but since "pin" mode doesn't make much
 		// sense (doesn't show much) for huge amounts of data points, we don't bother.
 		//
+		//FIXME handle: Double.isNaN(value) || Double.isInfinite(value)
+		boolean prevIsNaN = Double.isNaN(dataset.getYValue(series, first));
 		int prevX = mapping.toCanvasX(dataset.getXValue(series, first));
 		int prevY = mapping.toCanvasY(dataset.getYValue(series, first));
 		int maxY = prevY;
 		int minY = prevY;
+		
 
 		int[] dots = new int[] {1,2};
 		gc.setLineDash(dots);
 		//gc.setLineStyle(SWT.LINE_DOT);  // faster, but doesn't look as good
 
 		// n>1
-		for (int i=first+1; i<=last; i++) {
+		for (int i = first+1; i <= last; i++) {
+			double value = dataset.getYValue(series, i);
+			
+			if (i%5==0) value = 0.0/0.0;
+			
+			boolean isNaN = Double.isNaN(value); // see isNaN handling later
+
 			int x = mapping.toCanvasX(dataset.getXValue(series, i));
-			int y = mapping.toCanvasY(dataset.getYValue(series, i));
+			int y = mapping.toCanvasY(value); // note: this maps +-INF to +-MAXPIX, which works out just fine here
 			
 			if (x != prevX) {
-				gc.setLineStyle(SWT.LINE_SOLID);
-				gc.drawLine(prevX, prevY, x, prevY);
+				if (!prevIsNaN) {
+					gc.setLineStyle(SWT.LINE_SOLID);
+					gc.drawLine(prevX, prevY, x, prevY); // horizontal
 
-				gc.setLineDash(dots); 
-				gc.drawLine(x, prevY, x, y);
-				
+					gc.setLineDash(dots);
+					if (!isNaN)
+						gc.drawLine(x, prevY, x, y); // vertical
+				}
 				minY = maxY = y;
 			}
-			else if (y < minY) {
-				gc.drawLine(x, minY, x, y);  // in lineDash(dots) mode 
-				minY = y;
-			}
-			else if (y > maxY) {
-				gc.drawLine(x, maxY, x, y);  // in lineDash(dots) mode
-				maxY = y;
+			else if (!isNaN) {
+				System.out.println("minY="+minY+"  maxY="+maxY); //FIXME sometimes minY/maxY is invalid (=0)!!! (if first value on this Y is NaN) This is to be handled 
+				
+				// same x coord, only vertical line needs to be drawn
+				if (y < minY) {
+					gc.drawLine(x, minY, x, y);  // in lineDash(dots) mode 
+					minY = y;
+				}
+				else if (y > maxY) {
+					gc.drawLine(x, maxY, x, y);  // in lineDash(dots) mode
+					maxY = y;
+				}
 			}
 			
 			prevX = x;
 			prevY = y;
+			prevIsNaN = isNaN;
 		}
-		gc.drawPoint(prevX, prevY);
+
+		if (!prevIsNaN)
+			gc.drawPoint(prevX, prevY);
 
 		// draw symbols
+		gc.setLineStyle(SWT.LINE_SOLID);
 		plotSymbols(dataset, series, gc, mapping, symbol);
 	}
 }

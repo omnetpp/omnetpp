@@ -30,6 +30,10 @@ public class PinsVectorPlotter extends VectorPlotter {
 		double[] valueRange = valueRange(gc, mapping, symbol);
 		double lo = valueRange[0], hi = valueRange[1];
 
+		// chart y range in canvas coordinates 
+		int[] yrange = canvasYRange(gc, symbol);
+		int top = yrange[0], bottom = yrange[1];  // top < bottom
+
 		//
 		// Performance optimization: avoid painting the same pixels over and over,
 		// by maintaining prevX, minY and maxY. This results in magnitudes faster
@@ -48,11 +52,11 @@ public class PinsVectorPlotter extends VectorPlotter {
 		// draw pins
 		for (int i = first; i <= last; i++) {
 			double value = dataset.getYValue(series, i);
-			if ((referenceLevel < lo && value < lo) || (referenceLevel > hi && value > hi)) 
-				continue; // pin completely off the screen
-			
+			if ((referenceLevel < lo && value < lo) || (referenceLevel > hi && value > hi) || Double.isNaN(value)) 
+				continue; // pin is off-screen
+
 			int x = mapping.toCanvasX(dataset.getXValue(series, i));
-			int y = mapping.toCanvasY(dataset.getYValue(series, i));
+			int y = mapping.toCanvasY(value); // note: this maps +-INF to +-MAXPIX, which works out just fine here
 
 			if (prevX != x) {
 				gc.drawLine(x, refY, x, y);

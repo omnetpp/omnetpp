@@ -30,7 +30,9 @@ public class LinearAxis {
 	private int gap = 2;  // space between axis line and plot area (usually 0)
 	private int majorTickLength = 4;
 	private int minorTickLength = 2;
-	private boolean gridVisible = DEFAULT_SHOW_GRID;
+	private boolean drawGrid = DEFAULT_SHOW_GRID;
+	private boolean drawLabels = true; //XXX todo implement
+	private boolean drawTitle = true; //XXX todo implement
 
 	private Rectangle bounds;
 	private Insets insets;  // plot area = bounds minus insets 
@@ -92,7 +94,7 @@ public class LinearAxis {
 	}
 	
 	public void drawGrid(GC gc) {
-		if (!gridVisible)
+		if (!drawGrid)
 			return;
 
 		// Note: when canvas caching is on, gc is the cached image, so the grid must be drawn 
@@ -128,6 +130,7 @@ public class LinearAxis {
 		gc.setForeground(DEFAULT_AXIS_COLOR);
 		gc.setFont(titleFont); 
 
+		//FIXME titles get painted to wrong position
 		Point titleSize = gc.textExtent(title);
 		if (vertical) {
 			if (mapping.fromCanvasY(plotArea.bottom()) < 0 && mapping.fromCanvasY(plotArea.y) > 0)
@@ -244,10 +247,10 @@ public class LinearAxis {
 	}
 
 	public boolean isGridVisible() {
-		return gridVisible;
+		return drawGrid;
 	}
 
 	public void setGridVisible(boolean gridEnabled) {
-		this.gridVisible = gridEnabled;
+		this.drawGrid = gridEnabled;
 	}
 }
