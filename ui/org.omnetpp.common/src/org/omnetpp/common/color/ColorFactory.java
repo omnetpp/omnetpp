@@ -560,9 +560,9 @@ public class ColorFactory {
         addMapping("yellow4",new RGB(139,139,0));
 
         goodChartColors = new Color[] {
-        		ColorFactory.asColor("blue"),
+        		ColorFactory.asColor("darkblue"),
         		ColorFactory.asColor("red2"),
-        		ColorFactory.asColor("green"),
+        		ColorFactory.asColor("darkGreen"),
         		ColorFactory.asColor("orange"),
         		ColorFactory.asColor("#008000"),
         		ColorFactory.asColor("darkGrey"), 

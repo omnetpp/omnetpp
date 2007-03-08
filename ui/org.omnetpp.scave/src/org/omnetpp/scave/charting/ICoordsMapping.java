@@ -1,5 +1,13 @@
 package org.omnetpp.scave.charting;
 
+/**
+ * Abstracts out coordinate mapping for charts.
+ * 
+ * @author Andras
+ */
+//TODO move to "common"
+//TODO move MAXPIX/NANPIX here
+//TODO zoomableCachingCanvas to implement this
 public interface ICoordsMapping {
 
 	public double fromCanvasX(int x);
@@ -18,4 +26,8 @@ public interface ICoordsMapping {
 
 	public int toCanvasDistY(double yCoord);
 
+	public int getNumCoordinateOverflows();
+
+	public void resetCoordinateOverflowCount();
 }
+

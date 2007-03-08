@@ -244,11 +244,15 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoor
 		final long viewportTopMinusTopInset = getViewportTop() - getTopInset();
 
 		ICoordsMapping mapping = new ICoordsMapping() {
+			private int numOverflows; // counts pixel coordinate overflows
+			
 			public double fromCanvasX(int x) {
+				Assert.isTrue(-MAXPIX<x && x<MAXPIX);
 				return (x + viewportLeftMinusLeftInset) / zoomX + minX;
 			}
 
 			public double fromCanvasY(int y) {
+				Assert.isTrue(-MAXPIX<y && y<MAXPIX);
 				return maxY - (y + viewportTopMinusTopInset) / zoomY;
 			}
 
@@ -262,22 +266,40 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements ICoor
 			
 			public int toCanvasX(double xCoord) {
 				double x = (xCoord - minX)*zoomX - viewportLeftMinusLeftInset;
-				return x<-MAXPIX ? -MAXPIX : x>MAXPIX ? MAXPIX : (int)x;
+				return toInt(x);
 			}
 
 			public int toCanvasY(double yCoord) {
 				double y = (maxY - yCoord)*zoomY - viewportTopMinusTopInset;
-				return y<-MAXPIX ? -MAXPIX : y>MAXPIX ? MAXPIX : (int)y;
+				return toInt(y);
 			}
 
 			public int toCanvasDistX(double xCoord) {
 				double x = xCoord * zoomX;
-				return x<-MAXPIX ? -MAXPIX : x>MAXPIX ? MAXPIX : (int)x;
+				return toInt(x);
 			}
 
 			public int toCanvasDistY(double yCoord) {
 				double y = yCoord * zoomY;
-				return y<-MAXPIX ? -MAXPIX : y>MAXPIX ? MAXPIX : (int)y;
+				return toInt(y);
+			}
+			
+			private int toInt(double c) {
+				return c<-MAXPIX ? -largeValue(c) : c>MAXPIX ? largeValue(c) : Double.isNaN(c) ? NANPIX : (int)c;
+			}
+			
+			private int largeValue(double c) {
+				if (!Double.isInfinite(c)) // infinite is OK and does not count as coordinate overflow
+					numOverflows++;
+				return MAXPIX; 
+			}
+
+			public int getNumCoordinateOverflows() {
+				return numOverflows;
+			}
+
+			public void resetCoordinateOverflowCount() {
+				numOverflows = 0;				
 			}
 		};
 		

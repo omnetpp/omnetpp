@@ -384,16 +384,15 @@ public class VectorChart extends ChartCanvas {
 		yAxis.drawGrid(gc);
 
 		if (dataset != null) {
-			resetDrawingStylesAndColors(gc);
-			gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
-			gc.setLineStyle(SWT.LINE_SOLID);
+			ICoordsMapping mapper = getOptimizedCoordinateMapper();
 			long startTime = System.currentTimeMillis();
 			for (int series=0; series<dataset.getSeriesCount(); series++) {
 				String key = dataset.getSeriesKey(series).toString();
 				IVectorPlotter plotter = getPlotter(key);
 				IChartSymbol symbol = getSymbol(key);
-				ICoordsMapping mapper = getOptimizedCoordinateMapper();
 				Color color = getLineColor(series);
+				resetDrawingStylesAndColors(gc);
+				gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
 				gc.setForeground(color);
 				gc.setBackground(color);
 
@@ -407,6 +406,13 @@ public class VectorChart extends ChartCanvas {
 				plotter.plot(dataset, series, gc, mapper, symbol);
 			}
 			System.out.println("plotting: "+(System.currentTimeMillis()-startTime)+" ms");
+
+			if (mapper.getNumCoordinateOverflows()>0) {
+				resetDrawingStylesAndColors(gc);
+				gc.drawText("There were coordinate overflows during plotting, and the resulting chart\n"+
+						    "may not be accurate. Please decrease zoom level.", 
+						    getViewportRectangle().x+10, getViewportRectangle().y+10, true);
+			}
 
 			if (debug) {
 				repaintCounter++;

@@ -1,19 +1,30 @@
 package org.omnetpp.common.canvas;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 
 /**
- * Extends CachingCanvas with zoom handling capabilities. Dragging and
- * mouse wheel zooming behaviours also added.
+ * Extends CachingCanvas with zoom handling capabilities. Dragging and mouse wheel 
+ * zooming behaviours can be added via ZoomableCanvasMouseSupport.
  *
  * @author andras
  */
-//FIXME add tooltip support
+//FIXME zooming in repeatedly eventually causes BigDecimal Underflow in tick painting. Set reasonable limit for zooming!
 public abstract class ZoomableCachingCanvas extends CachingCanvas {
 
-	public static final int MAXPIX = Integer.MAX_VALUE / 2;  // largest pixel coordinate we handle
+	/**
+	 * The largest coordinate the underlying platform graphics can handle.
+	 * This is supposed to be the full 32-bit signed range, but e.g. Windows XP
+	 * has been seen to overflow with coords > ~2 million. (Try zooming a chart.)
+	 */
+	public static final int MAXPIX = 2000000;  //XXX until we have more info
+
+	/**
+	 * We use this to return NaN as a pixel coordinate.
+	 */
+	public static final int NANPIX = Integer.MAX_VALUE;  
 	
 	private double zoomX = 0; // pixels per coordinate unit
 	private double zoomY = 0; // pixels per coordinate unit
@@ -21,6 +32,8 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	private double minX = 0, maxX = 1;
 	private double minY = 0, maxY = 1;
 
+	private int numCoordinateOverflows;
+	
 	/**
      * Constructor.
      */
@@ -77,10 +90,12 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	}
 
 	public double fromCanvasX(int x) {
+		Assert.isTrue(-MAXPIX<x && x<MAXPIX);
 		return (x + getViewportLeft() - getLeftInset()) / zoomX + minX;
 	}
 
 	public double fromCanvasY(int y) {
+		Assert.isTrue(-MAXPIX<y && y<MAXPIX);
 		return maxY - (y + getViewportTop() - getTopInset()) / zoomY;
 	}
 
@@ -94,22 +109,22 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	
 	public int toCanvasX(double xCoord) {
 		double x = (xCoord - minX)*zoomX - getViewportLeft() + getLeftInset();
-		return x<-MAXPIX ? -MAXPIX : x>MAXPIX ? MAXPIX : (int)x;
+		return toInt(x);
 	}
 
 	public int toCanvasY(double yCoord) {
 		double y = (maxY - yCoord)*zoomY - getViewportTop() + getTopInset();
-		return y<-MAXPIX ? -MAXPIX : y>MAXPIX ? MAXPIX : (int)y;
+		return toInt(y);
 	}
 
 	public int toCanvasDistX(double xCoord) {
 		double x = xCoord * zoomX;
-		return x<-MAXPIX ? -MAXPIX : x>MAXPIX ? MAXPIX : (int)x;
+		return toInt(x);
 	}
 
 	public int toCanvasDistY(double yCoord) {
 		double y = yCoord * zoomY;
-		return y<-MAXPIX ? -MAXPIX : y>MAXPIX ? MAXPIX : (int)y;
+		return toInt(y);
 	}
 
 	public long toVirtualX(double xCoord) {
@@ -128,6 +143,24 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 
 	public double fromVirtualY(long y) {
 		return maxY - y / zoomY;
+	}
+	
+	public int getNumCoordinateOverflows() {
+		return numCoordinateOverflows;
+	}
+
+	public void resetCoordinateOverflowCount() {
+		numCoordinateOverflows = 0;				
+	}
+
+	protected int toInt(double c) {
+		return c<-MAXPIX ? -largeValue(c) : c>MAXPIX ? largeValue(c) : Double.isNaN(c) ? NANPIX : (int)c;
+	}
+	
+	private int largeValue(double c) {
+		if (!Double.isInfinite(c)) // infinite is OK and does not count as coordinate overflow
+			numCoordinateOverflows++;
+		return MAXPIX; 
 	}
 	
 	public double getViewportCenterCoordX() {
