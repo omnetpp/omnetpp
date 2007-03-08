@@ -357,9 +357,8 @@ public class VectorChart extends ChartCanvas {
 			// now we have the final insets, set it everywhere again 
 			xAxis.setLayout(mainArea, insetsToMainArea);
 			yAxis.setLayout(mainArea, insetsToMainArea);
-			crosshair.layout(gc, plotArea);
-
 			plotArea = mainArea.getCopy().crop(insetsToMainArea);
+			crosshair.layout(gc, plotArea);
 			//FIXME how to handle it when plotArea.height/width comes out negative??
 			setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
 

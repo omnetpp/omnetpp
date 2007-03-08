@@ -32,11 +32,11 @@ public class LinearAxis {
 	private int majorTickLength = 4;
 	private int minorTickLength = 2;
 	private boolean drawGrid = DEFAULT_SHOW_GRID;
-	private boolean drawLabels = true; //XXX todo implement
-	private boolean drawTitle = true; //XXX todo implement
+	private boolean drawTickLabels = true;
+	private boolean drawTitle = true;
 
 	private Rectangle bounds;
-	private Insets insets;  // plot area = bounds minus insets 
+	private Insets insets;  // plot area = bounds minus insets
 
 	private ICoordsMapping mapping;
 	
@@ -61,29 +61,46 @@ public class LinearAxis {
 		
 		gc.setFont(tickFont);
 		if (vertical) {
-			// calculate tick label length
-			Ticks ticks = createTicks(bounds);
-			int labelWidth = 0;
-			gc.setFont(tickFont);
-			for (BigDecimal tick : ticks) {
-				if (ticks.isMajorTick(tick)) {
-					labelWidth = Math.max(labelWidth, gc.textExtent(tick.toPlainString()).x);
-				}						
-			}
-			gc.setFont(titleFont);
-			int titleWidth = title.equals("") ? 0 : gc.textExtent(title).y;  // "y" because we'll print it rotated 90 degrees
-			insets.left = Math.max(insets.left, gap + majorTickLength + labelWidth + titleWidth + 4);
+			int labelWidth = calculateTickLabelLength(gc, bounds);
+			int titleHeight = calculateTitleSize(gc).y;  // but will be drawn 90 deg rotated
+			insets.left = Math.max(insets.left, gap + majorTickLength + labelWidth + titleHeight + 4);
 			insets.right = Math.max(insets.right, gap + majorTickLength + labelWidth + 4);
 		}
 		else {
-			gc.setFont(tickFont);
-			int labelHeight = gc.textExtent("999").y;
-			gc.setFont(titleFont);
-			int titleHeight = title.equals("") ? 0 : gc.textExtent(title).y;
+			int labelHeight = calculateTickLabelHeight(gc);
+			int titleHeight = calculateTitleSize(gc).y;
 			insets.top = Math.max(insets.top, gap + majorTickLength + labelHeight + 4);
 			insets.bottom = Math.max(insets.bottom, gap + majorTickLength + labelHeight + titleHeight + 4);
 		}
 		return insets;
+	}
+
+	private Point calculateTitleSize(GC gc) {
+		gc.setFont(titleFont);
+		return (!drawTitle || title.equals("")) ? new Point(0,0) : gc.textExtent(title);
+	}
+
+	private int calculateTickLabelHeight(GC gc) {
+		if (!drawTickLabels)
+			return 0;
+		gc.setFont(tickFont);
+		int labelHeight = gc.textExtent("999").y;
+		return labelHeight;
+	}
+
+	private int calculateTickLabelLength(GC gc, Rectangle bounds) {
+		// calculate longest tick label length
+		if (!drawTickLabels)
+			return 0;
+		Ticks ticks = createTicks(bounds);
+		int labelWidth = 0;
+		gc.setFont(tickFont);
+		for (BigDecimal tick : ticks) {
+			if (ticks.isMajorTick(tick)) {
+				labelWidth = Math.max(labelWidth, gc.textExtent(tick.toPlainString()).x);
+			}						
+		}
+		return labelWidth;
 	}
 
 	/**
@@ -122,8 +139,6 @@ public class LinearAxis {
 
 	public void drawAxis(GC gc) {
 		Rectangle plotArea = bounds.getCopy().crop(insets);
-		Transform rotate90 = new Transform(gc.getDevice());
-		rotate90.rotate(-90);
 		
 		// draw axis line and title
 		gc.setLineWidth(1);
@@ -131,30 +146,29 @@ public class LinearAxis {
 		gc.setForeground(DEFAULT_AXIS_COLOR);
 		gc.setFont(titleFont); 
 
-		//FIXME titles get painted to wrong position
 		Point titleSize = gc.textExtent(title);
 		if (vertical) {
 			if (mapping.fromCanvasY(plotArea.bottom()) < 0 && mapping.fromCanvasY(plotArea.y) > 0)
 				gc.drawLine(plotArea.x, mapping.toCanvasY(0), plotArea.right(), mapping.toCanvasY(0)); // x axis
 			gc.drawLine(plotArea.x - gap, plotArea.y, plotArea.x - gap, plotArea.bottom());
 			gc.drawLine(plotArea.right() + gap, plotArea.y, plotArea.right() + gap, plotArea.bottom());
-			gc.setTransform(rotate90);
-			gc.drawText(title, 
-					-(plotArea.y + plotArea.height / 2 + titleSize.x / 2),
-					plotArea.x - gap - titleSize.y - majorTickLength - 10); //FIXME "10": labelLength
-			gc.setTransform(null);
+			if (drawTitle) {
+				Transform transform = new Transform(gc.getDevice());
+				transform.rotate(-90);
+				gc.setTransform(transform);
+				gc.drawText(title, -(plotArea.y + plotArea.height / 2 + titleSize.x / 2), bounds.x, true);
+				gc.setTransform(null);
+				transform.dispose();
+			}
 		}
 		else {
 			if (mapping.fromCanvasX(plotArea.x) < 0 && mapping.fromCanvasX(plotArea.right()) > 0)
 				gc.drawLine(mapping.toCanvasX(0), plotArea.y, mapping.toCanvasX(0), plotArea.bottom()); // y axis
 			gc.drawLine(plotArea.x, plotArea.y - gap, plotArea.right(), plotArea.y - gap);
 			gc.drawLine(plotArea.x, plotArea.bottom() + gap, plotArea.right(), plotArea.bottom() + gap);
-			gc.drawText(title, 
-					plotArea.x + plotArea.width / 2 - titleSize.x / 2,
-					plotArea.bottom() + gap);
+			if (drawTitle)
+				gc.drawText(title, plotArea.x + plotArea.width / 2 - titleSize.x / 2, bounds.bottom() - titleSize.y, true);
 		}
-
-		rotate90.dispose();
 
 		// draw ticks and labels
 		Ticks ticks = createTicks(plotArea);
@@ -168,9 +182,9 @@ public class LinearAxis {
 				if (y >= plotArea.y && y <= plotArea.bottom()) {
 					gc.drawLine(plotArea.x - gap - tickLen, y, plotArea.x - gap, y);
 					gc.drawLine(plotArea.right() + gap + tickLen, y, plotArea.right() + gap, y);
-					if (ticks.isMajorTick(tick)) {
-						gc.drawText(label, plotArea.x - gap - tickLen - size.x - 1, y - size.y / 2);
-						gc.drawText(label, plotArea.right() + gap + tickLen + 3, y - size.y / 2);
+					if (drawTickLabels && ticks.isMajorTick(tick)) {
+						gc.drawText(label, plotArea.x - gap - tickLen - size.x - 1, y - size.y / 2, true);
+						gc.drawText(label, plotArea.right() + gap + tickLen + 3, y - size.y / 2, true);
 					}
 				}
 			}
@@ -179,9 +193,9 @@ public class LinearAxis {
 				if (x >= plotArea.x && x <= plotArea.right()) {
 					gc.drawLine(x, plotArea.y - gap - tickLen, x, plotArea.y - gap);
 					gc.drawLine(x, plotArea.bottom() + gap + tickLen, x, plotArea.bottom() + gap);
-					if (ticks.isMajorTick(tick)) {
-						gc.drawText(label, x - size.x / 2 + 1, plotArea.y - gap - tickLen - size.y - 1);
-						gc.drawText(label, x - size.x / 2 + 1, plotArea.bottom() + gap + tickLen + 1);
+					if (drawTickLabels && ticks.isMajorTick(tick)) {
+						gc.drawText(label, x - size.x / 2 + 1, plotArea.y - gap - tickLen - size.y - 1, true);
+						gc.drawText(label, x - size.x / 2 + 1, plotArea.bottom() + gap + tickLen + 1, true);
 					}
 				}
 			}
@@ -200,12 +214,12 @@ public class LinearAxis {
 	}
 
 	public Rectangle getBounds() {
-		return bounds;
+		return bounds;  // note: no setter! use setLayout()
 	}
 
-//	public void setBounds(Rectangle bounds) {
-//		this.bounds = bounds;
-//	}
+	public Insets getInsets() {
+		return insets;  // note: no setter! use setLayout()
+	}
 
 	public int getGap() {
 		return gap;
@@ -213,14 +227,6 @@ public class LinearAxis {
 
 	public void setGap(int gap) {
 		this.gap = gap;
-	}
-
-	public Insets getInsets() {
-		return insets;
-	}
-
-	public void setInsets(Insets insets) {
-		this.insets = insets;
 	}
 
 	public Font getTickFont() {
@@ -253,5 +259,21 @@ public class LinearAxis {
 
 	public void setGridVisible(boolean gridEnabled) {
 		this.drawGrid = gridEnabled;
+	}
+
+	public boolean isDrawTickLabels() {
+		return drawTickLabels;
+	}
+
+	public void setDrawTickLabels(boolean drawTickLabels) {
+		this.drawTickLabels = drawTickLabels;
+	}
+
+	public boolean isDrawTitle() {
+		return drawTitle;
+	}
+
+	public void setDrawTitle(boolean drawTitle) {
+		this.drawTitle = drawTitle;
 	}
 }

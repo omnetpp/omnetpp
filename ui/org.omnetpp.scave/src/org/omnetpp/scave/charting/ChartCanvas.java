@@ -35,7 +35,6 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.jfree.data.general.Dataset;
-import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.image.ImageConverter;
@@ -217,6 +216,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	}
 	
 	protected void chartChanged() {
+		layoutChart();
 		clearCanvasCacheAndRedraw();
 	}
 	
