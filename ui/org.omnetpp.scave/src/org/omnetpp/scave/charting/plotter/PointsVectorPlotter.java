@@ -2,7 +2,7 @@ package org.omnetpp.scave.charting.plotter;
 
 import org.eclipse.swt.graphics.GC;
 import org.jfree.data.xy.XYDataset;
-import org.omnetpp.scave.charting.ICoordsMapping;
+import org.omnetpp.common.canvas.ICoordsMapping;
 
 /**
  * Vector plotter simply drawing pixels (and no lines or symbols). Note that despite 

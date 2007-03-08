@@ -41,6 +41,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.jfree.data.general.Dataset;
+import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave.ScavePlugin;

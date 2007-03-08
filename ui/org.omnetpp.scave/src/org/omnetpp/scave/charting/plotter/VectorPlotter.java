@@ -5,9 +5,9 @@ import java.util.HashSet;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 import org.jfree.data.xy.XYDataset;
+import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.scave.charting.DatasetUtils;
-import org.omnetpp.scave.charting.ICoordsMapping;
 
 
 /**
@@ -70,11 +70,11 @@ public abstract class VectorPlotter implements IVectorPlotter {
 		// performance improvement.
 		//
 		HashSet<Integer> yset = new HashSet<Integer>();
-		int prevX = -1;
+		int prevX = Integer.MIN_VALUE;
 		for (int i = first; i <= last; i++) {
 			double value = dataset.getYValue(series, i);
-			if (value < lo || value > hi || Double.isNaN(value)) 
-				continue; // value off-screen
+			if (value < lo || value > hi || Double.isNaN(value))  // even skip coord transform for off-screen values 
+				continue;
 			
 			int x = mapping.toCanvasX(dataset.getXValue(series, i));
 			int y = mapping.toCanvasY(value);
@@ -96,7 +96,7 @@ public abstract class VectorPlotter implements IVectorPlotter {
 	
 	protected static void drawLineNotNAN(GC gc, int x1, int y1, int x2, int y2) {
 		// note: x cannot be NaN, only infinite (MAXPIX) which is OK
-		if (y1 != ZoomableCachingCanvas.NANPIX && y2 != ZoomableCachingCanvas.NANPIX)
+		if (y1 != ICoordsMapping.NANPIX && y2 != ICoordsMapping.NANPIX)
 			gc.drawLine(x1, y1, x2, y2);
 	}
 }

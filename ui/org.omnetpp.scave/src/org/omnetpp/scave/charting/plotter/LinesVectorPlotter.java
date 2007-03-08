@@ -1,10 +1,12 @@
 package org.omnetpp.scave.charting.plotter;
 
+import static org.omnetpp.common.canvas.ICoordsMapping.NANPIX;
+
 import java.util.HashSet;
 
 import org.eclipse.swt.graphics.GC;
 import org.jfree.data.xy.XYDataset;
-import org.omnetpp.scave.charting.ICoordsMapping;
+import org.omnetpp.common.canvas.ICoordsMapping;
 
 /**
  * Vector plotter that connects data points with lines.
@@ -44,25 +46,32 @@ public class LinesVectorPlotter extends VectorPlotter {
 		
 		// n>1
 		for (int i=first+1; i<=last; i++) {
-			//FIXME NaN handling!!!
 			int x = mapping.toCanvasX(dataset.getXValue(series, i));
 			int y = mapping.toCanvasY(dataset.getYValue(series, i)); // note: this maps +-INF to +-MAXPIX, which works out just fine here
 
  			// draw line
-			if (x != prevX) {
-				gc.drawLine(prevX, prevY, x, y);
-				minY = maxY = y;
-			}
-			else if (y < minY) {
-				gc.drawLine(x, minY, x, y);
-				minY = y;
-			}
-			else if (y > maxY) {
-				gc.drawLine(x, maxY, x, y);
-				maxY = y;
-			}
+			if (y != NANPIX) {
+				if (x != prevX) {
+					if (prevY != NANPIX)
+						gc.drawLine(prevX, prevY, x, y);
+					minY = maxY = y;
+				}
+				else if (y < minY) {
+					gc.drawLine(x, minY, x, y);
+					minY = y;
+				}
+				else if (y > maxY) {
+					gc.drawLine(x, maxY, x, y);
+					maxY = y;
+				}
 
-  			// draw symbol (see VectorPlotter.plotSymbols() for explanation)
+				// note: this is also inside if(!isNAN): this is to handle case when first value on this x is NaN
+				prevX = x;
+				prevY = y;
+			}
+			
+  			// draw symbol (see VectorPlotter.plotSymbols() for explanation on yset-based optimization)
+			// note: top <= y <= bottom condition also filters out NaNs
 			if (symbol != null && top <= y && y <= bottom) {
 				if (prevX != x) {
 					yset.clear();
@@ -77,9 +86,6 @@ public class LinesVectorPlotter extends VectorPlotter {
 					// already plotted
 				}
 			}
-			
-			prevX = x;
-			prevY = y;
 		}
 	}
 }

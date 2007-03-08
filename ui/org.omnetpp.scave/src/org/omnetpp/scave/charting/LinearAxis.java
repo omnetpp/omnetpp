@@ -18,6 +18,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Transform;
+import org.omnetpp.common.canvas.ICoordsMapping;
 
 /**
  * Draws a (horizontal or vertical) chart axis, with the corresponding axis 

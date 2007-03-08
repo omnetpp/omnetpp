@@ -3,7 +3,7 @@ package org.omnetpp.scave.charting.plotter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.jfree.data.xy.XYDataset;
-import org.omnetpp.scave.charting.ICoordsMapping;
+import org.omnetpp.common.canvas.ICoordsMapping;
 
 /**
  * Sample-hold vector plotter
@@ -34,10 +34,9 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		// (instead of calling drawSymbols()), but since "pin" mode doesn't make much
 		// sense (doesn't show much) for huge amounts of data points, we don't bother.
 		//
-		//FIXME handle: Double.isNaN(value) || Double.isInfinite(value)
-		boolean prevIsNaN = Double.isNaN(dataset.getYValue(series, first));
 		int prevX = mapping.toCanvasX(dataset.getXValue(series, first));
 		int prevY = mapping.toCanvasY(dataset.getYValue(series, first));
+		boolean prevIsNaN = Double.isNaN(dataset.getYValue(series, first));
 		int maxY = prevY;
 		int minY = prevY;
 		
