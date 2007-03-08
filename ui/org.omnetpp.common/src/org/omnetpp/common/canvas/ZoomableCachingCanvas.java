@@ -141,7 +141,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 	}
 
 	protected int toInt(double c) {
-		return c<-MAXPIX ? -largeValue(c) : c>MAXPIX ? largeValue(c) : Double.isNaN(c) ? NANPIX : (int)c;
+		return c<-MAXPIX ? -largeValue(c) : c>MAXPIX ? largeValue(c) : Double.isNaN(c) ? NAN_PIX : (int)c;
 	}
 	
 	private int largeValue(double c) {
@@ -360,7 +360,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 			}
 			
 			private int toInt(double c) {
-				return c<-MAXPIX ? -largeValue(c) : c>MAXPIX ? largeValue(c) : Double.isNaN(c) ? NANPIX : (int)c;
+				return c<-MAXPIX ? -largeValue(c) : c>MAXPIX ? largeValue(c) : Double.isNaN(c) ? NAN_PIX : (int)c;
 			}
 			
 			private int largeValue(double c) {

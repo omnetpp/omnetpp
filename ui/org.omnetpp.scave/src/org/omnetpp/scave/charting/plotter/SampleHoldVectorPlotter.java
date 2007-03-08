@@ -22,10 +22,6 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		int[] range = indexRange(dataset, series, gc, mapping);
 		int first = range[0], last = range[1];
 
-		// value range on the chart
-		double[] valueRange = valueRange(gc, mapping, symbol);
-		double lo = valueRange[0], hi = valueRange[1];
-
 		//
 		// Performance optimization: avoid painting the same pixels over and over,
 		// by maintaining prevX, minY and maxY.

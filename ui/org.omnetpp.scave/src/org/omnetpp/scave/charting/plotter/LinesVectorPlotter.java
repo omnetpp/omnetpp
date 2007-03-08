@@ -1,6 +1,6 @@
 package org.omnetpp.scave.charting.plotter;
 
-import static org.omnetpp.common.canvas.ICoordsMapping.NANPIX;
+import static org.omnetpp.common.canvas.ICoordsMapping.NAN_PIX;
 
 import java.util.HashSet;
 
@@ -36,23 +36,27 @@ public class LinesVectorPlotter extends VectorPlotter {
 		// when drawing vertical lines. This results in magnitudes faster
 		// execution for large datasets.
 		//
-		int prevX = mapping.toCanvasX(dataset.getXValue(series, first));
-		int prevY = mapping.toCanvasY(dataset.getYValue(series, first));
+		int prevX = Integer.MIN_VALUE;
+		int prevY = NAN_PIX;
 		int maxY = prevY;
 		int minY = prevY;
 
 		// used for preventing painting the same symbol on the same pixels over and over.
 		HashSet<Integer> yset = new HashSet<Integer>();
+		int prevSymbolX = Integer.MIN_VALUE;
 		
-		// n>1
-		for (int i=first+1; i<=last; i++) {
+		for (int i = first; i <= last; i++) {
 			int x = mapping.toCanvasX(dataset.getXValue(series, i));
 			int y = mapping.toCanvasY(dataset.getYValue(series, i)); // note: this maps +-INF to +-MAXPIX, which works out just fine here
 
+			// for testing: 
+			// if (i%5==0) y = NANPIX;
+			// if (i%5==2 && prevX!=Integer.MIN_VALUE) x = prevX;
+			
  			// draw line
-			if (y != NANPIX) {
+			if (y != NAN_PIX) {
 				if (x != prevX) {
-					if (prevY != NANPIX)
+					if (prevY != NAN_PIX)
 						gc.drawLine(prevX, prevY, x, y);
 					minY = maxY = y;
 				}
@@ -64,16 +68,17 @@ public class LinesVectorPlotter extends VectorPlotter {
 					gc.drawLine(x, maxY, x, y);
 					maxY = y;
 				}
-
-				// note: this is also inside if(!isNAN): this is to handle case when first value on this x is NaN
 				prevX = x;
-				prevY = y;
 			}
+			else {
+				prevX = Integer.MIN_VALUE; // invalidate minX/maxX
+			}
+			prevY = y;
 			
   			// draw symbol (see VectorPlotter.plotSymbols() for explanation on yset-based optimization)
 			// note: top <= y <= bottom condition also filters out NaNs
 			if (symbol != null && top <= y && y <= bottom) {
-				if (prevX != x) {
+				if (prevSymbolX != x) {
 					yset.clear();
 					symbol.drawSymbol(gc, x, y);
 					yset.add(y);
@@ -86,6 +91,7 @@ public class LinesVectorPlotter extends VectorPlotter {
 					// already plotted
 				}
 			}
+			prevSymbolX = x;
 		}
 	}
 }

@@ -93,10 +93,4 @@ public abstract class VectorPlotter implements IVectorPlotter {
 			}
 		}
 	}
-	
-	protected static void drawLineNotNAN(GC gc, int x1, int y1, int x2, int y2) {
-		// note: x cannot be NaN, only infinite (MAXPIX) which is OK
-		if (y1 != ICoordsMapping.NANPIX && y2 != ICoordsMapping.NANPIX)
-			gc.drawLine(x1, y1, x2, y2);
-	}
 }
