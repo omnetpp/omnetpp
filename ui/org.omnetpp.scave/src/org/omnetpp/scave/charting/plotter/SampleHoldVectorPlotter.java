@@ -40,13 +40,19 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		gc.setLineDash(dots);
 		//gc.setLineStyle(SWT.LINE_DOT);  // faster, but doesn't look as good
 
-		// n>1
 		for (int i = first+1; i <= last; i++) {
 			double value = dataset.getYValue(series, i);
+
+			// for testing: 
+			//if (i%5==0) value = 0.0/0.0; //NaN
+			
 			boolean isNaN = Double.isNaN(value); // see isNaN handling later
 
 			int x = mapping.toCanvasX(dataset.getXValue(series, i));
 			int y = mapping.toCanvasY(value); // note: this maps +-INF to +-MAXPIX, which works out just fine here
+
+			// for testing:
+			//if (i%5==1) x = prevX;
 			
 			if (x != prevX) {
 				if (!prevIsNaN) {
@@ -70,12 +76,12 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 					maxY = y;
 				}
 			}
-			
-			prevIsNaN = isNaN;
+
 			if (!isNaN) {  // condition is to handle case when first value on this x is NaN
 				prevX = x;
 				prevY = y;
 			}
+			prevIsNaN = isNaN;
 		}
 
 		if (!prevIsNaN)

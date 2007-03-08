@@ -88,10 +88,9 @@ public class ChartProperties extends PropertySource {
 	public enum LineStyle {
 		None,
 		Linear,
-		Step,
+		SampleHold,
 		Pins, 
 		Points, 
-		Dots,
 	}
 
 	public enum BarPlacement {

@@ -435,10 +435,9 @@ public class VectorChart extends ChartCanvas {
 		switch (style) {
 		case None: return new DotsVectorPlotter();
 		case Linear: return new LinesVectorPlotter();
-		case Step: return new SampleHoldVectorPlotter();
+		case SampleHold: return new SampleHoldVectorPlotter();
 		case Pins: return new PinsVectorPlotter();
 		case Points: return new PointsVectorPlotter();
-		case Dots: return new DotsVectorPlotter();
 		default: throw new IllegalArgumentException("unknown line style: " + style);
 		}
 	}
