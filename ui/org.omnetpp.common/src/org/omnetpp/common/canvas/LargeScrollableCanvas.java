@@ -36,7 +36,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 		
 		// set an initial viewport rectangle to prevent null pointer exceptions;
 		// clients are expected to set a proper viewport rectangle inside Resize events.
-		setViewportRectangle(new Rectangle(0,0,0,0));
+		setViewportRectangle(new Rectangle(0,0,1,1));
 		
 		//
 		// Note: there is no need to reconfigure the scrollbars on Resize events,
