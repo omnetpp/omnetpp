@@ -62,18 +62,19 @@ import org.omnetpp.ned.model.pojo.SimpleModuleNode;
  */
 public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
-	// markers created during parsing
-	public static final String NEDPROBLEM_MARKERID = "org.omnetpp.ned.builder.nedproblem";
-
-	// markers created in rehash()
-	public static final String NEDCONSISTENCYPROBLEM_MARKERID = "org.omnetpp.ned.builder.nedconsistencyproblem";
+//	// markers created during parsing
+//	public static final String NEDPROBLEM_MARKERID = "org.omnetpp.ned.builder.nedproblem";
+//
+//	// markers created in rehash()
+//	public static final String NEDCONSISTENCYPROBLEM_MARKERID = "org.omnetpp.ned.builder.nedconsistencyproblem";
 
     private static final String NED_EXTENSION = "ned";
 
 	// stores parsed contents of NED files
 	private HashMap<IFile, NEDElement> nedFiles = new HashMap<IFile, NEDElement>();
-    private HashMap<IFile, NEDErrorStore> nedParseErrors = new HashMap<IFile, NEDErrorStore>();
-    private HashMap<IFile, NEDErrorStore> nedConsistencyErrors = new HashMap<IFile, NEDErrorStore>();
+//    private HashMap<IFile, NEDErrorStore> nedParseErrors = new HashMap<IFile, NEDErrorStore>();
+//    private HashMap<IFile, NEDErrorStore> nedConsistencyErrors = new HashMap<IFile, NEDErrorStore>();
+    private ProblemMarkerJob markerJob = new ProblemMarkerJob("Updating problem markers");
 
 	private HashMap<IFile, Integer> connectCount = new HashMap<IFile, Integer>();
 	
@@ -188,8 +189,10 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		return nedFiles.get(file);
 	}
 
+    
+    // TODO move this to the ProblemMarkerJob class
 	public boolean containsNEDErrors(IFile file) {
-        return hasErrorMarker(file, NEDPROBLEM_MARKERID) || hasErrorMarker(file, NEDCONSISTENCYPROBLEM_MARKERID);
+        return hasErrorMarker(file, ProblemMarkerJob.NEDPROBLEM_MARKERID) || hasErrorMarker(file, ProblemMarkerJob.NEDCONSISTENCYPROBLEM_MARKERID);
 	}
 
 	/**
@@ -352,7 +355,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
         NEDElement tree = NEDTreeUtil.parseNedSource(text, errors, file.getLocation().toOSString());
         setNEDFileModel(file, tree);
-        nedParseErrors.put(file, errors);
+        markerJob.setParseErrorStore(file, errors);
+        // nedParseErrors.put(file, errors);
         // convertErrorsToMarkers(file, errors);
     }
     
@@ -371,7 +375,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		String fileName = file.getLocation().toOSString();
 		NEDErrorStore errors = new NEDErrorStore();
 		NEDElement tree = NEDTreeUtil.loadNedSource(fileName, errors);
-        nedParseErrors.put(file, errors);
+        markerJob.setParseErrorStore(file, errors);
+//        nedParseErrors.put(file, errors);
 //		convertErrorsToMarkers(file, errors);
 
 		// only store it if there were no errors
@@ -381,87 +386,11 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 			storeNEDFileModel(file, tree);
 	}
 
-	private void addMarkersToFile(IFile file, NEDErrorStore errors) throws CoreException {
-//		try {
-            // TODO we should first create all markers and later compare the created markers to the
-            // ones already on the file. we should add/delete markers only if there were changes in the
-            // error messages. this would avoid unnecessary marker refresh if we are editing a file which
-            // already contains markers. adding the markers should be done in a WorkspaceJob
-			// file.deleteMarkers(NEDPROBLEM_MARKERID, true, IResource.DEPTH_ZERO);
-			for (int i=0; i<errors.numMessages(); i++) {
-                // XXX hack: parse out line number from string. NEDErrorStore should rather store line number as int...
-				String loc = errors.errorLocation(i);
-				int line = parseLineNumber(loc);
-				int markerSeverity = IMarker.SEVERITY_INFO;
-                NEDErrorCategory category = NEDErrorCategory.swigToEnum(errors.errorCategoryCode(i));
-                switch (category) {
-                case ERRCAT_FATAL:
-                    markerSeverity = IMarker.SEVERITY_ERROR;
-                    break;
-                case ERRCAT_ERROR:
-                    markerSeverity = IMarker.SEVERITY_ERROR;
-                    break;
-                case ERRCAT_WARNING:
-                    markerSeverity = IMarker.SEVERITY_WARNING;
-                    break;
-                case ERRCAT_INFO:
-                    markerSeverity = IMarker.SEVERITY_INFO;
-                    break;
-                default:
-                    markerSeverity = IMarker.SEVERITY_ERROR;
-                    break;
-                }
-                addMarker(file, NEDPROBLEM_MARKERID, markerSeverity, errors.errorText(i), line);
-			}
-//		} catch (CoreException e) {
-//            System.out.println("problem during attaching an error marker to the file: "+e);
-//		}
-	}
-
-	private int parseLineNumber(String loc) {
-		if (loc == null) return 1;
-		StringTokenizer t = new StringTokenizer(loc,":");
-		while (t.hasMoreTokens()) loc = t.nextToken();
-		int line = 1;
-		try {line = Integer.parseInt(loc);} catch (Exception e) {}
-		return line;
-	}
-
-	private void addMarker(final IFile file, final String type, int severity, String message, int line) throws CoreException {
-
-        // taken from MarkerUtilities see. Eclipse FAQ 304
-        final HashMap map = new HashMap();
-        map.put(IMarker.MESSAGE, message);
-        map.put(IMarker.SEVERITY, severity);
-        map.put(IMarker.LINE_NUMBER, line);
-
-        IWorkspaceRunnable r= new IWorkspaceRunnable() {
-            public void run(IProgressMonitor monitor) throws CoreException {
-                IMarker marker= file.createMarker(type);
-                marker.setAttributes(map);
-            }
-        };
-
-        file.getWorkspace().run(r, null,IWorkspace.AVOID_UPDATE , null);
-        //System.out.println("marker added: "+type+" on "+file+" line "+line+": "+message);
-	}
-
-    /**
-     * Converts all error store info to marker and attaches them to the files
-     * @throws CoreException 
-     */
-    private void errorStoresToFileMarkers() throws CoreException {
-        for (IFile file : nedFiles.keySet()) {
-            file.deleteMarkers(NEDPROBLEM_MARKERID, true, IResource.DEPTH_ZERO);
-            addMarkersToFile(file, nedParseErrors.get(file));
-            addMarkersToFile(file, nedConsistencyErrors.get(file));
-        }
-    }
-    
 	public void forgetNEDFile(IFile file) {
         if (nedFiles.containsKey(file)) {
             nedFiles.remove(file);
-            nedParseErrors.remove(file);
+            markerJob.removeStores(file);
+            // nedParseErrors.remove(file);
             needsRehash = true;
         }
 	}
@@ -527,7 +456,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
             // create a new ErrorStore for the consistency problems (the old one will be deleted if exists)
             NEDErrorStore errorStore = new NEDErrorStore();
-            nedConsistencyErrors.put(file, errorStore);
+            markerJob.setConsistencyErrorStore(file, errorStore);
+            // nedConsistencyErrors.put(file, errorStore);
 
 			// iterate on NED file contents, and register each componentt in our hash tables
 			NEDElement tree = nedFiles.get(file);
@@ -610,7 +540,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         // top level element insertion is slow because of this validation
 		for (IFile file : nedFiles.keySet()) {
 //			final IFile ifile = file;
-            final NEDErrorStore consistencyErrors= nedConsistencyErrors.get(file);
+            final NEDErrorStore consistencyErrors= markerJob.getConsistencyErrorStore(file);
 			INEDErrorStore errors = new INEDErrorStore() {  // XXX make a better one
 				public void add(NEDElement context, String message) {
 //					int line = parseLineNumber(context.getSourceLocation());
@@ -626,11 +556,14 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 			validator.validate(tree);
 		}
 
-        try {
-            errorStoresToFileMarkers();
-        } catch (CoreException e) {
-            System.out.println("problem during attaching an error marker to the file: "+e);
-        }
+//        try {
+            // TODO post it correctly as a background job
+//            markerJob.runInWorkspace(null);
+            markerJob.schedule();
+            // errorStoresToFileMarkers();
+//        } catch (CoreException e) {
+//            System.out.println("problem during attaching an error marker to the file: "+e);
+//        }
 		
 		//XXX temporary code, just testing:
 		//for (INEDComponent c : components.values()) {
