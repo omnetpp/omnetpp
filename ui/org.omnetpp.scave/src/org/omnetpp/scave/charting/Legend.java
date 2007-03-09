@@ -129,6 +129,11 @@ public class Legend {
 	 * Calculates the position and size of the legend and its items.
 	 * Returns the remaining space.
 	 */
+	//FIXME Tomi: the only problem is, here we don't know yet what the final position/size of the 
+	// plotArea will be, so whatever "bounds" we calculate here should be treated as some
+	// first approximation at the best... There should be a separate setLayout(canvasBounds, plotArea)
+	// call to communicate final plotArea size/position to the Legend.
+	// 
 	public Rectangle layout(GC gc, Rectangle parent) {
 		if (!visible)
 			return parent;
