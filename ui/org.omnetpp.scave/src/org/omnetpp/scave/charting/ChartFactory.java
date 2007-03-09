@@ -10,7 +10,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.jfree.data.category.CategoryDataset;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.BarChart;
@@ -74,7 +73,7 @@ public class ChartFactory {
 
 	public static void populateScalarChart(final Chart chart, final Dataset dataset, final ResultFileManager manager, ScalarChart scalarChart) {
 		// perform:
-		// scalarChart.setDataset(DatasetManager.createScalarDataset(chart, dataset, manager));
+		// scalarChart.setDataset(DatasetManager.createScalarDataset(chart, dataset, manager, null));
 		// but as a background job:
 		//
 		startDatasetEvaluationJob(scalarChart, new IDatasetCalculation() {

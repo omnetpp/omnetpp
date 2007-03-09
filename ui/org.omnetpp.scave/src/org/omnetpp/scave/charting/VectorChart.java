@@ -1,7 +1,5 @@
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_INSETS_BACKGROUND_COLOR;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_INSETS_LINE_COLOR;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LINE_STYLE;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_SYMBOL_SIZE;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_SYMBOL_TYPE;
@@ -70,9 +68,6 @@ public class VectorChart extends ChartCanvas {
 	private Map<String, LineProperties> lineProperties = new HashMap<String,LineProperties>();
 	private CrossHair crosshair = new CrossHair(this);
 
-	private Color insetsBackgroundColor = DEFAULT_INSETS_BACKGROUND_COLOR;
-	private Color insetsLineColor = DEFAULT_INSETS_LINE_COLOR;
-	
 	private boolean smartMode = true; // whether smartModeLimit is enabled
 	private int smartModeLimit = 10000; // turn off symbols if there're more than this amount of points on the plot
 	
@@ -409,19 +404,6 @@ public class VectorChart extends ChartCanvas {
 						    "may not be accurate. Please decrease zoom level.", 
 						    getViewportRectangle().x+10, getViewportRectangle().y+10, true);
 			}
-
-			if (debug) {
-				repaintCounter++;
-				gc.setForeground(ColorFactory.getGoodColor(repaintCounter));
-				gc.setBackground(ChartDefaults.DEFAULT_BACKGROUND_COLOR);
-				Rectangle clip = new Rectangle(gc.getClipping());
-				for (int x = clip.x - clip.x%100; x<clip.right(); x+=100) {
-					for (int y = clip.y - clip.y%100; y<clip.bottom(); y+=100) {
-						gc.drawLine(x, y, x+10, y+20);
-						gc.drawText("paint#"+repaintCounter+" ("+canvasToVirtualX(x)+","+canvasToVirtualY(y)+")", x+10, y+15);
-					}
-				}
-			}
 		}
 	}
 	
@@ -458,33 +440,16 @@ public class VectorChart extends ChartCanvas {
 
 	@Override
 	protected void paintNoncachableLayer(GC gc) {
-		Insets insets = getInsets();
 		resetDrawingStylesAndColors(gc);
 		gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
 
-		// draw insets border
-		Rectangle canvasRect = new Rectangle(getClientArea());
-		gc.setForeground(insetsBackgroundColor);
-		gc.setBackground(insetsBackgroundColor);
-		gc.fillRectangle(0, 0, canvasRect.width, insets.top); // top
-		gc.fillRectangle(0, canvasRect.bottom()-insets.bottom, canvasRect.width, insets.bottom); // bottom
-		gc.fillRectangle(0, 0, insets.left, canvasRect.height); // left
-		gc.fillRectangle(canvasRect.right()-insets.right, 0, insets.right, canvasRect.height); // right
-		gc.setForeground(insetsLineColor);
-		gc.drawRectangle(insets.left, insets.top, getViewportWidth(), getViewportHeight());
-
+		paintInsets(gc);
 		title.draw(gc);
 		legend.draw(gc);
 		xAxis.drawAxis(gc);
 		yAxis.drawAxis(gc);
 		crosshair.draw(gc);
-
-		// draw status text
-		if (getStatusText() != null) {
-			resetDrawingStylesAndColors(gc);
-			org.eclipse.swt.graphics.Rectangle rect = getViewportRectangle();
-			gc.drawText(getStatusText(), rect.x+10, rect.y+10);
-		}
+		drawStatusText(gc);
 	}
 
 	static class DPoint {

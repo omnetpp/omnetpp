@@ -3,6 +3,8 @@ package org.omnetpp.scave.charting;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_ANTIALIAS;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_CANVAS_CACHING;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_DISPLAY_LEGEND;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_INSETS_BACKGROUND_COLOR;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_INSETS_LINE_COLOR;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LEGEND_ANCHOR;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LEGEND_BORDER;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LEGEND_FONT;
@@ -27,9 +29,12 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
 import org.eclipse.draw2d.ColorConstants;
+import org.eclipse.draw2d.geometry.Insets;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -57,6 +62,8 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	private String statusText = "No data available."; // displayed when there's no dataset 
 
 	private ZoomableCanvasMouseSupport mouseSupport;
+	private Color insetsBackgroundColor = DEFAULT_INSETS_BACKGROUND_COLOR;
+	private Color insetsLineColor = DEFAULT_INSETS_LINE_COLOR;
 	
 	public ChartCanvas(Composite parent, int style) {
 		super(parent, style);
@@ -269,6 +276,28 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		return image;
 	}
 	
+	protected void paintInsets(GC gc) {
+		// draw insets border
+		Insets insets = getInsets();
+		Rectangle canvasRect = new Rectangle(getClientArea());
+		gc.setForeground(insetsBackgroundColor);
+		gc.setBackground(insetsBackgroundColor);
+		gc.fillRectangle(0, 0, canvasRect.width, insets.top); // top
+		gc.fillRectangle(0, canvasRect.bottom()-insets.bottom, canvasRect.width, insets.bottom); // bottom
+		gc.fillRectangle(0, 0, insets.left, canvasRect.height); // left
+		gc.fillRectangle(canvasRect.right()-insets.right, 0, insets.right, canvasRect.height); // right
+		gc.setForeground(insetsLineColor);
+		gc.drawRectangle(insets.left, insets.top, getViewportWidth(), getViewportHeight());
+	}
+
+	protected void drawStatusText(GC gc) {
+		if (getStatusText() != null) {
+			resetDrawingStylesAndColors(gc);
+			org.eclipse.swt.graphics.Rectangle rect = getViewportRectangle();
+			gc.drawText(getStatusText(), rect.x+10, rect.y+10);
+		}
+	}
+
 	protected static class PlotArea {
 		public double minX;
 		public double maxX;

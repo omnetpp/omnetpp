@@ -41,6 +41,7 @@ import org.jfree.data.general.Dataset;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GeomUtils;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
 
 /**
@@ -57,6 +58,8 @@ public class ScalarChart extends ChartCanvas {
 
 	private Double yMin;
 	private Double yMax;
+
+	private int layoutDepth = 0; // how many layoutChart() calls are on the stack
 	
 	public ScalarChart(Composite parent, int style) {
 		super(parent, style);
@@ -250,27 +253,68 @@ public class ScalarChart extends ChartCanvas {
 
 	@Override
 	protected void layoutChart() {
+		// prevent nasty infinite layout recursions
+		if (layoutDepth>0)
+			return; 
+		
+		// ignore initial invalid layout request
+		if (getClientArea().width==0 && getClientArea().height==0)
+			return;
+		
+		layoutDepth++;
 		GC gc = new GC(Display.getCurrent());
-		
-		// Calculate space occupied by title and legend and set insets accordingly
-		Rectangle area = new Rectangle(getClientArea());
-		Rectangle remaining = title.layout(gc, area);
-		remaining = legend.layout(gc, remaining);
-		
-		Rectangle mainArea = remaining.getCopy();
-		Insets insetsToMainArea = new Insets(30, 30, 30, 30);
-		
-		//XXX valueAxis.layoutHint(gc, mainArea, insetsToMainArea);
-		//XXX domainAxis.layoutHint(gc, remaining, insetsToMainArea);
+		System.out.println("layoutChart(), level "+layoutDepth);
 
-		valueAxis.setLayout(mainArea, insetsToMainArea);
-		domainAxis.setLayout(mainArea, insetsToMainArea);
-		Rectangle plotArea = mainArea.crop(insetsToMainArea);
-		plot.layout(gc, plotArea);
+		try {
+			// preserve zoomed-out state while resizing
+			boolean shouldZoomOutX = getZoomX()==0 || isZoomedOutX();
+			boolean shouldZoomOutY = getZoomY()==0 || isZoomedOutY();
 
-		setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
-		
-		gc.dispose();
+			// Calculate space occupied by title and legend and set insets accordingly
+			Rectangle area = new Rectangle(getClientArea());
+			Rectangle remaining = title.layout(gc, area);
+			remaining = legend.layout(gc, remaining);
+
+			Rectangle mainArea = remaining.getCopy();
+			Insets insetsToMainArea = new Insets();
+			domainAxis.layoutHint(gc, mainArea, insetsToMainArea);
+			// postpone valueAxis.layoutHint() as it wants to use coordinate mapping which is not yet set up (to calculate ticks)
+			insetsToMainArea.left = 50; insetsToMainArea.right = 30; // initial estimate for y axis
+
+			// tentative plotArea calculation (y axis ticks width missing from the picture yet)
+			Rectangle plotArea = mainArea.getCopy().crop(insetsToMainArea);
+			setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
+
+			if (shouldZoomOutX)
+				zoomToFitX();
+			if (shouldZoomOutY)
+				zoomToFitY();
+			validateZoom(); //Note: scrollbar.setVisible() triggers Resize too
+
+			// now the coordinate mapping is set up, so the y axis knows what tick labels
+			// will appear, and can calculate the occupied space from the longest tick label.
+			valueAxis.layoutHint(gc, mainArea, insetsToMainArea);
+
+			// now we have the final insets, set it everywhere again 
+			domainAxis.setLayout(mainArea, insetsToMainArea);
+			valueAxis.setLayout(mainArea, insetsToMainArea);
+			plotArea = mainArea.getCopy().crop(insetsToMainArea);
+			//FIXME how to handle it when plotArea.height/width comes out negative??
+			setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
+
+			if (shouldZoomOutX)
+				zoomToFitX();
+			if (shouldZoomOutY)
+				zoomToFitY();
+			validateZoom(); //Note: scrollbar.setVisible() triggers Resize too
+		} 
+		catch (Throwable e) {
+			ScavePlugin.logError(e);
+		}
+		finally {
+			gc.dispose();
+			layoutDepth--;
+		}
 	}
 	
 	
@@ -286,14 +330,16 @@ public class ScalarChart extends ChartCanvas {
 
 	@Override
 	protected void paintNoncachableLayer(GC gc) {
+		paintInsets(gc);
 		title.draw(gc);
 		legend.draw(gc);
 		valueAxis.drawAxis(gc);
 		domainAxis.draw(gc);
+		drawStatusText(gc);
 	}
 
 	class BarPlot {
-		private Rectangle rect;
+		private Rectangle rect = new Rectangle(0,0,1,1);
 		private int widthBar = 10;
 		private int hgapMinor = 5;
 		private int hgapMajor = 20;
@@ -315,22 +361,24 @@ public class ScalarChart extends ChartCanvas {
 		}
 		
 		public void draw(GC gc) {
-			Graphics graphics = new SWTGraphics(gc);
-			graphics.pushState();
-			
-			Rectangle clip = graphics.getClip(new Rectangle());
-			graphics.setBackgroundColor(backgroundColor);
-			graphics.fillRectangle(clip);
-			
-			int cColumns = dataset.getColumnCount();
-			int[] indices = getRowColumnsInRectangle(clip);
-			for (int i = indices[0]; i <= indices[1]; ++i) {
-				int row = i / cColumns;
-				int column = i % cColumns;
-				drawBar(graphics, row, column);
+			if (dataset != null) {
+				Graphics graphics = new SWTGraphics(gc);
+				graphics.pushState();
+
+				Rectangle clip = graphics.getClip(new Rectangle());
+				graphics.setBackgroundColor(backgroundColor);
+				graphics.fillRectangle(clip);
+
+				int cColumns = dataset.getColumnCount();
+				int[] indices = getRowColumnsInRectangle(clip);
+				for (int i = indices[0]; i <= indices[1]; ++i) {
+					int row = i / cColumns;
+					int column = i % cColumns;
+					drawBar(graphics, row, column);
+				}
+				graphics.popState();
+				graphics.dispose();
 			}
-			graphics.popState();
-			graphics.dispose();
 		}
 		
 		protected void drawBar(Graphics graphics, int row, int column) {
@@ -437,15 +485,18 @@ public class ScalarChart extends ChartCanvas {
 			int titleHeight = gc.textExtent(title).y;
 			gc.setFont(labelsFont);
 			labelsHeight = 0;
-			for (int row = 0; row < dataset.getRowCount(); ++row) {
-				String label = dataset.getRowKey(row).toString();
-				Dimension size = GeomUtils.rotatedSize(new Dimension(gc.textExtent(label)), rotation);
-				labelsHeight = Math.max(labelsHeight, size.height);
+			if (dataset != null) {
+				for (int row = 0; row < dataset.getRowCount(); ++row) {
+					String label = dataset.getRowKey(row).toString();
+					Dimension size = GeomUtils.rotatedSize(new Dimension(gc.textExtent(label)), rotation);
+					labelsHeight = Math.max(labelsHeight, size.height);
+				}
 			}
 			graphics.popState();
 			graphics.dispose();
 			
 			// modify insets with space required
+			insets.top = Math.max(insets.top, 10); // leave a few pixels at the top
 			int height = 10 + labelsHeight + titleHeight;
 			insets.bottom = Math.max(insets.bottom, height);
 			
@@ -463,6 +514,7 @@ public class ScalarChart extends ChartCanvas {
 		}
 		
 		public void draw(GC gc) {
+			org.eclipse.swt.graphics.Rectangle oldClip = gc.getClipping(); // graphics.popState() doesn't restore it!
 			Graphics graphics = new SWTGraphics(gc);
 			graphics.pushState();
 			graphics.setClip(rect);
@@ -474,22 +526,24 @@ public class ScalarChart extends ChartCanvas {
 			graphics.drawLine(plotRect.x, rect.y, plotRect.right(), rect.y);
 
 			// draw labels
-			int cColumns = dataset.getColumnCount();
-			graphics.setFont(labelsFont);
-			graphics.pushState();
-			for (int row = 0; row < dataset.getRowCount(); ++row) {
-				String label = dataset.getRowKey(row).toString();
-				Point size = gc.textExtent(label);
-				int left = plot.getBarRectangle(row, 0).x;
-				int right = plot.getBarRectangle(row, cColumns - 1).right();
-				
-				graphics.restoreState();
-				graphics.drawLine(left, rect.y + 5, right, rect.y + 5);
-				graphics.translate((left + right) / 2, rect.y + 10);
-				graphics.rotate((float)rotation);
-				graphics.drawText(label, -size.x / 2, - labelsHeight / 2);
+			if (dataset != null) {
+				int cColumns = dataset.getColumnCount();
+				graphics.setFont(labelsFont);
+				graphics.pushState();
+				for (int row = 0; row < dataset.getRowCount(); ++row) {
+					String label = dataset.getRowKey(row).toString();
+					Point size = gc.textExtent(label);
+					int left = plot.getBarRectangle(row, 0).x;
+					int right = plot.getBarRectangle(row, cColumns - 1).right();
+
+					graphics.restoreState();
+					graphics.drawLine(left, rect.y + 5, right, rect.y + 5);
+					graphics.translate((left + right) / 2, rect.y + 10);
+					graphics.rotate((float)rotation);
+					graphics.drawText(label, -size.x / 2, - labelsHeight / 2);
+				}
+				graphics.popState();
 			}
-			graphics.popState();
 			
 			// draw axis title
 			graphics.setFont(titleFont);
@@ -498,6 +552,7 @@ public class ScalarChart extends ChartCanvas {
 
 			graphics.popState();
 			graphics.dispose();
+			gc.setClipping(oldClip); // graphics.popState() doesn't restore it!
 		}
 	}
 }
