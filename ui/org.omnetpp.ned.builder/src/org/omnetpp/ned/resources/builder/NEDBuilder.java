@@ -118,18 +118,18 @@ public class NEDBuilder extends IncrementalProjectBuilder {
 	 * from NEDResourcesPlugin.start(). To be removed on the long term.  
 	 */
 	public static void runFullBuild() {
-		try {
-			IResource wsroot = ResourcesPlugin.getWorkspace().getRoot();
-			wsroot.accept(new IResourceVisitor() {
-				public boolean visit(IResource resource) {
-					NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
-					if (nedResources.isNEDFile(resource))
-						nedResources.readNEDFile((IFile) resource);
-					return true;
-				}
-			});
-		} catch (CoreException e) {
-		}
-        NEDResourcesPlugin.getNEDResources().rehashIfNeeded();
+//		try {
+//			IResource wsroot = ResourcesPlugin.getWorkspace().getRoot();
+//			wsroot.accept(new IResourceVisitor() {
+//				public boolean visit(IResource resource) {
+//					NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
+//					if (nedResources.isNEDFile(resource))
+//						nedResources.readNEDFile((IFile) resource);
+//					return true;
+//				}
+//			});
+//		} catch (CoreException e) {
+//		}
+//        NEDResourcesPlugin.getNEDResources().rehashIfNeeded();
 	}
 }
