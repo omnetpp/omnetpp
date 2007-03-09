@@ -31,13 +31,9 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.jfree.data.general.Dataset;
@@ -72,7 +68,7 @@ public class VectorChart extends ChartCanvas {
 	private LinearAxis xAxis = new LinearAxis(this, false);
 	private LinearAxis yAxis = new LinearAxis(this, true);
 	private Map<String, LineProperties> lineProperties = new HashMap<String,LineProperties>();
-	private CrossHair crosshair = new CrossHair();
+	private CrossHair crosshair = new CrossHair(this);
 
 	private Color insetsBackgroundColor = DEFAULT_INSETS_BACKGROUND_COLOR;
 	private Color insetsLineColor = DEFAULT_INSETS_LINE_COLOR;
@@ -491,10 +487,6 @@ public class VectorChart extends ChartCanvas {
 		}
 	}
 
-	private static final Cursor CROSS_CURSOR = new Cursor(null, SWT.CURSOR_CROSS);
-	private static final Font CROSS_HAIR_NORMAL_FONT = new Font(null, "Arial", 8, SWT.NORMAL);
-	private static final Font CROSS_HAIR_BOLD_FONT = new Font(null, "Arial", 8, SWT.BOLD);
-
 	static class DPoint {
 		double x;
 		double y;
@@ -502,132 +494,6 @@ public class VectorChart extends ChartCanvas {
 		public DPoint(double x, double y) {
 			this.x = x;
 			this.y = y;
-		}
-	}
-	
-	/**
-	 * Displays crosshair mouse cursor.
-	 */
-	class CrossHair {
-		
-		Rectangle rect;
-		private int x = Integer.MAX_VALUE;
-		private int y = Integer.MAX_VALUE;
-		DPoint dataPoint;
-		
-		public CrossHair() {
-			addMouseMoveListener(new MouseMoveListener() {
-				public void mouseMove(MouseEvent e) {
-					x = e.x;
-					y = e.y;
-					
-					// snap to data point
-					long startTime = System.currentTimeMillis();
-					dataPoint = dataPointNear(x, y, 2);
-					System.out.println("crosshair: "+(System.currentTimeMillis()-startTime)+" ms");
-					
-					if (dataPoint != null) {
-						x = toCanvasX(dataPoint.x);
-						y = toCanvasY(dataPoint.y);
-					}
-						
-					redraw();  //XXX this is killer if canvas is not cached. unfortunately, gc.setXORMode() cannot be used
-					
-					if (rect != null && rect.contains(x,y))
-						setCursor(CROSS_CURSOR);
-					else
-						setCursor(null);
-				}
-			});
-		}
-		
-		public Rectangle layout(GC gc, Rectangle rect) {
-			this.rect = rect;
-			return rect;
-		}
-		
-		public void draw(GC gc) {
-			if (rect != null && rect.contains(x, y)) {
-				int[] saveLineDash = gc.getLineDash();
-				int saveLineWidth = gc.getLineWidth();
-				Color saveForeground = gc.getForeground();
-				
-				gc.setLineDash(new int[] {3, 3});
-				gc.setLineWidth(1);
-				gc.setForeground(ColorFactory.asColor("red"));
-				gc.drawLine(rect.x, y, rect.x + rect.width, y);
-				gc.drawLine(x, rect.y, x, rect.y + rect.height);
-				
-				Font font = dataPoint != null ? CROSS_HAIR_BOLD_FONT : CROSS_HAIR_NORMAL_FONT; 
-				String coordinates =
-					String.format("%.3g,%.3g",
-						dataPoint != null ? dataPoint.x : fromCanvasX(x),
-						dataPoint != null ? dataPoint.y : fromCanvasY(y));
-				gc.setFont(font);
-				Point size = gc.textExtent(coordinates);
-				int left = x + 3;
-				int top = y - size.y - 4;
-				if (left + size.x + 3 > rect.x + rect.width)
-					left = x - size.x - 6;
-				if (top < rect.y)
-					top = y + 3;
-				gc.setForeground(ColorFactory.asColor("black"));
-				gc.setBackground(getBackground());
-				gc.setLineStyle(SWT.LINE_SOLID);
-				gc.drawRectangle(left, top, size.x + 3, size.y + 1);
-				gc.drawText(coordinates, left + 2, top + 1, false); // XXX set as tooltip, rather than draw it on the canvas!
-				
-				gc.setLineDash(saveLineDash);
-				gc.setLineWidth(saveLineWidth);
-				gc.setForeground(saveForeground);
-			}
-		}
-		
-		private DPoint dataPointNear(int x, int y, int d) {
-			if (dataset==null)
-				return null;
-			
-			// for each series, perform binary search on the x axis
-			for (int series = 0; series < dataset.getSeriesCount(); ++series) {
-				int start = 0;
-				int end = dataset.getItemCount(series) - 1;
-				
-				while (start <= end) {
-					int mid = (end + start) / 2;
-					int midX = toCanvasX(dataset.getXValue(series, mid));
-					
-					if (Math.abs(midX - x) <= d) {
-						for (int i = mid; i >= start; --i) {
-							double xx = dataset.getXValue(series, i);
-							double yy = dataset.getYValue(series, i);
-							int dx = toCanvasX(xx) - x;
-							int dy = toCanvasY(yy) - y;
-							if (dx * dx + dy * dy <= d * d)
-								return new DPoint(xx, yy);
-							if (Math.abs(dx) > d)
-								break;
-						}
-						for (int i = mid + 1; i <= end; ++i) {
-							double xx = dataset.getXValue(series, i);
-							double yy = dataset.getYValue(series, i);
-							int dx = toCanvasX(xx) - x;
-							int dy = toCanvasY(yy) - y;
-							if (dx * dx + dy * dy <= d * d)
-								return new DPoint(xx, yy);
-							if (Math.abs(dx) > d)
-								break;
-						}
-						break;
-					}
-					else if (midX - x < 0) {
-						start = mid + 1;
-					}
-					else if (midX - x > 0) {
-						end = mid - 1;
-					}
-				}
-			}
-			return null;
 		}
 	}
 }
