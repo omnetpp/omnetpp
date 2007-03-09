@@ -1,5 +1,6 @@
 package org.omnetpp.ned.resources;
 
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.ned.resources.builder.NEDBuilder;
@@ -31,6 +32,11 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 		super.start(context);
 
         PLUGIN_ID = getBundle().getSymbolicName();
+        
+        System.out.println("NEDResourcesPlugin started");
+
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(NEDResourcesPlugin.getNEDResources());
+
 
         // XXX this is most probably NOT the way to archieve that
 		// all NED files get parsed on startup. At minimum, this should
@@ -42,14 +48,17 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 		//   that do not complete in a timely fashion."
 		// So we should find a better way.
 		NEDBuilder.runFullBuild();
+        
 	}
 
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
 	public void stop(BundleContext context) throws Exception {
-		super.stop(context);
+        ResourcesPlugin.getWorkspace().removeResourceChangeListener(NEDResourcesPlugin.getNEDResources());
 		plugin = null;
+        super.stop(context);
+        System.out.println("NEDResourcesPlugin stopped");
 	}
 
 	/**

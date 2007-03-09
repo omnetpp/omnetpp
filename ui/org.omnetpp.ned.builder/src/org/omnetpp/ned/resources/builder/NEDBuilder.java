@@ -70,20 +70,20 @@ public class NEDBuilder extends IncrementalProjectBuilder {
 	 *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
-		if (kind == FULL_BUILD) {
-			fullBuild(monitor);
-		} else {
-			IResourceDelta delta = getDelta(getProject());
-			if (delta == null) {
-				fullBuild(monitor);
-			} else {
-				incrementalBuild(delta, monitor);
-			}
-		}
-		
-		// rebuild tables
-		NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
-		nedResources.rehashIfNeeded();
+//		if (kind == FULL_BUILD) {
+//			fullBuild(monitor);
+//		} else {
+//			IResourceDelta delta = getDelta(getProject());
+//			if (delta == null) {
+//				fullBuild(monitor);
+//			} else {
+//				incrementalBuild(delta, monitor);
+//			}
+//		}
+//		
+//		// rebuild tables
+//		NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
+//		nedResources.rehashIfNeeded();
 		return null;
 	}
 
@@ -130,5 +130,6 @@ public class NEDBuilder extends IncrementalProjectBuilder {
 			});
 		} catch (CoreException e) {
 		}
+        NEDResourcesPlugin.getNEDResources().rehashIfNeeded();
 	}
 }

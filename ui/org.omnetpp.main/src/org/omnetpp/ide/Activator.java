@@ -30,6 +30,7 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
         PLUGIN_ID = getBundle().getSymbolicName();
+        System.out.println("MainPlugin started");
 	}
 
 	/*
@@ -39,6 +40,7 @@ public class Activator extends AbstractUIPlugin {
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		super.stop(context);
+        System.out.println("MainPlugin stopped");
 	}
 
 	/**

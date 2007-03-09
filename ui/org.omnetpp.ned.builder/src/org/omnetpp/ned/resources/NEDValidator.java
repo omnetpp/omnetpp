@@ -64,9 +64,6 @@ import org.omnetpp.ned.model.pojo.UnknownNode;
  * 
  * @author andras
  */
-// XXX move to org.omnetpp.ned.model plugin? then INEDComponent,
-// INEDTypeResolver etc would have to be moved as well, and that plugin
-// would have to depend on org.eclipse.resources because of IFile!!!
 //
 // FIXME validation of embedded types!!!!
 //

@@ -11,6 +11,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.omnetpp.ned.builder,
- org.omnetpp.scave.builder
+ org.omnetpp.scave.builder,
+ org.omnetpp.ned.model
 Eclipse-LazyStart: true
 Export-Package: org.omnetpp.ide.wizard

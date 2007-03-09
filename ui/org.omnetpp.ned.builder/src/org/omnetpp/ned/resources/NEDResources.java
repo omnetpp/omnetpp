@@ -6,14 +6,21 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.eclipse.core.internal.events.ResourceDelta;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.omnetpp.ned.engine.NEDErrorCategory;
+import org.omnetpp.ned.engine.NEDErrorStore;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.NEDSourceRegion;
@@ -38,14 +45,13 @@ import org.omnetpp.ned.model.pojo.NedFileNode;
 import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.model.pojo.ParametersNode;
 import org.omnetpp.ned.model.pojo.SimpleModuleNode;
-import org.omnetpp.ned.engine.NEDErrorCategory;
-import org.omnetpp.ned.engine.NEDErrorStore;
 
 /**
  * Parses all NED files in the workspace and makes them available
  * for other plugins for consistence checks among NED files etc.
  *  
- * Its readNEDFile(IFile file) method gets invoked by NEDBuilder.
+ * It listens to workspace resource changes and modifies it content based on change
+ * notifications
  * 
  * XXX should do full rebuild when Eclipse starts up!!!
  * XXX default installation should have "workspace auto refresh" enabled, and "Problems view" shown!!! 
@@ -54,16 +60,20 @@ import org.omnetpp.ned.engine.NEDErrorStore;
  *  
  * @author andras
  */
-public class NEDResources implements INEDTypeResolver {
+public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
 	// markers created during parsing
 	public static final String NEDPROBLEM_MARKERID = "org.omnetpp.ned.builder.nedproblem";
 
 	// markers created in rehash()
 	public static final String NEDCONSISTENCYPROBLEM_MARKERID = "org.omnetpp.ned.builder.nedconsistencyproblem";
-	
+
+    private static final String NED_EXTENSION = "ned";
+
 	// stores parsed contents of NED files
 	private HashMap<IFile, NEDElement> nedFiles = new HashMap<IFile, NEDElement>();
+    private HashMap<IFile, NEDErrorStore> nedParseErrors = new HashMap<IFile, NEDErrorStore>();
+    private HashMap<IFile, NEDErrorStore> nedConsistencyErrors = new HashMap<IFile, NEDErrorStore>();
 
 	private HashMap<IFile, Integer> connectCount = new HashMap<IFile, Integer>();
 	
@@ -292,7 +302,7 @@ public class NEDResources implements INEDTypeResolver {
 	 */
 	public boolean isNEDFile(IResource resource) {
 		// XXX should only regard files within a folder designated as "source folder" (persistent attribute!)
-		return resource instanceof IFile && "ned".equals(((IFile) resource).getFileExtension()); // XXX hardcoded constant
+		return resource instanceof IFile && NED_EXTENSION.equalsIgnoreCase(((IFile) resource).getFileExtension());
 	}
 
 	/**
@@ -342,7 +352,8 @@ public class NEDResources implements INEDTypeResolver {
 
         NEDElement tree = NEDTreeUtil.parseNedSource(text, errors, file.getLocation().toOSString());
         setNEDFileModel(file, tree);
-        convertErrorsToMarkers(file, errors);
+        nedParseErrors.put(file, errors);
+        // convertErrorsToMarkers(file, errors);
     }
     
 	/**
@@ -360,7 +371,8 @@ public class NEDResources implements INEDTypeResolver {
 		String fileName = file.getLocation().toOSString();
 		NEDErrorStore errors = new NEDErrorStore();
 		NEDElement tree = NEDTreeUtil.loadNedSource(fileName, errors);
-		convertErrorsToMarkers(file, errors);
+        nedParseErrors.put(file, errors);
+//		convertErrorsToMarkers(file, errors);
 
 		// only store it if there were no errors
 		if (tree==null || !errors.empty())
@@ -369,9 +381,13 @@ public class NEDResources implements INEDTypeResolver {
 			storeNEDFileModel(file, tree);
 	}
 
-	private void convertErrorsToMarkers(IFile file, NEDErrorStore errors) {
-		try {
-			file.deleteMarkers(NEDPROBLEM_MARKERID, true, IResource.DEPTH_ZERO);
+	private void addMarkersToFile(IFile file, NEDErrorStore errors) throws CoreException {
+//		try {
+            // TODO we should first create all markers and later compare the created markers to the
+            // ones already on the file. we should add/delete markers only if there were changes in the
+            // error messages. this would avoid unnecessary marker refresh if we are editing a file which
+            // already contains markers. adding the markers should be done in a WorkspaceJob
+			// file.deleteMarkers(NEDPROBLEM_MARKERID, true, IResource.DEPTH_ZERO);
 			for (int i=0; i<errors.numMessages(); i++) {
                 // XXX hack: parse out line number from string. NEDErrorStore should rather store line number as int...
 				String loc = errors.errorLocation(i);
@@ -397,8 +413,9 @@ public class NEDResources implements INEDTypeResolver {
                 }
                 addMarker(file, NEDPROBLEM_MARKERID, markerSeverity, errors.errorText(i), line);
 			}
-		} catch (CoreException e) {
-		}
+//		} catch (CoreException e) {
+//            System.out.println("problem during attaching an error marker to the file: "+e);
+//		}
 	}
 
 	private int parseLineNumber(String loc) {
@@ -429,9 +446,22 @@ public class NEDResources implements INEDTypeResolver {
         //System.out.println("marker added: "+type+" on "+file+" line "+line+": "+message);
 	}
 
+    /**
+     * Converts all error store info to marker and attaches them to the files
+     * @throws CoreException 
+     */
+    private void errorStoresToFileMarkers() throws CoreException {
+        for (IFile file : nedFiles.keySet()) {
+            file.deleteMarkers(NEDPROBLEM_MARKERID, true, IResource.DEPTH_ZERO);
+            addMarkersToFile(file, nedParseErrors.get(file));
+            addMarkersToFile(file, nedConsistencyErrors.get(file));
+        }
+    }
+    
 	public void forgetNEDFile(IFile file) {
         if (nedFiles.containsKey(file)) {
             nedFiles.remove(file);
+            nedParseErrors.remove(file);
             needsRehash = true;
         }
 	}
@@ -465,6 +495,8 @@ public class NEDResources implements INEDTypeResolver {
 		
         if (!needsRehash)
 			return;
+        // rehash done!
+        needsRehash = false;
         
         Set<String> duplicates = new HashSet<String>();
 		components.clear();
@@ -482,11 +514,20 @@ public class NEDResources implements INEDTypeResolver {
 		// find toplevel components in each file, and register them
 		for (IFile file : nedFiles.keySet()) {
 			// remove old consistency problem markers from file, before we proceed to add new ones
-			try {
-				file.deleteMarkers(NEDCONSISTENCYPROBLEM_MARKERID, true, IResource.DEPTH_ZERO);
-				// System.out.println("markers removed: "+NEDCONSISTENCYPROBLEM_MARKERID+" from "+file);
-			} catch (CoreException e) {
-			}
+            // TODO we should first create all markers and later compare the created markers to the
+            // ones already on the file. we should add/delete markers only if there were changes in the
+            // error messages. this would avoid unnecessary marker refresh if we are editing a file which
+            // already contains markers.
+            // TODO impelment NedErrorStore wich adds the errors to an MarkerArray
+//			try {
+//				file.deleteMarkers(NEDCONSISTENCYPROBLEM_MARKERID, true, IResource.DEPTH_ZERO);
+//				// System.out.println("markers removed: "+NEDCONSISTENCYPROBLEM_MARKERID+" from "+file);
+//			} catch (CoreException e) {
+//			}
+
+            // create a new ErrorStore for the consistency problems (the old one will be deleted if exists)
+            NEDErrorStore errorStore = new NEDErrorStore();
+            nedConsistencyErrors.put(file, errorStore);
 
 			// iterate on NED file contents, and register each componentt in our hash tables
 			NEDElement tree = nedFiles.get(file);
@@ -519,26 +560,30 @@ public class NEDResources implements INEDTypeResolver {
             	if (name!=null) {
             		if (components.containsKey(name)) {
             			// it is a duplicate: issue warning
-            			try {
+//            			try {
                 			IFile otherFile = components.get(name).getNEDFile();
-                			int line = parseLineNumber(node.getSourceLocation());
+//                			int line = parseLineNumber(node.getSourceLocation());
 							if (otherFile==null) {
 								String message = node.getTagName()+" '"+name+"' is a built-in type and cannot be redefined";
-								addMarker(file, NEDCONSISTENCYPROBLEM_MARKERID, IMarker.SEVERITY_ERROR, message, line); 
+                                errorStore.add(node.getSourceLocation(), 2, message);
+								// addMarker(file, NEDCONSISTENCYPROBLEM_MARKERID, IMarker.SEVERITY_ERROR, message, line); 
 							}
 							else {
                                 // add it to the duplicate set so we can remove them before the end
                                 duplicates.add(name);
 								String message = node.getTagName()+" '"+name+"' already defined in "+otherFile.getFullPath().toString();
-							    addMarker(file, NEDCONSISTENCYPROBLEM_MARKERID, IMarker.SEVERITY_ERROR, message, line);
+                                errorStore.add(node.getSourceLocation(), 2, message);
+							    //addMarker(file, NEDCONSISTENCYPROBLEM_MARKERID, IMarker.SEVERITY_ERROR, message, line);
                                 // add the same error message to the other file too
                                 String otherMessage = node.getTagName()+" '"+name+"' already defined in "+file.getFullPath().toString();
-                                int otherLine = parseLineNumber(components.get(name).getNEDElement().getSourceLocation());
-                                addMarker(otherFile, NEDCONSISTENCYPROBLEM_MARKERID, IMarker.SEVERITY_ERROR, otherMessage, otherLine);
+                                errorStore.add(components.get(name).getNEDElement().getSourceLocation(), 2, otherMessage);
+//                                int otherLine = parseLineNumber(components.get(name).getNEDElement().getSourceLocation());
+//                                addMarker(otherFile, NEDCONSISTENCYPROBLEM_MARKERID, IMarker.SEVERITY_ERROR, otherMessage, otherLine);
                                 
 							}
-						} catch (CoreException e) {
-						}
+//						} catch (CoreException e) {
+//                            System.out.println("Problem during consistency check: "+e.toString());
+//						}
             		}
             		else {
             			INEDTypeInfo component = new NEDComponent(node, file, this); 
@@ -559,21 +604,21 @@ public class NEDResources implements INEDTypeResolver {
             components.remove(dupName);
         }
 
-		// rehash done!
-		needsRehash = false;
 
 		// run "semantic validator" for each file
         // FIXME this must be run in the background (it's a long running task)
         // top level element insertion is slow because of this validation
 		for (IFile file : nedFiles.keySet()) {
-			final IFile ifile = file;
+//			final IFile ifile = file;
+            final NEDErrorStore consistencyErrors= nedConsistencyErrors.get(file);
 			INEDErrorStore errors = new INEDErrorStore() {  // XXX make a better one
 				public void add(NEDElement context, String message) {
-					int line = parseLineNumber(context.getSourceLocation());
-					try {
-						addMarker(ifile, NEDCONSISTENCYPROBLEM_MARKERID, IMarker.SEVERITY_ERROR, message, line);
-					} catch (CoreException e) {
-					} 
+//					int line = parseLineNumber(context.getSourceLocation());
+//					try {
+                        consistencyErrors.add(context.getSourceLocation(), 2, message);
+						// addMarker(ifile, NEDCONSISTENCYPROBLEM_MARKERID, IMarker.SEVERITY_ERROR, message, line);
+//					} catch (CoreException e) {
+//					} 
 				}
 			};
 			NEDFileValidator validator = new NEDFileValidator(this, errors);
@@ -581,6 +626,11 @@ public class NEDResources implements INEDTypeResolver {
 			validator.validate(tree);
 		}
 
+        try {
+            errorStoresToFileMarkers();
+        } catch (CoreException e) {
+            System.out.println("problem during attaching an error marker to the file: "+e);
+        }
 		
 		//XXX temporary code, just testing:
 		//for (INEDComponent c : components.values()) {
@@ -593,8 +643,10 @@ public class NEDResources implements INEDTypeResolver {
 	}
 
     public void invalidate() {
-        System.out.println("NEDResources invalidated");
-        needsRehash = true;
+        if (!needsRehash) {
+            System.out.println("NEDResources invalidated");
+            needsRehash = true;
+        }
     }
 
     public void modelChanged(NEDModelEvent event) {
@@ -618,7 +670,7 @@ public class NEDResources implements INEDTypeResolver {
 
     /**
      * @param event
-     * @return Whether the inheritance chain has changed somewhere so the whole cache should be
+     * @return The inheritance chain has changed somewhere so the whole cache should be
      * invalidated
      */
     public static boolean inheritanceMayHaveChanged(NEDModelEvent event) {
@@ -649,4 +701,56 @@ public class NEDResources implements INEDTypeResolver {
         // none of the above, so do not refresh
         return false;
     }
+
+// ************************************************************************************************    
+    static int resourceChange = 0;
+    
+    public void resourceChanged(IResourceChangeEvent event) {
+        try {
+            if (event.getDelta() == null) return;
+            System.out.println("resourceChange conter: "+resourceChange++);
+            System.out.println(((ResourceDelta)event.getDelta()).toDeepDebugString());
+            
+            event.getDelta().accept(            
+                    new IResourceDeltaVisitor() {
+                        public boolean visit(IResourceDelta delta) throws CoreException {
+                            IResource resource = delta.getResource();
+                            // continue visiting the children if it is not a NED file
+                            if (!isNEDFile(resource))
+                                return true;
+
+                            switch (delta.getKind()) {
+                            case IResourceDelta.REMOVED:
+                                // handle removed resource
+                                forgetNEDFile((IFile) resource);
+                                invalidate();
+                                break;
+                            case IResourceDelta.ADDED:
+                                readNEDFile((IFile) resource);
+                                invalidate();
+                                break;
+                            case IResourceDelta.CHANGED:
+                                // handle changed resource, but we are interested only in content change
+                                // we don't care about marker and property changes
+                                if ((delta.getFlags() & IResourceDelta.CONTENT)!=0) {
+                                    readNEDFile((IFile) resource);
+                                    invalidate();
+                                }
+                                break;
+                            }
+                            // ned files do not have children
+                            return false;
+                        }
+                    }
+            );
+            
+        } catch (CoreException e) {
+            // error during visit. project is close or does not exist, no need for notification
+            return;
+        } finally {
+            rehashIfNeeded();
+        }
+        
+    }
+
 }

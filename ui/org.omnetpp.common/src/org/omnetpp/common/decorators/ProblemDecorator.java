@@ -20,7 +20,8 @@ import org.omnetpp.common.image.ImageFactory;
 
 /**
  * @author rhornig
- * Decorates IResources if they have error or warning markers.
+ * Decorates IResources if they have error or warning markers. Attaches to the workspace and
+ * listens to all changes in the resources.
  */
 public class ProblemDecorator implements ILightweightLabelDecorator, IResourceChangeListener {
     
@@ -111,7 +112,16 @@ public class ProblemDecorator implements ILightweightLabelDecorator, IResourceCh
                 event.getDelta().accept(            
                         new IResourceDeltaVisitor() {
                             public boolean visit(IResourceDelta delta) {
-                                resourceList.add(delta.getResource());
+                                // we are interested only in marker annotation changes
+                                if ((delta.getFlags() & IResourceDelta.MARKERS) != 0) {
+                                    // add the resource and its ancestors to the notification list
+                                    IResource res = delta.getResource();
+                                    while (res!=null && res.getType()!=IResource.ROOT) {
+                                        resourceList.add(res);
+                                        res = res.getParent();
+                                    }
+                                }
+                                // System.out.println(((ResourceDelta)delta).toDebugString());
                                 return true;
                             }
                         }

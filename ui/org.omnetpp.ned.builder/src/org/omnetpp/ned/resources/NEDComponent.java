@@ -182,7 +182,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
     protected void refreshOwnMembers() {
         // XXX for debuging
         ++refreshOwnCount;
-        System.out.println("NEDComponent for "+getName()+" ownRefersh: " + refreshOwnCount);
+//        System.out.println("NEDComponent for "+getName()+" ownRefersh: " + refreshOwnCount);
 
         ownProperties.clear();
         ownParams.clear();
@@ -227,7 +227,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 	 */
 	protected void refreshInheritedMembers() {
         ++refreshInheritedCount;
-        System.out.println("NEDComponent for "+getName()+" inheritedRefersh: " + refreshInheritedCount);
+//        System.out.println("NEDComponent for "+getName()+" inheritedRefersh: " + refreshInheritedCount);
 
         // first wee need our own members updated
         if (needsOwnUpdate)
@@ -453,7 +453,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
         resolver.modelChanged(event);
         
         // for debugging only
-        System.out.println("TYPEINFO NOTIFY ON: "+getNEDElement().getClass().getSimpleName()+" "+getName()+" "+event);
+        // System.out.println("TYPEINFO NOTIFY ON: "+getNEDElement().getClass().getSimpleName()+" "+getName()+" "+event);
         
         // TODO test if the name attribute has changed and pass it to NEDResources 
         // because in that case the whole model (All files) have to be rebuilt
