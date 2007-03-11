@@ -618,7 +618,8 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 	}
 
 	/**
-	 * This is the method called to load a resource into the editing domain's resource set based on the editor's input.
+	 * This is the method called to load a resource into the editing 
+	 * domain's resource set based on the editor's input.
 	 */
 	public void createModel() {
 		// Assumes that the input is a file object.
@@ -639,7 +640,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 
 		Diagnostic diagnostic = analyzeResourceProblems(resource, exception);
 		if (diagnostic.getSeverity() != Diagnostic.OK) {
-			resourceToDiagnosticMap.put(resource,  analyzeResourceProblems(resource, exception));
+			resourceToDiagnosticMap.put(resource,  diagnostic); //FIXME throw exception?
 		}
 		editingDomain.getResourceSet().eAdapters().add(problemIndicationAdapter);
 	}

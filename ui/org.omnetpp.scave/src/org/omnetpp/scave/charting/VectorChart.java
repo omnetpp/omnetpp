@@ -72,8 +72,6 @@ public class VectorChart extends ChartCanvas {
 	private int smartModeLimit = 10000; // turn off symbols if there're more than this amount of points on the plot
 	
 	private int layoutDepth = 0; // how many layoutChart() calls are on the stack
-	private int repaintCounter;
-	private boolean debug = false;
 
 	private static final String KEY_ALL = null;
 	
@@ -407,7 +405,7 @@ public class VectorChart extends ChartCanvas {
 		}
 	}
 	
-	private IVectorPlotter getPlotter(String key) {
+	public IVectorPlotter getPlotter(String key) {
 		LineStyle style = getLineStyle(key);
 		switch (style) {
 		case None: return new DotsVectorPlotter();
@@ -419,7 +417,7 @@ public class VectorChart extends ChartCanvas {
 		}
 	}
 	
-	private IChartSymbol getSymbol(String key) {
+	public IChartSymbol getSymbol(String key) {
 		SymbolType type = getSymbolType(key);
 		int size = getSymbolSize(key);
 		switch (type) {
@@ -434,8 +432,8 @@ public class VectorChart extends ChartCanvas {
 		}
 	}
 	
-	private Color getLineColor(int index) {
-		return ColorFactory.getGoodColor(index);
+	public Color getLineColor(int series) {
+		return ColorFactory.getGoodColor(series);
 	}
 
 	@Override
@@ -450,15 +448,5 @@ public class VectorChart extends ChartCanvas {
 		yAxis.drawAxis(gc);
 		crosshair.draw(gc);
 		drawStatusText(gc);
-	}
-
-	static class DPoint {
-		double x;
-		double y;
-		
-		public DPoint(double x, double y) {
-			this.x = x;
-			this.y = y;
-		}
 	}
 }
