@@ -252,14 +252,6 @@ IndexedVectorFileWriterNode::~IndexedVectorFileWriterNode()
 {
     for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
         delete *it;
-
-    if (f != NULL)
-        fclose(f);
-    if (indexWriter != NULL)
-    {
-        indexWriter->writeFingerprint(fileName);
-        delete indexWriter;
-    }
 }
 
 Port *IndexedVectorFileWriterNode::addVector(const VectorResult &vector)
@@ -320,6 +312,16 @@ bool IndexedVectorFileWriterNode::finished() const
         if (!port->channel()->closing() || port->channel()->length() > 0 || port->hasBufferedData())
             return false;
     }
+
+    // close output vector and index files
+    if (f != NULL)
+        fclose(f);
+    if (indexWriter != NULL)
+    {
+        indexWriter->writeFingerprint(fileName);
+        delete indexWriter;
+    }
+
     return true;
 }
 
