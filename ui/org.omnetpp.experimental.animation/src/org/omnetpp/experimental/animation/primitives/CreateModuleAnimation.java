@@ -41,11 +41,13 @@ public class CreateModuleAnimation extends AbstractInfiniteAnimation {
 			});
 			animationEnvironment.setFigure(module, submoduleFigure);
 			getCompoundModuleFigure(parentModule).addSubmoduleFigure(submoduleFigure);
-			submoduleFigure.setDisplayString(new DisplayString(null, null, ""));
+			submoduleFigure.setDisplayString(new DisplayString(""));
 			submoduleFigure.setName(getReplayModule().getFullName());
 
-			parentModule.addSubmodule(getReplayModule());
 		}
+
+		if (parentModule != null)
+			parentModule.addSubmodule(getReplayModule());
 
 		getReplaySimulation().addModule(getReplayModule());
 	}
@@ -56,8 +58,11 @@ public class CreateModuleAnimation extends AbstractInfiniteAnimation {
 		if (parentModule != null) {
 			SubmoduleFigure submoduleFigure = (SubmoduleFigure)animationEnvironment.getFigure(module);
 			getCompoundModuleFigure(parentModule).removeSubmoduleFigure(submoduleFigure);
-			parentModule.removeSubmodule(getReplayModule());
 		}
+
+		
+		if (parentModule != null)
+			parentModule.removeSubmodule(getReplayModule());
 
 		animationEnvironment.setFigure(module, null); //XXX move inside if???
 		getReplaySimulation().removeModule(module.getId());

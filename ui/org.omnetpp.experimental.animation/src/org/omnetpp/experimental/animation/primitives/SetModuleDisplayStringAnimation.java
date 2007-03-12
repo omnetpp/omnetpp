@@ -29,7 +29,7 @@ public class SetModuleDisplayStringAnimation extends AbstractInfiniteAnimation {
 		IRuntimeModule module = animationEnvironment.getSimulation().getModuleByID(moduleId);
 		if (module.getParentModule() == animationEnvironment.getSimulation().getRootModule()) { //FIXME
 			SubmoduleFigure moduleFigure = (SubmoduleFigure)animationEnvironment.getFigure(module);
-			SubmoduleConstraint submoduleConstraint = new SubmoduleConstraint(displayString);
+			SubmoduleConstraint submoduleConstraint = new SubmoduleConstraint(displayString, new Float(1.0));
 			submoduleConstraint.setVectorName(module.getFullPath());
 			submoduleConstraint.setVectorSize(module.getSize());
 			submoduleConstraint.setVectorIndex(module.getIndex());

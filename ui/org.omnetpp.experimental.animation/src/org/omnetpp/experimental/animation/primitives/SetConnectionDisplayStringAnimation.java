@@ -34,7 +34,7 @@ public class SetConnectionDisplayStringAnimation extends AbstractInfiniteAnimati
 			// FIXME:
 			if (connectionFigure != null) {
 				oldDisplayString = connectionFigure.getLastDisplayString();
-				if (oldDisplayString==null) oldDisplayString = new DisplayString(null, null, "");
+				if (oldDisplayString==null) oldDisplayString = new DisplayString("");
 				connectionFigure.setDisplayString(displayString);
 			}
 		}

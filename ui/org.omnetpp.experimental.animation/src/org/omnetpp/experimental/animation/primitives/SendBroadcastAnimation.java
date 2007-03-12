@@ -64,7 +64,7 @@ public class SendBroadcastAnimation extends AbstractSendMessageAnimation {
 			Point[] ps = getMessageSendPoints(animationPosition, 0);
 			//System.out.println("Source: " + p + " message:" + ps[0] + ":" + ps[1]);
 			double r = ps[0].getDistance(p);
-			double width = r - ps[1].getDistance(p);
+			double width = Math.max(10, r - ps[1].getDistance(p));
 			//System.out.println("Radius: " + r + " width:" + width);
 			int radius = (int)r;
 			circle.setLineWidth((int)width);
@@ -74,12 +74,12 @@ public class SendBroadcastAnimation extends AbstractSendMessageAnimation {
 
 	@Override
 	protected Point getBeginPoint() {
-		return getSubmoduleFigureCenter(sourceModuleId);
+		return getSubmoduleFigureCenter(getAncestorUnderParentModule(sourceModuleId));
 	}
 	
 	@Override
 	protected Point getEndPoint() {
-		return getSubmoduleFigureCenter(destinationModuleId);
+		return getSubmoduleFigureCenter(getAncestorUnderParentModule(destinationModuleId));
 	}
 
 	protected boolean isDisplayed() {

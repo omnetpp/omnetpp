@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -1385,12 +1386,12 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 				}
 				else if (tokens[0].equals("DS")) {
 					// "DisplayString" line
-					IDisplayString displayString = new DisplayString(null, null, getToken(tokens, "d"));
+					IDisplayString displayString = new DisplayString(getToken(tokens, "d"));
 					addAnimationPrimitive(new SetModuleDisplayStringAnimation(this, loadAnimationPosition, getIntegerToken(tokens, "id"), displayString));
 				}
 				else if (tokens[0].equals("CS")) {
 					// "ConnectionDisplayString" line
-					IDisplayString displayString = new DisplayString(null, null, getToken(tokens, "d"));
+					IDisplayString displayString = new DisplayString(getToken(tokens, "d"));
 					ConnectionId connectionId = new ConnectionId(getIntegerToken(tokens, "sm"), getIntegerToken(tokens, "sg"));
 					addAnimationPrimitive(new SetConnectionDisplayStringAnimation(this, loadAnimationPosition, connectionId, displayString));
 				}
@@ -1408,7 +1409,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 					addAnimationPrimitive(new BubbleAnimation(this, loadAnimationPosition, text, getIntegerToken(tokens, "id")));
 				}
 				else
-					throw new RuntimeException("Unknown log entry: "+tokens[0]);
+					System.out.println("Unknown log entry: " + tokens[0]);
 			}
 
 			// store the end of the simulation

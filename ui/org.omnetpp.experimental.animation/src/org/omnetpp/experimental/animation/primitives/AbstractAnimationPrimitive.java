@@ -121,6 +121,21 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 		else
 			return null;
 	}
+	
+	protected int getAncestorUnderParentModule(int enclosedModuleId)
+	{
+		IRuntimeModule parentModule = getSimulation().getRootModule();
+		IRuntimeModule module = getSimulation().getModuleByID(enclosedModuleId);
+		
+		while (module != null && module.getParentModule() != parentModule) {
+			module = module.getParentModule();
+		}
+
+		if (module != null)
+			return module.getId();
+		else
+			return -1;
+	}
 
 	protected Point getSubmoduleFigureCenter(int moduleId) {
 		return getSubmoduleFigure(moduleId).getBounds().getCenter();
