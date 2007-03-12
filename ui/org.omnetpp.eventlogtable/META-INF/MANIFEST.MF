@@ -19,5 +19,4 @@ Eclipse-LazyStart: true
 Bundle-Vendor: OpenSim Ltd.
 Export-Package: org.omnetpp.eventlogtable,
  org.omnetpp.eventlogtable.editors,
- org.omnetpp.eventlogtable.selection,
  org.omnetpp.eventlogtable.widgets

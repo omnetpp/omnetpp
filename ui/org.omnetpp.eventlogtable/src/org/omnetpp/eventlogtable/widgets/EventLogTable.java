@@ -3,11 +3,11 @@ package org.omnetpp.eventlogtable.widgets;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableColumn;
+import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.virtualtable.VirtualTableViewer;
 import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.EventLogTableFacade;
 import org.omnetpp.eventlog.engine.IEventLog;
-import org.omnetpp.eventlogtable.editors.EventLogInput;
 import org.omnetpp.eventlogtable.editors.EventLogTableContributor;
 
 public class EventLogTable extends VirtualTableViewer<EventLogEntry> {

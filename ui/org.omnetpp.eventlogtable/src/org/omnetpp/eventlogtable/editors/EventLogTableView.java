@@ -9,10 +9,10 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
+import org.omnetpp.common.eventlog.EventLogSelection;
 import org.omnetpp.common.virtualtable.VirtualTableSelection;
 import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.IEvent;
-import org.omnetpp.eventlogtable.selection.EventLogSelection;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 
 /**

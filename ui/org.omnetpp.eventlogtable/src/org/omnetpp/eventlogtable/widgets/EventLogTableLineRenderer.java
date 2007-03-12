@@ -13,6 +13,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.virtualtable.IVirtualTableLineRenderer;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
@@ -39,7 +40,6 @@ import org.omnetpp.eventlog.engine.ModuleReparentedEntry;
 import org.omnetpp.eventlog.engine.PStringVector;
 import org.omnetpp.eventlog.engine.SendDirectEntry;
 import org.omnetpp.eventlog.engine.SendHopEntry;
-import org.omnetpp.eventlogtable.editors.EventLogInput;
 
 public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<EventLogEntry> {
 	public enum DisplayMode {
