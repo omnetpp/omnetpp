@@ -275,7 +275,7 @@ foreach $class (@classes)
       elsif ($field->{TYPE} eq "simtime_t")
       {
          print ENTRIES_CC_FILE "    if ($field->{NAME} != $field->{DEFAULTVALUE})\n";
-         print ENTRIES_CC_FILE "        fprintf(fout, \" $field->{CODE} $field->{PRINTFTYPE}\", 12, $field->{NAME});\n";
+         print ENTRIES_CC_FILE "        fprintf(fout, \" $field->{CODE} $field->{PRINTFTYPE}\", 16, $field->{NAME});\n";
       }
       else
       {
@@ -314,7 +314,7 @@ foreach $class (@classes)
       }
       elsif ($field->{TYPE} eq "simtime_t")
       {
-         print ENTRIES_CC_FILE "        {sprintf(buffer, \"%.*g\", 12, $field->{NAME}); return buffer;}\n"; # gcvt() is obsolete
+         print ENTRIES_CC_FILE "        {sprintf(buffer, \"%.*g\", 16, $field->{NAME}); return buffer;}\n"; # gcvt() is obsolete
       }
       else
       {
