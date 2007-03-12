@@ -24,7 +24,7 @@ public class ProblemMarkerJob extends WorkspaceJob {
 
     public ProblemMarkerJob(String name) {
         super(name);
-        // TODO Auto-generated constructor stub
+        setPriority(INTERACTIVE);
     }
 
     /**
@@ -67,6 +67,23 @@ public class ProblemMarkerJob extends WorkspaceJob {
     public void removeStores(IFile file) {
         nedParseErrors.remove(file);
         nedConsistencyErrors.remove(file);
+    }
+    
+    /**
+     * @param file
+     * @return Whether the given file has errors in any of it's store 
+     */
+    public boolean hasErrors(IFile file) {
+        NEDErrorStore es = nedParseErrors.get(file);
+        if (es != null && (es.containsError() || es.containsFatal())) 
+            return true;
+        
+        es = nedConsistencyErrors.get(file);
+        if (es != null && (es.containsError() || es.containsFatal())) 
+            return true;
+        
+        // otherwise we do not have any error
+        return false;
     }
     
     private void addMarkersToFile(IFile file, NEDErrorStore errors)

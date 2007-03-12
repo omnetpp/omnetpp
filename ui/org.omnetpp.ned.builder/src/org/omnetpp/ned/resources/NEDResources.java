@@ -5,16 +5,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.core.internal.events.ResourceDelta;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
-import org.eclipse.core.resources.IResourceVisitor;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.ned.engine.NEDErrorStore;
@@ -95,7 +91,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 	 * Constructor.
 	 */
 	public NEDResources() {
-		createBuiltInNEDTypes(); 
+		createBuiltInNEDTypes();
 	}
 
 	/**
@@ -178,28 +174,10 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		return nedFiles.get(file);
 	}
 
-    
-    // TODO move this to the ProblemMarkerJob class
 	public synchronized boolean containsNEDErrors(IFile file) {
-        return hasErrorMarker(file, ProblemMarkerJob.NEDPROBLEM_MARKERID) || hasErrorMarker(file, ProblemMarkerJob.NEDCONSISTENCYPROBLEM_MARKERID);
+        return markerJob.hasErrors(file);
 	}
 
-	/**
-	 * True if the file has any marker of the given marker type id (or subclass) 
-	 * with severity ERROR; or if an error occurred while checking the markers. 
-	 */
-	private static boolean hasErrorMarker(IFile file, String markerType) {
-		try {
-        	IMarker[] markers = file.findMarkers(markerType, true, IFile.DEPTH_ZERO);
-        	for (IMarker marker : markers) 
-        		if (marker.getAttribute(IMarker.SEVERITY,IMarker.SEVERITY_ERROR)==IMarker.SEVERITY_ERROR)
-        			return true;
-        	return false;
-        } catch (CoreException e) {
-			return true;
-		}
-	}
-	
 	public synchronized INEDTypeInfo getComponentAt(IFile file, int lineNumber) {
 		if (needsRehash)
 			rehash();
