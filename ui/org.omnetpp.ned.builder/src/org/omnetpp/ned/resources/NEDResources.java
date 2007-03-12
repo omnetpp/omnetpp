@@ -168,11 +168,11 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		return param;
 	}
 	
-	public Set<IFile> getNEDFiles() {
+    public synchronized Set<IFile> getNEDFiles() {
 		return nedFiles.keySet();
 	}
 
-	public NEDElement getNEDFileContents(IFile file) {
+	public synchronized NEDElement getNEDFileContents(IFile file) {
 		if (needsRehash)
 			rehash();
 		return nedFiles.get(file);
@@ -180,7 +180,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     
     // TODO move this to the ProblemMarkerJob class
-	public boolean containsNEDErrors(IFile file) {
+	public synchronized boolean containsNEDErrors(IFile file) {
         return hasErrorMarker(file, ProblemMarkerJob.NEDPROBLEM_MARKERID) || hasErrorMarker(file, ProblemMarkerJob.NEDCONSISTENCYPROBLEM_MARKERID);
 	}
 
@@ -200,7 +200,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		}
 	}
 	
-	public INEDTypeInfo getComponentAt(IFile file, int lineNumber) {
+	public synchronized INEDTypeInfo getComponentAt(IFile file, int lineNumber) {
 		if (needsRehash)
 			rehash();
 		for (INEDTypeInfo component : components.values()) {
@@ -213,86 +213,86 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		return null;
 	}
 
-	public Collection<INEDTypeInfo> getAllComponents() {
+	public synchronized Collection<INEDTypeInfo> getAllComponents() {
 		if (needsRehash)
 			rehash();
 		return components.values();
 	}
 
-	public Collection<INEDTypeInfo> getModules() {
+	public synchronized Collection<INEDTypeInfo> getModules() {
 		if (needsRehash)
 			rehash();
 		return modules.values();
 	}
 
-	public Collection<INEDTypeInfo> getChannels() {
+	public synchronized Collection<INEDTypeInfo> getChannels() {
 		if (needsRehash)
 			rehash();
 		return channels.values();
 	}
 
-	public Collection<INEDTypeInfo> getModuleInterfaces() {
+	public synchronized Collection<INEDTypeInfo> getModuleInterfaces() {
 		if (needsRehash)
 			rehash();
 		return moduleInterfaces.values();
 	}
 
-	public Collection<INEDTypeInfo> getChannelInterfaces() {
+	public synchronized Collection<INEDTypeInfo> getChannelInterfaces() {
 		if (needsRehash)
 			rehash();
 		return channelInterfaces.values();
 	}
 
-    public Set<String> getAllComponentNames() {
+    public synchronized Set<String> getAllComponentNames() {
         if (needsRehash)
             rehash();
         return components.keySet();
     }
 
-    public Set<String> getReservedNames() {
+    public synchronized Set<String> getReservedNames() {
         if (needsRehash)
             rehash();
         return reservedNames;
     }
     
-    public Set<String> getModuleNames() {
+    public synchronized Set<String> getModuleNames() {
 		if (needsRehash)
 			rehash();
 		return modules.keySet();
 	}
 
-	public Set<String> getChannelNames() {
+	public synchronized Set<String> getChannelNames() {
 		if (needsRehash)
 			rehash();
 		return channels.keySet();
 	}
 
-	public Set<String> getModuleInterfaceNames() {
+	public synchronized Set<String> getModuleInterfaceNames() {
 		if (needsRehash)
 			rehash();
 		return moduleInterfaces.keySet();
 	}
 
-	public Set<String> getChannelInterfaceNames() {
+	public synchronized Set<String> getChannelInterfaceNames() {
 		if (needsRehash)
 			rehash();
 		return channelInterfaces.keySet();
 	}
 
-	public INEDTypeInfo getComponent(String name) {
+	public synchronized INEDTypeInfo getComponent(String name) {
 		if (needsRehash)
 			rehash();
 		return components.get(name);
 	}
 
-	public INEDTypeInfo wrapNEDElement(NEDElement componentNode) {
+	public synchronized INEDTypeInfo wrapNEDElement(NEDElement componentNode) {
 		return new NEDComponent(componentNode, null, this); 
 	}
 
 	/**
 	 * Determines if a resource is a NED file, that is, if it should be parsed.
 	 */
-	public boolean isNEDFile(IResource resource) {
+	public static boolean isNEDFile(IResource resource) {
 		// TODO should only regard files within a folder designated as "source folder" (persistent attribute!)
 		return resource instanceof IFile && NED_EXTENSION.equalsIgnoreCase(((IFile) resource).getFileExtension());
 	}
@@ -300,7 +300,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 	/**
 	 * NED editors should call this when they get opened.
 	 */
-	public void connect(IFile file) {
+	public synchronized void connect(IFile file) {
 		if (connectCount.containsKey(file))
 			connectCount.put(file, connectCount.get(file)+1);
 		else {
@@ -311,7 +311,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 	/**
 	 * NED editors should call this when they get closed.
 	 */
-	public void disconnect(IFile file) {
+	public synchronized void disconnect(IFile file) {
 		int count = connectCount.get(file);  // must exist
 		if (count<=1) {
 			// there's no open editor -- remove counter and re-read last saved state from disk
@@ -326,7 +326,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     /**
      * NED editors should call this when editor content changes.
      */
-    public void setNEDFileModel(IFile file, NEDElement tree) {
+    public synchronized void setNEDFileModel(IFile file, NEDElement tree) {
         if (tree==null)
             forgetNEDFile(file);  // XXX rather: it should never be called with tree==null!
         else
@@ -337,7 +337,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     /**
      * NED editors should call this when editor content changes.
      */
-    public void setNEDFileText(IFile file, String text) {
+    public synchronized void setNEDFileText(IFile file, String text) {
         // parse the NED text and put it into the hash table
         NEDErrorStore errors = new NEDErrorStore();
         errors.setPrintToStderr(false);
@@ -352,7 +352,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 	/**
 	 * Gets called from incremental builder. 
 	 */
-	public void readNEDFile(IFile file) {
+	public synchronized void readNEDFile(IFile file) {
 		// XXX for debugging
 		// System.out.println(file.toString());
 		
@@ -373,7 +373,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 			storeNEDFileModel(file, tree);
 	}
 
-	public void forgetNEDFile(IFile file) {
+	public synchronized void forgetNEDFile(IFile file) {
         if (nedFiles.containsKey(file)) {
             nedFiles.remove(file);
             markerJob.removeStores(file);
@@ -381,7 +381,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         }
 	}
 
-	private void storeNEDFileModel(IFile file, NEDElement tree) {
+	private synchronized void storeNEDFileModel(IFile file, NEDElement tree) {
 		// store NED file contents
 		Assert.isTrue(tree!=null);
 
@@ -396,7 +396,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 	/**
 	 * Calls rehash() if internal tables are out of date.
 	 */
-	public void rehashIfNeeded() {
+	public synchronized void rehashIfNeeded() {
 		if (needsRehash)
 			rehash();
 	}
@@ -530,7 +530,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         System.out.println("rehash() took " + dt + "ms");
     }
 
-    public void invalidate() {
+    public synchronized void invalidate() {
         if (!needsRehash) {
             System.out.println("NEDResources invalidated");
             needsRehash = true;
@@ -593,7 +593,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 // ************************************************************************************************    
     static int resourceChange = 0;
     
-    public void resourceChanged(IResourceChangeEvent event) {
+    public synchronized void resourceChanged(IResourceChangeEvent event) {
         try {
             if (event.getDelta() == null) return;
 //            System.out.println("resourceChange conter: "+resourceChange++);
