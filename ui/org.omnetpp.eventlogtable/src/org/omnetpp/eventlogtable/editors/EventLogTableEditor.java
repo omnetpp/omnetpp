@@ -99,9 +99,13 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 		}
 
 		public boolean mergeInto(INavigationLocation currentLocation) {
-			EventLogTableLocation eventLogTableLocation = (EventLogTableLocation)currentLocation;
-			
-			return eventLogTableLocation.eventNumber == eventNumber;	
+			if (currentLocation instanceof EventLogTableLocation) {
+				EventLogTableLocation eventLogTableLocation = (EventLogTableLocation)currentLocation;
+				
+				return eventLogTableLocation.eventNumber == eventNumber;
+			}
+			else
+				return false;
 		}
 
 		public void releaseState() {

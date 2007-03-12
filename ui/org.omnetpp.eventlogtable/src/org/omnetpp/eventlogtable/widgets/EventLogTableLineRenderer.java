@@ -133,7 +133,6 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 
 		EventLogEntry eventLogEntry = (EventLogEntry)element;
 		Event event = eventLogEntry.getEvent();
-		IEventLog eventLog = event.getEventLog();
 		boolean isEventLogEntry = eventLogEntry instanceof EventEntry;
 
 		try {
@@ -184,28 +183,26 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 							MessageDependency cause = event.getCause();
 				
 							drawText("Event in ", CONSTANT_TEXT_COLOR);
-							drawModuleDescription(eventLog.getModuleCreatedEntry(event.getModuleId()));
+							drawModuleDescription(event.getModuleId());
 							
 							BeginSendEntry beginSendEntry = cause != null ? cause.getCauseBeginSendEntry() : null;
 							if (beginSendEntry != null) {
 								drawText(" on arrival of ", CONSTANT_TEXT_COLOR);
 								
 								if (event.isSelfEvent())
-									drawText("self message ", CONSTANT_TEXT_COLOR);
-								else
-									drawText("message ", CONSTANT_TEXT_COLOR);
+									drawText("self ", CONSTANT_TEXT_COLOR);
 
 								drawMessageDescription(beginSendEntry);
 
 								if (!event.isSelfEvent()) {
 									drawText(" from ", CONSTANT_TEXT_COLOR);
-									drawModuleDescription(eventLog.getModuleCreatedEntry(beginSendEntry.getContextModuleId()));
+									drawModuleDescription(beginSendEntry.getContextModuleId());
 								}
 								
 								IEvent causeEvent = cause.getCauseEvent();
 								if (causeEvent != null && causeEvent.getModuleId() != beginSendEntry.getContextModuleId()) {
 									drawText(" called from ", CONSTANT_TEXT_COLOR);
-									drawModuleDescription(eventLog.getModuleCreatedEntry(causeEvent.getModuleId()));
+									drawModuleDescription(causeEvent.getModuleId());
 								}
 							}
 						}
@@ -220,7 +217,7 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 
 								if (event.getModuleId() != bubbleEntry.getContextModuleId()) {
 									drawText(" in ", CONSTANT_TEXT_COLOR);
-									drawModuleDescription(eventLog.getModuleCreatedEntry(bubbleEntry.getContextModuleId()));
+									drawModuleDescription(bubbleEntry.getContextModuleId());
 								}
 
 								drawText(": ", CONSTANT_TEXT_COLOR);
@@ -231,11 +228,11 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 								drawText("Begin calling ", CONSTANT_TEXT_COLOR);
 								drawText(moduleMethodBeginEntry.getMethod(), DATA_COLOR);
 								drawText(" in ", CONSTANT_TEXT_COLOR);
-								drawModuleDescription(eventLog.getModuleCreatedEntry(moduleMethodBeginEntry.getToModuleId()));
+								drawModuleDescription(moduleMethodBeginEntry.getToModuleId());
 
 								if (event.getModuleId() != moduleMethodBeginEntry.getContextModuleId()) {
 									drawText(" from ", CONSTANT_TEXT_COLOR);
-									drawModuleDescription(eventLog.getModuleCreatedEntry(moduleMethodBeginEntry.getFromModuleId()));
+									drawModuleDescription(moduleMethodBeginEntry.getFromModuleId());
 								}
 							}
 							else if (eventLogEntry instanceof ModuleMethodEndEntry) {
@@ -243,30 +240,33 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 							}
 							else if (eventLogEntry instanceof ModuleCreatedEntry) {
 								ModuleCreatedEntry moduleCreatedEntry = (ModuleCreatedEntry)eventLogEntry;
-								drawText("Module ", CONSTANT_TEXT_COLOR);
+								drawText("Creating ", CONSTANT_TEXT_COLOR);
 								drawModuleDescription(moduleCreatedEntry);
-								drawText(" created under ", CONSTANT_TEXT_COLOR);
-								drawModuleDescription(eventLog.getModuleCreatedEntry(moduleCreatedEntry.getParentModuleId()));
+								drawText(" under ", CONSTANT_TEXT_COLOR);
+								drawModuleDescription(moduleCreatedEntry.getParentModuleId());
 							}
 							else if (eventLogEntry instanceof ModuleDeletedEntry) {
 								ModuleDeletedEntry moduleDeletedEntry = (ModuleDeletedEntry)eventLogEntry;
-								drawText("Module ", CONSTANT_TEXT_COLOR);
-								drawModuleDescription(eventLog.getModuleCreatedEntry(moduleDeletedEntry.getModuleId()));
-								drawText(" deleted", CONSTANT_TEXT_COLOR);
+								drawText("Deleting ", CONSTANT_TEXT_COLOR);
+								drawModuleDescription(moduleDeletedEntry.getModuleId());
 							}
 							else if (eventLogEntry instanceof ModuleReparentedEntry) {
 								ModuleReparentedEntry moduleReparentedEntry = (ModuleReparentedEntry)eventLogEntry;
-								drawText("Module ", CONSTANT_TEXT_COLOR);
-								drawModuleDescription(eventLog.getModuleCreatedEntry(moduleReparentedEntry.getModuleId()));
-								drawText(" reparented under ", CONSTANT_TEXT_COLOR);
-								drawModuleDescription(eventLog.getModuleCreatedEntry(moduleReparentedEntry.getNewParentModuleId()));
+								drawText("Reparenting ", CONSTANT_TEXT_COLOR);
+								drawModuleDescription(moduleReparentedEntry.getModuleId());
+								drawText(" under ", CONSTANT_TEXT_COLOR);
+								drawModuleDescription(moduleReparentedEntry.getNewParentModuleId());
 							}
 							else if (eventLogEntry instanceof ConnectionCreatedEntry) {
-								drawText("Connection created...", CONSTANT_TEXT_COLOR);
+								ConnectionCreatedEntry connectionCreatedEntry = (ConnectionCreatedEntry)eventLogEntry;
+								drawText("Createding ", CONSTANT_TEXT_COLOR);
+								drawConnectionDescription(connectionCreatedEntry.getSourceModuleId(), connectionCreatedEntry.getSourceGateFullName(),
+									connectionCreatedEntry.getDestModuleId(), connectionCreatedEntry.getDestGateFullName());
 							}
 							else if (eventLogEntry instanceof ConnectionDeletedEntry) {
-								// TODO:
-								drawText("Connection deleted...", CONSTANT_TEXT_COLOR);
+								ConnectionDeletedEntry connectionDeletedEntry = (ConnectionDeletedEntry)eventLogEntry;
+								drawText("Deleting ", CONSTANT_TEXT_COLOR);
+								drawConnectionDescription(connectionDeletedEntry.getSourceModuleId(), connectionDeletedEntry.getSourceGateId());
 							}
 							else if (eventLogEntry instanceof ConnectionDisplayStringChangedEntry) {
 								// TODO: print connection info
@@ -280,7 +280,7 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 
 								if (event.getModuleId() != moduleDisplayStringChangedEntry.getContextModuleId())	{
 									drawText("for ", CONSTANT_TEXT_COLOR);
-									drawModuleDescription(eventLog.getModuleCreatedEntry(moduleDisplayStringChangedEntry.getContextModuleId()));
+									drawModuleDescription(moduleDisplayStringChangedEntry.getContextModuleId());
 								}
 
 								drawText(" to ", CONSTANT_TEXT_COLOR);							
@@ -288,7 +288,7 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 							}
 							else if (eventLogEntry instanceof CancelEventEntry) {
 								CancelEventEntry cancelEventEntry = (CancelEventEntry)eventLogEntry;
-								drawText("Cancelling self message ", CONSTANT_TEXT_COLOR);
+								drawText("Cancelling self ", CONSTANT_TEXT_COLOR);
 								drawMessageDescription(findBeginSendEntry(cancelEventEntry.getPreviousEventNumber(), cancelEventEntry.getMessageId()));
 							}
 							else if (eventLogEntry instanceof BeginSendEntry) {
@@ -310,7 +310,7 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 								// TODO: add senderGateId
 								SendHopEntry sendHopEntry = (SendHopEntry)eventLogEntry;
 								drawText("Sending from ", CONSTANT_TEXT_COLOR);
-								drawModuleDescription(eventLog.getModuleCreatedEntry(sendHopEntry.getSenderModuleId()));
+								drawModuleDescription(sendHopEntry.getSenderModuleId());
 								drawText(" with transmission delay ", CONSTANT_TEXT_COLOR);
 								drawText(sendHopEntry.getTransmissionDelay() + "s", DATA_COLOR);
 								drawText(" and propagation delay ", CONSTANT_TEXT_COLOR);
@@ -323,11 +323,11 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 
 								if (event.getModuleId() != sendDirectEntry.getContextModuleId())	{
 									drawText("from ", CONSTANT_TEXT_COLOR);
-									drawModuleDescription(eventLog.getModuleCreatedEntry(sendDirectEntry.getSenderModuleId()));
+									drawModuleDescription(sendDirectEntry.getSenderModuleId());
 								}
 
 								drawText(" to ", CONSTANT_TEXT_COLOR);
-								drawModuleDescription(eventLog.getModuleCreatedEntry(sendDirectEntry.getDestModuleId()));
+								drawModuleDescription(sendDirectEntry.getDestModuleId());
 								drawText(" with transmission delay ", CONSTANT_TEXT_COLOR);
 								drawText(sendDirectEntry.getTransmissionDelay() + "s", DATA_COLOR);
 								drawText(" and propagation delay ", CONSTANT_TEXT_COLOR);
@@ -335,7 +335,7 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 							}
 							else if (eventLogEntry instanceof DeleteMessageEntry) {
 								DeleteMessageEntry deleteMessageEntry = (DeleteMessageEntry)eventLogEntry;
-								drawText("Deleting message ", CONSTANT_TEXT_COLOR);
+								drawText("Deleting ", CONSTANT_TEXT_COLOR);
 								drawMessageDescription(findBeginSendEntry(deleteMessageEntry.getPreviousEventNumber(), deleteMessageEntry.getMessageId()));
 							}
 							else
@@ -366,19 +366,54 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 		return null;
 	}
 
+	private void drawModuleDescription(int moduleId) {
+		drawModuleDescription(eventLogInput.getEventLog().getModuleCreatedEntry(moduleId));
+	}
+
 	private void drawModuleDescription(ModuleCreatedEntry moduleCreatedEntry) {
+		drawText("module ", CONSTANT_TEXT_COLOR);
+
 		if (moduleCreatedEntry != null) {
 			// TODO: print submodule (fullName), parent (fullName) or module (fullPath)
-			drawText("module ", CONSTANT_TEXT_COLOR);
 			drawText("(" + moduleCreatedEntry.getModuleClassName() + ") ", TYPE_COLOR);
 			drawText(moduleCreatedEntry.getFullName(), NAME_COLOR, true);
 		}
 		else
-			drawText("module <unknown>", CONSTANT_TEXT_COLOR);
+			drawText("<unknown>", CONSTANT_TEXT_COLOR);
 	}
 	
+	private void drawConnectionDescription(int sourceModuleId, String sourceGateFullName, int destModuleId, String destGateFullName) {
+		IEventLog eventLog = eventLogInput.getEventLog();
+		drawConnectionDescription(eventLog.getModuleCreatedEntry(sourceModuleId), sourceGateFullName, eventLog.getModuleCreatedEntry(destModuleId), destGateFullName);
+	}
+
+	private void drawConnectionDescription(int sourceModuleId, int sourceGateId) {
+		IEventLog eventLog = eventLogInput.getEventLog();
+		// TODO: find out source gate name and dest stuff
+		drawConnectionDescription(eventLog.getModuleCreatedEntry(sourceModuleId), String.valueOf(sourceGateId), null, null);
+	}
+
+	private void drawConnectionDescription(ModuleCreatedEntry sourceModuleCreatedEntry, String sourceGateFullName, ModuleCreatedEntry destModuleCreatedEntry, String destGateFullName) {
+		drawText("connection from ", CONSTANT_TEXT_COLOR);
+
+		if (sourceModuleCreatedEntry != null) {
+			drawModuleDescription(sourceModuleCreatedEntry);
+			drawText(" gate ", CONSTANT_TEXT_COLOR);
+			drawText(sourceGateFullName, DATA_COLOR);
+		}
+
+		drawText(" to ", CONSTANT_TEXT_COLOR);
+
+		if (destModuleCreatedEntry != null) {
+			drawModuleDescription(destModuleCreatedEntry);
+			drawText(" gate ", CONSTANT_TEXT_COLOR);
+			drawText(destGateFullName, DATA_COLOR);
+		}
+	}
+
 	private void drawMessageDescription(BeginSendEntry beginSendEntry) {
 		if (beginSendEntry != null) {
+			drawText("message ", CONSTANT_TEXT_COLOR);
 			drawText("(" + beginSendEntry.getMessageClassName() + ") ", TYPE_COLOR);
 			drawText(beginSendEntry.getMessageFullName(), NAME_COLOR, true);
 		}

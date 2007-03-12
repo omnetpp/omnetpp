@@ -1,14 +1,14 @@
 package org.omnetpp.eventlogtable.editors;
 
 import org.eclipse.core.resources.IFile;
-import org.omnetpp.eventlog.engine.EventLog;
 import org.omnetpp.eventlog.engine.EventLogTableFacade;
+import org.omnetpp.eventlog.engine.IEventLog;
 
 
 public class EventLogInput {
 	protected IFile file;
 	
-	protected EventLog eventLog;
+	protected IEventLog eventLog;
 	
 	protected EventLogTableFacade eventLogTableFacade;
 
@@ -20,11 +20,11 @@ public class EventLogInput {
 		this.file = file;
 	}
 
-	public EventLog getEventLog() {
+	public IEventLog getEventLog() {
 		return eventLog;
 	}
 
-	public void setEventLog(EventLog eventLog) {
+	public void setEventLog(IEventLog eventLog) {
 		this.eventLog = eventLog;
 	}
 	
