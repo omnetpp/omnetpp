@@ -21,10 +21,10 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
-import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Property;
+import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.DatasetManager;
@@ -331,14 +331,17 @@ public class ChartProperties extends PropertySource {
 			@org.omnetpp.common.properties.Property(category="Lines",id=PROP_SYMBOL_TYPE,optional=true)
 			public SymbolType getSymbolType() { return getEnumProperty(propertyName(PROP_SYMBOL_TYPE), SymbolType.class); }
 			public void setSymbolType(SymbolType type) { setProperty(propertyName(PROP_SYMBOL_TYPE), type); }
+			public SymbolType defaultSymbolType() { return null; }
 
 			@org.omnetpp.common.properties.Property(category="Lines",id=PROP_SYMBOL_SIZE)
 			public String getSymbolSize() { return getStringProperty(propertyName(PROP_SYMBOL_SIZE)); }
 			public void setSymbolSize(String size) { setProperty(propertyName(PROP_SYMBOL_SIZE), size); }
+			public String defaultSymbolSize() { return null; }
 
 			@org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_TYPE,optional=true)
 			public LineStyle getLineType() { return getEnumProperty(propertyName(PROP_LINE_TYPE), LineStyle.class); }
 			public void setLineType(LineStyle style) { setProperty(propertyName(PROP_LINE_TYPE), style); }
+			public LineStyle defaultLineType() { return null; }
 		}
 	}
 
@@ -470,7 +473,7 @@ public class ChartProperties extends PropertySource {
 
 	@SuppressWarnings("unchecked")
 	public void setProperty(String propertyName, Enum<?> propertyValue) {
-		Enum<?> defaultValue = getDefaultEnumProperty(propertyName, propertyValue.getClass());
+		Enum<?> defaultValue = propertyValue == null ? null : getDefaultEnumProperty(propertyName, propertyValue.getClass());
 		if (defaultValue != null && defaultValue.equals(propertyValue))
 			propertyValue = null;
 		doSetProperty(propertyName, propertyValue == null ? null : String.valueOf(propertyValue));

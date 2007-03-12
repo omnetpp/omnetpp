@@ -1,6 +1,7 @@
 package org.omnetpp.scave.charting;
 
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LINE_STYLE;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_SHOW_GRID;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_SYMBOL_SIZE;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
@@ -78,6 +79,7 @@ public class VectorChart extends ChartCanvas {
 		SymbolType symbolType;
 		Integer symbolSize;
 		LineStyle lineStyle;
+		Color lineColor;
 	}
 	
 	public VectorChart(Composite parent, int style) {
@@ -114,6 +116,7 @@ public class VectorChart extends ChartCanvas {
 	 *==================================*/
 	public void setProperty(String name, String value) {
 		Assert.isLegal(name != null);
+		System.out.println("VectorChart.setProperty: "+name+"='"+value+"'");
 		// Titles
 		if (PROP_X_AXIS_TITLE.equals(name))
 			setXAxisTitle(value);
@@ -271,7 +274,7 @@ public class VectorChart extends ChartCanvas {
 	}
 	
 	public void setGridVisibility(Boolean value) {
-		boolean b = value != null ? value : false;
+		boolean b = value != null ? value : DEFAULT_SHOW_GRID;
 		xAxis.setGridVisible(b);
 		yAxis.setGridVisible(b);
 		chartChanged();
