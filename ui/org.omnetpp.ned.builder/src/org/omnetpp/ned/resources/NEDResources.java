@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import org.eclipse.core.internal.events.ResourceDelta;
 import org.eclipse.core.resources.IFile;
@@ -14,12 +13,10 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.omnetpp.ned.engine.NEDErrorCategory;
 import org.omnetpp.ned.engine.NEDErrorStore;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDElementUtil;
@@ -599,8 +596,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     public void resourceChanged(IResourceChangeEvent event) {
         try {
             if (event.getDelta() == null) return;
-            System.out.println("resourceChange conter: "+resourceChange++);
-            System.out.println(((ResourceDelta)event.getDelta()).toDeepDebugString());
+//            System.out.println("resourceChange conter: "+resourceChange++);
+//            System.out.println(((ResourceDelta)event.getDelta()).toDeepDebugString());
             
             event.getDelta().accept(            
                     new IResourceDeltaVisitor() {
@@ -643,4 +640,21 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         
     }
 
+    // do we need this at all ???
+    public void readAllNedFilesInWorkspace() {
+      try {
+          IResource wsroot = ResourcesPlugin.getWorkspace().getRoot();
+          wsroot.accept(new IResourceVisitor() {
+              public boolean visit(IResource resource) {
+                  NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
+                  if (nedResources.isNEDFile(resource))
+                      nedResources.readNEDFile((IFile) resource);
+                  return true;
+              }
+          });
+      } catch (CoreException e) {
+          System.out.println("Error during workspace refresh: "+e);
+      }
+      rehashIfNeeded();
+    }
 }
