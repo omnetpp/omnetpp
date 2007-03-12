@@ -59,6 +59,7 @@ import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
 import org.omnetpp.ned.editor.graph.misc.ISelectionSupport;
 import org.omnetpp.ned.editor.graph.misc.ModulePaletteCustomizer;
+import org.omnetpp.ned.editor.graph.misc.PaletteManager;
 import org.omnetpp.ned.editor.graph.properties.view.BasePreferrerPropertySheetSorter;
 import org.omnetpp.ned.editor.graph.properties.view.PropertySheetPageEx;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
@@ -190,17 +191,14 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
 //        getGraphicalControl().addListener(SWT.Deactivate, listener);
     }
 
-//    @Override
-//    protected CustomPalettePage createPalettePage() {
-//        return new CustomPalettePage(getPaletteViewerProvider()) {
-//            @Override
-//            public void init(IPageSite pageSite) {
-//                super.init(pageSite);
-//                IAction copy = getActionRegistry().getAction(ActionFactory.COPY.getId());
-//                pageSite.getActionBars().setGlobalActionHandler(ActionFactory.COPY.getId(), copy);
-//            }
-//        };
-//    }
+//  protected void handleActivationChanged(Event event) {
+//  IAction copy = null;
+//  if (event.type == SWT.Deactivate) copy = getActionRegistry().getAction(ActionFactory.COPY.getId());
+//  if (getEditorSite().getActionBars().getGlobalActionHandler(ActionFactory.COPY.getId()) != copy) {
+//      getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.COPY.getId(), copy);
+//      getEditorSite().getActionBars().updateActionBars();
+//  }
+//}
 
     @Override
     protected PaletteViewerProvider createPaletteViewerProvider() {
@@ -224,60 +222,8 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
     @Override
     public void doSave(final IProgressMonitor progressMonitor) {
         Assert.isTrue(false, "save is not implemented");
-//    	editorSaving = true;
-//    	SafeRunner.run(new SafeRunnable() {
-//    		public void run() throws Exception {
-//    			saveProperties();
-//    			ByteArrayOutputStream out = new ByteArrayOutputStream();
-//    			IFile file = ((IFileEditorInput)getEditorInput()).getFile();
-//    			file.setContents(new ByteArrayInputStream(out.toByteArray()),
-//    							true, false, progressMonitor);
     			getCommandStack().markSaveLocation();
-//    		}
-//    	});
-//    	editorSaving = false;
     }
-//
-//    @Override
-//    public void doSaveAs() {
-//        SaveAsDialog dialog = new SaveAsDialog(getSite().getWorkbenchWindow().getShell());
-//        dialog.setOriginalFile(((IFileEditorInput) getEditorInput()).getFile());
-//        dialog.open();
-//        IPath path = dialog.getResult();
-//
-//        if (path == null) return;
-//
-//        IWorkspace workspace = ResourcesPlugin.getWorkspace();
-//        final IFile file = workspace.getRoot().getFile(path);
-//
-//        if (!file.exists()) {
-//            WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
-//                @Override
-//                public void execute(final IProgressMonitor monitor) {
-//                    saveProperties();
-//                    try {
-//                        ByteArrayOutputStream out = new ByteArrayOutputStream();
-//                        file.create(new ByteArrayInputStream(out.toByteArray()), true, monitor);
-//                        out.close();
-//                    } catch (Exception e) {
-//                        e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
-//                    }
-//                }
-//            };
-//            try {
-//                new ProgressMonitorDialog(getSite().getWorkbenchWindow().getShell()).run(false, true, op);
-//            } catch (Exception e) {
-//                e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
-//            }
-//        }
-//
-//        try {
-//            setInput(new FileEditorInput(file));
-//            getCommandStack().markSaveLocation();
-//        } catch (Exception e) {
-//            e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
-//        }
-//    }
 
     @Override
     public Object getAdapter(Class type) {
@@ -317,19 +263,10 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
     @Override
     protected PaletteRoot getPaletteRoot() {
         if (root == null) {
-            root = GraphicalNedEditorPlugin.createPalette();
+            root = PaletteManager.createPalette();
         }
         return root;
     }
-
-//    protected void handleActivationChanged(Event event) {
-//        IAction copy = null;
-//        if (event.type == SWT.Deactivate) copy = getActionRegistry().getAction(ActionFactory.COPY.getId());
-//        if (getEditorSite().getActionBars().getGlobalActionHandler(ActionFactory.COPY.getId()) != copy) {
-//            getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.COPY.getId(), copy);
-//            getEditorSite().getActionBars().updateActionBars();
-//        }
-//    }
 
     @Override
     protected void initializeGraphicalViewer() {
@@ -413,36 +350,11 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
     }
 
     protected void loadProperties() {
-        // Snap to Geometry property
-//        getGraphicalViewer().setProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED,
-//                new Boolean(getModel().isSnapToGeometryEnabled()));
-//
-        // Zoom
-//        ZoomManager manager = (ZoomManager) getGraphicalViewer().getProperty(ZoomManager.class.toString());
-//        if (manager != null) manager.setZoom(getModel().getZoom());
-
         // Scroll-wheel Zoom support
         getGraphicalViewer().setProperty(MouseWheelHandler.KeyGenerator.getKey(SWT.MOD1),
                 MouseWheelZoomHandler.SINGLETON);
 
     }
-
-    protected void saveProperties() {
-//        getModel()
-//                .setGridEnabled(
-//                        ((Boolean) getGraphicalViewer().getProperty(SnapToGrid.PROPERTY_GRID_ENABLED))
-//                                .booleanValue());
-//        getModel().setSnapToGeometry(
-//                ((Boolean) getGraphicalViewer().getProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED))
-//                        .booleanValue());
-//        ZoomManager manager = (ZoomManager) getGraphicalViewer().getProperty(ZoomManager.class.toString());
-//        if (manager != null) getModel().setZoom(manager.getZoom());
-    }
-
-//    @Override
-//    protected void setInput(IEditorInput input) {
-//        superSetInput(input);
-//    }
 
     public NedFileNodeEx getModel() {
         return nedFileModel;
@@ -464,32 +376,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
             }
         }
     }
-
-//    protected void superSetInput(IEditorInput input) {
-//        // The workspace never changes for an editor. So, removing and re-adding the
-//        // resourceListener is not necessary. But it is being done here for the sake
-//        // of proper implementation. Plus, the resourceListener needs to be added
-//        // to the workspace the first time around.
-//        if (getEditorInput() != null) {
-//            IFile file = ((IFileEditorInput) getEditorInput()).getFile();
-//            file.getWorkspace().removeResourceChangeListener(resourceListener);
-//        }
-//
-//        super.setInput(input);
-//
-//        if (getEditorInput() != null) {
-//            IFile file = ((IFileEditorInput) getEditorInput()).getFile();
-//            file.getWorkspace().addResourceChangeListener(resourceListener);
-//            setPartName(file.getName());
-//        }
-//    }
-
-//    @Override
-//    protected void setSite(IWorkbenchPartSite site) {
-//        super.setSite(site);
-//        getSite().getWorkbenchWindow().getPartService().addPartListener(partListener);
-//    }
-
 
     // XXX HACK OVERRIDDEN because selection does not work if the editor is embedded in a multipage editor
     // GraphicalEditor doesn't accept the selection change event if embedded in a multipage editor
