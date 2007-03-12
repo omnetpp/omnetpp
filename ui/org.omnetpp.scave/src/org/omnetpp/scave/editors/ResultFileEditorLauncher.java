@@ -68,13 +68,13 @@ public class ResultFileEditorLauncher implements IEditorLauncher {
 		{
 			IFile resultFile = resultFiles[0];
 			IFile analysisFile = root.getFile(resultFile.getFullPath().addFileExtension("scave"));
-			if (!analysisFile.getLocation().toFile().exists()) {
-				if(openNewAnalysisWizard(resultFile))
-					return analysisFile; //FIXME Tomi: this is flat wrong!!! filename has to be queried from the wizard, because user can change it!!!
-				else
-					return null;
+			if (analysisFile.getLocation().toFile().exists()) {
+				return analysisFile; // return existing
 			}
-			return analysisFile;
+			else {
+				openNewAnalysisWizard(resultFile); 
+				return null; // wizard opens the editor, too, so we don't need to
+			}
 		}
 		else
 			return null;
