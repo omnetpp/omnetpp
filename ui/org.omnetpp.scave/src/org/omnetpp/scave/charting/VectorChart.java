@@ -2,7 +2,6 @@ package org.omnetpp.scave.charting;
 
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LINE_STYLE;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_SYMBOL_SIZE;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_SYMBOL_TYPE;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_AXIS_TITLE_FONT;
@@ -209,7 +208,23 @@ public class VectorChart extends ChartCanvas {
 		LineProperties props = getLineProperties(key);
 		if (props == null || props.symbolType == null)
 			props = getDefaultLineProperties();
-		return props.symbolType != null ? props.symbolType : DEFAULT_SYMBOL_TYPE;
+		if (props.symbolType != null) {
+			return props.symbolType;
+		}
+		else {
+			// generate one
+			int series = getDataset().indexOf(key);
+			Assert.isTrue(series >= 0); // key must be valid
+			switch (series % 6) {
+			case 0: return SymbolType.Square;
+			case 1: return SymbolType.Oval;
+			case 2: return SymbolType.Triangle;
+			case 3: return SymbolType.Diamond;
+			case 4: return SymbolType.Cross;
+			case 5: return SymbolType.Plus;
+			default: return null; // never reached  
+			}
+		}
 	}
 	
 	public void setSymbolType(String key, SymbolType symbolType) {

@@ -24,7 +24,7 @@ import static org.omnetpp.scave.charting.ChartProperties.*;
 public class ChartDefaults {
 	// general
 	public static final boolean DEFAULT_ANTIALIAS = true;
-	public static final boolean DEFAULT_CANVAS_CACHING = false; //XXX for testing
+	public static final boolean DEFAULT_CANVAS_CACHING = true;
 
 	// title
 	public static final String DEFAULT_TITLE = "";
@@ -53,7 +53,7 @@ public class ChartDefaults {
 	public static final boolean DEFAULT_INVERT_XY = false;
 
 	// grid
-	public static final boolean DEFAULT_SHOW_GRID = false;
+	public static final boolean DEFAULT_SHOW_GRID = true;
 	public static final Color DEFAULT_GRID_COLOR = ColorFactory.asColor("grey80");
 	
 	// bar chart
@@ -63,8 +63,7 @@ public class ChartDefaults {
 
 	// lines
 	public static final LineStyle DEFAULT_LINE_STYLE = LineStyle.Linear;
-	public static final Integer DEFAULT_SYMBOL_SIZE = Integer.valueOf(3);
-	public static final SymbolType DEFAULT_SYMBOL_TYPE = SymbolType.Square;
+	public static final Integer DEFAULT_SYMBOL_SIZE = 4;
 	
 	
 	// Maps property names to default values

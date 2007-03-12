@@ -247,7 +247,8 @@ class CrossHair {
 
 	private String getText(DataPoint dataPoint) {
 		OutputVectorDataset dataset = chart.getDataset();
-		String coordinates = String.format("%g, %g", dataset.getXValue(dataPoint.series, dataPoint.index), dataset.getYValue(dataPoint.series, dataPoint.index));
+		//String coordinates = String.format("%g, %g", dataset.getXValue(dataPoint.series, dataPoint.index), dataset.getYValue(dataPoint.series, dataPoint.index));
+		String coordinates = dataset.getXValue(dataPoint.series, dataPoint.index)+", "+dataset.getYValue(dataPoint.series, dataPoint.index);
 		coordinates += " - " + dataset.getSeriesKey(dataPoint.series);
 		return coordinates;
 	}
