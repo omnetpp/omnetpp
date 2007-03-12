@@ -14,12 +14,16 @@
 
 
 #include <sstream>
-#include <tchar.h>
+#include <string.h>
 #include "commonutil.h"
 #include "filereader.h"
 #include "exception.h"
 
 #define PRINT_DEBUG_MESSAGES false
+
+#ifdef _MSC_VER
+#define strncasecmp strnicmp
+#endif
 
 FileReader::FileReader(const char *fileName, size_t bufferSize)
 {
@@ -313,48 +317,24 @@ char *FileReader::getPreviousLineBufferPointer()
     }
 }
 
-template <typename CHAR_TYPE>
-CHAR_TYPE *strnistr
-(
-   CHAR_TYPE *szStringToBeSearched,
-   const CHAR_TYPE *szSubstringToSearchFor,
-   const int nStringLen
-)
+const char *strnistr(const char *haystack, const char *needle, int n)
 {
-   int nLen;
-   int nOffset;
-   int nMaxOffset;
-   CHAR_TYPE *pPos;
+    int needleLen = strlen(needle);
+    if (n == 0)
+        n = strlen(haystack);
 
-   // verify parameters
-   if (szStringToBeSearched == NULL || szSubstringToSearchFor == NULL )
-      return szStringToBeSearched;
+    int slen = n - needleLen;
 
-   // get length of the substring
-   nLen = _tcslen(szSubstringToSearchFor);
-
-   // empty substring-return input (consistent w/ strstr)
-   if (nLen == 0)
-      return szStringToBeSearched;
-
-   nMaxOffset = nStringLen - nLen;
-   pPos = szStringToBeSearched;
-
-   for (nOffset = 0; nOffset <= nMaxOffset; nOffset++) {
-      if (_tcsnicmp(pPos, szSubstringToSearchFor, nLen) == 0)
-         return pPos;
-
-      // move on to the next character
-      pPos++; //_tcsinc was causing problems :(
-   }
-
-   return NULL;
+    for (const char *s = haystack; slen>0 && *s; s++, slen--)
+        if (strncasecmp(s, needle, needleLen) == 0)
+            return s;
+    return NULL;
 }
 
 char *FileReader::findNextLineBufferPointer(const char *search)
 {
     char *line;
-    while (line = getNextLineBufferPointer())
+    while ((line = getNextLineBufferPointer()) != NULL)
         if (strnistr(line, search, getLastLineLength()))
             return line;
 
@@ -364,7 +344,7 @@ char *FileReader::findNextLineBufferPointer(const char *search)
 char *FileReader::findPreviousLineBufferPointer(const char *search)
 {
     char *line;
-    while (line = getPreviousLineBufferPointer())
+    while ((line = getPreviousLineBufferPointer()) != NULL)
         if (strnistr(line, search, getLastLineLength()))
             return line;
 

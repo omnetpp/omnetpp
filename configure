@@ -2976,8 +2976,8 @@ echo "$as_me: WARNING: Avoid linking with static libraries containing simple mod
 echo "$as_me: WARNING: and other dynamically registered components. Those components" >&2;}
       { echo "$as_me:$LINENO: WARNING: will not be found by the simulation program, because the linker" >&5
 echo "$as_me: WARNING: will not be found by the simulation program, because the linker" >&2;}
-      { echo "$as_me:$LINENO: WARNING: leaves them out of the executable." >&5
-echo "$as_me: WARNING: leaves them out of the executable." >&2;}
+      { echo "$as_me:$LINENO: WARNING: leaves them out from the executable." >&5
+echo "$as_me: WARNING: leaves them out from the executable." >&2;}
    fi
 else
    echo "$as_me:$LINENO: result: test failed" >&5
