@@ -1,0 +1,62 @@
+Event Log Table
+===============
+
+Features:
+ + display content according to simulation log file or in memory filter
+ + display optionally all kind of lines
+   + log messages
+   + message sends
+   + other lines
+ + one log viewer displays the log files for multiple sequence charts according to the current selection
+ + lazy single/multiple selections
+   + single left click selects a single line
+   + multiple selection supported by shift and control left clicks
+ + keyboard:
+   + home goes to the very beginning
+   + end goes to the very end
+   + cursor moves up and down,
+   + page up, page down jumps with a visible page size
+ + scroll bar:
+   + at the very beginning and at the very end it displays the exact position
+   + in the rest of the file it just display an approximate position
+   + dragging the thumb jumps to the event at the approximate position
+   + dragging to the very beginning or to the very end goes exactly to the first or last line of the file
+   + clicking below or above the thumb jumps according to the thumb size
+   + the arrows go up and down just like the corresponding keys
+   + thumb size reflects window size relative to file size only for small log files
+ + mouse wheel scrolls up and down one line per tick
+ + coloring:
+   + event lines are blue
+   + simulation log messages are black
+   + message sends are green
+   + other lines are black
+   + marked lines are colored
+ - context menu:
+   + go to the given event number if present in the file
+   + search forward and backward for the given text
+   - go to next/previous selected/marked line
+ + filter lines
+   + events
+   + events and messages
+   + all lines
+ + bookmark/unmark selected line
+ - configuration
+   - events are collapsed by default
+   - goto line puts line to a predefined position in the visible area (maybe 1/3)
+   ...
+ + navigation history
+ + toolbar
+ - property view
+ - viewer/editor mode
+ - remember event log table position for the corresponding sequence chart,
+   so when activating the sequence chart again then the event log viewer can show the last visited position
+ - display a separator (in case of an in memory filter) where subsequent lines are not
+   subsequent in the simulation log file
+ - double click on events switches to filter mode and traces the selected event
+ - single click? goes in the corresponding sequence chart to the selected event
+ - export current in memory filter as a log file
+
+Known bugs:
+ - filter and display mode combo boxes do not have selections
+ - hot keys for popup menu actions
+ - raw mode displays simulation time with 16 digits precision which is not as good as long int could be
