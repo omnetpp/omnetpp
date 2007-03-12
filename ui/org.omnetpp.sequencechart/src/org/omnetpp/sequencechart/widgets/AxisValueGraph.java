@@ -9,6 +9,10 @@ import org.eclipse.swt.graphics.Font;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.engine.XYArray;
 
+/**
+ * A special axis representation for sequence charts which displays a horizontal colored bar
+ * with the names representing the individual values.
+ */
 public class AxisValueGraph extends AxisGraph {
 	private static final Font VALUE_NAME_FONT = new Font(null, "Courier New", 8, 0);
 	private static final Color VALUE_NAME_COLOR = ColorFactory.asColor("black");

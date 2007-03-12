@@ -1,0 +1,68 @@
+Sequence Chart
+==============
+
+Features:
+ + display content according to simulation log file or in memory filter
+ - timeline mode:
+   - linear
+   + step
+   - non-linear
+ - sort axis by:
+   - user specified manual order
+   + module id
+   + module name
+   - minimizing axis crossing message sends
+   - minimizing axis crossing message sends hierarchically (place sibling modules next to each other)
+ - zoom:
+   + zoom in and out by clicking on the buttons
+   - zoom in and out by + and - keys
+   + mark zoom area with control and left drag
+   - zoom to fit whole file in current window (small files only)
+   - zoom to normal detail level
+ + flags turned on and off:
+   + display event numbers
+   + display message names
+   + display arrow heads
+   - display axis names
+   - display simulation time gutter
+ + display simulation time for horizontal mouse position on gutter
+ + show multiple tooltip information:
+   + event information
+   + message send information
+   + axis information
+ - in memory filtering based on:
+   + event's processing compound or simple module selected from the module tree
+   - trace selected event
+ + increase and decrease spacing between axis
+ - mouse wheel
+   - scrolls up and down among axis
+   - holding shift increases and decreases zoom level
+   - holding control navigates back and forward in navigation history
+ - context menu:
+   - axis
+     - split space among axis evently
+     - make axis dense
+     - center axis
+     - fit axis state to window
+   - event
+     - center on window
+     - trace
+   - message send 
+     - fit to window
+     - go to source
+     - go to target
+ + navigation history
+ + single click goes in the corresponding event log table to the selected event
+ + double click traces the selected event and switches to filered view
+ - mark selected events
+ - switch back to unfiltered view
+ - support specifying the vector file to be displayed on the axis
+ - display a separator where the timeline is filtered (timeline is not linear to pixel coordinates)
+ - make sequence chart scrollbars virtual (can't tell the exact size of the canvas)
+
+Known bugs:
+ - sorting sequence chart axis based on crossing arrows is broken
+ - linear/non linear timeline modes are broken
+ - timeline mode shows up with no value selected
+ - the user can type into the timeline sort mode and timeline coordinate system mode combo boxes
+ - tracing events sometimes kills eclipse

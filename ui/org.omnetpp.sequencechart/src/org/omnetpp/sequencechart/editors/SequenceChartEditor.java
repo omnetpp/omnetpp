@@ -34,6 +34,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.common.canvas.RubberbandSupport;
+import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.eventlog.engine.EventLog;
 import org.omnetpp.eventlog.engine.FileReader;
 import org.omnetpp.eventlog.engine.FilteredEventLog;
@@ -41,7 +42,6 @@ import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.IntVector;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
-import org.omnetpp.eventlogtable.selection.IEventLogSelection;
 import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.Node;
@@ -67,12 +67,19 @@ import org.omnetpp.sequencechart.widgets.SequenceChart;
 public class SequenceChartEditor extends EditorPart implements INavigationLocationProvider, IGotoMarker {
 
 	private SequenceChart sequenceChart;
+
 	private IEventLog eventLog;  // the log file loaded
+	
 	private ModuleTreeItem moduleTree; // modules in eventLog
+	
 	private ArrayList<ModuleTreeItem> selectedAxisModules; // which modules should have an axis
+	
 	private int tracedEventNumber = -1;
+	
 	private ResultFileManagerEx resultFileManager; 
+	
 	private IDList idlist; // idlist of the loaded vector file
+	
 	private XYArray[] stateVectors; // vector file loaded for the log file
 
 	private final Color CHART_BACKGROUND_COLOR = ColorConstants.white;
@@ -80,11 +87,10 @@ public class SequenceChartEditor extends EditorPart implements INavigationLocati
 	public SequenceChartEditor() {
 		super();
 	}
-
-    public void gotoMarker(IMarker marker)
-    {
-// TODO: pass down marker
-    }
+	
+	public SequenceChart getSequenceChart() {
+		return sequenceChart;
+	}
 	
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
@@ -602,6 +608,11 @@ public class SequenceChartEditor extends EditorPart implements INavigationLocati
 		seqChart.setMenu(popupMenu);
 */
 	}
+
+    public void gotoMarker(IMarker marker)
+    {
+// TODO: pass down marker
+    }
 
 	public void dispose() {
 		super.dispose();

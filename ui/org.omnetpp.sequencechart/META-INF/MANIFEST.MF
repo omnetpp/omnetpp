@@ -14,7 +14,6 @@ Require-Bundle: org.eclipse.core.resources,
  org.eclipse.jface.text,
  org.eclipse.draw2d,
  org.omnetpp.common,
- org.omnetpp.eventlogtable,
  org.omnetpp.scave.builder,
  org.omnetpp.ide.nativelibs
 Eclipse-LazyStart: true

@@ -6,6 +6,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.omnetpp.common.color.ColorFactory;
 
+/**
+ * Default axis representation for sequence charts.
+ */
 public class AxisGraph {
 	protected static final Color AXIS_COLOR = ColorFactory.asColor("black");
 	

@@ -40,6 +40,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.omnetpp.common.canvas.CachingCanvas;
+import org.omnetpp.common.eventlog.EventLogSelection;
+import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
@@ -51,8 +53,6 @@ import org.omnetpp.eventlog.engine.MessageDependencyKind;
 import org.omnetpp.eventlog.engine.MessageSend;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
-import org.omnetpp.eventlogtable.selection.EventLogSelection;
-import org.omnetpp.eventlogtable.selection.IEventLogSelection;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.sequencechart.moduletree.ModuleTreeItem;
 
