@@ -2,17 +2,6 @@
 <?eclipse version="3.0"?>
 <plugin>
    <extension
-         id="nedbuilder"
-         name="OMNeT++ NED Builder"
-         point="org.eclipse.core.resources.builders">
-      <builder
-            hasNature="true">
-         <run
-               class="org.omnetpp.ned.resources.builder.NEDBuilder">
-         </run>
-      </builder>
-   </extension>
-   <extension
          id="nedconsistencyproblem"
          name="NED consistency problem"
          point="org.eclipse.core.resources.markers">

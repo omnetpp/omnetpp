@@ -12,10 +12,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -26,7 +24,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.omnetpp.ide.Activator;
 import org.omnetpp.ide.OmnetppNature;
-import org.omnetpp.ned.resources.builder.NEDBuilder;
 import org.omnetpp.scave.builder.VectorFileIndexBuilder;
 
 public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
@@ -71,11 +68,9 @@ public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
         final IProjectDescription description = workspace.newProjectDescription(projectName);
         description.setLocation(newPath);
         description.setNatureIds(new String[] {OmnetppNature.NATURE_ID});
-        ICommand nedBuildSpec = description.newCommand();
-        nedBuildSpec.setBuilderName(NEDBuilder.BUILDER_ID);
         ICommand vciBuildSpec = description.newCommand();
         vciBuildSpec.setBuilderName(VectorFileIndexBuilder.BUILDER_ID);
-        description.setBuildSpec(new ICommand[] {nedBuildSpec, vciBuildSpec});
+        description.setBuildSpec(new ICommand[] {vciBuildSpec});
 		
         // define the operation to create a new project
         WorkspaceModifyOperation op = new WorkspaceModifyOperation() {

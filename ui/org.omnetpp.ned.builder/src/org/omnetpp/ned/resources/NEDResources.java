@@ -640,21 +640,4 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         
     }
 
-    // do we need this at all ???
-    public void readAllNedFilesInWorkspace() {
-      try {
-          IResource wsroot = ResourcesPlugin.getWorkspace().getRoot();
-          wsroot.accept(new IResourceVisitor() {
-              public boolean visit(IResource resource) {
-                  NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
-                  if (nedResources.isNEDFile(resource))
-                      nedResources.readNEDFile((IFile) resource);
-                  return true;
-              }
-          });
-      } catch (CoreException e) {
-          System.out.println("Error during workspace refresh: "+e);
-      }
-      rehashIfNeeded();
-    }
 }

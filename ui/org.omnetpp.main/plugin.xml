@@ -58,9 +58,6 @@
                   value="true"/>
          </run>
       </runtime>
-      <builder
-            id="org.omnetpp.ned.builder.nedbuilder">
-      </builder>
       <builder id="org.omnetpp.scave.builder.vectorfileindexer"/>
    </extension>
    <extension
@@ -111,6 +108,15 @@
                id="org.eclipse.ui.resourcePerspective">
          </perspectiveShortcut>
       </perspectiveExtension>
+   </extension>
+   <extension
+         id="omnetppNatureImagea"
+         name="OMNeT++ Nature Overlay Imagea"
+         point="org.eclipse.ui.ide.projectNatureImages">
+      <image
+            icon="icons/o_ovr.gif"
+            id="omnetppNatureImage"
+            natureId="org.omnetpp.ide.omnetppnature"/>
    </extension>
 
 </plugin>

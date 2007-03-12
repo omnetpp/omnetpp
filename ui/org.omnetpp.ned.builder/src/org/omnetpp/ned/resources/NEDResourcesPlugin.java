@@ -1,9 +1,12 @@
 package org.omnetpp.ned.resources;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.omnetpp.ned.resources.builder.NEDBuilder;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -47,7 +50,7 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 		//   of the plug-in environment. The platform may terminate initializers 
 		//   that do not complete in a timely fashion."
 		// So we should find a better way.
-		NEDBuilder.runFullBuild();
+		readAllNedFilesInWorkspace();
         
 	}
 
@@ -87,4 +90,24 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
+    // do we need this at all ???
+    // if we could activate the resouce listener before opening a project we would not need this
+    // function called in start()
+
+    private void readAllNedFilesInWorkspace() {
+      try {
+          IResource wsroot = ResourcesPlugin.getWorkspace().getRoot();
+          wsroot.accept(new IResourceVisitor() {
+              public boolean visit(IResource resource) {
+                  if (getNEDResources().isNEDFile(resource))
+                      getNEDResources().readNEDFile((IFile) resource);
+                  return true;
+              }
+          });
+      } catch (CoreException e) {
+          System.out.println("Error during workspace refresh: "+e);
+      }
+      getNEDResources().rehashIfNeeded();
+      
+    }
 }
