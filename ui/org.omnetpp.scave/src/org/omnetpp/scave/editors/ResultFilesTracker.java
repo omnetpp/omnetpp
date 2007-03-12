@@ -1,5 +1,7 @@
 package org.omnetpp.scave.editors;
 
+import static org.omnetpp.scave.engine.IndexFile.getVectorFileName;
+import static org.omnetpp.scave.engineext.IndexFile.isIndexFile;
 import static org.omnetpp.scave.engineext.IndexFile.isIndexFileUpToDate;
 import static org.omnetpp.scave.engineext.IndexFile.isVectorFile;
 
@@ -44,6 +46,8 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	private ResultFileManagerEx manager; //backreference to the manager it operates on
 	private Inputs inputs; // backreference to the Inputs element we watch
 
+	private Object lock = new Object();
+	
 	public ResultFilesTracker(ResultFileManagerEx manager, Inputs inputs) {
 		this.manager = manager;
 		this.inputs = inputs;
@@ -98,8 +102,8 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 						if (inputsMatches(file))
 							loadFile(file);
 					}
-					//else if (isIndexFile(file))
-					//	reloadFile(getVectorFile(file));
+//					else if (isIndexFile(file))
+//						reloadFile(getVectorFile(file));
 					break;
 			case IResourceDelta.REMOVED:
 					if (isResultFile(file))
@@ -109,8 +113,8 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 					if ((delta.getFlags() & ~IResourceDelta.MARKERS) != 0) {
 						if (isResultFile(file))
 							reloadFile(file);
-						//else if (isIndexFile(file))
-						//	reloadFile(getVectorFile(file));
+//						else if (isIndexFile(file))
+//							reloadFile(getVectorFileName(file));
 					}
 					break;
 			}
@@ -204,6 +208,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	 */
 	private void loadFile(final IFile file) {
 		System.out.println("loadFile: "+file);
+		synchronized (lock) {
 		if (isResultFile(file) && file.getLocation().toFile().exists()) {
 			try {
 				// Do not try to load from the vector file whose index is not up-to-date,
@@ -212,15 +217,17 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 				// Create or update the index file first, and try again.
 				if (isVectorFile(file) && !isIndexFileUpToDate(file)) {
 					System.out.println("indexing: "+file);
-					VectorFileIndexerJob indexer = new VectorFileIndexerJob("Indexing "+file, new IFile[] {file});
+					VectorFileIndexerJob indexer = new VectorFileIndexerJob("Indexing "+file, new IFile[] {file}, lock);
 					indexer.setPriority(Job.LONG);
 					indexer.addJobChangeListener(new JobChangeAdapter() {
 						public void done(IJobChangeEvent event) {
 							// load from the newly created index file
 		 				    // even if the workspace is not refreshed automatically
 							if (event.getResult().getSeverity() != IStatus.ERROR) {
-								String osPath = file.getLocation().toOSString();
-								manager.loadFile(file.getFullPath().toString(), osPath);
+								synchronized (lock) {
+									String osPath = file.getLocation().toOSString();
+									manager.loadFile(file.getFullPath().toString(), osPath);
+								}
 							}
 							else {
 								unloadFile(file);
@@ -238,6 +245,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		}
 		else
 			throw new RuntimeException("wrong file type:"+file.getFullPath()); //XXX proper error handling (e.g. remove file from Inputs?)
+		}
 	}
 
 	/**
@@ -263,8 +271,10 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			ResultFile resultFile = manager.getFile(resourcePath);
 			if (resultFile != null) {
 				try {
-					manager.unloadFile(resultFile);
-					manager.loadFile(resourcePath, osPath);
+					synchronized (lock) {
+						manager.unloadFile(resultFile);
+						manager.loadFile(resourcePath, osPath);
+					}
 				} catch (Exception e) {
 					ScavePlugin.logError("Could not reload file: " + file.getLocation().toOSString(), e);
 				}
@@ -288,7 +298,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		}
 		return false;
 	}
-
+	
 	/**
 	 * Return true iff the <code>file</code> matches any of the input files.
 	 */

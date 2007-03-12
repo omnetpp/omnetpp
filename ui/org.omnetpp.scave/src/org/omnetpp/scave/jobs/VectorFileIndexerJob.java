@@ -27,12 +27,14 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 	private static final boolean debug = false;
 	
 	private List<IFile> filesToBeIndexed;
+	private Object lock;
 
-	public VectorFileIndexerJob(String name, IFile[] filesToBeIndexed) {
+	public VectorFileIndexerJob(String name, IFile[] filesToBeIndexed, Object lock) {
 		super(name);
 		setRule(ResourcesPlugin.getWorkspace().getRuleFactory().buildRule());
 		
 		this.filesToBeIndexed = new ArrayList<IFile>();
+		this.lock = lock;
 		for (IFile file : filesToBeIndexed)
 			if (toBeIndexed(file))
 				this.filesToBeIndexed.add(file);
@@ -54,8 +56,10 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 						return Status.CANCEL_STATUS;
 
 					monitor.subTask("Indexing "+file.getName());
-					if (file.exists() && !isIndexFileUpToDate(file)) {
-						IndexFile.performIndexing(file);
+					synchronized (lock) {
+						if (file.exists() && !isIndexFileUpToDate(file)) {
+							IndexFile.performIndexing(file);
+						}
 					}
 					monitor.worked(1);
 				}
@@ -69,7 +73,9 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 
 	private boolean toBeIndexed(IFile file) {
 		if (isVectorFile(file)) {
-			return !isIndexFileUpToDate(file);
+			synchronized (lock) {
+				return !isIndexFileUpToDate(file);
+			}
 		}
 		else
 			return false;
