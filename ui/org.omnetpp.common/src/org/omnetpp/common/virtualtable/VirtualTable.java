@@ -427,11 +427,13 @@ public class VirtualTable<T> extends Composite {
 			long numberOfElements = contentProvider.getApproximateNumberOfElements();
 			verticalBar.setMaximum((int)Math.max(numberOfElements, 1E+6));
 			verticalBar.setThumb((int)((double)verticalBar.getMaximum() * getVisibleElementCount() / numberOfElements));
+			verticalBar.setIncrement(1);
 			verticalBar.setPageIncrement(getPageJumpCount());
 		}
 		else {
 			verticalBar.setMaximum(0);
 			verticalBar.setThumb(0);
+			verticalBar.setIncrement(0);
 			verticalBar.setPageIncrement(0);
 		}
 	}
