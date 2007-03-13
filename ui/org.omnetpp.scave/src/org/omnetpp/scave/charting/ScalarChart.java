@@ -177,7 +177,7 @@ public class ScalarChart extends ChartCanvas {
 	public void setXAxisLabelsRotatedBy(Double angle) {
 		if (angle == null)
 			angle = DEFAULT_X_LABELS_ROTATED_BY;
-		domainAxis.rotation = angle;
+		domainAxis.rotation = Math.max(0, Math.min(90, angle));
 		chartChanged();
 	}
 
@@ -534,15 +534,17 @@ public class ScalarChart extends ChartCanvas {
 				graphics.pushState();
 				for (int row = 0; row < dataset.getRowCount(); ++row) {
 					String label = dataset.getRowKey(row).toString();
-					Point size = gc.textExtent(label);
 					int left = plot.getBarRectangle(row, 0).x;
 					int right = plot.getBarRectangle(row, cColumns - 1).right();
 
 					graphics.restoreState();
 					graphics.drawLine(left, rect.y + gap, right, rect.y + gap);
-					graphics.translate((left + right) / 2, rect.y + gap);
+
+					Dimension size = new Dimension(gc.textExtent(label));
+					Dimension rotatedSize = GeomUtils.rotatedSize(size, rotation);
+					graphics.translate((left + right) / 2 - rotatedSize.width / 2, rect.y + gap + 1 + size.height/2);
 					graphics.rotate((float)rotation);
-					graphics.drawText(label, -size.x / 2, 1);
+					graphics.drawText(label, 0, -size.height/2);
 				}
 				graphics.popState();
 			}
