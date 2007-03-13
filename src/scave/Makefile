@@ -16,7 +16,8 @@ OBJS= arraybuilder.o channel.o commonnodes.o compoundfilter.o \
       resultfilemanager.o slidingwinavg.o \
       vectorfilereader.o vectorfilewriter.o windowavg.o \
       xyplotnode.o octaveexport.o indexedvectorfile.o \
-      vectorfileindexer.o indexfile.o scaveutils.o
+      vectorfileindexer.o indexfile.o scaveutils.o \
+      scaveexception.o
 
 #
 # Automatic rules

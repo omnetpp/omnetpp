@@ -20,7 +20,8 @@ OBJS= arraybuilder.obj channel.obj commonnodes.obj compoundfilter.obj \
       resultfilemanager.obj slidingwinavg.obj \
       vectorfilereader.obj vectorfilewriter.obj windowavg.obj \
       xyplotnode.obj octaveexport.obj indexedvectorfile.obj \
-      vectorfileindexer.obj indexfile.obj scaveutils.obj
+      vectorfileindexer.obj indexfile.obj scaveutils.obj \
+      scaveexception.obj
 
 #
 # Automatic rules
@@ -191,6 +192,7 @@ indexfile.obj: indexfile.cc \
   ../common/linetokenizer.h \
   ../common/stringutil.h \
   scaveutils.h \
+  scaveexception.h \
   indexfile.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
@@ -265,6 +267,11 @@ resultfilemanager.obj: resultfilemanager.cc \
   scavedefs.h \
   idlist.h \
   ../common/commonutil.h
+scaveexception.obj: scaveexception.cc \
+  scaveexception.h \
+  ../common/commondefs.h \
+  scavedefs.h \
+  ../common/exception.h
 scavetool.obj: scavetool.cc \
   ../utils/ver.h \
   resultfilemanager.h \
@@ -317,23 +324,18 @@ stddev.obj: stddev.cc \
   dataflowmanager.h
 vectorfileindexer.obj: vectorfileindexer.cc \
   ../common/stringutil.h \
-  resultfilemanager.h \
-  nodetype.h \
-  nodetyperegistry.h \
-  dataflowmanager.h \
-  vectorfilereader.h \
-  indexedvectorfile.h \
+  scaveutils.h \
+  scaveexception.h \
+  ../common/filereader.h \
+  ../common/linetokenizer.h \
   indexfile.h \
   vectorfileindexer.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
   ../common/exception.h \
-  idlist.h \
   scavedefs.h \
-  node.h \
-  channel.h \
-  ../common/filereader.h \
-  ../common/linetokenizer.h
+  resultfilemanager.h \
+  idlist.h
 vectorfilereader.obj: vectorfilereader.cc \
   channel.h \
   scaveutils.h \

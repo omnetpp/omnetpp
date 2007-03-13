@@ -12,7 +12,9 @@
 #include "linetokenizer.h"
 #include "stringutil.h"
 #include "scaveutils.h"
+#include "scaveexception.h"
 #include "indexfile.h"
+
 
 static bool serialLess(const Block &first, const Block &second)
 {
@@ -150,7 +152,7 @@ VectorData *VectorFileIndex::getVector(int vectorId)
 #ifdef CHECK
 #undef CHECK
 #endif
-#define CHECK(cond,msg) if (!(cond)) throw opp_runtime_error("Invalid index file syntax: %s, file %s, line %d", msg, filename, lineNo);
+#define CHECK(cond,msg) if (!(cond)) throw ResultFileFormatException(msg, filename, lineNo);
 
 bool RunData::parseLine(char **tokens, int numTokens, const char *filename, int lineNo)
 {

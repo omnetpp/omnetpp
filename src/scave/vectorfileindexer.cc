@@ -19,6 +19,7 @@
 #include "platmisc.h"
 #include "stringutil.h"
 #include "scaveutils.h"
+#include "scaveexception.h"
 #include "filereader.h"
 #include "linetokenizer.h"
 #include "indexfile.h"
@@ -74,12 +75,11 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName)
         else if (tokens[0][0] == 'v' && strcmp(tokens[0], "vector") == 0)
         {
             if (numTokens < 4)
-                throw opp_runtime_error("vector file indexer: broken vector declaration, file %s, line %d", vectorFileName, lineNo);
+                throw ResultFileFormatException("vector file indexer: broken vector declaration", vectorFileName, lineNo);
 
             VectorData vector;
             if (!parseInt(tokens[1], vector.vectorId))
-                throw opp_runtime_error("vector file indexer: malformed vector in vector declaration, file %s, line %d",
-                                        vectorFileName, lineNo);
+                throw ResultFileFormatException("vector file indexer: malformed vector in vector declaration", vectorFileName, lineNo);
             vector.moduleName = tokens[2];
             vector.name = tokens[3];
             vector.columns = numTokens >= 5 ? tokens[4] : "TV";
@@ -114,30 +114,29 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName)
                 currentBlock.startOffset = reader.getLastLineStartOffset();
                 currentVectorRef = index.getVector(vectorId);
                 if (currentVectorRef == NULL)
-                    throw opp_runtime_error("vector file indexer: missing vector declaration for id %d, file %s, line %d",
-                                            vectorId, vectorFileName, lineNo);
+                    throw ResultFileFormatException("vector file indexer: missing vector declaration", vectorFileName, lineNo);
             }
 
             for (int i = 0; i < currentVectorRef->columns.size(); ++i)
             {
                 char column = currentVectorRef->columns[i];
                 if (i+1 >= numTokens)
-                    throw opp_runtime_error("vector file indexer: data line too short, file %s, line %d", vectorFileName, lineNo);
+                    throw ResultFileFormatException("vector file indexer: data line too short", vectorFileName, lineNo);
 
                 char *token = tokens[i+1];
                 switch (column)
                 {
                 case 'T':
                     if (!parseDouble(token, simTime))
-                        throw opp_runtime_error("vector file indexer: malformed simulation time, file %s, line %d", vectorFileName, lineNo);
+                        throw ResultFileFormatException("vector file indexer: malformed simulation time", vectorFileName, lineNo);
                     break;
                 case 'V':
                     if (!parseDouble(token, value))
-                        throw opp_runtime_error("vector file indexer: malformed data value, file %s, line %d", vectorFileName, lineNo);
+                        throw ResultFileFormatException("vector file indexer: malformed data value", vectorFileName, lineNo);
                     break;
                 case 'E':
                     if (!parseLong(token, eventNum))
-                        throw opp_runtime_error("vector file indexer: malformed event number, file %s, line %d", vectorFileName, lineNo);
+                        throw ResultFileFormatException("vector file indexer: malformed event number", vectorFileName, lineNo);
                     break;
                 }
             }
