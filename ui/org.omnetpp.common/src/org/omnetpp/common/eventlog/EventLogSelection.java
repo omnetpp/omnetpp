@@ -85,7 +85,10 @@ public class EventLogSelection implements IEventLogSelection, IVirtualTableSelec
 	}
 
 	public Object getFirstElement() {
-		return events.get(0);
+		if (events.size() == 0)
+			return null;
+		else
+			return events.get(0);
 	}
 
 	public Iterator iterator() {

@@ -13,10 +13,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Sash;
-import org.eclipse.swt.widgets.ScrollBar;
 import org.omnetpp.common.canvas.ITileCache.Tile;
 
 /**
@@ -38,22 +35,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 
 		addPaintListener(new PaintListener() {
 			public void paintControl(final PaintEvent e) {
-				// show the busy mouse cursor during drawing, except if the user is resizing the
-				// chart (resize mouse cursor) or is dragging the scrollbar. Solution: only show
-				// busy cursor if display.getCursorControl() is the canvas, and the cursor
-				// location is inside the *client area* of the canvas (ie not over a scrollbar).
-				// Display.getCurrent().getCursorControl()==CachingCanvas.this -- not needed after all
-				if (CachingCanvas.this.getClientArea().contains(Display.getCurrent().getCursorLocation())) {
-					// show busy cursor during painting
-					BusyIndicator.showWhile(null, new Runnable() {
-						public void run() {
-							paint(e.gc);
-						}
-					});
-				}
-				else {
-					paint(e.gc);
-				}
+				paint(e.gc);
 			}
 		});
 	}
