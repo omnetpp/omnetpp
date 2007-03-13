@@ -109,8 +109,8 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 		this.displayMode = displayMode;
 	}
 	
-	public void setInput(EventLogInput eventLogInput) {
-		this.eventLogInput = eventLogInput;
+	public void setInput(Object eventLogInput) {
+		this.eventLogInput = (EventLogInput)eventLogInput;
 	}
 
 	public int getLineHeight(GC gc) {

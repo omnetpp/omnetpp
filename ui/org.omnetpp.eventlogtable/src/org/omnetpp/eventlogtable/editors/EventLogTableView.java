@@ -1,18 +1,11 @@
 package org.omnetpp.eventlogtable.editors;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
-import org.omnetpp.common.eventlog.EventLogSelection;
-import org.omnetpp.common.virtualtable.VirtualTableSelection;
-import org.omnetpp.eventlog.engine.EventLogEntry;
-import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 
 /**
@@ -32,13 +25,8 @@ public class EventLogTableView extends ViewPart {
 		// follow selection
 		viewSite.getPage().addSelectionListener(new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				if (part != eventLogTable && selection instanceof EventLogSelection) {
-					EventLogSelection eventLogSelection = (EventLogSelection)selection;
-					List<EventLogEntry> eventLogEntries = new ArrayList<EventLogEntry>();
-					for (IEvent event : eventLogSelection.getEvents())
-						eventLogEntries.add(event.getEventEntry());
-					eventLogTable.setSelection(new VirtualTableSelection<EventLogEntry>(eventLogSelection.getInput(), eventLogEntries));
-				}
+				if (part != eventLogTable)
+					eventLogTable.setSelection(selection);
 			}
 		});
 		
@@ -48,6 +36,6 @@ public class EventLogTableView extends ViewPart {
 
 	@Override
 	public void setFocus() {
-		eventLogTable.getControl().setFocus();
+		eventLogTable.setFocus();
 	}
 }

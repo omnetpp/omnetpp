@@ -1,51 +1,89 @@
 package org.omnetpp.eventlogtable.widgets;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.eventlog.EventLogInput;
-import org.omnetpp.common.virtualtable.VirtualTableViewer;
+import org.omnetpp.common.eventlog.EventLogSelection;
+import org.omnetpp.common.virtualtable.VirtualTable;
+import org.omnetpp.common.virtualtable.VirtualTableSelection;
 import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.EventLogTableFacade;
+import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlogtable.editors.EventLogTableContributor;
 
-public class EventLogTable extends VirtualTableViewer<EventLogEntry> {
+public class EventLogTable extends VirtualTable<EventLogEntry> {
 	private MenuManager menuManager;
 
 	public EventLogTable(Composite parent) {
-		super(parent);
+		super(parent, SWT.NONE);
 
 		setContentProvider(new EventLogTableContentProvider());
 		setLineRenderer(new EventLogTableLineRenderer());
 
-		TableColumn tableColumn = virtualTable.createColumn();
+		TableColumn tableColumn = createColumn();
 		tableColumn.setWidth(60);
 		tableColumn.setText("Event #");
 
-		tableColumn = virtualTable.createColumn();
+		tableColumn = createColumn();
 		tableColumn.setWidth(140);
 		tableColumn.setText("Time");
 
-		tableColumn = virtualTable.createColumn();
+		tableColumn = createColumn();
 		tableColumn.setWidth(2000);
 		tableColumn.setText("Details");
 
 		menuManager = new MenuManager();
 		new EventLogTableContributor(this).contributeToPopupMenu(menuManager);
-		virtualTable.setMenu(menuManager.createContextMenu(virtualTable));
+		setMenu(menuManager.createContextMenu(this));
 	}
 
 	@Override
-	public void setInput(Object input) {
-		super.setInput(input);
+	public ISelection getSelection() {
+		List<EventLogEntry> selectionElements = getSelectionElements();
+		
+		if (selectionElements == null)
+			return null;
+		else {
+			ArrayList<IEvent> selectionEvents = new ArrayList<IEvent>();
+			
+			for (EventLogEntry selectionElement : selectionElements)
+				selectionEvents.add(selectionElement.getEvent());
+	
+			return new EventLogSelection(getEventLogInput(), selectionEvents);
+		}
+	}
 
-		if (input != null)
-			((EventLogTableLineRenderer)getLineRenderer()).setInput((EventLogInput)input);
+	@Override
+	public void setSelection(ISelection selection) {
+		if (selection instanceof EventLogSelection) {
+			EventLogSelection eventLogSelection = (EventLogSelection)selection;
+			List<EventLogEntry> eventLogEntries = new ArrayList<EventLogEntry>();
+
+			for (IEvent event : eventLogSelection.getEvents())
+				eventLogEntries.add(event.getEventEntry());
+			
+			super.setSelection(new VirtualTableSelection<EventLogEntry>(eventLogSelection.getEventLogInput(), eventLogEntries));
+		}
+	}
+	
+	public EventLogInput getEventLogInput() {
+		return (EventLogInput)getInput();		
 	}
 
 	public IEventLog getEventLog() {
-		return ((EventLogInput)getInput()).getEventLog();
+		EventLogInput eventLogInput = getEventLogInput();
+		
+		if (eventLogInput == null)
+			return null;
+		else
+			return eventLogInput.getEventLog();
 	}
 
 	public EventLogTableFacade getEventLogTableFacade() {
@@ -62,6 +100,6 @@ public class EventLogTable extends VirtualTableViewer<EventLogEntry> {
 
 	public void setFilterMode(int i) {
 		getEventLogTableContentProvider().setFilterMode(i);
-		virtualTable.stayNear();
+		stayNear();
 	}
 }

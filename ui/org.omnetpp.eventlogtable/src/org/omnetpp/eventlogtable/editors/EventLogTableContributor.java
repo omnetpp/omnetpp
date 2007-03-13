@@ -79,10 +79,10 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 				// TODO: add case sensitivity, forward/backward search, etc.
 
 				String searchText = dialog.getValue();
-				EventLogEntry foundEventLogEntry = getEventLog().findEventLogEntry(eventLogTable.getVirtualTable().getSelectionElement(), searchText, true);
+				EventLogEntry foundEventLogEntry = getEventLog().findEventLogEntry(eventLogTable.getSelectionElement(), searchText, true);
 				
 				if (foundEventLogEntry != null)
-					eventLogTable.getVirtualTable().gotoElement(foundEventLogEntry);
+					eventLogTable.gotoElement(foundEventLogEntry);
 				else
 					MessageDialog.openInformation(null, "Search raw text", "No matches found!");
 			}
@@ -92,10 +92,10 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 	private Action getGotoEventCauseAction() {
 		return new Action("Goto event cause") {
 			public void run() {
-				BeginSendEntry beginSendEntry = eventLogTable.getVirtualTable().getSelectionElement().getEvent().getCause().getCauseBeginSendEntry();
+				BeginSendEntry beginSendEntry = eventLogTable.getSelectionElement().getEvent().getCause().getCauseBeginSendEntry();
 				
 				if (beginSendEntry != null)
-					eventLogTable.getVirtualTable().gotoElement(beginSendEntry);
+					eventLogTable.gotoElement(beginSendEntry);
 			}
 		};
 	}
@@ -103,9 +103,9 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 	private Action getGotoMessageArrivalAction() {
 		return new Action("Goto message arrival") {
 			public void run() {
-				IEvent event = eventLogTable.getVirtualTable().getSelectionElement().getEvent();
+				IEvent event = eventLogTable.getSelectionElement().getEvent();
 				MessageDependencyList consequences = event.getConsequences();
-				EventLogEntry eventLogEntry = eventLogTable.getVirtualTable().getSelectionElement();
+				EventLogEntry eventLogEntry = eventLogTable.getSelectionElement();
 				
 				for (int i = 0; i < consequences.size(); i++) {
 					MessageDependency consequence = consequences.get(i);
@@ -113,7 +113,7 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 						IEvent consequenceEvent = consequence.getConsequenceEvent();
 						
 						if (consequenceEvent != null)
-							eventLogTable.getVirtualTable().gotoElement(consequenceEvent.getEventEntry());
+							eventLogTable.gotoElement(consequenceEvent.getEventEntry());
 					}
 				}
 			}
@@ -123,9 +123,9 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 	private Action getGotoMessageOriginAction() {
 		return new Action("Goto message origin") {
 			public void run() {
-				IEvent event = eventLogTable.getVirtualTable().getSelectionElement().getEvent();
+				IEvent event = eventLogTable.getSelectionElement().getEvent();
 				MessageDependencyList causes = event.getCauses();
-				EventLogEntry eventLogEntry = eventLogTable.getVirtualTable().getSelectionElement();
+				EventLogEntry eventLogEntry = eventLogTable.getSelectionElement();
 				
 				for (int i = 0; i < causes.size(); i++) {
 					MessageDependency cause = causes.get(i);
@@ -134,7 +134,7 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 						IEvent causeEvent = cause.getCauseEvent();
 						
 						if (causeEvent != null)
-							eventLogTable.getVirtualTable().gotoElement(causeEvent.getEventEntry());
+							eventLogTable.gotoElement(causeEvent.getEventEntry());
 					}
 				}
 			}
@@ -144,7 +144,7 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 	private Action getGotoMessageReuseAction() {
 		return new Action("Goto message reuse") {
 			public void run() {
-				IEvent event = eventLogTable.getVirtualTable().getSelectionElement().getEvent();
+				IEvent event = eventLogTable.getSelectionElement().getEvent();
 				MessageDependencyList consequences = event.getConsequences();
 				
 				for (int i = 0; i < consequences.size(); i++) {
@@ -153,7 +153,7 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 						BeginSendEntry beginSendEntry = consequence.getConsequenceBeginSendEntry();
 						
 						if (beginSendEntry != null)
-							eventLogTable.getVirtualTable().gotoElement(beginSendEntry);
+							eventLogTable.gotoElement(beginSendEntry);
 					}
 				}
 			}
@@ -187,7 +187,7 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 					IEvent event = eventLog.getEventForEventNumber(eventNumber);
 
 					if (event != null)
-						eventLogTable.getVirtualTable().gotoElement(event.getEventEntry());
+						eventLogTable.gotoElement(event.getEventEntry());
 					else
 						MessageDialog.openError(null, "Goto event" , "No such event: " + eventNumber);
 				}
@@ -225,7 +225,7 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 					IEvent event = eventLog.getEventForSimulationTime(simulationTime, MatchKind.FIRST_OR_NEXT);
 
 					if (event != null)
-						eventLogTable.getVirtualTable().gotoElement(event.getEventEntry());
+						eventLogTable.gotoElement(event.getEventEntry());
 					else
 						MessageDialog.openError(null, "Goto simulation time" , "No such simulation time: " + simulationTime);
 				}
@@ -242,10 +242,10 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 				try {
 					EventLogInput eventLogInput = (EventLogInput)eventLogTable.getInput();
 					IMarker marker = eventLogInput.getFile().createMarker(IMarker.BOOKMARK);
-					IEvent event = ((EventLogEntry)eventLogTable.getVirtualTable().getSelectionElement()).getEvent();
+					IEvent event = ((EventLogEntry)eventLogTable.getSelectionElement()).getEvent();
 					marker.setAttribute(IMarker.LOCATION, "# " + event.getEventNumber());
 					marker.setAttribute("EventNumber", event.getEventNumber());
-					eventLogTable.refresh();
+					eventLogTable.redraw();
 				}
 				catch (CoreException e) {
 					throw new RuntimeException(e);
@@ -260,7 +260,7 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 			public void run() {
 				EventLogTableLineRenderer eventLogTableItemProvider = (EventLogTableLineRenderer)eventLogTable.getLineRenderer();
 				eventLogTableItemProvider.setDisplayMode(EventLogTableLineRenderer.DisplayMode.values()[(eventLogTableItemProvider.getDisplayMode().ordinal() + 1) % EventLogTableLineRenderer.DisplayMode.values().length]);
-				eventLogTable.refresh();
+				eventLogTable.redraw();
 			}
 			
 			@Override
@@ -309,7 +309,7 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 							public void widgetSelected(SelectionEvent e) {
 								EventLogTableLineRenderer eventLogTableItemProvider = (EventLogTableLineRenderer)eventLogTable.getLineRenderer();
 								eventLogTableItemProvider.setDisplayMode(displayMode);
-								eventLogTable.refresh();
+								eventLogTable.redraw();
 							}
 						});
 					}
@@ -326,7 +326,7 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 			@Override
 			public void run() {
 				eventLogTable.setFilterMode((eventLogTable.getFilterMode() + 1) % 5);
-				eventLogTable.getVirtualTable().updateVerticalBarParameters();
+				eventLogTable.updateVerticalBarParameters();
 			}
 			
 			@Override

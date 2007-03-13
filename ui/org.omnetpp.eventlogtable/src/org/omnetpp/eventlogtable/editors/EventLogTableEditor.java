@@ -7,8 +7,6 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
@@ -25,11 +23,7 @@ import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 
 public class EventLogTableEditor extends EventLogEditor implements INavigationLocationProvider, IGotoMarker {
-	private Runnable locationTimer;
-
-	private int lastLocationEventNumber;
-	
-	private ResourceChangeListener resourceChangeListener = new ResourceChangeListener();
+	protected ResourceChangeListener resourceChangeListener = new ResourceChangeListener();
 
 	protected EventLogTable eventLogTable;
 
@@ -53,31 +47,13 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 		eventLogTable = new EventLogTable(parent);
 		eventLogTable.setInput(eventLogInput);
 
-		locationTimer = new Runnable() {
-			public void run() {
-				markLocation();
-			}
-		};
-
-		eventLogTable.getVirtualTable().getCanvas().addPaintListener(new PaintListener() {
-			public void paintControl(PaintEvent e) {
-				int eventNumber = eventLogTable.getVirtualTable().getTopVisibleElement().getEvent().getEventNumber();
-
-				if (eventNumber != lastLocationEventNumber) {
-					lastLocationEventNumber = eventNumber;
-					Display.getCurrent().timerExec(3000, locationTimer);
-				}
-			}
-		});
+		getSite().setSelectionProvider(eventLogTable);
+		addLocationProviderPaintListener(eventLogTable.getCanvas());
 	}
 
 	@Override
 	public void setFocus() {
-		eventLogTable.getControl().setFocus();
-	}
-
-	public void markLocation() {
-		getSite().getPage().getNavigationHistory().markLocation(this);
+		eventLogTable.setFocus();
 	}
 	
 	public class EventLogTableLocation implements INavigationLocation {
@@ -117,10 +93,8 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 			IEvent event = eventLogInput.getEventLog().getEventForEventNumber(eventNumber);
 			EventLogEntry eventLogEntry = event != null ? event.getEventEntry() : null;
 			
-			if (eventLogEntry != null) {
-				lastLocationEventNumber = event.getEventNumber();
-				eventLogTable.getVirtualTable().scrollToElement(eventLogEntry);
-			}
+			if (eventLogEntry != null)
+				eventLogTable.scrollToElement(eventLogEntry);
 		}
 
 		public void restoreState(IMemento memento) {
@@ -141,6 +115,28 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 		public void update() {
 			// void
 		}
+
+		@Override
+		public int hashCode() {
+			final int PRIME = 31;
+			int result = 1;
+			result = PRIME * result + eventNumber;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			final EventLogTableLocation other = (EventLogTableLocation) obj;
+			if (eventNumber != other.eventNumber)
+				return false;
+			return true;
+		}
 	}
 
 	public INavigationLocation createEmptyNavigationLocation() {
@@ -148,7 +144,7 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 	}
 
 	public INavigationLocation createNavigationLocation() {
-		EventLogEntry topElement = eventLogTable.getVirtualTable().getTopVisibleElement();
+		EventLogEntry topElement = eventLogTable.getTopVisibleElement();
 		
 		if (topElement == null)
 			return null;
@@ -158,7 +154,7 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 
 	public void gotoMarker(IMarker marker) {
 		int eventNumber = marker.getAttribute("EventNumber", -1);
-		eventLogTable.getVirtualTable().gotoElement(eventLogInput.getEventLog().getEventForEventNumber(eventNumber).getEventEntry());
+		eventLogTable.gotoElement(eventLogInput.getEventLog().getEventForEventNumber(eventNumber).getEventEntry());
 	}
 
 	private class ResourceChangeListener implements IResourceChangeListener, IResourceDeltaVisitor {
@@ -178,7 +174,7 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
             if (delta != null && delta.getResource() != null && delta.getResource().equals(eventLogInput.getFile())) {
             	Display.getCurrent().asyncExec(new Runnable() {
 					public void run() {
-	    				eventLogTable.refresh();
+	    				eventLogTable.redraw();
 					}            		
             	});
             }
