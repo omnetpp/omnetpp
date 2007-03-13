@@ -3,7 +3,6 @@ package org.omnetpp.scave.jobs;
 import static org.omnetpp.scave.engineext.IndexFile.isIndexFileUpToDate;
 import static org.omnetpp.scave.engineext.IndexFile.isVectorFile;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +13,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engineext.IndexFile;
 
 /**
@@ -23,8 +21,6 @@ import org.omnetpp.scave.engineext.IndexFile;
  * @author tomi
  */
 public class VectorFileIndexerJob extends WorkspaceJob {
-	
-	private static final boolean debug = false;
 	
 	private List<IFile> filesToBeIndexed;
 	private Object lock;

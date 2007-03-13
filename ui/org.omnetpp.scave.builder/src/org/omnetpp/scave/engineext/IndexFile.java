@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.scave.builder.Activator;
+import org.omnetpp.scave.engineext.ResultFileFormatException;
 import org.omnetpp.scave.engine.VectorFileIndexer;
 
 /**
@@ -165,10 +166,6 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 	 */
 	public static void performIndexing(IFile vectorFile) {
 		try {
-			//TODO refine: 
-			// - if vector file is garbage, add ERROR marker
-			// - if indexing failed (e.g. readonly filesystem), add WARNING marker
-			//
 			vectorFile.deleteMarkers(MARKERTYPE_SCAVEPROBLEM, true, IResource.DEPTH_ZERO);
 
 			VectorFileIndexer indexer = new VectorFileIndexer();
@@ -178,6 +175,10 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 			long startTime = System.currentTimeMillis();
 			indexer.generateIndex(osFileName);
 			System.out.println("finished indexing " + vectorFile + ", " + (System.currentTimeMillis()-startTime) + "ms");
+		}
+		catch (ResultFileFormatException e) {
+			addMarker(vectorFile, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_ERROR, "Wrong file: "+e.getMessage(), e.getLineNo());
+			Activator.logError("Vector file format error: " + e.getMessage(), e);
 		}
 		catch (Throwable e) {
 			addMarker(vectorFile, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_WARNING, "Indexing failed: "+e.getMessage(), -1);

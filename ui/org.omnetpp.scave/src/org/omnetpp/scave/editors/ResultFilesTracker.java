@@ -83,9 +83,10 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	public void resourceChanged(IResourceChangeEvent event) {
 		try {
 			IResourceDelta delta = event.getDelta();
-			delta.accept(new ResourceDeltaVisitor());
+			if (delta != null)
+				delta.accept(new ResourceDeltaVisitor());
 		} catch (CoreException e) {
-			e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
+			ScavePlugin.logError("Could not refresh the result files", e);
 		}
 	}
 
