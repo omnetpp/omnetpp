@@ -64,6 +64,7 @@ import org.omnetpp.ned.editor.graph.properties.view.BasePreferrerPropertySheetSo
 import org.omnetpp.ned.editor.graph.properties.view.PropertySheetPageEx;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
+import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 
 public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
@@ -124,10 +125,9 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
     }
 
     private KeyHandler sharedKeyHandler;
-    private PaletteRoot root;
+    private PaletteManager paletteManager;
     private OutlinePage outlinePage;
     private boolean editorSaving = false;
-
 
     private NedFileNodeEx nedFileModel;
 
@@ -139,6 +139,22 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
     public GraphicalNedEditor() {
         GraphicalNedEditorPlugin.getDefault().getPreferenceStore().setDefault(PALETTE_SIZE, DEFAULT_PALETTE_SIZE);
         setEditDomain(new DefaultEditDomain(this));
+    }
+
+    @Override
+    public void dispose() {
+        NEDResourcesPlugin.getNEDResources().getPaletteModelListenerList().remove(paletteManager);
+        super.dispose();
+    }
+    
+    protected PaletteRoot getPaletteRoot() {
+        if (paletteManager == null) {
+            paletteManager = new PaletteManager(this);
+            // attach the palette manager as a listener to the resource manager plugin
+            // so it will be notified if the palette should be updated
+            NEDResourcesPlugin.getNEDResources().getPaletteModelListenerList().add(paletteManager);
+        }
+        return paletteManager.getRootPalette();
     }
 
     @Override
@@ -225,6 +241,10 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
     			getCommandStack().markSaveLocation();
     }
 
+    /* (non-Javadoc)
+     * @see org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette#getAdapter(java.lang.Class)
+     * Adds content outline and zoom support
+     */
     @Override
     public Object getAdapter(Class type) {
         if (type == org.eclipse.ui.views.properties.IPropertySheetPage.class) {
@@ -259,14 +279,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
         return sharedKeyHandler;
     }
 
-
-    @Override
-    protected PaletteRoot getPaletteRoot() {
-        if (root == null) {
-            root = PaletteManager.createPalette();
-        }
-        return root;
-    }
 
     @Override
     protected void initializeGraphicalViewer() {

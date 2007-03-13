@@ -13,6 +13,7 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.ned.engine.NEDErrorCategory;
 import org.omnetpp.ned.engine.NEDErrorStore;
 import org.omnetpp.ned.model.NEDElement;
@@ -25,6 +26,7 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
+import org.omnetpp.ned.model.notification.NEDChangeListenerList;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
@@ -41,23 +43,25 @@ import org.omnetpp.ned.model.pojo.ParametersNode;
 import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 
 /**
- * Parses all NED files in the workspace and makes them available
- * for other plugins for consistence checks among NED files etc.
- *  
- * It listens to workspace resource changes and modifies it content based on change
- * notifications
+ * Parses all NED files in the workspace and makes them available for other
+ * plugins for consistence checks among NED files etc.
  * 
- * XXX should do full rebuild when Eclipse starts up!!!
- * XXX default installation should have "workspace auto refresh" enabled, and "Problems view" shown!!! 
- * XXX when something changes, we always rebuild INEDComponents. This is not needed -- rather, we
- *     should just call NEDComponent.componentsChanged()! (PERFORMANCE)
- *  
+ * It listens to workspace resource changes and modifies it content based on
+ * change notifications
+ * 
+ * XXX should do full rebuild when Eclipse starts up!!! XXX default installation
+ * should have "workspace auto refresh" enabled, and "Problems view" shown!!!
+ * XXX when something changes, we always rebuild INEDComponents. This is not
+ * needed -- rather, we should just call NEDComponent.componentsChanged()!
+ * (PERFORMANCE)
+ * 
  * @author andras
  */
 public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     private static final String NED_EXTENSION = "ned";
-
+    // listener list that listenens on all NED changes
+    private transient NEDChangeListenerList paletteModellisteners = null;
     // stores parsed contents of NED files
     private HashMap<IFile, NEDElement> nedFiles = new HashMap<IFile, NEDElement>();
     private ProblemMarkerJob markerJob = new ProblemMarkerJob("Updating problem markers");
@@ -70,12 +74,13 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     // reserved (used) names (contains all names including dupliates)
     private Set<String> reservedNames = new HashSet<String>();
 
-    // last event serials processed by the components. used to be able to skip duplicated
-    // event notification in NEDComponent
+    // last event serials processed by the components. used to be able to skip
+    // duplicated event notification in NEDComponent
     HashMap<String, Long> eventSerials = new HashMap<String, Long>();
 
     // tables of toplevel components, classified (points into nedFiles trees)
     private boolean needsRehash = false; // if tables below need to be rebuilt
+    
     private HashMap<String, INEDTypeInfo> modules = new HashMap<String, INEDTypeInfo>();
     private HashMap<String, INEDTypeInfo> channels = new HashMap<String, INEDTypeInfo>();
     private HashMap<String, INEDTypeInfo> moduleInterfaces = new HashMap<String, INEDTypeInfo>();
@@ -88,6 +93,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     private long lastEventSerial;
 
+
     /**
      * Constructor.
      */
@@ -98,7 +104,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     /**
      * Create channel and interface types that are predefined in NED.
      */
-    //FIXME should use built-in NED text from nedxml lib!!!
+    // FIXME should use built-in NED text from nedxml lib!!!
     protected void createBuiltInNEDTypes() {
         // create built-in channel type cIdealChannel
         ChannelNode nullChannel = (ChannelNode) NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_CHANNEL);
@@ -119,8 +125,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
         //
         // create built-in interfaces that allow modules to be used as channels
-        //  interface IBidirectionalChannel { gates: inout a; inout b; }
-        //  interface IUnidirectionalChannel {gates: input i; output o; }
+        // interface IBidirectionalChannel { gates: inout a; inout b; }
+        // interface IUnidirectionalChannel {gates: input i; output o; }
         //
         ModuleInterfaceNode bidirChannel = (ModuleInterfaceNode) NEDElementFactoryEx.getInstance().createNodeWithTag(
                 NEDElementTags.NED_MODULE_INTERFACE);
@@ -155,7 +161,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         param.setType(type);
         param.setIsVolatile(false);
         param.setIsDefault(false);
-        //TODO add default value of zero
+        // TODO add default value of zero
         param.setSourceLocation("internal");
         return param;
     }
@@ -165,7 +171,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     public synchronized NEDElement getNEDFileContents(IFile file) {
-        if (needsRehash) rehash();
+        if (needsRehash)
+            rehash();
         return nedFiles.get(file);
     }
 
@@ -174,73 +181,87 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     public synchronized INEDTypeInfo getComponentAt(IFile file, int lineNumber) {
-        if (needsRehash) rehash();
+        if (needsRehash)
+            rehash();
         for (INEDTypeInfo component : components.values()) {
             if (file.equals(component.getNEDFile())) {
                 NEDSourceRegion region = component.getNEDElement().getSourceRegion();
-                if (region != null && region.containsLine(lineNumber)) return component;
+                if (region != null && region.containsLine(lineNumber))
+                    return component;
             }
         }
         return null;
     }
 
     public synchronized Collection<INEDTypeInfo> getAllComponents() {
-        if (needsRehash) rehash();
+        if (needsRehash)
+            rehash();
         return components.values();
     }
 
     public synchronized Collection<INEDTypeInfo> getModules() {
-        if (needsRehash) rehash();
+        if (needsRehash)
+            rehash();
         return modules.values();
     }
 
     public synchronized Collection<INEDTypeInfo> getChannels() {
-        if (needsRehash) rehash();
+        if (needsRehash)
+            rehash();
         return channels.values();
     }
 
     public synchronized Collection<INEDTypeInfo> getModuleInterfaces() {
-        if (needsRehash) rehash();
+        if (needsRehash)
+            rehash();
         return moduleInterfaces.values();
     }
 
     public synchronized Collection<INEDTypeInfo> getChannelInterfaces() {
-        if (needsRehash) rehash();
+        if (needsRehash)
+            rehash();
         return channelInterfaces.values();
     }
 
     public synchronized Set<String> getAllComponentNames() {
-        if (needsRehash) rehash();
+        if (needsRehash)
+            rehash();
         return components.keySet();
     }
 
     public synchronized Set<String> getReservedNames() {
-        if (needsRehash) rehash();
+        if (needsRehash)
+            rehash();
         return reservedNames;
     }
 
     public synchronized Set<String> getModuleNames() {
-        if (needsRehash) rehash();
+        if (needsRehash)
+            rehash();
         return modules.keySet();
     }
 
     public synchronized Set<String> getChannelNames() {
-        if (needsRehash) rehash();
+        if (needsRehash)
+            rehash();
         return channels.keySet();
     }
 
     public synchronized Set<String> getModuleInterfaceNames() {
-        if (needsRehash) rehash();
+        if (needsRehash)
+            rehash();
         return moduleInterfaces.keySet();
     }
 
     public synchronized Set<String> getChannelInterfaceNames() {
-        if (needsRehash) rehash();
+        if (needsRehash)
+            rehash();
         return channelInterfaces.keySet();
     }
 
     public synchronized INEDTypeInfo getComponent(String name) {
-        if (needsRehash) rehash();
+        if (needsRehash)
+            rehash();
         return components.get(name);
     }
 
@@ -252,7 +273,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      * Determines if a resource is a NED file, that is, if it should be parsed.
      */
     public static boolean isNEDFile(IResource resource) {
-        // TODO should only regard files within a folder designated as "source folder" (persistent attribute!)
+        // TODO should only regard files within a folder designated as "source
+        // folder" (persistent attribute!)
         return resource instanceof IFile && NED_EXTENSION.equalsIgnoreCase(((IFile) resource).getFileExtension());
     }
 
@@ -273,7 +295,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     public synchronized void disconnect(IFile file) {
         int count = connectCount.get(file); // must exist
         if (count <= 1) {
-            // there's no open editor -- remove counter and re-read last saved state from disk
+            // there's no open editor -- remove counter and re-read last saved
+            // state from disk
             connectCount.remove(file);
             readNEDFile(file);
         } else {
@@ -286,7 +309,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      */
     public synchronized void setNEDFileModel(IFile file, NEDElement tree) {
         if (tree == null)
-            forgetNEDFile(file); // XXX rather: it should never be called with tree==null!
+            forgetNEDFile(file); // XXX rather: it should never be called
+                                    // with tree==null!
         else
             storeNEDFileModel(file, tree);
         rehashIfNeeded();
@@ -308,14 +332,15 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     /**
-     * Gets called from incremental builder. 
+     * Gets called from incremental builder.
      */
     public synchronized void readNEDFile(IFile file) {
         // XXX for debugging
         // System.out.println(file.toString());
 
         // if this file is currently loaded in an editor, we don't read it from disk
-        if (connectCount.containsKey(file)) return;
+        if (connectCount.containsKey(file))
+            return;
 
         // parse the NED file and put it into the hash table
         String fileName = file.getLocation().toOSString();
@@ -354,17 +379,19 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      * Calls rehash() if internal tables are out of date.
      */
     public synchronized void rehashIfNeeded() {
-        if (needsRehash) rehash();
+        if (needsRehash)
+            rehash();
     }
 
     /**
-     * Rebuild hash tables after NED resource change. Note: some errors 
-     * such as duplicate names only get detected when this gets run! 
+     * Rebuild hash tables after NED resource change. Note: some errors such as
+     * duplicate names only get detected when this gets run!
      */
     private synchronized void rehash() {
         long startMillis = System.currentTimeMillis();
 
-        if (!needsRehash) return;
+        if (!needsRehash)
+            return;
         // rehash done!
         needsRehash = false;
 
@@ -422,7 +449,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                             String message = node.getTagName() + " '" + name + "' is a built-in type and cannot be redefined";
                             errorStore.add(node.getSourceLocation(), NEDErrorCategory.ERRCAT_ERROR.ordinal(), message);
                         } else {
-                            // add it to the duplicate set so we can remove them before the end
+                            // add it to the duplicate set so we can remove them
+                            // before the end
                             duplicates.add(name);
                             String message = node.getTagName() + " '" + name + "' already defined in "
                                     + otherFile.getFullPath().toString();
@@ -432,7 +460,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                                     + file.getFullPath().toString();
                             NEDErrorStore oErrorStore = markerJob.getConsistencyErrorStore(otherFile);
                             if (oErrorStore != null)
-                                oErrorStore.add(components.get(name).getNEDElement().getSourceLocation(), NEDErrorCategory.ERRCAT_ERROR.ordinal(), otherMessage);
+                                oErrorStore.add(components.get(name).getNEDElement().getSourceLocation(),
+                                        NEDErrorCategory.ERRCAT_ERROR.ordinal(), otherMessage);
                         }
                     } else {
                         INEDTypeInfo component = new NEDComponent(node, file, this);
@@ -482,65 +511,110 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         }
     }
 
+    // ******************* notification helpers ************************************
+
+    /**
+     * @return The listener list attached to this element 
+     */
+    public NEDChangeListenerList getPaletteModelListenerList() {
+        if (paletteModellisteners == null)
+            paletteModellisteners = new NEDChangeListenerList();
+        return paletteModellisteners;
+    }
+    
+    /**
+     * Fires a palette model change  (forwards it to he listener list if any)
+     * @param event the model change event or NULL if the whole model should be rebuilt
+     */
+    public void firePaletteModelChanged(NEDModelEvent event) {
+        if(paletteModellisteners == null || !getPaletteModelListenerList().isEnabled())
+            return;
+        //forward to the listerList
+        paletteModellisteners.fireModelChanged(event);
+    }
+
     public void modelChanged(NEDModelEvent event) {
-        // skip the event processing if te last serial is greater or equal. only newer
-        // events should be processed. this prevent the processing of the same event multiple times
+        // skip the event processing if te last serial is greater or equal. only
+        // newer
+        // events should be processed. this prevent the processing of the same
+        // event multiple times
         if (lastEventSerial >= event.getSerial())
             return;
         else
             // process the even and remeber this serial
             lastEventSerial = event.getSerial();
 
-        // if a name property has changed everything should be rebuilt because inheritence might have changed
+        // if a name property has changed everything should be rebuilt because
+        // inheritence might have changed
         // we may check only for toplevel component names and extends attributes
 
         if (inheritanceMayHaveChanged(event)) {
             System.out.println("Invalidating because of: " + event);
             invalidate();
             rehashIfNeeded();
+            // a total rebuild has occured
+            firePaletteModelChanged(event);
+        }
+        // display string notification
+        if (displayMayHaveChanged(event)) {
+            firePaletteModelChanged(event);
         }
     }
 
     /**
      * @param event
-     * @return The inheritance chain has changed somewhere so the whole cache should be
-     * invalidated
+     * @return The inheritance chain has changed somewhere so the whole cache
+     *         should be invalidated
      */
     public static boolean inheritanceMayHaveChanged(NEDModelEvent event) {
-        // if we have changed a toplevel element's name we should rehash 
+        // if we have changed a toplevel element's name we should rehash
         if (event.getSource() instanceof ITopLevelElement && event instanceof NEDAttributeChangeEvent
-                && SimpleModuleNode.ATT_NAME.equals(((NEDAttributeChangeEvent) event).getAttribute())) return true;
+                && SimpleModuleNode.ATT_NAME.equals(((NEDAttributeChangeEvent) event).getAttribute()))
+            return true;
 
-        // check for removal or insertion of top level nodes 
-        if (event.getSource() instanceof NedFileNodeEx && event instanceof NEDStructuralChangeEvent) return true;
+        // check for removal or insertion of top level nodes
+        if (event.getSource() instanceof NedFileNodeEx && event instanceof NEDStructuralChangeEvent)
+            return true;
 
-        // check for extends name change  
+        // check for extends name change
         if (event.getSource() instanceof ExtendsNode && event instanceof NEDAttributeChangeEvent
-                && ExtendsNode.ATT_NAME.equals(((NEDAttributeChangeEvent) event).getAttribute())) return true;
+                && ExtendsNode.ATT_NAME.equals(((NEDAttributeChangeEvent) event).getAttribute()))
+            return true;
         // refresh if we have removed an extend node
         if (event instanceof NEDStructuralChangeEvent && ((NEDStructuralChangeEvent) event).getChild() instanceof ExtendsNode
-                && ((NEDStructuralChangeEvent) event).getType() == NEDStructuralChangeEvent.Type.REMOVAL) return true;
+                && ((NEDStructuralChangeEvent) event).getType() == NEDStructuralChangeEvent.Type.REMOVAL)
+            return true;
 
-        // TODO missing the handling of type, like attribute change, interface node insert,remove, change
+        // TODO missing the handling of type, like attribute change, interface
+        // node insert,remove, change
 
         // none of the above, so do not refresh
         return false;
     }
 
-    // ************************************************************************************************    
-    static int resourceChange = 0;
+    public static boolean displayMayHaveChanged(NEDModelEvent event) {
+        // if we have changed a toplevel element's name we should rehash
+        if (event.getSource() instanceof ITopLevelElement && event instanceof NEDAttributeChangeEvent
+                && IDisplayString.ATT_DISPLAYSTRING.equals(((NEDAttributeChangeEvent) event).getAttribute()))
+            return true;
+        return false;
+    }
+    // ************************************************************************************************
+    // static int resourceChange = 0;
 
     public synchronized void resourceChanged(IResourceChangeEvent event) {
         try {
-            if (event.getDelta() == null) return;
-            //            System.out.println("resourceChange conter: "+resourceChange++);
-            //            System.out.println(((ResourceDelta)event.getDelta()).toDeepDebugString());
+            if (event.getDelta() == null)
+                return;
+            // System.out.println("resourceChange conter: "+resourceChange++);
+            // System.out.println(((ResourceDelta)event.getDelta()).toDeepDebugString());
 
             event.getDelta().accept(new IResourceDeltaVisitor() {
                 public boolean visit(IResourceDelta delta) throws CoreException {
                     IResource resource = delta.getResource();
                     // continue visiting the children if it is not a NED file
-                    if (!isNEDFile(resource)) return true;
+                    if (!isNEDFile(resource))
+                        return true;
 
                     switch (delta.getKind()) {
                         case IResourceDelta.REMOVED:
@@ -553,7 +627,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                             invalidate();
                             break;
                         case IResourceDelta.CHANGED:
-                            // handle changed resource, but we are interested only in content change
+                            // handle changed resource, but we are interested
+                            // only in content change
                             // we don't care about marker and property changes
                             if ((delta.getFlags() & IResourceDelta.CONTENT) != 0) {
                                 readNEDFile((IFile) resource);

@@ -46,6 +46,9 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
 		ConnectionCommand endCommand = (ConnectionCommand)getCommand();
     	setCurrentCommand(endCommand);
     	
+        if (endCommand == null)
+            return false;
+        
         endCommand.setDestGate(null);
         endCommand.setSrcGate(null);
     	// ask the user about which gates should be connected, ask for both source and destination gates
