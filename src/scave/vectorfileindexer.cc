@@ -78,7 +78,8 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName)
 
             VectorData vector;
             if (!parseInt(tokens[1], vector.vectorId))
-                throw opp_runtime_error("");
+                throw opp_runtime_error("vector file indexer: malformed vector in vector declaration, file %s, line %d",
+                                        vectorFileName, lineNo);
             vector.moduleName = tokens[2];
             vector.name = tokens[3];
             vector.columns = numTokens >= 5 ? tokens[4] : "TV";
