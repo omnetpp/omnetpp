@@ -211,38 +211,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		System.out.println("loadFile: "+file);
 		synchronized (lock) {
 		if (isResultFile(file) && file.getLocation().toFile().exists()) {
-			try {
-				// Do not try to load from the vector file whose index is not up-to-date,
-				// because the ResultFileManager loads it from the vector file and it takes too much time
-				// for ~100MB files.
-				// Create or update the index file first, and try again.
-				if (isVectorFile(file) && !isIndexFileUpToDate(file)) {
-					System.out.println("indexing: "+file);
-					VectorFileIndexerJob indexer = new VectorFileIndexerJob("Indexing "+file, new IFile[] {file}, lock);
-					indexer.setPriority(Job.LONG);
-					indexer.addJobChangeListener(new JobChangeAdapter() {
-						public void done(IJobChangeEvent event) {
-							// load from the newly created index file
-		 				    // even if the workspace is not refreshed automatically
-							if (event.getResult().getSeverity() != IStatus.ERROR) {
-								synchronized (lock) {
-									String osPath = file.getLocation().toOSString();
-									manager.loadFile(file.getFullPath().toString(), osPath);
-								}
-							}
-							else {
-								unloadFile(file);
-							}
-						}
-					});
-					indexer.schedule();
-				} else {
-					String osPath = file.getLocation().toOSString();
-					manager.loadFile(file.getFullPath().toString(), osPath);
-				}
-			} catch (Exception e) {
-				ScavePlugin.logError("Could not load file: " + file.getLocation().toOSString(), e);
-			}
+			loadFileInternal(file);
 		}
 		else
 			throw new RuntimeException("wrong file type:"+file.getFullPath()); //XXX proper error handling (e.g. remove file from Inputs?)
@@ -268,18 +237,57 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		System.out.println("reloadFile: "+file);
 		if (isResultFile(file)) {
 			String resourcePath = file.getFullPath().toString();
-			String osPath = file.getLocation().toOSString();
 			ResultFile resultFile = manager.getFile(resourcePath);
 			if (resultFile != null) {
 				try {
-					synchronized (lock) {
-						manager.unloadFile(resultFile);
-						manager.loadFile(resourcePath, osPath);
-					}
+					manager.unloadFile(resultFile);
+					loadFileInternal(file);
 				} catch (Exception e) {
 					ScavePlugin.logError("Could not reload file: " + file.getLocation().toOSString(), e);
 				}
 			}
+		}
+	}
+	
+	/**
+	 * Loads the specified <code>file</code> into the ResultFileManager.
+	 * If a vector file is loaded, it checks that the index file is up-to-date.
+	 * When not, it generates the index first and then loads it from the index.
+	 */
+	private void loadFileInternal(final IFile file) {
+		try {
+			final String resourcePath = file.getFullPath().toString();
+			final String osPath = file.getLocation().toOSString();
+			synchronized (lock) {
+				// Do not try to load from the vector file whose index is not up-to-date,
+				// because the ResultFileManager loads it from the vector file and it takes too much time
+				// for ~100MB files.
+				// Create or update the index file first, and try again.
+				if (isVectorFile(file) && !isIndexFileUpToDate(file)) {
+					System.out.println("indexing: "+file);
+					VectorFileIndexerJob indexer = new VectorFileIndexerJob("Indexing "+file, new IFile[] {file}, lock);
+					indexer.setPriority(Job.LONG);
+					indexer.addJobChangeListener(new JobChangeAdapter() {
+						public void done(IJobChangeEvent event) {
+							// load from the newly created index file
+		 				    // even if the workspace is not refreshed automatically
+							if (event.getResult().getSeverity() != IStatus.ERROR) {
+								synchronized (lock) {
+									manager.loadFile(resourcePath, osPath);
+								}
+							}
+							else {
+								unloadFile(file);
+							}
+						}
+					});
+					indexer.schedule();
+				} else {
+					manager.loadFile(resourcePath, osPath);
+				}
+			}
+		} catch (Exception e) {
+			ScavePlugin.logError("Could not load file: " + file.getLocation().toOSString(), e);
 		}
 	}
 
