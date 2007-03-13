@@ -205,6 +205,7 @@ public class ChartProperties extends PropertySource {
 	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_Y_AXIS_LOGARITHMIC)
 	public boolean getYAxisLogarithmic() { return getBooleanProperty(PROP_Y_AXIS_LOGARITHMIC); }
 	public void setYAxisLogarithmic(boolean flag) { setProperty(PROP_Y_AXIS_LOGARITHMIC, flag); }
+	public boolean defaultYAxisLogarithmic() { return ChartDefaults.DEFAULT_Y_AXIS_LOGARITHMIC; }
 
 	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_XY_INVERT,displayName="invert x y")
 	public boolean getXYInvert() { return getBooleanProperty(PROP_XY_INVERT); }

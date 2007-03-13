@@ -31,3 +31,5 @@ Bundle-ClassPath: lib/commons-collections-3.2.jar,
  lib/commons-lang-2.1.jar,
  .
 Bundle-Vendor: OpenSim Ltd.
+Bundle-Activator: org.omnetpp.common.CommonPlugin
+Eclipse-LazyStart: true

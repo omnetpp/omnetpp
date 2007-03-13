@@ -51,6 +51,7 @@ public class ChartDefaults {
 	public static final Font DEFAULT_LABELS_FONT = new Font(null, "Arial", 8, SWT.NORMAL);
 	public static final double DEFAULT_X_LABELS_ROTATED_BY = 0.0;
 	public static final boolean DEFAULT_INVERT_XY = false;
+	public static final boolean DEFAULT_Y_AXIS_LOGARITHMIC = false;
 
 	// grid
 	public static final boolean DEFAULT_SHOW_GRID = true;

@@ -16,7 +16,9 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
+import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.engine.ScaveEngine;
 
 /**
  * Abstract base class for PropertySource wrappers.
@@ -112,7 +114,7 @@ public abstract class PropertySource implements IPropertySource2 {
 					descriptors.add(descriptor);
 					infos.put((String)descriptor.getId(), new PropInfo(getter, setter, defaultGetter, descriptorFactory, descriptor));
 				} catch (Exception e) {
-					e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
+					CommonPlugin.logError(e);
 				}
 			}
 		}
@@ -339,6 +341,10 @@ public abstract class PropertySource implements IPropertySource2 {
 	}
 
 	public boolean isPropertyResettable(Object id) {
+		// Note: isPropertyResettable() is supposed to control whether the "Restore Default Value"
+		// action is enabled in the property's context menu. However, this is not yet implemented
+		// in Eclipse; see comment at top of org.eclipse.ui.views.properties.DefaultsAction:
+		// "[Issue: should listen for selection changes in the viewer and set enablement]"
 		PropInfo info = getInfo((String)id);
 		return info.defaultGetter != null && info.setter != null;
 	}
@@ -350,7 +356,7 @@ public abstract class PropertySource implements IPropertySource2 {
 				Object defaultValue = info.defaultGetter.invoke(this);
 				info.setter.invoke(this, defaultValue);
 			} catch (Exception e) {
-				e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
+				CommonPlugin.logError(e);
 			}
 		}
 	}
@@ -361,7 +367,7 @@ public abstract class PropertySource implements IPropertySource2 {
 		try {
 			value = info.getter.invoke(this);
 		} catch (Exception e) {
-			e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
+			CommonPlugin.logError(e);
 		}
 		return value;
 	}
@@ -372,7 +378,7 @@ public abstract class PropertySource implements IPropertySource2 {
 			try {
 				info.setter.invoke(this, new Object[] {value});
 			} catch (Exception e) {
-				e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
+				CommonPlugin.logError(e);
 			}
 	}
 }
