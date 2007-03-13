@@ -468,6 +468,7 @@ public class ScalarChart extends ChartCanvas {
 		private Font titleFont = DEFAULT_AXIS_TITLE_FONT;
 		private Font labelsFont = DEFAULT_LABELS_FONT;
 		private double rotation = DEFAULT_X_LABELS_ROTATED_BY;
+		private int gap = 4;  // between chart and axis 
 		
 		public Ticks getTicks() {
 			return new Ticks(1.0, 0.0, 1.0); // TODO
@@ -480,10 +481,8 @@ public class ScalarChart extends ChartCanvas {
 		public Insets layoutHint(GC gc, Rectangle rect, Insets insets) {
 
 			// measure title height and labels height
-			Graphics graphics = new SWTGraphics(gc);
-			graphics.pushState();
 			gc.setFont(titleFont);
-			int titleHeight = gc.textExtent(title).y;
+			int titleHeight = title.equals("") ? 0 : gc.textExtent(title).y;
 			gc.setFont(labelsFont);
 			labelsHeight = 0;
 			if (dataset != null) {
@@ -491,15 +490,13 @@ public class ScalarChart extends ChartCanvas {
 					String label = dataset.getRowKey(row).toString();
 					Dimension size = GeomUtils.rotatedSize(new Dimension(gc.textExtent(label)), rotation);
 					labelsHeight = Math.max(labelsHeight, size.height);
+					System.out.println("labelsheight: "+labelsHeight);
 				}
 			}
-			graphics.popState();
-			graphics.dispose();
 			
 			// modify insets with space required
 			insets.top = Math.max(insets.top, 10); // leave a few pixels at the top
-			int height = 10 + labelsHeight + titleHeight;
-			insets.bottom = Math.max(insets.bottom, height);
+			insets.bottom = Math.max(insets.bottom, gap + labelsHeight + titleHeight + 8);
 			
 			return insets;
 		}
@@ -542,10 +539,10 @@ public class ScalarChart extends ChartCanvas {
 					int right = plot.getBarRectangle(row, cColumns - 1).right();
 
 					graphics.restoreState();
-					graphics.drawLine(left, rect.y + 5, right, rect.y + 5);
-					graphics.translate((left + right) / 2, rect.y + 10);
+					graphics.drawLine(left, rect.y + gap, right, rect.y + gap);
+					graphics.translate((left + right) / 2, rect.y + gap);
 					graphics.rotate((float)rotation);
-					graphics.drawText(label, -size.x / 2, - labelsHeight / 2);
+					graphics.drawText(label, -size.x / 2, 1);
 				}
 				graphics.popState();
 			}
