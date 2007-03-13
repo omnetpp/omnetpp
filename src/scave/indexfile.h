@@ -141,6 +141,8 @@ struct VectorData {
      */
     void collect(const Block &block) { stat.adjoin(block.stat); }
 
+    void addBlock(const Block &block) { blocks.push_back(block); collect(block); }
+
     /**
      * Returns true if the vector contains the specified column.
      */
@@ -201,20 +203,30 @@ struct RunData {
 };
 
 /**
+ * Attributes of the vector files that are stored in the index file to
+ * check if it is up-to-date.
+ */
+struct FingerPrint {
+    long lastModified;
+    long fileSize;
+
+    FingerPrint() : lastModified(0), fileSize(0) {}
+    FingerPrint(const char *vectorFileName);
+};
+
+/**
  * Data of all vectors stored in the index file.
  */
 struct VectorFileIndex {
     std::string vectorFileName;
-    long vectorFileLastModified;
-    long vectorFileSize;
-
+    FingerPrint fingerprint;
     RunData run;
     Vectors vectors;
 
-    VectorFileIndex() : vectorFileLastModified(0), vectorFileSize(0) {}
     int getNumberOfVectors() const { return vectors.size(); };
+    void addVector(const VectorData &vector) { vectors.push_back(vector); }
     const VectorData *getVectorAt(int index) const { return &vectors[index]; };
-    const VectorData *getVector(int vectorId) const;
+    VectorData *getVector(int vectorId);
 };
 
 /**

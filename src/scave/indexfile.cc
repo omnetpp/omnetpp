@@ -136,9 +136,9 @@ Blocks::size_type VectorData::getBlocksInEventnumInterval(long startEventNum, lo
 
 //=========================================================================
 
-const VectorData *VectorFileIndex::getVector(int vectorId) const
+VectorData *VectorFileIndex::getVector(int vectorId)
 {
-    for (Vectors::const_iterator it=vectors.begin(); it != vectors.end(); ++it)
+    for (Vectors::iterator it=vectors.begin(); it != vectors.end(); ++it)
     {
         if (it->vectorId == vectorId)
             return &(*it);
@@ -268,11 +268,22 @@ bool IndexFile::isIndexFileUpToDate(const char *filename)
     bool uptodate = false;
     if (stat(vectorFileName.c_str(), &s) == 0)
     {
-        uptodate = (s.st_mtime == index->vectorFileLastModified) && (s.st_size == index->vectorFileSize);
+        uptodate = (s.st_mtime == index->fingerprint.lastModified) && (s.st_size == index->fingerprint.fileSize);
     }
 
     delete index;
     return uptodate;
+}
+
+//=========================================================================
+FingerPrint::FingerPrint(const char *vectorFileName)
+{
+    struct stat s;
+    if (stat(vectorFileName, &s) != 0)
+        throw opp_runtime_error("vector file '%s' does not exist", vectorFileName);
+
+    this->lastModified = (long)s.st_mtime;
+    this->fileSize = (long)s.st_size;
 }
 
 //=========================================================================
@@ -379,8 +390,8 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
         CHECK(numTokens >= 3, "missing file attributes", lineNum);
         CHECK(parseLong(tokens[1], fileSize), "file size is not a number", lineNum);
         CHECK(parseLong(tokens[2], lastModified), "modification date is not a number", lineNum);
-        index->vectorFileSize = fileSize;
-        index->vectorFileLastModified = lastModified;
+        index->fingerprint.fileSize = fileSize;
+        index->fingerprint.lastModified = lastModified;
     }
     else if (index->run.parseLine(tokens, numTokens, filename.c_str(), lineNum))
     {
@@ -457,16 +468,14 @@ void IndexFileWriter::writeAll(const VectorFileIndex& index)
 
 void IndexFileWriter::writeFingerprint(std::string vectorFileName)
 {
+    FingerPrint fingerprint(vectorFileName.c_str());
+
     if (file == NULL)
         openFile();
 
-    struct stat s;
-    if (stat(vectorFileName.c_str(), &s) != 0)
-        throw opp_runtime_error("vector file %s does not exist", vectorFileName.c_str());
-
     long saveOffset = ftell(file);
     fseek(file, 0, SEEK_SET);
-    CHECK(fprintf(file, "file %ld %ld", (long)s.st_size, (long)s.st_mtime));
+    CHECK(fprintf(file, "file %ld %ld", fingerprint.fileSize, fingerprint.lastModified));
     fseek(file,saveOffset, SEEK_SET);
 }
 

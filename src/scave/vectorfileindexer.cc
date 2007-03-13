@@ -18,12 +18,9 @@
 #include <ostream>
 #include "platmisc.h"
 #include "stringutil.h"
-#include "resultfilemanager.h"
-#include "nodetype.h"
-#include "nodetyperegistry.h"
-#include "dataflowmanager.h"
-#include "vectorfilereader.h"
-#include "indexedvectorfile.h"
+#include "scaveutils.h"
+#include "filereader.h"
+#include "linetokenizer.h"
 #include "indexfile.h"
 #include "vectorfileindexer.h"
 
@@ -45,112 +42,134 @@ static std::string createTempFileName(const std::string baseFileName)
     return tmpFileName;
 }
 
-void VectorFileIndexer::generateIndex(const char* fileName)
+void VectorFileIndexer::generateIndex(const char *vectorFileName)
 {
-    // load file
-    ResultFileManager resultFileManager;
-    ResultFile *f = resultFileManager.loadFile(fileName); // TODO: limit number of lines read
-    if (!f)
-    {
-        throw opp_runtime_error("Error: %s: load() returned null", fileName);
-    }
-    else if (f->numUnrecognizedLines>0)
-    {
-        fprintf(stderr, "WARNING: %s: %d invalid/incomplete lines out of %d\n", fileName, f->numUnrecognizedLines, f->numLines);
-    }
+    FileReader reader(vectorFileName);
+    LineTokenizer tokenizer(1024);
+    VectorFileIndex index;
+    index.vectorFileName = vectorFileName;
 
-    RunList runs = resultFileManager.getRunsInFile(f);
-    if (runs.size() != 1)
+    char *line;
+    char **tokens;
+    int numTokens, lineNo, numOfUnrecognizedLines = 0;
+    int currentVectorId = -1;
+    VectorData *currentVectorRef = NULL;
+    Block currentBlock;
+
+    while ((line=reader.getNextLineBufferPointer())!=NULL)
     {
-        if (runs.size() == 0)
-            fprintf(stderr, "WARNING: %s: contains no runs\n", fileName);
+        tokenizer.tokenize(line, reader.getLastLineLength());
+        numTokens = tokenizer.numTokens();
+        tokens = tokenizer.tokens();
+        lineNo = reader.getNumReadLines();
+
+        if (numTokens == 0 || tokens[0][0] == '#')
+            continue;
+        else if (tokens[0][0] == 'r' && strcmp(tokens[0], "run") == 0 ||
+                 tokens[0][0] == 'a' && strcmp(tokens[0], "attr") == 0 ||
+                 tokens[0][0] == 'p' && strcmp(tokens[0], "param") == 0)
+        {
+            index.run.parseLine(tokens, numTokens, vectorFileName, lineNo);
+        }
+        else if (tokens[0][0] == 'v' && strcmp(tokens[0], "vector") == 0)
+        {
+            if (numTokens < 4)
+                throw opp_runtime_error("vector file indexer: broken vector declaration, file %s, line %d", vectorFileName, lineNo);
+
+            VectorData vector;
+            if (!parseInt(tokens[1], vector.vectorId))
+                throw opp_runtime_error("");
+            vector.moduleName = tokens[2];
+            vector.name = tokens[3];
+            vector.columns = numTokens >= 5 ? tokens[4] : "TV";
+            vector.blockSize = 0;
+            
+            index.addVector(vector);
+        }
         else
-            fprintf(stderr, "WARNING: %s: contains %d runs, expected 1\n", fileName, (int)runs.size());
-        return;
+        {
+            int vectorId;
+            double simTime;
+            double value;
+            long eventNum = -1;
+
+            if (!parseInt(tokens[0], vectorId))
+            {
+                numOfUnrecognizedLines++;
+                continue;
+            }
+
+            if (currentVectorRef == NULL || vectorId != currentVectorRef->vectorId)
+            {
+                if (currentVectorRef != NULL)
+                {
+                    long blockSize = (long)(reader.getLastLineStartOffset() - currentBlock.startOffset);
+                    if (blockSize > currentVectorRef->blockSize)
+                        currentVectorRef->blockSize = blockSize;
+                    currentVectorRef->addBlock(currentBlock);
+                }
+
+                currentBlock = Block();
+                currentBlock.startOffset = reader.getLastLineStartOffset();
+                currentVectorRef = index.getVector(vectorId);
+                if (currentVectorRef == NULL)
+                    throw opp_runtime_error("vector file indexer: missing vector declaration for id %d, file %s, line %d",
+                                            vectorId, vectorFileName, lineNo);
+            }
+
+            for (int i = 0; i < currentVectorRef->columns.size(); ++i)
+            {
+                char column = currentVectorRef->columns[i];
+                if (i+1 >= numTokens)
+                    throw opp_runtime_error("vector file indexer: data line too short, file %s, line %d", vectorFileName, lineNo);
+
+                char *token = tokens[i+1];
+                switch (column)
+                {
+                case 'T':
+                    if (!parseDouble(token, simTime))
+                        throw opp_runtime_error("vector file indexer: malformed simulation time, file %s, line %d", vectorFileName, lineNo);
+                    break;
+                case 'V':
+                    if (!parseDouble(token, value))
+                        throw opp_runtime_error("vector file indexer: malformed data value, file %s, line %d", vectorFileName, lineNo);
+                    break;
+                case 'E':
+                    if (!parseLong(token, eventNum))
+                        throw opp_runtime_error("vector file indexer: malformed event number, file %s, line %d", vectorFileName, lineNo);
+                    break;
+                }
+            }
+
+            currentBlock.collect(eventNum, simTime, value);
+        }
     }
 
-    Run *runRef = runs[0];
-
-    //
-    // assemble dataflow network for vectors
-    //
-    DataflowManager *dataflowManager = new DataflowManager;
-
-    // create filereader node
-    NodeType *readerNodeType=NodeTypeRegistry::instance()->getNodeType("vectorfilereader");
-    StringMap attrs;
-    attrs["filename"] = fileName;
-    VectorFileReaderNode *reader = (VectorFileReaderNode*)readerNodeType->create(dataflowManager, attrs);
-
-    // create filewriter node
-    NodeType *writerNodeType=NodeTypeRegistry::instance()->getNodeType("indexedvectorfilewriter");
-    std::string tmpFileName=createTempFileName(fileName);
-    std::string indexFileName=IndexFile::getIndexFileName(fileName);
-    std::string tmpIndexFileName=createTempFileName(indexFileName);
-    attrs.clear();
-    attrs["fileheader"]= generateHeader(runRef);
-    attrs["blocksize"]="65536";
-    attrs["filename"]=tmpFileName;
-    attrs["indexfilename"]=tmpIndexFileName;
-    IndexedVectorFileWriterNode *writer = (IndexedVectorFileWriterNode*)writerNodeType->create(dataflowManager, attrs);
-    writer->setRun(runRef->runName.c_str(), runRef->attributes, runRef->moduleParams);
-
-    // create a ports for each vector on reader node and writer node and connect them
-    IDList vectorIDList = resultFileManager.getAllVectors();
-    for (int i=0; i<(int)vectorIDList.size(); i++)
+    // finish last block
+    if (currentBlock.count() > 0)
     {
-         const VectorResult& vector = resultFileManager.getVector(vectorIDList.get(i));
-         Port *readerPort = reader->addVector(vector);
-         Port *writerPort = writer->addVector(vector);
-         dataflowManager->connect(readerPort, writerPort);
+        assert(currentVectorRef != NULL);
+        long blockSize = (long)(reader.getFileSize() - currentBlock.startOffset);
+        if (blockSize > currentVectorRef->blockSize)
+            currentVectorRef->blockSize = blockSize;
+        currentVectorRef->addBlock(currentBlock);
     }
 
-    // run!
-    try
+    if (numOfUnrecognizedLines > 0)
     {
-        dataflowManager->execute();
-    }
-    catch (std::exception &e)
-    {
-        fprintf(stderr, "Exception during indexing: %s\n", e.what());
-        if (unlink(tmpFileName.c_str())!=0 && errno!=ENOENT)
-            fprintf(stderr, "Cannot remove temporary file: %s\n", tmpFileName.c_str());
-        if (unlink(tmpIndexFileName.c_str())!=0 && errno!=ENOENT)
-            fprintf(stderr, "Cannot remove temporary index file: %s\n", tmpIndexFileName.c_str());
-        delete dataflowManager;
-        throw e;
+        fprintf(stderr, "Found %d unrecognized lines in %s.\n", numOfUnrecognizedLines, vectorFileName);
     }
 
-    delete dataflowManager;
+    // generate index file
+    std::string indexFileName = IndexFile::getIndexFileName(vectorFileName);
+    std::string tempIndexFileName = createTempFileName(indexFileName);
+    IndexFileWriter writer(tempIndexFileName.c_str());
+    writer.writeAll(index);
 
-    // rename vector file and index file
-    if (unlink(fileName)!=0 && errno!=ENOENT)
-        throw opp_runtime_error("Cannot remove original vector file `%s': %s", fileName, strerror(errno));
+    // rename generated index file
     if (unlink(indexFileName.c_str())!=0 && errno!=ENOENT)
         throw opp_runtime_error("Cannot remove original index file `%s': %s", indexFileName, strerror(errno));
-    if (rename(tmpIndexFileName.c_str(), indexFileName.c_str())!=0)
-        throw opp_runtime_error("Cannot rename index file from '%s' to '%s': %s", tmpIndexFileName.c_str(), indexFileName.c_str(), strerror(errno));
-    if (rename(tmpFileName.c_str(), fileName)!=0)
-        throw opp_runtime_error("Cannot rename vector file from '%s' to '%s': %s", tmpFileName.c_str(), fileName, strerror(errno));
+    if (rename(tempIndexFileName.c_str(), indexFileName.c_str())!=0)
+        throw opp_runtime_error("Cannot rename index file from '%s' to '%s': %s", tempIndexFileName.c_str(), indexFileName.c_str(), strerror(errno));
 }
 
-std::string VectorFileIndexer::generateHeader(Run *runRef)
-{
-    std::stringstream header;
-
-    header << "# generated by scave\n";
-    if (runRef->runName.size() > 0)
-        header << "run " << runRef->runName << "\n";
-
-    for (StringMap::iterator attrRef = runRef->attributes.begin(); attrRef != runRef->attributes.end(); ++attrRef)
-    {
-        header << "attr " << attrRef->first << " " << QUOTE(attrRef->second.c_str()) << "\n";
-    }
-
-    for (StringMap::iterator paramRef = runRef->moduleParams.begin(); paramRef != runRef->moduleParams.end(); ++paramRef)
-    {
-        header << "param " << paramRef->first << " " << QUOTE(paramRef->second.c_str()) << "\n";
-    }
-
-    return header.str();
-}

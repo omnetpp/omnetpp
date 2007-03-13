@@ -25,8 +25,6 @@ class SCAVE_API VectorFileIndexer
 {
     public:
         void generateIndex(const char *filename);
-    protected:
-        std::string generateHeader(Run *runRef);
 };
 
 #endif
