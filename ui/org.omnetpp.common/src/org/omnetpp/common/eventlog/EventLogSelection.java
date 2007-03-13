@@ -1,28 +1,35 @@
 package org.omnetpp.common.eventlog;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.virtualtable.IVirtualTableSelection;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 
 /**
- * Selection that is published by event log editors/viewers.
+ * Selection that is published by event log editors and viewers.
  *  
  * @author andras
  */
-public class EventLogSelection implements IEventLogSelection, IVirtualTableSelection<IEvent>, Cloneable {
+public class EventLogSelection implements IEventLogSelection, IVirtualTableSelection<IEvent>, IStructuredSelection, Cloneable {
+	/**
+	 * The input where this selection is.
+	 */
+	protected EventLogInput eventLogInput;
 
-	// TODO: implement IStructuredSelection and IPropertySourceProvider
-	private IEventLog eventLog;
-	private List<IEvent> events;
+	/**
+	 * The selected events.
+	 */
+	protected List<IEvent> events;
 
-	public EventLogSelection(IEventLog eventLog, List<IEvent> events) {
-		Assert.isTrue(eventLog != null);
+	public EventLogSelection(EventLogInput eventLogInput, List<IEvent> events) {
+		Assert.isTrue(eventLogInput != null);
 		Assert.isTrue(events != null);
-		this.eventLog = eventLog;
+		this.eventLogInput = eventLogInput;
 		this.events = events;
 	}
 
@@ -31,11 +38,15 @@ public class EventLogSelection implements IEventLogSelection, IVirtualTableSelec
 	}
 
 	public Object getInput() {
-		return eventLog;
+		return eventLogInput;
 	}
 	
 	public IEventLog getEventLog() {
-		return eventLog;
+		return eventLogInput.getEventLog();
+	}
+
+	public EventLogInput getEventLogInput() {
+		return eventLogInput;
 	}
 
 	public List<IEvent> getEvents() {
@@ -55,7 +66,7 @@ public class EventLogSelection implements IEventLogSelection, IVirtualTableSelec
 		ArrayList<IEvent> list = new ArrayList<IEvent>();
 		for (IEvent e : events)
 			list.add(e);
-		return new EventLogSelection(this.eventLog, list);
+		return new EventLogSelection(this.eventLogInput, list);
 	}
 	
 	@Override
@@ -63,7 +74,7 @@ public class EventLogSelection implements IEventLogSelection, IVirtualTableSelec
 		if (o == null || !(o instanceof EventLogSelection))
 			return false;
 		EventLogSelection sel = (EventLogSelection)o;
-		if (sel.eventLog != eventLog)
+		if (sel.eventLogInput != eventLogInput)
 			return false;
 		if (sel.events.size() != events.size())
 			return false;
@@ -71,5 +82,25 @@ public class EventLogSelection implements IEventLogSelection, IVirtualTableSelec
 			if (sel.events.get(i).getEventNumber() != events.get(i).getEventNumber())
 				return false;
 		return true;
+	}
+
+	public Object getFirstElement() {
+		return events.get(0);
+	}
+
+	public Iterator iterator() {
+		return events.iterator();
+	}
+
+	public int size() {
+		return events.size();
+	}
+
+	public Object[] toArray() {
+		return events.toArray();
+	}
+
+	public List toList() {
+		return events;
 	}
 }

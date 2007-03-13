@@ -5,10 +5,17 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 
+/**
+ * This class serves debugging purposes.
+ */
 public class LongVirtualTableLineRenderer extends LabelProvider implements IVirtualTableLineRenderer<Long> {
 	protected Font font = JFaceResources.getDefaultFont();
 
 	protected int fontHeight;
+
+	public void setInput(Object input) {
+		// void
+	}
 
 	public void drawCell(GC gc, Long element, int index) {
 		gc.drawText(element.toString(), 0, 0);

@@ -90,11 +90,19 @@ public abstract class LargeScrollableCanvas extends Canvas {
 		return viewX;
 	}
 
+	public long getViewportRight() {
+		return viewX + virtualWidth;
+	}
+
 	/**
 	 * The virtual coordinate of the top of the viewport (clientArea minus insets).
 	 */
 	public long getViewportTop() {
 		return viewY;
+	}
+
+	public long getViewportBottom() {
+		return viewY + virtualHeight;
 	}
 
 	/**

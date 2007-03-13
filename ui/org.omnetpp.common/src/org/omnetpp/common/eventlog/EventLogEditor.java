@@ -1,21 +1,54 @@
 package org.omnetpp.common.eventlog;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.INavigationLocation;
+import org.eclipse.ui.INavigationLocationProvider;
 import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.eventlog.engine.EventLog;
+import org.omnetpp.eventlog.engine.EventLogFacade;
 import org.omnetpp.eventlog.engine.FileReader;
+import org.omnetpp.eventlog.engine.IEventLog;
 
-// TODO: resuse this class from sequence chart
-public abstract class EventLogEditor extends EditorPart {
+/**
+ * Serves as a base class for editors which show an event log file.
+ */
+public abstract class EventLogEditor extends EditorPart implements INavigationLocationProvider {
+	protected Runnable locationTimer;
+
 	protected EventLogInput eventLogInput;
 
+	protected INavigationLocation lastLocation;
+
+	public IEventLog getEventLog() {
+		return eventLogInput.getEventLog();
+	}
+	
+	public EventLogFacade getSequenceChartFacade() {
+		return eventLogInput.getSequenceChartFacade();
+	}
+	
+	public IFile getFile() {
+		return eventLogInput.getFile();
+	}
+	
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+		locationTimer = new Runnable() {
+			public void run() {
+				markLocation();
+			}
+		};
+
 		setSite(site);
 		setInput(input);
 		setPartName(input.getName());
@@ -38,6 +71,23 @@ public abstract class EventLogEditor extends EditorPart {
 		eventLogInput.setEventLog(new EventLog(new FileReader(logFileName, /* EventLog will delete it */false)));
 	}
 
+	protected void addLocationProviderPaintListener(Control control) {
+		control.addPaintListener(new PaintListener() {
+			public void paintControl(PaintEvent e) {
+				INavigationLocation currentLocation = createNavigationLocation();
+
+				if (!currentLocation.equals(lastLocation)) {
+					lastLocation = currentLocation;
+					Display.getCurrent().timerExec(3000, locationTimer);
+				}
+			}
+		});
+	}
+
+	public void markLocation() {
+		getSite().getPage().getNavigationHistory().markLocation(this);
+	}
+	
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		// void

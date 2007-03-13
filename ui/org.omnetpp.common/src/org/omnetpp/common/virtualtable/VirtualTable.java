@@ -4,7 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlAdapter;
@@ -44,7 +49,7 @@ import org.omnetpp.common.color.ColorFactory;
  * - the width of the canvas is equal to the width of the table
  * - the height of the canvas is equal to the height of the client area of the scrollable composite minus the header's height
  */
-public class VirtualTable<T> extends Composite {
+public class VirtualTable<T> extends Composite implements ISelectionProvider {
 	private static final Color LINE_COLOR = ColorFactory.asColor("grey95");
 
 	private final static boolean debug = false;
@@ -59,6 +64,13 @@ public class VirtualTable<T> extends Composite {
 	 * 0 means the fix point element is display as the top visible element, positive value means below it. 
 	 */
 	protected int fixPointDistance;
+
+    /**
+     * List of selection change listeners (element type: <code>ISelectionChangedListener</code>).
+     *
+     * @see #fireSelectionChanged
+     */
+    protected ListenerList selectionChangedListeners = new ListenerList();
 
 	/**
 	 * True means the table will jump to the selection and switch input automatically when it gets notified about a selection change
@@ -91,14 +103,29 @@ public class VirtualTable<T> extends Composite {
 	 */
 	protected int lineHeight;
 	
+	/**
+	 * Indicates whether the table will draw 1 pixels thick lines around cells.
+	 */
 	protected boolean drawLines;
 	
+	/**
+	 * Container to support horizontal scrollin.
+	 */
 	protected ScrolledComposite scrolledComposite;
 	
+	/**
+	 * Container for real and virtual table.
+	 */
 	protected Composite composite;
 
+	/**
+	 * Used to draw the actual content of the virtual table.
+	 */
 	protected Canvas canvas;
 	
+	/**
+	 * Used to draw the header of the virtual table.
+	 */
 	protected Table table;
 
 	public VirtualTable(Composite parent, int style) {
@@ -106,6 +133,7 @@ public class VirtualTable<T> extends Composite {
 
 		drawLines = true;
 		setLayout(new FillLayout());
+		setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 
 		createComposite(this);
 		createCanvas(composite);
@@ -196,20 +224,22 @@ public class VirtualTable<T> extends Composite {
 		
 		canvas.addMouseListener(new MouseAdapter() {
 			public void mouseDown(MouseEvent e) {
-				T element = getVisibleElementAt(e.y / getLineHeight());
-
-				if (e.button == 1 || selectionElements == null || !selectionElements.contains(element)) {
-					if ((e.stateMask & SWT.CONTROL) != 0) {
-						if (selectionElements.contains(element))
-							selectionElements.remove(element);
+				if (input != null && contentProvider != null) {
+					T element = getVisibleElementAt(e.y / getLineHeight());
+	
+					if (e.button == 1 || selectionElements == null || !selectionElements.contains(element)) {
+						if ((e.stateMask & SWT.CONTROL) != 0) {
+							if (selectionElements.contains(element))
+								selectionElements.remove(element);
+							else
+								selectionElements.add(element);
+						}
 						else
-							selectionElements.add(element);
+							setSelectionElement(element);
 					}
-					else
-						setSelectionElement(element);
+	
+					redraw();
 				}
-
-				redraw();
 			}
 		});
 
@@ -267,6 +297,7 @@ public class VirtualTable<T> extends Composite {
 	public void setInput(Object input) {
 		this.input = input;
 		getContentProvider().inputChanged(null, null, input);
+		getLineRenderer().setInput(input);
 		updateVerticalBarParameters();
 		gotoBegin();
 	}
@@ -298,14 +329,42 @@ public class VirtualTable<T> extends Composite {
 		canvas.setMenu(menu);
 	}
 
+	public void addSelectionChangedListener(ISelectionChangedListener listener) {
+        selectionChangedListeners.add(listener);
+	}
+
+	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+        selectionChangedListeners.remove(listener);
+	}
+
+    /**
+     * Notifies any selection changed listeners that the viewer's selection has changed.
+     * Only listeners registered at the time this method is called are notified.
+     *
+     * @param event a selection changed event
+     *
+     * @see ISelectionChangedListener#selectionChanged
+     */
+    protected void fireSelectionChanged(final SelectionChangedEvent event) {
+        Object[] listeners = selectionChangedListeners.getListeners();
+        for (int i = 0; i < listeners.length; ++i) {
+            final ISelectionChangedListener l = (ISelectionChangedListener) listeners[i];
+            SafeRunnable.run(new SafeRunnable() {
+                public void run() {
+                    l.selectionChanged(event);
+                }
+            });
+        }
+    }
+
 	public ISelection getSelection() {
 		return new VirtualTableSelection<T>(getInput(), getSelectionElements());
 	}
 
 	@SuppressWarnings("unchecked")
-	public void setSelection(ISelection selection, boolean reveal) {
+	public void setSelection(ISelection selection) {
 		if (debug)
-			System.out.println("VirtualTableViewer got selection: " + selection);
+			System.out.println("VirtualTable got selection: " + selection);
 		
 		if (followSelection) {
 			// act as a view: display the element which comes in the selection, 
@@ -339,7 +398,7 @@ public class VirtualTable<T> extends Composite {
 	 * Returns the current selection.
 	 */
 	public T getSelectionElement() {
-		if (selectionElements != null)
+		if (selectionElements != null && selectionElements.size() != 0)
 			return selectionElements.get(0);
 		else
 			return null;
@@ -492,17 +551,17 @@ public class VirtualTable<T> extends Composite {
 	}
 
 	/**
-	 * Scroll to the given element making it visible.
+	 * Scroll to the given element making it visible with as little scrolling as it is possible.
 	 */
 	public void scrollToElement(T element) {
 		T topElement = getTopVisibleElement();
 
 		int maxDistance = getVisibleElementCount() + 1;
-		long distance = contentProvider.getDistanceToElement(topElement, element, maxDistance);
+		long distance = topElement == null ? maxDistance : contentProvider.getDistanceToElement(topElement, element, maxDistance);
 
 		if (distance == maxDistance) {
 			T bottomElement = getBottomFullyVisibleElement();
-			distance = contentProvider.getDistanceToElement(bottomElement, element, maxDistance);
+			distance = bottomElement == null ? maxDistance : contentProvider.getDistanceToElement(bottomElement, element, maxDistance);
 
 			if (distance == maxDistance)
 				relocateFixPoint(element, 0);
@@ -587,7 +646,7 @@ public class VirtualTable<T> extends Composite {
 		Rectangle clipping = gc.getClipping();
 		Transform transform = new Transform(null);
 		gc.getTransform(transform);
-		gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+		gc.setBackground(getBackground());
 		gc.fillRectangle(clipping);
 
 		if (contentProvider != null && fixPointElement != null) {
