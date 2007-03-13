@@ -339,6 +339,9 @@ public class ScalarChart extends ChartCanvas {
 		drawStatusText(gc);
 	}
 
+	/**
+	 * Draws the bars of the bar chart. 
+	 */
 	class BarPlot {
 		private Rectangle rect = new Rectangle(0,0,1,1);
 		private int widthBar = 10;
@@ -349,7 +352,6 @@ public class ScalarChart extends ChartCanvas {
 		private double barBaseline = DEFAULT_BAR_BASELINE;
 		private BarPlacement barPlacement = DEFAULT_BAR_PLACEMENT;
 		private Color barOutlineColor = DEFAULT_BAR_OUTLINE_COLOR;
-		private Color backgroundColor = DEFAULT_BACKGROUND_COLOR;
 		private Boolean invertXY = DEFAULT_INVERT_XY;
 		
 		public Rectangle getRectangle() {
@@ -368,8 +370,6 @@ public class ScalarChart extends ChartCanvas {
 				graphics.pushState();
 
 				Rectangle clip = graphics.getClip(new Rectangle());
-				graphics.setBackgroundColor(backgroundColor);
-				graphics.fillRectangle(clip);
 
 				int cColumns = dataset.getColumnCount();
 				int[] indices = getRowColumnsInRectangle(clip);
@@ -461,7 +461,6 @@ public class ScalarChart extends ChartCanvas {
 	/**
 	 * Domain axis for bar chart.
 	 */
-	//TODO factor out as separate class, or at least make it static (to reduce interdependencies)
 	class DomainAxis {
 		private Rectangle rect; // strip below the plotArea where the axis text etc goes
 		private int labelsHeight;
@@ -513,17 +512,22 @@ public class ScalarChart extends ChartCanvas {
 			int bottom = rect.bottom();
 			rect.height = insets.bottom;
 			rect.y = bottom - rect.height;
+			rect.x += insets.left;
+			rect.width -= insets.getWidth();
 		}
 		
 		public void draw(GC gc) {
 			org.eclipse.swt.graphics.Rectangle oldClip = gc.getClipping(); // graphics.popState() doesn't restore it!
 			Graphics graphics = new SWTGraphics(gc);
 			graphics.pushState();
+
 			graphics.setClip(rect);
 			
 			graphics.setLineStyle(SWT.LINE_SOLID);
 			graphics.setLineWidth(1);
 			graphics.setForegroundColor(ColorFactory.asColor("black"));
+
+			Rectangle plotRect = getPlotRectangle();
 
 			// draw labels
 			if (dataset != null) {
@@ -550,7 +554,6 @@ public class ScalarChart extends ChartCanvas {
 			graphics.setFont(titleFont);
 			graphics.drawText("", 0, 0); // force Graphics push the font setting into GC
 			Point size = gc.textExtent(title);
-			Rectangle plotRect = getPlotRectangle();
 			graphics.drawText(title, plotRect.x + (plotRect.width - size.x) / 2, rect.bottom() - size.y - 1);
 
 			graphics.popState();
