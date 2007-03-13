@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.SelectionDialog;
-import org.omnetpp.sequencechart.moduletree.ModuleTreeItem;
+import org.omnetpp.common.eventlog.ModuleTreeItem;
 
 /**
  * Dialog to add items to a given dataset.

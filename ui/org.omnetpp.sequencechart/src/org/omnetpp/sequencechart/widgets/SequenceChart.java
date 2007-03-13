@@ -15,6 +15,7 @@ import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -25,6 +26,8 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -40,8 +43,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.omnetpp.common.canvas.CachingCanvas;
+import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogSelection;
 import org.omnetpp.common.eventlog.IEventLogSelection;
+import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
@@ -54,7 +59,6 @@ import org.omnetpp.eventlog.engine.MessageSend;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
 import org.omnetpp.scave.engine.XYArray;
-import org.omnetpp.sequencechart.moduletree.ModuleTreeItem;
 
 /**
  * This is a sequence chart as a single figure.
@@ -72,6 +76,7 @@ import org.omnetpp.sequencechart.moduletree.ModuleTreeItem;
 //TODO rubberband vs. haircross, show them at once
 public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
+	private static final Color CHART_BACKGROUND_COLOR = ColorConstants.white;
 	private static final Color LABEL_COLOR = new Color(null, 0, 0, 0);
 	private static final Color TICK_LINE_COLOR = new Color(null, 160, 160, 160);
 	private static final Color TICK_LABEL_COLOR = new Color(null, 0, 0, 0);
@@ -135,6 +140,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private ArrayList<SelectionListener> selectionListenerList = new ArrayList<SelectionListener>(); // SWT selection listeners
 	private List<IEvent> selectedEvents = new ArrayList<IEvent>(); // the selection
     private ListenerList selectionChangedListeners = new ListenerList(); // list of selection change listeners (type ISelectionChangedListener).
+	private EventLogInput eventLogInput;
 
 	private static Rectangle TEMP_RECT = new Rectangle();  // tmp var for local calculations (a second Rectangle.SINGLETON)
     
@@ -157,7 +163,15 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
      */
 	public SequenceChart(Composite parent, int style) {
 		super(parent, style);
+		setBackground(CHART_BACKGROUND_COLOR);
     	setUpMouseHandling();
+    	
+		addControlListener(new ControlAdapter() {
+			public void controlResized(ControlEvent e) {
+				org.eclipse.swt.graphics.Rectangle r = getClientArea();
+				setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(r.x, r.y + GUTTER_HEIGHT, r.width, r.height - GUTTER_HEIGHT * 2));
+			}
+		});
 	}
 
 	/**
@@ -425,6 +439,29 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 				}
 			}
 	}
+
+	private ArrayList<ModuleTreeItem> getAllAxisModules(final EventLogInput eventLogInput) {
+		final ArrayList<ModuleTreeItem> modules = new ArrayList<ModuleTreeItem>();
+		eventLogInput.getModuleTreeRoot().visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
+			public void visit(ModuleTreeItem treeItem) {
+				if (treeItem != eventLogInput.getModuleTreeRoot())
+					modules.add(treeItem);
+			}
+		});
+
+		return modules;
+	}
+
+	public void setInput(EventLogInput eventLogInput) {
+		this.eventLogInput = eventLogInput;
+		ArrayList<ModuleTreeItem> axisModules = getAllAxisModules(eventLogInput);
+
+		ArrayList<XYArray> axisVectors = new ArrayList<XYArray>();
+		for (ModuleTreeItem axisModule : axisModules)
+			axisVectors.add(null);
+
+		setParameters(eventLogInput.getEventLog(), axisModules, axisVectors);
+	}
 	
 	/**
 	 * Sets event log and axis modules and vector data.
@@ -545,9 +582,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		axisGraphs = new ArrayList<AxisGraph>();
 
 		for (XYArray axisVector : axisVectors)
-			if (axisVector != null) {
+			if (axisVector != null)
 				axisGraphs.add(new AxisValueGraph(this, axisVector));
-			}
 			else
 				axisGraphs.add(new AxisGraph(this));
 
@@ -1178,12 +1214,12 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private void paintGutters(Graphics graphics) {
 		graphics.setBackgroundColor(GUTTER_BACKGROUND_COLOR);
 		graphics.fillRectangle(0, 0, getViewportWidth(), GUTTER_HEIGHT);
-		graphics.fillRectangle(0, getViewportHeight() - GUTTER_HEIGHT - 1, getViewportWidth(), GUTTER_HEIGHT);
+		graphics.fillRectangle(0, getViewportHeight() + GUTTER_HEIGHT, getViewportWidth(), GUTTER_HEIGHT);
 		paintTicks(graphics);
 		graphics.setBackgroundColor(GUTTER_BORDER_COLOR);
 		graphics.setLineStyle(SWT.LINE_SOLID);
 		graphics.drawRectangle(0, 0, getViewportWidth(), GUTTER_HEIGHT);
-		graphics.drawRectangle(0, getViewportHeight() - GUTTER_HEIGHT - 1, getViewportWidth(), GUTTER_HEIGHT);
+		graphics.drawRectangle(0, getViewportHeight() + GUTTER_HEIGHT, getViewportWidth(), GUTTER_HEIGHT);
 	}
 
 	private void paintTicks(Graphics graphics) {
@@ -1205,16 +1241,16 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		int x = getViewportPixelForSimulationTime(simulationTime.doubleValue());
 		graphics.setLineStyle(SWT.LINE_DOT);
 		graphics.setForegroundColor(TICK_LINE_COLOR);
-		graphics.drawLine(x, 0, x, getViewportHeight());
+		graphics.drawLine(x, 0, x, getViewportHeight() + GUTTER_HEIGHT * 2);
 		graphics.setForegroundColor(TICK_LABEL_COLOR);
 		String str = simulationTime.toPlainString() + "s";
 		graphics.setBackgroundColor(GUTTER_BACKGROUND_COLOR);
 		graphics.fillText(str, x + 3, 2);
-		graphics.fillText(str, x + 3, getViewportHeight() - 16);
+		graphics.fillText(str, x + 3, getViewportHeight() + GUTTER_HEIGHT + 2);
 	}
 	
 	private void paintEventSelectionMarks(Graphics graphics) {
-		long[] eventPtrRange = getFirstLastEventInPixelRange(0 - EVENT_SEL_RADIUS, getClientArea().width + EVENT_SEL_RADIUS);
+		long[] eventPtrRange = getFirstLastEventInPixelRange(0 - EVENT_SEL_RADIUS, getViewportWidth() + EVENT_SEL_RADIUS);
 		long startEventPtr = eventPtrRange[0];
 		long endEventPtr = eventPtrRange[1];
 		int startEventNumber = sequenceChartFacade.Event_getEventNumber(startEventPtr);
@@ -1407,7 +1443,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 */
 	private void calculateTicks() {
 		ticks = new ArrayList<BigDecimal>();
-		org.eclipse.swt.graphics.Rectangle rect = getClientArea();
+		org.eclipse.swt.graphics.Rectangle rect = getViewportRectangle();
 		
 		if (getTimelineMode() == TimelineMode.LINEAR) {
 			// puts ticks to constant distance from each other measured in timeline units
@@ -1878,7 +1914,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			long startMillis = System.currentTimeMillis();
 		
 			// determine start/end event numbers
-			long[] eventPtrRange = getFirstLastEventInPixelRange(0, getClientArea().width);
+			long[] eventPtrRange = getFirstLastEventInPixelRange(0, getViewportWidth());
 			long startEventPtr = eventPtrRange[0];
 			long endEventPtr = eventPtrRange[1];
 
@@ -2031,7 +2067,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * Selection is shown as red circles in the chart.
 	 */
 	public ISelection getSelection() {
-		return new EventLogSelection(eventLog, selectedEvents);
+		return new EventLogSelection(eventLogInput, selectedEvents);
 	}
 
 	/**
