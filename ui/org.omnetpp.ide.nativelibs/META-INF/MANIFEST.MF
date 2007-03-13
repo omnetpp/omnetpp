@@ -11,4 +11,5 @@ Export-Package: org.omnetpp.common.engine,
  org.omnetpp.eventlog.engine,
  org.omnetpp.layout.engine,
  org.omnetpp.ned.engine,
- org.omnetpp.scave.engine
+ org.omnetpp.scave.engine,
+ org.omnetpp.scave.engineext

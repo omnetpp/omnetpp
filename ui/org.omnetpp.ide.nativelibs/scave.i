@@ -11,6 +11,7 @@
 #include "indexedvectorfile.h"
 #include "vectorfileindexer.h"
 #include "vectorfilereader.h"
+#include "scaveexception.h"
 %}
 
 %exception {
@@ -347,7 +348,23 @@ class IndexFile
 
 /* ------------- vectorfileindexer.h  ----------------- */
 
+%exception VectorFileIndexer::generateIndex {
+    try {
+        $action
+    } catch (ResultFileFormatException& e) {
+	jclass clazz = jenv->FindClass("org/omnetpp/scave/engineext/ResultFileFormatException");
+	jmethodID methodId = jenv->GetMethodID(clazz, "<init>", "(Ljava/lang/String;Ljava/lang/String;I)V");
+	jthrowable exception = (jthrowable)(jenv->NewObject(clazz, methodId, jenv->NewStringUTF(e.what()), jenv->NewStringUTF(e.getFileName()), e.getLine()));
+        jenv->Throw(exception);
+        return $null;
+    } catch (std::exception& e) {
+        SWIG_JavaThrowException(jenv, SWIG_JavaRuntimeException, const_cast<char*>(e.what()));
+        return $null;
+    }
+}
+
 %include "vectorfileindexer.h"
+
 
 /* ------------- indexedvectorfile.h  ----------------- */
 
