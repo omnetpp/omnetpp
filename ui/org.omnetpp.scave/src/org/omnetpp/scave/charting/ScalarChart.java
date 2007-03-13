@@ -300,6 +300,7 @@ public class ScalarChart extends ChartCanvas {
 			valueAxis.setLayout(mainArea, insetsToMainArea);
 			plotArea = mainArea.getCopy().crop(insetsToMainArea);
 			//FIXME how to handle it when plotArea.height/width comes out negative??
+			plot.layout(gc, plotArea);
 			setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
 
 			if (shouldZoomOutX)
@@ -356,12 +357,13 @@ public class ScalarChart extends ChartCanvas {
 		}
 		
 		public Rectangle layout(GC gc, Rectangle rect) {
-			this.rect = rect;
+			this.rect = rect.getCopy();
 			return rect;
 		}
 		
 		public void draw(GC gc) {
 			if (dataset != null) {
+				resetDrawingStylesAndColors(gc);
 				Graphics graphics = new SWTGraphics(gc);
 				graphics.pushState();
 
@@ -387,7 +389,7 @@ public class ScalarChart extends ChartCanvas {
 			graphics.drawRectangle(rect);
 			if (rect.width > 1 && rect.height > 1) {
 				graphics.setBackgroundColor(getBarColor(column));
-				graphics.fillRectangle(rect.getCropped(new Insets(1,1,1,1)));
+				graphics.fillRectangle(rect.getCropped(new Insets(1,1,0,0)));
 			}
 		}
 		
@@ -518,17 +520,16 @@ public class ScalarChart extends ChartCanvas {
 			Graphics graphics = new SWTGraphics(gc);
 			graphics.pushState();
 			graphics.setClip(rect);
-			// draw axis
+			
 			graphics.setLineStyle(SWT.LINE_SOLID);
 			graphics.setLineWidth(1);
 			graphics.setForegroundColor(ColorFactory.asColor("black"));
-			Rectangle plotRect = getPlotRectangle();
-			graphics.drawLine(plotRect.x, rect.y, plotRect.right(), rect.y);
 
 			// draw labels
 			if (dataset != null) {
 				int cColumns = dataset.getColumnCount();
 				graphics.setFont(labelsFont);
+				graphics.drawText("", 0, 0); // force Graphics push the font setting into GC
 				graphics.pushState();
 				for (int row = 0; row < dataset.getRowCount(); ++row) {
 					String label = dataset.getRowKey(row).toString();
@@ -547,8 +548,10 @@ public class ScalarChart extends ChartCanvas {
 			
 			// draw axis title
 			graphics.setFont(titleFont);
+			graphics.drawText("", 0, 0); // force Graphics push the font setting into GC
 			Point size = gc.textExtent(title);
-			graphics.drawText(title, plotRect.x + (plotRect.width - size.x) / 2, rect.y + 10);
+			Rectangle plotRect = getPlotRectangle();
+			graphics.drawText(title, plotRect.x + (plotRect.width - size.x) / 2, rect.bottom() - size.y - 1);
 
 			graphics.popState();
 			graphics.dispose();

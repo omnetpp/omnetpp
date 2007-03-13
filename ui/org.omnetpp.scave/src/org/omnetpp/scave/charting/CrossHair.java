@@ -13,6 +13,9 @@ import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
 
@@ -33,7 +36,7 @@ class CrossHair {
 	private boolean detailedTooltip = false; // turned on while hovering 
 
 	//XXX experimental
-	//private Canvas hoverCanvas; // displayed in its own shell, the tooltip window
+//	private Canvas hoverCanvas; // displayed in its own shell, the tooltip window
 
 	Rectangle plotArea;
 
@@ -55,14 +58,14 @@ class CrossHair {
 	public CrossHair(VectorChart chart) {
 		this.chart = chart;
 
-		//XXX experimental		
+//		//XXX experimental		
 //		Shell shell = new Shell(chart.getShell(), SWT.NO_FOCUS | SWT.ON_TOP | SWT.NO_TRIM);
 //		shell.setLayout(new FillLayout());
 //		shell.setSize(50,10);
 //		hoverCanvas = new Canvas(shell, SWT.DOUBLE_BUFFERED);
 //		shell.layout();
 //		shell.setVisible(true);
-
+//
 //		chart.addMouseTrackListener(new MouseTrackListener() {
 //		public void mouseEnter(MouseEvent e) {
 //		CrossHair.this.chart.redraw();
@@ -175,6 +178,12 @@ class CrossHair {
 			gc.setForeground(ColorFactory.asColor("red"));
 			gc.drawLine(plotArea.x, y, plotArea.x + plotArea.width, y);
 			gc.drawLine(x, plotArea.y, x, plotArea.y + plotArea.height);
+
+//			hoverCanvas.getShell().setVisible(true);
+//			hoverCanvas.getShell().setLocation(chart.toDisplay(x+5, y+5));
+//			hoverCanvas.getShell().setSize(x%50+10, y%20+10);
+//			GC tempGC = new GC(hoverCanvas);
+//			tempGC.drawRoundRectangle(0, 0, 50, 20, 5, 5);
 
 			// draw tooltip
 			drawTooltip(gc, dataPoints, totalFound);
