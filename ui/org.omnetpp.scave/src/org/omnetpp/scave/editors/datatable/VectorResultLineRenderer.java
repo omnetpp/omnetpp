@@ -27,6 +27,10 @@ public class VectorResultLineRenderer extends LabelProvider implements IVirtualT
 
 	protected int fontHeight;
 
+	public void setInput(Object input) {
+		// void
+	}
+
 	public int getLineHeight(GC gc) {
 		if (fontHeight == 0) {
 			Font oldFont = gc.getFont();
@@ -59,5 +63,4 @@ public class VectorResultLineRenderer extends LabelProvider implements IVirtualT
 				break;
 		}
 	}
-
 }
