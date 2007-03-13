@@ -30,6 +30,7 @@ import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
@@ -411,7 +412,15 @@ public class VectorChart extends ChartCanvas {
 				}
 				
 				plotter.plot(dataset, series, gc, mapper, symbol);
+
+				// if drawing is taking too long, display busy cursor
+				if (System.currentTimeMillis() - startTime > 1000) {
+					Cursor cursor = Display.getCurrent().getSystemCursor(SWT.CURSOR_WAIT);
+					getShell().setCursor(cursor);
+					setCursor(null); // crosshair cursor would override shell's busy cursor 
+				}
 			}
+			getShell().setCursor(null);
 			System.out.println("plotting: "+(System.currentTimeMillis()-startTime)+" ms");
 
 			if (mapper.getNumCoordinateOverflows()>0) {

@@ -233,8 +233,10 @@ class CrossHair {
 				gc.setForeground(chart.getLineColor(dataPoint.series));
 				String text = getText(dataPoint);
 				IChartSymbol symbol = chart.getSymbol((String)dataset.getSeriesKey(dataPoint.series));
-				symbol.setSizeHint(6);
-				symbol.drawSymbol(gc, left + symbolWidth/2 + 2, currentY + lineHeight/2);
+				if (symbol != null) {
+					symbol.setSizeHint(6);
+					symbol.drawSymbol(gc, left + symbolWidth/2 + 2, currentY + lineHeight/2);
+				}
 				gc.drawLine(left + symbolWidth/2 - 3, currentY + lineHeight/2, left + symbolWidth/2 + 7, currentY + lineHeight/2);
 				gc.drawText(text, left + symbolWidth + 6, currentY, true);
 				currentY += lineHeight; 
