@@ -194,8 +194,9 @@ public class VectorBrowserView extends ViewPart {
 					viewer.setColumnOrder(new int[] {0,3,1,2});
 				}
 			} else {
-				message.setText("The vector content can not be browsed," +
-						" because the index for \""+file+"\" is not up to date.");
+				String fileInWorkspace = input.getFileRun().getFile().getFilePath();
+				message.setText("Vector content cannot be browsed," +
+						" because the index file (.vci) for \""+fileInWorkspace+"\" is missing or out of date.");
 				setVisible(messagePanel, true);
 				setVisible(viewer, false);
 				
