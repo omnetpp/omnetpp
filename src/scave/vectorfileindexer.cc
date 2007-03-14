@@ -84,7 +84,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName)
             vector.name = tokens[3];
             vector.columns = numTokens >= 5 ? tokens[4] : "TV";
             vector.blockSize = 0;
-            
+
             index.addVector(vector);
         }
         else
@@ -160,16 +160,29 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName)
         fprintf(stderr, "Found %d unrecognized lines in %s.\n", numOfUnrecognizedLines, vectorFileName);
     }
 
-    // generate index file
+    // generate index file: first write it to a temp file then rename it to .vci;
+    // we do this in order to prevent race conditions from other processes/threads
+    // reading an incomplete .vci file
     std::string indexFileName = IndexFile::getIndexFileName(vectorFileName);
     std::string tempIndexFileName = createTempFileName(indexFileName);
-    IndexFileWriter writer(tempIndexFileName.c_str());
-    writer.writeAll(index);
 
-    // rename generated index file
-    if (unlink(indexFileName.c_str())!=0 && errno!=ENOENT)
-        throw opp_runtime_error("Cannot remove original index file `%s': %s", indexFileName, strerror(errno));
-    if (rename(tempIndexFileName.c_str(), indexFileName.c_str())!=0)
-        throw opp_runtime_error("Cannot rename index file from '%s' to '%s': %s", tempIndexFileName.c_str(), indexFileName.c_str(), strerror(errno));
+    try
+    {
+        IndexFileWriter writer(tempIndexFileName.c_str());
+        writer.writeAll(index);
+
+        // rename generated index file
+        if (unlink(indexFileName.c_str())!=0 && errno!=ENOENT)
+            throw opp_runtime_error("Cannot remove original index file `%s': %s", indexFileName.c_str(), strerror(errno));
+        if (rename(tempIndexFileName.c_str(), indexFileName.c_str())!=0)
+            throw opp_runtime_error("Cannot rename index file from '%s' to '%s': %s", tempIndexFileName.c_str(), indexFileName.c_str(), strerror(errno));
+    }
+    catch (std::exception&)
+    {
+        // if something wrong happened, we remove the temp files
+        unlink(indexFileName.c_str());
+        unlink(tempIndexFileName.c_str());
+        throw;
+    }
 }
 
