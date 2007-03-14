@@ -473,7 +473,7 @@ public class VectorChart extends ChartCanvas {
 		legend.draw(gc);
 		xAxis.drawAxis(gc);
 		yAxis.drawAxis(gc);
-		crosshair.draw(gc);
 		drawStatusText(gc);
+		crosshair.draw(gc);
 	}
 }

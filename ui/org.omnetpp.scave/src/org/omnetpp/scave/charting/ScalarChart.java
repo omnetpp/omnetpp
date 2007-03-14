@@ -1,7 +1,6 @@
 package org.omnetpp.scave.charting;
 
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_AXIS_TITLE_FONT;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_BACKGROUND_COLOR;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_BAR_BASELINE;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_BAR_OUTLINE_COLOR;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_BAR_PLACEMENT;
@@ -29,7 +28,11 @@ import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
@@ -55,6 +58,7 @@ public class ScalarChart extends ChartCanvas {
 	private LinearAxis valueAxis = new LinearAxis(this, true);
 	private DomainAxis domainAxis = new DomainAxis();
 	private BarPlot plot = new BarPlot();
+	//private Tooltip tooltip = new Tooltip();
 
 	private Double yMin;
 	private Double yMax;
@@ -76,6 +80,10 @@ public class ScalarChart extends ChartCanvas {
 		chartChanged();
 	}
 	
+	public CategoryDataset getDataset() {
+		return dataset;
+	}
+
 	private void updateLegend() {
 		legend.clearLegendItems();
 		if (dataset != null) {
@@ -405,6 +413,26 @@ public class ScalarChart extends ChartCanvas {
 			int cColumns = dataset.getColumnCount();
 			return before ? 0 : (cRows*cColumns-1);
 		}
+
+		private int findRowColumn(double x, double y) {
+			int cRows = dataset.getRowCount();
+			int cColumns = dataset.getColumnCount();
+			x -= inset;
+			if (x < 0)
+				return -1;
+			double rowWidth = cColumns * widthBar + (cColumns - 1) * hgapMinor;
+			int row = (int) Math.floor(x / (rowWidth+hgapMajor));
+			if (row >= cRows)
+				return -1;  // x too big
+			x -= row * (rowWidth+hgapMajor);
+			if (x > rowWidth)
+				return -1;  // x falls in a major gap
+			int column = (int) Math.floor(x / (widthBar + hgapMinor));
+			x -= column * (widthBar+hgapMinor);
+			if (x > widthBar)
+				return -1;  // x falls in a minor gap
+			return row * cColumns + column; 
+		}
 		
 		protected Color getBarColor(int column) {
 			return ColorFactory.getGoodColor(column);
@@ -558,6 +586,46 @@ public class ScalarChart extends ChartCanvas {
 			graphics.popState();
 			graphics.dispose();
 			gc.setClipping(oldClip); // graphics.popState() doesn't restore it!
+		}
+	}
+	
+	/**
+	 * Bar chart tooltip
+	 * @author Andras
+	 */
+	class Tooltip {
+		private DefaultInformationControl tooltipWidget; // the current tooltip (Note: SWT's Tooltip cannot be used as it wraps lines)
+		
+		public Tooltip() {
+			addMouseTrackListener(new MouseTrackAdapter() {
+				public void mouseHover(MouseEvent e) {
+					showTooltip(e.x, e.y);
+				}
+			});
+			addMouseMoveListener(new MouseMoveListener() {
+				public void mouseMove(MouseEvent e) {
+					tooltipWidget.dispose();
+					tooltipWidget = null;
+				}
+			});
+		}
+		
+		private void showTooltip(int x, int y) {
+			int rowColumn = plot.findRowColumn(fromCanvasX(x), fromCanvasY(y));
+			if (rowColumn != -1) {
+				int numColumns = dataset.getColumnCount();
+				int row = rowColumn / numColumns;
+				int column = rowColumn % numColumns;
+				CategoryDataset dataset = getDataset();
+
+				String tooltipText = (String) dataset.getColumnKey(column) + "\nvalue: " + dataset.getValue(row, column);
+				tooltipWidget = new DefaultInformationControl(getShell());
+				tooltipWidget.setInformation(tooltipText);
+				tooltipWidget.setLocation(toDisplay(x,y+20));
+				Point size = tooltipWidget.computeSizeHint();
+				tooltipWidget.setSize(size.x, size.y);
+				tooltipWidget.setVisible(true);
+			}
 		}
 	}
 }
