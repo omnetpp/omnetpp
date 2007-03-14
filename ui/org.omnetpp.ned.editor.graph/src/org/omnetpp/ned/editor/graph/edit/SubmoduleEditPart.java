@@ -5,11 +5,13 @@ import java.util.List;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.gef.EditPolicy;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
+import org.omnetpp.ned.editor.graph.edit.policies.SubmoduleDirectEditPolicy;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 
@@ -17,6 +19,11 @@ import org.omnetpp.ned.model.notification.NEDModelEvent;
 public class SubmoduleEditPart extends ModuleEditPart {
     protected GateAnchor gateAnchor;
 
+    @Override
+    protected void createEditPolicies() {
+        super.createEditPolicies();
+        installEditPolicy(EditPolicy.DIRECT_EDIT_ROLE, new SubmoduleDirectEditPolicy());
+    }
     /** 
      * Returns a newly created Figure of this.
      * 
