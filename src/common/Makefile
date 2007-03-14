@@ -13,7 +13,7 @@ OBJS= lcgrandom.o filereader.o linetokenizer.o \
       stringtokenizer.o fnamelisttokenizer.o \
       matchexpression.o lex.matchexpressionyy.o matchexpression.tab.o \
       patternmatcher.o unitconversion.o displaystring.o fileglobber.o \
-      fileutil.o stringutil.o commonutil.o exception.o
+      fileutil.o stringutil.o commonutil.o exception.o simultime.o
 
 #
 # Automatic rules
