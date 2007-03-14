@@ -1,6 +1,7 @@
 package org.omnetpp.eventlogtable.editors;
 
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IViewSite;
@@ -17,10 +18,11 @@ public class EventLogTableView extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		IViewSite viewSite = (IViewSite)getSite();
-		eventLogTable = new EventLogTable(parent);
+		eventLogTable = new EventLogTable(parent, SWT.NONE);
 
 		// we want to provide selection for the sequence chart tool (an IEditPart)
 		viewSite.setSelectionProvider(eventLogTable);
+		new EventLogTableContributor(eventLogTable).contributeToToolBar(viewSite.getActionBars().getToolBarManager());
 
 		// follow selection
 		viewSite.getPage().addSelectionListener(new ISelectionListener() {

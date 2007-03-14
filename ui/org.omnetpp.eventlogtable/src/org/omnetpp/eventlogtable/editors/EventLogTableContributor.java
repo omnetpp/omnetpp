@@ -54,7 +54,11 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 		menuManager.add(getGotoMessageReuseAction());
 		menuManager.add(getSeparatorAction());
 		menuManager.add(getBookmarkAction());
+		menuManager.add(getSeparatorAction());
+		menuManager.add(getFilterModeAction());
+		menuManager.add(getDisplayModeAction());
 	}
+
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
 		toolBarManager.add(getFilterModeAction());
@@ -255,7 +259,7 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 	}
 
 	private Action getDisplayModeAction() {
-		Action action = new Action("Display", Action.AS_DROP_DOWN_MENU) {
+		Action action = new Action("Display mode", Action.AS_DROP_DOWN_MENU) {
 			@Override
 			public void run() {
 				EventLogTableLineRenderer eventLogTableItemProvider = (EventLogTableLineRenderer)eventLogTable.getLineRenderer();
@@ -303,7 +307,7 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 					}
 
 					private void addSubMenuItem(Menu menu, String text, final EventLogTableLineRenderer.DisplayMode displayMode) {
-						MenuItem subMenuItem = new MenuItem(menu, SWT.PUSH);
+						MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
 						subMenuItem.setText(text);
 						subMenuItem.addSelectionListener( new SelectionAdapter() {
 							public void widgetSelected(SelectionEvent e) {
@@ -322,7 +326,7 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 	}
 
 	private Action getFilterModeAction() {
-		Action action = new Action("Show", Action.AS_DROP_DOWN_MENU) {
+		Action action = new Action("Filter mode", Action.AS_DROP_DOWN_MENU) {
 			@Override
 			public void run() {
 				eventLogTable.setFilterMode((eventLogTable.getFilterMode() + 1) % 5);

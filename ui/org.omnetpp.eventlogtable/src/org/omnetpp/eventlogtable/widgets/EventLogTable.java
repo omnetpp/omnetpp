@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.eventlog.EventLogInput;
@@ -21,8 +20,8 @@ import org.omnetpp.eventlogtable.editors.EventLogTableContributor;
 public class EventLogTable extends VirtualTable<EventLogEntry> {
 	private MenuManager menuManager;
 
-	public EventLogTable(Composite parent) {
-		super(parent, SWT.NONE);
+	public EventLogTable(Composite parent, int style) {
+		super(parent, style);
 
 		setContentProvider(new EventLogTableContentProvider());
 		setLineRenderer(new EventLogTableLineRenderer());

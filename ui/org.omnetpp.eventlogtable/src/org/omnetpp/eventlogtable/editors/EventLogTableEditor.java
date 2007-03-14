@@ -7,6 +7,7 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
@@ -44,7 +45,7 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 
 	@Override
 	public void createPartControl(Composite parent) {
-		eventLogTable = new EventLogTable(parent);
+		eventLogTable = new EventLogTable(parent, SWT.NONE);
 		eventLogTable.setInput(eventLogInput);
 
 		getSite().setSelectionProvider(eventLogTable);
