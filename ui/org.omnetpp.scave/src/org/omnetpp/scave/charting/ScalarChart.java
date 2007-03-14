@@ -58,7 +58,7 @@ public class ScalarChart extends ChartCanvas {
 	private LinearAxis valueAxis = new LinearAxis(this, true);
 	private DomainAxis domainAxis = new DomainAxis();
 	private BarPlot plot = new BarPlot();
-	//private Tooltip tooltip = new Tooltip();
+	private Tooltip tooltip = new Tooltip();
 
 	private Double yMin;
 	private Double yMax;
@@ -393,11 +393,11 @@ public class ScalarChart extends ChartCanvas {
 		
 		protected void drawBar(Graphics graphics, int row, int column) {
 			Rectangle rect = getBarRectangle(row, column);
-			graphics.setForegroundColor(barOutlineColor);
-			graphics.drawRectangle(rect);
-			if (rect.width > 1 && rect.height > 1) {
-				graphics.setBackgroundColor(getBarColor(column));
-				graphics.fillRectangle(rect.getCropped(new Insets(1,1,0,0)));
+			graphics.setBackgroundColor(getBarColor(column));
+			graphics.fillRectangle(rect);
+			if (rect.width >= 4 && rect.height >= 3) {
+				graphics.setForegroundColor(barOutlineColor);
+				graphics.drawRectangle(rect.getCropped(new Insets(0,0,0,0)));
 			}
 		}
 		
@@ -431,6 +431,9 @@ public class ScalarChart extends ChartCanvas {
 			x -= column * (widthBar+hgapMinor);
 			if (x > widthBar)
 				return -1;  // x falls in a minor gap
+			double value = dataset.getValue(row, column).doubleValue();
+			if (value >= 0 ? (y < 0 || y > value) : (y > 0 || y < value))
+				return -1;  // above or below actual bar 
 			return row * cColumns + column; 
 		}
 		
