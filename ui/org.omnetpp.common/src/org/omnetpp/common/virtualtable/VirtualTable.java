@@ -55,7 +55,7 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 	private final static boolean debug = false;
 
 	/**
-	 * This is an element close enough to the top of the visible area.
+	 * This is an element close enough to the top of the visible area or null if there are no elements at all.
 	 */
 	protected T fixPointElement;
 	
@@ -226,8 +226,9 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 			public void mouseDown(MouseEvent e) {
 				if (input != null && contentProvider != null) {
 					T element = getVisibleElementAt(e.y / getLineHeight());
-	
-					if (e.button == 1 || selectionElements == null || !selectionElements.contains(element)) {
+
+					if (element != null && 
+						(e.button == 1 || selectionElements == null || !selectionElements.contains(element))) {
 						if ((e.stateMask & SWT.CONTROL) != 0) {
 							if (selectionElements.contains(element))
 								selectionElements.remove(element);
@@ -405,6 +406,8 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 	}
 
 	public void setSelectionElement(T element) {
+		Assert.isTrue(element != null);
+
 		selectionElements = new ArrayList<T>();
 		selectionElements.add(element);
 	}
@@ -446,6 +449,8 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 	 * Position the selection to the given element and make it visible.
 	 */
 	public void gotoElement(T element) {
+		Assert.isTrue(element != null);
+
 		setSelectionElement(element);		
 		scrollToElement(element);
 	}
@@ -454,7 +459,11 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 	 * Position the selection to the very beginning of the table.
 	 */
 	public void gotoBegin() {
-		setSelectionElement(contentProvider.getFirstElement());
+		T firstElement = contentProvider.getFirstElement();
+		
+		if (firstElement != null)
+			setSelectionElement(firstElement);
+
 		scrollToBegin();
 	}
 
@@ -462,7 +471,11 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 	 * Position the selection to the very end of the table.
 	 */
 	public void gotoEnd() {
-		setSelectionElement(contentProvider.getLastElement());
+		T lastElement = contentProvider.getLastElement();
+		
+		if (lastElement != null)
+			setSelectionElement(lastElement);
+
 		scrollToEnd();
 	}
 
@@ -470,8 +483,10 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 	 * Updates the invalid fix point to a valid one staying as close to the current position as it is possible.
 	 */
 	public void stayNear() {
-		relocateFixPoint(contentProvider.getClosestElement(fixPointElement), fixPointDistance);
-		redraw();
+		if (fixPointElement != null) {
+			relocateFixPoint(contentProvider.getClosestElement(fixPointElement), fixPointDistance);
+			redraw();
+		}
 	}
 
 	/**
@@ -538,7 +553,9 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 				element = contentProvider.getLastElement();
 		}
 
-		setSelectionElement(element);
+		if (element != null)
+			setSelectionElement(element);
+
 		scrollToElement(element);
 	}
 	
@@ -554,6 +571,8 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 	 * Scroll to the given element making it visible with as little scrolling as it is possible.
 	 */
 	public void scrollToElement(T element) {
+		Assert.isTrue(element != null);
+
 		T topElement = getTopVisibleElement();
 
 		int maxDistance = getVisibleElementCount() + 1;
@@ -604,30 +623,30 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 	 * also always display an element.
 	 */
 	protected void relocateFixPoint(T element, int distance) {
-		Assert.isTrue(element != null);
-
-		int maxDistance = getVisibleElementCount() * 2;
-		long firstElementDistance = contentProvider.getDistanceToFirstElement(element, maxDistance);
-
 		fixPointElement = element;
 		fixPointDistance = distance;
 
-		T topElement = getTopVisibleElement();
-		T bottomElement = getBottomFullyVisibleElement();
+		if (element != null) {
+			int maxDistance = getVisibleElementCount() * 2;
+			long firstElementDistance = contentProvider.getDistanceToFirstElement(element, maxDistance);
 
-		if ((topElement == null || bottomElement == null)) {
-			if (firstElementDistance < maxDistance && topElement == null) {
-				fixPointElement = contentProvider.getFirstElement();
-				fixPointDistance = 0;
-			}
-			else if (isVisible() && bottomElement == null){
-				if (contentProvider.getApproximateNumberOfElements() >= getFullyVisibleElementCount()) {
-					fixPointElement = contentProvider.getLastElement();
-					fixPointDistance = getFullyVisibleElementCount() - 1;
-				}
-				else {
+			T topElement = getTopVisibleElement();
+			T bottomElement = getBottomFullyVisibleElement();
+	
+			if ((topElement == null || bottomElement == null)) {
+				if (firstElementDistance < maxDistance && topElement == null) {
 					fixPointElement = contentProvider.getFirstElement();
 					fixPointDistance = 0;
+				}
+				else if (isVisible() && bottomElement == null){
+					if (contentProvider.getApproximateNumberOfElements() >= getFullyVisibleElementCount()) {
+						fixPointElement = contentProvider.getLastElement();
+						fixPointDistance = getFullyVisibleElementCount() - 1;
+					}
+					else {
+						fixPointElement = contentProvider.getFirstElement();
+						fixPointDistance = 0;
+					}
 				}
 			}
 		}
@@ -727,7 +746,10 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 	}
 
 	public T getElementAtDistanceFromFixPoint(int distance) {
-		return contentProvider.getNeighbourElement(fixPointElement, distance);
+		if (fixPointElement == null)
+			return null;
+		else
+			return contentProvider.getNeighbourElement(fixPointElement, distance);
 	}
 	
 	public T getVisibleElementAt(int index) {

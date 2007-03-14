@@ -76,7 +76,7 @@ public abstract class EventLogEditor extends EditorPart implements INavigationLo
 			public void paintControl(PaintEvent e) {
 				INavigationLocation currentLocation = createNavigationLocation();
 
-				if (!currentLocation.equals(lastLocation)) {
+				if (currentLocation != null && !currentLocation.equals(lastLocation)) {
 					lastLocation = currentLocation;
 					Display.getCurrent().timerExec(3000, locationTimer);
 				}
