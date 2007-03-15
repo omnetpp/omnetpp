@@ -33,6 +33,7 @@ IndexedVectorFileReader::IndexedVectorFileReader(const char *filename, long vect
     IndexFileReader indexReader(ifname.c_str());
     index = indexReader.readAll(); // XXX do not read whole index
     vector = index->getVector(vectorId);
+    scale = index->run.getSimtimeScale();
 }
 
 IndexedVectorFileReader::~IndexedVectorFileReader()
@@ -101,7 +102,7 @@ void IndexedVectorFileReader::loadBlock(const Block &block)
             switch (columns[j])
             {
             case 'E': CHECK(parseLong(tokens[j+1], entry.eventNumber), "Malformed event number", block, i); break;
-            case 'T': CHECK(parseDouble(tokens[j+1], entry.simtime), "Malformed simulation time", block, i); break;
+            case 'T': CHECK(parseSimtime(tokens[j+1], scale, entry.simtime), "Malformed simulation time", block, i); break;
             case 'V': CHECK(parseDouble(tokens[j+1], entry.value), "Malformed vector value", block, i); break;
             default: CHECK(false, "Unknown column", block, i); break;
             }
@@ -124,7 +125,7 @@ OutputVectorEntry *IndexedVectorFileReader::getEntryBySerial(long serial)
     return &currentEntries[serial - currentBlock->startSerial];
 }
 
-OutputVectorEntry *IndexedVectorFileReader::getEntryBySimtime(double simtime, bool after)
+OutputVectorEntry *IndexedVectorFileReader::getEntryBySimtime(simultime_t simtime, bool after)
 {
     const Block *block = vector->getBlockBySimtime(simtime, after);
     if (block)
@@ -168,7 +169,7 @@ OutputVectorEntry *IndexedVectorFileReader::getEntryByEventnum(long eventNum, bo
     return NULL;
 }
 
-long IndexedVectorFileReader::collectEntriesInSimtimeInterval(double startTime, double endTime, Entries &out)
+long IndexedVectorFileReader::collectEntriesInSimtimeInterval(simultime_t startTime, simultime_t endTime, Entries &out)
 {
     Blocks::size_type startIndex;
     Blocks::size_type endIndex;

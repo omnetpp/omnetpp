@@ -43,6 +43,7 @@ static std::string createTempFileName(const std::string baseFileName)
     return tmpFileName;
 }
 
+// TODO: adjacent blocks are merged
 void VectorFileIndexer::generateIndex(const char *vectorFileName)
 {
     FileReader reader(vectorFileName);
@@ -56,6 +57,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName)
     int currentVectorId = -1;
     VectorData *currentVectorRef = NULL;
     Block currentBlock;
+    int scale=INT_MAX;
 
     while ((line=reader.getNextLineBufferPointer())!=NULL)
     {
@@ -87,12 +89,15 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName)
 
             index.addVector(vector);
         }
-        else
+        else // data line
         {
             int vectorId;
-            double simTime;
+            simultime_t simTime;
             double value;
             long eventNum = -1;
+
+            if (scale == INT_MAX)
+                scale = index.run.getSimtimeScale();
 
             if (!parseInt(tokens[0], vectorId))
             {
@@ -127,7 +132,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName)
                 switch (column)
                 {
                 case 'T':
-                    if (!parseDouble(token, simTime))
+                    if (!parseSimtime(token, scale, simTime))
                         throw ResultFileFormatException("vector file indexer: malformed simulation time", vectorFileName, lineNo);
                     break;
                 case 'V':

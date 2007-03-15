@@ -52,7 +52,7 @@ static bool simtimeGreater(const Block &first, const Block &second)
 }
 
 
-const Block *VectorData::getBlockBySimtime(double simtime, bool after) const
+const Block *VectorData::getBlockBySimtime(simultime_t simtime, bool after) const
 {
     Block blockToFind;
     blockToFind.startTime = simtime;
@@ -70,7 +70,7 @@ const Block *VectorData::getBlockBySimtime(double simtime, bool after) const
     }
 }
 
-Blocks::size_type VectorData::getBlocksInSimtimeInterval(double startTime, double endTime, Blocks::size_type &startIndex, Blocks::size_type &endIndex) const
+Blocks::size_type VectorData::getBlocksInSimtimeInterval(simultime_t startTime, simultime_t endTime, Blocks::size_type &startIndex, Blocks::size_type &endIndex) const
 {
     Block blockToFind;
     blockToFind.startTime = startTime;
@@ -199,6 +199,20 @@ void RunData::writeToFile(FILE *file, const char *filename) const
     {
         CHECK(fprintf(file, "param %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
     }
+}
+
+int RunData::getSimtimeScale() const
+{
+    std::map<std::string,std::string>::const_iterator it = attributes.find("simtime-scale");
+    if (it != attributes.end())
+    {
+        std::string value = it->second;
+        int scale;
+        if (parseInt(value.c_str(), scale))
+            return scale;
+    }
+
+    return -12; // DEFAULT SCALE
 }
 
 //=========================================================================
@@ -419,7 +433,8 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
         }
         if (vector.hasColumn('T'))
         {
-            CHECK(parseDouble(tokens[i++], block.startTime) && parseDouble(tokens[i++], block.endTime),
+            int scale = index->run.getSimtimeScale();
+            CHECK(parseSimtime(tokens[i++], scale, block.startTime) && parseSimtime(tokens[i++], scale, block.endTime),
                 "invalid simulation time", lineNum);
         }
         if (vector.hasColumn('V'))
@@ -458,7 +473,7 @@ void IndexFileWriter::writeAll(const VectorFileIndex& index)
 {
     openFile();
     writeFingerprint(index.vectorFileName);
-    index.run.writeToFile(file, filename.c_str());
+    writeRun(index.run);
 
     for (Vectors::const_iterator vectorRef = index.vectors.begin(); vectorRef != index.vectors.end(); ++vectorRef)
     {
@@ -486,6 +501,7 @@ void IndexFileWriter::writeRun(const RunData &run)
     if (file == NULL)
         openFile();
     run.writeToFile(file, filename.c_str());
+    scale = run.getSimtimeScale();
 }
 
 void IndexFileWriter::writeVector(const VectorData& vector)
@@ -516,11 +532,16 @@ void IndexFileWriter::writeVectorDeclaration(const VectorData& vector)
 
 void IndexFileWriter::writeBlock(const VectorData &vector, const Block& block)
 {
+    static char buff1[64], buff2[64];
+    char *e;
+
     if (block.count() > 0)
     {
         CHECK(fprintf(file, "%d\t%ld", vector.vectorId, block.startOffset));
         if (vector.hasColumn('E')) { CHECK(fprintf(file, " %ld %ld", block.startEventNum, block.endEventNum)); }
-        if (vector.hasColumn('T')) { CHECK(fprintf(file, " %.*g %.*g", precision, block.startTime, precision, block.endTime)); }
+        if (vector.hasColumn('T')) { CHECK(fprintf(file, " %s %s",
+                                                        SimulTime::ttoa(buff1, block.startTime, scale, e),
+                                                        SimulTime::ttoa(buff2, block.endTime, scale, e))); }
         if (vector.hasColumn('V')) { CHECK(fprintf(file, " %ld %.*g %.*g %.*g %.*g",
                                                 block.count(), precision, block.min(), precision, block.max(),
                                                 precision, block.sum(), precision, block.sumSqr())); }

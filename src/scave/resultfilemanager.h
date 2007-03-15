@@ -134,6 +134,9 @@ struct SCAVE_API Run
         StringMap::const_iterator it = moduleParams.find(namePattern);
         return it==attributes.end() ? NULL : it->second.c_str();
     }
+
+    
+    int getSimulationTimeScale() const;
 };
 
 

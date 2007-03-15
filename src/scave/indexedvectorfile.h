@@ -21,21 +21,21 @@
 #include <map>
 #include <stdarg.h>
 #include "filereader.h"
+#include "scavedefs.h"
 #include "indexfile.h"
 #include "node.h"
 #include "nodetype.h"
 #include "resultfilemanager.h"
 
-
 struct OutputVectorEntry {
     long serial;
     long eventNumber;
-    double simtime;
+    simultime_t simtime;
     double value;
 
     OutputVectorEntry()
         : eventNumber(-1) {}
-    OutputVectorEntry(long serial, long eventNumber, double simtime, double value)
+    OutputVectorEntry(long serial, long eventNumber, simultime_t simtime, double value)
         : serial(serial), eventNumber(eventNumber), simtime(simtime), value(value) {}
 };
 
@@ -51,6 +51,7 @@ class SCAVE_API IndexedVectorFileReader
     FileReader *reader; // reader of the vector file
 
     VectorFileIndex *index; // index of the vector file, loaded fully into the memory
+    int scale;  // sim time scale
     const VectorData *vector;     // index data of the read vector, points into index
     const Block *currentBlock;    // last loaded block, points into index
     Entries currentEntries; // entries of the loaded block
@@ -78,7 +79,7 @@ class SCAVE_API IndexedVectorFileReader
          * or the last entry whose simtime is <= than the given simtime (when after is false).
          * Returns NULL when no entry after/before.
          */
-        OutputVectorEntry *getEntryBySimtime(double simtime, bool after);
+        OutputVectorEntry *getEntryBySimtime(simultime_t simtime, bool after);
 
         /**
          * Returns the first entry whose simtime is >= than the given simtime (when after is true),
@@ -91,7 +92,7 @@ class SCAVE_API IndexedVectorFileReader
          * Adds output vector entries in the [startTime,endTime] interval to
          * the specified vector. Returns the number of entries added.
          */
-        long collectEntriesInSimtimeInterval(double startTime, double endTime, Entries &out);
+        long collectEntriesInSimtimeInterval(simultime_t startTime, simultime_t endTime, Entries &out);
         /**
          * Adds output vector entries in the [startTime,endTime] interval to
          * the specified vector. Returns the number of entries added.

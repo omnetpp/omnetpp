@@ -61,6 +61,15 @@ double VectorResult::stddev() const
     return sqrt( variance() );
 }
 
+int Run::getSimulationTimeScale() const
+{
+    int scale;
+    const char *value = getAttribute("simtime-scale");
+    if (value && parseInt(value, scale))
+        return scale;
+    else
+        return -12;
+}
 
 ResultFileManager::ResultFileManager()
 {

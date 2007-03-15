@@ -17,6 +17,7 @@
 
 #include <float.h>
 #include <map>
+#include "simultime.h"
 #include "scavedefs.h"
 
 /**
@@ -79,8 +80,8 @@ struct Block {
     long startSerial;
     long startEventNum;
     long endEventNum;
-    double startTime;
-    double endTime;
+    simultime_t startTime;
+    simultime_t endTime;
     Statistics stat;
 
     Block() : startOffset(-1), startSerial(-1), startEventNum(-1), endEventNum(-1),
@@ -96,7 +97,7 @@ struct Block {
 
     bool contains(long serial) const { return startSerial <= serial && serial < endSerial(); }
 
-    void collect(long eventNum, double simtime, double value)
+    void collect(long eventNum, simultime_t simtime, double value)
     {
         if (count() == 0)
         {
@@ -159,7 +160,7 @@ struct VectorData {
      * or the last block whose startTime <= simtime (when after == false).
      * Returns NULL if no such block.
      */
-    const Block *getBlockBySimtime(double simtime, bool after) const;
+    const Block *getBlockBySimtime(simultime_t simtime, bool after) const;
 
     /**
      * Returns the first block which endEventNum >= eventNum (when after == true)
@@ -173,7 +174,7 @@ struct VectorData {
      * containing entries in the [startTime,endTime] interval (both inclusive).
      * Returns the number of blocks found.
      */
-    Blocks::size_type getBlocksInSimtimeInterval(double startTime, double endTime, Blocks::size_type &startIndex, Blocks::size_type &endIndex) const;
+    Blocks::size_type getBlocksInSimtimeInterval(simultime_t startTime, simultime_t endTime, Blocks::size_type &startIndex, Blocks::size_type &endIndex) const;
 
     /**
      * Finds the start (inclusive) and end (exclusive) indeces of the range of blocks,
@@ -200,6 +201,7 @@ struct RunData {
 
     bool parseLine(char **tokens, int numTokens, const char *filename, int lineNo);
     void writeToFile(FILE *file, const char *filename) const;
+    int getSimtimeScale() const;
 };
 
 /**
@@ -286,6 +288,8 @@ class SCAVE_API IndexFileWriter
     private:
         /** Name of the index file. */
         std::string filename;
+        /** Scale of the simulation time. */
+        int scale;
         /** Precision of double values stored in the index file. */
         int precision;
         /** Handle of the opened index file. */
