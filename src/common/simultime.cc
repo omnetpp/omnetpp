@@ -19,40 +19,7 @@
 #include "unitconversion.h"
 #include "exception.h"
 
-
-int SimulTime::scaleexp;
-int64 SimulTime::dscale;
-double SimulTime::fscale;
-double SimulTime::invfscale;
-
-
-void SimulTime::setScaleExp(int e)
-{
-    if (e < -18 || e > 0)
-        throw opp_runtime_error("simtime_t scale exponent %d is out of accepted range -18..0; "
-                            "recommended value is -12 (picosecond resolution with range +-106 days)", e);
-
-    // calculate 10^-e
-    scaleexp = e;
-    int64 scale = 1;
-    while(e++ < 0)
-        scale *= 10;
-
-    // store it in double too
-    dscale = scale;
-    fscale = (double) scale;
-    invfscale = 1.0 / fscale;
-}
-
-std::string SimulTime::str() const
-{
-    // delegate to operator<<
-    std::stringstream out;
-    out << *this;
-    return out.str();
-}
-
-char *SimulTime::ttoa(char *buf, int64 t, int scaleexp, char *&endp)
+char *SimulTime::ttoa(char *buf, simultime_t t, int scaleexp, char *&endp)
 {
     assert(scaleexp<=0 && scaleexp>=-18);
 
@@ -95,15 +62,15 @@ char *SimulTime::ttoa(char *buf, int64 t, int scaleexp, char *&endp)
     return s;
 }
 
-const SimulTime SimulTime::parse(const char *s)
+const simultime_t SimulTime::parse(const char *s, int scaleexp)
 {
     char *endp;
-    return parse(s, endp);
+    return parse(s, scaleexp, endp);
 }
 
 #define OVERFLOW_CHECK(c,s) if (!(c)) throw opp_runtime_error("SimulTime::parse(\"%s\"): arithmetic overflow", (s));
 
-const SimulTime SimulTime::parse(const char *s, const char *&endp)
+const simultime_t SimulTime::parse(const char *s, int scaleexp, const char *&endp)
 {
     int64 result = 0;
     int digit;
@@ -139,8 +106,6 @@ const SimulTime SimulTime::parse(const char *s, const char *&endp)
     if (digits == 0 && *p != '.')
     {
         throw opp_runtime_error("SimulTime::parse(\"%s\"): missing digits", s);
-        //endp = p;
-        //return SimulTime();
     }
 
     // digits after decimal
@@ -160,17 +125,17 @@ const SimulTime SimulTime::parse(const char *s, const char *&endp)
     }
 
     // adjust according to the required scale
-    if (log10Exp < SimulTime::scaleexp)
+    if (log10Exp < scaleexp)
     {
-        while (log10Exp < SimulTime::scaleexp)
+        while (log10Exp < scaleexp)
         {
             result /= 10;
             log10Exp++;
         }
     }
-    else if (log10Exp > SimulTime::scaleexp)
+    else if (log10Exp > scaleexp)
     {
-        while (log10Exp > SimulTime::scaleexp)
+        while (log10Exp > scaleexp)
         {
             OVERFLOW_CHECK(result <= _I64_MAX / 10, s);
             result *= 10;
@@ -178,9 +143,7 @@ const SimulTime SimulTime::parse(const char *s, const char *&endp)
         }
     }
 
-    SimulTime simtime;
-    simtime.setRaw(sign*result);
     endp = p;
-    return simtime;
+    return sign*result;
 }
 
