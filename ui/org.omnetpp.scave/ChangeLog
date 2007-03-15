@@ -1,3 +1,21 @@
+2007-03-15
+----------
+
+Fixes:
+
+   + The indexer does not change the indexed vector file. It is assumed that it was
+     generated with an index and it already contains blocks of vectors.
+
+   + If the vector file contains a syntax error, then ResultFileFormatException is thrown
+     by the indexer. These exceptions are converted to an error marker, while other exceptions
+     are converted to a warning marker.
+
+   + Simulation times are represented by int64 values (long in Java) to prevent loss of 
+     precision. Dataflow network still represents them as doubles though.
+
+   + Fixed crashes during indexing by blocking the ResultFilesTracker while indexing.
+
+
 2007-03-02
 ----------
 
