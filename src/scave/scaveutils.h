@@ -15,9 +15,12 @@
 #ifndef _SCAVEUTILS_H_
 #define _SCAVEUTILS_H_
 
+#include "simultime.h"
+
 bool parseInt(const char *str, int &dest);
 bool parseLong(const char *str, long &dest);
 bool parseDouble(const char *str, double &dest);
+bool parseSimtime(const char *str, int scale, simultime_t &dest);
 
 #endif
 
