@@ -28,7 +28,7 @@ public class IndexedVectorFileReaderEx extends IndexedVectorFileReader {
 	}
 
 	@Override
-	public OutputVectorEntry getEntryBySimtime(double simtime, boolean after) {
+	public OutputVectorEntry getEntryBySimtime(long simtime, boolean after) {
 		return copy(super.getEntryBySimtime(simtime, after));
 	}
 	

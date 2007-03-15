@@ -12,6 +12,7 @@
 #include "vectorfileindexer.h"
 #include "vectorfilereader.h"
 #include "scaveexception.h"
+#include "simultime.h"
 %}
 
 %exception {
@@ -244,7 +245,7 @@ namespace std {
 //
 %define FIX_STRING_MEMBER(STRUCT,MEMBER,CAPITALIZEDMEMBER)
 %ignore STRUCT::MEMBER;
-%extend STRUCT {
+%extend STRUCT {      
    std::string get ## CAPITALIZEDMEMBER() {return self->MEMBER;}
    void set ## CAPITALIZEDMEMBER(std::string __a) {self->MEMBER = __a;}
 }
@@ -382,3 +383,7 @@ namespace std {
 
 %ignore VectorFileReaderNodeType;
 %include "vectorfilereader.h"
+
+/* ------------ simultime.h ----------------------- */
+%ignore SimulTime::ttoa;
+%include "simultime.h"

@@ -25,6 +25,7 @@ import org.omnetpp.scave.editors.datatable.VectorResultContentProvider;
 import org.omnetpp.scave.editors.datatable.VectorResultLineRenderer;
 import org.omnetpp.scave.engine.IndexFile;
 import org.omnetpp.scave.engine.OutputVectorEntry;
+import org.omnetpp.scave.engine.SimulTime;
 import org.omnetpp.scave.engine.VectorResult;
 
 /**
@@ -112,7 +113,7 @@ public class VectorBrowserView extends ViewPart {
 			viewer.scrollToElement(entry);
 	}
 	
-	public void gotoTime(double time) {
+	public void gotoTime(long time) {
 		OutputVectorEntry entry = contentProvider.getElementBySimulationTime(time, true);
 		if (entry != null)
 			viewer.scrollToElement(entry);
@@ -204,6 +205,15 @@ public class VectorBrowserView extends ViewPart {
 		}
 	}
 	
+	private int getCurrentTimeScale() {
+		if (viewer.getInput() instanceof VectorResult) {
+			VectorResult vector = (VectorResult)viewer.getInput();
+			if (vector.getFileRun() != null && vector.getFileRun().getRun() != null)
+				return vector.getFileRun().getRun().getSimulationTimeScale();
+		}
+		return 0;
+	}
+	
 	private void setVisible(Control control, boolean visible) {
 		GridData gridData = (GridData)control.getLayoutData();
 		gridData.exclude = !visible;
@@ -264,10 +274,12 @@ public class VectorBrowserView extends ViewPart {
 			InputDialog dialog = new InputDialog(view.getSite().getShell(), "Go to", prompt, "", validator);
 			if (dialog.open() == Window.OK) {
 				Number targetAddr = parseTarget(dialog.getValue());
-				switch (target) {
-				case Line: view.gotoLine((Integer)targetAddr); break;
-				case Event: view.gotoEvent((Integer)targetAddr); break;
-				case Time: view.gotoTime((Double)targetAddr); break;
+				if (targetAddr != null) {
+					switch (target) {
+					case Line: view.gotoLine((Integer)targetAddr); break;
+					case Event: view.gotoEvent((Integer)targetAddr); break;
+					case Time: view.gotoTime((Long)targetAddr); break;
+					}
 				}
 			}
 		}
@@ -276,10 +288,10 @@ public class VectorBrowserView extends ViewPart {
 			try
 			{
 				if (target == GotoTarget.Time)
-					return Double.parseDouble(str);
+					return SimulTime.parse(str, view.getCurrentTimeScale());
 				else
 					return Integer.parseInt(str);
-			} catch (NumberFormatException e) {
+			} catch (Exception e) {
 				return null;
 			}
 		}

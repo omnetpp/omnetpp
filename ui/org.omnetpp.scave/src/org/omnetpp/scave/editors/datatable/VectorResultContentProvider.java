@@ -96,7 +96,7 @@ public class VectorResultContentProvider implements IVirtualTableContentProvider
 		return reader != null ? reader.getEntryBySerial(serial) : null;
 	}
 	
-	public OutputVectorEntry getElementBySimulationTime(double time, boolean after) {
+	public OutputVectorEntry getElementBySimulationTime(long time, boolean after) {
 		return reader != null ? reader.getEntryBySimtime(time, after) : null;
 	}
 	
