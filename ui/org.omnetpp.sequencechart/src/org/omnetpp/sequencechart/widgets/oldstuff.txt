@@ -1,0 +1,136 @@
+	
+	private ArrayList<ModuleTreeItem> selectedAxisModules; // which modules should have an axis
+	
+	private int tracedEventNumber = -1;
+	
+		String vectorFileName = logFileName.replaceFirst("\\.log$", ".vec");
+		if (!vectorFileName.equals(logFileName) && new java.io.File(vectorFileName).exists()) {
+			stateVectors = readVectorFile(vectorFileName);
+			System.out.println("read "+stateVectors.length+" vectors from "+vectorFileName);
+		}
+
+		// set up operations: click, double-click
+		sequenceChart.addSelectionListener(new SelectionAdapter() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// on double-click, filter the event log
+				List<IEvent> events = ((IEventLogSelection)sequenceChart.getSelection()).getEvents();
+
+				if (events.size() > 1)
+					MessageDialog.openInformation(getEditorSite().getShell(), "Information", "Ambiguous double-click: there are " + events.size() + " events under the mouse! Zooming may help.");
+				else if (events.size() == 1)
+					sequenceChart.showEvent(events.get(0));
+			}
+		});
+
+
+	private XYArray[] readVectorFile(String fileName)
+	{
+		resultFileManager = new ResultFileManagerEx();
+		ResultFile file = resultFileManager.loadFile(fileName);
+		idlist = resultFileManager.getAllVectors();
+		idlist = resultFileManager.filterIDList(idlist, null, "*", "State");
+		DataflowManager net = new DataflowManager();
+		NodeTypeRegistry factory = NodeTypeRegistry.instance();
+
+		// create VectorFileReader nodes
+		NodeType vectorFileReaderType = factory.getNodeType("vectorfilereader");
+		StringMap args = new StringMap();
+		args.set("filename", file.getFilePath());
+		Node fileReaderNode = vectorFileReaderType.create(net, args);
+
+		// create network
+		NodeType removeRepeatsType = factory.getNodeType("removerepeats");
+		NodeType arrayBuilderType = factory.getNodeType("arraybuilder");
+		Node [] arrayBuilderNodes = new Node[(int)idlist.size()];
+		for (int i = 0; i < (int)idlist.size(); i++) {
+			VectorResult vec = resultFileManager.getVector(idlist.get(i));
+			// no filter: connect directly to an ArrayBuilder
+			args = new StringMap();
+			Node removeRepeatsNode = removeRepeatsType.create(net, args);
+			Node arrayBuilderNode = arrayBuilderType.create(net, args);
+			arrayBuilderNodes[i] = arrayBuilderNode;
+			net.connect(vectorFileReaderType.getPort(fileReaderNode, "" + vec.getVectorId()),
+						removeRepeatsType.getPort(removeRepeatsNode, "in"));
+			net.connect(removeRepeatsType.getPort(removeRepeatsNode, "out"),
+						arrayBuilderType.getPort(arrayBuilderNode, "in"));
+		}
+
+		// run the netwrork
+		net.dump();
+		net.execute();
+
+		// extract results
+		XYArray[] xyArray = new XYArray[arrayBuilderNodes.length];
+		for (int i = 0; i < arrayBuilderNodes.length; i++)
+			xyArray[i] = arrayBuilderNodes[i].getArray();
+		
+		return xyArray;
+	}
+	
+	private void showSequenceChartForEvent(int eventNumber) {
+		IEvent event = eventLog.getEventForEventNumber(eventNumber);
+
+		if (event == null)
+			MessageDialog.openError(getEditorSite().getShell(), "Error", "Event #" + eventNumber + " not found.");
+		else {
+			tracedEventNumber = eventNumber;	
+			showFilteredEventLog();
+		}
+	}
+
+	private void showFullSequenceChart() {
+		tracedEventNumber = -1;
+		selectedAxisModules = getAllAxisModules();
+		showEventLog(eventLog, selectedAxisModules);
+	}
+	
+	private void showFilteredEventLog(IEventLog eventLog, ArrayList<ModuleTreeItem> axisModules, int eventNumber) {
+		final IntVector moduleIds = new IntVector();
+
+		for (int i = 0; i < axisModules.size(); i++) {
+			ModuleTreeItem treeItem = axisModules.get(i);
+			treeItem.visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
+				public void visit(ModuleTreeItem treeItem) {
+					moduleIds.add(treeItem.getModuleId());
+				}
+			});
+		}
+		FilteredEventLog filteredEventLog = new FilteredEventLog(eventLog);
+		filteredEventLog.setModuleIds(moduleIds);
+		filteredEventLog.setTracedEventNumber(eventNumber);
+		showEventLog(filteredEventLog, axisModules);
+	}
+
+	private void showEventLog(IEventLog eventLog,  ArrayList<ModuleTreeItem> axisModules) {
+		ArrayList<XYArray> axisVectors = new ArrayList<XYArray>();
+		for (ModuleTreeItem treeItem : axisModules) {
+			axisVectors.add(null);
+
+			if (idlist != null) 
+				for (int i = 0; i < idlist.size(); i++)
+					if (resultFileManager.getItem(idlist.get(i)).getModuleName().equals(treeItem.getModuleFullPath())) {
+						axisVectors.set(axisVectors.size() - 1, stateVectors[i]);
+						break;
+					}
+		}
+		
+		sequenceChart.setParameters(eventLog, axisModules, axisVectors);
+	}
+
+	protected void displayModuleTreeDialog() {
+		ModuleTreeDialog dialog = new ModuleTreeDialog(getSite().getShell(), eventLogInput.getModuleTreeRoot(), selectedAxisModules);
+		dialog.open();
+		Object[] selection = dialog.getResult(); 
+		if (selection != null) { // not cancelled
+			selectedAxisModules = new ArrayList<ModuleTreeItem>();
+			for (Object sel : selection)
+				selectedAxisModules.add((ModuleTreeItem)sel);
+
+			System.out.println("Selected:");
+			for (ModuleTreeItem sel : selectedAxisModules)
+				System.out.println(" "+sel.getModuleFullPath());
+
+			showFilteredEventLog();
+		}
+	}
+	
