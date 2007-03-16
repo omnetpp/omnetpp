@@ -45,7 +45,7 @@ bool parseDouble(const char *s, double& dest)
 
 bool parseSimtime(const char *s, int scale, simultime_t &dest)
 {
-    char *e;
+    const char *e;
     simultime_t t;
     try {
         t = SimulTime::parse(s, scale, e);

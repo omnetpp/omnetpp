@@ -64,7 +64,7 @@ char *SimulTime::ttoa(char *buf, simultime_t t, int scaleexp, char *&endp)
 
 const simultime_t SimulTime::parse(const char *s, int scaleexp)
 {
-    char *endp;
+    const char *endp;
     return parse(s, scaleexp, endp);
 }
 
