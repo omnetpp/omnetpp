@@ -27,7 +27,7 @@ public class EventLogTableView extends ViewPart {
 		// follow selection
 		viewSite.getPage().addSelectionListener(new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				if (part != eventLogTable)
+				if (part != EventLogTableView.this)
 					eventLogTable.setSelection(selection);
 			}
 		});

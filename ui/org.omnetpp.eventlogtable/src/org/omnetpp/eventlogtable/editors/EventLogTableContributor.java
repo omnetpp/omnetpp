@@ -1,6 +1,9 @@
 package org.omnetpp.eventlogtable.editors;
 
+import java.util.ArrayList;
+
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuCreator;
@@ -10,6 +13,9 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -32,50 +38,121 @@ import org.omnetpp.eventlogtable.widgets.EventLogTable;
 import org.omnetpp.eventlogtable.widgets.EventLogTableLineRenderer;
 
 
-public class EventLogTableContributor extends EditorActionBarContributor {
+public class EventLogTableContributor extends EditorActionBarContributor implements ISelectionChangedListener {
+	private static EventLogTableContributor singleton;
+
 	protected EventLogTable eventLogTable;
+
+	protected Separator separatorAction;
+
+	protected EventLogTableAction searchTextAction;
+
+	protected EventLogTableAction gotoEventAction;
+
+	protected EventLogTableAction gotoSimulationTimeAction;
+
+	protected EventLogTableAction gotoEventCauseAction;
+
+	protected EventLogTableAction gotoMessageArrivalAction;
+
+	protected EventLogTableAction gotoMessageOriginAction;
+
+	protected EventLogTableAction gotoMessageReuseAction;
+
+	protected EventLogTableAction bookmarkAction;
+
+	protected EventLogTableMenuAction filterModeAction;
+
+	protected EventLogTableMenuAction displayModeAction;
 	
 	public EventLogTableContributor() {
+		this.separatorAction = new Separator();
+		this.searchTextAction = createSearchTextAction();
+		this.gotoEventAction = createGotoEventAction();
+		this.gotoSimulationTimeAction= createGotoSimulationTimeAction();
+		this.gotoEventCauseAction= createGotoEventCauseAction();
+		this.gotoMessageArrivalAction= createGotoMessageArrivalAction();
+		this.gotoMessageOriginAction= createGotoMessageOriginAction();
+		this.gotoMessageReuseAction= createGotoMessageReuseAction();
+		this.bookmarkAction= createBookmarkAction();
+		this.filterModeAction = createFilterModeAction();
+		this.displayModeAction= createDisplayModeAction();
+
+		if (singleton == null)
+			singleton = this;
 	}
 	
 	public EventLogTableContributor(EventLogTable eventLogTable) {
+		this();
 		this.eventLogTable = eventLogTable;
+		eventLogTable.addSelectionChangedListener(this);
+	}
+	
+	public static EventLogTableContributor getDefault() {
+		return singleton;
 	}
 
 	public void contributeToPopupMenu(IMenuManager menuManager) {
-		menuManager.add(getSearchTextAction());
-		menuManager.add(getSeparatorAction());
-		menuManager.add(getGotoEventAction());
-		menuManager.add(getGotoSimulationTimeAction());
-		menuManager.add(getSeparatorAction());
-		menuManager.add(getGotoEventCauseAction());
-		menuManager.add(getGotoMessageArrivalAction());
-		menuManager.add(getGotoMessageOriginAction());
-		menuManager.add(getGotoMessageReuseAction());
-		menuManager.add(getSeparatorAction());
-		menuManager.add(getBookmarkAction());
-		menuManager.add(getSeparatorAction());
-		menuManager.add(getFilterModeAction());
-		menuManager.add(getDisplayModeAction());
+		menuManager.add(searchTextAction);
+		menuManager.add(separatorAction);
+		menuManager.add(gotoEventAction);
+		menuManager.add(gotoSimulationTimeAction);
+		menuManager.add(separatorAction);
+		menuManager.add(gotoEventCauseAction);
+		menuManager.add(gotoMessageArrivalAction);
+		menuManager.add(gotoMessageOriginAction);
+		menuManager.add(gotoMessageReuseAction);
+		menuManager.add(separatorAction);
+		menuManager.add(bookmarkAction);
+		menuManager.add(separatorAction);
+		menuManager.add(filterModeAction);
+		menuManager.add(displayModeAction);
 	}
 
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
-		toolBarManager.add(getFilterModeAction());
-		toolBarManager.add(getDisplayModeAction());		
+		toolBarManager.add(filterModeAction);
+		toolBarManager.add(displayModeAction);		
 	}
 	
 	@Override
 	public void setActiveEditor(IEditorPart targetEditor) {
+		if (eventLogTable != null)
+			eventLogTable.removeSelectionChangedListener(this);
 		eventLogTable = ((EventLogTableEditor)targetEditor).getEventLogTable();
+		eventLogTable.addSelectionChangedListener(this);
+
+		update();
 	}
 
-	private Separator getSeparatorAction() {
-		return new Separator();
+	public void selectionChanged(SelectionChangedEvent event) {
+		update();
 	}
 
-	private Action getSearchTextAction() {
-		return new Action("Search raw text...") {
+	private void update() {
+		searchTextAction.update();
+		separatorAction.update();
+		gotoEventAction.update();
+		gotoSimulationTimeAction.update();
+		separatorAction.update();
+		gotoEventCauseAction.update();
+		gotoMessageArrivalAction.update();
+		gotoMessageOriginAction.update();
+		gotoMessageReuseAction.update();
+		separatorAction.update();
+		bookmarkAction.update();
+		separatorAction.update();
+		filterModeAction.update();
+		displayModeAction.update();
+	}
+
+	private IEventLog getEventLog() {
+		return eventLogTable.getEventLog();
+	}
+	
+	private EventLogTableAction createSearchTextAction() {
+		return new EventLogTableAction("Search raw text...") {
+			@Override
 			public void run() {
 				InputDialog dialog = new InputDialog(null, "Search raw text", "Please enter the search text", null, null);
 				dialog.open();
@@ -90,82 +167,155 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 				else
 					MessageDialog.openInformation(null, "Search raw text", "No matches found!");
 			}
-		};
-	}
-
-	private Action getGotoEventCauseAction() {
-		return new Action("Goto event cause") {
-			public void run() {
-				BeginSendEntry beginSendEntry = eventLogTable.getSelectionElement().getEvent().getCause().getCauseBeginSendEntry();
-				
-				if (beginSendEntry != null)
-					eventLogTable.gotoElement(beginSendEntry);
+			
+			@Override
+			public void update() {
+				setEnabled(getEventLog().getApproximateNumberOfEvents() != 0);
 			}
 		};
 	}
 
-	private Action getGotoMessageArrivalAction() {
-		return new Action("Goto message arrival") {
+	private EventLogTableAction createGotoEventCauseAction() {
+		return new EventLogTableAction("Goto event cause") {
+			@Override
 			public void run() {
-				IEvent event = eventLogTable.getSelectionElement().getEvent();
-				MessageDependencyList consequences = event.getConsequences();
+				eventLogTable.gotoElement(getCauseEventLogEntry());
+			}
+
+			@Override
+			public void update() {
+				setEnabled(getCauseEventLogEntry() != null);
+			}
+
+			private EventLogEntry getCauseEventLogEntry() {
 				EventLogEntry eventLogEntry = eventLogTable.getSelectionElement();
 				
-				for (int i = 0; i < consequences.size(); i++) {
-					MessageDependency consequence = consequences.get(i);
-					if (consequence.getCauseBeginSendEntry().equals(eventLogEntry)) {
-						IEvent consequenceEvent = consequence.getConsequenceEvent();
-						
-						if (consequenceEvent != null)
-							eventLogTable.gotoElement(consequenceEvent.getEventEntry());
-					}
+				if (eventLogEntry == null)
+					return null;
+				else {
+					MessageDependency cause = eventLogEntry.getEvent().getCause();
+					
+					if (cause == null)
+						return null;
+					else
+						return cause.getCauseBeginSendEntry();
 				}
 			}
 		};
 	}
 
-	private Action getGotoMessageOriginAction() {
-		return new Action("Goto message origin") {
+	private EventLogTableAction createGotoMessageArrivalAction() {
+		return new EventLogTableAction("Goto message arrival") {
+			@Override
 			public void run() {
-				IEvent event = eventLogTable.getSelectionElement().getEvent();
-				MessageDependencyList causes = event.getCauses();
+				eventLogTable.gotoElement(getConsequenceEventLogEntry());
+			}
+
+			@Override
+			public void update() {
+				setEnabled(getConsequenceEventLogEntry() != null);
+			}
+			
+			private EventLogEntry getConsequenceEventLogEntry() {
 				EventLogEntry eventLogEntry = eventLogTable.getSelectionElement();
-				
-				for (int i = 0; i < causes.size(); i++) {
-					MessageDependency cause = causes.get(i);
-					if (eventLogTable.getEventLogTableFacade().MessageDependency_isMessageReuse(cause.getCPtr()) &&
-						cause.getConsequenceBeginSendEntry().equals(eventLogEntry)) {
-						IEvent causeEvent = cause.getCauseEvent();
-						
-						if (causeEvent != null)
-							eventLogTable.gotoElement(causeEvent.getEventEntry());
+
+				if (eventLogEntry != null) {
+					IEvent event = eventLogEntry.getEvent();
+					MessageDependencyList consequences = event.getConsequences();
+					
+					for (int i = 0; i < consequences.size(); i++) {
+						MessageDependency consequence = consequences.get(i);
+
+						if (eventLogTable.getEventLogTableFacade().MessageDependency_isMessageSend(consequence.getCPtr()) &&
+							consequence.getCauseBeginSendEntry().equals(eventLogEntry))
+						{
+							IEvent consequenceEvent = consequence.getConsequenceEvent();
+							
+							if (consequenceEvent != null)
+								return consequenceEvent.getEventEntry();
+						}
 					}
 				}
+
+				return null;
 			}
 		};
 	}
 
-	private Action getGotoMessageReuseAction() {
-		return new Action("Goto message reuse") {
+	private EventLogTableAction createGotoMessageOriginAction() {
+		return new EventLogTableAction("Goto message origin") {
+			@Override
 			public void run() {
-				IEvent event = eventLogTable.getSelectionElement().getEvent();
-				MessageDependencyList consequences = event.getConsequences();
-				
-				for (int i = 0; i < consequences.size(); i++) {
-					MessageDependency consequence = consequences.get(i);
-					if (eventLogTable.getEventLogTableFacade().MessageDependency_isMessageReuse(consequence.getCPtr())) {
-						BeginSendEntry beginSendEntry = consequence.getConsequenceBeginSendEntry();
-						
-						if (beginSendEntry != null)
-							eventLogTable.gotoElement(beginSendEntry);
+				eventLogTable.gotoElement(getMessageOriginEventLogEntry());
+			}
+
+			@Override
+			public void update() {
+				setEnabled(getMessageOriginEventLogEntry() != null);
+			}
+
+			private EventLogEntry getMessageOriginEventLogEntry() {
+				EventLogEntry eventLogEntry = eventLogTable.getSelectionElement();
+
+				if (eventLogEntry != null) {
+					IEvent event = eventLogEntry.getEvent();
+					MessageDependencyList causes = event.getCauses();
+					
+					for (int i = 0; i < causes.size(); i++) {
+						MessageDependency cause = causes.get(i);
+						if (eventLogTable.getEventLogTableFacade().MessageDependency_isMessageReuse(cause.getCPtr()) &&
+							cause.getConsequenceBeginSendEntry().equals(eventLogEntry)) {
+							IEvent causeEvent = cause.getCauseEvent();
+							
+							if (causeEvent != null)
+								return causeEvent.getEventEntry();
+						}
 					}
 				}
+
+				return null;
 			}
 		};
 	}
 
-	private Action getGotoEventAction() {
-		return new Action("Goto event...") {
+	private EventLogTableAction createGotoMessageReuseAction() {
+		return new EventLogTableAction("Goto message reuse") {
+			@Override
+			public void run() {
+				eventLogTable.gotoElement(getMessageReuseEventLogEntry());
+			}
+
+			@Override
+			public void update() {
+				setEnabled(getMessageReuseEventLogEntry() != null);
+			}
+
+			private EventLogEntry getMessageReuseEventLogEntry() {
+				EventLogEntry eventLogEntry = eventLogTable.getSelectionElement();
+
+				if (eventLogEntry != null) {
+					IEvent event = eventLogEntry.getEvent();
+					MessageDependencyList consequences = event.getConsequences();
+					
+					for (int i = 0; i < consequences.size(); i++) {
+						MessageDependency consequence = consequences.get(i);
+						if (eventLogTable.getEventLogTableFacade().MessageDependency_isMessageReuse(consequence.getCPtr())) {
+							BeginSendEntry beginSendEntry = consequence.getConsequenceBeginSendEntry();
+							
+							if (beginSendEntry != null)
+								return beginSendEntry;
+						}
+					}
+				}
+				
+				return null;
+			}
+		};
+	}
+
+	private EventLogTableAction createGotoEventAction() {
+		return new EventLogTableAction("Goto event...") {
+			@Override
 			public void run() {
 				InputDialog dialog = new InputDialog(null, "Goto event", "Please enter the event number to go to", null, new IInputValidator() {
 					public String isValid(String newText) {
@@ -199,11 +349,17 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 					// void
 				}
 			}
+			
+			@Override
+			public void update() {
+				setEnabled(getEventLog().getApproximateNumberOfEvents() != 0);
+			}
 		};
 	}
 
-	private Action getGotoSimulationTimeAction() {
-		return new Action("Goto simulation time...") {
+	private EventLogTableAction createGotoSimulationTimeAction() {
+		return new EventLogTableAction("Goto simulation time...") {
+			@Override
 			public void run() {
 				InputDialog dialog = new InputDialog(null, "Goto simulation time", "Please enter the simulation time to go to", null, new IInputValidator() {
 					public String isValid(String newText) {
@@ -237,11 +393,17 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 					// void
 				}
 			}
+			
+			@Override
+			public void update() {
+				setEnabled(getEventLog().getApproximateNumberOfEvents() != 0);
+			}
 		};
 	}
 
-	private Action getBookmarkAction() {
-		return new Action("Bookmark") {
+	private EventLogTableAction createBookmarkAction() {
+		return new EventLogTableAction("Bookmark") {
+			@Override
 			public void run() {
 				try {
 					EventLogInput eventLogInput = (EventLogInput)eventLogTable.getInput();
@@ -249,59 +411,47 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 					IEvent event = ((EventLogEntry)eventLogTable.getSelectionElement()).getEvent();
 					marker.setAttribute(IMarker.LOCATION, "# " + event.getEventNumber());
 					marker.setAttribute("EventNumber", event.getEventNumber());
+					update();
 					eventLogTable.redraw();
 				}
 				catch (CoreException e) {
 					throw new RuntimeException(e);
 				}
 			}
+
+			@Override
+			public void update() {
+				setEnabled(eventLogTable.getSelectionElement() != null);
+			}
 		};
 	}
 
-	private Action getDisplayModeAction() {
-		Action action = new Action("Display mode", Action.AS_DROP_DOWN_MENU) {
+	private EventLogTableMenuAction createDisplayModeAction() {
+		return new EventLogTableMenuAction("Display mode", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
 			@Override
 			public void run() {
 				EventLogTableLineRenderer eventLogTableItemProvider = (EventLogTableLineRenderer)eventLogTable.getLineRenderer();
 				eventLogTableItemProvider.setDisplayMode(EventLogTableLineRenderer.DisplayMode.values()[(eventLogTableItemProvider.getDisplayMode().ordinal() + 1) % EventLogTableLineRenderer.DisplayMode.values().length]);
+				update();
 				eventLogTable.redraw();
 			}
-			
+
+			@Override
+			protected void updateMenu(Menu menu) {
+				EventLogTableLineRenderer eventLogTableItemProvider = (EventLogTableLineRenderer)eventLogTable.getLineRenderer();
+				int index = eventLogTableItemProvider.getDisplayMode().ordinal();
+
+				for (int i = 0; i < menu.getItemCount(); i++) {
+					MenuItem menuItem = menu.getItem(i);
+					menuItem.setSelection(i == index);
+				}
+			}
+
 			@Override
 			public IMenuCreator getMenuCreator() {
-				return new IMenuCreator() {
-					private Menu controlMenu;
-
-					private Menu parentMenu;
-					
-					
-					public void dispose() {
-						if (controlMenu != null)
-							controlMenu.dispose();
-
-						if (parentMenu != null)
-							parentMenu.dispose();
-					}
-
-					public Menu getMenu(Control parent) {
-						if (controlMenu == null) {
-							controlMenu = new Menu(parent);
-							createMenu(controlMenu);
-						}
-						
-						return controlMenu;
-					}
-
-					public Menu getMenu(Menu parent) {
-						if (parentMenu == null) {
-							parentMenu = new Menu(parent);
-							createMenu(parentMenu);
-						}
-						
-						return parentMenu;
-					}
-
-					private void createMenu(Menu menu) {
+				return new AbstractMenuCreator() {
+					@Override
+					protected void createMenu(Menu menu) {
 						addSubMenuItem(menu, "Descriptive", EventLogTableLineRenderer.DisplayMode.DESCRIPTIVE);
 						addSubMenuItem(menu, "Raw", EventLogTableLineRenderer.DisplayMode.RAW);
 					}
@@ -320,53 +470,32 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 				};
 			}
 		};
-
-		action.setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE));
-		return action;
 	}
 
-	private Action getFilterModeAction() {
-		Action action = new Action("Filter mode", Action.AS_DROP_DOWN_MENU) {
+	private EventLogTableMenuAction createFilterModeAction() {
+		return new EventLogTableMenuAction("Filter mode", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER)) {
 			@Override
 			public void run() {
 				eventLogTable.setFilterMode((eventLogTable.getFilterMode() + 1) % 5);
 				eventLogTable.updateVerticalBarParameters();
+				update();
+			}
+
+			@Override
+			protected void updateMenu(Menu menu) {
+				int index = eventLogTable.getFilterMode();
+
+				for (int i = 0; i < menu.getItemCount(); i++) {
+					MenuItem menuItem = menu.getItem(i);
+					menuItem.setSelection(i == index);
+				}
 			}
 			
 			@Override
 			public IMenuCreator getMenuCreator() {
-				return new IMenuCreator() {
-					private Menu controlMenu;
-
-					private Menu parentMenu;
-					
-					public void dispose() {
-						if (controlMenu != null)
-							controlMenu.dispose();
-
-						if (parentMenu != null)
-							parentMenu.dispose();
-					}
-
-					public Menu getMenu(Control parent) {
-						if (controlMenu == null) {
-							controlMenu = new Menu(parent);
-							createMenu(controlMenu);
-						}
-						
-						return controlMenu;
-					}
-
-					public Menu getMenu(Menu parent) {
-						if (parentMenu == null) {
-							parentMenu = new Menu(parent);
-							createMenu(parentMenu);
-						}
-						
-						return parentMenu;
-					}
-
-					private void createMenu(Menu menu) {
+				return new AbstractMenuCreator() {
+					@Override
+					protected void createMenu(Menu menu) {
 						addSubMenuItem(menu, "All", 0);
 						addSubMenuItem(menu, "Events, message sends and log messages", 1);
 						addSubMenuItem(menu, "Events and log messages", 2);
@@ -402,12 +531,88 @@ public class EventLogTableContributor extends EditorActionBarContributor {
 				};
 			}
 		};
-
-		action.setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER));
-		return action;
 	}
 	
-	private IEventLog getEventLog() {
-		return eventLogTable.getEventLog();
+	private abstract class EventLogTableAction extends Action {
+		public EventLogTableAction(String text) {
+			super(text);
+		}
+
+		public EventLogTableAction(String text, int style, ImageDescriptor image) {
+			super(text, style);
+			setImageDescriptor(image);
+		}
+
+		public void update() {
+		}
+	}
+
+	private abstract class EventLogTableMenuAction extends EventLogTableAction {
+		protected ArrayList<Menu> menus = new ArrayList<Menu>();
+
+		public EventLogTableMenuAction(String text, int style, ImageDescriptor image) {
+			super(text, style, image);
+		}
+		
+		@Override
+		public void update() {
+			for (Menu menu : menus)
+				updateMenu(menu);
+		}
+		
+		protected void addMenu(Menu menu) {
+			Assert.isTrue(menu != null);
+
+			menus.add(menu);
+			updateMenu(menu);
+		}
+		
+		protected void removeMenu(Menu menu) {
+			Assert.isTrue(menu != null);
+
+			menus.remove(menu);
+		}
+
+		protected abstract void updateMenu(Menu menu);
+
+		protected abstract class AbstractMenuCreator implements IMenuCreator {
+			private Menu controlMenu;
+
+			private Menu parentMenu;
+		
+			public void dispose() {
+				if (controlMenu != null) {
+					controlMenu.dispose();
+					removeMenu(controlMenu);
+				}
+
+				if (parentMenu != null) {
+					parentMenu.dispose();
+					removeMenu(parentMenu);
+				}
+			}
+
+			public Menu getMenu(Control parent) {
+				if (controlMenu == null) {
+					controlMenu = new Menu(parent);
+					createMenu(controlMenu);
+					addMenu(controlMenu);
+				}
+				
+				return controlMenu;
+			}
+
+			public Menu getMenu(Menu parent) {
+				if (parentMenu == null) {
+					parentMenu = new Menu(parent);
+					createMenu(parentMenu);
+					addMenu(parentMenu);
+				}
+				
+				return parentMenu;
+			}
+
+			protected abstract void createMenu(Menu menu);
+		}
 	}
 }
