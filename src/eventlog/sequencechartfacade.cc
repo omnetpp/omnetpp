@@ -70,18 +70,14 @@ IEvent *SequenceChartFacade::getLastEventNotAfterTimelineCoordinate(double timel
 
     switch (timelineMode) {
         case LINEAR:
-            // TODO:
-            throw opp_runtime_error("Not yet implemented");
-            break;
+            return eventLog->getLastEventNotAfterSimulationTime(timelineCoordinate);
         case STEP:
             if (timelineCoordinate > LONG_MAX)
                 return eventLog->getLastEvent();
             else
                 return eventLog->getLastEventNotAfterEventNumber((long)floor(timelineCoordinate));
         case NON_LINEAR:
-            // TODO:
-            throw opp_runtime_error("Not yet implemented");
-            break;
+            return eventLog->getLastEventNotAfterSimulationTime(getSimulationTimeForTimelineCoordinate(timelineCoordinate));
         default:
             throw opp_runtime_error("Unknown timeline mode");
     }
@@ -93,18 +89,14 @@ IEvent *SequenceChartFacade::getFirstEventNotBeforeTimelineCoordinate(double tim
 
     switch (timelineMode) {
         case LINEAR:
-            // TODO:
-            throw opp_runtime_error("Not yet implemented");
-            break;
+            return eventLog->getFirstEventNotBeforeSimulationTime(timelineCoordinate);
         case STEP:
             if (timelineCoordinate > LONG_MAX)
                 return NULL;
             else
                 return eventLog->getFirstEventNotBeforeEventNumber((long)ceil(timelineCoordinate));
         case NON_LINEAR:
-            // TODO:
-            throw opp_runtime_error("Not yet implemented");
-            break;
+            return eventLog->getFirstEventNotBeforeSimulationTime(getSimulationTimeForTimelineCoordinate(timelineCoordinate));
         default:
             throw opp_runtime_error("Unknown timeline mode");
     }
