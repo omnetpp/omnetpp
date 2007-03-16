@@ -48,6 +48,7 @@ public class SequenceChartPlugin extends AbstractUIPlugin {
 	public void logException(Throwable ex) {
 		getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK, "An exception occurred", ex));					
 	}
+
 	/**
 	 * Returns the shared instance
 	 *

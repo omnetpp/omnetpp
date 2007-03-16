@@ -1,168 +1,540 @@
 package org.omnetpp.sequencechart.editors;
 
+import java.util.ArrayList;
+
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuCreator;
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.EditorActionBarContributor;
+import org.omnetpp.common.eventlog.ModuleTreeItem;
+import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.eventlog.engine.IEvent;
+import org.omnetpp.eventlog.engine.MessageDependency;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
 
 
 public class SequenceChartContributor extends EditorActionBarContributor {
+	private static SequenceChartContributor singleton;
+
 	protected SequenceChart sequenceChart;
+
+	protected Separator separatorAction;
+
+	protected SequenceChartMenuAction timelineModeAction;
+
+	protected SequenceChartMenuAction timelineSortModeAction;
+
+	protected SequenceChartAction showEventNumbersAction;
+
+	protected SequenceChartAction showMessageNamesAction;
+
+	protected SequenceChartAction showReuseMessageAction;
+
+	protected SequenceChartAction showArrowHeadsAction;
+
+	protected SequenceChartAction increaseSpacingAction;
+
+	protected SequenceChartAction decreaseSpacingAction;
+
+	protected SequenceChartAction zoomInAction;
+
+	protected SequenceChartAction zoomOutAction;
+
+	protected SequenceChartAction denseAxesAction;
+
+	protected SequenceChartAction evenlyDistributedAxesAction;
 	
 	public SequenceChartContributor() {
+		this.separatorAction = new Separator();
+		this.timelineModeAction = createTimelineModeAction();
+		this.timelineSortModeAction = createTimelineSortModeAction();
+		this.showEventNumbersAction = createShowEventNumbersAction();
+		this.showMessageNamesAction = createShowMessageNamesAction();
+		this.showReuseMessageAction = createShowReuseMessageAction();
+		this.showArrowHeadsAction = createShowArrowHeadsAction();
+		this.increaseSpacingAction = createIncreaseSpacingAction();
+		this.decreaseSpacingAction = createDecreaseSpacingAction();
+		this.zoomInAction = createZoomInAction();
+		this.zoomOutAction = createZoomOutAction();
+		this.denseAxesAction = createDenseAxesAction();
+		this.evenlyDistributedAxesAction = createEvenlyDistributedAxesAction();
+
+		if (singleton == null)
+			singleton = this;
 	}
 	
 	public SequenceChartContributor(SequenceChart sequenceChart) {
+		this();
 		this.sequenceChart = sequenceChart;
 	}
-
-	public void contributeToPopupMenu(IMenuManager menuManager) {
+	
+	public static SequenceChartContributor getDefault() {
+		return singleton;
 	}
+	
+	public void contributeToPopupMenu(IMenuManager menuManager) {
+		menuManager.setRemoveAllWhenShown(true);
+		menuManager.addMenuListener(new IMenuListener() {
+			public void menuAboutToShow(IMenuManager menuManager) {
+				// dynamic menu
+				ArrayList<IEvent> events = new ArrayList<IEvent>();
+				ArrayList<MessageDependency> msgs = new ArrayList<MessageDependency>();
+				Point p = sequenceChart.toControl(sequenceChart.getDisplay().getCursorLocation());
+				sequenceChart.collectStuffUnderMouse(p.x, p.y, events, msgs);
+
+				// events submenu
+				for (final IEvent event : events) {
+					IMenuManager subMenuManager = new MenuManager(sequenceChart.getEventText(event));
+					menuManager.add(subMenuManager);
+
+					subMenuManager.add(createCenterEventAction(event));
+					subMenuManager.add(createSelectEventAction(event));
+					subMenuManager.add(createFilterEventCausesConsequencesAction(event));
+				}
+
+				// messages submenu
+				for (final MessageDependency msg : msgs) {
+					IMenuManager subMenuManager = new MenuManager(sequenceChart.getMessageText(msg));
+					menuManager.add(subMenuManager);
+
+					subMenuManager.add(createZoomToMessageAction(msg));
+					subMenuManager.add(createGotoCauseAction(msg));
+					subMenuManager.add(createGotoConsequenceAction(msg));
+				}
+
+				// axis submenu
+				final ModuleTreeItem axisModule = sequenceChart.findAxisAt(p.y);
+				if (axisModule != null) {
+					IMenuManager subMenuManager = new MenuManager(sequenceChart.getAxisText(axisModule));
+
+					subMenuManager.add(createCenterAxisAction(axisModule));
+					subMenuManager.add(createZoomToAxisValueAction(axisModule, p.x));
+				}
+
+				// static menu
+				menuManager.add(timelineModeAction);
+				menuManager.add(timelineSortModeAction);
+				menuManager.add(separatorAction);
+				menuManager.add(showEventNumbersAction);
+				menuManager.add(showMessageNamesAction);
+				menuManager.add(showReuseMessageAction);
+				menuManager.add(showArrowHeadsAction);
+				menuManager.add(separatorAction);
+				menuManager.add(increaseSpacingAction);
+				menuManager.add(decreaseSpacingAction);
+				menuManager.add(separatorAction);
+				menuManager.add(zoomInAction);
+				menuManager.add(zoomOutAction);
+				menuManager.add(separatorAction);
+				menuManager.add(denseAxesAction);
+				menuManager.add(evenlyDistributedAxesAction);
+				menuManager.add(separatorAction);
+			}
+		});
+	}
+
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
+		toolBarManager.add(timelineModeAction);
+		toolBarManager.add(timelineSortModeAction);
+		toolBarManager.add(separatorAction);
+		toolBarManager.add(showEventNumbersAction);
+		toolBarManager.add(showMessageNamesAction);
+		toolBarManager.add(separatorAction);
+		toolBarManager.add(increaseSpacingAction);
+		toolBarManager.add(decreaseSpacingAction);
+		toolBarManager.add(separatorAction);
+		toolBarManager.add(zoomInAction);
+		toolBarManager.add(zoomOutAction);
 	}
 	
 	@Override
 	public void setActiveEditor(IEditorPart targetEditor) {
 		sequenceChart = ((SequenceChartEditor)targetEditor).getSequenceChart();
+		timelineModeAction.update();
+		timelineSortModeAction.update();
+		showEventNumbersAction.update();
+		showMessageNamesAction.update();
+		showReuseMessageAction.update();
+		showArrowHeadsAction.update();
 	}
 
-	private void displayPopupMenu(MouseEvent e) {
-/* FIXME: resurrect this code
-		final int x = e.x;
-		Menu popupMenu = new Menu(seqChart);
-		ArrayList<IEvent> events = new ArrayList<IEvent>();
-		ArrayList<MessageEntry> msgs = new ArrayList<MessageEntry>();
-		Point p = seqChart.toControl(seqChart.getDisplay().getCursorLocation());
-		seqChart.collectStuffUnderMouse(p.x, p.y, events, msgs);
-
-		// center menu item
-		MenuItem subMenuItem = new MenuItem(popupMenu, SWT.PUSH);
-		subMenuItem.setText("Center");
-		subMenuItem.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				seqChart.gotoSimulationTimeWithCenter(seqChart.pixelToSimulationTime(x));
+	private SequenceChartMenuAction createTimelineModeAction() {
+		return new SequenceChartMenuAction("Timeline mode", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+			@Override
+			public void run() {
+				sequenceChart.setTimelineMode(SequenceChart.TimelineMode.values()[(sequenceChart.getTimelineMode().ordinal() + 1) % SequenceChart.TimelineMode.values().length]);
+				update();
 			}
-		});
 
-		// axis submenu
-		MenuItem cascadeItem = new MenuItem(popupMenu, SWT.CASCADE);
-		cascadeItem.setText("Axis");
-		Menu subMenu = new Menu(popupMenu);
-		cascadeItem.setMenu(subMenu);
+			@Override
+			protected void updateMenu(Menu menu) {
+				int index = sequenceChart.getTimelineMode().ordinal();
 
-		subMenuItem = new MenuItem(subMenu, SWT.PUSH);
-		subMenuItem.setText("Dense");
-		subMenuItem.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				seqChart.setAxisSpacing(20);
+				for (int i = 0; i < menu.getItemCount(); i++) {
+					MenuItem menuItem = menu.getItem(i);
+					menuItem.setSelection(i == index);
+				}
 			}
-		});
-		
-		subMenuItem = new MenuItem(subMenu, SWT.PUSH);
-		subMenuItem.setText("Evenly");
-		subMenuItem.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				seqChart.setAxisSpacing(-1);
+			
+			@Override
+			public IMenuCreator getMenuCreator() {
+				return new AbstractMenuCreator() {
+					@Override
+					protected void createMenu(Menu menu) {
+						addSubMenuItem(menu, "Linear", SequenceChart.TimelineMode.LINEAR);
+						addSubMenuItem(menu, "Step", SequenceChart.TimelineMode.STEP);
+						addSubMenuItem(menu, "Non linear", SequenceChart.TimelineMode.NON_LINEAR);
+					}
+
+					private void addSubMenuItem(Menu menu, String text, final SequenceChart.TimelineMode timelineMode) {
+						MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
+						subMenuItem.setText(text);
+						subMenuItem.addSelectionListener( new SelectionAdapter() {
+							public void widgetSelected(SelectionEvent e) {
+								sequenceChart.setTimelineMode(timelineMode);
+								update();
+							}
+						});
+					}
+				};
 			}
-		});
-		
-		new MenuItem(popupMenu, SWT.SEPARATOR);
-		
-		// events submenu
-		for (final IEvent event : events) {
-			cascadeItem = new MenuItem(popupMenu, SWT.CASCADE);
-			cascadeItem.setText(seqChart.getEventText(event));
-			subMenu = new Menu(popupMenu);
-			cascadeItem.setMenu(subMenu);
+		};
+	}
 
-			subMenuItem = new MenuItem(subMenu, SWT.PUSH);
-			subMenuItem.setText("Center");
-			subMenuItem.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
-					seqChart.gotoEvent(event);
-				}
-			});
+	private SequenceChartMenuAction createTimelineSortModeAction() {
+		return new SequenceChartMenuAction("Timeline sort mode", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+			@Override
+			public void run() {
+				sequenceChart.setTimelineSortMode(SequenceChart.TimelineSortMode.values()[(sequenceChart.getTimelineSortMode().ordinal() + 1) % SequenceChart.TimelineSortMode.values().length]);
+				update();
+			}
 
-			subMenuItem = new MenuItem(subMenu, SWT.PUSH);
-			subMenuItem.setText("Select");
-			subMenuItem.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
-					// TODO:
-				}
-			});
+			@Override
+			protected void updateMenu(Menu menu) {
+				int index = sequenceChart.getTimelineSortMode().ordinal();
 
-			subMenuItem = new MenuItem(subMenu, SWT.PUSH);
-			subMenuItem.setText("Filter to");
-			subMenuItem.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
-					showSequenceChartForEvent(event.getEventNumber());
+				for (int i = 0; i < menu.getItemCount(); i++) {
+					MenuItem menuItem = menu.getItem(i);
+					menuItem.setSelection(i == index);
 				}
-			});
+			}
+			
+			@Override
+			public IMenuCreator getMenuCreator() {
+				return new AbstractMenuCreator() {
+					@Override
+					protected void createMenu(Menu menu) {
+						addSubMenuItem(menu, "Manual", SequenceChart.TimelineSortMode.MANUAL);
+						addSubMenuItem(menu, "Module id", SequenceChart.TimelineSortMode.MODULE_ID);
+						addSubMenuItem(menu, "Module name", SequenceChart.TimelineSortMode.MODULE_NAME);
+						addSubMenuItem(menu, "Minimize crossings", SequenceChart.TimelineSortMode.MINIMIZE_CROSSINGS);
+						addSubMenuItem(menu, "Minimize crossings hierarchically", SequenceChart.TimelineSortMode.MINIMIZE_CROSSINGS_HIERARCHICALLY);
+					}
+
+					private void addSubMenuItem(Menu menu, String text, final SequenceChart.TimelineSortMode timelineSortMode) {
+						MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
+						subMenuItem.setText(text);
+						subMenuItem.addSelectionListener( new SelectionAdapter() {
+							public void widgetSelected(SelectionEvent e) {
+								sequenceChart.setTimelineSortMode(timelineSortMode);
+								update();
+							}
+						});
+					}
+				};
+			}
+		};
+	}
+	
+	private SequenceChartAction createShowEventNumbersAction() {
+		return new SequenceChartAction(null, Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+			@Override
+			public void run() {
+				sequenceChart.setShowEventNumbers(!sequenceChart.getShowEventNumbers());
+				update();
+			}
+			
+			@Override
+			public void update() {
+				boolean showEventNumbers = sequenceChart.getShowEventNumbers();
+				setChecked(showEventNumbers);
+				setText(showEventNumbers ? "Hide event numbers" : "Show event numbers");
+			}
+		};
+	}
+
+	private SequenceChartAction createShowMessageNamesAction() {
+		return new SequenceChartAction(null, Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+			@Override
+			public void run() {
+				sequenceChart.setShowMessageNames(!sequenceChart.getShowMessageNames());
+				update();
+			}
+			
+			@Override
+			public void update() {
+				boolean showMessageNames = sequenceChart.getShowMessageNames();
+				setChecked(showMessageNames);
+				setText(showMessageNames ? "Hide message names" : "Show message names");
+			}
+		};
+	}
+	
+	private SequenceChartAction createShowReuseMessageAction() {
+		return new SequenceChartAction(null, Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+			@Override
+			public void run() {
+				sequenceChart.setShowReuseMessages(!sequenceChart.getShowReuseMessages());
+				update();
+			}
+			
+			@Override
+			public void update() {
+				boolean showReuseMessage = sequenceChart.getShowReuseMessages();
+				setChecked(showReuseMessage);
+				setText(showReuseMessage ? "Hide reuse messages" : "Show reuse messages");
+			}
+		};
+	}
+	
+	private SequenceChartAction createShowArrowHeadsAction() {
+		return new SequenceChartAction(null, Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+			@Override
+			public void run() {
+				sequenceChart.setShowArrowHeads(!sequenceChart.getShowArrowHeads());
+				update();
+			}
+			
+			@Override
+			public void update() {
+				boolean showArrowHeads = sequenceChart.getShowArrowHeads();
+				setChecked(showArrowHeads);
+				setText(showArrowHeads ? "Hide arrow heads" : "Show arrow heads");
+			}
+		};
+	}
+	
+	private SequenceChartAction createIncreaseSpacingAction() {
+		return new SequenceChartAction("Increase spacing", Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+			@Override
+			public void run() {
+				sequenceChart.setAxisSpacing(sequenceChart.getAxisSpacing() + 5);
+			}
+		};
+	}
+	
+	private SequenceChartAction createDecreaseSpacingAction() {
+		return new SequenceChartAction("Decrease spacing", Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+			@Override
+			public void run() {
+				sequenceChart.setAxisSpacing(sequenceChart.getAxisSpacing() - 5);
+			}
+		};
+	}
+	
+	private SequenceChartAction createZoomInAction() {
+		return new SequenceChartAction("Zoom in", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_ZOOMPLUS)) {
+			@Override
+			public void run() {
+				sequenceChart.zoomIn();
+			}
+		};
+	}
+
+	private SequenceChartAction createZoomOutAction() {
+		return new SequenceChartAction("Zoom out", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_ZOOMMINUS)) {
+			@Override
+			public void run() {
+				sequenceChart.zoomOut();
+			}
+		};
+	}
+
+	private SequenceChartAction createDenseAxesAction() {
+		return new SequenceChartAction("Dense axes", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+			@Override
+			public void run() {
+				sequenceChart.setAxisSpacing(20);
+			}
+		};
+	}
+
+	private SequenceChartAction createEvenlyDistributedAxesAction() {
+		return new SequenceChartAction("Evenly distributed axes", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+			@Override
+			public void run() {
+				sequenceChart.setAxisSpacing(-1);
+			}
+		};
+	}
+
+	private SequenceChartAction createCenterEventAction(final IEvent event) {
+		return new SequenceChartAction("Center", SWT.PUSH) {
+			@Override
+			public void run() {
+				sequenceChart.gotoEvent(event);
+			}
+		};
+	}
+
+	private SequenceChartAction createSelectEventAction(final IEvent event) {
+		return new SequenceChartAction("Select", SWT.PUSH) {
+			@Override
+			public void run() {
+				sequenceChart.setSelectionEvent(event);
+			}
+		};
+	}
+
+	private SequenceChartAction createFilterEventCausesConsequencesAction(final IEvent event) {
+		return new SequenceChartAction("Filter causes/consequences", SWT.PUSH) {
+			@Override
+			public void run() {
+				// TODO:
+			}
+		};
+	}
+
+	private SequenceChartAction createZoomToMessageAction(final MessageDependency msg) {
+		return new SequenceChartAction("Zoom to message", SWT.PUSH) {
+			@Override
+			public void run() {
+				sequenceChart.gotoSimulationTimeRange(msg.getCauseEvent().getSimulationTime(), msg.getConsequenceEvent().getSimulationTime(), (int)(sequenceChart.getViewportWidth() * 0.1));
+			}
+		};
+	}
+
+	private SequenceChartAction createGotoCauseAction(final MessageDependency msg) {
+		return new SequenceChartAction("Goto cause event", SWT.PUSH) {
+			@Override
+			public void run() {
+				sequenceChart.gotoEvent(msg.getCauseEvent());
+			}
+		};
+	}
+
+	private SequenceChartAction createGotoConsequenceAction(final MessageDependency msg) {
+		return new SequenceChartAction("Goto consequence event", SWT.PUSH) {
+			@Override
+			public void run() {
+				sequenceChart.gotoEvent(msg.getConsequenceEvent());
+			}
+		};
+	}
+
+	private SequenceChartAction createCenterAxisAction(final ModuleTreeItem axisModule) {
+		return new SequenceChartAction("Center", SWT.PUSH) {
+			@Override
+			public void run() {
+				sequenceChart.gotoAxisModule(axisModule);
+			}
+		};
+	}
+
+	private SequenceChartAction createZoomToAxisValueAction(final ModuleTreeItem axisModule, final int x) {
+		return new SequenceChartAction("Zoom to value", SWT.PUSH) {
+			@Override
+			public void run() {
+				sequenceChart.gotoAxisValue(axisModule, sequenceChart.getSimulationTimeForViewportPixel(x));
+			}
+		};
+	}	
+
+	private abstract class SequenceChartAction extends Action {
+		public SequenceChartAction(String text, int style) {			
+			super(text, style);
+		}
+
+		public SequenceChartAction(String text, int style, ImageDescriptor image) {
+			super(text, style);
+			setImageDescriptor(image);
+		}
+
+		public void update() {
+		}
+	}
+	
+	private abstract class SequenceChartMenuAction extends SequenceChartAction {
+		protected ArrayList<Menu> menus = new ArrayList<Menu>();
+
+		public SequenceChartMenuAction(String text, int style, ImageDescriptor image) {
+			super(text, style, image);
 		}
 		
-		new MenuItem(popupMenu, SWT.SEPARATOR);
-
-		// messages submenu
-		for (final MessageEntry msg : msgs) {
-			cascadeItem = new MenuItem(popupMenu, SWT.CASCADE);
-			cascadeItem.setText(seqChart.getMessageText(msg));
-			subMenu = new Menu(popupMenu);
-			cascadeItem.setMenu(subMenu);
-
-			subMenuItem = new MenuItem(subMenu, SWT.PUSH);
-			subMenuItem.setText("Zoom to message");
-			subMenuItem.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
-					seqChart.gotoSimulationTimeRange(msg.getSource().getSimulationTime(), msg.getTarget().getSimulationTime(), (int)(seqChart.getWidth() * 0.1));
-				}
-			});
-
-			subMenuItem = new MenuItem(subMenu, SWT.PUSH);
-			subMenuItem.setText("Go to source event");
-			subMenuItem.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
-					seqChart.gotoEvent(msg.getSource());
-				}
-			});
-
-			subMenuItem = new MenuItem(subMenu, SWT.PUSH);
-			subMenuItem.setText("Go to target event");
-			subMenuItem.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
-					seqChart.gotoEvent(msg.getTarget());
-				}
-			});
+		@Override
+		public void update() {
+			for (Menu menu : menus)
+				updateMenu(menu);
 		}
 		
-		// axis submenu
-		final ModuleTreeItem axisModule = seqChart.findAxisAt(p.y);
-		if (axisModule != null) {
-			cascadeItem = new MenuItem(popupMenu, SWT.CASCADE);
-			cascadeItem.setText(seqChart.getAxisText(axisModule));
-			subMenu = new Menu(popupMenu);
-			cascadeItem.setMenu(subMenu);
+		protected void addMenu(Menu menu) {
+			Assert.isTrue(menu != null);
 
-			subMenuItem = new MenuItem(subMenu, SWT.PUSH);
-			subMenuItem.setText("Center");
-			subMenuItem.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
-					seqChart.gotoAxisModule(axisModule);
-				}
-			});
-
-			subMenuItem = new MenuItem(subMenu, SWT.PUSH);
-			subMenuItem.setText("Zoom to value");
-			subMenuItem.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
-					seqChart.gotoAxisValue(axisModule, seqChart.pixelToSimulationTime(x));
-				}
-			});			
+			menus.add(menu);
+			updateMenu(menu);
 		}
 		
-		seqChart.setMenu(popupMenu);
-*/
+		protected void removeMenu(Menu menu) {
+			Assert.isTrue(menu != null);
+
+			menus.remove(menu);
+		}
+
+		protected abstract void updateMenu(Menu menu);
+
+		protected abstract class AbstractMenuCreator implements IMenuCreator {
+			private Menu controlMenu;
+
+			private Menu parentMenu;
+		
+			public void dispose() {
+				if (controlMenu != null) {
+					controlMenu.dispose();
+					removeMenu(controlMenu);
+				}
+
+				if (parentMenu != null) {
+					parentMenu.dispose();
+					removeMenu(parentMenu);
+				}
+			}
+
+			public Menu getMenu(Control parent) {
+				if (controlMenu == null) {
+					controlMenu = new Menu(parent);
+					createMenu(controlMenu);
+					addMenu(controlMenu);
+				}
+				
+				return controlMenu;
+			}
+
+			public Menu getMenu(Menu parent) {
+				if (parentMenu == null) {
+					parentMenu = new Menu(parent);
+					createMenu(parentMenu);
+					addMenu(parentMenu);
+				}
+				
+				return parentMenu;
+			}
+
+			protected abstract void createMenu(Menu menu);
+		}
 	}
 }

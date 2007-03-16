@@ -19,6 +19,7 @@ import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.viewers.ISelection;
@@ -43,6 +44,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.omnetpp.common.canvas.CachingCanvas;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogSelection;
 import org.omnetpp.common.eventlog.IEventLogSelection;
@@ -59,6 +61,7 @@ import org.omnetpp.eventlog.engine.MessageSend;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
 import org.omnetpp.scave.engine.XYArray;
+import org.omnetpp.sequencechart.editors.SequenceChartContributor;
 
 /**
  * This is a sequence chart as a single figure.
@@ -82,7 +85,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private static final Color TICK_LABEL_COLOR = new Color(null, 0, 0, 0);
 	private static final Color GUTTER_BACKGROUND_COLOR = new Color(null, 255, 255, 160);
 	private static final Color GUTTER_BORDER_COLOR = new Color(null, 0, 0, 0);
-	private static final Color EVENT_FG_COLOR = new Color(null,255,0,0);
+	private static final Color EVENT_FG_COLOR = ColorFactory.asColor("green");
+	private static final Color SELF_EVENT_FG_COLOR = ColorFactory.asColor("orange");
 	private static final Color EVENT_BG_COLOR = new Color(null,255,255,255);
 	private static final Color EVENT_SEL_COLOR = new Color(null,255,0,0);
 	private static final Color ARROWHEAD_COLOR = null; // defaults to line color
@@ -117,7 +121,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private int axisSpacing = -1; // y distance between two axes
 
 	private boolean showMessageNames;
-	private boolean showNonDeliveryMessages; // show or hide non-delivery message arrows
+	private boolean showReuseMessages; // show or hide non-delivery message arrows
 	private boolean showEventNumbers;
 	private TimelineSortMode timelineSortMode = TimelineSortMode.MODULE_ID; // specifies the ordering mode of timelines
 	
@@ -141,6 +145,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private List<IEvent> selectedEvents = new ArrayList<IEvent>(); // the selection
     private ListenerList selectionChangedListeners = new ListenerList(); // list of selection change listeners (type ISelectionChangedListener).
 	private EventLogInput eventLogInput;
+	private MenuManager menuManager;
 
 	private static Rectangle TEMP_RECT = new Rectangle();  // tmp var for local calculations (a second Rectangle.SINGLETON)
     
@@ -165,7 +170,11 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		super(parent, style);
 		setBackground(CHART_BACKGROUND_COLOR);
     	setUpMouseHandling();
-    	
+
+		menuManager = new MenuManager();
+		SequenceChartContributor.getDefault().contributeToPopupMenu(menuManager);
+		setMenu(menuManager.createContextMenu(this));
+
 		addControlListener(new ControlAdapter() {
 			public void controlResized(ControlEvent e) {
 				org.eclipse.swt.graphics.Rectangle r = getClientArea();
@@ -241,17 +250,17 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 	
 	/**
-	 * Returns whether non-delivery messages are shown in the chart.
+	 * Returns whether reuse messages are shown in the chart.
 	 */
-	public boolean getShowNonDeliveryMessages() {
-		return showNonDeliveryMessages;
+	public boolean getShowReuseMessages() {
+		return showReuseMessages;
 	}
 
 	/**
-	 * Shows/Hides non-delivery messages.
+	 * Shows/Hides reuse messages.
 	 */
-	public void setShowNonDeliveryMessages(boolean showNonDeliveryMessages) {
-		this.showNonDeliveryMessages = showNonDeliveryMessages;
+	public void setShowReuseMessages(boolean showReuseMessages) {
+		this.showReuseMessages = showReuseMessages;
 		clearCanvasCacheAndRedraw();
 	}
 
@@ -407,10 +416,9 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * Scroll the canvas to make the event visible.
 	 */
 	public void gotoEvent(IEvent e) {
-		/*
-		scrollVerticalTo(e.getCachedY() - getClientArea().height / 2);
+		// TODO:
+		//scrollVerticalTo(e.getCachedY() - getClientArea().height / 2);
 		gotoSimulationTimeWithCenter(e.getSimulationTime());
-		*/
 	}
 	
 	/**
@@ -1179,8 +1187,17 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			if (lastX == null || lastX.intValue() != x) {
 				axisYtoLastX.put(y, x);
 				
-				graphics.setBackgroundColor(EVENT_FG_COLOR);
+				// TODO: performance killer
+				IEvent event = sequenceChartFacade.Event_getEvent(eventPtr);
+				//graphics.setBackgroundColor(event.isSelfEvent() ? SELF_EVENT_FG_COLOR : EVENT_FG_COLOR);
+				graphics.setBackgroundColor(!event.isSelfEvent() ? ColorFactory.asColor("red") : ColorFactory.asColor("green2"));
+				//graphics.setBackgroundColor(event.isSelfEvent() ? ColorFactory.asColor("orange3") : ColorFactory.asColor("green3"));
+
 				graphics.fillOval(x - 2, y - 3, 5, 7);
+				graphics.setLineStyle(SWT.LINE_SOLID);
+				graphics.setForegroundColor(!event.isSelfEvent() ? ColorFactory.asColor("red4") : ColorFactory.asColor("green4")); // TODO:
+				//graphics.setForegroundColor(event.isSelfEvent() ? ColorFactory.asColor("orange4") : ColorFactory.asColor("green4")); // TODO:
+				graphics.drawOval(x - 2, y - 3, 5, 7);
 
 				if (showEventNumbers) {
 					graphics.setBackgroundColor(EVENT_BG_COLOR);
@@ -1214,12 +1231,12 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private void paintGutters(Graphics graphics) {
 		graphics.setBackgroundColor(GUTTER_BACKGROUND_COLOR);
 		graphics.fillRectangle(0, 0, getViewportWidth(), GUTTER_HEIGHT);
-		graphics.fillRectangle(0, getViewportHeight() + GUTTER_HEIGHT, getViewportWidth(), GUTTER_HEIGHT);
+		graphics.fillRectangle(0, getViewportHeight() + GUTTER_HEIGHT - 1, getViewportWidth(), GUTTER_HEIGHT);
 		paintTicks(graphics);
 		graphics.setBackgroundColor(GUTTER_BORDER_COLOR);
 		graphics.setLineStyle(SWT.LINE_SOLID);
 		graphics.drawRectangle(0, 0, getViewportWidth(), GUTTER_HEIGHT);
-		graphics.drawRectangle(0, getViewportHeight() + GUTTER_HEIGHT, getViewportWidth(), GUTTER_HEIGHT);
+		graphics.drawRectangle(0, getViewportHeight() + GUTTER_HEIGHT - 1, getViewportWidth(), GUTTER_HEIGHT);
 	}
 
 	private void paintTicks(Graphics graphics) {
@@ -1246,7 +1263,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		String str = simulationTime.toPlainString() + "s";
 		graphics.setBackgroundColor(GUTTER_BACKGROUND_COLOR);
 		graphics.fillText(str, x + 3, 2);
-		graphics.fillText(str, x + 3, getViewportHeight() + GUTTER_HEIGHT + 2);
+		graphics.fillText(str, x + 3, getViewportHeight() + GUTTER_HEIGHT + 1);
 	}
 	
 	private void paintEventSelectionMarks(Graphics graphics) {
@@ -1292,6 +1309,10 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private void drawMessageArrow(Graphics graphics, long messageDependencyPtr, VLineBuffer vlineBuffer) {
 		long causeEventPtr = sequenceChartFacade.MessageDependency_getCauseEvent(messageDependencyPtr);
 		long consequenceEventPtr = sequenceChartFacade.MessageDependency_getConsequenceEvent(messageDependencyPtr);
+		boolean isMessageSend = sequenceChartFacade.MessageDependency_isMessageSend(messageDependencyPtr);
+
+		if (!isMessageSend && !showReuseMessages)
+			return;
 
 		// TODO: we probably do not need this, it's check in C++ anyway
 		if (causeEventPtr == 0 || consequenceEventPtr == 0)
@@ -1332,12 +1353,11 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		}
 
 		// line color and style depends on message type
-		boolean isDelivery = sequenceChartFacade.MessageDependency_isMessageSend(messageDependencyPtr);
-		if (isDelivery) {
+		if (isMessageSend) {
 			graphics.setForegroundColor(DELIVERY_MESSAGE_COLOR);
 			graphics.setLineStyle(SWT.LINE_SOLID);
 		}
-		else { 
+		else {
 			graphics.setForegroundColor(NONDELIVERY_MESSAGE_COLOR);
 			graphics.setLineDash(DOTTED_LINE_PATTERN); // SWT.LINE_DOT style is not what we want
 		}
@@ -1352,7 +1372,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		// test if self-message (y1==y2) or not
 		if (y1==y2) {
 
-			int halfEllipseHeight = isDelivery ? DELIVERY_SELFARROW_HEIGHT : NONDELIVERY_SELFARROW_HEIGHT;
+			int halfEllipseHeight = isMessageSend ? DELIVERY_SELFARROW_HEIGHT : NONDELIVERY_SELFARROW_HEIGHT;
 			
 			if (x1==x2) {
 				// draw vertical line (as zero-width half ellipse) 
@@ -2098,6 +2118,12 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 			redraw();
 		}
+	}
+	
+	public void setSelectionEvent(IEvent event) {
+		selectedEvents.clear();
+		selectedEvents.add(event);
+		redraw();
 	}
 	
 	/**
