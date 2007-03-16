@@ -234,6 +234,8 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 								selectionElements.remove(element);
 							else
 								selectionElements.add(element);
+							
+							fireSelectionChanged();
 						}
 						else
 							setSelectionElement(element);
@@ -338,6 +340,10 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
         selectionChangedListeners.remove(listener);
 	}
 
+	protected void fireSelectionChanged() {
+		fireSelectionChanged(new SelectionChangedEvent(this, getSelection()));
+	}
+
     /**
      * Notifies any selection changed listeners that the viewer's selection has changed.
      * Only listeners registered at the time this method is called are notified.
@@ -410,6 +416,8 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 
 		selectionElements = new ArrayList<T>();
 		selectionElements.add(element);
+		
+		fireSelectionChanged();
 	}
 
 	/**
@@ -424,6 +432,8 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 	 */
 	public void setSelectionElements(List<T> elements) {
 		selectionElements = elements;
+
+		fireSelectionChanged();
 	}
 
 	/**
