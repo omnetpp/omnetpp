@@ -182,13 +182,8 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			}
 
 			@Override
-			protected void updateMenu(Menu menu) {
-				int index = sequenceChart.getTimelineMode().ordinal();
-
-				for (int i = 0; i < menu.getItemCount(); i++) {
-					MenuItem menuItem = menu.getItem(i);
-					menuItem.setSelection(i == index);
-				}
+			protected int getMenuIndex() {
+				return sequenceChart.getTimelineMode().ordinal();
 			}
 			
 			@Override
@@ -206,8 +201,12 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 						subMenuItem.setText(text);
 						subMenuItem.addSelectionListener( new SelectionAdapter() {
 							public void widgetSelected(SelectionEvent e) {
-								sequenceChart.setTimelineMode(timelineMode);
-								update();
+								MenuItem menuItem = (MenuItem)e.widget;
+								
+								if (menuItem.getSelection()) {
+									sequenceChart.setTimelineMode(timelineMode);
+									update();
+								}
 							}
 						});
 					}
@@ -225,13 +224,8 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			}
 
 			@Override
-			protected void updateMenu(Menu menu) {
-				int index = sequenceChart.getTimelineSortMode().ordinal();
-
-				for (int i = 0; i < menu.getItemCount(); i++) {
-					MenuItem menuItem = menu.getItem(i);
-					menuItem.setSelection(i == index);
-				}
+			protected int getMenuIndex() {
+				return sequenceChart.getTimelineSortMode().ordinal();
 			}
 			
 			@Override
@@ -251,8 +245,12 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 						subMenuItem.setText(text);
 						subMenuItem.addSelectionListener( new SelectionAdapter() {
 							public void widgetSelected(SelectionEvent e) {
-								sequenceChart.setTimelineSortMode(timelineSortMode);
-								update();
+								MenuItem menuItem = (MenuItem)e.widget;
+								
+								if (menuItem.getSelection()) {
+									sequenceChart.setTimelineSortMode(timelineSortMode);
+									update();
+								}
 							}
 						});
 					}
@@ -495,7 +493,17 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			menus.remove(menu);
 		}
 
-		protected abstract void updateMenu(Menu menu);
+		protected abstract int getMenuIndex();
+
+		protected void updateMenu(Menu menu) {
+			for (int i = 0; i < menu.getItemCount(); i++) {
+				boolean selection = i == getMenuIndex();
+				MenuItem menuItem = menu.getItem(i);
+
+				if (menuItem.getSelection() != selection)
+					menuItem.setSelection(selection);
+			}
+		}
 
 		protected abstract class AbstractMenuCreator implements IMenuCreator {
 			private Menu controlMenu;

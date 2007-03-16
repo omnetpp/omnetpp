@@ -19,7 +19,11 @@ public class SequenceChartView extends ViewPart {
 
 		// we want to provide selection for the sequence chart tool (an IEditPart)
 		viewSite.setSelectionProvider(sequenceChart);
-		new SequenceChartContributor(sequenceChart).contributeToToolBar(viewSite.getActionBars().getToolBarManager());
+
+		// contribue to toolbar
+		SequenceChartContributor sequenceChartContributor = new SequenceChartContributor(sequenceChart);
+		sequenceChart.setSequenceChartContributor(sequenceChartContributor);
+		sequenceChartContributor.contributeToToolBar(viewSite.getActionBars().getToolBarManager());
 
 		// follow selection
 		viewSite.getPage().addSelectionListener(new ISelectionListener() {

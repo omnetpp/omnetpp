@@ -73,6 +73,7 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
 		sequenceChart = new SequenceChart(parent, SWT.DOUBLE_BUFFERED);
 		sequenceChart.setInput(eventLogInput);
 		sequenceChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		sequenceChart.setSequenceChartContributor(SequenceChartContributor.getDefault());
 
 		// set up zoom tool
 		new RubberbandSupport(sequenceChart, SWT.CTRL) {

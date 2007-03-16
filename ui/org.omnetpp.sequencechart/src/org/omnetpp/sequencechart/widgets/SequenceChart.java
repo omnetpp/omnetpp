@@ -171,16 +171,18 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		setBackground(CHART_BACKGROUND_COLOR);
     	setUpMouseHandling();
 
-		menuManager = new MenuManager();
-		SequenceChartContributor.getDefault().contributeToPopupMenu(menuManager);
-		setMenu(menuManager.createContextMenu(this));
-
 		addControlListener(new ControlAdapter() {
 			public void controlResized(ControlEvent e) {
 				org.eclipse.swt.graphics.Rectangle r = getClientArea();
 				setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(r.x, r.y + GUTTER_HEIGHT, r.width, r.height - GUTTER_HEIGHT * 2));
 			}
 		});
+	}
+
+	public void setSequenceChartContributor(SequenceChartContributor sequenceChartContributor) {
+		MenuManager menuManager = new MenuManager();
+		sequenceChartContributor.contributeToPopupMenu(menuManager);
+		setMenu(menuManager.createContextMenu(this));
 	}
 
 	/**
@@ -2123,6 +2125,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	public void setSelectionEvent(IEvent event) {
 		selectedEvents.clear();
 		selectedEvents.add(event);
+		fireSelectionChanged();
 		redraw();
 	}
 	
