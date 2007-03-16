@@ -18,8 +18,6 @@ import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlogtable.editors.EventLogTableContributor;
 
 public class EventLogTable extends VirtualTable<EventLogEntry> {
-	private MenuManager menuManager;
-
 	public EventLogTable(Composite parent, int style) {
 		super(parent, style);
 
@@ -37,9 +35,11 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 		tableColumn = createColumn();
 		tableColumn.setWidth(2000);
 		tableColumn.setText("Details");
+	}
 
-		menuManager = new MenuManager();
-		new EventLogTableContributor(this).contributeToPopupMenu(menuManager);
+	public void setEventLogTableContributor(EventLogTableContributor eventLogTableContributor) {
+		MenuManager menuManager = new MenuManager();
+		eventLogTableContributor.contributeToPopupMenu(menuManager);
 		setMenu(menuManager.createContextMenu(this));
 	}
 

@@ -47,6 +47,7 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 	public void createPartControl(Composite parent) {
 		eventLogTable = new EventLogTable(parent, SWT.NONE);
 		eventLogTable.setInput(eventLogInput);
+		eventLogTable.setEventLogTableContributor(EventLogTableContributor.getDefault());
 
 		getSite().setSelectionProvider(eventLogTable);
 		addLocationProviderPaintListener(eventLogTable.getCanvas());

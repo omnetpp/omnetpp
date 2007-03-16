@@ -66,32 +66,22 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	protected EventLogTableMenuAction displayModeAction;
 	
 	public EventLogTableContributor() {
-		this.separatorAction = new Separator();
-		this.searchTextAction = createSearchTextAction();
-		this.gotoEventAction = createGotoEventAction();
-		this.gotoSimulationTimeAction= createGotoSimulationTimeAction();
-		this.gotoEventCauseAction= createGotoEventCauseAction();
-		this.gotoMessageArrivalAction= createGotoMessageArrivalAction();
-		this.gotoMessageOriginAction= createGotoMessageOriginAction();
-		this.gotoMessageReuseAction= createGotoMessageReuseAction();
-		this.bookmarkAction= createBookmarkAction();
-		this.filterModeAction = createFilterModeAction();
-		this.displayModeAction= createDisplayModeAction();
+		createActions();
 
 		if (singleton == null)
 			singleton = this;
 	}
-	
+
 	public EventLogTableContributor(EventLogTable eventLogTable) {
-		this();
 		this.eventLogTable = eventLogTable;
+		createActions();
 		eventLogTable.addSelectionChangedListener(this);
 	}
 	
 	public static EventLogTableContributor getDefault() {
 		return singleton;
 	}
-
+	
 	public void contributeToPopupMenu(IMenuManager menuManager) {
 		menuManager.add(searchTextAction);
 		menuManager.add(separatorAction);
@@ -127,6 +117,20 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 	public void selectionChanged(SelectionChangedEvent event) {
 		update();
+	}
+
+	private void createActions() {
+		separatorAction = new Separator();
+		searchTextAction = createSearchTextAction();
+		gotoEventAction = createGotoEventAction();
+		gotoSimulationTimeAction= createGotoSimulationTimeAction();
+		gotoEventCauseAction= createGotoEventCauseAction();
+		gotoMessageArrivalAction= createGotoMessageArrivalAction();
+		gotoMessageOriginAction= createGotoMessageOriginAction();
+		gotoMessageReuseAction= createGotoMessageReuseAction();
+		bookmarkAction= createBookmarkAction();
+		filterModeAction = createFilterModeAction();
+		displayModeAction= createDisplayModeAction();
 	}
 
 	private void update() {
@@ -428,52 +432,60 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 	private EventLogTableMenuAction createDisplayModeAction() {
 		return new EventLogTableMenuAction("Display mode", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+			private AbstractMenuCreator menuCreator;
+
 			@Override
 			public void run() {
 				EventLogTableLineRenderer eventLogTableItemProvider = (EventLogTableLineRenderer)eventLogTable.getLineRenderer();
 				eventLogTableItemProvider.setDisplayMode(EventLogTableLineRenderer.DisplayMode.values()[(eventLogTableItemProvider.getDisplayMode().ordinal() + 1) % EventLogTableLineRenderer.DisplayMode.values().length]);
-				update();
 				eventLogTable.redraw();
+				update();
 			}
 
 			@Override
-			protected void updateMenu(Menu menu) {
+			protected int getMenuIndex() {
 				EventLogTableLineRenderer eventLogTableItemProvider = (EventLogTableLineRenderer)eventLogTable.getLineRenderer();
-				int index = eventLogTableItemProvider.getDisplayMode().ordinal();
-
-				for (int i = 0; i < menu.getItemCount(); i++) {
-					MenuItem menuItem = menu.getItem(i);
-					menuItem.setSelection(i == index);
-				}
+				return eventLogTableItemProvider.getDisplayMode().ordinal();
 			}
 
 			@Override
 			public IMenuCreator getMenuCreator() {
-				return new AbstractMenuCreator() {
-					@Override
-					protected void createMenu(Menu menu) {
-						addSubMenuItem(menu, "Descriptive", EventLogTableLineRenderer.DisplayMode.DESCRIPTIVE);
-						addSubMenuItem(menu, "Raw", EventLogTableLineRenderer.DisplayMode.RAW);
-					}
-
-					private void addSubMenuItem(Menu menu, String text, final EventLogTableLineRenderer.DisplayMode displayMode) {
-						MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
-						subMenuItem.setText(text);
-						subMenuItem.addSelectionListener( new SelectionAdapter() {
-							public void widgetSelected(SelectionEvent e) {
-								EventLogTableLineRenderer eventLogTableItemProvider = (EventLogTableLineRenderer)eventLogTable.getLineRenderer();
-								eventLogTableItemProvider.setDisplayMode(displayMode);
-								eventLogTable.redraw();
-							}
-						});
-					}
-				};
+				if (menuCreator == null) {
+					menuCreator = new AbstractMenuCreator() {
+						@Override
+						protected void createMenu(Menu menu) {
+							addSubMenuItem(menu, "Descriptive", EventLogTableLineRenderer.DisplayMode.DESCRIPTIVE);
+							addSubMenuItem(menu, "Raw", EventLogTableLineRenderer.DisplayMode.RAW);
+						}
+	
+						private void addSubMenuItem(Menu menu, String text, final EventLogTableLineRenderer.DisplayMode displayMode) {
+							MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
+							subMenuItem.setText(text);
+							subMenuItem.addSelectionListener( new SelectionAdapter() {
+								public void widgetSelected(SelectionEvent e) {
+									MenuItem menuItem = (MenuItem)e.widget;
+									
+									if (menuItem.getSelection()) {
+										EventLogTableLineRenderer eventLogTableItemProvider = (EventLogTableLineRenderer)eventLogTable.getLineRenderer();
+										eventLogTableItemProvider.setDisplayMode(displayMode);
+										eventLogTable.redraw();
+										update();
+									}
+								}
+							});
+						}
+					};
+				}
+				
+				return menuCreator;
 			}
 		};
 	}
 
 	private EventLogTableMenuAction createFilterModeAction() {
 		return new EventLogTableMenuAction("Filter mode", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER)) {
+			private AbstractMenuCreator menuCreator;
+
 			@Override
 			public void run() {
 				eventLogTable.setFilterMode((eventLogTable.getFilterMode() + 1) % 5);
@@ -482,53 +494,62 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			}
 
 			@Override
-			protected void updateMenu(Menu menu) {
-				int index = eventLogTable.getFilterMode();
-
-				for (int i = 0; i < menu.getItemCount(); i++) {
-					MenuItem menuItem = menu.getItem(i);
-					menuItem.setSelection(i == index);
-				}
+			protected int getMenuIndex() {
+				return eventLogTable.getFilterMode();
 			}
 			
 			@Override
 			public IMenuCreator getMenuCreator() {
-				return new AbstractMenuCreator() {
-					@Override
-					protected void createMenu(Menu menu) {
-						addSubMenuItem(menu, "All", 0);
-						addSubMenuItem(menu, "Events, message sends and log messages", 1);
-						addSubMenuItem(menu, "Events and log messages", 2);
-						addSubMenuItem(menu, "Events", 3);
-						addSubMenuItem(menu, "Custom filter...", new SelectionAdapter() {
-							public void widgetSelected(SelectionEvent e) {
-								InputDialog dialog = new InputDialog(null, "Search patter", "Please enter the search pattern such as (BS and c(MyMessage))", null, null);
-								dialog.open();
-
-								String pattern = dialog.getValue();
-								if (pattern == null || pattern.equals(""))
-									pattern = "*";
-
-								eventLogTable.getEventLogTableContentProvider().setCustomFilter(pattern);
-								eventLogTable.setFilterMode(4);
-							}
-						});
-					}
-
-					private void addSubMenuItem(final Menu menu, String text, final int filterMode) {
-						addSubMenuItem(menu, text, new SelectionAdapter() {
-							public void widgetSelected(SelectionEvent e) {
-								eventLogTable.setFilterMode(filterMode);
-							}
-						});
-					}
-
-					private void addSubMenuItem(Menu menu, String text, SelectionListener adapter) {
-						MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
-						subMenuItem.setText(text);
-						subMenuItem.addSelectionListener(adapter);
-					}
-				};
+				if (menuCreator == null) {
+					menuCreator = new AbstractMenuCreator() {
+						@Override
+						protected void createMenu(Menu menu) {
+							addSubMenuItem(menu, "All", 0);
+							addSubMenuItem(menu, "Events, message sends and log messages", 1);
+							addSubMenuItem(menu, "Events and log messages", 2);
+							addSubMenuItem(menu, "Events", 3);
+							addSubMenuItem(menu, "Custom filter...", new SelectionAdapter() {
+								public void widgetSelected(SelectionEvent e) {
+									MenuItem menuItem = (MenuItem)e.widget;
+									
+									if (menuItem.getSelection()) {
+										InputDialog dialog = new InputDialog(null, "Search pattern", "Please enter the search pattern such as (BS and c(MyMessage))", null, null);
+										dialog.open();
+		
+										String pattern = dialog.getValue();
+										if (pattern == null || pattern.equals(""))
+											pattern = "*";
+		
+										eventLogTable.getEventLogTableContentProvider().setCustomFilter(pattern);
+										eventLogTable.setFilterMode(4);
+										update();
+									}
+								}
+							});
+						}
+	
+						private void addSubMenuItem(final Menu menu, String text, final int filterMode) {
+							addSubMenuItem(menu, text, new SelectionAdapter() {
+								public void widgetSelected(SelectionEvent e) {
+									MenuItem menuItem = (MenuItem)e.widget;
+									
+									if (menuItem.getSelection()) {
+										eventLogTable.setFilterMode(filterMode);
+										update();
+									}
+								}
+							});
+						}
+	
+						private void addSubMenuItem(Menu menu, String text, SelectionListener adapter) {
+							MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
+							subMenuItem.setText(text);
+							subMenuItem.addSelectionListener(adapter);
+						}
+					};
+				}
+				
+				return menuCreator;
 			}
 		};
 	}
@@ -572,8 +593,18 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 			menus.remove(menu);
 		}
+		
+		protected abstract int getMenuIndex();
 
-		protected abstract void updateMenu(Menu menu);
+		protected void updateMenu(Menu menu) {
+			for (int i = 0; i < menu.getItemCount(); i++) {
+				boolean selection = i == getMenuIndex();
+				MenuItem menuItem = menu.getItem(i);
+
+				if (menuItem.getSelection() != selection)
+					menuItem.setSelection(selection);
+			}
+		}
 
 		protected abstract class AbstractMenuCreator implements IMenuCreator {
 			private Menu controlMenu;

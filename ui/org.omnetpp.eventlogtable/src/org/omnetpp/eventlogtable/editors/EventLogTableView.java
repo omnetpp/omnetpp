@@ -22,7 +22,11 @@ public class EventLogTableView extends ViewPart {
 
 		// we want to provide selection for the sequence chart tool (an IEditPart)
 		viewSite.setSelectionProvider(eventLogTable);
-		new EventLogTableContributor(eventLogTable).contributeToToolBar(viewSite.getActionBars().getToolBarManager());
+		
+		// contribue to toolbar
+		EventLogTableContributor eventLogTableContributor = new EventLogTableContributor(eventLogTable);
+		eventLogTable.setEventLogTableContributor(eventLogTableContributor);
+		eventLogTableContributor.contributeToToolBar(viewSite.getActionBars().getToolBarManager());
 
 		// follow selection
 		viewSite.getPage().addSelectionListener(new ISelectionListener() {
