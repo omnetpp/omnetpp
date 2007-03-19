@@ -6,7 +6,7 @@ import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.IDocumentPartitioner;
 import org.eclipse.jface.text.rules.FastPartitioner;
 import org.omnetpp.inifile.editor.text.assist.NedContentAssistPartitionScanner;
-import org.omnetpp.inifile.editor.text.highlight.NedSyntaxHighlightPartitionScanner;
+import org.omnetpp.inifile.editor.text.highlight.InifileSyntaxHighlightPartitionScanner;
 
 /**
  * Configures the inifile text editor by adding various features into it 
@@ -35,8 +35,8 @@ public class InifileDocumentSetupParticipant implements IDocumentSetupParticipan
 
             // syntax highlighter partitioner setup
             IDocumentPartitioner highlightPartitioner = 
-                new FastPartitioner(new NedSyntaxHighlightPartitionScanner(), NedSyntaxHighlightPartitionScanner.SUPPORTED_PARTITION_TYPES);
-            extension3.setDocumentPartitioner(NedSyntaxHighlightPartitionScanner.PARTITIONING_ID, highlightPartitioner);
+                new FastPartitioner(new InifileSyntaxHighlightPartitionScanner(), InifileSyntaxHighlightPartitionScanner.SUPPORTED_PARTITION_TYPES);
+            extension3.setDocumentPartitioner(InifileSyntaxHighlightPartitionScanner.PARTITIONING_ID, highlightPartitioner);
             highlightPartitioner.connect(document);
             
             // outline partitioner setup

@@ -23,7 +23,7 @@ import org.omnetpp.inifile.editor.text.assist.NedContentAssistPartitionScanner;
 import org.omnetpp.inifile.editor.text.highlight.NedCodeColorizerScanner;
 import org.omnetpp.inifile.editor.text.highlight.NedDocColorizerScanner;
 import org.omnetpp.inifile.editor.text.highlight.NedPrivateDocColorizerScanner;
-import org.omnetpp.inifile.editor.text.highlight.NedSyntaxHighlightPartitionScanner;
+import org.omnetpp.inifile.editor.text.highlight.InifileSyntaxHighlightPartitionScanner;
 import org.omnetpp.inifile.editor.text.util.NedAnnotationHover;
 import org.omnetpp.inifile.editor.text.util.NedTextHover;
 
@@ -79,7 +79,7 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
         
 		PresentationReconciler reconciler= new PresentationReconciler();
         // syntax highlighting is using a separate partitioner
-		reconciler.setDocumentPartitioning(NedSyntaxHighlightPartitionScanner.PARTITIONING_ID);
+		reconciler.setDocumentPartitioning(InifileSyntaxHighlightPartitionScanner.PARTITIONING_ID);
 
         // colorizers for ned code
 		DefaultDamagerRepairer dr = new DefaultDamagerRepairer(new NedCodeColorizerScanner());
@@ -88,8 +88,8 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 
         // colorizer for normal ned doc 
 		dr = new DefaultDamagerRepairer(new NedDocColorizerScanner());
-		reconciler.setDamager(dr, NedSyntaxHighlightPartitionScanner.NED_DOC);
-		reconciler.setRepairer(dr, NedSyntaxHighlightPartitionScanner.NED_DOC);
+		reconciler.setDamager(dr, InifileSyntaxHighlightPartitionScanner.INI_COMMENT);
+		reconciler.setRepairer(dr, InifileSyntaxHighlightPartitionScanner.INI_COMMENT);
         
 		return reconciler;
 	}
