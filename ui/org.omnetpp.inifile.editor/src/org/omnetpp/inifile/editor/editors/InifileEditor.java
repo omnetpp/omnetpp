@@ -23,6 +23,7 @@ import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.omnetpp.inifile.editor.model.Inifile;
+import org.omnetpp.inifile.editor.text.InifileTextEditor;
 
 /**
  * Editor for omnetpp.ini files.
@@ -45,7 +46,7 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	 */
 	void createTextEditorPage() {
 		try {
-			editor = new TextEditor();
+			editor = new InifileTextEditor();
 			int index = addPage(editor, getEditorInput());
 			setPageText(index, "Text");
 		} catch (PartInitException e) {
