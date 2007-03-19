@@ -81,20 +81,6 @@ public class NedHelper {
         }
     }
 
-    /**
-     * Detects kewords that look like an XML tag.
-     */
-    static class NedDocTagDetector implements IWordDetector {
-
-        public boolean isWordStart(char c) {
-            return (c == '<');
-        }
-
-        public boolean isWordPart(char c) {
-            return Character.isLetter(c) || c == '/' || c == '>';
-        }
-    }
-
     // word lists for syntax highlighting
     // TODO these are both for NED and MSG files. Once a separate MSG editor is done keywords should be split
     public final static String[] highlightPrivateDocTodo = { "CHECKME", "FIXME", "TBD", "TODO" };
@@ -124,10 +110,7 @@ public class NedHelper {
     public final static String[] proposedNedParamPropertyNames = {"prompt(...)", "choice(...)", "classname(...)"}; //XXX check this list before release  
     public final static String[] proposedNedGatePropertyNames = {"labels(...)", "inlabels(...)", "outlabels(...)"}; //XXX check this list before release
 
-    // MSG specific completions - not used currently
-    //  public final static String[] proposedMsgTypes = { "bool", "char", "double", "int", "long", "numeric", "short", "string", "unsigned", "xml" };
-    //  public final static String[] proposedMsgKeywords = { "abstract", "ancestor", "channel", "class", "connections", "const", "cplusplus", "datarate", "delay", "display", "do", "endchannel", "endfor", "endmodule", "endnetwork", "endsimple", "enum", "error", "extends", "fields", "for", "gates", "gatesizes", "if", "import", "in:", "index", "like", "message", "module", "network", "nocheck", "noncobject", "on", "out:", "parameters", "properties", "ref", "simple", "sizeof", "struct", "submodules", "to" };
-
+    
     public final static Template[] proposedNedOperatorsTempl = new Template[] {
     	makeShortTemplate("const(${x})", "operator"),
     	makeShortTemplate("default(${x})", "operator"),
@@ -186,129 +169,11 @@ public class NedHelper {
     	return new Template(name, description, NedContextType.DEFAULT_CONTEXT_TYPE, pattern, false);
     }
 
-    public final static Template[] proposedNedGlobalTempl = new Template[] {
-    	makeTemplate("import", "import NED file", 
-    			"import \"${FileName}\";\n"),
-        makeTemplate("simple1", "create simple module",
-        		"//\n// TODO description\n//\n"+
-        		"simple ${SomeModule} {\n"+
-        		"    parameters:\n"+
-        		"    gates:\n"+
-        		"}\n${cursor}\n"),
-        makeTemplate("simple2", "specialize simple module",
-        		"//\n// TODO description\n//\n"+
-        		"simple ${SomeModule} extends ${AnotherModule} {\n"+
-        		"    parameters:\n"+
-        		"}\n${cursor}\n"),
-        makeTemplate("simple3", "simple module complying an interface",
-        		"//\n// TODO description\n//\n"+
-        		"simple ${SomeModule} like ${SomeInterface} {\n"+
-        		"    parameters:\n"+
-        		"    gates:\n"+
-        		"}\n${cursor}\n"),
-        makeTemplate("module1", "create compound module",
-        		"//\n// TODO description\n//\n"+
-        		"module ${SomeModule} {\n"+
-        		"    parameters:\n"+
-        		"    gates:\n"+
-        		"    submodules:\n"+
-        		"    connections:\n"+
-        		"}\n${cursor}\n"),
-        makeTemplate("module2", "specialize compound module",
-        		"//\n// TODO description\n//\n"+
-        		"module ${SomeModule} extends ${AnotherModule} {\n"+
-        		"    parameters:\n"+
-        		"}\n${cursor}\n"),
-        makeTemplate("module3", "compound module complying an interface",
-        		"//\n// TODO description\n//\n"+
-        		"module ${SomeModule} like ${SomeInterface} {\n"+
-        		"    parameters:\n"+
-        		"    gates:\n"+
-        		"    submodules:\n"+
-        		"    connections:\n"+
-        		"}\n${cursor}\n"),
-		makeTemplate("interface", "create module interface",
-				"//\n// TODO description\n//\n"+
-				"interface ${SomeInterface} {\n"+
-				"    parameters:\n"+
-				"    gates:\n"+
-				"}\n${cursor}\n"),
-        makeTemplate("network1", "create network",
-        		"//\n// TODO description\n//\n"+
-        		"network ${SomeNetwork} {\n"+
-        		"    parameters:\n"+
-        		"    submodules:\n"+
-        		"    connections:\n"+
-        		"}\n${cursor}\n"),
-        makeTemplate("network2", "create network instantiating a module",
-        		"//\n// TODO description\n//\n"+
-        		"network ${SomeNetwork} extends ${SomeModule} {\n"+
-        		"    parameters:\n"+
-        		"}\n${cursor}\n"),
-        makeTemplate("channel1", "create channel",
-        		"//\n// TODO description\n//\n"+
-        		"channel ${SomeChannel} {\n"+
-        		"    parameters:\n"+
-        		"}\n${cursor}\n"),
-        makeTemplate("channel2", "channel with underlying C++ class", //XXX revise name
-        		"//\n// TODO description\n//\n"+
-        		"channel withcppclass ${SomeChannel} {\n"+
-        		"    parameters:\n"+
-        		"}\n${cursor}\n"),
-        makeTemplate("channelinterface", "create channel interface",
-        		"//\n// TODO description\n//\n"+
-        		"channelinterface ${SomeChannelInterface} {\n"+
-        		"    parameters:\n"+
-        		"    gates:\n"+
-        		"}\n${cursor}\n"),
-    };
-    public final static Template[] proposedNedSubmoduleTempl = new Template[] {
-        makeTemplate("submodule1", "submodule",
-        		"        ${someSubmodule} : ${SomeModule};\n"),
-        makeTemplate("submodule2", "submodule vector",
-		"        ${someSubmodule}[${size}] : ${SomeModule};\n"),
-		makeTemplate("submodule3", "submodule with variable type",
-		"        ${someSubmodule} : <${stringParameter}> like ${SomeInterface};\n"),
-        makeTemplate("submodule4", "submodule with parameter settings",
-        		"        ${someSubmodule} : ${SomeModule} {\n"+
-        		"            //...\n"+
-        		"        }\n${cursor}\n"),
-        makeTemplate("submodule5", "submodule with gate size settings",
-        		"        ${someSubmodule} : ${SomeModule} {\n"+
-        		"            gates:\n"+
-        		"        }\n${cursor}\n"),
-    };
-    public final static Template[] proposedNedConnectionTempl = new Template[] {
-        makeTemplate("connection1", "two one-way connections",
-        		"        ${mod1}.${outgate1} --> ${mod2}.${ingate2};\n"+
-        		"        ${mod1}.${ingate1} <-- ${mod2}.${outgate2};\n"),
-        makeTemplate("connection2", "a single two-way connection (inout gates)",
-				"        ${mod1}.${inoutgate1} <--> ${mod2}.${inoutgate2};\n"),
-        makeTemplate("connection3", "connecting an inout gate with an input and an output",
-        		"        ${mod1}.${outgate} --> ${mod2}.${inoutgate}$$i;\n"+
-        		"        ${mod1}.${ingate} <-- ${mod2}.${inoutgate}$$o;\n"),
-        makeTemplate("connection4", "connections to parent (2x one-way)",
-        		"        ${mod}.${outgate} --> ${parentout};\n"+
-        		"        ${mod}.${ingate} <-- ${parentin};\n"),
-        makeTemplate("connection5", "connection with predefined channel",
-        		"        ${mod1}.${inout1} <--> ${SomeChannel} <--> ${mod2}.${inout2};\n"),
-        makeTemplate("connection6", "connection with channel parameters",
-        		"        ${mod1}.${inout1} <--> {delay=${delay}; datarate=${txrate}; error=${ber}} <--> ${mod2}.${inout2};\n"),
-        makeTemplate("connection7", "connection with predefined channel parameterized",
-        		"        ${mod1}.${inout1} <--> ${SomeChannel} {${customParam}=${value};} <--> ${mod2}.${inout2};\n"),
-        //XXX with [], with ++, with "where", connection templates...
-    };
-
-    private static Template makeTemplate(String name, String description, String pattern) {
-    	return new Template(name, description, NedContextType.DEFAULT_CONTEXT_TYPE, pattern, false);
-    }
-    		
     // whitespace and word detectors for tokenization
     public final static NedWhitespaceDetector nedWhitespaceDetector = new NedWhitespaceDetector();
     public final static NedWordDetector nedWordDetector = new NedWordDetector();
     public final static NedSpecialWordDetector nedSpecialWordDetector = new NedSpecialWordDetector();
     public final static NedAtWordDetector nedAtWordDetector = new NedAtWordDetector();
-    public final static NedDocTagDetector nedDocTagDetector = new NedDocTagDetector();
 
     // tokens for syntax highlighting
     // TODO these styles should be configurable
