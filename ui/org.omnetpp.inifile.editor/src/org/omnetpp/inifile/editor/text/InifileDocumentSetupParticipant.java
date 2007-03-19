@@ -9,16 +9,15 @@ import org.omnetpp.inifile.editor.text.assist.NedContentAssistPartitionScanner;
 import org.omnetpp.inifile.editor.text.highlight.NedSyntaxHighlightPartitionScanner;
 
 /**
- * Configures the NED editor by adding all sorts of features into it 
+ * Configures the inifile text editor by adding various features into it 
  */
-//XXX TODO rename, revise, possibly remove...
 //TODO "F3 Goto declaration" or ctrl-click "Follow Hyperlink" feature
 //FIXME: trying to use ctrl-H "Search" with NED files open result in "SWTException: Invalid thread access"!
-public class NedDocumentSetupParticipant implements IDocumentSetupParticipant {
+public class InifileDocumentSetupParticipant implements IDocumentSetupParticipant {
 	
 	/**
 	 */
-	public NedDocumentSetupParticipant() {
+	public InifileDocumentSetupParticipant() {
 	}
 
 	/*

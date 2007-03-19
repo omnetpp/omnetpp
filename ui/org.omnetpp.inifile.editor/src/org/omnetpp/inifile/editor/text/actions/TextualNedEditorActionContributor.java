@@ -11,7 +11,7 @@ import org.eclipse.ui.editors.text.TextEditorActionContributor;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.RetargetTextEditorAction;
-import org.omnetpp.inifile.editor.text.NedEditorMessages;
+import org.omnetpp.inifile.editor.text.InifileEditorMessages;
 
 /**
  * Contributes interesting Java actions to the desktop's Edit menu and the toolbar.
@@ -27,9 +27,9 @@ public class TextualNedEditorActionContributor extends TextEditorActionContribut
 	 */
 	public TextualNedEditorActionContributor() {
 		super();
-		fContentAssistProposal= new RetargetTextEditorAction(NedEditorMessages.getResourceBundle(), "ContentAssistProposal."); //$NON-NLS-1$
+		fContentAssistProposal= new RetargetTextEditorAction(InifileEditorMessages.getResourceBundle(), "ContentAssistProposal."); //$NON-NLS-1$
 		fContentAssistProposal.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS); 
-		fContentAssistTip= new RetargetTextEditorAction(NedEditorMessages.getResourceBundle(), "ContentAssistTip."); //$NON-NLS-1$
+		fContentAssistTip= new RetargetTextEditorAction(InifileEditorMessages.getResourceBundle(), "ContentAssistTip."); //$NON-NLS-1$
 		fContentAssistTip.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_CONTEXT_INFORMATION);
 	}
 	

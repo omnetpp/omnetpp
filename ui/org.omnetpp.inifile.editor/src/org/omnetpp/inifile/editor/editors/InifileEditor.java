@@ -116,16 +116,16 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		super.init(site, editorInput);
 		setPartName(editorInput.getName());
 		
-		//XXX experimental
-		Inifile ini = new Inifile();
-		IFile file = ((IFileEditorInput)(editorInput)).getFile();
-		try {
-			ini.parse(file);
-		} catch (CoreException e) {
-			e.printStackTrace(); //XXX
-		} catch (IOException e) {
-			e.printStackTrace(); //XXX
-		}
+//		//XXX experimental
+//		Inifile ini = new Inifile();
+//		IFile file = ((IFileEditorInput)(editorInput)).getFile();
+//		try {
+//			ini.parse(file);
+//		} catch (CoreException e) {
+//			e.printStackTrace(); //XXX
+//		} catch (IOException e) {
+//			e.printStackTrace(); //XXX
+//		}
 	}
 
 	/* (non-Javadoc)

@@ -96,15 +96,15 @@ public class InifileTextEditor extends TextEditor {
 	protected void createActions() {
 		super.createActions();
 		
-		IAction a= new TextOperationAction(NedEditorMessages.getResourceBundle(), "ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS); //$NON-NLS-1$
+		IAction a= new TextOperationAction(InifileEditorMessages.getResourceBundle(), "ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS); //$NON-NLS-1$
 		a.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
 		setAction("ContentAssistProposal", a); //$NON-NLS-1$
 		
-		a= new TextOperationAction(NedEditorMessages.getResourceBundle(), "ContentAssistTip.", this, ISourceViewer.CONTENTASSIST_CONTEXT_INFORMATION);  //$NON-NLS-1$
+		a= new TextOperationAction(InifileEditorMessages.getResourceBundle(), "ContentAssistTip.", this, ISourceViewer.CONTENTASSIST_CONTEXT_INFORMATION);  //$NON-NLS-1$
 		a.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_CONTEXT_INFORMATION);
 		setAction("ContentAssistTip", a); //$NON-NLS-1$
 		
-		a= new DefineFoldingRegionAction(NedEditorMessages.getResourceBundle(), "DefineFoldingRegion.", this); //$NON-NLS-1$
+		a= new DefineFoldingRegionAction(InifileEditorMessages.getResourceBundle(), "DefineFoldingRegion.", this); //$NON-NLS-1$
 		setAction("DefineFoldingRegion", a); //$NON-NLS-1$
 	}
 	

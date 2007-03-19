@@ -1,8 +1,6 @@
 package org.omnetpp.inifile.editor.text.util;
 
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -12,7 +10,6 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IFileEditorInput;
 import org.omnetpp.inifile.editor.text.NedHelper;
 
 /**
@@ -70,7 +67,7 @@ public class NedTextHover implements ITextHover {
 //			} catch (BadLocationException x) {
 //			}
 //		}
-//		return NedEditorMessages.getString("NedTextHover.emptySelection"); //$NON-NLS-1$
+//		return InifileEditorMessages.getString("NedTextHover.emptySelection"); //$NON-NLS-1$
 	}
 
 //	private String getNEDElementsUnderCursor(ITextViewer textViewer, IRegion hoverRegion) {

@@ -3,7 +3,7 @@ package org.omnetpp.inifile.editor.text.actions;
 
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.TextEditorAction;
-import org.omnetpp.inifile.editor.text.NedEditorMessages;
+import org.omnetpp.inifile.editor.text.InifileEditorMessages;
 
 /**
  * A toolbar action which toggles the presentation model of the
@@ -17,7 +17,7 @@ public class NedPresentationAction extends TextEditorAction {
 	 * Constructs and updates the action.
 	 */
 	public NedPresentationAction() {
-		super(NedEditorMessages.getResourceBundle(), "TogglePresentation.", null); //$NON-NLS-1$
+		super(InifileEditorMessages.getResourceBundle(), "TogglePresentation.", null); //$NON-NLS-1$
 		update();
 	}
 	

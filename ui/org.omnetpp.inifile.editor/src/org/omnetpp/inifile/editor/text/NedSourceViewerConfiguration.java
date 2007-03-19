@@ -91,11 +91,6 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 		reconciler.setDamager(dr, NedSyntaxHighlightPartitionScanner.NED_DOC);
 		reconciler.setRepairer(dr, NedSyntaxHighlightPartitionScanner.NED_DOC);
         
-        // colorizer for private ned doc
-        dr = new DefaultDamagerRepairer(new NedPrivateDocColorizerScanner());
-		reconciler.setDamager(dr, NedSyntaxHighlightPartitionScanner.NED_PRIVATE_DOC);
-		reconciler.setRepairer(dr, NedSyntaxHighlightPartitionScanner.NED_PRIVATE_DOC);
-
 		return reconciler;
 	}
 	
