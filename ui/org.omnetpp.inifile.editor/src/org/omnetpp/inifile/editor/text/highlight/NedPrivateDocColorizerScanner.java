@@ -29,7 +29,7 @@ public class NedPrivateDocColorizerScanner extends RuleBasedScanner {
 		List<IRule> list= new ArrayList<IRule>();
         
         // Add word rule for private comment hints
-        WordRule hintRule= new WordRule(NedHelper.nedWordDetector, Token.UNDEFINED);
+        WordRule hintRule= new WordRule(NedHelper.inifileWordDetector, Token.UNDEFINED);
         for (int i= 0; i < NedHelper.highlightPrivateDocTodo.length; i++)
             hintRule.addWord(NedHelper.highlightPrivateDocTodo[i], NedHelper.docPrivateTodoToken);
         list.add(hintRule);

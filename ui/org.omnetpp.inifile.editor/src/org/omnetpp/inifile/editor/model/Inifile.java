@@ -7,6 +7,8 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -74,7 +76,56 @@ public class Inifile {
 
 		String line;
 		while ((line=reader.readLine()) != null) {
-			System.out.println(reader.getLineNumber()+": "+line);
+			System.out.print(reader.getLineNumber()+": "+line+" >>>> ");
+
+			// join continued lines
+			while (line.endsWith("\\")) {
+				String cont = reader.readLine();
+				if (cont == null)
+					break; //XXX error? (missing continuation line after "\"-terminated line)
+				line = line.substring(0, line.length()-1) + cont;
+			}
+
+			// process the line
+			line = line.trim();
+			char lineStart = line.length()==0 ? 0 : line.charAt(0);
+			if (line.length()==0) {
+				// blank line
+				System.out.println("blank");
+			}
+			else if (lineStart=='#' || lineStart==';') {
+				// comment line
+				System.out.println("comment");
+			}
+			else if (line.startsWith("include ") || line.startsWith("include\t")) {
+				// include directive
+			}
+			else if (lineStart=='[') {
+				// section heading
+				Matcher m = Pattern.compile("\\[([^#;\"]+)\\]\\s*([#;].*)?").matcher(line);
+				if (!m.matches())
+					throw new RuntimeException("syntax error");
+				String sectionName = m.group(1).trim();
+				String comment = m.groupCount()>1 ? m.group(2) : null; 
+				System.out.println("section "+sectionName+"  comment="+comment);
+			}
+			else {
+				// key = value
+				int equalSignPos = line.indexOf('=');
+				if (equalSignPos == -1)
+					throw new RuntimeException("line must be in the form key=value");
+				String key = line.substring(0, equalSignPos).trim();
+				if (key.length()==0 || key.indexOf('#')!=-1 || key.indexOf(';')!=-1)
+					throw new RuntimeException("line must be in the form key=value");
+				String rawValue = line.substring(equalSignPos+1).trim();
+				if (rawValue.startsWith("\"")) {
+					//XXX find matching quote and chop off the rest 
+				}
+				else {
+					//XXX chop off anything after "#" or ";"
+				}
+				System.out.println("key-value: ``"+key+"'' = ``"+rawValue+"''");
+			}
 		}
 	}
 }

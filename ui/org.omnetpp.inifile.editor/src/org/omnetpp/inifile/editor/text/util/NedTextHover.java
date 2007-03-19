@@ -26,7 +26,7 @@ public class NedTextHover implements ITextHover {
 	}
 
 	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
-		String word = getWordUnderCursor(textViewer, hoverRegion, NedHelper.nedWordDetector);
+		String word = getWordUnderCursor(textViewer, hoverRegion, NedHelper.inifileWordDetector);
 
 //		// if we find a NED component with that name, display its source code
 //		NEDResources res = NEDResourcesPlugin.getNEDResources();    	

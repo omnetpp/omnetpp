@@ -32,7 +32,7 @@ public class NedHelper {
     /**
      * A generic white space detector
      */
-    public static class NedWhitespaceDetector implements IWhitespaceDetector {
+    public static class WhitespaceDetector implements IWhitespaceDetector {
 
         public boolean isWhitespace(char character) {
             return Character.isWhitespace(character);
@@ -40,61 +40,29 @@ public class NedHelper {
     }
 
     /**
-     * Detector for normal NED keywords (may start with letter or _ and contain letter number or _)
+     * Word detector for ini files. Key names may contain hyphens
+     * ("sim-time-limit"), so we recognize it as a word part as well.
      */
-    public static class NedWordDetector implements IWordDetector {
+    public static class InifileWordDetector implements IWordDetector {
 
         public boolean isWordStart(char character) {
             return Character.isLetter(character) || character == '_';
         }
 
         public boolean isWordPart(char character) {
-            return Character.isLetterOrDigit(character) || character == '_';
-        }
-    }
-
-    /**
-     * Detector for extreme NED keywords (in: out: --> <-- .. ...) where the keyword may contain special chars
-     */
-    public static class NedSpecialWordDetector implements IWordDetector {
-
-        public boolean isWordStart(char c) {
-            return Character.isLetter(c) || c == '-' || c == '<' || c == '>' || c == '.';
-        }
-
-        public boolean isWordPart(char c) {
-            return isWordStart(c) || c == ':';
-        }
-    }
-
-    /**
-     * Detects kewords that athere to the @whatewer syntax, staring with @ and continuing with letters only.
-     */
-    static class NedAtWordDetector implements IWordDetector {
-
-        public boolean isWordStart(char c) {
-            return (c == '@');
-        }
-
-        public boolean isWordPart(char c) {
-            return Character.isLetter(c);
+            return Character.isLetterOrDigit(character) || character == '_' || character == '-';
         }
     }
 
     // word lists for syntax highlighting
     // TODO these are both for NED and MSG files. Once a separate MSG editor is done keywords should be split
     public final static String[] highlightPrivateDocTodo = { "CHECKME", "FIXME", "TBD", "TODO" };
-    public final static String[] highlightDocTags = { "a", "b", "body", "br", "center", "caption", "code", "dd", "dfn", "dl", "dt", "em", "form", "font", "hr", "h1", "h2", "h3", "i", "input", "img", "li", "meta", "multicol", "ol", "p", "small", "span", "strong", "sub", "sup", "table", "td", "th", "tr", "tt", "kbd", "ul", "var" };
     public final static String[] highlightDocKeywords = { "author", "bug", "date", "see", "since", "todo", "version", "warning" };
-    public final static String[] highlightNedTypes = { "bool", "double", "volatile", "inout", "input", "int", "output", "string", "xml" };
-    public final static String[] highlightNedSpecialKeywords = { "-->", "<--", "<-->", ".." };
-    public final static String[] highlightNedKeywords = { "allowunconnected", "channel", "channelinterface", "connections", "extends", "for", "gates", "if", "import", "index", "interface", "like", "module", "network", "package", "parameters", "property", "simple", "submodules", "this", "typename", "types", "withcppclass" };
     public final static String[] highlightNedFunctions = { "acos", "asin", "atan", "atan2", "bernoulli", "beta", "binomial", "cauchy", "ceil", "chi_square", "const", "cos", "default", "erlang_k", "exp", "exponential", "fabs", "floor", "fmod", "gamma_d", "genk_exponential", "genk_intuniform", "genk_normal", "genk_truncnormal", "genk_uniform", "geometric", "hypergeometric", "hypot", "intuniform", "log", "log10", "lognormal", "max", "min", "negbinomial", "normal", "pareto_shifted", "poisson", "pow", "sin", "sizeof", "sqrt", "student_t", "tan", "triang", "truncnormal", "uniform", "weibull", "xmldoc" };
     public final static String[] highlightConstants = { "false", "true" };
 
     // word lists for completion
     public final static String[] proposedPrivateDocTodo = highlightPrivateDocTodo;
-    public final static String[] proposedDocTags = highlightDocTags;
     public final static String[] proposedDocKeywords = highlightDocKeywords;
     public final static String[] proposedNedBaseParamTypes = { "bool", "double", "int", "string", "xml" };
     public final static String[] proposedNedParamTypes = { "bool", "double", "int", "string", "xml", "volatile bool", "volatile double", "volatile int", "volatile string", "volatile xml" };
@@ -170,10 +138,8 @@ public class NedHelper {
     }
 
     // whitespace and word detectors for tokenization
-    public final static NedWhitespaceDetector nedWhitespaceDetector = new NedWhitespaceDetector();
-    public final static NedWordDetector nedWordDetector = new NedWordDetector();
-    public final static NedSpecialWordDetector nedSpecialWordDetector = new NedSpecialWordDetector();
-    public final static NedAtWordDetector nedAtWordDetector = new NedAtWordDetector();
+    public final static WhitespaceDetector whitespaceDetector = new WhitespaceDetector();
+    public final static InifileWordDetector inifileWordDetector = new InifileWordDetector();
 
     // tokens for syntax highlighting
     // TODO these styles should be configurable

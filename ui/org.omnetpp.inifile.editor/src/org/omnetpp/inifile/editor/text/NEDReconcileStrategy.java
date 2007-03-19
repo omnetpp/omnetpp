@@ -1,13 +1,17 @@
 package org.omnetpp.inifile.editor.text;
 
+import java.io.IOException;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.reconciler.DirtyRegion;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
+import org.omnetpp.inifile.editor.model.Inifile;
 
 /**
  * This class has one instance per NED editor, and performs 
@@ -40,6 +44,14 @@ public class NEDReconcileStrategy implements IReconcilingStrategy {
 
 		// perform parsing (of full text, we ignore the changed region)
 //XXX		NEDResourcesPlugin.getNEDResources().setNEDFileText(file, nedtext);
+		
+		//XXX experimental
+		Inifile ini = new Inifile();
+		//IFile file = ((IFileEditorInput)(editorInput)).getFile();
+		try {
+			ini.parse(nedtext);
+		} catch (Exception e) {
+			System.err.println(e.getMessage()); //XXX
+		}
 	}
-
 }

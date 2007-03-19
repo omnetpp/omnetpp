@@ -54,7 +54,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 		 * @see IContextInformationValidator#install(IContextInformation, ITextViewer, int)
 		 */
 		public void install(IContextInformation info, ITextViewer viewer, int offset) {
-			fInstallOffset= offset;
+			fInstallOffset = offset;
 		}
 
 		/*
@@ -288,6 +288,8 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 //		//if (result.isEmpty())
 //		//	addProposals(viewer, documentOffset, result, NedHelper.proposedNedOtherKeywords, null);
 
+		addProposals(viewer, documentOffset, result, NedHelper.proposedNedOtherKeywords, null); //XXX
+		
 	    // get all the template proposals from the parent
 		//XXX update templates (templates/ned.xml) to current NED syntax!!!
 	    List<ICompletionProposal> tmp = Arrays.asList(super.computeCompletionProposals(viewer, documentOffset));
@@ -325,11 +327,11 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 //	}
 
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, String[] proposals, String description) {
-		result.addAll(createProposals(viewer, documentOffset, NedHelper.nedWordDetector, "", proposals, "", description));
+		result.addAll(createProposals(viewer, documentOffset, NedHelper.inifileWordDetector, "", proposals, "", description));
 	}
 
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Set<String> proposals, String description) {
-		result.addAll(createProposals(viewer, documentOffset, NedHelper.nedWordDetector, "", proposals.toArray(new String[0]), "", description));
+		result.addAll(createProposals(viewer, documentOffset, NedHelper.inifileWordDetector, "", proposals.toArray(new String[0]), "", description));
 	}
 
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Template[] templates) {
