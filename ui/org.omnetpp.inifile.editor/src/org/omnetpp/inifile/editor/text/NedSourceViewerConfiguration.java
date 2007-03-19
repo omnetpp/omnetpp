@@ -2,7 +2,7 @@ package org.omnetpp.inifile.editor.text;
 
 
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jface.text.DefaultIndentLineAutoEditStrategy;
+import org.eclipse.jface.text.DefaultTextDoubleClickStrategy;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextDoubleClickStrategy;
@@ -25,8 +25,6 @@ import org.omnetpp.inifile.editor.text.highlight.NedDocColorizerScanner;
 import org.omnetpp.inifile.editor.text.highlight.NedPrivateDocColorizerScanner;
 import org.omnetpp.inifile.editor.text.highlight.NedSyntaxHighlightPartitionScanner;
 import org.omnetpp.inifile.editor.text.util.NedAnnotationHover;
-import org.omnetpp.inifile.editor.text.util.NedAutoIndentStrategy;
-import org.omnetpp.inifile.editor.text.util.NedDoubleClickSelector;
 import org.omnetpp.inifile.editor.text.util.NedTextHover;
 
 /**
@@ -46,8 +44,7 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 	}
 		
 	public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
-		IAutoEditStrategy strategy= (IDocument.DEFAULT_CONTENT_TYPE.equals(contentType) ? new NedAutoIndentStrategy() : new DefaultIndentLineAutoEditStrategy());
-		return new IAutoEditStrategy[] { strategy };
+		return null;
 	}
 	
     public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
@@ -70,7 +67,7 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 	}
 	
 	public ITextDoubleClickStrategy getDoubleClickStrategy(ISourceViewer sourceViewer, String contentType) {
-		return new NedDoubleClickSelector();
+		return new DefaultTextDoubleClickStrategy();
 	}
 	
 	public String[] getIndentPrefixes(ISourceViewer sourceViewer, String contentType) {
