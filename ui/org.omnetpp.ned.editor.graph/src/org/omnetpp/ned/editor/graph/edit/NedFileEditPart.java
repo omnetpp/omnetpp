@@ -37,9 +37,10 @@ public class NedFileEditPart extends BaseEditPart  {
         installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, null);
         // this is a root edit part, so it cannot be deleted
         installEditPolicy(EditPolicy.COMPONENT_ROLE, null);
-//        installEditPolicy(EditPolicy.COMPONENT_ROLE, new RootComponentEditPolicy());
         // install a layout edit policy, this one provides also the creation commands
         installEditPolicy(EditPolicy.LAYOUT_ROLE, new NedFileLayoutEditPolicy());
+        // no direct editing is possible on the toplevel model element
+        installEditPolicy(EditPolicy.DIRECT_EDIT_ROLE, null);
     }
 
     /**

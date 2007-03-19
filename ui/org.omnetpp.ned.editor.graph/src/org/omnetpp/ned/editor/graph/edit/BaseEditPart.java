@@ -2,19 +2,25 @@ package org.omnetpp.ned.editor.graph.edit;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.draw2d.Label;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
+import org.eclipse.gef.tools.DirectEditManager;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.views.properties.IPropertySource;
+import org.omnetpp.figures.IDirectEditSupport;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
+import org.omnetpp.ned.editor.graph.edit.policies.NedDirectEditPolicy;
 import org.omnetpp.ned.editor.graph.misc.ISelectionSupport;
+import org.omnetpp.ned.editor.graph.misc.RenameDirectEditManager;
 import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
@@ -32,6 +38,7 @@ abstract public class BaseEditPart
     protected long lastEventSerial;
     private boolean editable = true;
     private IPropertySource propertySource;
+    protected DirectEditManager manager;
 
     @Override
     public void activate() {
@@ -58,6 +65,7 @@ abstract public class BaseEditPart
     @Override
     protected void createEditPolicies() {
         installEditPolicy(EditPolicy.COMPONENT_ROLE, new NedComponentEditPolicy());
+        installEditPolicy(EditPolicy.DIRECT_EDIT_ROLE, new NedDirectEditPolicy());
     }
 
     /**
@@ -134,10 +142,25 @@ abstract public class BaseEditPart
     @Override
     public void performRequest(Request req) {
         super.performRequest(req);
+        if (RequestConstants.REQ_DIRECT_EDIT.equals(req.getType()))
+            performDirectEdit();
         // let's open or activate a new editor if somone has double clicked the component
         if (RequestConstants.REQ_OPEN.equals(req.getType())) {
             openEditor(getNEDModel(), getTypeNameForDblClickOpen());
         }
+    }
+
+    /**
+     * Performs a direct edit operation on the part
+     */
+    protected void performDirectEdit() {
+        if (manager == null && (getFigure() instanceof IDirectEditSupport)) {
+            Label l = ((IDirectEditSupport)getFigure()).getLabel();
+            manager = new RenameDirectEditManager(this, TextCellEditor.class,
+                              new RenameDirectEditManager.LabelCellEditorLocator(l), l);
+        }
+        if (manager != null)
+            manager.show();
     }
 
     /**

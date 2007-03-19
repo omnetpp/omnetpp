@@ -11,7 +11,7 @@ import org.omnetpp.common.image.ImageFactory;
  * @author rhornig
  * Figure to represent top level components like SImpleModule, CHannel,CHannel IF and Module IF
  */
-public class TopLevelFigure extends Label {
+public class TopLevelFigure extends Label implements IDirectEditSupport {
 
     protected void setShape(Image img, 
             String shape, int shapeWidth, int shapeHeight, 
@@ -53,5 +53,9 @@ public class TopLevelFigure extends Label {
 	public String toString() {
 	    return getClass().getSimpleName()+" "+getText();
 	}
+
+    public Label getLabel() {
+        return this;
+    }
 }
 

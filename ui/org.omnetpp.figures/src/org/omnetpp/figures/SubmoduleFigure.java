@@ -23,7 +23,7 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.LayerSupport.LayerID;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 
-public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
+public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDirectEditSupport {
 
     protected Layer foregroundLayer;
     protected Layer backgroundLayer;
@@ -365,6 +365,10 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
     public void setScale(float scale) {
         this.scale = scale;
         invalidate();
+    }
+
+    public Label getLabel() {
+        return nameFigure;
     }
 
 }

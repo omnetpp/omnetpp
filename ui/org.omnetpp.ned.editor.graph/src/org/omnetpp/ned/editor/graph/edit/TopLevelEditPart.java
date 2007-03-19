@@ -23,13 +23,6 @@ import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
  */
 public class TopLevelEditPart extends BaseEditPart 
 								  implements INEDChangeListener {
-    /**
-     * Installs the desired EditPolicies for this.
-     */
-//    @Override
-//    protected void createEditPolicies() {
-//		installEditPolicy(EditPolicy.COMPONENT_ROLE, new NedComponentEditPolicy());
-//    }
 
     /**
      * Returns the model associated with this as a NEDElement.
@@ -77,7 +70,7 @@ public class TopLevelEditPart extends BaseEditPart
     	}
 
     	// parse a dispaly string, so it's easier to get values from it.
-    	// for other visula properties
+    	// for other visual properties
     	if (getModel() instanceof IHasDisplayString) {
     		DisplayString dps = ((IHasDisplayString)getModel()).getEffectiveDisplayString();
             
