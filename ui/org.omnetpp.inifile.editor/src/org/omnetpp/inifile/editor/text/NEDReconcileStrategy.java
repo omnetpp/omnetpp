@@ -50,7 +50,7 @@ public class NEDReconcileStrategy implements IReconcilingStrategy {
 		try {
 //			new InifileParser().parse(nedtext, new InifileParser.DebugParserAdapter());
 			Inifile ini = new Inifile(nedtext);
-			ini.print(System.out);
+			//XXX ini.print(System.out);
 		} catch (Exception e) {
 			System.err.println(e.getClass()+": "+e.getMessage()); //XXX
 		}
