@@ -42,7 +42,7 @@ public class InifileParser {
 	}
 
 	/**
-	 * A ParserCallback with all methods defined to be empty.
+	 * A ParserCallback for debug purposes.
 	 */
 	public static class DebugParserAdapter implements ParserCallback {
 		public void blankOrCommentLine(int lineNumber, String rawLine, String comment) {
