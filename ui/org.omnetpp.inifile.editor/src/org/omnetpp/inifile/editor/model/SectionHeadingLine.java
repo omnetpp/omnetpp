@@ -15,4 +15,14 @@ class SectionHeadingLine extends InifileLine {
 	public String getSectionName() {
 		return sectionName;
 	}
+	
+	public void setSectionName(String sectionName) {
+		rawText = null;
+		this.sectionName = sectionName;
+	}
+
+	@Override
+	protected String assemble() {
+		return "[" + sectionName + "]" + (comment==null ? "" : " "+comment);
+	}
 }

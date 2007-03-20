@@ -73,8 +73,10 @@ public class Inifile {
 	public void print(OutputStream stream) {
 		PrintStream out = new PrintStream(stream);
 		for (InifileLine line : lines) 
-			if (line != null)
-				out.println(line.getRawText());
+			if (line != null) {
+				line.setComment(line.getComment()); // invalidate rawText
+				out.println(line.getText());
+			}
 	}
 	
 	public InifileLine getLine(int k) {

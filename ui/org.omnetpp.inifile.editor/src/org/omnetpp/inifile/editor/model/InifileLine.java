@@ -16,10 +16,10 @@ abstract class InifileLine {
 	public static final int INCOMPLETE = 4; // continued from previous line (which ended in backslash)
 	
 
-	private int lineType;
-	private int lineNumber;
-	private String rawText;
-	private String comment; // with "#"
+	protected int lineType;
+	protected int lineNumber;
+	protected String rawText;
+	protected String comment; // with "#"
 
 	public InifileLine(int type, int lineNumber, String rawText, String comment) {
 		this.lineType = type;
@@ -36,11 +36,18 @@ abstract class InifileLine {
 		return lineNumber;
 	}
 
-	public String getRawText() {
-		return rawText;
+	public String getText() {
+		return rawText != null ? rawText : assemble();
 	}
 
 	public int getLineType() {
 		return lineType;
 	}
+	
+	public void setComment(String comment) {
+		rawText = null;
+		this.comment = comment;
+	}
+
+	abstract protected String assemble();
 }
