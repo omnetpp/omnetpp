@@ -12,6 +12,7 @@ import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.omnetpp.inifile.editor.model.Inifile;
+import org.omnetpp.inifile.editor.model.InifileParser;
 
 /**
  * This class has one instance per NED editor, and performs 
@@ -46,10 +47,9 @@ public class NEDReconcileStrategy implements IReconcilingStrategy {
 //XXX		NEDResourcesPlugin.getNEDResources().setNEDFileText(file, nedtext);
 		
 		//XXX experimental
-		Inifile ini = new Inifile();
-		//IFile file = ((IFileEditorInput)(editorInput)).getFile();
 		try {
-			ini.parse(nedtext);
+			//IFile file = ((IFileEditorInput)(editorInput)).getFile();
+			new InifileParser().parse(nedtext, new InifileParser.ParserAdapter());
 		} catch (Exception e) {
 			System.err.println(e.getMessage()); //XXX
 		}
