@@ -96,6 +96,7 @@ public class Inifile {
 			else if (lineStart=='#' || lineStart==';') {
 				// comment line
 				System.out.println("comment");
+				String comment = line;
 			}
 			else if (line.startsWith("include ") || line.startsWith("include\t")) {
 				// include directive
@@ -122,21 +123,24 @@ public class Inifile {
 				loop: while (k < rest.length()) {
 					switch (rest.charAt(k)) {
 					case '"':
-						// find end of string literal
+						// string literal: skip it
 						k++;
-						while (k < rest.length() && rest.charAt(k) != '"')
-							k++;  //XXX handle \", \\, etc.
-//						System.out.println("EOS:k="+k+" len="+rest.length());
-						if (k == rest.length())
+						while (k < rest.length() && rest.charAt(k) != '"') {
+							if (rest.charAt(k) == '\\')  // skip \", \\, etc.
+								k++; 
+							k++;  
+						}
+						if (k >= rest.length())
 							throw new RuntimeException("unterminated string literal");
 						break;
 					case '#': case ';':
+						// comment
 						break loop;
 					}
 					k++;
 				}
 				String rawValue = rest.substring(0, k).trim();
-				String comment = rest.substring(k);
+				String comment = (k==rest.length()) ? null : rest.substring(k);
 				System.out.println("key-value: ``"+key+"'' = ``"+rawValue+"''  comment="+comment);
 			}
 		}
