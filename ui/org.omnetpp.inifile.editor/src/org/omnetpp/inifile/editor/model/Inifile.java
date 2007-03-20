@@ -117,14 +117,27 @@ public class Inifile {
 				String key = line.substring(0, equalSignPos).trim();
 				if (key.length()==0 || key.indexOf('#')!=-1 || key.indexOf(';')!=-1)
 					throw new RuntimeException("line must be in the form key=value");
-				String rawValue = line.substring(equalSignPos+1).trim();
-				if (rawValue.startsWith("\"")) {
-					//XXX find matching quote and chop off the rest 
+				String rest = line.substring(equalSignPos+1).trim();
+				int k = 0;
+				loop: while (k < rest.length()) {
+					switch (rest.charAt(k)) {
+					case '"':
+						// find end of string literal
+						k++;
+						while (k < rest.length() && rest.charAt(k) != '"')
+							k++;  //XXX handle \", \\, etc.
+//						System.out.println("EOS:k="+k+" len="+rest.length());
+						if (k == rest.length())
+							throw new RuntimeException("unterminated string literal");
+						break;
+					case '#': case ';':
+						break loop;
+					}
+					k++;
 				}
-				else {
-					//XXX chop off anything after "#" or ";"
-				}
-				System.out.println("key-value: ``"+key+"'' = ``"+rawValue+"''");
+				String rawValue = rest.substring(0, k).trim();
+				String comment = rest.substring(k);
+				System.out.println("key-value: ``"+key+"'' = ``"+rawValue+"''  comment="+comment);
 			}
 		}
 	}
