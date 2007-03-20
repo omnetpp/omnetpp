@@ -17,7 +17,6 @@ import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
-// TODO handle isEditable correctly in installed editpolicies
 /**
  * Implements a Connection Editpart to represnt a Wire like connection.
  * 

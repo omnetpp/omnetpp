@@ -1,11 +1,14 @@
 package org.omnetpp.figures;
 
 import org.eclipse.draw2d.Label;
+import org.eclipse.gef.tools.CellEditorLocator;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.figures.misc.IDirectEditSupport;
+import org.omnetpp.figures.misc.LabelCellEditorLocator;
 
 /**
  * @author rhornig
@@ -49,13 +52,18 @@ public class TopLevelFigure extends Label implements IDirectEditSupport {
         invalidate();
 	}
 	
+    public CellEditorLocator getDirectEditCellEditorLocator() {
+        return new LabelCellEditorLocator(this);
+    }
+
+    public String getDirectEditText() {
+        return getText();
+    }
+
     @Override
 	public String toString() {
 	    return getClass().getSimpleName()+" "+getText();
 	}
 
-    public Label getLabel() {
-        return this;
-    }
 }
 

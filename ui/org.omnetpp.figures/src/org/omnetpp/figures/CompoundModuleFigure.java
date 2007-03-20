@@ -30,7 +30,7 @@ import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
 import org.omnetpp.figures.routers.CompoundModuleShortestPathConnectionRouter;
 
 public class CompoundModuleFigure extends ModuleFigure 
-				implements LayerSupport, HandleBounds {
+				implements ILayerSupport, HandleBounds {
 
     private static final int DEFAULT_BORDER_WIDTH = 2;
     private static final int DEFAULT_BORDER_SNAP_WIDTH = 3;
@@ -79,8 +79,7 @@ public class CompoundModuleFigure extends ModuleFigure
 	        	graphics.fillRectangle(viewportRect);
 	        }
 	        
-	        // draw background image
-	        // clip the background image
+	        // draw and clip background image
 	        graphics.clipRect(viewportRect);
 	        if (backgroundImage != null) {
 	            Rectangle imageRect = new Rectangle(backgroundImage.getBounds());
@@ -427,5 +426,5 @@ public class CompoundModuleFigure extends ModuleFigure
 	public void removeMessageFigure(IFigure messageFigure) {
 		messageLayer.remove(messageFigure);
 	}
-    
+
 }

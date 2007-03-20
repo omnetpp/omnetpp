@@ -2,7 +2,6 @@ package org.omnetpp.ned.editor.graph.edit;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.draw2d.Label;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
@@ -15,7 +14,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.views.properties.IPropertySource;
-import org.omnetpp.figures.IDirectEditSupport;
+import org.omnetpp.figures.misc.IDirectEditSupport;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedDirectEditPolicy;
@@ -155,9 +154,8 @@ abstract public class BaseEditPart
      */
     protected void performDirectEdit() {
         if (manager == null && (getFigure() instanceof IDirectEditSupport)) {
-            Label l = ((IDirectEditSupport)getFigure()).getLabel();
-            manager = new RenameDirectEditManager(this, TextCellEditor.class,
-                              new RenameDirectEditManager.LabelCellEditorLocator(l), l);
+            IDirectEditSupport deSupport = (IDirectEditSupport)getFigure();  
+            manager = new RenameDirectEditManager(this, TextCellEditor.class, deSupport);
         }
         if (manager != null)
             manager.show();

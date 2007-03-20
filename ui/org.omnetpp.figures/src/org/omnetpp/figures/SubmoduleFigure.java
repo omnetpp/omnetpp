@@ -15,15 +15,20 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.handles.HandleBounds;
+import org.eclipse.gef.tools.CellEditorLocator;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.figures.LayerSupport.LayerID;
+import org.omnetpp.figures.ILayerSupport.LayerID;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
+import org.omnetpp.figures.misc.IDirectEditSupport;
+import org.omnetpp.figures.misc.LabelCellEditorLocator;
+import org.omnetpp.figures.misc.LabelEx;
 
-public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDirectEditSupport {
+public class SubmoduleFigure extends ModuleFigure 
+                implements HandleBounds, IDirectEditSupport {
 
     protected Layer foregroundLayer;
     protected Layer backgroundLayer;
@@ -36,7 +41,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
     
     protected ImageFigure imageFigure = new ImageFigure();
     protected ImageFigure decoratorImageFigure = new ImageFigure();
-    protected Label nameFigure = new Label();
+    protected Label nameFigure = new LabelEx();
     protected AttachedLayer textAttachLayer;
 	private AttachedLayer rangeAttachLayer;
     protected Label textFigure = new Label();
@@ -62,14 +67,14 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
      * Returns the requested layer from the first ancestor that supports multiple layers for decorations
      * and contains the a layer with the given id
      * @param id Layer id
-     * @return The layer with teh given id from the first ancestor that implements the LayerSupport IF
+     * @return The layer with teh given id from the first ancestor that implements the ILayerSupport IF
      */
     protected Layer getAncestorLayer(LayerID id) {
         IFigure figureIter = getParent();
-        // look for a parent who is an instance of LayerSupport and get the layer from it
+        // look for a parent who is an instance of ILayerSupport and get the layer from it
         while (figureIter != null) {
-            if(figureIter instanceof LayerSupport) {
-                Layer layer = ((LayerSupport)figureIter).getLayer(id);
+            if(figureIter instanceof ILayerSupport) {
+                Layer layer = ((ILayerSupport)figureIter).getLayer(id);
                 if (layer != null)
                     return layer;
             }
@@ -84,8 +89,8 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
         // procedures cannot be done in the constructor
 
         // look for decorator layers among the ancestor (compound module figure)
-        foregroundLayer = getAncestorLayer(LayerSupport.LayerID.FRONT_DECORATION);
-        backgroundLayer = getAncestorLayer(LayerSupport.LayerID.BACKGROUND_DECORATION);
+        foregroundLayer = getAncestorLayer(ILayerSupport.LayerID.FRONT_DECORATION);
+        backgroundLayer = getAncestorLayer(ILayerSupport.LayerID.BACKGROUND_DECORATION);
         
         // add main figures
         // TODO figures should be added and created only ON DEMAND!!!
@@ -367,8 +372,12 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds, IDire
         invalidate();
     }
 
-    public Label getLabel() {
-        return nameFigure;
+    public CellEditorLocator getDirectEditCellEditorLocator() {
+        return new LabelCellEditorLocator(nameFigure);
+    }
+
+    public String getDirectEditText() {
+        return nameFigure.getText();
     }
 
 }

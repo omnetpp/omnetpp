@@ -1,5 +1,9 @@
 package org.omnetpp.ned.editor.graph.misc;
 
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.gef.GraphicalEditPart;
+import org.eclipse.gef.tools.DirectEditManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
@@ -8,16 +12,7 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Text;
-
-import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.Label;
-import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.draw2d.geometry.Rectangle;
-
-import org.eclipse.gef.GraphicalEditPart;
-import org.eclipse.gef.tools.CellEditorLocator;
-import org.eclipse.gef.tools.DirectEditManager;
-import org.eclipse.jface.viewers.CellEditor;
+import org.omnetpp.figures.misc.IDirectEditSupport;
 
 /**
  * DirectEditManager for renameable objects
@@ -26,7 +21,7 @@ public class RenameDirectEditManager extends DirectEditManager {
 
     Font scaledFont;
     protected VerifyListener verifyListener;
-    protected Label label;
+    protected IDirectEditSupport directEditable;
 
     /**
      * Creates a new RenameDirectEditManager with the given attributes.
@@ -38,9 +33,10 @@ public class RenameDirectEditManager extends DirectEditManager {
      * @param locator
      *            the CellEditorLocator
      */
-    public RenameDirectEditManager(GraphicalEditPart source, Class editorType, CellEditorLocator locator, Label label) {
-        super(source, editorType, locator);
-        this.label = label;
+    public RenameDirectEditManager(GraphicalEditPart source, Class editorType, IDirectEditSupport directEditable) {
+        super(source, editorType, directEditable.getDirectEditCellEditorLocator());
+        this.directEditable = directEditable;
+//        this.label = label;
     }
 
     protected void bringDown() {
@@ -70,17 +66,18 @@ public class RenameDirectEditManager extends DirectEditManager {
         };
         text.addVerifyListener(verifyListener);
 
-        String initialLabelText = label.getText();
-        getCellEditor().setValue(initialLabelText);
-        IFigure figure = getEditPart().getFigure();
-        scaledFont = figure.getFont();
-        FontData data = scaledFont.getFontData()[0];
-        Dimension fontSize = new Dimension(0, data.getHeight());
-        label.translateToAbsolute(fontSize);
-        data.setHeight(fontSize.height);
-        scaledFont = new Font(null, data);
-
-        text.setFont(scaledFont);
+//        String initialLabelText = label.getText();
+//        getCellEditor().setValue(initialLabelText);
+        getCellEditor().setValue(directEditable.getDirectEditText());
+//        IFigure figure = getEditPart().getFigure();
+//        scaledFont = figure.getFont();
+//        FontData data = scaledFont.getFontData()[0];
+//        Dimension fontSize = new Dimension(0, data.getHeight());
+////        label.translateToAbsolute(fontSize);
+//        data.setHeight(fontSize.height);
+//        scaledFont = new Font(null, data);
+//
+//        text.setFont(scaledFont);
     }
 
     protected void unhookListeners() {
@@ -92,30 +89,30 @@ public class RenameDirectEditManager extends DirectEditManager {
 
     //**********************************************************************************************
     // cellEditorLocator to place the cellEditor over the provided label
-    public static class LabelCellEditorLocator implements CellEditorLocator {
-        private Label label;
-
-        /**
-         * Creates a new LabelCellEditorLocator for the given Label
-         * 
-         * @param label
-         *            the Label
-         */
-        public LabelCellEditorLocator(Label label) {
-            this.label = label;
-        }
-
-        /**
-         * @see CellEditorLocator#relocate(org.eclipse.jface.viewers.CellEditor)
-         */
-        public void relocate(CellEditor celleditor) {
-            Text text = (Text) celleditor.getControl();
-            Point pref = text.computeSize(-1, -1);
-            Rectangle rect = label.getTextBounds().getCopy();
-            label.translateToAbsolute(rect);
-            text.setBounds(rect.x - 1, rect.y - 1, pref.x + 1, pref.y + 1);
-        }
-
-    }
+//    public static class LabelCellEditorLocator implements CellEditorLocator {
+//        private Label label;
+//
+//        /**
+//         * Creates a new LabelCellEditorLocator for the given Label
+//         * 
+//         * @param label
+//         *            the Label
+//         */
+//        public LabelCellEditorLocator(Label label) {
+//            this.label = label;
+//        }
+//
+//        /**
+//         * @see CellEditorLocator#relocate(org.eclipse.jface.viewers.CellEditor)
+//         */
+//        public void relocate(CellEditor celleditor) {
+//            Text text = (Text) celleditor.getControl();
+//            Point pref = text.computeSize(-1, -1);
+//            Rectangle rect = label.getTextBounds().getCopy();
+//            label.translateToAbsolute(rect);
+//            text.setBounds(rect.x - 1, rect.y - 1, pref.x + 1, pref.y + 1);
+//        }
+//
+//    }
 
 }

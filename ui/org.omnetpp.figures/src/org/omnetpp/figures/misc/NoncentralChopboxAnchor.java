@@ -1,7 +1,6 @@
-package org.omnetpp.figures;
+package org.omnetpp.figures.misc;
 
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.ScalableFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;

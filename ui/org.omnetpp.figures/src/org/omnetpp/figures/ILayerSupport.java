@@ -7,7 +7,7 @@ import org.eclipse.draw2d.Layer;
  * decoration layers for child figures.
  * @author rhornig
  */
-public interface LayerSupport {
+public interface ILayerSupport {
 	enum LayerID { BACKGROUND, BACKGROUND_DECORATION, DEFAULT, FRONT_DECORATION, CONNECTION, MESSAGE } 
 
     /**
