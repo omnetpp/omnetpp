@@ -40,6 +40,27 @@ public class InifileParser {
 		public void directiveLine(int lineNumber, String rawLine, String directive, String args, String comment) {}
 		public void incompleteLine(int lineNumber, String rawLine) {}
 	}
+
+	/**
+	 * A ParserCallback with all methods defined to be empty.
+	 */
+	public static class DebugParserAdapter implements ParserCallback {
+		public void blankOrCommentLine(int lineNumber, String rawLine, String comment) {
+			System.out.println(lineNumber+": "+rawLine+" --> comment="+comment);
+		}
+		public void sectionHeadingLine(int lineNumber, String rawLine, String sectionName, String comment) {
+			System.out.println(lineNumber+": "+rawLine+" --> section '"+sectionName+"'  comment="+comment);
+		}
+		public void keyValueLine(int lineNumber, String rawLine, String key, String value, String comment) {
+			System.out.println(lineNumber+": "+rawLine+" --> key='"+key+"' value='"+value+"'  comment="+comment);
+		}
+		public void directiveLine(int lineNumber, String rawLine, String directive, String args, String comment) {
+			System.out.println(lineNumber+": "+rawLine+" --> directive='"+directive+"' args='"+args+"'  comment="+comment);
+		}
+		public void incompleteLine(int lineNumber, String rawLine) {
+			System.out.println(lineNumber+": "+rawLine+" --> incomplete line");
+		}
+	}
 	
 	public void parse(IFile file, ParserCallback callback) throws CoreException, IOException, ParseException {
 		parse(new InputStreamReader(file.getContents()), callback);
@@ -52,20 +73,21 @@ public class InifileParser {
 	public void parse(Reader streamReader, ParserCallback callback) throws IOException, ParseException {
 		LineNumberReader reader = new LineNumberReader(streamReader);
 
-		String line;
-		while ((line=reader.readLine()) != null) {
-			System.out.print(reader.getLineNumber()+": "+line+" >>>> ");
-
+		String rawLine;
+		while ((rawLine=reader.readLine()) != null) {
 			// join continued lines
-			if (line.endsWith("\\")) {
-				callback.incompleteLine(reader.getLineNumber(), line);
-				while (line.endsWith("\\")) {
-					String cont = reader.readLine();
-					if (cont == null)
-						break; //XXX error? (missing continuation line after "\"-terminated line)
-					callback.incompleteLine(reader.getLineNumber(), cont);
-					line = line.substring(0, line.length()-1) + cont;
+			String line = rawLine;
+			if (rawLine.endsWith("\\")) {
+				StringBuilder concatenatedLines = new StringBuilder();
+				while (rawLine != null && rawLine.endsWith("\\")) {
+					callback.incompleteLine(reader.getLineNumber(), rawLine);
+					concatenatedLines.append(rawLine, 0, rawLine.length()-1);
+					rawLine = reader.readLine();
 				}
+				if (rawLine == null)
+					throw new ParseException("stray backslash at end of file", reader.getLineNumber());
+				concatenatedLines.append(rawLine);
+				line = concatenatedLines.toString();
 			}
 
 			// process the line
@@ -73,15 +95,18 @@ public class InifileParser {
 			char lineStart = line.length()==0 ? 0 : line.charAt(0);
 			if (line.length()==0) {
 				// blank line
-				callback.blankOrCommentLine(reader.getLineNumber(), line, null);
+				callback.blankOrCommentLine(reader.getLineNumber(), rawLine, null);
 			}
 			else if (lineStart=='#' || lineStart==';') {
 				// comment line
-				callback.blankOrCommentLine(reader.getLineNumber(), line, line.trim());
+				callback.blankOrCommentLine(reader.getLineNumber(), rawLine, line.trim());
 			}
-			else if (line.startsWith("include ") || line.startsWith("include\t")) {
+			else if (lineStart=='i' && line.matches("include\\s.*")) {
 				// include directive
-				callback.directiveLine(reader.getLineNumber(), line, "include", "TODO XXX", "TODO XXX");
+				String directive = "include";
+				String args = line.substring(directive.length()).trim();
+				String comment = null;
+				callback.directiveLine(reader.getLineNumber(), rawLine, directive, args, comment);
 			}
 			else if (lineStart=='[') {
 				// section heading
@@ -90,8 +115,7 @@ public class InifileParser {
 					throw new ParseException("syntax error", reader.getLineNumber());
 				String sectionName = m.group(1).trim();
 				String comment = m.groupCount()>1 ? m.group(2) : null; 
-				//System.out.println("section "+sectionName+"  comment="+comment);
-				callback.sectionHeadingLine(reader.getLineNumber(), line, sectionName, comment);
+				callback.sectionHeadingLine(reader.getLineNumber(), rawLine, sectionName, comment);
 			}
 			else {
 				// key = value
@@ -124,8 +148,7 @@ public class InifileParser {
 				}
 				String value = rest.substring(0, k).trim();
 				String comment = (k==rest.length()) ? null : rest.substring(k);
-				//System.out.println("key-value: ``"+key+"'' = ``"+rawValue+"''  comment="+comment);
-				callback.keyValueLine(reader.getLineNumber(), line, key, value, comment);
+				callback.keyValueLine(reader.getLineNumber(), rawLine, key, value, comment);
 			}
 		}
 	}

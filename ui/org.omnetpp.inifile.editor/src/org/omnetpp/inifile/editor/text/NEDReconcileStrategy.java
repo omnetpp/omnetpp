@@ -49,7 +49,7 @@ public class NEDReconcileStrategy implements IReconcilingStrategy {
 		//XXX experimental
 		try {
 			//IFile file = ((IFileEditorInput)(editorInput)).getFile();
-			new InifileParser().parse(nedtext, new InifileParser.ParserAdapter());
+			new InifileParser().parse(nedtext, new InifileParser.DebugParserAdapter());
 		} catch (Exception e) {
 			System.err.println(e.getMessage()); //XXX
 		}
