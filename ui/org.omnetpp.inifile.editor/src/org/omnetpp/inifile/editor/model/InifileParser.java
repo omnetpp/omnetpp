@@ -62,14 +62,23 @@ public class InifileParser {
 		}
 	}
 	
+	/**
+	 * Parses an IFile.
+	 */
 	public void parse(IFile file, ParserCallback callback) throws CoreException, IOException, ParseException {
 		parse(new InputStreamReader(file.getContents()), callback);
 	}
 
+	/**
+	 * Parses a multi-line string.
+	 */
 	public void parse(String text, ParserCallback callback) throws IOException, ParseException {
 		parse(new StringReader(text), callback);
 	}
 
+	/**
+	 * Parses a stream.
+	 */
 	public void parse(Reader streamReader, ParserCallback callback) throws IOException, ParseException {
 		LineNumberReader reader = new LineNumberReader(streamReader);
 
@@ -104,53 +113,67 @@ public class InifileParser {
 			else if (lineStart=='i' && line.matches("include\\s.*")) {
 				// include directive
 				String directive = "include";
-				String args = line.substring(directive.length()).trim();
-				String comment = null;
+				String rest = line.substring(directive.length());
+				int endPos = findEndContent(rest, 0, reader.getLineNumber());
+				String args = rest.substring(0, endPos).trim();
+				String comment = (endPos==rest.length()) ? null : rest.substring(endPos);
 				callback.directiveLine(reader.getLineNumber(), rawLine, directive, args, comment);
 			}
 			else if (lineStart=='[') {
 				// section heading
 				Matcher m = Pattern.compile("\\[([^#;\"]+)\\]\\s*([#;].*)?").matcher(line);
 				if (!m.matches())
-					throw new ParseException("syntax error", reader.getLineNumber());
+					throw new ParseException("syntax error in section heading", reader.getLineNumber());
 				String sectionName = m.group(1).trim();
 				String comment = m.groupCount()>1 ? m.group(2) : null; 
 				callback.sectionHeadingLine(reader.getLineNumber(), rawLine, sectionName, comment);
 			}
 			else {
 				// key = value
-				int equalSignPos = line.indexOf('=');
+				int endPos = findEndContent(line, 0, reader.getLineNumber());
+				String comment = (endPos==line.length()) ? null : line.substring(endPos);
+				String keyValue = line.substring(0, endPos);
+				int equalSignPos = keyValue.indexOf('=');
 				if (equalSignPos == -1)
 					throw new ParseException("line must be in the form key=value", reader.getLineNumber());
-				String key = line.substring(0, equalSignPos).trim();
-				if (key.length()==0 || key.indexOf('#')!=-1 || key.indexOf(';')!=-1)
+				String key = keyValue.substring(0, equalSignPos).trim();
+				if (key.length()==0)
 					throw new ParseException("line must be in the form key=value", reader.getLineNumber());
-				String rest = line.substring(equalSignPos+1).trim();
-				int k = 0;
-				loop: while (k < rest.length()) {
-					switch (rest.charAt(k)) {
-					case '"':
-						// string literal: skip it
-						k++;
-						while (k < rest.length() && rest.charAt(k) != '"') {
-							if (rest.charAt(k) == '\\')  // skip \", \\, etc.
-								k++; 
-							k++;  
-						}
-						if (k >= rest.length())
-							throw new ParseException("unterminated string literal", reader.getLineNumber());
-						break;
-					case '#': case ';':
-						// comment
-						break loop;
-					}
-					k++;
-				}
-				String value = rest.substring(0, k).trim();
-				String comment = (k==rest.length()) ? null : rest.substring(k);
+				String value = keyValue.substring(equalSignPos+1).trim();
 				callback.keyValueLine(reader.getLineNumber(), rawLine, key, value, comment);
 			}
 		}
+	}
+
+	/**
+	 * Returns the position of the comment on the given line (i.e. the position of the
+	 * # or ; character), or line.length() if no comment is found. String literals
+	 * are recognized and skipped properly. 
+	 */
+	private static int findEndContent(String line, int fromPos, int currentLineNumber) throws ParseException {
+		int k = fromPos;
+		while (k < line.length()) {
+			switch (line.charAt(k)) {
+			case '"':
+				// string literal: skip it
+				k++;
+				while (k < line.length() && line.charAt(k) != '"') {
+					if (line.charAt(k) == '\\')  // skip \", \\, etc.
+						k++; 
+					k++;  
+				}
+				if (k >= line.length())
+					throw new ParseException("unterminated string literal", currentLineNumber);
+				k++;
+				break;
+			case '#': case ';':
+				// comment
+				return k;
+			default:
+				k++;
+			}
+		}
+		return k;
 	}
 
 }
