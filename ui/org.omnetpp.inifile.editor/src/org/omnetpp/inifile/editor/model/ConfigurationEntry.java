@@ -1,11 +1,11 @@
 package org.omnetpp.inifile.editor.model;
 
 /**
- * Declares a possible configuration entry.
+ * One entry in the ConfigurationRegistry. Describes a configuration entry. 
  * 
  * @author Andras
  */
-public class InifileEntry {
+public class ConfigurationEntry {
     /** Configuration entry types */
     public enum Type {
       CFG_BOOL,
@@ -28,7 +28,7 @@ public class InifileEntry {
     /**
      * Constructor.
      */
-    InifileEntry(String name, String section, boolean isGlobal, Type type,
+    ConfigurationEntry(String name, String section, boolean isGlobal, Type type,
                  String unit, Object defaultValue, String description) {
         this.name = name;
         this.section = section;
