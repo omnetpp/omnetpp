@@ -10,6 +10,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -64,9 +66,21 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	 */
 	@Override
 	protected void createPages() {
+		// create form page
+		InifileEditorFormPage page = new SettingsPage(getContainer(), this);
+		addEditorPage(page, "Form");
+
+		// create texteditor
 		createTextEditorPage();
-		//createPage1();
-		//createPage2();
+	}
+
+	/**
+	 * Adds an editor page at the last position.
+	 */
+	public int addEditorPage(Control page, String label) {
+		int index = addPage(page);
+		setPageText(index, label);
+		return index;
 	}
 
 	/**

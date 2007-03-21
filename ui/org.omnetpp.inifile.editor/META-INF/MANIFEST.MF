@@ -13,6 +13,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide,
  org.eclipse.ui.workbench.texteditor,
  org.omnetpp.common,
- org.eclipse.ui.views
+ org.eclipse.ui.views,
+ org.eclipse.ui.forms
 Eclipse-LazyStart: true
 Bundle-Vendor: OpenSim Ltd.
