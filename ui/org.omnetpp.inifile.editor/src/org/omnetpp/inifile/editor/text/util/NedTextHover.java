@@ -10,6 +10,7 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
+import org.omnetpp.inifile.editor.editors.InifileEditorData;
 import org.omnetpp.inifile.editor.text.NedHelper;
 
 /**
@@ -19,10 +20,10 @@ import org.omnetpp.inifile.editor.text.NedHelper;
 // TODO for the "F2 to focus" stuff, see ITextHoverExtension & IInformationControlCreator
 public class NedTextHover implements ITextHover {
 
-	private IEditorPart editor = null; // because NEDReconcileStrategy will need IFile from editorInput
+	private InifileEditorData editorData;
 	
-	public NedTextHover(IEditorPart editor) {
-		this.editor = editor;
+	public NedTextHover(InifileEditorData editorData) {
+		this.editorData = editorData;
 	}
 
 	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {

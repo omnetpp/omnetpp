@@ -17,26 +17,23 @@ import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
-import org.eclipse.ui.IEditorPart;
+import org.omnetpp.inifile.editor.editors.InifileEditorData;
 import org.omnetpp.inifile.editor.text.assist.NedCompletionProcessor;
 import org.omnetpp.inifile.editor.text.assist.NedContentAssistPartitionScanner;
+import org.omnetpp.inifile.editor.text.highlight.InifileSyntaxHighlightPartitionScanner;
 import org.omnetpp.inifile.editor.text.highlight.NedCodeColorizerScanner;
 import org.omnetpp.inifile.editor.text.highlight.NedDocColorizerScanner;
-import org.omnetpp.inifile.editor.text.highlight.NedPrivateDocColorizerScanner;
-import org.omnetpp.inifile.editor.text.highlight.InifileSyntaxHighlightPartitionScanner;
 import org.omnetpp.inifile.editor.text.util.NedAnnotationHover;
 import org.omnetpp.inifile.editor.text.util.NedTextHover;
 
 /**
- * Configuration for an <code>SourceViewer</code> which shows NED code.
+ * Configuration for a SourceViewer which shows an inifile.
  */
-//XXX TODO rename, revise, possibly remove...
-public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
+public class InifileSourceViewerConfiguration extends SourceViewerConfiguration {
+	private InifileEditorData editorData;
 
-	private IEditorPart editor = null; // because NEDReconcileStrategy will need IFile from editorInput
-
-	public NedSourceViewerConfiguration(IEditorPart editor) {
-		this.editor = editor;
+	public InifileSourceViewerConfiguration(InifileEditorData editorData) {
+		this.editorData = editorData;
 	}
 	
 	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
@@ -71,8 +68,7 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 	}
 	
 	public String[] getIndentPrefixes(ISourceViewer sourceViewer, String contentType) {
-        // TODO indentation should be configurable
-		return new String[] { "\t", "    " }; //$NON-NLS-1$ //$NON-NLS-2$
+		return new String[] { "\t", "    " };
 	}
 	
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
@@ -100,16 +96,16 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 	}
 	
 	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
-		return new NedTextHover(editor);
+		return new NedTextHover(editorData);
 	}
 
 	@Override
 	public IReconciler getReconciler(ISourceViewer sourceViewer) {
 		// Installs background NED parsing.
 		// Based on: JavaSourceViewerConfiguration.getReconciler() in JDT which
-		// creates and configures JavaReconciler; than in turn will eventually
+		// creates and configures JavaReconciler; that in turn will eventually
 		// result in calls to org.eclipse.jdt.internal.compiler.parser.Parser.
-		MonoReconciler reconciler = new MonoReconciler(new NEDReconcileStrategy(editor), true);
+		MonoReconciler reconciler = new MonoReconciler(new NEDReconcileStrategy(editorData), true);
 		reconciler.setIsIncrementalReconciler(false);
 		reconciler.setIsAllowedToModifyDocument(false);
 		reconciler.setProgressMonitor(new NullProgressMonitor());

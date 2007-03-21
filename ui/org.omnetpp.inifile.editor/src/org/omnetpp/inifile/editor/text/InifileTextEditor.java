@@ -1,92 +1,50 @@
 package org.omnetpp.inifile.editor.text;
 
 
-import java.util.ResourceBundle;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.ITextViewerExtension5;
-import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.Region;
-import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
-import org.eclipse.jface.text.source.projection.ProjectionAnnotation;
-import org.eclipse.jface.text.source.projection.ProjectionAnnotationModel;
 import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
-import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
-import org.eclipse.ui.texteditor.TextEditorAction;
 import org.eclipse.ui.texteditor.TextOperationAction;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
-import org.omnetpp.inifile.editor.text.outline.NedContentOutlinePage;
+import org.omnetpp.inifile.editor.editors.InifileEditor;
+import org.omnetpp.inifile.editor.text.actions.DefineFoldingRegionAction;
+import org.omnetpp.inifile.editor.text.outline.InifileContentOutlinePage;
 
 
 /**
  * Text editor for ini files.
  */
 public class InifileTextEditor extends TextEditor {
+	/** The parent multipage editor */
+	private InifileEditor parentEditor;
 	
-	private class DefineFoldingRegionAction extends TextEditorAction {
-
-		public DefineFoldingRegionAction(ResourceBundle bundle, String prefix, ITextEditor editor) {
-			super(bundle, prefix, editor);
-		}
-		
-		private IAnnotationModel getAnnotationModel(ITextEditor editor) {
-			return (IAnnotationModel) editor.getAdapter(ProjectionAnnotationModel.class);
-		}
-		
-		/*
-		 * @see org.eclipse.jface.action.Action#run()
-		 */
-		public void run() {
-			ITextEditor editor= getTextEditor();
-			ISelection selection= editor.getSelectionProvider().getSelection();
-			if (selection instanceof ITextSelection) {
-				ITextSelection textSelection= (ITextSelection) selection;
-				if (!textSelection.isEmpty()) {
-					IAnnotationModel model= getAnnotationModel(editor);
-					if (model != null) {
-						
-						int start= textSelection.getStartLine();
-						int end= textSelection.getEndLine();
-						
-						try {
-							IDocument document= editor.getDocumentProvider().getDocument(editor.getEditorInput());
-							int offset= document.getLineOffset(start);
-							int endOffset= document.getLineOffset(end + 1);
-							Position position= new Position(offset, endOffset - offset);
-							model.addAnnotation(new ProjectionAnnotation(), position);
-						} catch (BadLocationException x) {
-							// ignore
-						}
-					}
-				}
-			}
-		}
-	}
-
 	/** The outline page */
-	private NedContentOutlinePage fOutlinePage;
+	private InifileContentOutlinePage fOutlinePage;
+	
 	/** The projection support */
 	private ProjectionSupport fProjectionSupport;
 
 	/**
 	 * Default constructor.
 	 */
-	public InifileTextEditor() {
+	public InifileTextEditor(InifileEditor parentEditor) {
 		super();
+		this.parentEditor = parentEditor;
+		// Note: we should actually override initializeEditor() and place the 
+		// setSourceViewerConfiguration() call there. Problem is, parentEditor 
+		// is not yet available at that point.
+		setSourceViewerConfiguration(new InifileSourceViewerConfiguration(parentEditor.getEditorData()));
 	}
 	
 	/** The <code>TextualNedEditor</code> implementation of this 
@@ -159,8 +117,9 @@ public class InifileTextEditor extends TextEditor {
 	 */ 
 	public void doSetInput(IEditorInput input) throws CoreException {
 		super.doSetInput(input);
-		if (fOutlinePage != null)
-			fOutlinePage.setInput(input);
+//XXX update the outline page		
+//		if (fOutlinePage != null)
+//			fOutlinePage.setInput(input);
 	}
 	
 	/**
@@ -189,25 +148,25 @@ public class InifileTextEditor extends TextEditor {
 	}
 	
 	/** The <code>TextualNedEditor</code> implementation of this 
-	 * <code>AbstractTextEditor</code> method performs gets
+	 * <code>AbstractTextEditor</code> method gets
 	 * the ned content outline page if request is for a an 
 	 * outline page.
 	 * 
 	 * @param required the required type
 	 * @return an adapter for the required type or <code>null</code>
 	 */ 
+	//FIXME move it to main editor? as page is shared among all pages of the multi-page editor
 	public Object getAdapter(Class required) {
 		if (IContentOutlinePage.class.equals(required)) {
 			if (fOutlinePage == null) {
-				fOutlinePage = new NedContentOutlinePage(getDocumentProvider(), this);
-				if (getEditorInput() != null)
-					fOutlinePage.setInput(getEditorInput());
+				fOutlinePage = new InifileContentOutlinePage(getDocumentProvider(), this);
+				fOutlinePage.setInput(parentEditor.getEditorData().getInifileContents());
 			}
 			return fOutlinePage;
 		}
 		
 		if (fProjectionSupport != null) {
-			Object adapter= fProjectionSupport.getAdapter(getSourceViewer(), required);
+			Object adapter = fProjectionSupport.getAdapter(getSourceViewer(), required);
 			if (adapter != null)
 				return adapter;
 		}
@@ -215,14 +174,6 @@ public class InifileTextEditor extends TextEditor {
 		return super.getAdapter(required);
 	}
 		
-	/* (non-Javadoc)
-	 * Method declared on AbstractTextEditor
-	 */
-	protected void initializeEditor() {
-		super.initializeEditor();
-		setSourceViewerConfiguration(new NedSourceViewerConfiguration(this));
-	}
-	
 	/*
 	 * @see org.eclipse.ui.texteditor.ExtendedTextEditor#createSourceViewer(org.eclipse.swt.widgets.Composite, org.eclipse.jface.text.source.IVerticalRuler, int)
 	 */

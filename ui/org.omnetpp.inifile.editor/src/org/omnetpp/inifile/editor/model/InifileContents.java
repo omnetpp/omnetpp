@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import org.eclipse.core.resources.IFile;
@@ -13,11 +14,12 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 
 /**
- * Represents an ini file.
+ * Stores contents of an ini file in a parsed form. Allows modification
+ * and regeneration of the inifile as well.
  * 
  * @author Andras
  */
-public class Inifile {
+public class InifileContents {
 	/**
 	 * Stores the lines of the file. The array is indexed by line number,
 	 * starting at zero. 
@@ -25,23 +27,29 @@ public class Inifile {
 	private Vector<InifileLine> lines = new Vector<InifileLine>();
 
 	/**
+	 * Constructor.
+	 */
+	public InifileContents() {
+	}
+
+	/**
 	 * Parses an IFile.
 	 */
-	public Inifile(IFile file) throws CoreException, IOException, ParseException {
-		this(new InputStreamReader(file.getContents()));
+	public void parse(IFile file) throws CoreException, IOException, ParseException {
+		parse(new InputStreamReader(file.getContents()));
 	}
 
 	/**
 	 * Parses a multi-line string.
 	 */
-	public Inifile(String text) throws IOException, ParseException {
-		this(new StringReader(text));
+	public void parse(String text) throws IOException, ParseException {
+		parse(new StringReader(text));
 	}
 	
 	/**
 	 * Parses a stream.
 	 */
-	public Inifile(Reader streamReader) throws IOException, ParseException {
+	public void parse(Reader streamReader) throws IOException, ParseException {
 		lines.clear();
 		lines.add(null);
 		long startTime = System.currentTimeMillis();
@@ -81,5 +89,17 @@ public class Inifile {
 	
 	public InifileLine getLine(int k) {
 		return lines.get(k);
+	}
+	
+	public InifileLine[] getLines() {
+		return (InifileLine[]) lines.subList(1, lines.size()).toArray(new InifileLine[lines.size()-1]);
+	}
+	
+	public InifileLine[] getSections() {
+		ArrayList<InifileLine> a = new ArrayList<InifileLine>();
+		for (InifileLine line : lines)
+			if (line instanceof SectionHeadingLine)
+				a.add(line);
+		return (InifileLine[]) a.toArray(new InifileLine[a.size()]);
 	}
 }

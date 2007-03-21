@@ -17,12 +17,11 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
-import org.omnetpp.inifile.editor.model.Inifile;
+import org.omnetpp.inifile.editor.model.ParseException;
 import org.omnetpp.inifile.editor.text.InifileTextEditor;
 
 /**
@@ -30,9 +29,12 @@ import org.omnetpp.inifile.editor.text.InifileTextEditor;
  */
 public class InifileEditor extends MultiPageEditorPart implements IResourceChangeListener, IGotoMarker {
 
-	/** The text editor used in page 0. */
-	private TextEditor editor;
+	/** The text editor */
+	private InifileTextEditor textEditor;
 
+	/** The data model */
+	private InifileEditorData editorData = new InifileEditorData();
+	
 	/**
 	 * Creates the ini file editor.
 	 */
@@ -40,14 +42,18 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		super();
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
 	}
-
+ 
+	public InifileEditorData getEditorData() {
+		return editorData;
+	}
+	
 	/**
 	 * Creates the text editor page of the multi-page editor.
 	 */
 	void createTextEditorPage() {
 		try {
-			editor = new InifileTextEditor();
-			int index = addPage(editor, getEditorInput());
+			textEditor = new InifileTextEditor(this);
+			int index = addPage(textEditor, getEditorInput());
 			setPageText(index, "Text");
 		} catch (PartInitException e) {
 			ErrorDialog.openError(getSite().getShell(), "Error creating nested text editor", null, e.getStatus());
@@ -109,12 +115,25 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	 * checks that the input is an instance of <code>IFileEditorInput</code>.
 	 */
 	@Override
-	public void init(IEditorSite site, IEditorInput editorInput)
-		throws PartInitException {
+	public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
 		if (!(editorInput instanceof IFileEditorInput))
 			throw new PartInitException("Invalid input: it must be a file in the workspace");
 		super.init(site, editorInput);
 		setPartName(editorInput.getName());
+		
+		// load the file
+		try {
+			IFile file = ((IFileEditorInput)editorInput).getFile();
+			getEditorData().getInifileContents().parse(file);
+		} 
+		catch (CoreException e) {
+			e.printStackTrace(); //XXX
+		} catch (IOException e) {
+			e.printStackTrace(); //XXX
+		} catch (ParseException e) {
+ 			e.printStackTrace();  //XXX
+		}
+
 	}
 
 	/* (non-Javadoc)

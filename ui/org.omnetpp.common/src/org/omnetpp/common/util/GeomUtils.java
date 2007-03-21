@@ -32,12 +32,18 @@ public class GeomUtils {
 	 * Calculates bounding box of a rotated rectangle. Rotation is in *degrees*.
 	 */
 	public static Dimension rotatedSize(Dimension size, double rotation) {
-		Transform transform = new Transform();
-		transform.setRotation(Math.toRadians(rotation));
-		Point p1 = transform.getTransformed(new Point(size.width / 2, size.height / 2));
-		Point p2 = transform.getTransformed(new Point(size.width / 2, - size.height / 2));
-		return new Dimension(
-				Math.max(Math.abs(p1.x), Math.abs(p2.x)),
-				Math.max(Math.abs(p1.y), Math.abs(p2.y)));
+		if (rotation == 0 || rotation == 180)  // avoid rounding errors in spec cases
+			return size.getCopy();
+		else if (rotation == 90 || rotation == 270)
+			return new Dimension(size.height, size.width);
+		else {
+			Transform transform = new Transform();
+			transform.setRotation(Math.toRadians(rotation));
+			Point p1 = transform.getTransformed(new Point((size.width+1), (size.height+1)));
+			Point p2 = transform.getTransformed(new Point((size.width+1), - (size.height+1)));
+			return new Dimension(
+					Math.max(Math.abs(p1.x), Math.abs(p2.x)),
+					Math.max(Math.abs(p1.y), Math.abs(p2.y)));
+		}
 	}
 }

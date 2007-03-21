@@ -2,30 +2,26 @@ package org.omnetpp.inifile.editor.text;
 
 import java.io.IOException;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.reconciler.DirtyRegion;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IFileEditorInput;
-import org.omnetpp.inifile.editor.model.Inifile;
-import org.omnetpp.inifile.editor.model.InifileParser;
+import org.omnetpp.inifile.editor.editors.InifileEditorData;
+import org.omnetpp.inifile.editor.model.InifileContents;
+import org.omnetpp.inifile.editor.model.ParseException;
 
 /**
- * This class has one instance per NED editor, and performs 
- * background NED parsing.
+ * This class has one instance per editor. It performs 
+ * background parsing of the inifile, and keeps editor data 
+ * (InifileContents) up to date.
  */
-//XXX TODO rename, revise, possibly remove...
 public class NEDReconcileStrategy implements IReconcilingStrategy {
 
-	private IEditorPart editor= null; // because NEDResourcesPlugin needs IFile!
+	private InifileEditorData editorData = null;
 	private IDocument document = null;
-	
-	public NEDReconcileStrategy(IEditorPart editor) {
-		this.editor = editor;
+
+	public NEDReconcileStrategy(InifileEditorData editorData) {
+		this.editorData = editorData;
 	}
 
 	public void setDocument(IDocument document) {
@@ -39,20 +35,18 @@ public class NEDReconcileStrategy implements IReconcilingStrategy {
 
 	public void reconcile(IRegion partition) {
 		System.out.println("reconcile(IRegion) called");
-		Assert.isTrue(editor.getEditorInput() instanceof IFileEditorInput); // NEDEditor only accepts file input
-		IFile file = ((IFileEditorInput)editor.getEditorInput()).getFile();
-		String nedtext = document.get();
+		String text = document.get();
 
-		// perform parsing (of full text, we ignore the changed region)
-//XXX		NEDResourcesPlugin.getNEDResources().setNEDFileText(file, nedtext);
-		
-		//XXX experimental
 		try {
-//			new InifileParser().parse(nedtext, new InifileParser.DebugParserAdapter());
-			Inifile ini = new Inifile(nedtext);
-			ini.print(System.out);
-		} catch (Exception e) {
-			System.err.println(e.getClass()+": "+e.getMessage()); //XXX
+			InifileContents ini = editorData.getInifileContents();
+			ini.parse(text);
+			ini.print(System.out); //XXX debug
+		} 
+		catch (IOException e) {
+			// cannot happen with string input
+		} 
+		catch (ParseException e) {
+			e.printStackTrace(); //XXX
 		}
 	}
 }

@@ -2,29 +2,25 @@ package org.omnetpp.inifile.editor.text.outline;
 
 
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
+import org.omnetpp.inifile.editor.model.InifileContents;
 
 /**
- * XXX notify after every run of the reconciler
+ * Content outline page for the inifile editor.
  */
-//XXX TODO rename, revise, possibly remove...
-public class NedContentOutlinePage extends ContentOutlinePage {
-	protected IFileEditorInput fInput;
+//XXX notify after every run of the reconciler
+public class InifileContentOutlinePage extends ContentOutlinePage {
+	protected Object fInput;
 	protected IDocumentProvider fDocumentProvider;
 	protected ITextEditor fTextEditor;
 
@@ -35,10 +31,10 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 	 * @param provider the document provider
 	 * @param editor the editor
 	 */
-	public NedContentOutlinePage(IDocumentProvider provider, ITextEditor editor) {
+	public InifileContentOutlinePage(IDocumentProvider provider, ITextEditor editor) {
 		super();
-		fDocumentProvider= provider;
-		fTextEditor= editor;
+		fDocumentProvider = provider;
+		fTextEditor = editor;
 	}
 	
 	/* (non-Javadoc)
@@ -47,13 +43,38 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 	public void createControl(Composite parent) {
 		super.createControl(parent);
 
-//XXX        getTreeViewer().setContentProvider(NEDTreeUtil.getNedModelContentProvider());
-//XXX        getTreeViewer().setLabelProvider(NEDTreeUtil.getNedModelLabelProvider());
-		getTreeViewer().setContentProvider(new ArrayContentProvider()); //XXX just temp
-		getTreeViewer().setLabelProvider(new LabelProvider()); //XXX just temp
+		getTreeViewer().setLabelProvider(new LabelProvider()); //XXX for now
+		getTreeViewer().setContentProvider(new ITreeContentProvider() {
+			public void dispose() {
+			}
 
+			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+			}
+
+			public Object[] getChildren(Object parentElement) {
+				if (parentElement instanceof InifileContents) {
+					InifileContents ini = (InifileContents) parentElement;
+					return ini.getSections();
+				}
+				return null;
+			}
+
+			public Object getParent(Object element) {
+				return null; //XXX
+			}
+
+			public boolean hasChildren(Object element) {
+				return (element instanceof InifileContents);
+			}
+
+			public Object[] getElements(Object inputElement) {
+				return getChildren(inputElement);
+			}
+		});
+		
+		Assert.isTrue(fInput!=null);
+		getTreeViewer().setInput(fInput);
 		getTreeViewer().addSelectionChangedListener(this);
-        update();
 	}
 	
 	/* (non-Javadoc)
@@ -67,6 +88,9 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 		if (selection.isEmpty())
 			fTextEditor.resetHighlightRange();
 		else {
+			TreeViewer viewer = getTreeViewer();
+			viewer.refresh();
+			
 //XXX			
 //			NEDElement node = (NEDElement) ((IStructuredSelection) selection).getFirstElement();
 //			//System.out.println("selected: "+node);
@@ -92,10 +116,10 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 	 * @param input the input of this outline page
 	 */
 	public void setInput(Object input) {
-		Assert.isTrue(input instanceof IFileEditorInput || input == null);
-		fInput = (IFileEditorInput) input;
-		System.out.println(this+".setInput( " + input+ ") called");
-		update();
+		// Note: treeViewer==null on first invocation, so we need fInput and cannot set it immediately
+		fInput = input;
+		if (getTreeViewer() != null) 
+			getTreeViewer().setInput(fInput);
 	}
 	
 	/**
@@ -103,23 +127,9 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 	 */
 	public void update() {
 		System.out.println(this+".update() called");
-        if (fInput == null) 
-            return;
-
 		TreeViewer viewer = getTreeViewer();
 		if (viewer != null) {
-			Control control = viewer.getControl();
-			if (control != null && !control.isDisposed()) {
-				control.setRedraw(false);
-
-				// set file contents as input
-				IFile file = fInput.getFile();
-//XXX				NEDElement tree = NEDResourcesPlugin.getNEDResources().getNEDFileContents(file);
-//XXX                viewer.setInput(tree);
-
-				//viewer.expandAll();
-				control.setRedraw(true);
-			}
-		}
+			viewer.refresh();
+		}		
 	}
 }

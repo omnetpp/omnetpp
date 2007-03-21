@@ -50,4 +50,9 @@ abstract class InifileLine {
 	}
 
 	abstract protected String assemble();
+	
+	@Override
+	public String toString() {
+		return getText();
+	}
 }

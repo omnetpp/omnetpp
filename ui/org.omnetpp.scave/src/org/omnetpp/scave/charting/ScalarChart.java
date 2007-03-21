@@ -414,7 +414,7 @@ public class ScalarChart extends ChartCanvas {
 			return before ? 0 : (cRows*cColumns-1);
 		}
 
-		private int findRowColumn(double x, double y) {
+		public int findRowColumn(double x, double y) {
 			int cRows = dataset.getRowCount();
 			int cColumns = dataset.getColumnCount();
 			x -= inset;
@@ -432,7 +432,7 @@ public class ScalarChart extends ChartCanvas {
 			if (x > widthBar)
 				return -1;  // x falls in a minor gap
 			double value = dataset.getValue(row, column).doubleValue();
-			if (value >= 0 ? (y < 0 || y > value) : (y > 0 || y < value))
+			if (value >= barBaseline ? (y < barBaseline || y > value) : (y > barBaseline || y < value))
 				return -1;  // above or below actual bar 
 			return row * cColumns + column; 
 		}
@@ -607,8 +607,10 @@ public class ScalarChart extends ChartCanvas {
 			});
 			addMouseMoveListener(new MouseMoveListener() {
 				public void mouseMove(MouseEvent e) {
-					tooltipWidget.dispose();
-					tooltipWidget = null;
+					if (tooltipWidget != null) {
+						tooltipWidget.dispose();
+						tooltipWidget = null;
+					}
 				}
 			});
 		}
