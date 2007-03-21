@@ -1,19 +1,14 @@
-package org.omnetpp.ned.model.notification;
+package org.omnetpp.inifile.editor.model;
 
+public class InifileChangeListenerList {
 
-/**
- * @author rhornig
- * Supports a listener list used for change and structural notification in a NEDElement tree
- */
-public class NEDChangeListenerList {
-
-	protected INEDChangeListener[] array = new INEDChangeListener[0];
+	protected IInifileChangeListener[] array = new IInifileChangeListener[0];
     protected boolean enabled = true;
 
 	/**
 	 * @param listener Adds a new model change listener
 	 */
-	public void add(INEDChangeListener listener) {
+	public void add(IInifileChangeListener listener) {
 		array = copyArray(array.length+1);
 		array[array.length-1] = listener;
 	}
@@ -21,7 +16,7 @@ public class NEDChangeListenerList {
 	/**
 	 * @param listener Removes a listener from the list
 	 */
-	public void remove(INEDChangeListener listener) {
+	public void remove(IInifileChangeListener listener) {
 		for (int i=0; i<array.length; i++) {
 			if (array[i]==listener) {
 				array[i] = array[array.length-1];
@@ -31,27 +26,26 @@ public class NEDChangeListenerList {
 		}
 	}
 
-	private INEDChangeListener[] copyArray(int size) {
-		INEDChangeListener[] newArray = new INEDChangeListener[size];
+	private IInifileChangeListener[] copyArray(int size) {
+		IInifileChangeListener[] newArray = new IInifileChangeListener[size];
 		System.arraycopy(array, 0, newArray, 0, Math.min(array.length, size));
 		return newArray;
 	}
 
 	/**
-	 * @return The listener list's copy so adding/removing listeners during
+	 * Returns a copy of the listener list, so adding/removing listeners during
      * notification is allowed. 
 	 */
-	public INEDChangeListener[] getListeners() {
+	public IInifileChangeListener[] getListeners() {
 		// make a copy, just in case there are adds/removes during iteration
         // Maybe a copy on/write implementation would be more efficient
-		INEDChangeListener[] newArray = new INEDChangeListener[array.length];
+		IInifileChangeListener[] newArray = new IInifileChangeListener[array.length];
 		System.arraycopy(array, 0, newArray, 0, array.length);
 		return newArray;
 	}
 
     /**
      * Check whether change notification is enabled
-     * @return
      */
     public boolean isEnabled() {
         return enabled;
@@ -72,9 +66,9 @@ public class NEDChangeListenerList {
      * Fires a model change event to all listeners if event sending is enebaled
      * @param event 
      */
-    public void fireModelChanged(NEDModelEvent event) {
+    public void fireModelChanged() {
         if (enabled)
-            for (INEDChangeListener listener : getListeners())
-                listener.modelChanged(event);
+            for (IInifileChangeListener listener : getListeners())
+                listener.modelChanged();
     }
 }

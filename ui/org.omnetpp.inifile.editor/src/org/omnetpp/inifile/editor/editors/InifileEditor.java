@@ -28,7 +28,6 @@ import org.omnetpp.inifile.editor.text.InifileTextEditor;
  * Editor for omnetpp.ini files.
  */
 public class InifileEditor extends MultiPageEditorPart implements IResourceChangeListener, IGotoMarker {
-
 	/** The text editor */
 	private InifileTextEditor textEditor;
 

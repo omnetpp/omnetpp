@@ -10,20 +10,21 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
+import org.omnetpp.inifile.editor.model.IInifileChangeListener;
 import org.omnetpp.inifile.editor.model.InifileContents;
 
 /**
  * Content outline page for the inifile editor.
  */
 //XXX notify after every run of the reconciler
-public class InifileContentOutlinePage extends ContentOutlinePage {
-	protected Object fInput;
+public class InifileContentOutlinePage extends ContentOutlinePage implements IInifileChangeListener {
+	protected InifileContents fInput;
 	protected IDocumentProvider fDocumentProvider;
 	protected ITextEditor fTextEditor;
-
 
 	/**
 	 * Creates a content outline page using the given provider and the given editor.
@@ -109,6 +110,13 @@ public class InifileContentOutlinePage extends ContentOutlinePage {
 //			}
 		}
 	}
+
+	@Override
+	public void dispose() {
+		if (fInput != null)
+			fInput.getListeners().remove(this);
+		super.dispose();
+	}
 	
 	/**
 	 * Sets the input of the outline page
@@ -116,10 +124,15 @@ public class InifileContentOutlinePage extends ContentOutlinePage {
 	 * @param input the input of this outline page
 	 */
 	public void setInput(Object input) {
-		// Note: treeViewer==null on first invocation, so we need fInput and cannot set it immediately
-		fInput = input;
+		// unhook from old input object
+		if (fInput != null)
+			fInput.getListeners().remove(this);
+		Assert.isTrue(input instanceof InifileContents || input == null);
+		fInput = (InifileContents) input;
+		// Note: when first invoked, treeViewer==null yet
 		if (getTreeViewer() != null) 
 			getTreeViewer().setInput(fInput);
+		fInput.getListeners().add(this);
 	}
 	
 	/**
@@ -127,9 +140,17 @@ public class InifileContentOutlinePage extends ContentOutlinePage {
 	 */
 	public void update() {
 		System.out.println(this+".update() called");
-		TreeViewer viewer = getTreeViewer();
+		final TreeViewer viewer = getTreeViewer();
 		if (viewer != null) {
-			viewer.refresh();
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					viewer.refresh();
+				}
+			});
 		}		
+	}
+
+	public void modelChanged() {
+		update();
 	}
 }

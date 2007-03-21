@@ -26,6 +26,8 @@ public class InifileContents {
 	 */
 	private Vector<InifileLine> lines = new Vector<InifileLine>();
 
+	private InifileChangeListenerList listeners = new InifileChangeListenerList();
+	
 	/**
 	 * Constructor.
 	 */
@@ -76,6 +78,9 @@ public class InifileContents {
 			}
 		});
 		System.out.println("Inifile parsing: "+(System.currentTimeMillis()-startTime)+"ms");
+
+		// notify listeners
+		fireModeChanged();
 	}
 	
 	public void print(OutputStream stream) {
@@ -102,4 +107,21 @@ public class InifileContents {
 				a.add(line);
 		return (InifileLine[]) a.toArray(new InifileLine[a.size()]);
 	}
+
+    /**
+     * @return The listener list attached to this element 
+     */
+    public InifileChangeListenerList getListeners() {
+        return listeners;
+    }
+	
+	/**
+     * Fires a model change event by notifying listeners.
+     */
+    public void fireModeChanged() {
+        if(listeners == null || !getListeners().isEnabled())
+            return;
+        //forward to the listerList
+        listeners.fireModelChanged();
+    }
 }

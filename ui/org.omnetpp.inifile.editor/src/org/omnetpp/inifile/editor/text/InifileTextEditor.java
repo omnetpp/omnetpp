@@ -76,37 +76,40 @@ public class InifileTextEditor extends TextEditor {
 		super.dispose();
 	}
 	
-	/** The <code>TextualNedEditor</code> implementation of this 
-	 * <code>AbstractTextEditor</code> method performs any extra 
-	 * revert behavior required by the ned editor.
-	 */
-	public void doRevertToSaved() {
-		super.doRevertToSaved();
-		if (fOutlinePage != null)
-			fOutlinePage.update();
-	}
+//XXX make sure this isn't needed after all
+//	/** The <code>TextualNedEditor</code> implementation of this 
+//	 * <code>AbstractTextEditor</code> method performs any extra 
+//	 * revert behavior required by the ned editor.
+//	 */
+//	public void doRevertToSaved() {
+//		super.doRevertToSaved();
+//		if (fOutlinePage != null)
+//			fOutlinePage.update();
+//	}
 	
-	/** The <code>TextualNedEditor</code> implementation of this 
-	 * <code>AbstractTextEditor</code> method performs any extra 
-	 * save behavior required by the ned editor.
-	 * 
-	 * @param monitor the progress monitor
-	 */
-	public void doSave(IProgressMonitor monitor) {
-		super.doSave(monitor);
-		if (fOutlinePage != null)
-			fOutlinePage.update();
-	}
+//XXX make sure this isn't needed after all
+//	/** The <code>TextualNedEditor</code> implementation of this 
+//	 * <code>AbstractTextEditor</code> method performs any extra 
+//	 * save behavior required by the ned editor.
+//	 * 
+//	 * @param monitor the progress monitor
+//	 */
+//	public void doSave(IProgressMonitor monitor) {
+//		super.doSave(monitor);
+//		if (fOutlinePage != null)
+//			fOutlinePage.update();
+//	}
 	
-	/** The <code>TextualNedEditor</code> implementation of this 
-	 * <code>AbstractTextEditor</code> method performs any extra 
-	 * save as behavior required by the ned editor.
-	 */
-	public void doSaveAs() {
-		super.doSaveAs();
-		if (fOutlinePage != null)
-			fOutlinePage.update();
-	}
+//XXX make sure this isn't needed after all
+//	/** The <code>TextualNedEditor</code> implementation of this 
+//	 * <code>AbstractTextEditor</code> method performs any extra 
+//	 * save as behavior required by the ned editor.
+//	 */
+//	public void doSaveAs() {
+//		super.doSaveAs();
+//		if (fOutlinePage != null)
+//			fOutlinePage.update();
+//	}
 	
 	/** The <code>TextualNedEditor</code> implementation of this 
 	 * <code>AbstractTextEditor</code> method performs sets the 
@@ -117,6 +120,7 @@ public class InifileTextEditor extends TextEditor {
 	 */ 
 	public void doSetInput(IEditorInput input) throws CoreException {
 		super.doSetInput(input);
+		//XXX when to parse the input? does reconcile get called?
 //XXX update the outline page		
 //		if (fOutlinePage != null)
 //			fOutlinePage.setInput(input);

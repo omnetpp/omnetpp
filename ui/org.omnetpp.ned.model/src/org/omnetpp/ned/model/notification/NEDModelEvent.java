@@ -4,8 +4,8 @@ import org.eclipse.core.runtime.Assert;
 import org.omnetpp.ned.model.NEDElement;
 
 /**
- * @author rhornig
  * Defines a generic model change
+ * @author rhornig
  */
 public abstract class NEDModelEvent {
     private static long staticSerial = 0;
