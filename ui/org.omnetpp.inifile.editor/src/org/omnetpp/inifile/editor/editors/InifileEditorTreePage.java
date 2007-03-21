@@ -2,14 +2,20 @@ package org.omnetpp.inifile.editor.editors;
 
 import java.util.ArrayList;
 
+import org.eclipse.jface.preference.IPreferenceNode;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.omnetpp.common.color.ColorFactory;
@@ -58,6 +64,15 @@ public class InifileEditorTreePage extends Composite {
 		contentArea.setWeights(new int[] {1,3});
 		
 		buildTree();
+		
+	}
+
+	protected TreeViewer createTreeViewer(Composite parent) {
+		final TreeViewer viewer = new TreeViewer(parent, SWT.BORDER);
+		addListener(viewer);
+		viewer.setLabelProvider(new LabelProvider());
+		viewer.setContentProvider(new GenericTreeContentProvider());
+		return viewer;
 	}
 
 	private void buildTree() {
@@ -68,12 +83,21 @@ public class InifileEditorTreePage extends Composite {
 		treeViewer.setInput(root);
 	}
 	
-	protected TreeViewer createTreeViewer(Composite parent) {
-		final TreeViewer viewer = new TreeViewer(parent, SWT.BORDER);
-		//XXX addListeners(viewer);
-		viewer.setLabelProvider(new LabelProvider());
-		viewer.setContentProvider(new GenericTreeContentProvider());
-		return viewer;
+	private void addListener(final TreeViewer treeViewer) {
+		((Tree) treeViewer.getControl()).addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(final SelectionEvent event) {
+				ISelection selection = treeViewer.getSelection();
+				if (selection.isEmpty())
+					return;
+				Object sel = ((IStructuredSelection) selection).getFirstElement();
+				String selected = (String) ((GenericTreeNode)sel).getPayload();
+				treeSelectionChanged(selected);
+			}
+		});
+	}
+
+	private void treeSelectionChanged(String selected) {
+		System.out.println("selected:" + selected);
 	}
 
 	public void showStatusMessage(String message) {
@@ -88,5 +112,4 @@ public class InifileEditorTreePage extends Composite {
 	 */
 	public void pageSelected() {
 	}
-
 }
