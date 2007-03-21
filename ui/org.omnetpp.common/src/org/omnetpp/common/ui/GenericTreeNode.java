@@ -1,4 +1,4 @@
-package org.omnetpp.scave.editors.treeproviders;
+package org.omnetpp.common.ui;
 
 import org.eclipse.core.runtime.Assert;
 
@@ -9,9 +9,7 @@ import org.eclipse.core.runtime.Assert;
  * 
  * @author andras
  */
-//XXX move to "common" plug-in?
 public class GenericTreeNode {
-
 	private static final GenericTreeNode[] EMPTY_ARRAY = new GenericTreeNode[0];
 
 	private GenericTreeNode parent;
@@ -103,4 +101,8 @@ public class GenericTreeNode {
 		return child;
 	}
 	
+	@Override
+	public String toString() {
+		return payload.toString();
+	}
 }

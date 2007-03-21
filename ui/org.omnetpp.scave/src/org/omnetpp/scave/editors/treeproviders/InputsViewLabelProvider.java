@@ -2,6 +2,7 @@ package org.omnetpp.scave.editors.treeproviders;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.Run;

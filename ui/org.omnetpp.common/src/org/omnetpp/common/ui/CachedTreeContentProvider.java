@@ -1,4 +1,4 @@
-package org.omnetpp.scave.editors.treeproviders;
+package org.omnetpp.common.ui;
 
 import org.eclipse.jface.viewers.Viewer;
 
@@ -9,7 +9,6 @@ import org.eclipse.jface.viewers.Viewer;
  * buildTree() is only called once. Refresh (discarding and rebuilding
  * the tree) can be triggered by calling setInput() on the viewer.
  */
-//XXX this is reusable and does not reference any Scave stuff -- move to the common plug-in!
 public abstract class CachedTreeContentProvider extends GenericTreeContentProvider {
 	private GenericTreeNode root;
 

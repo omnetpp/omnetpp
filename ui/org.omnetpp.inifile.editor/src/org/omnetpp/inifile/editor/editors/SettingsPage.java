@@ -13,6 +13,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.CustomSashForm;
 
+//XXX dead-end, remove this class!
 public class SettingsPage extends InifileEditorFormPage {
 	private FormToolkit formToolkit = null;
 	private SashForm sashform = null;

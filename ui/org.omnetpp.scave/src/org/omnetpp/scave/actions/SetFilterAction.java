@@ -5,8 +5,8 @@ import static org.omnetpp.scave.model2.RunAttribute.MEASUREMENT;
 import static org.omnetpp.scave.model2.RunAttribute.REPLICATION;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.treeproviders.GenericTreeNode;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.Run;

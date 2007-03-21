@@ -12,7 +12,9 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
  * Common functionality for form-based pages of the inifile multi-page editor.
  * @author andras
  */
+//XXX obsolete class, remove
 public class InifileEditorFormPage extends ScrolledForm {
+
 	protected InifileEditor inifileEditor = null;  // backreference to the containing editor
 	
 	public InifileEditorFormPage(Composite parent, int style, InifileEditor inifileEditor) {

@@ -1,4 +1,4 @@
-package org.omnetpp.scave.editors.treeproviders;
+package org.omnetpp.common.ui;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -8,7 +8,6 @@ import org.eclipse.jface.viewers.Viewer;
  * Content provider for a tree built of {@link GenericTreeNode}s.
  * @author andras
  */
-//XXX move to "common" plug-in?
 public class GenericTreeContentProvider implements ITreeContentProvider {
 	
 	public Object[] getChildren(Object parentElement) {

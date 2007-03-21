@@ -1,5 +1,7 @@
 package org.omnetpp.scave.editors.treeproviders;
 
+import org.omnetpp.common.ui.CachedTreeContentProvider;
+import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileList;
 import org.omnetpp.scave.engine.Run;
