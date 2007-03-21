@@ -4,7 +4,7 @@
 package org.omnetpp.inifile.editor.model;
 
 
-class DirectiveLine extends InifileLine {
+public class DirectiveLine extends InifileLine {
 	private String directive;
 	private String args;
 	

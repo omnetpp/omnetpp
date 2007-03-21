@@ -1,9 +1,10 @@
 package org.omnetpp.inifile.editor.text.outline;
 
-
-
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -16,11 +17,11 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.omnetpp.inifile.editor.model.IInifileChangeListener;
 import org.omnetpp.inifile.editor.model.InifileContents;
+import org.omnetpp.inifile.editor.model.InifileLine;
 
 /**
  * Content outline page for the inifile editor.
  */
-//XXX notify after every run of the reconciler
 public class InifileContentOutlinePage extends ContentOutlinePage implements IInifileChangeListener {
 	protected InifileContents fInput;
 	protected IDocumentProvider fDocumentProvider;
@@ -48,10 +49,8 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 		getTreeViewer().setContentProvider(new ITreeContentProvider() {
 			public void dispose() {
 			}
-
 			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			}
-
 			public Object[] getChildren(Object parentElement) {
 				if (parentElement instanceof InifileContents) {
 					InifileContents ini = (InifileContents) parentElement;
@@ -59,15 +58,12 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 				}
 				return null;
 			}
-
 			public Object getParent(Object element) {
 				return null; //XXX
 			}
-
 			public boolean hasChildren(Object element) {
 				return (element instanceof InifileContents);
 			}
-
 			public Object[] getElements(Object inputElement) {
 				return getChildren(inputElement);
 			}
@@ -85,29 +81,30 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 		super.selectionChanged(event);
 		//System.out.println(this+".selectionChanged( " + event + ") called");
 
+		// make text editor to follow outline's selection
 		ISelection selection = event.getSelection();
-		if (selection.isEmpty())
+		if (selection.isEmpty()) {
 			fTextEditor.resetHighlightRange();
+		}
 		else {
+			// if an InifileLine is selected in the outline, highlight it in the text editor
 			TreeViewer viewer = getTreeViewer();
 			viewer.refresh();
-			
-//XXX			
-//			NEDElement node = (NEDElement) ((IStructuredSelection) selection).getFirstElement();
-//			//System.out.println("selected: "+node);
-//			NEDSourceRegion region = node.getSourceRegion();
-//			if (region!=null) {
-//				IDocument docu = fDocumentProvider.getDocument(fInput);
-//				try {
-//					int startOffset = docu.getLineOffset(region.startLine-1)+region.startColumn;
-//					int endOffset = docu.getLineOffset(region.endLine-1)+region.endColumn;
-//					fTextEditor.setHighlightRange(startOffset, endOffset-startOffset, true);
-//				} catch (BadLocationException e) {
-//				}
-//				catch (IllegalArgumentException x) {
-//					fTextEditor.resetHighlightRange();
-//				}
-//			}
+			Object sel = ((IStructuredSelection) selection).getFirstElement();
+			if (sel instanceof InifileLine) {
+				InifileLine line = (InifileLine) sel;
+
+				IDocument docu = fDocumentProvider.getDocument(fTextEditor.getEditorInput());
+				try {
+					int startOffset = docu.getLineOffset(line.getLineNumber()-1);
+					int endOffset = docu.getLineOffset(line.getLineNumber())-1;
+					fTextEditor.setHighlightRange(startOffset, endOffset-startOffset, true);
+				} catch (BadLocationException e) {
+				}
+				catch (IllegalArgumentException x) {
+					fTextEditor.resetHighlightRange();
+				}
+			}
 		}
 	}
 
@@ -150,6 +147,9 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 		}		
 	}
 
+	/* (non-Javadoc)
+	 * @see org.omnetpp.inifile.editor.model.IInifileChangeListener#modelChanged()
+	 */
 	public void modelChanged() {
 		update();
 	}

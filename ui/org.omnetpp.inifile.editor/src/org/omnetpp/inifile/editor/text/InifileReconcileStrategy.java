@@ -15,12 +15,12 @@ import org.omnetpp.inifile.editor.model.ParseException;
  * background parsing of the inifile, and keeps editor data 
  * (InifileContents) up to date.
  */
-public class NEDReconcileStrategy implements IReconcilingStrategy {
+public class InifileReconcileStrategy implements IReconcilingStrategy {
 
 	private InifileEditorData editorData = null;
 	private IDocument document = null;
 
-	public NEDReconcileStrategy(InifileEditorData editorData) {
+	public InifileReconcileStrategy(InifileEditorData editorData) {
 		this.editorData = editorData;
 	}
 
@@ -40,13 +40,13 @@ public class NEDReconcileStrategy implements IReconcilingStrategy {
 		try {
 			InifileContents ini = editorData.getInifileContents();
 			ini.parse(text);
-			ini.print(System.out); //XXX debug
+			//ini.print(System.out);
 		} 
 		catch (IOException e) {
 			// cannot happen with string input
 		} 
 		catch (ParseException e) {
-			e.printStackTrace(); //XXX
+			System.err.println(e.getClass()+": "+e.getMessage()); //XXX convert to marker?
 		}
 	}
 }

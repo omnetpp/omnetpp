@@ -8,7 +8,7 @@ package org.omnetpp.inifile.editor.model;
  * Base class for various inifile line types.
  * @author Andras
  */
-abstract class InifileLine {
+public abstract class InifileLine {
 	public static final int COMMENT = 0; // blank or comment line (optional whitespace + optional comment) 
 	public static final int HEADING = 1; // section heading (plus optional comment) 
 	public static final int KEYVALUE = 2; // key = value (plus optional comment)

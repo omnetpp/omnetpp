@@ -1,6 +1,5 @@
 package org.omnetpp.inifile.editor.editors;
 
-
 import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
@@ -27,6 +26,7 @@ import org.omnetpp.inifile.editor.text.InifileTextEditor;
 /**
  * Editor for omnetpp.ini files.
  */
+//FIXME File|Revert is always diabled 
 public class InifileEditor extends MultiPageEditorPart implements IResourceChangeListener, IGotoMarker {
 	/** The text editor */
 	private InifileTextEditor textEditor;

@@ -4,7 +4,7 @@
 package org.omnetpp.inifile.editor.model;
 
 
-class KeyValueLine extends InifileLine {
+public class KeyValueLine extends InifileLine {
 	protected String key;
 	protected String value;
 	

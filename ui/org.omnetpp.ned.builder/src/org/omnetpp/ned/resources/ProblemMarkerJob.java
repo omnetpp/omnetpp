@@ -91,14 +91,10 @@ public class ProblemMarkerJob extends WorkspaceJob {
         if (errors == null)
             return;
 
-        // TODO we should first create all markers and later compare the created
-        // markers to the
-        // ones already on the file. we should add/delete markers only if there
-        // were changes in the
-        // error messages. this would avoid unnecessary marker refresh if we are
-        // editing a file which
-        // already contains markers. adding the markers should be done in a
-        // WorkspaceJob
+        // TODO we should first create all markers and later compare the created markers to the
+        // ones already on the file. we should add/delete markers only if there were changes in the
+        // error messages. this would avoid unnecessary marker refresh if we are editing a file which
+        // already contains markers. adding the markers should be done in a WorkspaceJob
         // file.deleteMarkers(NEDPROBLEM_MARKERID, true, IResource.DEPTH_ZERO);
         for (int i = 0; i < errors.numMessages(); i++) {
             // XXX hack: parse out line number from string. NEDErrorStore should
@@ -106,8 +102,7 @@ public class ProblemMarkerJob extends WorkspaceJob {
             String loc = errors.errorLocation(i);
             int line = parseLineNumber(loc);
             int markerSeverity = IMarker.SEVERITY_INFO;
-            NEDErrorCategory category = NEDErrorCategory.swigToEnum(errors
-                    .errorCategoryCode(i));
+            NEDErrorCategory category = NEDErrorCategory.swigToEnum(errors.errorCategoryCode(i));
             switch (category) {
             case ERRCAT_FATAL:
                 markerSeverity = IMarker.SEVERITY_ERROR;
@@ -125,8 +120,7 @@ public class ProblemMarkerJob extends WorkspaceJob {
                 markerSeverity = IMarker.SEVERITY_ERROR;
                 break;
             }
-            addMarker(file, NEDPROBLEM_MARKERID, markerSeverity, errors
-                    .errorText(i), line);
+            addMarker(file, NEDPROBLEM_MARKERID, markerSeverity, errors.errorText(i), line);
         }
     }
 
@@ -147,10 +141,9 @@ public class ProblemMarkerJob extends WorkspaceJob {
     }
 
     
-    /* (non-Javadoc)
-     * @see org.eclipse.core.resources.WorkspaceJob#runInWorkspace(org.eclipse.core.runtime.IProgressMonitor)
-     * Runs the marker update job. Converts all messages in the ErrorStores to Markers and syncorinzes them with
-     * fileMarkers already present on the file.
+    /**
+     * Runs the marker update job. Converts all messages in the ErrorStores to 
+     * Markers and synchronizes them with fileMarkers already present on the file.
      */
     @Override
     public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
@@ -158,7 +151,7 @@ public class ProblemMarkerJob extends WorkspaceJob {
         for (IFile file : nedParseErrors.keySet()) {
             if (!file.exists())
                 continue;
-            // TODO optimize the marker update. if no chane occured to the marker state
+            // TODO optimize the marker update. if no change occured to the marker state
             // do not touch the markers
             file.deleteMarkers(NEDPROBLEM_MARKERID, true, IResource.DEPTH_ZERO);
             file.deleteMarkers(NEDCONSISTENCYPROBLEM_MARKERID, true, IResource.DEPTH_ZERO);

@@ -105,7 +105,7 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
 		// Based on: JavaSourceViewerConfiguration.getReconciler() in JDT which
 		// creates and configures JavaReconciler; that in turn will eventually
 		// result in calls to org.eclipse.jdt.internal.compiler.parser.Parser.
-		MonoReconciler reconciler = new MonoReconciler(new NEDReconcileStrategy(editorData), true);
+		MonoReconciler reconciler = new MonoReconciler(new InifileReconcileStrategy(editorData), true);
 		reconciler.setIsIncrementalReconciler(false);
 		reconciler.setIsAllowedToModifyDocument(false);
 		reconciler.setProgressMonitor(new NullProgressMonitor());
