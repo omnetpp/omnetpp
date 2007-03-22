@@ -2,6 +2,7 @@ package org.omnetpp.common.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 public class StringUtils extends org.apache.commons.lang.StringUtils {
 	
@@ -57,5 +58,22 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 
 		result.add(currentWord.toString());
 		return result;
+	}
+	
+	public static String breakLines(String text, int maxLineLength) {
+		StringBuilder buf = new StringBuilder();
+		StringTokenizer st = new StringTokenizer(text, " \t\n,;-", true);
+		int lineLength = 0;
+		while (st.hasMoreTokens()) {
+			String token = st.nextToken();
+			if (lineLength + token.length() > maxLineLength) {
+				buf.append("\n");
+				lineLength = 0;
+				token = token.replaceFirst("^[ \t]+", "");
+			}
+			buf.append(token);
+			lineLength += token.length();
+		}
+		return buf.toString();
 	}
 }

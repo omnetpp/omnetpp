@@ -119,9 +119,12 @@ public class InifileContents {
      * Fires a model change event by notifying listeners.
      */
     public void fireModeChanged() {
-        if(listeners == null || !getListeners().isEnabled())
-            return;
-        //forward to the listerList
-        listeners.fireModelChanged();
+        if (listeners != null && getListeners().isEnabled())
+        	listeners.fireModelChanged();
     }
+
+	public String getValue(String section, String key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

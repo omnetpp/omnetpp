@@ -27,7 +27,8 @@ import org.omnetpp.inifile.editor.text.InifileTextEditor;
 /**
  * Editor for omnetpp.ini files.
  */
-//FIXME File|Revert is always diabled 
+//FIXME File|Revert is always diabled
+//FIXME outline view doesn't get displayed - move creation from TextEditor into here
 public class InifileEditor extends MultiPageEditorPart implements IResourceChangeListener, IGotoMarker {
 	/** The text editor */
 	private InifileTextEditor textEditor;
@@ -67,11 +68,7 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	protected void createPages() {
 		// create form page
 		InifileEditorTreePage treePage = new InifileEditorTreePage(getContainer(), this);
-		addEditorPage(treePage, "Tree-based form");
-
-		// create form page
-		InifileEditorFormPage page = new SettingsPage(getContainer(), this);
-		addEditorPage(page, "Form");
+		addEditorPage(treePage, "Form");
 
 		// create texteditor
 		createTextEditorPage();
