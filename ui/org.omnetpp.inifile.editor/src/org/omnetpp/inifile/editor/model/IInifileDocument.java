@@ -1,11 +1,6 @@
 package org.omnetpp.inifile.editor.model;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-
 import org.eclipse.core.resources.IFile;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IRegion;
 
 /**
  * An interface for high-level manipulation of the contents of an ini file 
@@ -15,39 +10,17 @@ import org.eclipse.jface.text.IRegion;
  * and values -- they are just treated as strings. Additional layer(s) 
  * may be needed to deal with these details.
  *
- * NOTE 1: this interface assumes that within a section, keys are unique
- * (i.e. multiple appearances of the same key should be flagged as an error
- * during parsing.)
+ * This interface assumes that within a section, keys are unique (i.e. multiple 
+ * appearances of the same key should be flagged as an error during parsing.)
+ * If there're non-unique keys, behaviour is undefined: this interface
+ * should not be used until this condition gets resolved. 
  * 
- * NOTE 2: It is also not possible to distinguish multiple sections 
- * of the same name: this interface presents them as a single section.
+ * Note: it is not possible to distinguish multiple sections of the same name
+ * (ie a non-contiguous section): this interface presents them as a single section.
  * 
  * @author Andras
  */
-//FIXME deal with include files; their contents should be visible but not editable?
-public interface IInifileDocument { //XXX
-	/** Setters change the underlying IDocument */
-	public class IniLine {
-		private IFile file;
-		private IRegion region;
-		//private String comment;
-	};
-	public class SectionHeadingLine extends IniLine {
-		private String sectionName;
-	}
-	public class KeyValueLine extends IniLine {
-		private String keyName;
-		private String value;
-	}
-	public class IniSection {
-		private SectionHeadingLine sectionHeading; // the first if there's more than one
-		private LinkedHashMap<String,KeyValueLine> entries; // the first, if key occurs multiple times
-	}
-	
-	public LinkedHashMap<String,IniSection> sections = new LinkedHashMap<String, IniSection>();
-	
-	//--------------------
-
+public interface IInifileDocument {
 	public class LineInfo {
 		private IFile file;
 		private int lineNumber;
@@ -70,59 +43,116 @@ public interface IInifileDocument { //XXX
 		}
 	}
 	
-	// null if not exists, first one if there's more than one
+	/**
+	 * Returns the value of the given entry.
+	 * @return null if section or key in it does not exist 
+	 */
 	String getValue(String section, String key);
 
-	// set if exists, error if not exists
+	/** 
+	 * Sets the value of the given entry. Throws error if key does not exist 
+	 * in that section, or it is readonly. 
+	 */
 	void setValue(String section, String key, String value);
 
-	// error if exists, add to section if not exists, create section if section not exists;
-	// comment may be null; beforeKey may be null (meaning append)
+	/**
+	 * Creates a new entry. Throws error if already exists, or section or beforeKey does not exist. 
+	 * @param comment may be null
+	 * @param beforeKey may be null (meaning append) 
+	 */
 	void addEntry(String section, String key, String value, String comment, String beforeKey);
 
-	// returns immutable value object with file/line/isreadonly info; 
-	// of the first occurrence if there's more than one
+	/**
+	 * Returns immutable value object with file/line/isreadonly info. 
+	 */
 	LineInfo getEntryLineDetails(String section, String key); 
 
-	// error if key doesn't exist; of first one if key is not unique
+	/** 
+	 * Returns comment for the given key, or null if there's no comment.
+	 * Throws error if key doesn't exist.
+	 */
 	String getComment(String section, String key);
 
-	// error if key doesn't exist; sets comment on first one if key is not unique
+	/** 
+	 * Sets the comment for an entry. Throws error if key doesn't exist.
+	 */
 	void setComment(String section, String key, String comment);
 
-	// removes all if there's more than one
+	/** 
+	 * Removes the given key from the given section. Nothing happens if it's not there.
+	 */
 	void removeKey(String section, String key);
 
-	// returns unique keys, in order
+	/** 
+	 * Returns keys in the given section, in the order they appear. 
+	 */
 	String[] getKeys(String section);
 
-	// returns list of unique section names
+	/** 
+	 * Returns list of unique section names. 
+	 */
 	String[] getSectionNames();
 
-	// removes all sections with that name, except the parts in readonly files
+	/** 
+	 * Removes all sections with that name, except the parts in readonly files. 
+	 */
 	void removeSection(String section);
 	
-	// adds section; error if already exists
+	/** 
+	 * Adds a section. Throws an error if such section already exists. 
+	 * (This effectively means that this interface does not support creating 
+	 * and populating non-contiguous sections). 
+	 */
 	void addSection(String sectionName, String beforeSection);
 
-	// returns immutable value object with file/line/isreadonly info; 
-	// of the first occurrence if there's more than one
+	/** 
+	 * Returns immutable value object with file/line/isreadonly info.
+	 */
 	LineInfo getSectionLineDetails(String section); 
 	
-	// error if section doesn't exist; of the first one if there're more than one
+	/**
+	 * Returns the comment on the section heading's line. Throws error if section 
+	 * doesn't exist; returns comment of the first heading if there're more than one. 
+	 */
 	String getSectionComment(String section);
 
-	// error if section doesn't exist; sets comment on first one if there're more than one
+	/**
+	 * Sets the comment on the section heading's line. Throws error if section 
+	 * doesn't exist; sets the comment of the first heading if there're more than one. 
+	 */
 	void setSectionComment(String section, String comment);
 
-	// only includes the includes at the top of the primary (edited) file
+	/**
+	 * Returns the included files at the top of the primary (edited) file.
+	 * Other includes are not returned.
+	 */ 
 	String[] getTopIncludes();
-	void addTopInclude(String include, String before);
+	
+	/**
+	 * Adds an include at the top of the file.
+	 * @param beforeInclude specify null to append
+	 */
+	void addTopInclude(String include, String beforeInclude);
+	
+	/**
+	 * Removes the given include. Throws error if include does not exist.
+	 */
 	void removeTopInclude(String include);
 
-	// only includes the includes at the bottom of the primary (edited) file
+	/**
+	 * Returns the included files at the bottom of the primary (edited) file.
+	 * Other includes are not returned.
+	 */ 
 	String[] getBottomIncludes();
-	void addBottomInclude(String include, String before);
-	void removeBottomInclude(String include);
 
+	/**
+	 * Adds an include at the bottom of the file.
+	 * @param beforeInclude specify null to append
+	 */
+	void addBottomInclude(String include, String before);
+
+	/**
+	 * Removes the given include. Throws error if include does not exist.
+	 */
+	void removeBottomInclude(String include);
 }
