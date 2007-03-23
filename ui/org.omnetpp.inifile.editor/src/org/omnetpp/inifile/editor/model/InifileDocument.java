@@ -174,7 +174,7 @@ public class InifileDocument implements IInifileDocument {
 
 		// change IDocument
 		line.value = value; 
-		String text = line.key + " = " + line.value + (line.comment == null ? "" : line.comment);
+		String text = line.key + " = " + line.value + (line.comment == null ? "" : " "+line.comment);
 		replaceLine(line, text);
 		//changed = true; //XXX just to trigger the "tru/fals" bug
 	}
@@ -230,7 +230,7 @@ s	 * @return true if line numbers have changed, false if not
 
 		// modify IDocument
 		line.comment = comment; 
-		String text = line.key + " = " + line.value + (line.comment == null ? "" : line.comment);
+		String text = line.key + " = " + line.value + (line.comment == null ? "" : " "+line.comment);
 		replaceLine(line, text);
 		//TODO
 	}
@@ -294,7 +294,7 @@ s	 * @return true if line numbers have changed, false if not
 
 		SectionHeadingLine line = section.sectionHeading;
 		line.comment = comment; 
-		String text = "[" + line.sectionName + "]" + (line.comment == null ? "" : line.comment);
+		String text = "[" + line.sectionName + "]" + (line.comment == null ? "" : " "+line.comment);
 		replaceLine(line, text);
 	}
 
