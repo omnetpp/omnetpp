@@ -4,15 +4,21 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
+import org.eclipse.ui.texteditor.MarkerUtilities;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.inifile.editor.InifileEditorPlugin;
 
 /**
  * Standard implementation of IInifileDocument.
@@ -21,6 +27,8 @@ import org.omnetpp.common.util.StringUtils;
  */
 //XXX renameSection() missing
 public class InifileDocument implements IInifileDocument {
+	public static final String INIFILEPROBLEM_MARKER_ID = InifileEditorPlugin.PLUGIN_ID + ".inifileproblem";
+	
 	private IDocument document; // the document we are manipulating
 	private IFile documentFile; // the file of the document
 	private boolean changed; // whether changed since last parsed
@@ -84,6 +92,13 @@ public class InifileDocument implements IInifileDocument {
 		bottomIncludes.clear();
 		long startTime = System.currentTimeMillis();
 		Reader streamReader = new StringReader(document.get());
+        
+		try {
+			documentFile.deleteMarkers(INIFILEPROBLEM_MARKER_ID, true, IResource.DEPTH_ZERO);
+		} catch (CoreException e1) {
+			e1.printStackTrace(); //XXX
+		}
+
 		try {
 			new InifileParser().parse(streamReader, new InifileParser.ParserCallback() {
 				Section currentSection = null;
@@ -145,6 +160,7 @@ public class InifileDocument implements IInifileDocument {
 			// cannot happen with string input
 		} 
 		catch (ParseException e) {
+		    addMarker(documentFile, INIFILEPROBLEM_MARKER_ID, IMarker.SEVERITY_ERROR, e.getMessage(), e.getLineNumber());
 			System.err.println(e.getClass()+": "+e.getMessage()); //XXX convert to marker?
 		}
 		changed = false; // even if there was an error, we don't try again until text changes
@@ -152,6 +168,19 @@ public class InifileDocument implements IInifileDocument {
 		System.out.println("Inifile parsing: "+(System.currentTimeMillis()-startTime)+"ms");
 	}
 
+    @SuppressWarnings("unchecked")
+    private static void addMarker(final IFile file, final String type, int severity, String message, int line) {
+    	try {
+    		HashMap map = new HashMap();
+    		MarkerUtilities.setMessage(map, message);
+    		MarkerUtilities.setLineNumber(map, line);
+    		map.put(IMarker.SEVERITY, severity);
+			MarkerUtilities.createMarker(file, map, IMarker.PROBLEM);
+		} catch (CoreException e) {
+			e.printStackTrace(); //XXX
+		}
+    }
+	
 	public String getValue(String section, String key) {
 		KeyValueLine line = lookupEntry(section, key);
 		return line == null ? null : line.value;
