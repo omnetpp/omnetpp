@@ -33,9 +33,17 @@ public abstract class FieldEditor extends Composite {
 		String key = entry.getName();
 		inifile.setValue(section, key, value);
 	}
+
+	protected void resetValue() {
+		String section = entry.getSection(); 
+		String key = entry.getName();
+		inifile.removeKey(section, key);
+	}
 	
 	public abstract void reread();
 	
 	public abstract void commit();
+	
+	public abstract void resetToDefault();
 	
 }

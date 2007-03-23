@@ -16,6 +16,8 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
 public class CheckboxFieldEditor extends FieldEditor {
 	private Button checkbox;
 	private Label label;
+	private Button resetButton;
+	
 	private boolean oldValue;
 
 	public CheckboxFieldEditor(Composite parent, int style, ConfigurationEntry entry, IInifileDocument inifile) {
@@ -28,10 +30,14 @@ public class CheckboxFieldEditor extends FieldEditor {
 		label.setText("["+entry.getSection()+(entry.isGlobal() ? "" : "] or [Run X")+"] "+entry.getName());
 		label.setToolTipText(StringUtils.breakLines(entry.getDescription(),60));
 		label.setBackground(BGCOLOR);
+		resetButton = new Button(this, SWT.PUSH);
+		resetButton.setText("Reset");
+		resetButton.setToolTipText("Reset to default, and remove line from ini file");
 
-		setLayout(new GridLayout(2, false));
+		setLayout(new GridLayout(3, false));
 		checkbox.setLayoutData(new GridData());
 		label.setLayoutData(new GridData());
+		resetButton.setLayoutData(new GridData());
 
 		reread();
 
@@ -40,6 +46,7 @@ public class CheckboxFieldEditor extends FieldEditor {
 				setAsString(checkbox.getSelection() ? "true" : "false");
 			}
 		});
+		
 		
 	}
 
@@ -65,5 +72,11 @@ public class CheckboxFieldEditor extends FieldEditor {
 		if (value != oldValue) {
 			setAsString(value ? "true" : "false");
 		}
+	}
+
+	@Override
+	public void resetToDefault() {
+		resetValue();
+		reread();
 	}
 }

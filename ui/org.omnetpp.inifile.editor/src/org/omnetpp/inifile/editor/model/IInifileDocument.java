@@ -10,6 +10,10 @@ import org.eclipse.core.resources.IFile;
  * and values -- they are just treated as strings. Additional layer(s) 
  * may be needed to deal with these details.
  *
+ * Some entries may not be editable (i.e. they are readonly), because they
+ * come from included ini files, or for some other reason. It it an error 
+ * to try to modify or remove these entries.
+ * 
  * This interface assumes that within a section, keys are unique (i.e. multiple 
  * appearances of the same key should be flagged as an error during parsing.)
  * If there're non-unique keys, behaviour is undefined: this interface
@@ -75,12 +79,14 @@ public interface IInifileDocument {
 	String getComment(String section, String key);
 
 	/** 
-	 * Sets the comment for an entry. Throws error if key doesn't exist.
+	 * Sets the comment for an entry. Throws error if key doesn't exist,
+	 * or the entry is readonly.
 	 */
 	void setComment(String section, String key, String comment);
 
 	/** 
 	 * Removes the given key from the given section. Nothing happens if it's not there.
+	 * Throws an error if this entry is not editable (readonly).
 	 */
 	void removeKey(String section, String key);
 
@@ -98,7 +104,9 @@ public interface IInifileDocument {
 
 	/** 
 	 * Removes all sections with that name, except the parts in readonly files.
-	 * If there's no such section, nothing happens. 
+	 * If there's no such section, nothing happens.  
+	 * Throws an error if this entry is not editable (readonly).
+	 * XXX what should happen if some is readonly and some is not?
 	 */
 	void removeSection(String section);
 	
@@ -122,8 +130,10 @@ public interface IInifileDocument {
 	String getSectionComment(String section);
 
 	/**
-	 * Sets the comment on the section heading's line. Throws error if section 
-	 * doesn't exist; sets the comment of the first heading if there're more than one. 
+	 * Sets the comment on the section heading's line. 
+	 * Sets the comment of the first heading if there're more than one. 
+	 * Throws error if section doesn't exist, or if the section heading line 
+	 * is readonly.
 	 */
 	void setSectionComment(String section, String comment);
 
