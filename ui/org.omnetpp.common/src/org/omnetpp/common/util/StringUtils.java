@@ -60,6 +60,10 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 		return result;
 	}
 	
+	/**
+	 * Inserts newlines into the string, performing rudimentary
+	 * line breaking. Good enough for long tooltip texts etc.
+	 */
 	public static String breakLines(String text, int maxLineLength) {
 		StringBuilder buf = new StringBuilder();
 		StringTokenizer st = new StringTokenizer(text, " \t\n,;-", true);
@@ -67,7 +71,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 		while (st.hasMoreTokens()) {
 			String token = st.nextToken();
 			if (lineLength + token.length() > maxLineLength) {
-				buf.append("\n");
+				buf.append("\n"); //TODO should probably chop off trailing spaces of buf[] first
 				lineLength = 0;
 				token = token.replaceFirst("^[ \t]+", "");
 			}

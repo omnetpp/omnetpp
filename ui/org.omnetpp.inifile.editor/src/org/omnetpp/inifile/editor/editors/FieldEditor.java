@@ -8,7 +8,6 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
  * Base class for inifile field editors
  * @author Andras
  */
-//FIXME finish...
 public abstract class FieldEditor extends Composite {
 	protected ConfigurationEntry entry;
 	protected IInifileDocument inifile;
@@ -23,5 +22,11 @@ public abstract class FieldEditor extends Composite {
 		String section = entry.getSection(); 
 		String key = entry.getName();
 		return inifile.getValue(section, key);
+	}
+
+	protected void setAsString(String value) {
+		String section = entry.getSection(); 
+		String key = entry.getName();
+		inifile.setValue(section, key, value);
 	}
 }

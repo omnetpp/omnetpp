@@ -103,13 +103,16 @@ public class InifileEditorTreePage extends Composite {
 		
 		for (ConfigurationEntry e : ConfigurationRegistry.getEntries()) {
 			if (e.getCategory().equals(category)) {
-				Label label = new Label(form, SWT.NONE);
-				//label.setLayoutData(new GridData(200,20));
-				label.setBackground(bgColor);
-				label.setText("["+e.getSection()+(e.isGlobal() ? "" : "] or [Run X")+"] "+e.getName());
-				label.setToolTipText(StringUtils.breakLines(e.getDescription(),60));
-				
-				//System.out.println(label.getText());
+				if (e.getType()==ConfigurationEntry.Type.CFG_BOOL) {
+					CheckboxFieldEditor label = new CheckboxFieldEditor(form, SWT.NONE, e, inifileEditor.getEditorData().getInifileDocument());
+				}
+				else {
+					Label label = new Label(form, SWT.NONE);
+					label.setBackground(bgColor);
+					label.setText("["+e.getSection()+(e.isGlobal() ? "" : "] or [Run X")+"] "+e.getName());
+					label.setToolTipText(StringUtils.breakLines(e.getDescription(),60));
+					//System.out.println(label.getText());
+				}
 			}
 		}
 		form.layout();

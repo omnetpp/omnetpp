@@ -176,6 +176,7 @@ public class InifileDocument implements IInifileDocument {
 		line.value = value; 
 		String text = line.key + " = " + line.value + (line.comment == null ? "" : line.comment);
 		replaceLine(line, text);
+		//changed = true; //XXX just to trigger the "tru/fals" bug
 	}
 
 	/**
@@ -184,11 +185,11 @@ s	 * @return true if line numbers have changed, false if not
 	 */
 	protected boolean replaceLine(Line line, String text) {
 		try {
-			int offset = document.getLineOffset(line.lineNumber);
-			int length = document.getLineOffset(line.lineNumber+line.numLines) - 1 - offset;
+			int offset = document.getLineOffset(line.lineNumber-1);
+			int length = document.getLineOffset(line.lineNumber-1+line.numLines) - 1 - offset;
 			document.replace(offset, length, text);
 
-			boolean lineNumberChange = (line.numLines == StringUtils.countNewLines(text)+1);
+			boolean lineNumberChange = (line.numLines != StringUtils.countNewLines(text)+1);
 			if (lineNumberChange)
 				changed = true; // force re-parsing because line numbers have shifted
 			return lineNumberChange;
