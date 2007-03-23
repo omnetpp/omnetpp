@@ -76,4 +76,11 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 		}
 		return buf.toString();
 	}
+
+	public static int countNewLines(String text) {
+		int newlineCount = 0;
+		for (int pos = -42; pos != -1; pos = text.indexOf('\n', pos==-42 ? 0 : pos+1))
+			newlineCount++;
+		return newlineCount;
+	}
 }

@@ -4,19 +4,21 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
+import org.omnetpp.common.util.StringUtils;
 
 /**
  * Standard implementation of IInifileDocument.
  * Setters change the underlying IDocument.
  * @author Andras
  */
+//XXX renameSection() missing
 public class InifileDocument implements IInifileDocument {
 	private IDocument document; // the document we are manipulating
 	private IFile documentFile; // the file of the document
@@ -32,7 +34,7 @@ public class InifileDocument implements IInifileDocument {
 		String sectionName;
 	}
 	class KeyValueLine extends Line {
-		String keyName;
+		String key;
 		String value;
 	}
 	class IncludeLine extends Line {
@@ -40,7 +42,7 @@ public class InifileDocument implements IInifileDocument {
 	}
 
 	class Section {
-		SectionHeadingLine sectionHeading; // the first if there's more than one
+		SectionHeadingLine sectionHeading; // the first if there's more than one; XXX store all?
 		LinkedHashMap<String,KeyValueLine> entries = new LinkedHashMap<String, KeyValueLine>();
 	}
 
@@ -98,7 +100,7 @@ public class InifileDocument implements IInifileDocument {
 						line.numLines = 1; //XXX
 						line.comment = comment;
 						line.includedFile = args;
-						// TODO: at this point, recursively parse that file as well
+						// TODO: at this point, we should recursively parse that file as well
 					}
 				}
 
@@ -115,7 +117,7 @@ public class InifileDocument implements IInifileDocument {
 						line.lineNumber = lineNumber;
 						line.numLines = 1; //XXX
 						line.comment = comment;
-						line.keyName = key;
+						line.key = key;
 						line.value = value;
 						currentSection.entries.put(key, line);
 					}
@@ -169,7 +171,31 @@ public class InifileDocument implements IInifileDocument {
 			throw new IllegalArgumentException("no such entry: ["+section+"] "+key);
 		if (!inMainFile(line))
 			throw new IllegalArgumentException("cannot change entry in an included file: ["+section+"] "+key);
-		//TODO change IDocument
+
+		// change IDocument
+		line.value = value; 
+		String text = line.key + " = " + line.value + (line.comment == null ? "" : line.comment);
+		replaceLine(line, text);
+	}
+
+	/**
+	 * Replaces line content in IDocument.
+s	 * @return true if line numbers have changed, false if not
+	 */
+	protected boolean replaceLine(Line line, String text) {
+		try {
+			int offset = document.getLineOffset(line.lineNumber);
+			int length = document.getLineOffset(line.lineNumber+line.numLines) - 1 - offset;
+			document.replace(offset, length, text);
+
+			boolean lineNumberChange = (line.numLines == StringUtils.countNewLines(text)+1);
+			if (lineNumberChange)
+				changed = true; // force re-parsing because line numbers have shifted
+			return lineNumberChange;
+		} 
+		catch (BadLocationException e) {
+			throw new RuntimeException("cannot set value: bad location: "+e.getMessage());
+		}
 	}
 
 	public void addEntry(String section, String key, String value, String comment, String beforeKey) {
@@ -200,6 +226,11 @@ public class InifileDocument implements IInifileDocument {
 		KeyValueLine line = lookupEntry(section, key);
 		if (line == null)
 			throw new IllegalArgumentException("no such entry: ["+section+"] "+key);
+
+		// modify IDocument
+		line.comment = comment; 
+		String text = line.key + " = " + line.value + (line.comment == null ? "" : line.comment);
+		replaceLine(line, text);
 		//TODO
 	}
 
@@ -259,7 +290,11 @@ public class InifileDocument implements IInifileDocument {
 		Section section = sections.get(sectionName);
 		if (section == null)
 			throw new IllegalArgumentException("section does not exist: ["+sectionName+"]");
-		//TODO
+
+		SectionHeadingLine line = section.sectionHeading;
+		line.comment = comment; 
+		String text = "[" + line.sectionName + "]" + (line.comment == null ? "" : line.comment);
+		replaceLine(line, text);
 	}
 
 	public String[] getTopIncludes() {
