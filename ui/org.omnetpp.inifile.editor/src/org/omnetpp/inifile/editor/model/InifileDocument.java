@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
@@ -42,7 +43,7 @@ public class InifileDocument implements IInifileDocument {
 	}
 
 	class Section {
-		SectionHeadingLine sectionHeading; // the first if there's more than one; XXX store all?
+		SectionHeadingLine sectionHeadingLine; // the first if there's more than one; XXX store all?
 		LinkedHashMap<String,KeyValueLine> entries = new LinkedHashMap<String, KeyValueLine>();
 	}
 
@@ -72,12 +73,12 @@ public class InifileDocument implements IInifileDocument {
 		document.removeDocumentListener(listener);
 	}
 
-	public void parseIfChanged() {
+	synchronized public void parseIfChanged() {
 		if (changed)
 			parse();
 	}
 
-	public void parse() {
+	synchronized public void parse() {
 		sections.clear();
 		topIncludes.clear();
 		bottomIncludes.clear();
@@ -132,7 +133,8 @@ public class InifileDocument implements IInifileDocument {
 						line.numLines = 1; //XXX
 						line.comment = comment;
 						line.sectionName = sectionName;
-						Section section = new Section(); //XXX fill it in
+						Section section = new Section();
+						section.sectionHeadingLine = line;
 						sections.put(sectionName, section);
 					}
 					currentSection = sections.get(sectionName);
@@ -176,22 +178,20 @@ public class InifileDocument implements IInifileDocument {
 		line.value = value; 
 		String text = line.key + " = " + line.value + (line.comment == null ? "" : " "+line.comment);
 		replaceLine(line, text);
-		//changed = true; //XXX just to trigger the "tru/fals" bug
 	}
 
 	/**
-	 * Replaces line content in IDocument.
-s	 * @return true if line numbers have changed, false if not
+	 * Replaces line content in IDocument, or if text==null, deletes the line.
+	 * @return true if line numbers have changed, false if not
 	 */
 	protected boolean replaceLine(Line line, String text) {
 		try {
 			int offset = document.getLineOffset(line.lineNumber-1);
-			int length = document.getLineOffset(line.lineNumber-1+line.numLines) - 1 - offset;
-			document.replace(offset, length, text);
+			int length = document.getLineOffset(line.lineNumber-1+line.numLines) - offset;
+			document.replace(offset, length, text==null ? "" : text+"\n");
 
-			boolean lineNumberChange = (line.numLines != StringUtils.countNewLines(text)+1);
-			if (lineNumberChange)
-				changed = true; // force re-parsing because line numbers have shifted
+			boolean lineNumberChange = (text==null) || (line.numLines != StringUtils.countNewLines(text)+1);
+			changed = lineNumberChange; // force re-parsing because line numbers have shifted, and cancel changed=true setting from documentlistener 
 			return lineNumberChange;
 		} 
 		catch (BadLocationException e) {
@@ -199,16 +199,33 @@ s	 * @return true if line numbers have changed, false if not
 		}
 	}
 
+	/**
+	 * Adds a line to IDocument before the given line.
+	 * @return true if line numbers have changed, false if not
+	 */
+	protected void addLine(Line beforeLine, String text) {
+		try {
+			int offset = document.getLineOffset(beforeLine.lineNumber-1);
+			document.replace(offset, 0, text+"\n");
+		} 
+		catch (BadLocationException e) {
+			throw new RuntimeException("cannot insert line: bad location: "+e.getMessage());
+		}
+	}
+	
 	public void addEntry(String section, String key, String value, String comment, String beforeKey) {
 		KeyValueLine line = lookupEntry(section, key);
 		if (line != null)
 			throw new IllegalArgumentException("entry already exists: ["+section+"] "+key);
-		KeyValueLine beforeLine = lookupEntry(section, key);
+		Line beforeLine = beforeKey==null ? lookupSection(section).sectionHeadingLine : lookupEntry(section, beforeKey);
 		if (beforeLine == null)
 			throw new IllegalArgumentException("no such entry: ["+section+"] "+beforeKey);
 		if (!isEditable(beforeLine))
 			throw new IllegalArgumentException("cannot insert entry into included file, before entry ["+section+"] "+beforeKey);
-		//TODO change IDocument
+
+		// modify IDocument
+		String text = key + " = " + value + (comment == null ? "" : " "+comment);
+		addLine(beforeLine, text);
 	}
 
 	public LineInfo getEntryLineDetails(String section, String key) {
@@ -232,13 +249,12 @@ s	 * @return true if line numbers have changed, false if not
 		line.comment = comment; 
 		String text = line.key + " = " + line.value + (line.comment == null ? "" : " "+line.comment);
 		replaceLine(line, text);
-		//TODO
 	}
 
 	public void removeKey(String section, String key) {
 		KeyValueLine line = lookupEntry(section, key);
 		if (line != null) {
-			//TODO remove
+			replaceLine(line, null);
 		}
 	}
 
@@ -253,6 +269,15 @@ s	 * @return true if line numbers have changed, false if not
 		return sections.keySet().toArray(new String[0]);
 	}
 
+	protected Section lookupSection(String sectionName) {
+		parseIfChanged();
+		Section section = sections.get(sectionName);
+		if (section == null)
+			throw new IllegalArgumentException("section does not exist: ["+sectionName+"]");
+		Assert.isTrue(section.sectionHeadingLine!=null);
+		return section;
+	}
+	
 	public void removeSection(String sectionName) {
 		parseIfChanged();
 		Section section = sections.get(sectionName);
@@ -269,13 +294,17 @@ s	 * @return true if line numbers have changed, false if not
 		Section beforeSection = sections.get(beforeSectionName);
 		if (beforeSection == null)
 			throw new IllegalArgumentException("section does not exist: ["+beforeSectionName+"]");
-		//TODO add
+		Line beforeLine = beforeSection.sectionHeadingLine;
+		
+		// modify IDocument
+		String text = "[" + sectionName + "]";
+		addLine(beforeLine, text);
 	}
 
 	public LineInfo getSectionLineDetails(String sectionName) {
 		parseIfChanged();
 		Section section = sections.get(sectionName);
-		return section==null ? null : new LineInfo(section.sectionHeading.file, section.sectionHeading.lineNumber, !isEditable(section.sectionHeading));
+		return section==null ? null : new LineInfo(section.sectionHeadingLine.file, section.sectionHeadingLine.lineNumber, !isEditable(section.sectionHeadingLine));
 	} 
 
 	public String getSectionComment(String sectionName) {
@@ -283,7 +312,7 @@ s	 * @return true if line numbers have changed, false if not
 		Section section = sections.get(sectionName);
 		if (section == null)
 			throw new IllegalArgumentException("section does not exist: ["+sectionName+"]");
-		return section.sectionHeading.comment;
+		return section.sectionHeadingLine.comment;
 	}
 
 	public void setSectionComment(String sectionName, String comment) {
@@ -292,7 +321,7 @@ s	 * @return true if line numbers have changed, false if not
 		if (section == null)
 			throw new IllegalArgumentException("section does not exist: ["+sectionName+"]");
 
-		SectionHeadingLine line = section.sectionHeading;
+		SectionHeadingLine line = section.sectionHeadingLine;
 		line.comment = comment; 
 		String text = "[" + line.sectionName + "]" + (line.comment == null ? "" : " "+line.comment);
 		replaceLine(line, text);

@@ -63,7 +63,7 @@ public class TextFieldEditor extends FieldEditor {
 
 	@Override
 	public void reread() {
-		String value = getAsString();
+		String value = getValueAsString();
 		if (value==null) {
 			String defaultValue = entry.getDefaultValue()==null ? "" : entry.getDefaultValue().toString(); 
 			textField.setText(defaultValue);
@@ -80,7 +80,7 @@ public class TextFieldEditor extends FieldEditor {
 	public void commit() {
 		String value = textField.getText();
 		if (!value.equals(oldValue)) {
-			try {setAsString(value);} catch (Exception e) {}  //XXX
+			setValueAsString(value); //XXX
 		}
 	}
 

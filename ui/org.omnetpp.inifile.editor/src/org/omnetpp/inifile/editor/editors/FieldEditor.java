@@ -22,16 +22,19 @@ public abstract class FieldEditor extends Composite {
 		setBackground(BGCOLOR);
 	}
 
-	protected String getAsString() {
+	protected String getValueAsString() {
 		String section = entry.getSection(); 
 		String key = entry.getName();
 		return inifile.getValue(section, key);
 	}
 
-	protected void setAsString(String value) {
+	protected void setValueAsString(String value) {
 		String section = entry.getSection(); 
 		String key = entry.getName();
-		inifile.setValue(section, key, value);
+		if (inifile.getValue(section, key)==null)
+			inifile.addEntry(section, key, value, null, null);
+		else
+			inifile.setValue(section, key, value);
 	}
 
 	protected void resetValue() {
