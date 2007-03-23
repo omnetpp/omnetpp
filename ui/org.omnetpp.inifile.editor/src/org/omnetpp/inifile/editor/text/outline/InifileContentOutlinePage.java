@@ -16,15 +16,14 @@ import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.omnetpp.inifile.editor.model.IInifileChangeListener;
-import org.omnetpp.inifile.editor.model.InifileContents;
-import org.omnetpp.inifile.editor.model.InifileLine;
+import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.old.InifileLine;
 
 /**
  * Content outline page for the inifile editor.
  */
 public class InifileContentOutlinePage extends ContentOutlinePage implements IInifileChangeListener {
-	protected InifileContents fInput;
-	protected IDocumentProvider fDocumentProvider;
+	protected IInifileDocument fInput;
 	protected ITextEditor fTextEditor;
 
 	/**
@@ -35,7 +34,6 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 	 */
 	public InifileContentOutlinePage(IDocumentProvider provider, ITextEditor editor) {
 		super();
-		fDocumentProvider = provider;
 		fTextEditor = editor;
 	}
 	
@@ -52,9 +50,9 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			}
 			public Object[] getChildren(Object parentElement) {
-				if (parentElement instanceof InifileContents) {
-					InifileContents ini = (InifileContents) parentElement;
-					return ini.getSections();
+				if (parentElement instanceof IInifileDocument) {
+					IInifileDocument ini = (IInifileDocument) parentElement;
+					return ini.getSectionNames();
 				}
 				return null;
 			}
@@ -62,7 +60,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 				return null; //XXX
 			}
 			public boolean hasChildren(Object element) {
-				return (element instanceof InifileContents);
+				return (element instanceof IInifileDocument);
 			}
 			public Object[] getElements(Object inputElement) {
 				return getChildren(inputElement);
@@ -71,7 +69,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 		
 		Assert.isTrue(fInput!=null);
 		getTreeViewer().setInput(fInput);
-		getTreeViewer().addSelectionChangedListener(this);
+		//XXX needed? it's there in the base class too!!!: getTreeViewer().addSelectionChangedListener(this);
 	}
 	
 	/* (non-Javadoc)
@@ -91,10 +89,10 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 			TreeViewer viewer = getTreeViewer();
 			viewer.refresh();
 			Object sel = ((IStructuredSelection) selection).getFirstElement();
-			if (sel instanceof InifileLine) {
+			if (sel instanceof InifileLine) {  //XXX String!!!
 				InifileLine line = (InifileLine) sel;
 
-				IDocument docu = fDocumentProvider.getDocument(fTextEditor.getEditorInput());
+				IDocument docu = fTextEditor.getDocumentProvider().getDocument(fTextEditor.getEditorInput());
 				try {
 					int startOffset = docu.getLineOffset(line.getLineNumber()-1);
 					int endOffset = docu.getLineOffset(line.getLineNumber())-1;
@@ -124,12 +122,13 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 		// unhook from old input object
 		if (fInput != null)
 			fInput.getListeners().remove(this);
-		Assert.isTrue(input instanceof InifileContents || input == null);
-		fInput = (InifileContents) input;
+		Assert.isTrue(input instanceof IInifileDocument || input == null);
+		fInput = (IInifileDocument) input;
 		// Note: when first invoked, treeViewer==null yet
 		if (getTreeViewer() != null) 
 			getTreeViewer().setInput(fInput);
-		fInput.getListeners().add(this);
+		if (fInput != null)
+			fInput.getListeners().add(this);
 	}
 	
 	/**

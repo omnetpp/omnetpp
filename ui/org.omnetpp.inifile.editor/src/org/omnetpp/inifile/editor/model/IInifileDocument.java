@@ -42,10 +42,10 @@ public interface IInifileDocument {
 			return readOnly;
 		}
 	}
-	
+
 	/**
-	 * Returns the value of the given entry.
-	 * @return null if section or key in it does not exist 
+	 * Returns the value of the given entry. Returns null if section,
+	 * or key in it does not exist. 
 	 */
 	String getValue(String section, String key);
 
@@ -63,7 +63,8 @@ public interface IInifileDocument {
 	void addEntry(String section, String key, String value, String comment, String beforeKey);
 
 	/**
-	 * Returns immutable value object with file/line/isreadonly info. 
+	 * Returns immutable value object with file/line/isreadonly info.
+	 * Returns null if section, or key in it does not exist.  
 	 */
 	LineInfo getEntryLineDetails(String section, String key); 
 
@@ -85,6 +86,8 @@ public interface IInifileDocument {
 
 	/** 
 	 * Returns keys in the given section, in the order they appear. 
+	 * Returns null if section does not exist, and zero-length array if it 
+	 * does not contain entries.
 	 */
 	String[] getKeys(String section);
 
@@ -94,7 +97,8 @@ public interface IInifileDocument {
 	String[] getSectionNames();
 
 	/** 
-	 * Removes all sections with that name, except the parts in readonly files. 
+	 * Removes all sections with that name, except the parts in readonly files.
+	 * If there's no such section, nothing happens. 
 	 */
 	void removeSection(String section);
 	
@@ -107,6 +111,7 @@ public interface IInifileDocument {
 
 	/** 
 	 * Returns immutable value object with file/line/isreadonly info.
+	 * Returns null if section does not exist.  
 	 */
 	LineInfo getSectionLineDetails(String section); 
 	
@@ -155,4 +160,9 @@ public interface IInifileDocument {
 	 * Removes the given include. Throws error if include does not exist.
 	 */
 	void removeBottomInclude(String include);
+	
+    /**
+     * Return the listener list for adding/removing listeners. 
+     */
+	InifileChangeListenerList getListeners();
 }

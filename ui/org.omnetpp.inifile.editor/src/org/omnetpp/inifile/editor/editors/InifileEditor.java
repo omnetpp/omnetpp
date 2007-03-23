@@ -1,15 +1,13 @@
 package org.omnetpp.inifile.editor.editors;
 
-import java.io.IOException;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
@@ -21,7 +19,7 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
-import org.omnetpp.inifile.editor.model.ParseException;
+import org.omnetpp.inifile.editor.model.InifileDocument;
 import org.omnetpp.inifile.editor.text.InifileTextEditor;
 
 /**
@@ -72,6 +70,10 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 
 		// create texteditor
 		createTextEditorPage();
+		
+		IFile file = ((IFileEditorInput)getEditorInput()).getFile();
+		IDocument document = textEditor.getDocumentProvider().getDocument(getEditorInput());
+		editorData.setInifiledocument(new InifileDocument(document, file));
 	}
 
 	/**
@@ -99,7 +101,7 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	 */
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		getEditor(0).doSave(monitor);
+		textEditor.doSave(monitor);
 	}
 	
 	/**
@@ -109,18 +111,16 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	 */
 	@Override
 	public void doSaveAs() {
-		IEditorPart editor = getEditor(0);
-		editor.doSaveAs();
-		setPageText(0, editor.getTitle());
-		setInput(editor.getEditorInput());
+		textEditor.doSaveAs();
+		setInput(textEditor.getEditorInput());
 	}
 	
 	/* (non-Javadoc)
 	 * Method declared on IGotoMarker
 	 */
 	public void gotoMarker(IMarker marker) {
-		setActivePage(0);
-		IDE.gotoMarker(getEditor(0), marker);
+		setActivePage(0); //XXX
+		IDE.gotoMarker(textEditor, marker);
 	}
 
 	/**
@@ -133,20 +133,6 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 			throw new PartInitException("Invalid input: it must be a file in the workspace");
 		super.init(site, editorInput);
 		setPartName(editorInput.getName());
-		
-		// load the file
-		try {
-			IFile file = ((IFileEditorInput)editorInput).getFile();
-			getEditorData().getInifileContents().parse(file);
-		} 
-		catch (CoreException e) {
-			e.printStackTrace(); //XXX
-		} catch (IOException e) {
-			e.printStackTrace(); //XXX
-		} catch (ParseException e) {
- 			e.printStackTrace();  //XXX
-		}
-
 	}
 
 	/* (non-Javadoc)

@@ -1,14 +1,12 @@
 package org.omnetpp.inifile.editor.text;
 
-import java.io.IOException;
-
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.reconciler.DirtyRegion;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
-import org.omnetpp.inifile.editor.model.InifileContents;
-import org.omnetpp.inifile.editor.model.ParseException;
+import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.InifileDocument;
 
 /**
  * This class has one instance per editor. It performs 
@@ -16,7 +14,6 @@ import org.omnetpp.inifile.editor.model.ParseException;
  * (InifileContents) up to date.
  */
 public class InifileReconcileStrategy implements IReconcilingStrategy {
-
 	private InifileEditorData editorData = null;
 	private IDocument document = null;
 
@@ -35,18 +32,7 @@ public class InifileReconcileStrategy implements IReconcilingStrategy {
 
 	public void reconcile(IRegion partition) {
 		System.out.println("reconcile(IRegion) called");
-		String text = document.get();
-
-		try {
-			InifileContents ini = editorData.getInifileContents();
-			ini.parse(text);
-			//ini.print(System.out);
-		} 
-		catch (IOException e) {
-			// cannot happen with string input
-		} 
-		catch (ParseException e) {
-			System.err.println(e.getClass()+": "+e.getMessage()); //XXX convert to marker?
-		}
+		IInifileDocument ini = editorData.getInifileDocument();
+		((InifileDocument)ini).parse();
 	}
 }

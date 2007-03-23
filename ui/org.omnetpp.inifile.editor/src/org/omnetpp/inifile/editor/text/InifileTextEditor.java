@@ -164,7 +164,7 @@ public class InifileTextEditor extends TextEditor {
 		if (IContentOutlinePage.class.equals(required)) {
 			if (fOutlinePage == null) {
 				fOutlinePage = new InifileContentOutlinePage(getDocumentProvider(), this);
-				fOutlinePage.setInput(parentEditor.getEditorData().getInifileContents());
+				fOutlinePage.setInput(parentEditor.getEditorData().getInifileDocument());
 			}
 			return fOutlinePage;
 		}

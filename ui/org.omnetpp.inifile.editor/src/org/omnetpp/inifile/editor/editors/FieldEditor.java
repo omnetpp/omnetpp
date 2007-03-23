@@ -2,7 +2,7 @@ package org.omnetpp.inifile.editor.editors;
 
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
-import org.omnetpp.inifile.editor.model.InifileContents;
+import org.omnetpp.inifile.editor.model.IInifileDocument;
 
 /**
  * Base class for inifile field editors
@@ -11,9 +11,9 @@ import org.omnetpp.inifile.editor.model.InifileContents;
 //FIXME finish...
 public abstract class FieldEditor extends Composite {
 	protected ConfigurationEntry entry;
-	protected InifileContents inifile;
+	protected IInifileDocument inifile;
 
-	public FieldEditor(Composite parent, int style, ConfigurationEntry entry, InifileContents inifile) {
+	public FieldEditor(Composite parent, int style, ConfigurationEntry entry, IInifileDocument inifile) {
 		super(parent, style);
 		this.entry = entry;
 		this.inifile = inifile;

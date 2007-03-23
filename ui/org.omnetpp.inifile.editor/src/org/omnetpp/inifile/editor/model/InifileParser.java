@@ -79,7 +79,7 @@ public class InifileParser {
 	/**
 	 * Parses a stream.
 	 */
-	public void parse(Reader streamReader, ParserCallback callback) throws IOException, ParseException {
+	public void parse(Reader streamReader, ParserCallback callback) throws IOException {
 		LineNumberReader reader = new LineNumberReader(streamReader);
 
 		String rawLine;

@@ -1,16 +1,22 @@
 package org.omnetpp.inifile.editor.editors;
 
-import org.omnetpp.inifile.editor.model.InifileContents;
+import org.omnetpp.inifile.editor.model.IInifileDocument;
 
 /**
- * Data held by InifileEditor
+ * Data held by InifileEditor. Introduced because we don't want to pass around
+ * reference to the whole editor part.
+ * 
  * @author Andras
  */
 public class InifileEditorData {
 	// the inifile being edited, in parsed form
-	private InifileContents inifileContents = new InifileContents();
+	private IInifileDocument inifileDocument;
+	
+	public void setInifiledocument(IInifileDocument inifileDocument) {
+		this.inifileDocument = inifileDocument;
+	}
 
-	public InifileContents getInifileContents() {
-		return inifileContents;
+	public IInifileDocument getInifileDocument() {
+		return inifileDocument;
 	}
 }
