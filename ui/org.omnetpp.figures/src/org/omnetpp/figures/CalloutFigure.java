@@ -2,6 +2,7 @@ package org.omnetpp.figures;
 
 import org.eclipse.draw2d.*;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.SWT;
 
 /**
  * @author rhornig
@@ -13,6 +14,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 
 // TODO implement background timeout and hiding the expired entries
 public class CalloutFigure extends Layer {
+    
     private Layer bubbleLayer = new Layer();
     private Shape mainShape = new RoundedRectangle(); 
 
@@ -41,5 +43,15 @@ public class CalloutFigure extends Layer {
     public void clearCallout() {
         setVisible(false);
         mainShape.removeAll();
+    }
+
+    @Override
+    public void paint(Graphics graphics) {
+        graphics.pushState();
+        // set antialiasing on contenet and child/derived figures
+        if(NedFileFigure.antialias != SWT.DEFAULT)
+            graphics.setAntialias(NedFileFigure.antialias);
+        super.paint(graphics);
+        graphics.popState();
     }
 }

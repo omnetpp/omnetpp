@@ -16,6 +16,8 @@ import org.omnetpp.figures.misc.LabelCellEditorLocator;
  */
 public class TopLevelFigure extends Label implements IDirectEditSupport {
 
+    private String tmpName;
+    
     protected void setShape(Image img, 
             String shape, int shapeWidth, int shapeHeight, 
             Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
@@ -60,6 +62,17 @@ public class TopLevelFigure extends Label implements IDirectEditSupport {
         return getText();
     }
 
+    public void setDirectEditTextVisible(boolean visible) {
+        // HACK to hide the text part only of the label
+        if (!visible) {
+            tmpName = getText();
+            setText("");
+        } else {
+            if ("".equals(getText()))
+                setText(tmpName);
+        }
+    }
+    
     @Override
 	public String toString() {
 	    return getClass().getSimpleName()+" "+getText();

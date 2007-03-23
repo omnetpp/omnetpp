@@ -18,6 +18,7 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.handles.HandleBounds;
+import org.eclipse.gef.tools.CellEditorLocator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -26,11 +27,12 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.layout.SpringEmbedderLayout;
+import org.omnetpp.figures.misc.IDirectEditSupport;
 import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
 import org.omnetpp.figures.routers.CompoundModuleShortestPathConnectionRouter;
 
 public class CompoundModuleFigure extends ModuleFigure 
-				implements ILayerSupport, HandleBounds {
+				implements ILayerSupport, HandleBounds, IDirectEditSupport {
 
     private static final int DEFAULT_BORDER_WIDTH = 2;
     private static final int DEFAULT_BORDER_SNAP_WIDTH = 3;
@@ -426,5 +428,18 @@ public class CompoundModuleFigure extends ModuleFigure
 	public void removeMessageFigure(IFigure messageFigure) {
 		messageLayer.remove(messageFigure);
 	}
+
+    // delegate the direct edit siupport to the TitleBorder
+    public CellEditorLocator getDirectEditCellEditorLocator() {
+        return getCompoundModuleBorder().getTitleBorder().getDirectEditCellEditorLocator();
+    }
+
+    public String getDirectEditText() {
+        return getCompoundModuleBorder().getTitleBorder().getDirectEditText();
+    }
+
+    public void setDirectEditTextVisible(boolean visible) {
+        getCompoundModuleBorder().getTitleBorder().setDirectEditTextVisible(visible);
+    }
 
 }

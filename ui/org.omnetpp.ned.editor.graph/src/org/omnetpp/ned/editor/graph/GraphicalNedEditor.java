@@ -48,6 +48,7 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
+import org.eclipse.ui.dialogs.PropertyDialogAction;
 import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
@@ -97,7 +98,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
             getViewer().setEditPartFactory(new NedTreeEditPartFactory());
             ContextMenuProvider provider = new GNEDContextMenuProvider(getViewer(), getActionRegistry());
             getViewer().setContextMenu(provider);
-            getSite().registerContextMenu("org.eclipse.gef.examples.logic.outline.contextmenu", //$NON-NLS-1$
+            getSite().registerContextMenu("org.omnetpp.ned.editor.graph.outline.contextmenu", //$NON-NLS-1$
                     provider, getSite().getSelectionProvider());
             getViewer().setKeyHandler(getCommonKeyHandler());
             getViewer().addDropTargetListener((TransferDropTargetListener)
@@ -198,23 +199,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
         IAction snapAction = new ToggleSnapToGeometryAction(getGraphicalViewer());
         getActionRegistry().registerAction(snapAction);
 
-//        Listener listener = new Listener() {
-//            public void handleEvent(Event event) {
-//                handleActivationChanged(event);
-//            }
-//        };
-//        getGraphicalControl().addListener(SWT.Activate, listener);
-//        getGraphicalControl().addListener(SWT.Deactivate, listener);
     }
-
-//  protected void handleActivationChanged(Event event) {
-//  IAction copy = null;
-//  if (event.type == SWT.Deactivate) copy = getActionRegistry().getAction(ActionFactory.COPY.getId());
-//  if (getEditorSite().getActionBars().getGlobalActionHandler(ActionFactory.COPY.getId()) != copy) {
-//      getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.COPY.getId(), copy);
-//      getEditorSite().getActionBars().updateActionBars();
-//  }
-//}
 
     @Override
     protected PaletteViewerProvider createPaletteViewerProvider() {
@@ -318,6 +303,10 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
         action = new DirectEditAction((IWorkbenchPart) this);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
+
+//        action = new PropertyDialogAction((IWorkbenchPart) this);
+//        registry.registerAction(action);
+//        getSelectionActions().add(action.getId());
 
         action = new AlignmentAction((IWorkbenchPart) this, PositionConstants.LEFT);
         registry.registerAction(action);

@@ -77,4 +77,5 @@ public class ConnectionFigure extends PolylineConnection {
 	public IDisplayString getLastDisplayString() {
     	return lastDisplayString;
     }
+    
 }

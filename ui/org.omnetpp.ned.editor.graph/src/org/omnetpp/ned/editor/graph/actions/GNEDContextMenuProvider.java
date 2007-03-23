@@ -9,6 +9,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.actions.ActionFactory;
+import org.omnetpp.common.image.ImageFactory;
 
 /**
  * Adds actions to the context menus in the editor area
@@ -41,11 +42,6 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
         action = getActionRegistry().getAction(ActionFactory.REDO.getId());
         manager.appendToGroup(GEFActionConstants.GROUP_UNDO, action);
 
-        action = getActionRegistry().getAction(UnpinAction.ID);
-        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_REST, action);
-
-        action = getActionRegistry().getAction(ReLayoutAction.ID);
-        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_REST, action);
 
 // COPY,CUT,PASTE is not currently 
 //        action = getActionRegistry().getAction(ActionFactory.PASTE.getId());
@@ -54,10 +50,19 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
         action = getActionRegistry().getAction(ActionFactory.DELETE.getId());
         if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
 
-// NO DIRECT EDIT support        
-//        action = getActionRegistry().getAction(GEFActionConstants.DIRECT_EDIT);
-//        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
+        action = getActionRegistry().getAction(GEFActionConstants.DIRECT_EDIT);
+        action.setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_RENAME));
+        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
 
+        action = getActionRegistry().getAction(UnpinAction.ID);
+        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
+        
+        action = getActionRegistry().getAction(ReLayoutAction.ID);
+        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
+
+        action = getActionRegistry().getAction(ActionFactory.PROPERTIES.getId());
+        action.setEnabled(true);
+        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
 
         // Alignment Actions
         MenuManager submenu = new MenuManager("&Align");

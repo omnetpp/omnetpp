@@ -7,13 +7,20 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Insets;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.swt.SWT;
+import org.eclipse.gef.tools.CellEditorLocator;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.figures.misc.IDirectEditSupport;
 
-public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder {
+public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder
+                                          implements IDirectEditSupport {
 
 	private static Color defaultColor = ColorConstants.menuBackgroundSelected;
 
@@ -23,8 +30,16 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder {
 	private Insets imgInsets;
 	private Image image;
 	private Dimension imageSize;
+	private boolean titleVisible = true;
 
-	public CompoundModuleTitleBarBorder() { }
+    // cached values to support the cell edit locator for DirectEdit support
+    private IFigure hostFigure;
+    private Point labelLoc;
+    private Font labelFont;
+
+    
+	public CompoundModuleTitleBarBorder() { 
+    }
 
 	public CompoundModuleTitleBarBorder(String s) {
 		setLabel(s);
@@ -84,6 +99,7 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder {
 	public void paint(IFigure figure, Graphics g, Insets insets) {
 		int lx, ly, imgx, imgy;
 		int titleBarHeight = 0;
+        
 		Rectangle tRect = new Rectangle(getPaintRectangle(figure, insets));
 		lx = imgx = tRect.x;
 		ly = imgy = tRect.y;
@@ -109,9 +125,16 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder {
 			g.setBackgroundColor(fillColor);
 			g.fillRectangle(tRect);
 		}
-		g.drawString(getLabel(), lx, ly);
+        if (titleVisible)
+            g.drawString(getLabel(), lx, ly);
 		if (getImage() != null) 
 			g.drawImage(getImage(), imgx, imgy);
+        
+        // store the label bounds (in absolute coordinates )so cell editors 
+        // will be able to place the editor over it
+        hostFigure = figure;
+        labelLoc = new Point(lx, ly);
+        labelFont = g.getFont();
 	}
 
 	/**
@@ -166,4 +189,34 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder {
 		imgInsets.left = imageSize.width;
 	}
 
+    public CellEditorLocator getDirectEditCellEditorLocator() {
+        // this is a special cell edit locator for compound modules
+        return new CellEditorLocator() {
+            public void relocate(CellEditor celleditor) {
+                Text text = (Text)celleditor.getControl();
+                // set the font size
+                FontData data = labelFont.getFontData()[0];
+                Dimension fontSize = new Dimension(0, data.getHeight());
+                hostFigure.translateToAbsolute(fontSize);
+                data.setHeight(fontSize.height);
+                text.setFont(new Font(null, data));
+
+                // and the location and size of the editor
+                org.eclipse.swt.graphics.Point pref = text.computeSize(-1, -1);
+                Point editorLoc = labelLoc.getTranslated(-1, 0);
+                hostFigure.translateToAbsolute(editorLoc);
+
+                text.setBounds(editorLoc.x-1, editorLoc.y, pref.x, pref.y);
+            }
+        };
+    }
+
+    public String getDirectEditText() {
+        return getLabel();
+    }
+
+    public void setDirectEditTextVisible(boolean visible) {
+        titleVisible = visible;
+        invalidate();
+    }
 }

@@ -15,16 +15,25 @@ import org.eclipse.swt.widgets.Text;
  * Places the cell editor over the provided label (and sets its fontsize too)
  */
 public class LabelCellEditorLocator implements CellEditorLocator {
-    private Label label;
+    protected Label label;
+    protected boolean centerAlign = false;
 
     /**
      * Creates a new LabelCellEditorLocator for the given Label
-     * 
      * @param label
-     *            the Label
      */
     public LabelCellEditorLocator(Label label) {
         this.label = label;
+    }
+
+    /**
+     * Creates a new LabelCellEditorLocator for the given Label
+     * @param label
+     * @param centerAlign whether to align the center of the cell editor to the center of the label 
+     */
+    public LabelCellEditorLocator(Label label, boolean centerAlign) {
+        this.label = label;
+        this.centerAlign = centerAlign;
     }
 
     /**
@@ -32,7 +41,6 @@ public class LabelCellEditorLocator implements CellEditorLocator {
      */
     public void relocate(CellEditor celleditor) {
         Text text = (Text)celleditor.getControl();
-        // TODO set the font size too
         Font scaledFont = label.getFont();
         FontData data = scaledFont.getFontData()[0];
         Dimension fontSize = new Dimension(0, data.getHeight());
@@ -41,10 +49,13 @@ public class LabelCellEditorLocator implements CellEditorLocator {
         scaledFont = new Font(null, data);
         text.setFont(scaledFont);
 
-        Point pref = text.computeSize(-1, -1);
-        Rectangle rect = label.getTextBounds().getCopy();
-        label.translateToAbsolute(rect);
-        text.setBounds(rect.x - 1, rect.y - 1, pref.x + 1, pref.y + 1);
+        Point editorSize = text.computeSize(-1, -1);
+        Rectangle labelBounds = label.getTextBounds().getTranslated(-1,0);
+        label.translateToAbsolute(labelBounds);
+        if (centerAlign)
+            text.setBounds(labelBounds.x + labelBounds.width/2 - editorSize.x/2, labelBounds.y, editorSize.x + 1, editorSize.y + 1);
+        else
+            text.setBounds(labelBounds.x, labelBounds.y, editorSize.x + 1, editorSize.y + 1);
 }
 
 }

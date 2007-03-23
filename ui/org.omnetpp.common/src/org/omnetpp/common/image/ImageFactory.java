@@ -63,6 +63,7 @@ public class ImageFactory {
     public final static String TOOLBAR_IMAGE_ZOOMMINUS = TOOL_IMAGE_DIR + "zoomminus";
     public final static String TOOLBAR_IMAGE_ZOOMPLUS = TOOL_IMAGE_DIR + "zoomplus";
     public final static String TOOLBAR_IMAGE_REFRESH = TOOL_IMAGE_DIR + "refresh";
+    public final static String TOOLBAR_IMAGE_RENAME = TOOL_IMAGE_DIR + "rename";
     public final static String TOOLBAR_IMAGE_TEMPLATE = TOOL_IMAGE_DIR + "template";
     public final static String TOOLBAR_IMAGE_PLOT = TOOL_IMAGE_DIR + "plot";
     public final static String TOOLBAR_IMAGE_FILTER = TOOL_IMAGE_DIR + "filter";

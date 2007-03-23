@@ -1,36 +1,16 @@
 package org.omnetpp.figures;
 
 import org.eclipse.draw2d.Figure;
-import org.eclipse.draw2d.Graphics;
-import org.eclipse.swt.SWT;
 import org.omnetpp.common.displaymodel.IDisplayString;
 
 /**
- * It is a generic 'Module' (anything that can have connections)
+ * It is a generic 'Module' (anything that can have a display string and a connection)
  * @author rhornig
  */
 abstract public class ModuleFigure extends Figure {
-	protected int antialias = SWT.DEFAULT;
     protected String figureName = ""; 
 	protected IDisplayString lastDisplayString;
 
-    /**
-	 * Sets the module antialaiasing. can be SWT.DEFAULT, SWT.ON, SWT.OFF
-	 * @param antialias
-	 */
-	public void setAntialias(int antialias) {
-		this.antialias = antialias;
-	}
-	
-    @Override
-    public void paint(Graphics graphics) {
-    	// set antialiasing on derived figures
-        if(antialias != SWT.DEFAULT)
-        	graphics.setAntialias(antialias);
-        super.paint(graphics);
-    }
-
-    
     /**
      * Returns the lastly set displaysting
      * @return

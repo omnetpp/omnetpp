@@ -14,6 +14,13 @@ public interface IDirectEditSupport {
     String getDirectEditText();
     
     /**
+     * Sets the text that is displayed under the cell editor. Note that this changes
+     * ONLY the figure, so the underlying model is NOT changed by this method. Model should be changed
+     * by a command. 
+     */
+    void setDirectEditTextVisible(boolean visible);
+    
+    /**
      * @return An editor locator to place the cell editor at the correct place 
      */
     CellEditorLocator getDirectEditCellEditorLocator();

@@ -2,6 +2,7 @@ package org.omnetpp.figures;
 
 
 import org.eclipse.draw2d.Ellipse;
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
@@ -16,6 +17,7 @@ import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.handles.HandleBounds;
 import org.eclipse.gef.tools.CellEditorLocator;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.color.ColorFactory;
@@ -25,7 +27,6 @@ import org.omnetpp.figures.ILayerSupport.LayerID;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.figures.misc.IDirectEditSupport;
 import org.omnetpp.figures.misc.LabelCellEditorLocator;
-import org.omnetpp.figures.misc.LabelEx;
 
 public class SubmoduleFigure extends ModuleFigure 
                 implements HandleBounds, IDirectEditSupport {
@@ -41,19 +42,19 @@ public class SubmoduleFigure extends ModuleFigure
     
     protected ImageFigure imageFigure = new ImageFigure();
     protected ImageFigure decoratorImageFigure = new ImageFigure();
-    protected Label nameFigure = new LabelEx();
+    protected Label nameFigure = new Label();
     protected AttachedLayer textAttachLayer;
 	private AttachedLayer rangeAttachLayer;
     protected Label textFigure = new Label();
     protected Label queueFigure = new Label();
     protected String queueName = "";
     protected TooltipFigure tooltipFigure;
-    protected Shape rangeFigure = new Ellipse();
+    protected Shape rangeFigure = new RangeFigure();
     protected float scale = 1.0f;
 
     public SubmoduleFigure() {
         setLayoutManager(new StackLayout());
-
+        // set line antialaiasing on for all drawing n submodules
         rectShapeFigure.setVisible(false);
         rrectShapeFigure.setVisible(false);
         rrectShapeFigure.setCornerDimensions(new Dimension(30, 30));
@@ -63,6 +64,16 @@ public class SubmoduleFigure extends ModuleFigure
         
     }
 
+    @Override
+    public void paint(Graphics graphics) {
+        graphics.pushState();
+        // set antialiasing on contenet and child/derived figures
+        if(NedFileFigure.antialias != SWT.DEFAULT)
+            graphics.setAntialias(NedFileFigure.antialias);
+        super.paint(graphics);
+        graphics.popState();
+    }
+    
     /**
      * Returns the requested layer from the first ancestor that supports multiple layers for decorations
      * and contains the a layer with the given id
@@ -373,11 +384,30 @@ public class SubmoduleFigure extends ModuleFigure
     }
 
     public CellEditorLocator getDirectEditCellEditorLocator() {
-        return new LabelCellEditorLocator(nameFigure);
+        // create a center aligned label locator
+        return new LabelCellEditorLocator(nameFigure, true);
     }
 
     public String getDirectEditText() {
         return nameFigure.getText();
+    }
+    
+    public void setDirectEditTextVisible(boolean visible) {
+        nameFigure.setVisible(visible);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.eclipse.draw2d.Figure#containsPoint(int, int)
+     * override it to include also the nameFigure, so clicking on submodule name would
+     * be counted also as a selection event.
+     */
+    @Override
+    public boolean containsPoint(int x, int y) {
+        // if the name label contains this point we consider it as our part and report true
+        if (nameFigure.containsPoint(x, y))
+            return true;
+        // otherwise use the defult implementation
+        return super.containsPoint(x, y);
     }
 
 }

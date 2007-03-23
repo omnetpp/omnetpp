@@ -22,6 +22,7 @@ import org.omnetpp.ned.editor.graph.misc.ISelectionSupport;
 import org.omnetpp.ned.editor.graph.misc.RenameDirectEditManager;
 import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
 import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
@@ -72,7 +73,7 @@ abstract public class BaseEditPart
      *
      * @return The model of this as a NedElement.
      */
-    protected NEDElement getNEDModel() {
+    public NEDElement getNEDModel() {
         return (NEDElement) getModel();
     }
 
@@ -153,9 +154,10 @@ abstract public class BaseEditPart
      * Performs a direct edit operation on the part
      */
     protected void performDirectEdit() {
-        if (manager == null && (getFigure() instanceof IDirectEditSupport)) {
+        if (manager == null && (getFigure() instanceof IDirectEditSupport) 
+                && getNEDModel() instanceof IHasName) {
             IDirectEditSupport deSupport = (IDirectEditSupport)getFigure();  
-            manager = new RenameDirectEditManager(this, TextCellEditor.class, deSupport);
+            manager = new RenameDirectEditManager(this, TextCellEditor.class,deSupport);
         }
         if (manager != null)
             manager.show();
