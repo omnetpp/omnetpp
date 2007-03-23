@@ -14,12 +14,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
 
@@ -28,14 +26,14 @@ import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
  * Common functionality for form-based pages of the inifile multi-page editor.
  * @author andras
  */
-public class InifileEditorTreePage extends Composite {
-	public static final Color BGCOLOR = new Color(null, 255, 255, 255);
+public class InifileEditorFormPage extends Composite {
+	public static final Color BGCOLOR = null; // or: ColorFactory.asColor("white");
 
 	protected InifileEditor inifileEditor = null;  // backreference to the containing editor
 	private TreeViewer treeViewer;
 	private Composite form;
 	
-	public InifileEditorTreePage(Composite parent, InifileEditor inifileEditor) {
+	public InifileEditorFormPage(Composite parent, InifileEditor inifileEditor) {
 		super(parent, SWT.None);
 		this.inifileEditor = inifileEditor;
 		createControl();
@@ -44,20 +42,10 @@ public class InifileEditorTreePage extends Composite {
 	private void createControl() {
 		// create and layout a banner and a content area
 		setBackground(BGCOLOR);
-//		Composite bannerArea = new Composite(this, SWT.NONE);
 		SashForm contentArea = new SashForm(this, SWT.HORIZONTAL | SWT.SMOOTH);
 		setLayout(new GridLayout());
-//		bannerArea.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		contentArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		contentArea.setBackground(BGCOLOR);
-		
-//		// setup banner area
-//		Label title = new Label(bannerArea, SWT.NONE);
-//		bannerArea.setLayout(new FillLayout());
-//		title.setText("Configuration Editor");
-//		title.setFont(new Font(null, "Arial", 12, SWT.BOLD));
-//		title.setBackground(ColorFactory.asColor("white"));
-//		title.setForeground(new Color(null, 0, 128, 255));
 		
 		treeViewer = createTreeViewer(contentArea);
 		form = new Composite(contentArea, SWT.V_SCROLL | SWT.BORDER);
@@ -97,8 +85,26 @@ public class InifileEditorTreePage extends Composite {
 		});
 	}
 
-	private void showCategoryPage(String category) {
+	/**
+	 * Writes the edits on the current page back into the text editor.
+	 */
+	public void commitCurrentPage() {
+		System.out.println("form page: committing current page");
+		for (Control c : form.getChildren())  //XXX temp code
+			if (c instanceof FieldEditor)
+				((FieldEditor) c).commit();
+	}
+	
+	/**
+	 * Shows the form page belonging to the given category (i.e. tree node),
+	 * after committing changes on the current page.
+	 */
+	public void showCategoryPage(String category) {
 		System.out.println("selected:" + category);
+		
+		commitCurrentPage();
+
+		//XXX temp: remove old widgets
 		for (Control c : form.getChildren())
 			c.dispose();
 		
@@ -129,9 +135,16 @@ public class InifileEditorTreePage extends Composite {
 	}
 	
 	/**
-	 * Notification about the selection of the page of the
-	 * multipage editor.
+	 * Notification: User switched to this page of the multipage editor.
 	 */
 	public void pageSelected() {
+		commitCurrentPage();
+	}
+	
+	/**
+	 * Notification: User switched away from this page of the multipage editor.
+	 */
+	public void pageDeselected() {
+		commitCurrentPage();
 	}
 }

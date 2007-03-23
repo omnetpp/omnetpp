@@ -15,6 +15,7 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
 public class TextFieldEditor extends FieldEditor {
 	private Text textField;
 	private Label label;
+	private String oldValue;
 
 	public TextFieldEditor(Composite parent, int style, ConfigurationEntry entry, IInifileDocument inifile) {
 		super(parent, style, entry, inifile);
@@ -24,7 +25,6 @@ public class TextFieldEditor extends FieldEditor {
 		label.setToolTipText(StringUtils.breakLines(entry.getDescription(),60));
 		label.setBackground(BGCOLOR);
 		textField = new Text(this, SWT.SINGLE | SWT.BORDER);
-		//textField.setBackground(BGCOLOR);
 
 		setLayout(new GridLayout(2, false));
 		label.setLayoutData(new GridData());
@@ -40,9 +40,19 @@ public class TextFieldEditor extends FieldEditor {
 		
 	}
 
+	@Override
 	public void reread() {
 		String text = getAsString();
 		if (text==null) return; //XXX for now -- should set default, probably
 		textField.setText(text);
+		oldValue = text;
+	}
+
+	@Override
+	public void commit() {
+		String value = textField.getText();
+		if (!value.equals(oldValue)) {
+			setAsString(value);
+		}
 	}
 }

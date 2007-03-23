@@ -16,6 +16,7 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
 public class CheckboxFieldEditor extends FieldEditor {
 	private Button checkbox;
 	private Label label;
+	private boolean oldValue;
 
 	public CheckboxFieldEditor(Composite parent, int style, ConfigurationEntry entry, IInifileDocument inifile) {
 		super(parent, style, entry, inifile);
@@ -42,6 +43,7 @@ public class CheckboxFieldEditor extends FieldEditor {
 		
 	}
 
+	@Override
 	public void reread() {
 		String text = getAsString();
 		if (text==null) return; //XXX for now -- should set default, probably
@@ -54,5 +56,14 @@ public class CheckboxFieldEditor extends FieldEditor {
 	    else
 	    	value = false; //XXX something invalid, we take it as false; probably should warn the user or something
 	    checkbox.setSelection(value);
+	    oldValue = value;
+	}
+	
+	@Override
+	public void commit() {
+		boolean value = checkbox.getSelection();
+		if (value != oldValue) {
+			setAsString(value ? "true" : "false");
+		}
 	}
 }

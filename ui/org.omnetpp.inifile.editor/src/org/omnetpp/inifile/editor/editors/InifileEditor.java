@@ -30,6 +30,8 @@ import org.omnetpp.inifile.editor.text.InifileTextEditor;
 public class InifileEditor extends MultiPageEditorPart implements IResourceChangeListener, IGotoMarker {
 	/** The text editor */
 	private InifileTextEditor textEditor;
+	
+	private InifileEditorFormPage formEditor;
 
 	/** The data model */
 	private InifileEditorData editorData = new InifileEditorData();
@@ -65,8 +67,8 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	@Override
 	protected void createPages() {
 		// create form page
-		InifileEditorTreePage treePage = new InifileEditorTreePage(getContainer(), this);
-		addEditorPage(treePage, "Form");
+		formEditor = new InifileEditorFormPage(getContainer(), this);
+		addEditorPage(formEditor, "Form");
 
 		// create texteditor
 		createTextEditorPage();
@@ -144,12 +146,17 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	}
 
 	/**
-	 * Calculates the contents of page 2 when the it is activated.
+	 * Notification about page change.
 	 */
 	@Override
 	protected void pageChange(int newPageIndex) {
 		super.pageChange(newPageIndex);
-		//TBD
+		if (getControl(newPageIndex) == formEditor) {
+			formEditor.pageSelected();
+		}
+		else {
+			formEditor.pageDeselected();
+		}
 	}
 
 	/**

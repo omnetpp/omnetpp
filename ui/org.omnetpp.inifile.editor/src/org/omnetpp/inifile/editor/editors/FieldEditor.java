@@ -10,7 +10,7 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
  * @author Andras
  */
 public abstract class FieldEditor extends Composite {
-	public static final Color BGCOLOR = InifileEditorTreePage.BGCOLOR;
+	public static final Color BGCOLOR = InifileEditorFormPage.BGCOLOR;
 
 	protected ConfigurationEntry entry;
 	protected IInifileDocument inifile;
@@ -33,4 +33,9 @@ public abstract class FieldEditor extends Composite {
 		String key = entry.getName();
 		inifile.setValue(section, key, value);
 	}
+	
+	public abstract void reread();
+	
+	public abstract void commit();
+	
 }
