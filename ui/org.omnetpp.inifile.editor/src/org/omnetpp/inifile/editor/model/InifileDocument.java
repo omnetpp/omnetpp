@@ -161,7 +161,7 @@ public class InifileDocument implements IInifileDocument {
 		return section == null ? null : section.entries.get(key);
 	}
 
-	protected boolean inMainFile(Line line) {
+	protected boolean isEditable(Line line) {
 		return line.file == documentFile;
 	}
 	
@@ -169,7 +169,7 @@ public class InifileDocument implements IInifileDocument {
 		KeyValueLine line = lookupEntry(section, key);
 		if (line == null)
 			throw new IllegalArgumentException("no such entry: ["+section+"] "+key);
-		if (!inMainFile(line))
+		if (!isEditable(line))
 			throw new IllegalArgumentException("cannot change entry in an included file: ["+section+"] "+key);
 
 		// change IDocument
@@ -206,14 +206,14 @@ s	 * @return true if line numbers have changed, false if not
 		KeyValueLine beforeLine = lookupEntry(section, key);
 		if (beforeLine == null)
 			throw new IllegalArgumentException("no such entry: ["+section+"] "+beforeKey);
-		if (!inMainFile(beforeLine))
+		if (!isEditable(beforeLine))
 			throw new IllegalArgumentException("cannot insert entry into included file, before entry ["+section+"] "+beforeKey);
 		//TODO change IDocument
 	}
 
 	public LineInfo getEntryLineDetails(String section, String key) {
 		KeyValueLine line = lookupEntry(section, key);
-		return line==null ? null : new LineInfo(line.file, line.lineNumber, !inMainFile(line));
+		return line==null ? null : new LineInfo(line.file, line.lineNumber, !isEditable(line));
 	} 
 
 	public String getComment(String section, String key) {
@@ -275,7 +275,7 @@ s	 * @return true if line numbers have changed, false if not
 	public LineInfo getSectionLineDetails(String sectionName) {
 		parseIfChanged();
 		Section section = sections.get(sectionName);
-		return section==null ? null : new LineInfo(section.sectionHeading.file, section.sectionHeading.lineNumber, !inMainFile(section.sectionHeading));
+		return section==null ? null : new LineInfo(section.sectionHeading.file, section.sectionHeading.lineNumber, !isEditable(section.sectionHeading));
 	} 
 
 	public String getSectionComment(String sectionName) {

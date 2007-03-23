@@ -22,12 +22,15 @@ public class CheckboxFieldEditor extends FieldEditor {
 
 		Assert.isTrue(entry.getType()==ConfigurationEntry.Type.CFG_BOOL);
 		checkbox = new Button(this, SWT.CHECK);
+		checkbox.setBackground(BGCOLOR);
 		label = new Label(this, SWT.NONE);
+		label.setText("["+entry.getSection()+(entry.isGlobal() ? "" : "] or [Run X")+"] "+entry.getName());
+		label.setToolTipText(StringUtils.breakLines(entry.getDescription(),60));
+		label.setBackground(BGCOLOR);
+
 		setLayout(new GridLayout(2, false));
 		checkbox.setLayoutData(new GridData());
 		label.setLayoutData(new GridData());
-		label.setText("["+entry.getSection()+(entry.isGlobal() ? "" : "] or [Run X")+"] "+entry.getName());
-		label.setToolTipText(StringUtils.breakLines(entry.getDescription(),60));
 
 		reread();
 

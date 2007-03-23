@@ -29,10 +29,11 @@ import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
  * @author andras
  */
 public class InifileEditorTreePage extends Composite {
+	public static final Color BGCOLOR = new Color(null, 255, 255, 255);
+
 	protected InifileEditor inifileEditor = null;  // backreference to the containing editor
 	private TreeViewer treeViewer;
 	private Composite form;
-	private Color bgColor = new Color(null, 255, 255, 255);
 	
 	public InifileEditorTreePage(Composite parent, InifileEditor inifileEditor) {
 		super(parent, SWT.None);
@@ -42,13 +43,13 @@ public class InifileEditorTreePage extends Composite {
 
 	private void createControl() {
 		// create and layout a banner and a content area
-		setBackground(bgColor);
+		setBackground(BGCOLOR);
 //		Composite bannerArea = new Composite(this, SWT.NONE);
 		SashForm contentArea = new SashForm(this, SWT.HORIZONTAL | SWT.SMOOTH);
 		setLayout(new GridLayout());
 //		bannerArea.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		contentArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		contentArea.setBackground(bgColor);
+		contentArea.setBackground(BGCOLOR);
 		
 //		// setup banner area
 //		Label title = new Label(bannerArea, SWT.NONE);
@@ -60,7 +61,7 @@ public class InifileEditorTreePage extends Composite {
 		
 		treeViewer = createTreeViewer(contentArea);
 		form = new Composite(contentArea, SWT.V_SCROLL | SWT.BORDER);
-		form.setBackground(bgColor);
+		form.setBackground(BGCOLOR);
 		form.setLayout(new GridLayout());
 		contentArea.setWeights(new int[] {1,3});
 		
@@ -108,7 +109,7 @@ public class InifileEditorTreePage extends Composite {
 				}
 				else {
 					Label label = new Label(form, SWT.NONE);
-					label.setBackground(bgColor);
+					label.setBackground(BGCOLOR);
 					label.setText("["+e.getSection()+(e.isGlobal() ? "" : "] or [Run X")+"] "+e.getName());
 					label.setToolTipText(StringUtils.breakLines(e.getDescription(),60));
 					//System.out.println(label.getText());
