@@ -66,7 +66,7 @@ class COMMON_API UnitConversion
     /**
      * XXX. todo docu. like the one above, but expectedUnit==NULL assumed,
      * and returns actual unit too (if there was one). The expectedUnit param
-     * is left out, because if given, it outActualUnit would be exactly the
+     * is left out, because if given, outActualUnit would be exactly the
      * same (else exception!), so the two don't make sense together.
      */
     static double parseQuantity(const char *str, std::string& outActualUnit);

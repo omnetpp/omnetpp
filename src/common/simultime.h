@@ -27,6 +27,7 @@ typedef int64 simultime_t;
  * exponent, which falls in the range -18..0.
  * For example, a scale exponent of -6 means microsecond precision.
  */
+//XXX rename to SimTimeUtil (as it doesn't actually store a time value)
 class COMMON_API SimulTime
 {
   public:
@@ -69,4 +70,5 @@ class COMMON_API SimulTime
       }
 
 };
+
 #endif

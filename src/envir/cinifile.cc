@@ -149,6 +149,7 @@ void cIniFile::_readFile(const char *fname, int section_id)
         // process section heading '[new section]'
         else if (*s=='[')
         {
+           //FIXME incorrect: if ] occurs inside a comment (after # or ;) it should be rejected
            // section header text into s:
            char *e=++s;
            while (*e!=']' && *e!=0) e++;      // find closing brace
@@ -192,7 +193,7 @@ void cIniFile::_readFile(const char *fname, int section_id)
            while (*e==' ' || *e=='\t') e++;
 
            // do cosmetics on the value string
-           if (*e=='"')
+           if (*e=='"') //FIXME incorrect: there may be embedded string literals (ie not starting at pos 0)
            {
               // quoted string: keep quotes but chop off rest of the line
               e1 = e+1;
