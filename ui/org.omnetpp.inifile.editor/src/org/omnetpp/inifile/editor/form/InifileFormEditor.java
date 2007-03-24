@@ -72,7 +72,7 @@ public class InifileFormEditor extends Composite {
 		String[] categories = ConfigurationRegistry.getCategories();
 		for (String c : categories)
 			root.addChild(new GenericTreeNode(c));
-		root.addChild(new GenericTreeNode("Parameters (!!!)"));
+		root.addChild(new GenericTreeNode("PARAMETERS")); //XXX
 		treeViewer.setInput(root);
 	}
 	
@@ -101,7 +101,10 @@ public class InifileFormEditor extends Composite {
 			formPage.dispose();
 		}
 
-		formPage = new GenericConfigPage(form, category, inifileEditor);
+		if (category.equals("PARAMETERS"))
+			formPage = new ParametersPage(form, inifileEditor);
+		else
+			formPage = new GenericConfigPage(form, category, inifileEditor);
 		form.layout();
 	}
 
