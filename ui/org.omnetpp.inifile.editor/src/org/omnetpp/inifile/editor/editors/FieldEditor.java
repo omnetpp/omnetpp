@@ -1,7 +1,13 @@
 package org.omnetpp.inifile.editor.editors;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 
@@ -43,10 +49,38 @@ public abstract class FieldEditor extends Composite {
 		inifile.removeKey(section, key);
 	}
 	
+	protected Label createLabel(ConfigurationEntry entry, String labelText) {
+		Label label = new Label(this, SWT.NONE);
+		label.setBackground(BGCOLOR);
+		label.setText(labelText);
+		
+		String tooltip = entry.getDescription();
+		tooltip += "\n\nCorresponds to:\n["+entry.getSection()+(entry.isGlobal() ? "" : "] or [Run X")+"] "+entry.getName();
+		IInifileDocument.LineInfo line = inifile.getEntryLineDetails(entry.getSection(), entry.getName()); 
+		tooltip += "\n\n"+(line==null ? "Currently set to default." : "Defined at: "+line.getFile().getFullPath().toString()+" line "+line.getLineNumber());
+		label.setToolTipText(StringUtils.breakLines(tooltip,60));  //XXX we'll need to refresh tooltip after each re-parse!
+		return label;
+	}
+
+	protected Button createResetButton() {
+		Button resetButton = new Button(this, SWT.PUSH);
+		resetButton.setText("Reset");
+		resetButton.setToolTipText("Remove corresponding entry from ini file");
+		resetButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				resetToDefault();
+			}
+		});
+		return resetButton;
+	}
+
 	public abstract void reread();
 	
 	public abstract void commit();
 	
-	public abstract void resetToDefault();
+	public void resetToDefault() {
+		removeFromFile();
+		reread();
+	}
 	
 }

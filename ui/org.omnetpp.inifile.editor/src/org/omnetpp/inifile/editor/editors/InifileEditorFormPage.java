@@ -20,6 +20,7 @@ import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
+import org.omnetpp.inifile.editor.model.IInifileDocument;
 
 
 /**
@@ -108,20 +109,18 @@ public class InifileEditorFormPage extends Composite {
 		for (Control c : form.getChildren())
 			c.dispose();
 		
+		IInifileDocument doc = inifileEditor.getEditorData().getInifileDocument();
 		for (ConfigurationEntry e : ConfigurationRegistry.getEntries()) {
 			if (e.getCategory().equals(category)) {
+				//String label = "["+e.getSection()+(e.isGlobal() ? "" : "] or [Run X")+"] "+e.getName();
+				String label = "The \""+e.getName()+"\" setting";
 				if (e.getType()==ConfigurationEntry.Type.CFG_BOOL) {
-					CheckboxFieldEditor control = new CheckboxFieldEditor(form, SWT.NONE, e, inifileEditor.getEditorData().getInifileDocument());
+					CheckboxFieldEditor control = new CheckboxFieldEditor(form, SWT.NONE, e, doc, label);
 					control.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 				}
 				else {
-					TextFieldEditor control = new TextFieldEditor(form, SWT.NONE, e, inifileEditor.getEditorData().getInifileDocument());
+					TextFieldEditor control = new TextFieldEditor(form, SWT.NONE, e, doc, label);
 					control.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-//					Label label = new Label(form, SWT.NONE);
-//					label.setBackground(BGCOLOR);
-//					label.setText("["+e.getSection()+(e.isGlobal() ? "" : "] or [Run X")+"] "+e.getName());
-//					label.setToolTipText(StringUtils.breakLines(e.getDescription(),60));
-					//System.out.println(label.getText());
 				}
 			}
 		}

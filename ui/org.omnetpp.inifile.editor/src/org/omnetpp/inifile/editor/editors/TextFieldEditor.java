@@ -3,15 +3,12 @@ package org.omnetpp.inifile.editor.editors;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 
@@ -19,20 +16,15 @@ public class TextFieldEditor extends FieldEditor {
 	private Text textField;
 	private Label label;
 	private Button resetButton;
-	private String oldValue;
+	private boolean isEdited;
 	
 
-	public TextFieldEditor(Composite parent, int style, ConfigurationEntry entry, IInifileDocument inifile) {
+	public TextFieldEditor(Composite parent, int style, ConfigurationEntry entry, IInifileDocument inifile, String labelText) {
 		super(parent, style, entry, inifile);
 
-		label = new Label(this, SWT.NONE);
-		label.setText("["+entry.getSection()+(entry.isGlobal() ? "" : "] or [Run X")+"] "+entry.getName());
-		label.setToolTipText(StringUtils.breakLines(entry.getDescription(),60));
-		label.setBackground(BGCOLOR);
+		label = createLabel(entry, labelText);
 		textField = new Text(this, SWT.SINGLE | SWT.BORDER);
-		resetButton = new Button(this, SWT.PUSH);
-		resetButton.setText("Reset");
-		resetButton.setToolTipText("Reset to default, and remove line from ini file");
+		resetButton = createResetButton();
 
 		setLayout(new GridLayout(3, false));
 		label.setLayoutData(new GridData());
@@ -44,21 +36,10 @@ public class TextFieldEditor extends FieldEditor {
 
 		textField.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
+				isEdited = true;
 				resetButton.setEnabled(true);
 			}
 		});
-		resetButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				resetToDefault();
-			}
-		});
-		
-//		SelectionListener(new SelectionAdapter() {
-//			public void widgetDefaultSelected(SelectionEvent e) {
-//				setAsString(textField.getText());  //XXX rather, on focusOut or something like that?
-//			}
-//		});
-		
 	}
 
 	@Override
@@ -71,22 +52,17 @@ public class TextFieldEditor extends FieldEditor {
 		}
 		else {
 			textField.setText(value);
-			oldValue = value;
 			resetButton.setEnabled(true);
 		}
+		isEdited = false;
 	}
 
 	@Override
 	public void commit() {
-		String value = textField.getText();
-		if (!value.equals(oldValue)) {
+		if (isEdited) {
+			String value = textField.getText();
 			setValueInFile(value); //XXX
+			isEdited = false;
 		}
-	}
-
-	@Override
-	public void resetToDefault() {
-		removeFromFile();
-		reread();
 	}
 }

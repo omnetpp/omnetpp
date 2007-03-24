@@ -10,7 +10,6 @@ import java.util.LinkedHashMap;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentEvent;
@@ -186,33 +185,23 @@ public class InifileDocument implements IInifileDocument {
 			e.printStackTrace(); //XXX
 		}
     }
-	
-	public String getValue(String section, String key) {
-		KeyValueLine line = lookupEntry(section, key);
-		return line == null ? null : line.value;
-	}
 
-	protected KeyValueLine lookupEntry(String sectionName, String key) {
-		parseIfChanged();
-		Section section = sections.get(sectionName);
-		return section == null ? null : section.entries.get(key);
-	}
+    protected boolean isEditable(Line line) {
+    	return line.file == documentFile;
+    }
 
-	protected boolean isEditable(Line line) {
-		return line.file == documentFile;
-	}
-	
-	public void setValue(String section, String key, String value) {
-		KeyValueLine line = lookupEntry(section, key);
-		if (line == null)
-			throw new IllegalArgumentException("no such entry: ["+section+"] "+key);
-		if (!isEditable(line))
-			throw new IllegalArgumentException("cannot change entry in an included file: ["+section+"] "+key);
-
-		// change IDocument
-		line.value = value; 
-		String text = line.key + " = " + line.value + (line.comment == null ? "" : " "+line.comment);
-		replaceLine(line, text);
+	/**
+	 * Adds a line to IDocument at the given lineNumber (1-based). Existing lines
+	 * will be shifted down. Line text is to be specified without the trailing newline.
+	 */
+	protected void addLineAt(int lineNumber, String text) {
+		try {
+			int offset = document.getLineOffset(lineNumber-1);
+			document.replace(offset, 0, text+"\n");
+		} 
+		catch (BadLocationException e) {
+			throw new RuntimeException("cannot insert line: bad location: "+e.getMessage());
+		}
 	}
 
 	/**
@@ -233,34 +222,49 @@ public class InifileDocument implements IInifileDocument {
 			throw new RuntimeException("cannot set value: bad location: "+e.getMessage());
 		}
 	}
+    
+    protected KeyValueLine lookupEntry(String sectionName, String key) {
+    	parseIfChanged();
+    	Section section = sections.get(sectionName);
+    	return section == null ? null : section.entries.get(key);
+    }
+    
+    protected KeyValueLine getEntry(String sectionName, String key) {
+    	KeyValueLine line = lookupEntry(sectionName, key);
+    	if (line == null)
+    		throw new IllegalArgumentException("no such entry: ["+sectionName+"] "+key);
+    	return line;
+    }
 
-	/**
-	 * Adds a line to IDocument before the given line.
-	 * @return true if line numbers have changed, false if not
-	 */
-	protected void addLine(Line beforeLine, String text) {
-		try {
-			int offset = document.getLineOffset(beforeLine.lineNumber-1);
-			document.replace(offset, 0, text+"\n");
-		} 
-		catch (BadLocationException e) {
-			throw new RuntimeException("cannot insert line: bad location: "+e.getMessage());
-		}
+    protected KeyValueLine getEditableEntry(String sectionName, String key) {
+    	KeyValueLine line = getEntry(sectionName, key);
+    	if (!isEditable(line))
+    		throw new IllegalArgumentException("entry is in an included file which cannot be edited: ["+sectionName+"] "+key);
+    	return line;
+    }
+
+    public String getValue(String section, String key) {
+		KeyValueLine line = lookupEntry(section, key);
+		return line == null ? null : line.value;
 	}
 	
+	public void setValue(String section, String key, String value) {
+		KeyValueLine line = getEditableEntry(section, key);
+
+		// change IDocument
+		line.value = value; 
+		String text = line.key + " = " + line.value + (line.comment == null ? "" : " "+line.comment);
+		replaceLine(line, text);
+	}
+
 	public void addEntry(String section, String key, String value, String comment, String beforeKey) {
-		KeyValueLine line = lookupEntry(section, key);
-		if (line != null)
+		if (lookupEntry(section, key) != null)
 			throw new IllegalArgumentException("entry already exists: ["+section+"] "+key);
-		Line beforeLine = beforeKey==null ? lookupFirstEditableSectionHeading(section) : lookupEntry(section, beforeKey);
-		if (beforeLine == null)
-			throw new IllegalArgumentException("no such entry: ["+section+"] "+beforeKey);
-		if (!isEditable(beforeLine))
-			throw new IllegalArgumentException("cannot insert entry into included file, before entry ["+section+"] "+beforeKey);
 
 		// modify IDocument
+		int atLine = beforeKey==null ? getFirstEditableSectionHeading(section).lineNumber+1 : getEditableEntry(section, beforeKey).lineNumber;
 		String text = key + " = " + value + (comment == null ? "" : " "+comment);
-		addLine(beforeLine, text);
+		addLineAt(atLine, text);
 	}
 
 	public LineInfo getEntryLineDetails(String section, String key) {
@@ -269,18 +273,11 @@ public class InifileDocument implements IInifileDocument {
 	} 
 
 	public String getComment(String section, String key) {
-		KeyValueLine line = lookupEntry(section, key);
-		if (line == null)
-			throw new IllegalArgumentException("no such entry: ["+section+"] "+key);
-		return line.comment;
+		return getEntry(section, key).comment;
 	}
 
 	public void setComment(String section, String key, String comment) {
-		KeyValueLine line = lookupEntry(section, key);
-		if (line == null)
-			throw new IllegalArgumentException("no such entry: ["+section+"] "+key);
-
-		// modify IDocument
+		KeyValueLine line = getEditableEntry(section, key);
 		line.comment = comment; 
 		String text = line.key + " = " + line.value + (line.comment == null ? "" : " "+line.comment);
 		replaceLine(line, text);
@@ -288,7 +285,7 @@ public class InifileDocument implements IInifileDocument {
 
 	public void removeKey(String section, String key) {
 		KeyValueLine line = lookupEntry(section, key);
-		if (line != null) {
+		if (line != null) { //XXX isEditable
 			replaceLine(line, null);
 		}
 	}
@@ -326,7 +323,7 @@ public class InifileDocument implements IInifileDocument {
 		return section.headingLines.get(0);
 	}
 
-	protected SectionHeadingLine lookupFirstEditableSectionHeading(String sectionName) {
+	protected SectionHeadingLine getFirstEditableSectionHeading(String sectionName) {
 		SectionHeadingLine line = lookupPreferredSectionHeading(sectionName);
 		if (!isEditable(line))
 			throw new IllegalArgumentException("section is in an included file: ["+sectionName+"]");
@@ -345,11 +342,12 @@ public class InifileDocument implements IInifileDocument {
 		parseIfChanged();
 		if (sections.get(sectionName) != null)
 			throw new IllegalArgumentException("section already exists: ["+sectionName+"]");
-		SectionHeadingLine beforeLine = lookupFirstEditableSectionHeading(beforeSectionName);
+		SectionHeadingLine beforeLine = getFirstEditableSectionHeading(beforeSectionName);
 		
 		// modify IDocument
 		String text = "[" + sectionName + "]";
-		addLine(beforeLine, text); //XXX check before/after!
+		addLineAt(beforeLine.lineNumber, "");  // leave blank
+		addLineAt(beforeLine.lineNumber, text);
 	}
 
 	public LineInfo getSectionLineDetails(String sectionName) {
@@ -362,7 +360,7 @@ public class InifileDocument implements IInifileDocument {
 	}
 
 	public void setSectionComment(String sectionName, String comment) {
-		SectionHeadingLine line = lookupFirstEditableSectionHeading(sectionName);
+		SectionHeadingLine line = getFirstEditableSectionHeading(sectionName);
 		line.comment = comment; 
 		String text = "[" + line.sectionName + "]" + (line.comment == null ? "" : " "+line.comment);
 		replaceLine(line, text);

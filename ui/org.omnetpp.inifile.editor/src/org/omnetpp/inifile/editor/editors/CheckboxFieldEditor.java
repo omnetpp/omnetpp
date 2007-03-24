@@ -17,22 +17,16 @@ public class CheckboxFieldEditor extends FieldEditor {
 	private Button checkbox;
 	private Label label;
 	private Button resetButton;
-	
-	private boolean oldValue;
+	private boolean isEdited;
 
-	public CheckboxFieldEditor(Composite parent, int style, ConfigurationEntry entry, IInifileDocument inifile) {
+	public CheckboxFieldEditor(Composite parent, int style, ConfigurationEntry entry, IInifileDocument inifile, String labelText) {
 		super(parent, style, entry, inifile);
 
 		Assert.isTrue(entry.getType()==ConfigurationEntry.Type.CFG_BOOL);
 		checkbox = new Button(this, SWT.CHECK);
 		checkbox.setBackground(BGCOLOR);
-		label = new Label(this, SWT.NONE);
-		label.setText("["+entry.getSection()+(entry.isGlobal() ? "" : "] or [Run X")+"] "+entry.getName());
-		label.setToolTipText(StringUtils.breakLines(entry.getDescription(),60));
-		label.setBackground(BGCOLOR);
-		resetButton = new Button(this, SWT.PUSH);
-		resetButton.setText("Reset");
-		resetButton.setToolTipText("Reset to default, and remove line from ini file");
+		label = createLabel(entry, labelText);
+		resetButton = createResetButton();
 
 		setLayout(new GridLayout(3, false));
 		checkbox.setLayoutData(new GridData());
@@ -43,40 +37,44 @@ public class CheckboxFieldEditor extends FieldEditor {
 
 		checkbox.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				setValueInFile(checkbox.getSelection() ? "true" : "false");
+				isEdited = true;
+				resetButton.setEnabled(true);
 			}
 		});
-		
-		
 	}
 
 	@Override
 	public void reread() {
-		String text = getValueFromFile();
-		if (text==null) return; //XXX for now -- should set default, probably
-		//XXX create some InifileUtils for parsing?
-		boolean value;
-	    if (text.equals("yes") || text.equals("true") || text.equals("on") || text.equals("1"))
-	    	value = true;
-	    else if (text.equals("no") || text.equals("false") || text.equals("off") || text.equals("0"))
-	    	value = false;
+		String value = getValueFromFile();
+		if (value==null) {
+			boolean defaultValue = entry.getDefaultValue()==null ? false : (Boolean)entry.getDefaultValue(); 
+			checkbox.setSelection(defaultValue);
+			resetButton.setEnabled(false);
+		}
+		else {
+			checkbox.setSelection(parseAsBool(value));
+			resetButton.setEnabled(true);
+		}
+		isEdited = false;
+	}
+
+	private boolean parseAsBool(String value) {
+		boolean boolValue;
+		if (value.equals("yes") || value.equals("true") || value.equals("on") || value.equals("1"))
+	    	boolValue = true;
+	    else if (value.equals("no") || value.equals("false") || value.equals("off") || value.equals("0"))
+	    	boolValue = false;
 	    else
-	    	value = false; //XXX something invalid, we take it as false; probably should warn the user or something
-	    checkbox.setSelection(value);
-	    oldValue = value;
+	    	boolValue = false; //XXX something invalid, we take it as false; probably should warn the user or something
+		return boolValue;
 	}
 	
 	@Override
 	public void commit() {
-		boolean value = checkbox.getSelection();
-		if (value != oldValue) {
+		if (isEdited) {
+			boolean value = checkbox.getSelection();
 			setValueInFile(value ? "true" : "false");
+			isEdited = false;
 		}
-	}
-
-	@Override
-	public void resetToDefault() {
-		removeFromFile();
-		reread();
 	}
 }
