@@ -1,4 +1,4 @@
-package org.omnetpp.inifile.editor.editors;
+package org.omnetpp.inifile.editor.form;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.SWT;

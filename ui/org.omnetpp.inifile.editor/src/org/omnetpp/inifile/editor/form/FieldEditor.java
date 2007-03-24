@@ -1,4 +1,4 @@
-package org.omnetpp.inifile.editor.editors;
+package org.omnetpp.inifile.editor.form;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
