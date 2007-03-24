@@ -23,7 +23,7 @@ public class GenericConfigPage extends FormPage {
 		setLayout(new GridLayout(1,false));
 		
 		// populate with field editors
-		IInifileDocument doc = inifileEditor.getEditorData().getInifileDocument();
+		IInifileDocument doc = getInifileDocument();
 		for (ConfigurationEntry e : ConfigurationRegistry.getEntries()) {
 			if (e.getCategory().equals(category)) {
 				String label = "The \""+e.getName()+"\" setting";

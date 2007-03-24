@@ -104,7 +104,7 @@ public interface INEDTypeResolver extends INEDChangeListener {
 	public Set<String> getChannelInterfaceNames();
 
 	/**
-	 * Returns a component by name.
+	 * Returns a component by name, or null if it does not exist.
 	 */
 	public INEDTypeInfo getComponent(String name);
 

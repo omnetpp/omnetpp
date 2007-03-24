@@ -256,7 +256,7 @@ public class ImageFactory {
 
     /**
      * @param refClass Reference class, if <code>null</code> file is loaded from the filesystem
-     *                 otehrwise from the same resource where this class is located
+     *                 otherwise from the same resource where this class is located
      * @param dir Base path for file
      * @param fileName The name of the file
      * @param ext extension to be used

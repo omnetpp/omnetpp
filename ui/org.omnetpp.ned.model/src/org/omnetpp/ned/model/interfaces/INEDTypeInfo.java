@@ -86,8 +86,8 @@ public interface INEDTypeInfo extends INEDChangeListener {
      */
     public List<INEDTypeInfo> getAllDerivedTypes();
     /**
-     * @return ALl types that are using internally this type (iw compound mosules that
-     * contain submodules or connections with this type)
+     * @return All types that are using internally this type (i.e. compound 
+     * modules that contain submodules or connections with this type)
      */
     public List<INEDTypeInfo> getAllUsingTypes();
 }

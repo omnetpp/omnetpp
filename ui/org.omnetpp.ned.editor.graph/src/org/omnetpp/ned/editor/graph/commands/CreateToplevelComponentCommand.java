@@ -12,7 +12,7 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
  * @author rhornig
- * Allows the creation of new top level model element like, channels, simple mosules 
+ * Allows the creation of new top level model element like, channels, simple modules 
  * and compound modules
  */
 public class CreateToplevelComponentCommand extends Command {
