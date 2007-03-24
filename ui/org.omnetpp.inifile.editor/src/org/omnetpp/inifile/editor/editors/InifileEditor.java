@@ -19,7 +19,7 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
-import org.omnetpp.inifile.editor.form.InifileEditorFormPage;
+import org.omnetpp.inifile.editor.form.InifileFormEditor;
 import org.omnetpp.inifile.editor.model.InifileDocument;
 import org.omnetpp.inifile.editor.text.InifileTextEditor;
 
@@ -32,7 +32,7 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	/** The text editor */
 	private InifileTextEditor textEditor;
 	
-	private InifileEditorFormPage formEditor;
+	private InifileFormEditor formEditor;
 
 	/** The data model */
 	private InifileEditorData editorData = new InifileEditorData();
@@ -68,7 +68,7 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	@Override
 	protected void createPages() {
 		// create form page
-		formEditor = new InifileEditorFormPage(getContainer(), this);
+		formEditor = new InifileFormEditor(getContainer(), this);
 		addEditorPage(formEditor, "Form");
 
 		// create texteditor

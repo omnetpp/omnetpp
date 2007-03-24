@@ -16,7 +16,7 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
  * @author Andras
  */
 public abstract class FieldEditor extends Composite {
-	public static final Color BGCOLOR = InifileEditorFormPage.BGCOLOR;
+	public static final Color BGCOLOR = InifileFormEditor.BGCOLOR;
 
 	protected ConfigurationEntry entry;
 	protected IInifileDocument inifile;
