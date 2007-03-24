@@ -38,7 +38,7 @@ public abstract class FieldEditor extends Composite {
 		String section = entry.getSection(); 
 		String key = entry.getName();
 		if (inifile.getValue(section, key)==null)
-			inifile.addEntry(section, key, value, null, null);
+			inifile.addEntry(section, key, value, null, null); //XXX there's more: if section doesn't exist, it has to be added first!
 		else
 			inifile.setValue(section, key, value);
 	}
@@ -46,7 +46,7 @@ public abstract class FieldEditor extends Composite {
 	protected void removeFromFile() {
 		String section = entry.getSection(); 
 		String key = entry.getName();
-		inifile.removeKey(section, key);
+		inifile.removeKey(section, key);  //XXX remove section as well, if it became empty?
 	}
 	
 	protected Label createLabel(ConfigurationEntry entry, String labelText) {

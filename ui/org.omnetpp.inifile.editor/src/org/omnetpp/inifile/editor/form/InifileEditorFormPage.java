@@ -96,6 +96,16 @@ public class InifileEditorFormPage extends Composite {
 			if (c instanceof FieldEditor)
 				((FieldEditor) c).commit();
 	}
+
+	/**
+	 * Reads data from the text editor into the current page.
+	 */
+	public void rereadCurrentPage() {
+		System.out.println("form page: rereading current page");
+		for (Control c : form.getChildren())  //XXX temp code
+			if (c instanceof FieldEditor)
+				((FieldEditor) c).reread();
+	}
 	
 	/**
 	 * Shows the form page belonging to the given category (i.e. tree node),
@@ -138,7 +148,7 @@ public class InifileEditorFormPage extends Composite {
 	 * Notification: User switched to this page of the multipage editor.
 	 */
 	public void pageSelected() {
-		commitCurrentPage();
+		rereadCurrentPage();
 	}
 	
 	/**
