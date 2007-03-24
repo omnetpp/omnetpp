@@ -35,12 +35,13 @@ public class InifileDocument implements IInifileDocument {
 
 	class Line {
 		IFile file;
-		int lineNumber;
+		int lineNumber; // 1-based
 		int numLines;  // ==1 unless line continues on other lines (trailing backslash)
 		String comment;
 	};
 	class SectionHeadingLine extends Line {
 		String sectionName;
+		int lastLine; // last line of section contents  XXX fill in
 	}
 	class KeyValueLine extends Line {
 		String key;
@@ -51,7 +52,7 @@ public class InifileDocument implements IInifileDocument {
 	}
 
 	class Section {
-		SectionHeadingLine sectionHeadingLine; // the first if there's more than one; XXX store all?
+		ArrayList<SectionHeadingLine> headingLines = new ArrayList<SectionHeadingLine>();
 		LinkedHashMap<String,KeyValueLine> entries = new LinkedHashMap<String, KeyValueLine>();
 	}
 
@@ -149,7 +150,7 @@ public class InifileDocument implements IInifileDocument {
 						line.comment = comment;
 						line.sectionName = sectionName;
 						Section section = new Section();
-						section.sectionHeadingLine = line;
+						section.headingLines.add(line);
 						sections.put(sectionName, section);
 					}
 					currentSection = sections.get(sectionName);
@@ -161,11 +162,16 @@ public class InifileDocument implements IInifileDocument {
 		} 
 		catch (ParseException e) {
 		    addMarker(documentFile, INIFILEPROBLEM_MARKER_ID, IMarker.SEVERITY_ERROR, e.getMessage(), e.getLineNumber());
-			System.err.println(e.getClass()+": "+e.getMessage()); //XXX convert to marker?
+			//System.err.println(e.getClass()+": "+e.getMessage());
 		}
-		changed = false; // even if there was an error, we don't try again until text changes
-		fireModelChanged();
 		System.out.println("Inifile parsing: "+(System.currentTimeMillis()-startTime)+"ms");
+		
+		// mark data structure as up to date (even if there was an error, because 
+		// we don't want to keep re-parsing)
+		changed = false;
+		
+		// notify listeners
+		fireModelChanged();
 	}
 
     @SuppressWarnings("unchecked")
@@ -175,7 +181,7 @@ public class InifileDocument implements IInifileDocument {
     		MarkerUtilities.setMessage(map, message);
     		MarkerUtilities.setLineNumber(map, line);
     		map.put(IMarker.SEVERITY, severity);
-			MarkerUtilities.createMarker(file, map, IMarker.PROBLEM);
+			MarkerUtilities.createMarker(file, map, type);
 		} catch (CoreException e) {
 			e.printStackTrace(); //XXX
 		}
@@ -246,7 +252,7 @@ public class InifileDocument implements IInifileDocument {
 		KeyValueLine line = lookupEntry(section, key);
 		if (line != null)
 			throw new IllegalArgumentException("entry already exists: ["+section+"] "+key);
-		Line beforeLine = beforeKey==null ? lookupSection(section).sectionHeadingLine : lookupEntry(section, beforeKey);
+		Line beforeLine = beforeKey==null ? lookupFirstEditableSectionHeading(section) : lookupEntry(section, beforeKey);
 		if (beforeLine == null)
 			throw new IllegalArgumentException("no such entry: ["+section+"] "+beforeKey);
 		if (!isEditable(beforeLine))
@@ -303,8 +309,28 @@ public class InifileDocument implements IInifileDocument {
 		Section section = sections.get(sectionName);
 		if (section == null)
 			throw new IllegalArgumentException("section does not exist: ["+sectionName+"]");
-		Assert.isTrue(section.sectionHeadingLine!=null);
 		return section;
+	}
+
+	/**
+	 * Returns the first editable section heading, or if none are editable, the first one.
+	 */
+	protected SectionHeadingLine lookupPreferredSectionHeading(String sectionName) {
+		parseIfChanged();
+		Section section = sections.get(sectionName);
+		if (section == null)
+			throw new IllegalArgumentException("section does not exist: ["+sectionName+"]");
+		for (SectionHeadingLine line : section.headingLines)
+			if (isEditable(line))
+				return line;
+		return section.headingLines.get(0);
+	}
+
+	protected SectionHeadingLine lookupFirstEditableSectionHeading(String sectionName) {
+		SectionHeadingLine line = lookupPreferredSectionHeading(sectionName);
+		if (!isEditable(line))
+			throw new IllegalArgumentException("section is in an included file: ["+sectionName+"]");
+		return line;
 	}
 	
 	public void removeSection(String sectionName) {
@@ -317,40 +343,26 @@ public class InifileDocument implements IInifileDocument {
 
 	public void addSection(String sectionName, String beforeSectionName) {
 		parseIfChanged();
-		Section section = sections.get(sectionName);
-		if (section != null)
+		if (sections.get(sectionName) != null)
 			throw new IllegalArgumentException("section already exists: ["+sectionName+"]");
-		Section beforeSection = sections.get(beforeSectionName);
-		if (beforeSection == null)
-			throw new IllegalArgumentException("section does not exist: ["+beforeSectionName+"]");
-		Line beforeLine = beforeSection.sectionHeadingLine;
+		SectionHeadingLine beforeLine = lookupFirstEditableSectionHeading(beforeSectionName);
 		
 		// modify IDocument
 		String text = "[" + sectionName + "]";
-		addLine(beforeLine, text);
+		addLine(beforeLine, text); //XXX check before/after!
 	}
 
 	public LineInfo getSectionLineDetails(String sectionName) {
-		parseIfChanged();
-		Section section = sections.get(sectionName);
-		return section==null ? null : new LineInfo(section.sectionHeadingLine.file, section.sectionHeadingLine.lineNumber, !isEditable(section.sectionHeadingLine));
+		SectionHeadingLine line = lookupPreferredSectionHeading(sectionName);
+		return new LineInfo(line.file, line.lineNumber, !isEditable(line));
 	} 
 
 	public String getSectionComment(String sectionName) {
-		parseIfChanged();
-		Section section = sections.get(sectionName);
-		if (section == null)
-			throw new IllegalArgumentException("section does not exist: ["+sectionName+"]");
-		return section.sectionHeadingLine.comment;
+		return lookupPreferredSectionHeading(sectionName).comment;
 	}
 
 	public void setSectionComment(String sectionName, String comment) {
-		parseIfChanged();
-		Section section = sections.get(sectionName);
-		if (section == null)
-			throw new IllegalArgumentException("section does not exist: ["+sectionName+"]");
-
-		SectionHeadingLine line = section.sectionHeadingLine;
+		SectionHeadingLine line = lookupFirstEditableSectionHeading(sectionName);
 		line.comment = comment; 
 		String text = "[" + line.sectionName + "]" + (line.comment == null ? "" : " "+line.comment);
 		replaceLine(line, text);

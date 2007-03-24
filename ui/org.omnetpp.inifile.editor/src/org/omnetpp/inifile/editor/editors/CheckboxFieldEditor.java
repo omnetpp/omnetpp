@@ -43,7 +43,7 @@ public class CheckboxFieldEditor extends FieldEditor {
 
 		checkbox.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				setValueAsString(checkbox.getSelection() ? "true" : "false");
+				setValueInFile(checkbox.getSelection() ? "true" : "false");
 			}
 		});
 		
@@ -52,7 +52,7 @@ public class CheckboxFieldEditor extends FieldEditor {
 
 	@Override
 	public void reread() {
-		String text = getValueAsString();
+		String text = getValueFromFile();
 		if (text==null) return; //XXX for now -- should set default, probably
 		//XXX create some InifileUtils for parsing?
 		boolean value;
@@ -70,13 +70,13 @@ public class CheckboxFieldEditor extends FieldEditor {
 	public void commit() {
 		boolean value = checkbox.getSelection();
 		if (value != oldValue) {
-			setValueAsString(value ? "true" : "false");
+			setValueInFile(value ? "true" : "false");
 		}
 	}
 
 	@Override
 	public void resetToDefault() {
-		resetValue();
+		removeFromFile();
 		reread();
 	}
 }

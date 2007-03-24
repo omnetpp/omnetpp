@@ -22,13 +22,13 @@ public abstract class FieldEditor extends Composite {
 		setBackground(BGCOLOR);
 	}
 
-	protected String getValueAsString() {
+	protected String getValueFromFile() {
 		String section = entry.getSection(); 
 		String key = entry.getName();
 		return inifile.getValue(section, key);
 	}
 
-	protected void setValueAsString(String value) {
+	protected void setValueInFile(String value) {
 		String section = entry.getSection(); 
 		String key = entry.getName();
 		if (inifile.getValue(section, key)==null)
@@ -37,7 +37,7 @@ public abstract class FieldEditor extends Composite {
 			inifile.setValue(section, key, value);
 	}
 
-	protected void resetValue() {
+	protected void removeFromFile() {
 		String section = entry.getSection(); 
 		String key = entry.getName();
 		inifile.removeKey(section, key);
