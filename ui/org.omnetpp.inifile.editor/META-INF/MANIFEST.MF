@@ -16,6 +16,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.views,
  org.eclipse.ui.forms,
  org.omnetpp.ned.builder,
- org.omnetpp.ned.model
+ org.omnetpp.ned.model,
+ org.omnetpp.ide.nativelibs
 Eclipse-LazyStart: true
 Bundle-Vendor: OpenSim Ltd.
