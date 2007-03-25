@@ -12,7 +12,6 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_CONFI
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_CPU_TIME_LIMIT;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_DEBUG_ON_ERRORS;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_DEFAULT_RUN;
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_DESCRIPTION;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_EVENTLOG_FILE;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_EVENT_BANNERS;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_EVENT_BANNER_DETAILS;
@@ -79,11 +78,14 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_USE_N
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_WARNINGS;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.forms.widgets.ColumnLayout;
+import org.eclipse.swt.widgets.Label;
+import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 
@@ -94,6 +96,8 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
  * @author Andras
  */
 public class GenericConfigPage extends FormPage {
+	private static Font titleFont = new Font(null, "Arial", 10, SWT.BOLD);
+	
     public static final String CAT_GENERAL = "General";
     public static final String CAT_ADVANCED = "Advanced";
     public static final String CAT_RANDOMNUMBERS = "Random Numbers";
@@ -122,8 +126,25 @@ public class GenericConfigPage extends FormPage {
 	public GenericConfigPage(Composite parent, String category, InifileEditor inifileEditor) {
 		super(parent, inifileEditor);
 		GridLayout gridLayout = new GridLayout(1,false);
-		gridLayout.marginTop = gridLayout.marginBottom = gridLayout.marginHeight = gridLayout.verticalSpacing = 0;
+		gridLayout.verticalSpacing = 0;
 		setLayout(gridLayout);
+		
+		// title area (XXX a bit ugly -- re-think layout)
+		Composite titleArea = new Composite(this, SWT.BORDER);
+		GridData gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
+		gridData.heightHint = 40;
+		titleArea.setLayoutData(gridData);
+		titleArea.setBackground(ColorFactory.asColor("white"));
+		titleArea.setLayout(new GridLayout(2, false));
+		Label imageLabel = new Label(titleArea, SWT.NONE);
+		imageLabel.setImage(ImageFactory.getImage(ImageFactory.MODEL_IMAGE_FOLDER)); //XXX 
+		imageLabel.setBackground(ColorFactory.asColor("white"));
+		Label title = new Label(titleArea, SWT.NONE);
+		title.setText(category);
+		title.setFont(titleFont);
+		title.setBackground(ColorFactory.asColor("white"));
+		title.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, true, true));
+		new Label(this, SWT.NONE);
 
 		// populate with field editors
 		IInifileDocument doc = getInifileDocument();
