@@ -3,7 +3,6 @@ package org.omnetpp.inifile.editor.form;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
@@ -77,6 +76,7 @@ public class InifileFormEditor extends Composite {
 		String[] categories = GenericConfigPage.getCategoryNames();
 		for (String c : categories)
 			root.addChild(new GenericTreeNode(c));
+		root.addChild(new GenericTreeNode("RUNS")); //XXX
 		root.addChild(new GenericTreeNode("PARAMETERS")); //XXX
 		treeViewer.setInput(root);
 	}
@@ -108,6 +108,8 @@ public class InifileFormEditor extends Composite {
 
 		if (category.equals("PARAMETERS"))
 			formPage = new ParametersPage(form, inifileEditor);
+		else if (category.equals("RUNS"))
+			formPage = new RunsPage(form, inifileEditor);
 		else
 			formPage = new GenericConfigPage(form, category, inifileEditor);
 		form.layout();
