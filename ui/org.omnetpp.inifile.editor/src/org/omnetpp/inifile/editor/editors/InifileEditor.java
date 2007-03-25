@@ -90,6 +90,9 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		IFile file = ((IFileEditorInput)getEditorInput()).getFile();
 		IDocument document = textEditor.getDocumentProvider().getDocument(getEditorInput());
 		editorData.setInifiledocument(new InifileDocument(document, file));
+		
+		// force a selectionChanged event to get views (e.g. ModuleTreeView) updated
+		textEditor.selectAndReveal(0, 0);
 	}
 
 	/**

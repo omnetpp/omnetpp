@@ -9,7 +9,7 @@
             contributorClass="org.omnetpp.inifile.editor.editors.InifileEditorContributor"
             default="true"
             extensions="ini"
-            icon="icons/inifile.gif"
+            icon="icons/inifile.png"
             id="org.omnetpp.inifile.editor.editors.InifileEditor"
             name="OMNEST/OMNeT++ Ini File Editor">
       </editor>
@@ -19,7 +19,7 @@
          point="org.eclipse.ui.newWizards">
       <wizard
             name="Initialization File (ini)"
-            icon="icons/inifile.gif"
+            icon="icons/inifile.png"
             category="org.omnetpp.wizards"
             class="org.omnetpp.inifile.editor.wizards.NewInifileWizard"
             id="org.omnetpp.inifile.editor.wizards.NewInifileWizard">
@@ -45,6 +45,26 @@
 	<super type="org.eclipse.core.resources.problemmarker"/> 
 	<super type="org.eclipse.core.resources.textmarker"/>
 	<persistent value="false"/>
+  </extension>
+
+  <extension
+        point="org.eclipse.ui.views">
+     <view
+           category="org.omnetpp.views"
+           class="org.omnetpp.inifile.editor.views.ModuleTreeView"
+           icon="icons/moduletreeview.png"
+           id="org.omnetpp.inifile.ModuleTree"
+           name="Module Tree"/>
+  </extension>
+
+  <extension
+        point="org.eclipse.ui.views">
+     <view
+           category="org.omnetpp.views"
+           class="org.omnetpp.inifile.editor.views.UnsetParametersView"
+           icon="icons/unsetparameters.gif"
+           id="org.omnetpp.inifile.UnsetParameters"
+           name="Unset Parameters"/>
   </extension>
 
 </plugin>
