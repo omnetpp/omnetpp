@@ -12,7 +12,8 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
 
 /**
  * Form page for editing fields for a given section. Just throws in 
- * editors for all fields that are in the given section.
+ * editors for all fields that are in the given section. This, of course,
+ * requires section names to be listed as nodes in the form editor's tree.
  * 
  * Currently unused.
  * 

@@ -94,27 +94,27 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
  */
 public class GenericConfigPage extends FormPage {
     public static final String CAT_GENERAL = "General";
+    public static final String CAT_ADVANCED = "Advanced";
     public static final String CAT_RANDOMNUMBERS = "Random Numbers";
     public static final String CAT_DEBUGGING = "Debugging";
-    public static final String CAT_EXECUTION = "Execution";
-    public static final String CAT_ADVANCED = "Advanced";
+    public static final String CAT_OUTPUTFILES = "Output Files";
     public static final String CAT_CMDENV = "Cmdenv";
     public static final String CAT_TKENV = "Tkenv";
+    public static final String CAT_EXTENSIONS = "Extensions";
     public static final String CAT_PARSIM = "Parallel Simulation";
-    public static final String CAT_OUTPUTFILES = "Output Files";
     //public static final String CAT_OUTPUTVECTORS = "Output Vectors";
 
     public static String[] getCategoryNames() {
     	return new String[] {
     			CAT_GENERAL, 
+    			CAT_ADVANCED,
     			CAT_RANDOMNUMBERS,
     			CAT_DEBUGGING,
-    			CAT_EXECUTION,
-    			CAT_ADVANCED,
+    			CAT_OUTPUTFILES,
     			CAT_CMDENV,
     			CAT_TKENV,
+    			CAT_EXTENSIONS,
     			CAT_PARSIM,
-    			CAT_OUTPUTFILES,
     	};
     }
     
@@ -125,32 +125,41 @@ public class GenericConfigPage extends FormPage {
 		// populate with field editors
 		IInifileDocument doc = getInifileDocument();
 		if (category.equals(CAT_GENERAL)) {
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_LOAD_LIBS, doc, "load-libs"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_USER_INTERFACE, doc, "user-interface"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_INI_WARNINGS, doc, "ini-warnings"));
 			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PRELOAD_NED_FILES, doc, "preload-ned-files"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_TOTAL_STACK_KB, doc, "total-stack-kb"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_FNAME_APPEND_HOST, doc, "fname-append-host"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_DEBUG_ON_ERRORS, doc, "debug-on-errors"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_SIMTIME_SCALE, doc, "simtime-scale"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_DESCRIPTION, doc, "description"));
 			addField(new TextFieldEditor(this, SWT.NONE, CFGID_NETWORK, doc, "network"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_WARNINGS, doc, "warnings"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_SIM_TIME_LIMIT, doc, "sim-time-limit"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_CPU_TIME_LIMIT, doc, "cpu-time-limit"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_USER_INTERFACE, doc, "user-interface"));
+			//addField(new TextFieldEditor(this, SWT.NONE, CFGID_DESCRIPTION, doc, "description"));
+		}
+		else if (category.equals(CAT_ADVANCED)) {
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_WARNINGS, doc, "warnings")); //XXX
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_INI_WARNINGS, doc, "ini-warnings")); //XXX
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_SIMTIME_SCALE, doc, "simtime-scale"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_TOTAL_STACK_KB, doc, "total-stack-kb"));
 			addField(new TextFieldEditor(this, SWT.NONE, CFGID_FINGERPRINT, doc, "fingerprint"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_PERFORM_GC, doc, "perform-gc"));
 		}
 		else if (category.equals(CAT_RANDOMNUMBERS)) {
 			addField(new TextFieldEditor(this, SWT.NONE, CFGID_NUM_RNGS, doc, "num-rngs"));
 			addField(new TextFieldEditor(this, SWT.NONE, CFGID_RNG_CLASS, doc, "rng-class"));
 		}
 		else if (category.equals(CAT_DEBUGGING)) {
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_PERFORM_GC, doc, "perform-gc"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_DEBUG_ON_ERRORS, doc, "debug-on-errors"));
 			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_PRINT_UNDISPOSED, doc, "print-undisposed"));
 		}
-		else if (category.equals(CAT_EXECUTION)) {
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_SIM_TIME_LIMIT, doc, "sim-time-limit"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_CPU_TIME_LIMIT, doc, "cpu-time-limit"));
+		else if (category.equals(CAT_OUTPUTFILES)) {
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUT_VECTOR_FILE, doc, "output-vector-file"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUT_VECTOR_PRECISION, doc, "output-vector-precision"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, doc, "output-vectors-memory-limit"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUT_SCALAR_FILE, doc, "output-scalar-file"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUT_SCALAR_PRECISION, doc, "output-scalar-precision"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_SNAPSHOT_FILE, doc, "snapshot-file"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_EVENTLOG_FILE, doc, "eventlog-file"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_FNAME_APPEND_HOST, doc, "fname-append-host"));
 		}
-		else if (category.equals(CAT_ADVANCED)) {
+		else if (category.equals(CAT_EXTENSIONS)) {
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_LOAD_LIBS, doc, "load-libs"));
 			addField(new TextFieldEditor(this, SWT.NONE, CFGID_CONFIGURATION_CLASS, doc, "configuration-class"));
 			addField(new TextFieldEditor(this, SWT.NONE, CFGID_SCHEDULER_CLASS, doc, "scheduler-class"));
 			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUTVECTORMANAGER_CLASS, doc, "outputvectormanager-class"));
@@ -209,15 +218,6 @@ public class GenericConfigPage extends FormPage {
 			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS, doc, "parsim-nullmessageprotocol-lookahead-class"));
 			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS, doc, "parsim-nullmessageprotocol-laziness"));
 			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_PARSIM_DEBUG, doc, "parsim-debug"));
-		}
-		else if (category.equals(CAT_OUTPUTFILES)) {
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUT_VECTOR_FILE, doc, "output-vector-file"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUT_VECTOR_PRECISION, doc, "output-vector-precision"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUT_SCALAR_FILE, doc, "output-scalar-file"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUT_SCALAR_PRECISION, doc, "output-scalar-precision"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_SNAPSHOT_FILE, doc, "snapshot-file"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, doc, "output-vectors-memory-limit"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_EVENTLOG_FILE, doc, "eventlog-file"));
 		}
 		
 	}
