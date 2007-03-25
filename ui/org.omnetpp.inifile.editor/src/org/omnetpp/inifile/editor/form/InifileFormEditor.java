@@ -7,7 +7,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
@@ -17,11 +16,9 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
-import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
 
 
 /**
@@ -69,7 +66,7 @@ public class InifileFormEditor extends Composite {
 
 	private void buildTree() {
 		GenericTreeNode root = new GenericTreeNode("root");
-		String[] categories = ConfigurationRegistry.getCategories();
+		String[] categories = GenericConfigPage2.getCategoryNames();
 		for (String c : categories)
 			root.addChild(new GenericTreeNode(c));
 		root.addChild(new GenericTreeNode("PARAMETERS")); //XXX
@@ -104,7 +101,7 @@ public class InifileFormEditor extends Composite {
 		if (category.equals("PARAMETERS"))
 			formPage = new ParametersPage(form, inifileEditor);
 		else
-			formPage = new GenericConfigPage(form, category, inifileEditor);
+			formPage = new GenericConfigPage2(form, category, inifileEditor);
 		form.layout();
 	}
 

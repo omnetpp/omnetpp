@@ -23,21 +23,19 @@ public class ConfigurationEntry {
     private Type type;        // entry type
     private String unit;      // if numeric, its unit ("s") or empty string
     private Object defaultValue; // the default value
-    private String category;     // the tree node on which it will appear in the editor
     private String description;  // help text
 
     /**
      * Constructor.
      */
     ConfigurationEntry(String name, String section, boolean isGlobal, Type type,
-                 String unit, Object defaultValue, String category, String description) {
+                 String unit, Object defaultValue, String description) {
         this.name = name;
         this.section = section;
         this.isGlobal = isGlobal;
         this.type = type;
         this.unit = unit;
         this.defaultValue = defaultValue;
-        this.category = category;
         this.description = description;
     }
 
@@ -67,9 +65,5 @@ public class ConfigurationEntry {
 
 	public String getUnit() {
 		return unit;
-	}
-
-	public String getCategory() {
-		return category;
 	}
 }
