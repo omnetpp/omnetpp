@@ -28,11 +28,13 @@ public class TextFieldEditor extends FieldEditor {
 	public TextFieldEditor(Composite parent, int style, ConfigurationEntry entry, IInifileDocument inifile, String labelText) {
 		super(parent, style, entry, inifile);
 
-		label = createLabel(entry, labelText);
+		GridLayout gridLayout = new GridLayout(3, false);
+		//gridLayout.marginTop = gridLayout.marginBottom = gridLayout.marginHeight = gridLayout.verticalSpacing = 0;
+		setLayout(gridLayout);
+
+		label = createLabel(entry, labelText+":");
 		textField = new Text(this, SWT.SINGLE | SWT.BORDER);
 		resetButton = createResetButton();
-
-		setLayout(new GridLayout(3, false));
 		label.setLayoutData(new GridData());
 		//textField.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 		int width = (entry.getType()==Type.CFG_STRING || entry.getType()==Type.CFG_FILENAME || entry.getType()==Type.CFG_FILENAMES) ? 250 : 50;

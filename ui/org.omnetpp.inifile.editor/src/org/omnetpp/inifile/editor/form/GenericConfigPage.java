@@ -83,6 +83,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 
@@ -120,13 +121,15 @@ public class GenericConfigPage extends FormPage {
     
 	public GenericConfigPage(Composite parent, String category, InifileEditor inifileEditor) {
 		super(parent, inifileEditor);
-		setLayout(new GridLayout(1,false));
+		GridLayout gridLayout = new GridLayout(1,false);
+		gridLayout.marginTop = gridLayout.marginBottom = gridLayout.marginHeight = gridLayout.verticalSpacing = 0;
+		setLayout(gridLayout);
 
 		// populate with field editors
 		IInifileDocument doc = getInifileDocument();
 		if (category.equals(CAT_GENERAL)) {
 			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PRELOAD_NED_FILES, doc, "Preload NED files"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_NETWORK, doc, "Network"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_NETWORK, doc, "Network to simulate"));
 			addField(new TextFieldEditor(this, SWT.NONE, CFGID_SIM_TIME_LIMIT, doc, "Simulation time limit"));
 			addField(new TextFieldEditor(this, SWT.NONE, CFGID_CPU_TIME_LIMIT, doc, "CPU time limit"));
 			addField(new TextFieldEditor(this, SWT.NONE, CFGID_USER_INTERFACE, doc, "User interface"));
@@ -135,13 +138,13 @@ public class GenericConfigPage extends FormPage {
 		else if (category.equals(CAT_ADVANCED)) {
 			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_WARNINGS, doc, "Warnings")); //XXX
 			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_INI_WARNINGS, doc, "Ini warnings")); //XXX
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_SIMTIME_SCALE, doc, "Simtime scale"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_SIMTIME_SCALE, doc, "Simtime scale exponent"));
 			addField(new TextFieldEditor(this, SWT.NONE, CFGID_TOTAL_STACK_KB, doc, "Total stack (Kb)"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_FINGERPRINT, doc, "Fingerprint"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_FINGERPRINT, doc, "Fingerprint to verify"));
 			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_PERFORM_GC, doc, "Perform GC"));
 		}
 		else if (category.equals(CAT_RANDOMNUMBERS)) {
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_NUM_RNGS, doc, "Number of RNGs"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_NUM_RNGS, doc, "Number of random number generators (RNGs)"));
 			addField(new TextFieldEditor(this, SWT.NONE, CFGID_RNG_CLASS, doc, "RNG class"));
 		}
 		else if (category.equals(CAT_DEBUGGING)) {
@@ -169,7 +172,7 @@ public class GenericConfigPage extends FormPage {
 		}
 		else if (category.equals(CAT_CMDENV)) {
 			addField(new TextFieldEditor(this, SWT.NONE, CFGID_RUNS_TO_EXECUTE, doc, "Runs to execute"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_EXPRESS_MODE, doc, "Express mode"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_EXPRESS_MODE, doc, "Run in Express mode"));
 			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_PERFORMANCE_DISPLAY, doc, "Display performance data"));
 			addField(new TextFieldEditor(this, SWT.NONE, CFGID_STATUS_FREQUENCY, doc, "Status frequency"));
 			addField(new TextFieldEditor(this, SWT.NONE, CFGID_CMDENV_EXTRA_STACK_KB, doc, "Cmdenv extra stack (Kb)"));

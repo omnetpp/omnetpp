@@ -27,12 +27,18 @@ public class CheckboxFieldEditor extends FieldEditor {
 		super(parent, style, entry, inifile);
 
 		Assert.isTrue(entry.getType()==ConfigurationEntry.Type.CFG_BOOL);
+
+		GridLayout gridLayout = new GridLayout(3, false);
+		gridLayout.marginTop = gridLayout.marginBottom = gridLayout.marginHeight = gridLayout.verticalSpacing = 0;
+		gridLayout.marginHeight = 2;
+		setLayout(gridLayout);
+		
 		checkbox = new Button(this, SWT.CHECK);
 		checkbox.setBackground(BGCOLOR);
 		label = createLabel(entry, labelText);
 		resetButton = createResetButton();
 
-		setLayout(new GridLayout(3, false));
+
 		checkbox.setLayoutData(new GridData());
 		label.setLayoutData(new GridData());
 		resetButton.setLayoutData(new GridData());
