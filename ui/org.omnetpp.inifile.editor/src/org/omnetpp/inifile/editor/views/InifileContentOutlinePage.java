@@ -1,4 +1,4 @@
-package org.omnetpp.inifile.editor.text.outline;
+package org.omnetpp.inifile.editor.views;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.BadLocationException;
@@ -10,31 +10,30 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
+import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.inifile.editor.model.IInifileChangeListener;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
-import org.omnetpp.inifile.editor.model.old.InifileLine;
+import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 
 /**
  * Content outline page for the inifile editor.
  */
 public class InifileContentOutlinePage extends ContentOutlinePage implements IInifileChangeListener {
-	protected IInifileDocument fInput;
-	protected ITextEditor fTextEditor;
+	protected IInifileDocument inifileDocument;
+	protected ITextEditor textEditor;
 
 	/**
 	 * Creates a content outline page using the given provider and the given editor.
-	 * 
-	 * @param provider the document provider
 	 * @param editor the editor
 	 */
-	public InifileContentOutlinePage(IDocumentProvider provider, ITextEditor editor) {
+	public InifileContentOutlinePage(ITextEditor editor) {
 		super();
-		fTextEditor = editor;
+		textEditor = editor;
 	}
 	
 	/* (non-Javadoc)
@@ -43,7 +42,17 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 	public void createControl(Composite parent) {
 		super.createControl(parent);
 
-		getTreeViewer().setLabelProvider(new LabelProvider()); //XXX for now
+		getTreeViewer().setLabelProvider(new LabelProvider() {
+			@Override
+			public Image getImage(Object element) {
+				return ImageFactory.getImage(ImageFactory.MODEL_IMAGE_FOLDER); //XXX
+			}
+
+			@Override
+			public String getText(Object element) {
+				return "["+(String)element+"]";
+			}
+		});
 		getTreeViewer().setContentProvider(new ITreeContentProvider() {
 			public void dispose() {
 			}
@@ -51,8 +60,8 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 			}
 			public Object[] getChildren(Object parentElement) {
 				if (parentElement instanceof IInifileDocument) {
-					IInifileDocument ini = (IInifileDocument) parentElement;
-					return ini.getSectionNames();
+					IInifileDocument doc = (IInifileDocument) parentElement;
+					return doc.getSectionNames();
 				}
 				return null;
 			}
@@ -67,8 +76,8 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 			}
 		});
 		
-		Assert.isTrue(fInput!=null);
-		getTreeViewer().setInput(fInput);
+		Assert.isTrue(inifileDocument!=null);
+		getTreeViewer().setInput(inifileDocument);
 		//XXX needed? it's there in the base class too!!!: getTreeViewer().addSelectionChangedListener(this);
 	}
 	
@@ -82,25 +91,26 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 		// make text editor to follow outline's selection
 		ISelection selection = event.getSelection();
 		if (selection.isEmpty()) {
-			fTextEditor.resetHighlightRange();
+			textEditor.resetHighlightRange();
 		}
 		else {
 			// if an InifileLine is selected in the outline, highlight it in the text editor
 			TreeViewer viewer = getTreeViewer();
 			viewer.refresh();
 			Object sel = ((IStructuredSelection) selection).getFirstElement();
-			if (sel instanceof InifileLine) {  //XXX String!!!
-				InifileLine line = (InifileLine) sel;
+			if (sel instanceof String) {
+				String sectionName = (String) sel;
 
-				IDocument docu = fTextEditor.getDocumentProvider().getDocument(fTextEditor.getEditorInput());
+				LineInfo line = inifileDocument.getSectionLineDetails(sectionName);
+				IDocument docu = textEditor.getDocumentProvider().getDocument(textEditor.getEditorInput());
 				try {
 					int startOffset = docu.getLineOffset(line.getLineNumber()-1);
 					int endOffset = docu.getLineOffset(line.getLineNumber())-1;
-					fTextEditor.setHighlightRange(startOffset, endOffset-startOffset, true);
+					textEditor.setHighlightRange(startOffset, endOffset-startOffset, true);
 				} catch (BadLocationException e) {
 				}
 				catch (IllegalArgumentException x) {
-					fTextEditor.resetHighlightRange();
+					textEditor.resetHighlightRange();
 				}
 			}
 		}
@@ -108,8 +118,8 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 
 	@Override
 	public void dispose() {
-		if (fInput != null)
-			fInput.getListeners().remove(this);
+		if (inifileDocument != null)
+			inifileDocument.getListeners().remove(this);
 		super.dispose();
 	}
 	
@@ -120,15 +130,15 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 	 */
 	public void setInput(Object input) {
 		// unhook from old input object
-		if (fInput != null)
-			fInput.getListeners().remove(this);
+		if (inifileDocument != null)
+			inifileDocument.getListeners().remove(this);
 		Assert.isTrue(input instanceof IInifileDocument || input == null);
-		fInput = (IInifileDocument) input;
+		inifileDocument = (IInifileDocument) input;
 		// Note: when first invoked, treeViewer==null yet
 		if (getTreeViewer() != null) 
-			getTreeViewer().setInput(fInput);
-		if (fInput != null)
-			fInput.getListeners().add(this);
+			getTreeViewer().setInput(inifileDocument);
+		if (inifileDocument != null)
+			inifileDocument.getListeners().add(this);
 	}
 	
 	/**

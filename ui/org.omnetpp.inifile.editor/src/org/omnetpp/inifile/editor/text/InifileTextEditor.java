@@ -2,7 +2,6 @@ package org.omnetpp.inifile.editor.text;
 
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.text.ITextViewerExtension5;
@@ -16,22 +15,14 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.TextOperationAction;
-import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.text.actions.DefineFoldingRegionAction;
-import org.omnetpp.inifile.editor.text.outline.InifileContentOutlinePage;
 
 
 /**
  * Text editor for ini files.
  */
 public class InifileTextEditor extends TextEditor {
-	/** The parent multipage editor */
-	private InifileEditor parentEditor;
-	
-	/** The outline page */
-	private InifileContentOutlinePage fOutlinePage;
-	
 	/** The projection support */
 	private ProjectionSupport fProjectionSupport;
 
@@ -40,7 +31,7 @@ public class InifileTextEditor extends TextEditor {
 	 */
 	public InifileTextEditor(InifileEditor parentEditor) {
 		super();
-		this.parentEditor = parentEditor;
+
 		// Note: we should actually override initializeEditor() and place the 
 		// setSourceViewerConfiguration() call there. Problem is, parentEditor 
 		// is not yet available at that point.
@@ -64,16 +55,6 @@ public class InifileTextEditor extends TextEditor {
 		
 		a= new DefineFoldingRegionAction(InifileEditorMessages.getResourceBundle(), "DefineFoldingRegion.", this); //$NON-NLS-1$
 		setAction("DefineFoldingRegion", a); //$NON-NLS-1$
-	}
-	
-	/** The <code>TextualNedEditor</code> implementation of this 
-	 * <code>AbstractTextEditor</code> method performs any extra 
-	 * disposal actions required by the ned editor.
-	 */
-	public void dispose() {
-		if (fOutlinePage != null)
-			fOutlinePage.setInput(null);
-		super.dispose();
 	}
 	
 //XXX make sure this isn't needed after all
@@ -159,16 +140,7 @@ public class InifileTextEditor extends TextEditor {
 	 * @param required the required type
 	 * @return an adapter for the required type or <code>null</code>
 	 */ 
-	//FIXME move it to main editor? as page is shared among all pages of the multi-page editor
 	public Object getAdapter(Class required) {
-		if (IContentOutlinePage.class.equals(required)) {
-			if (fOutlinePage == null) {
-				fOutlinePage = new InifileContentOutlinePage(getDocumentProvider(), this);
-				fOutlinePage.setInput(parentEditor.getEditorData().getInifileDocument());
-			}
-			return fOutlinePage;
-		}
-		
 		if (fProjectionSupport != null) {
 			Object adapter = fProjectionSupport.getAdapter(getSourceViewer(), required);
 			if (adapter != null)

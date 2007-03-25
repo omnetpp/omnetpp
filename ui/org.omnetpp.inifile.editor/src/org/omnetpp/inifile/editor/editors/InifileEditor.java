@@ -20,23 +20,27 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
+import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.inifile.editor.form.InifileFormEditor;
 import org.omnetpp.inifile.editor.model.InifileDocument;
 import org.omnetpp.inifile.editor.text.InifileTextEditor;
+import org.omnetpp.inifile.editor.views.InifileContentOutlinePage;
 
 /**
  * Editor for omnetpp.ini files.
  */
-//FIXME File|Revert is always diabled
-//FIXME outline view doesn't get displayed - move creation from TextEditor into here
+//FIXME File|Revert is always diabled; same for Redo/Undo  
 public class InifileEditor extends MultiPageEditorPart implements IResourceChangeListener, IGotoMarker {
 	/** The text editor */
 	private InifileTextEditor textEditor;
 	
+	/** Form editor */
 	private InifileFormEditor formEditor;
 
 	/** The data model */
 	private InifileEditorData editorData = new InifileEditorData();
+
+	private InifileContentOutlinePage outlinePage;
 	
 	/**
 	 * Creates the ini file editor.
@@ -105,6 +109,8 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	@Override
 	public void dispose() {
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
+		if (outlinePage != null)
+			outlinePage.setInput(null); //XXX ?
 		super.dispose();
 	}
 
@@ -169,6 +175,18 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		}
 	}
 
+	@Override
+	public Object getAdapter(Class required) {
+		if (IContentOutlinePage.class.equals(required)) {
+			if (outlinePage == null) {
+				outlinePage = new InifileContentOutlinePage(textEditor);
+				outlinePage.setInput(getEditorData().getInifileDocument());
+			}
+			return outlinePage;
+		}
+		return super.getAdapter(required);
+	}
+	
 	/**
 	 * Called on workspace changes.
 	 */
