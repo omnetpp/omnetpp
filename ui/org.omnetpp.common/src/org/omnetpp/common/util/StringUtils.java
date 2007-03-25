@@ -94,4 +94,11 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 		}
 		return newlineCount;
 	}
+	
+	/**
+	 * Returns true iff string is null or "".
+	 */
+	public static boolean isEmpty(String string) {
+		return string==null || "".equals(string);
+	}
 }

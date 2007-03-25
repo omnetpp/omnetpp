@@ -61,10 +61,10 @@
         point="org.eclipse.ui.views">
      <view
            category="org.omnetpp.views"
-           class="org.omnetpp.inifile.editor.views.UnsetParametersView"
+           class="org.omnetpp.inifile.editor.views.UnassignedParametersView"
            icon="icons/unsetparameters.gif"
-           id="org.omnetpp.inifile.UnsetParameters"
-           name="Unset Parameters"/>
+           id="org.omnetpp.inifile.UnassignedParameters"
+           name="Unassigned Parameters"/>
   </extension>
 
 </plugin>

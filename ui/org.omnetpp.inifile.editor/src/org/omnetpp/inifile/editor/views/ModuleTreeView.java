@@ -9,11 +9,12 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
-import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
@@ -79,7 +80,7 @@ public class ModuleTreeView extends ViewPart {
 			}
 
 			if (!networkName.equals(oldNetworkName)) {  //XXX or something changed in the NED tree
-				dumpModule(networkName, networkName, networkName, root, nedResources, doc);
+				buildTree(root, networkName, networkName, networkName, nedResources, doc);
 				treeViewer.setInput(root);
 				oldNetworkName = networkName;
 			}
@@ -95,62 +96,72 @@ public class ModuleTreeView extends ViewPart {
 		treeViewer.setInput(root);
 	}
 
-	private void dumpModule(String moduleTypeName, String moduleFullPath, String moduleName, GenericTreeNode parent, INEDTypeResolver nedResources, IInifileDocument doc) {
+	private void buildTree(GenericTreeNode parent, String moduleFullName, String moduleFullPath, String moduleTypeName, INEDTypeResolver nedResources, IInifileDocument doc) {
 		// dig out type info (NED declaration)
-		if (isEmpty(moduleTypeName)) {
-			String text = moduleName+"  (module type unknown)";
+		if (StringUtils.isEmpty(moduleTypeName)) {
+			String text = moduleFullName+"  (module type unknown)";
 			GenericTreeNode thisNode = new GenericTreeNode(text);
 			parent.addChild(thisNode);
 			return;
 		}
 		INEDTypeInfo moduleType = nedResources.getComponent(moduleTypeName);
 		if (moduleType == null) {
-			String text = moduleName+"  ("+moduleTypeName+" - no such module type)";
+			String text = moduleFullName+"  ("+moduleTypeName+" - no such module type)";
 			GenericTreeNode thisNode = new GenericTreeNode(text);
 			parent.addChild(thisNode);
 			return;
 		}
 
-		String text = moduleName+"  ("+moduleTypeName+")";
-		GenericTreeNode thisNode = new GenericTreeNode(text);
-		parent.addChild(thisNode);
-
-		dumpParameters(moduleType, thisNode, moduleFullPath, doc);
+		// do useful work: add tree node corresponding to this module
+		GenericTreeNode thisNode = addTreeNode(parent, moduleFullName, moduleFullPath, moduleType, doc);
 		
-		for (NEDElement node : moduleType.getSubmods().values()) {
+		// traverse submodules
+		for (NEDElement node : moduleType.getSubmods().values()) { //XXX ordered list somehow! use LinkedHashMap in NEDComponent?
 			SubmoduleNode submodule = (SubmoduleNode) node;
 
 			// produce submodule name; if vector, append [*]
 			String submoduleName = submodule.getName();
-			if (!isEmpty(submodule.getVectorSize())) //XXX what if parsed expressions are in use?
-				submoduleName += "[*]";
+			if (!StringUtils.isEmpty(submodule.getVectorSize())) //XXX what if parsed expressions are in use?
+				submoduleName += "[*]"; //XXX
 			
 			// produce submodule type: if "like", use like type
 			//XXX should try to evaluate "like" expression and use result as type (if possible)
 			String submoduleType = submodule.getType();
-			if (isEmpty(submoduleType))
+			if (StringUtils.isEmpty(submoduleType))
 				submoduleType = submodule.getLikeType();
 			
 			// recursive call
-			dumpModule(submoduleType, moduleFullPath+"."+submoduleName, submoduleName, thisNode, nedResources, doc);
+			buildTree(thisNode, submoduleName, moduleFullPath+"."+submoduleName, submoduleType, nedResources, doc);
 		}
 	}
 	
-	private static void dumpParameters(INEDTypeInfo moduleType, GenericTreeNode parent, String moduleFullPath, IInifileDocument doc) {
+	/**
+	 * Adds a node to the tree. The new node described the module and its parameters.
+	 */
+	private static GenericTreeNode addTreeNode(GenericTreeNode parent, String moduleFullName, String moduleFullPath, INEDTypeInfo moduleType, IInifileDocument doc) {
+		String moduleText = moduleFullName+"  ("+moduleType.getName()+")";
+		GenericTreeNode thisNode = new GenericTreeNode(moduleText);
+		parent.addChild(thisNode);
+
 		for (NEDElement node : moduleType.getParamValues().values()) {
 			ParamNode param = (ParamNode) node;
 			
 			// value in the NED file
 			String nedValue = param.getValue(); //XXX what if parsed expressions?
-			if (isEmpty(nedValue)) nedValue = null;
-			boolean isDefault = param.getIsDefault();
+			if (StringUtils.isEmpty(nedValue)) nedValue = null;
+			boolean isDefault = param.getIsDefault(); //XXX should be used somehow
 
 			// look up its value in the ini file
 			String paramFullPath = moduleFullPath + "." + param.getName();
-			String iniKey = lookupParameter(paramFullPath, doc, "Parameters");
+			String iniKey = InifileUtils.lookupParameter(paramFullPath, doc, "Parameters");
 			String iniValue = doc.getValue("Parameters", iniKey);
-			//XXX look up use-default as well!!!
+			//XXX observe "**.use-default=true" style settings as well!!!
 			
+			//XXX this issue is much more complicated, as there may be multiple possibly matching 
+			// inifile entries. For example, we have "net.node[*].power", and inifile contains
+			// "*.node[0..4].power=...", "*.node[5..9].power=...", and "net.node[10..].power=...".
+			// Current code would not match any (!!!), only "net.node[*].power=..." if it existed.
+			// lookupParameter() should actually return multiple matches. 
 			String valueText;
 			if (nedValue==null && iniValue==null)
 				valueText = "(unassigned)";
@@ -164,24 +175,9 @@ public class ModuleTreeView extends ViewPart {
 				valueText = iniValue+" (ini, overrides NED value "+nedValue+")";
 				
 			String text = param.getName()+" = "+valueText;
-			parent.addChild(new GenericTreeNode(text));
+			thisNode.addChild(new GenericTreeNode(text));
 		}
+		return thisNode;
 	}
 
-	/**
-	 * Given a parameter's fullPath, returns the key of the matching
-	 * inifile entry in the given section, or null if it's not 
-	 * in the inifile. 
-	 */
-	private static String lookupParameter(String paramFullPath, IInifileDocument doc, String section) {
-		String[] keys = doc.getKeys(section);
-		for (String key : keys)
-			if (new PatternMatcher(key, true, true, true).matches(paramFullPath))
-				return key;
-		return null;
-	}
-
-	private static boolean isEmpty(String string) {
-		return string==null || "".equals(string);
-	}
 }

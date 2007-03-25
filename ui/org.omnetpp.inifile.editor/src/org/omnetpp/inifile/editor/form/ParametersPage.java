@@ -13,15 +13,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
-import org.omnetpp.ned.model.NEDElement;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
-import org.omnetpp.ned.model.pojo.ParamNode;
-import org.omnetpp.ned.model.pojo.SubmoduleNode;
-import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
  * For editing module parameters.
@@ -91,7 +84,6 @@ public class ParametersPage extends FormPage {
 		Button downButton = createButton(buttonGroup, "Down");
 		
 		reread();
-		dumpUnboundParameters(); //XXX temp
 	}
 
 	private TableColumn addTableColumn(Table table, String label, int width) {
@@ -121,84 +113,5 @@ public class ParametersPage extends FormPage {
 	@Override
 	public void commit() {
 		//XXX todo
-	}
-
-	private void dumpUnboundParameters() {
-		IInifileDocument doc = getInifileDocument();
-		//XXX consider changing the return type of NEDResourcesPlugin.getNEDResources() to INEDTypeResolver
-		INEDTypeResolver nedResources = NEDResourcesPlugin.getNEDResources();
-		
-		String networkName = doc.getValue("General", "network");
-		if (networkName == null) {
-			System.out.println("no network name specified (no [General]/network= setting)");
-			return;
-		}
-		//XXX todo: parse networkName, i.e. remove quotes
-		
-		dumpModule(networkName, networkName, nedResources, doc);
-	}
-
-	private void dumpModule(String moduleTypeName, String moduleFullPath, INEDTypeResolver nedResources, IInifileDocument doc) {
-		System.out.println("- "+moduleFullPath+"\t\t\t("+moduleTypeName+")");
-
-		// dig out type info (NED declaration)
-		if (isEmpty(moduleTypeName)) {
-			System.out.println("*** no module type for "+moduleFullPath);
-			return;
-		}
-		INEDTypeInfo moduleType = nedResources.getComponent(moduleTypeName);
-		if (moduleType == null) {
-			System.out.println("*** no such module type: "+moduleTypeName);
-			return;
-		}
-
-		dumpParameters(moduleType, moduleFullPath, doc);
-		
-		for (NEDElement node : moduleType.getSubmods().values()) {
-			SubmoduleNode submodule = (SubmoduleNode) node;
-
-			// produce submodule name; if vector, append [*]
-			String submoduleName = submodule.getName();
-			if (!isEmpty(submodule.getVectorSize())) //XXX what if parsed expressions are in use?
-				submoduleName += "[*]";
-			
-			// produce submodule type: if "like", use like type
-			//XXX should try to evaluate "like" expression and use result as type (if possible)
-			String submoduleType = submodule.getType();
-			if (isEmpty(submoduleType))
-				submoduleType = submodule.getLikeType();
-			
-			// recursive call
-			dumpModule(submoduleType, moduleFullPath+"."+submoduleName, nedResources, doc);
-		}
-	}
-	
-	private static void dumpParameters(INEDTypeInfo moduleType, String moduleFullPath, IInifileDocument doc) {
-		for (NEDElement node : moduleType.getParamValues().values()) {
-			ParamNode param = (ParamNode) node;
-
-			String paramFullPath = moduleFullPath + "." + param.getName();
-			String iniKey = lookupParameter(paramFullPath, doc, "Parameters");
-			String value = doc.getValue("Parameters", iniKey);
-			
-			System.out.println("\t"+param.getName()+"= NED:"+param.getValue()+",  INI:"+value);
-		}
-	}
-
-	/**
-	 * Given a parameter's fullPath, returns the key of the matching
-	 * inifile entry in the given section, or null if it's not 
-	 * in the inifile. 
-	 */
-	private static String lookupParameter(String paramFullPath, IInifileDocument doc, String section) {
-		String[] keys = doc.getKeys(section);
-		for (String key : keys)
-			if (new PatternMatcher(key, true, true, true).matches(paramFullPath))
-				return key;
-		return null;
-	}
-
-	private static boolean isEmpty(String string) {
-		return string==null || "".equals(string);
 	}
 }
