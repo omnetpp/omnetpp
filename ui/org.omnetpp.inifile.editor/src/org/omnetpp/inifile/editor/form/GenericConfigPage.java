@@ -92,7 +92,7 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
  * 
  * @author Andras
  */
-public class GenericConfigPage2 extends FormPage {
+public class GenericConfigPage extends FormPage {
     public static final String CAT_GENERAL = "General";
     public static final String CAT_RANDOMNUMBERS = "Random Numbers";
     public static final String CAT_DEBUGGING = "Debugging";
@@ -118,7 +118,7 @@ public class GenericConfigPage2 extends FormPage {
     	};
     }
     
-	public GenericConfigPage2(Composite parent, String category, InifileEditor inifileEditor) {
+	public GenericConfigPage(Composite parent, String category, InifileEditor inifileEditor) {
 		super(parent, inifileEditor);
 		setLayout(new GridLayout(1,false));
 

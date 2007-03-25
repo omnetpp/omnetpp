@@ -66,7 +66,7 @@ public class InifileFormEditor extends Composite {
 
 	private void buildTree() {
 		GenericTreeNode root = new GenericTreeNode("root");
-		String[] categories = GenericConfigPage2.getCategoryNames();
+		String[] categories = GenericConfigPage.getCategoryNames();
 		for (String c : categories)
 			root.addChild(new GenericTreeNode(c));
 		root.addChild(new GenericTreeNode("PARAMETERS")); //XXX
@@ -101,7 +101,7 @@ public class InifileFormEditor extends Composite {
 		if (category.equals("PARAMETERS"))
 			formPage = new ParametersPage(form, inifileEditor);
 		else
-			formPage = new GenericConfigPage2(form, category, inifileEditor);
+			formPage = new GenericConfigPage(form, category, inifileEditor);
 		form.layout();
 	}
 
