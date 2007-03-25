@@ -125,99 +125,99 @@ public class GenericConfigPage extends FormPage {
 		// populate with field editors
 		IInifileDocument doc = getInifileDocument();
 		if (category.equals(CAT_GENERAL)) {
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PRELOAD_NED_FILES, doc, "preload-ned-files"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_NETWORK, doc, "network"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_SIM_TIME_LIMIT, doc, "sim-time-limit"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_CPU_TIME_LIMIT, doc, "cpu-time-limit"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_USER_INTERFACE, doc, "user-interface"));
-			//addField(new TextFieldEditor(this, SWT.NONE, CFGID_DESCRIPTION, doc, "description"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PRELOAD_NED_FILES, doc, "Preload NED files"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_NETWORK, doc, "Network"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_SIM_TIME_LIMIT, doc, "Simulation time limit"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_CPU_TIME_LIMIT, doc, "CPU time limit"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_USER_INTERFACE, doc, "User interface"));
+			//addField(new TextFieldEditor(this, SWT.NONE, CFGID_DESCRIPTION, doc, "Description"));
 		}
 		else if (category.equals(CAT_ADVANCED)) {
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_WARNINGS, doc, "warnings")); //XXX
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_INI_WARNINGS, doc, "ini-warnings")); //XXX
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_SIMTIME_SCALE, doc, "simtime-scale"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_TOTAL_STACK_KB, doc, "total-stack-kb"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_FINGERPRINT, doc, "fingerprint"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_PERFORM_GC, doc, "perform-gc"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_WARNINGS, doc, "Warnings")); //XXX
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_INI_WARNINGS, doc, "Ini warnings")); //XXX
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_SIMTIME_SCALE, doc, "Simtime scale"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_TOTAL_STACK_KB, doc, "Total stack (Kb)"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_FINGERPRINT, doc, "Fingerprint"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_PERFORM_GC, doc, "Perform GC"));
 		}
 		else if (category.equals(CAT_RANDOMNUMBERS)) {
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_NUM_RNGS, doc, "num-rngs"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_RNG_CLASS, doc, "rng-class"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_NUM_RNGS, doc, "Number of RNGs"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_RNG_CLASS, doc, "RNG class"));
 		}
 		else if (category.equals(CAT_DEBUGGING)) {
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_DEBUG_ON_ERRORS, doc, "debug-on-errors"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_PRINT_UNDISPOSED, doc, "print-undisposed"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_DEBUG_ON_ERRORS, doc, "Debug on errors"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_PRINT_UNDISPOSED, doc, "Dump names of undisposed objects"));
 		}
 		else if (category.equals(CAT_OUTPUTFILES)) {
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUT_VECTOR_FILE, doc, "output-vector-file"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUT_VECTOR_PRECISION, doc, "output-vector-precision"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, doc, "output-vectors-memory-limit"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUT_SCALAR_FILE, doc, "output-scalar-file"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUT_SCALAR_PRECISION, doc, "output-scalar-precision"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_SNAPSHOT_FILE, doc, "snapshot-file"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_EVENTLOG_FILE, doc, "eventlog-file"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_FNAME_APPEND_HOST, doc, "fname-append-host"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUT_VECTOR_FILE, doc, "Output vector file"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUT_VECTOR_PRECISION, doc, "Output vector precision"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, doc, "Output vectors memory limit"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUT_SCALAR_FILE, doc, "Output scalar file"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUT_SCALAR_PRECISION, doc, "Output scalar precision"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_SNAPSHOT_FILE, doc, "Snapshot file"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_EVENTLOG_FILE, doc, "Eventlog file"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_FNAME_APPEND_HOST, doc, "Append host name to filenames"));
 		}
 		else if (category.equals(CAT_EXTENSIONS)) {
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_LOAD_LIBS, doc, "load-libs"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_CONFIGURATION_CLASS, doc, "configuration-class"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_SCHEDULER_CLASS, doc, "scheduler-class"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUTVECTORMANAGER_CLASS, doc, "outputvectormanager-class"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUTSCALARMANAGER_CLASS, doc, "outputscalarmanager-class"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_SNAPSHOTMANAGER_CLASS, doc, "snapshotmanager-class"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_REALTIMESCHEDULER_SCALING, doc, "realtimescheduler-scaling"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_LOAD_LIBS, doc, "Shared libraries to load"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_CONFIGURATION_CLASS, doc, "Configuration class"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_SCHEDULER_CLASS, doc, "Scheduler class"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUTVECTORMANAGER_CLASS, doc, "Output vector manager class"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUTSCALARMANAGER_CLASS, doc, "Output scalar manager class"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_SNAPSHOTMANAGER_CLASS, doc, "Snapshot manager class"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_REALTIMESCHEDULER_SCALING, doc, "Real-Time scheduler scaling"));
 		}
 		else if (category.equals(CAT_CMDENV)) {
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_RUNS_TO_EXECUTE, doc, "runs-to-execute"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_CMDENV_EXTRA_STACK_KB, doc, "cmdenv-extra-stack-kb"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUT_FILE, doc, "output-file"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_EXPRESS_MODE, doc, "express-mode"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_AUTOFLUSH, doc, "autoflush"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_MODULE_MESSAGES, doc, "module-messages"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_EVENT_BANNERS, doc, "event-banners"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_EVENT_BANNER_DETAILS, doc, "event-banner-details"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_MESSAGE_TRACE, doc, "message-trace"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_STATUS_FREQUENCY, doc, "status-frequency"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_PERFORMANCE_DISPLAY, doc, "performance-display"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_RUNS_TO_EXECUTE, doc, "Runs to execute"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_EXPRESS_MODE, doc, "Express mode"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_PERFORMANCE_DISPLAY, doc, "Display performance data"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_STATUS_FREQUENCY, doc, "Status frequency"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_CMDENV_EXTRA_STACK_KB, doc, "Cmdenv extra stack (Kb)"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_OUTPUT_FILE, doc, "Output file"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_AUTOFLUSH, doc, "Autoflush output files"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_MODULE_MESSAGES, doc, "Print module messages"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_EVENT_BANNERS, doc, "Print event banners"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_EVENT_BANNER_DETAILS, doc, "Detailed event banners"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_MESSAGE_TRACE, doc, "Message trace"));
 		}
 		else if (category.equals(CAT_TKENV)) {
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_TKENV_EXTRA_STACK_KB, doc, "tkenv-extra-stack-kb"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_DEFAULT_RUN, doc, "default-run"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_SLOWEXEC_DELAY, doc, "slowexec-delay"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_UPDATE_FREQ_FAST, doc, "update-freq-fast"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_UPDATE_FREQ_EXPRESS, doc, "update-freq-express"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_ANIMATION_ENABLED, doc, "animation-enabled"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_NEXT_EVENT_MARKERS, doc, "next-event-markers"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_SENDDIRECT_ARROWS, doc, "senddirect-arrows"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_ANIM_METHODCALLS, doc, "anim-methodcalls"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_METHODCALLS_DELAY, doc, "methodcalls-delay"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_ANIMATION_MSGNAMES, doc, "animation-msgnames"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_ANIMATION_MSGCLASSNAMES, doc, "animation-msgclassnames"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_ANIMATION_MSGCOLORS, doc, "animation-msgcolors"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_PENGUIN_MODE, doc, "penguin-mode"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_SHOW_LAYOUTING, doc, "show-layouting"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_USE_NEW_LAYOUTER, doc, "use-new-layouter"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_SHOW_BUBBLES, doc, "show-bubbles"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_ANIMATION_SPEED, doc, "animation-speed"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_PRINT_BANNERS, doc, "print-banners"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_USE_MAINWINDOW, doc, "use-mainwindow"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_EXPRESSMODE_AUTOUPDATE, doc, "expressmode-autoupdate"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_IMAGE_PATH, doc, "image-path"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PLUGIN_PATH, doc, "plugin-path"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_TKENV_EXTRA_STACK_KB, doc, "Tkenv extra stack (Kb)"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_DEFAULT_RUN, doc, "Default run"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_SLOWEXEC_DELAY, doc, "Slow-exec delay"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_UPDATE_FREQ_FAST, doc, "Update frequency for Fast mode"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_UPDATE_FREQ_EXPRESS, doc, "Update frequency for Express mode"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_ANIMATION_ENABLED, doc, "Enable animation"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_NEXT_EVENT_MARKERS, doc, "Show next event markers"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_SENDDIRECT_ARROWS, doc, "Show SendDirect arrows"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_ANIM_METHODCALLS, doc, "Animate method calls"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_METHODCALLS_DELAY, doc, "Delay for method call animation"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_ANIMATION_MSGNAMES, doc, "Show message names in animation"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_ANIMATION_MSGCLASSNAMES, doc, "Show message class names in animation"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_ANIMATION_MSGCOLORS, doc, "Colorize messages by message kind"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_PENGUIN_MODE, doc, "Penguin mode"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_SHOW_LAYOUTING, doc, "Show layouting process"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_USE_NEW_LAYOUTER, doc, "Use new layouter"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_SHOW_BUBBLES, doc, "Show bubbles"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_ANIMATION_SPEED, doc, "Animation speed"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_PRINT_BANNERS, doc, "Print banners"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_USE_MAINWINDOW, doc, "Use main window"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_EXPRESSMODE_AUTOUPDATE, doc, "Auto-update in Express mode"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_IMAGE_PATH, doc, "Image path"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PLUGIN_PATH, doc, "Plugin path"));
 		}
 		else if (category.equals(CAT_PARSIM)) {
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_PARALLEL_SIMULATION, doc, "parallel-simulation"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PARSIM_COMMUNICATIONS_CLASS, doc, "parsim-communications-class"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PARSIM_SYNCHRONIZATION_CLASS, doc, "parsim-synchronization-class"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PARSIM_FILECOMM_PREFIX, doc, "parsim-filecommunications-prefix"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PARSIM_FILECOMM_READ_PREFIX, doc, "parsim-filecommunications-read-prefix"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_PARSIM_FILECOMM_PRESERVE_READ, doc, "parsim-filecommunications-preserve-read"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PARSIM_IDEALSIMULATIONPROTOCOL_TABLESIZE, doc, "parsim-idealsimulationprotocol-tablesize"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER, doc, "parsim-mpicommunications-mpibuffer"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PARSIM_NAMEDPIPECOMM_PREFIX, doc, "parsim-namedpipecommunications-prefix"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS, doc, "parsim-nullmessageprotocol-lookahead-class"));
-			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS, doc, "parsim-nullmessageprotocol-laziness"));
-			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_PARSIM_DEBUG, doc, "parsim-debug"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_PARALLEL_SIMULATION, doc, "Parallel simulation"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PARSIM_COMMUNICATIONS_CLASS, doc, "Communications class"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PARSIM_SYNCHRONIZATION_CLASS, doc, "Synchronization class"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_PARSIM_DEBUG, doc, "Parsim debug"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER, doc, "MPI communications: MPI buffer"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PARSIM_NAMEDPIPECOMM_PREFIX, doc, "Named Pipe communications: prefix"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PARSIM_FILECOMM_PREFIX, doc, "File-based communications: prefix"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PARSIM_FILECOMM_READ_PREFIX, doc, "File-based communications: read prefix"));
+			addField(new CheckboxFieldEditor(this, SWT.NONE, CFGID_PARSIM_FILECOMM_PRESERVE_READ, doc, "File-based communications: preserve read files"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS, doc, "Null Message Protocol: lookahead class"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS, doc, "Null Message Protocol: laziness"));
+			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PARSIM_IDEALSIMULATIONPROTOCOL_TABLESIZE, doc, "Ideal Simulation Protocol: table size"));
 		}
 		
 	}

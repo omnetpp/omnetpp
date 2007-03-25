@@ -12,6 +12,11 @@ import org.eclipse.swt.widgets.Label;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 
+/**
+ * Checkbox-based editor for boolean inifile entries.
+ * 
+ * @author Andras
+ */
 public class CheckboxFieldEditor extends FieldEditor {
 	private Button checkbox;
 	private Label label;

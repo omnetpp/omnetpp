@@ -11,7 +11,13 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.ConfigurationEntry.Type;
 
+/**
+ * Text-based editor for inifile entries.
+ * 
+ * @author Andras
+ */
 public class TextFieldEditor extends FieldEditor {
 	private Text textField;
 	private Label label;
@@ -29,7 +35,8 @@ public class TextFieldEditor extends FieldEditor {
 		setLayout(new GridLayout(3, false));
 		label.setLayoutData(new GridData());
 		//textField.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
-		textField.setLayoutData(new GridData(200, SWT.DEFAULT));
+		int width = (entry.getType()==Type.CFG_STRING || entry.getType()==Type.CFG_FILENAME || entry.getType()==Type.CFG_FILENAMES) ? 250 : 50;
+		textField.setLayoutData(new GridData(width, SWT.DEFAULT));
 		resetButton.setLayoutData(new GridData());
 
 		reread();
