@@ -243,6 +243,9 @@ public class GenericConfigPage extends FormPage {
 			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS, doc, "Null Message Protocol: laziness"));
 			addField(new TextFieldEditor(this, SWT.NONE, CFGID_PARSIM_IDEALSIMULATIONPROTOCOL_TABLESIZE, doc, "Ideal Simulation Protocol: table size"));
 		}
+		else {
+			throw new IllegalArgumentException("no such category: "+category);
+		}
 		
 	}
 	

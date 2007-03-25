@@ -55,10 +55,10 @@ public abstract class FieldEditor extends Composite {
 		label.setText(labelText);
 		
 		String tooltip = entry.getDescription();
-		tooltip += "\n\nCorresponds to:\n["+entry.getSection()+(entry.isGlobal() ? "" : "] or [Run X")+"] "+entry.getName();
+		tooltip += "\n\nConfigures: ["+entry.getSection()+(entry.isGlobal() ? "" : "] or [Run X")+"] / "+entry.getName()+"=...";
 		IInifileDocument.LineInfo line = inifile.getEntryLineDetails(entry.getSection(), entry.getName()); 
 		tooltip += "\n\n"+(line==null ? "Currently set to default." : "Defined at: "+line.getFile().getFullPath().toString()+" line "+line.getLineNumber());
-		label.setToolTipText(StringUtils.breakLines(tooltip,60));  //XXX we'll need to refresh tooltip after each re-parse!
+		label.setToolTipText(StringUtils.breakLines(tooltip, 80));  //XXX we'll need to refresh tooltip after each re-parse!
 		return label;
 	}
 

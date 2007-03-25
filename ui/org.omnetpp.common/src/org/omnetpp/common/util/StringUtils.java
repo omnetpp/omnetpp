@@ -66,17 +66,21 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 	 */
 	public static String breakLines(String text, int maxLineLength) {
 		StringBuilder buf = new StringBuilder();
-		StringTokenizer st = new StringTokenizer(text, " \t\n,;-", true);
+		StringTokenizer st = new StringTokenizer(text, " \t\n", true);
 		int lineLength = 0;
 		while (st.hasMoreTokens()) {
 			String token = st.nextToken();
-			if (lineLength + token.length() > maxLineLength) {
+			if (token.contains("\n") || lineLength + token.length() > maxLineLength) {
 				buf.append("\n"); //TODO should probably chop off trailing spaces of buf[] first
-				lineLength = 0;
-				token = token.replaceFirst("^[ \t]+", "");
+				token = token.replaceFirst("^[ \t]*\n?", "");
+				buf.append(token);
+				token = token.replaceFirst("^.*\n", "");
+				lineLength = token.length();
 			}
-			buf.append(token);
-			lineLength += token.length();
+			else {
+				buf.append(token);
+				lineLength += token.length();
+			}
 		}
 		return buf.toString();
 	}

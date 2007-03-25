@@ -3,6 +3,7 @@ package org.omnetpp.inifile.editor.form;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
@@ -14,6 +15,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
@@ -54,7 +56,13 @@ public class InifileFormEditor extends Composite {
 		sashForm.setWeights(new int[] {1,3});
 		
 		buildTree();
-	}
+
+		Display.getCurrent().asyncExec(new Runnable() {
+			public void run() {
+				showCategoryPage(GenericConfigPage.getCategoryNames()[0]);
+			}
+	});
+}
 
 	protected TreeViewer createTreeViewer(Composite parent) {
 		final TreeViewer viewer = new TreeViewer(parent, SWT.BORDER);
