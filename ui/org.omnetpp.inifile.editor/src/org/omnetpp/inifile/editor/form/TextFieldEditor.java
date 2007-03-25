@@ -25,11 +25,12 @@ public class TextFieldEditor extends FieldEditor {
 	private boolean isEdited;
 	
 
-	public TextFieldEditor(Composite parent, int style, ConfigurationEntry entry, IInifileDocument inifile, String labelText) {
-		super(parent, style, entry, inifile);
+	public TextFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, String labelText) {
+		super(parent, SWT.NONE, entry, inifile);
 
 		GridLayout gridLayout = new GridLayout(3, false);
-		//gridLayout.marginTop = gridLayout.marginBottom = gridLayout.marginHeight = gridLayout.verticalSpacing = 0;
+		gridLayout.marginTop = gridLayout.marginBottom = gridLayout.marginHeight = gridLayout.verticalSpacing = 0;
+		gridLayout.marginHeight = 2;
 		setLayout(gridLayout);
 
 		label = createLabel(entry, labelText+":");
@@ -45,8 +46,10 @@ public class TextFieldEditor extends FieldEditor {
 
 		textField.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				isEdited = true;
-				resetButton.setEnabled(true);
+				if (!isEdited) {
+					isEdited = true;
+					resetButton.setEnabled(true);
+				}
 			}
 		});
 	}

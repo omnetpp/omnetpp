@@ -31,11 +31,11 @@ public class SectionBasedConfigPage extends FormPage {
 			if (e.getSection().equals(sectionName)) {
 				String label = "The \""+e.getName()+"\" setting";
 				if (e.getType()==ConfigurationEntry.Type.CFG_BOOL) {
-					CheckboxFieldEditor control = new CheckboxFieldEditor(this, SWT.NONE, e, doc, label);
+					CheckboxFieldEditor control = new CheckboxFieldEditor(this, e, doc, label);
 					control.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 				}
 				else {
-					TextFieldEditor control = new TextFieldEditor(this, SWT.NONE, e, doc, label);
+					TextFieldEditor control = new TextFieldEditor(this, e, doc, label);
 					control.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 				}
 			}

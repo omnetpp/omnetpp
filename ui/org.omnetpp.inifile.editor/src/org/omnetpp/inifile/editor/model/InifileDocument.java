@@ -194,7 +194,7 @@ public class InifileDocument implements IInifileDocument {
 	 * Adds a line to IDocument at the given lineNumber (1-based). Existing lines
 	 * will be shifted down. Line text is to be specified without the trailing newline.
 	 */
-	protected void addLineAt(int lineNumber, String text) {
+    synchronized protected void addLineAt(int lineNumber, String text) {
 		try {
 			int offset = document.getLineOffset(lineNumber-1);
 			document.replace(offset, 0, text+"\n");
@@ -208,7 +208,7 @@ public class InifileDocument implements IInifileDocument {
 	 * Replaces line content in IDocument, or if text==null, deletes the line.
 	 * @return true if line numbers have changed, false if not
 	 */
-	protected boolean replaceLine(Line line, String text) {
+    synchronized protected boolean replaceLine(Line line, String text) {
 		try {
 			int offset = document.getLineOffset(line.lineNumber-1);
 			int length = document.getLineOffset(line.lineNumber-1+line.numLines) - offset;

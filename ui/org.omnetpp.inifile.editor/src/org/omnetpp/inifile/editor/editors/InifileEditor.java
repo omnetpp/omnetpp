@@ -14,6 +14,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.IGotoMarker;
@@ -60,7 +61,14 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		} catch (PartInitException e) {
 			ErrorDialog.openError(getSite().getShell(), "Error creating nested text editor", null, e.getStatus());
 		}
-	}
+
+		// propagate property changes (esp. PROP_DIRTY) from our text editor
+		textEditor.addPropertyListener(new IPropertyListener() {
+			public void propertyChanged(Object source, int propertyId) {
+				firePropertyChange(propertyId);
+			}
+		});
+}
 
 	/**
 	 * Creates the pages of the multi-page editor.
@@ -74,6 +82,7 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		// create texteditor
 		createTextEditorPage();
 		
+		// set up editorData (the InifileDocument)
 		IFile file = ((IFileEditorInput)getEditorInput()).getFile();
 		IDocument document = textEditor.getDocumentProvider().getDocument(getEditorInput());
 		editorData.setInifiledocument(new InifileDocument(document, file));

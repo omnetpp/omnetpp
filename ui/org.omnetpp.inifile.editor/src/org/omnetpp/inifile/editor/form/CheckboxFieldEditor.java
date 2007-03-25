@@ -4,6 +4,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -23,21 +24,20 @@ public class CheckboxFieldEditor extends FieldEditor {
 	private Button resetButton;
 	private boolean isEdited;
 
-	public CheckboxFieldEditor(Composite parent, int style, ConfigurationEntry entry, IInifileDocument inifile, String labelText) {
-		super(parent, style, entry, inifile);
+	public CheckboxFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, String labelText) {
+		super(parent, SWT.NONE, entry, inifile);
 
 		Assert.isTrue(entry.getType()==ConfigurationEntry.Type.CFG_BOOL);
 
 		GridLayout gridLayout = new GridLayout(3, false);
 		gridLayout.marginTop = gridLayout.marginBottom = gridLayout.marginHeight = gridLayout.verticalSpacing = 0;
-		gridLayout.marginHeight = 2;
+		gridLayout.marginHeight = 0;
 		setLayout(gridLayout);
 		
 		checkbox = new Button(this, SWT.CHECK);
 		checkbox.setBackground(BGCOLOR);
 		label = createLabel(entry, labelText);
 		resetButton = createResetButton();
-
 
 		checkbox.setLayoutData(new GridData());
 		label.setLayoutData(new GridData());
@@ -47,8 +47,11 @@ public class CheckboxFieldEditor extends FieldEditor {
 
 		checkbox.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				isEdited = true;
-				resetButton.setEnabled(true);
+				if (!isEdited) {
+					isEdited = true;
+					resetButton.setEnabled(true);
+					//XXX setBackground(new Color(null, 240, 248, 210));
+				}
 			}
 		});
 	}
