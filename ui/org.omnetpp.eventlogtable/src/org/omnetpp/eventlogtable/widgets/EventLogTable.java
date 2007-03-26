@@ -3,6 +3,8 @@ package org.omnetpp.eventlogtable.widgets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
@@ -70,6 +72,47 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 			
 			super.setSelection(new VirtualTableSelection<EventLogEntry>(eventLogSelection.getEventLogInput(), eventLogEntries));
 		}
+	}
+	
+	@Override
+	public void setInput(Object input) {
+		EventLogInput eventLogInput = getEventLogInput();
+
+		// store current position
+		if (eventLogInput != null) {
+			EventLogEntry eventLogEntry = getTopVisibleElement();
+			
+			if (eventLogEntry != null) {
+				String eventNumber = String.valueOf(eventLogEntry.getEvent().getEventNumber());
+				try {
+					eventLogInput.getFile().setPersistentProperty(getEventLogTableEventNumberPropertyName(), eventNumber);
+				}
+				catch (CoreException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+
+		super.setInput(input);
+
+		// restore last known position
+		eventLogInput = (EventLogInput)input;
+
+		if (eventLogInput != null) {
+			try {
+				String eventNumber = eventLogInput.getFile().getPersistentProperty(getEventLogTableEventNumberPropertyName());
+
+				if (eventNumber != null)
+					gotoElement(getEventLog().getEventForEventNumber(Integer.parseInt(eventNumber)).getEventEntry());
+			}
+			catch (CoreException e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	private QualifiedName getEventLogTableEventNumberPropertyName() {
+		return new QualifiedName("EventLogTable", "EventNumber");
 	}
 	
 	public EventLogInput getEventLogInput() {
