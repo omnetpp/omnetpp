@@ -2,19 +2,20 @@ package org.omnetpp.inifile.editor.views;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.part.ViewPart;
 import org.omnetpp.common.ui.TableLabelProvider;
+import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
@@ -26,9 +27,8 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
  * Displays module parameters recursively for module type.
  * @author Andras
  */
-public class ModuleParametersView extends ViewPart {
+public class ModuleParametersView extends AbstractModuleView {
 	private TableViewer tableViewer;
-	private ISelectionListener selectionChangedListener;
 	private boolean unassignedOnly = true;  //TODO IAction to flip it
 	
 	public ModuleParametersView() {
@@ -36,8 +36,13 @@ public class ModuleParametersView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
+		GridLayout layout = new GridLayout();
+		layout.marginWidth = layout.marginHeight = 0;
+		parent.setLayout(layout);
+		
 		// create table with columns
 		Table table = new Table(parent, SWT.SINGLE | SWT.FULL_SELECTION);
+		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		addTableColumn(table, "Parameter", 300);
@@ -65,13 +70,19 @@ public class ModuleParametersView extends ViewPart {
 		tableViewer.setContentProvider(new ArrayContentProvider());
 		hookSelectionChangedListener();
 		
-		getViewSite().getActionBars().getToolBarManager().add(new Action() {
+		IAction toggleModeAction = createToggleModeAction();
+		getViewSite().getActionBars().getToolBarManager().add(toggleModeAction);
+	}
+
+	protected IAction createToggleModeAction() {
+		Action action = new Action("Toggle display mode", InifileEditorPlugin.getImageDescriptor("icons/unsetparameters.gif")) {
 			@Override
 			public void run() {
 				unassignedOnly = !unassignedOnly;
-				tableViewer.refresh();
+				tableViewer.refresh();  //XXX not enough!
 			}
-		});
+		};
+		return action;
 	}
 
 	private void addTableColumn(Table table, String text, int width) {
@@ -80,29 +91,8 @@ public class ModuleParametersView extends ViewPart {
 		column.setText(text);
 	}
 
-	@Override
-	public void dispose() {
-		unhookSelectionChangedListener();
-		super.dispose();
-	}
-	
-	private void hookSelectionChangedListener() {
-		selectionChangedListener = new ISelectionListener() {
-			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				setViewerInput(selection);
-			}
-		};
-		getSite().getPage().addPostSelectionListener(selectionChangedListener);
-	}
-	
-	private void unhookSelectionChangedListener() {
-		if (selectionChangedListener != null)
-			getSite().getPage().removePostSelectionListener(selectionChangedListener);
-	}
-	
-	@Override
-	public void setFocus() {
-		tableViewer.getTable().setFocus();
+	protected Control getPartControl() {
+		return tableViewer.getTable();
 	}
 
 	public void setViewerInput(ISelection selection) {
@@ -128,7 +118,11 @@ public class ModuleParametersView extends ViewPart {
 		}
 	}
 
-	private void displayMessage(String text) {
-		tableViewer.setInput(new String[] {text});
+	@Override
+	public void buildContent(String moduleFullPath, String moduleTypeName, IInifileDocument doc) {
+		//XXX consider changing the return type of NEDResourcesPlugin.getNEDResources() to INEDTypeResolver
+		INEDTypeResolver nedResources = NEDResourcesPlugin.getNEDResources();
+		ParameterData[] pars = InifileUtils.collectParameters(moduleFullPath, moduleTypeName, nedResources, doc, unassignedOnly);
+		tableViewer.setInput(pars);
 	}
 }

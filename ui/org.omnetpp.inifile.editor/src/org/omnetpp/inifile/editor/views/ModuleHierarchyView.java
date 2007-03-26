@@ -1,30 +1,23 @@
 package org.omnetpp.inifile.editor.views;
 
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.part.ViewPart;
+import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
-import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
-import org.omnetpp.ned.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned.model.pojo.ParamNode;
-import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
@@ -33,9 +26,8 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
  * 
  * @author Andras
  */
-public class ModuleHierarchyView extends ViewPart {
+public class ModuleHierarchyView extends AbstractModuleView {
 	private TreeViewer treeViewer;
-	private ISelectionListener selectionChangedListener;
 	
 	private static class Payload {
 		String text;
@@ -56,7 +48,12 @@ public class ModuleHierarchyView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
+		GridLayout layout = new GridLayout();
+		layout.marginWidth = layout.marginHeight = 0;
+		parent.setLayout(layout);
+		
 		treeViewer = new TreeViewer(parent, SWT.SINGLE);
+		treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		treeViewer.setLabelProvider(new LabelProvider() {
 			@Override
 			public Image getImage(Object element) {
@@ -74,97 +71,11 @@ public class ModuleHierarchyView extends ViewPart {
 		hookSelectionChangedListener();
 	}
 
-	@Override
-	public void dispose() {
-		unhookSelectionChangedListener();
-		super.dispose();
-	}
-	
-	private void hookSelectionChangedListener() {
-		selectionChangedListener = new ISelectionListener() {
-			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				if (part instanceof IEditorPart)
-					setSelection(selection);
-			}
-		};
-		getSite().getPage().addPostSelectionListener(selectionChangedListener);
-	}
-	
-	private void unhookSelectionChangedListener() {
-		if (selectionChangedListener != null)
-			getSite().getPage().removePostSelectionListener(selectionChangedListener);
-	}
-	
-	@Override
-	public void setFocus() {
-		treeViewer.getTree().setFocus();
+	protected Control getPartControl() {
+		return treeViewer.getTree();
 	}
 
-	public void setSelection(ISelection selection) {
-		IEditorPart activeEditor = getSite().getWorkbenchWindow().getActivePage().getActiveEditor(); //XXX this may crash on startup (NPE)!!!
-
-		System.out.println("SELECTION: "+selection); //XXX
-		ISelection editorSel = activeEditor.getSite().getSelectionProvider().getSelection();
-		System.out.println("   EDITOR: "+editorSel); //XXX
-
-		if (selection instanceof IStructuredSelection && !selection.isEmpty()) {
-			// The NED graphical editor publishes selection as an IStructuredSelection,
-			// with editparts in it. NEDElement can be extracted from editparts
-			// via IModelProvider.
-			Object element = ((IStructuredSelection)selection).getFirstElement();
-			if (element instanceof IModelProvider) {
-				Object model = ((IModelProvider)element).getModel();
-				if (model instanceof CompoundModuleNode) {
-					CompoundModuleNode node = (CompoundModuleNode)model;
-					String moduleTypeName = node.getName();
-					buildModuleHierarchy(moduleTypeName, null);
-				}
-				else if (model instanceof SimpleModuleNode) {
-					SimpleModuleNode node = (SimpleModuleNode)model;
-					String moduleTypeName = node.getName();
-					buildModuleHierarchy(moduleTypeName, null);
-				}
-				else if (model instanceof SubmoduleNode) {
-					SubmoduleNode submodule = (SubmoduleNode)model;
-					String submoduleName = InifileUtils.getSubmoduleFullName(submodule);
-					String submoduleType = InifileUtils.getSubmoduleType(submodule);
-					buildModuleHierarchy(submoduleName, submoduleType, null);
-				}
-			}
-			
-		}
-		else if (activeEditor instanceof InifileEditor) {
-			InifileEditor inifileEditor = (InifileEditor) activeEditor;
-			IInifileDocument doc = inifileEditor.getEditorData().getInifileDocument();
-
-			//XXX consider changing the return type of NEDResourcesPlugin.getNEDResources() to INEDTypeResolver
-
-			String networkName = doc.getValue("General", "network");
-			if (networkName == null) {
-				displayMessage("Network not specified (no [General]/network= setting)");
-				return;
-			}
-			buildModuleHierarchy(networkName, doc);
-		}
-		else {
-			displayMessage(activeEditor==null ? "No editor is open." : "Editor is not an inifile editor.");
-		}
-	}
-
-	private void displayMessage(String text) {
-		GenericTreeNode root = new GenericTreeNode("root");
-		root.addChild(new GenericTreeNode(text));
-		treeViewer.setInput(root);
-	}
-
-	public void buildModuleHierarchy(String moduleTypeName, IInifileDocument doc) {
-		GenericTreeNode root = new GenericTreeNode("root");
-		INEDTypeResolver nedResources = NEDResourcesPlugin.getNEDResources();
-		buildTree(root, moduleTypeName, moduleTypeName, moduleTypeName, nedResources, doc);
-		treeViewer.setInput(root);
-	}
-
-	public void buildModuleHierarchy(String moduleFullPath, String moduleTypeName, IInifileDocument doc) {
+	public void buildContent(String moduleFullPath, String moduleTypeName, IInifileDocument doc) {
 		GenericTreeNode root = new GenericTreeNode("root");
 		INEDTypeResolver nedResources = NEDResourcesPlugin.getNEDResources();
 		String moduleFullName = moduleFullPath.replaceFirst("^.*\\.", "");
