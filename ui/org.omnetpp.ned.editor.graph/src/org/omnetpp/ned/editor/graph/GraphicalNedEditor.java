@@ -142,7 +142,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
 
     @Override
     public void dispose() {
-        NEDResourcesPlugin.getNEDResources().getPaletteModelListenerList().remove(paletteManager);
+        NEDResourcesPlugin.getNEDResources().getNEDResourceListenerList().remove(paletteManager);
         super.dispose();
     }
     
@@ -151,7 +151,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
             paletteManager = new PaletteManager(this);
             // attach the palette manager as a listener to the resource manager plugin
             // so it will be notified if the palette should be updated
-            NEDResourcesPlugin.getNEDResources().getPaletteModelListenerList().add(paletteManager);
+            NEDResourcesPlugin.getNEDResources().getNEDResourceListenerList().add(paletteManager);
         }
         return paletteManager.getRootPalette();
     }
