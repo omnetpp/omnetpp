@@ -61,7 +61,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     private static final String NED_EXTENSION = "ned";
     // listener list that listenens on all NED changes
-    private transient NEDChangeListenerList paletteModellisteners = null;
+    private transient NEDChangeListenerList nedResourceListenerList = null;
     // stores parsed contents of NED files
     private HashMap<IFile, NEDElement> nedFiles = new HashMap<IFile, NEDElement>();
     private ProblemMarkerJob markerJob = new ProblemMarkerJob("Updating problem markers");
@@ -516,21 +516,21 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     /**
      * @return The listener list attached to this element 
      */
-    public NEDChangeListenerList getPaletteModelListenerList() {
-        if (paletteModellisteners == null)
-            paletteModellisteners = new NEDChangeListenerList();
-        return paletteModellisteners;
+    public NEDChangeListenerList getNEDResourceListenerList() {
+        if (nedResourceListenerList == null)
+            nedResourceListenerList = new NEDChangeListenerList();
+        return nedResourceListenerList;
     }
     
     /**
      * Fires a palette model change  (forwards it to he listener list if any)
      * @param event the model change event or NULL if the whole model should be rebuilt
      */
-    public void firePaletteModelChanged(NEDModelEvent event) {
-        if(paletteModellisteners == null || !getPaletteModelListenerList().isEnabled())
+    public void fireNEDResourceChanged(NEDModelEvent event) {
+        if(nedResourceListenerList == null || !getNEDResourceListenerList().isEnabled())
             return;
-        //forward to the listerList
-        paletteModellisteners.fireModelChanged(event);
+        // forward to the listerList
+        nedResourceListenerList.fireModelChanged(event);
     }
 
     public void modelChanged(NEDModelEvent event) {
@@ -553,11 +553,11 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             invalidate();
             rehashIfNeeded();
             // a total rebuild has occured
-            firePaletteModelChanged(event);
+            fireNEDResourceChanged(event);
         }
         // display string notification
         if (displayMayHaveChanged(event)) {
-            firePaletteModelChanged(event);
+            fireNEDResourceChanged(event);
         }
     }
 
