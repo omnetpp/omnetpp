@@ -8,6 +8,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
@@ -90,10 +91,17 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		IFile file = ((IFileEditorInput)getEditorInput()).getFile();
 		IDocument document = textEditor.getDocumentProvider().getDocument(getEditorInput());
 		editorData.setInifiledocument(new InifileDocument(document, file));
-		
-		// force a selectionChanged event to get views (e.g. ModuleTreeView) updated
-		textEditor.selectAndReveal(0, 0);
+
+		// export the selection of the text editor; without this, the SelectionProvider of this
+		// editor would be null if the form page is selected (that's the behaviour of the
+		// original MultiPageSelectionProvider which we replace with this call).
+		getSite().setSelectionProvider(textEditor.getSelectionProvider());
 	}
+
+//XXX	public void fireSelectionChange() {
+//		ISelectionProvider selectionProvider = getSite().getSelectionProvider();
+//		selectionProvider.setSelection(selectionProvider.getSelection());
+//	}
 
 	/**
 	 * Adds an editor page at the last position.

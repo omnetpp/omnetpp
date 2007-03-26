@@ -24,9 +24,10 @@ public class InifileUtils {
 	 */
 	public static String lookupParameter(String paramFullPath, IInifileDocument doc, String section) {
 		String[] keys = doc.getKeys(section);
-		for (String key : keys)
-			if (new PatternMatcher(key, true, true, true).matches(paramFullPath))
-				return key;
+		if (keys != null)
+			for (String key : keys)
+				if (new PatternMatcher(key, true, true, true).matches(paramFullPath))
+					return key;
 		return null;
 	}
 
@@ -54,23 +55,35 @@ public class InifileUtils {
 		visitor.visit(moduleName, moduleFullPath, moduleType);
 
 		// traverse submodules
-		for (NEDElement node : moduleType.getSubmods().values()) { //XXX ordered list somehow! use LinkedHashMap in NEDComponent?
+		for (NEDElement node : moduleType.getSubmods().values()) {
 			SubmoduleNode submodule = (SubmoduleNode) node;
-
-			// produce submodule name; if vector, append [*]
-			String submoduleName = submodule.getName();
-			if (!StringUtils.isEmpty(submodule.getVectorSize())) //XXX what if parsed expressions are in use?
-				submoduleName += "[*]"; //XXX
-
-			// produce submodule type: if "like", use like type
-			//XXX should try to evaluate "like" expression and use result as type (if possible)
-			String submoduleType = submodule.getType();
-			if (StringUtils.isEmpty(submoduleType))
-				submoduleType = submodule.getLikeType();
+			String submoduleName = getSubmoduleFullName(submodule);
+			String submoduleType = getSubmoduleType(submodule);
 
 			// recursive call
 			traverseModuleUsageHierarchy(submoduleName, moduleFullPath+"."+submoduleName, submoduleType, nedResources, doc, visitor);
 		}
+	}
+
+	/**
+	 * Returns the submodule name. If vector, appends [*].
+	 */
+	public static String getSubmoduleFullName(SubmoduleNode submodule) {
+		String submoduleName = submodule.getName();
+		if (!StringUtils.isEmpty(submodule.getVectorSize())) //XXX what if parsed expressions are in use?
+			submoduleName += "[*]"; //XXX
+		return submoduleName;
+	}
+
+	/**
+	 * Returns the submodule type name. If it uses "like", returns the "like" name.
+	 */
+	public static String getSubmoduleType(SubmoduleNode submodule) {
+		//XXX should try to evaluate "like" expression and use result as type (if possible)
+		String submoduleType = submodule.getType();
+		if (StringUtils.isEmpty(submoduleType))
+			submoduleType = submodule.getLikeType();
+		return submoduleType;
 	}
 
 	/**

@@ -1,7 +1,7 @@
 package org.omnetpp.ned.resources;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -43,30 +43,30 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 	
 	// own stuff
     boolean needsOwnUpdate;
-	protected HashMap<String, NEDElement> ownProperties = new HashMap<String, NEDElement>();
-    protected HashMap<String, NEDElement> ownParams = new HashMap<String, NEDElement>();
-    protected HashMap<String, NEDElement> ownParamValues = new HashMap<String, NEDElement>();
-	protected HashMap<String, NEDElement> ownGates = new HashMap<String, NEDElement>();
-    protected HashMap<String, NEDElement> ownGateSizes = new HashMap<String, NEDElement>();
-	protected HashMap<String, NEDElement> ownInnerTypes = new HashMap<String, NEDElement>();
-	protected HashMap<String, NEDElement> ownSubmodules = new HashMap<String, NEDElement>();
+	protected LinkedHashMap<String, NEDElement> ownProperties = new LinkedHashMap<String, NEDElement>();
+    protected LinkedHashMap<String, NEDElement> ownParams = new LinkedHashMap<String, NEDElement>();
+    protected LinkedHashMap<String, NEDElement> ownParamValues = new LinkedHashMap<String, NEDElement>();
+	protected LinkedHashMap<String, NEDElement> ownGates = new LinkedHashMap<String, NEDElement>();
+    protected LinkedHashMap<String, NEDElement> ownGateSizes = new LinkedHashMap<String, NEDElement>();
+	protected LinkedHashMap<String, NEDElement> ownInnerTypes = new LinkedHashMap<String, NEDElement>();
+	protected LinkedHashMap<String, NEDElement> ownSubmodules = new LinkedHashMap<String, NEDElement>();
     protected HashSet<String> ownUsedTypes = new HashSet<String>();
 
 	// sum of all "own" stuff
-	protected HashMap<String, NEDElement> ownMembers = new HashMap<String, NEDElement>();
+	protected LinkedHashMap<String, NEDElement> ownMembers = new LinkedHashMap<String, NEDElement>();
 
 	// own plus inherited
 	boolean needsUpdate;
-	protected HashMap<String, NEDElement> allProperties = new HashMap<String, NEDElement>();
-    protected HashMap<String, NEDElement> allParams = new HashMap<String, NEDElement>();
-    protected HashMap<String, NEDElement> allParamValues = new HashMap<String, NEDElement>();
-    protected HashMap<String, NEDElement> allGates = new HashMap<String, NEDElement>();
-    protected HashMap<String, NEDElement> allGateSizes = new HashMap<String, NEDElement>();
-	protected HashMap<String, NEDElement> allInnerTypes = new HashMap<String, NEDElement>();
-	protected HashMap<String, NEDElement> allSubmodules = new HashMap<String, NEDElement>();
+	protected LinkedHashMap<String, NEDElement> allProperties = new LinkedHashMap<String, NEDElement>();
+    protected LinkedHashMap<String, NEDElement> allParams = new LinkedHashMap<String, NEDElement>();
+    protected LinkedHashMap<String, NEDElement> allParamValues = new LinkedHashMap<String, NEDElement>();
+    protected LinkedHashMap<String, NEDElement> allGates = new LinkedHashMap<String, NEDElement>();
+    protected LinkedHashMap<String, NEDElement> allGateSizes = new LinkedHashMap<String, NEDElement>();
+	protected LinkedHashMap<String, NEDElement> allInnerTypes = new LinkedHashMap<String, NEDElement>();
+	protected LinkedHashMap<String, NEDElement> allSubmodules = new LinkedHashMap<String, NEDElement>();
 
 	// sum of all own+inherited stuff
-	protected HashMap<String, NEDElement> allMembers = new HashMap<String, NEDElement>();
+	protected LinkedHashMap<String, NEDElement> allMembers = new LinkedHashMap<String, NEDElement>();
     
     // all types which extends this component
     protected List<INEDTypeInfo> allDerivedTypes = new ArrayList<INEDTypeInfo>();
@@ -105,7 +105,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 	 * 							have this attribute non-empty to be collected (this is how we collect
 	 * 							parameter declarations, and ignore parameter assignments/refinements)
 	 */
-	protected void collect(HashMap<String, NEDElement> hashmap, int tagCode, 
+	protected void collect(LinkedHashMap<String, NEDElement> hashmap, int tagCode, 
 							int sectionTagCode,	String nameAttr, String typeAttr) {
 		NEDElement section = componentNode.getFirstChildWithTag(sectionTagCode);
 		if (section!=null) {

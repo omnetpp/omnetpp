@@ -51,7 +51,7 @@
         point="org.eclipse.ui.views">
      <view
            category="org.omnetpp.views"
-           class="org.omnetpp.inifile.editor.views.ModuleTreeView"
+           class="org.omnetpp.inifile.editor.views.ModuleHierarchyView"
            icon="icons/moduletreeview.png"
            id="org.omnetpp.inifile.ModuleTree"
            name="Module Tree"/>
@@ -61,7 +61,7 @@
         point="org.eclipse.ui.views">
      <view
            category="org.omnetpp.views"
-           class="org.omnetpp.inifile.editor.views.UnassignedParametersView"
+           class="org.omnetpp.inifile.editor.views.ModuleParametersView"
            icon="icons/unsetparameters.gif"
            id="org.omnetpp.inifile.UnassignedParameters"
            name="Unassigned Parameters"/>

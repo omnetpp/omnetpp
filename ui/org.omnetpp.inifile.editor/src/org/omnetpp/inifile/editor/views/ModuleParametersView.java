@@ -26,12 +26,12 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
  * Displays module parameters recursively for module type.
  * @author Andras
  */
-public class UnassignedParametersView extends ViewPart {
+public class ModuleParametersView extends ViewPart {
 	private TableViewer tableViewer;
 	private ISelectionListener selectionChangedListener;
 	private boolean unassignedOnly = true;  //TODO IAction to flip it
 	
-	public UnassignedParametersView() {
+	public ModuleParametersView() {
 	}
 
 	@Override

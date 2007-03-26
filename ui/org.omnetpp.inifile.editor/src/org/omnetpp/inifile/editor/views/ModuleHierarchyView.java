@@ -1,6 +1,7 @@
 package org.omnetpp.inifile.editor.views;
 
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
@@ -16,18 +17,20 @@ import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned.model.pojo.ParamNode;
+import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
-public class ModuleTreeView extends ViewPart {
+public class ModuleHierarchyView extends ViewPart {
 	private TreeViewer treeViewer;
 	private ISelectionListener selectionChangedListener;
-	private String oldNetworkName;
 	
-	public ModuleTreeView() {
+	public ModuleHierarchyView() {
 	}
 
 	@Override
@@ -47,7 +50,8 @@ public class ModuleTreeView extends ViewPart {
 	private void hookSelectionChangedListener() {
 		selectionChangedListener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				setViewerInput(selection);
+				if (part instanceof IEditorPart)
+					setSelection(selection);
 			}
 		};
 		getSite().getPage().addPostSelectionListener(selectionChangedListener);
@@ -63,36 +67,75 @@ public class ModuleTreeView extends ViewPart {
 		treeViewer.getTree().setFocus();
 	}
 
-	public void setViewerInput(ISelection selection) {
-		GenericTreeNode root = new GenericTreeNode("root");
-		IEditorPart editor = getSite().getWorkbenchWindow().getActivePage().getActiveEditor();
-		if (editor instanceof InifileEditor) {
-			InifileEditor inifileEditor = (InifileEditor) editor;
+	public void setSelection(ISelection selection) {
+		IEditorPart activeEditor = getSite().getWorkbenchWindow().getActivePage().getActiveEditor();
+
+		System.out.println("SELECTION: "+selection); //XXX
+		ISelection editorSel = activeEditor.getSite().getSelectionProvider().getSelection();
+		System.out.println("   EDITOR: "+editorSel); //XXX
+
+		if (selection instanceof IStructuredSelection && !selection.isEmpty()) {
+			// The NED graphical editor publishes selection as an IStructuredSelection,
+			// with editparts in it. NEDElement can be extracted from editparts
+			// via IModelProvider.
+			Object element = ((IStructuredSelection)selection).getFirstElement();
+			if (element instanceof IModelProvider) {
+				Object model = ((IModelProvider)element).getModel();
+				if (model instanceof CompoundModuleNode) {
+					CompoundModuleNode node = (CompoundModuleNode)model;
+					String moduleTypeName = node.getName();
+					buildModuleHierarchy(moduleTypeName, null);
+				}
+				else if (model instanceof SimpleModuleNode) {
+					SimpleModuleNode node = (SimpleModuleNode)model;
+					String moduleTypeName = node.getName();
+					buildModuleHierarchy(moduleTypeName, null);
+				}
+				else if (model instanceof SubmoduleNode) {
+					SubmoduleNode submodule = (SubmoduleNode)model;
+					String submoduleName = InifileUtils.getSubmoduleFullName(submodule);
+					String submoduleType = InifileUtils.getSubmoduleType(submodule);
+					buildModuleHierarchy(submoduleName, submoduleType, null);
+				}
+			}
+			
+		}
+		else if (activeEditor instanceof InifileEditor) {
+			InifileEditor inifileEditor = (InifileEditor) activeEditor;
 			IInifileDocument doc = inifileEditor.getEditorData().getInifileDocument();
 
 			//XXX consider changing the return type of NEDResourcesPlugin.getNEDResources() to INEDTypeResolver
-			INEDTypeResolver nedResources = NEDResourcesPlugin.getNEDResources();
 
 			String networkName = doc.getValue("General", "network");
 			if (networkName == null) {
 				displayMessage("Network not specified (no [General]/network= setting)");
 				return;
 			}
-
-			if (!networkName.equals(oldNetworkName)) {  //XXX or something changed in the NED tree
-				buildTree(root, networkName, networkName, networkName, nedResources, doc);
-				treeViewer.setInput(root);
-				oldNetworkName = networkName;
-			}
+			buildModuleHierarchy(networkName, doc);
 		}
 		else {
-			displayMessage(editor==null ? "No editor is open." : "Editor is not an inifile editor.");
+			displayMessage(activeEditor==null ? "No editor is open." : "Editor is not an inifile editor.");
 		}
 	}
 
 	private void displayMessage(String text) {
 		GenericTreeNode root = new GenericTreeNode("root");
 		root.addChild(new GenericTreeNode(text));
+		treeViewer.setInput(root);
+	}
+
+	public void buildModuleHierarchy(String moduleTypeName, IInifileDocument doc) {
+		GenericTreeNode root = new GenericTreeNode("root");
+		INEDTypeResolver nedResources = NEDResourcesPlugin.getNEDResources();
+		buildTree(root, moduleTypeName, moduleTypeName, moduleTypeName, nedResources, doc);
+		treeViewer.setInput(root);
+	}
+
+	public void buildModuleHierarchy(String moduleFullPath, String moduleTypeName, IInifileDocument doc) {
+		GenericTreeNode root = new GenericTreeNode("root");
+		INEDTypeResolver nedResources = NEDResourcesPlugin.getNEDResources();
+		String moduleFullName = moduleFullPath.replaceFirst("^.*\\.", "");
+		buildTree(root, moduleFullName, moduleFullPath, moduleTypeName, nedResources, doc);
 		treeViewer.setInput(root);
 	}
 
@@ -152,10 +195,13 @@ public class ModuleTreeView extends ViewPart {
 			boolean isDefault = param.getIsDefault(); //XXX should be used somehow
 
 			// look up its value in the ini file
-			String paramFullPath = moduleFullPath + "." + param.getName();
-			String iniKey = InifileUtils.lookupParameter(paramFullPath, doc, "Parameters");
-			String iniValue = doc.getValue("Parameters", iniKey);
-			//XXX observe "**.use-default=true" style settings as well!!!
+			String iniValue = null;
+			if (doc != null) {
+				String paramFullPath = moduleFullPath + "." + param.getName();
+				String iniKey = InifileUtils.lookupParameter(paramFullPath, doc, "Parameters");
+				iniValue = doc.getValue("Parameters", iniKey);
+				//XXX observe "**.use-default=true" style settings as well!!!
+			}
 			
 			//XXX this issue is much more complicated, as there may be multiple possibly matching 
 			// inifile entries. For example, we have "net.node[*].power", and inifile contains

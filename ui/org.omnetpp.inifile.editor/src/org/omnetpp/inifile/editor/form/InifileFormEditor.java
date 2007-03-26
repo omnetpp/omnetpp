@@ -99,7 +99,6 @@ public class InifileFormEditor extends Composite {
 	 * after committing changes on the current page.
 	 */
 	public void showCategoryPage(String category) {
-		System.out.println("selected:" + category);
 		
 		if (formPage != null) {
 			formPage.commit();
