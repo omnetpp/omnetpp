@@ -17,7 +17,7 @@ OBJS= lcgrandom.obj filereader.obj linetokenizer.obj \
       matchexpression.obj lex.matchexpressionyy.obj matchexpression.tab.obj \
       patternmatcher.obj unitconversion.obj displaystring.obj fileglobber.obj \
       fileutil.obj stringutil.obj commonutil.obj exception.obj \
-      simultime.obj
+      simultime.obj bigdecimal.obj
 
 
 #
