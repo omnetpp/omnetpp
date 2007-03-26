@@ -15,6 +15,7 @@ import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEndpointEditPolic
 import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
 import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.ex.ConnectionNodeEx;
+import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 /**
@@ -22,7 +23,8 @@ import org.omnetpp.ned.model.notification.NEDModelEvent;
  * 
  */
 public class ModuleConnectionEditPart extends AbstractConnectionEditPart 
-                    implements INEDChangeListener, IReadOnlySupport, IPropertySourceSupport {
+                    implements INEDChangeListener, IReadOnlySupport, 
+                               IPropertySourceSupport, IModelProvider {
 
 	private EditPart sourceEditPartEx; 
 	private EditPart targetEditPartEx;

@@ -23,6 +23,7 @@ import org.omnetpp.ned.editor.graph.misc.RenameDirectEditManager;
 import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.IHasName;
+import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
@@ -33,7 +34,7 @@ import org.omnetpp.ned.model.notification.NEDModelEvent;
 abstract public class BaseEditPart
                            extends AbstractGraphicalEditPart
                            implements INEDChangeListener, IReadOnlySupport,
-                                      IPropertySourceSupport {
+                                      IPropertySourceSupport, IModelProvider {
 
     protected long lastEventSerial;
     private boolean editable = true;

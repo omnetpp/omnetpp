@@ -17,6 +17,7 @@ import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 
@@ -24,7 +25,7 @@ import org.omnetpp.ned.model.notification.NEDModelEvent;
  * EditPart for Logic components in the Tree.
  */
 public class NedTreeEditPart extends AbstractTreeEditPart implements
-        INEDChangeListener, IPropertySourceSupport {
+        INEDChangeListener, IPropertySourceSupport, IModelProvider {
 
     private long lastEventSerial;
     private IPropertySource propertySource;
