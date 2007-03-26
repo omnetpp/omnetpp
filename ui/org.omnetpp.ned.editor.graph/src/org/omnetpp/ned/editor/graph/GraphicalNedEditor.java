@@ -48,17 +48,16 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
-import org.eclipse.ui.dialogs.PropertyDialogAction;
 import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.omnetpp.common.editor.ISelectionSupport;
 import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
 import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
 import org.omnetpp.ned.editor.graph.actions.UnpinAction;
 import org.omnetpp.ned.editor.graph.dnd.TextTransferDropTargetListener;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
-import org.omnetpp.ned.editor.graph.misc.ISelectionSupport;
 import org.omnetpp.ned.editor.graph.misc.ModulePaletteCustomizer;
 import org.omnetpp.ned.editor.graph.misc.PaletteManager;
 import org.omnetpp.ned.editor.graph.properties.view.BasePreferrerPropertySheetSorter;
@@ -70,8 +69,6 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
     implements ISelectionSupport {
-
-    public final static String MULTIPAGE_NEDEDITOR_ID = "org.omnetpp.ned.editor";
 
     class OutlinePage extends ContentOutlinePage {
 
@@ -179,8 +176,8 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
         root.getZoomManager().setZoomLevelContributions(zoomLevels);
 
         IAction zoomIn = new ZoomInAction(root.getZoomManager());
-        IAction zoomOut = new ZoomOutAction(root.getZoomManager());
         getActionRegistry().registerAction(zoomIn);
+        IAction zoomOut = new ZoomOutAction(root.getZoomManager());
         getActionRegistry().registerAction(zoomOut);
 
         // set the root edit part as the main viewer
@@ -393,7 +390,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
             updateActions(getSelectionActions());
     }
 
-    public void selectComponent(String componentName) {
+    public void selectGraphComponent(String componentName) {
         if (componentName == null || "".equals(componentName)) {
             getGraphicalViewer().deselectAll();
             return;
@@ -409,6 +406,10 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
 
         getGraphicalViewer().reveal(selectedEditpart);
         getGraphicalViewer().select(selectedEditpart);
+    }
+
+    public void setTextHighlightRange(int offset, int length) {
+        
     }
 
 }

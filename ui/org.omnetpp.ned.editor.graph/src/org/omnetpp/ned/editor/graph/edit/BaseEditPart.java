@@ -14,11 +14,11 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.views.properties.IPropertySource;
+import org.omnetpp.common.editor.EditorUtil;
+import org.omnetpp.common.editor.ISelectionSupport;
 import org.omnetpp.figures.misc.IDirectEditSupport;
-import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedDirectEditPolicy;
-import org.omnetpp.ned.editor.graph.misc.ISelectionSupport;
 import org.omnetpp.ned.editor.graph.misc.RenameDirectEditManager;
 import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
 import org.omnetpp.ned.model.NEDElement;
@@ -147,7 +147,7 @@ abstract public class BaseEditPart
             performDirectEdit();
         // let's open or activate a new editor if somone has double clicked the component
         if (RequestConstants.REQ_OPEN.equals(req.getType())) {
-            openEditor(getNEDModel(), getTypeNameForDblClickOpen());
+            openNEDEditor(getNEDModel(), getTypeNameForDblClickOpen());
         }
     }
 
@@ -167,7 +167,7 @@ abstract public class BaseEditPart
     /**
      * @param name
      */
-    public static void openEditor(NEDElement srcNode, String name) {
+    public static void openNEDEditor(NEDElement srcNode, String name) {
         INEDTypeInfo typeInfo = srcNode.getContainerNEDTypeInfo()
                                         .getResolver().getComponent(name);
         if (typeInfo != null) {
@@ -176,11 +176,11 @@ abstract public class BaseEditPart
 
             try {
                 IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-                        .openEditor(fileEditorInput, GraphicalNedEditor.MULTIPAGE_NEDEDITOR_ID, true);
+                        .openEditor(fileEditorInput, EditorUtil.MULTIPAGE_NEDEDITOR_ID, true);
 
                 // select the component so it will be visible in the opened editor
                 if (editor instanceof ISelectionSupport)
-                    ((ISelectionSupport)editor).selectComponent(typeInfo.getName());
+                    ((ISelectionSupport)editor).selectGraphComponent(typeInfo.getName());
 
             } catch (PartInitException e) {
                 // should not happen

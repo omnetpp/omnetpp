@@ -193,7 +193,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
         super.performRequest(req);
         // let's open or activate a new editor if somone has double clicked the component
         if (RequestConstants.REQ_OPEN.equals(req.getType())) {
-            BaseEditPart.openEditor(getConnectionModel(), getConnectionModel().getEffectiveType());
+            BaseEditPart.openNEDEditor(getConnectionModel(), getConnectionModel().getEffectiveType());
         }
     }
     
