@@ -5,6 +5,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISelectionListener;
@@ -17,6 +18,7 @@ import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
@@ -26,9 +28,28 @@ import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
+/**
+ * View.
+ * 
+ * @author Andras
+ */
 public class ModuleHierarchyView extends ViewPart {
 	private TreeViewer treeViewer;
 	private ISelectionListener selectionChangedListener;
+	
+	private static class Payload {
+		String text;
+		NEDElement node;  // SubmoduleNode, ParameterNode etc
+
+		public Payload(String text, NEDElement node) {
+			this.text = text;
+			this.node = node;
+		}
+
+		public String toString() { 
+			return text;
+		}
+	}
 	
 	public ModuleHierarchyView() {
 	}
@@ -36,8 +57,20 @@ public class ModuleHierarchyView extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		treeViewer = new TreeViewer(parent, SWT.SINGLE);
-		treeViewer.setLabelProvider(new LabelProvider()); //XXX for now
-		treeViewer.setContentProvider(new GenericTreeContentProvider()); //XXX for now
+		treeViewer.setLabelProvider(new LabelProvider() {
+			@Override
+			public Image getImage(Object element) {
+				Object payload = ((GenericTreeNode)element).getPayload();
+				if (payload instanceof Payload) {
+					Object nedElement = ((Payload)payload).node;
+					return NEDTreeUtil.getNedModelLabelProvider().getImage(nedElement);
+				}
+				else {
+					return null;
+				}
+			}
+		});
+		treeViewer.setContentProvider(new GenericTreeContentProvider());
 		hookSelectionChangedListener();
 	}
 
@@ -68,7 +101,7 @@ public class ModuleHierarchyView extends ViewPart {
 	}
 
 	public void setSelection(ISelection selection) {
-		IEditorPart activeEditor = getSite().getWorkbenchWindow().getActivePage().getActiveEditor();
+		IEditorPart activeEditor = getSite().getWorkbenchWindow().getActivePage().getActiveEditor(); //XXX this may crash on startup (NPE)!!!
 
 		System.out.println("SELECTION: "+selection); //XXX
 		ISelection editorSel = activeEditor.getSite().getSelectionProvider().getSelection();
@@ -143,15 +176,15 @@ public class ModuleHierarchyView extends ViewPart {
 		// dig out type info (NED declaration)
 		if (StringUtils.isEmpty(moduleTypeName)) {
 			String text = moduleFullName+"  (module type unknown)";
-			GenericTreeNode thisNode = new GenericTreeNode(text);
-			parent.addChild(thisNode);
+			GenericTreeNode thisNode = new GenericTreeNode(text);  
+			parent.addChild(thisNode); //XXX display with "error" icon
 			return;
 		}
 		INEDTypeInfo moduleType = nedResources.getComponent(moduleTypeName);
 		if (moduleType == null) {
 			String text = moduleFullName+"  ("+moduleTypeName+" - no such module type)";
 			GenericTreeNode thisNode = new GenericTreeNode(text);
-			parent.addChild(thisNode);
+			parent.addChild(thisNode); //XXX display with "error" icon
 			return;
 		}
 
@@ -159,19 +192,10 @@ public class ModuleHierarchyView extends ViewPart {
 		GenericTreeNode thisNode = addTreeNode(parent, moduleFullName, moduleFullPath, moduleType, doc);
 		
 		// traverse submodules
-		for (NEDElement node : moduleType.getSubmods().values()) { //XXX ordered list somehow! use LinkedHashMap in NEDComponent?
+		for (NEDElement node : moduleType.getSubmods().values()) {
 			SubmoduleNode submodule = (SubmoduleNode) node;
-
-			// produce submodule name; if vector, append [*]
-			String submoduleName = submodule.getName();
-			if (!StringUtils.isEmpty(submodule.getVectorSize())) //XXX what if parsed expressions are in use?
-				submoduleName += "[*]"; //XXX
-			
-			// produce submodule type: if "like", use like type
-			//XXX should try to evaluate "like" expression and use result as type (if possible)
-			String submoduleType = submodule.getType();
-			if (StringUtils.isEmpty(submoduleType))
-				submoduleType = submodule.getLikeType();
+			String submoduleName = InifileUtils.getSubmoduleFullName(submodule);
+			String submoduleType = InifileUtils.getSubmoduleType(submodule);
 			
 			// recursive call
 			buildTree(thisNode, submoduleName, moduleFullPath+"."+submoduleName, submoduleType, nedResources, doc);
@@ -183,7 +207,7 @@ public class ModuleHierarchyView extends ViewPart {
 	 */
 	private static GenericTreeNode addTreeNode(GenericTreeNode parent, String moduleFullName, String moduleFullPath, INEDTypeInfo moduleType, IInifileDocument doc) {
 		String moduleText = moduleFullName+"  ("+moduleType.getName()+")";
-		GenericTreeNode thisNode = new GenericTreeNode(moduleText);
+		GenericTreeNode thisNode = new GenericTreeNode(new Payload(moduleText, moduleType.getNEDElement()));
 		parent.addChild(thisNode);
 
 		for (NEDElement node : moduleType.getParamValues().values()) {
@@ -221,7 +245,7 @@ public class ModuleHierarchyView extends ViewPart {
 				valueText = iniValue+" (ini, overrides NED value "+nedValue+")";
 				
 			String text = param.getName()+" = "+valueText;
-			thisNode.addChild(new GenericTreeNode(text));
+			thisNode.addChild(new GenericTreeNode(new Payload(text, param)));
 		}
 		return thisNode;
 	}

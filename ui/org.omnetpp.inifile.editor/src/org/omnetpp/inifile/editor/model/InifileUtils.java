@@ -122,10 +122,13 @@ public class InifileUtils {
 			boolean isDefault = param.getIsDefault(); //XXX should be used somehow
 
 			// look up its value in the ini file
-			String paramFullPath = moduleFullPath + "." + param.getName();
-			String iniKey = InifileUtils.lookupParameter(paramFullPath, doc, "Parameters");
-			String iniValue = doc.getValue("Parameters", iniKey);
-			//XXX observe "**.use-default=true" style settings as well!!!
+			String iniValue = null;
+			if (doc != null) {
+				String paramFullPath = moduleFullPath + "." + param.getName();
+				String iniKey = InifileUtils.lookupParameter(paramFullPath, doc, "Parameters"); //XXX run-specific sections too!
+				iniValue = doc.getValue("Parameters", iniKey);
+				//XXX observe "**.use-default=true" style settings as well!!!
+			}
 
 			ParameterData d = new ParameterData();
 			d.moduleFullPath = moduleFullPath;

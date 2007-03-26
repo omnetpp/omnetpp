@@ -27,8 +27,9 @@ import org.omnetpp.ned.model.pojo.SubmodulesNode;
 import org.omnetpp.ned.model.pojo.TypesNode;
 
 /**
+ * Label provider for NEDElement tree node. Assumes unparsed expressions.
+ * 
  * @author rhornig
- * A LabelProvider for ned tree structure for displazing it in a tree
  */
 public class NedModelLabelProvider extends LabelProvider {
 
@@ -42,7 +43,7 @@ public class NedModelLabelProvider extends LabelProvider {
         } 
         else if (model instanceof PropertyNode) {
             PropertyNode node = (PropertyNode)model;
-            label = "@"+node.getName();
+            label = "@"+node.getName(); //FIXME TODO: produce value by visiting children
         } 
         else if (model instanceof ParamNode) {
             ParamNode node = (ParamNode)model;
@@ -60,7 +61,7 @@ public class NedModelLabelProvider extends LabelProvider {
         }
         else if (model instanceof SubmoduleNodeEx) {
             SubmoduleNodeEx node = (SubmoduleNodeEx)model;
-            label = node.getName()+" : "+node.getType();
+            label = node.getName()+bracketizeIfNotEmpty(node.getVectorSize())+" : "+node.getType();
         }
         else if (model instanceof ModuleInterfaceNode) {
             ModuleInterfaceNode node = (ModuleInterfaceNode)model;
@@ -83,30 +84,28 @@ public class NedModelLabelProvider extends LabelProvider {
             String attType = node.getAttribute(ParamNode.ATT_TYPE);
             label = "".equals(attType) ? "" : attType+" ";
             label += node.getName();
+            String vectorSizeInBrackets = bracketizeIfNotEmpty(node.getVectorSize());
+            label += vectorSizeInBrackets.equals("") ? (node.getIsVector() ? "[]" : "") : vectorSizeInBrackets;
         } 
         else if (model instanceof ConnectionNodeEx) {
             ConnectionNodeEx node = (ConnectionNodeEx)model;
             StringBuffer srclabel = new StringBuffer();
             if (!"".equals(node.getSrcModule())) {
                 srclabel.append(node.getSrcModule());
-                srclabel.append(!"".equals(node.getSrcModuleIndex()) ? 
-                                 "["+node.getSrcModuleIndex()+"]" : "");
+                srclabel.append(bracketizeIfNotEmpty(node.getSrcModuleIndex()));
                 srclabel.append(".");
             }
             srclabel.append(node.getSrcGate());
-            srclabel.append(!"".equals(node.getSrcGateIndex()) ? 
-                             "["+node.getSrcGateIndex()+"]" : "");
+            srclabel.append(bracketizeIfNotEmpty(node.getSrcGateIndex()));
             
             StringBuffer destlabel = new StringBuffer();
             if(!"".equals(node.getDestModule())) {
                 destlabel.append(node.getDestModule());
-                destlabel.append(!"".equals(node.getDestModuleIndex()) ? 
-                        "["+node.getDestModuleIndex()+"]" : "");
+                destlabel.append(bracketizeIfNotEmpty(node.getDestModuleIndex()));
                 destlabel.append(".");
             }
             destlabel.append(node.getDestGate());
-            destlabel.append(!"".equals(node.getDestGateIndex()) ? 
-                        "["+node.getDestGateIndex()+"]" : "");
+            destlabel.append(bracketizeIfNotEmpty(node.getDestGateIndex()));
             switch (node.getArrowDirection()) {
                 case NEDElementUtil.NED_ARROWDIR_L2R :
                     label = srclabel + " --> " + destlabel;
@@ -126,6 +125,10 @@ public class NedModelLabelProvider extends LabelProvider {
         return label;
 	}
 
+	private static String bracketizeIfNotEmpty(String attr) {
+		return (attr==null || attr.equals("")) ? "" : "["+attr+"]";
+	}
+	
 	public Image getImage(Object obj) {
         NEDElement model = (NEDElement)obj;
         Image image = null;
