@@ -10,6 +10,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
@@ -21,8 +23,8 @@ import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
+import org.omnetpp.common.editor.ISelectionSupport;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
-import org.omnetpp.ned.editor.graph.misc.ISelectionSupport;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
@@ -207,8 +209,8 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 		return false;
 	}
 
-    public void selectComponent(String componentName) {
-        graphEditor.selectComponent(componentName);
+    public void selectGraphComponent(String componentName) {
+        graphEditor.selectGraphComponent(componentName);
     }
 
     /**
@@ -293,6 +295,18 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         IGotoMarker gm = (IGotoMarker)nedEditor.getAdapter(IGotoMarker.class);
         if (gm != null)
             gm.gotoMarker(marker);
+    }
+    
+    public void setTextHighlightRange(int startLine, int endLine) {
+        // switch to text page and delagte to it
+        setActivePage(textPageIndex);
+        IDocument document = nedEditor.getDocumentProvider().getDocument(getEditorInput());
+        try {
+            nedEditor.setHighlightRange(document.getLineOffset(startLine-1), 
+                                        document.getLineOffset(endLine-1)+document.getLineLength(endLine-1), 
+                                        true);
+        } catch (BadLocationException e) {
+        }
     }
 
 }
