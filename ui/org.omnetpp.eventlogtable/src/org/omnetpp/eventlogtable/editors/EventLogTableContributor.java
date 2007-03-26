@@ -35,7 +35,6 @@ import org.omnetpp.eventlog.engine.MatchKind;
 import org.omnetpp.eventlog.engine.MessageDependency;
 import org.omnetpp.eventlog.engine.MessageDependencyList;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
-import org.omnetpp.eventlogtable.widgets.EventLogTableLineRenderer;
 
 
 public class EventLogTableContributor extends EditorActionBarContributor implements ISelectionChangedListener {
@@ -436,16 +435,14 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 			@Override
 			public void run() {
-				EventLogTableLineRenderer eventLogTableItemProvider = (EventLogTableLineRenderer)eventLogTable.getLineRenderer();
-				eventLogTableItemProvider.setDisplayMode(EventLogTableLineRenderer.DisplayMode.values()[(eventLogTableItemProvider.getDisplayMode().ordinal() + 1) % EventLogTableLineRenderer.DisplayMode.values().length]);
+				eventLogTable.setDisplayMode(getMenuIndex() % 2);
 				eventLogTable.redraw();
 				update();
 			}
 
 			@Override
 			protected int getMenuIndex() {
-				EventLogTableLineRenderer eventLogTableItemProvider = (EventLogTableLineRenderer)eventLogTable.getLineRenderer();
-				return eventLogTableItemProvider.getDisplayMode().ordinal();
+				return eventLogTable.getDisplayMode();
 			}
 
 			@Override
@@ -454,11 +451,11 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					menuCreator = new AbstractMenuCreator() {
 						@Override
 						protected void createMenu(Menu menu) {
-							addSubMenuItem(menu, "Descriptive", EventLogTableLineRenderer.DisplayMode.DESCRIPTIVE);
-							addSubMenuItem(menu, "Raw", EventLogTableLineRenderer.DisplayMode.RAW);
+							addSubMenuItem(menu, "Descriptive", 0);
+							addSubMenuItem(menu, "Raw", 1);
 						}
 	
-						private void addSubMenuItem(Menu menu, String text, final EventLogTableLineRenderer.DisplayMode displayMode) {
+						private void addSubMenuItem(Menu menu, String text, final int displayMode) {
 							MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
 							subMenuItem.setText(text);
 							subMenuItem.addSelectionListener( new SelectionAdapter() {
@@ -466,8 +463,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 									MenuItem menuItem = (MenuItem)e.widget;
 									
 									if (menuItem.getSelection()) {
-										EventLogTableLineRenderer eventLogTableItemProvider = (EventLogTableLineRenderer)eventLogTable.getLineRenderer();
-										eventLogTableItemProvider.setDisplayMode(displayMode);
+										eventLogTable.setDisplayMode(displayMode);
 										eventLogTable.redraw();
 										update();
 									}
@@ -520,7 +516,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 										if (pattern == null || pattern.equals(""))
 											pattern = "*";
 		
-										eventLogTable.getEventLogTableContentProvider().setCustomFilter(pattern);
+										eventLogTable.getEventLogTableFacade().setCustomFilter(pattern);
 										eventLogTable.setFilterMode(4);
 										update();
 									}
@@ -578,7 +574,8 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		@Override
 		public void update() {
 			for (Menu menu : menus)
-				updateMenu(menu);
+				if (!menu.isDisposed())
+					updateMenu(menu);
 		}
 		
 		protected void addMenu(Menu menu) {

@@ -93,12 +93,20 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 		return (EventLogTableContentProvider)getContentProvider();
 	}
 
+	public int getDisplayMode() {
+		return getEventLogTableFacade().getDisplayMode();
+	}
+
+	public void setDisplayMode(int i) {
+		getEventLogTableFacade().setDisplayMode(i);
+	}
+
 	public int getFilterMode() {
-		return getEventLogTableContentProvider().getFilterMode();
+		return getEventLogTableFacade().getFilterMode();
 	}
 
 	public void setFilterMode(int i) {
-		getEventLogTableContentProvider().setFilterMode(i);
+		getEventLogTableFacade().setFilterMode(i);
 		stayNear();
 	}
 }

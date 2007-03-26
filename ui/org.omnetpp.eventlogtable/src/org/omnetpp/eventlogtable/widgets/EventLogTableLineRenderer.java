@@ -42,11 +42,6 @@ import org.omnetpp.eventlog.engine.SendDirectEntry;
 import org.omnetpp.eventlog.engine.SendHopEntry;
 
 public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<EventLogEntry> {
-	public enum DisplayMode {
-		DESCRIPTIVE,
-		RAW
-	}
-
 	private static final Color DARKBLUE = new Color(null, 0, 0, 192);
 	private static final Color DARKRED = new Color(null, 127, 0, 85);
 	private static final Color RED = new Color(null, 240, 0, 0);
@@ -83,8 +78,6 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 
 	private static final int VERTICAL_SPACING = 3;
 
-	protected DisplayMode displayMode = DisplayMode.DESCRIPTIVE;
-
 	protected EventLogInput eventLogInput;
 
 	protected Font font = JFaceResources.getDefaultFont();
@@ -101,14 +94,6 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 	 */
 	protected int x;
 
-	public DisplayMode getDisplayMode() {
-		return displayMode;
-	}
-	
-	public void setDisplayMode(DisplayMode displayMode) {
-		this.displayMode = displayMode;
-	}
-	
 	public void setInput(Object eventLogInput) {
 		this.eventLogInput = (EventLogInput)eventLogInput;
 	}
@@ -177,8 +162,8 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 				gc.drawImage(image, x, 0);
 				x += image.getBounds().width + HORIZONTAL_SPACING;
 				
-				switch (displayMode) {
-					case DESCRIPTIVE:
+				switch (eventLogInput.getEventLogTableFacade().getDisplayMode()) {
+					case 0:
 						if (eventLogEntry instanceof EventEntry) {
 							MessageDependency cause = event.getCause();
 				
@@ -342,7 +327,7 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 								throw new RuntimeException("Unknown event log entry: " + eventLogEntry.getClassName());
 						}
 						break;
-					case RAW:
+					case 1:
 						drawRawEntry(eventLogEntry);
 						break;
 					default:

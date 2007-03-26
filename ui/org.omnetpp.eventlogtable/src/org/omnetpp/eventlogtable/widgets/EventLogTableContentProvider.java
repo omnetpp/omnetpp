@@ -10,18 +10,6 @@ public class EventLogTableContentProvider implements IVirtualTableContentProvide
 	protected static boolean debug = false;
 	
 	protected EventLogTableFacade eventLogTableFacade;
-	
-	public int getFilterMode() {
-		return eventLogTableFacade.getEventLogTableMode();
-	}
-
-	public void setFilterMode(int mode) {
-		eventLogTableFacade.setEventLogTableMode(mode);
-	}
-	
-	public void setCustomFilter(String pattern) {
-		eventLogTableFacade.setCustomFilter(pattern);
-	}
 
 	public EventLogEntry getFirstElement() {
 		if (debug)
