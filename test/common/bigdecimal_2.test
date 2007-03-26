@@ -1,0 +1,48 @@
+%description:
+Tests the BigDecimal::BigDecimal(double) method
+
+%global:
+
+#include <iostream>
+#include "bigdecimal.h"
+
+static void convertAndPrint(double d)
+{
+    ev.precision(16);
+    ev << d;
+    ev << " ==> ";
+    try {
+        BigDecimal bd(d);
+        ev << "intVal=" << bd.getIntValue() << ", scale=" << bd.getScale() <<"\n";
+    } catch (std::exception& e) {
+        ev << "ERROR: " << e.what() << "\n";
+    }
+}
+
+%activity:
+
+#define T(x) convertAndPrint(x)
+
+ev << "\n";
+
+// positive cases
+T(0);
+T(1);
+T(-1);
+T(1234567890123456);
+T(1234567890123.456);
+T(1234567890.123456);
+T(123456.7890123456);
+T(123.4567890123456);
+T(0.1234567890123456);
+T(-1234567890123456);
+
+// negative cases
+T(12345678901234567890); // overflow
+
+
+ev << ".\n";
+
+
+%contains: stdout
+.

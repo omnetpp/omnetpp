@@ -1,0 +1,61 @@
+%description:
+Tests the BigDecimal::parse() method
+
+%global:
+
+#include "bigdecimal.h"
+
+static void parseAndPrint(const char *text)
+{
+    ev << "'" << text << "'";
+    ev << " ==> ";
+    try {
+        BigDecimal d = BigDecimal::parse(text);
+        ev << "intVal=" << d.getIntValue() << ", scale=" << d.getScale() <<"\n";
+    } catch (std::exception& e) {
+        ev << "ERROR: " << e.what() << "\n";
+    }
+}
+
+%activity:
+
+#define P(x) parseAndPrint(x)
+
+ev << "\n";
+
+// positive cases
+P("123456789012345678");
+P("123456789012345.678");
+P("123456789012.345678");
+P("123456789.012345678");
+P("123456.789012345678");
+P("123.456789012345678");
+P("0.123456789012345678");
+
+P("+123456789012345678");
+P("-123456789012345678");
+P(" 123456789012345678");
+
+// negative cases
+P("12345678901234567890"); // overflow
+P("");
+P("  ");
+
+ev << ".\n";
+
+
+%contains: stdout
+'123456789012345678' ==> intVal=123456789012345678, scale=0
+'123456789012345.678' ==> intVal=123456789012345678, scale=-3
+'123456789012.345678' ==> intVal=123456789012345678, scale=-6
+'123456789.012345678' ==> intVal=123456789012345678, scale=-9
+'123456.789012345678' ==> intVal=123456789012345678, scale=-12
+'123.456789012345678' ==> intVal=123456789012345678, scale=-15
+'0.123456789012345678' ==> intVal=123456789012345678, scale=-18
+'+123456789012345678' ==> intVal=123456789012345678, scale=0
+'-123456789012345678' ==> intVal=-123456789012345678, scale=0
+' 123456789012345678' ==> intVal=123456789012345678, scale=0
+'12345678901234567890' ==> ERROR: BigDecimal::parse("12345678901234567890"): arithmetic overflow
+'' ==> ERROR: BigDecimal::parse(""): missing digits
+'  ' ==> ERROR: BigDecimal::parse("  "): missing digits
+.
