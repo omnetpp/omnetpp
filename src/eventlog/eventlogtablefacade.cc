@@ -19,14 +19,15 @@
 
 EventLogTableFacade::EventLogTableFacade(IEventLog *eventLog) : EventLogFacade(eventLog)
 {
-    setEventLogTableMode(ALL_ENTRIES);
+    setDisplayMode(DESCRIPTIVE);
+    setFilterMode(ALL_ENTRIES);
     setCustomFilter("*");
 }
 
-void EventLogTableFacade::setEventLogTableMode(EventLogTableMode eventLogTableMode)
+void EventLogTableFacade::setFilterMode(EventLogTableFilterMode filterMode)
 {
-    this->eventLogTableMode = eventLogTableMode;
-    
+    this->filterMode = filterMode;
+
     approximateNumberOfEntries = -1;
     lastMatchedEventNumber = -1;
     lastNumMatchingEventLogEntries = -1;
@@ -34,7 +35,7 @@ void EventLogTableFacade::setEventLogTableMode(EventLogTableMode eventLogTableMo
 
 bool EventLogTableFacade::matchesFilter(EventLogEntry *eventLogEntry)
 {
-    switch (eventLogTableMode)
+    switch (filterMode)
     {
         case ALL_ENTRIES:
             return true;
@@ -63,7 +64,7 @@ int EventLogTableFacade::getNumMatchingEventLogEntries(IEvent *event)
     else {
         lastMatchedEventNumber = event->getEventNumber();
 
-        switch (eventLogTableMode)
+        switch (filterMode)
         {
             case ALL_ENTRIES:
                 lastNumMatchingEventLogEntries = event->getNumEventLogEntries();

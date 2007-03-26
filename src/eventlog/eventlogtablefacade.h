@@ -20,12 +20,17 @@
 #include "ieventlog.h"
 #include "eventlogfacade.h"
 
-enum EventLogTableMode {
+enum EventLogTableFilterMode {
     ALL_ENTRIES,
     EVENT_AND_SEND_AND_MESSAGE_ENTRIES,
     EVENT_AND_MESSAGE_ENTRIES,
     EVENT_ENTRIES,
     CUSTOM_ENTRIES
+};
+
+enum EventLogTableDisplayMode {
+    DESCRIPTIVE,
+    RAW
 };
 
 /**
@@ -41,15 +46,18 @@ class EVENTLOG_API EventLogTableFacade : public EventLogFacade
         long approximateNumberOfEntries;
         long lastMatchedEventNumber;
         int lastNumMatchingEventLogEntries;
-        EventLogTableMode eventLogTableMode;
+        EventLogTableDisplayMode displayMode;
+        EventLogTableFilterMode filterMode;
         MatchExpression matchExpression;
 
     public:
         EventLogTableFacade(IEventLog *eventLog);
         virtual ~EventLogTableFacade() {}
 
-        EventLogTableMode getEventLogTableMode() { return eventLogTableMode; }
-        void setEventLogTableMode(EventLogTableMode eventLogTableMode);
+        EventLogTableDisplayMode getDisplayMode() { return displayMode; }
+        void setDisplayMode(EventLogTableDisplayMode displayMode) { this->displayMode = displayMode; }
+        EventLogTableFilterMode getFilterMode() { return filterMode; }
+        void setFilterMode(EventLogTableFilterMode filterMode);
         bool matchesFilter(EventLogEntry *eventLogEntry);
         int getNumMatchingEventLogEntries(IEvent *event);
         void setCustomFilter(const char *pattern) { matchExpression.setPattern((std::string("E or (") + pattern + ")").c_str(), false, true, false); }
