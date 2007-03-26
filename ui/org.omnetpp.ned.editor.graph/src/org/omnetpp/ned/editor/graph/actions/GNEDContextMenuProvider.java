@@ -60,9 +60,9 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
         action = getActionRegistry().getAction(ReLayoutAction.ID);
         if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
 
-        action = getActionRegistry().getAction(ActionFactory.PROPERTIES.getId());
+        action = getActionRegistry().getAction(ShowPropertyViewAction.ID);
         action.setEnabled(true);
-        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
+        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_VIEW, action);
 
         // Alignment Actions
         MenuManager submenu = new MenuManager("&Align");

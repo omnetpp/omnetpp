@@ -54,6 +54,7 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.common.editor.ISelectionSupport;
 import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
 import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
+import org.omnetpp.ned.editor.graph.actions.ShowPropertyViewAction;
 import org.omnetpp.ned.editor.graph.actions.UnpinAction;
 import org.omnetpp.ned.editor.graph.dnd.TextTransferDropTargetListener;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
@@ -301,9 +302,9 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
 
-//        action = new PropertyDialogAction((IWorkbenchPart) this);
-//        registry.registerAction(action);
-//        getSelectionActions().add(action.getId());
+        action = new ShowPropertyViewAction((IWorkbenchPart) this);
+        registry.registerAction(action);
+        getSelectionActions().add(action.getId());
 
         action = new AlignmentAction((IWorkbenchPart) this, PositionConstants.LEFT);
         registry.registerAction(action);

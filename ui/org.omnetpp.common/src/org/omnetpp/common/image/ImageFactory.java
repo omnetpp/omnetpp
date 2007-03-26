@@ -56,6 +56,7 @@ public class ImageFactory {
     public final static String EVENLOG_IMAGE_DELETE_MESSAGE = EVENTLOG_IMAGE_DIR + "DeleteMessage";
     
     public final static String TOOLBAR_IMAGE_UNPIN = TOOL_IMAGE_DIR + "unpin";
+    public final static String TOOLBAR_IMAGE_PROPERTIES = TOOL_IMAGE_DIR + "properties";
     public final static String TOOLBAR_IMAGE_LAYOUT = TOOL_IMAGE_DIR + "layout";
     public final static String TOOLBAR_IMAGE_OUTLINE = TOOL_IMAGE_DIR + "outline";
     public final static String TOOLBAR_IMAGE_ZOOM = TOOL_IMAGE_DIR + "zoom";
