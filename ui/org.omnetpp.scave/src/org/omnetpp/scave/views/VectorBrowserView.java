@@ -9,17 +9,13 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.part.ViewPart;
-import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.common.virtualtable.VirtualTable;
 import org.omnetpp.scave.editors.datatable.VectorResultContentProvider;
 import org.omnetpp.scave.editors.datatable.VectorResultRowRenderer;
@@ -33,13 +29,11 @@ import org.omnetpp.scave.engine.VectorResult;
  *
  * @author tomi
  */
-public class VectorBrowserView extends ViewPart {
+//XXX if last editor is closed, view still displays the last vector
+public class VectorBrowserView extends ViewWithMessagePart {
 	public static final String ID = "org.omnetpp.scave.VectorBrowserView";
 	
-	protected Composite panel;
 	protected TableColumn eventNumberColumn;
-	protected Composite messagePanel;
-	protected Label message;
 	protected VirtualTable<OutputVectorEntry> viewer;
 	protected ISelectionListener selectionChangedListener;
 	protected VectorResultContentProvider contentProvider;
@@ -50,28 +44,13 @@ public class VectorBrowserView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
+		super.createPartControl(parent);
 		createPulldownMenu();
-		panel = new Composite(parent, SWT.NONE);
-		GridLayout layout = new GridLayout(1, false);
-		layout.marginWidth = layout.marginHeight = 0;
-		panel.setLayout(layout);
-		createMessage(panel);
-		createTableViewer(panel);
 		hookSelectionChangedListener();
 	}
 	
-	private void createMessage(Composite parent) {
-		messagePanel = new Composite(parent, SWT.NONE);
-		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gridData.exclude = true;
-		messagePanel.setLayoutData(gridData);
-		messagePanel.setLayout(new FillLayout());
-		messagePanel.setBackground(ColorFactory.asColor("white"));
-		message = new Label(messagePanel, SWT.WRAP);
-		message.setBackground(ColorFactory.asColor("white"));
-	}
-
-	private void createTableViewer(Composite parent) {
+	@Override
+	protected Control createViewControl(Composite parent) {
 		contentProvider = new VectorResultContentProvider();
 		viewer = new VirtualTable<OutputVectorEntry>(parent, SWT.NONE);
 		viewer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -88,6 +67,7 @@ public class VectorBrowserView extends ViewPart {
 		tableColumn = viewer.createColumn();
 		tableColumn.setWidth(140);
 		tableColumn.setText("Value");
+		return viewer;
 	}
 	
 	private void createPulldownMenu() {
@@ -182,8 +162,7 @@ public class VectorBrowserView extends ViewPart {
 		if (input != null) {
 			String file = input.getFileRun().getFile().getFileSystemFilePath();
 			if (IndexFile.isIndexFileUpToDate(file)) {
-				setVisible(messagePanel, false);
-				setVisible(viewer, true);
+				hideMessage();
 				if (eventNumberColumn != null && input.getColumns().indexOf('E') < 0) {
 					eventNumberColumn.dispose();
 					eventNumberColumn = null;
@@ -196,11 +175,8 @@ public class VectorBrowserView extends ViewPart {
 				}
 			} else {
 				String fileInWorkspace = input.getFileRun().getFile().getFilePath();
-				message.setText("Vector content cannot be browsed," +
-						" because the index file (.vci) for \""+fileInWorkspace+"\" is missing or out of date.");
-				setVisible(messagePanel, true);
-				setVisible(viewer, false);
-				
+				displayMessage("Vector content cannot be browsed, because the index file (.vci) " +
+							   "for \""+fileInWorkspace+"\" is missing or out of date.");
 			}
 		}
 	}
@@ -212,13 +188,6 @@ public class VectorBrowserView extends ViewPart {
 				return vector.getFileRun().getRun().getSimulationTimeScale();
 		}
 		return 0;
-	}
-	
-	private void setVisible(Control control, boolean visible) {
-		GridData gridData = (GridData)control.getLayoutData();
-		gridData.exclude = !visible;
-		control.setVisible(visible);
-		panel.layout(true, true);
 	}
 	
 	// Order: Item#, Event#, Time, Value
@@ -296,4 +265,5 @@ public class VectorBrowserView extends ViewPart {
 			}
 		}
 	}
+
 }
