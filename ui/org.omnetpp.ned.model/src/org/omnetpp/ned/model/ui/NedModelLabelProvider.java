@@ -61,7 +61,8 @@ public class NedModelLabelProvider extends LabelProvider {
         }
         else if (model instanceof SubmoduleNodeEx) {
             SubmoduleNodeEx node = (SubmoduleNodeEx)model;
-            label = node.getName()+bracketizeIfNotEmpty(node.getVectorSize())+" : "+node.getType();
+            label = node.getName()+bracketizeIfNotEmpty(node.getVectorSize())+" : ";
+            label += node.getType();  //FIXME "like" !!!
         }
         else if (model instanceof ModuleInterfaceNode) {
             ModuleInterfaceNode node = (ModuleInterfaceNode)model;
