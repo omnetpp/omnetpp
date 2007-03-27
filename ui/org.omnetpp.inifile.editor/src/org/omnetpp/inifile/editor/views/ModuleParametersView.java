@@ -35,14 +35,9 @@ public class ModuleParametersView extends AbstractModuleView {
 	}
 
 	@Override
-	public void createPartControl(Composite parent) {
-		GridLayout layout = new GridLayout();
-		layout.marginWidth = layout.marginHeight = 0;
-		parent.setLayout(layout);
-		
+	public Control createViewControl(Composite parent) {
 		// create table with columns
 		Table table = new Table(parent, SWT.SINGLE | SWT.FULL_SELECTION);
-		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		addTableColumn(table, "Parameter", 300);
@@ -68,10 +63,11 @@ public class ModuleParametersView extends AbstractModuleView {
 			
 		});
 		tableViewer.setContentProvider(new ArrayContentProvider());
-		hookListeners();
 		
 		IAction toggleModeAction = createToggleModeAction();
 		getViewSite().getActionBars().getToolBarManager().add(toggleModeAction);
+		
+		return table;
 	}
 
 	protected IAction createToggleModeAction() {
@@ -89,10 +85,6 @@ public class ModuleParametersView extends AbstractModuleView {
 		TableColumn column = new TableColumn(table, SWT.NONE);
 		column.setWidth(width);
 		column.setText(text);
-	}
-
-	protected Control getPartControl() {
-		return tableViewer.getTable();
 	}
 
 	@Override

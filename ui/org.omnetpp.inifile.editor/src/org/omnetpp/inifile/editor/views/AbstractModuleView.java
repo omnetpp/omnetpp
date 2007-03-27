@@ -7,7 +7,9 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener;
@@ -35,14 +37,44 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
  * @author Andras
  */
 public abstract class AbstractModuleView extends ViewPart {
+	private Label messageLabel;
+	private Control viewControl; 
 	private ISelectionListener selectionChangedListener;
 	private IPartListener partListener;
-	private Label messageLabel;
 	private INEDChangeListener nedChangeListener;
 	
 	public AbstractModuleView() {
 	}
 
+	public void createPartControl(Composite parent) {
+		GridLayout layout = new GridLayout();
+		layout.marginWidth = layout.marginHeight = 0;
+		parent.setLayout(layout);
+
+		messageLabel = new Label(parent, SWT.WRAP);
+		messageLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		setVisible(messageLabel, false);
+		
+		viewControl = createViewControl(parent);
+		viewControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		hookListeners();
+		scheduleRebuildContent();
+	}
+	
+	/**
+	 * Create and return the control that displays the content of the view. 
+	 * This will typically be a table or a tree widget. 
+	 */
+	abstract protected Control createViewControl(Composite parent);
+
+	/**
+	 * Sets the focus. Override if the focus should be set to a child of viewControl.
+	 */
+	@Override
+	public void setFocus() {
+		viewControl.setFocus();
+	}
 
 	@Override
 	public void dispose() {
@@ -51,36 +83,23 @@ public abstract class AbstractModuleView extends ViewPart {
 	}
 
 	/**
-	 * Return the part control used to display the contents of the view. This will
-	 * typically be a Tree or a Table.
-	 */
-	protected abstract Control getPartControl();
-
-	@Override
-	public void setFocus() {
-		getPartControl().setFocus();
-	}
-
-	/**
 	 * Display a message (such as "Nothing to show") instead of the contents.
 	 */
 	protected void displayMessage(String text) {
-		if (messageLabel==null) {
-			messageLabel = new Label(getPartControl().getParent(), SWT.WRAP);
-			messageLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		if (viewControl.isVisible()) {
+			messageLabel.setText(text);
+			setVisible(messageLabel, true);
+			setVisible(viewControl, false);
 		}
-		messageLabel.setText(text);
-		setVisible(messageLabel, true);
-		setVisible(getPartControl(), false);
 	}
 
 	/**
 	 * Displays the part control.
 	 */
 	protected void hideMessage() {
-		if (!getPartControl().isVisible()) {
-			if (messageLabel != null) setVisible(messageLabel, false);
-			setVisible(getPartControl(), true);
+		if (!viewControl.isVisible()) {
+			setVisible(messageLabel, false);
+			setVisible(viewControl, true);
 		}
 	}
 
@@ -100,7 +119,7 @@ public abstract class AbstractModuleView extends ViewPart {
 		// Listen on selection changes
 		selectionChangedListener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				workbenchSelectionChanged(part, selection);
+				workbenchSelectionChanged();
 			}
 		};
 		getSite().getPage().addPostSelectionListener(selectionChangedListener);
@@ -156,18 +175,30 @@ public abstract class AbstractModuleView extends ViewPart {
 			NEDResourcesPlugin.getNEDResources().getNEDResourceListenerList().remove(nedChangeListener);
 	}
 
+	public void workbenchSelectionChanged() {
+		System.out.println("************ SELECTIONCHANGE");
+		scheduleRebuildContent();
+	}
+
 	protected void activeEditorChanged() {
-		//System.out.println("************ "+activeEditor);
-		// TODO Auto-generated method stub
-		
+		System.out.println("************ ACTIVE EDITOR CHANGED");
+		scheduleRebuildContent();
 	}
 
 	protected void nedModelChanged() {
-		// TODO Auto-generated method stub
 		System.out.println("%%%%%%%%%%%%%% NED MODEL CHANGE");
+		scheduleRebuildContent();
 	}
-	
-	public void workbenchSelectionChanged(IWorkbenchPart part, ISelection selection) {  //XXX remove params
+
+	public void scheduleRebuildContent() {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				rebuildContent();
+			}
+		});
+	}
+
+	public void rebuildContent() { 
 			
 		IWorkbenchPage activePage = getSite().getWorkbenchWindow().getActivePage();
 		IEditorPart activeEditor = activePage==null ? null : activePage.getActiveEditor();
@@ -177,7 +208,7 @@ public abstract class AbstractModuleView extends ViewPart {
 		}
 
 		ISelectionProvider selectionProvider = activeEditor.getSite().getSelectionProvider();
-		selection = selectionProvider==null ? null : selectionProvider.getSelection();
+		ISelection selection = selectionProvider==null ? null : selectionProvider.getSelection();
 		
 		System.out.println("SELECTION: "+selection); //XXX
 

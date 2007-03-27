@@ -47,13 +47,8 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	}
 
 	@Override
-	public void createPartControl(Composite parent) {
-		GridLayout layout = new GridLayout();
-		layout.marginWidth = layout.marginHeight = 0;
-		parent.setLayout(layout);
-		
+	public Control createViewControl(Composite parent) {
 		treeViewer = new TreeViewer(parent, SWT.SINGLE);
-		treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		treeViewer.setLabelProvider(new LabelProvider() {
 			@Override
 			public Image getImage(Object element) {
@@ -68,10 +63,6 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			}
 		});
 		treeViewer.setContentProvider(new GenericTreeContentProvider());
-		hookListeners(); //XXX into base class
-	}
-
-	protected Control getPartControl() {
 		return treeViewer.getTree();
 	}
 
