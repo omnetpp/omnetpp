@@ -127,10 +127,17 @@ public abstract class AbstractModuleView extends ViewPart {
 		// Listens to workbench changes, and invokes activeEditorChanged() whenever the 
 		// active editor changes. Listening on workbench changes is needed because 
 		// editor don't always send selection changes when they get opened or closed.
+		//
+		// NOTE: the view only gets workbench events while it is visible. So we also
+		// need to update our contents on getting activated.
+		//
 		partListener = new IPartListener() {
 			private IEditorPart activeEditor = null;
 			
 			public void partActivated(IWorkbenchPart part) {
+				if (part == AbstractModuleView.this) {
+					viewActivated();
+				}
 				if (part instanceof IEditorPart) {
 					activeEditor = (IEditorPart) part;
 					activeEditorChanged();
@@ -177,6 +184,11 @@ public abstract class AbstractModuleView extends ViewPart {
 
 	public void workbenchSelectionChanged() {
 		System.out.println("************ SELECTIONCHANGE");
+		scheduleRebuildContent();
+	}
+
+	protected void viewActivated() {
+		System.out.println("************ VIEW ACTIVATED");
 		scheduleRebuildContent();
 	}
 
