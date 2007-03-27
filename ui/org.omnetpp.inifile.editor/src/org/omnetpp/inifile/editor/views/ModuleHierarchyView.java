@@ -104,6 +104,12 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		}
 	}
 	
+	protected void unhookListeners() {
+	}
+
+	protected void hookListeners() {
+	}
+
 	/**
 	 * Adds a node to the tree. The new node described the module and its parameters.
 	 */
