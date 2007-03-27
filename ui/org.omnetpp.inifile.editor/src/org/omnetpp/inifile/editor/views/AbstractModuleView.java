@@ -234,18 +234,23 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 	 */
 	protected abstract void buildContent(String submoduleName, String submoduleType, IInifileDocument doc);
 
+	public static final String ICON_ERROR = "icons/full/obj16/Error.png";
+	public static final String ICON_UNASSIGNEDPAR = "icons/full/obj16/UnassignedPar.png";
+	public static final String ICON_NEDPAR = "icons/full/obj16/NedPar.png";
+	public static final String ICON_INIPAR = "icons/full/obj16/IniPar.png";
+	public static final String ICON_INIPARREDUNDANT = "icons/full/obj16/IniParRedundant.png";
+	
 	/**
 	 * Helper function: suggests an icon for a table or tree entry.
 	 */
 	protected static Image suggestImage(Type type, NEDElement element) {
 		switch (type) {
-		//FIXME better icons!
-		case ERROR: return ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_ERROR); //XXX
-		case UNASSIGNED_PAR: return ImageFactory.getImage(ImageFactory.MODEL_IMAGE_INVALID); //XXX
-		case INI_PAR: return InifileEditorPlugin.getImageDescriptor("icons/inifile.png").createImage(); //XXX cache it
-		case NED_PAR: return InifileEditorPlugin.getImageDescriptor("icons/moduletreeview.png").createImage(); //XXX cache it
-		case INI_PAR_REDUNDANT: return ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_WARNING); //XXX
-		case OTHER: if (element!=null) return NEDTreeUtil.getNedModelLabelProvider().getImage(element);
+			case ERROR: return InifileEditorPlugin.getImage(ICON_ERROR);
+			case UNASSIGNED_PAR: return InifileEditorPlugin.getImage(ICON_UNASSIGNEDPAR);
+			case NED_PAR: return InifileEditorPlugin.getImage(ICON_NEDPAR);
+			case INI_PAR: return InifileEditorPlugin.getImage(ICON_INIPAR);
+			case INI_PAR_REDUNDANT: return InifileEditorPlugin.getImage(ICON_INIPARREDUNDANT);
+			case OTHER: if (element!=null) return NEDTreeUtil.getNedModelLabelProvider().getImage(element);
 		}
 		return null;
 	}
