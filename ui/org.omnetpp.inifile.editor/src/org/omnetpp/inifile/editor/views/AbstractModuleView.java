@@ -164,7 +164,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 			return;
 		}
 		
-		System.out.println("SELECTION: "+selection); //XXX
+		//System.out.println("SELECTION: "+selection);
 
 		if (selection instanceof IStructuredSelection && !selection.isEmpty()) {
 			// The NED graphical editor publishes selection as an IStructuredSelection,

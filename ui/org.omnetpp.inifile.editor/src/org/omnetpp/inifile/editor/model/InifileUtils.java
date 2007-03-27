@@ -96,7 +96,7 @@ public class InifileUtils {
 		public String remark;
 	}
 	
-	public static ParameterData[] collectParameters(String moduleFullPath, String moduleTypeName, INEDTypeResolver nedResources, IInifileDocument doc, boolean unassignedOnly) {
+	public static ParameterData[] collectParameters(String moduleFullPath, String moduleTypeName, INEDTypeResolver nedResources, IInifileDocument doc, boolean unassignedOnly, final boolean collectErrors) {
 		String moduleName = moduleFullPath.replaceFirst("^.*\\.", "");  // stuff after the last dot
 		final IInifileDocument finalDoc = doc;
 		final boolean finalUnassignedOnly = unassignedOnly;
@@ -106,6 +106,8 @@ public class InifileUtils {
 				collectParameters(list, moduleFullPath, moduleType, finalDoc, finalUnassignedOnly);
 			}
 			public void visitUnresolved(String moduleName, String moduleFullPath, String moduleTypeName) {
+				if (collectErrors)
+					addErrorEntry(list, moduleFullPath, moduleTypeName);
 			}
 		});
 		return list.toArray(new ParameterData[0]);
@@ -166,4 +168,12 @@ public class InifileUtils {
 		}
 	}
 
+	private static void addErrorEntry(final ArrayList<ParameterData> list, String moduleFullPath, String moduleTypeName) {
+		ParameterData d = new ParameterData();
+		d.moduleFullPath = moduleFullPath;
+		d.parameterName = "*";
+		d.value = "";
+		d.remark = "no such module type: "+moduleTypeName;
+		list.add(d);
+	}
 }
