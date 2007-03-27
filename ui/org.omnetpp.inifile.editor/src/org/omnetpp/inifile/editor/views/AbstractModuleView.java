@@ -3,6 +3,7 @@ package org.omnetpp.inifile.editor.views;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
@@ -105,6 +106,8 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 		};
 		NEDResourcesPlugin.getNEDResources().getNEDResourceListenerList().add(nedChangeListener);
 		
+		//XXX should listen on changes in the inifile as well.
+		
 	}
 	
 	protected void unhookListeners() {
@@ -117,32 +120,32 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 	}
 
 	public void workbenchSelectionChanged() {
-		System.out.println("************ SELECTIONCHANGE");
+		System.out.println("*** SELECTIONCHANGE");
 		scheduleRebuildContent();
 	}
 
 	protected void viewActivated() {
-		System.out.println("************ VIEW ACTIVATED");
+		System.out.println("*** VIEW ACTIVATED");
 		scheduleRebuildContent();
 	}
 
 	protected void activeEditorChanged() {
-		System.out.println("************ ACTIVE EDITOR CHANGED");
+		System.out.println("*** ACTIVE EDITOR CHANGED");
 		scheduleRebuildContent();
 	}
 
 	protected void nedModelChanged() {
-		System.out.println("%%%%%%%%%%%%%% NED MODEL CHANGE");
+		System.out.println("*** NED MODEL CHANGE");
 		scheduleRebuildContent();
 	}
 
 	public void scheduleRebuildContent() {
 		rebuildContent();
-//		Display.getDefault().asyncExec(new Runnable() {
-//			public void run() {
-//				rebuildContent();
-//			}
-//		});
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				rebuildContent();
+			}
+		});
 	}
 
 	public void rebuildContent() { 
@@ -204,7 +207,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 			hideMessage();
 		}
 		else {
-			displayMessage(activeEditor==null ? "No editor is open." : "Editor is not an inifile editor.");
+			displayMessage("Please open an inifile or NED editor.");
 		}
 	}
 
