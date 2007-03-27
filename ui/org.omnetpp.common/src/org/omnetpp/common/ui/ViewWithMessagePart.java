@@ -63,6 +63,10 @@ public abstract class ViewWithMessagePart extends ViewPart {
 		}
 	}
 
+	protected boolean isDisposed() {
+		return messageLabel.isDisposed() || viewControl.isDisposed();
+	}
+	
 	/**
 	 * Displays the part control.
 	 */

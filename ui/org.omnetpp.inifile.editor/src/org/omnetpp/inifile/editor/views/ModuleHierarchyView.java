@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
+import org.omnetpp.common.ui.GenericTreeUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
@@ -26,21 +27,49 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
  */
 public class ModuleHierarchyView extends AbstractModuleView {
 	private TreeViewer treeViewer;
-	
+
+	/**
+	 * Node contents for the GenericTreeNode tree that is displayed in the view
+	 */
 	private static class Payload {
 		String text;
 		NEDElement node;  // SubmoduleNode, ParameterNode etc
 
+		/* for convenience */
 		public Payload(String text, NEDElement node) {
 			this.text = text;
 			this.node = node;
 		}
 
+		/* needed for labelProvider */
 		public String toString() { 
 			return text;
 		}
+
+		/* needed for GenericTreeUtil.treeEquals() */
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			final Payload other = (Payload) obj;
+			if (text == null) {
+				if (other.text != null)
+					return false;
+			} else if (!text.equals(other.text))
+				return false;
+			if (node == null) {
+				if (other.node != null)
+					return false;
+			} else if (!node.equals(other.node))
+				return false;
+			return true;
+		}
 	}
-	
+
 	public ModuleHierarchyView() {
 	}
 
@@ -65,11 +94,15 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	}
 
 	public void buildContent(String moduleFullPath, String moduleTypeName, IInifileDocument doc) {
+		// build tree
 		GenericTreeNode root = new GenericTreeNode("root");
 		INEDTypeResolver nedResources = NEDResourcesPlugin.getNEDResources();
 		String moduleFullName = moduleFullPath.replaceFirst("^.*\\.", "");
 		buildTree(root, moduleFullName, moduleFullPath, moduleTypeName, nedResources, doc);
-		treeViewer.setInput(root);
+
+		// prevent collapsing all treeviewer nodes: only set it on viewer if it's different from old input
+		if (!GenericTreeUtils.treeEquals(root, (GenericTreeNode)treeViewer.getInput())) 
+			treeViewer.setInput(root);
 	}
 
 	private void buildTree(GenericTreeNode parent, String moduleFullName, String moduleFullPath, String moduleTypeName, INEDTypeResolver nedResources, IInifileDocument doc) {
@@ -90,18 +123,18 @@ public class ModuleHierarchyView extends AbstractModuleView {
 
 		// do useful work: add tree node corresponding to this module
 		GenericTreeNode thisNode = addTreeNode(parent, moduleFullName, moduleFullPath, moduleType, doc);
-		
+
 		// traverse submodules
 		for (NEDElement node : moduleType.getSubmods().values()) {
 			SubmoduleNode submodule = (SubmoduleNode) node;
 			String submoduleName = InifileUtils.getSubmoduleFullName(submodule);
 			String submoduleType = InifileUtils.getSubmoduleType(submodule);
-			
+
 			// recursive call
 			buildTree(thisNode, submoduleName, moduleFullPath+"."+submoduleName, submoduleType, nedResources, doc);
 		}
 	}
-	
+
 	/**
 	 * Adds a node to the tree. The new node described the module and its parameters.
 	 */
@@ -112,7 +145,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 
 		for (NEDElement node : moduleType.getParamValues().values()) {
 			ParamNode param = (ParamNode) node;
-			
+
 			// value in the NED file
 			String nedValue = param.getValue(); //XXX what if parsed expressions?
 			if (StringUtils.isEmpty(nedValue)) nedValue = null;
@@ -126,7 +159,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 				iniValue = doc.getValue("Parameters", iniKey);
 				//XXX observe "**.use-default=true" style settings as well!!!
 			}
-			
+
 			//XXX this issue is much more complicated, as there may be multiple possibly matching 
 			// inifile entries. For example, we have "net.node[*].power", and inifile contains
 			// "*.node[0..4].power=...", "*.node[5..9].power=...", and "net.node[10..].power=...".
@@ -143,7 +176,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 				valueText = nedValue+" (NED, ini)";
 			else
 				valueText = iniValue+" (ini, overrides NED value "+nedValue+")";
-				
+
 			String text = param.getName()+" = "+valueText;
 			thisNode.addChild(new GenericTreeNode(new Payload(text, param)));
 		}

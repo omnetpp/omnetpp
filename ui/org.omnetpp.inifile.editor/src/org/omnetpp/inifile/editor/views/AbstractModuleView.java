@@ -148,7 +148,10 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 		});
 	}
 
-	public void rebuildContent() { 
+	public void rebuildContent() {
+		if (isDisposed())
+			return;
+		
 		IEditorPart activeEditor = getActiveEditor();
 		if (activeEditor==null) {
 			displayMessage("There is no active editor.");

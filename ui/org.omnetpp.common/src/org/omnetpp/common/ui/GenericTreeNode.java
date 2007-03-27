@@ -41,14 +41,14 @@ public class GenericTreeNode {
 	}
 
 	/**
-	 * Returns the payload object.
+	 * Returns the payload object, which cannot be null.
 	 */
 	public Object getPayload() {
 		return payload;
 	}
 
 	/**
-	 * Sets the payload object.
+	 * Sets the payload object. null is not accepted.
 	 */
 	public void setPayload(Object payload) {
 		Assert.isTrue(payload!=null);
@@ -56,7 +56,7 @@ public class GenericTreeNode {
 	}
 
 	/**
-	 * Returns the chilren.
+	 * Returns the children. The result is never null. 
 	 */
 	public GenericTreeNode[] getChildren() {
 		return children;
