@@ -71,7 +71,6 @@ import org.omnetpp.sequencechart.widgets.axisrenderer.IAxisRenderer;
 //FIXME expressions like int x = (int)(logFacade.getEvent_i_cachedX(i) - getViewportLeft()) may overflow -- make use of XMAX!
 //TODO cf with ns2 trace file and cEnvir callbacks, and modify file format...
 //TODO proper "hand" cursor - current one is not very intuitive
-//TODO max number of event selection marks must be limited (e.g. max 1000)
 //TODO hierarchic sort should be able to reverse order of sorted axes of its submodules
 //TODO rubberband vs. haircross, show them at once
 public class SequenceChart extends CachingCanvas implements ISelectionProvider {
@@ -114,7 +113,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private static final int ARROWHEAD_LENGTH = 10; // length of message arrow head
 	private static final int ARROWHEAD_WIDTH = 7; // width of message arrow head
 	private static final int AXISLABEL_DISTANCE = 15; // distance of timeline label above axis
-	private static final int EVENT_SEL_RADIUS = 10; // radius of event selection mark circle
+	private static final int EVENT_SELECTION_RADIUS = 10; // radius of event selection mark circle
 	private static final int TICK_SPACING = 100; // space between ticks in pixels
 	private static final int GUTTER_HEIGHT = 17; // height of top and bottom gutter
 	
@@ -124,7 +123,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private double pixelsPerTimelineUnit = -1;
 	private boolean antiAlias = true;  // antialiasing -- this gets turned on/off automatically
 	private boolean showArrowHeads = true; // whether arrow heads are drawn or not
-	private int axisOffset = 50;  // y coord of first axis
+	private int axisOffset = 10;  // y coord of first axis
 	private int axisSpacing = -1; // y distance between two axes
 
 	private boolean showMessageNames;
@@ -652,7 +651,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 				if (axisModulePositions[j] < axisModulePositions[i])
 					y += axisSpacing + axisRenderers.get(j).getHeight();
 
-			axisModuleYs[i] = axisOffset + y;
+			axisModuleYs[i] = axisOffset + axisSpacing + y;
 		}
 	}
 	
@@ -665,10 +664,10 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		for (IAxisRenderer axisRenderer : axisRenderers)
 			dy += axisRenderer.getHeight();
 
-		if (axisModules.size() == 0 || axisModules.size() == 1)
+		if (axisModules.size() <= 1)
 			setAxisSpacing(0);
 		else
-			setAxisSpacing(Math.max(AXISLABEL_DISTANCE + 1, (getViewportHeight() - axisOffset * 2 - dy) / (axisModules.size() - 1)));
+			setAxisSpacing(Math.max(AXISLABEL_DISTANCE + 1, (getViewportHeight() - axisOffset * 2 - dy) / axisModules.size()));
 	}
 
 	/**
@@ -676,7 +675,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 */
 	private void calculateModuleYCoordinates() {
 		// different y for each selected module
-		for (int i=0; i<axisModules.size(); i++) {
+		for (int i = 0; i < axisModules.size(); i++) {
 			ModuleTreeItem treeItem = axisModules.get(i);
 			final int y = axisModuleYs[i] + axisRenderers.get(i).getHeight() / 2;
 			// propagate y to all submodules recursively
@@ -763,7 +762,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		IEvent lastEvent = eventLog.getLastEvent();
 		long width = lastEvent==null ? 0 : (long)(sequenceChartFacade.getTimelineCoordinate(lastEvent) * getPixelsPerTimelineUnit()) + 3; // event mark should fit in
 		width = Math.max(width, 600); // at least half a screen
-		long height = (axisModules.size() - 1) * axisSpacing + axisOffset * 2;
+		long height = axisModules.size() * axisSpacing + axisOffset * 2;
 		for (int i = 0; i < axisRenderers.size(); i++)
 			height += axisRenderers.get(i).getHeight();
 		setVirtualSize(width, height);
@@ -808,18 +807,25 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	@Override
 	protected void paintCachableLayer(GC gc) {
 		Graphics graphics = new SWTGraphics(gc);
+
+		graphics.translate(0, GUTTER_HEIGHT);
 		drawSequenceChart(graphics);
-		graphics.dispose();
-		
+
+		graphics.dispose();		
 	}
 
 	@Override
 	protected void paintNoncachableLayer(GC gc) {
 		Graphics graphics = new SWTGraphics(gc);
+
+		graphics.translate(0, GUTTER_HEIGHT);
 		drawAxisLabels(graphics);
-        drawGutters(graphics);
-        drawMouseTick(graphics);
         drawEventSelectionMarks(graphics);
+
+        graphics.translate(0, -GUTTER_HEIGHT);
+        drawMouseTick(graphics);
+        drawGutters(graphics);
+
         graphics.dispose();
 	}
 
@@ -982,7 +988,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * Draws the visual representation of selections around events.
 	 */
 	private void drawEventSelectionMarks(Graphics graphics) {
-		long[] eventPtrRange = getFirstLastEventInPixelRange(0 - EVENT_SEL_RADIUS, getViewportWidth() + EVENT_SEL_RADIUS);
+		long[] eventPtrRange = getFirstLastEventInPixelRange(0 - EVENT_SELECTION_RADIUS, getViewportWidth() + EVENT_SELECTION_RADIUS);
 		long startEventPtr = eventPtrRange[0];
 		long endEventPtr = eventPtrRange[1];
 		int startEventNumber = sequenceChartFacade.Event_getEventNumber(startEventPtr);
@@ -999,7 +1005,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		    	{
 		    		int x = getEventViewportXCoordinate(selectedEvent.getCPtr());
 		    		int y = getEventViewportYCoordinate(selectedEvent.getCPtr());
-		    		graphics.drawOval(x - EVENT_SEL_RADIUS, y - EVENT_SEL_RADIUS, EVENT_SEL_RADIUS * 2 + 1, EVENT_SEL_RADIUS * 2 + 1);
+		    		graphics.drawOval(x - EVENT_SELECTION_RADIUS, y - EVENT_SELECTION_RADIUS, EVENT_SELECTION_RADIUS * 2 + 1, EVENT_SELECTION_RADIUS * 2 + 1);
 		    	}
 			}
 		} 

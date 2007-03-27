@@ -56,7 +56,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 
 	protected SequenceChartAction denseAxesAction;
 
-	protected SequenceChartAction evenlyDistributedAxesAction;
+	protected SequenceChartAction balancedAxesAction;
 	
 	public SequenceChartContributor() {
 		this.separatorAction = new Separator();
@@ -71,7 +71,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		this.zoomInAction = createZoomInAction();
 		this.zoomOutAction = createZoomOutAction();
 		this.denseAxesAction = createDenseAxesAction();
-		this.evenlyDistributedAxesAction = createEvenlyDistributedAxesAction();
+		this.balancedAxesAction = createBalancedAxesAction();
 
 		if (singleton == null)
 			singleton = this;
@@ -148,7 +148,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 				menuManager.add(zoomOutAction);
 				menuManager.add(separatorAction);
 				menuManager.add(denseAxesAction);
-				menuManager.add(evenlyDistributedAxesAction);
+				menuManager.add(balancedAxesAction);
 				menuManager.add(separatorAction);
 			}
 		});
@@ -374,13 +374,13 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		return new SequenceChartAction("Dense axes", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
 			@Override
 			public void run() {
-				sequenceChart.setAxisSpacing(20);
+				sequenceChart.setAxisSpacing(16);
 			}
 		};
 	}
 
-	private SequenceChartAction createEvenlyDistributedAxesAction() {
-		return new SequenceChartAction("Evenly distributed axes", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+	private SequenceChartAction createBalancedAxesAction() {
+		return new SequenceChartAction("Balanced axes", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
 			@Override
 			public void run() {
 				sequenceChart.setAxisSpacing(-1);
