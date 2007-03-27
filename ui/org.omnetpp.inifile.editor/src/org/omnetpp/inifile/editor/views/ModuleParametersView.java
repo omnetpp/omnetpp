@@ -95,29 +95,6 @@ public class ModuleParametersView extends AbstractModuleView {
 		return tableViewer.getTable();
 	}
 
-	public void setViewerInput(ISelection selection) {
-		IEditorPart editor = getSite().getWorkbenchWindow().getActivePage().getActiveEditor();
-		if (editor instanceof InifileEditor) {
-			InifileEditor inifileEditor = (InifileEditor) editor;
-			IInifileDocument doc = inifileEditor.getEditorData().getInifileDocument();
-
-			//XXX consider changing the return type of NEDResourcesPlugin.getNEDResources() to INEDTypeResolver
-			INEDTypeResolver nedResources = NEDResourcesPlugin.getNEDResources();
-
-			String networkName = doc.getValue("General", "network");
-			if (networkName == null) {
-				displayMessage("Network not specified (no [General]/network= setting)");
-				return;
-			}
-
-			ParameterData[] pars = InifileUtils.collectParameters(networkName, networkName, nedResources, doc, unassignedOnly);
-			tableViewer.setInput(pars);
-		}
-		else {
-			displayMessage(editor==null ? "No editor is open." : "Editor is not an inifile editor.");
-		}
-	}
-
 	@Override
 	public void buildContent(String moduleFullPath, String moduleTypeName, IInifileDocument doc) {
 		//XXX consider changing the return type of NEDResourcesPlugin.getNEDResources() to INEDTypeResolver
