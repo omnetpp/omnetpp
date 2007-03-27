@@ -11,6 +11,7 @@ import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
+import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
@@ -37,7 +38,12 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 	
 	public AbstractModuleView() {
 	}
-	//scheduleRebuildContent();   XXX TODO!!!!!!
+
+	@Override
+	public void createPartControl(Composite parent) {
+		super.createPartControl(parent);
+		scheduleRebuildContent();
+	}
 
 	@Override
 	protected void hookListeners() {

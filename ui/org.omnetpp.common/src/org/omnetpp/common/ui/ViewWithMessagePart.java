@@ -1,4 +1,4 @@
-package org.omnetpp.inifile.editor.views;
+package org.omnetpp.common.ui;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.SWT;
