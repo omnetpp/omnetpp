@@ -1,12 +1,17 @@
 package org.omnetpp.common.ui;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.part.ViewPart;
 
 /**
@@ -52,7 +57,7 @@ public abstract class ViewWithMessagePart extends ViewPart {
 	 */
 	protected void displayMessage(String text) {
 		messageLabel.setText(text);
-		if (viewControl.isVisible()) {
+		if (isVisible(viewControl)) {
 			setVisible(messageLabel, true);
 			setVisible(viewControl, false);
 		}
@@ -62,7 +67,7 @@ public abstract class ViewWithMessagePart extends ViewPart {
 	 * Displays the part control.
 	 */
 	protected void hideMessage() {
-		if (!viewControl.isVisible()) {
+		if (!isVisible(viewControl)) {
 			setVisible(messageLabel, false);
 			setVisible(viewControl, true);
 		}
@@ -71,15 +76,45 @@ public abstract class ViewWithMessagePart extends ViewPart {
 	/**
 	 * Utility function
 	 */
+	private boolean isVisible(Control control) {
+		GridData gridData = (GridData)control.getLayoutData();
+		return !gridData.exclude;
+	}
+
+	/**
+	 * Utility function
+	 */
 	private void setVisible(Control control, boolean visible) {
 		Assert.isTrue(control.getParent().getLayout() instanceof GridLayout); // if not, set it!
 		GridData gridData = (GridData)control.getLayoutData();
-		if (gridData == null) {
-			gridData = new GridData();
-			control.setLayoutData(gridData);
-		}
 		gridData.exclude = !visible;
 		control.setVisible(visible);
 		control.getParent().layout(true, true);
+	}
+	
+	/**
+	 * Utility method: Returns the active editor, or null.
+	 */
+	protected IEditorPart getActiveEditor() {
+		IWorkbenchPartSite site = getSite();
+		IWorkbenchPage activePage = site==null ? null : site.getWorkbenchWindow().getActivePage();
+		return activePage==null ? null : activePage.getActiveEditor();
+	}
+	
+	/**
+	 * Utility method: Return the active editor's selection, or null.
+	 */
+	protected ISelection getActiveEditorSelection() {
+		IEditorPart editor = getActiveEditor();
+		ISelectionProvider selectionProvider = editor==null ? null : editor.getSite().getSelectionProvider();
+		return selectionProvider==null ? null : selectionProvider.getSelection();
+	}
+	
+	/**
+	 * Utility method: Return the selection of the active 
+	 * workbench part (editor OR view!), or null.
+	 */
+	protected ISelection getWorkbenchSelection() {
+		return getSite()==null ? null : getSite().getWorkbenchWindow().getSelectionService().getSelection();
 	}
 }

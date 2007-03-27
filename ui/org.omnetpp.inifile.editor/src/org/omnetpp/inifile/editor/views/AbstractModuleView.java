@@ -140,11 +140,12 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 	}
 
 	public void scheduleRebuildContent() {
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				rebuildContent();
-			}
-		});
+		rebuildContent();
+//		Display.getDefault().asyncExec(new Runnable() {
+//			public void run() {
+//				rebuildContent();
+//			}
+//		});
 	}
 
 	public void rebuildContent() { 
