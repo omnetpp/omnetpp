@@ -1,4 +1,4 @@
-package org.omnetpp.sequencechart.widgets;
+package org.omnetpp.common.eventlog;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +18,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.SelectionDialog;
-import org.omnetpp.common.eventlog.ModuleTreeItem;
 
 /**
  * Dialog to add items to a given dataset.

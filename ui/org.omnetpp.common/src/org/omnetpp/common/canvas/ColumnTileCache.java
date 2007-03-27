@@ -18,6 +18,7 @@ import org.eclipse.swt.graphics.Image;
  */
 public class ColumnTileCache implements ITileCache {
 
+	private static final boolean debug = false;
 	private int memoryUsageLimit = 32*1024*1024; // 32Meg by default
 	private int memoryUsage = 0;
 	private ArrayList<Tile> cache = new ArrayList<Tile>();
@@ -62,7 +63,7 @@ public class ColumnTileCache implements ITileCache {
 			tile.image.dispose();
 			count++;
 		}
-		if (count>0)
+		if (count>0 && debug)
 			System.out.printf("cache: thrown out %d tiles, currently holding %d\n", count, cache.size());
 	}
 

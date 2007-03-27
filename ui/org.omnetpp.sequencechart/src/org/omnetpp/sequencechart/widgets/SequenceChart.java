@@ -5,17 +5,11 @@ import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
-import org.apache.commons.collections.ListUtils;
-import org.apache.commons.collections.map.MultiValueMap;
-import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
-import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -54,7 +48,6 @@ import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.Int64Vector;
 import org.omnetpp.eventlog.engine.IntSet;
-import org.omnetpp.eventlog.engine.IntVector;
 import org.omnetpp.eventlog.engine.MessageDependency;
 import org.omnetpp.eventlog.engine.MessageDependencyKind;
 import org.omnetpp.eventlog.engine.MessageSend;
@@ -62,6 +55,14 @@ import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.sequencechart.editors.SequenceChartContributor;
+import org.omnetpp.sequencechart.widgets.axisorder.AxisOrderByModuleId;
+import org.omnetpp.sequencechart.widgets.axisorder.AxisOrderByModuleName;
+import org.omnetpp.sequencechart.widgets.axisorder.FlatAxisOrderByMinimizingCost;
+import org.omnetpp.sequencechart.widgets.axisorder.HierarchicalAxisOrderByMinimizingCost;
+import org.omnetpp.sequencechart.widgets.axisorder.ManualAxisOrder;
+import org.omnetpp.sequencechart.widgets.axisrenderer.AxisLineRenderer;
+import org.omnetpp.sequencechart.widgets.axisrenderer.AxisVectorBarRenderer;
+import org.omnetpp.sequencechart.widgets.axisrenderer.IAxisRenderer;
 
 /**
  * This is a sequence chart as a single figure.
@@ -78,21 +79,31 @@ import org.omnetpp.sequencechart.editors.SequenceChartContributor;
 //TODO hierarchic sort should be able to reverse order of sorted axes of its submodules
 //TODO rubberband vs. haircross, show them at once
 public class SequenceChart extends CachingCanvas implements ISelectionProvider {
+	private final static boolean debug = false;
 
-	private static final Color CHART_BACKGROUND_COLOR = ColorConstants.white;
-	private static final Color LABEL_COLOR = new Color(null, 0, 0, 0);
+	private static final Color CHART_BACKGROUND_COLOR = ColorFactory.asColor("white");
+	private static final Color LABEL_COLOR = ColorFactory.asColor("black");
+	
 	private static final Color TICK_LINE_COLOR = new Color(null, 160, 160, 160);
-	private static final Color TICK_LABEL_COLOR = new Color(null, 0, 0, 0);
+	private static final Color TICK_LABEL_COLOR = ColorFactory.asColor("black");
+
 	private static final Color GUTTER_BACKGROUND_COLOR = new Color(null, 255, 255, 160);
-	private static final Color GUTTER_BORDER_COLOR = new Color(null, 0, 0, 0);
-	private static final Color EVENT_FG_COLOR = ColorFactory.asColor("green");
-	private static final Color SELF_EVENT_FG_COLOR = ColorFactory.asColor("orange");
-	private static final Color EVENT_BG_COLOR = new Color(null,255,255,255);
-	private static final Color EVENT_SEL_COLOR = new Color(null,255,0,0);
+	private static final Color GUTTER_BORDER_COLOR = ColorFactory.asColor("black");
+
+	private static final Color EVENT_BORDER_COLOR = ColorFactory.asColor("red4");
+	private static final Color EVENT_BACKGROUND_COLOR = ColorFactory.asColor("red");
+	private static final Color SELF_EVENT_BORDER_COLOR = ColorFactory.asColor("green4");
+	private static final Color SELF_EVENT_BACKGROUND_COLOR = ColorFactory.asColor("green2");
+	private static final Color EVENT_NUMBER_BACKGROUND_COLOR = ColorFactory.asColor("white");
+
+	private static final Color EVENT_SELECTION_COLOR =ColorFactory.asColor("red");
+
 	private static final Color ARROWHEAD_COLOR = null; // defaults to line color
 	private static final Color MESSAGE_LABEL_COLOR = null; // defaults to line color
-	private static final Color DELIVERY_MESSAGE_COLOR = new Color(null,0,0,255);
-	private static final Color NONDELIVERY_MESSAGE_COLOR = new Color(null,0,150,0);
+	
+	private static final Color DELIVERY_MESSAGE_COLOR = ColorFactory.asColor("blue");
+	private static final Color NONDELIVERY_MESSAGE_COLOR = new Color(null, 0, 150, 0);
+	
 	private static final Cursor DRAG_CURSOR = new Cursor(null, SWT.CURSOR_SIZEALL);
 	private static final int[] DOTTED_LINE_PATTERN = new int[] {2,2}; // 2px black, 2px gap
 	
@@ -124,7 +135,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private boolean showReuseMessages; // show or hide non-delivery message arrows
 	private boolean showEventNumbers;
 	private TimelineSortMode timelineSortMode = TimelineSortMode.MODULE_ID; // specifies the ordering mode of timelines
-	
+
 	private double viewportLeftSimulationTime; // used to restore the visible range of simulation time
 	private double viewportRightSimulationTime;
 	
@@ -132,12 +143,12 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	
 	private int dragStartX = -1, dragStartY = -1; // temporary variables for drag handling
 	private List<ModuleTreeItem> axisModules; // the modules which should have an axis (they must be part of a module tree!)
-	private List<AxisGraph> axisGraphs; // used to paint the axis
+	private List<IAxisRenderer> axisRenderers; // used to draw the axis
 	private int[] axisModulePositions; // y order of the axis modules (in the same order as axisModules); this is a permutation of the 0..axisModule.size()-1 numbers
 	private int[] axisModuleYs; // top y coordinates of axis bounding boxes
 	private HashMap<Integer, Integer> moduleIdToAxisYMap = new HashMap<Integer, Integer>();
 	private IntSet moduleIds; // calculated from axisModules: module Ids of all modules which are submodule of an axisModule (i.e. whose events appear on the chart)
-	private ArrayList<BigDecimal> ticks; // a list of simulation times painted on the axis as tick marks
+	private ArrayList<BigDecimal> ticks; // a list of simulation times drawn on the axis as tick marks
 	private boolean invalidVirtualSize = true;
 	private boolean invalidModuleYCoordinates = true;
 	
@@ -180,7 +191,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 
 	public void setSequenceChartContributor(SequenceChartContributor sequenceChartContributor) {
-		MenuManager menuManager = new MenuManager();
+		menuManager = new MenuManager();
 		sequenceChartContributor.contributeToPopupMenu(menuManager);
 		setMenu(menuManager.createContextMenu(this));
 	}
@@ -429,7 +440,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	public void gotoAxisModule(ModuleTreeItem axisModule) {
 		for (int i = 0; i < axisModules.size(); i++)
 			if (axisModules.get(i) == axisModule)
-				scrollVerticalTo(axisModuleYs[i] - axisGraphs.get(i).getHeight() / 2 - getViewportHeight() / 2);
+				scrollVerticalTo(axisModuleYs[i] - axisRenderers.get(i).getHeight() / 2 - getViewportHeight() / 2);
 	}
 	
 	/**
@@ -438,13 +449,13 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	public void gotoAxisValue(ModuleTreeItem axisModule, double simulationTime) {
 		for (int i = 0; i < axisModules.size(); i++)
 			if (axisModules.get(i) == axisModule) {
-				AxisGraph axisGraph = axisGraphs.get(i);
+				IAxisRenderer axisRenderer = axisRenderers.get(i);
 				
-				if (axisGraph instanceof AxisValueGraph) {
-					AxisValueGraph axisValueGraph = (AxisValueGraph)axisGraph;
+				if (axisRenderer instanceof AxisVectorBarRenderer) {
+					AxisVectorBarRenderer axisVectorBarRenderer = (AxisVectorBarRenderer)axisRenderer;
 					gotoSimulationTimeRange(
-						axisValueGraph.getSimulationTime(axisValueGraph.getIndex(simulationTime, true)),
-						axisValueGraph.getSimulationTime(axisValueGraph.getIndex(simulationTime, false)),
+						axisVectorBarRenderer.getSimulationTime(axisVectorBarRenderer.getIndex(simulationTime, true)),
+						axisVectorBarRenderer.getSimulationTime(axisVectorBarRenderer.getIndex(simulationTime, false)),
 						(int)(getViewportWidth() * 0.1));
 				}
 			}
@@ -467,7 +478,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		ArrayList<ModuleTreeItem> axisModules = getAllAxisModules(eventLogInput);
 
 		ArrayList<XYArray> axisVectors = new ArrayList<XYArray>();
-		for (ModuleTreeItem axisModule : axisModules)
+		for (int i = 0; i < axisModules.size(); i++)
 			axisVectors.add(null);
 
 		setParameters(eventLogInput.getEventLog(), axisModules, axisVectors);
@@ -589,13 +600,13 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * Sets the data vectors associated with axis that will be displayed along the axis.
 	 */
 	private void setAxisVectors(ArrayList<XYArray> axisVectors) {
-		axisGraphs = new ArrayList<AxisGraph>();
+		axisRenderers = new ArrayList<IAxisRenderer>();
 
 		for (XYArray axisVector : axisVectors)
 			if (axisVector != null)
-				axisGraphs.add(new AxisValueGraph(this, axisVector));
+				axisRenderers.add(new AxisVectorBarRenderer(this, axisVector));
 			else
-				axisGraphs.add(new AxisGraph(this));
+				axisRenderers.add(new AxisLineRenderer(this));
 
 		axisModuleYs = null;
 		invalidVirtualSize = true;
@@ -604,316 +615,30 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 	
 	/**
-	 * Calculates axis positions sorting by module ids.
-	 */
-	private void sortTimelinesByModuleId() {
-		Integer[] axisModulesIndices = new Integer[axisModules.size()];
-		
-		for (int i = 0; i < axisModulesIndices.length; i++)
-			axisModulesIndices[i] = i;
-		
-		java.util.Arrays.sort(axisModulesIndices, new java.util.Comparator<Integer>() {
-				public int compare(Integer o1, Integer o2) {
-					return ((Integer)axisModules.get(o1).getModuleId()).compareTo(axisModules.get(o2).getModuleId());
-				}
-			});
-		
-		for (int i = 0; i < axisModulesIndices.length; i++)
-			axisModulePositions[axisModulesIndices[i]] = i;
-	}
-	
-	/**
-	 * Calculates axis positions sorting by module names.
-	 */
-	private void sortTimelinesByModuleName() {
-		int[] axisPositions = sortTimelinesByModuleName(axisModules.toArray(new ModuleTreeItem[0]));
-		System.arraycopy(axisPositions, 0, axisModulePositions, 0, axisModulePositions.length);
-	}
-
-	/**
-	 * Same as above but works on a subset of modules.
-	 */
-	private int[] sortTimelinesByModuleName(final ModuleTreeItem[] modules) {
-		int[] axisPositions = new int[modules.length];
-		Integer[] axisModulesIndexes = new Integer[modules.length];
-		
-		for (int i = 0; i < axisModulesIndexes.length; i++)
-			axisModulesIndexes[i] = i;
-		
-		java.util.Arrays.sort(axisModulesIndexes, new java.util.Comparator<Integer>() {
-				public int compare(Integer o1, Integer o2) {
-					return modules[o1].getModuleFullPath().compareTo(modules[o2].getModuleFullPath());
-				}
-			});
-		
-		for (int i = 0; i < axisModulesIndexes.length; i++)
-			axisPositions[axisModulesIndexes[i]] = i;
-		
-		return axisPositions;
-	}
-	
-	/**
-	 * Sorts axes by minimizing message arrows crossing timelines.
-	 * Axes are sorted in a hierarchic way based on the module hierarchy.
-	 */
-	private void sortTimelinesHierarchicallyByMinimizingCost(IntVector axisMatrix) {
-		sortTimelinesHierarchicallyByMinimizingCostRecursive(axisModules.get(0).getRootModule(), axisMatrix);
-	}
-
-	/**
-	 * Recursive version for the hierarchic sort of axis timelines.
-	 */
-	private void sortTimelinesHierarchicallyByMinimizingCostRecursive(final ModuleTreeItem module, final IntVector axisMatrix) {
-		if (!axisModules.contains(module)) {
-			final int numberOfAxis = axisModules.size();
-			final ModuleTreeItem[] submodules = module.getSubmodules();
-			final int[] submoduleIndicesToNumberOfAxis = new int[submodules.length];
-			final MultiValueMap submoduleToAxisIndexes = new MultiValueMap();
-			final int[] axisPositions = new int[numberOfAxis];
-
-			if (submodules.length == 0)
-				return;
-
-			// calculate the number of axes and the axis module indexes that a submodule represents
-			for (int i = 0; i < numberOfAxis; i++) {
-				ModuleTreeItem submodule = axisModules.get(i).getAncestorModuleUnder(module);
-			
-				if (submodule != null) {
-					submoduleIndicesToNumberOfAxis[ArrayUtils.indexOf(submodules, submodule)]++;
-					submoduleToAxisIndexes.put(submodule, i);
-				}
-			}
-			
-			// first sort descendants recursively
-			for (ModuleTreeItem submodule : submodules)
-				sortTimelinesHierarchicallyByMinimizingCostRecursive(submodule, axisMatrix);
-
-			// sort the direct submodules of this module
-			int[] submoduleIndicesToSubmodulePositions = sortTimelinesByMinimizingCost(submodules, new ICostCalculator() {
-				public int calculateCost(int[] submoduleIndicesToSubmodulePositions) {
-					int cost = 0;
-					
-					for (int i = 0; i < numberOfAxis; i++)
-						axisPositions[i] = axisModulePositions[i];
-
-					calculateAxisPositions(axisPositions, submodules, submoduleIndicesToSubmodulePositions, submoduleIndicesToNumberOfAxis, submoduleToAxisIndexes);
-
-					// sum up cost of messages to other axis
-					for (ModuleTreeItem iSubmodule : submodules)
-						for (ModuleTreeItem jSubmodule : submodules)
-							if (iSubmodule != jSubmodule)
-								for (Object iObject : getAxisModuleIndicesForSubmodule(submoduleToAxisIndexes, iSubmodule))
-									for (Object jObject : getAxisModuleIndicesForSubmodule(submoduleToAxisIndexes, jSubmodule))
-										cost += SequenceChart.this.calculateCost(axisPositions, (Integer)iObject, (Integer)jObject, axisMatrix);
-
-					return cost;
-				}
-			});
-
-			// calculate axis offsets and positions for submodules
-			calculateAxisPositions(axisModulePositions, submodules, submoduleIndicesToSubmodulePositions, submoduleIndicesToNumberOfAxis, submoduleToAxisIndexes);
-		}
-		else
-			// the positions will be updated each time when returning from this recursive function
-			axisModulePositions[axisModules.indexOf(module)] = 0;
-	}
-	
-	/**
-	 * Calculates axis positions by shifting axes according to the module positions and count of axes per module.
-	 */
-	private void calculateAxisPositions(int[] axisPositions, ModuleTreeItem[] submodules, int[] submoduleIndicesToSubmodulePositions, int[] submoduleIndicesToNumberOfAxis, MultiValueMap submoduleToAxisIndexes) {
-		int[] submodulePositionsToSubmoduleIndices = new int[submodules.length];
-		for (int i = 0; i < submodules.length; i++)
-			submodulePositionsToSubmoduleIndices[submoduleIndicesToSubmodulePositions[i]] = i;
-
-		int count = 0;
-		int[] submoduleIndicesToSubmoduleAxisOffsets = new int[submodules.length];
-		for (int submodulePosition = 0; submodulePosition < submodules.length; submodulePosition++) {
-			int c = submoduleIndicesToNumberOfAxis[submodulePositionsToSubmoduleIndices[submodulePosition]];
-			submoduleIndicesToSubmoduleAxisOffsets[submodulePositionsToSubmoduleIndices[submodulePosition]] = count;
-			count += c;
-		}
-
-		// recalculate positions
-		for (int submoduleIndex = 0; submoduleIndex < submodules.length; submoduleIndex++) {
-			ModuleTreeItem submodule = submodules[submoduleIndex];
-
-			// move axes to the offset of their module
-			for (Object i : getAxisModuleIndicesForSubmodule(submoduleToAxisIndexes, submodule))
-				axisPositions[(Integer)i] += submoduleIndicesToSubmoduleAxisOffsets[submoduleIndex];
-		}
-	}
-
-	/**
-	 * Just a convenient helper function to return an empty collection if there's no value for the given key.
-	 */
-	private Collection getAxisModuleIndicesForSubmodule(MultiValueMap submoduleToAxisIndexes, ModuleTreeItem submodule) {
-		Collection collection = submoduleToAxisIndexes.getCollection(submodule);
-		
-		if (collection != null)
-			return collection;
-		else
-			return ListUtils.EMPTY_LIST;
-	}
-
-	/**
-	 * Sorts axes by minimizing message arrows crossing physical timelines.
-	 * Axes are sorted in a flat way without looking at module hierarchy.
-	 */
-	private void sortTimelinesFlatByMinimizingCost(final IntVector axisMatrix) {
-		final ModuleTreeItem[] modules = axisModules.toArray(new ModuleTreeItem[axisModules.size()]);
-		final int numberOfAxis = modules.length;
-		int[] axisPositions = sortTimelinesByMinimizingCost(modules,
-			new ICostCalculator() {
-				public int calculateCost(int[] axisPositions) {
-					int cost = 0;
-
-					// sum up cost of messages to other axis
-					for (int i = 0; i < numberOfAxis; i++)
-						for (int j = 0; j < numberOfAxis; j++)
-							if (i != j)
-								cost += SequenceChart.this.calculateCost(axisPositions, i, j, axisMatrix);
-					
-					return cost;
-				}
-			});
-		System.arraycopy(axisPositions, 0, axisModulePositions, 0, axisModulePositions.length);
-	}
-	
-	/**
-	 * Cost is based on the number of crossed axis according to the positions.
-	 */
-	private int calculateCost(int[] axisPositions, int i, int j, IntVector axisMatrix) {
-		return Math.abs(axisPositions[i] - axisPositions[j]) *
-			            (axisMatrix.get(axisPositions.length * i + j) +
-                         axisMatrix.get(axisPositions.length * j + i));
-	}
-	
-	/**
-	 * Helper interface to calculate the cost of a candidate ordering for the axis being ordered.
-	 */
-	private interface ICostCalculator {
-		public int calculateCost(int[] axisPositions);
-	}
-
-	/**
-	 * Sorts axes by minimizing message arrows crossing physical timelines.
-	 * A message arrow costs as much as many axes it crosses. Uses simulated annealing.
-	 */
-	private int[] sortTimelinesByMinimizingCost(ModuleTreeItem[] modules, ICostCalculator costCalculator) {
-		int cycleCount = 0;
-		int noMoveCount = 0;
-		int noRandomMoveCount = 0;
-		int numberOfAxis = modules.length;
-		int[] axisPositions = new int[numberOfAxis]; // actual positions of axis to be returned
-		int[] candidateAxisPositions = new int[numberOfAxis]; // new positions of axis to be set (if better)
-		int[] bestAxisPositions = new int[numberOfAxis]; // best positions choosen from a set of candidates
-		Random r = new Random(0);
-		double temperature = 1.0;		
-
-		// set initial axis positions 
-		System.arraycopy(sortTimelinesByModuleName(modules), 0, axisPositions, 0, numberOfAxis);
-		
-		while (cycleCount < 100 && (noMoveCount < numberOfAxis || noRandomMoveCount < numberOfAxis))
-		{
-			cycleCount++;
-			
-			// randomly swap axis based on temperature
-			double t = temperature;
-			noRandomMoveCount++;
-			while (false && r.nextDouble() < t) {
-				int i1 = r.nextInt(numberOfAxis);
-				int i2 = r.nextInt(numberOfAxis);
-				int i = axisPositions[i1];
-				axisPositions[i1] = axisPositions[i2];
-				axisPositions[i2] = i;
-				noRandomMoveCount = 0;
-				t--;
-			}
-
-			// choose an axis which we move to the best place (there are numberOfAxis possibilities)
-			int selectedAxisIndex = cycleCount % numberOfAxis;
-			int bestPositionOfSelectedAxis = -1;
-			int costOfBestPositions = Integer.MAX_VALUE;
-
-			// assume moving axis at index to position i while keeping the order of others and calculate cost
-			for (int newPositionOfSelectedAxis = 0; newPositionOfSelectedAxis < numberOfAxis; newPositionOfSelectedAxis++) {
-				if (newPositionOfSelectedAxis == -1)
-					continue;
-
-				// set up candidateAxisPositions so that the order of other axis do not change
-				for (int i = 0; i < numberOfAxis; i++) {
-					int pos = axisPositions[i];
-					if (newPositionOfSelectedAxis <= pos && pos < axisPositions[selectedAxisIndex])
-						pos++;
-					if (axisPositions[selectedAxisIndex] < pos && pos <= newPositionOfSelectedAxis)
-						pos--;
-					candidateAxisPositions[i] = pos;
-				}
-				candidateAxisPositions[selectedAxisIndex] = newPositionOfSelectedAxis;
-
-				int cost = costCalculator.calculateCost(candidateAxisPositions);
-				
-				// find minimum cost
-				if (cost < costOfBestPositions) {
-					costOfBestPositions = cost;
-					bestPositionOfSelectedAxis = newPositionOfSelectedAxis;
-					System.arraycopy(candidateAxisPositions, 0, bestAxisPositions, 0, numberOfAxis);
-				}
-			}
-			
-			// move selected axis into best position if applicable
-			if (bestPositionOfSelectedAxis != -1) {
-				System.arraycopy(bestAxisPositions, 0, axisPositions, 0, numberOfAxis);
-				noMoveCount = 0;
-			}
-			else
-				noMoveCount++;
-
-			// decrease temperature
-			temperature *= 0.9;
-		}
-
-		return axisPositions;
-	}
-	
-	/**
 	 * Sorts axis modules depending on timelineSortMode.
 	 */
 	private void calculateAxisPositions() {
-		axisModulePositions = new int[axisModules.size()];
+		if (axisModulePositions == null)
+			axisModulePositions = new int[axisModules.size()];
 
 		switch (timelineSortMode) {
-			case MODULE_ID:
-				sortTimelinesByModuleId();
-				break;
 			case MANUAL:
+				new ManualAxisOrder().calculateOrdering(axisModules.toArray(new ModuleTreeItem[0]), axisModulePositions);
+				break;
+			case MODULE_ID:
+				new AxisOrderByModuleId().calculateOrdering(axisModules.toArray(new ModuleTreeItem[0]), axisModulePositions);
 				break;
 			case MODULE_NAME:
-				sortTimelinesByModuleName();
+				new AxisOrderByModuleName().calculateOrdering(axisModules.toArray(new ModuleTreeItem[0]), axisModulePositions);
 				break;
-				/*
 			case MINIMIZE_CROSSINGS:
-			case MINIMIZE_CROSSINGS_HIERARCHICALLY:
-				// build module id to axis map
-				final IntIntMap moduleIdToAxisIdMap = new IntIntMap();
-				for (int i = 0; i < axisModules.size(); i++) {
-					final Integer ii = i;
-					ModuleTreeItem treeItem = axisModules.get(i);
-					treeItem.visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
-						public void visit(ModuleTreeItem treeItem) {
-							moduleIdToAxisIdMap.set(treeItem.getModuleId(), ii);
-						}
-					});
-				}
-
-				if (timelineSortMode == TimelineSortMode.MINIMIZE_CROSSINGS)
-					sortTimelinesFlatByMinimizingCost(eventLog.buildMessageCountGraph(moduleIdToAxisIdMap));
-				else
-					sortTimelinesHierarchicallyByMinimizingCost(eventLog.buildMessageCountGraph(moduleIdToAxisIdMap));
-					
+				new FlatAxisOrderByMinimizingCost(eventLogInput).calculateOrdering(axisModules.toArray(new ModuleTreeItem[0]), axisModulePositions);
 				break;
-		*/
+			case MINIMIZE_CROSSINGS_HIERARCHICALLY:
+				new HierarchicalAxisOrderByMinimizingCost(eventLogInput).calculateOrdering(axisModules.toArray(new ModuleTreeItem[0]), axisModulePositions);
+				break;
+			default:
+				throw new RuntimeException("Unknown sort mode");
 		}
 	}
 
@@ -929,7 +654,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 			for (int j = 0; j < axisModuleYs.length; j++)
 				if (axisModulePositions[j] < axisModulePositions[i])
-					y += axisSpacing + axisGraphs.get(j).getHeight();
+					y += axisSpacing + axisRenderers.get(j).getHeight();
 
 			axisModuleYs[i] = axisOffset + y;
 		}
@@ -941,8 +666,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private void calculateAxisSpacing() {
 		int dy = 0;
 		
-		for (AxisGraph axisGraph : axisGraphs)
-			dy += axisGraph.getHeight();
+		for (IAxisRenderer axisRenderer : axisRenderers)
+			dy += axisRenderer.getHeight();
 
 		if (axisModules.size() == 0 || axisModules.size() == 1)
 			setAxisSpacing(0);
@@ -957,7 +682,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		// different y for each selected module
 		for (int i=0; i<axisModules.size(); i++) {
 			ModuleTreeItem treeItem = axisModules.get(i);
-			final int y = axisModuleYs[i] + axisGraphs.get(i).getHeight() / 2;
+			final int y = axisModuleYs[i] + axisRenderers.get(i).getHeight() / 2;
 			// propagate y to all submodules recursively
 			treeItem.visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
 				public void visit(ModuleTreeItem treeItem) {
@@ -1041,8 +766,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		long width = lastEvent==null ? 0 : (long)(sequenceChartFacade.getTimelineCoordinate(lastEvent) * getPixelsPerTimelineUnit()) + 3; // event mark should fit in
 		width = Math.max(width, 600); // at least half a screen
 		long height = (axisModules.size() - 1) * axisSpacing + axisOffset * 2;
-		for (int i = 0; i < axisGraphs.size(); i++)
-			height += axisGraphs.get(i).getHeight();
+		for (int i = 0; i < axisRenderers.size(); i++)
+			height += axisRenderers.get(i).getHeight();
 		setVirtualSize(width, height);
 		invalidVirtualSize = false;
 	}
@@ -1072,16 +797,20 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			calculateModuleYCoordinates();
 	}
 	
+	/*************************************************************************************
+	 * DRAWING
+	 */
+
 	@Override
 	protected void beforePaint(GC gc) {
 		calculateStuff();
 		calculateTicks();
 	}
-	
+
 	@Override
 	protected void paintCachableLayer(GC gc) {
 		Graphics graphics = new SWTGraphics(gc);
-		paintFigure(graphics);
+		drawSequenceChart(graphics);
 		graphics.dispose();
 		
 	}
@@ -1089,38 +818,17 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	@Override
 	protected void paintNoncachableLayer(GC gc) {
 		Graphics graphics = new SWTGraphics(gc);
-		paintAxisLabels(graphics);
-        paintGutters(graphics);
-        paintMouseTick(graphics);
-        paintEventSelectionMarks(graphics);
+		drawAxisLabels(graphics);
+        drawGutters(graphics);
+        drawMouseTick(graphics);
+        drawEventSelectionMarks(graphics);
         graphics.dispose();
 	}
 
 	/**
-	 * Utility function to determine event range we need to paint. 
-	 * Returns an array of size 2, or null if the eventLog is empty.
+	 * Draws the actual sequence chart part including events, messages
 	 */
-	protected long[] getFirstLastEventInPixelRange(int x1, int x2) {
-		if (eventLog.getApproximateNumberOfEvents() == 0)
-			return null;
-		
-		double tleft = Math.max(0, getTimelineCoordinateForViewportPixel(x1));
-		double tright = getTimelineCoordinateForViewportPixel(x2);
-
-		Assert.isTrue(tleft >= 0);
-		IEvent startEvent = sequenceChartFacade.getLastEventNotAfterTimelineCoordinate(tleft);
-		if (startEvent == null)
-			startEvent = eventLog.getFirstEvent();
-
-		Assert.isTrue(tright >= 0);
-		IEvent endEvent = sequenceChartFacade.getFirstEventNotBeforeTimelineCoordinate(tright);
-		if (endEvent == null)
-			endEvent = eventLog.getLastEvent();
-
-		return new long[] {startEvent.getCPtr(), endEvent.getCPtr()};
-	}
-
-	protected void paintFigure(Graphics graphics) {
+	protected void drawSequenceChart(Graphics graphics) {
 		if (eventLog != null && eventLog.getApproximateNumberOfEvents() > 0) {
 			long startMillis = System.currentTimeMillis();
 
@@ -1131,44 +839,50 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 			double startSimulationTime = getSimulationTimeForViewportPixel(clip.x);
 			double endSimulationTime = getSimulationTimeForViewportPixel(clip.right());
-			int extraClipping = (showMessageNames || showEventNumbers) ? 100 : 10;
+			int extraClipping = (showMessageNames || showEventNumbers) ? 300 : 100;
 			long[] eventPtrRange = getFirstLastEventInPixelRange(clip.x - extraClipping, clip.right() + extraClipping);
 			long startEventPtr = eventPtrRange[0];
 			long endEventPtr = eventPtrRange[1];
-	        System.out.println("redrawing events from: " + sequenceChartFacade.Event_getEventNumber(startEventPtr) + " to: " + sequenceChartFacade.Event_getEventNumber(endEventPtr));
+			
+			if (debug)
+				System.out.println("redrawing events from: " + sequenceChartFacade.Event_getEventNumber(startEventPtr) + " to: " + sequenceChartFacade.Event_getEventNumber(endEventPtr));
 
 			ensureEventsLoaded(startEventPtr, endEventPtr);
-			paintAxis(graphics, startSimulationTime, endSimulationTime);
-	        paintMessageArrows(graphics, startEventPtr, endEventPtr);
-	        paintEvents(graphics, startEventPtr, endEventPtr);
+			drawAxes(graphics, startSimulationTime, endSimulationTime);
+	        drawMessageArrows(graphics, startEventPtr, endEventPtr);
+	        drawEvents(graphics, startEventPtr, endEventPtr);
 	
-	        long repaintMillis = System.currentTimeMillis()-startMillis;
-	        System.out.println("redraw(): "+repaintMillis+"ms");
+	        long redrawMillis = System.currentTimeMillis() - startMillis;
+
+	        if (debug)
+	        	System.out.println("redraw(): " + redrawMillis + "ms");
 
 	        // turn on/off anti-alias 
-	        if (antiAlias && repaintMillis > ANTIALIAS_TURN_OFF_AT_MSEC)
+	        if (antiAlias && redrawMillis > ANTIALIAS_TURN_OFF_AT_MSEC)
 	        	antiAlias = false;
-	        else if (!antiAlias && repaintMillis < ANTIALIAS_TURN_ON_AT_MSEC)
+	        else if (!antiAlias && redrawMillis < ANTIALIAS_TURN_ON_AT_MSEC)
 	        	antiAlias = true;
 		}
 	}
 
-	private void ensureEventsLoaded(long startEventPtr, long endEventPtr) {
-		for (long eventPtr = startEventPtr; eventPtr != endEventPtr; eventPtr = sequenceChartFacade.Event_getNextEvent(eventPtr));
-	}
-
-	private void paintAxis(Graphics graphics, double startSimulationTime, double endSimulationTime) {
+	/**
+	 * Draws all axes in the given simulation time range.
+	 */
+	private void drawAxes(Graphics graphics, double startSimulationTime, double endSimulationTime) {
 		for (int i = 0; i < axisModules.size(); i++) {
 			int y = (int)(axisModuleYs[i] - getViewportTop());
-			AxisGraph axisGraph = axisGraphs.get(i);
+			IAxisRenderer axisRenderer = axisRenderers.get(i);
 			int dy = y;
 			graphics.translate(0, dy);
-			axisGraph.paintAxis(graphics, startSimulationTime, endSimulationTime);
+			axisRenderer.drawAxis(graphics, startSimulationTime, endSimulationTime);
 			graphics.translate(0, -dy);
 		}
 	}
 
-	private void paintMessageArrows(Graphics graphics, long startEventPtr, long endEventPtr) {
+	/**
+	 * Draws all message arrows which have visual representation in the given event range.
+	 */
+	private void drawMessageArrows(Graphics graphics, long startEventPtr, long endEventPtr) {
 		VLineBuffer vlineBuffer = new VLineBuffer();
 		Int64Vector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
 		
@@ -1176,8 +890,10 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			drawMessageArrow(graphics, messageDependencies.get(i), vlineBuffer);
 	}
 
-	private void paintEvents(Graphics graphics, long startEventPtr, long endEventPtr) {
-		graphics.setForegroundColor(EVENT_FG_COLOR);
+	/**
+	 * Draws events for the given event range.
+	 */
+	private void drawEvents(Graphics graphics, long startEventPtr, long endEventPtr) {
 		HashMap<Integer,Integer> axisYtoLastX = new HashMap<Integer, Integer>();
 
 		for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.Event_getNextEvent(eventPtr)) {
@@ -1185,24 +901,26 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			int y = getEventViewportYCoordinate(eventPtr);
 			Integer lastX = axisYtoLastX.get(y);
 
-			// performance optimization: don't paint event if there's one already drawn exactly there
+			// performance optimization: don't draw event if there's one already drawn exactly there
 			if (lastX == null || lastX.intValue() != x) {
 				axisYtoLastX.put(y, x);
 				
 				// TODO: performance killer
-				IEvent event = sequenceChartFacade.Event_getEvent(eventPtr);
-				//graphics.setBackgroundColor(event.isSelfEvent() ? SELF_EVENT_FG_COLOR : EVENT_FG_COLOR);
-				graphics.setBackgroundColor(!event.isSelfEvent() ? ColorFactory.asColor("red") : ColorFactory.asColor("green2"));
-				//graphics.setBackgroundColor(event.isSelfEvent() ? ColorFactory.asColor("orange3") : ColorFactory.asColor("green3"));
+				if (sequenceChartFacade.Event_isSelfEvent(eventPtr)) {
+					graphics.setForegroundColor(SELF_EVENT_BORDER_COLOR);
+					graphics.setBackgroundColor(SELF_EVENT_BACKGROUND_COLOR);
+				}
+				else {
+					graphics.setForegroundColor(EVENT_BORDER_COLOR);
+					graphics.setBackgroundColor(EVENT_BACKGROUND_COLOR);
+				}
 
 				graphics.fillOval(x - 2, y - 3, 5, 7);
 				graphics.setLineStyle(SWT.LINE_SOLID);
-				graphics.setForegroundColor(!event.isSelfEvent() ? ColorFactory.asColor("red4") : ColorFactory.asColor("green4")); // TODO:
-				//graphics.setForegroundColor(event.isSelfEvent() ? ColorFactory.asColor("orange4") : ColorFactory.asColor("green4")); // TODO:
 				graphics.drawOval(x - 2, y - 3, 5, 7);
 
 				if (showEventNumbers) {
-					graphics.setBackgroundColor(EVENT_BG_COLOR);
+					graphics.setBackgroundColor(EVENT_NUMBER_BACKGROUND_COLOR);
 					graphics.fillText("#" + sequenceChartFacade.Event_getEventNumber(eventPtr), x + 3, y + 3);
 				}
 			}
@@ -1211,52 +929,46 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 				break;
 		}
 	}
-	
-	private long getEventXCoordinate(long eventPtr) {
-		// TODO: use cache
-		return (long)(sequenceChartFacade.Event_getTimelineCoordinate(eventPtr) * pixelsPerTimelineUnit);
-	}
 
-	private long getEventYCoordinate(long eventPtr) {
-		// TODO: use cache
-		return moduleIdToAxisYMap.get(sequenceChartFacade.Event_getModuleId(eventPtr));
-	}
-
-	private int getEventViewportXCoordinate(long eventPtr) {
-		return (int)(getEventXCoordinate(eventPtr) - getViewportLeft());
-	}
-
-	private int getEventViewportYCoordinate(long eventPtr) {
-		return (int)(getEventYCoordinate(eventPtr) - getViewportTop());
-	}
-
-	private void paintGutters(Graphics graphics) {
+	/**
+	 * Draws the top and bottom gutters which will display ticks.
+	 */
+	private void drawGutters(Graphics graphics) {
 		graphics.setBackgroundColor(GUTTER_BACKGROUND_COLOR);
 		graphics.fillRectangle(0, 0, getViewportWidth(), GUTTER_HEIGHT);
 		graphics.fillRectangle(0, getViewportHeight() + GUTTER_HEIGHT - 1, getViewportWidth(), GUTTER_HEIGHT);
-		paintTicks(graphics);
+		drawTicks(graphics);
 		graphics.setBackgroundColor(GUTTER_BORDER_COLOR);
 		graphics.setLineStyle(SWT.LINE_SOLID);
 		graphics.drawRectangle(0, 0, getViewportWidth(), GUTTER_HEIGHT);
 		graphics.drawRectangle(0, getViewportHeight() + GUTTER_HEIGHT - 1, getViewportWidth(), GUTTER_HEIGHT);
 	}
 
-	private void paintTicks(Graphics graphics) {
+	/**
+	 * Draws ticks on the gutter.
+	 */
+	private void drawTicks(Graphics graphics) {
 		for (BigDecimal tick : ticks)
-			paintTick(graphics, tick);
+			drawTick(graphics, tick);
 	}
-	
-	private void paintMouseTick(Graphics graphics) {
+
+	/**
+	 * Draws a tick under the mouse.
+	 */
+	private void drawMouseTick(Graphics graphics) {
 		Point p = toControl(Display.getDefault().getCursorLocation());
 		
 		if (0 <= p.x && p.x < getViewportWidth() &&
 			0 <= p.y && p.y < getViewportHeight()) {
 			BigDecimal t = new BigDecimal(getSimulationTimeForViewportPixel(p.x));
-			paintTick(graphics, calculateTick(t, 1));
+			drawTick(graphics, calculateTick(t, 1));
 		}
 	}
-	
-	private void paintTick(Graphics graphics, BigDecimal simulationTime) {
+
+	/**
+	 * Draws a single tick on the gutters.
+	 */
+	private void drawTick(Graphics graphics, BigDecimal simulationTime) {
 		int x = getViewportPixelForSimulationTime(simulationTime.doubleValue());
 		graphics.setLineStyle(SWT.LINE_DOT);
 		graphics.setForegroundColor(TICK_LINE_COLOR);
@@ -1267,8 +979,11 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		graphics.fillText(str, x + 3, 2);
 		graphics.fillText(str, x + 3, getViewportHeight() + GUTTER_HEIGHT + 1);
 	}
-	
-	private void paintEventSelectionMarks(Graphics graphics) {
+
+	/**
+	 * Draws the visual representation of selections around events.
+	 */
+	private void drawEventSelectionMarks(Graphics graphics) {
 		long[] eventPtrRange = getFirstLastEventInPixelRange(0 - EVENT_SEL_RADIUS, getViewportWidth() + EVENT_SEL_RADIUS);
 		long startEventPtr = eventPtrRange[0];
 		long endEventPtr = eventPtrRange[1];
@@ -1277,10 +992,10 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 		graphics.setAntialias(SWT.ON); //XXX
 		
-		// paint event selection marks
+		// draw event selection marks
 		if (selectedEvents != null) {
 			graphics.setLineStyle(SWT.LINE_SOLID);
-		    graphics.setForegroundColor(EVENT_SEL_COLOR);
+		    graphics.setForegroundColor(EVENT_SELECTION_COLOR);
 			for (IEvent selectedEvent : selectedEvents) {
 		    	if (startEventNumber <= selectedEvent.getEventNumber() && selectedEvent.getEventNumber() <= endEventNumber)
 		    	{
@@ -1293,9 +1008,9 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 
 	/**
-	 * Paints axis labels if there's enough space between axes.
+	 * Draws axis labels if there's enough space between axes.
 	 */
-	private void paintAxisLabels(Graphics graphics) {
+	private void drawAxisLabels(Graphics graphics) {
 		if (AXISLABEL_DISTANCE < axisSpacing) {
 			graphics.setForegroundColor(LABEL_COLOR);
 
@@ -1308,6 +1023,10 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		}
 	}
 
+	/**
+	 * Draws a single message arrow represented by the given message dependency.
+	 * The line buffer is used to skip drawing message arrows where there is one already drawn. (dense arrows)
+	 */
 	private void drawMessageArrow(Graphics graphics, long messageDependencyPtr, VLineBuffer vlineBuffer) {
 		long causeEventPtr = sequenceChartFacade.MessageDependency_getCauseEvent(messageDependencyPtr);
 		long consequenceEventPtr = sequenceChartFacade.MessageDependency_getConsequenceEvent(messageDependencyPtr);
@@ -1316,7 +1035,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		if (!isMessageSend && !showReuseMessages)
 			return;
 
-		// TODO: we probably do not need this, it's check in C++ anyway
+		// TODO: we probably do not need this, it's checked in C++ anyway
 		if (causeEventPtr == 0 || consequenceEventPtr == 0)
 			return;
 		
@@ -1433,16 +1152,25 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 				drawMessageArrowLabel(graphics, arrowLabel, (x1 + x2) / 2, (y1 + y2) / 2, 2, y1 < y2 ? -15 : 0);
 		}
 	}
-	
+
+	/**
+	 * Draws a message arrow label with the corresponding message line color.
+	 */
 	private void drawMessageArrowLabel(Graphics graphics, String label, int x, int y, int dx, int dy) {
-		if (MESSAGE_LABEL_COLOR!=null)
+		if (MESSAGE_LABEL_COLOR != null)
 			graphics.setForegroundColor(MESSAGE_LABEL_COLOR);
+
 		graphics.drawText(label, x + dx, y + dy);
 	}
 	
 	/**
-	 * Draws an arrowhead.
-	 * XXX what are the parameters? document!!!
+	 * Draws an arrow head at the given location in the given direction.
+	 * 
+	 * @param graphics
+	 * @param x the x coordinate of the arrow's end
+	 * @param y the y coordinate of the arrow's end
+	 * @param dx the x coordinate of the direction vector 
+	 * @param dy the y coordinate of the direction vector
 	 */
 	private void drawArrowHead(Graphics graphics, int x, int y, double dx, double dy) {
 		double n = Math.sqrt(dx * dx + dy * dy);
@@ -1455,8 +1183,57 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		int x2 = (int)Math.round(xt + dwx);
 		int y2 = (int)Math.round(yt + dwy);
 
-		graphics.setBackgroundColor(ARROWHEAD_COLOR!=null ? ARROWHEAD_COLOR : graphics.getForegroundColor());
+		graphics.setBackgroundColor(ARROWHEAD_COLOR != null ? ARROWHEAD_COLOR : graphics.getForegroundColor());
 		graphics.fillPolygon(new int[] {x, y, x1, y1, x2, y2});
+	}
+
+	/**
+	 * Utility function to determine event range we need to draw. 
+	 * Returns an array of size 2, or null if the eventLog is empty.
+	 */
+	protected long[] getFirstLastEventInPixelRange(int x1, int x2) {
+		if (eventLog.getApproximateNumberOfEvents() == 0)
+			return null;
+		
+		double leftTimelineCoordinate = Math.max(0, getTimelineCoordinateForViewportPixel(x1));
+		double rightTimelineCoordinate = getTimelineCoordinateForViewportPixel(x2);
+
+		Assert.isTrue(leftTimelineCoordinate >= 0);
+		IEvent startEvent = sequenceChartFacade.getLastEventNotAfterTimelineCoordinate(leftTimelineCoordinate);
+		if (startEvent == null)
+			startEvent = eventLog.getFirstEvent();
+
+		Assert.isTrue(rightTimelineCoordinate >= 0);
+		IEvent endEvent = sequenceChartFacade.getFirstEventNotBeforeTimelineCoordinate(rightTimelineCoordinate);
+		if (endEvent == null)
+			endEvent = eventLog.getLastEvent();
+
+		return new long[] {startEvent.getCPtr(), endEvent.getCPtr()};
+	}
+
+	/**
+	 * Makes sure events are loaded into memory in the given range.
+	 */
+	private void ensureEventsLoaded(long startEventPtr, long endEventPtr) {
+		for (long eventPtr = startEventPtr; eventPtr != endEventPtr; eventPtr = sequenceChartFacade.Event_getNextEvent(eventPtr));
+	}
+
+	private long getEventXCoordinate(long eventPtr) {
+		// TODO: use cache
+		return (long)(sequenceChartFacade.Event_getTimelineCoordinate(eventPtr) * pixelsPerTimelineUnit);
+	}
+
+	private long getEventYCoordinate(long eventPtr) {
+		// TODO: use cache
+		return moduleIdToAxisYMap.get(sequenceChartFacade.Event_getModuleId(eventPtr));
+	}
+
+	private int getEventViewportXCoordinate(long eventPtr) {
+		return (int)(getEventXCoordinate(eventPtr) - getViewportLeft());
+	}
+
+	private int getEventViewportYCoordinate(long eventPtr) {
+		return (int)(getEventYCoordinate(eventPtr) - getViewportTop());
 	}
 
 	/**
@@ -1913,7 +1690,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	public ModuleTreeItem findAxisAt(long y) {
 		y += getViewportTop();
 		for (int i=0; i<axisModuleYs.length; i++) {
-			int height = axisGraphs.get(i).getHeight();
+			int height = axisRenderers.get(i).getHeight();
 			if (axisModuleYs[i] - MOUSE_TOLERANCE <= y && y <= axisModuleYs[i] + height + MOUSE_TOLERANCE)
 				return axisModules.get(i);
 		}
@@ -1962,23 +1739,28 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
             			msgs.add(sequenceChartFacade.MessageDependency_getMessageDependency(messageDependencyPtr));
         		}
             }
+            
             long millis = System.currentTimeMillis() - startMillis;
-            System.out.println("collectStuffUnderMouse(): "+millis+"ms - "+(events==null ? "n/a" : events.size())+" events, "+(msgs==null ? "n/a" : msgs.size())+" msgs");
+            if (debug)
+				System.out.println("collectStuffUnderMouse(): " + millis + "ms - " + (events == null ? "n/a" : events.size()) + " events, " + (msgs == null ? "n/a" : msgs.size()) + " msgs");
 		}
 	}
 
 	/**
-	 * Utility function, to detect whether use clicked (hovered) an event in the chart
+	 * Utility function, to detect whether user clicked (hovered) an event in the chart
 	 */
 	private boolean eventSymbolContainsPoint(int x, int y, int px, int py, int tolerance) {
-		return Math.abs(x-px) <= 2+tolerance && Math.abs(y-py) <= 5+tolerance;
+		return Math.abs(x - px) <= 2 + tolerance && Math.abs(y - py) <= 5 + tolerance;
 	}
 
+	/**
+	 * Utility function, to detect whether user clicked (hovered) a message arrow in the chart
+	 */
 	private boolean messageArrowContainsPoint(long messageDependencyPtr, int px, int py, int tolerance) {
 		long causeEventPtr = sequenceChartFacade.MessageDependency_getCauseEvent(messageDependencyPtr);
 		long consequenceEventPtr = sequenceChartFacade.MessageDependency_getConsequenceEvent(messageDependencyPtr);
 
-		// TODO: we probably do not need this, it's check in C++ anyway
+		// TODO: we probably do not need this, it's checked in C++ anyway
 		if (causeEventPtr == 0 || consequenceEventPtr == 0)
 			return false;
 		
@@ -2053,6 +1835,10 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		return result <= tolerance * tolerance;
 	}
 
+	/*************************************************************************************
+	 * SELECTION
+	 */
+
 	/**
      * Add a selection change listener.
      */
@@ -2099,8 +1885,9 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * circles in the graph.
 	 */
 	public void setSelection(ISelection newSelection) {
-		System.out.println("SeqChartFigure got selection: "+newSelection);
-		
+		if (debug)
+			System.out.println("SeqChartFigure got selection: " + newSelection);
+
 		if (!(newSelection instanceof IEventLogSelection))
 			return; // wrong selection type
 		IEventLogSelection newEventLogSelection = (IEventLogSelection)newSelection;
@@ -2138,20 +1925,29 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 */
 	static class VLineBuffer {
 		int currentX = -1;
+
 		static class Region {
 			int y1, y2; 
-			Region() {} 
-			Region(int y1, int y2) {this.y1=y1; this.y2=y2;} 
+
+			Region() {
+			}
+
+			Region(int y1, int y2) {
+				this.y1 = y1;
+				this.y2 = y2;
+			} 
 		}
+		
 		ArrayList<Region> regions = new ArrayList<Region>();
 
 		public boolean vlineContainsNewPixel(int x, int y1, int y2) {
-			if (y1>y2) {
+			if (y1 > y2) {
 				int tmp = y1;
 				y1 = y2;
 				y2 = tmp;
 			}
-			if (x!=currentX) {
+
+			if (x != currentX) {
 				// start new X
 				Region r = regions.isEmpty() ? new Region() : regions.get(0);
 				regions.clear();
@@ -2164,7 +1960,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 			// find an overlapping region
 			int i = findOverlappingRegion(y1, y2);
-			if (i==-1) {
+			if (i == -1) {
 				// no overlapping region, add this one and return
 				regions.add(new Region(y1, y2));
 				return true;
@@ -2172,25 +1968,27 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 			// existing region entirely contains this one (most frequent, fast route)
 			Region r = regions.get(i);
-			if (y1>=r.y1 && y2<=r.y2)
+			if (y1 >= r.y1 && y2 <= r.y2)
 				return false;
 
 			// merge it into other regions
 			mergeRegion(new Region(y1, y2));
 			return true;
 		}
+
 		private void mergeRegion(Region r) {
 			// merge all regions into r, then add it back
 			int i;
 			while ((i = findOverlappingRegion(r.y1, r.y2)) != -1) {
 				Region r2 = regions.remove(i);
-				if (r.y1>r2.y1) r.y1 = r2.y1; 
-				if (r.y2<r2.y2) r.y2 = r2.y2;
+				if (r.y1 > r2.y1) r.y1 = r2.y1; 
+				if (r.y2 < r2.y2) r.y2 = r2.y2;
 			}
 			regions.add(r);
 		}
+
 		private int findOverlappingRegion(int y1, int y2) {
-			for (int i=0; i<regions.size(); i++) {
+			for (int i = 0; i < regions.size(); i++) {
 				Region r = regions.get(i);
 				if (r.y1 < y2 && r.y2 > y1)
 					return i;

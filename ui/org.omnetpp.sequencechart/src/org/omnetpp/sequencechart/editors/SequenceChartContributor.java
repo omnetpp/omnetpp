@@ -106,6 +106,9 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 					subMenuManager.add(createFilterEventCausesConsequencesAction(event));
 				}
 
+				if (events.size() != 0)
+					menuManager.add(separatorAction);
+
 				// messages submenu
 				for (final MessageDependency msg : msgs) {
 					IMenuManager subMenuManager = new MenuManager(sequenceChart.getMessageText(msg));
@@ -115,6 +118,9 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 					subMenuManager.add(createGotoCauseAction(msg));
 					subMenuManager.add(createGotoConsequenceAction(msg));
 				}
+				
+				if (msgs.size() != 0)
+					menuManager.add(separatorAction);					
 
 				// axis submenu
 				final ModuleTreeItem axisModule = sequenceChart.findAxisAt(p.y);
@@ -123,6 +129,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 
 					subMenuManager.add(createCenterAxisAction(axisModule));
 					subMenuManager.add(createZoomToAxisValueAction(axisModule, p.x));
+					menuManager.add(separatorAction);
 				}
 
 				// static menu
@@ -233,7 +240,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 				return new AbstractMenuCreator() {
 					@Override
 					protected void createMenu(Menu menu) {
-						addSubMenuItem(menu, "Manual", SequenceChart.TimelineSortMode.MANUAL);
+						addSubMenuItem(menu, "Manual...", SequenceChart.TimelineSortMode.MANUAL);
 						addSubMenuItem(menu, "Module id", SequenceChart.TimelineSortMode.MODULE_ID);
 						addSubMenuItem(menu, "Module name", SequenceChart.TimelineSortMode.MODULE_NAME);
 						addSubMenuItem(menu, "Minimize crossings", SequenceChart.TimelineSortMode.MINIMIZE_CROSSINGS);
@@ -328,7 +335,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 	
 	private SequenceChartAction createIncreaseSpacingAction() {
-		return new SequenceChartAction("Increase spacing", Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+		return new SequenceChartAction("Increase spacing", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
 			@Override
 			public void run() {
 				sequenceChart.setAxisSpacing(sequenceChart.getAxisSpacing() + 5);
@@ -337,7 +344,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 	
 	private SequenceChartAction createDecreaseSpacingAction() {
-		return new SequenceChartAction("Decrease spacing", Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+		return new SequenceChartAction("Decrease spacing", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
 			@Override
 			public void run() {
 				sequenceChart.setAxisSpacing(sequenceChart.getAxisSpacing() - 5);
@@ -477,7 +484,8 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		@Override
 		public void update() {
 			for (Menu menu : menus)
-				updateMenu(menu);
+				if (!menu.isDisposed())
+					updateMenu(menu);
 		}
 		
 		protected void addMenu(Menu menu) {

@@ -96,7 +96,7 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 	/**
 	 * Responsible for drawing individual table items.
 	 */
-	protected IVirtualTableLineRenderer<T> lineRenderer;
+	protected IVirtualTableRowRenderer<T> rowRenderer;
 
 	/**
 	 * The height in pixels of all lines.
@@ -300,7 +300,7 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 	public void setInput(Object input) {
 		this.input = input;
 		getContentProvider().inputChanged(null, null, input);
-		getLineRenderer().setInput(input);
+		getRowRenderer().setInput(input);
 		updateVerticalBarParameters();
 		gotoBegin();
 	}
@@ -314,12 +314,12 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 		updateVerticalBarParameters();
 	}
 
-	public IVirtualTableLineRenderer<T> getLineRenderer() {
-		return lineRenderer;
+	public IVirtualTableRowRenderer<T> getRowRenderer() {
+		return rowRenderer;
 	}
 	
-	public void setLineRenderer(IVirtualTableLineRenderer<T> lineRenderer) {
-		this.lineRenderer = lineRenderer;
+	public void setRowRenderer(IVirtualTableRowRenderer<T> rowRenderer) {
+		this.rowRenderer = rowRenderer;
 	}
 	
 	@Override
@@ -507,7 +507,7 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 		ScrollBar verticalBar = getVerticalBar();
 		verticalBar.setMinimum(0);
 
-		if (contentProvider != null && lineRenderer != null) {
+		if (contentProvider != null && rowRenderer != null) {
 			long numberOfElements = contentProvider.getApproximateNumberOfElements();
 			verticalBar.setMaximum((int)Math.max(numberOfElements, 1E+6));
 			verticalBar.setThumb((int)((double)verticalBar.getMaximum() * getVisibleElementCount() / numberOfElements));
@@ -713,7 +713,7 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 						if (isSelectedElement)
 							gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
 
-						lineRenderer.drawCell(gc, element, columnOrder[j]);
+						rowRenderer.drawCell(gc, element, columnOrder[j]);
 						x += column.getWidth();
 						
 						if (drawLines) {
@@ -829,7 +829,7 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 	public int getLineHeight() {
 		if (lineHeight == 0) {
 			 GC gc = new GC(this);
-			 lineHeight = lineRenderer.getLineHeight(gc);
+			 lineHeight = rowRenderer.getRowHeight(gc);
 			 gc.dispose();
 		}
 

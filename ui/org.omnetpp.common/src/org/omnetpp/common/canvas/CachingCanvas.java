@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
@@ -13,7 +12,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.canvas.ITileCache.Tile;
 
 /**
@@ -160,6 +158,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	 */
 	public void clearCanvasCache() {
 		tileCache.clear();
-		System.out.println("canvas cache cleared");
+		if (debug)
+			System.out.println("canvas cache cleared");
 	}
 }

@@ -24,7 +24,7 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 		super(parent, style);
 
 		setContentProvider(new EventLogTableContentProvider());
-		setLineRenderer(new EventLogTableLineRenderer());
+		setRowRenderer(new EventLogTableRowRenderer());
 
 		TableColumn tableColumn = createColumn();
 		tableColumn.setWidth(60);

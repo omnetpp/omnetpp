@@ -8,7 +8,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.virtualtable.IVirtualTableLineRenderer;
+import org.omnetpp.common.virtualtable.IVirtualTableRowRenderer;
 import org.omnetpp.scave.engine.OutputVectorEntry;
 import org.omnetpp.scave.engine.SimulTime;
 import org.omnetpp.scave.engine.VectorResult;
@@ -19,7 +19,7 @@ import org.omnetpp.scave.engine.VectorResult;
  *
  * @author tomi
  */
-public class VectorResultLineRenderer extends LabelProvider implements IVirtualTableLineRenderer<OutputVectorEntry> {
+public class VectorResultRowRenderer extends LabelProvider implements IVirtualTableRowRenderer<OutputVectorEntry> {
 
 	private static final int HORIZONTAL_SPACING = 4;
 
@@ -43,7 +43,7 @@ public class VectorResultLineRenderer extends LabelProvider implements IVirtualT
 			timeScale = 0;
 	}
 
-	public int getLineHeight(GC gc) {
+	public int getRowHeight(GC gc) {
 		if (fontHeight == 0) {
 			Font oldFont = gc.getFont();
 			gc.setFont(font);

@@ -22,15 +22,33 @@ package org.omnetpp.common.ui;
  *  $Revision: 1.9 $  $Date: 2005/12/05 22:10:14 $ 
  */
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.draw2d.Cursors;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackAdapter;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Sash;
 
 /**
  * A SashForm that allows move to/from max controls on sash.
@@ -88,7 +106,7 @@ public class CustomSashForm extends SashForm {
 	protected boolean sashBorders[];	// Whether cooresponding control needs a sash border
 							
 	protected boolean noMaxUp, noMaxDown;
-	protected List customSashFormListeners = null;
+	protected List<ICustomSashFormListener> customSashFormListeners = null;
 	
 	protected static final int 
 		UP_ARROW = 0,
@@ -872,7 +890,7 @@ public class CustomSashForm extends SashForm {
 	 */
 	public void addCustomSashFormListener(ICustomSashFormListener listener){
 		if(customSashFormListeners==null)
-			customSashFormListeners = new ArrayList();
+			customSashFormListeners = new ArrayList<ICustomSashFormListener>();
 		customSashFormListeners.add(listener);
 	}
 	

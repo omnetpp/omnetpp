@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.common.virtualtable.IVirtualTableLineRenderer;
+import org.omnetpp.common.virtualtable.IVirtualTableRowRenderer;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
 import org.omnetpp.eventlog.engine.BubbleEntry;
 import org.omnetpp.eventlog.engine.CancelEventEntry;
@@ -41,7 +41,7 @@ import org.omnetpp.eventlog.engine.PStringVector;
 import org.omnetpp.eventlog.engine.SendDirectEntry;
 import org.omnetpp.eventlog.engine.SendHopEntry;
 
-public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<EventLogEntry> {
+public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventLogEntry> {
 	private static final Color DARKBLUE = new Color(null, 0, 0, 192);
 	private static final Color DARKRED = new Color(null, 127, 0, 85);
 	private static final Color RED = new Color(null, 240, 0, 0);
@@ -98,7 +98,7 @@ public class EventLogTableLineRenderer implements IVirtualTableLineRenderer<Even
 		this.eventLogInput = (EventLogInput)eventLogInput;
 	}
 
-	public int getLineHeight(GC gc) {
+	public int getRowHeight(GC gc) {
 		if (fontHeight == 0) {
 			Font oldFont = gc.getFont();
 			gc.setFont(font);

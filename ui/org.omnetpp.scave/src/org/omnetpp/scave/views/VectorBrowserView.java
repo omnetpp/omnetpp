@@ -22,7 +22,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.virtualtable.VirtualTable;
 import org.omnetpp.scave.editors.datatable.VectorResultContentProvider;
-import org.omnetpp.scave.editors.datatable.VectorResultLineRenderer;
+import org.omnetpp.scave.editors.datatable.VectorResultRowRenderer;
 import org.omnetpp.scave.engine.IndexFile;
 import org.omnetpp.scave.engine.OutputVectorEntry;
 import org.omnetpp.scave.engine.SimulTime;
@@ -76,7 +76,7 @@ public class VectorBrowserView extends ViewPart {
 		viewer = new VirtualTable<OutputVectorEntry>(parent, SWT.NONE);
 		viewer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		viewer.setContentProvider(contentProvider);
-		viewer.setLineRenderer(new VectorResultLineRenderer());
+		viewer.setRowRenderer(new VectorResultRowRenderer());
 		setViewerInput(getSite().getPage().getSelection());
 
 		TableColumn tableColumn = viewer.createColumn();

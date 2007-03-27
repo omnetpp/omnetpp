@@ -8,7 +8,7 @@ import org.eclipse.swt.graphics.GC;
 /**
  * This class serves debugging purposes.
  */
-public class LongVirtualTableLineRenderer extends LabelProvider implements IVirtualTableLineRenderer<Long> {
+public class LongVirtualTableRowRenderer extends LabelProvider implements IVirtualTableRowRenderer<Long> {
 	protected Font font = JFaceResources.getDefaultFont();
 
 	protected int fontHeight;
@@ -21,7 +21,7 @@ public class LongVirtualTableLineRenderer extends LabelProvider implements IVirt
 		gc.drawText(element.toString(), 0, 0);
 	}
 
-	public int getLineHeight(GC gc) {
+	public int getRowHeight(GC gc) {
 		if (fontHeight == 0) {
 			Font oldFont = gc.getFont();
 			gc.setFont(font);
