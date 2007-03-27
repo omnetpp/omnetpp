@@ -44,13 +44,22 @@ class COMMON_API BigDecimal
             throw opp_runtime_error("Scale must be between %d and %d.", minScale, maxScale); 
     }
 
+    /*
+     * Sets scale between minScale and maxScale and strips trailing zeros.
+     */
+    void normalize();
+    /*
+     * Returns 18 digits of the decimal number from place-values in [scale,scale+18) as an int64.
+     */
+    int64 getDigits(int scale) const;
+
   public:
 
     /**
      * Constructor initializes to zero.
      */
     BigDecimal() {intVal=0; scale=0;}
-    BigDecimal(int64 intVal, int scale) : intVal(intVal), scale(scale) { }
+    BigDecimal(int64 intVal, int scale) : intVal(intVal), scale(scale) { normalize(); }
     BigDecimal(double d) {operator=(d);}
 
     /** @name Arithmetic operations */
@@ -64,12 +73,12 @@ class COMMON_API BigDecimal
     const BigDecimal& operator*=(double d) {*this=BigDecimal(dbl()*d); return *this;}
     const BigDecimal& operator/=(double d) {*this=BigDecimal(dbl()/d); return *this;}
 
-    bool operator==(const BigDecimal& x) const  {return dbl()==x.dbl();}
-    bool operator!=(const BigDecimal& x) const  {return dbl()!=x.dbl();}
-    bool operator< (const BigDecimal& x) const  {return dbl()<x.dbl();}
-    bool operator> (const BigDecimal& x) const  {return dbl()>x.dbl();}
-    bool operator<=(const BigDecimal& x) const  {return dbl()<=x.dbl();}
-    bool operator>=(const BigDecimal& x) const  {return dbl()>=x.dbl();}
+    bool operator==(const BigDecimal& x) const  {return intVal == x.intVal && scale == x.scale;}
+    bool operator!=(const BigDecimal& x) const  {return intVal != x.intVal || scale != x.scale;}
+    bool operator< (const BigDecimal& x) const;
+    bool operator> (const BigDecimal& x) const  {return x < *this;}
+    bool operator<=(const BigDecimal& x) const  {return *this == x || *this < x;}
+    bool operator>=(const BigDecimal& x) const  {return *this == x || *this > x;}
 
     friend const BigDecimal operator+(const BigDecimal& x, const BigDecimal& y);
     friend const BigDecimal operator-(const BigDecimal& x, const BigDecimal& y);
@@ -119,7 +128,7 @@ class COMMON_API BigDecimal
     /**
      * Sets the scale exponent.
      */
-    void setScale(int s) { checkScale(s); scale = s; };
+    void setScale(int s) { checkScale(s); scale = s; normalize(); };
 
     /**
      * Converts the given string to big decimal. Throws an error if

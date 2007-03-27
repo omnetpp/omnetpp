@@ -17,6 +17,79 @@
 #include "bigdecimal.h"
 
 static double zero = 0.0;
+static inline int64 max(int64 x, int64 y) { return x > y ? x : y; }
+static inline int64 min(int64 x, int64 y) { return x < y ? x : y; }
+static inline int64 abs(int64 x) { return x >= 0 ? x : -x; }
+static inline int sgn(int64 x) { return (x > 0 ? 1 : (x < 0 ? -1 : 0)); }
+
+void BigDecimal::normalize()
+{
+    // transform scale between minScale and maxScale
+    if (scale < minScale)
+    {
+        while (scale < minScale)
+        {
+            intVal /= 10;
+            scale++;
+
+            if (intVal == 0)
+            {
+                scale = 0;
+                return;
+            }
+        }
+    }
+    else if (scale > maxScale)
+    {
+        while (scale > maxScale)
+        {
+            if (intVal > _I64_MAX/10)
+                throw opp_runtime_error("BigDecimal::normalize(): arithmetic overflow");
+
+            intVal *= 10;
+            scale--;
+        }
+    }
+
+    // strip trailing zeros
+    while ((intVal % 10 == 0) && scale < maxScale)
+    {
+        intVal /= 10;
+        scale++;
+    }
+}
+
+int64 BigDecimal::getDigits(int scale) const
+{
+    int start = max(scale, this->scale); // inclusive
+    int end = min(scale+18, this->scale+18); // exclusive
+
+    if (start >= end)
+        return 0;
+
+    int64 val = abs(this->intVal);
+    for (int i = this->scale; i < start; ++i)
+        val /= 10;
+
+    if (val == 0)
+        return 0;
+
+    int64 result = 0;
+    int digit;
+    int64 multiplier = 1;
+    for (int i = start; i < end; ++i)
+    {
+        digit = val % 10;
+        val /= 10;
+        result += multiplier*digit;
+        multiplier *= 10;
+    }
+
+    for (int i = 0; i < (start-scale); ++i)
+        result *= 10;
+
+    return result;
+}
 
 const BigDecimal& BigDecimal::operator=(double d)
 {
@@ -94,37 +167,41 @@ const BigDecimal& BigDecimal::operator=(double d)
         }
     }
 
-    // transform scale between minScale and maxScale
-    if (scale < minScale)
-    {
-        while (scale < minScale)
-        {
-            intVal /= 10;
-            scale++;
-        }
-    }
-    else if (scale > maxScale)
-    {
-        while (scale > maxScale)
-        {
-            if (intVal > _I64_MAX/10)
-                throw opp_runtime_error("BigDecimal::operator=(%f): arithmetic overflow", sign*d);
-
-            intVal *= 10;
-            scale--;
-        }
-    }
-
-    // normalize, e.g. 500*10^-2 -> 5*10^0
-    while ((intVal % 10 == 0) && scale < maxScale)
-    {
-        intVal /= 10;
-        scale++;
-    }
-
-    this->intVal = sign * intVal;
-    this->scale = scale;
+    *this = BigDecimal(sign * intVal, scale);
     return *this;
+}
+
+bool BigDecimal::operator<(const BigDecimal &x) const
+{
+    if (scale == x.scale)
+        return intVal < x.intVal;
+    if (sgn(intVal) < sgn(x.intVal))
+        return true;
+    if (sgn(intVal) > sgn(x.intVal))
+        return false;
+
+    assert(intVal < 0 && x.intVal < 0 || intVal > 0 && x.intVal > 0);
+    bool negatives = intVal < 0;
+
+    // compare absolute values by comparing most significant digits first
+    bool result = false;
+    for (int s = max(scale,x.scale); s > min(scale,x.scale); s-=18)
+    {
+        int64 digits = this->getDigits(s);
+        int64 digitsX = x.getDigits(s);
+        if (digits < digitsX)
+        {
+            result = true;
+            break;
+        }
+        else if (digits > digitsX)
+        {
+            result = false;
+            break;
+        }
+    }
+
+    return negatives ? !result : result;
 }
 
 double BigDecimal::dbl() const
