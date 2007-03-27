@@ -30,7 +30,8 @@ import org.omnetpp.inifile.editor.views.InifileContentOutlinePage;
 /**
  * Editor for omnetpp.ini files.
  */
-//FIXME File|Revert is always diabled; same for Redo/Undo  
+//FIXME File|Revert is always diabled; same for Redo/Undo
+//XXX should listen on workspace changes (of included ini files)
 public class InifileEditor extends MultiPageEditorPart implements IResourceChangeListener, IGotoMarker {
 	/** The text editor */
 	private InifileTextEditor textEditor;

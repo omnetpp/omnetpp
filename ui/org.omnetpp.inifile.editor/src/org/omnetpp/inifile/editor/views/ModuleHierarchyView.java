@@ -68,7 +68,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			}
 		});
 		treeViewer.setContentProvider(new GenericTreeContentProvider());
-		hookSelectionChangedListener();
+		hookListeners(); //XXX into base class
 	}
 
 	protected Control getPartControl() {

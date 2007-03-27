@@ -68,7 +68,7 @@ public class ModuleParametersView extends AbstractModuleView {
 			
 		});
 		tableViewer.setContentProvider(new ArrayContentProvider());
-		hookSelectionChangedListener();
+		hookListeners();
 		
 		IAction toggleModeAction = createToggleModeAction();
 		getViewSite().getActionBars().getToolBarManager().add(toggleModeAction);

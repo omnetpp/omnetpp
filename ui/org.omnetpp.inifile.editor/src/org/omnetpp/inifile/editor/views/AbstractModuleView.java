@@ -2,6 +2,7 @@ package org.omnetpp.inifile.editor.views;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -9,25 +10,35 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.model.notification.INEDChangeListener;
+import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
+import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
- * View.
+ * Abstract base class for views that display information based on a single NED
+ * module or network type, and possibly an inifile. Subclasses are expected to 
+ * implement the buildContent() method, which will be invoked whenever the 
+ * selection changes, or there is a change in NED or ini files.
  * 
  * @author Andras
  */
 public abstract class AbstractModuleView extends ViewPart {
 	private ISelectionListener selectionChangedListener;
+	private IPartListener partListener;
 	private Label messageLabel;
+	private INEDChangeListener nedChangeListener;
 	
 	public AbstractModuleView() {
 	}
@@ -35,7 +46,7 @@ public abstract class AbstractModuleView extends ViewPart {
 
 	@Override
 	public void dispose() {
-		unhookSelectionChangedListener();
+		unhookListeners();
 		super.dispose();
 	}
 
@@ -85,30 +96,90 @@ public abstract class AbstractModuleView extends ViewPart {
 		control.getParent().layout(true, true);
 	}
 	
-	protected void hookSelectionChangedListener() {
+	protected void hookListeners() {
+		// Listen on selection changes
 		selectionChangedListener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 				workbenchSelectionChanged(part, selection);
 			}
 		};
 		getSite().getPage().addPostSelectionListener(selectionChangedListener);
+		
+		// Listens to workbench changes, and invokes activeEditorChanged() whenever the 
+		// active editor changes. Listening on workbench changes is needed because 
+		// editor don't always send selection changes when they get opened or closed.
+		partListener = new IPartListener() {
+			private IEditorPart activeEditor = null;
+			
+			public void partActivated(IWorkbenchPart part) {
+				if (part instanceof IEditorPart) {
+					activeEditor = (IEditorPart) part;
+					activeEditorChanged();
+				}
+			}
+
+			public void partBroughtToTop(IWorkbenchPart part) {
+			}
+
+			public void partClosed(IWorkbenchPart part) {
+				if (part == activeEditor) {
+					activeEditor = null;
+					activeEditorChanged();
+				}
+			}
+
+			public void partDeactivated(IWorkbenchPart part) {
+			}
+
+			public void partOpened(IWorkbenchPart part) {
+			}
+		};
+		getSite().getPage().addPartListener(partListener);
+		
+		// Listen on NED changes as well. 
+		//FIXME this only fires when TOPLEVEL elements are added/removed! not on submodule, parameter etc changes.
+		nedChangeListener = new INEDChangeListener() {
+			public void modelChanged(NEDModelEvent event) {
+				nedModelChanged();
+			}
+		};
+		NEDResourcesPlugin.getNEDResources().getNEDResourceListenerList().add(nedChangeListener);
+		
 	}
 	
-	private void unhookSelectionChangedListener() {
+	protected void unhookListeners() {
 		if (selectionChangedListener != null)
 			getSite().getPage().removePostSelectionListener(selectionChangedListener);
+		if (partListener != null)
+			getSite().getPage().removePartListener(partListener);
+		if (nedChangeListener != null)
+			NEDResourcesPlugin.getNEDResources().getNEDResourceListenerList().remove(nedChangeListener);
+	}
+
+	protected void activeEditorChanged() {
+		//System.out.println("************ "+activeEditor);
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void nedModelChanged() {
+		// TODO Auto-generated method stub
+		System.out.println("%%%%%%%%%%%%%% NED MODEL CHANGE");
 	}
 	
-	public void workbenchSelectionChanged(IWorkbenchPart part, ISelection selection) {
-		if (!(part instanceof IEditorPart))
-			return; // ignore selection from views
+	public void workbenchSelectionChanged(IWorkbenchPart part, ISelection selection) {  //XXX remove params
 			
-		IEditorPart activeEditor = (IEditorPart)part;
-		//IEditorPart activeEditor = getSite().getWorkbenchWindow().getActivePage().getActiveEditor(); //XXX this may crash on startup (NPE)!!!
+		IWorkbenchPage activePage = getSite().getWorkbenchWindow().getActivePage();
+		IEditorPart activeEditor = activePage==null ? null : activePage.getActiveEditor();
+		if (activeEditor==null) {
+			displayMessage("There is no active editor.");
+			return;
+		}
 
+		ISelectionProvider selectionProvider = activeEditor.getSite().getSelectionProvider();
+		selection = selectionProvider==null ? null : selectionProvider.getSelection();
+		
 		System.out.println("SELECTION: "+selection); //XXX
-		ISelection editorSel = activeEditor.getSite().getSelectionProvider().getSelection();
-		System.out.println("   EDITOR: "+editorSel); //XXX
 
 		if (selection instanceof IStructuredSelection && !selection.isEmpty()) {
 			// The NED graphical editor publishes selection as an IStructuredSelection,

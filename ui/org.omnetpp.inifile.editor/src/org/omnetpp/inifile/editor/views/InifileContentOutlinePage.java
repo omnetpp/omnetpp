@@ -78,7 +78,6 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 		
 		Assert.isTrue(inifileDocument!=null);
 		getTreeViewer().setInput(inifileDocument);
-		//XXX needed? it's there in the base class too!!!: getTreeViewer().addSelectionChangedListener(this);
 	}
 	
 	/* (non-Javadoc)
@@ -94,7 +93,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 			textEditor.resetHighlightRange();
 		}
 		else {
-			// if an InifileLine is selected in the outline, highlight it in the text editor
+			// if a line is selected in the outline, highlight it in the text editor
 			TreeViewer viewer = getTreeViewer();
 			viewer.refresh();
 			Object sel = ((IStructuredSelection) selection).getFirstElement();
@@ -145,7 +144,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 	 * Updates the outline page.
 	 */
 	public void update() {
-		System.out.println(this+".update() called");
+		//System.out.println(this+".update() called");
 		final TreeViewer viewer = getTreeViewer();
 		if (viewer != null) {
 			Display.getDefault().asyncExec(new Runnable() {
