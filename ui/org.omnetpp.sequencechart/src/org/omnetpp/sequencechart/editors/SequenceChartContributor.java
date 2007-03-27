@@ -36,7 +36,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 
 	protected SequenceChartMenuAction timelineModeAction;
 
-	protected SequenceChartMenuAction timelineSortModeAction;
+	protected SequenceChartMenuAction axisOrderingModeAction;
 
 	protected SequenceChartAction showEventNumbersAction;
 
@@ -61,7 +61,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	public SequenceChartContributor() {
 		this.separatorAction = new Separator();
 		this.timelineModeAction = createTimelineModeAction();
-		this.timelineSortModeAction = createTimelineSortModeAction();
+		this.axisOrderingModeAction = createAxisOrderingModeAction();
 		this.showEventNumbersAction = createShowEventNumbersAction();
 		this.showMessageNamesAction = createShowMessageNamesAction();
 		this.showReuseMessageAction = createShowReuseMessageAction();
@@ -134,7 +134,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 
 				// static menu
 				menuManager.add(timelineModeAction);
-				menuManager.add(timelineSortModeAction);
+				menuManager.add(axisOrderingModeAction);
 				menuManager.add(separatorAction);
 				menuManager.add(showEventNumbersAction);
 				menuManager.add(showMessageNamesAction);
@@ -157,7 +157,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
 		toolBarManager.add(timelineModeAction);
-		toolBarManager.add(timelineSortModeAction);
+		toolBarManager.add(axisOrderingModeAction);
 		toolBarManager.add(separatorAction);
 		toolBarManager.add(showEventNumbersAction);
 		toolBarManager.add(showMessageNamesAction);
@@ -173,7 +173,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	public void setActiveEditor(IEditorPart targetEditor) {
 		sequenceChart = ((SequenceChartEditor)targetEditor).getSequenceChart();
 		timelineModeAction.update();
-		timelineSortModeAction.update();
+		axisOrderingModeAction.update();
 		showEventNumbersAction.update();
 		showMessageNamesAction.update();
 		showReuseMessageAction.update();
@@ -222,17 +222,17 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		};
 	}
 
-	private SequenceChartMenuAction createTimelineSortModeAction() {
-		return new SequenceChartMenuAction("Timeline sort mode", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+	private SequenceChartMenuAction createAxisOrderingModeAction() {
+		return new SequenceChartMenuAction("Axis ordering mode", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
 			@Override
 			public void run() {
-				sequenceChart.setTimelineSortMode(SequenceChart.TimelineSortMode.values()[(sequenceChart.getTimelineSortMode().ordinal() + 1) % SequenceChart.TimelineSortMode.values().length]);
+				sequenceChart.setAxisOrderingMode(SequenceChart.AxisOrderingMode.values()[(sequenceChart.getAxisOrderingMode().ordinal() + 1) % SequenceChart.AxisOrderingMode.values().length]);
 				update();
 			}
 
 			@Override
 			protected int getMenuIndex() {
-				return sequenceChart.getTimelineSortMode().ordinal();
+				return sequenceChart.getAxisOrderingMode().ordinal();
 			}
 			
 			@Override
@@ -240,14 +240,14 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 				return new AbstractMenuCreator() {
 					@Override
 					protected void createMenu(Menu menu) {
-						addSubMenuItem(menu, "Manual...", SequenceChart.TimelineSortMode.MANUAL);
-						addSubMenuItem(menu, "Module id", SequenceChart.TimelineSortMode.MODULE_ID);
-						addSubMenuItem(menu, "Module name", SequenceChart.TimelineSortMode.MODULE_NAME);
-						addSubMenuItem(menu, "Minimize crossings", SequenceChart.TimelineSortMode.MINIMIZE_CROSSINGS);
-						addSubMenuItem(menu, "Minimize crossings hierarchically", SequenceChart.TimelineSortMode.MINIMIZE_CROSSINGS_HIERARCHICALLY);
+						addSubMenuItem(menu, "Manual...", SequenceChart.AxisOrderingMode.MANUAL);
+						addSubMenuItem(menu, "Module id", SequenceChart.AxisOrderingMode.MODULE_ID);
+						addSubMenuItem(menu, "Module name", SequenceChart.AxisOrderingMode.MODULE_NAME);
+						addSubMenuItem(menu, "Minimize crossings", SequenceChart.AxisOrderingMode.MINIMIZE_CROSSINGS);
+						addSubMenuItem(menu, "Minimize crossings hierarchically", SequenceChart.AxisOrderingMode.MINIMIZE_CROSSINGS_HIERARCHICALLY);
 					}
 
-					private void addSubMenuItem(Menu menu, String text, final SequenceChart.TimelineSortMode timelineSortMode) {
+					private void addSubMenuItem(Menu menu, String text, final SequenceChart.AxisOrderingMode axisOrderingMode) {
 						MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
 						subMenuItem.setText(text);
 						subMenuItem.addSelectionListener( new SelectionAdapter() {
@@ -255,7 +255,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 								MenuItem menuItem = (MenuItem)e.widget;
 								
 								if (menuItem.getSelection()) {
-									sequenceChart.setTimelineSortMode(timelineSortMode);
+									sequenceChart.setAxisOrderingMode(axisOrderingMode);
 									update();
 								}
 							}

@@ -4,18 +4,18 @@ import java.util.ArrayList;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.swt.SWT;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 
 public class ManualAxisOrder implements IAxisOrder {
 	public void calculateOrdering(ModuleTreeItem[] axisModules, int[] axisPositions) {
-		ArrayList<ModuleTreeItem> orderedAxisModules = new ArrayList<ModuleTreeItem>();
-		
+		final ArrayList<ModuleTreeItem> orderedAxisModules = new ArrayList<ModuleTreeItem>();
+
 		for (int i = 0; i < axisModules.length; i++)
 			orderedAxisModules.add(axisModules[ArrayUtils.indexOf(axisPositions, i)]);
 		
@@ -30,33 +30,33 @@ public class ManualAxisOrder implements IAxisOrder {
 
 			@Override
 			protected void buttonPressed(int buttonId) {
+				int index = -1;
+				StructuredSelection selection = (StructuredSelection)getTableViewer().getSelection();
+				ModuleTreeItem moduleTreeItem = (ModuleTreeItem)selection.getFirstElement();
+
+				if (buttonId >= IDialogConstants.CLIENT_ID) {
+					moduleTreeItem = (ModuleTreeItem)selection.getFirstElement();
+					index = orderedAxisModules.indexOf(moduleTreeItem);
+				}
+
 				switch (buttonId) {
 					case IDialogConstants.CLIENT_ID:
-						Object o = getResult();
+						swap(orderedAxisModules, index - 1, index);
 						break;
 					case IDialogConstants.CLIENT_ID + 1:
+						swap(orderedAxisModules, index, index + 1);
 						break;
 					default:
 						super.buttonPressed(buttonId);
 						break;
 				}
+
+				if (buttonId >= IDialogConstants.CLIENT_ID)
+					getTableViewer().refresh();
 			}
 		};
-		dialog.setContentProvider(new IStructuredContentProvider() {
-			ArrayList<ModuleTreeItem> axisModules;
 
-			public Object[] getElements(Object inputElement) {
-				return axisModules.toArray();
-			}
-
-			public void dispose() {
-			}
-
-			@SuppressWarnings("unchecked")
-			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-				axisModules = (ArrayList<ModuleTreeItem>)newInput;
-			}
-		});
+		dialog.setContentProvider(new ArrayContentProvider());
 		dialog.setLabelProvider(new LabelProvider() {
 			@Override
 			public String getText(Object element) {
@@ -64,12 +64,18 @@ public class ManualAxisOrder implements IAxisOrder {
 				return moduleTreeItem.getModuleFullPath();
 			}
 		});
+
 		dialog.setInput(orderedAxisModules);
+		dialog.setTitle("Manual axis reordering");
 		dialog.open();
 		
-		if (dialog.getReturnCode() == SWT.OK) {
+		if (dialog.getReturnCode() == Window.OK)
 			for (int i = 0; i < axisModules.length; i++)
 				axisPositions[i] = orderedAxisModules.indexOf(axisModules[i]);
-		}
+	}
+	
+	private void swap(ArrayList<ModuleTreeItem> list, int index1, int index2) {
+		if (index1 >= 0 && index2 < list.size())
+			list.add(index2, list.remove(index1));
 	}
 }

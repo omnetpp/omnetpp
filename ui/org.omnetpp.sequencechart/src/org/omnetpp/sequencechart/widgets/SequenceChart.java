@@ -50,7 +50,6 @@ import org.omnetpp.eventlog.engine.Int64Vector;
 import org.omnetpp.eventlog.engine.IntSet;
 import org.omnetpp.eventlog.engine.MessageDependency;
 import org.omnetpp.eventlog.engine.MessageDependencyKind;
-import org.omnetpp.eventlog.engine.MessageSend;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
 import org.omnetpp.scave.engine.XYArray;
@@ -70,9 +69,6 @@ import org.omnetpp.sequencechart.widgets.axisrenderer.IAxisRenderer;
  * @author andras, levy
  */
 //FIXME expressions like int x = (int)(logFacade.getEvent_i_cachedX(i) - getViewportLeft()) may overflow -- make use of XMAX!
-//TODO renaming: DELIVERY->SENDING, NONDELIVERY->USAGE, isDelivery->isSending;
-//               Timeline modes: Linear, Step, Compact (=nonlinear), Compact2 (CompactWithStep);
-//               SortMode to OrderingMode
 //TODO cf with ns2 trace file and cEnvir callbacks, and modify file format...
 //TODO proper "hand" cursor - current one is not very intuitive
 //TODO max number of event selection marks must be limited (e.g. max 1000)
@@ -84,7 +80,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private static final Color CHART_BACKGROUND_COLOR = ColorFactory.asColor("white");
 	private static final Color LABEL_COLOR = ColorFactory.asColor("black");
 	
-	private static final Color TICK_LINE_COLOR = new Color(null, 160, 160, 160);
+	private static final Color TICK_LINE_COLOR = ColorFactory.asColor("darkGrey");
 	private static final Color TICK_LABEL_COLOR = ColorFactory.asColor("black");
 
 	private static final Color GUTTER_BACKGROUND_COLOR = new Color(null, 255, 255, 160);
@@ -96,13 +92,13 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private static final Color SELF_EVENT_BACKGROUND_COLOR = ColorFactory.asColor("green2");
 	private static final Color EVENT_NUMBER_BACKGROUND_COLOR = ColorFactory.asColor("white");
 
-	private static final Color EVENT_SELECTION_COLOR =ColorFactory.asColor("red");
+	private static final Color EVENT_SELECTION_COLOR = ColorFactory.asColor("red");
 
 	private static final Color ARROWHEAD_COLOR = null; // defaults to line color
 	private static final Color MESSAGE_LABEL_COLOR = null; // defaults to line color
 	
-	private static final Color DELIVERY_MESSAGE_COLOR = ColorFactory.asColor("blue");
-	private static final Color NONDELIVERY_MESSAGE_COLOR = new Color(null, 0, 150, 0);
+	private static final Color MESSAGE_SEND_COLOR = ColorFactory.asColor("blue");
+	private static final Color MESSAGE_REUSE_COLOR = ColorFactory.asColor("green4");
 	
 	private static final Cursor DRAG_CURSOR = new Cursor(null, SWT.CURSOR_SIZEALL);
 	private static final int[] DOTTED_LINE_PATTERN = new int[] {2,2}; // 2px black, 2px gap
@@ -113,8 +109,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private static final int ANTIALIAS_TURN_OFF_AT_MSEC = 300;
 	private static final int MOUSE_TOLERANCE = 1;
 
-	private static final int DELIVERY_SELFARROW_HEIGHT = 20; // vertical radius of ellipse for selfmsg arrows
-	private static final int NONDELIVERY_SELFARROW_HEIGHT = 10; // same for non-delivery messages
+	private static final int SELF_MESSAGE_ARROW_HEIGHT = 20; // vertical radius of ellipse for self message arrows
+	private static final int REUSE_MESSAGE_ARROW_HEIGHT = 10; // same for reusing messages
 	private static final int ARROWHEAD_LENGTH = 10; // length of message arrow head
 	private static final int ARROWHEAD_WIDTH = 7; // width of message arrow head
 	private static final int AXISLABEL_DISTANCE = 15; // distance of timeline label above axis
@@ -132,9 +128,9 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private int axisSpacing = -1; // y distance between two axes
 
 	private boolean showMessageNames;
-	private boolean showReuseMessages; // show or hide non-delivery message arrows
+	private boolean showReuseMessages; // show or hide reuse message arrows
 	private boolean showEventNumbers;
-	private TimelineSortMode timelineSortMode = TimelineSortMode.MODULE_ID; // specifies the ordering mode of timelines
+	private AxisOrderingMode axisOrderingMode = AxisOrderingMode.MODULE_ID; // specifies the ordering mode of timelines
 
 	private double viewportLeftSimulationTime; // used to restore the visible range of simulation time
 	private double viewportRightSimulationTime;
@@ -166,7 +162,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		NON_LINEAR
 	}
 
-	public enum TimelineSortMode {
+	public enum AxisOrderingMode {
 		MANUAL,
 		MODULE_ID,
 		MODULE_NAME,
@@ -325,21 +321,21 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 	
 	/**
-	 * Changes the timeline sort mode and updates figure accordingly.
+	 * Changes the axis ordering mode and updates figure accordingly.
 	 */
-	public void setTimelineSortMode(TimelineSortMode timelineSortMode) {
-		this.timelineSortMode = timelineSortMode;
-		axisModulePositions = null;
+	public void setAxisOrderingMode(AxisOrderingMode axisOrderingMode) {
+		this.axisOrderingMode = axisOrderingMode;
+		calculateAxisPositions();
 		axisModuleYs = null;
 		invalidModuleYCoordinates = true;
 		clearCanvasCacheAndRedraw();
 	}
 	
 	/**
-	 * Return the current timeline sort mode.
+	 * Return the current axis ordering mode.
 	 */
-	public TimelineSortMode getTimelineSortMode() {
-		return timelineSortMode;
+	public AxisOrderingMode getAxisOrderingMode() {
+		return axisOrderingMode;
 	}
 	
 	/**
@@ -589,7 +585,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			});
 		}
 		
-		axisModulePositions = null;
+		calculateAxisPositions();
 		axisModuleYs = null;
 		invalidVirtualSize = true;
 		invalidModuleYCoordinates = true;
@@ -615,13 +611,13 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 	
 	/**
-	 * Sorts axis modules depending on timelineSortMode.
+	 * Sorts axis modules depending on timeline ordering mode.
 	 */
 	private void calculateAxisPositions() {
 		if (axisModulePositions == null)
 			axisModulePositions = new int[axisModules.size()];
 
-		switch (timelineSortMode) {
+		switch (axisOrderingMode) {
 			case MANUAL:
 				new ManualAxisOrder().calculateOrdering(axisModules.toArray(new ModuleTreeItem[0]), axisModulePositions);
 				break;
@@ -638,7 +634,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 				new HierarchicalAxisOrderByMinimizingCost(eventLogInput).calculateOrdering(axisModules.toArray(new ModuleTreeItem[0]), axisModulePositions);
 				break;
 			default:
-				throw new RuntimeException("Unknown sort mode");
+				throw new RuntimeException("Unknown axis ordering mode");
 		}
 	}
 
@@ -690,6 +686,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 				}
 			});
 		}
+		
+		invalidModuleYCoordinates = false;
 	}
 	
 	/**
@@ -1075,25 +1073,18 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 		// line color and style depends on message type
 		if (isMessageSend) {
-			graphics.setForegroundColor(DELIVERY_MESSAGE_COLOR);
+			graphics.setForegroundColor(MESSAGE_SEND_COLOR);
 			graphics.setLineStyle(SWT.LINE_SOLID);
 		}
 		else {
-			graphics.setForegroundColor(NONDELIVERY_MESSAGE_COLOR);
+			graphics.setForegroundColor(MESSAGE_REUSE_COLOR);
 			graphics.setLineDash(DOTTED_LINE_PATTERN); // SWT.LINE_DOT style is not what we want
 		}
 
-		// check if message was sent from a method call (event module != message source module).
-		// XXX This currently only works for non-delivery messages, as we don't have enough info in the log file;
-		// XXX even with non-delivery messages it acts strange... 
-		//if (!isDelivery && logFacade.getMessage_source_cause_module_moduleId(pos) != logFacade.getMessage_module_moduleId(pos)) {
-		//	graphics.setForegroundColor(EVENT_FG_COLOR); //FIXME temporarily red
-		//}
-		
 		// test if self-message (y1==y2) or not
 		if (y1==y2) {
 
-			int halfEllipseHeight = isMessageSend ? DELIVERY_SELFARROW_HEIGHT : NONDELIVERY_SELFARROW_HEIGHT;
+			int halfEllipseHeight = isMessageSend ? SELF_MESSAGE_ARROW_HEIGHT : REUSE_MESSAGE_ARROW_HEIGHT;
 			
 			if (x1==x2) {
 				// draw vertical line (as zero-width half ellipse) 
@@ -1650,14 +1641,12 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			case MessageDependencyKind.SEND:
 				beginSendEntry = msg.getCauseBeginSendEntry();
 				result = "sending message (" + beginSendEntry.getMessageClassName() + ") " + beginSendEntry.getMessageFullName()
-					+ "  (" + (msg instanceof MessageSend ? "sending" : "usage")  //TODO also: "selfmsg"
-					+ ", #" + msg.getCauseEventNumber() + " -> #" + msg.getConsequenceEventNumber() + ")";
+					+ " (#" + msg.getCauseEventNumber() + " -> #" + msg.getConsequenceEventNumber() + ")";
 				break;
 			case MessageDependencyKind.REUSE:
 				beginSendEntry = msg.getConsequenceBeginSendEntry();
 				result = "reusing message (" + beginSendEntry.getMessageClassName() + ") " + beginSendEntry.getMessageFullName()
-					+ "  (" + (msg instanceof MessageSend ? "sending" : "usage")  //TODO also: "selfmsg"
-					+ ", #" + msg.getCauseEventNumber() + " -> #" + msg.getConsequenceEventNumber() + ")";
+					+ " (#" + msg.getCauseEventNumber() + " -> #" + msg.getConsequenceEventNumber() + ")";
 				break;
 			case MessageDependencyKind.FILTERED:
 				result = sequenceChartFacade.MessageDependency_getCauseMessageName(messageDependencyPtr) +
@@ -1771,7 +1760,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 		//System.out.printf("checking %d %d %d %d\n", x1, x2, y1, y2);
 		if (y1==y2) {
-			int height = sequenceChartFacade.MessageDependency_isMessageSend(messageDependencyPtr) ? DELIVERY_SELFARROW_HEIGHT : NONDELIVERY_SELFARROW_HEIGHT;
+			int height = sequenceChartFacade.MessageDependency_isMessageSend(messageDependencyPtr) ? SELF_MESSAGE_ARROW_HEIGHT : REUSE_MESSAGE_ARROW_HEIGHT;
 			return halfEllipseContainsPoint(x1, x2, y1, height, px, py, tolerance);
 		}
 		else
