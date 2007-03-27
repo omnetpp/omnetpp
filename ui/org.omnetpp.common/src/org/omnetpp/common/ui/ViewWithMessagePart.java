@@ -10,8 +10,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.part.ViewPart;
 
 /**
- * Base class for Views that may need to display an informative message 
- * instead of the normal contents (like "No data available."). 
+ * Base class for Views that may occasionally need to display an informative message
+ * (like "No data available") instead of the normal contents . 
  * Subclasses can call displayMessage()/hideMessage() for this functionality.
  * 
  * @author Andras
@@ -31,8 +31,6 @@ public abstract class ViewWithMessagePart extends ViewPart {
 		
 		viewControl = createViewControl(parent);
 		viewControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-	
-		hookListeners();
 	}
 
 	/**
@@ -50,30 +48,11 @@ public abstract class ViewWithMessagePart extends ViewPart {
 	}
 
 	/**
-	 * Install listeners (PartListener, SelectionChangeListener, etc)
-	 * for events that need to update the view. 
-	 */
-	protected abstract void hookListeners();
-
-	/**
-	 * Remove listeners installed in hookListeners(). 
-	 * This gets called on view shutdown (dispose()).
-	 */
-	protected abstract void unhookListeners();
-
-	
-	@Override
-	public void dispose() {
-		unhookListeners();
-		super.dispose();
-	}
-
-	/**
 	 * Display a message (such as "Nothing to show") instead of the contents.
 	 */
 	protected void displayMessage(String text) {
+		messageLabel.setText(text);
 		if (viewControl.isVisible()) {
-			messageLabel.setText(text);
 			setVisible(messageLabel, true);
 			setVisible(viewControl, false);
 		}

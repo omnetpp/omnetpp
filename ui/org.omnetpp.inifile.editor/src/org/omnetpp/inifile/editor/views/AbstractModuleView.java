@@ -42,10 +42,16 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
+		hookListeners();
 		scheduleRebuildContent();
 	}
 
 	@Override
+	public void dispose() {
+		unhookListeners();
+		super.dispose();
+	}
+
 	protected void hookListeners() {
 		// Listen on selection changes
 		selectionChangedListener = new ISelectionListener() {
@@ -104,7 +110,6 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 		
 	}
 	
-	@Override
 	protected void unhookListeners() {
 		if (selectionChangedListener != null)
 			getSite().getPage().removePostSelectionListener(selectionChangedListener);
