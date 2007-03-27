@@ -16,6 +16,7 @@
 #define __SEQUENCECHARTFACADE_H_
 
 #include <vector>
+#include <map>
 #include "ievent.h"
 #include "ieventlog.h"
 #include "eventlogfacade.h"
@@ -50,6 +51,7 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
         double getTimelineCoordinateForSimulationTime(double simulationTime);
 
         std::vector<int64> *getIntersectingMessageDependencies(int64 startEventPtr, int64 endEventPtr);
+        std::vector<int> getApproximateMessageCountAdjacencyMatrix(std::map<int, int> moduleIdToAxisIdMap);
 };
 
 #endif

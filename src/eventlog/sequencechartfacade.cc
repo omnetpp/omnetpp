@@ -262,3 +262,12 @@ std::vector<int64> *SequenceChartFacade::getIntersectingMessageDependencies(int6
 
     return result;
 }
+
+std::vector<int> SequenceChartFacade::getApproximateMessageCountAdjacencyMatrix(std::map<int, int> moduleIdToAxisIdMap)
+{
+    std::vector<int> adjacencyMatrix;
+
+    // TODO:
+
+    return adjacencyMatrix;
+}

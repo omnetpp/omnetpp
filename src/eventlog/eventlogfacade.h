@@ -45,6 +45,7 @@ class EVENTLOG_API EventLogFacade
         int Event_getNumConsequences(int64 ptr);
         int64 Event_getCause(int64 ptr, int index);
         int64 Event_getConsequence(int64 ptr, int index);
+        bool Event_isSelfEvent(int64 ptr);
 
         MessageDependency* MessageDependency_getMessageDependency(int64 ptr);
         const char *MessageDependency_getCauseMessageName(int64 ptr);
