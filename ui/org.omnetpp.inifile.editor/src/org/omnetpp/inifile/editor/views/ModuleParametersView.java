@@ -4,19 +4,14 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.IEditorPart;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
-import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.InifileUtils.ParameterData;
@@ -29,7 +24,7 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
  */
 public class ModuleParametersView extends AbstractModuleView {
 	private TableViewer tableViewer;
-	private boolean unassignedOnly = true;  //TODO IAction to flip it
+	private boolean unassignedOnly = true;
 	
 	public ModuleParametersView() {
 	}
@@ -75,7 +70,7 @@ public class ModuleParametersView extends AbstractModuleView {
 			@Override
 			public void run() {
 				unassignedOnly = !unassignedOnly;
-				tableViewer.refresh();  //XXX not enough!
+				rebuildContent();
 			}
 		};
 		return action;
@@ -91,7 +86,7 @@ public class ModuleParametersView extends AbstractModuleView {
 	public void buildContent(String moduleFullPath, String moduleTypeName, IInifileDocument doc) {
 		//XXX consider changing the return type of NEDResourcesPlugin.getNEDResources() to INEDTypeResolver
 		INEDTypeResolver nedResources = NEDResourcesPlugin.getNEDResources();
-		ParameterData[] pars = InifileUtils.collectParameters(moduleFullPath, moduleTypeName, nedResources, doc, unassignedOnly);
+		ParameterData[] pars = InifileUtils.collectParameters(moduleFullPath, moduleTypeName, nedResources, doc, unassignedOnly, true);
 		tableViewer.setInput(pars);
 	}
 }
