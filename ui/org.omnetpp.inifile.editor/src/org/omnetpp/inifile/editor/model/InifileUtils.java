@@ -17,6 +17,16 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
 //TODO somehow detect if an inifile line matches parameters of more than one module type; that might be an error.
 // i.e. EtherMAC.backoffs and Ieee80211.backoffs.
 public class InifileUtils {
+	// to
+	public enum Type {
+		ERROR, // unknown module type etc 
+		UNASSIGNED_PAR, // unassigned parameter
+		NED_PAR, // parameter assigned in NED
+		INI_PAR, // parameter assigned in inifile
+		INI_PAR_REDUNDANT, // inifile sets param to its NED default value
+		OTHER  // none of the above
+	}
+	
 	/**
 	 * Given a parameter's fullPath, returns the key of the matching
 	 * inifile entry in the given section, or null if it's not 
@@ -90,10 +100,22 @@ public class InifileUtils {
 	 * Value class for returning data from collectParameters()
 	 */
 	public static class ParameterData {
+		public Type type;
+		public NEDElement element;
 		public String moduleFullPath;
 		public String parameterName;
 		public String value;
 		public String remark;
+
+		/* for convenience */
+		public ParameterData(Type type, NEDElement element, String moduleFullPath, String parameterName, String value, String remark) {
+			this.type = type;
+			this.element = element;
+			this.moduleFullPath = moduleFullPath;
+			this.parameterName = parameterName;
+			this.value = value;
+			this.remark = remark;
+		}
 	}
 	
 	public static ParameterData[] collectParameters(String moduleFullPath, String moduleTypeName, INEDTypeResolver nedResources, IInifileDocument doc, boolean unassignedOnly, final boolean collectErrors) {
@@ -132,48 +154,44 @@ public class InifileUtils {
 				//XXX observe "**.use-default=true" style settings as well!!!
 			}
 
-			ParameterData d = new ParameterData();
-			d.moduleFullPath = moduleFullPath;
-			d.parameterName = param.getName();
-
 			//XXX this issue is much more complicated, as there may be multiple possibly matching 
 			// inifile entries. For example, we have "net.node[*].power", and inifile contains
 			// "*.node[0..4].power=...", "*.node[5..9].power=...", and "net.node[10..].power=...".
 			// Current code would not match any (!!!), only "net.node[*].power=..." if it existed.
 			// lookupParameter() should actually return multiple matches. 
 			if (nedValue==null && iniValue==null) {
-				d.value = ""; 
-				d.remark = "unassigned";
-				resultList.add(d);
+				resultList.add(new ParameterData(Type.UNASSIGNED_PAR, param, moduleFullPath, param.getName(), "", "unassigned"));
 			}
 			else if (!unassignedOnly) {
+				Type type;
+				String value;
+				String remark;
 				if (nedValue!=null && iniValue==null) {
-					d.value = nedValue; 
-					d.remark = "NED";  //XXX default(x) or not??
+					type = Type.NED_PAR;
+					value = nedValue; 
+					remark = "NED";  //XXX default(x) or not??
 				}
 				else if (nedValue==null && iniValue!=null) {
-					d.value = iniValue;
-					d.remark = "ini file";
+					type = Type.INI_PAR;
+					value = iniValue;
+					remark = "ini file";
 				}
 				else if (nedValue.equals(iniValue)) {
-					d.value = nedValue;
-					d.remark = "same value both in NED and ini file";
+					type = Type.INI_PAR_REDUNDANT;
+					value = nedValue;
+					remark = "same value both in NED and ini file";
 				}
 				else {
-					d.value = iniValue;
-					d.remark = "ini file (overrides NED value "+nedValue+")";
+					type = Type.INI_PAR;
+					value = iniValue;
+					remark = "ini file (overrides NED value "+nedValue+")"; //XXX if NED is default()!
 				}
-				resultList.add(d);
+				resultList.add(new ParameterData(type, param, moduleFullPath, param.getName(), value, remark));
 			}
 		}
 	}
 
 	private static void addErrorEntry(final ArrayList<ParameterData> list, String moduleFullPath, String moduleTypeName) {
-		ParameterData d = new ParameterData();
-		d.moduleFullPath = moduleFullPath;
-		d.parameterName = "*";
-		d.value = "";
-		d.remark = "no such module type: "+moduleTypeName;
-		list.add(d);
+		list.add(new ParameterData(Type.ERROR, null, moduleFullPath, "", "", "no such module type: "+moduleTypeName));
 	}
 }

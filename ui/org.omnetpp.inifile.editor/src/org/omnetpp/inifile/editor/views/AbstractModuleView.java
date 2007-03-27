@@ -1,17 +1,24 @@
 package org.omnetpp.inifile.editor.views;
 
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
+import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.ViewWithMessagePart;
+import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
+import org.omnetpp.inifile.editor.model.InifileUtils.Type;
+import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
@@ -226,5 +233,21 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 	 * with the specified inifile as configuration. 
 	 */
 	protected abstract void buildContent(String submoduleName, String submoduleType, IInifileDocument doc);
+
+	/**
+	 * Helper function: suggests an icon for a table or tree entry.
+	 */
+	protected static Image suggestImage(Type type, NEDElement element) {
+		switch (type) {
+		//FIXME better icons!
+		case ERROR: return ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_ERROR); //XXX
+		case UNASSIGNED_PAR: return ImageFactory.getImage(ImageFactory.MODEL_IMAGE_INVALID); //XXX
+		case INI_PAR: return InifileEditorPlugin.getImageDescriptor("icons/inifile.png").createImage(); //XXX cache it
+		case NED_PAR: return InifileEditorPlugin.getImageDescriptor("icons/moduletreeview.png").createImage(); //XXX cache it
+		case INI_PAR_REDUNDANT: return ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_WARNING); //XXX
+		case OTHER: if (element!=null) return NEDTreeUtil.getNedModelLabelProvider().getImage(element);
+		}
+		return null;
+	}
 
 }

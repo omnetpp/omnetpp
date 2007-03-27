@@ -12,6 +12,7 @@ import org.omnetpp.common.ui.GenericTreeUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
+import org.omnetpp.inifile.editor.model.InifileUtils.ParameterData;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
@@ -19,9 +20,11 @@ import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
+import static org.omnetpp.inifile.editor.model.InifileUtils.Type;
 
 /**
- * View.
+ * Displays NED module hierarchy with module parameters, and 
+ * optionally, values assigned in ini files.
  * 
  * @author Andras
  */
@@ -32,11 +35,13 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	 * Node contents for the GenericTreeNode tree that is displayed in the view
 	 */
 	private static class Payload {
+		Type type;
 		String text;
 		NEDElement node;  // SubmoduleNode, ParameterNode etc
 
 		/* for convenience */
-		public Payload(String text, NEDElement node) {
+		public Payload(Type type, String text, NEDElement node) {
+			this.type = type;
 			this.text = text;
 			this.node = node;
 		}
@@ -56,6 +61,8 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			if (getClass() != obj.getClass())
 				return false;
 			final Payload other = (Payload) obj;
+			if (type != other.type)
+				return false;
 			if (text == null) {
 				if (other.text != null)
 					return false;
@@ -79,10 +86,9 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		treeViewer.setLabelProvider(new LabelProvider() {
 			@Override
 			public Image getImage(Object element) {
-				Object payload = ((GenericTreeNode)element).getPayload();
-				if (payload instanceof Payload) {
-					Object nedElement = ((Payload)payload).node;
-					return NEDTreeUtil.getNedModelLabelProvider().getImage(nedElement);
+				if (element instanceof GenericTreeNode && ((GenericTreeNode)element).getPayload() instanceof Payload) {
+					Payload payload = (Payload) ((GenericTreeNode)element).getPayload();
+					return suggestImage(payload.type, payload.node);
 				}
 				else {
 					return null;
@@ -109,15 +115,15 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		// dig out type info (NED declaration)
 		if (StringUtils.isEmpty(moduleTypeName)) {
 			String text = moduleFullName+"  (module type unknown)";
-			GenericTreeNode thisNode = new GenericTreeNode(text);  
-			parent.addChild(thisNode); //XXX display with "error" icon
+			GenericTreeNode thisNode = new GenericTreeNode(new Payload(Type.ERROR, text, null));  
+			parent.addChild(thisNode);
 			return;
 		}
 		INEDTypeInfo moduleType = nedResources.getComponent(moduleTypeName);
 		if (moduleType == null) {
 			String text = moduleFullName+"  ("+moduleTypeName+" - no such module type)";
-			GenericTreeNode thisNode = new GenericTreeNode(text);
-			parent.addChild(thisNode); //XXX display with "error" icon
+			GenericTreeNode thisNode = new GenericTreeNode(new Payload(Type.ERROR, text, null));  
+			parent.addChild(thisNode);
 			return;
 		}
 
@@ -140,7 +146,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	 */
 	private static GenericTreeNode addTreeNode(GenericTreeNode parent, String moduleFullName, String moduleFullPath, INEDTypeInfo moduleType, IInifileDocument doc) {
 		String moduleText = moduleFullName+"  ("+moduleType.getName()+")";
-		GenericTreeNode thisNode = new GenericTreeNode(new Payload(moduleText, moduleType.getNEDElement()));
+		GenericTreeNode thisNode = new GenericTreeNode(new Payload(Type.OTHER, moduleText, moduleType.getNEDElement()));
 		parent.addChild(thisNode);
 
 		for (NEDElement node : moduleType.getParamValues().values()) {
@@ -165,20 +171,31 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			// "*.node[0..4].power=...", "*.node[5..9].power=...", and "net.node[10..].power=...".
 			// Current code would not match any (!!!), only "net.node[*].power=..." if it existed.
 			// lookupParameter() should actually return multiple matches. 
+			Type type;
 			String valueText;
-			if (nedValue==null && iniValue==null)
+			if (nedValue==null && iniValue==null) {
+				type = Type.UNASSIGNED_PAR;
 				valueText = "(unassigned)";
-			else if (nedValue!=null && iniValue==null)
+			}
+			else if (nedValue!=null && iniValue==null) {
+				type = Type.NED_PAR;
 				valueText = nedValue+" (NED)";  //XXX default(x) or not??
-			else if (nedValue==null && iniValue!=null)
+			}
+			else if (nedValue==null && iniValue!=null) { 
+				type = Type.INI_PAR;
 				valueText = iniValue+" (ini)";
-			else if (nedValue.equals(iniValue))
-				valueText = nedValue+" (NED, ini)";
-			else
+			}
+			else if (nedValue.equals(iniValue)) {
+				type = Type.INI_PAR_REDUNDANT;
+				valueText = nedValue+" (same value in both NED and ini)";
+			}
+			else {
+				type = Type.INI_PAR;
 				valueText = iniValue+" (ini, overrides NED value "+nedValue+")";
+			}
 
 			String text = param.getName()+" = "+valueText;
-			thisNode.addChild(new GenericTreeNode(new Payload(text, param)));
+			thisNode.addChild(new GenericTreeNode(new Payload(type, text, param)));
 		}
 		return thisNode;
 	}

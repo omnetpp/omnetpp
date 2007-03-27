@@ -6,6 +6,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
@@ -22,6 +23,7 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
  * Displays module parameters recursively for module type.
  * @author Andras
  */
+//XXX add ordering support to the table
 public class ModuleParametersView extends AbstractModuleView {
 	private TableViewer tableViewer;
 	private boolean unassignedOnly = true;
@@ -54,6 +56,17 @@ public class ModuleParametersView extends AbstractModuleView {
 					}
 				}
 				return columnIndex==0 ? element.toString() : "";
+			}
+
+			@Override
+			public Image getColumnImage(Object element, int columnIndex) {
+				if (columnIndex==0 && element instanceof ParameterData) {
+					ParameterData par = (ParameterData) element;
+					return suggestImage(par.type, par.element);
+				}
+				else {
+					return null;
+				}
 			}
 			
 		});

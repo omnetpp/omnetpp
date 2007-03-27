@@ -53,8 +53,8 @@
            category="org.omnetpp.views"
            class="org.omnetpp.inifile.editor.views.ModuleHierarchyView"
            icon="icons/moduletreeview.png"
-           id="org.omnetpp.inifile.ModuleTree"
-           name="Module Tree"/>
+           id="org.omnetpp.inifile.ModuleHierarchy"
+           name="Module Hierarchy"/>
   </extension>
 
   <extension
@@ -63,8 +63,8 @@
            category="org.omnetpp.views"
            class="org.omnetpp.inifile.editor.views.ModuleParametersView"
            icon="icons/unsetparameters.gif"
-           id="org.omnetpp.inifile.UnassignedParameters"
-           name="Unassigned Parameters"/>
+           id="org.omnetpp.inifile.ParameterAssignments"
+           name="NED Parameter Assignments"/>
   </extension>
 
 </plugin>
