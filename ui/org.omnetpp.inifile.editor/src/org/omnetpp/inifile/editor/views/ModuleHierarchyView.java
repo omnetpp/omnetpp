@@ -4,8 +4,6 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
@@ -104,12 +102,6 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		}
 	}
 	
-	protected void unhookListeners() {
-	}
-
-	protected void hookListeners() {
-	}
-
 	/**
 	 * Adds a node to the tree. The new node described the module and its parameters.
 	 */

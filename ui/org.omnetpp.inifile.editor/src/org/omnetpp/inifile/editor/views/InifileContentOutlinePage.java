@@ -45,7 +45,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 		getTreeViewer().setLabelProvider(new LabelProvider() {
 			@Override
 			public Image getImage(Object element) {
-				return ImageFactory.getImage(ImageFactory.MODEL_IMAGE_FOLDER); //XXX
+				return ImageFactory.getImage(ImageFactory.MODEL_IMAGE_FOLDER);
 			}
 
 			@Override
@@ -134,7 +134,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 		Assert.isTrue(input instanceof IInifileDocument || input == null);
 		inifileDocument = (IInifileDocument) input;
 		// Note: when first invoked, treeViewer==null yet
-		if (getTreeViewer() != null) 
+		if (getTreeViewer() != null && !getTreeViewer().getTree().isDisposed()) 
 			getTreeViewer().setInput(inifileDocument);
 		if (inifileDocument != null)
 			inifileDocument.getListeners().add(this);

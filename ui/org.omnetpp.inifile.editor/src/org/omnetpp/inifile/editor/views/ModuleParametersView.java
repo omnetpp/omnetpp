@@ -94,10 +94,4 @@ public class ModuleParametersView extends AbstractModuleView {
 		ParameterData[] pars = InifileUtils.collectParameters(moduleFullPath, moduleTypeName, nedResources, doc, unassignedOnly);
 		tableViewer.setInput(pars);
 	}
-
-	protected void unhookListeners() {
-	}
-
-	protected void hookListeners() {
-	}
 }

@@ -1,15 +1,11 @@
 package org.omnetpp.inifile.editor.views;
 
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
@@ -68,8 +64,9 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 		// NOTE: the view only gets workbench events while it is visible. So we also
 		// need to update our contents on getting activated.
 		//
+		final IEditorPart initialEditor = getActiveEditor();
 		partListener = new IPartListener() {
-			private IEditorPart activeEditor = null;
+			private IEditorPart activeEditor = initialEditor;
 			
 			public void partActivated(IWorkbenchPart part) {
 				if (part == AbstractModuleView.this) {
@@ -149,16 +146,17 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 	}
 
 	public void rebuildContent() { 
-			
-		IWorkbenchPage activePage = getSite().getWorkbenchWindow().getActivePage();
-		IEditorPart activeEditor = activePage==null ? null : activePage.getActiveEditor();
+		IEditorPart activeEditor = getActiveEditor();
 		if (activeEditor==null) {
 			displayMessage("There is no active editor.");
 			return;
 		}
 
-		ISelectionProvider selectionProvider = activeEditor.getSite().getSelectionProvider();
-		ISelection selection = selectionProvider==null ? null : selectionProvider.getSelection();
+		ISelection selection = getActiveEditorSelection();
+		if (selection==null) {
+			displayMessage("Nothing is selected.");
+			return;
+		}
 		
 		System.out.println("SELECTION: "+selection); //XXX
 
