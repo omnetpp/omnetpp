@@ -72,7 +72,7 @@ public class EventLogInput {
 				ModuleCreatedEntry entry = eventLog.getModuleCreatedEntry(i);
 				
 				if (entry != null)
-					treeBuilder.addModule(entry.getParentModuleId(), entry.getModuleId(), entry.getModuleClassName(), entry.getFullName() + i);
+					treeBuilder.addModule(entry.getParentModuleId(), entry.getModuleId(), entry.getModuleClassName(), entry.getFullName());
 			}
 	
 			moduleTree = treeBuilder.getModuleTree();
