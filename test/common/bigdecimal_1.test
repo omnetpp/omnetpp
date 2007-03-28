@@ -19,27 +19,39 @@ static void parseAndPrint(const char *text)
 
 %activity:
 
-#define P(x) parseAndPrint(x)
+#define T(x) parseAndPrint(x)
 
 ev << "\n";
 
 // positive cases
-P("123456789012345678");
-P("123456789012345.678");
-P("123456789012.345678");
-P("123456789.012345678");
-P("123456.789012345678");
-P("123.456789012345678");
-P("0.123456789012345678");
+T("123456789012345678");
+T("123456789012345.678");
+T("123456789012.345678");
+T("123456789.012345678");
+T("123456.789012345678");
+T("123.456789012345678");
+T("0.123456789012345678");
 
-P("+123456789012345678");
-P("-123456789012345678");
-P(" 123456789012345678");
+T("+123456789012345678");
+T("-123456789012345678");
+T(" 123456789012345678");
+
+T("NaN");
+T("nan");
+T("NAN");
+T("-1.#IND");
+T("+Inf");
+T("+infinity");
+T("+1.#INF");
+T("-Inf");
+T("-infinity");
+T("-1.#INF");
+T("Inf");
 
 // negative cases
-P("12345678901234567890"); // overflow
-P("");
-P("  ");
+T("12345678901234567890"); // overflow
+T("");
+T("  ");
 
 ev << ".\n";
 
@@ -55,6 +67,17 @@ ev << ".\n";
 '+123456789012345678' ==> intVal=123456789012345678, scale=0
 '-123456789012345678' ==> intVal=-123456789012345678, scale=0
 ' 123456789012345678' ==> intVal=123456789012345678, scale=0
+'NaN' ==> intVal=0, scale=2147483647
+'nan' ==> intVal=0, scale=2147483647
+'NAN' ==> intVal=0, scale=2147483647
+'-1.#IND' ==> intVal=0, scale=2147483647
+'+Inf' ==> intVal=1, scale=2147483647
+'+infinity' ==> intVal=1, scale=2147483647
+'+1.#INF' ==> intVal=1, scale=2147483647
+'-Inf' ==> intVal=-1, scale=2147483647
+'-infinity' ==> intVal=-1, scale=2147483647
+'-1.#INF' ==> intVal=-1, scale=2147483647
+'Inf' ==> intVal=1, scale=2147483647
 '12345678901234567890' ==> ERROR: BigDecimal::parse("12345678901234567890"): arithmetic overflow
 '' ==> ERROR: BigDecimal::parse(""): missing digits
 '  ' ==> ERROR: BigDecimal::parse("  "): missing digits

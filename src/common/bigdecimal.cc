@@ -16,14 +16,51 @@
 #include <assert.h>
 #include "bigdecimal.h"
 
+// helpers
 static double zero = 0.0;
+static double dblNaN = zero / zero;
+static double dblPositiveInfinity = 1 / zero;
+static double dblNegativeInfinity = -1 / zero;
 static inline int64 max(int64 x, int64 y) { return x > y ? x : y; }
 static inline int64 min(int64 x, int64 y) { return x < y ? x : y; }
 static inline int64 abs(int64 x) { return x >= 0 ? x : -x; }
 static inline int sgn(int64 x) { return (x > 0 ? 1 : (x < 0 ? -1 : 0)); }
+static inline bool isNaN(double d) { return d!=d; }
+static inline bool isPositiveInfinity(double d) { return d==dblPositiveInfinity; }
+static inline bool isNegativeInfinity(double d) { return d==dblNegativeInfinity; }
+
+BigDecimal BigDecimal::Zero(0, 0);
+BigDecimal BigDecimal::NaN(0, INT_MAX);
+BigDecimal BigDecimal::PositiveInfinity(1, INT_MAX);
+BigDecimal BigDecimal::NegativeInfinity(-1, INT_MAX);
+BigDecimal BigDecimal::Nil(INT_MAX, INT_MAX);
 
 void BigDecimal::normalize()
 {
+    // special values
+    if (scale == INT_MAX && (intVal == -1 || intVal == 0 || intVal == 1 || intVal == INT_MAX))
+        return;
+
+    // zero
+    if (intVal == 0)
+    {
+        intVal = 0;
+        scale = 0;
+        return;
+    }
+
+    // underflow, XXX should throw an exception?
+    if (scale < minScale - _I64_MAX_DIGITS)
+    {
+        intVal = 0;
+        scale = 0;
+        return;
+    }
+
+    // overflow
+    if (scale > maxScale + _I64_MAX_DIGITS)
+        throw opp_runtime_error("BigDecimal::normalize(): scale too big: %d.", scale); // XXX should be +-Infinity?
+
     // transform scale between minScale and maxScale
     if (scale < minScale)
     {
@@ -61,6 +98,8 @@ void BigDecimal::normalize()
 
 int64 BigDecimal::getDigits(int scale) const
 {
+    assert(!this->isSpecial());
+
     int start = max(scale, this->scale); // inclusive
     int end = min(scale+18, this->scale+18); // exclusive
 
@@ -94,8 +133,12 @@ int64 BigDecimal::getDigits(int scale) const
 const BigDecimal& BigDecimal::operator=(double d)
 {
     // check NaN and infinity
-    if (d != d /*NaN*/ || d == 1/zero || d == -1/zero)
-        throw opp_runtime_error("BigDecimal::operator=(%d): unexpected value (NaN or infinite)", d);
+    if (::isNaN(d))
+        return *this = NaN;
+    else if (isPositiveInfinity(d))
+        return *this = PositiveInfinity;
+    else if (isNegativeInfinity(d))
+        return *this = NegativeInfinity;
 
     int sign = 1;
     if (d < 0.0)
@@ -167,12 +210,28 @@ const BigDecimal& BigDecimal::operator=(double d)
         }
     }
 
-    *this = BigDecimal(sign * intVal, scale);
+    this->intVal = sign * intVal;
+    this->scale = scale;
+    this->normalize();
     return *this;
 }
 
 bool BigDecimal::operator<(const BigDecimal &x) const
 {
+    if (isSpecial() || x.isSpecial())
+    {
+        if (isNil() || x.isNil())
+            throw opp_runtime_error("BigDecimal::operator<() received Nil.");
+        else if (isNaN() || x.isNaN())
+            return false;
+        else if (x == PositiveInfinity)
+            return *this != PositiveInfinity;
+        else if (*this == NegativeInfinity)
+            return x != NegativeInfinity;
+        else
+            return false;
+    }
+
     if (scale == x.scale)
         return intVal < x.intVal;
     if (sgn(intVal) < sgn(x.intVal))
@@ -206,6 +265,18 @@ bool BigDecimal::operator<(const BigDecimal &x) const
 
 double BigDecimal::dbl() const
 {
+    if (isSpecial())
+    {
+        if (isNaN())
+            return dblNaN;
+        else if (*this == PositiveInfinity)
+            return dblPositiveInfinity;
+        else if (*this == NegativeInfinity)
+            return dblNegativeInfinity;
+        else // Nil
+            throw opp_runtime_error("BigDecimal::dbl(): received Nil."); // XXX should return NaN?
+    }
+
     double d = (double)intVal;
     int s = scale;
     while (s > 0)
@@ -231,6 +302,29 @@ std::string BigDecimal::str() const
 
 char *BigDecimal::ttoa(char *buf, const BigDecimal &x, char *&endp)
 {
+    // special values
+    if (x.isSpecial())
+    {
+        if (x.isNaN())
+        {
+            strcpy(buf, "NaN");
+            endp = buf+3;
+        }
+        else if (x == PositiveInfinity)
+        {
+            strcpy(buf, "+Inf");
+            endp = buf+4;
+        }
+        else if (x == NegativeInfinity)
+        {
+            strcpy(buf, "-Inf");
+            endp = buf+4;
+        }
+        else // Nil
+            throw opp_runtime_error("BigDecimal::ttoa(): received Nil.");
+        return buf;
+    }
+
     int64 intVal = x.getIntValue();
     int scale = x.getScale();
 
@@ -303,6 +397,41 @@ const BigDecimal BigDecimal::parse(const char *s, const char *&endp)
     }
     else if (*p == '+')
         ++p;
+
+    // parse special numbers
+    if (isalpha(*p))
+    {
+        if (strnicmp(p, "nan", 3) == 0)
+        {
+            endp = p+3;
+            return NaN;
+        }
+        else if (strnicmp(p, "inf", 3) == 0) // inf and infinity
+        {
+            endp = p+3;
+            if (strnicmp(endp, "inity", 5) == 0)
+                endp += 5;
+            return sign > 0 ? PositiveInfinity : NegativeInfinity;
+        }
+        else
+        {
+            endp = p;
+            return Zero;  // XXX should return Nil?
+        }
+    }
+    else if (*p=='1' && *(p+1)=='.' && *(p+2)=='#')
+    {
+        if (strnicmp(p+3, "ind", 3) == 0)
+        {
+            endp = p+6;
+            return NaN;
+        }
+        else if (strnicmp(p+3, "inf", 6) == 0)
+        {
+            endp = p+6;
+            return sign > 0 ? PositiveInfinity : NegativeInfinity;
+        }
+    }
 
     // digits before decimal
     while (isdigit(*p))

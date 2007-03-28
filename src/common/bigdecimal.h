@@ -22,6 +22,8 @@
 #include "exception.h"
 #include "inttypes.h"
 
+// maximum number of digits in an int64 number, i.e. number of digits in _I64_MAX.
+#define _I64_MAX_DIGITS 19
 
 /**
  * BigDecimal stores a decimal value as an 64 bit integer and a scale.
@@ -35,11 +37,12 @@ class COMMON_API BigDecimal
     /*
      * The value of the number is intVal * 10^scale.
      * If two decimal is equal then they have the same intVal and scale (see normalize()).
+     * Special values (NaN, +-infinity, Nil) uses the scale INT_MAX.
      */
     int64 intVal; // stores digits of the decimal number (up to 18 digits can be stored)
     int scale;    // stores the position of the decimal point, must be in the [0,-18] range
 
-    static const int minScale = -18;
+    static const int minScale = -18; // XXX the range length must be <= 18, see buffer allocation in ttoa()
     static const int maxScale = 0;
 
     void checkScale(int scale)
@@ -60,6 +63,11 @@ class COMMON_API BigDecimal
     int64 getDigits(int scale) const;
 
   public:
+    static BigDecimal Zero;
+    static BigDecimal NaN;
+    static BigDecimal PositiveInfinity;
+    static BigDecimal NegativeInfinity;
+    static BigDecimal Nil;
 
     /** Constructors. */
     BigDecimal() {intVal=0; scale=0;}
@@ -67,21 +75,29 @@ class COMMON_API BigDecimal
     BigDecimal(const BigDecimal &x) {operator=(x);}
     BigDecimal(double d) {operator=(d);}
 
-    /** Arithmetic operations */
+    /** Special values */
+    bool isNaN() const { return scale == INT_MAX && intVal == 0; }
+    bool isNil() const { return *this == Nil; }
+    bool isSpecial() const { return scale == INT_MAX; }
+
+    /** Assignments */
     const BigDecimal& operator=(double d);
     const BigDecimal& operator=(const BigDecimal& x) {intVal=x.intVal; scale=x.scale; return *this;}
 
+    /** Arithmetic operations */
     const BigDecimal& operator+=(const BigDecimal& x) {*this=BigDecimal(dbl()+x.dbl()); return *this;}
     const BigDecimal& operator-=(const BigDecimal& x) {*this=BigDecimal(dbl()-x.dbl()); return *this;}
     const BigDecimal& operator*=(double d) {*this=BigDecimal(dbl()*d); return *this;}
     const BigDecimal& operator/=(double d) {*this=BigDecimal(dbl()/d); return *this;}
 
-    bool operator==(const BigDecimal& x) const  {return intVal == x.intVal && scale == x.scale;}
-    bool operator!=(const BigDecimal& x) const  {return intVal != x.intVal || scale != x.scale;}
+#define CHK(a,b) { if ((a).isNaN() || (b).isNaN()) return false; }
+
+    bool operator==(const BigDecimal& x) const  {CHK(*this,x); return intVal == x.intVal && scale == x.scale;}
+    bool operator!=(const BigDecimal& x) const  {CHK(*this, x); return intVal != x.intVal || scale != x.scale;}
     bool operator< (const BigDecimal& x) const;
-    bool operator> (const BigDecimal& x) const  {return x < *this;}
-    bool operator<=(const BigDecimal& x) const  {return *this == x || *this < x;}
-    bool operator>=(const BigDecimal& x) const  {return *this == x || *this > x;}
+    bool operator> (const BigDecimal& x) const  {CHK(*this, x); return x < *this;}
+    bool operator<=(const BigDecimal& x) const  {CHK(*this, x); return *this == x || *this < x;}
+    bool operator>=(const BigDecimal& x) const  {CHK(*this, x); return *this == x || *this > x;}
 
     friend const BigDecimal operator+(const BigDecimal& x, const BigDecimal& y);
     friend const BigDecimal operator-(const BigDecimal& x, const BigDecimal& y);
