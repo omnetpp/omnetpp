@@ -415,8 +415,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             NEDErrorStore errorStore = new NEDErrorStore();
             markerJob.setConsistencyErrorStore(file, errorStore);
 
-            // iterate on NED file contents, and register each componentt in our
+            // iterate on NED file contents, and register each component in our
             // hash tables
+            //XXX should be recursive, and collect inner types as well (store them as "TopleveTtype.InnerType) or something
             NEDElement tree = nedFiles.get(file);
             for (NEDElement node : tree) {
                 // find node's name and where it should be inserted

@@ -100,6 +100,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		});
 		treeViewer.setContentProvider(new GenericTreeContentProvider());
 
+		//XXX turn this into an Action and add to context menu as well
 		treeViewer.getTree().addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {

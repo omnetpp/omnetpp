@@ -1,21 +1,13 @@
 package org.omnetpp.ned.editor.graph.edit;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.tools.DirectEditManager;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.views.properties.IPropertySource;
-import org.omnetpp.common.editor.EditorUtil;
-import org.omnetpp.common.editor.ISelectionSupport;
 import org.omnetpp.figures.misc.IDirectEditSupport;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedDirectEditPolicy;
@@ -27,6 +19,9 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
+import org.omnetpp.ned.resources.NEDResourcesPlugin;
+
+import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 
 /**
  * Provides support for Container EditParts.
@@ -168,26 +163,12 @@ abstract public class BaseEditPart
      * @param name
      */
     public static void openNEDEditor(NEDElement srcNode, String name) {
-        INEDTypeInfo typeInfo = srcNode.getContainerNEDTypeInfo()
-                                        .getResolver().getComponent(name);
-        if (typeInfo != null) {
-            IFile file = typeInfo.getNEDFile();
-            IFileEditorInput fileEditorInput = new FileEditorInput(file);
-
-            try {
-                IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-                        .openEditor(fileEditorInput, EditorUtil.MULTIPAGE_NEDEDITOR_ID, true);
-
-                // select the component so it will be visible in the opened editor
-                if (editor instanceof ISelectionSupport)
-                    ((ISelectionSupport)editor).selectGraphComponent(typeInfo.getName());
-
-            } catch (PartInitException e) {
-                // should not happen
-                e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
-                Assert.isTrue(false);
-            }
+        INEDTypeInfo typeInfo = NEDResourcesPlugin.getNEDResources().getComponent(name); //XXX should work for inner types as well; interpret srcNode as context?
+        if (typeInfo==null) {
+        	MessageDialog.openConfirm(null, "Error", "Cannot open submodule or channel in an editor: NED type "+name+" is unknown.");
+        	return;
         }
+        NEDResourcesPlugin.openNEDElementInEditor(typeInfo.getNEDElement());
     }
 
     public IPropertySource getPropertySource() {

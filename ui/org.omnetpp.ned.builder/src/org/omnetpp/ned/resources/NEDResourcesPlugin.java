@@ -4,19 +4,21 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.common.editor.EditorUtil;
 import org.omnetpp.common.editor.ISelectionSupport;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDSourceRegion;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.ITopLevelElement;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -139,6 +141,7 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 	
 	/**
 	 * Opens the given NEDElement in a NED editor, and positions the cursor on it.
+	 * @param element must NOT be null, and MUST be part of the model (i.e. in NEDResourcesPlugin)
 	 */
 	public static void openNEDElementInEditor(NEDElement element) {
 		INEDTypeInfo typeInfo = element.getContainerNEDTypeInfo();
@@ -149,10 +152,15 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
             IEditorPart editor = EditorUtil.openEditor(file, NED_EDITOR_ID, true);
 
             // select the component so it will be visible in the opened editor
-            if (editor instanceof ISelectionSupport)
-                ((ISelectionSupport)editor).setTextHighlightRange(sourceRegion.startLine, sourceRegion.endLine);
+            if (editor instanceof ISelectionSupport) {
+            	if (element instanceof ITopLevelElement) //XXX or submodule
+            		((ISelectionSupport)editor).selectGraphComponent(typeInfo.getName());
+            	else
+            		((ISelectionSupport)editor).setTextHighlightRange(sourceRegion.startLine, sourceRegion.endLine);
+            }
 
         } catch (PartInitException e) {
+        	// no message dialog is needed, because the platform displays an erroreditpart anyway 
             logError("Cannot open NED editor", e);
         }
 	}
