@@ -23,6 +23,8 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -64,7 +66,7 @@ import org.omnetpp.sequencechart.widgets.axisrenderer.AxisVectorBarRenderer;
 import org.omnetpp.sequencechart.widgets.axisrenderer.IAxisRenderer;
 
 /**
- * This is a sequence chart as a single figure.
+ * The sequence chart is figure which shows the events and the messages passed along between several modules.
  *
  * @author andras, levy
  */
@@ -123,7 +125,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private double pixelsPerTimelineUnit = -1;
 	private boolean antiAlias = true;  // antialiasing -- this gets turned on/off automatically
 	private boolean showArrowHeads = true; // whether arrow heads are drawn or not
-	private int axisOffset = 10;  // y coord of first axis
+	private int axisOffset = 10;  // extra y distance before and after first and last axes
 	private int axisSpacing = -1; // y distance between two axes
 
 	private boolean showMessageNames;
@@ -182,6 +184,13 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 				org.eclipse.swt.graphics.Rectangle r = getClientArea();
 				setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(r.x, r.y + GUTTER_HEIGHT, r.width, r.height - GUTTER_HEIGHT * 2));
 			}
+		});
+		
+		addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				if (e.keyCode == SWT.F5)
+					clearCanvasCacheAndRedraw();
+			}			
 		});
 	}
 
@@ -466,6 +475,10 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		});
 
 		return modules;
+	}
+	
+	public Object getInput() {
+		return eventLogInput;
 	}
 
 	public void setInput(EventLogInput eventLogInput) {
@@ -800,33 +813,39 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 	@Override
 	protected void beforePaint(GC gc) {
-		calculateStuff();
-		calculateTicks();
+		if (eventLogInput != null) {
+			calculateStuff();
+			calculateTicks();
+		}
 	}
 
 	@Override
 	protected void paintCachableLayer(GC gc) {
-		Graphics graphics = new SWTGraphics(gc);
-
-		graphics.translate(0, GUTTER_HEIGHT);
-		drawSequenceChart(graphics);
-
-		graphics.dispose();		
+		if (eventLogInput != null) {
+			Graphics graphics = new SWTGraphics(gc);
+	
+			graphics.translate(0, GUTTER_HEIGHT);
+			drawSequenceChart(graphics);
+	
+			graphics.dispose();
+		}
 	}
 
 	@Override
 	protected void paintNoncachableLayer(GC gc) {
-		Graphics graphics = new SWTGraphics(gc);
-
-		graphics.translate(0, GUTTER_HEIGHT);
-		drawAxisLabels(graphics);
-        drawEventSelectionMarks(graphics);
-
-        graphics.translate(0, -GUTTER_HEIGHT);
-        drawMouseTick(graphics);
-        drawGutters(graphics);
-
-        graphics.dispose();
+		if (eventLogInput != null) {
+			Graphics graphics = new SWTGraphics(gc);
+	
+			graphics.translate(0, GUTTER_HEIGHT);
+			drawAxisLabels(graphics);
+	        drawEventSelectionMarks(graphics);
+	
+	        graphics.translate(0, -GUTTER_HEIGHT);
+	        drawGutters(graphics);
+	        drawMouseTick(graphics);
+	
+	        graphics.dispose();
+		}
 	}
 
 	/**
@@ -888,8 +907,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 */
 	private void drawMessageArrows(Graphics graphics, long startEventPtr, long endEventPtr) {
 		VLineBuffer vlineBuffer = new VLineBuffer();
-		Int64Vector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
-		
+		Int64Vector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr, 100);
+
 		for (int i = 0; i < messageDependencies.size(); i++)
 			drawMessageArrow(graphics, messageDependencies.get(i), vlineBuffer);
 	}
@@ -1612,7 +1631,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		}
 
 		// 3) no events or message arrows: show axis info
-		ModuleTreeItem axisModule = findAxisAt(y);
+		ModuleTreeItem axisModule = findAxisAt(y - GUTTER_HEIGHT);
 		if (axisModule != null) {
 			String res = getAxisText(axisModule)+"\n";
 			double t = getSimulationTimeForViewportPixel(x);
@@ -1703,8 +1722,9 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * If you're interested only in messages or only in events, pass null in the
 	 * events or msgs argument. This method does NOT clear the lists before filling them.
 	 */
-	public void collectStuffUnderMouse(final int mouseX, final int mouseY, List<IEvent> events, final List<MessageDependency> msgs) {
+	public void collectStuffUnderMouse(int mouseX, int mouseY, List<IEvent> events, List<MessageDependency> msgs) {
 		if (eventLog!=null) {
+			mouseY -= GUTTER_HEIGHT;
 			long startMillis = System.currentTimeMillis();
 		
 			// determine start/end event numbers
@@ -1725,8 +1745,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
             // check message arrows
             if (msgs != null) {
-            	Int64Vector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
-        		
+            	Int64Vector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr, 100);
+
         		for (int i = 0; i < messageDependencies.size(); i++) {
         			long messageDependencyPtr = messageDependencies.get(i);
 
@@ -1870,7 +1890,10 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * Selection is shown as red circles in the chart.
 	 */
 	public ISelection getSelection() {
-		return new EventLogSelection(eventLogInput, selectedEvents);
+		if (eventLogInput == null)
+			return null;
+		else
+			return new EventLogSelection(eventLogInput, selectedEvents);
 	}
 
 	/**

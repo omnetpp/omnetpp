@@ -466,6 +466,13 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 	}
 
 	/**
+	 * Position the selection to the closest shown element and make it visible.
+	 */
+	public void gotoClosestElement(T element) {
+		gotoElement(contentProvider.getClosestElement(element));
+	}
+
+	/**
 	 * Position the selection to the very beginning of the table.
 	 */
 	public void gotoBegin() {

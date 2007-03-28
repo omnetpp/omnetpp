@@ -26,11 +26,12 @@ public abstract class AbstractAxisOrderByMinimizingCost  implements IAxisOrder {
 				}
 			});
 		}
-		
-		calculateOrdering(axisModules, axisPositions, eventLogInput.getSequenceChartFacade().getApproximateMessageCountAdjacencyMatrix(moduleIdToAxisIdMap));
+
+		IntVector axisMatrix = eventLogInput.getSequenceChartFacade().getApproximateMessageDependencyCountAdjacencyMatrix(moduleIdToAxisIdMap, 100);
+		calculateOrdering(axisModules, axisPositions, axisMatrix);
 	}
 	
-	protected abstract void calculateOrdering(ModuleTreeItem[] axisModules, int[] axisPositions, IntVector moduleIdToAxisIdMap);
+	protected abstract void calculateOrdering(ModuleTreeItem[] axisModules, int[] axisPositions, IntVector axisMatrix);
 
 	/**
 	 * Cost is based on the number of crossed axis according to the positions.

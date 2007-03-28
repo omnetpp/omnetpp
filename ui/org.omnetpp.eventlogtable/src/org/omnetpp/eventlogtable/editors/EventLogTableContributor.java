@@ -166,7 +166,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 				EventLogEntry foundEventLogEntry = getEventLog().findEventLogEntry(eventLogTable.getSelectionElement(), searchText, true);
 				
 				if (foundEventLogEntry != null)
-					eventLogTable.gotoElement(foundEventLogEntry);
+					eventLogTable.gotoClosestElement(foundEventLogEntry);
 				else
 					MessageDialog.openInformation(null, "Search raw text", "No matches found!");
 			}
@@ -182,7 +182,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		return new EventLogTableAction("Goto event cause") {
 			@Override
 			public void run() {
-				eventLogTable.gotoElement(getCauseEventLogEntry());
+				eventLogTable.gotoClosestElement(getCauseEventLogEntry());
 			}
 
 			@Override
@@ -285,7 +285,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		return new EventLogTableAction("Goto message reuse") {
 			@Override
 			public void run() {
-				eventLogTable.gotoElement(getMessageReuseEventLogEntry());
+				eventLogTable.gotoClosestElement(getMessageReuseEventLogEntry());
 			}
 
 			@Override
@@ -435,7 +435,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 			@Override
 			public void run() {
-				eventLogTable.setDisplayMode(getMenuIndex() % 2);
+				eventLogTable.setDisplayMode((getMenuIndex() + 1) % 2);
 				eventLogTable.redraw();
 				update();
 			}

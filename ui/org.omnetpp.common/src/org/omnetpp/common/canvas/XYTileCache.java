@@ -88,7 +88,7 @@ public class XYTileCache implements ITileCache {
 			memoryUsage -= TILE_SIZE_BYTES;
 			count++;
 		}
-		if (count>0)
+		if (debug && count>0)
 			System.out.printf("cache: thrown out %d tiles, currently holding %d\n", count, cache.size());
 	}
 

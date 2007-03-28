@@ -15,6 +15,7 @@ public class HierarchicalAxisOrderByMinimizingCost extends AbstractAxisOrderByMi
 	}
 
 	public void calculateOrdering(final ModuleTreeItem[] axisModules, int[] axisPositions, final IntVector axisMatrix) {
+		calculateOrdering(axisModules[0].getRootModule(), axisModules, axisPositions, axisMatrix);
 	}
 
 	public void calculateOrdering(final ModuleTreeItem module, final ModuleTreeItem[] axisModules, final int[] axisPositions, final IntVector axisMatrix) {

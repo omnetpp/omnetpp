@@ -42,7 +42,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 
 	protected SequenceChartAction showMessageNamesAction;
 
-	protected SequenceChartAction showReuseMessageAction;
+	protected SequenceChartAction showReuseMessagesAction;
 
 	protected SequenceChartAction showArrowHeadsAction;
 
@@ -64,7 +64,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		this.axisOrderingModeAction = createAxisOrderingModeAction();
 		this.showEventNumbersAction = createShowEventNumbersAction();
 		this.showMessageNamesAction = createShowMessageNamesAction();
-		this.showReuseMessageAction = createShowReuseMessageAction();
+		this.showReuseMessagesAction = createShowReuseMessagesAction();
 		this.showArrowHeadsAction = createShowArrowHeadsAction();
 		this.increaseSpacingAction = createIncreaseSpacingAction();
 		this.decreaseSpacingAction = createDecreaseSpacingAction();
@@ -138,7 +138,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 				menuManager.add(separatorAction);
 				menuManager.add(showEventNumbersAction);
 				menuManager.add(showMessageNamesAction);
-				menuManager.add(showReuseMessageAction);
+				menuManager.add(showReuseMessagesAction);
 				menuManager.add(showArrowHeadsAction);
 				menuManager.add(separatorAction);
 				menuManager.add(increaseSpacingAction);
@@ -176,12 +176,12 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		axisOrderingModeAction.update();
 		showEventNumbersAction.update();
 		showMessageNamesAction.update();
-		showReuseMessageAction.update();
+		showReuseMessagesAction.update();
 		showArrowHeadsAction.update();
 	}
 
 	private SequenceChartMenuAction createTimelineModeAction() {
-		return new SequenceChartMenuAction("Timeline mode", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+		return new SequenceChartMenuAction("Timeline mode", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_TIMELINE_MODE)) {
 			@Override
 			public void run() {
 				sequenceChart.setTimelineMode(SequenceChart.TimelineMode.values()[(sequenceChart.getTimelineMode().ordinal() + 1) % SequenceChart.TimelineMode.values().length]);
@@ -223,7 +223,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 
 	private SequenceChartMenuAction createAxisOrderingModeAction() {
-		return new SequenceChartMenuAction("Axis ordering mode", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+		return new SequenceChartMenuAction("Axis ordering mode", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_AXIS_ORDERING_MODE)) {
 			@Override
 			public void run() {
 				sequenceChart.setAxisOrderingMode(SequenceChart.AxisOrderingMode.values()[(sequenceChart.getAxisOrderingMode().ordinal() + 1) % SequenceChart.AxisOrderingMode.values().length]);
@@ -267,7 +267,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 	
 	private SequenceChartAction createShowEventNumbersAction() {
-		return new SequenceChartAction(null, Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+		return new SequenceChartAction(null, Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_SHOW_EVENT_NUMBERS)) {
 			@Override
 			public void run() {
 				sequenceChart.setShowEventNumbers(!sequenceChart.getShowEventNumbers());
@@ -284,7 +284,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 
 	private SequenceChartAction createShowMessageNamesAction() {
-		return new SequenceChartAction(null, Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+		return new SequenceChartAction(null, Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_SHOW_MESSAGE_NAMES)) {
 			@Override
 			public void run() {
 				sequenceChart.setShowMessageNames(!sequenceChart.getShowMessageNames());
@@ -300,8 +300,8 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		};
 	}
 	
-	private SequenceChartAction createShowReuseMessageAction() {
-		return new SequenceChartAction(null, Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+	private SequenceChartAction createShowReuseMessagesAction() {
+		return new SequenceChartAction(null, Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_SHOW_REUSE_MESSAGES)) {
 			@Override
 			public void run() {
 				sequenceChart.setShowReuseMessages(!sequenceChart.getShowReuseMessages());
@@ -318,7 +318,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 	
 	private SequenceChartAction createShowArrowHeadsAction() {
-		return new SequenceChartAction(null, Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+		return new SequenceChartAction(null, Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_SHOW_ARROW_HEADS)) {
 			@Override
 			public void run() {
 				sequenceChart.setShowArrowHeads(!sequenceChart.getShowArrowHeads());
@@ -335,7 +335,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 	
 	private SequenceChartAction createIncreaseSpacingAction() {
-		return new SequenceChartAction("Increase spacing", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+		return new SequenceChartAction("Increase spacing", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_INCREASE_SPACING)) {
 			@Override
 			public void run() {
 				sequenceChart.setAxisSpacing(sequenceChart.getAxisSpacing() + 5);
@@ -344,7 +344,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 	
 	private SequenceChartAction createDecreaseSpacingAction() {
-		return new SequenceChartAction("Decrease spacing", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+		return new SequenceChartAction("Decrease spacing", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_DECREASE_SPACING)) {
 			@Override
 			public void run() {
 				sequenceChart.setAxisSpacing(sequenceChart.getAxisSpacing() - 5);
@@ -371,7 +371,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 
 	private SequenceChartAction createDenseAxesAction() {
-		return new SequenceChartAction("Dense axes", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+		return new SequenceChartAction("Dense axes", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_DENSE_AXES)) {
 			@Override
 			public void run() {
 				sequenceChart.setAxisSpacing(16);
@@ -380,7 +380,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 
 	private SequenceChartAction createBalancedAxesAction() {
-		return new SequenceChartAction("Balanced axes", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+		return new SequenceChartAction("Balanced axes", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_BALANCED_AXES)) {
 			@Override
 			public void run() {
 				sequenceChart.setAxisSpacing(-1);

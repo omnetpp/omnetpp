@@ -63,7 +63,7 @@ public class ColumnTileCache implements ITileCache {
 			tile.image.dispose();
 			count++;
 		}
-		if (count>0 && debug)
+		if (debug && count>0)
 			System.out.printf("cache: thrown out %d tiles, currently holding %d\n", count, cache.size());
 	}
 
