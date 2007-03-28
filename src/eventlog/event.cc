@@ -290,7 +290,8 @@ Event *Event::getReuserEvent(int &beginSendEntryNumber)
     // TODO: the result of this calculation should be put into an index file lazily
     // TODO: and first we should look it up there, so that the expesive computation is not repeated
     // TODO: there should be some kind of limit on this loop not the end of the file
-    while (current) {
+    int maxLookAhead = 100;
+    while (current && maxLookAhead--) {
         for (beginSendEntryNumber = 0; beginSendEntryNumber < (int)current->eventLogEntries.size(); beginSendEntryNumber++)
         {
             EventLogEntry *eventLogEntry = current->eventLogEntries[beginSendEntryNumber];

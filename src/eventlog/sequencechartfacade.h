@@ -50,8 +50,8 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
         double getSimulationTimeForTimelineCoordinate(double timelineCoordinate);
         double getTimelineCoordinateForSimulationTime(double simulationTime);
 
-        std::vector<int64> *getIntersectingMessageDependencies(int64 startEventPtr, int64 endEventPtr);
-        std::vector<int> getApproximateMessageCountAdjacencyMatrix(std::map<int, int> moduleIdToAxisIdMap);
+        std::vector<int64> *getIntersectingMessageDependencies(int64 startEventPtr, int64 endEventPtr, int lookAroundCount);
+        std::vector<int> getApproximateMessageDependencyCountAdjacencyMatrix(std::map<int, int> *moduleIdToAxisIdMap, int numberOfSamples);
 };
 
 #endif

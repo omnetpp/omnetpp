@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <set>
 #include <math.h>
+#include "lcgrandom.h"
 #include "ievent.h"
 #include "ieventlog.h"
 #include "event.h"
@@ -209,49 +210,62 @@ double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simula
     }
 }
 
-std::vector<int64> *SequenceChartFacade::getIntersectingMessageDependencies(int64 startEventPtr, int64 endEventPtr)
+std::vector<int64> *SequenceChartFacade::getIntersectingMessageDependencies(int64 startEventPtr, int64 endEventPtr, int lookAroundCount)
 {
     int i;
     IEvent *event;
-    int lookaheadCount = 100;
     std::set<int64> messageDependencies;
     IEvent *startEvent = (IEvent *)startEventPtr;
     IEvent *endEvent = (IEvent *)endEventPtr;
     long startEventNumber = startEvent->getEventNumber();
     long endEventNumber = endEvent->getEventNumber();
+    long endLookAroundEventNumber = endEventNumber;
 
-    for (event = startEvent, i = 0; i < lookaheadCount && event; event = event->getPreviousEvent(), i++) {
-        MessageDependencyList *consequences = event->getCauses();
-
-        for (MessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++) {
-            MessageDependency *messageDependency = *it;
-            long eventNumber = messageDependency->getConsequenceEventNumber();
-
-            if (endEventNumber < eventNumber)
-                messageDependencies.insert((int64)messageDependency);
-        }
-    }
-
-    for (IEvent *event = startEvent; event != endEvent; event = event->getNextEvent()) {
-        MessageDependencyList *causes = event->getCauses();
-
-        for (MessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
-            messageDependencies.insert((int64)*it);
-
-        MessageDependencyList *consequences = event->getCauses();
-
-        for (MessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
-            messageDependencies.insert((int64)*it);
-    }
-
-    for (event = endEvent, i = 0; i < lookaheadCount && event; event = event->getNextEvent(), i++) {
+    // look after requrested range
+    for (event = endEvent, i = 0; i < lookAroundCount && event; event = event->getNextEvent(), i++) {
         MessageDependencyList *causes = event->getCauses();
 
         for (MessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++) {
             MessageDependency *messageDependency = *it;
             long eventNumber = messageDependency->getCauseEventNumber();
 
-            if (eventNumber < startEventNumber)
+            // store only if refers inside or before the requested range
+            if (eventNumber <= endEventNumber)
+                messageDependencies.insert((int64)messageDependency);
+        }
+
+        endLookAroundEventNumber = event->getEventNumber();
+    }
+
+    // look before requrested range
+    for (event = startEvent, i = 0; i < lookAroundCount && event; event = event->getPreviousEvent(), i++) {
+        MessageDependencyList *consequences = event->getConsequences();
+
+        for (MessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++) {
+            MessageDependency *messageDependency = *it;
+            long eventNumber = messageDependency->getConsequenceEventNumber();
+
+            // store only if refers outside the requested plus look around range
+            if (endLookAroundEventNumber < eventNumber)
+                messageDependencies.insert((int64)messageDependency);
+        }
+    }
+
+    // look at requested range
+    for (IEvent *event = startEvent; event != endEvent; event = event->getNextEvent()) {
+        MessageDependencyList *causes = event->getCauses();
+
+        for (MessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
+            messageDependencies.insert((int64)*it);
+
+        MessageDependencyList *consequences = event->getConsequences();
+
+        for (MessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++) {
+            MessageDependency *messageDependency = *it;
+            long eventNumber = messageDependency->getConsequenceEventNumber();
+
+            // store only if refers outside the requested plus look around range
+            if (endLookAroundEventNumber < eventNumber)
                 messageDependencies.insert((int64)messageDependency);
         }
     }
@@ -263,11 +277,45 @@ std::vector<int64> *SequenceChartFacade::getIntersectingMessageDependencies(int6
     return result;
 }
 
-std::vector<int> SequenceChartFacade::getApproximateMessageCountAdjacencyMatrix(std::map<int, int> moduleIdToAxisIdMap)
+std::vector<int> SequenceChartFacade::getApproximateMessageDependencyCountAdjacencyMatrix(std::map<int, int> *moduleIdToAxisIdMap, int numberOfSamples)
 {
+    LCGRandom lcgRandom;
     std::vector<int> adjacencyMatrix;
+    std::set<int> axisIdSet;
+    std::set<long> eventNumbers;
 
-    // TODO:
+    for (std::map<int, int>::iterator it = moduleIdToAxisIdMap->begin(); it != moduleIdToAxisIdMap->end(); it++)
+        axisIdSet.insert(it->second);
+
+    int numberOfAxes = axisIdSet.size();
+    adjacencyMatrix.resize(numberOfAxes * numberOfAxes);
+
+    for (int i = 0; i < numberOfSamples; i++)
+    {
+        double percentage = lcgRandom.next01();
+        IEvent *event = eventLog->getApproximateEventAt(percentage);
+
+        if (eventNumbers.find(event->getEventNumber()) == eventNumbers.end()) {
+            MessageDependencyList *causes = event->getCauses();
+
+            for (MessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++) {
+                MessageDependency *messageDependency = *it;
+                IEvent *causeEvent = messageDependency->getCauseEvent();
+                IEvent *consequenceEvent = messageDependency->getConsequenceEvent();
+
+                if (causeEvent && consequenceEvent) {
+                    int causeModuleId = causeEvent->getModuleId();
+                    int consequenceModuleId = consequenceEvent->getModuleId();
+
+                    std::map<int, int>::iterator causeModuleIdIt = moduleIdToAxisIdMap->find(causeModuleId);
+                    std::map<int, int>::iterator consequenceModuleIdIt = moduleIdToAxisIdMap->find(consequenceModuleId);
+
+                    if (causeModuleIdIt !=  moduleIdToAxisIdMap->end() && consequenceModuleIdIt !=  moduleIdToAxisIdMap->end())
+                        adjacencyMatrix.at(causeModuleIdIt->second * numberOfAxes + consequenceModuleIdIt->second)++;
+                }
+            }
+        }
+    }
 
     return adjacencyMatrix;
 }
