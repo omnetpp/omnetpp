@@ -449,11 +449,12 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
         else // process the event and remeber this serial
             setLastEventSerial(event.getSerial());
 
+        // for debugging only
+        System.out.println("TYPEINFO NOTIFY ON: "+getNEDElement().getClass().getSimpleName()+" "+getName()+" "+event);
+
         // send the event to the builder for processing. 
         resolver.modelChanged(event);
         
-        // for debugging only
-        System.out.println("TYPEINFO NOTIFY ON: "+getNEDElement().getClass().getSimpleName()+" "+getName()+" "+event);
         
         // TODO test if the name attribute has changed and pass it to NEDResources 
         // because in that case the whole model (All files) have to be rebuilt

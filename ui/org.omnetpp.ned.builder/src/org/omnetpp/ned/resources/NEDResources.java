@@ -25,6 +25,7 @@ import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.ITopLevelElement;
+import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NEDChangeListenerList;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
@@ -62,6 +63,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     private static final String NED_EXTENSION = "ned";
     // listener list that listenens on all NED changes
     private transient NEDChangeListenerList nedComponentChangeListenerList = null;
+    private transient NEDChangeListenerList nedModelChangeListenerList = null;
+    private INEDChangeListener nedModelChangeListener;
     // stores parsed contents of NED files
     private HashMap<IFile, NEDElement> nedFiles = new HashMap<IFile, NEDElement>();
     private ProblemMarkerJob markerJob = new ProblemMarkerJob("Updating problem markers");
@@ -99,6 +102,11 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      */
     public NEDResources() {
         createBuiltInNEDTypes();
+        nedModelChangeListener = new INEDChangeListener() {
+            public void modelChanged(NEDModelEvent event) {
+                nedModelChanged(event);
+            }
+        };
     }
 
     /**
@@ -357,6 +365,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     public synchronized void forgetNEDFile(IFile file) {
         if (nedFiles.containsKey(file)) {
+            // remove our model change from the file
+            nedFiles.get(file).getListeners().remove(nedModelChangeListener);
             nedFiles.remove(file);
             markerJob.removeStores(file);
             needsRehash = true;
@@ -372,6 +382,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         if (oldTree == null || !NEDTreeUtil.isNEDTreeEqual(oldTree, tree)) {
             needsRehash = true;
             nedFiles.put(file, tree);
+            // add ourselves to the tree root as a listener
+            tree.getListeners().add(nedModelChangeListener);
         }
     }
 
@@ -545,7 +557,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             // process the even and remeber this serial
             lastEventSerial = event.getSerial();
 
-        System.out.println("NEDRESOURCES NOTIFY: "+event);
+        System.out.println("NEDRESOURCES TYPE NOTIFY: "+event);
         // if a name property has changed everything should be rebuilt because
         // inheritence might have changed
         // we may check only for toplevel component names and extends attributes
@@ -563,6 +575,30 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         if (displayMayHaveChanged(event)) {
             fireNEDComponentChanged(event);
         }
+    }
+
+    /**
+     * @return The listener list attached to the plugin which is notified about 
+     * ANY change in the NED model (ie. any change in any file) 
+     */
+    public NEDChangeListenerList getNEDModelChangeListenerList() {
+        if (nedModelChangeListenerList == null)
+            nedModelChangeListenerList = new NEDChangeListenerList();
+        return nedModelChangeListenerList;
+    }
+
+    protected void nedModelChanged(NEDModelEvent event) {
+        // skip the event processing if te last serial is greater or equal. only newer
+        // events should be processed. this prevent the processing of the same event multiple times
+
+        if(nedModelChangeListenerList == null || !getNEDModelChangeListenerList().isEnabled())
+            return;
+        
+        System.out.println("NEDRESOURCES MODEL NOTIFY: "+event);
+
+        // forward to the listerList
+        nedModelChangeListenerList.fireModelChanged(event);
+        
     }
 
     /**
