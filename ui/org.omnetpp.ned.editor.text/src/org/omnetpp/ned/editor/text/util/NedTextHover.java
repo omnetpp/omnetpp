@@ -18,6 +18,7 @@ import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDSourceRegion;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.resources.NEDResources;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
@@ -37,7 +38,7 @@ public class NedTextHover implements ITextHover {
 		String word = getWordUnderCursor(textViewer, hoverRegion, NedHelper.nedWordDetector);
 
 		// if we find a NED component with that name, display its source code
-		NEDResources res = NEDResourcesPlugin.getNEDResources();    	
+		INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();    	
 		INEDTypeInfo component = res.getComponent(word);
 		
 		if (component!=null)
@@ -81,7 +82,7 @@ public class NedTextHover implements ITextHover {
 	private String getNEDElementsUnderCursor(ITextViewer textViewer, IRegion hoverRegion) {
 		try {
 			// find out line:column
-			NEDResources res = NEDResourcesPlugin.getNEDResources();    	
+			INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();    	
 			IDocument docu = textViewer.getDocument();
 			int line = docu.getLineOfOffset(hoverRegion.getOffset());
 			int column = hoverRegion.getOffset() - docu.getLineOffset(line);
