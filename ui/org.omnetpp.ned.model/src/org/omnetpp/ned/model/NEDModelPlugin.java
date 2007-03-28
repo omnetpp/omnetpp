@@ -4,19 +4,13 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
-import org.omnetpp.ned.model.notification.INEDChangeListener;
-import org.omnetpp.ned.model.notification.NEDChangeListenerList;
-import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.osgi.framework.BundleContext;
 
 /**
  * The main plugin class to be used in the desktop.
  */
-public class NEDModelPlugin extends AbstractUIPlugin 
-                                implements INEDChangeListener {
+public class NEDModelPlugin extends AbstractUIPlugin {
     public static String PLUGIN_ID; 
-    private transient NEDChangeListenerList nedModelChangeListenerList = null;
-    protected long lastEventSerial;
     
 	//The shared instance.
 	private static NEDModelPlugin plugin;
@@ -63,29 +57,4 @@ public class NEDModelPlugin extends AbstractUIPlugin
         getDefault().getLog().log(status);
     }
 
-    /**
-     * @return The listener list attached to the plugin which is notified about 
-     * ANY change in the NED model (ie. any change in any file) 
-     */
-    public NEDChangeListenerList getNEDModelChangeListenerList() {
-        if (nedModelChangeListenerList == null)
-            nedModelChangeListenerList = new NEDChangeListenerList();
-        return nedModelChangeListenerList;
-    }
-
-    public void modelChanged(NEDModelEvent event) {
-        // skip the event processing if te last serial is greater or equal. only newer
-        // events should be processed. this prevent the processing of the same event multiple times
-        if (lastEventSerial >= event.getSerial())
-            return;
-        else // process the event and remember this serial
-            lastEventSerial = event.getSerial();
-
-        if(nedModelChangeListenerList == null || !getNEDModelChangeListenerList().isEnabled())
-            return;
-        // forward to the listerList
-        nedModelChangeListenerList.fireModelChanged(event);
-        
-        System.out.println("NED MODEL NOTIFY: "+event);
-    }
 }
