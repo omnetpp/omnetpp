@@ -201,20 +201,6 @@ void RunData::writeToFile(FILE *file, const char *filename) const
     }
 }
 
-int RunData::getSimtimeScale() const
-{
-    std::map<std::string,std::string>::const_iterator it = attributes.find("simtime-scale");
-    if (it != attributes.end())
-    {
-        std::string value = it->second;
-        int scale;
-        if (parseInt(value.c_str(), scale))
-            return scale;
-    }
-
-    return -12; // DEFAULT SCALE
-}
-
 //=========================================================================
 static bool isFileReadable(const char *filename)
 {
@@ -433,8 +419,7 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
         }
         if (vector.hasColumn('T'))
         {
-            int scale = index->run.getSimtimeScale();
-            CHECK(parseSimtime(tokens[i++], scale, block.startTime) && parseSimtime(tokens[i++], scale, block.endTime),
+            CHECK(parseSimtime(tokens[i++], block.startTime) && parseSimtime(tokens[i++], block.endTime),
                 "invalid simulation time", lineNum);
         }
         if (vector.hasColumn('V'))
@@ -501,7 +486,6 @@ void IndexFileWriter::writeRun(const RunData &run)
     if (file == NULL)
         openFile();
     run.writeToFile(file, filename.c_str());
-    scale = run.getSimtimeScale();
 }
 
 void IndexFileWriter::writeVector(const VectorData& vector)
@@ -540,8 +524,8 @@ void IndexFileWriter::writeBlock(const VectorData &vector, const Block& block)
         CHECK(fprintf(file, "%d\t%ld", vector.vectorId, block.startOffset));
         if (vector.hasColumn('E')) { CHECK(fprintf(file, " %ld %ld", block.startEventNum, block.endEventNum)); }
         if (vector.hasColumn('T')) { CHECK(fprintf(file, " %s %s",
-                                                        SimulTime::ttoa(buff1, block.startTime, scale, e),
-                                                        SimulTime::ttoa(buff2, block.endTime, scale, e))); }
+                                                        BigDecimal::ttoa(buff1, block.startTime, e),
+                                                        BigDecimal::ttoa(buff2, block.endTime, e))); }
         if (vector.hasColumn('V')) { CHECK(fprintf(file, " %ld %.*g %.*g %.*g %.*g",
                                                 block.count(), precision, block.min(), precision, block.max(),
                                                 precision, block.sum(), precision, block.sumSqr())); }

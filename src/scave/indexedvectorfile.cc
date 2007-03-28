@@ -33,7 +33,6 @@ IndexedVectorFileReader::IndexedVectorFileReader(const char *filename, long vect
     IndexFileReader indexReader(ifname.c_str());
     index = indexReader.readAll(); // XXX do not read whole index
     vector = index->getVector(vectorId);
-    scale = index->run.getSimtimeScale();
 }
 
 IndexedVectorFileReader::~IndexedVectorFileReader()
@@ -102,7 +101,7 @@ void IndexedVectorFileReader::loadBlock(const Block &block)
             switch (columns[j])
             {
             case 'E': CHECK(parseLong(tokens[j+1], entry.eventNumber), "Malformed event number", block, i); break;
-            case 'T': CHECK(parseSimtime(tokens[j+1], scale, entry.simtime), "Malformed simulation time", block, i); break;
+            case 'T': CHECK(parseSimtime(tokens[j+1], entry.simtime), "Malformed simulation time", block, i); break;
             case 'V': CHECK(parseDouble(tokens[j+1], entry.value), "Malformed vector value", block, i); break;
             default: CHECK(false, "Unknown column", block, i); break;
             }

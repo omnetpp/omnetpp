@@ -17,6 +17,7 @@
 
 #include "inttypes.h" // for int64, our equivalent of Java's "long" type
 #include "platdefs.h"
+#include "bigdecimal.h"
 
 #ifdef BUILDING_SCAVE
 #  define SCAVE_API  OPP_DLLEXPORT
@@ -25,6 +26,8 @@
 #endif
 
 #define DEFAULT_PRECISION  14
+
+typedef BigDecimal simultime_t;
 
 #endif
 

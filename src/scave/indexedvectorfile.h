@@ -51,7 +51,6 @@ class SCAVE_API IndexedVectorFileReader
     FileReader *reader; // reader of the vector file
 
     VectorFileIndex *index; // index of the vector file, loaded fully into the memory
-    int scale;  // sim time scale
     const VectorData *vector;     // index data of the read vector, points into index
     const Block *currentBlock;    // last loaded block, points into index
     Entries currentEntries; // entries of the loaded block

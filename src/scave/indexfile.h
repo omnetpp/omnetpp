@@ -17,7 +17,6 @@
 
 #include <float.h>
 #include <map>
-#include "simultime.h"
 #include "scavedefs.h"
 
 /**
@@ -201,7 +200,6 @@ struct RunData {
 
     bool parseLine(char **tokens, int numTokens, const char *filename, int lineNo);
     void writeToFile(FILE *file, const char *filename) const;
-    int getSimtimeScale() const;
 };
 
 /**
@@ -288,8 +286,6 @@ class SCAVE_API IndexFileWriter
     private:
         /** Name of the index file. */
         std::string filename;
-        /** Scale of the simulation time. */
-        int scale;
         /** Precision of double values stored in the index file. */
         int precision;
         /** Handle of the opened index file. */

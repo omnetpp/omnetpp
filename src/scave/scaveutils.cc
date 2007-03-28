@@ -7,7 +7,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "simultime.h"
 #include "scaveutils.h"
 
 static double zero =0;
@@ -43,12 +42,12 @@ bool parseDouble(const char *s, double& dest)
     return false;
 }
 
-bool parseSimtime(const char *s, int scale, simultime_t &dest)
+bool parseSimtime(const char *s, simultime_t &dest)
 {
     const char *e;
     simultime_t t;
     try {
-        t = SimulTime::parse(s, scale, e);
+        t = BigDecimal::parse(s, e);
     } catch (std::exception &e) {
         return false;
     }

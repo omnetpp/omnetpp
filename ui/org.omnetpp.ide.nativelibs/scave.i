@@ -3,6 +3,7 @@
 %include "loadlib.i"
 
 %{
+#include "scavedefs.h"
 #include "idlist.h"
 #include "resultfilemanager.h"
 #include "datasorter.h"
@@ -12,7 +13,6 @@
 #include "vectorfileindexer.h"
 #include "vectorfilereader.h"
 #include "scaveexception.h"
-#include "simultime.h"
 %}
 
 %exception {
@@ -47,6 +47,28 @@
 %include "std_vector.i"
 %include "std_map.i"
 
+%typemap(jni) BigDecimal "jobject";
+%typemap(jtype) BigDecimal "java.math.BigDecimal";
+%typemap(jstype) BigDecimal "java.math.BigDecimal";
+%typemap(javain) BigDecimal "$javainput";
+%typemap(javaout) BigDecimal {
+   return $jnicall;
+}
+
+%typemap(in) BigDecimal {
+   jclass cl = jenv->FindClass("java/math/BigDecimal");
+   jmethodID methodID = jenv->GetMethodID(cl, "toPlainString", "()Ljava/lang/String;");
+   jstring javaString = (jstring)jenv->CallObjectMethod($input, methodID);
+   const char *chars = jenv->GetStringUTFChars(javaString, 0);
+   $1 = BigDecimal::parse(chars);
+   jenv->ReleaseStringUTFChars(javaString, chars);
+}
+
+%typemap(out) BigDecimal {
+   jclass cl = jenv->FindClass("java/math/BigDecimal");
+   jmethodID methodId = jenv->GetMethodID(cl, "<init>", "(Ljava/lang/String;)V");
+   $result = (jenv->NewObject(cl, methodId, jenv->NewStringUTF($1.str().c_str())));
+}
 
 namespace std {
    %typemap(javacode) vector<string> %{
@@ -157,6 +179,7 @@ namespace std {
    %template(IntVector) vector<int>;
 
 };
+
 
 %typemap(javacode) IDList %{
     public void swigDisown() {
@@ -384,6 +407,7 @@ namespace std {
 %ignore VectorFileReaderNodeType;
 %include "vectorfilereader.h"
 
-/* ------------ simultime.h ----------------------- */
-%ignore SimulTime::ttoa;
-%include "simultime.h"
+// /* ------------ simultime.h ----------------------- */
+// %ignore SimulTime::ttoa;
+// %include "simultime.h"
+

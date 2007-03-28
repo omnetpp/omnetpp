@@ -1,5 +1,7 @@
 package org.omnetpp.scave.engineext;
 
+import java.math.BigDecimal;
+
 import org.omnetpp.scave.engine.IndexedVectorFileReader;
 import org.omnetpp.scave.engine.OutputVectorEntry;
 
@@ -28,7 +30,7 @@ public class IndexedVectorFileReaderEx extends IndexedVectorFileReader {
 	}
 
 	@Override
-	public OutputVectorEntry getEntryBySimtime(long simtime, boolean after) {
+	public OutputVectorEntry getEntryBySimtime(BigDecimal simtime, boolean after) {
 		return copy(super.getEntryBySimtime(simtime, after));
 	}
 	

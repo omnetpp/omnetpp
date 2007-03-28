@@ -57,7 +57,6 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName)
     int currentVectorId = -1;
     VectorData *currentVectorRef = NULL;
     Block currentBlock;
-    int scale=INT_MAX;
 
     while ((line=reader.getNextLineBufferPointer())!=NULL)
     {
@@ -96,9 +95,6 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName)
             double value;
             long eventNum = -1;
 
-            if (scale == INT_MAX)
-                scale = index.run.getSimtimeScale();
-
             if (!parseInt(tokens[0], vectorId))
             {
                 numOfUnrecognizedLines++;
@@ -132,7 +128,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName)
                 switch (column)
                 {
                 case 'T':
-                    if (!parseSimtime(token, scale, simTime))
+                    if (!parseSimtime(token, simTime))
                         throw ResultFileFormatException("vector file indexer: malformed simulation time", vectorFileName, lineNo);
                     break;
                 case 'V':

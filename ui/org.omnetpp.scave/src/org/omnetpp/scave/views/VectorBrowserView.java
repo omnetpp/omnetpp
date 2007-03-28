@@ -1,5 +1,7 @@
 package org.omnetpp.scave.views;
 
+import java.math.BigDecimal;
+
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -21,7 +23,6 @@ import org.omnetpp.scave.editors.datatable.VectorResultContentProvider;
 import org.omnetpp.scave.editors.datatable.VectorResultRowRenderer;
 import org.omnetpp.scave.engine.IndexFile;
 import org.omnetpp.scave.engine.OutputVectorEntry;
-import org.omnetpp.scave.engine.SimulTime;
 import org.omnetpp.scave.engine.VectorResult;
 
 /**
@@ -93,7 +94,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 			viewer.scrollToElement(entry);
 	}
 	
-	public void gotoTime(long time) {
+	public void gotoTime(BigDecimal time) {
 		OutputVectorEntry entry = contentProvider.getElementBySimulationTime(time, true);
 		if (entry != null)
 			viewer.scrollToElement(entry);
@@ -181,15 +182,6 @@ public class VectorBrowserView extends ViewWithMessagePart {
 		}
 	}
 	
-	private int getCurrentTimeScale() {
-		if (viewer.getInput() instanceof VectorResult) {
-			VectorResult vector = (VectorResult)viewer.getInput();
-			if (vector.getFileRun() != null && vector.getFileRun().getRun() != null)
-				return vector.getFileRun().getRun().getSimulationTimeScale();
-		}
-		return 0;
-	}
-	
 	// Order: Item#, Event#, Time, Value
 	private static final int[] ColumnOrder = new int[] {0,3,1,2};
 	
@@ -247,7 +239,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 					switch (target) {
 					case Line: view.gotoLine((Integer)targetAddr); break;
 					case Event: view.gotoEvent((Integer)targetAddr); break;
-					case Time: view.gotoTime((Long)targetAddr); break;
+					case Time: view.gotoTime((BigDecimal)targetAddr); break;
 					}
 				}
 			}
@@ -257,7 +249,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 			try
 			{
 				if (target == GotoTarget.Time)
-					return SimulTime.parse(str, view.getCurrentTimeScale());
+					return new BigDecimal(str);
 				else
 					return Integer.parseInt(str);
 			} catch (Exception e) {
@@ -265,5 +257,4 @@ public class VectorBrowserView extends ViewWithMessagePart {
 			}
 		}
 	}
-
 }

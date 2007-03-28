@@ -32,8 +32,12 @@
 class COMMON_API BigDecimal
 {
   private:
-    int64 intVal;
-    int scale;
+    /*
+     * The value of the number is intVal * 10^scale.
+     * If two decimal is equal then they have the same intVal and scale (see normalize()).
+     */
+    int64 intVal; // stores digits of the decimal number (up to 18 digits can be stored)
+    int scale;    // stores the position of the decimal point, must be in the [0,-18] range
 
     static const int minScale = -18;
     static const int maxScale = 0;
@@ -45,7 +49,9 @@ class COMMON_API BigDecimal
     }
 
     /*
-     * Sets scale between minScale and maxScale and strips trailing zeros.
+     * Sets scale between minScale and maxScale and strips trailing zeros when scale<maxScale.
+     * 0.0 always has scale=0.
+     * If x and y equal decimals, then x.intVal==y.intVal and x.scale==y.scale after normalization.
      */
     void normalize();
     /*
@@ -55,21 +61,18 @@ class COMMON_API BigDecimal
 
   public:
 
-    /**
-     * Constructor initializes to zero.
-     */
+    /** Constructors. */
     BigDecimal() {intVal=0; scale=0;}
     BigDecimal(int64 intVal, int scale) : intVal(intVal), scale(scale) { normalize(); }
+    BigDecimal(const BigDecimal &x) {operator=(x);}
     BigDecimal(double d) {operator=(d);}
 
-    /** @name Arithmetic operations */
-    //@{
+    /** Arithmetic operations */
     const BigDecimal& operator=(double d);
     const BigDecimal& operator=(const BigDecimal& x) {intVal=x.intVal; scale=x.scale; return *this;}
 
     const BigDecimal& operator+=(const BigDecimal& x) {*this=BigDecimal(dbl()+x.dbl()); return *this;}
     const BigDecimal& operator-=(const BigDecimal& x) {*this=BigDecimal(dbl()-x.dbl()); return *this;}
-
     const BigDecimal& operator*=(double d) {*this=BigDecimal(dbl()*d); return *this;}
     const BigDecimal& operator/=(double d) {*this=BigDecimal(dbl()/d); return *this;}
 
@@ -87,8 +90,6 @@ class COMMON_API BigDecimal
     friend const BigDecimal operator*(double d, const BigDecimal& x);
     friend const BigDecimal operator/(const BigDecimal& x, double d);
     friend const BigDecimal operator/(const BigDecimal& x, const BigDecimal& y);
-
-    //@}
 
     /**
      * Converts big decimal to double. Note that conversion to and from

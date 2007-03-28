@@ -16,8 +16,7 @@ OBJS= lcgrandom.obj filereader.obj linetokenizer.obj \
       stringtokenizer.obj fnamelisttokenizer.obj \
       matchexpression.obj lex.matchexpressionyy.obj matchexpression.tab.obj \
       patternmatcher.obj unitconversion.obj displaystring.obj fileglobber.obj \
-      fileutil.obj stringutil.obj commonutil.obj exception.obj \
-      simultime.obj bigdecimal.obj
+      fileutil.obj stringutil.obj commonutil.obj exception.obj bigdecimal.obj
 
 
 #
@@ -66,6 +65,10 @@ clean:
 	-del $(VC_AUX_FILES) 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+bigdecimal.obj: bigdecimal.cc \
+  bigdecimal.h \
+  commondefs.h \
+  exception.h
 commonutil.obj: commonutil.cc \
   commonutil.h \
   commondefs.h \
@@ -85,6 +88,7 @@ filereader.obj: filereader.cc \
   exception.h \
   commondefs.h
 fileutil.obj: fileutil.cc \
+  ./unistd.h \
   fileutil.h \
   commondefs.h
 fnamelisttokenizer.obj: fnamelisttokenizer.cc \
@@ -121,6 +125,11 @@ patternmatcher.obj: patternmatcher.cc \
   exception.h \
   commondefs.h \
   commonutil.h
+simultime.obj: simultime.cc \
+  simultime.h \
+  unitconversion.h \
+  exception.h \
+  commondefs.h
 stringtokenizer.obj: stringtokenizer.cc \
   stringtokenizer.h \
   commondefs.h

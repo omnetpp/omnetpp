@@ -75,6 +75,7 @@ arraybuilder.obj: arraybuilder.cc \
   ../common/commondefs.h \
   ../common/exception.h \
   scavedefs.h \
+  ../common/bigdecimal.h \
   commonnodes.h \
   xyarray.h \
   nodetype.h \
@@ -85,7 +86,8 @@ channel.obj: channel.cc \
   node.h \
   ../common/commondefs.h \
   ../common/exception.h \
-  scavedefs.h
+  scavedefs.h \
+  ../common/bigdecimal.h
 commonnodes.obj: commonnodes.cc \
   commonnodes.h \
   channel.h \
@@ -93,6 +95,7 @@ commonnodes.obj: commonnodes.cc \
   nodetype.h \
   scavedefs.h \
   ../common/commonutil.h \
+  ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/exception.h \
   dataflowmanager.h
@@ -108,7 +111,8 @@ compoundfilter.obj: compoundfilter.cc \
   dataflowmanager.h \
   node.h \
   channel.h \
-  scavedefs.h
+  scavedefs.h \
+  ../common/bigdecimal.h
 dataflowmanager.obj: dataflowmanager.cc \
   channel.h \
   nodetype.h \
@@ -117,7 +121,8 @@ dataflowmanager.obj: dataflowmanager.cc \
   node.h \
   ../common/commondefs.h \
   ../common/exception.h \
-  scavedefs.h
+  scavedefs.h \
+  ../common/bigdecimal.h
 datasorter.obj: datasorter.cc \
   resultfilemanager.h \
   ../common/commonutil.h \
@@ -126,6 +131,7 @@ datasorter.obj: datasorter.cc \
   idlist.h \
   ../common/exception.h \
   scavedefs.h \
+  ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/patternmatcher.h
 diffquot.obj: diffquot.cc \
@@ -136,6 +142,7 @@ diffquot.obj: diffquot.cc \
   ../common/commondefs.h \
   ../common/exception.h \
   scavedefs.h \
+  ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
   dataflowmanager.h
@@ -147,6 +154,7 @@ filewriter.obj: filewriter.cc \
   ../common/commondefs.h \
   ../common/exception.h \
   scavedefs.h \
+  ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
   dataflowmanager.h
@@ -158,6 +166,7 @@ filternodes.obj: filternodes.cc \
   ../common/commondefs.h \
   ../common/exception.h \
   scavedefs.h \
+  ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
   dataflowmanager.h
@@ -166,9 +175,10 @@ idlist.obj: idlist.cc \
   resultfilemanager.h \
   ../common/stringutil.h \
   scavedefs.h \
+  ../common/bigdecimal.h \
+  ../common/commondefs.h \
   ../common/exception.h \
-  ../common/commonutil.h \
-  ../common/commondefs.h
+  ../common/commonutil.h
 indexedvectorfile.obj: indexedvectorfile.cc \
   ../common/exception.h \
   ../common/linetokenizer.h \
@@ -180,6 +190,7 @@ indexedvectorfile.obj: indexedvectorfile.cc \
   ../common/commonutil.h \
   node.h \
   scavedefs.h \
+  ../common/bigdecimal.h \
   ../common/filereader.h \
   indexfile.h \
   nodetype.h \
@@ -196,7 +207,8 @@ indexfile.obj: indexfile.cc \
   indexfile.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
-  scavedefs.h
+  scavedefs.h \
+  ../common/bigdecimal.h
 mergernodes.obj: mergernodes.cc \
   channel.h \
   mergernodes.h \
@@ -205,6 +217,7 @@ mergernodes.obj: mergernodes.cc \
   ../common/commondefs.h \
   ../common/exception.h \
   scavedefs.h \
+  ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
   dataflowmanager.h
@@ -216,7 +229,8 @@ nodetype.obj: nodetype.cc \
   dataflowmanager.h \
   node.h \
   channel.h \
-  scavedefs.h
+  scavedefs.h \
+  ../common/bigdecimal.h
 nodetyperegistry.obj: nodetyperegistry.cc \
   ../common/commonutil.h \
   nodetyperegistry.h \
@@ -238,6 +252,7 @@ nodetyperegistry.obj: nodetyperegistry.cc \
   node.h \
   nodetype.h \
   scavedefs.h \
+  ../common/bigdecimal.h \
   dataflowmanager.h \
   channel.h \
   commonnodes.h \
@@ -252,6 +267,7 @@ octaveexport.obj: octaveexport.cc \
   scavedefs.h \
   xyarray.h \
   ../common/exception.h \
+  ../common/bigdecimal.h \
   ../common/commondefs.h
 resultfilemanager.obj: resultfilemanager.cc \
   ../common/matchexpression.h \
@@ -265,13 +281,15 @@ resultfilemanager.obj: resultfilemanager.cc \
   ../common/commondefs.h \
   ../common/exception.h \
   scavedefs.h \
+  ../common/bigdecimal.h \
   idlist.h \
   ../common/commonutil.h
 scaveexception.obj: scaveexception.cc \
   scaveexception.h \
   ../common/commondefs.h \
   scavedefs.h \
-  ../common/exception.h
+  ../common/exception.h \
+  ../common/bigdecimal.h
 scavetool.obj: scavetool.cc \
   ../utils/ver.h \
   resultfilemanager.h \
@@ -290,6 +308,7 @@ scavetool.obj: scavetool.cc \
   ../common/exception.h \
   ../common/commonutil.h \
   scavedefs.h \
+  ../common/bigdecimal.h \
   ../common/commondefs.h \
   node.h \
   channel.h \
@@ -298,7 +317,11 @@ scavetool.obj: scavetool.cc \
   commonnodes.h \
   xyarray.h
 scaveutils.obj: scaveutils.cc \
-  scaveutils.h
+  scaveutils.h \
+  scavedefs.h \
+  ../common/bigdecimal.h \
+  ../common/commondefs.h \
+  ../common/exception.h
 slidingwinavg.obj: slidingwinavg.cc \
   channel.h \
   slidingwinavg.h \
@@ -307,6 +330,7 @@ slidingwinavg.obj: slidingwinavg.cc \
   ../common/commondefs.h \
   ../common/exception.h \
   scavedefs.h \
+  ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
   dataflowmanager.h
@@ -318,6 +342,7 @@ stddev.obj: stddev.cc \
   ../common/commondefs.h \
   ../common/exception.h \
   scavedefs.h \
+  ../common/bigdecimal.h \
   commonnodes.h \
   xyarray.h \
   nodetype.h \
@@ -334,6 +359,7 @@ vectorfileindexer.obj: vectorfileindexer.cc \
   ../common/commonutil.h \
   ../common/exception.h \
   scavedefs.h \
+  ../common/bigdecimal.h \
   resultfilemanager.h \
   idlist.h
 vectorfilereader.obj: vectorfilereader.cc \
@@ -345,6 +371,7 @@ vectorfilereader.obj: vectorfilereader.cc \
   ../common/commondefs.h \
   ../common/exception.h \
   scavedefs.h \
+  ../common/bigdecimal.h \
   nodetype.h \
   ../common/filereader.h \
   ../common/linetokenizer.h \
@@ -360,6 +387,7 @@ vectorfilewriter.obj: vectorfilewriter.cc \
   ../common/commondefs.h \
   ../common/exception.h \
   scavedefs.h \
+  ../common/bigdecimal.h \
   nodetype.h \
   resultfilemanager.h \
   dataflowmanager.h \
@@ -372,6 +400,7 @@ windowavg.obj: windowavg.cc \
   ../common/commondefs.h \
   ../common/exception.h \
   scavedefs.h \
+  ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
   dataflowmanager.h
@@ -383,6 +412,7 @@ xyplotnode.obj: xyplotnode.cc \
   ../common/commondefs.h \
   ../common/exception.h \
   scavedefs.h \
+  ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
   dataflowmanager.h

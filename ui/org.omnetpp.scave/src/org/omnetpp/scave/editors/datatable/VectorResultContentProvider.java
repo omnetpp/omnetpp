@@ -1,5 +1,7 @@
 package org.omnetpp.scave.editors.datatable;
 
+import java.math.BigDecimal;
+
 import org.eclipse.jface.viewers.Viewer;
 import org.omnetpp.common.virtualtable.IVirtualTableContentProvider;
 import org.omnetpp.scave.ScavePlugin;
@@ -96,7 +98,7 @@ public class VectorResultContentProvider implements IVirtualTableContentProvider
 		return reader != null ? reader.getEntryBySerial(serial) : null;
 	}
 	
-	public OutputVectorEntry getElementBySimulationTime(long time, boolean after) {
+	public OutputVectorEntry getElementBySimulationTime(BigDecimal time, boolean after) {
 		return reader != null ? reader.getEntryBySimtime(time, after) : null;
 	}
 	
