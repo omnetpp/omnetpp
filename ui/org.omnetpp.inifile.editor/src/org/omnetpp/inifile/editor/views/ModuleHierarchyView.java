@@ -107,7 +107,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 				if (element instanceof GenericTreeNode && ((GenericTreeNode)element).getPayload() instanceof Payload) {
 					Payload payload = (Payload) ((GenericTreeNode)element).getPayload();
 					if (payload.node != null) {
-						openNEDElementInEditor(payload.node);
+						NEDResourcesPlugin.openNEDElementInEditor(payload.node);
 					}
 				}				
 			}
