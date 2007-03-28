@@ -70,7 +70,7 @@ class COMMON_API BigDecimal
     static BigDecimal Nil;
 
     /** Constructors. */
-    BigDecimal() {intVal=0; scale=0;}
+    BigDecimal() {intVal=_I64_MAX; scale=INT_MAX;} // == Nil
     BigDecimal(int64 intVal, int scale) : intVal(intVal), scale(scale) { normalize(); }
     BigDecimal(const BigDecimal &x) {operator=(x);}
     BigDecimal(double d) {operator=(d);}

@@ -33,12 +33,12 @@ BigDecimal BigDecimal::Zero(0, 0);
 BigDecimal BigDecimal::NaN(0, INT_MAX);
 BigDecimal BigDecimal::PositiveInfinity(1, INT_MAX);
 BigDecimal BigDecimal::NegativeInfinity(-1, INT_MAX);
-BigDecimal BigDecimal::Nil(INT_MAX, INT_MAX);
+BigDecimal BigDecimal::Nil;
 
 void BigDecimal::normalize()
 {
     // special values
-    if (scale == INT_MAX && (intVal == -1 || intVal == 0 || intVal == 1 || intVal == INT_MAX))
+    if (scale == INT_MAX && (intVal == -1 || intVal == 0 || intVal == 1))
         return;
 
     // zero
