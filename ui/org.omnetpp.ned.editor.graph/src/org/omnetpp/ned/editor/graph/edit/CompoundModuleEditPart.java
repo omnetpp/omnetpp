@@ -139,12 +139,13 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         else // process the even and remeber this serial
             lastEventSerial = event.getSerial();
 
+        super.modelChanged(event);
+
         // forward the event to the type info component
         INEDTypeInfo typeInfo = getNEDModel().getContainerNEDTypeInfo();
         if (typeInfo != null)
             typeInfo.modelChanged(event);
 
-        super.modelChanged(event);
         // check for attribute changes
         if (event instanceof NEDAttributeChangeEvent) {
             totalRefresh();

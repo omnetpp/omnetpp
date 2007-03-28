@@ -42,13 +42,14 @@ public class TopLevelEditPart extends BaseEditPart
         else // process the even and remeber this serial
             lastEventSerial = event.getSerial();
 
+        super.modelChanged(event);
+
         // forward the event to the type info component
         INEDTypeInfo typeInfo = getNEDModel().getContainerNEDTypeInfo();
         if (typeInfo != null)
             typeInfo.modelChanged(event);
         
         refreshVisuals();
-        super.modelChanged(event);
     }
 
 	@Override
