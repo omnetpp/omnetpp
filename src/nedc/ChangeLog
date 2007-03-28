@@ -1,3 +1,9 @@
+2007-03-28  Andras Varga
+
+	* opp_msgc bugfix: path info has to be stripped from _m.h file name 
+	  when generating the #include directive in the _m.cc file. 
+	  [reported by Endre Varga]
+
 2006-11-06  Andras Varga
 
 	* alternative syntax for properties: @prop or @prop(value)
