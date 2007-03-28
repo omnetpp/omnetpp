@@ -1,9 +1,8 @@
 package org.omnetpp.common.editor;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
@@ -13,29 +12,28 @@ import org.eclipse.ui.part.FileEditorInput;
  * @author rhornig
  */
 public class EditorUtil {
-    public final static String MULTIPAGE_NEDEDITOR_ID = "org.omnetpp.ned.editor";
-    
+
     /**
-     * Opens a NED file in text mode and sets a highlight range on it
-     * @param file
-     * @param startLine
-     * @param endLine
+     * Convenience function for opening editors in the workbench. See also IWorkbenchPage.
      */
-    public static void openNEDEditor(IFile file, int startLine, int endLine) {
-        try {
-            IFileEditorInput fileEditorInput = new FileEditorInput(file);
-            IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-                    .openEditor(fileEditorInput, EditorUtil.MULTIPAGE_NEDEDITOR_ID, true);
-
-            // select the component so it will be visible in the opened editor
-            if (editor instanceof ISelectionSupport)
-                ((ISelectionSupport)editor).setTextHighlightRange(startLine, endLine);
-
-        } catch (PartInitException e) {
-            // should not happen
-            e.printStackTrace();  //FIXME log it or something. Just "print" is not OK!
-            Assert.isTrue(false);
-        }
+    public static IEditorPart openEditor(IFile file, String editorID) throws PartInitException {
+    	IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		return activePage.openEditor(new FileEditorInput(file), editorID);
     }
 
+    /**
+     * Convenience function for opening editors in the workbench. See also IWorkbenchPage.
+     */
+    public static IEditorPart openEditor(IFile file, String editorID, boolean activate) throws PartInitException {
+    	IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		return activePage.openEditor(new FileEditorInput(file), editorID, activate);
+    }
+
+    /**
+     * Convenience function for opening editors in the workbench. See also IWorkbenchPage.
+     */
+    public static IEditorPart openEditor(IFile file, String editorID, boolean activate, int matchFlags) throws PartInitException {
+    	IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		return activePage.openEditor(new FileEditorInput(file), editorID, activate, matchFlags);
+    }
 }

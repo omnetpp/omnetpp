@@ -5,16 +5,28 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.omnetpp.common.editor.EditorUtil;
+import org.omnetpp.common.editor.ISelectionSupport;
+import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.NEDSourceRegion;
+import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.osgi.framework.BundleContext;
 
 /**
  * The main plugin class to be used in the desktop.
  */
 public class NEDResourcesPlugin extends AbstractUIPlugin {
+    public final static String NED_EDITOR_ID = "org.omnetpp.ned.editor";
 
     public static String PLUGIN_ID;
+    
 	//The shared instance.
 	private static NEDResourcesPlugin plugin;
 
@@ -90,24 +102,59 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
-    // do we need this at all ???
+
+	//XXX do we need this at all ???
     // if we could activate the resouce listener before opening a project we would not need this
     // function called in start()
+	private void readAllNedFilesInWorkspace() {
+		try {
+			IResource wsroot = ResourcesPlugin.getWorkspace().getRoot();
+			wsroot.accept(new IResourceVisitor() {
+				public boolean visit(IResource resource) {
+					if (getNEDResources().isNEDFile(resource))
+						getNEDResources().readNEDFile((IFile) resource);
+					return true;
+				}
+			});
+		} catch (CoreException e) {
+			System.out.println("Error during workspace refresh: "+e);
+		}
+		getNEDResources().rehashIfNeeded();
 
-    private void readAllNedFilesInWorkspace() {
-      try {
-          IResource wsroot = ResourcesPlugin.getWorkspace().getRoot();
-          wsroot.accept(new IResourceVisitor() {
-              public boolean visit(IResource resource) {
-                  if (getNEDResources().isNEDFile(resource))
-                      getNEDResources().readNEDFile((IFile) resource);
-                  return true;
-              }
-          });
-      } catch (CoreException e) {
-          System.out.println("Error during workspace refresh: "+e);
-      }
-      getNEDResources().rehashIfNeeded();
-      
-    }
+	}
+
+	public static void logError(Throwable exception) {
+		logError(exception.toString(), exception);
+	}
+	
+	public static void logError(String message, Throwable exception) {
+		if (plugin != null) {
+			plugin.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
+		}
+		else {
+			System.err.println(message);
+			exception.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Opens the given NEDElement in a NED editor, and positions the cursor on it.
+	 */
+	public static void openNEDElementInEditor(NEDElement element) {
+		INEDTypeInfo typeInfo = element.getContainerNEDTypeInfo();
+		IFile file = typeInfo.getNEDFile();
+		NEDSourceRegion sourceRegion = element.getSourceRegion();
+
+        try {
+            IEditorPart editor = EditorUtil.openEditor(file, NED_EDITOR_ID, true);
+
+            // select the component so it will be visible in the opened editor
+            if (editor instanceof ISelectionSupport)
+                ((ISelectionSupport)editor).setTextHighlightRange(sourceRegion.startLine, sourceRegion.endLine);
+
+        } catch (PartInitException e) {
+            logError("Cannot open NED editor", e);
+        }
+	}
+	
 }

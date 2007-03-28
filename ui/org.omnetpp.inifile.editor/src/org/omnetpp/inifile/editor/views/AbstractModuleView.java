@@ -1,16 +1,22 @@
 package org.omnetpp.inifile.editor.views;
 
-import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
-import org.omnetpp.common.image.ImageFactory;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.FileEditorInput;
+import org.omnetpp.common.editor.EditorUtil;
+import org.omnetpp.common.editor.ISelectionSupport;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
@@ -18,8 +24,10 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.InifileUtils.Type;
 import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.NEDSourceRegion;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.CompoundModuleNode;
@@ -254,5 +262,4 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 		}
 		return null;
 	}
-
 }

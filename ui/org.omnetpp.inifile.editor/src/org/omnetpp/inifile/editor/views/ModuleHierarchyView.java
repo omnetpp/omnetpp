@@ -1,8 +1,11 @@
 package org.omnetpp.inifile.editor.views;
 
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -96,6 +99,20 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			}
 		});
 		treeViewer.setContentProvider(new GenericTreeContentProvider());
+
+		treeViewer.getTree().addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				Object element = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
+				if (element instanceof GenericTreeNode && ((GenericTreeNode)element).getPayload() instanceof Payload) {
+					Payload payload = (Payload) ((GenericTreeNode)element).getPayload();
+					if (payload.node != null) {
+						openNEDElementInEditor(payload.node);
+					}
+				}				
+			}
+		});
+		
 		return treeViewer.getTree();
 	}
 
