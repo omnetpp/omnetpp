@@ -119,7 +119,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 				nedModelChanged();
 			}
 		};
-		NEDResourcesPlugin.getNEDResources().getNEDResourceListenerList().add(nedChangeListener);
+		NEDResourcesPlugin.getNEDResources().getNEDComponentChangeListenerList().add(nedChangeListener);
 		
 		//XXX should listen on changes in the inifile as well.
 		
@@ -131,7 +131,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 		if (partListener != null)
 			getSite().getPage().removePartListener(partListener);
 		if (nedChangeListener != null)
-			NEDResourcesPlugin.getNEDResources().getNEDResourceListenerList().remove(nedChangeListener);
+			NEDResourcesPlugin.getNEDResources().getNEDComponentChangeListenerList().remove(nedChangeListener);
 	}
 
 	public void workbenchSelectionChanged() {

@@ -69,7 +69,7 @@ public class NEDChangeListenerList {
     }
 
     /**
-     * Fires a model change event to all listeners if event sending is enebaled
+     * Fires a model change event to all listeners if event sending is enabled
      * @param event 
      */
     public void fireModelChanged(NEDModelEvent event) {

@@ -128,7 +128,7 @@ abstract public class BaseEditPart
         String nameString = getNEDModel().getAttribute("name");
         if (nameString == null)
             nameString = "";
-        System.out.println("NOTIFY ON: "+getModel().getClass().getSimpleName()+" "+nameString+" "+event);
+        System.out.println("PART NOTIFY ON: "+getModel().getClass().getSimpleName()+" "+nameString+" "+event);
     }
 
     /* (non-Javadoc)

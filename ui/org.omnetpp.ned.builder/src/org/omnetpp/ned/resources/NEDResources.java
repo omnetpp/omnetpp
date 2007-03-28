@@ -61,7 +61,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     private static final String NED_EXTENSION = "ned";
     // listener list that listenens on all NED changes
-    private transient NEDChangeListenerList nedResourceListenerList = null;
+    private transient NEDChangeListenerList nedComponentChangeListenerList = null;
     // stores parsed contents of NED files
     private HashMap<IFile, NEDElement> nedFiles = new HashMap<IFile, NEDElement>();
     private ProblemMarkerJob markerJob = new ProblemMarkerJob("Updating problem markers");
@@ -515,50 +515,53 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     // ******************* notification helpers ************************************
 
     /**
-     * @return The listener list attached to this element 
+     * @return The listener list attached to the plugin which is notified about 
+     * TOP LEVEL COMPONENT changes 
      */
-    public NEDChangeListenerList getNEDResourceListenerList() {
-        if (nedResourceListenerList == null)
-            nedResourceListenerList = new NEDChangeListenerList();
-        return nedResourceListenerList;
+    public NEDChangeListenerList getNEDComponentChangeListenerList() {
+        if (nedComponentChangeListenerList == null)
+            nedComponentChangeListenerList = new NEDChangeListenerList();
+        return nedComponentChangeListenerList;
     }
     
     /**
-     * Fires a palette model change  (forwards it to he listener list if any)
+     * Fires a component change  (forwards it to he listener list if any)
+     * Used for notifying listeners that depend on components (name, display string etc) 
      * @param event the model change event or NULL if the whole model should be rebuilt
      */
-    public void fireNEDResourceChanged(NEDModelEvent event) {
-        if(nedResourceListenerList == null || !getNEDResourceListenerList().isEnabled())
+    protected void fireNEDComponentChanged(NEDModelEvent event) {
+        if(nedComponentChangeListenerList == null || !getNEDComponentChangeListenerList().isEnabled())
             return;
         // forward to the listerList
-        nedResourceListenerList.fireModelChanged(event);
+        nedComponentChangeListenerList.fireModelChanged(event);
     }
 
     public void modelChanged(NEDModelEvent event) {
-        // skip the event processing if te last serial is greater or equal. only
-        // newer
-        // events should be processed. this prevent the processing of the same
-        // event multiple times
+        // skip the event processing if te last serial is greater or equal. only newer
+        // events should be processed. this prevent the processing of the same event multiple times
         if (lastEventSerial >= event.getSerial())
             return;
         else
             // process the even and remeber this serial
             lastEventSerial = event.getSerial();
 
+        System.out.println("NEDRESOURCES NOTIFY: "+event);
         // if a name property has changed everything should be rebuilt because
         // inheritence might have changed
         // we may check only for toplevel component names and extends attributes
 
+        // fire a component changed event if inheritance, naming or visual representation
+        // has changed
         if (inheritanceMayHaveChanged(event)) {
             System.out.println("Invalidating because of: " + event);
             invalidate();
             rehashIfNeeded();
             // a total rebuild has occured
-            fireNEDResourceChanged(event);
+            fireNEDComponentChanged(event);
         }
         // display string notification
         if (displayMayHaveChanged(event)) {
-            fireNEDResourceChanged(event);
+            fireNEDComponentChanged(event);
         }
     }
 

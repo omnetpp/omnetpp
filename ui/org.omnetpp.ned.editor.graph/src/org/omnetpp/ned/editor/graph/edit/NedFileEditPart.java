@@ -90,8 +90,6 @@ public class NedFileEditPart extends BaseEditPart  {
         // logging etc.
         super.modelChanged(event);
         
-        NEDResourcesPlugin.getNEDResources().modelChanged(event);
-
         // invalidate the type info cache and redraw the children
         if (NEDResources.inheritanceMayHaveChanged(event))
             totalRefresh();

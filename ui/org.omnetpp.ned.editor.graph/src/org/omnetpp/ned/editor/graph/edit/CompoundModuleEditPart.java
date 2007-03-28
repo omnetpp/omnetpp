@@ -133,6 +133,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     public void modelChanged(NEDModelEvent event) {
         // skip the event processing if te last serial is greater or equal. only newer
         // events should be processed. this prevent the processing of the same event multiple times
+        // prevents circular notification
         if (lastEventSerial >= event.getSerial())
             return;
         else // process the even and remeber this serial

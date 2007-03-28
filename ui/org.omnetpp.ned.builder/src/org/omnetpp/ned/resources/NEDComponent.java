@@ -446,14 +446,14 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
         // events should be processed. this prevent the processing of the same event multiple times
         if (getLastEventSerial() >= event.getSerial())
             return;
-        else // process the even and remeber this serial
+        else // process the event and remeber this serial
             setLastEventSerial(event.getSerial());
 
         // send the event to the builder for processing. 
         resolver.modelChanged(event);
         
         // for debugging only
-        // System.out.println("TYPEINFO NOTIFY ON: "+getNEDElement().getClass().getSimpleName()+" "+getName()+" "+event);
+        System.out.println("TYPEINFO NOTIFY ON: "+getNEDElement().getClass().getSimpleName()+" "+getName()+" "+event);
         
         // TODO test if the name attribute has changed and pass it to NEDResources 
         // because in that case the whole model (All files) have to be rebuilt
