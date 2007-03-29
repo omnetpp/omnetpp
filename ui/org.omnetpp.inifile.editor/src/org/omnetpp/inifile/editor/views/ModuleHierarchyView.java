@@ -130,6 +130,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	}
 
 	private void buildTree(GenericTreeNode parent, String moduleFullName, String moduleFullPath, String moduleTypeName, INEDTypeResolver nedResources, IInifileDocument doc) {
+		//FIXME detect circles!!! currently it results in stack overflow
 		// dig out type info (NED declaration)
 		if (StringUtils.isEmpty(moduleTypeName)) {
 			String text = moduleFullName+"  (module type unknown)";
