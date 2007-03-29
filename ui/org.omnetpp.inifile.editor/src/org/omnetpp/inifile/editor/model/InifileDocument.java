@@ -20,8 +20,11 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 
 /**
- * Standard implementation of IInifileDocument.
- * Setters change the underlying IDocument.
+ * Standard implementation of IInifileDocument. Setters change the 
+ * underlying text document (IDocument). Parsing is lazy: changes on the 
+ * text document cause a "changed" flag to be set here, and getters 
+ * automatically reparse the text document if it's out of date.
+ * 
  * @author Andras
  */
 //XXX renameSection() missing
@@ -482,17 +485,24 @@ public class InifileDocument implements IInifileDocument {
 	}
 
     /**
-     * @return The listener list attached to this element 
+     * Adds a listener to this document 
      */
-    public InifileChangeListenerList getListeners() {
-        return listeners;
+	public void addInifileChangeListener(IInifileChangeListener listener) {
+        listeners.add(listener);
+    }
+
+	/**
+     * Adds a listener to this document 
+     */
+	public void removeInifileChangeListener(IInifileChangeListener listener) {
+        listeners.remove(listener);
     }
 	
 	/**
      * Fires a model change event by notifying listeners.
      */
     public void fireModelChanged() {
-        if (listeners != null && getListeners().isEnabled())
+        if (listeners != null && listeners.isEnabled())
         	listeners.fireModelChanged();
     }
 }

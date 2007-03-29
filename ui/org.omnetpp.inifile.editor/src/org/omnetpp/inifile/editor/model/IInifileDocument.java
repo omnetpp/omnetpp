@@ -196,8 +196,14 @@ public interface IInifileDocument {
 	 */
 	void removeBottomInclude(String include);
 	
-    /**
-     * Return the listener list for adding/removing listeners. 
+	/**
+     * Adds a listener to this document 
      */
-	InifileChangeListenerList getListeners();
+	public void addInifileChangeListener(IInifileChangeListener listener);
+
+	/**
+     * Removes a listener from this document 
+     */
+	public void removeInifileChangeListener(IInifileChangeListener listener);
+	
 }
