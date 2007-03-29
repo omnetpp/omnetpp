@@ -27,14 +27,34 @@ public class DelayedJob {
 	 * Starts or re-starts the timer.
 	 */
 	public void restartTimer() {
-		Display.getDefault().timerExec(-1, runnable);
-		Display.getDefault().timerExec(delayMillis, runnable);
+		// Alas, timerExec() may only be invoked from the UI thread 
+		if (Display.getCurrent() != null) {
+			Display.getDefault().timerExec(-1, runnable);
+			Display.getDefault().timerExec(delayMillis, runnable);
+		}
+		else {
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					restartTimer(); // try again from the UI thread
+				}
+			});
+		}
 	}
 
 	/**
-	 * Cancels currently running timer.
+	 * Cancels the currently running timer.
 	 */
 	public void cancel() {
-		Display.getDefault().timerExec(-1, runnable);
+		// Alas, timerExec() may only be invoked from the UI thread 
+		if (Display.getCurrent() != null) {
+			Display.getDefault().timerExec(-1, runnable);
+		}
+		else {
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					cancel(); // try again from the UI thread
+				}
+			});
+		}
 	}
 }
