@@ -15,6 +15,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.TextOperationAction;
+import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.text.actions.DefineFoldingRegionAction;
 
@@ -22,9 +23,12 @@ import org.omnetpp.inifile.editor.text.actions.DefineFoldingRegionAction;
 /**
  * Text editor for ini files.
  */
+//XXX status bar does not show cursor position etc!!!
 public class InifileTextEditor extends TextEditor {
 	/** The projection support */
-	private ProjectionSupport fProjectionSupport;
+	private ProjectionSupport projectionSupport;
+	private DelayedJob postCursorPositionChangedJob;
+
 
 	/**
 	 * Default constructor.
@@ -141,8 +145,8 @@ public class InifileTextEditor extends TextEditor {
 	 * @return an adapter for the required type or <code>null</code>
 	 */ 
 	public Object getAdapter(Class required) {
-		if (fProjectionSupport != null) {
-			Object adapter = fProjectionSupport.getAdapter(getSourceViewer(), required);
+		if (projectionSupport != null) {
+			Object adapter = projectionSupport.getAdapter(getSourceViewer(), required);
 			if (adapter != null)
 				return adapter;
 		}
@@ -161,7 +165,7 @@ public class InifileTextEditor extends TextEditor {
 		ISourceViewer viewer= new ProjectionViewer(parent, ruler, getOverviewRuler(), isOverviewRulerVisible(), styles);
 		// ensure decoration support has been created and configured.
 		getSourceViewerDecorationSupport(viewer);
-		
+
 		return viewer;
 	}
 	
@@ -170,12 +174,41 @@ public class InifileTextEditor extends TextEditor {
 	 */
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
-		ProjectionViewer viewer= (ProjectionViewer) getSourceViewer();
-		fProjectionSupport= new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
-		fProjectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.error"); //$NON-NLS-1$
-		fProjectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.warning"); //$NON-NLS-1$
-		fProjectionSupport.install();
+		ProjectionViewer viewer = (ProjectionViewer) getSourceViewer();
+		projectionSupport = new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
+		projectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.error"); //$NON-NLS-1$
+		projectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.warning"); //$NON-NLS-1$
+		projectionSupport.install();
 		viewer.doOperation(ProjectionViewer.TOGGLE);
+	}
+
+	/**
+	 * Installs a function to be called after the cursor rests at one place for 600ms.
+	 * @param runnable  contains the function
+	 */
+	public void setPostCursorPositionChangeJob(Runnable runnable) {
+		postCursorPositionChangedJob = new DelayedJob(600, runnable);
+	}
+
+	/*
+	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#handleCursorPositionChanged()
+	 */
+	protected void handleCursorPositionChanged() {
+		super.handleCursorPositionChanged();
+		if (postCursorPositionChangedJob != null)
+			postCursorPositionChangedJob.restartTimer();
+	}
+
+	/**
+	 * Returns the line number where the cursor is currently located. 
+	 */
+	public int getCursorLine() {
+		String pos = super.getCursorPosition();  // "12 : 45"
+		try {
+			return Integer.valueOf(pos.replaceFirst(" *:.*", ""));
+		} catch (NumberFormatException e) {
+			return 1;
+		}
 	}
 	
 	/*
