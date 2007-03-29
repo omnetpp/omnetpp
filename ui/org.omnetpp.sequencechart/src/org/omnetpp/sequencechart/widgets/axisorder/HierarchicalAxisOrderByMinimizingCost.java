@@ -9,6 +9,7 @@ import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.eventlog.engine.IntVector;
 
+// TODO: this seems to be somewhat broken in that the ordering, should check it
 public class HierarchicalAxisOrderByMinimizingCost extends AbstractAxisOrderByMinimizingCost {
 	public HierarchicalAxisOrderByMinimizingCost(EventLogInput eventLogInput) {
 		super(eventLogInput);

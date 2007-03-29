@@ -50,7 +50,7 @@ public class SequenceChartView extends ViewWithMessagePart {
 
 	@Override
 	protected Control createViewControl(Composite parent) {
-		sequenceChart = new SequenceChart(parent, SWT.NONE);
+		sequenceChart = new SequenceChart(parent, SWT.DOUBLE_BUFFERED);
 
 		return sequenceChart;
 	}

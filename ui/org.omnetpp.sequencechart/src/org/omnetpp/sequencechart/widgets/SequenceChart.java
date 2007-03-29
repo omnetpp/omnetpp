@@ -428,13 +428,13 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		scrollHorizontalTo(x - getViewportWidth()/2);
 		redraw();
 	}
-	
+
+	// TODO: distinguish between goto and scroll just as in EventLogTable
 	/**
 	 * Scroll the canvas to make the event visible.
 	 */
 	public void gotoEvent(IEvent e) {
-		// TODO:
-		//scrollVerticalTo(e.getCachedY() - getClientArea().height / 2);
+		scrollVerticalTo(getEventYCoordinate(e.getCPtr()) - getClientArea().height / 2);
 		gotoSimulationTimeWithCenter(e.getSimulationTime());
 	}
 	
@@ -469,7 +469,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		final ArrayList<ModuleTreeItem> modules = new ArrayList<ModuleTreeItem>();
 		eventLogInput.getModuleTreeRoot().visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
 			public void visit(ModuleTreeItem treeItem) {
-				if (treeItem != eventLogInput.getModuleTreeRoot())
+				if (treeItem != eventLogInput.getModuleTreeRoot() && treeItem.getSubmodules().length == 0)
 					modules.add(treeItem);
 			}
 		});
@@ -928,7 +928,6 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			if (lastX == null || lastX.intValue() != x) {
 				axisYtoLastX.put(y, x);
 				
-				// TODO: performance killer
 				if (sequenceChartFacade.Event_isSelfEvent(eventPtr)) {
 					graphics.setForegroundColor(SELF_EVENT_BORDER_COLOR);
 					graphics.setBackgroundColor(SELF_EVENT_BACKGROUND_COLOR);
@@ -979,12 +978,14 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * Draws a tick under the mouse.
 	 */
 	private void drawMouseTick(Graphics graphics) {
+		// TODO: in step mode draws wrong tick
 		Point p = toControl(Display.getDefault().getCursorLocation());
 		
 		if (0 <= p.x && p.x < getViewportWidth() &&
 			0 <= p.y && p.y < getViewportHeight()) {
 			BigDecimal t = new BigDecimal(getSimulationTimeForViewportPixel(p.x));
-			drawTick(graphics, calculateTick(t, 1));
+			BigDecimal tick = calculateTick(t, 1);
+			drawTick(graphics, tick);
 		}
 	}
 
@@ -1013,7 +1014,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		int startEventNumber = sequenceChartFacade.Event_getEventNumber(startEventPtr);
 		int endEventNumber = sequenceChartFacade.Event_getEventNumber(endEventPtr);
 
-		graphics.setAntialias(SWT.ON); //XXX
+		graphics.setAntialias(SWT.ON); // TODO:
 		
 		// draw event selection marks
 		if (selectedEvents != null) {
@@ -1304,14 +1305,18 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 */
 	private BigDecimal calculateTick(BigDecimal simulationTime, int halfTickRange) {
 		int x = getViewportPixelForSimulationTime(simulationTime.doubleValue());
+		
 		// defines the range of valid simulation times for the tick
 		BigDecimal tMin = new BigDecimal(getSimulationTimeForTimelineCoordinate(Math.max(0, getTimelineCoordinateForViewportPixel(x - halfTickRange))));
 		BigDecimal tMax = new BigDecimal(getSimulationTimeForViewportPixel(x + halfTickRange));
+		Assert.isTrue(tMin.compareTo(simulationTime) <= 0);
+		Assert.isTrue(tMax.compareTo(simulationTime) >= 0);
+
 		// number of digits
 		int tMinPrecision = tMin.stripTrailingZeros().precision();
 		int tMaxPrecision = tMax.stripTrailingZeros().precision();
 		int tDeltaPrecision = tMax.subtract(tMin).stripTrailingZeros().precision();
-		int precision = Math.max(0, 1 + Math.max(tMinPrecision - tDeltaPrecision, tMaxPrecision - tDeltaPrecision));
+		int precision = Math.max(1, 1 + Math.max(tMinPrecision - tDeltaPrecision, tMaxPrecision - tDeltaPrecision));
 		// estabilish initial rounding contextes
 		MathContext mcMin = new MathContext(precision, RoundingMode.FLOOR);
 		MathContext mcMax = new MathContext(precision, RoundingMode.CEILING);
@@ -1532,7 +1537,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 				}
 			}
 			public void mouseDown(MouseEvent me) {
-				//XXX improve mouse handling: starting dragging should not deselect events!
+				// TODO: improve mouse handling: starting dragging should not deselect events!
 				if (me.button==1) {
 					ArrayList<IEvent> tmp = new ArrayList<IEvent>();
 					if ((me.stateMask & SWT.CTRL)!=0) // CTRL key extends selection
@@ -1909,8 +1914,12 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		if (!(newSelection instanceof IEventLogSelection))
 			return; // wrong selection type
 		IEventLogSelection newEventLogSelection = (IEventLogSelection)newSelection;
-		if (newEventLogSelection.getEventLog() != eventLog)
-			return;  // wrong -- refers to another eventLog
+		
+		// TODO: add followSelection as in EventLogTable
+//		if (newEventLogSelection.getEventLog() != eventLog)
+//			return;  // wrong -- refers to another eventLog
+		if (getInput() != newEventLogSelection.getEventLogInput())
+			setInput(newEventLogSelection.getEventLogInput());
 
 		// if new selection differs from existing one, take over its contents
 		if (!eventListEquals(newEventLogSelection.getEvents(), selectedEvents)) {

@@ -21,6 +21,7 @@ import org.eclipse.ui.ide.IGotoMarker;
 import org.omnetpp.common.eventlog.EventLogEditor;
 import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.IEvent;
+import org.omnetpp.eventlogtable.EventLogTablePlugin;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 
 public class EventLogTableEditor extends EventLogEditor implements INavigationLocationProvider, IGotoMarker {
@@ -36,6 +37,16 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener);
+
+		// try to open the sequence chart view
+		try {
+			// Eclipse feature: during startup, showView() throws "Abnormal Workbench Condition" because perspective is null
+			if (getSite().getPage().getPerspective() != null)
+				getSite().getPage().showView("org.omnetpp.sequencechart.editors.SequenceChartView");
+		}
+		catch (PartInitException e) {
+			EventLogTablePlugin.getDefault().logException(e);					
+		}
 	}
 
 	@Override

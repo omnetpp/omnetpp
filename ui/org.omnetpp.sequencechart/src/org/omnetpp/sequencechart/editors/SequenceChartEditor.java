@@ -55,7 +55,7 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
 		// try to open the log view
 		try {
 			// Eclipse feature: during startup, showView() throws "Abnormal Workbench Condition" because perspective is null
-			if (getSite().getPage().getPerspective()!=null)
+			if (getSite().getPage().getPerspective() != null)
 				getSite().getPage().showView("org.omnetpp.eventlogtable.editors.EventLogTableView");
 		}
 		catch (PartInitException e) {

@@ -1,5 +1,7 @@
 package org.omnetpp.common.eventlog;
 
+import java.util.ArrayList;
+
 
 /**
  * Stores a submodule tree for ModuleTreeDialog etc.
@@ -15,7 +17,7 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	
 	private ModuleTreeItem parentModule;
 	
-	private ModuleTreeItem[] submodules = new ModuleTreeItem[0];
+	private ArrayList<ModuleTreeItem> submodules = new ArrayList<ModuleTreeItem>();
 
 	public interface IModuleTreeItemVisitor
 	{
@@ -38,15 +40,12 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	public ModuleTreeItem(String moduleName, ModuleTreeItem parent) {
 		setModuleName(moduleName);
 		parentModule = parent;
-		if (parentModule!=null)
+		if (parentModule != null)
 			parentModule.addSubmodule(this);
 	}
 	
-	private void addSubmodule(ModuleTreeItem item) {
-		ModuleTreeItem[] newSubmodules = new ModuleTreeItem[submodules.length+1];
-		System.arraycopy(submodules, 0, newSubmodules, 0, submodules.length);
-		newSubmodules[submodules.length] = item;
-		submodules = newSubmodules;
+	private void addSubmodule(ModuleTreeItem submodule) {
+		submodules.add(submodule);
 	}
 
 	public void visitLeaves(IModuleTreeItemVisitor visitor)
@@ -135,7 +134,7 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	}
 
 	public ModuleTreeItem[] getSubmodules() {
-		return submodules;
+		return submodules.toArray(new ModuleTreeItem[0]);
 	}
 
 	public ModuleTreeItem getSubmodule(String submoduleName) {

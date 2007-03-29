@@ -102,8 +102,12 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 			try {
 				String eventNumber = eventLogInput.getFile().getPersistentProperty(getEventLogTableEventNumberPropertyName());
 
-				if (eventNumber != null)
-					gotoElement(getEventLog().getEventForEventNumber(Integer.parseInt(eventNumber)).getEventEntry());
+				if (eventNumber != null) {
+					IEvent event = getEventLog().getEventForEventNumber(Integer.parseInt(eventNumber));
+					
+					if (event != null)
+						gotoElement(event.getEventEntry());
+				}
 			}
 			catch (CoreException e) {
 				throw new RuntimeException(e);

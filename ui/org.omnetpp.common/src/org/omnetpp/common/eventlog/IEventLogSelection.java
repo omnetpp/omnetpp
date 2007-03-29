@@ -13,6 +13,12 @@ import org.omnetpp.eventlog.engine.IEventLog;
  */
 public interface IEventLogSelection extends ISelection {
 	/**
+	 * The EventLogInput object we are dealing with. All selected Events
+	 * belong to this EventLogInput. Never returns null.  
+	 */
+	public EventLogInput getEventLogInput();
+
+	/**
 	 * The EventLog object we are dealing with. All selected Events
 	 * belong to this EventLog. Never returns null.  
 	 */
