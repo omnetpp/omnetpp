@@ -8,7 +8,9 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
@@ -22,7 +24,10 @@ import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.omnetpp.common.ui.SelectionProvider;
+import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.inifile.editor.form.InifileFormEditor;
+import org.omnetpp.inifile.editor.model.IInifileChangeListener;
 import org.omnetpp.inifile.editor.model.InifileDocument;
 import org.omnetpp.inifile.editor.text.InifileTextEditor;
 import org.omnetpp.inifile.editor.views.InifileContentOutlinePage;
@@ -43,6 +48,8 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	private InifileEditorData editorData = new InifileEditorData();
 
 	private InifileContentOutlinePage outlinePage;
+
+	private DelayedJob postSelectionChangedJob;
 	
 	/**
 	 * Creates the ini file editor.
@@ -67,14 +74,7 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		} catch (PartInitException e) {
 			ErrorDialog.openError(getSite().getShell(), "Error creating nested text editor", null, e.getStatus());
 		}
-
-		// propagate property changes (esp. PROP_DIRTY) from our text editor
-		textEditor.addPropertyListener(new IPropertyListener() {
-			public void propertyChanged(Object source, int propertyId) {
-				firePropertyChange(propertyId);
-			}
-		});
-}
+	}
 
 	/**
 	 * Creates the pages of the multi-page editor.
@@ -93,16 +93,63 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		IDocument document = textEditor.getDocumentProvider().getDocument(getEditorInput());
 		editorData.setInifiledocument(new InifileDocument(document, file));
 
-		// export the selection of the text editor; without this, the SelectionProvider of this
-		// editor would be null if the form page is selected (that's the behaviour of the
-		// original MultiPageSelectionProvider which we replace with this call).
-		getSite().setSelectionProvider(textEditor.getSelectionProvider());
+//XXX		// export the selection of the text editor; without this, the SelectionProvider of this
+//		// editor would be null if the form page is selected (that's the behaviour of the
+//		// original MultiPageSelectionProvider which we replace with this call).
+//		getSite().setSelectionProvider(textEditor.getSelectionProvider());
+
+		getSite().setSelectionProvider(new SelectionProvider());
+		
+//		textEditor.getSite().getSelectionProvider().addSelectionChangedListener(new ISelectionChangedListener() {
+//			public void selectionChanged(SelectionChangedEvent event) {
+//				setSelection(section, key);
+//			}
+//		});
+		
+		// propagate property changes (esp. PROP_DIRTY) from our text editor
+		textEditor.addPropertyListener(new IPropertyListener() {
+			public void propertyChanged(Object source, int propertyId) {
+				firePropertyChange(propertyId);
+			}
+		});
+		
+		// this DelayedJob will, after a delay, publish a new editor selection towards the workbench
+		postSelectionChangedJob = new DelayedJob(600, new Runnable() {
+			public void run() {
+				updateSelection();
+			}
+		});
+		
+		// we want to update the selection whenever the document changes, or the cursor position in the text editor changes
+		editorData.getInifileDocument().addInifileChangeListener(new IInifileChangeListener() {
+			public void modelChanged() {
+				postSelectionChangedJob.restartTimer();
+			}
+		});
+		textEditor.setPostCursorPositionChangeJob(new Runnable() {
+			public void run() {
+				postSelectionChangedJob.restartTimer();
+			}
+		});
 	}
 
-//XXX	public void fireSelectionChange() {
-//		ISelectionProvider selectionProvider = getSite().getSelectionProvider();
-//		selectionProvider.setSelection(selectionProvider.getSelection());
-//	}
+	protected void updateSelection() {
+		int cursorLine = textEditor.getCursorLine();
+		String section = getEditorData().getInifileDocument().getSectionForLine(cursorLine);
+		String key = getEditorData().getInifileDocument().getKeyForLine(cursorLine);
+		System.out.println("Line: "+cursorLine+" section:"+section+" key="+key);
+		setSelection(section, key);
+	}
+
+	/**
+	 * Sets the editor's selection to an InifileSelectionItem containing
+	 * the given section and key.
+	 */
+	public void setSelection(String section, String key) {
+		ISelection selection = new StructuredSelection(new InifileSelectionItem(getEditorData().getInifileDocument(), section, key));
+		ISelectionProvider selectionProvider = getSite().getSelectionProvider();
+		selectionProvider.setSelection(selection);
+	}
 
 	/**
 	 * Adds an editor page at the last position.
@@ -123,6 +170,7 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
 		if (outlinePage != null)
 			outlinePage.setInput(null); //XXX ?
+		((InifileDocument)editorData.getInifileDocument()).dispose();
 		super.dispose();
 	}
 
