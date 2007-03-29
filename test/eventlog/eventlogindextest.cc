@@ -18,6 +18,22 @@
 #include "filereader.h"
 #include "eventlogindex.h"
 
+bool getReadForward(MatchKind matchKind)
+{
+    switch (matchKind)
+    {
+        case FIRST_OR_NEXT:
+        case LAST_OR_NEXT:
+            return false;
+        case EXACT:
+        case FIRST_OR_PREVIOUS:
+        case LAST_OR_PREVIOUS:
+            return true;
+        default:
+            throw opp_runtime_error("*** Invalid match kind\n");
+    }
+}
+
 void checkOffset(EventLogIndex& eventLogIndex, file_offset_t offset)
 {
     Assert(offset != -1);
@@ -34,10 +50,49 @@ void checkOffset(EventLogIndex& eventLogIndex, file_offset_t offset)
         throw opp_runtime_error("*** Inconsistent begin and end offsets for offset: %lld\n", offset);
 }
 
-void checkValidOffset(EventLogIndex& eventLogIndex, file_offset_t offset)
+void checkEventNumberOffset(EventLogIndex& eventLogIndex, file_offset_t offset, MatchKind matchKind, long eventNumber)
 {
-    if (offset != -1)
+    if (offset != -1) {
         checkOffset(eventLogIndex, offset);
+
+        long checkEventNumber;
+        file_offset_t lineStartOffset, lineEndOffset;
+        simtime_t simulationTime;
+
+        eventLogIndex.readToEventLine(true, offset, checkEventNumber, simulationTime, lineStartOffset, lineEndOffset);
+
+        if (checkEventNumber != eventNumber) {
+            bool forward = getReadForward(matchKind);
+            eventLogIndex.readToEventLine(forward, forward ? offset + 1 : offset, checkEventNumber, simulationTime, lineStartOffset, lineEndOffset);
+
+            if ((!forward || eventNumber > checkEventNumber) &&
+                (forward || eventNumber < checkEventNumber))
+                throw opp_runtime_error("*** Found wrong offset for event number: %ld\n", eventNumber);
+        }
+    }
+}
+
+void checkSimulationTimeOffset(EventLogIndex& eventLogIndex, file_offset_t offset, MatchKind matchKind, simtime_t simulationTime)
+{
+    if (offset != -1) {
+        checkOffset(eventLogIndex, offset);
+
+        long eventNumber;
+        file_offset_t lineStartOffset, lineEndOffset;
+        simtime_t checkSimulationTime;
+        bool forward = getReadForward(matchKind);
+
+        eventLogIndex.readToEventLine(true, offset, eventNumber, checkSimulationTime, lineStartOffset, lineEndOffset);
+
+        if (checkSimulationTime != simulationTime) {
+            bool forward = getReadForward(matchKind);
+            eventLogIndex.readToEventLine(forward, forward ? offset + 1 : offset, eventNumber, checkSimulationTime, lineStartOffset, lineEndOffset);
+
+            if ((!forward || simulationTime > checkSimulationTime) &&
+                (forward || simulationTime < checkSimulationTime))
+                throw opp_runtime_error("*** Found wrong offset for simulation time: %g\n", simulationTime);
+        }
+    }
 }
 
 void testEventLogIndex(const char *fileName, int numberOfOffsetLookups)
@@ -61,56 +116,50 @@ void testEventLogIndex(const char *fileName, int numberOfOffsetLookups)
             // seek to random event number
             long eventNumber = random.next01() * lastEventNumber;
             printf("Seeking for event number: %ld\n", eventNumber);
-            file_offset_t offset = eventLogIndex.getOffsetForEventNumber(eventNumber, (MatchKind)(int)(random.next01() * 5));
-            if (offset != -1)
-                checkOffset(eventLogIndex, offset);
-            else {
-                file_offset_t firstOrPreviousOffset = eventLogIndex.getOffsetForEventNumber(eventNumber, FIRST_OR_PREVIOUS);
-                file_offset_t firstOrNextOffset = eventLogIndex.getOffsetForEventNumber(eventNumber, FIRST_OR_NEXT);
-                file_offset_t lastOrPreviousOffset = eventLogIndex.getOffsetForEventNumber(eventNumber, LAST_OR_PREVIOUS);
-                file_offset_t lastOrNextOffset = eventLogIndex.getOffsetForEventNumber(eventNumber, LAST_OR_NEXT);
+            file_offset_t offset = eventLogIndex.getOffsetForEventNumber(eventNumber, EXACT);
+            file_offset_t firstOrPreviousOffset = eventLogIndex.getOffsetForEventNumber(eventNumber, FIRST_OR_PREVIOUS);
+            file_offset_t firstOrNextOffset = eventLogIndex.getOffsetForEventNumber(eventNumber, FIRST_OR_NEXT);
+            file_offset_t lastOrPreviousOffset = eventLogIndex.getOffsetForEventNumber(eventNumber, LAST_OR_PREVIOUS);
+            file_offset_t lastOrNextOffset = eventLogIndex.getOffsetForEventNumber(eventNumber, LAST_OR_NEXT);
 
-                if (firstOrPreviousOffset >= lastOrNextOffset)
-                    throw opp_runtime_error("*** Inconsistent first or previous and last or next offsets for event number: %ld\n", eventNumber);
+            if (firstOrPreviousOffset > lastOrNextOffset)
+                throw opp_runtime_error("*** Inconsistent first or previous and last or next offsets for event number: %ld\n", eventNumber);
 
-                if (firstOrNextOffset < firstOrPreviousOffset)
-                    throw opp_runtime_error("*** Inconsistent first or next and first or previous offsets for event number: %ld\n", eventNumber);
+            if (firstOrNextOffset < firstOrPreviousOffset)
+                throw opp_runtime_error("*** Inconsistent first or next and first or previous offsets for event number: %ld\n", eventNumber);
 
-                if (lastOrNextOffset < lastOrPreviousOffset)
-                    throw opp_runtime_error("*** Inconsistent last or next and last or previous offsets for event number: %ld\n", eventNumber);
+            if (lastOrNextOffset < lastOrPreviousOffset)
+                throw opp_runtime_error("*** Inconsistent last or next and last or previous offsets for event number: %ld\n", eventNumber);
 
-                checkValidOffset(eventLogIndex, firstOrPreviousOffset);
-                checkValidOffset(eventLogIndex, firstOrNextOffset);
-                checkValidOffset(eventLogIndex, firstOrPreviousOffset);
-                checkValidOffset(eventLogIndex, firstOrNextOffset);
-            }
+            checkEventNumberOffset(eventLogIndex, offset, EXACT, eventNumber);
+            checkEventNumberOffset(eventLogIndex, firstOrPreviousOffset, FIRST_OR_PREVIOUS, eventNumber);
+            checkEventNumberOffset(eventLogIndex, firstOrNextOffset, FIRST_OR_NEXT, eventNumber);
+            checkEventNumberOffset(eventLogIndex, lastOrPreviousOffset, LAST_OR_PREVIOUS, eventNumber);
+            checkEventNumberOffset(eventLogIndex, lastOrNextOffset, LAST_OR_NEXT, eventNumber);
 
             // seek to random simulation time
             simtime_t simulationTime = random.next01() * lastSimulationTime;
             printf("Seeking for simulation time: %g\n", simulationTime);
-            offset = eventLogIndex.getOffsetForSimulationTime(simulationTime, (MatchKind)(int)(random.next01() * 5));
-            if (offset != -1)
-                checkOffset(eventLogIndex, offset);
-            else {
-                file_offset_t firstOrPreviousOffset = eventLogIndex.getOffsetForSimulationTime(simulationTime, FIRST_OR_PREVIOUS);
-                file_offset_t firstOrNextOffset = eventLogIndex.getOffsetForSimulationTime(simulationTime, FIRST_OR_NEXT);
-                file_offset_t lastOrPreviousOffset = eventLogIndex.getOffsetForSimulationTime(simulationTime, LAST_OR_PREVIOUS);
-                file_offset_t lastOrNextOffset = eventLogIndex.getOffsetForSimulationTime(simulationTime, LAST_OR_NEXT);
+            offset = eventLogIndex.getOffsetForSimulationTime(simulationTime, EXACT);
+            firstOrPreviousOffset = eventLogIndex.getOffsetForSimulationTime(simulationTime, FIRST_OR_PREVIOUS);
+            firstOrNextOffset = eventLogIndex.getOffsetForSimulationTime(simulationTime, FIRST_OR_NEXT);
+            lastOrPreviousOffset = eventLogIndex.getOffsetForSimulationTime(simulationTime, LAST_OR_PREVIOUS);
+            lastOrNextOffset = eventLogIndex.getOffsetForSimulationTime(simulationTime, LAST_OR_NEXT);
 
-                if (firstOrPreviousOffset >= lastOrNextOffset)
-                    throw opp_runtime_error("*** Inconsistent first or previous and last or next offsets for simulation time: %g\n", simulationTime);
+            if (firstOrPreviousOffset > lastOrNextOffset)
+                throw opp_runtime_error("*** Inconsistent first or previous and last or next offsets for simulation time: %g\n", simulationTime);
 
-                if (firstOrNextOffset < firstOrPreviousOffset)
-                    throw opp_runtime_error("*** Inconsistent first or next and first or previous offsets for simulation time: %ld\n", simulationTime);
+            if (firstOrNextOffset < firstOrPreviousOffset)
+                throw opp_runtime_error("*** Inconsistent first or next and first or previous offsets for simulation time: %ld\n", simulationTime);
 
-                if (lastOrNextOffset < lastOrPreviousOffset)
-                    throw opp_runtime_error("*** Inconsistent last or next and last or previous offsets for simulation time: %ld\n", simulationTime);
+            if (lastOrNextOffset < lastOrPreviousOffset)
+                throw opp_runtime_error("*** Inconsistent last or next and last or previous offsets for simulation time: %ld\n", simulationTime);
 
-                checkValidOffset(eventLogIndex, firstOrPreviousOffset);
-                checkValidOffset(eventLogIndex, firstOrNextOffset);
-                checkValidOffset(eventLogIndex, firstOrPreviousOffset);
-                checkValidOffset(eventLogIndex, firstOrNextOffset);
-            }
+            checkSimulationTimeOffset(eventLogIndex, offset, EXACT, simulationTime);
+            checkSimulationTimeOffset(eventLogIndex, firstOrPreviousOffset, FIRST_OR_PREVIOUS, simulationTime);
+            checkSimulationTimeOffset(eventLogIndex, firstOrNextOffset, FIRST_OR_NEXT, simulationTime);
+            checkSimulationTimeOffset(eventLogIndex, lastOrPreviousOffset, LAST_OR_PREVIOUS, simulationTime);
+            checkSimulationTimeOffset(eventLogIndex, lastOrNextOffset, LAST_OR_NEXT, simulationTime);
         }
     }
 }
