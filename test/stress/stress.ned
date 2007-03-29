@@ -171,3 +171,53 @@ network SimpleStress
         capsulate2.out++ --> StressChannel --> sink2.in++;
         duplicate2.out++ --> StressChannel --> sink2.in++;
 }
+
+network LineStress
+{
+    submodules:
+        source: StressSource;
+        node[6]: StressNode;
+        sink: StressSink;
+    connections allowunconnected:
+        source.out++ --> StressChannel --> node[0].in++;
+
+        node[0].out++ --> StressChannel --> node[1].in++;
+        node[1].out++ --> StressChannel --> node[2].in++;
+        node[2].out++ --> StressChannel --> node[3].in++;
+        node[3].out++ --> StressChannel --> node[4].in++;
+        node[4].out++ --> StressChannel --> node[5].in++;
+
+        node[1].out++ --> StressChannel --> node[0].in++;
+        node[2].out++ --> StressChannel --> node[1].in++;
+        node[3].out++ --> StressChannel --> node[2].in++;
+        node[4].out++ --> StressChannel --> node[3].in++;
+        node[5].out++ --> StressChannel --> node[4].in++;
+
+        node[5].out++ --> StressChannel --> sink.in++;
+}
+
+network CircleStress
+{
+    submodules:
+        source: StressSource;
+        node[6]: StressNode;
+        sink: StressSink;
+    connections allowunconnected:
+        source.out++ --> node[0].in++;
+
+        node[0].out++ --> StressChannel --> node[1].in++;
+        node[1].out++ --> StressChannel --> node[2].in++;
+        node[2].out++ --> StressChannel --> node[3].in++;
+        node[3].out++ --> StressChannel --> node[4].in++;
+        node[4].out++ --> StressChannel --> node[5].in++;
+        node[5].out++ --> StressChannel --> node[0].in++;
+
+        node[0].out++ --> StressChannel --> node[5].in++;
+        node[1].out++ --> StressChannel --> node[0].in++;
+        node[2].out++ --> StressChannel --> node[1].in++;
+        node[3].out++ --> StressChannel --> node[2].in++;
+        node[4].out++ --> StressChannel --> node[3].in++;
+        node[5].out++ --> StressChannel --> node[4].in++;
+
+        node[3].out++ --> StressChannel --> sink.in++;
+}
