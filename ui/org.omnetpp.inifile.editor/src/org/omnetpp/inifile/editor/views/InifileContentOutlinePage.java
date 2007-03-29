@@ -23,6 +23,8 @@ import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 /**
  * Content outline page for the inifile editor.
  */
+//XXX use workbench selection service instead of manually calling setInput()
+//XXX also: treeView to follow editor's selection
 public class InifileContentOutlinePage extends ContentOutlinePage implements IInifileChangeListener {
 	protected IInifileDocument inifileDocument;
 	protected ITextEditor textEditor;
@@ -118,7 +120,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 	@Override
 	public void dispose() {
 		if (inifileDocument != null)
-			inifileDocument.getListeners().remove(this);
+			inifileDocument.removeInifileChangeListener(this);
 		super.dispose();
 	}
 	
@@ -130,21 +132,20 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 	public void setInput(Object input) {
 		// unhook from old input object
 		if (inifileDocument != null)
-			inifileDocument.getListeners().remove(this);
+			inifileDocument.removeInifileChangeListener(this);
 		Assert.isTrue(input instanceof IInifileDocument || input == null);
 		inifileDocument = (IInifileDocument) input;
 		// Note: when first invoked, treeViewer==null yet
 		if (getTreeViewer() != null && !getTreeViewer().getTree().isDisposed()) 
 			getTreeViewer().setInput(inifileDocument);
 		if (inifileDocument != null)
-			inifileDocument.getListeners().add(this);
+			inifileDocument.addInifileChangeListener(this);
 	}
 	
 	/**
 	 * Updates the outline page.
 	 */
 	public void update() {
-		//System.out.println(this+".update() called");
 		final TreeViewer viewer = getTreeViewer();
 		if (viewer != null) {
 			Display.getDefault().asyncExec(new Runnable() {
