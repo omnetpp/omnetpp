@@ -48,6 +48,11 @@ public interface IInifileDocument {
 	}
 
 	/**
+	 * Returns true iff section and key exists.
+	 */
+	boolean containsKey(String section, String key);
+
+	/**
 	 * Returns the value of the given entry. Returns null if section,
 	 * or key in it does not exist. 
 	 */
@@ -101,6 +106,11 @@ public interface IInifileDocument {
 	 * Returns list of unique section names. 
 	 */
 	String[] getSectionNames();
+
+	/**
+	 * Returns true iff section exists.
+	 */
+	boolean containsSection(String section);
 
 	/** 
 	 * Removes all sections with that name, except the parts in readonly files.

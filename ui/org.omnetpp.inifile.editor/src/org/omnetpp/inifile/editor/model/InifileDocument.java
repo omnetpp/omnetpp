@@ -263,7 +263,11 @@ public class InifileDocument implements IInifileDocument {
 			throw new RuntimeException("cannot set value: bad location: "+e.getMessage());
 		}
 	}
-    
+
+	public boolean containsKey(String section, String key) {
+		return lookupEntry(section, key) != null;
+	}
+  
     protected KeyValueLine lookupEntry(String sectionName, String key) {
     	parseIfChanged();
     	Section section = sections.get(sectionName);
@@ -342,6 +346,10 @@ public class InifileDocument implements IInifileDocument {
 		return sections.keySet().toArray(new String[0]);
 	}
 
+	public boolean containsSection(String section) {
+		return sections.containsKey(section);
+	}
+	
 	protected Section lookupSection(String sectionName) {
 		parseIfChanged();
 		Section section = sections.get(sectionName);
