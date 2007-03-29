@@ -48,6 +48,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 		super.createPartControl(parent);
 		createPulldownMenu();
 		hookSelectionChangedListener();
+		setViewerInput(getSite().getPage().getSelection());
 	}
 	
 	@Override
@@ -57,7 +58,6 @@ public class VectorBrowserView extends ViewWithMessagePart {
 		viewer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		viewer.setContentProvider(contentProvider);
 		viewer.setRowRenderer(new VectorResultRowRenderer());
-		setViewerInput(getSite().getPage().getSelection());
 
 		TableColumn tableColumn = viewer.createColumn();
 		tableColumn.setWidth(60);
