@@ -146,10 +146,8 @@ double SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double timeli
 
                 if (timelineCoordinateDelta == 0) //XXX this can happen in STEP mode when pos==-1, and 1st event is at timeline zero. perhaps getLastEventPositionBeforeTimelineCoordinate() should check "<=" not "<" ?
                     return eventSimulationTime;
-
-                Assert(timelineCoordinateDelta > 0);
-
-                return eventSimulationTime + simulationTimeDelta * (timelineCoordinate - eventTimelineCoordinate) / timelineCoordinateDelta;
+                else
+                    return eventSimulationTime + simulationTimeDelta * (timelineCoordinate - eventTimelineCoordinate) / timelineCoordinateDelta;
             }
         default:
             throw opp_runtime_error("Unknown timeline mode");
@@ -200,10 +198,8 @@ double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simula
 
                 if (simulationTimeDelta == 0) //XXX this can happen in STEP mode when pos==-1, and 1st event is at timeline zero. perhaps getLastEventPositionBeforeTimelineCoordinate() should check "<=" not "<" ?
                     return eventTimelineCoordinate;
-
-                Assert(simulationTimeDelta > 0);
-
-                return eventTimelineCoordinate + timelineCoordinateDelta * (simulationTime - eventSimulationTime) / simulationTimeDelta;
+                else
+                    return eventTimelineCoordinate + timelineCoordinateDelta * (simulationTime - eventSimulationTime) / simulationTimeDelta;
             }
         default:
             throw opp_runtime_error("Unknown timeline mode");

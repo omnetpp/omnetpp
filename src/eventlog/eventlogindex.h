@@ -54,13 +54,10 @@ class EVENTLOG_API EventLogIndex
     protected:
         // return true if the given offset should be stored in the map (not already there, etc)
         bool needsToBeStored(long eventNumber);
-        // true if OK, false if no "E" line found till the end of file in the given direction
-        // reads the first event line in the given direction starting from the given offset
-        bool readToEventLine(bool forward, file_offset_t readStartOffset, long& eventNumber, simtime_t& simulationTime, file_offset_t& lineStartOffset, file_offset_t& lineEndOffset);
 
         void addPosition(long eventNumber, simtime_t simulationTime, file_offset_t offset);
         template <typename T> file_offset_t binarySearchForOffset(bool eventNumberBased, std::map<T, file_offset_t> *keyToOffsetMap, T key, MatchKind matchKind);
-        template <typename T> file_offset_t linearSearchForOffset(bool eventNumberBased, file_offset_t offset, T key, MatchKind matchKind, bool exactMatchFound);
+        template <typename T> file_offset_t linearSearchForOffset(bool eventNumberBased, file_offset_t offset, T key, bool forward, bool exactMatchFound);
 
     public:
         // reader will be deleted
@@ -79,6 +76,9 @@ class EVENTLOG_API EventLogIndex
         file_offset_t getOffsetForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT);
         bool positionToEventNumber(long eventNumber, MatchKind matchKind = EXACT);
         bool positionToSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT);
+        // true if OK, false if no "E" line found till the end of file in the given direction
+        // reads the first event line in the given direction starting from the given offset
+        bool readToEventLine(bool forward, file_offset_t readStartOffset, long& eventNumber, simtime_t& simulationTime, file_offset_t& lineStartOffset, file_offset_t& lineEndOffset);
         void dumpTable();
 };
 
