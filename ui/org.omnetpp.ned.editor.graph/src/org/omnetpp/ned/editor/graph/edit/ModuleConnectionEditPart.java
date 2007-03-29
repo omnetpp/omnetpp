@@ -16,6 +16,7 @@ import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
 import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.resources.NEDResourcesPlugin;
 /**
  * Implements a Connection Editpart to represnt a Wire like connection.
  * 
@@ -173,7 +174,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
         super.performRequest(req);
         // let's open or activate a new editor if somone has double clicked the component
         if (RequestConstants.REQ_OPEN.equals(req.getType())) {
-            BaseEditPart.openNEDEditor(getConnectionModel(), getConnectionModel().getEffectiveType());
+            NEDResourcesPlugin.openNEDElementInEditor(getConnectionModel().getEffectiveTypeRef());
         }
     }
     

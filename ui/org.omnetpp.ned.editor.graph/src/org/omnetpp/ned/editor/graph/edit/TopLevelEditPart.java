@@ -6,6 +6,7 @@ import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.TopLevelFigure;
+import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.IHasAncestors;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
@@ -77,9 +78,9 @@ public class TopLevelEditPart extends BaseEditPart {
      * open the first base component for double click
      */
     @Override
-    protected String getTypeNameForDblClickOpen() {
+    protected NEDElement getNEDElementToOpen() {
         if (getModel() instanceof IHasAncestors)
-            return ((IHasAncestors)getNEDModel()).getFirstExtends();
+            return ((IHasAncestors)getNEDModel()).getFirstExtendsRef();
         
         return null;
     }

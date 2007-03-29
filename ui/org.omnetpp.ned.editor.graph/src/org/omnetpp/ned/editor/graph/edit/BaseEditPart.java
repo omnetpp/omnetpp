@@ -5,7 +5,6 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.tools.DirectEditManager;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.omnetpp.figures.misc.IDirectEditSupport;
@@ -16,7 +15,6 @@ import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
@@ -111,7 +109,7 @@ abstract public class BaseEditPart
             performDirectEdit();
         // let's open or activate a new editor if somone has double clicked the component
         if (RequestConstants.REQ_OPEN.equals(req.getType())) {
-            openNEDEditor(getNEDModel(), getTypeNameForDblClickOpen());
+            NEDResourcesPlugin.openNEDElementInEditor(getNEDElementToOpen());
         }
     }
 
@@ -128,18 +126,6 @@ abstract public class BaseEditPart
             manager.show();
     }
 
-    /**
-     * @param name
-     */
-    public static void openNEDEditor(NEDElement srcNode, String name) {
-        INEDTypeInfo typeInfo = NEDResourcesPlugin.getNEDResources().getComponent(name); //XXX should work for inner types as well; interpret srcNode as context?
-        if (typeInfo==null) {
-        	MessageDialog.openConfirm(null, "Error", "Cannot open submodule or channel in an editor: NED type "+name+" is unknown.");
-        	return;
-        }
-        NEDResourcesPlugin.openNEDElementInEditor(typeInfo.getNEDElement());
-    }
-
     public IPropertySource getPropertySource() {
         return propertySource;
     }
@@ -150,5 +136,5 @@ abstract public class BaseEditPart
     /**
      * @return Should return the type name that must be opened if the user double clicks the module
      */
-    protected abstract String getTypeNameForDblClickOpen();
+    protected abstract NEDElement getNEDElementToOpen();
 }

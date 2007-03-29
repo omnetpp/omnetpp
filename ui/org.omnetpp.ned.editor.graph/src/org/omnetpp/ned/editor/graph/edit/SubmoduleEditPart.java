@@ -10,6 +10,7 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.figures.misc.GateAnchor;
+import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 
 
@@ -153,7 +154,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
      * open the type of component for double click
      */
     @Override
-    protected String getTypeNameForDblClickOpen() {
-        return getSubmoduleModel().getEffectiveType();
+    protected NEDElement getNEDElementToOpen() {
+        return getSubmoduleModel().getEffectiveTypeRef();
     }
 }

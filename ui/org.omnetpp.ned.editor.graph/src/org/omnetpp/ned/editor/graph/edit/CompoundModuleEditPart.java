@@ -25,6 +25,7 @@ import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.CompoundModuleGateAnchor;
 import org.omnetpp.figures.misc.GateAnchor;
 import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy;
+import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 
 public class CompoundModuleEditPart extends ModuleEditPart {
@@ -189,7 +190,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      * open the first base component for double click
      */
     @Override
-    protected String getTypeNameForDblClickOpen() {
-        return getCompoundModuleModel().getFirstExtends();
+    protected NEDElement getNEDElementToOpen() {
+        return getCompoundModuleModel().getFirstExtendsRef();
     }
 }

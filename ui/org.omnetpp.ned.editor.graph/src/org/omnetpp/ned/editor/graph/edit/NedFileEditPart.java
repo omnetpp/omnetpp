@@ -10,6 +10,7 @@ import org.eclipse.gef.SnapToGeometry;
 import org.eclipse.gef.SnapToHelper;
 import org.omnetpp.figures.NedFileFigure;
 import org.omnetpp.ned.editor.graph.edit.policies.NedFileLayoutEditPolicy;
+import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
@@ -99,7 +100,7 @@ public class NedFileEditPart extends BaseEditPart  implements INEDChangeListener
      * do not open anything on double click 
      */
     @Override
-    protected String getTypeNameForDblClickOpen() {
+    protected NEDElement getNEDElementToOpen() {
         return null;
     }
 
