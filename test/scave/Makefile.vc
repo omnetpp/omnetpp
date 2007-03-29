@@ -1,0 +1,43 @@
+#
+# Global definitions
+#
+!include ..\..\configuser.vc
+
+!if "$(LIB_SUFFIX)"==".dll"
+CFLAGS=$(CFLAGS) -DWIN32_DLL
+!endif
+
+#
+# Local definitions
+#
+COPTS=$(CFLAGS) -I. -I../../src/common -I../../include/platdep -I../../src/scave \
+      /Fd"vectorfilereadertest.pdb"
+
+OBJS= vectorfilereadertest.obj
+LIBS= ../../lib/common.lib ../../lib/scave.lib
+
+#
+# Automatic rules
+#
+.SUFFIXES : .cc
+
+.cc.obj:
+	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
+
+#
+# Targets (TBD: build dll)
+#
+all: vectorfilereadertest.exe
+
+vectorfilereadertest.exe: vectorfilereadertest.obj $(LIBS)
+	$(LINK) $(LDFLAGS) /nologo /out:vectorfilereadertest.exe vectorfilereadertest.obj $(LIBS)
+
+depend:
+	$(MAKEDEPEND) -I. -fMakefile.vc -- *.cc
+
+clean:
+	- del *.obj 2> nul
+	- del *.ilk *.idb *.pdb *.lib *.exe 2> nul
+
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
