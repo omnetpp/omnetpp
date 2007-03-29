@@ -6,6 +6,11 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 
+/**
+ * A default implementation of ISelectionProvider.
+ * 
+ * @author tomi
+ */
 public class SelectionProvider implements ISelectionProvider
 {
 	ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
@@ -31,6 +36,10 @@ public class SelectionProvider implements ISelectionProvider
 		return selection;
 	}
 
+	/**
+	 * Note: we always notify (not only when the new selection is different 
+	 * from the old one), in order to allow firing extra ("fake") notifications.
+	 */
 	public void setSelection(ISelection selection) {
 		this.selection = selection;
 		fireSelectionChanged(new SelectionChangedEvent(this, selection));
