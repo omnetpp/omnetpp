@@ -4,11 +4,9 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
@@ -113,13 +111,13 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 			IResource wsroot = ResourcesPlugin.getWorkspace().getRoot();
 			wsroot.accept(new IResourceVisitor() {
 				public boolean visit(IResource resource) {
-					if (getNEDResources().isNEDFile(resource))
+					if (NEDResources.isNEDFile(resource))
 						getNEDResources().readNEDFile((IFile) resource);
 					return true;
 				}
 			});
 		} catch (CoreException e) {
-			System.out.println("Error during workspace refresh: "+e);
+			logError("Error during workspace refresh: ",e);
 		}
 		getNEDResources().rehashIfNeeded();
 
@@ -153,7 +151,7 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 
             // select the component so it will be visible in the opened editor
             if (editor instanceof ISelectionSupport) {
-            	if (element instanceof ITopLevelElement) //XXX or submodule
+            	if (element instanceof ITopLevelElement)
             		((ISelectionSupport)editor).selectGraphComponent(typeInfo.getName());
             	else
             		((ISelectionSupport)editor).setTextHighlightRange(sourceRegion.startLine, sourceRegion.endLine);
