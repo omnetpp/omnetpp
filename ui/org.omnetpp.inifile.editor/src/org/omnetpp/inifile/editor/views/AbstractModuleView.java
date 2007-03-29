@@ -1,33 +1,23 @@
 package org.omnetpp.inifile.editor.views;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.part.FileEditorInput;
-import org.omnetpp.common.editor.EditorUtil;
-import org.omnetpp.common.editor.ISelectionSupport;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
-import org.omnetpp.inifile.editor.editors.InifileEditor;
+import org.omnetpp.inifile.editor.editors.InifileSelectionItem;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.InifileUtils.Type;
 import org.omnetpp.ned.model.NEDElement;
-import org.omnetpp.ned.model.NEDSourceRegion;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.CompoundModuleNode;
@@ -112,17 +102,13 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 		};
 		getSite().getPage().addPartListener(partListener);
 		
-		// Listen on NED changes as well. 
-		//FIXME this only fires when TOPLEVEL elements are added/removed! not on submodule, parameter etc changes.
+		// Listen on NED changes as well (note: inifile changes arrive as selection changes) 
 		nedChangeListener = new INEDChangeListener() {
 			public void modelChanged(NEDModelEvent event) {
 				nedModelChanged();
 			}
 		};
 		NEDResourcesPlugin.getNEDResources().getNEDModelChangeListenerList().add(nedChangeListener);
-		
-		//XXX should listen on changes in the inifile as well.
-		
 	}
 	
 	protected void unhookListeners() {
@@ -180,13 +166,15 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 		}
 		
 		//System.out.println("SELECTION: "+selection);
-
+		
 		if (selection instanceof IStructuredSelection && !selection.isEmpty()) {
-			// The NED graphical editor publishes selection as an IStructuredSelection,
-			// with editparts in it. NEDElement can be extracted from editparts
-			// via IModelProvider.
 			Object element = ((IStructuredSelection)selection).getFirstElement();
 			if (element instanceof IModelProvider) {
+				//
+				// The NED graphical editor publishes selection as an IStructuredSelection,
+				// with editparts in it. NEDElement can be extracted from editparts
+				// via IModelProvider.
+				//
 				Object model = ((IModelProvider)element).getModel();
 				if (model instanceof CompoundModuleNode) {
 					CompoundModuleNode node = (CompoundModuleNode)model;
@@ -208,21 +196,23 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 					hideMessage();
 				}
 			}
-			
-		}
-		else if (activeEditor instanceof InifileEditor) {
-			InifileEditor inifileEditor = (InifileEditor) activeEditor;
-			IInifileDocument doc = inifileEditor.getEditorData().getInifileDocument();
+			else if (element instanceof InifileSelectionItem) {
+				//
+				// The inifile editor publishes selection in InifileSelectionItems.
+				//
+				InifileSelectionItem sel = (InifileSelectionItem) element;
+				IInifileDocument doc = sel.getDocument();
+				String section = sel.getSection();
 
-			//XXX consider changing the return type of NEDResourcesPlugin.getNEDResources() to INEDTypeResolver
-
-			String networkName = doc.getValue("General", "network");
-			if (networkName == null) {
-				displayMessage("Network not specified (no [General]/network= setting)");
-				return;
+				String networkName = doc.getValue("General", "network"); //XXX or [Run X], if that's the selected one!
+				if (networkName == null) {
+					displayMessage("Network not specified (no [General]/network= setting)");
+					return;
+				}
+				buildContent(networkName, doc);
+				hideMessage();
 			}
-			buildContent(networkName, doc);
-			hideMessage();
+			
 		}
 		else {
 			displayMessage("Please open an inifile or NED editor.");
@@ -242,6 +232,8 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 	 */
 	protected abstract void buildContent(String submoduleName, String submoduleType, IInifileDocument doc);
 
+
+	/* stuff for subclasses: icons */
 	public static final String ICON_ERROR = "icons/full/obj16/Error.png";
 	public static final String ICON_UNASSIGNEDPAR = "icons/full/obj16/UnassignedPar.png";
 	public static final String ICON_NEDPAR = "icons/full/obj16/NedPar.png";
