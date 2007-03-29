@@ -1,5 +1,7 @@
 package org.omnetpp.scave.charting;
 
+import java.math.BigDecimal;
+
 import org.eclipse.core.runtime.Assert;
 import org.jfree.data.DomainOrder;
 import org.jfree.data.general.AbstractSeriesDataset;
@@ -55,5 +57,9 @@ public class OutputVectorDataset extends AbstractSeriesDataset implements XYData
 
 	public Comparable getSeriesKey(int series) {
 		return seriesKeys[series];
+	}
+	
+	public BigDecimal getPreciseX(int series, int item) {
+		return seriesData[series].getPreciseX(item);
 	}
 }

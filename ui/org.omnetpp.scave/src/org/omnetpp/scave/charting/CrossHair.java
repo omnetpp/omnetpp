@@ -1,5 +1,6 @@
 package org.omnetpp.scave.charting;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -17,6 +18,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
 
 /**
@@ -259,9 +261,13 @@ class CrossHair {
 	private String getText(DataPoint dataPoint) {
 		OutputVectorDataset dataset = chart.getDataset();
 		//String coordinates = String.format("%g, %g", dataset.getXValue(dataPoint.series, dataPoint.index), dataset.getYValue(dataPoint.series, dataPoint.index));
-		String coordinates = dataset.getXValue(dataPoint.series, dataPoint.index)+", "+dataset.getYValue(dataPoint.series, dataPoint.index);
-		coordinates += " - " + dataset.getSeriesKey(dataPoint.series);
-		return coordinates;
+		BigDecimal xp = dataset.getPreciseX(dataPoint.series, dataPoint.index);
+		double x = dataset.getXValue(dataPoint.series, dataPoint.index);
+		double y = dataset.getYValue(dataPoint.series, dataPoint.index);
+		String coordinates = (xp != null ? xp.toPlainString() : Double.toString(x))+", "+y;
+		String series = dataset.getSeriesKey(dataPoint.series).toString();
+		series = StringUtils.abbreviate(series, series.length(), 25);
+		return coordinates + " - " + series;
 	}
 
 	private int dataPointsNear(int x, int y, int d, ArrayList<DataPoint> result, int maxCount) {
