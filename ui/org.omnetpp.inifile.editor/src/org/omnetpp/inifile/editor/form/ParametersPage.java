@@ -78,15 +78,14 @@ public class ParametersPage extends FormPage {
 			public String getColumnText(Object element, int columnIndex) {
 				String key = (String) element;
 				switch (columnIndex) {
-				case 0: return key;
-				case 1: return getInifileDocument().getValue("Parameters", key); 
-				case 2: return getInifileDocument().getComment("Parameters", key);
-				default: throw new IllegalArgumentException();
+					case 0: return key;
+					case 1: return getInifileDocument().getValue("Parameters", key); 
+					case 2: return getInifileDocument().getComment("Parameters", key);
+					default: throw new IllegalArgumentException();
 				}
 			}
 
 			public void addListener(ILabelProviderListener listener) {
-				//XXX
 			}
 
 			public void dispose() {
@@ -97,15 +96,14 @@ public class ParametersPage extends FormPage {
 			}
 
 			public void removeListener(ILabelProviderListener listener) {
-				//XXX
 			}
 		});
 
 		//XXX make a copy of JDT's TableTextCellEditor, and use that! see example in ChangeParametersControl in JDT
-		final TextCellEditor editors[]= new TextCellEditor[3];
-		editors[0]= new TextCellEditor(tableViewer.getTable(), SWT.NONE);
-		editors[1]= new TextCellEditor(tableViewer.getTable(), SWT.NONE);
-		editors[2]= new TextCellEditor(tableViewer.getTable(), SWT.NONE);
+		final TextCellEditor editors[] = new TextCellEditor[3];
+		editors[0] = new TextCellEditor(tableViewer.getTable(), SWT.NONE);
+		editors[1] = new TextCellEditor(tableViewer.getTable(), SWT.NONE);
+		editors[2] = new TextCellEditor(tableViewer.getTable(), SWT.NONE);
 		tableViewer.setCellEditors(editors);
 		tableViewer.setColumnProperties(new String[] {"key", "value", "comment"});
 		tableViewer.setCellModifier(new ICellModifier() {
@@ -131,13 +129,15 @@ public class ParametersPage extends FormPage {
 				String key = (String) element;
 				String stringValue = (String) value;
 				if (property.equals("key"))
-					; //FIXME todo set key
+					; //FIXME implement changeKey(section, oldKey, newKey) in IInifileDocument
 				else if (property.equals("value"))
 					getInifileDocument().setValue("Parameters", key, stringValue); 
 				else if (property.equals("comment"))
 					getInifileDocument().setComment("Parameters", key, stringValue);
 			}
 		});
+		//XXX arrange updating labelProvider after cell editor has committed
+		
 		return tableViewer;
 	}
 
