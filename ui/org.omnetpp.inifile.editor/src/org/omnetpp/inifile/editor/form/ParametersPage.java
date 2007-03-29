@@ -1,9 +1,11 @@
 package org.omnetpp.inifile.editor.form;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -22,6 +24,18 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
  * @author Andras
  */
 //XXX for now it only edits the [Parameters] section, should be extended to run configs as well
+//XXX hint for in-place table editing: ICellModifier, TableViewer.setCellEditors(), TableViewer.setCellModifier()
+// see: ChangeParametersControl.class in JDT, addCellEditors() and ParametersCellModifier inner class
+//	and:
+//		final TableTextCellEditor editors[]= new TableTextCellEditor[PROPERTIES.length];
+//		editors[TYPE_PROP]= new TableTextCellEditor(fTableViewer, TYPE_PROP);
+//		editors[NEWNAME_PROP]= new TableTextCellEditor(fTableViewer, NEWNAME_PROP);
+//		editors[DEFAULT_PROP]= new TableTextCellEditor(fTableViewer, DEFAULT_PROP);
+//      [...]
+//		fTableViewer.setCellEditors(editors);
+//		fTableViewer.setCellModifier(new ParametersCellModifier());
+//
+
 public class ParametersPage extends FormPage {
 	private TableViewer tableViewer;
 	
@@ -30,18 +44,31 @@ public class ParametersPage extends FormPage {
 
 		// layout: 2x2 grid: (label, dummy) / (table, buttonGroup)
 		setLayout(new GridLayout(2,false));
+
 		Label label = new Label(this, SWT.NONE);
 		label.setText("Parameter Assignments");
-		new Label(this, SWT.NONE); // dummy
+		new Label(this, SWT.NONE); // dummy, for row1col2
+
+		tableViewer = createAndConfigureTable();
+		tableViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		
+		Composite buttonGroup = createButtons();
+		buttonGroup.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, true));
+		
+		reread();
+	}
+
+	private TableViewer createAndConfigureTable() {
 		Table table = new Table(this, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION | SWT.VIRTUAL);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
-		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		addTableColumn(table, "Key", 200);
 		addTableColumn(table, "Value", 150);
 		addTableColumn(table, "Comment", 200);
-		tableViewer = new TableViewer(table);
+
+		TableViewer tableViewer = new TableViewer(table);
 		tableViewer.setContentProvider(new ArrayContentProvider());
+		
 		tableViewer.setLabelProvider(new ITableLabelProvider() {
 			public Image getColumnImage(Object element, int columnIndex) {
 				return null;
@@ -73,17 +100,27 @@ public class ParametersPage extends FormPage {
 			}
 		});
 
-		Composite buttonGroup = new Composite(this, SWT.NONE);
-		buttonGroup.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, true));
-		buttonGroup.setLayout(new GridLayout(1,false));
-		
-		Button addButton = createButton(buttonGroup, "Add...");
-		Button editButton = createButton(buttonGroup, "Edit...");
-		Button removeButton = createButton(buttonGroup, "Remove");
-		Button upButton = createButton(buttonGroup, "Up");
-		Button downButton = createButton(buttonGroup, "Down");
-		
-		reread();
+		//XXX make a copy of JDT's TableTextCellEditor, and use that! see example in ChangeParametersControl in JDT
+		final TextCellEditor editors[]= new TextCellEditor[3];
+		editors[0]= new TextCellEditor(tableViewer.getTable(), SWT.NONE);
+		editors[1]= new TextCellEditor(tableViewer.getTable(), SWT.NONE);
+		editors[2]= new TextCellEditor(tableViewer.getTable(), SWT.NONE);
+		tableViewer.setCellEditors(editors);
+		tableViewer.setColumnProperties(new String[] {"one", "two", "three"});
+		tableViewer.setCellModifier(new ICellModifier() {
+			public boolean canModify(Object element, String property) {
+				return true;
+			}
+
+			public Object getValue(Object element, String property) {
+				return "bubu-"+property; 
+			}
+
+			public void modify(Object element, String property, Object value) {
+				System.out.println("changed! "+property+" to "+value);
+			}
+		});
+		return tableViewer;
 	}
 
 	private TableColumn addTableColumn(Table table, String label, int width) {
@@ -93,13 +130,25 @@ public class ParametersPage extends FormPage {
 		return column;
 	}
 
+	private Composite createButtons() {
+		Composite buttonGroup = new Composite(this, SWT.NONE);
+		buttonGroup.setLayout(new GridLayout(1,false));
+		
+		Button addButton = createButton(buttonGroup, "Add...");
+		Button editButton = createButton(buttonGroup, "Edit...");
+		Button removeButton = createButton(buttonGroup, "Remove");
+		Button upButton = createButton(buttonGroup, "Up");
+		Button downButton = createButton(buttonGroup, "Down");
+		return buttonGroup;
+	}
+
 	private Button createButton(Composite buttonGroup, String label) {
 		Button button = new Button(buttonGroup, SWT.PUSH);
 		button.setText(label);
 		button.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
 		return button;
 	}
-	
+
 	@Override
 	public void reread() {
 		//XXX use keys like: "section/key"

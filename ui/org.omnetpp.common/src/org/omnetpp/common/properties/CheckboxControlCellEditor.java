@@ -12,8 +12,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /**
+ * A boolean property editor using an SWT checkbox as the editor.
  * @author rhornig
- * A boolean property editor using an SWT checkbox as the editor
  */
 public class CheckboxControlCellEditor extends CellEditor {
 
