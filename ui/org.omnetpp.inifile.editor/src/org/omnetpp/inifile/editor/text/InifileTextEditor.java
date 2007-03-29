@@ -27,8 +27,7 @@ import org.omnetpp.inifile.editor.text.actions.DefineFoldingRegionAction;
 public class InifileTextEditor extends TextEditor {
 	/** The projection support */
 	private ProjectionSupport projectionSupport;
-	private DelayedJob postCursorPositionChangedJob;
-
+	private Runnable cursorPositionChangedJob;
 
 	/**
 	 * Default constructor.
@@ -187,7 +186,7 @@ public class InifileTextEditor extends TextEditor {
 	 * @param runnable  contains the function
 	 */
 	public void setPostCursorPositionChangeJob(Runnable runnable) {
-		postCursorPositionChangedJob = new DelayedJob(600, runnable);
+		cursorPositionChangedJob = runnable;
 	}
 
 	/*
@@ -195,8 +194,8 @@ public class InifileTextEditor extends TextEditor {
 	 */
 	protected void handleCursorPositionChanged() {
 		super.handleCursorPositionChanged();
-		if (postCursorPositionChangedJob != null)
-			postCursorPositionChangedJob.restartTimer();
+		if (cursorPositionChangedJob != null)
+			cursorPositionChangedJob.run();
 	}
 
 	/**
