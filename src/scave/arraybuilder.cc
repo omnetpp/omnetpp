@@ -26,12 +26,15 @@ ArrayBuilderNode::ArrayBuilderNode()
     veclen = 0;
     xvec = new double[vecsize];
     yvec = new double[vecsize];
+    xpvecsize = 0;
+    xpvec = NULL;
 }
 
 ArrayBuilderNode::~ArrayBuilderNode()
 {
     delete [] xvec;
     delete [] yvec;
+    if (xpvec) delete[] xpvec;
 }
 
 void ArrayBuilderNode::resize()
@@ -46,6 +49,16 @@ void ArrayBuilderNode::resize()
     xvec = newxvec;
     yvec = newyvec;
     vecsize = newsize;
+}
+
+void ArrayBuilderNode::resizePrec()
+{
+    size_t newsize = vecsize;
+    BigDecimal *newxpvec = new BigDecimal[newsize];
+    memcpy(newxpvec, xpvec, xpvecsize*sizeof(BigDecimal));
+    delete[] xpvec;
+    xpvec = newxpvec;
+    xpvecsize = newsize;
 }
 
 bool ArrayBuilderNode::isReady() const
@@ -65,6 +78,12 @@ void ArrayBuilderNode::process()
             resize();
         xvec[veclen] = a.x;
         yvec[veclen] = a.y;
+        if (!a.xp.isNil())
+        {
+            if (veclen>=xpvecsize)
+                resizePrec();
+            xpvec[veclen] = a.xp;
+        }
         veclen++;
     }
 }
@@ -81,22 +100,30 @@ void ArrayBuilderNode::sort()
     //std::sort();
 }
 
-void ArrayBuilderNode::extractVector(double *&x, double *&y, size_t& len)
+#ifndef min
+#define min(a,b)    (((a) < (b)) ? (a) : (b))
+#endif
+
+void ArrayBuilderNode::extractVector(double *&x, double *&y, size_t &len, BigDecimal *&xp, size_t &xplen)
 {
     // transfer ownership to caller
     x = xvec;
     y = yvec;
     len = veclen;
+    xp = xpvec;
+    xplen = min(veclen, xpvecsize);
     xvec = NULL;
     yvec = NULL;
     veclen = 0;
+    xpvec = NULL;
 }
 
 XYArray *ArrayBuilderNode::getArray()
 {
     // transfer ownership to XYArray
-    XYArray *array = new XYArray(xvec, yvec, veclen);
+    XYArray *array = new XYArray(xvec, yvec, veclen, xpvec, min(veclen, xpvecsize));
     xvec = yvec = NULL;
+    xpvec = NULL;
     veclen = 0;
     return array;
 }

@@ -347,6 +347,8 @@ void IndexedVectorFileWriterNode::writeRecordsToBuffer(VectorInputPort *port)
     int colno = columns.size();
     Datum a;
     int count;
+    char buf[64];
+    char *endp;
 
     if (colno == 2 && columns[0] == 'T' && columns[1] == 'V')
     {
@@ -355,7 +357,10 @@ void IndexedVectorFileWriterNode::writeRecordsToBuffer(VectorInputPort *port)
             chan->read(&a,1);
             if (port->bufferPtr - port->buffer >= port->bufferSize - 100)
                 writeBufferToFile(port);
-            bufferPrintf(port, "%d\t%.*g\t%.*g\n", vectorId, prec, a.x, prec, a.y);
+            if (a.xp.isNil())
+                bufferPrintf(port, "%d\t%.*g\t%.*g\n", vectorId, prec, a.x, prec, a.y);
+            else
+                bufferPrintf(port, "%d\t%s\t%.*g\n", vectorId, BigDecimal::ttoa(buf, a.xp, endp), prec, a.y);
             port->bufferNumOfRecords++;
             port->vector.blocks.back().collect(-1, a.x, a.y);
         }
@@ -367,7 +372,10 @@ void IndexedVectorFileWriterNode::writeRecordsToBuffer(VectorInputPort *port)
             chan->read(&a,1);
             if (port->bufferPtr - port->buffer >= port->bufferSize - 100)
                 writeBufferToFile(port);
-            bufferPrintf(port, "%d\t%ld\t%.*g\t%.*g\n", vectorId, a.eventNumber, prec, a.x, prec, a.y);
+            if (a.xp.isNil())
+                bufferPrintf(port, "%d\t%ld\t%.*g\t%.*g\n", vectorId, a.eventNumber, prec, a.x, prec, a.y);
+            else
+                bufferPrintf(port, "%d\t%ld\t%s\t%.*g\n", vectorId, a.eventNumber, BigDecimal::ttoa(buf, a.xp, endp), prec, a.y);
             port->bufferNumOfRecords++;
             port->vector.blocks.back().collect(a.eventNumber, a.x, a.y);
         }
@@ -384,7 +392,11 @@ void IndexedVectorFileWriterNode::writeRecordsToBuffer(VectorInputPort *port)
                 bufferPrintf(port, "\t");
                 switch (columns[j])
                 {
-                case 'T': bufferPrintf(port,"%.*g", prec, a.x); break;
+                case 'T':
+                    if (a.xp.isNil())
+                        bufferPrintf(port,"%.*g", prec, a.x);
+                    else
+                        bufferPrintf(port,"%s", BigDecimal::ttoa(buf, a.xp, endp)); break;
                 case 'V': bufferPrintf(port,"%.*g", prec, a.y); break;
                 case 'E': bufferPrintf(port,"%ld", a.eventNumber); break; 
                 default: throw opp_runtime_error("unknown column type: '%c'", columns[j]);

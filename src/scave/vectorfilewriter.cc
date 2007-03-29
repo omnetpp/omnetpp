@@ -76,13 +76,22 @@ void VectorFileWriterNode::process()
         std::string &columns = it->columns;
         int colno = columns.size();
         Datum a;
+        char buf[64];
+        char *endp;
 
         if (colno == 2 && columns[0] == 'T' && columns[1] == 'V')
         {
             for (int i=0; i<n; i++)
             {
                 chan->read(&a,1);
-                CHECK(fprintf(f,"%d\t%.*g\t%.*g\n", it->id, prec, a.x, prec, a.y));
+                if (a.xp.isNil())
+                {
+                    CHECK(fprintf(f,"%d\t%.*g\t%.*g\n", it->id, prec, a.x, prec, a.y));
+                }
+                else
+                {
+                    CHECK(fprintf(f,"%d\t%s\t%.*g\n", it->id, BigDecimal::ttoa(buf, a.xp, endp), prec, a.y));
+                }
             }
         }
         else if (colno == 3 && columns[0] == 'E' && columns[1] == 'T' && columns[2] == 'V')
@@ -90,7 +99,14 @@ void VectorFileWriterNode::process()
             for (int i=0; i<n; i++)
             {
                 chan->read(&a,1);
-                CHECK(fprintf(f,"%d\t%ld\t%.*g\t%.*g\n", it->id, a.eventNumber, prec, a.x, prec, a.y));
+                if (a.xp.isNil())
+                {
+                    CHECK(fprintf(f,"%d\t%ld\t%.*g\t%.*g\n", it->id, a.eventNumber, prec, a.x, prec, a.y));
+                }
+                else
+                {
+                    CHECK(fprintf(f,"%d\t%ld\t%s\t%.*g\n", it->id, a.eventNumber, BigDecimal::ttoa(buf, a.xp, endp), prec, a.y));
+                }
             }
         }
         else
@@ -104,7 +120,16 @@ void VectorFileWriterNode::process()
                     CHECK(fputc('\t', f));
                     switch (columns[j])
                     {
-                    case 'T': CHECK(fprintf(f,"%.*g", prec, a.x)); break;
+                    case 'T':
+                        if (a.xp.isNil())
+                        {
+                            CHECK(fprintf(f,"%.*g", prec, a.x));
+                        }
+                        else
+                        {
+                            CHECK(fprintf(f, "%s", BigDecimal::ttoa(buf, a.xp, endp)));
+                        }
+                        break;
                     case 'V': CHECK(fprintf(f,"%.*g", prec, a.y)); break;
                     case 'E': CHECK(fprintf(f,"%ld", a.eventNumber)); break; 
                     default: throw opp_runtime_error("unknown column type: '%c' while writing %s", columns[j], fileName.c_str());

@@ -63,15 +63,17 @@ static Datum parseColumns(char **tokens, int numtokens, const VectorFileReaderNo
     if (colno == 2 && columns[0] == 'T' && columns[1] == 'V')
     {
         // parse time and value
-        if (!parseDouble(tokens[1],a.x) || !parseDouble(tokens[2],a.y))
+        if (!parseSimtime(tokens[1],a.xp) || !parseDouble(tokens[2],a.y))
             throw opp_runtime_error("invalid vector file syntax: invalid time or value column, line %d", lineno);
         a.eventNumber = -1;
+        a.x = a.xp.dbl();
     }
     else if (colno == 3 && columns[0] == 'E' && columns[1] == 'T' && columns[2] == 'V')
     {
         // parse event number, time and value
-        if (!parseLong(tokens[1], a.eventNumber) || !parseDouble(tokens[2],a.x) || !parseDouble(tokens[3],a.y))
+        if (!parseLong(tokens[1], a.eventNumber) || !parseSimtime(tokens[2],a.xp) || !parseDouble(tokens[3],a.y))
             throw opp_runtime_error("invalid vector file syntax: invalid event number, time or value column, line %d", lineno);
+        a.x = a.xp.dbl();
     }
     else // interpret general case
     {
@@ -85,8 +87,9 @@ static Datum parseColumns(char **tokens, int numtokens, const VectorFileReaderNo
                     throw opp_runtime_error("invalid vector file syntax: invalid event number, line %d", lineno);
                 break;
             case 'T':
-                if (!parseDouble(tokens[i+1], a.x))
+                if (!parseSimtime(tokens[i+1], a.xp))
                     throw opp_runtime_error("invalid vector file syntax: invalid time, line %d", lineno);
+                a.x = a.xp.dbl();
                 break;
             case 'V':
                 if (!parseDouble(tokens[i+1], a.y))

@@ -32,11 +32,13 @@ class DataflowManager;
  */
 struct Datum
 {
-    double x;  ///< usually t simulation time
+    // x value stored as a double or a BigDecimal, usually the simulation time t
+    double x;       // x value as double
+    BigDecimal xp;  // precise x value, BigDecimal::Nil if not filled in
     double y;  ///< usually the value at t
     long eventNumber;
 
-    Datum() : eventNumber(-1) {}
+    Datum() : xp(BigDecimal::Nil), eventNumber(-1) {}
 };
 
 

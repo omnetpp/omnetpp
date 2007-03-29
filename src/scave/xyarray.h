@@ -26,12 +26,16 @@ class SCAVE_API XYArray
         double *x;
         double *y;
         int len;
+        BigDecimal *xp; // precise x value
+        int lenp;       // length of the xp array
     public:
-        XYArray(double *xv, double *yv, int l) {x = xv; y = yv; len = l;}
+        XYArray(double *xv, double *yv, int l) {x = xv; y = yv; len = l; xp = NULL; lenp = 0;}
+        XYArray(double *xv, double *yv, int l, BigDecimal *xpv, int lp) {x = xv; y = yv; len = l; xp = xpv; lenp = lp;}
         ~XYArray() {delete [] x; delete [] y;}
         int length() const  {return len;}
         double getX(int i) const  {return (i>=0 && i<len) ? x[i] : 0;}
         double getY(int i) const  {return (i>=0 && i<len) ? y[i] : 0;}
+        BigDecimal getPreciseX(int i) const {return ((xp != NULL && i>=0 && i < lenp) ? xp[i] : BigDecimal::Nil);}
 };
 
 #endif

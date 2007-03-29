@@ -29,7 +29,10 @@ class SCAVE_API ArrayBuilderNode : public SingleSinkNode
         double *yvec;
         size_t vecsize;
         size_t veclen;
+        BigDecimal *xpvec;
+        size_t xpvecsize;
         void resize();
+        void resizePrec();
     public:
         ArrayBuilderNode();
         virtual ~ArrayBuilderNode();
@@ -39,7 +42,7 @@ class SCAVE_API ArrayBuilderNode : public SingleSinkNode
 
         void sort();
         size_t length() {return veclen;}
-        void extractVector(double *&x, double *&y, size_t& len);
+        void extractVector(double *&x, double *&y, size_t &len, BigDecimal *&xp, size_t &xplen);
         XYArray *getArray();
 };
 
