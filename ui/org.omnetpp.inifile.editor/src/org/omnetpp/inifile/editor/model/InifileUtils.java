@@ -50,6 +50,7 @@ public class InifileUtils {
 	}
 
 	public static void traverseModuleUsageHierarchy(String moduleName, String moduleFullPath, String moduleTypeName, INEDTypeResolver nedResources, IInifileDocument doc, IModuleTreeVisitor visitor) {
+		//FIXME detect circles!!! currently it results in stack overflow
 		// dig out type info (NED declaration)
 		if (StringUtils.isEmpty(moduleTypeName)) {
 			visitor.visitUnresolved(moduleName, moduleFullPath, null);

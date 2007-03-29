@@ -55,11 +55,21 @@ public class InifileDocument implements IInifileDocument {
 		LinkedHashMap<String,KeyValueLine> entries = new LinkedHashMap<String, KeyValueLine>();
 	}
 
+	// primary data structure: sections, keys
 	private LinkedHashMap<String,Section> sections = new LinkedHashMap<String,Section>();
+	
+	// reverse (linenumber-to-section/key) mapping
+	private ArrayList<SectionHeadingLine> mainFileSectionHeadingLines = new ArrayList<SectionHeadingLine>(); 
+	private ArrayList<KeyValueLine> mainFileKeyValueLines = new ArrayList<KeyValueLine>();
+	
+	// include directives
 	private ArrayList<IncludeLine> topIncludes = new ArrayList<IncludeLine>();
 	private ArrayList<IncludeLine> bottomIncludes = new ArrayList<IncludeLine>();
-	private IDocumentListener listener;
-	private InifileChangeListenerList listeners = new InifileChangeListenerList();
+
+	// listeners
+	private IDocumentListener listener; // we listen on IDocument
+	private InifileChangeListenerList listeners = new InifileChangeListenerList(); // clients that listen on us
+
 
 	public InifileDocument(IDocument document, IFile documentFile) {
 		this.document = document;
@@ -76,7 +86,9 @@ public class InifileDocument implements IInifileDocument {
 		document.addDocumentListener(listener);
 	}
 
-	//FIXME to be called from the editor!
+	/** 
+	 * To be called from the editor!
+	 */ 
 	public void dispose() {
 		document.removeDocumentListener(listener);
 	}
@@ -88,6 +100,8 @@ public class InifileDocument implements IInifileDocument {
 
 	synchronized public void parse() {
 		sections.clear();
+		mainFileKeyValueLines.clear();
+		mainFileSectionHeadingLines.clear();
 		topIncludes.clear();
 		bottomIncludes.clear();
 		long startTime = System.currentTimeMillis();
@@ -136,23 +150,27 @@ public class InifileDocument implements IInifileDocument {
 						line.key = key;
 						line.value = value;
 						currentSection.entries.put(key, line);
+						mainFileKeyValueLines.add(line);
 					}
 				}
 
 				public void sectionHeadingLine(int lineNumber, String rawLine, String sectionName, String comment) {
-					if (!sections.containsKey(sectionName)) {
-						// add if such section not yet exists
-						SectionHeadingLine line = new SectionHeadingLine();
-						line.file = currentFile;
-						line.lineNumber = lineNumber;
-						line.numLines = 1; //XXX
-						line.comment = comment;
-						line.sectionName = sectionName;
-						Section section = new Section();
-						section.headingLines.add(line);
+					// add if such section not yet exists
+					Section section = sections.get(sectionName);
+					if (section == null) {
+						section = new Section();
 						sections.put(sectionName, section);
 					}
-					currentSection = sections.get(sectionName);
+					// add line
+					SectionHeadingLine line = new SectionHeadingLine();
+					line.file = currentFile;
+					line.lineNumber = lineNumber;
+					line.numLines = 1; //XXX include continued lines!
+					line.comment = comment;
+					line.sectionName = sectionName;
+					section.headingLines.add(line);
+					mainFileSectionHeadingLines.add(line);
+					currentSection = section;
 				}
 			});
 		} 
@@ -186,6 +204,29 @@ public class InifileDocument implements IInifileDocument {
 		}
     }
 
+    public void dump() {
+    	for (String sectionName : sections.keySet()) {
+    		System.out.println("Section "+sectionName);
+    		Section section = sections.get(sectionName);
+    		for (SectionHeadingLine line : section.headingLines) {
+    			System.out.println("  headingLine: line="+line.lineNumber+"  sectionName="+line.sectionName);
+    		}
+    		for (String key : section.entries.keySet()) {
+    			KeyValueLine line = section.entries.get(key);
+    			System.out.println("  keyValueLine: line="+line.lineNumber+"  key="+line.key+" value="+line.value);
+    		}
+    	}
+    	System.out.println("Includes:");
+		for (IncludeLine line : topIncludes) {
+			System.out.println("  topInclude: line="+line.lineNumber+"  file="+line.includedFile);
+		}
+		for (IncludeLine line : bottomIncludes) {
+			System.out.println("  bottomInclude: line="+line.lineNumber+"  file="+line.includedFile);
+		}
+		System.out.println("num section heading lines: "+mainFileSectionHeadingLines.size());
+		System.out.println("num key-value lines: "+mainFileKeyValueLines.size());
+    }
+    
     protected boolean isEditable(Line line) {
     	return line.file == documentFile;
     }
@@ -366,6 +407,32 @@ public class InifileDocument implements IInifileDocument {
 		replaceLine(line, text);
 	}
 
+	public String getSectionForLine(int lineNumber) {
+		SectionHeadingLine line = findSectionHeadingLine(lineNumber);
+		return line == null ? null : line.sectionName;
+	}
+
+	private SectionHeadingLine findSectionHeadingLine(int lineNumber) {
+		int i = -1;
+		while (i+1 < mainFileSectionHeadingLines.size() && lineNumber >= mainFileSectionHeadingLines.get(i+1).lineNumber)
+			i++;
+		return i==-1 ? null : mainFileSectionHeadingLines.get(i);
+	}
+	
+	public String getKeyForLine(int lineNumber) {
+		SectionHeadingLine sectionHeadingLine = findSectionHeadingLine(lineNumber);
+		if (sectionHeadingLine == null)
+			return null;
+
+		// find key in that section
+		//XXX use binary search, or map<int,Line>, etc
+		for (KeyValueLine line : mainFileKeyValueLines) {
+			if (line.lineNumber==lineNumber)
+				return line.key;
+		}
+		return null;
+	}
+	
 	public String[] getTopIncludes() {
 		parseIfChanged();
 		return null; //TODO

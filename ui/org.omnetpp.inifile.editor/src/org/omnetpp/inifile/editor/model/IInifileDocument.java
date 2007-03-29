@@ -138,6 +138,20 @@ public interface IInifileDocument {
 	void setSectionComment(String section, String comment);
 
 	/**
+	 * Interprets lineNumber as a position into the primary (edited) file,
+	 * and returns which section it is part of; null is returned for 
+	 * positions above the first section heading.
+	 */
+	String getSectionForLine(int lineNumber);
+	
+	/**
+	 * Interprets lineNumber as a position into the primary (edited) file,
+	 * and returns the key on which the cursor is positioned, or null if
+	 * it is not a key-value line.
+	 */
+	String getKeyForLine(int lineNumber);
+
+	/**
 	 * Returns the included files at the top of the primary (edited) file.
 	 * Other includes are not returned.
 	 */ 
