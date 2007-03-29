@@ -468,6 +468,7 @@ void TimeShiftNode::process()
         Datum d;
         in()->read(&d,1);
         d.x += dt;
+        d.xp = BigDecimal::Nil;
         out()->write(&d,1);
     }
 }
