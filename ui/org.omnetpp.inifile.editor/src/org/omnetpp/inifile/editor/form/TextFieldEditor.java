@@ -44,6 +44,7 @@ public class TextFieldEditor extends FieldEditor {
 
 		reread();
 
+		// enable Reset button on editing
 		textField.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				if (!isEdited) {
@@ -52,6 +53,10 @@ public class TextFieldEditor extends FieldEditor {
 				}
 			}
 		});
+		
+		// commit on losing focus, etc.
+		addFocusListenerTo(textField);
+		
 	}
 
 	@Override

@@ -45,6 +45,7 @@ public class CheckboxFieldEditor extends FieldEditor {
 
 		reread();
 
+		// enable Reset button on editing
 		checkbox.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				if (!isEdited) {
@@ -54,6 +55,9 @@ public class CheckboxFieldEditor extends FieldEditor {
 				}
 			}
 		});
+		
+		// commit on losing focus, etc.
+		addFocusListenerTo(checkbox);
 	}
 
 	@Override

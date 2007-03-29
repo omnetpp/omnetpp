@@ -1,11 +1,14 @@
 package org.omnetpp.inifile.editor.form;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
@@ -76,6 +79,18 @@ public abstract class FieldEditor extends Composite {
 			}
 		});
 		return resetButton;
+	}
+	
+	protected void addFocusListenerTo(Control control) {
+		control.addFocusListener(new FocusListener() {
+			public void focusGained(FocusEvent e) {
+				//XXX position the cursor on the edited entry, and fire InifileEditor selection change
+			}
+
+			public void focusLost(FocusEvent e) {
+				commit();
+			}
+		});
 	}
 
 	public abstract void reread();
