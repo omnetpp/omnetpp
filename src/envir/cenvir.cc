@@ -277,6 +277,7 @@ void cEnvir::shutdown()
     classes.clear();
     enums.clear();
     classDescriptors.clear();
+    configEntries.clear();
     omnetapps.clear();
 }
 
