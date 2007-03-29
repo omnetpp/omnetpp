@@ -232,12 +232,16 @@ public class InifileDocument implements IInifileDocument {
     }
 
 	/**
-	 * Adds a line to IDocument at the given lineNumber (1-based). Existing lines
+	 * Adds a line to IDocument at the given lineNumber (1-based). Existing lineNumber
 	 * will be shifted down. Line text is to be specified without the trailing newline.
 	 */
     synchronized protected void addLineAt(int lineNumber, String text) {
 		try {
-			int offset = document.getLineOffset(lineNumber-1);
+			if (lineNumber==document.getNumberOfLines()+1) {
+				// adding a line at the bottom
+				document.replace(document.getLength(), 0, "\n");  // XXX doing this, we sometime create two blank lines
+			}
+			int offset = document.getLineOffset(lineNumber-1); //IDocument is 0-based
 			document.replace(offset, 0, text+"\n");
 		} 
 		catch (BadLocationException e) {
@@ -391,12 +395,18 @@ public class InifileDocument implements IInifileDocument {
 		parseIfChanged();
 		if (sections.get(sectionName) != null)
 			throw new IllegalArgumentException("section already exists: ["+sectionName+"]");
-		SectionHeadingLine beforeLine = getFirstEditableSectionHeading(beforeSectionName);
-		
+
+		// find insertion point
+		int lineNumber;
+		if (beforeSectionName==null)                                       
+			lineNumber = bottomIncludes.isEmpty() ? document.getNumberOfLines()+1 : bottomIncludes.get(0).lineNumber;
+		else
+			lineNumber = getFirstEditableSectionHeading(beforeSectionName).lineNumber;
+
 		// modify IDocument
 		String text = "[" + sectionName + "]";
-		addLineAt(beforeLine.lineNumber, "");  // leave blank
-		addLineAt(beforeLine.lineNumber, text);
+		addLineAt(lineNumber, "");  // leave blank
+		addLineAt(lineNumber, text);
 	}
 
 	public LineInfo getSectionLineDetails(String sectionName) {

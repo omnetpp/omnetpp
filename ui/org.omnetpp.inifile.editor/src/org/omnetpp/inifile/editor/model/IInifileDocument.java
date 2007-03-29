@@ -123,7 +123,8 @@ public interface IInifileDocument {
 	/** 
 	 * Adds a section. Throws an error if such section already exists. 
 	 * (This effectively means that this interface does not support creating 
-	 * and populating non-contiguous sections). 
+	 * and populating non-contiguous sections).  beforeSection==null means
+	 * append.
 	 */
 	void addSection(String sectionName, String beforeSection);
 
