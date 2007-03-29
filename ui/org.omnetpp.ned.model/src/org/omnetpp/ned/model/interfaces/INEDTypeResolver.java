@@ -5,9 +5,8 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.omnetpp.ned.model.NEDElement;
-import org.omnetpp.ned.model.notification.INEDChangeListener;
 
-public interface INEDTypeResolver extends INEDChangeListener {
+public interface INEDTypeResolver {
 
     /**
      * Mark the whole resolver invalid

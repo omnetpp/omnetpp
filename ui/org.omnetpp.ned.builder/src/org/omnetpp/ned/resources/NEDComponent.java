@@ -1,8 +1,8 @@
 package org.omnetpp.ned.resources;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,7 +16,6 @@ import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
-import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned.model.pojo.ChannelNode;
 import org.omnetpp.ned.model.pojo.CompoundModuleNode;
@@ -439,62 +438,6 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
         if (needsUpdate)
             refreshInheritedMembers();
         return allUsingTypes;
-    }
-
-    public void modelChanged(NEDModelEvent event) {
-        // skip the event processing if te last serial is greater or equal. only newer
-        // events should be processed. this prevent the processing of the same event multiple times
-        if (getLastEventSerial() >= event.getSerial())
-            return;
-        else // process the event and remeber this serial
-            setLastEventSerial(event.getSerial());
-
-        // for debugging only
-        System.out.println("TYPEINFO NOTIFY ON: "+getNEDElement().getClass().getSimpleName()+" "+getName()+" "+event);
-
-        // send the event to the builder for processing. 
-        resolver.modelChanged(event);
-        
-        
-        // TODO test if the name attribute has changed and pass it to NEDResources 
-        // because in that case the whole model (All files) have to be rebuilt
-
-        // pre change notification
-        
-        // get all dependent types before hashing and invalidation (this is needed because name changes may
-        // change which modules are depending on us) we put everything in a set so each comonent will be notified only once 
-        
-        Set<INEDTypeInfo> dependentTypes = new HashSet<INEDTypeInfo>();
-        dependentTypes.addAll(getAllDerivedTypes());
-        dependentTypes.addAll(getAllUsingTypes());
-        
-        // refresh all ownMemebers
-        refreshOwnMembers();
-        // invalidate and recalculate / refresh all derived and instance lists
-        invalidate();
-        
-        // post change notification
-        // notify derived types before change
-        // we send notification to types that became dependent on us after a name change 
-        dependentTypes.addAll(getAllDerivedTypes());
-        dependentTypes.addAll(getAllUsingTypes());
-        // forward notifications
-        for(INEDTypeInfo derivedType: dependentTypes)
-            derivedType.getNEDElement().fireModelChanged(event);
-
-    }
-    
-    // used to get,set the evenet serial number associated with ned components
-    private void setLastEventSerial(long serial) {
-        ((NEDResources)resolver).eventSerials.put(getName(), serial);
-    }
-
-    private long getLastEventSerial() {
-        Long serial = ((NEDResources)resolver).eventSerials.get(getName());
-        if (serial != null)
-            return serial;
-        // defautl value
-        return 0;
     }
 
     /* (non-Javadoc)

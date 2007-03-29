@@ -16,19 +16,16 @@ import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
 import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
-import org.omnetpp.ned.model.notification.INEDChangeListener;
-import org.omnetpp.ned.model.notification.NEDModelEvent;
 /**
  * Implements a Connection Editpart to represnt a Wire like connection.
  * 
  */
 public class ModuleConnectionEditPart extends AbstractConnectionEditPart 
-                    implements INEDChangeListener, IReadOnlySupport, 
+                    implements IReadOnlySupport, 
                                IPropertySourceSupport, IModelProvider {
 
 	private EditPart sourceEditPartEx; 
 	private EditPart targetEditPartEx;
-    private long lastEventSerial;
     private boolean editable = true;
     private IPropertySource propertySource;
 
@@ -36,15 +33,11 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
     public void activate() {
         if (isActive()) return;
         super.activate();
-        // register as listener of the model object
-        getConnectionModel().getListeners().add(this);
     }
 
     @Override
     public void deactivate() {
         if (!isActive()) return;
-        // deregister as listener of the model object
-        getConnectionModel().getListeners().remove(this);
         super.deactivate();
     }
 
@@ -158,19 +151,6 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
         ConnectionFigure cfig = (ConnectionFigure)getConnectionFigure();  
         cfig.setDisplayString(getConnectionModel().getEffectiveDisplayString());
         cfig.setArrowEnabled(getConnectionModel().getArrowDirection() != NEDElementUtil.NED_ARROWDIR_BIDIR);
-    }
-
-    public void modelChanged(NEDModelEvent event) {
-        // skip the event processing if te last serial is greater or equal. only newer
-        // events should be processed. this prevent the processing of the same event multiple times
-        if (lastEventSerial >= event.getSerial())
-            return;
-        else // process the even and remeber this serial
-            lastEventSerial = event.getSerial();
-
-        System.out.println("NOTIFY ON: "+getModel().getClass().getSimpleName()+" "+event);
-        // not needed because the containing compound module always refreshes all it's children and connections
-        // refreshVisuals();
     }
 
     public void setEditable(boolean editable) {

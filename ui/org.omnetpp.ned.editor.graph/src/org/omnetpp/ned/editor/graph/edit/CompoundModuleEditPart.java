@@ -26,12 +26,6 @@ import org.omnetpp.figures.CompoundModuleGateAnchor;
 import org.omnetpp.figures.misc.GateAnchor;
 import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
-import org.omnetpp.ned.model.ex.ConnectionNodeEx;
-import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
-import org.omnetpp.ned.model.notification.NEDModelEvent;
-import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
 
 public class CompoundModuleEditPart extends ModuleEditPart {
 
@@ -129,44 +123,6 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         return getCompoundModuleModel().getDestConnections();
     }
 
-    @Override
-    public void modelChanged(NEDModelEvent event) {
-        // skip the event processing if te last serial is greater or equal. only newer
-        // events should be processed. this prevent the processing of the same event multiple times
-        // prevents circular notification
-        if (lastEventSerial >= event.getSerial())
-            return;
-        else // process the even and remeber this serial
-            lastEventSerial = event.getSerial();
-
-        super.modelChanged(event);
-
-        // forward the event to the type info component
-        INEDTypeInfo typeInfo = getNEDModel().getContainerNEDTypeInfo();
-        if (typeInfo != null)
-            typeInfo.modelChanged(event);
-
-        // check for attribute changes
-        if (event instanceof NEDAttributeChangeEvent) {
-            totalRefresh();
-        }
-
-        // check for structural changes
-        if (event instanceof NEDStructuralChangeEvent) {
-            NEDStructuralChangeEvent structEvent = (NEDStructuralChangeEvent) event;
-
-            // refresh children if a submodule was added/removed
-            if (structEvent.getChild() instanceof SubmoduleNodeEx)
-                refreshChildren();
-            
-            // refresh connections if a connection was inserted/deleted
-            if (structEvent.getChild() instanceof ConnectionNodeEx) {
-                totalRefresh();
-            }
-        }
-        
-    }
-    
     /**
      * Updates the visual aspect of this compound module
      */

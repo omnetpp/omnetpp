@@ -64,7 +64,12 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     // listener list that listenens on all NED changes
     private transient NEDChangeListenerList nedComponentChangeListenerList = null;
     private transient NEDChangeListenerList nedModelChangeListenerList = null;
-    private INEDChangeListener nedModelChangeListener;
+    private INEDChangeListener nedModelChangeListener = 
+                        new INEDChangeListener() {
+                            public void modelChanged(NEDModelEvent event) {
+                                nedModelChanged(event);
+                            }   
+                        };
     // stores parsed contents of NED files
     private HashMap<IFile, NEDElement> nedFiles = new HashMap<IFile, NEDElement>();
     private ProblemMarkerJob markerJob = new ProblemMarkerJob("Updating problem markers");
@@ -94,19 +99,12 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     private INEDTypeInfo bidirChannelType = null;
     private INEDTypeInfo unidirChannelType = null;
 
-    private long lastEventSerial;
-
 
     /**
      * Constructor.
      */
     public NEDResources() {
         createBuiltInNEDTypes();
-        nedModelChangeListener = new INEDChangeListener() {
-            public void modelChanged(NEDModelEvent event) {
-                nedModelChanged(event);
-            }
-        };
     }
 
     /**
@@ -500,8 +498,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         // top level element insertion is slow because of this validation
         for (IFile file : nedFiles.keySet()) {
             final NEDErrorStore consistencyErrors = markerJob.getConsistencyErrorStore(file);
-            INEDErrorStore errors = new INEDErrorStore() { // XXX make a better
-                // one
+            INEDErrorStore errors = new INEDErrorStore() { // XXX make a better one
                 public void add(NEDElement context, String message) {
                     consistencyErrors.add(context.getSourceLocation(), 2, message);
                 }
@@ -528,7 +525,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     /**
      * @return The listener list attached to the plugin which is notified about 
-     * TOP LEVEL COMPONENT changes 
+     * TOP LEVEL COMPONENT changes (name, inheritance and visual appearence changes) 
      */
     public NEDChangeListenerList getNEDComponentChangeListenerList() {
         if (nedComponentChangeListenerList == null)
@@ -536,47 +533,6 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         return nedComponentChangeListenerList;
     }
     
-    /**
-     * Fires a component change  (forwards it to he listener list if any)
-     * Used for notifying listeners that depend on components (name, display string etc) 
-     * @param event the model change event or NULL if the whole model should be rebuilt
-     */
-    protected void fireNEDComponentChanged(NEDModelEvent event) {
-        if(nedComponentChangeListenerList == null || !getNEDComponentChangeListenerList().isEnabled())
-            return;
-        // forward to the listerList
-        nedComponentChangeListenerList.fireModelChanged(event);
-    }
-
-    public void modelChanged(NEDModelEvent event) {
-        // skip the event processing if te last serial is greater or equal. only newer
-        // events should be processed. this prevent the processing of the same event multiple times
-        if (lastEventSerial >= event.getSerial())
-            return;
-        else
-            // process the even and remeber this serial
-            lastEventSerial = event.getSerial();
-
-        System.out.println("NEDRESOURCES TYPE NOTIFY: "+event);
-        // if a name property has changed everything should be rebuilt because
-        // inheritence might have changed
-        // we may check only for toplevel component names and extends attributes
-
-        // fire a component changed event if inheritance, naming or visual representation
-        // has changed
-        if (inheritanceMayHaveChanged(event)) {
-            System.out.println("Invalidating because of: " + event);
-            invalidate();
-            rehashIfNeeded();
-            // a total rebuild has occured
-            fireNEDComponentChanged(event);
-        }
-        // display string notification
-        if (displayMayHaveChanged(event)) {
-            fireNEDComponentChanged(event);
-        }
-    }
-
     /**
      * @return The listener list attached to the plugin which is notified about 
      * ANY change in the NED model (ie. any change in any file) 
@@ -587,24 +543,43 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         return nedModelChangeListenerList;
     }
 
+    /**
+     * Respond to model changes
+     * @param event
+     */
     protected void nedModelChanged(NEDModelEvent event) {
-        // skip the event processing if te last serial is greater or equal. only newer
-        // events should be processed. this prevent the processing of the same event multiple times
+        System.out.println("NEDRESOURCES NOTIFY: "+event);
+        // fire a component changed event if inheritance, naming or visual representation
+        // has changed
+        boolean inheritanceChanged = inheritanceMayHaveChanged(event); 
+        if (inheritanceChanged) {
+            System.out.println("Invalidating because of: " + event);
+            invalidate();
+            rehashIfNeeded();
+        }
+        // a top level component has changed (name, inheritance, display string)
+        if (inheritanceChanged || displayMayHaveChanged(event)) {
+            // notify component listeners (ie. palette manager, where only the component name and
+            // icon matters)
+            if(nedComponentChangeListenerList != null && getNEDComponentChangeListenerList().isEnabled())
+                nedComponentChangeListenerList.fireModelChanged(event);
+        }
 
-        if(nedModelChangeListenerList == null || !getNEDModelChangeListenerList().isEnabled())
-            return;
-        
-        System.out.println("NEDRESOURCES MODEL NOTIFY: "+event);
+        // notify generic listeners (like NedFileEditParts who refresh themselves
+        // in response to this notification)
+        long startMillis = System.currentTimeMillis();
 
-        // forward to the listerList
-        nedModelChangeListenerList.fireModelChanged(event);
-        
+        if(nedModelChangeListenerList != null && getNEDModelChangeListenerList().isEnabled())
+            nedModelChangeListenerList.fireModelChanged(event);
+
+        long dt = System.currentTimeMillis() - startMillis;
+        System.out.println("visual notification took " + dt + "ms");
     }
 
     /**
      * @param event
-     * @return The inheritance chain has changed somewhere so the whole cache
-     *         should be invalidated
+     * @return Wheteher the inheritance chain has changed somewhere 
+     * (name, extends, adding and removing top level nodes)
      */
     public static boolean inheritanceMayHaveChanged(NEDModelEvent event) {
         // if we have changed a toplevel element's name we should rehash
@@ -632,6 +607,10 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         return false;
     }
 
+    /**
+     * @param event
+     * @return Whether th display string has changed in the evenet
+     */
     public static boolean displayMayHaveChanged(NEDModelEvent event) {
         // if we have changed a toplevel element's name we should rehash
         if (event.getSource() instanceof ITopLevelElement && event instanceof NEDAttributeChangeEvent
@@ -639,15 +618,13 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             return true;
         return false;
     }
-    // ************************************************************************************************
-    // static int resourceChange = 0;
 
+    // ************************************************************************************************
+    // syncronize the plugin with the resources in the workspace
     public synchronized void resourceChanged(IResourceChangeEvent event) {
         try {
             if (event.getDelta() == null)
                 return;
-            // System.out.println("resourceChange conter: "+resourceChange++);
-            // System.out.println(((ResourceDelta)event.getDelta()).toDeepDebugString());
 
             event.getDelta().accept(new IResourceDeltaVisitor() {
                 public boolean visit(IResourceDelta delta) throws CoreException {

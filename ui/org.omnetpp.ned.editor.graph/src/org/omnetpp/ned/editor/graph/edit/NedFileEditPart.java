@@ -11,15 +11,16 @@ import org.eclipse.gef.SnapToHelper;
 import org.omnetpp.figures.NedFileFigure;
 import org.omnetpp.ned.editor.graph.edit.policies.NedFileLayoutEditPolicy;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
+import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
-import org.omnetpp.ned.resources.NEDResources;
+import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
  * Holds all other NedEditParts under this. It is activated by
  * LogicEditorPart, to hold the entire model. It is sort of a blank board where
  * all other EditParts get added.
  */
-public class NedFileEditPart extends BaseEditPart  {
+public class NedFileEditPart extends BaseEditPart  implements INEDChangeListener {
 
     /**
      * Installs EditPolicies specific to this.
@@ -42,6 +43,20 @@ public class NedFileEditPart extends BaseEditPart  {
         installEditPolicy(EditPolicy.DIRECT_EDIT_ROLE, null);
     }
 
+    @Override
+    public void activate() {
+        if (isActive()) return;
+        super.activate();
+        // attache to the resources plugin so we will be notified about any change in the model
+        NEDResourcesPlugin.getNEDResources().getNEDModelChangeListenerList().add(this);
+    }
+    
+    @Override
+    public void deactivate() {
+        if (!isActive()) return;
+        NEDResourcesPlugin.getNEDResources().getNEDModelChangeListenerList().remove(this);
+        super.deactivate();
+    }
     /**
      * Returns a Figure to represent this.
      * 
@@ -79,21 +94,6 @@ public class NedFileEditPart extends BaseEditPart  {
     	return ((NedFileNodeEx)getNEDModel()).getTopLevelElements();
     }
 
-    @Override
-    public void modelChanged(NEDModelEvent event) {
-        if (lastEventSerial >= event.getSerial())
-            return;
-        else // process the even and remeber this serial
-            lastEventSerial = event.getSerial();
-
-        // logging etc.
-        super.modelChanged(event);
-        
-        // invalidate the type info cache and redraw the children
-        if (NEDResources.inheritanceMayHaveChanged(event))
-            totalRefresh();
-    }
-    
     /* (non-Javadoc)
      * @see org.omnetpp.ned.editor.graph.edit.BaseEditPart#getTypeNameForDblClickOpen()
      * do not open anything on double click 
@@ -101,5 +101,10 @@ public class NedFileEditPart extends BaseEditPart  {
     @Override
     protected String getTypeNameForDblClickOpen() {
         return null;
+    }
+
+    public void modelChanged(NEDModelEvent event) {
+        // we do a full refresh in response of a change
+        totalRefresh();
     }
 }    

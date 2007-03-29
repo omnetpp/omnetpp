@@ -11,7 +11,6 @@ import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.figures.misc.GateAnchor;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
-import org.omnetpp.ned.model.notification.NEDModelEvent;
 
 
 public class SubmoduleEditPart extends ModuleEditPart {
@@ -90,13 +89,6 @@ public class SubmoduleEditPart extends ModuleEditPart {
         return getCompoundModulePart().getCompoundModuleModel().getDestConnectionsFor(getSubmoduleModel().getName());
     }
 
-    @Override
-    public void modelChanged(NEDModelEvent event) {
-        super.modelChanged(event);
-        // currently not needed because the compound module always refreshes all it's children
-//        refreshVisuals();
-    }
-    
     /**
      * Updates the visual aspect of this.
      */

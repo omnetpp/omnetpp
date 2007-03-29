@@ -8,9 +8,6 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.TopLevelFigure;
 import org.omnetpp.ned.model.interfaces.IHasAncestors;
 import org.omnetpp.ned.model.interfaces.IHasName;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.notification.INEDChangeListener;
-import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned.model.pojo.ChannelNode;
 import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
@@ -21,8 +18,7 @@ import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
  * SimpleModule, Channel, CHannelInterface and interface.
  * (NOTE: compound module has it's own controller)
  */
-public class TopLevelEditPart extends BaseEditPart 
-								  implements INEDChangeListener {
+public class TopLevelEditPart extends BaseEditPart {
 
     /**
      * Returns the model associated with this as a NEDElement.
@@ -33,24 +29,6 @@ public class TopLevelEditPart extends BaseEditPart
 	protected IFigure createFigure() {
 		return new TopLevelFigure();
 	}
-
-    public void modelChanged(NEDModelEvent event) {
-        // skip the event processing if te last serial is greater or equal. only newer
-        // events should be processed. this prevent the processing of the same event multiple times
-        if (lastEventSerial >= event.getSerial())
-            return;
-        else // process the even and remeber this serial
-            lastEventSerial = event.getSerial();
-
-        super.modelChanged(event);
-
-        // forward the event to the type info component
-        INEDTypeInfo typeInfo = getNEDModel().getContainerNEDTypeInfo();
-        if (typeInfo != null)
-            typeInfo.modelChanged(event);
-        
-        refreshVisuals();
-    }
 
 	@Override
 	protected void refreshVisuals() {

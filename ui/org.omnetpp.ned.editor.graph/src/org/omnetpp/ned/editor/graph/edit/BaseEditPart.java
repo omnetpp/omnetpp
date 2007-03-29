@@ -17,43 +17,19 @@ import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.notification.INEDChangeListener;
-import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
-
-import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 
 /**
  * Provides support for Container EditParts.
  */
 abstract public class BaseEditPart
                            extends AbstractGraphicalEditPart
-                           implements INEDChangeListener, IReadOnlySupport,
+                           implements IReadOnlySupport,
                                       IPropertySourceSupport, IModelProvider {
 
-    protected long lastEventSerial;
     private boolean editable = true;
     private IPropertySource propertySource;
     protected DirectEditManager manager;
-
-    @Override
-    public void activate() {
-        if (isActive()) return;
-        super.activate();
-        // register as listener of the model object
-        getNEDModel().getListeners().add(this);
-    }
-
-    /**
-     * Makes the EditPart insensible to changes in the model by removing itself
-     * from the model's list of listeners.
-     */
-    @Override
-    public void deactivate() {
-        if (!isActive()) return;
-        super.deactivate();
-        getNEDModel().getListeners().remove(this);
-    }
 
     /**
      * Installs the desired EditPolicies for this.
@@ -122,13 +98,6 @@ abstract public class BaseEditPart
             return ((IReadOnlySupport)getParent()).isEditable();
         // otherwise edit is possible
         return true;
-    }
-
-    public void modelChanged(NEDModelEvent event) {
-        String nameString = getNEDModel().getAttribute("name");
-        if (nameString == null)
-            nameString = "";
-        System.out.println("PART NOTIFY ON: "+getModel().getClass().getSimpleName()+" "+nameString+" "+event);
     }
 
     /* (non-Javadoc)
