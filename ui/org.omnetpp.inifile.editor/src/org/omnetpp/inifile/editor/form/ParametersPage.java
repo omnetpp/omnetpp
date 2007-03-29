@@ -12,6 +12,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -106,23 +107,44 @@ public class ParametersPage extends FormPage {
 		editors[1]= new TextCellEditor(tableViewer.getTable(), SWT.NONE);
 		editors[2]= new TextCellEditor(tableViewer.getTable(), SWT.NONE);
 		tableViewer.setCellEditors(editors);
-		tableViewer.setColumnProperties(new String[] {"one", "two", "three"});
+		tableViewer.setColumnProperties(new String[] {"key", "value", "comment"});
 		tableViewer.setCellModifier(new ICellModifier() {
 			public boolean canModify(Object element, String property) {
 				return true;
 			}
 
 			public Object getValue(Object element, String property) {
-				return "bubu-"+property; 
+				String key = (String) element;
+				if (property.equals("key"))
+					return key;
+				else if (property.equals("value"))
+					return nullToEmpty(getInifileDocument().getValue("Parameters", key)); 
+				else if (property.equals("comment"))
+					return nullToEmpty(getInifileDocument().getComment("Parameters", key));
+				else
+					return "-";
 			}
 
 			public void modify(Object element, String property, Object value) {
-				System.out.println("changed! "+property+" to "+value);
+			    if (element instanceof Item)
+			    	element = ((Item) element).getData(); // workaround, see super's comment
+				String key = (String) element;
+				String stringValue = (String) value;
+				if (property.equals("key"))
+					; //FIXME todo set key
+				else if (property.equals("value"))
+					getInifileDocument().setValue("Parameters", key, stringValue); 
+				else if (property.equals("comment"))
+					getInifileDocument().setComment("Parameters", key, stringValue);
 			}
 		});
 		return tableViewer;
 	}
 
+	private static String nullToEmpty(String text) {
+		return text == null ? "" : text;
+	}
+	
 	private TableColumn addTableColumn(Table table, String label, int width) {
 		TableColumn column = new TableColumn(table, SWT.NONE);
 		column.setText(label);
