@@ -281,11 +281,6 @@ template <typename T> file_offset_t EventLogIndex::binarySearchForOffset(bool ev
     }
     else
     {
-        if (matchKind == FIRST_OR_PREVIOUS && !eventNumberBased)
-        {
-            int a = 5;
-        }
-
         bool forward = matchKind == FIRST_OR_NEXT || matchKind == LAST_OR_NEXT;
         bool exactMatchFound = foundOffset != -1;
         file_offset_t searchOffset = exactMatchFound ? foundOffset : (forward ? lowerOffset : midEventEndOffset);
