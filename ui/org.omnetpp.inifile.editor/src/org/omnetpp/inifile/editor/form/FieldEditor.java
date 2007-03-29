@@ -37,10 +37,14 @@ public abstract class FieldEditor extends Composite {
 	protected void setValueInFile(String value) {
 		String section = entry.getSection(); 
 		String key = entry.getName();
-		if (inifile.getValue(section, key)==null)
-			inifile.addEntry(section, key, value, null, null); //XXX there's more: if section doesn't exist, it has to be added first!
-		else
+		if (!inifile.containsKey(section, key)) {
+			if (!inifile.containsSection(section))
+				inifile.addSection(section, null); //XXX refine insert position
+			inifile.addEntry(section, key, value, null, null); //XXX refine position
+		}
+		else {
 			inifile.setValue(section, key, value);
+		}
 	}
 
 	protected void removeFromFile() {
