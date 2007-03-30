@@ -12,6 +12,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.viewers.IPostSelectionProvider;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
@@ -22,6 +26,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
+import org.eclipse.ui.part.MultiPageSelectionProvider;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.omnetpp.common.editor.ISelectionSupport;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
@@ -41,7 +46,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 		ISelectionSupport, IGotoMarker {
 
     private GraphicalNedEditor graphEditor;
-	private TextualNedEditor nedEditor;
+	private TextualNedEditor textEditor;
     private ResourceTracker resourceListener = new ResourceTracker();
 
     private String textContent = "";          // the text version of the file the last time we have switched editors
@@ -56,6 +61,19 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         if (!(editorInput instanceof IFileEditorInput))
             throw new PartInitException("Invalid input type!");
         
+        // unfortunately GEF vievers do not implement IPostSelectionListener interface
+        // they only provide selection change events. Some other views (ModuleHierarchyView)
+        // depend on PostSelectionChangeEvent. If the active editor is graphical
+        // after selectionChange event we fire a postSelection event, so dependent modules
+        // will work ok
+        getSite().setSelectionProvider(new MultiPageSelectionProvider(this) {
+            public void fireSelectionChanged(final SelectionChangedEvent event) {
+                super.fireSelectionChanged(event);
+                if (getActiveEditor() == graphEditor)
+                    firePostSelectionChanged(event);
+            }
+            
+        });
         NEDResourcesPlugin.getNEDResources().connect(((IFileEditorInput)editorInput).getFile());
 	}
     
@@ -70,7 +88,8 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 	@Override
 	protected void createPages() {
 		graphEditor = new GraphicalNedEditor();
-		nedEditor = new TextualNedEditor();
+		textEditor = new TextualNedEditor();
+        
         IFile ifile = ((FileEditorInput)getEditorInput()).getFile();
         
 		try {
@@ -84,7 +103,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
             // setup text editor
             // we don't have to set the content because it's set 
             // automatically by the text editor (from the FileEditorInput)
-            textPageIndex = addPage(nedEditor, getEditorInput());
+            textPageIndex = addPage(textEditor, getEditorInput());
             setPageText(textPageIndex,"Text");
 
             // switch to graphics mode initially if there's no error in the file
@@ -94,6 +113,8 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 		} catch (PartInitException e) {
 			e.printStackTrace();  //XXX handle it? let it propagate?
 		}
+        
+        
 	}
 	
 	@Override
@@ -136,21 +157,21 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
             // generate the text representation
             textContent = NEDTreeUtil.generateNedSource(modelRoot, true);
             // put it into the text editor if changed
-            if (!textContent.equals(nedEditor.getText())) {
+            if (!textContent.equals(textEditor.getText())) {
                 // TODO refresh the editor annotations to show the error marks
                 res.setNEDFileText(ifile, textContent);
-                nedEditor.setText(textContent);
+                textEditor.setText(textContent);
             }
 		} 
 		else if (newPageIndex==graphPageIndex) {
 			
 		    // the text has changed in the editor
-		    res.setNEDFileText(ifile, nedEditor.getText());
-            if (!textContent.equals(nedEditor.getText())) {
+		    res.setNEDFileText(ifile, textEditor.getText());
+            if (!textContent.equals(textEditor.getText())) {
 				// set the parsed ned text as a model to the graphical editor 
 				graphEditor.setModel((NedFileNodeEx)res.getNEDFileContents(ifile));
                 // store the actual text content to be able th detect changes in the future
-                textContent = nedEditor.getText();
+                textContent = textEditor.getText();
 			}
 
             // only start in graphics mode if there's no error in the file
@@ -190,11 +211,11 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
             // generate the text representation
             String textEditorContent = NEDTreeUtil.generateNedSource(modelRoot, true);
             // put it into the text editor
-            nedEditor.setText(textEditorContent);
+            textEditor.setText(textEditorContent);
             graphEditor.getEditDomain().getCommandStack().markSaveLocation();
 		}
 		// delegate the save task to the TextEditor's save method
-		nedEditor.doSave(monitor);
+		textEditor.doSave(monitor);
 	}
 
     @Override
@@ -292,7 +313,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
     public void gotoMarker(IMarker marker) {
         // switch to text page and delagte to it
         setActivePage(textPageIndex);
-        IGotoMarker gm = (IGotoMarker)nedEditor.getAdapter(IGotoMarker.class);
+        IGotoMarker gm = (IGotoMarker)textEditor.getAdapter(IGotoMarker.class);
         if (gm != null)
             gm.gotoMarker(marker);
     }
@@ -300,9 +321,9 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
     public void setTextHighlightRange(int startLine, int endLine) {
         // switch to text page and delagte to it
         setActivePage(textPageIndex);
-        IDocument document = nedEditor.getDocumentProvider().getDocument(getEditorInput());
+        IDocument document = textEditor.getDocumentProvider().getDocument(getEditorInput());
         try {
-            nedEditor.setHighlightRange(document.getLineOffset(startLine-1), 
+            textEditor.setHighlightRange(document.getLineOffset(startLine-1), 
                                         document.getLineOffset(endLine-1)+document.getLineLength(endLine-1), 
                                         true);
         } catch (BadLocationException e) {
