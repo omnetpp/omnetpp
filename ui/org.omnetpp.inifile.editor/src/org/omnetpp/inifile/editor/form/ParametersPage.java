@@ -168,7 +168,7 @@ public class ParametersPage extends FormPage {
 				IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
 				String beforeKey = sel.isEmpty() ? null : (String) sel.getFirstElement();
 				String newKey = "**.newKey";
-				getInifileDocument().addEntry(DEFAULT_SECTION, newKey, "", null, beforeKey);
+				getInifileDocument().addEntry(DEFAULT_SECTION, newKey, "", null, beforeKey); //XXX what if no such section
 				reread();
 				//XXX key must be validated (in InifileDocument). if it causes parse error, the whole table goes away! 
 				tableViewer.editElement(newKey, 0);
