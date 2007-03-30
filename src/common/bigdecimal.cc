@@ -101,7 +101,7 @@ int64 BigDecimal::getDigits(int scale, int numDigits) const
     assert(!this->isSpecial());
 
     int start = max(scale, this->scale); // inclusive
-    int end = min(scale+numDigits, this->scale+numDigits); // exclusive
+    int end = scale+numDigits; // exclusive
 
     if (start >= end)
         return 0;
