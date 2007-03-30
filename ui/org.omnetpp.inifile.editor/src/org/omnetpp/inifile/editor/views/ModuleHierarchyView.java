@@ -122,14 +122,14 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		GenericTreeNode root = new GenericTreeNode("root");
 		INEDTypeResolver nedResources = NEDResourcesPlugin.getNEDResources();
 		String moduleFullName = moduleFullPath.replaceFirst("^.*\\.", "");
-		buildTree(root, moduleFullName, moduleFullPath, moduleTypeName, nedResources, doc);
+		buildTree(root, moduleFullName, moduleFullPath, moduleTypeName, null, nedResources, doc);
 
 		// prevent collapsing all treeviewer nodes: only set it on viewer if it's different from old input
 		if (!GenericTreeUtils.treeEquals(root, (GenericTreeNode)treeViewer.getInput())) 
 			treeViewer.setInput(root);
 	}
 
-	private void buildTree(GenericTreeNode parent, String moduleFullName, String moduleFullPath, String moduleTypeName, INEDTypeResolver nedResources, IInifileDocument doc) {
+	private void buildTree(GenericTreeNode parent, String moduleFullName, String moduleFullPath, String moduleTypeName, SubmoduleNode thisSubmodule, INEDTypeResolver nedResources, IInifileDocument doc) {
 		//FIXME detect circles!!! currently it results in stack overflow
 		// dig out type info (NED declaration)
 		if (StringUtils.isEmpty(moduleTypeName)) {
@@ -147,7 +147,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		}
 
 		// do useful work: add tree node corresponding to this module
-		GenericTreeNode thisNode = addTreeNode(parent, moduleFullName, moduleFullPath, moduleType, doc);
+		GenericTreeNode thisNode = addTreeNode(parent, moduleFullName, moduleFullPath, moduleType, thisSubmodule, doc);
 
 		// traverse submodules
 		for (NEDElement node : moduleType.getSubmods().values()) {
@@ -156,16 +156,16 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			String submoduleType = InifileUtils.getSubmoduleType(submodule);
 
 			// recursive call
-			buildTree(thisNode, submoduleName, moduleFullPath+"."+submoduleName, submoduleType, nedResources, doc);
+			buildTree(thisNode, submoduleName, moduleFullPath+"."+submoduleName, submoduleType, submodule, nedResources, doc);
 		}
 	}
 
 	/**
-	 * Adds a node to the tree. The new node described the module and its parameters.
+	 * Adds a node to the tree. The new node describes the module and its parameters.
 	 */
-	private static GenericTreeNode addTreeNode(GenericTreeNode parent, String moduleFullName, String moduleFullPath, INEDTypeInfo moduleType, IInifileDocument doc) {
+	private static GenericTreeNode addTreeNode(GenericTreeNode parent, String moduleFullName, String moduleFullPath, INEDTypeInfo moduleType, SubmoduleNode thisSubmodule, IInifileDocument doc) {
 		String moduleText = moduleFullName+"  ("+moduleType.getName()+")";
-		GenericTreeNode thisNode = new GenericTreeNode(new Payload(Type.OTHER, moduleText, moduleType.getNEDElement()));
+		GenericTreeNode thisNode = new GenericTreeNode(new Payload(Type.OTHER, moduleText, thisSubmodule==null ? moduleType.getNEDElement() : thisSubmodule));
 		parent.addChild(thisNode);
 
 		for (NEDElement node : moduleType.getParamValues().values()) {
