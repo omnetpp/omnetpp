@@ -1,6 +1,5 @@
 package org.omnetpp.common.image;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -12,6 +11,7 @@ import java.awt.image.WritableRaster;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -32,7 +32,7 @@ public class ImageConverter {
 
 	public static Image getResizedImage(Device device, Image swtImage, int width, int height) {
 		BufferedImage awtImage = convertToAWT(swtImage);
-		BufferedImage scaledAwtImage = getResizedImage(awtImage, width, height);
+		BufferedImage scaledAwtImage = getResampledAWTImage(awtImage, width, height);
 		return convertToSWT(device, scaledAwtImage);
 	}
 	
@@ -151,7 +151,7 @@ public class ImageConverter {
 		}
 	}
 
-	public static BufferedImage getResizedImage(BufferedImage img, int width, int height) {
+	public static BufferedImage getResampledAWTImage(BufferedImage img, int width, int height) {
 		BufferedImage resultImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
 
 		Graphics2D g2d = resultImage.createGraphics();
@@ -160,7 +160,7 @@ public class ImageConverter {
 		//g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
 		// fill with transparent color
-		g2d.setColor(new Color(255, 255, 255, 0));
+		g2d.setColor(new java.awt.Color(255, 255, 255, 0));
 		g2d.fillRect(0, 0, width, height);
 
 		// draw image, preserving aspect ratio
@@ -194,7 +194,8 @@ public class ImageConverter {
 		// produce a high-quality re-sampled image (but transparency got lost along the way)
 		Image scaledImage = new Image(null, width, height);
 		GC gc = new GC(scaledImage);
-		gc.setBackground(new org.eclipse.swt.graphics.Color(null, 240, 240, 240));
+		Color backgroundColor = new Color(null, 240, 241, 240);
+		gc.setBackground(backgroundColor);
 		gc.fillRectangle(0, 0, width, height);
 		gc.setInterpolation(SWT.HIGH);
 		gc.drawImage(image, 0, 0, imageSize.width, imageSize.height, xoff, yoff, scaledWidth, scaledHeight);
@@ -238,15 +239,17 @@ public class ImageConverter {
 
 			Image resultImage = new Image(null, resultData);
 			scaledImage.dispose();
+			alphaImage.dispose();
+			scaledAlphaImage.dispose();
 			return resultImage;
 		}
-		else if (data.getTransparencyType()==SWT.TRANSPARENCY_MASK) {
-			System.out.println("MASKKKKKKK");
-			return scaledImage;
-		}
-		if (data.getTransparencyType()==SWT.TRANSPARENCY_PIXEL) {
-			// have not seen this with png or gif images, so just ignore transparency
-			return scaledImage;
+		else if (data.getTransparencyType()==SWT.TRANSPARENCY_MASK || data.getTransparencyType()==SWT.TRANSPARENCY_PIXEL) { 
+			// This is likely a gif image. Just set our background color as the transparent color. 
+			ImageData resultData = scaledImage.getImageData();
+			resultData.transparentPixel = resultData.palette.getPixel(backgroundColor.getRGB());
+			scaledImage.dispose();
+			Image resultImage = new Image(null, resultData);
+			return resultImage;
 		}
 		else { 
 			// TRANSPARENCY_NONE
