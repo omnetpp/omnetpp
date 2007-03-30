@@ -118,7 +118,8 @@ public class ScaveModelLabelProvider extends LabelProvider {
 			return "compute "+fallback(o.getOperation(),"<undefined>");
 		}
 		else if (element instanceof Group) {
-			return "group";
+			Group o = (Group) element;
+			return "group "+fallback(o.getName(),"<unnamed>");
 		}
 		else if (element instanceof BarChart) {
 			Chart o = (Chart) element;
