@@ -178,18 +178,35 @@ public class ImageConverter {
 		return resultImage;
 	}    
 
+	/**
+	 * Invokes getResampledImage() with zero insets.
+	 * 
+	 * @author Andras
+	 */
 	public static Image getResampledImage(Image image, int width, int height) {
+		return getResampledImage(image, width, height, 0, 0, 0, 0);
+	}
+
+	/**
+	 * Resizes an image to the given size, preserving aspect ratio, and leaving
+	 * some margin (insets). Performs high-quality resampling, and preserves
+	 * transparency (alpha) information.
+	 * 
+	 * @author Andras
+	 */
+	public static Image getResampledImage(Image image, int width, int height, int leftInset, int topInset, int rightInset, int bottomInset) {
 		// calculate scaled image width/height, preserving aspect ratio
 		Rectangle imageSize = image.getBounds();
-		double scaleX = (double) width / (double) imageSize.width;
-		double scaleY = (double) height / (double) imageSize.height;
-		int scaledHeight = height, scaledWidth = width;
+		int scaledHeight = height - topInset - bottomInset;
+		int scaledWidth = width - leftInset - rightInset;
+		double scaleX = (double) scaledWidth / (double) imageSize.width;
+		double scaleY = (double) scaledHeight / (double) imageSize.height;
 		if (scaleX < scaleY)
-			scaledHeight = (int) (scaleX * (height / scaleY));
+			scaledHeight = (int) (scaleX * (scaledHeight / scaleY));
 		else 
-			scaledWidth = (int) (scaleY * (width / scaleX));
-		int xoff = (width-scaledWidth)/2;
-		int yoff = (height-scaledHeight)/2;
+			scaledWidth = (int) (scaleY * (scaledWidth / scaleX));
+		int xoff = (width-scaledWidth+1)/2;
+		int yoff = (height-scaledHeight+1)/2;
 		
 		// produce a high-quality re-sampled image (but transparency got lost along the way)
 		Image scaledImage = new Image(null, width, height);
