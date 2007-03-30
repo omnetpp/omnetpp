@@ -1,7 +1,5 @@
 package org.omnetpp.scave.views;
 
-import java.math.BigDecimal;
-
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -17,6 +15,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.common.virtualtable.VirtualTable;
 import org.omnetpp.scave.editors.datatable.VectorResultContentProvider;
@@ -234,7 +233,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 			};
 			InputDialog dialog = new InputDialog(view.getSite().getShell(), "Go to", prompt, "", validator);
 			if (dialog.open() == Window.OK) {
-				Number targetAddr = parseTarget(dialog.getValue());
+				Object targetAddr = parseTarget(dialog.getValue());
 				if (targetAddr != null) {
 					switch (target) {
 					case Line: view.gotoLine((Integer)targetAddr); break;
@@ -245,11 +244,11 @@ public class VectorBrowserView extends ViewWithMessagePart {
 			}
 		}
 		
-		public Number parseTarget(String str) {
+		public Object parseTarget(String str) {
 			try
 			{
 				if (target == GotoTarget.Time)
-					return new BigDecimal(str);
+					return BigDecimal.parse(str);
 				else
 					return Integer.parseInt(str);
 			} catch (Exception e) {

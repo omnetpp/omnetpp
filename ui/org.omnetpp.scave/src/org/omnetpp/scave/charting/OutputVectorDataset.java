@@ -1,12 +1,11 @@
 package org.omnetpp.scave.charting;
 
-import java.math.BigDecimal;
-
 import org.eclipse.core.runtime.Assert;
 import org.jfree.data.DomainOrder;
 import org.jfree.data.general.AbstractSeriesDataset;
 import org.jfree.data.xy.XYDataset;
 
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.scave.engine.XYArray;
 
 public class OutputVectorDataset extends AbstractSeriesDataset implements XYDataset {

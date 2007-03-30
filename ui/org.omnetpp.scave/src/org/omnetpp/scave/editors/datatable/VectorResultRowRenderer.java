@@ -1,7 +1,5 @@
 package org.omnetpp.scave.editors.datatable;
 
-import java.math.BigDecimal;
-
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
@@ -10,6 +8,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.virtualtable.IVirtualTableRowRenderer;
 import org.omnetpp.scave.engine.OutputVectorEntry;
 
@@ -55,7 +54,7 @@ public class VectorResultRowRenderer extends LabelProvider implements IVirtualTa
 				break;
 			case 1:
 				BigDecimal time = entry.getSimtime();
-				gc.drawText((time != null ? time.toPlainString() : ""), HORIZONTAL_SPACING, 0);
+				gc.drawText((time != null ? time.str() : ""), HORIZONTAL_SPACING, 0);
 				break;
 			case 2:
 				gc.drawText(String.valueOf(entry.getValue()), HORIZONTAL_SPACING, 0);

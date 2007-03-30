@@ -1,7 +1,6 @@
 package org.omnetpp.scave.engineext;
 
-import java.math.BigDecimal;
-
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.scave.engine.IndexedVectorFileReader;
 import org.omnetpp.scave.engine.OutputVectorEntry;
 

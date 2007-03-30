@@ -15,6 +15,8 @@
 #include "scaveexception.h"
 %}
 
+%include "commondefs.i"
+
 %exception {
     try {
         $action
@@ -34,11 +36,7 @@
 
 %typemap(jni) ID "jlong";
 
-%typemap(jni)    int64 "jlong"
-%typemap(jtype)  int64 "long"
-%typemap(jstype) int64 "long"
-%typemap(javain) int64 "$javainput"
-
+COMMON_ENGINE_BIGDECIMAL();
 
 %include "std_common.i"
 %include "std_string.i"
@@ -46,43 +44,6 @@
 %include "std_list.i"    // our custom version
 %include "std_vector.i"
 %include "std_map.i"
-
-%typemap(jni) BigDecimal "jobject";
-%typemap(jtype) BigDecimal "java.math.BigDecimal";
-%typemap(jstype) BigDecimal "java.math.BigDecimal";
-%typemap(javain) BigDecimal "$javainput";
-%typemap(javaout) BigDecimal {
-   return $jnicall;
-}
-
-%typemap(in) BigDecimal {
-   if ($input)
-   {
-      jclass cl = jenv->FindClass("java/math/BigDecimal");
-      jmethodID methodID = jenv->GetMethodID(cl, "toPlainString", "()Ljava/lang/String;");
-      jstring javaString = (jstring)jenv->CallObjectMethod($input, methodID);
-      const char *chars = jenv->GetStringUTFChars(javaString, 0);
-      $1 = BigDecimal::parse(chars);
-      jenv->ReleaseStringUTFChars(javaString, chars);
-   }
-   else
-   {
-      $1 = BigDecimal::Nil;
-   }
-}
-
-%typemap(out) BigDecimal {
-   if ($1.isNil())
-   {
-      $result = NULL;
-   }
-   else
-   {
-      jclass cl = jenv->FindClass("java/math/BigDecimal");
-      jmethodID methodId = jenv->GetMethodID(cl, "<init>", "(Ljava/lang/String;)V");
-      $result = (jenv->NewObject(cl, methodId, jenv->NewStringUTF($1.str().c_str())));
-   }
-}
 
 namespace std {
    %typemap(javacode) vector<string> %{
@@ -270,6 +231,7 @@ namespace std {
 %typemap(jtype)  (char *array, int n) "byte[]"
 %typemap(jstype) (char *array, int n) "byte[]"
 %typemap(javain) (char *array, int n) "$javainput"
+
 
 // FIXME add %newobject where needed!
 

@@ -1,8 +1,7 @@
 package org.omnetpp.scave.editors.datatable;
 
-import java.math.BigDecimal;
-
 import org.eclipse.jface.viewers.Viewer;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.virtualtable.IVirtualTableContentProvider;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.OutputVectorEntry;

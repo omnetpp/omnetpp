@@ -4,7 +4,10 @@
 #include "stringutil.h"
 #include "patternmatcher.h"
 #include "unitconversion.h"
+#include "bigdecimal.h"
 %}
+
+%include "commondefs.i"
 
 %exception {
     try {
@@ -36,6 +39,16 @@ std::string opp_quotestr_ifneeded(const char *txt);
 
 %include "patternmatcher.h"
 %include "unitconversion.h"
+
+
+/* -------------------- BigDecimal -------------------------- */
+
+%ignore BigDecimal::BigDecimal();
+%ignore BigDecimal::str(char*);
+%ignore BigDecimal::parse(const char*,const char*&);
+%ignore BigDecimal::ttoa;
+SWIG_JAVABODY_METHODS(public, public, BigDecimal)
+%include "bigdecimal.h"
 
 
 

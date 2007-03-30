@@ -1,6 +1,5 @@
 package org.omnetpp.scave.charting;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -18,6 +17,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
 
@@ -264,7 +264,7 @@ class CrossHair {
 		BigDecimal xp = dataset.getPreciseX(dataPoint.series, dataPoint.index);
 		double x = dataset.getXValue(dataPoint.series, dataPoint.index);
 		double y = dataset.getYValue(dataPoint.series, dataPoint.index);
-		String coordinates = (xp != null ? xp.toPlainString() : Double.toString(x))+", "+y;
+		String coordinates = (xp != null ? xp.str() : Double.toString(x))+", "+y;
 		String series = dataset.getSeriesKey(dataPoint.series).toString();
 		series = StringUtils.abbreviate(series, series.length(), 25);
 		return coordinates + " - " + series;
