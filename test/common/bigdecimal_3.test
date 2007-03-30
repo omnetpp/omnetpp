@@ -72,6 +72,9 @@ T(NaN,0);
 T(0,NaN);
 T(NaN,NaN);
 
+// XXX
+T(90.210190538889,785.4248266628098885)
+
 ev << ".\n";
 
 %contains: stdout
