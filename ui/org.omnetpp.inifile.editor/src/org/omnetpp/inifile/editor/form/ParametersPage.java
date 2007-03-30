@@ -1,11 +1,11 @@
 package org.omnetpp.inifile.editor.form;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 
@@ -25,18 +26,6 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
  * @author Andras
  */
 //XXX for now it only edits the [Parameters] section, should be extended to run configs as well
-//XXX hint for in-place table editing: ICellModifier, TableViewer.setCellEditors(), TableViewer.setCellModifier()
-// see: ChangeParametersControl.class in JDT, addCellEditors() and ParametersCellModifier inner class
-//	and:
-//		final TableTextCellEditor editors[]= new TableTextCellEditor[PROPERTIES.length];
-//		editors[TYPE_PROP]= new TableTextCellEditor(fTableViewer, TYPE_PROP);
-//		editors[NEWNAME_PROP]= new TableTextCellEditor(fTableViewer, NEWNAME_PROP);
-//		editors[DEFAULT_PROP]= new TableTextCellEditor(fTableViewer, DEFAULT_PROP);
-//      [...]
-//		fTableViewer.setCellEditors(editors);
-//		fTableViewer.setCellModifier(new ParametersCellModifier());
-//
-
 public class ParametersPage extends FormPage {
 	private TableViewer tableViewer;
 	
@@ -67,7 +56,7 @@ public class ParametersPage extends FormPage {
 		addTableColumn(table, "Value", 150);
 		addTableColumn(table, "Comment", 200);
 
-		TableViewer tableViewer = new TableViewer(table);
+		final TableViewer tableViewer = new TableViewer(table);
 		tableViewer.setContentProvider(new ArrayContentProvider());
 		
 		tableViewer.setLabelProvider(new ITableLabelProvider() {
@@ -99,13 +88,13 @@ public class ParametersPage extends FormPage {
 			}
 		});
 
-		//XXX make a copy of JDT's TableTextCellEditor, and use that! see example in ChangeParametersControl in JDT
-		final TextCellEditor editors[] = new TextCellEditor[3];
-		editors[0] = new TextCellEditor(tableViewer.getTable(), SWT.NONE);
-		editors[1] = new TextCellEditor(tableViewer.getTable(), SWT.NONE);
-		editors[2] = new TextCellEditor(tableViewer.getTable(), SWT.NONE);
-		tableViewer.setCellEditors(editors);
+		//XXX set up content assist. See: addCellEditors() method, ChangeParametersControl.class in JDT
 		tableViewer.setColumnProperties(new String[] {"key", "value", "comment"});
+		final CellEditor editors[] = new CellEditor[3];
+		editors[0] = new TableTextCellEditor(tableViewer, 0);
+		editors[1] = new TableTextCellEditor(tableViewer, 1);
+		editors[2] = new TableTextCellEditor(tableViewer, 2);
+		tableViewer.setCellEditors(editors);
 		tableViewer.setCellModifier(new ICellModifier() {
 			public boolean canModify(Object element, String property) {
 				return true;
@@ -134,9 +123,9 @@ public class ParametersPage extends FormPage {
 					getInifileDocument().setValue("Parameters", key, stringValue); 
 				else if (property.equals("comment"))
 					getInifileDocument().setComment("Parameters", key, stringValue);
+				tableViewer.refresh(); // looks like cell editor doesn't do it 
 			}
 		});
-		//XXX arrange updating labelProvider after cell editor has committed
 		
 		return tableViewer;
 	}

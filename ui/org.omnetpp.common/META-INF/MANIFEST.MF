@@ -12,7 +12,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jface,
  org.eclipse.draw2d,
  org.eclipse.ui.ide,
- org.omnetpp.ide.nativelibs
+ org.omnetpp.ide.nativelibs,
+ org.eclipse.jface.text
 Export-Package: org.apache.commons.collections,
  org.apache.commons.collections.map,
  org.apache.commons.lang,
