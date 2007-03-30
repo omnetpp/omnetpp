@@ -198,6 +198,11 @@ public class ImageConverter {
 	 * @author Andras
 	 */
 	public static Image getResampledImage(Image image, int width, int height, int leftInset, int topInset, int rightInset, int bottomInset) {
+		if (image==null)
+			throw new IllegalArgumentException("image cannot be null");
+		if (width <= leftInset+rightInset || height <= topInset+bottomInset)
+			throw new IllegalArgumentException("invalid width, height, or insets values");
+		
 		// calculate scaled image width/height, preserving aspect ratio
 		Rectangle imageSize = image.getBounds();
 		int scaledHeight = height - topInset - bottomInset;
@@ -277,7 +282,7 @@ public class ImageConverter {
 		}
 	}    
 	
-	static { testImageResizing(); }
+	//	static { testImageResizing(); }
 	
 	protected static void testImageResizing() {
 		Shell shell = new Shell((Shell)null, SWT.SHELL_TRIM);

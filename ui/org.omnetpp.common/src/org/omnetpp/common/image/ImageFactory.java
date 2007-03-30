@@ -124,8 +124,9 @@ public class ImageFactory {
      * @return a 16x16 image or null if there is no icon for that id
      */
     public static Image getIconImage(String imageId) {
-        // FIXME this is not a correct implementation 
-        return getImage(imageId, "vs", null, -1);
+    	// FIXME icon image needs to be cached as well
+        Image image = getImage(imageId, null, null, -1);
+        return image==null ? null : ImageConverter.getResampledImage(image, 16, 16, 1, 1, 1, 1); 
     }
 
     public static ImageDescriptor getIconDescriptor(String imageId) {
