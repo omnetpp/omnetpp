@@ -1,12 +1,16 @@
 package org.omnetpp.inifile.editor.form;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -27,6 +31,7 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
  */
 //XXX for now it only edits the [Parameters] section, should be extended to run configs as well
 public class ParametersPage extends FormPage {
+	private static final String DEFAULT_SECTION = "Parameters";
 	private TableViewer tableViewer;
 	
 	public ParametersPage(Composite parent, InifileEditor inifileEditor) {
@@ -68,8 +73,8 @@ public class ParametersPage extends FormPage {
 				String key = (String) element;
 				switch (columnIndex) {
 					case 0: return key;
-					case 1: return getInifileDocument().getValue("Parameters", key); 
-					case 2: return getInifileDocument().getComment("Parameters", key);
+					case 1: return getInifileDocument().getValue(DEFAULT_SECTION, key); 
+					case 2: return getInifileDocument().getComment(DEFAULT_SECTION, key);
 					default: throw new IllegalArgumentException();
 				}
 			}
@@ -89,6 +94,7 @@ public class ParametersPage extends FormPage {
 		});
 
 		//XXX set up content assist. See: addCellEditors() method, ChangeParametersControl.class in JDT
+		//XXX prefix comments with "#" after editing?
 		tableViewer.setColumnProperties(new String[] {"key", "value", "comment"});
 		final CellEditor editors[] = new CellEditor[3];
 		editors[0] = new TableTextCellEditor(tableViewer, 0);
@@ -105,9 +111,9 @@ public class ParametersPage extends FormPage {
 				if (property.equals("key"))
 					return key;
 				else if (property.equals("value"))
-					return nullToEmpty(getInifileDocument().getValue("Parameters", key)); 
+					return nullToEmpty(getInifileDocument().getValue(DEFAULT_SECTION, key)); 
 				else if (property.equals("comment"))
-					return nullToEmpty(getInifileDocument().getComment("Parameters", key));
+					return nullToEmpty(getInifileDocument().getComment(DEFAULT_SECTION, key));
 				else
 					return "-";
 			}
@@ -117,16 +123,16 @@ public class ParametersPage extends FormPage {
 			    	element = ((Item) element).getData(); // workaround, see super's comment
 				String key = (String) element;
 				if (property.equals("key")) {
-					getInifileDocument().changeKey("Parameters", key, (String)value);
+					getInifileDocument().changeKey(DEFAULT_SECTION, key, (String)value);
 					reread(); // tableViewer.refresh() not enough, because input consists of keys
 				}
 				else if (property.equals("value")) {
-					getInifileDocument().setValue("Parameters", key, (String)value);
+					getInifileDocument().setValue(DEFAULT_SECTION, key, (String)value);
 					tableViewer.refresh(); // if performance gets critical: refresh only if changed
 				}
 				else if (property.equals("comment")) {
 					if (value.equals("")) value = null; // no comment == null
-					getInifileDocument().setComment("Parameters", key, (String)value);
+					getInifileDocument().setComment(DEFAULT_SECTION, key, (String)value);
 					tableViewer.refresh();// if performance gets critical: refresh only if changed
 				}
 			}
@@ -151,10 +157,59 @@ public class ParametersPage extends FormPage {
 		buttonGroup.setLayout(new GridLayout(1,false));
 		
 		Button addButton = createButton(buttonGroup, "Add...");
-		Button editButton = createButton(buttonGroup, "Edit...");
+		//Button editButton = createButton(buttonGroup, "Edit...");
 		Button removeButton = createButton(buttonGroup, "Remove");
+		//new Label(buttonGroup, SWT.NONE);
 		Button upButton = createButton(buttonGroup, "Up");
 		Button downButton = createButton(buttonGroup, "Down");
+		
+		addButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
+				String beforeKey = sel.isEmpty() ? null : (String) sel.getFirstElement();
+				String newKey = "**.newKey";
+				getInifileDocument().addEntry(DEFAULT_SECTION, newKey, "", null, beforeKey);
+				reread();
+				//XXX key must be validated (in InifileDocument). if it causes parse error, the whole table goes away! 
+				tableViewer.editElement(newKey, 0);
+			}
+		});
+
+		removeButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
+				for (Object o : sel.toArray()) {
+					String key = (String) o;
+					getInifileDocument().removeKey(DEFAULT_SECTION, key);
+				}
+				reread();
+			}
+		});
+
+		upButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
+				for (Object o : sel.toArray()) {
+					String key = (String) o;
+					//XXX getInifileDocument().moveKey(DEFAULT_SECTION, key);
+				}
+				reread();
+			}
+		});
+
+		downButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
+				Object[] array = sel.toArray();
+				ArrayUtils.reverse(array);  // we must iterate in reverse order
+				for (Object o : array) {
+					String key = (String) o;
+					//XXX getInifileDocument().moveKey(DEFAULT_SECTION, key);
+				}
+				reread();
+			}
+		});
+
 		return buttonGroup;
 	}
 
@@ -171,7 +226,7 @@ public class ParametersPage extends FormPage {
 		IInifileDocument doc = getInifileDocument();
 		//XXX get only dotted keys! if (key.contains("."))...
 		//TODO should introduce rule: parameter refs must contain a dot; to check this in C++ code as well
-		tableViewer.setInput(doc.getKeys("Parameters")); //XXX or empty array if there's no such section
+		tableViewer.setInput(doc.getKeys(DEFAULT_SECTION)); //XXX or empty array if there's no such section
 		tableViewer.refresh();
 	}
 
