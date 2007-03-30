@@ -43,6 +43,7 @@ std::string opp_quotestr_ifneeded(const char *txt);
 
 /* -------------------- BigDecimal -------------------------- */
 
+%ignore _I64_MAX_DIGITS;
 %ignore BigDecimal::BigDecimal();
 %ignore BigDecimal::str(char*);
 %ignore BigDecimal::parse(const char*,const char*&);
