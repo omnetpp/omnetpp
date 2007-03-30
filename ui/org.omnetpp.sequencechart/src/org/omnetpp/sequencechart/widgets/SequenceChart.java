@@ -14,6 +14,7 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.viewers.ISelection;
@@ -33,6 +34,8 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -45,6 +48,7 @@ import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogSelection;
 import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
+import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
@@ -82,6 +86,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private static final Color LABEL_COLOR = ColorFactory.asColor("black");
 	
 	private static final Color TICK_LINE_COLOR = ColorFactory.asColor("darkGrey");
+	private static final Color MOUSE_TICK_LINE_COLOR = ColorFactory.asColor("black");
 	private static final Color TICK_LABEL_COLOR = ColorFactory.asColor("black");
 
 	private static final Color GUTTER_BACKGROUND_COLOR = new Color(null, 255, 255, 160);
@@ -100,6 +105,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	
 	private static final Color MESSAGE_SEND_COLOR = ColorFactory.asColor("blue");
 	private static final Color MESSAGE_REUSE_COLOR = ColorFactory.asColor("green4");
+
+	private static final Color ZERO_SIMULATION_TIME_REGION_COLOR = ColorFactory.asColor("grey90");
 	
 	private static final Cursor DRAG_CURSOR = new Cursor(null, SWT.CURSOR_SIZEALL);
 	private static final int[] DOTTED_LINE_PATTERN = new int[] {2,2}; // 2px black, 2px gap
@@ -118,6 +125,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private static final int EVENT_SELECTION_RADIUS = 10; // radius of event selection mark circle
 	private static final int TICK_SPACING = 100; // space between ticks in pixels
 	private static final int GUTTER_HEIGHT = 17; // height of top and bottom gutter
+
+	protected Font font = JFaceResources.getDefaultFont();
 	
 	private IEventLog eventLog; // contains the data to be displayed
 	private SequenceChartFacade sequenceChartFacade; // helpful facade on eventlog
@@ -148,12 +157,20 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private ArrayList<BigDecimal> ticks; // a list of simulation times drawn on the axis as tick marks
 	private boolean invalidVirtualSize = true;
 	private boolean invalidModuleYCoordinates = true;
-	
+
+	/**
+	 * True means the chart will jump to the selection and switch input automatically when it gets notified about a selection change
+	 * even if the input is different from the current one.
+	 */
+	protected boolean followSelection = true;
+
 	private ArrayList<SelectionListener> selectionListenerList = new ArrayList<SelectionListener>(); // SWT selection listeners
 	private List<IEvent> selectedEvents = new ArrayList<IEvent>(); // the selection
     private ListenerList selectionChangedListeners = new ListenerList(); // list of selection change listeners (type ISelectionChangedListener).
 	private EventLogInput eventLogInput;
 	private MenuManager menuManager;
+
+	private BigDecimal tickPrefix;
 
 	private static Rectangle TEMP_RECT = new Rectangle();  // tmp var for local calculations (a second Rectangle.SINGLETON)
     
@@ -192,6 +209,25 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 					clearCanvasCacheAndRedraw();
 			}			
 		});
+	}
+
+	/**
+	 * See setFollowSelection().
+	 */
+	public boolean getFollowSelection() {
+		return followSelection;
+	}
+
+	/**
+	 * Sets whether this widget should always switch to the element which comes in
+	 * the selection (=true), or stick to the input set with setInput() (=false).
+	 * The proper setting typically depends on whether the widget is used in an
+	 * editor (false) or in a view (true).
+	 *
+	 * Default is true.
+	 */
+	public void setFollowSelection(boolean followSelection) {
+		this.followSelection = followSelection;
 	}
 
 	public void setSequenceChartContributor(SequenceChartContributor sequenceChartContributor) {
@@ -843,9 +879,32 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	        graphics.translate(0, -GUTTER_HEIGHT);
 	        drawGutters(graphics);
 	        drawMouseTick(graphics);
-	
+	        drawInfo(gc, graphics);
+
 	        graphics.dispose();
 		}
+	}
+
+	private void drawInfo(GC gc, Graphics graphics) {
+		org.eclipse.swt.graphics.Rectangle rect = getViewportRectangle();
+		double leftSimulationTime = getSimulationTimeForViewportPixel(rect.x);
+		double rightSimulationTime = getSimulationTimeForViewportPixel(rect.x + rect.width);
+		double simulationTimeRange = rightSimulationTime - leftSimulationTime;
+		
+		graphics.setForegroundColor(LABEL_COLOR);
+		String timeString = "Range: " + TimeUtils.secondsToTimeString(simulationTimeRange);
+		int width = gc.textExtent(timeString).x;
+		graphics.drawText(timeString, rect.x + rect.width - width - 2, GUTTER_HEIGHT + 2);
+
+		timeString = " " + TimeUtils.secondsToTimeString(tickPrefix) + " ";
+		Font oldFont = gc.getFont();
+		FontData fontData = font.getFontData()[0];
+		Font newFont = new Font(oldFont.getDevice(), fontData.getName(), fontData.getHeight(), SWT.BOLD);
+		gc.setFont(newFont);
+		graphics.setBackgroundColor(GUTTER_BACKGROUND_COLOR);
+		graphics.fillText(timeString, 1, 2);
+		newFont.dispose();
+		gc.setFont(oldFont);
 	}
 
 	/**
@@ -871,6 +930,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 				System.out.println("redrawing events from: " + sequenceChartFacade.Event_getEventNumber(startEventPtr) + " to: " + sequenceChartFacade.Event_getEventNumber(endEventPtr));
 
 			ensureEventsLoaded(startEventPtr, endEventPtr);
+			drawZeroSimulationTimeRegions(graphics, startEventPtr, endEventPtr);
 			drawAxes(graphics, startSimulationTime, endSimulationTime);
 	        drawMessageArrows(graphics, startEventPtr, endEventPtr);
 	        drawEvents(graphics, startEventPtr, endEventPtr);
@@ -885,6 +945,29 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	        	antiAlias = false;
 	        else if (!antiAlias && redrawMillis < ANTIALIAS_TURN_ON_AT_MSEC)
 	        	antiAlias = true;
+		}
+	}
+
+	private void drawZeroSimulationTimeRegions(Graphics graphics, long startEventPtr, long endEventPtr) {
+		long previousEventPtr = -1;
+		graphics.getClip(Rectangle.SINGLETON);
+		graphics.setBackgroundColor(ZERO_SIMULATION_TIME_REGION_COLOR);
+
+		for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.Event_getNextEvent(eventPtr)) {
+			if (previousEventPtr != -1) {
+				int x = getEventViewportXCoordinate(eventPtr);
+				int previousX = getEventViewportXCoordinate(previousEventPtr);
+				double simulationTime = sequenceChartFacade.Event_getSimulationTime(eventPtr);
+				double previousSimulationTime = sequenceChartFacade.Event_getSimulationTime(previousEventPtr);
+				
+				if (simulationTime == previousSimulationTime && x != previousX)
+					graphics.fillRectangle(previousX, Rectangle.SINGLETON.y, x - previousX, Rectangle.SINGLETON.height);
+			}
+
+			previousEventPtr = eventPtr;
+			
+			if (eventPtr == endEventPtr)
+				break;
 		}
 	}
 
@@ -971,34 +1054,40 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 */
 	private void drawTicks(Graphics graphics) {
 		for (BigDecimal tick : ticks)
-			drawTick(graphics, tick);
+			drawTick(graphics, TICK_LINE_COLOR, tick);
 	}
 
 	/**
 	 * Draws a tick under the mouse.
 	 */
 	private void drawMouseTick(Graphics graphics) {
-		// TODO: in step mode draws wrong tick
 		Point p = toControl(Display.getDefault().getCursorLocation());
 		
 		if (0 <= p.x && p.x < getViewportWidth() &&
 			0 <= p.y && p.y < getViewportHeight()) {
 			BigDecimal t = new BigDecimal(getSimulationTimeForViewportPixel(p.x));
 			BigDecimal tick = calculateTick(t, 1);
-			drawTick(graphics, tick);
+			drawTick(graphics, MOUSE_TICK_LINE_COLOR, tick, p.x);
 		}
 	}
 
 	/**
 	 * Draws a single tick on the gutters.
 	 */
-	private void drawTick(Graphics graphics, BigDecimal simulationTime) {
-		int x = getViewportPixelForSimulationTime(simulationTime.doubleValue());
+	private void drawTick(Graphics graphics, Color tickColor, BigDecimal tick) {
+		drawTick(graphics, tickColor, tick, getViewportPixelForSimulationTime(tick.doubleValue()));
+	}
+
+	private void drawTick(Graphics graphics, Color tickColor, BigDecimal tick, int x) {
 		graphics.setLineStyle(SWT.LINE_DOT);
-		graphics.setForegroundColor(TICK_LINE_COLOR);
+		graphics.setForegroundColor(tickColor);
 		graphics.drawLine(x, 0, x, getViewportHeight() + GUTTER_HEIGHT * 2);
 		graphics.setForegroundColor(TICK_LABEL_COLOR);
-		String str = simulationTime.toPlainString() + "s";
+		
+		String str = TimeUtils.secondsToTimeString(tick.subtract(tickPrefix));
+		if (tickPrefix.doubleValue() != 0.0)
+			str = "+" + str;
+
 		graphics.setBackgroundColor(GUTTER_BACKGROUND_COLOR);
 		graphics.fillText(str, x + 3, 2);
 		graphics.fillText(str, x + 3, getViewportHeight() + GUTTER_HEIGHT + 1);
@@ -1260,15 +1349,16 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private void calculateTicks() {
 		ticks = new ArrayList<BigDecimal>();
 		org.eclipse.swt.graphics.Rectangle rect = getViewportRectangle();
-		
+		double leftSimulationTime = getSimulationTimeForViewportPixel(rect.x);
+		double rightSimulationTime = getSimulationTimeForViewportPixel(rect.x + rect.width);
+		tickPrefix = TimeUtils.commonPrefix(leftSimulationTime, rightSimulationTime);
+
 		if (getTimelineMode() == TimelineMode.LINEAR) {
 			// puts ticks to constant distance from each other measured in timeline units
-			double tleft = getSimulationTimeForViewportPixel(rect.x);
-			double tright = getSimulationTimeForViewportPixel(rect.x + rect.width);
 			int tickScale = (int)Math.ceil(Math.log10(TICK_SPACING / pixelsPerTimelineUnit));
 			BigDecimal tickSpacing = BigDecimal.valueOf(TICK_SPACING / pixelsPerTimelineUnit);
-			BigDecimal tickStart = new BigDecimal(tleft).setScale(-tickScale, RoundingMode.FLOOR);
-			BigDecimal tickEnd = new BigDecimal(tright).setScale(-tickScale, RoundingMode.CEILING);
+			BigDecimal tickStart = new BigDecimal(leftSimulationTime).setScale(-tickScale, RoundingMode.FLOOR);
+			BigDecimal tickEnd = new BigDecimal(rightSimulationTime).setScale(-tickScale, RoundingMode.CEILING);
 			BigDecimal tickIntvl = new BigDecimal(1).scaleByPowerOfTen(tickScale);
 
 			// use 2, 4, 6, 8, etc. if possible
@@ -1911,28 +2001,28 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		if (debug)
 			System.out.println("SeqChartFigure got selection: " + newSelection);
 
-		if (!(newSelection instanceof IEventLogSelection))
-			return; // wrong selection type
-		IEventLogSelection newEventLogSelection = (IEventLogSelection)newSelection;
-		
-		// TODO: add followSelection as in EventLogTable
-//		if (newEventLogSelection.getEventLog() != eventLog)
-//			return;  // wrong -- refers to another eventLog
-		if (getInput() != newEventLogSelection.getEventLogInput())
-			setInput(newEventLogSelection.getEventLogInput());
-
-		// if new selection differs from existing one, take over its contents
-		if (!eventListEquals(newEventLogSelection.getEvents(), selectedEvents)) {
-			selectedEvents.clear();
-			for (IEvent e : newEventLogSelection.getEvents()) 
-				selectedEvents.add(e);
-
-			// go to the time of the first event selected
-			if (selectedEvents.size()>0) {
-				gotoEvent(selectedEvents.get(0));
+		if (newSelection instanceof IEventLogSelection) {
+			IEventLogSelection newEventLogSelection = (IEventLogSelection)newSelection;
+	
+			if (getInput() != newEventLogSelection.getEventLogInput()) {
+				if (followSelection)
+					setInput(newEventLogSelection.getEventLogInput());
+				else
+					return;
 			}
-
-			redraw();
+	
+			// if new selection differs from existing one, take over its contents
+			if (!eventListEquals(newEventLogSelection.getEvents(), selectedEvents)) {
+				selectedEvents.clear();
+				for (IEvent e : newEventLogSelection.getEvents()) 
+					selectedEvents.add(e);
+	
+				// go to the time of the first event selected
+				if (selectedEvents.size() > 0)
+					gotoEvent(selectedEvents.get(0));
+	
+				redraw();
+			}
 		}
 	}
 	

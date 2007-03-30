@@ -7,6 +7,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -20,6 +21,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.EditorActionBarContributor;
+import org.eclipse.ui.texteditor.StatusLineContributionItem;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.eventlog.engine.IEvent;
@@ -57,6 +59,8 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	protected SequenceChartAction denseAxesAction;
 
 	protected SequenceChartAction balancedAxesAction;
+
+	protected StatusLineContributionItem timelineModeStatus;
 	
 	public SequenceChartContributor() {
 		this.separatorAction = new Separator();
@@ -72,6 +76,8 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		this.zoomOutAction = createZoomOutAction();
 		this.denseAxesAction = createDenseAxesAction();
 		this.balancedAxesAction = createBalancedAxesAction();
+		
+		this.timelineModeStatus = createTimelineModeStatus();
 
 		if (singleton == null)
 			singleton = this;
@@ -168,6 +174,10 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		toolBarManager.add(zoomInAction);
 		toolBarManager.add(zoomOutAction);
 	}
+
+    public void contributeToStatusLine(IStatusLineManager statusLineManager) {
+    	statusLineManager.add(timelineModeStatus);
+    }
 	
 	@Override
 	public void setActiveEditor(IEditorPart targetEditor) {
@@ -178,6 +188,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		showMessageNamesAction.update();
 		showReuseMessagesAction.update();
 		showArrowHeadsAction.update();
+		timelineModeStatus.update();
 	}
 
 	private SequenceChartMenuAction createTimelineModeAction() {
@@ -185,6 +196,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			@Override
 			public void run() {
 				sequenceChart.setTimelineMode(SequenceChart.TimelineMode.values()[(sequenceChart.getTimelineMode().ordinal() + 1) % SequenceChart.TimelineMode.values().length]);
+				timelineModeStatus.update();
 				update();
 			}
 
@@ -212,6 +224,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 								
 								if (menuItem.getSelection()) {
 									sequenceChart.setTimelineMode(timelineMode);
+									timelineModeStatus.update();
 									update();
 								}
 							}
@@ -459,6 +472,15 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			}
 		};
 	}	
+
+	private StatusLineContributionItem createTimelineModeStatus() {
+		return new StatusLineContributionItem("Timeline mode") {
+			@Override
+		    public void update() {
+				setText(sequenceChart.getTimelineMode().name());
+		    }
+		};
+	}
 
 	private abstract class SequenceChartAction extends Action {
 		public SequenceChartAction(String text, int style) {			

@@ -10,7 +10,8 @@
             icon="icons/sample.gif"
             contributorClass="org.omnetpp.sequencechart.editors.SequenceChartContributor"
             class="org.omnetpp.sequencechart.editors.SequenceChartEditor"
-            id="org.omnetpp.sequencechart.editors.SequenceChartEditor">
+            id="org.omnetpp.sequencechart.editors.SequenceChartEditor"
+            default="true">
       </editor>
    </extension>
 

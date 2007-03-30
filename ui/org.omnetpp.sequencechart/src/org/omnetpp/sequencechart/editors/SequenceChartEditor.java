@@ -71,6 +71,7 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
 	@Override
 	public void createPartControl(Composite parent) {
 		sequenceChart = new SequenceChart(parent, SWT.DOUBLE_BUFFERED);
+		sequenceChart.setFollowSelection(false);
 		sequenceChart.setInput(eventLogInput);
 		sequenceChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		sequenceChart.setSequenceChartContributor(SequenceChartContributor.getDefault());

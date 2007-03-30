@@ -57,6 +57,7 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 	@Override
 	public void createPartControl(Composite parent) {
 		eventLogTable = new EventLogTable(parent, SWT.NONE);
+		eventLogTable.setFollowSelection(false);
 		eventLogTable.setInput(eventLogInput);
 		eventLogTable.setEventLogTableContributor(EventLogTableContributor.getDefault());
 
