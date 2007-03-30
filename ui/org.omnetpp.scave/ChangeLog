@@ -1,3 +1,22 @@
+2007-03-30
+----------
+
+Additions:
+
+   + Simulation time represented as a BigDecimal (int64 value + scale).
+     Output vector now may contain time values with different scale. The precise
+     values are kept by the dataflow network, when there is no computation with
+     the simulation time.
+     
+
+Fixes:
+
+   + Chart tooltip shows precise time values of data points.
+
+   + Group names are displayed.
+
+   + Fixed NullPointerException when the "Vector Browser" view is opened.
+
 2007-03-15
 ----------
 
