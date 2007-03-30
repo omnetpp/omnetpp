@@ -178,7 +178,7 @@ public class ImageConverter {
 		return resultImage;
 	}    
 
-	public static Image getResizedImage(Image image, int width, int height) {
+	public static Image getResampledImage(Image image, int width, int height) {
 		// calculate scaled image width/height, preserving aspect ratio
 		Rectangle imageSize = image.getBounds();
 		double scaleX = (double) width / (double) imageSize.width;
@@ -201,30 +201,39 @@ public class ImageConverter {
 		gc.dispose();
 
 		// now, produce alpha channel...
-		ImageData data = scaledImage.getImageData();
-		
-		byte[] alphas = image.getImageData().scaledTo(scaledWidth, scaledHeight).alphaData;
-		if (alphas!=null) {
-			// original image had an alpha channel, try to fix it up...
-			byte[] alphas2 = alphas.clone();
-			int w = scaledWidth;
+		ImageData data = image.getImageData();
+		if (data.getTransparencyType()==SWT.TRANSPARENCY_ALPHA) {
+			for (int y=0; y < imageSize.height; y++) {
+				for (int x=0; x < imageSize.width; x++) {
+					int alpha = data.getAlpha(x, y);
+					data.setPixel(x, y, data.palette.getPixel(new RGB(alpha, alpha, alpha)));
+				}
+			}
+			Image alphaImage = new Image(null, data);
+			Image scaledAlphaImage = new Image(null, width, height);
+			GC gc2 = new GC(scaledAlphaImage);
+			gc2.setBackground(new org.eclipse.swt.graphics.Color(null, 0, 0, 0));
+			gc2.fillRectangle(0, 0, width, height);
+			gc2.setInterpolation(SWT.HIGH);
+			gc2.drawImage(alphaImage, 0, 0, imageSize.width, imageSize.height, xoff, yoff, scaledWidth, scaledHeight);
+			gc2.dispose();
 
-			for (int y=1; y < scaledHeight-1; y++)
-				for (int x=1; x < scaledWidth-1; x++)
-					alphas2[y*w+x] = (byte)Math.min(Math.min(alphas[y*w+x], alphas[y*w+x-1]), alphas[(y-1)*w+x]); 
-					// alphas2[y*w+x] = (byte)Math.min(Math.min(Math.min(Math.min(alphas[y*w+x], alphas[y*w+x-1]), alphas[y*w+x+1]), alphas[(y-1)*w+x]), alphas[(y+1)*w+x]); 
-					// alphas2[y*w+x] = (byte)((alphas[y*w+x] + alphas[y*w+x-1] + alphas[y*w+x+1] + alphas[(y-1)*w+x] + alphas[(y+1)*w+x]) / 5); 
+			ImageData scaledAlphaData = scaledAlphaImage.getImageData();
+			ImageData resultData = scaledImage.getImageData();
+			for (int y=0; y < height; y++) {
+				for (int x=0; x < width; x++) {
+					int alpha = scaledAlphaData.palette.getRGB(scaledAlphaData.getPixel(x, y)).blue;
+					resultData.setAlpha(x, y, alpha);
+				}
+			}
 
-
-			data.alphaData = new byte[width*height]; // this is all zero == fully transparent
-			for (int y=0; y < scaledHeight; y++)
-				for (int x=0; x < scaledWidth; x++)
-					data.alphaData[(y+yoff)*width+(x+xoff)] = alphas2[y*w+x];
+			Image resultImage = new Image(null, resultData);
+			scaledImage.dispose();
+			return resultImage;
 		}
-		
-		Image resultImage = new Image(null, data);
-		scaledImage.dispose();
-		return resultImage;
+		else {
+			return scaledImage;
+		}
 	}    
 	
 }
