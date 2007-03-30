@@ -90,6 +90,11 @@ public interface IInifileDocument {
 	void setComment(String section, String key, String comment);
 
 	/** 
+	 * Renames the given key. Throws error if key doesn't exist, or the entry is readonly.
+	 */
+	void changeKey(String section, String oldKey, String newKey);
+	
+	/** 
 	 * Removes the given key from the given section. Nothing happens if it's not there.
 	 * Throws an error if this entry is not editable (readonly).
 	 */

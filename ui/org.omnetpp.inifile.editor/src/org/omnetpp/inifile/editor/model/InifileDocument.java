@@ -234,6 +234,10 @@ public class InifileDocument implements IInifileDocument {
     	return line.file == documentFile;
     }
 
+    protected static boolean nullSafeEquals(String first, String second) {
+    	return first==null ? second == null : first.equals(second);
+    }
+    
 	/**
 	 * Adds a line to IDocument at the given lineNumber (1-based). Existing lineNumber
 	 * will be shifted down. Line text is to be specified without the trailing newline.
@@ -254,6 +258,7 @@ public class InifileDocument implements IInifileDocument {
 
 	/**
 	 * Replaces line content in IDocument, or if text==null, deletes the line.
+	 * If the line numbers are NOT changed, suppresses re-parsing the document.
 	 * @return true if line numbers have changed, false if not
 	 */
     synchronized protected boolean replaceLine(Line line, String text) {
@@ -302,11 +307,11 @@ public class InifileDocument implements IInifileDocument {
 	
 	public void setValue(String section, String key, String value) {
 		KeyValueLine line = getEditableEntry(section, key);
-
-		// change IDocument
-		line.value = value; 
-		String text = line.key + " = " + line.value + (line.comment == null ? "" : " "+line.comment);
-		replaceLine(line, text);
+		if (!nullSafeEquals(line.value, value)) {
+			line.value = value; 
+			String text = line.key + " = " + line.value + (line.comment == null ? "" : " "+line.comment);
+			replaceLine(line, text);
+		}
 	}
 
 	public void addEntry(String section, String key, String value, String comment, String beforeKey) {
@@ -330,9 +335,21 @@ public class InifileDocument implements IInifileDocument {
 
 	public void setComment(String section, String key, String comment) {
 		KeyValueLine line = getEditableEntry(section, key);
-		line.comment = comment; 
-		String text = line.key + " = " + line.value + (line.comment == null ? "" : " "+line.comment);
-		replaceLine(line, text);
+		if (!nullSafeEquals(line.comment, comment)) {
+			line.comment = comment; 
+			String text = line.key + " = " + line.value + (line.comment == null ? "" : " "+line.comment);
+			replaceLine(line, text);
+		}
+	}
+
+	public void changeKey(String section, String oldKey, String newKey) {
+		KeyValueLine line = lookupEntry(section, oldKey);
+		if (!nullSafeEquals(line.key, newKey)) {
+			line.key = newKey; 
+			String text = line.key + " = " + line.value + (line.comment == null ? "" : " "+line.comment);
+			replaceLine(line, text);
+			changed = true; // force re-parsing to update hash tables (replaceLine() may have suppressed re-parsing)
+		}
 	}
 
 	public void removeKey(String section, String key) {
@@ -423,9 +440,11 @@ public class InifileDocument implements IInifileDocument {
 
 	public void setSectionComment(String sectionName, String comment) {
 		SectionHeadingLine line = getFirstEditableSectionHeading(sectionName);
-		line.comment = comment; 
-		String text = "[" + line.sectionName + "]" + (line.comment == null ? "" : " "+line.comment);
-		replaceLine(line, text);
+		if (!nullSafeEquals(line.comment, comment)) {
+			line.comment = comment; 
+			String text = "[" + line.sectionName + "]" + (line.comment == null ? "" : " "+line.comment);
+			replaceLine(line, text);
+		}
 	}
 
 	public String getSectionForLine(int lineNumber) {

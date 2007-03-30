@@ -56,9 +56,9 @@ public class ParametersPage extends FormPage {
 		addTableColumn(table, "Value", 150);
 		addTableColumn(table, "Comment", 200);
 
+		// set up tableViewer, content and label providers
 		final TableViewer tableViewer = new TableViewer(table);
 		tableViewer.setContentProvider(new ArrayContentProvider());
-		
 		tableViewer.setLabelProvider(new ITableLabelProvider() {
 			public Image getColumnImage(Object element, int columnIndex) {
 				return null;
@@ -116,14 +116,19 @@ public class ParametersPage extends FormPage {
 			    if (element instanceof Item)
 			    	element = ((Item) element).getData(); // workaround, see super's comment
 				String key = (String) element;
-				String stringValue = (String) value;
-				if (property.equals("key"))
-					; //FIXME implement changeKey(section, oldKey, newKey) in IInifileDocument
-				else if (property.equals("value"))
-					getInifileDocument().setValue("Parameters", key, stringValue); 
-				else if (property.equals("comment"))
-					getInifileDocument().setComment("Parameters", key, stringValue);
-				tableViewer.refresh(); // looks like cell editor doesn't do it 
+				if (property.equals("key")) {
+					getInifileDocument().changeKey("Parameters", key, (String)value);
+					reread(); // tableViewer.refresh() not enough, because input consists of keys
+				}
+				else if (property.equals("value")) {
+					getInifileDocument().setValue("Parameters", key, (String)value);
+					tableViewer.refresh(); // if performance gets critical: refresh only if changed
+				}
+				else if (property.equals("comment")) {
+					if (value.equals("")) value = null; // no comment == null
+					getInifileDocument().setComment("Parameters", key, (String)value);
+					tableViewer.refresh();// if performance gets critical: refresh only if changed
+				}
 			}
 		});
 		
