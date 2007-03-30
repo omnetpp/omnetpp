@@ -32,9 +32,6 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.ned.editor.text.outline.NedContentOutlinePage;
 
 
-/**
- * Java specific text editor.
- */
 public class TextualNedEditor extends TextEditor {
 	
 	private class DefineFoldingRegionAction extends TextEditorAction {
@@ -261,4 +258,6 @@ public class TextualNedEditor extends TextEditor {
 			extension.exposeModelRange(new Region(offset, length));
 		}
 	}
+    
+    
 }

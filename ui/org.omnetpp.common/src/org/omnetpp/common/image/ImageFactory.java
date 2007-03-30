@@ -120,6 +120,19 @@ public class ImageFactory {
     }
 
     /**
+     * @param imageId
+     * @return a 16x16 image or null if there is no icon for that id
+     */
+    public static Image getIconImage(String imageId) {
+        // FIXME this is not a correct implementation 
+        return getImage(imageId, "vs", null, -1);
+    }
+
+    public static ImageDescriptor getIconDescriptor(String imageId) {
+        // FIXME this is not a correct implementation 
+        return getDescriptor(imageId, "vs", null, -1);
+    }
+    /**
      * Returns the requested image seraching on the bitmap path and in the resources
      * @param imageId the rquested image's id
      * @return Image with a given ID
