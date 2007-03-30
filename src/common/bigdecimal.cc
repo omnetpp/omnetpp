@@ -244,7 +244,7 @@ bool BigDecimal::operator<(const BigDecimal &x) const
 
     // compare absolute values by comparing most significant digits first
     bool result = false;
-    for (int s = max(scale,x.scale); s > min(scale,x.scale); s-=18)
+    for (int s = max(scale,x.scale); s > min(scale,x.scale)-18; s-=18)
     {
         int64 digits = this->getDigits(s);
         int64 digitsX = x.getDigits(s);
