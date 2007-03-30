@@ -5,6 +5,10 @@ package org.omnetpp.ned.model.ui;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
+import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.displaymodel.DisplayString;
+import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDElementUtil;
@@ -133,8 +137,14 @@ public class NedModelLabelProvider extends LabelProvider {
 	public Image getImage(Object obj) {
         NEDElement model = (NEDElement)obj;
         Image image = null;
-        
-        if (model instanceof ImportNode) {
+        if (model instanceof IHasDisplayString) {
+            DisplayString dps = ((IHasDisplayString) model).getEffectiveDisplayString();
+            image = ImageFactory.getIconImage(dps.getAsStringDef(IDisplayString.Prop.IMAGE));
+        }
+
+        if (image != null) {
+            return image;
+        } else if (model instanceof ImportNode) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_IMPORT);
         } else if (model instanceof PropertyNode) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_PROPERTY);
