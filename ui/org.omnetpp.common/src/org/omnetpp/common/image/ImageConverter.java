@@ -240,7 +240,16 @@ public class ImageConverter {
 			scaledImage.dispose();
 			return resultImage;
 		}
-		else {
+		else if (data.getTransparencyType()==SWT.TRANSPARENCY_MASK) {
+			System.out.println("MASKKKKKKK");
+			return scaledImage;
+		}
+		if (data.getTransparencyType()==SWT.TRANSPARENCY_PIXEL) {
+			// have not seen this with png or gif images, so just ignore transparency
+			return scaledImage;
+		}
+		else { 
+			// TRANSPARENCY_NONE
 			return scaledImage;
 		}
 	}    
