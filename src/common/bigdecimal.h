@@ -78,6 +78,9 @@ class COMMON_API BigDecimal
     /** Special values */
     bool isNaN() const { return scale == INT_MAX && intVal == 0; }
     bool isNil() const { return *this == Nil; }
+    bool isPositiveInfinity() const {return *this==PositiveInfinity;}
+    bool isNegativeInfinity() const {return *this==NegativeInfinity;}
+    bool isInfinity() const {return isPositiveInfinity() || isNegativeInfinity();}
     bool isSpecial() const { return scale == INT_MAX; }
 
     /** Assignments */

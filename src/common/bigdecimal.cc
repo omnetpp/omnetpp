@@ -135,9 +135,9 @@ const BigDecimal& BigDecimal::operator=(double d)
     // check NaN and infinity
     if (::isNaN(d))
         return *this = NaN;
-    else if (isPositiveInfinity(d))
+    else if (::isPositiveInfinity(d))
         return *this = PositiveInfinity;
-    else if (isNegativeInfinity(d))
+    else if (::isNegativeInfinity(d))
         return *this = NegativeInfinity;
 
     int sign = 1;
