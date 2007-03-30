@@ -96,12 +96,12 @@ void BigDecimal::normalize()
     }
 }
 
-int64 BigDecimal::getDigits(int scale) const
+int64 BigDecimal::getDigits(int scale, int numDigits) const
 {
     assert(!this->isSpecial());
 
     int start = max(scale, this->scale); // inclusive
-    int end = min(scale+18, this->scale+18); // exclusive
+    int end = min(scale+numDigits, this->scale+numDigits); // exclusive
 
     if (start >= end)
         return 0;
@@ -246,8 +246,8 @@ bool BigDecimal::operator<(const BigDecimal &x) const
     bool result = false;
     for (int s = max(scale,x.scale); s > min(scale,x.scale)-18; s-=18)
     {
-        int64 digits = this->getDigits(s);
-        int64 digitsX = x.getDigits(s);
+        int64 digits = this->getDigits(s, 18);
+        int64 digitsX = x.getDigits(s, 18);
         if (digits < digitsX)
         {
             result = true;

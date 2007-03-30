@@ -58,9 +58,9 @@ class COMMON_API BigDecimal
      */
     void normalize();
     /*
-     * Returns 18 digits of the decimal number from place-values in [scale,scale+18) as an int64.
+     * Returns digits of the decimal number from place-values in [scale,scale+numDigits) as an int64.
      */
-    int64 getDigits(int scale) const;
+    int64 getDigits(int scale, int numDigits) const;
 
   public:
     static BigDecimal Zero;
