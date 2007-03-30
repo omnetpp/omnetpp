@@ -40,6 +40,7 @@ class EVENTLOG_API EventLogFacade
         int64 Event_getPreviousEvent(int64 ptr);
         int64 Event_getNextEvent(int64 ptr);
         long Event_getEventNumber(int64 ptr);
+        simtime_t Event_getSimulationTime(int64 ptr);
         int Event_getModuleId(int64 ptr);
         int Event_getNumCauses(int64 ptr);
         int Event_getNumConsequences(int64 ptr);

@@ -47,6 +47,12 @@ long EventLogFacade::Event_getEventNumber(int64 ptr)
     return ((IEvent*)ptr)->getEventNumber();
 }
 
+simtime_t EventLogFacade::Event_getSimulationTime(int64 ptr)
+{
+    PTR(ptr);
+    return ((IEvent*)ptr)->getSimulationTime();
+}
+
 int EventLogFacade::Event_getModuleId(int64 ptr)
 {
     PTR(ptr);
