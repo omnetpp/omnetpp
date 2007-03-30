@@ -19,6 +19,9 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Shell;
 
 public class ImageConverter {
 
@@ -273,6 +276,34 @@ public class ImageConverter {
 			return scaledImage;
 		}
 	}    
+	
+	static { testImageResizing(); }
+	
+	protected static void testImageResizing() {
+		Shell shell = new Shell((Shell)null, SWT.SHELL_TRIM);
+		shell.setSize(750, 500);
+		shell.setLayout(new FillLayout());
+		Canvas canvas = new Canvas(shell, SWT.NONE);
+		shell.layout();
+		shell.open();
+		
+		int k = 0;
+		GC gc = new GC(canvas);
+		for (String s : ImageFactory.getImageNameList()) {
+			Image image = ImageFactory.getImage(s);
+			Image smallImage = ImageConverter.getResampledImage(image, 16, 16, 2, 2, 2, 2);
+			int x = (k%40)*20, y = 20*(int)(k/40);
+			gc.drawImage(smallImage, x, y);
+
+			Rectangle r = smallImage.getBounds();
+			r.x += x;
+			r.y += y;
+			gc.setBackground(new Color(null, 0, 0, 0));
+			gc.drawRectangle(r);
+
+			k++;
+		}
+	}
 	
 }
 
