@@ -2,6 +2,7 @@ package org.omnetpp.common.util;
 
 import java.math.BigDecimal;
 
+
 public class TimeUtils {
 	private static BigDecimal appendToTimeString(StringBuffer timeString, BigDecimal time, String name) {
 		long value = time.longValue();
@@ -33,9 +34,9 @@ public class TimeUtils {
 		return timeString.toString().trim();
 	}
 	
-	public static BigDecimal commonPrefix(double time1, double time2) {
-		String s1 = new BigDecimal(time1).toPlainString();
-		String s2 = new BigDecimal(time2).toPlainString();
+	public static BigDecimal commonPrefix(BigDecimal time1, BigDecimal time2) {
+		String s1 = time1.toPlainString();
+		String s2 = time2.toPlainString();
 		StringBuffer common = new StringBuffer();
 
 		int len = Math.min(s1.length(), s2.length());
@@ -61,6 +62,6 @@ public class TimeUtils {
 		if (decimalPointFound)
 			return new BigDecimal(common.toString());
 		else
-			return BigDecimal.ZERO;
+			return new BigDecimal(0);
 	}
 }

@@ -2,7 +2,10 @@
 
 %include "loadlib.i"
 %include "enumtypeunsafe.swg"
+%include "commondefs.i"
 %javaconst(1);
+
+COMMON_ENGINE_BIGDECIMAL();
 
 %{
 #include "ievent.h"
@@ -37,11 +40,6 @@
 
 %include "inttypes.h"
 %include "eventlogdefs.h"
-
-%typemap(jni)    int64 "jlong"
-%typemap(jtype)  int64 "long"
-%typemap(jstype) int64 "long"
-%typemap(javain) int64 "$javainput"
 
 %include "std_common.i"
 %include "std_string.i"

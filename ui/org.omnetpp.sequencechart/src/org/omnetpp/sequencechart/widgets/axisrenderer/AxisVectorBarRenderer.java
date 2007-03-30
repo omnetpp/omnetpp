@@ -157,7 +157,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 			return -1;
 		else {
 			Assert.isTrue((before && getSimulationTime(index) < simulationTime) ||
-				   (!before && getSimulationTime(index) > simulationTime));
+						  (!before && getSimulationTime(index) > simulationTime));
 			return index;
 		}
 	}

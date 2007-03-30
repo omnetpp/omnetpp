@@ -88,7 +88,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	}
 
 	public long getViewportRight() {
-		return viewX + virtualWidth;
+		return viewX + getViewportWidth();
 	}
 
 	/**
@@ -99,7 +99,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	}
 
 	public long getViewportBottom() {
-		return viewY + virtualHeight;
+		return viewY + getViewportHeight();
 	}
 
 	/**

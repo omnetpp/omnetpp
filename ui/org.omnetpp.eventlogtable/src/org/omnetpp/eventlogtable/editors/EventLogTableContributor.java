@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.EditorActionBarContributor;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
@@ -383,7 +384,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 				dialog.open();
 
 				try {
-					double simulationTime = Double.parseDouble(dialog.getValue());
+					BigDecimal simulationTime = BigDecimal.parse(dialog.getValue());
 					IEventLog eventLog = getEventLog();
 					IEvent event = eventLog.getEventForSimulationTime(simulationTime, MatchKind.FIRST_OR_NEXT);
 

@@ -432,7 +432,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		return new SequenceChartAction("Zoom to message", SWT.PUSH) {
 			@Override
 			public void run() {
-				sequenceChart.gotoSimulationTimeRange(msg.getCauseEvent().getSimulationTime(), msg.getConsequenceEvent().getSimulationTime(), (int)(sequenceChart.getViewportWidth() * 0.1));
+				sequenceChart.gotoSimulationTimeRange(msg.getCauseEvent().getSimulationTime().doubleValue(), msg.getConsequenceEvent().getSimulationTime().doubleValue(), (int)(sequenceChart.getViewportWidth() * 0.1));
 			}
 		};
 	}
