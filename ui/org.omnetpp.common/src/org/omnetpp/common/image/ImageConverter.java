@@ -191,7 +191,7 @@ public class ImageConverter {
 		int xoff = (width-scaledWidth)/2;
 		int yoff = (height-scaledHeight)/2;
 		
-		// produce a high-quality resample image (but this won't have alpha channel)
+		// produce a high-quality re-sampled image (but transparency got lost along the way)
 		Image scaledImage = new Image(null, width, height);
 		GC gc = new GC(scaledImage);
 		gc.setBackground(new org.eclipse.swt.graphics.Color(null, 240, 240, 240));
@@ -200,15 +200,23 @@ public class ImageConverter {
 		gc.drawImage(image, 0, 0, imageSize.width, imageSize.height, xoff, yoff, scaledWidth, scaledHeight);
 		gc.dispose();
 
-		// now, produce alpha channel...
+		// now, reproduce transparency
 		ImageData data = image.getImageData();
 		if (data.getTransparencyType()==SWT.TRANSPARENCY_ALPHA) {
+			// OK, original image has alpha channel. Trick: we create an
+			// alpha mask image (a greyscale image purely from the alpha
+			// channel as input), scale it like we did the original image,
+			// then copy out the resulting grayscale values as alphas.
+
+			// turn alpha into greyscale
 			for (int y=0; y < imageSize.height; y++) {
 				for (int x=0; x < imageSize.width; x++) {
 					int alpha = data.getAlpha(x, y);
 					data.setPixel(x, y, data.palette.getPixel(new RGB(alpha, alpha, alpha)));
 				}
 			}
+
+			// rescale greyscale image
 			Image alphaImage = new Image(null, data);
 			Image scaledAlphaImage = new Image(null, width, height);
 			GC gc2 = new GC(scaledAlphaImage);
@@ -218,6 +226,7 @@ public class ImageConverter {
 			gc2.drawImage(alphaImage, 0, 0, imageSize.width, imageSize.height, xoff, yoff, scaledWidth, scaledHeight);
 			gc2.dispose();
 
+			// take greyscale values as alpha
 			ImageData scaledAlphaData = scaledAlphaImage.getImageData();
 			ImageData resultData = scaledImage.getImageData();
 			for (int y=0; y < height; y++) {
