@@ -47,7 +47,30 @@ std::string opp_quotestr_ifneeded(const char *txt);
 %ignore BigDecimal::str(char*);
 %ignore BigDecimal::parse(const char*,const char*&);
 %ignore BigDecimal::ttoa;
+%ignore BigDecimal::Nil;
+%ignore BigDecimal::isNil;
+%immutable BigDecimal::Zero;
+%immutable BigDecimal::NaN;
+%immutable BigDecimal::PositiveInfinity;
+%immutable BigDecimal::NegativeInfinity;
+%rename(equals) BigDecimal::operator==;
+%rename(less) BigDecimal::operator<;
+%rename(greater) BigDecimal::operator>;
+%rename(lessOrEqual) BigDecimal::operator<=;
+%rename(greaterOrEqual) BigDecimal::operator>=;
+
 SWIG_JAVABODY_METHODS(public, public, BigDecimal)
+
+%typemap(javacode) BigDecimal %{
+    public boolean equals(Object other) {
+       return other instanceof BigDecimal && equals((BigDecimal)other);
+    }
+
+    public int hashCode() {
+       return (int)getIntValue();
+    }
+%}
+
 %include "bigdecimal.h"
 
 
