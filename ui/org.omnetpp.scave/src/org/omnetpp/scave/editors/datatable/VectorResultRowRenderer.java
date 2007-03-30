@@ -54,7 +54,7 @@ public class VectorResultRowRenderer extends LabelProvider implements IVirtualTa
 				break;
 			case 1:
 				BigDecimal time = entry.getSimtime();
-				gc.drawText((time != null ? time.str() : ""), HORIZONTAL_SPACING, 0);
+				gc.drawText((time != null ? time.toString() : ""), HORIZONTAL_SPACING, 0);
 				break;
 			case 2:
 				gc.drawText(String.valueOf(entry.getValue()), HORIZONTAL_SPACING, 0);

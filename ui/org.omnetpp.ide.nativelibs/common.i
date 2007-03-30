@@ -59,6 +59,8 @@ std::string opp_quotestr_ifneeded(const char *txt);
 %rename(greater) BigDecimal::operator>;
 %rename(lessOrEqual) BigDecimal::operator<=;
 %rename(greaterOrEqual) BigDecimal::operator>=;
+%rename(toString) BigDecimal::str;
+%rename(doubleValue) BigDecimal::dbl;
 
 SWIG_JAVABODY_METHODS(public, public, BigDecimal)
 
@@ -69,6 +71,13 @@ SWIG_JAVABODY_METHODS(public, public, BigDecimal)
 
     public int hashCode() {
        return (int)getIntValue();
+    }
+
+    public java.math.BigDecimal toBigDecimal() {
+       long intVal = getIntValue();
+       int scale = getScale();
+       java.math.BigDecimal d = new java.math.BigDecimal(intVal);
+       return (scale == 0 ? d : d.movePointLeft(scale));
     }
 %}
 
