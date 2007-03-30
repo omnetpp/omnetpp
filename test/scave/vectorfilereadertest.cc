@@ -32,7 +32,7 @@ using namespace std;
  * The reader reads all vectors from inputfile, and the writer writes all
  * vectors to the outputfile.
  */
-static void testWithVectorFileWriter(const char *inputfile, const char *outputfile)
+void testReaderWriter(const char *inputfile, const char *outputfile)
 {
     ResultFileManager resultfilemanager;
     DataflowManager manager;
@@ -66,7 +66,7 @@ static void testWithVectorFileWriter(const char *inputfile, const char *outputfi
  * The reader reads all vectors from inputfile, and the data collected by the
  * array builder are written to the outputfile.
  */
-static void testWithArrayBuilder(const char *inputfile, const char *outputfile)
+void testReaderBuilder(const char *inputfile, const char *outputfile)
 {
     ResultFileManager resultfilemanager;
     DataflowManager manager;
@@ -119,41 +119,4 @@ static void testWithArrayBuilder(const char *inputfile, const char *outputfile)
         }
     }
     out.close();
-}
-
-static void usage(char *message)
-{
-    if (message)
-        cerr << "Error: " << message << "\n\n";
-
-    cerr << "Usage:\n";
-    cerr << "   vectorfilereadertest <input-file-name> <output-file-name> <output-node-type>\n";
-    cerr << "where <output-node-type> is 'a' (arraybuilder) or 'v' (vectorfilewriter)\n\n";
-}
-
-int main(int argc, char **argv)
-{
-    try {
-        if (argc < 4) {
-            usage("Not enough arguments specified");
-            return -1;
-        }
-        else {
-            if (strcmp(argv[3], "v") == 0)
-                testWithVectorFileWriter(argv[1], argv[2]);
-            else if (strcmp(argv[3], "a") == 0)
-                testWithArrayBuilder(argv[1], argv[2]);
-            else {
-                usage("Unknown <output-node-type>");
-                return -1;
-            }
-
-            cout << "PASS\n";
-            return 0;
-        }
-    }
-    catch (std::exception& e) {
-        cout << "FAIL: " << e.what();
-        return -2;
-    }
 }

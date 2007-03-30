@@ -13,7 +13,7 @@ CFLAGS=$(CFLAGS) -DWIN32_DLL
 COPTS=$(CFLAGS) -I. -I../../src/common -I../../include/platdep -I../../src/scave \
       /Fd"vectorfilereadertest.pdb"
 
-OBJS= vectorfilereadertest.obj
+OBJS= main.obj vectorfilereadertest.obj resultfilemanagertest.obj
 LIBS= ../../lib/common.lib ../../lib/scave.lib
 
 #
@@ -27,10 +27,10 @@ LIBS= ../../lib/common.lib ../../lib/scave.lib
 #
 # Targets (TBD: build dll)
 #
-all: vectorfilereadertest.exe
+all: test.exe
 
-vectorfilereadertest.exe: vectorfilereadertest.obj $(LIBS)
-	$(LINK) $(LDFLAGS) /nologo /out:vectorfilereadertest.exe vectorfilereadertest.obj $(LIBS)
+test.exe: $(OBJS) $(LIBS)
+	$(LINK) $(LDFLAGS) /nologo /out:test.exe $(OBJS) $(LIBS)
 
 depend:
 	$(MAKEDEPEND) -I. -fMakefile.vc -- *.cc

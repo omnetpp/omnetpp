@@ -26,16 +26,20 @@ sub matchFiles
 
 sub test
 {
-   my($fileName,$outtype) = @_;
-   local($resultFileName,$expectedResultFileName);
+   my($testname, $fileName) = @_;
+   local($suffix, $resultFileName,$expectedResultFileName);
 
    print("Testing $fileName...\n");
+   $suffix = "v";
+   if ($testname eq "reader-builder") {
+     $suffix = "a";
+   }
    $resultFileName = $fileName;
-   $resultFileName =~ s/^(.*)\.(.*)/\1_$outtype\.\2/;
+   $resultFileName =~ s/^(.*)\.(.*)/\1_$suffix\.\2/;
    $expectedResultFileName = $resultFileName;
    $resultFileName =~ s/^(.*)\//result\//;
    $expectedResultFileName =~ s/^(.*)\//expected\//;
-   if (system("vectorfilereadertest $fileName $resultFileName $outtype") == 0  && matchFiles($resultFileName, $expectedResultFileName))
+   if (system("test $testname $fileName $resultFileName") == 0  && matchFiles($resultFileName, $expectedResultFileName))
    {
       print("PASS: Reader test on $fileName\n\n");
    }
@@ -48,8 +52,9 @@ sub test
 
 mkdir("result");
 
-test("testfiles/omnetpp1.vec", "a");
-test("testfiles/simtime_test.vec", "a");
+test("reader-builder", "testfiles/omnetpp1.vec");
+test("reader-builder", "testfiles/simtime_test.vec");
 
-test("testfiles/omnetpp1.vec", "v");
-test("testfiles/simtime_test.vec", "v");
+test("reader-writer", "testfiles/omnetpp1.vec");
+test("reader-writer", "testfiles/simtime_test.vec");
+
