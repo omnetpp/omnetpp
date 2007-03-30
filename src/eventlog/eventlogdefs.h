@@ -19,6 +19,7 @@
 #include "exception.h"
 #include "inttypes.h" // for int64, our equivalent of Java's "long" type
 #include "commonutil.h"
+#include "bigdecimal.h"
 
 
 #ifdef BUILDING_EVENTLOG
@@ -30,7 +31,7 @@
 
 #define PRINT_DEBUG_MESSAGES false
 
-typedef double simtime_t;  //XXX revise later
+typedef BigDecimal simtime_t;
 
 
 /**

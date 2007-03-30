@@ -66,7 +66,7 @@ while (<FILE>)
       }
       elsif ($fieldType eq "simtime_t")
       {
-         $fieldPrintfType = "%.*g";
+         $fieldPrintfType = "%s";
          $fieldDefault = "-1";
       }
 
@@ -314,11 +314,14 @@ foreach $class (@classes)
       }
       elsif ($field->{TYPE} eq "simtime_t")
       {
-         print ENTRIES_CC_FILE "        {sprintf(buffer, \"%.*g\", 16, $field->{NAME}); return buffer;}\n"; # gcvt() is obsolete
+         print ENTRIES_CC_FILE "        return $field->{NAME}.str(buffer);\n";
       }
       else
       {
-         print ENTRIES_CC_FILE "        {sprintf(buffer, \"%ld\", (long)$field->{NAME}); return buffer;}\n"; # ltoa() is not portable
+         print ENTRIES_CC_FILE "    {\n";
+         print ENTRIES_CC_FILE "        sprintf(buffer, \"%ld\", (long)$field->{NAME});\n";
+         print ENTRIES_CC_FILE "        return buffer;\n";
+         print ENTRIES_CC_FILE "    }\n";
       }
    }
 

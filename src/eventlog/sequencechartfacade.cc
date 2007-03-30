@@ -42,7 +42,7 @@ double SequenceChartFacade::getTimelineCoordinate(IEvent *event)
 
         switch (timelineMode) {
             case LINEAR:
-                timelineCoordinate = event->getSimulationTime();
+                timelineCoordinate = event->getSimulationTime().dbl();
                 break;
             case STEP:
                 timelineCoordinate = event->getEventNumber();
@@ -120,7 +120,7 @@ double SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double timeli
 
                 // if before the first event
                 if (event) {
-                    eventSimulationTime = event->getSimulationTime();
+                    eventSimulationTime = event->getSimulationTime().dbl();
                     eventTimelineCoordinate = getTimelineCoordinate(event);
                 }
                 else {
@@ -134,7 +134,7 @@ double SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double timeli
                 double nextEventTimelineCoordinate;
 
                 if (nextEvent) {
-                    nextEventSimulationTime = nextEvent->getSimulationTime();
+                    nextEventSimulationTime = nextEvent->getSimulationTime().dbl();
                     nextEventTimelineCoordinate = getTimelineCoordinate(nextEvent);
                 }
                 else
@@ -171,7 +171,7 @@ double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simula
 
                 // if before the first event
                 if (event) {
-                    eventSimulationTime = event->getSimulationTime();
+                    eventSimulationTime = event->getSimulationTime().dbl();
                     eventTimelineCoordinate = getTimelineCoordinate(event);
                 }
                 else {
@@ -185,7 +185,7 @@ double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simula
                 double nextEventTimelineCoordinate;
 
                 if (nextEvent) {
-                    nextEventSimulationTime = nextEvent->getSimulationTime();
+                    nextEventSimulationTime = nextEvent->getSimulationTime().dbl();
                     nextEventTimelineCoordinate = getTimelineCoordinate(nextEvent);
                 }
                 else

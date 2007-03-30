@@ -168,6 +168,26 @@ file_offset_t EventLogIndex::getOffsetForSimulationTime(simtime_t simulationTime
     return offset;
 }
 
+static void convertKey(long& key, long eventNumber)
+{
+    key = eventNumber;
+}
+
+static void convertKey(simtime_t& key, simtime_t simulationTime)
+{
+    key = simulationTime;
+}
+
+static void convertKey(simtime_t& key, long eventNumber)
+{
+    throw opp_runtime_error("Invalid conversion");
+}
+
+static void convertKey(long& key, simtime_t simulationTime)
+{
+    throw opp_runtime_error("Invalid conversion");
+}
+
 template <typename T> file_offset_t EventLogIndex::binarySearchForOffset(bool eventNumberBased, std::map<T, file_offset_t> *keyToOffsetMap, T key, MatchKind matchKind)
 {
     Assert(key >= 0);
@@ -183,7 +203,7 @@ template <typename T> file_offset_t EventLogIndex::binarySearchForOffset(bool ev
         foundOffset = it->second;
     else
     {
-        long lowerKey;
+        T lowerKey;
 
         // figure out start positions for binary search
         if (it == keyToOffsetMap->end())
@@ -224,9 +244,9 @@ template <typename T> file_offset_t EventLogIndex::binarySearchForOffset(bool ev
                 T midKey;
 
                 if (eventNumberBased)
-                    midKey = midEventNumber;
+                    convertKey(midKey, midEventNumber);
                 else
-                    midKey = midSimulationTime;
+                    convertKey(midKey, midSimulationTime);
 
                 // store the mid position
                 addPosition(midEventNumber, midSimulationTime, midEventStartOffset);
@@ -311,9 +331,9 @@ template <typename T> file_offset_t EventLogIndex::linearSearchForOffset(bool ev
         T readKey;
 
         if (eventNumberBased)
-            readKey = eventNumber;
+            convertKey(readKey, eventNumber);
         else
-            readKey = simulationTime;
+            convertKey(readKey, simulationTime);
 
         if (!exactMatchFound) {
             if (forward && readKey > key)
@@ -373,7 +393,7 @@ bool EventLogIndex::readToEventLine(bool forward, file_offset_t readStartOffset,
             eventNumber = atol(tokenizer.tokens()[i+1]);
 
         if (!strcmp(tokenizer.tokens()[i], "t"))
-            simulationTime = atof(tokenizer.tokens()[i+1]);
+            simulationTime = BigDecimal::parse(tokenizer.tokens()[i+1]);
     }
 
     if (eventNumber != -1)

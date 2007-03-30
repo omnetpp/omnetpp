@@ -81,7 +81,7 @@ long EventLogTokenBasedEntry::getLongToken(char **tokens, int numTokens, const c
 simtime_t EventLogTokenBasedEntry::getSimtimeToken(char **tokens, int numTokens, const char *sign, bool mandatory, simtime_t defaultValue)
 {
     char *token = getToken(tokens, numTokens, sign, mandatory);
-    return token ? atof(token) : defaultValue;
+    return token ? BigDecimal::parse(token) : defaultValue;
 }
 
 const char *EventLogTokenBasedEntry::getStringToken(char **tokens, int numTokens, const char *sign, bool mandatory, const char *defaultValue)

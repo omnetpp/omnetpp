@@ -410,9 +410,9 @@ int main(int argc, char **argv)
             else if (!strcmp(argv[i], "-te") || !strcmp(argv[i], "--to-event-number"))
                 options.toEventNumber = atol(argv[++i]);
             else if (!strcmp(argv[i], "-ft") || !strcmp(argv[i], "--from-simulation-time"))
-                options.fromSimulationTime = atof(argv[++i]);
+                options.fromSimulationTime = BigDecimal::parse(argv[++i]);
             else if (!strcmp(argv[i], "-tt") || !strcmp(argv[i], "--to-simulation-time"))
-                options.toSimulationTime = atof(argv[++i]);
+                options.toSimulationTime = BigDecimal::parse(argv[++i]);
             else if (!strcmp(argv[i], "-e") || !strcmp(argv[i], "--event-numbers"))
                 parseLongTokens(options.eventNumbers, argv[++i]);
             else if (!strcmp(argv[i], "-f") || !strcmp(argv[i], "--file-offsets"))
