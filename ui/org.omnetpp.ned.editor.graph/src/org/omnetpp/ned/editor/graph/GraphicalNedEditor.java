@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.content.IContentTypeManager.ISelectionPolicy;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.gef.ContextMenuProvider;
@@ -41,10 +40,7 @@ import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.gef.ui.properties.UndoablePropertySheetEntry;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.util.TransferDropTargetListener;
-import org.eclipse.jface.viewers.IPostSelectionProvider;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.widgets.Composite;
@@ -171,34 +167,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
     protected void configureGraphicalViewer() {
         super.configureGraphicalViewer();
         ScrollingGraphicalViewer viewer = (ScrollingGraphicalViewer) getGraphicalViewer();
-
-//        ISelectionProvider isp = getSite().getSelectionProvider();
-//        getSite().setSelectionProvider(new IPostSelectionProvider() {
-//
-//            public void addPostSelectionChangedListener(ISelectionChangedListener listener) {
-//                getGraphicalViewer().addSelectionChangedListener(listener);
-//            }
-//
-//            public void removePostSelectionChangedListener(ISelectionChangedListener listener) {
-//                getGraphicalViewer().removeSelectionChangedListener(listener);
-//            }
-//
-//            public void addSelectionChangedListener(ISelectionChangedListener listener) {
-//                getGraphicalViewer().addSelectionChangedListener(listener);
-//            }
-//
-//            public ISelection getSelection() {
-//                return getGraphicalViewer().getSelection();
-//            }
-//
-//            public void removeSelectionChangedListener(ISelectionChangedListener listener) {
-//                getGraphicalViewer().removeSelectionChangedListener(listener);
-//            }
-//
-//            public void setSelection(ISelection selection) {
-//                getGraphicalViewer().setSelection(selection);
-//            }
-//        });
         
         ScalableRootEditPart root = new ScalableRootEditPart();
 
