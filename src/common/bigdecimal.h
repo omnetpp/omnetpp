@@ -128,7 +128,7 @@ class COMMON_API BigDecimal
      * beginning. Please read the documentation of ttoa() for the minimum
      * required buffer size.
      */
-    char *str(char *buf) {char *endp; return BigDecimal::ttoa(buf, *this, endp);}
+    char *str(char *buf) const {char *endp; return BigDecimal::ttoa(buf, *this, endp);}
 
     /**
      * Returns the underlying 64-bit integer.
@@ -188,7 +188,7 @@ inline const BigDecimal operator-(const BigDecimal& x, const BigDecimal& y)
 
 inline const BigDecimal operator*(const BigDecimal& x, double d)
 {
-    return BigDecimal(x.dbl()+d);
+    return BigDecimal(x.dbl()*d);
 }
 
 inline const BigDecimal operator*(double d, const BigDecimal& x)
