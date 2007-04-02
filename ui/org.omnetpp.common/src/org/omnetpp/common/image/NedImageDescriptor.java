@@ -291,7 +291,7 @@ public class NedImageDescriptor extends ImageDescriptor {
             // treat as relatve size in percent
             scaleRatio = (double)preferredScale / 100;
         
-        return ImageConverter.getResampledImageData(imgData, (int)(imgData.width*scaleRatio), (int)(imgData.height*scaleRatio), 1, 1, 0, 0);
+        return ImageConverter.getResampledImageData(imgData, (int)(imgData.width*scaleRatio), (int)(imgData.height*scaleRatio), 0, 0, 0, 0);
     }
 
 }

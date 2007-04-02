@@ -66,7 +66,6 @@ public class PaletteManager implements INEDChangeListener {
         nedPalette.add(toolsDrawer);
         nedPalette.add(componentsDrwawer);
         nedPalette.addAll(createSubmodulesDrawer());
-//        System.out.println("Palette change occured.");
     }
 
     public PaletteRoot getRootPalette() {
@@ -104,12 +103,14 @@ public class PaletteManager implements INEDChangeListener {
             }
             
             // set the default images for the palette entry
-            ImageDescriptor imageDescNorm = ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_SUBMODULE);
+            ImageDescriptor imageDescNorm = ImageFactory.getDescriptor(ImageFactory.DEFAULT,"vs",null,0);
+            ImageDescriptor imageDescLarge = ImageFactory.getDescriptor(ImageFactory.DEFAULT,"s",null,0);
             if (nedElement instanceof IHasDisplayString) {
                 IDisplayString dps = ((IHasDisplayString)nedElement).getEffectiveDisplayString();
                 String iid = dps.getAsStringDef(IDisplayString.Prop.IMAGE);
                 if (iid != null && !"".equals(iid)) {
                     imageDescNorm = ImageFactory.getDescriptor(iid,"vs",null,0);
+                    imageDescLarge = ImageFactory.getDescriptor(iid,"s",null,0);
                 }
             }
             
@@ -132,7 +133,7 @@ public class PaletteManager implements INEDChangeListener {
             CombinedTemplateCreationEntry combined = new CombinedTemplateCreationEntry(
                     name, "A submodule with type "+name,
                     new ModelFactory(SubmoduleNodeEx.getStaticTagName(),name.toLowerCase(), name), 
-                    imageDescNorm, imageDescNorm );
+                    imageDescNorm, imageDescLarge );
             // add to the selected drawer
             currentDrawer.add(combined);
         }

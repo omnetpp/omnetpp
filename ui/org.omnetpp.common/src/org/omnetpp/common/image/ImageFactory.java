@@ -101,6 +101,9 @@ public class ImageFactory {
     public final static String DECORATOR_IMAGE_ERROR = DECORATORS_IMAGE_DIR + "error";
     public final static String DECORATOR_IMAGE_WARNING = DECORATORS_IMAGE_DIR + "warning";
 
+    public final static String UNKNOWN = INTERNAL_DIR + "unknown";
+    public final static String DEFAULT = INTERNAL_DIR + "default";
+    
     public final static String DEFAULT_NAME = IMAGE_DIR + INTERNAL_DIR + "default.png";
     public final static String DEFAULT_PIN = DECORATORS_IMAGE_DIR + "pin";
     public final static String DEFAULT_KEY = "__default__";
@@ -130,13 +133,10 @@ public class ImageFactory {
      * @return a 16x16 image or null if there is no icon for that id
      */
     public static Image getIconImage(String imageId) {
-        Image image = getImage(imageId, "vs", null, -1);
-        return image==null ? null : ImageConverter.getResampledImage(image, 16, 16, 1, 1, 0, 0); 
+        Image image = getImage(imageId);
+        return image==null ? null : ImageConverter.getResampledImage(image, 16, 16, 1, 1, 1, 1); 
     }
 
-    public static ImageDescriptor getIconDescriptor(String imageId) {
-        return getDescriptor(imageId, "vs", null, -1);
-    }
     /**
      * Returns the requested image seraching on the bitmap path and in the resources
      * @param imageId the rquested image's id
@@ -160,6 +160,10 @@ public class ImageFactory {
         key = getKeyFor(LEGACY_DIR+imageId, imageSize, shade, weight);
         // if image was found, get it from the registry
         if (key != null) return imageRegistry.get(key);
+        // if image was not found, display the unknow icon
+        key = getKeyFor(UNKNOWN, imageSize, shade, weight);
+        // if image was found, get it from the registry
+        if (key != null) return imageRegistry.get(key);
         // if key was null (ie not found) return the default image
         return imageRegistry.get(DEFAULT_KEY);
     }
@@ -172,6 +176,10 @@ public class ImageFactory {
         if (key != null) return imageRegistry.getDescriptor(key);
         // if image was not found, look it up among the legacy icons
         key = getKeyFor(LEGACY_DIR+imageId, imageSize, shade, weight);
+        // if image was found, get it from the registry
+        if (key != null) return imageRegistry.getDescriptor(key);
+        // if image was not found, display the unknow icon
+        key = getKeyFor(UNKNOWN, imageSize, shade, weight);
         // if image was found, get it from the registry
         if (key != null) return imageRegistry.getDescriptor(key);
         // if key was null (ie not found) return the default image descriptor
