@@ -1,6 +1,7 @@
 package org.omnetpp.inifile.editor.form;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
@@ -189,11 +190,18 @@ public class ParametersPage extends FormPage {
 		upButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
+				String[] keys = (String[]) tableViewer.getInput();
 				for (Object o : sel.toArray()) {
 					String key = (String) o;
-					//XXX getInifileDocument().moveKey(DEFAULT_SECTION, key);
+					int pos = ArrayUtils.indexOf(keys, key);
+					Assert.isTrue(pos != -1);
+					if (pos == 0) 
+						break; // hit the top
+					getInifileDocument().moveKey(DEFAULT_SECTION, key, keys[pos-1]);
+					String tmp = keys[pos-1]; keys[pos-1] = keys[pos]; keys[pos] = tmp;
 				}
 				reread();
+				tableViewer.setSelection(sel);
 			}
 		});
 
@@ -201,12 +209,19 @@ public class ParametersPage extends FormPage {
 			public void widgetSelected(SelectionEvent e) {
 				IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
 				Object[] array = sel.toArray();
+				String[] keys = (String[]) tableViewer.getInput();
 				ArrayUtils.reverse(array);  // we must iterate in reverse order
 				for (Object o : array) {
 					String key = (String) o;
-					//XXX getInifileDocument().moveKey(DEFAULT_SECTION, key);
+					int pos = ArrayUtils.indexOf(keys, key);
+					Assert.isTrue(pos != -1);
+					if (pos == keys.length-1) 
+						break; // hit the bottom
+					getInifileDocument().moveKey(DEFAULT_SECTION, key, pos==keys.length-2 ? null : keys[pos+2]);
+					String tmp = keys[pos+1]; keys[pos+1] = keys[pos]; keys[pos] = tmp;
 				}
 				reread();
+				tableViewer.setSelection(sel);
 			}
 		});
 
