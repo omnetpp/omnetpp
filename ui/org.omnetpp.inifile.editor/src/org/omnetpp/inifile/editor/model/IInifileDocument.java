@@ -100,6 +100,14 @@ public interface IInifileDocument {
 	 */
 	void removeKey(String section, String key);
 
+	/**
+	 * Moves the given key before the given one. Throws error if the entry does 
+	 * not exist, or beforeKey does not exist. 
+	 * @param comment may be null
+	 * @param beforeKey may be null (meaning append) 
+	 */
+	void moveKey(String section, String key, String beforeKey);
+	
 	/** 
 	 * Returns keys in the given section, in the order they appear. 
 	 * Returns null if section does not exist, and zero-length array if it 

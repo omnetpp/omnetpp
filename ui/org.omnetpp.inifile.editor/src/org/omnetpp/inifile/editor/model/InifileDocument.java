@@ -319,6 +319,8 @@ public class InifileDocument implements IInifileDocument {
 			throw new IllegalArgumentException("entry already exists: ["+section+"] "+key);
 
 		// modify IDocument
+		//FIXME this inserts NOT APPENDS!!!!!
+		System.out.println("addEntry() is shit!");
 		int atLine = beforeKey==null ? getFirstEditableSectionHeading(section).lineNumber+1 : getEditableEntry(section, beforeKey).lineNumber;
 		String text = key + " = " + value + (comment == null ? "" : " "+comment);
 		addLineAt(atLine, text);
@@ -343,7 +345,7 @@ public class InifileDocument implements IInifileDocument {
 	}
 
 	public void changeKey(String section, String oldKey, String newKey) {
-		KeyValueLine line = lookupEntry(section, oldKey);
+		KeyValueLine line = getEditableEntry(section, oldKey);
 		if (!nullSafeEquals(line.key, newKey)) {
 			line.key = newKey; 
 			String text = line.key + " = " + line.value + (line.comment == null ? "" : " "+line.comment);
@@ -355,8 +357,19 @@ public class InifileDocument implements IInifileDocument {
 	public void removeKey(String section, String key) {
 		KeyValueLine line = lookupEntry(section, key);
 		if (line != null) { //XXX isEditable
-			replaceLine(line, null);
+			replaceLine(line, null); //XXX what if multi-line
 		}
+	}
+
+	public void moveKey(String section, String key, String beforeKey) {
+		KeyValueLine line = getEditableEntry(section, key);
+		if (beforeKey != null) {
+			if (beforeKey.equals(key))
+				return; // moving it before itself == nop
+			getEditableEntry(section, beforeKey); // just probe it, to make sure it's editable
+		}
+		removeKey(section, key);
+		addEntry(section, key, line.value, line.comment, beforeKey);
 	}
 
 	public String[] getKeys(String sectionName) {
