@@ -107,6 +107,12 @@ public class ImageFactory {
 
     private static ImageRegistry imageRegistry = new ImageRegistry(Display.getDefault());
     private static String[] imageDirs;
+    // image size constants
+    public static final int SIZE_VS = 40; 
+    public static final int SIZE_S = 60; 
+    public static final int SIZE_NORMAL = 100; 
+    public static final int SIZE_L = 150; 
+    public static final int SIZE_VL = 250; 
 
     static {
         imageDirs = new String[0];
@@ -115,7 +121,7 @@ public class ImageFactory {
             imageDirs = omnetppBitmapPath.split(";");
         // create and register a default / notfound image
         imageRegistry.put(DEFAULT_KEY,
-                new ColorizableImageDescriptor(ImageFactory.class, DEFAULT_NAME));
+                new NedImageDescriptor(ImageFactory.class, DEFAULT_NAME));
 
     }
 
@@ -124,13 +130,11 @@ public class ImageFactory {
      * @return a 16x16 image or null if there is no icon for that id
      */
     public static Image getIconImage(String imageId) {
-    	// FIXME icon image needs to be cached as well
-        Image image = getImage(imageId, null, null, -1);
-        return image==null ? null : ImageConverter.getResampledImage(image, 16, 16, 1, 1, 1, 1); 
+        Image image = getImage(imageId, "vs", null, -1);
+        return image==null ? null : ImageConverter.getResampledImage(image, 16, 16, 1, 1, 0, 0); 
     }
 
     public static ImageDescriptor getIconDescriptor(String imageId) {
-        // FIXME this is not a correct implementation 
         return getDescriptor(imageId, "vs", null, -1);
     }
     /**
@@ -178,36 +182,46 @@ public class ImageFactory {
      * Returns an image key with a given id, with preferred size. The method also
      * caches the image for future reuse
      * @param imageId The requested image name
-     * @param imageSize preferred size if possible either vs,s,l,vl or a number as size in pixel
+     * @param imageSize preferred size if possible either vs,s,l,vl or a number as size in pixel or percent (as a negative number)
      * @param shade icon shading color
-     * @param weight weitght (0-100) of the colorization effect
+     * @param weight weigth (0-100) of the colorization effect
      * @return the requested image or <code>null</code> if imageId was also <code>null</code>
      */
     private static String getKeyFor(String imageId, String imageSize, RGB shade, int weight) {
-        String sizedId = imageId;
-        int pixelSize = -1;
-        // translate the textua size to pixel
-        if(imageSize == null) {
-            pixelSize = -1;
+        String sizeSuffix = "";
+        // strip the size suffix from the imageId
+        if(imageId.endsWith("_s") || imageId.endsWith("_l")) { 
+            sizeSuffix = imageId.substring(imageId.length()-1);
+            imageId = imageId.substring(0, imageId.length()-2);
+        }
+        if(imageId.endsWith("_vs") || imageId.endsWith("_vl")) {
+            sizeSuffix = imageId.substring(imageId.length()-2);
+            imageId = imageId.substring(0, imageId.length()-3);
+        }
+
+        // imageSIze takes precendence over the suffix in the imageId
+        if (imageSize == null || "".equals(imageSize)) 
+            imageSize = sizeSuffix;
+
+        int imageScaling = SIZE_NORMAL;
+        // translate the textual size to pixel
+        if(imageSize == null || "".equals(imageSize) ) {
+            imageScaling = SIZE_NORMAL;
         } else if("vs".equals(imageSize.toLowerCase())) {
-            sizedId += "_vs";
-            pixelSize = 16;
+            imageScaling = SIZE_VS;
         } else if("s".equals(imageSize.toLowerCase())) {
-            sizedId += "_s";
-            pixelSize = 20;
+            imageScaling = SIZE_S;
         } else if("l".equals(imageSize.toLowerCase())) {
-            sizedId += "_l";
-            pixelSize = 60;
+            imageScaling = SIZE_L;
         } else if("vl".equals(imageSize.toLowerCase())) {
-            sizedId += "_vl";
-            pixelSize = 100;
+            imageScaling = SIZE_VL;
         } else  try {
-                    pixelSize = Integer.valueOf(imageSize).intValue();
+                    imageScaling = Integer.valueOf(imageSize).intValue();
                 } catch (Exception e) { }
 
-         return getKeyFor(sizedId, pixelSize, shade, weight);
+         return getKeyFor(imageId, imageScaling, shade, weight);
     }
-
+    
     /**
      * Returns an image key with a given id, with preferred size and color. The method also
      * caches the image for future reuse, so a get() with the returned key is guaranteed
@@ -225,11 +239,11 @@ public class ImageFactory {
 
         String decoratedImageId = baseId;
         // add the size param to the id
-        if (imageSize > 0)
-            decoratedImageId += "_" + imageSize;
+        if (imageSize != SIZE_NORMAL)
+            decoratedImageId += ":" + imageSize;
         // add the color part
         if (shade != null && weight > 0)
-            decoratedImageId += "_" + shade + "_" + weight;
+            decoratedImageId += ":" + shade + ":" + weight;
 
         // try to get it from the registry (maybe we've already created it)
         ImageDescriptor result = imageRegistry.getDescriptor(decoratedImageId);
@@ -237,16 +251,15 @@ public class ImageFactory {
             return decoratedImageId;
 
         // if the colorized image is not in the registry create a non colorized one
-        result = createDescriptor(baseId);
+        result = createDescriptor(baseId, imageSize);
         // return null if image not found
         if (result == null )
             return null;
 
         // adjust the colorization and size parameteres for the descriptor
-        if(result instanceof ColorizableImageDescriptor) {
-            ((ColorizableImageDescriptor)result).setColorization(shade);
-            ((ColorizableImageDescriptor)result).setColorizationWeight(weight);
-            ((ColorizableImageDescriptor)result).setPreferredWidth(imageSize);
+        if(result instanceof NedImageDescriptor) {
+            ((NedImageDescriptor)result).setColorization(shade);
+            ((NedImageDescriptor)result).setColorizationWeight(weight);
         }
 
         // add it to the image registry, so later we can reuse it. The key provides the
@@ -260,22 +273,23 @@ public class ImageFactory {
      * Looks for image files with the given name in the image search path. First looks for
      * svg, then png and then gif
      * @param baseName basic name of the figure
+     * @param preferredSize in percent
      * @return The file object describing for the given name
      */
-    private static ColorizableImageDescriptor createDescriptor(String baseName) {
-        ColorizableImageDescriptor result;
+    private static NedImageDescriptor createDescriptor(String baseName, int preferredSize) {
+        NedImageDescriptor result;
         // TODO svg support missing
         for(String currPath : imageDirs)
-            if ((result = createDescriptor(null, currPath, baseName, "png")) != null)
+            if ((result = createDescriptor(null, currPath, baseName, "png", preferredSize)) != null)
                 return result;
         // if not found in the filesystem, look for it in the JAR file
-        if ((result = createDescriptor(ImageFactory.class, IMAGE_DIR, baseName, "png")) != null)
+        if ((result = createDescriptor(ImageFactory.class, IMAGE_DIR, baseName, "png", preferredSize)) != null)
             return result;
         // serach for gifs if no PNG found
         for(String currPath : imageDirs)
-            if ((result = createDescriptor(null, currPath, baseName, "gif")) != null)
+            if ((result = createDescriptor(null, currPath, baseName, "gif", preferredSize)) != null)
                 return result;
-        if ((result = createDescriptor(ImageFactory.class, IMAGE_DIR, baseName, "gif")) != null)
+        if ((result = createDescriptor(ImageFactory.class, IMAGE_DIR, baseName, "gif", preferredSize)) != null)
             return result;
 
         return null;
@@ -287,11 +301,33 @@ public class ImageFactory {
      * @param dir Base path for file
      * @param fileName The name of the file
      * @param ext extension to be used
+     * @param preferredSize The preferred size for the image (will add the nedded suffix to the filename if necessar
+     *        (_l,_vl,_s,_vs)
      * @return The ImageDescriptor or <code>null</code> if does exist.
      */
-    private static ColorizableImageDescriptor createDescriptor(Class refClass, String dir, String fileName, String ext) {
+    private static NedImageDescriptor createDescriptor(Class refClass, String dir, String fileName, String ext, int preferredSize) {
+        // add a size suffix to the filename if we need some of the predefined scaling factors
+        String sizeSuffix = "";
+        if (preferredSize == SIZE_VS) 
+            sizeSuffix = "_vs";
+        else if (preferredSize == SIZE_S)
+            sizeSuffix = "_s";
+        else if (preferredSize == SIZE_L)
+            sizeSuffix = "_l";
+        else if (preferredSize == SIZE_VL)
+            sizeSuffix = "_vl";
+            
+        if (!"".equals(sizeSuffix)) {
+            // try to load the resized image
+            String name = (new Path(dir)).append(fileName+sizeSuffix).addFileExtension(ext).toString();
+            NedImageDescriptor iDesc = new NedImageDescriptor(refClass, name, SIZE_NORMAL);
+            // check if the resource exists
+            if(iDesc.canCreate()) return iDesc;
+        }
+
+        // load the normal size image and scale it
         String name = (new Path(dir)).append(fileName).addFileExtension(ext).toString();
-        ColorizableImageDescriptor iDesc = new ColorizableImageDescriptor(refClass, name);
+        NedImageDescriptor iDesc = new NedImageDescriptor(refClass, name, preferredSize);
         // check if the resource exists
         if(iDesc.canCreate()) return iDesc;
 

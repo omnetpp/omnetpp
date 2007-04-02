@@ -20,7 +20,7 @@ import org.eclipse.swt.graphics.RGB;
  * An ImageDescriptor used in NED editor. Supports coloring and preferred size. 
  *
  */
-public class ColorizableImageDescriptor extends ImageDescriptor {
+public class NedImageDescriptor extends ImageDescriptor {
 
     /**
      * The class whose resource directory contain the file, 
@@ -33,7 +33,7 @@ public class ColorizableImageDescriptor extends ImageDescriptor {
      */
     private String name;
 
-    private int preferredWidth = -1;
+    private int preferredScale = 100;
     
     private RGB colorization = null;
     
@@ -57,9 +57,14 @@ public class ColorizableImageDescriptor extends ImageDescriptor {
      *   <code>null</code>
      * @param filename the name of the file
      */
-    ColorizableImageDescriptor(Class clazz, String filename) {
+    NedImageDescriptor(Class clazz, String filename) {
         this.location = clazz;
         this.name = filename;
+    }
+
+    NedImageDescriptor(Class clazz, String filename, int preferredScale) {
+        this(clazz, filename);
+        this.preferredScale = preferredScale;
     }
 
     public void setColorization(RGB colorization) {
@@ -70,18 +75,23 @@ public class ColorizableImageDescriptor extends ImageDescriptor {
         this.colorizationWeight = colorizationWeight;
     }
 
-    public void setPreferredWidth(int preferredWidth) {
-        this.preferredWidth = preferredWidth;
-    }
+    /**
+     * Sets the preferred scaling factor. If preferredScale < 0 it is treated 
+     * as an absolute width parameter
+     * @param preferredScale
+     */
+//    public void setPreferredScale(int preferredScale) {
+//        this.preferredScale = preferredScale;
+//    }
 
     /* (non-Javadoc)
      * Method declared on Object.
      */
     public boolean equals(Object o) {
-        if (!(o instanceof ColorizableImageDescriptor)) {
+        if (!(o instanceof NedImageDescriptor)) {
             return false;
         }
-        ColorizableImageDescriptor other = (ColorizableImageDescriptor) o;
+        NedImageDescriptor other = (NedImageDescriptor) o;
         if (location != null) {
             if (!location.equals(other.location)) {
                 return false;
@@ -101,7 +111,7 @@ public class ColorizableImageDescriptor extends ImageDescriptor {
             }
         }
         return name.equals(other.name) 
-                &&preferredWidth == other.preferredWidth 
+                &&preferredScale == other.preferredScale 
                 && colorizationWeight == other.colorizationWeight;
     }
 
@@ -128,6 +138,7 @@ public class ColorizableImageDescriptor extends ImageDescriptor {
         }
         // add colorization effect to the image data
         shadeImageData(result, colorization, colorizationWeight);
+        result = rescaleImageData(result);
         return result;
     }
 
@@ -179,7 +190,7 @@ public class ColorizableImageDescriptor extends ImageDescriptor {
         if (colorization != null) {
             code += colorization.hashCode();
         }
-        code += colorizationWeight * 100 + preferredWidth;
+        code += colorizationWeight * 10000 + preferredScale;
         return code;
     }
 
@@ -189,7 +200,7 @@ public class ColorizableImageDescriptor extends ImageDescriptor {
      */
     public String toString() {
         return "NedImageDescriptor(location=" + location + ", name=" + name + 
-            ", prefWidth=" + preferredWidth + ", colorize="+colorization+", colorWight="+colorizationWeight+")";
+            ", prefScale=" + preferredScale + ", colorize="+colorization+", colorWight="+colorizationWeight+")";
     }
 
     /**
@@ -263,4 +274,24 @@ public class ColorizableImageDescriptor extends ImageDescriptor {
         return col<0 ? 0 : (col>255 ? 255 : col);
     }
     
+    /**
+     * @param result
+     * @param scale
+     * @return 
+     */
+    private ImageData rescaleImageData(ImageData imgData) {
+        if (preferredScale==100 || imgData.width==0 || imgData.width==-preferredScale)
+            return imgData;
+        
+        double scaleRatio;
+        if (preferredScale < 0)
+            // treat as absolute size
+            scaleRatio = -(double)preferredScale / imgData.width;
+        else
+            // treat as relatve size in percent
+            scaleRatio = (double)preferredScale / 100;
+        
+        return ImageConverter.getResampledImageData(imgData, (int)(imgData.width*scaleRatio), (int)(imgData.height*scaleRatio), 1, 1, 0, 0);
+    }
+
 }

@@ -200,88 +200,91 @@ public class ImageConverter {
 	public static Image getResampledImage(Image image, int width, int height, int leftInset, int topInset, int rightInset, int bottomInset) {
 		if (image==null)
 			throw new IllegalArgumentException("image cannot be null");
-		if (width <= leftInset+rightInset || height <= topInset+bottomInset)
-			throw new IllegalArgumentException("invalid width, height, or insets values");
-		
-		// calculate scaled image width/height, preserving aspect ratio
-		Rectangle imageSize = image.getBounds();
-		int scaledHeight = height - topInset - bottomInset;
-		int scaledWidth = width - leftInset - rightInset;
-		double scaleX = (double) scaledWidth / (double) imageSize.width;
-		double scaleY = (double) scaledHeight / (double) imageSize.height;
-		if (scaleX < scaleY)
-			scaledHeight = (int) (scaleX * (scaledHeight / scaleY));
-		else 
-			scaledWidth = (int) (scaleY * (scaledWidth / scaleX));
-		int xoff = (width-scaledWidth+1)/2;
-		int yoff = (height-scaledHeight+1)/2;
-		
-		// produce a high-quality re-sampled image (but transparency got lost along the way)
-		Image scaledImage = new Image(null, width, height);
-		GC gc = new GC(scaledImage);
-		Color backgroundColor = new Color(null, 240, 241, 240);
-		gc.setBackground(backgroundColor);
-		gc.fillRectangle(0, 0, width, height);
-		gc.setInterpolation(SWT.HIGH);
-		gc.drawImage(image, 0, 0, imageSize.width, imageSize.height, xoff, yoff, scaledWidth, scaledHeight);
-		gc.dispose();
-
-		// now, reproduce transparency
-		ImageData data = image.getImageData();
-		if (data.getTransparencyType()==SWT.TRANSPARENCY_ALPHA) {
-			// OK, original image has alpha channel. Trick: we create an
-			// alpha mask image (a greyscale image purely from the alpha
-			// channel as input), scale it like we did the original image,
-			// then copy out the resulting grayscale values as alphas.
-
-			// turn alpha into greyscale
-			for (int y=0; y < imageSize.height; y++) {
-				for (int x=0; x < imageSize.width; x++) {
-					int alpha = data.getAlpha(x, y);
-					data.setPixel(x, y, data.palette.getPixel(new RGB(alpha, alpha, alpha)));
-				}
-			}
-
-			// rescale greyscale image
-			Image alphaImage = new Image(null, data);
-			Image scaledAlphaImage = new Image(null, width, height);
-			GC gc2 = new GC(scaledAlphaImage);
-			gc2.setBackground(new org.eclipse.swt.graphics.Color(null, 0, 0, 0));
-			gc2.fillRectangle(0, 0, width, height);
-			gc2.setInterpolation(SWT.HIGH);
-			gc2.drawImage(alphaImage, 0, 0, imageSize.width, imageSize.height, xoff, yoff, scaledWidth, scaledHeight);
-			gc2.dispose();
-
-			// take greyscale values as alpha
-			ImageData scaledAlphaData = scaledAlphaImage.getImageData();
-			ImageData resultData = scaledImage.getImageData();
-			for (int y=0; y < height; y++) {
-				for (int x=0; x < width; x++) {
-					int alpha = scaledAlphaData.palette.getRGB(scaledAlphaData.getPixel(x, y)).blue;
-					resultData.setAlpha(x, y, alpha);
-				}
-			}
-
-			Image resultImage = new Image(null, resultData);
-			scaledImage.dispose();
-			alphaImage.dispose();
-			scaledAlphaImage.dispose();
-			return resultImage;
-		}
-		else if (data.getTransparencyType()==SWT.TRANSPARENCY_MASK || data.getTransparencyType()==SWT.TRANSPARENCY_PIXEL) { 
-			// This is likely a gif image. Just set our background color as the transparent color. 
-			ImageData resultData = scaledImage.getImageData();
-			resultData.transparentPixel = resultData.palette.getPixel(backgroundColor.getRGB());
-			scaledImage.dispose();
-			Image resultImage = new Image(null, resultData);
-			return resultImage;
-		}
-		else { 
-			// TRANSPARENCY_NONE
-			return scaledImage;
-		}
+        return new Image(null, getResampledImageData(image.getImageData(), width, height, leftInset, topInset, rightInset, bottomInset));
 	}    
 	
+    public static ImageData getResampledImageData(ImageData imageData, int width, int height, int leftInset, int topInset, int rightInset, int bottomInset) {
+        if (imageData==null)
+            throw new IllegalArgumentException("imageData cannot be null");
+        if (width <= leftInset+rightInset || height <= topInset+bottomInset)
+            throw new IllegalArgumentException("invalid width, height, or insets values");
+        
+        // calculate scaled image width/height, preserving aspect ratio
+        int scaledHeight = height - topInset - bottomInset;
+        int scaledWidth = width - leftInset - rightInset;
+        double scaleX = (double) scaledWidth / (double) imageData.width;
+        double scaleY = (double) scaledHeight / (double) imageData.height;
+        if (scaleX < scaleY)
+            scaledHeight = (int) (scaleX * (scaledHeight / scaleY));
+        else 
+            scaledWidth = (int) (scaleY * (scaledWidth / scaleX));
+        int xoff = (width-scaledWidth+1)/2;
+        int yoff = (height-scaledHeight+1)/2;
+        
+        // produce a high-quality re-sampled image (but transparency got lost along the way)
+        Image scaledImage = new Image(null, width, height);
+        GC gc = new GC(scaledImage);
+        Color backgroundColor = new Color(null, 240, 241, 240);
+        gc.setBackground(backgroundColor);
+        gc.fillRectangle(0, 0, width, height);
+        gc.setInterpolation(SWT.HIGH);
+        gc.drawImage(new Image(gc.getDevice(),imageData), 0, 0, imageData.width, imageData.height, xoff, yoff, scaledWidth, scaledHeight);
+        gc.dispose();
+
+        // now, reproduce transparency
+        if (imageData.getTransparencyType()==SWT.TRANSPARENCY_ALPHA) {
+            // OK, original image has alpha channel. Trick: we create an
+            // alpha mask image (a greyscale image purely from the alpha
+            // channel as input), scale it like we did the original image,
+            // then copy out the resulting grayscale values as alphas.
+
+            // turn alpha into greyscale
+            for (int y=0; y < imageData.height; y++) {
+                for (int x=0; x < imageData.width; x++) {
+                    int alpha = imageData.getAlpha(x, y);
+                    imageData.setPixel(x, y, imageData.palette.getPixel(new RGB(alpha, alpha, alpha)));
+                }
+            }
+
+            // rescale greyscale image
+            Image alphaImage = new Image(null, imageData);
+            Image scaledAlphaImage = new Image(null, width, height);
+            GC gc2 = new GC(scaledAlphaImage);
+            gc2.setBackground(new org.eclipse.swt.graphics.Color(null, 0, 0, 0));
+            gc2.fillRectangle(0, 0, width, height);
+            gc2.setInterpolation(SWT.HIGH);
+            gc2.drawImage(alphaImage, 0, 0, imageData.width, imageData.height, xoff, yoff, scaledWidth, scaledHeight);
+            gc2.dispose();
+
+            // take greyscale values as alpha
+            ImageData scaledAlphaData = scaledAlphaImage.getImageData();
+            ImageData resultData = scaledImage.getImageData();
+            for (int y=0; y < height; y++) {
+                for (int x=0; x < width; x++) {
+                    int alpha = scaledAlphaData.palette.getRGB(scaledAlphaData.getPixel(x, y)).blue;
+                    resultData.setAlpha(x, y, alpha);
+                }
+            }
+
+            Image resultImage = new Image(null, resultData);
+            scaledImage.dispose();
+            alphaImage.dispose();
+            scaledAlphaImage.dispose();
+            return resultImage.getImageData();
+        }
+        else if (imageData.getTransparencyType()==SWT.TRANSPARENCY_MASK || imageData.getTransparencyType()==SWT.TRANSPARENCY_PIXEL) { 
+            // This is likely a gif image. Just set our background color as the transparent color. 
+            ImageData resultData = scaledImage.getImageData();
+            resultData.transparentPixel = resultData.palette.getPixel(backgroundColor.getRGB());
+            scaledImage.dispose();
+            Image resultImage = new Image(null, resultData);
+            return resultImage.getImageData();
+        }
+        else { 
+            // TRANSPARENCY_NONE
+            return scaledImage.getImageData();
+        }
+    }    
 	//	static { testImageResizing(); }
 	
 	protected static void testImageResizing() {
