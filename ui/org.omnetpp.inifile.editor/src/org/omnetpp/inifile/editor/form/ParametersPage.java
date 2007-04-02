@@ -31,6 +31,8 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
  * @author Andras
  */
 //XXX for now it only edits the [Parameters] section, should be extended to run configs as well
+//XXX validation of keys and values! e.g. shouldn't allow empty key
+//XXX comment handling (stripping/adding of "#")
 public class ParametersPage extends FormPage {
 	private static final String DEFAULT_SECTION = "Parameters";
 	private TableViewer tableViewer;
