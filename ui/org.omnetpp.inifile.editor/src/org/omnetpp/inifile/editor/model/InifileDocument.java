@@ -43,7 +43,7 @@ public class InifileDocument implements IInifileDocument {
 	};
 	class SectionHeadingLine extends Line {
 		String sectionName;
-		int lastLine; // last line of section contents  XXX fill in
+		int lastLine; // last line of section contents
 	}
 	class KeyValueLine extends Line {
 		String key;
@@ -119,6 +119,7 @@ public class InifileDocument implements IInifileDocument {
 		try {
 			new InifileParser().parse(streamReader, new InifileParser.ParserCallback() {
 				Section currentSection = null;
+				SectionHeadingLine currentSectionHeading = null;
 				IFile currentFile = documentFile; 
 
 				public void blankOrCommentLine(int lineNumber, String rawLine, String comment) {
@@ -152,8 +153,9 @@ public class InifileDocument implements IInifileDocument {
 						line.comment = comment;
 						line.key = key;
 						line.value = value;
-						currentSection.entries.put(key, line);
 						mainFileKeyValueLines.add(line);
+						currentSection.entries.put(key, line);
+						currentSectionHeading.lastLine = line.lineNumber + line.numLines - 1;
 					}
 				}
 
@@ -171,9 +173,11 @@ public class InifileDocument implements IInifileDocument {
 					line.numLines = 1; //XXX include continued lines!
 					line.comment = comment;
 					line.sectionName = sectionName;
+					line.lastLine = line.lineNumber + line.numLines - 1;
 					section.headingLines.add(line);
 					mainFileSectionHeadingLines.add(line);
 					currentSection = section;
+					currentSectionHeading = line;
 				}
 			});
 		} 
@@ -319,9 +323,7 @@ public class InifileDocument implements IInifileDocument {
 			throw new IllegalArgumentException("entry already exists: ["+section+"] "+key);
 
 		// modify IDocument
-		//FIXME this inserts NOT APPENDS!!!!!
-		System.out.println("addEntry() is shit!");
-		int atLine = beforeKey==null ? getFirstEditableSectionHeading(section).lineNumber+1 : getEditableEntry(section, beforeKey).lineNumber;
+		int atLine = beforeKey==null ? getFirstEditableSectionHeading(section).lastLine+1 : getEditableEntry(section, beforeKey).lineNumber;
 		String text = key + " = " + value + (comment == null ? "" : " "+comment);
 		addLineAt(atLine, text);
 	}
