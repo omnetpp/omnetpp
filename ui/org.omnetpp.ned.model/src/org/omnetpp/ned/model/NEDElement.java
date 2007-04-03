@@ -11,6 +11,7 @@ import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
+import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
@@ -28,7 +29,8 @@ import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
  * primarily for PropertySheet support 
  */
 public abstract class NEDElement extends PlatformObject 
-            implements Iterable<NEDElement>, IDisplayStringChangeListener
+            implements Iterable<NEDElement>, IDisplayStringChangeListener, 
+                       IModelProvider
 {
 	private long id;
 	private String srcloc;
@@ -731,6 +733,13 @@ public abstract class NEDElement extends PlatformObject
     }
     
     /* (non-Javadoc)
+     * @see org.omnetpp.ned.model.interfaces.IModelProvider#getModel()
+     * We provide ourselves as a model
+     */
+    public Object getModel() {
+        return this;
+    }
+  /* (non-Javadoc)
      * @see java.lang.Object#toString()
      * For debugging purposes
      */

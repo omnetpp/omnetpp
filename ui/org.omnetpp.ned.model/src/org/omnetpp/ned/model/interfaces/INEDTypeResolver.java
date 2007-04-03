@@ -48,7 +48,15 @@ public interface INEDTypeResolver {
 	 */
 	public INEDTypeInfo getComponentAt(IFile file, int lineNumber);
 	
-	/**
+    /**
+     * Returns a NEDElement at the given file/line/column. returns nul if no ned element
+     * found under the position
+     *  
+     * @param file - must not be null
+     */
+    public NEDElement getNEDElementAt(IFile file, int line, int column);
+
+    /**
 	 * Returns all components in the NED files.
 	 */
 	public Collection<INEDTypeInfo> getAllComponents();

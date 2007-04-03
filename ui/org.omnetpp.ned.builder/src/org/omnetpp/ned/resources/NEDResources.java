@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.text.BadLocationException;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -194,6 +196,20 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                 NEDSourceRegion region = component.getNEDElement().getSourceRegion();
                 if (region != null && region.containsLine(lineNumber))
                     return component;
+            }
+        }
+        return null;
+    }
+
+    public synchronized NEDElement getNEDElementAt(IFile file, int line, int column) {
+        line++;  // IDocument is 0-based
+        
+        // find component and NEDElements under the cursor 
+        INEDTypeInfo c = getComponentAt(file, line);
+        if (c!=null) {
+            NEDElement[] nodes = c.getNEDElementsAt(line, column);
+            if (nodes!=null && nodes.length>0) {
+                return nodes[nodes.length-1];
             }
         }
         return null;

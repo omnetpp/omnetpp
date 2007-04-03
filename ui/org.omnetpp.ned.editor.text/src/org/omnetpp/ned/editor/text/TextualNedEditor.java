@@ -3,6 +3,8 @@ package org.omnetpp.ned.editor.text;
 
 import java.util.ResourceBundle;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
@@ -23,6 +25,7 @@ import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
@@ -30,6 +33,10 @@ import org.eclipse.ui.texteditor.TextEditorAction;
 import org.eclipse.ui.texteditor.TextOperationAction;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.ned.editor.text.outline.NedContentOutlinePage;
+import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 
 public class TextualNedEditor extends TextEditor {
@@ -165,15 +172,22 @@ public class TextualNedEditor extends TextEditor {
 	 * @param content
 	 */
 	public void setText(String content) {
-		getDocumentProvider().getDocument(getEditorInput()).set(content);
+		getDocument().set(content);
 	}
 	
 	/**
 	 * @return The content of the text editor
 	 */
 	public String getText() {
-		return getDocumentProvider().getDocument(getEditorInput()).get();
+		return getDocument().get();
 	}
+    
+    /**
+     * @return The current document under editing
+     */
+    public IDocument getDocument() {
+        return getDocumentProvider().getDocument(getEditorInput());
+    }
 
 	/*
 	 * @see org.eclipse.ui.texteditor.ExtendedTextEditor#editorContextMenuAboutToShow(org.eclipse.jface.action.IMenuManager)
@@ -228,7 +242,7 @@ public class TextualNedEditor extends TextEditor {
 		fAnnotationAccess= createAnnotationAccess();
 		fOverviewRuler= createOverviewRuler(getSharedColors());
 		
-		ISourceViewer viewer= new ProjectionViewer(parent, ruler, getOverviewRuler(), isOverviewRulerVisible(), styles);
+		ISourceViewer viewer= new NedProjectionViewer(this, parent, ruler, getOverviewRuler(), isOverviewRulerVisible(), styles);
 		// ensure decoration support has been created and configured.
 		getSourceViewerDecorationSupport(viewer);
 		
@@ -260,4 +274,35 @@ public class TextualNedEditor extends TextEditor {
 	}
     
     
+    /**
+     * Returns the NED element at the given position
+     * @param offset
+     * @return
+     */
+    public NEDElement getNEDElementAtOffset(int offset) {
+        try {
+            // find out line:column
+            INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();        
+            IDocument docu = getSourceViewer().getDocument();
+            int line = docu.getLineOfOffset(offset);
+            int column = offset - docu.getLineOffset(line);
+            line++;  // IDocument is 0-based
+            
+            // find out file
+            Assert.isTrue(getEditorInput() instanceof IFileEditorInput); // NEDEditor only accepts file input
+            IFile file = ((IFileEditorInput)getEditorInput()).getFile();
+            
+            // find component and NEDElements under the cursor 
+            INEDTypeInfo c = res.getComponentAt(file, line);
+            if (c!=null) {
+                NEDElement[] nodes = c.getNEDElementsAt(line, column);
+                if (nodes!=null && nodes[0]!=null) {
+                    return nodes[0];
+                }
+            }
+            return null;
+        } catch (BadLocationException e) {
+            return null;
+        }
+    }
 }

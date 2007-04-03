@@ -12,7 +12,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
@@ -28,6 +31,7 @@ import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.omnetpp.common.editor.ISelectionSupport;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
+import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.resources.NEDResources;
@@ -68,6 +72,53 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
                 super.fireSelectionChanged(event);
                 if (getActiveEditor() == graphEditor)
                     firePostSelectionChanged(event);
+            }
+            
+            @Override
+            public void firePostSelectionChanged(SelectionChangedEvent event) {
+                // if the text editor sent the selection, convert it to trucured slection and add
+                // the selected NEDElement to it
+                if (getActiveEditor() == textEditor) {
+                    
+//                  try {
+                        // calculate the ned element under the current position
+//                        int offset = ((ITextSelection)event.getSelection()).getOffset();
+//                        int line = textEditor.getDocument().getLineOfOffset(offset);
+//                        int column = offset - textEditor.getDocument().getLineOffset(line);
+//                        IFile file = ((FileEditorInput) getEditorInput()).getFile();
+//                        NEDElement selectedElement = NEDResourcesPlugin.getNEDResources().getNEDElementAt(file, line, column);
+//                        // create a structured selection
+//                        ISelection selection = (selectedElement != null) ? new StructuredSelection(selectedElement)
+//                                : StructuredSelection.EMPTY;
+
+                        event = new SelectionChangedEvent(this, getSelection());
+//                    } catch (BadLocationException e) {
+//                    }
+                }
+
+                super.firePostSelectionChanged(event);
+            }
+            
+            @Override
+            public ISelection getSelection() {
+                ISelection selection = super.getSelection(); 
+                if (getActiveEditor() == textEditor) {
+                    
+                    try {
+                          // calculate the ned element under the current position
+                          int offset = ((ITextSelection)selection).getOffset();
+                          int line = textEditor.getDocument().getLineOfOffset(offset);
+                          int column = offset - textEditor.getDocument().getLineOffset(line);
+                          IFile file = ((FileEditorInput) getEditorInput()).getFile();
+                          NEDElement selectedElement = NEDResourcesPlugin.getNEDResources().getNEDElementAt(file, line, column);
+                          // create a structured selection
+                          selection = (selectedElement != null) ? new StructuredSelection(selectedElement)
+                                  : StructuredSelection.EMPTY;
+
+                      } catch (BadLocationException e) {
+                      }
+                  }
+                return selection;
             }
             
         });

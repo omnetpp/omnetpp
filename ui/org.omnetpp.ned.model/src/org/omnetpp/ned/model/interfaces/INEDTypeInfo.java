@@ -78,7 +78,6 @@ public interface INEDTypeInfo {
     public Map<String, NEDElement> getGateSizes();
     public Map<String, NEDElement> getInnerTypes();
     public Map<String, NEDElement> getSubmods();
-//    public Set<String> getUsedTypes();
     
     /**
      * @return All types derived from this type
