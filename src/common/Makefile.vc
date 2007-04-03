@@ -88,7 +88,6 @@ filereader.obj: filereader.cc \
   exception.h \
   commondefs.h
 fileutil.obj: fileutil.cc \
-  ./unistd.h \
   fileutil.h \
   commondefs.h
 fnamelisttokenizer.obj: fnamelisttokenizer.cc \
@@ -125,11 +124,6 @@ patternmatcher.obj: patternmatcher.cc \
   exception.h \
   commondefs.h \
   commonutil.h
-simultime.obj: simultime.cc \
-  simultime.h \
-  unitconversion.h \
-  exception.h \
-  commondefs.h
 stringtokenizer.obj: stringtokenizer.cc \
   stringtokenizer.h \
   commondefs.h

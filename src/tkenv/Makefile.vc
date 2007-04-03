@@ -288,12 +288,12 @@ layouterenv.obj: layouterenv.cc \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/opp_string.h \
   ../../include/cneddeclarationbase.h \
   ../../include/globals.h \
   ../../include/cparvalue.h \
@@ -342,12 +342,12 @@ modinsp.obj: modinsp.cc \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/opp_string.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
@@ -479,12 +479,12 @@ statinsp.obj: statinsp.cc \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/opp_string.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
@@ -512,9 +512,12 @@ tkapp.obj: tkapp.cc \
   modinsp.h \
   ../utils/ver.h \
   ../../include/simkerneldefs.h \
+  ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
   ../../include/cmodule.h \
   ../../include/ccomponent.h \
   ../../include/globals.h \
@@ -522,14 +525,11 @@ tkapp.obj: tkapp.cc \
   ../../include/cownedobject.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
-  ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/opp_string.h \
   ../../include/cexpression.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
@@ -573,19 +573,19 @@ tkcmd.obj: tkcmd.cc \
   inspfactory.h \
   visitor.h \
   ../../include/simkerneldefs.h \
+  ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
-  ../../include/cownedobject.h \
   ../../include/util.h \
+  ../../include/errmsg.h \
+  ../../include/cownedobject.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/opp_string.h \
   ../../include/globals.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
@@ -617,6 +617,7 @@ tkutil.obj: tkutil.cc \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
@@ -625,7 +626,6 @@ tkutil.obj: tkutil.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/opp_string.h \
   ../../include/ccomponent.h \
   ../../include/globals.h \
   ../../include/cgate.h \
@@ -653,13 +653,14 @@ visitor.obj: visitor.cc \
   ../../include/cgate.h \
   visitor.h \
   ../../include/simkerneldefs.h \
+  ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/util.h \
+  ../../include/errmsg.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/errmsg.h \
   ../../include/ccomponent.h \
   ../../include/globals.h \
   ../../include/csimulation.h \
@@ -668,7 +669,6 @@ visitor.obj: visitor.cc \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
   ../../include/cstringpool.h \
-  ../../include/opp_string.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \

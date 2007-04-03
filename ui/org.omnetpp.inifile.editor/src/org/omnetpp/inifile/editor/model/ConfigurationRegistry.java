@@ -8,6 +8,7 @@ import static org.omnetpp.inifile.editor.model.ConfigurationEntry.Type.CFG_INT;
 import static org.omnetpp.inifile.editor.model.ConfigurationEntry.Type.CFG_STRING;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.omnetpp.inifile.editor.model.ConfigurationEntry.Type;
@@ -18,36 +19,41 @@ import org.omnetpp.inifile.editor.model.ConfigurationEntry.Type;
  */
 //TODO must be kept in sync with the C++ code
 public class ConfigurationRegistry {
-	private static List<ConfigurationEntry> entries = new ArrayList<ConfigurationEntry>();
+//	private static List<ConfigurationEntry> entries = new ArrayList<ConfigurationEntry>();
+	private static HashMap<String, ConfigurationEntry> entries = new HashMap<String, ConfigurationEntry>(); 
 	
 	private static ConfigurationEntry addGlobalEntry(String name, String section, Type type, Object defaultValue, String description) {
     	ConfigurationEntry e = new ConfigurationEntry(name, section, true, type, null, defaultValue, description);
-    	entries.add(e);
+    	entries.put(name, e);
     	return e;
     }
 
 	private static ConfigurationEntry addGlobalEntryU(String name, String section, String unit, Object defaultValue, String description) {
     	ConfigurationEntry e = new ConfigurationEntry(name, section, false, CFG_DOUBLE, unit, defaultValue, description);
-    	entries.add(e);
+    	entries.put(name, e);
     	return e;
     }
     
 	private static ConfigurationEntry addPerRunEntry(String name, String section, Type type, Object defaultValue, String description) {
     	ConfigurationEntry e = new ConfigurationEntry(name, section, false, type, null, defaultValue, description);
-    	entries.add(e);
+    	entries.put(name, e);
     	return e;
     }
 
 	private static ConfigurationEntry addPerRunEntryU(String name, String section, String unit, Object defaultValue, String description) {
     	ConfigurationEntry e = new ConfigurationEntry(name, section, false, CFG_DOUBLE, unit, defaultValue, description);
-    	entries.add(e);
+    	entries.put(name, e);
     	return e;
     }
 
 	public static ConfigurationEntry[] getEntries() {
-		return (ConfigurationEntry[]) entries.toArray(new ConfigurationEntry[entries.size()]);
+		return (ConfigurationEntry[]) entries.values().toArray(new ConfigurationEntry[entries.size()]);
 	}
 
+	public static ConfigurationEntry getEntry(String name) {
+		return entries.get(name);
+	}
+	
 	private static final Object CMDENV_EXTRASTACK_KB = null;
     private static final Object DEFAULT_PRECISION = null;
     private static final Object TOTAL_STACK_KB = null;

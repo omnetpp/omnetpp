@@ -23,6 +23,7 @@ public class InifileUtils {
 		UNASSIGNED_PAR, // unassigned parameter
 		NED_PAR, // parameter assigned in NED
 		INI_PAR, // parameter assigned in inifile
+		DEFAULTED_PAR, // parameter set to the default value (**.use-default=true)
 		INI_PAR_REDUNDANT, // inifile sets param to its NED default value
 		OTHER  // none of the above
 	}
@@ -187,6 +188,7 @@ public class InifileUtils {
 					value = iniValue;
 					remark = "ini file (overrides NED value "+nedValue+")"; //XXX if NED is default()!
 				}
+				//XXX return Type.DEFAULTED sometimes
 				resultList.add(new ParameterData(type, param, moduleFullPath, param.getName(), value, remark));
 			}
 		}

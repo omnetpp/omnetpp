@@ -16,7 +16,6 @@ public class InifileSelectionItem {
 	private String key;
 	
 	public InifileSelectionItem(IInifileDocument document, String section, String key) {
-		super();
 		this.document = document;
 		this.section = section;
 		this.key = key;

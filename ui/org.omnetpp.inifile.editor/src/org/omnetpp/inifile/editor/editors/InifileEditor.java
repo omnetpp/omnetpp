@@ -28,6 +28,7 @@ import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.inifile.editor.form.InifileFormEditor;
 import org.omnetpp.inifile.editor.model.IInifileChangeListener;
+import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileDocument;
 import org.omnetpp.inifile.editor.text.InifileTextEditor;
 import org.omnetpp.inifile.editor.views.InifileContentOutlinePage;
@@ -92,19 +93,11 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		IFile file = ((IFileEditorInput)getEditorInput()).getFile();
 		IDocument document = textEditor.getDocumentProvider().getDocument(getEditorInput());
 		editorData.setInifiledocument(new InifileDocument(document, file));
+		editorData.setInifileAnalyzer(new InifileAnalyzer(editorData.getInifileDocument()));
 
-//XXX		// export the selection of the text editor; without this, the SelectionProvider of this
-//		// editor would be null if the form page is selected (that's the behaviour of the
-//		// original MultiPageSelectionProvider which we replace with this call).
-//		getSite().setSelectionProvider(textEditor.getSelectionProvider());
-
+		// replace original MultiPageSelectionProvider with our own, as we want to
+		// publish our own selection (with InifileSelectionItem) for both pages.
 		getSite().setSelectionProvider(new SelectionProvider());
-		
-//		textEditor.getSite().getSelectionProvider().addSelectionChangedListener(new ISelectionChangedListener() {
-//			public void selectionChanged(SelectionChangedEvent event) {
-//				setSelection(section, key);
-//			}
-//		});
 		
 		// propagate property changes (esp. PROP_DIRTY) from our text editor
 		textEditor.addPropertyListener(new IPropertyListener() {
@@ -129,6 +122,14 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		textEditor.setPostCursorPositionChangeJob(new Runnable() {
 			public void run() {
 				postSelectionChangedJob.restartTimer();
+			}
+		});
+		
+		// we want inifileAnalyzer to run whenever the document was parsed
+		//XXX revise performance-wise (it doesn't have to run immediately)
+		editorData.getInifileDocument().addInifileChangeListener(new IInifileChangeListener() {
+			public void modelChanged() {
+				editorData.getInifileAnalyzer().run();
 			}
 		});
 	}

@@ -31,6 +31,7 @@ import static org.omnetpp.inifile.editor.model.InifileUtils.Type;
  * 
  * @author Andras
  */
+//XXX create another view: Hierarchy (inheritance tree); and call this Usage? Nesting? Tree? Containment?
 public class ModuleHierarchyView extends AbstractModuleView {
 	private TreeViewer treeViewer;
 
@@ -212,6 +213,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 				type = Type.INI_PAR;
 				valueText = iniValue+" (ini, overrides NED value "+nedValue+")";
 			}
+			//XXX set ICON_DEFAULTEDPAR sometimes as well
 
 			String text = param.getName()+" = "+valueText;
 			thisNode.addChild(new GenericTreeNode(new Payload(type, text, param)));

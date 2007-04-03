@@ -40,6 +40,7 @@ public class InifileDocument implements IInifileDocument {
 		int lineNumber; // 1-based
 		int numLines;  // ==1 unless line continues on other lines (trailing backslash)
 		String comment;
+		Object data;
 	};
 	class SectionHeadingLine extends Line {
 		String sectionName;
@@ -56,6 +57,7 @@ public class InifileDocument implements IInifileDocument {
 	class Section {
 		ArrayList<SectionHeadingLine> headingLines = new ArrayList<SectionHeadingLine>();
 		LinkedHashMap<String,KeyValueLine> entries = new LinkedHashMap<String, KeyValueLine>();
+		Object data;
 	}
 
 	// primary data structure: sections, keys
@@ -539,4 +541,32 @@ public class InifileDocument implements IInifileDocument {
         if (listeners != null && listeners.isEnabled())
         	listeners.fireModelChanged();
     }
+
+	public Object getData(String section, String key) {
+		KeyValueLine line = lookupEntry(section, key);
+    	if (line == null)
+    		throw new IllegalArgumentException("no such entry: ["+section+"] "+key);
+		return line.data;
+	}
+
+	public void setData(String section, String key, Object data) {
+		KeyValueLine line = lookupEntry(section, key);
+    	if (line == null)
+    		throw new IllegalArgumentException("no such entry: ["+section+"] "+key);
+		line.data = data;
+	}
+
+	public Object getData(String sectionName) {
+		Section section = sections.get(sectionName);
+    	if (section == null)
+    		throw new IllegalArgumentException("no such section: ["+sectionName+"]");
+		return section.data;
+	}
+
+	public void setData(String sectionName, Object data) {
+		Section section = sections.get(sectionName);
+    	if (section == null)
+    		throw new IllegalArgumentException("no such section: ["+sectionName+"]");
+		section.data = data;
+	}
 }

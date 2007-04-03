@@ -237,6 +237,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 	public static final String ICON_UNASSIGNEDPAR = "icons/full/obj16/UnassignedPar.png";
 	public static final String ICON_NEDPAR = "icons/full/obj16/NedPar.png";
 	public static final String ICON_INIPAR = "icons/full/obj16/IniPar.png";
+	public static final String ICON_DEFAULTEDPAR = "icons/full/obj16/IniPar.png"; //XXX
 	public static final String ICON_INIPARREDUNDANT = "icons/full/obj16/IniParRedundant.png";
 	
 	/**
@@ -248,6 +249,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 			case UNASSIGNED_PAR: return InifileEditorPlugin.getImage(ICON_UNASSIGNEDPAR);
 			case NED_PAR: return InifileEditorPlugin.getImage(ICON_NEDPAR);
 			case INI_PAR: return InifileEditorPlugin.getImage(ICON_INIPAR);
+			case DEFAULTED_PAR:  return InifileEditorPlugin.getImage(ICON_DEFAULTEDPAR); 
 			case INI_PAR_REDUNDANT: return InifileEditorPlugin.getImage(ICON_INIPARREDUNDANT);
 			case OTHER: if (element!=null) return NEDTreeUtil.getNedModelLabelProvider().getImage(element);
 		}

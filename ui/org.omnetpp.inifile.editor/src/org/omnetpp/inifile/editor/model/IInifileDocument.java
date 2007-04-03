@@ -208,6 +208,26 @@ public interface IInifileDocument {
 	 * Removes the given include. Throws error if include does not exist.
 	 */
 	void removeBottomInclude(String include);
+
+	/**
+	 * Get user data object attached to the given key.
+	 */
+	public Object getData(String section, String key);
+
+	/**
+	 * Attach a (single, unnamed) user data object to the given key.
+	 */
+	public void setData(String section, String key, Object data);
+
+	/**
+	 * Get user data object attached to the given section.
+	 */
+	public Object getData(String section);
+
+	/**
+	 * Attach a (single, unnamed) user data object to the given section.
+	 */
+	public void setData(String section, Object data);
 	
 	/**
      * Adds a listener to this document 
