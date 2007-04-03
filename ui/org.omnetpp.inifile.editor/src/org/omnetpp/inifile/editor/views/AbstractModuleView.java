@@ -1,14 +1,11 @@
 package org.omnetpp.inifile.editor.views;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
@@ -168,13 +165,6 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 			return;
 		}
 		
-        if (selection instanceof ITextSelection) {
-            // get the active editors file and the selcion offset
-            int offset = ((ITextSelection)selection).getOffset();
-            IFile file = ((IFileEditorInput)getActiveEditor().getEditorInput()).getFile();
-            System.out.println("TEXT SELECTION: "+selection);
-        }
-        
 		//System.out.println("SELECTION: "+selection);
 		
 		if (selection instanceof IStructuredSelection && !selection.isEmpty()) {
@@ -212,7 +202,6 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 				//
 				InifileSelectionItem sel = (InifileSelectionItem) element;
 				IInifileDocument doc = sel.getDocument();
-				String section = sel.getSection();
 
 				String networkName = doc.getValue("General", "network"); //XXX or [Run X], if that's the selected one!
 				if (networkName == null) {

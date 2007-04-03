@@ -1,7 +1,6 @@
 package org.omnetpp.ned.editor.text.actions;
 
 
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.IActionBars;

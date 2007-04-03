@@ -78,22 +78,9 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
             public void firePostSelectionChanged(SelectionChangedEvent event) {
                 // if the text editor sent the selection, convert it to trucured slection and add
                 // the selected NEDElement to it
+                // TODO maybe this PostSelectionProvider should be installed on the textEditor
                 if (getActiveEditor() == textEditor) {
-                    
-//                  try {
-                        // calculate the ned element under the current position
-//                        int offset = ((ITextSelection)event.getSelection()).getOffset();
-//                        int line = textEditor.getDocument().getLineOfOffset(offset);
-//                        int column = offset - textEditor.getDocument().getLineOffset(line);
-//                        IFile file = ((FileEditorInput) getEditorInput()).getFile();
-//                        NEDElement selectedElement = NEDResourcesPlugin.getNEDResources().getNEDElementAt(file, line, column);
-//                        // create a structured selection
-//                        ISelection selection = (selectedElement != null) ? new StructuredSelection(selectedElement)
-//                                : StructuredSelection.EMPTY;
-
-                        event = new SelectionChangedEvent(this, getSelection());
-//                    } catch (BadLocationException e) {
-//                    }
+                    event = new SelectionChangedEvent(this, getSelection());
                 }
 
                 super.firePostSelectionChanged(event);
