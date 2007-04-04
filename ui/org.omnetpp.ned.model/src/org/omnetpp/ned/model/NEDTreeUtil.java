@@ -243,7 +243,7 @@ public class NEDTreeUtil {
                 || (pojoNode instanceof ParametersNode)
                 || (pojoNode instanceof GatesNode)
                 || (pojoNode instanceof SubmodulesNode)
-                || (pojoNode instanceof ConnectionsNode))
+                || (pojoNode instanceof ConnectionsNode && !((ConnectionsNode)pojoNode).getAllowUnconnected()))
                                 && !pojoNode.hasChildren()) {
             pojoNode.removeFromParent();
         }

@@ -309,7 +309,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
 		conn.removeFromParent();
 
 		ConnectionsNode snode = getFirstConnectionsChild();
-		if (snode != null && !snode.hasChildren())
+		if (snode != null && !snode.hasChildren() && !snode.getAllowUnconnected())
 			snode.removeFromParent();
 	}
 
