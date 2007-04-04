@@ -122,7 +122,7 @@ public class ConnectionCommand extends Command {
             // FIXME this does not work if connections are placed in connection groups
             parent = (CompoundModuleNodeEx)connModel.getParent().getParent();
             // and remove from the parent too
-            connModel.removeFromParent();
+            parentEditPart.getCompoundModuleModel().removeConnection(connModel);
             return;
         }
 
