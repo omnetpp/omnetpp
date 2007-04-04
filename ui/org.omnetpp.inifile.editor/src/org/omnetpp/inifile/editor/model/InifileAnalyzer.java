@@ -2,8 +2,10 @@ package org.omnetpp.inifile.editor.model;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.resources.IMarker;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.InifileUtils.IModuleTreeVisitor;
+import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
@@ -30,77 +32,6 @@ public class InifileAnalyzer {
 		PER_OBJECT_CONFIG; // dotted, and contains hyphen (like **.use-default, rng mapping, vector configuration, etc)
 	};
 
-	public enum ParamResolutionType {
-		UNASSIGNED, // unassigned parameter
-		NED, // parameter assigned in NED
-		NED_DEFAULT, // parameter set to the default value (**.use-default=true)
-		INI, // parameter assigned in inifile, with no default in NED file
-		INI_OVERRIDE, // inifile setting overrides NED default
-		INI_NEDDEFAULT, // inifile sets param to its NED default value
-	} 
-	
-	/**
-	 * Stores the result of a parameter resolution.
-	 */
-	public static class ParamResolution {
-		// moduleFullPath and paramNode identify the NED parameter 
-		public String moduleFullPath;
-		public ParamNode paramNode;
-		// how the parameter value gets resolved: from NED, from inifile, unassigned, etc
-		public ParamResolutionType type;
-		// section+key identify the value assignment in the inifile; 
-		// they are null if parameter is assigned from NED
-		public String section;
-		public String key;
-		
-		// for convenience
-		public ParamResolution(String moduleFullPath, ParamNode paramNode, ParamResolutionType type, String section, String key) {
-			this.moduleFullPath = moduleFullPath;
-			this.paramNode = paramNode;
-			this.type = type;
-			this.section = section;
-			this.key = key;
-		}
-
-		/* Generated; needed for GenericTreeUtil.treeEquals() */
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			final ParamResolution other = (ParamResolution) obj;
-			if (key == null) {
-				if (other.key != null)
-					return false;
-			} else if (!key.equals(other.key))
-				return false;
-			if (moduleFullPath == null) {
-				if (other.moduleFullPath != null)
-					return false;
-			} else if (!moduleFullPath.equals(other.moduleFullPath))
-				return false;
-			if (paramNode == null) {
-				if (other.paramNode != null)
-					return false;
-			} else if (!paramNode.equals(other.paramNode))
-				return false;
-			if (section == null) {
-				if (other.section != null)
-					return false;
-			} else if (!section.equals(other.section))
-				return false;
-			if (type == null) {
-				if (other.type != null)
-					return false;
-			} else if (!type.equals(other.type))
-				return false;
-			return true;
-		}
-	}
-	
 	/**
 	 * Used internally: class of objects attached to IInifileDocument entries 
 	 * (see getKeyData()/setKeyData())
@@ -150,13 +81,13 @@ public class InifileAnalyzer {
 					if (isParamSection)
 						doc.setData(section, key, new KeyData());
 					else
-						System.out.println("ERROR: parameter settings must be in section [Parameters] or in a run-specific section [Run X]");
+						addMarker(section, key, IMarker.SEVERITY_ERROR, "Parameter settings must be in section [Parameters] or in a run-specific section [Run X]");
 					break;
 				case PER_OBJECT_CONFIG:
 					if (isParamSection)
 						doc.setData(section, key, new KeyData());
 					else
-						System.out.println("ERROR: this configuration must be in section [Parameters] or in a run-specific section [Run X]"); //XXX really?
+						addMarker(section, key, IMarker.SEVERITY_ERROR, "This configuration must be in section [Parameters] or in a run-specific section [Run X]"); //XXX really?
 					break;
 				}
 			}

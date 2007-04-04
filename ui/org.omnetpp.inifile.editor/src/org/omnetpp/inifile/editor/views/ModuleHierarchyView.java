@@ -17,7 +17,7 @@ import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
-import org.omnetpp.inifile.editor.model.InifileAnalyzer.ParamResolution;
+import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;

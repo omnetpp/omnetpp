@@ -15,7 +15,7 @@ import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
-import org.omnetpp.inifile.editor.model.InifileAnalyzer.ParamResolution;
+import org.omnetpp.inifile.editor.model.ParamResolution;
 
 /**
  * Displays module parameters recursively for module type.
