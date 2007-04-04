@@ -5,21 +5,24 @@ import java.util.List;
 
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.RootEditPart;
+import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.editparts.AbstractTreeEditPart;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.views.properties.IPropertySource;
+import org.omnetpp.ned.editor.graph.edit.BaseEditPart;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedTreeContainerEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedTreeEditPolicy;
 import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
-import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.pojo.NedFileNode;
+import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
  * EditPart for Logic components in the Tree.
@@ -44,10 +47,19 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
     @Override
     public void activate() {
         super.activate();
-        if (getModel() != null)
-            ((NEDElement)getModel()).getListeners().add(this);
+        if (getModel() instanceof NedFileNode)
+            NEDResourcesPlugin.getNEDResources().getNEDModelChangeListenerList().add(this);
+//            ((NEDElement)getModel()).getListeners().add(this);
     }
 
+    @Override
+    public void deactivate() {
+        if (getModel() instanceof NedFileNode)
+            NEDResourcesPlugin.getNEDResources().getNEDModelChangeListenerList().remove(this);
+//            ((NEDElement)getModel()).getListeners().remove(this);
+        super.deactivate();
+    }
+    
     /**
      * Creates and installs pertinent EditPolicies for this.
      */
@@ -69,13 +81,6 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
         // delete support
         installEditPolicy(EditPolicy.COMPONENT_ROLE, new NedComponentEditPolicy());
         // reorder support
-    }
-
-    @Override
-    public void deactivate() {
-        if (getModel() != null)
-            ((NEDElement)getModel()).getListeners().remove(this);
-        super.deactivate();
     }
 
     /**
@@ -106,7 +111,19 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
         else // process the even and remeber this serial
             lastEventSerial = event.getSerial();
 
-        refreshChildren();
+        totalRefresh();
+    }
+
+    /**
+     * Fully refresh ourselves an all of our children (recursively) visually
+     */
+    protected void totalRefresh() {
+        // refresh ourselves
+        refresh();
+        // delegate to all children and refresh all their appearence
+        for(Object child : getChildren())
+            ((NedTreeEditPart)child).totalRefresh();
+
     }
 
     public IPropertySource getPropertySource() {
