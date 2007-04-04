@@ -542,7 +542,7 @@ public class InifileDocument implements IInifileDocument {
         	listeners.fireModelChanged();
     }
 
-	public Object getData(String section, String key) {
+	public Object getKeyData(String section, String key) {
 		KeyValueLine line = lookupEntry(section, key);
     	if (line == null)
     		throw new IllegalArgumentException("no such entry: ["+section+"] "+key);
@@ -556,7 +556,7 @@ public class InifileDocument implements IInifileDocument {
 		line.data = data;
 	}
 
-	public Object getData(String sectionName) {
+	public Object getSectionData(String sectionName) {
 		Section section = sections.get(sectionName);
     	if (section == null)
     		throw new IllegalArgumentException("no such section: ["+sectionName+"]");

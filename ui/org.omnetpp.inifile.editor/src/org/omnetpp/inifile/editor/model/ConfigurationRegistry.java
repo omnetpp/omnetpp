@@ -7,9 +7,7 @@ import static org.omnetpp.inifile.editor.model.ConfigurationEntry.Type.CFG_FILEN
 import static org.omnetpp.inifile.editor.model.ConfigurationEntry.Type.CFG_INT;
 import static org.omnetpp.inifile.editor.model.ConfigurationEntry.Type.CFG_STRING;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import org.omnetpp.inifile.editor.model.ConfigurationEntry.Type;
 

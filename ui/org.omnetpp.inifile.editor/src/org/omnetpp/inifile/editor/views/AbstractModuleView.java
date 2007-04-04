@@ -13,8 +13,9 @@ import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileSelectionItem;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
-import org.omnetpp.inifile.editor.model.InifileUtils.Type;
+import org.omnetpp.inifile.editor.model.InifileAnalyzer.ParamResolutionType;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
@@ -201,6 +202,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 				// The inifile editor publishes selection in InifileSelectionItems.
 				//
 				InifileSelectionItem sel = (InifileSelectionItem) element;
+				InifileAnalyzer ana = sel.getAnalyzer();
 				IInifileDocument doc = sel.getDocument();
 
 				String networkName = doc.getValue("General", "network"); //XXX or [Run X], if that's the selected one!
@@ -208,7 +210,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 					displayMessage("Network not specified (no [General]/network= setting)");
 					return;
 				}
-				buildContent(networkName, doc);
+				buildContent(networkName, ana);
 				hideMessage();
 			}
 			
@@ -221,37 +223,36 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 	/**
 	 * Delegates to the other buildContent() method. 
 	 */
-	protected void buildContent(String moduleTypeName, IInifileDocument doc) {
-		buildContent(moduleTypeName, moduleTypeName, doc);
+	protected void buildContent(String moduleTypeName, InifileAnalyzer ana) {
+		buildContent(moduleTypeName, moduleTypeName, ana);
 	}
 
 	/**
 	 * Update view to display content that corresponds to the given module, 
 	 * with the specified inifile as configuration. 
 	 */
-	protected abstract void buildContent(String submoduleName, String submoduleType, IInifileDocument doc);
+	protected abstract void buildContent(String submoduleName, String submoduleType, InifileAnalyzer ana);
 
 
 	/* stuff for subclasses: icons */
 	public static final String ICON_ERROR = "icons/full/obj16/Error.png";
 	public static final String ICON_UNASSIGNEDPAR = "icons/full/obj16/UnassignedPar.png";
 	public static final String ICON_NEDPAR = "icons/full/obj16/NedPar.png";
+	public static final String ICON_NEDDEFAULTPAR = "icons/full/obj16/IniPar.png"; //XXX
 	public static final String ICON_INIPAR = "icons/full/obj16/IniPar.png";
-	public static final String ICON_DEFAULTEDPAR = "icons/full/obj16/IniPar.png"; //XXX
 	public static final String ICON_INIPARREDUNDANT = "icons/full/obj16/IniParRedundant.png";
 	
 	/**
 	 * Helper function: suggests an icon for a table or tree entry.
 	 */
-	protected static Image suggestImage(Type type, NEDElement element) {
+	protected static Image suggestImage(ParamResolutionType type) {
 		switch (type) {
-			case ERROR: return InifileEditorPlugin.getImage(ICON_ERROR);
-			case UNASSIGNED_PAR: return InifileEditorPlugin.getImage(ICON_UNASSIGNEDPAR);
-			case NED_PAR: return InifileEditorPlugin.getImage(ICON_NEDPAR);
-			case INI_PAR: return InifileEditorPlugin.getImage(ICON_INIPAR);
-			case DEFAULTED_PAR:  return InifileEditorPlugin.getImage(ICON_DEFAULTEDPAR); 
-			case INI_PAR_REDUNDANT: return InifileEditorPlugin.getImage(ICON_INIPARREDUNDANT);
-			case OTHER: if (element!=null) return NEDTreeUtil.getNedModelLabelProvider().getImage(element);
+			case UNASSIGNED: return InifileEditorPlugin.getImage(ICON_UNASSIGNEDPAR);
+			case NED: return InifileEditorPlugin.getImage(ICON_NEDPAR);
+			case NED_DEFAULT: return InifileEditorPlugin.getImage(ICON_NEDDEFAULTPAR);
+			case INI: return InifileEditorPlugin.getImage(ICON_INIPAR);
+			case INI_OVERRIDE:  return InifileEditorPlugin.getImage(ICON_INIPAR); 
+			case INI_NEDDEFAULT: return InifileEditorPlugin.getImage(ICON_INIPARREDUNDANT);
 		}
 		return null;
 	}

@@ -212,7 +212,7 @@ public interface IInifileDocument {
 	/**
 	 * Get user data object attached to the given key.
 	 */
-	public Object getData(String section, String key);
+	public Object getKeyData(String section, String key);
 
 	/**
 	 * Attach a (single, unnamed) user data object to the given key.
@@ -222,7 +222,7 @@ public interface IInifileDocument {
 	/**
 	 * Get user data object attached to the given section.
 	 */
-	public Object getData(String section);
+	public Object getSectionData(String section);
 
 	/**
 	 * Attach a (single, unnamed) user data object to the given section.

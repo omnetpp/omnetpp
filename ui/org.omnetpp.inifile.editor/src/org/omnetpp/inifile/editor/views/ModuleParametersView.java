@@ -13,17 +13,15 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
-import org.omnetpp.inifile.editor.model.IInifileDocument;
-import org.omnetpp.inifile.editor.model.InifileUtils;
-import org.omnetpp.inifile.editor.model.InifileUtils.ParameterData;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
-import org.omnetpp.ned.resources.NEDResourcesPlugin;
+import org.omnetpp.inifile.editor.model.InifileAnalyzer;
+import org.omnetpp.inifile.editor.model.InifileAnalyzer.ParamResolution;
 
 /**
  * Displays module parameters recursively for module type.
  * @author Andras
  */
 //XXX add ordering support to the table
+//XXX rewrite to make use of InifileAnalyzer
 public class ModuleParametersView extends AbstractModuleView {
 	private TableViewer tableViewer;
 	private boolean unassignedOnly = true;
@@ -47,12 +45,12 @@ public class ModuleParametersView extends AbstractModuleView {
 			@Override
 			public String getColumnText(Object element, int columnIndex) {
 				Assert.isTrue(columnIndex<=2);
-				if (element instanceof ParameterData) {
-					ParameterData par = (ParameterData) element;
+				if (element instanceof ParamResolution) {
+					ParamResolution par = (ParamResolution) element;
 					switch (columnIndex) {
-					case 0: return par.moduleFullPath+"."+par.parameterName;
-					case 1: return par.value;
-					case 2: return par.remark;
+					case 0: return par.moduleFullPath+"."+par.paramNode.getName();
+					case 1: return par.paramNode.getValue(); //XXX or: ini value!!!!
+					case 2: return "TBD remark!";  //XXX par.remark;
 					}
 				}
 				return columnIndex==0 ? element.toString() : "";
@@ -60,9 +58,9 @@ public class ModuleParametersView extends AbstractModuleView {
 
 			@Override
 			public Image getColumnImage(Object element, int columnIndex) {
-				if (columnIndex==0 && element instanceof ParameterData) {
-					ParameterData par = (ParameterData) element;
-					return suggestImage(par.type, par.element);
+				if (columnIndex==0 && element instanceof ParamResolution) {
+					ParamResolution par = (ParamResolution) element;
+					return suggestImage(par.type);
 				}
 				else {
 					return null;
@@ -96,10 +94,11 @@ public class ModuleParametersView extends AbstractModuleView {
 	}
 
 	@Override
-	public void buildContent(String moduleFullPath, String moduleTypeName, IInifileDocument doc) {
-		//XXX consider changing the return type of NEDResourcesPlugin.getNEDResources() to INEDTypeResolver
-		INEDTypeResolver nedResources = NEDResourcesPlugin.getNEDResources();
-		ParameterData[] pars = InifileUtils.collectParameters(moduleFullPath, moduleTypeName, nedResources, doc, unassignedOnly, true);
-		tableViewer.setInput(pars);
+	public void buildContent(String moduleFullPath, String moduleTypeName, InifileAnalyzer ana) {
+//XXX commented out for now: TODO put back		
+//		//XXX consider changing the return type of NEDResourcesPlugin.getNEDResources() to INEDTypeResolver
+//		INEDTypeResolver nedResources = NEDResourcesPlugin.getNEDResources();
+//		ParamResolution[] pars = InifileUtils.collectParameters(moduleFullPath, moduleTypeName, nedResources, doc, unassignedOnly, true);
+//		tableViewer.setInput(pars);
 	}
 }

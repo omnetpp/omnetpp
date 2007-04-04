@@ -147,7 +147,7 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	 * the given section and key.
 	 */
 	public void setSelection(String section, String key) {
-		ISelection selection = new StructuredSelection(new InifileSelectionItem(getEditorData().getInifileDocument(), section, key));
+		ISelection selection = new StructuredSelection(new InifileSelectionItem(getEditorData().getInifileDocument(), getEditorData().getInifileAnalyzer(), section, key));
 		ISelectionProvider selectionProvider = getSite().getSelectionProvider();
 		selectionProvider.setSelection(selection);
 	}

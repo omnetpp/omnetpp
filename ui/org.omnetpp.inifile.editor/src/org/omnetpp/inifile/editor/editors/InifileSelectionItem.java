@@ -1,6 +1,7 @@
 package org.omnetpp.inifile.editor.editors;
 
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 
 /**
  * An item in structured selections (IStructuredSelection) published
@@ -12,11 +13,13 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
  */
 public class InifileSelectionItem {
 	private IInifileDocument document;
+	private InifileAnalyzer analyzer;
 	private String section;
 	private String key;
 	
-	public InifileSelectionItem(IInifileDocument document, String section, String key) {
+	public InifileSelectionItem(IInifileDocument document, InifileAnalyzer analyzer, String section, String key) {
 		this.document = document;
+		this.analyzer = analyzer;
 		this.section = section;
 		this.key = key;
 	}
@@ -26,6 +29,13 @@ public class InifileSelectionItem {
 	 */
 	public IInifileDocument getDocument() {
 		return document;
+	}
+
+	/**
+	 * The inifile analyzer.
+	 */
+	public InifileAnalyzer getAnalyzer() {
+		return analyzer;
 	}
 
 	/**
