@@ -61,6 +61,44 @@ public class InifileAnalyzer {
 			this.section = section;
 			this.key = key;
 		}
+
+		/* Generated; needed for GenericTreeUtil.treeEquals() */
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			final ParamResolution other = (ParamResolution) obj;
+			if (key == null) {
+				if (other.key != null)
+					return false;
+			} else if (!key.equals(other.key))
+				return false;
+			if (moduleFullPath == null) {
+				if (other.moduleFullPath != null)
+					return false;
+			} else if (!moduleFullPath.equals(other.moduleFullPath))
+				return false;
+			if (paramNode == null) {
+				if (other.paramNode != null)
+					return false;
+			} else if (!paramNode.equals(other.paramNode))
+				return false;
+			if (section == null) {
+				if (other.section != null)
+					return false;
+			} else if (!section.equals(other.section))
+				return false;
+			if (type == null) {
+				if (other.type != null)
+					return false;
+			} else if (!type.equals(other.type))
+				return false;
+			return true;
+		}
 	}
 	
 	/**
@@ -89,7 +127,7 @@ public class InifileAnalyzer {
 	public IInifileDocument getDocument() {
 		return doc;
 	}
-	
+
 	/**
 	 * Analyzes the inifile. Side effects: error/warning markers may be placed
 	 * on the IFile, and parameter resolutions (see ParamResolution) are 
@@ -129,6 +167,14 @@ public class InifileAnalyzer {
 			}
 		}
 		System.out.println("Inifile analysed in "+(System.currentTimeMillis()-startTime)+"ms");
+	}
+
+	protected void addMarker(String section, int severity, String message) {
+		System.out.println(message); //XXX TODO
+	}
+
+	protected void addMarker(String section, String key, int severity, String message) {
+		System.out.println(message); //XXX TODO
 	}
 	
 	protected void validateConfig(String section, String key, INEDTypeResolver ned) {
@@ -307,7 +353,7 @@ public class InifileAnalyzer {
 	/**
 	 * Returns unassigned parameters for the given inifile section.
 	 */
-	public ParamResolution[] getUnresolvedParams(String section) {
+	public ParamResolution[] getUnassignedParams(String section) {
 		SectionData data = (SectionData) doc.getSectionData(section);
 		ArrayList<ParamResolution> pars = data==null ? null : data.paramResolutions;
 		if (pars == null || pars.isEmpty())

@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
+import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.ParamResolution;
 
@@ -25,7 +26,39 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer.ParamResolution;
 public class ModuleParametersView extends AbstractModuleView {
 	private TableViewer tableViewer;
 	private boolean unassignedOnly = true;
+	private IInifileDocument inifileDocument; // corresponds to the current selection; unfortunately needed by the label provider
 	
+	/**
+	 * Node contents for the GenericTreeNode tree that is displayed in the view
+	 */
+	//XXX needed?
+	private static class ErrorNode {
+		String text;
+		ErrorNode(String text) {
+			this.text = text;
+		}
+		@Override
+		public String toString() {
+			return text;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			final ErrorNode other = (ErrorNode) obj;
+			if (text == null) {
+				if (other.text != null)
+					return false;
+			} else if (!text.equals(other.text))
+				return false;
+			return true;
+		}
+	}
+
 	public ModuleParametersView() {
 	}
 
@@ -48,9 +81,9 @@ public class ModuleParametersView extends AbstractModuleView {
 				if (element instanceof ParamResolution) {
 					ParamResolution par = (ParamResolution) element;
 					switch (columnIndex) {
-					case 0: return par.moduleFullPath+"."+par.paramNode.getName();
-					case 1: return par.paramNode.getValue(); //XXX or: ini value!!!!
-					case 2: return "TBD remark!";  //XXX par.remark;
+						case 0: return par.moduleFullPath+"."+par.paramNode.getName();
+						case 1: return getValueAndRemark(par, inifileDocument)[0]; // value
+						case 2: return getValueAndRemark(par, inifileDocument)[1]; // remark
 					}
 				}
 				return columnIndex==0 ? element.toString() : "";
@@ -58,13 +91,14 @@ public class ModuleParametersView extends AbstractModuleView {
 
 			@Override
 			public Image getColumnImage(Object element, int columnIndex) {
-				if (columnIndex==0 && element instanceof ParamResolution) {
-					ParamResolution par = (ParamResolution) element;
-					return suggestImage(par.type);
-				}
-				else {
+				if (columnIndex!=0)
 					return null;
-				}
+				if (element instanceof ParamResolution)
+					return suggestImage(((ParamResolution) element).type);
+				else if (element instanceof ErrorNode)
+					return InifileEditorPlugin.getImage(ICON_ERROR);
+				else
+					return null;
 			}
 			
 		});
@@ -94,11 +128,16 @@ public class ModuleParametersView extends AbstractModuleView {
 	}
 
 	@Override
+	protected void displayMessage(String text) {
+		super.displayMessage(text);
+		inifileDocument = null;
+		tableViewer.setInput(null);
+	}
+	
+	@Override
 	public void buildContent(String moduleFullPath, String moduleTypeName, InifileAnalyzer ana) {
-//XXX commented out for now: TODO put back		
-//		//XXX consider changing the return type of NEDResourcesPlugin.getNEDResources() to INEDTypeResolver
-//		INEDTypeResolver nedResources = NEDResourcesPlugin.getNEDResources();
-//		ParamResolution[] pars = InifileUtils.collectParameters(moduleFullPath, moduleTypeName, nedResources, doc, unassignedOnly, true);
-//		tableViewer.setInput(pars);
+		String section = "Parameters"; //XXX
+		ParamResolution[] pars = unassignedOnly ? ana.getUnassignedParams(section) : ana.getParamResolutions(section); //XXX or maybe the resolutions for the selected key, etc
+		tableViewer.setInput(pars);
 	}
 }

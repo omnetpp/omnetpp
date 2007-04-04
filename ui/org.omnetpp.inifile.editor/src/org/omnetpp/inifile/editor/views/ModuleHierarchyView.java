@@ -34,6 +34,7 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
 //XXX create another view: Hierarchy (inheritance tree); and call this Usage? Nesting? Tree? Containment?
 public class ModuleHierarchyView extends AbstractModuleView {
 	private TreeViewer treeViewer;
+	private IInifileDocument inifileDocument; // corresponds to the current selection; unfortunately needed by the label provider
 
 	/**
 	 * Node contents for the GenericTreeNode tree that is displayed in the view
@@ -46,6 +47,22 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		@Override
 		public String toString() {
 			return text;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			final ErrorNode other = (ErrorNode) obj;
+			if (text == null) {
+				if (other.text != null)
+					return false;
+			} else if (!text.equals(other.text))
+				return false;
+			return true;
 		}
 	}
 
@@ -62,13 +79,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			this.node = node;
 		}
 
-		/* needed for labelProvider */
-		@Override
-		public String toString() { 
-			return moduleFullPath;
-		}
-
-		/* needed for GenericTreeUtil.treeEquals() */
+		/* Generated; needed for GenericTreeUtil.treeEquals() */
 		@Override
 		public boolean equals(Object obj) {
 			if (this == obj)
@@ -120,7 +131,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 				if (element instanceof ModuleNode)
 					return NEDTreeUtil.getNedModelLabelProvider().getText(((ModuleNode) element).node);
 				else if (element instanceof ParamResolution)
-					return createLabelFor((ParamResolution) element, null); //XXX null??
+					return getLabelFor((ParamResolution) element, inifileDocument);
 				else 
 					return element.toString();
 			}
@@ -140,8 +151,15 @@ public class ModuleHierarchyView extends AbstractModuleView {
 				}				
 			}
 		});
-		
+
 		return treeViewer.getTree();
+	}
+
+	@Override
+	protected void displayMessage(String text) {
+		super.displayMessage(text);
+		inifileDocument = null;
+		treeViewer.setInput(null);
 	}
 
 	public void buildContent(String moduleFullPath, String moduleTypeName, InifileAnalyzer ana) {
@@ -152,8 +170,10 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		buildTree(root, moduleFullName, moduleFullPath, moduleTypeName, null, nedResources, ana);
 
 		// prevent collapsing all treeviewer nodes: only set it on viewer if it's different from old input
-		if (!GenericTreeUtils.treeEquals(root, (GenericTreeNode)treeViewer.getInput())) 
+		if (!GenericTreeUtils.treeEquals(root, (GenericTreeNode)treeViewer.getInput())) { 
 			treeViewer.setInput(root);
+			this.inifileDocument = ana==null ? null : ana.getDocument();
+		}
 	}
 
 	private void buildTree(GenericTreeNode parent, String moduleFullName, String moduleFullPath, String moduleTypeName, SubmoduleNode thisSubmodule, INEDTypeResolver nedResources, InifileAnalyzer ana) {
@@ -206,31 +226,12 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		}
 		return thisNode;
 	}
-	
-	protected static String createLabelFor(ParamResolution res, IInifileDocument doc) {
-			// value in the NED file
-			String nedValue = res.paramNode.getValue(); //XXX what if parsed expressions?
-			if (StringUtils.isEmpty(nedValue)) 
-				nedValue = null;
 
-			// look up its value in the ini file
-			String iniValue = null;
-			if (doc != null && res.key != null)
-				iniValue = doc.getValue(res.section, res.key);
-
-			String valueText;
-			switch (res.type) {
-				case UNASSIGNED: valueText = "(unassigned)"; break;
-				case NED: valueText = nedValue+" (NED)"; break;  
-				case NED_DEFAULT: valueText = nedValue+"(NED default applied)"; break;
-				case INI: valueText = iniValue+" (ini)"; break;
-				case INI_OVERRIDE: valueText = iniValue+" (ini, overrides NED default "+nedValue+")"; break;
-				case INI_NEDDEFAULT: valueText = nedValue+" (ini, sets same value as NED default)"; break;
-				default: throw new IllegalStateException("invalid param resolution type: "+res.type);
-			}
-
-			String text = res.paramNode.getName()+" = "+valueText;
-			return text;
+	protected static String getLabelFor(ParamResolution res, IInifileDocument doc) {
+		String[] tmp = getValueAndRemark(res, doc);
+		String value = tmp[0];
+		String remark = tmp[1];
+		return res.paramNode.getName() + " = " + (value==null ? "" : value+" ") + "(" + remark + ")"; 
 	}
 
 }
