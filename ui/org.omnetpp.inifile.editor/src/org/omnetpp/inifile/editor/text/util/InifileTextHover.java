@@ -48,14 +48,19 @@ public class InifileTextHover implements ITextHover {
 
 		InifileAnalyzer ana = editorData.getInifileAnalyzer();
 		if (key == null) {
-			// Parameters section: display unassigned parameters
-			ParamResolution[] resList = ana.getUnassignedParams(section);
-			if (resList.length==0) 
-				return "Section [" + section + "] seems to contain no unassigned parameters ";
-			String text = "Section [" + section + "] does not seem to assign the following parameters: \n";
-			for (ParamResolution res : resList)
-				text += "  - " + res.moduleFullPath + "." +res.paramNode.getName() + "\n";
-			return text;
+			if (InifileAnalyzer.isParamSection(section)) {
+				// Parameters section: display unassigned parameters
+				ParamResolution[] resList = ana.getUnassignedParams(section);
+				if (resList.length==0) 
+					return "Section [" + section + "] seems to contain no unassigned parameters ";
+				String text = "Section [" + section + "] does not seem to assign the following parameters: \n";
+				for (ParamResolution res : resList)
+					text += "  - " + res.moduleFullPath + "." +res.paramNode.getName() + "\n";
+				return text;
+			}
+			else {
+				return null;
+			}
 		}
 		else if (keyType==KeyType.CONFIG) {
 			// config key: display description

@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -23,7 +21,9 @@ import org.omnetpp.common.editor.text.IncrementalCompletionProcessor;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
-import org.omnetpp.inifile.editor.model.ParseException;
+import org.omnetpp.inifile.editor.model.InifileAnalyzer;
+import org.omnetpp.inifile.editor.model.ParamResolution;
+import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 import org.omnetpp.inifile.editor.text.NedHelper;
 
 /**
@@ -51,10 +51,10 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 	}
 
 	private IContextInformationValidator fValidator = new Validator();
-	
-    /**
-     * This is the main entry point. 
-     */
+
+	/**
+	 * This is the main entry point. 
+	 */
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
 		List<ICompletionProposal> result = new ArrayList<ICompletionProposal>();
 
@@ -69,53 +69,122 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 		} catch (BadLocationException e) {
 			InifileEditorPlugin.logError(e);
 		}
+
+		// cut off leading spaces
 		linePrefix = linePrefix.replaceFirst("^\\s+", "");
 
-		// identify where we are: include, section name, key, value, or comment.
-
 		Set<String> proposals = new HashSet<String>();
-		
-		if (linePrefix.startsWith("#") || linePrefix.startsWith(";")) {
+
+		ContextType type = lineEndContext(linePrefix);
+		if (type==ContextType.COMMENT) {
 			// comment: no completion
 		}
-		if (linePrefix.matches("include\\s.*")) {
-			// include directive: offer filenames
-			proposals.add("foo.ini");
-			proposals.add("bar.ini");
-			proposals.add("somethingelse.ini");
+		else if (type==ContextType.STRINGLITERAL) {
+			// inside string literal: no completion
+			proposals.add("\"");
 		}
-		if (linePrefix.length()==0 || linePrefix.startsWith("[")) {
-			// section heading
-			//XXX todo
-			proposals.add("General"); //XXX not entirely OK...
-			proposals.add("Cmdenv");
-			
-			//Matcher m = Pattern.compile("\\[([^#;\"]+)\\]\\s*([#;].*)?").matcher(linePrefix);
-			//String sectionName = m.group(1).trim();
-			//String comment = m.groupCount()>1 ? m.group(2) : null; 
-		}
-
-		if ("include".startsWith(linePrefix)) {
-			proposals.add("include "); //XXX TODO
-		}
-		
-		if (!linePrefix.startsWith("[") && !linePrefix.matches("include\\s.*") && !linePrefix.startsWith("#") && !linePrefix.startsWith(";")) {
-			// key = value
-			//XXX check that "=" is not within a comment already -- see InifileParser.findEndContent()
-			if (linePrefix.contains("=")) {
-				// offer value completions
-				proposals.add("\"some string\"");
-				proposals.add("1000s");
+		else {
+			// normal context
+			// identify where we are: include, section name, key, value, or comment.
+			if ("include".startsWith(linePrefix)) {
+				proposals.add("include ");
 			}
-			else {
-				for (ConfigurationEntry e : ConfigurationRegistry.getEntries()) {
-					proposals.add(e.getName()); //XXX check if section is ok, config not in there yet, etc
+			if (linePrefix.matches("include\\s.*")) {
+				// include directive: offer filenames
+				proposals.add("foo.ini");
+				proposals.add("bar.ini");
+				proposals.add("somethingelse.ini");
+			}
+			if (linePrefix.length()==0) {
+				proposals.add("[General]");
+				proposals.add("[Cmdenv]");
+			}
+			if (linePrefix.matches("\\[[a-zA-Z]*")) {
+				// section heading
+				proposals.add("General");
+				proposals.add("Cmdenv");
+			}
+
+			if (!linePrefix.startsWith("[") && !linePrefix.matches("include\\s.*")) {
+				// key = value
+				if (!linePrefix.contains("=")) {
+					// offer key completion proposals
+					for (ConfigurationEntry e : ConfigurationRegistry.getEntries())
+						proposals.add(e.getName()+" = "); //XXX check if section is ok, config not in there yet, etc
+				}
+				else {
+					// offer value completions
+					String key = linePrefix.replaceFirst("=.*", "").trim();
+					if (InifileAnalyzer.getKeyType(key) == KeyType.CONFIG) {
+						// configuration key: offer value completion based on the type
+						ConfigurationEntry e = ConfigurationRegistry.getEntry(key);
+						if (e != null) {
+							switch (e.getType()) {
+								case CFG_BOOL: 
+									proposals.add("true");
+									proposals.add("false");
+									break;
+								case CFG_STRING: 
+									proposals.add("\"\"");
+									break;
+								case CFG_FILENAME:
+								case CFG_FILENAMES:
+									//TODO offer file name completion
+									break;
+							}
+						}
+					}
+					else {
+						if (InifileAnalyzer.getKeyType(key) == KeyType.PARAM) {
+							// offer unassigned parameters
+							String section = "Parameters"; //XXX
+							if (InifileAnalyzer.isParamSection(section)) {
+								proposals.add("**.foo.numBars"); //XXX
+//								ParamResolution[] resList = ana.getUnassignedParams(section);
+//								for (ParamResolution res : resList) {
+//									proposals.add("**." + res.paramNode.getName());
+//									proposals.add(res.moduleFullPath + "." +res.paramNode.getName());
+//									//XXX plus futher interpolation between the two
+//								}
+							}
+							
+						}
+						
+						//XXX offer per-object configuration completion? (use-default, etc)
+					}
 				}
 			}
 		}
-		
+
 		addProposals(viewer, documentOffset, result, proposals, "some description or whatever"); //XXX
-	    return (ICompletionProposal[]) result.toArray(new ICompletionProposal[result.size()]);
+		return (ICompletionProposal[]) result.toArray(new ICompletionProposal[result.size()]);
+	}
+
+	enum ContextType {NORMAL, COMMENT, STRINGLITERAL};
+	private static ContextType lineEndContext(String linePrefix) {
+		int k = 0;
+		while (k < linePrefix.length()) {
+			switch (linePrefix.charAt(k)) {
+			case '"':
+				// string literal: skip it
+				k++;
+				while (k < linePrefix.length() && linePrefix.charAt(k) != '"') {
+					if (linePrefix.charAt(k) == '\\')  // skip \", \\, etc.
+						k++; 
+					k++;  
+				}
+				if (k >= linePrefix.length())
+					return ContextType.STRINGLITERAL;
+				k++;
+				break;
+			case '#': case ';':
+				// comment
+				return ContextType.COMMENT;
+			default:
+				k++;
+			}
+		}
+		return ContextType.NORMAL;
 	}
 
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, String[] proposals, String description) {
@@ -127,7 +196,7 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 	}
 
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Template[] templates) {
-	    result.addAll(Arrays.asList(createTemplateProposals(viewer, documentOffset, templates)));
+		result.addAll(Arrays.asList(createTemplateProposals(viewer, documentOffset, templates)));
 	}
 
 	public IContextInformation[] computeContextInformation(ITextViewer viewer, int documentOffset) {
