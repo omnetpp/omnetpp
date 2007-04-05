@@ -11,7 +11,7 @@ import org.omnetpp.ned.editor.text.NedHelper;
 /**
  * NED documentation completion processor.
  */
-public class NedDocCompletionProcessor extends IncrementalCompletionProcessor {
+public class NedDocCompletionProcessor extends NedTemplateCompletionProcessor {
 
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
         List<ICompletionProposal> result = 
@@ -30,5 +30,5 @@ public class NedDocCompletionProcessor extends IncrementalCompletionProcessor {
     public char[] getCompletionProposalAutoActivationCharacters() {
         return new char[] { '@', '<' };
     }
-
+    
 }

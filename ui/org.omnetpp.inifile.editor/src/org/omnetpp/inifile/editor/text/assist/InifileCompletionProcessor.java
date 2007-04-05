@@ -34,7 +34,7 @@ import org.omnetpp.inifile.editor.text.NedHelper;
  * NED completion processor.
  */
 //XXX TODO rename, revise, possibly remove...
-public class NedCompletionProcessor extends IncrementalCompletionProcessor {
+public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 
 	/**
 	 * Simple content assist tip closer. The tip is valid in a range

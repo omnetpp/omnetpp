@@ -35,7 +35,7 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
 /**
  * NED completion processor.
  */
-public class NedCompletionProcessor extends IncrementalCompletionProcessor {
+public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 
 	/**
 	 * Simple content assist tip closer. The tip is valid in a range

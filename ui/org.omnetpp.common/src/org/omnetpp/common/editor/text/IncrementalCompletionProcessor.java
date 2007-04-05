@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.text.assist;
+package org.omnetpp.common.editor.text;
 
 
 import java.util.ArrayList;
@@ -20,18 +20,16 @@ import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateCompletionProcessor;
 import org.eclipse.jface.text.templates.TemplateContext;
-import org.eclipse.jface.text.templates.TemplateContextType;
 import org.eclipse.jface.text.templates.TemplateException;
 import org.eclipse.jface.text.templates.TemplateProposal;
 import org.eclipse.swt.graphics.Image;
-import org.omnetpp.ned.editor.text.TextualNedEditorPlugin;
+import org.omnetpp.common.CommonPlugin;
 
 /**
  * Generic incremental type completion processor.
  */
 public abstract class IncrementalCompletionProcessor extends TemplateCompletionProcessor {
-
-    private static final String DEFAULT_IMAGE= "icons/16/template.gif"; //$NON-NLS-1$
+    private static final String DEFAULT_IMAGE = "icons/16/template.gif"; //XXX make sure it exists (copy from nedtexteditor)
 
     /**
      * Helper comparator calss to compare CompletionProposals using relevance and the the display name 
@@ -136,6 +134,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
 	 * @author andras
 	 * @see org.eclipse.jface.text.contentassist.IContentAssistProcessor#computeCompletionProposals(org.eclipse.jface.text.ITextViewer, int)
 	 */
+	@SuppressWarnings("unchecked")
 	public ICompletionProposal[] createTemplateProposals(ITextViewer viewer, int offset, Template[] templates) {
 
 		ITextSelection selection= (ITextSelection) viewer.getSelectionProvider().getSelection();
@@ -172,39 +171,18 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
 	}
     
     /**
-     * Returns the all templates for this contextTypeId.
-     * 
-     * @param contextTypeId the context type
-     * @return all templates
-     */
-    protected Template[] getTemplates(String contextTypeId) {
-        return TextualNedEditorPlugin.getDefault().getTemplateStore().getTemplates(contextTypeId);
-    }
-
-    /**
-     * Return the XML context type that is supported by this plug-in.
-     * 
-     * @param viewer the viewer, ignored in this implementation
-     * @param region the region, ignored in this implementation
-     * @return the supported XML context type
-     */
-    protected TemplateContextType getContextType(ITextViewer viewer, IRegion region) {
-        return TextualNedEditorPlugin.getDefault().getContextTypeRegistry().getContextType(NedContextType.DEFAULT_CONTEXT_TYPE);
-    }
-
-    /**
      * Always return the default image.
      * 
      * @param template the template, ignored in this implementation
-     * @return the defaul template image
+     * @return the default template image
      */
     protected Image getImage(Template template) {
-        ImageRegistry registry= TextualNedEditorPlugin.getDefault().getImageRegistry();
-        Image image= registry.get(DEFAULT_IMAGE);
+        ImageRegistry registry = CommonPlugin.getDefault().getImageRegistry();
+        Image image = registry.get(DEFAULT_IMAGE);
         if (image == null) {
-            ImageDescriptor desc= TextualNedEditorPlugin.imageDescriptorFromPlugin(DEFAULT_IMAGE); //$NON-NLS-1$
+            ImageDescriptor desc = CommonPlugin.imageDescriptorFromPlugin(CommonPlugin.PLUGIN_ID, DEFAULT_IMAGE);
             registry.put(DEFAULT_IMAGE, desc);
-            image= registry.get(DEFAULT_IMAGE);
+            image = registry.get(DEFAULT_IMAGE);
         }
         return image;
     }

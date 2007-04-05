@@ -10,8 +10,10 @@ import org.omnetpp.ned.editor.text.NedHelper;
 /**
  * Private NED documentation completion processor.
  */
-public class NedPrivateDocCompletionProcessor extends IncrementalCompletionProcessor {
-    public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
+public class NedPrivateDocCompletionProcessor extends NedTemplateCompletionProcessor {
+
+	@SuppressWarnings("unchecked")
+	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
         List<ICompletionProposal> result = 
             createProposals(viewer, documentOffset, NedHelper.nedWordDetector,
                     "", NedHelper.proposedPrivateDocTodo, " ", null);
