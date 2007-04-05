@@ -1,9 +1,15 @@
 package org.omnetpp.inifile.editor.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.ui.texteditor.MarkerUtilities;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.inifile.editor.InifileEditorPlugin;
+import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.InifileUtils.IModuleTreeVisitor;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.model.NEDElement;
@@ -21,6 +27,7 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
  * @author Andras
  */
 public class InifileAnalyzer {
+	public static final String INIFILEANALYZERPROBLEM_MARKER_ID = InifileEditorPlugin.PLUGIN_ID + ".inifileanalyzerproblem";
 	private IInifileDocument doc;
 
 	/**
@@ -68,6 +75,15 @@ public class InifileAnalyzer {
 		long startTime = System.currentTimeMillis();
 		INEDTypeResolver ned = NEDResourcesPlugin.getNEDResources();
 		
+		// remove existing markers
+		try {
+			IFile file = doc.getDocumentFile();
+			file.deleteMarkers(INIFILEANALYZERPROBLEM_MARKER_ID, true, 0);
+		} catch (CoreException e) {
+			InifileEditorPlugin.logError(e);
+		}
+		
+		// analyze file
 		for (String section : doc.getSectionNames()) {
 			boolean isParamSection = isParamSection(section);
 			for (String key : doc.getKeys(section)) {
@@ -81,13 +97,13 @@ public class InifileAnalyzer {
 					if (isParamSection)
 						doc.setData(section, key, new KeyData());
 					else
-						addMarker(section, key, IMarker.SEVERITY_ERROR, "Parameter settings must be in section [Parameters] or in a run-specific section [Run X]");
+						addError(section, key, "Parameter settings must be in section [Parameters] or in a run-specific section [Run X]");
 					break;
 				case PER_OBJECT_CONFIG:
 					if (isParamSection)
 						doc.setData(section, key, new KeyData());
 					else
-						addMarker(section, key, IMarker.SEVERITY_ERROR, "This configuration must be in section [Parameters] or in a run-specific section [Run X]"); //XXX really?
+						addError(section, key, "This configuration must be in section [Parameters] or in a run-specific section [Run X]"); //XXX really?
 					break;
 				}
 			}
@@ -100,25 +116,50 @@ public class InifileAnalyzer {
 		System.out.println("Inifile analysed in "+(System.currentTimeMillis()-startTime)+"ms");
 	}
 
-	protected void addMarker(String section, int severity, String message) {
-		System.out.println(message); //XXX TODO
+	protected void addError(String section, String message) {
+		LineInfo line = doc.getSectionLineDetails(section);
+		addMarker(line.getFile(), INIFILEANALYZERPROBLEM_MARKER_ID, IMarker.SEVERITY_ERROR, message, line.getLineNumber()); 
 	}
 
-	protected void addMarker(String section, String key, int severity, String message) {
-		System.out.println(message); //XXX TODO
+	protected void addError(String section, String key, String message) {
+		LineInfo line = doc.getEntryLineDetails(section, key);
+		addMarker(line.getFile(), INIFILEANALYZERPROBLEM_MARKER_ID, IMarker.SEVERITY_ERROR, message, line.getLineNumber()); 
 	}
-	
+
+	protected void addWarning(String section, String message) {
+		LineInfo line = doc.getSectionLineDetails(section);
+		addMarker(line.getFile(), INIFILEANALYZERPROBLEM_MARKER_ID, IMarker.SEVERITY_WARNING, message, line.getLineNumber()); 
+	}
+
+	protected void addWarning(String section, String key, String message) {
+		LineInfo line = doc.getEntryLineDetails(section, key);
+		addMarker(line.getFile(), INIFILEANALYZERPROBLEM_MARKER_ID, IMarker.SEVERITY_WARNING, message, line.getLineNumber()); 
+	}
+
+    @SuppressWarnings("unchecked")
+    private static void addMarker(final IFile file, final String type, int severity, String message, int line) {
+    	try {
+    		HashMap map = new HashMap();
+    		MarkerUtilities.setMessage(map, message);
+    		MarkerUtilities.setLineNumber(map, line);
+    		map.put(IMarker.SEVERITY, severity);
+			MarkerUtilities.createMarker(file, map, type);
+		} catch (CoreException e) {
+			InifileEditorPlugin.logError(e);
+		}
+    }
+
 	protected void validateConfig(String section, String key, INEDTypeResolver ned) {
 		ConfigurationEntry e = ConfigurationRegistry.getEntry(key);
 		boolean isPerRunSection = section.startsWith("Run ");
 		if (e == null) {
-			System.out.println("ERROR: unknown configuration entry: "+key);
+			addError(section, key, "Unknown configuration entry: "+key);
 		}
 		else if (e.isGlobal() && !section.equals(e.getSection())) {
-			System.out.println("ERROR: key "+key+" occurs in wrong section, must be in ["+e.getSection()+"]");
+			addError(section, key, "Key \""+key+"\" occurs in wrong section, must be in ["+e.getSection()+"]");
 		}
 		else if (!e.isGlobal() && !section.equals(e.getSection()) && !isPerRunSection) {
-			System.out.println("ERROR: key "+key+" occurs in wrong section, must be in ["+e.getSection()+"], or in a run-specific section [Run X]");
+			addError(section, key, "Key \""+key+"\" occurs in wrong section, must be in ["+e.getSection()+"], or in a run-specific section [Run X]");
 		}
 		
 		//XXX check the syntax of the value too, etc...

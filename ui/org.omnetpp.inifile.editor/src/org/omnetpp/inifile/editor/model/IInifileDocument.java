@@ -217,26 +217,31 @@ public interface IInifileDocument {
 	/**
 	 * Attach a (single, unnamed) user data object to the given key.
 	 */
-	public void setData(String section, String key, Object data);
+	void setData(String section, String key, Object data);
 
 	/**
 	 * Get user data object attached to the given section.
 	 */
-	public Object getSectionData(String section);
+	Object getSectionData(String section);
 
 	/**
 	 * Attach a (single, unnamed) user data object to the given section.
 	 */
-	public void setData(String section, Object data);
+	void setData(String section, Object data);
 	
 	/**
      * Adds a listener to this document 
      */
-	public void addInifileChangeListener(IInifileChangeListener listener);
+	void addInifileChangeListener(IInifileChangeListener listener);
 
 	/**
      * Removes a listener from this document 
      */
-	public void removeInifileChangeListener(IInifileChangeListener listener);
+	void removeInifileChangeListener(IInifileChangeListener listener);
+
+	/**
+	 * Returns the main (edited) inifile.
+	 */
+	IFile getDocumentFile();
 	
 }

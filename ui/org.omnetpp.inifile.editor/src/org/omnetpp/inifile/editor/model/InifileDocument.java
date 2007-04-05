@@ -209,7 +209,7 @@ public class InifileDocument implements IInifileDocument {
     		map.put(IMarker.SEVERITY, severity);
 			MarkerUtilities.createMarker(file, map, type);
 		} catch (CoreException e) {
-			e.printStackTrace(); //XXX
+			InifileEditorPlugin.logError(e);
 		}
     }
 
@@ -568,5 +568,9 @@ public class InifileDocument implements IInifileDocument {
     	if (section == null)
     		throw new IllegalArgumentException("no such section: ["+sectionName+"]");
 		section.data = data;
+	}
+
+	public IFile getDocumentFile() {
+		return documentFile;
 	}
 }
