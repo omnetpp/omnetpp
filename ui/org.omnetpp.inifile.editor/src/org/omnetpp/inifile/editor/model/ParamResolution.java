@@ -3,7 +3,7 @@ package org.omnetpp.inifile.editor.model;
 import org.omnetpp.ned.model.pojo.ParamNode;
 
 /**
- * Stores the result of a parameter resolution.
+ * Value object, stores the result of a parameter resolution.
  */
 public class ParamResolution {
 	public enum ParamResolutionType {

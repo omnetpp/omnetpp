@@ -32,6 +32,8 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
  * @author Andras
  */
 //XXX create another view: Hierarchy (inheritance tree); and call this Usage? Nesting? Tree? Containment?
+//XXX follow selection
+//XXX context menu with "Go to NED file" and "Go to ini file"
 public class ModuleHierarchyView extends AbstractModuleView {
 	private TreeViewer treeViewer;
 	private IInifileDocument inifileDocument; // corresponds to the current selection; unfortunately needed by the label provider
