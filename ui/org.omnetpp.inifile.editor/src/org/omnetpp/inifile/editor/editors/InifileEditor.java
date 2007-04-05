@@ -107,11 +107,11 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		});
 		
 		// this DelayedJob will, after a delay, publish a new editor selection towards the workbench
-		postSelectionChangedJob = new DelayedJob(600, new Runnable() {
+		postSelectionChangedJob = new DelayedJob(600) {
 			public void run() {
 				updateSelection();
 			}
-		});
+		};
 		
 		// we want to update the selection whenever the document changes, or the cursor position in the text editor changes
 		editorData.getInifileDocument().addInifileChangeListener(new IInifileChangeListener() {

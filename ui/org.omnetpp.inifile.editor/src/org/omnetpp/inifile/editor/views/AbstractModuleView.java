@@ -4,12 +4,12 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.ui.ViewWithMessagePart;
+import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileSelectionItem;
@@ -38,7 +38,12 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 	private ISelectionListener selectionChangedListener;
 	private IPartListener partListener;
 	private INEDChangeListener nedChangeListener;
-
+    private DelayedJob rebuildContentJob = new DelayedJob(200) {
+        public void run() {
+            rebuildContent();
+        }
+    };
+	
 	public AbstractModuleView() {
 	}
 
@@ -63,6 +68,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 			}
 		};
 		getSite().getPage().addPostSelectionListener(selectionChangedListener);
+        getSite().getPage().addSelectionListener(selectionChangedListener);
 		
 		// Listens to workbench changes, and invokes activeEditorChanged() whenever the 
 		// active editor changes. Listening on workbench changes is needed because 
@@ -115,6 +121,8 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 	protected void unhookListeners() {
 		if (selectionChangedListener != null)
 			getSite().getPage().removePostSelectionListener(selectionChangedListener);
+        if (selectionChangedListener != null)
+            getSite().getPage().removeSelectionListener(selectionChangedListener);
 		if (partListener != null)
 			getSite().getPage().removePartListener(partListener);
 		if (nedChangeListener != null)
@@ -142,18 +150,14 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 	}
 
 	public void scheduleRebuildContent() {
-		rebuildContent();
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				rebuildContent();
-			}
-		});
+        rebuildContentJob.restartTimer();
 	}
 
 	public void rebuildContent() {
 		if (isDisposed())
 			return;
 		
+        System.out.println("*** CONTENT REBUILD");
 		IEditorPart activeEditor = getActiveEditor();
 		if (activeEditor==null) {
 			displayMessage("There is no active editor.");
@@ -216,7 +220,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 			
 		}
 		else {
-			displayMessage("Please open an inifile or NED editor.");
+			displayMessage("No NED element or INI file entry selected.");
 		}
 	}
 
