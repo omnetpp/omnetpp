@@ -11,16 +11,14 @@ import org.eclipse.swt.widgets.Display;
  * 
  * @author Andras
  */
-public class DelayedJob {
-	private Runnable runnable;
+abstract public class DelayedJob implements Runnable {
 	private int delayMillis;
 
 	/**
 	 * Creates the object, but does not start the timer yet.
 	 */
-	public DelayedJob(int delayMillis, Runnable runnable) {
+	public DelayedJob(int delayMillis) {
 		this.delayMillis = delayMillis;
-		this.runnable = runnable;
 	}
 
 	/**
@@ -29,8 +27,8 @@ public class DelayedJob {
 	public void restartTimer() {
 		// Alas, timerExec() may only be invoked from the UI thread 
 		if (Display.getCurrent() != null) {
-			Display.getDefault().timerExec(-1, runnable);
-			Display.getDefault().timerExec(delayMillis, runnable);
+			Display.getDefault().timerExec(-1, this);
+			Display.getDefault().timerExec(delayMillis, this);
 		}
 		else {
 			Display.getDefault().asyncExec(new Runnable() {
@@ -47,7 +45,7 @@ public class DelayedJob {
 	public void cancel() {
 		// Alas, timerExec() may only be invoked from the UI thread 
 		if (Display.getCurrent() != null) {
-			Display.getDefault().timerExec(-1, runnable);
+			Display.getDefault().timerExec(-1, this);
 		}
 		else {
 			Display.getDefault().asyncExec(new Runnable() {
@@ -57,4 +55,12 @@ public class DelayedJob {
 			});
 		}
 	}
+    
+    /**
+     * Runs the job immediately
+     */
+    public void runNow() {
+        cancel();
+        run();
+    }
 }
