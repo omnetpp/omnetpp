@@ -56,7 +56,7 @@ public class InifileTextHover implements ITextHover {
 				return "Section [" + section + "] seems to contain no unassigned parameters ";
 			String text = "Section [" + section + "] does not seem to assign the following parameters: \n";
 			for (ParamResolution res : resList)
-				text += "   " + res.moduleFullPath + "." +res.paramNode.getName() + "\n";
+				text += "  - " + res.moduleFullPath + "." +res.paramNode.getName() + "\n";
 			return text;
 		}
 		else if (keyType==KeyType.CONFIG) {
@@ -79,7 +79,7 @@ public class InifileTextHover implements ITextHover {
 				return "Entry \"" + key + "\" does not match any module parameters ";
 			String text = "Entry \"" + key + "\" applies to the following module parameters: \n";
 			for (ParamResolution res : resList)
-				text += "   " + res.moduleFullPath + "." +res.paramNode.getName() + "\n";
+				text += "  - " + res.moduleFullPath + "." +res.paramNode.getName() + "\n";
 			return text;
 		}
 		else if (keyType == KeyType.PER_OBJECT_CONFIG) {
