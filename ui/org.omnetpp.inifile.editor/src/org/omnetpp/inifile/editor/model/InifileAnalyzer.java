@@ -111,6 +111,9 @@ public class InifileAnalyzer {
 			if (isParamSection) {
 				doc.setData(section, new SectionData());
 				calculateParamResolutions(section, ned);
+				
+				for (String key : getUnusedParameterKeys(section))
+					addWarning(section, key, "Unused entry (does not match any parameters)");
 			}
 		}
 		System.out.println("Inifile analysed in "+(System.currentTimeMillis()-startTime)+"ms");
@@ -281,9 +284,11 @@ public class InifileAnalyzer {
 			return KeyType.PER_OBJECT_CONFIG; // contains both dot and hyphen
 	}
 	
-	public boolean isUsed(String section, String key) {
+	public boolean isUnusedParameterKey(String section, String key) {
+		if (getKeyType(key)!=KeyType.PARAM) 
+			return false;
 		KeyData data = (KeyData) doc.getKeyData(section,key);
-		return data!=null && data.paramResolutions!=null && !data.paramResolutions.isEmpty(); 
+		return data!=null && data.paramResolutions!=null && data.paramResolutions.isEmpty(); 
 	}
 
 	/**
@@ -293,6 +298,14 @@ public class InifileAnalyzer {
 	public ParamResolution[] getParamResolutionsForKey(String section, String key) {
 		KeyData data = (KeyData) doc.getKeyData(section,key);
 		return (data!=null && data.paramResolutions!=null) ? data.paramResolutions.toArray(new ParamResolution[]{}) : new ParamResolution[0]; 
+	}
+
+	public String[] getUnusedParameterKeys(String section) {
+		ArrayList<String> list = new ArrayList<String>();
+		for (String key : doc.getKeys(section)) 
+			if (isUnusedParameterKey(section, key))
+				list.add(key);
+		return list.toArray(new String[list.size()]);
 	}
 
 	/**
