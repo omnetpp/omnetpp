@@ -18,10 +18,12 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
+import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.CompoundModuleNode;
+import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
 import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
@@ -153,6 +155,20 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
         rebuildContentJob.restartTimer();
 	}
 
+    /**
+     * @return Tries to find a ned element up in the ancestor chanin which may have 
+     * parameters. ie. simple and submodule, compoundmodule and channel
+     */
+    private NEDElement findFirstElementWithParameter(NEDElement element) {
+        while (element != null) {
+            if (element instanceof CompoundModuleNode || element instanceof SimpleModuleNode ||
+                    element instanceof SubmoduleNode || element instanceof ModuleInterfaceNode)
+                return element;
+            element = element.getParent();
+        }
+        return element;
+    }
+    
 	public void rebuildContent() {
 		if (isDisposed())
 			return;
@@ -170,8 +186,6 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 			return;
 		}
 		
-		//System.out.println("SELECTION: "+selection);
-		
 		if (selection instanceof IStructuredSelection && !selection.isEmpty()) {
 			Object element = ((IStructuredSelection)selection).getFirstElement();
 			if (element instanceof IModelProvider) {
@@ -180,7 +194,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 				// with editparts in it. NEDElement can be extracted from editparts
 				// via IModelProvider.
 				//
-				Object model = ((IModelProvider)element).getModel();
+				NEDElement model = findFirstElementWithParameter(((IModelProvider)element).getNEDModel());
 				if (model instanceof CompoundModuleNode) {
 					CompoundModuleNode node = (CompoundModuleNode)model;
 					String moduleTypeName = node.getName();
@@ -199,7 +213,13 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 					String submoduleType = InifileUtils.getSubmoduleType(submodule);
 					buildContent(submoduleName, submoduleType, null);
 					hideMessage();
-				}
+				} else if (model instanceof ModuleInterfaceNode) {
+                    ModuleInterfaceNode node = (ModuleInterfaceNode)model;
+                    String moduleTypeName = node.getName();
+                    buildContent(moduleTypeName, null);
+                    hideMessage();
+                } else
+                    displayMessage("No NED element selected.");
 			}
 			else if (element instanceof InifileSelectionItem) {
 				//
