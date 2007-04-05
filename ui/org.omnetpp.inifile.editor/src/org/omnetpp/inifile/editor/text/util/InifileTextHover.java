@@ -19,9 +19,7 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 /**
  * Presents hover information for ini files.
  */
-//TODO for the "F2 to focus" stuff, see ITextHoverExtension & IInformationControlCreator
 public class InifileTextHover implements ITextHover {
-
 	private InifileEditorData editorData;
 
 	public InifileTextHover(InifileEditorData editorData) {
@@ -86,7 +84,7 @@ public class InifileTextHover implements ITextHover {
 			return null; // TODO
 		}
 		else {
-			return null; // should not happen
+			return null; // should not happen (invalid key type)
 		}
 	}    
 

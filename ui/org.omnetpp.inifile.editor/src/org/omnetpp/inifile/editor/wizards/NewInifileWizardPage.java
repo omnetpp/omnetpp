@@ -39,8 +39,8 @@ public class NewInifileWizardPage extends WizardPage {
 	 */
 	public NewInifileWizardPage(ISelection selection) {
 		super("wizardPage");
-		setTitle("Multi-page Editor File");
-		setDescription("This wizard creates a new file with *.ini extension.");
+		setTitle("Create an ini file");
+		setDescription("This wizard creates a new OMNeT++/OMNEST simulation configuration file.");
 		this.selection = selection;
 	}
 
