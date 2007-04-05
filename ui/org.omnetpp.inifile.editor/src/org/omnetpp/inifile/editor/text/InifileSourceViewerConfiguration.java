@@ -47,7 +47,7 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
 
 		ContentAssistant assistant = new ContentAssistant();
 		//assistant.setDocumentPartitioning(...);
-		assistant.setContentAssistProcessor(new InifileCompletionProcessor(), IDocument.DEFAULT_CONTENT_TYPE);
+		assistant.setContentAssistProcessor(new InifileCompletionProcessor(editorData), IDocument.DEFAULT_CONTENT_TYPE);
         
 		assistant.enableAutoActivation(true);
 		assistant.setAutoActivationDelay(500);

@@ -40,6 +40,20 @@ public class NedHelper {
     }
 
     /**
+     * Detects words separated by whitespace.
+     */
+    public static class SpaceSeparatedWordDetector implements IWordDetector {
+
+        public boolean isWordStart(char c) {
+            return isWordPart(c);
+        }
+
+        public boolean isWordPart(char c) {
+            return c!=' ' && c!='\t' && c!='\f' && c!='\n' && c!='\r';
+        }
+    }
+
+    /**
      * Word detector for ini files. Key names may contain hyphens
      * ("sim-time-limit"), so we recognize it as a word part as well.
      */
@@ -139,7 +153,8 @@ public class NedHelper {
 
     // whitespace and word detectors for tokenization
     public final static WhitespaceDetector whitespaceDetector = new WhitespaceDetector();
-    public final static InifileWordDetector inifileWordDetector = new InifileWordDetector();
+    public final static IWordDetector spaceSeparatedWordDetector = new SpaceSeparatedWordDetector();
+    public final static IWordDetector inifileWordDetector = new InifileWordDetector();
 
     // tokens for syntax highlighting
     // TODO these styles should be configurable
