@@ -10,10 +10,10 @@ import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 
 /** 
- * The NedAnnotationHover provides the hover support for java editors.
+ * Provides hover info for annotations.
  */
-//XXX TODO rename, revise, possibly remove...
-public class NedAnnotationHover implements IAnnotationHover {
+//XXX copied from NedAnnotationHover. Maybe there's a standard implementation somewhere?
+public class InifileAnnotationHover implements IAnnotationHover {
 
     /* (non-Javadoc)
 	 * Method declared on IAnnotationHover

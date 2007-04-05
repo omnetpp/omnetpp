@@ -23,8 +23,8 @@ import org.omnetpp.inifile.editor.text.assist.NedContentAssistPartitionScanner;
 import org.omnetpp.inifile.editor.text.highlight.InifileSyntaxHighlightPartitionScanner;
 import org.omnetpp.inifile.editor.text.highlight.NedCodeColorizerScanner;
 import org.omnetpp.inifile.editor.text.highlight.NedDocColorizerScanner;
-import org.omnetpp.inifile.editor.text.util.NedAnnotationHover;
-import org.omnetpp.inifile.editor.text.util.NedTextHover;
+import org.omnetpp.inifile.editor.text.util.InifileAnnotationHover;
+import org.omnetpp.inifile.editor.text.util.InifileTextHover;
 
 /**
  * Configuration for a SourceViewer which shows an inifile.
@@ -37,7 +37,7 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
 	}
 	
 	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
-		return new NedAnnotationHover();
+		return new InifileAnnotationHover();
 	}
 		
 	public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
@@ -96,7 +96,7 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
 	}
 	
 	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
-		return new NedTextHover(editorData);
+		return new InifileTextHover(editorData);
 	}
 
 	@Override

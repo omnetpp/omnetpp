@@ -16,15 +16,14 @@ import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.text.NedHelper;
 
 /**
- * Example implementation for an <code>ITextHover</code> which hovers over NED code.
+ * Presents hover information for ini files.
  */
-//XXX TODO rename, revise, possibly remove...
 // TODO for the "F2 to focus" stuff, see ITextHoverExtension & IInformationControlCreator
-public class NedTextHover implements ITextHover {
+public class InifileTextHover implements ITextHover {
 
 	private InifileEditorData editorData;
 	
-	public NedTextHover(InifileEditorData editorData) {
+	public InifileTextHover(InifileEditorData editorData) {
 		this.editorData = editorData;
 	}
 
