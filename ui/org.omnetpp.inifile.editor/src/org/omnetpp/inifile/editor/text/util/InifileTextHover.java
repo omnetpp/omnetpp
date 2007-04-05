@@ -64,16 +64,19 @@ public class InifileTextHover implements ITextHover {
 			ConfigurationEntry entry = ConfigurationRegistry.getEntry(key);
 			if (entry == null)
 				return null;
-
-			String text = "["+entry.getSection()+(entry.isGlobal() ? "" : "] or [Run X")+"] / "+entry.getName()+"=... \n\n";
+			String text = "["+entry.getSection()+(entry.isGlobal() ? "" : "] or [Run X")+"] / "+entry.getName();
+			text += " = <" + entry.getType().name().replaceFirst("CFG_", ""); 
+			if (!"".equals(entry.getDefaultValue()))
+				text += ", default: " + entry.getDefaultValue();
+			text += "> \n\n";
 			text += entry.getDescription() + "\n";
-			return StringUtils.breakLines(text, 80); //XXX refine! display defaultValue too!
+			return StringUtils.breakLines(text, 80);
 		}
 		else if (keyType == KeyType.PARAM) {
 			// parameter assignment: display which parameters it matches
 			ParamResolution[] resList = ana.getParamResolutionsForKey(section, key);
 			if (resList.length==0) 
-				return "Entry \"" + key + "\" seems to be redundant (not matching any module parameters) ";
+				return "Entry \"" + key + "\" does not match any module parameters ";
 			String text = "Entry \"" + key + "\" applies to the following module parameters: \n";
 			for (ParamResolution res : resList)
 				text += "   " + res.moduleFullPath + "." +res.paramNode.getName() + "\n";
