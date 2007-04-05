@@ -1,5 +1,7 @@
 package org.omnetpp.ned.model.interfaces;
 
+import org.omnetpp.ned.model.NEDElement;
+
 /**
  * Can provide a NED Model. Allows that we access the model from any selection
  * without depending on the GEF plugin. GEF EditParts should implement this, as an
@@ -7,5 +9,5 @@ package org.omnetpp.ned.model.interfaces;
  * @author rhornig
  */
 public interface IModelProvider {
-    public Object getModel();
+    public NEDElement getNEDModel();
 }
