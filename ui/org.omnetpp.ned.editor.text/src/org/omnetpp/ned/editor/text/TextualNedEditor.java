@@ -3,8 +3,6 @@ package org.omnetpp.ned.editor.text;
 
 import java.util.ResourceBundle;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
@@ -25,7 +23,6 @@ import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
@@ -33,10 +30,6 @@ import org.eclipse.ui.texteditor.TextEditorAction;
 import org.eclipse.ui.texteditor.TextOperationAction;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.ned.editor.text.outline.NedContentOutlinePage;
-import org.omnetpp.ned.model.NEDElement;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
-import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 
 public class TextualNedEditor extends TextEditor {
@@ -233,7 +226,7 @@ public class TextualNedEditor extends TextEditor {
 		super.initializeEditor();
 		setSourceViewerConfiguration(new NedSourceViewerConfiguration(this));
 	}
-	
+    
 	/*
 	 * @see org.eclipse.ui.texteditor.ExtendedTextEditor#createSourceViewer(org.eclipse.swt.widgets.Composite, org.eclipse.jface.text.source.IVerticalRuler, int)
 	 */
@@ -260,6 +253,11 @@ public class TextualNedEditor extends TextEditor {
 		fProjectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.warning"); //$NON-NLS-1$
 		fProjectionSupport.install();
 		viewer.doOperation(ProjectionViewer.TOGGLE);
+        // we should set the selection provider as late as possible because the outer multipage esitor overrides it
+        // during editor initializatiopn
+        // install a selection provider that provides StructuredSelection of NEDModel elements in getSelection
+        // instead of ITestSelection
+        getSite().setSelectionProvider(new NedSelectionProvider(this));
 	}
 	
 	/*
@@ -272,37 +270,4 @@ public class TextualNedEditor extends TextEditor {
 			extension.exposeModelRange(new Region(offset, length));
 		}
 	}
-    
-    
-    /**
-     * Returns the NED element at the given position
-     * @param offset
-     * @return
-     */
-    public NEDElement getNEDElementAtOffset(int offset) {
-        try {
-            // find out line:column
-            INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();        
-            IDocument docu = getSourceViewer().getDocument();
-            int line = docu.getLineOfOffset(offset);
-            int column = offset - docu.getLineOffset(line);
-            line++;  // IDocument is 0-based
-            
-            // find out file
-            Assert.isTrue(getEditorInput() instanceof IFileEditorInput); // NEDEditor only accepts file input
-            IFile file = ((IFileEditorInput)getEditorInput()).getFile();
-            
-            // find component and NEDElements under the cursor 
-            INEDTypeInfo c = res.getComponentAt(file, line);
-            if (c!=null) {
-                NEDElement[] nodes = c.getNEDElementsAt(line, column);
-                if (nodes!=null && nodes[0]!=null) {
-                    return nodes[0];
-                }
-            }
-            return null;
-        } catch (BadLocationException e) {
-            return null;
-        }
-    }
 }
