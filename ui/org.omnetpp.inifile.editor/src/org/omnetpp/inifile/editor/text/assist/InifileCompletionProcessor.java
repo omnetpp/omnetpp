@@ -2,9 +2,14 @@ package org.omnetpp.inifile.editor.text.assist;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.TextPresentation;
@@ -15,6 +20,10 @@ import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContextType;
 import org.omnetpp.common.editor.text.IncrementalCompletionProcessor;
+import org.omnetpp.inifile.editor.InifileEditorPlugin;
+import org.omnetpp.inifile.editor.model.ConfigurationEntry;
+import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
+import org.omnetpp.inifile.editor.model.ParseException;
 import org.omnetpp.inifile.editor.text.NedHelper;
 
 /**
@@ -48,8 +57,63 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
      */
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
 		List<ICompletionProposal> result = new ArrayList<ICompletionProposal>();
-		// TODO
-		String[] proposals = new String[] {"ecc", "pecc", "kimehecc"};
+
+		// determine prefix (content of the given line before the cursor)
+		String linePrefix = ""; 
+		try {
+			IDocument doc = viewer.getDocument();
+			int lineNumber = doc.getLineOfOffset(documentOffset);
+			int lineStartOffset = doc.getLineOffset(lineNumber);
+			linePrefix = doc.get(lineStartOffset, documentOffset - lineStartOffset);
+			//XXX if previous line ends in "\", it has to be included in the prefix
+		} catch (BadLocationException e) {
+			InifileEditorPlugin.logError(e);
+		}
+		linePrefix = linePrefix.replaceFirst("^\\s+", "");
+
+		// identify where we are: include, section name, key, value, or comment.
+
+		Set<String> proposals = new HashSet<String>();
+		
+		if (linePrefix.startsWith("#") || linePrefix.startsWith(";")) {
+			// comment: no completion
+		}
+		if (linePrefix.matches("include\\s.*")) {
+			// include directive: offer filenames
+			proposals.add("foo.ini");
+			proposals.add("bar.ini");
+			proposals.add("somethingelse.ini");
+		}
+		if (linePrefix.length()==0 || linePrefix.startsWith("[")) {
+			// section heading
+			//XXX todo
+			proposals.add("General"); //XXX not entirely OK...
+			proposals.add("Cmdenv");
+			
+			//Matcher m = Pattern.compile("\\[([^#;\"]+)\\]\\s*([#;].*)?").matcher(linePrefix);
+			//String sectionName = m.group(1).trim();
+			//String comment = m.groupCount()>1 ? m.group(2) : null; 
+		}
+
+		if ("include".startsWith(linePrefix)) {
+			proposals.add("include "); //XXX TODO
+		}
+		
+		if (!linePrefix.startsWith("[") && !linePrefix.matches("include\\s.*") && !linePrefix.startsWith("#") && !linePrefix.startsWith(";")) {
+			// key = value
+			//XXX check that "=" is not within a comment already -- see InifileParser.findEndContent()
+			if (linePrefix.contains("=")) {
+				// offer value completions
+				proposals.add("\"some string\"");
+				proposals.add("1000s");
+			}
+			else {
+				for (ConfigurationEntry e : ConfigurationRegistry.getEntries()) {
+					proposals.add(e.getName()); //XXX check if section is ok, config not in there yet, etc
+				}
+			}
+		}
+		
 		addProposals(viewer, documentOffset, result, proposals, "some description or whatever"); //XXX
 	    return (ICompletionProposal[]) result.toArray(new ICompletionProposal[result.size()]);
 	}
