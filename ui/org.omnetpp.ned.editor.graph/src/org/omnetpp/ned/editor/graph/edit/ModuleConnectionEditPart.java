@@ -13,6 +13,7 @@ import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEndpointEditPolicy;
 import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
+import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
@@ -215,6 +216,10 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
 
     public void setPropertySource(IPropertySource propertySource) {
         this.propertySource = propertySource;
+    }
+
+    public NEDElement getNEDModel() {
+        return (NEDElement)getModel();
     }
 }
 

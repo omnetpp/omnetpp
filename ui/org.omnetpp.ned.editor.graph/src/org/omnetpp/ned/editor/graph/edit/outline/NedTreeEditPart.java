@@ -5,16 +5,15 @@ import java.util.List;
 
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.RootEditPart;
-import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.editparts.AbstractTreeEditPart;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.views.properties.IPropertySource;
-import org.omnetpp.ned.editor.graph.edit.BaseEditPart;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedTreeContainerEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedTreeEditPolicy;
 import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
+import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
@@ -49,14 +48,12 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
         super.activate();
         if (getModel() instanceof NedFileNode)
             NEDResourcesPlugin.getNEDResources().getNEDModelChangeListenerList().add(this);
-//            ((NEDElement)getModel()).getListeners().add(this);
     }
 
     @Override
     public void deactivate() {
         if (getModel() instanceof NedFileNode)
             NEDResourcesPlugin.getNEDResources().getNEDModelChangeListenerList().remove(this);
-//            ((NEDElement)getModel()).getListeners().remove(this);
         super.deactivate();
     }
     
@@ -81,6 +78,10 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
         // delete support
         installEditPolicy(EditPolicy.COMPONENT_ROLE, new NedComponentEditPolicy());
         // reorder support
+    }
+
+    public NEDElement getNEDModel() {
+        return (NEDElement)getModel();
     }
 
     /**
@@ -133,4 +134,5 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
     public void setPropertySource(IPropertySource propertySource) {
         this.propertySource = propertySource;
     }
+
 }

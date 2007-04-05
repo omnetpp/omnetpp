@@ -36,6 +36,7 @@ import org.eclipse.gef.ui.parts.ContentOutlinePage;
 import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
 import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
+import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.gef.ui.properties.UndoablePropertySheetEntry;
 import org.eclipse.jface.action.IAction;
@@ -60,6 +61,7 @@ import org.omnetpp.ned.editor.graph.dnd.TextTransferDropTargetListener;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
 import org.omnetpp.ned.editor.graph.misc.ModulePaletteCustomizer;
+import org.omnetpp.ned.editor.graph.misc.NedSelectionSynchronizer;
 import org.omnetpp.ned.editor.graph.misc.PaletteManager;
 import org.omnetpp.ned.editor.graph.properties.view.BasePreferrerPropertySheetSorter;
 import org.omnetpp.ned.editor.graph.properties.view.PropertySheetPageEx;
@@ -129,6 +131,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
     private boolean editorSaving = false;
 
     private NedFileNodeEx nedFileModel;
+    private SelectionSynchronizer synchronizer;
 
     protected static final String PALETTE_DOCK_LOCATION = "Dock location"; //$NON-NLS-1$
     protected static final String PALETTE_SIZE = "Palette Size"; //$NON-NLS-1$
@@ -144,6 +147,13 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
     public void dispose() {
         NEDResourcesPlugin.getNEDResources().getNEDComponentChangeListenerList().remove(paletteManager);
         super.dispose();
+    }
+    
+    @Override
+    protected SelectionSynchronizer getSelectionSynchronizer() {
+        if (synchronizer == null)
+            synchronizer = new NedSelectionSynchronizer();
+        return synchronizer;
     }
     
     protected PaletteRoot getPaletteRoot() {
