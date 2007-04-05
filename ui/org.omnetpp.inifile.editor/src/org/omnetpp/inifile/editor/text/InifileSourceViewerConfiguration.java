@@ -18,8 +18,7 @@ import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
-import org.omnetpp.inifile.editor.text.assist.NedCompletionProcessor;
-import org.omnetpp.inifile.editor.text.assist.NedContentAssistPartitionScanner;
+import org.omnetpp.inifile.editor.text.assist.InifileCompletionProcessor;
 import org.omnetpp.inifile.editor.text.highlight.InifileSyntaxHighlightPartitionScanner;
 import org.omnetpp.inifile.editor.text.highlight.NedCodeColorizerScanner;
 import org.omnetpp.inifile.editor.text.highlight.NedDocColorizerScanner;
@@ -46,9 +45,9 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
 	
     public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
 
-		ContentAssistant assistant= new ContentAssistant();
-		assistant.setDocumentPartitioning(NedContentAssistPartitionScanner.PARTITIONING_ID);
-		assistant.setContentAssistProcessor(new NedCompletionProcessor(), IDocument.DEFAULT_CONTENT_TYPE);
+		ContentAssistant assistant = new ContentAssistant();
+		//assistant.setDocumentPartitioning(...);
+		assistant.setContentAssistProcessor(new InifileCompletionProcessor(), IDocument.DEFAULT_CONTENT_TYPE);
         
 		assistant.enableAutoActivation(true);
 		assistant.setAutoActivationDelay(500);
@@ -57,10 +56,6 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
         assistant.setInformationControlCreator(getInformationControlCreator(sourceViewer));
 
 		return assistant;
-	}
-	
-	public String getDefaultPrefix(ISourceViewer sourceViewer, String contentType) {
-		return (NedContentAssistPartitionScanner.NED_DOC.equals(contentType) ? "// " : null); //$NON-NLS-1$
 	}
 	
 	public ITextDoubleClickStrategy getDoubleClickStrategy(ISourceViewer sourceViewer, String contentType) {

@@ -9,7 +9,6 @@ import org.eclipse.jface.text.templates.Template;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
-import org.omnetpp.inifile.editor.text.assist.NedContextType;
 
 /**
  * This class contains all the possible keywords for syntax highlighting and context assist functions.
@@ -19,6 +18,7 @@ import org.omnetpp.inifile.editor.text.assist.NedContextType;
  */
 //XXX TODO rename, revise, possibly remove...
 public class NedHelper {
+	public static final String DEFAULT_CONTEXT_TYPE= "org.omnetpp.ned.editor.text.default"; //$NON-NLS-1$
 
     /**
      * Convenience method, to return a system default color. Color constants come from SWT class e.g. SWT.COLOR_RED
@@ -134,7 +134,7 @@ public class NedHelper {
 
     private static Template makeShortTemplate(String pattern, String description) {
     	String name = pattern.replaceAll("\\$\\{(.*?)\\}", "$1");  // remove ${} from parameters
-    	return new Template(name, description, NedContextType.DEFAULT_CONTEXT_TYPE, pattern, false);
+    	return new Template(name, description, NedHelper.DEFAULT_CONTEXT_TYPE, pattern, false);
     }
 
     // whitespace and word detectors for tokenization
