@@ -12,11 +12,8 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.common.editor.EditorUtil;
-import org.omnetpp.common.editor.ISelectionSupport;
 import org.omnetpp.ned.model.NEDElement;
-import org.omnetpp.ned.model.NEDSourceRegion;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.interfaces.ITopLevelElement;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -144,19 +141,14 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 	public static void openNEDElementInEditor(NEDElement element) {
 		INEDTypeInfo typeInfo = element.getContainerNEDTypeInfo();
 		IFile file = typeInfo.getNEDFile();
-		NEDSourceRegion sourceRegion = element.getSourceRegion();
 
         try {
             IEditorPart editor = EditorUtil.openEditor(file, NED_EDITOR_ID, true);
 
             // select the component so it will be visible in the opened editor
-            if (editor instanceof ISelectionSupport) {
-            	if (element instanceof ITopLevelElement)
-            		((ISelectionSupport)editor).selectGraphComponent(typeInfo.getName());
-            	else
-            		((ISelectionSupport)editor).setTextHighlightRange(sourceRegion.startLine, sourceRegion.endLine);
+            if (editor instanceof IGotoNedElement) {
+            		((IGotoNedElement)editor).showInEditor(element, IGotoNedElement.Mode.AUTOMATIC);
             }
-
         } catch (PartInitException e) {
         	// no message dialog is needed, because the platform displays an erroreditpart anyway 
             logError("Cannot open NED editor", e);

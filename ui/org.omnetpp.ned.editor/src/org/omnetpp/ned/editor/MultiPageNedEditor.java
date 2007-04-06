@@ -23,22 +23,24 @@ import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
-import org.omnetpp.common.editor.ISelectionSupport;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
+import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
+import org.omnetpp.ned.model.interfaces.ITopLevelElement;
+import org.omnetpp.ned.model.pojo.SubmoduleNode;
+import org.omnetpp.ned.resources.IGotoNedElement;
 import org.omnetpp.ned.resources.NEDResources;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
  * Multi-page NED editor.
  * 
- * TODO react to resource changes (reread if file changed, close if file deleted)
  * FIXME File|Open in Eclipse won't work!!! it creates a JavaFileEditorInput which is NOT an IFileEditorInput!!! 
  */
 public class MultiPageNedEditor extends MultiPageEditorPart implements
-		ISelectionSupport, IGotoMarker {
+		IGotoNedElement, IGotoMarker {
 
     private GraphicalNedEditor graphEditor;
 	private TextualNedEditor textEditor;
@@ -142,6 +144,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
             if (!textContent.equals(textEditor.getText())) {
                 // TODO refresh the editor annotations to show the error marks
                 res.setNEDFileText(ifile, textContent);
+                // set the text control content too
                 textEditor.setText(textContent);
             }
 		} 
@@ -150,11 +153,11 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 		    // the text has changed in the editor
 		    res.setNEDFileText(ifile, textEditor.getText());
             if (!textContent.equals(textEditor.getText())) {
-				// set the parsed ned text as a model to the graphical editor 
-				graphEditor.setModel((NedFileNodeEx)res.getNEDFileContents(ifile));
                 // store the actual text content to be able th detect changes in the future
                 textContent = textEditor.getText();
 			}
+            // set the parsed ned text as a model to the graphical editor 
+            graphEditor.setModel((NedFileNodeEx)res.getNEDFileContents(ifile));
 
             // only start in graphics mode if there's no error in the file
             if (res.containsNEDErrors(ifile)) {
@@ -211,10 +214,6 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         // we do not support save as...
 		return false;
 	}
-
-    public void selectGraphComponent(String componentName) {
-        graphEditor.selectGraphComponent(componentName);
-    }
 
     /**
      * closes the editor and optionally saves it.
@@ -300,16 +299,25 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
             gm.gotoMarker(marker);
     }
     
-    public void setTextHighlightRange(int startLine, int endLine) {
-        // switch to text page and delagte to it
-        setActivePage(textPageIndex);
-        IDocument document = textEditor.getDocumentProvider().getDocument(getEditorInput());
-        try {
-            textEditor.setHighlightRange(document.getLineOffset(startLine-1), 
-                                        document.getLineOffset(endLine-1)+document.getLineLength(endLine-1), 
-                                        true);
-        } catch (BadLocationException e) {
+    public void showInEditor(NEDElement model, Mode mode) {
+        if (mode == Mode.AUTOMATIC) {
+            mode = (model instanceof ITopLevelElement || model instanceof SubmoduleNode) ? Mode.GRAPHICAL : Mode.TEXT;
+        }
+        
+        if (mode == Mode.GRAPHICAL) {
+            setActivePage(graphPageIndex);
+            graphEditor.reveal(model);
+        } else {
+            setActivePage(textPageIndex);
+            IDocument document = textEditor.getDocumentProvider().getDocument(getEditorInput());
+            try {
+                int startLine = model.getSourceRegion().startLine;
+                int endLine = model.getSourceRegion().endLine;
+                textEditor.setHighlightRange(document.getLineOffset(startLine-1), 
+                                             document.getLineOffset(endLine-1)+document.getLineLength(endLine-1), 
+                                             true);
+            } catch (BadLocationException e) {
+            }
         }
     }
-
 }

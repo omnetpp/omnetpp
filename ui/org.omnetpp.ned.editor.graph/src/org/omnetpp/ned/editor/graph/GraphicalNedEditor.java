@@ -52,7 +52,6 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
-import org.omnetpp.common.editor.ISelectionSupport;
 import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
 import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
 import org.omnetpp.ned.editor.graph.actions.ShowPropertyViewAction;
@@ -65,13 +64,12 @@ import org.omnetpp.ned.editor.graph.misc.NedSelectionSynchronizer;
 import org.omnetpp.ned.editor.graph.misc.PaletteManager;
 import org.omnetpp.ned.editor.graph.properties.view.BasePreferrerPropertySheetSorter;
 import org.omnetpp.ned.editor.graph.properties.view.PropertySheetPageEx;
+import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
-import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 
-public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
-    implements ISelectionSupport {
+public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
 
     class OutlinePage extends ContentOutlinePage {
 
@@ -401,26 +399,23 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
             updateActions(getSelectionActions());
     }
 
-    public void selectGraphComponent(String componentName) {
-        if (componentName == null || "".equals(componentName)) {
-            getGraphicalViewer().deselectAll();
-            return;
-        }
-
-        List toplevelParts = getGraphicalViewer().getContents().getChildren();
-        EditPart selectedEditpart = null;
-        for (Object child : toplevelParts) {
-            Object model = ((EditPart)child).getModel();
-            if ((model instanceof IHasName) && componentName.equals(((IHasName)model).getName()))
-                    selectedEditpart = (EditPart)child;
-        }
-
-        getGraphicalViewer().reveal(selectedEditpart);
-        getGraphicalViewer().select(selectedEditpart);
-    }
-
-    public void setTextHighlightRange(int offset, int length) {
+    /**
+     * Reveals a model element in the editor (or its nearest ancestor which 
+     * has an associated editPart)
+     * @param model
+     */
+    public void reveal(NEDElement model) {
+        EditPart editPart = null;
+         while( (model != null) && 
+                (editPart = (EditPart)getGraphicalViewer().getEditPartRegistry().get(model)) == null)
+             model = model.getParent();
         
+         if (editPart == null) {
+             getGraphicalViewer().deselectAll();
+         } else { 
+             getGraphicalViewer().reveal(editPart);
+             getGraphicalViewer().select(editPart);
+         }
     }
 
 }
