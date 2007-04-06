@@ -147,11 +147,17 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				Object element = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
-				if (element instanceof GenericTreeNode && ((GenericTreeNode)element).getPayload() instanceof ModuleNode) {
-					ModuleNode payload = (ModuleNode) ((GenericTreeNode)element).getPayload();
-					if (payload.node != null) {
+				if (element instanceof GenericTreeNode)
+					element = ((GenericTreeNode)element).getPayload();
+				if (element instanceof ModuleNode) {
+					ModuleNode payload = (ModuleNode) element;
+					if (payload.node != null)
 						NEDResourcesPlugin.openNEDElementInEditor(payload.node);
-					}
+				}				
+				if (element instanceof ParamResolution) {
+					ParamResolution payload = (ParamResolution) element;
+					if (payload.paramNode != null)
+						NEDResourcesPlugin.openNEDElementInEditor(payload.paramNode);
 				}				
 			}
 		});

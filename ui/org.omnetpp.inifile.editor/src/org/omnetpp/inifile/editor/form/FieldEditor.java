@@ -18,6 +18,7 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
  * Base class for inifile field editors
  * @author Andras
  */
+//XXX add ">>" button next to the "Reset" buttons, for config-specific settings
 public abstract class FieldEditor extends Composite {
 	public static final Color BGCOLOR = InifileFormEditor.BGCOLOR;
 

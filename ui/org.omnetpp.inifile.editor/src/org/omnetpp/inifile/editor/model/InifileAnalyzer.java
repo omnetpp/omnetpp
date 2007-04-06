@@ -228,13 +228,17 @@ public class InifileAnalyzer {
 		boolean isDefault = param.getIsDefault(); //XXX should be used somehow
 
 		// look up its value in the ini file
-		String iniValue = null;
 		String iniKey = null;
+		String iniValue = null;
+		String iniUseDefaultKey = null;
+		boolean iniUseDefault = false;
 		if (doc != null) {
 			String paramFullPath = moduleFullPath + "." + param.getName();
 			iniKey = InifileUtils.lookupParameter(paramFullPath, doc, "Parameters"); //XXX run-specific sections too!
 			iniValue = doc.getValue("Parameters", iniKey);
-			//XXX observe "**.use-default=true" style settings as well!!!
+			iniUseDefaultKey = InifileUtils.lookupParameter(paramFullPath+".use-default", doc, "Parameters");
+			String iniUseDefaultStr = doc.getValue("Parameters", iniKey);
+			iniUseDefault = "true".equals(iniUseDefaultStr);
 		}
 
 		//XXX this issue is much more complicated, as there may be multiple possibly matching 
