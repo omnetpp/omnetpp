@@ -16,6 +16,7 @@ import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned.model.pojo.ChannelNode;
 import org.omnetpp.ned.model.pojo.CompoundModuleNode;
@@ -181,7 +182,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
     protected void refreshOwnMembers() {
         // XXX for debuging
         ++refreshOwnCount;
-//        System.out.println("NEDComponent for "+getName()+" ownRefersh: " + refreshOwnCount);
+        // System.out.println("NEDComponent for "+getName()+" ownRefersh: " + refreshOwnCount);
 
         ownProperties.clear();
         ownParams.clear();
@@ -226,7 +227,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 	 */
 	protected void refreshInheritedMembers() {
         ++refreshInheritedCount;
-//        System.out.println("NEDComponent for "+getName()+" inheritedRefersh: " + refreshInheritedCount);
+        // System.out.println("NEDComponent for "+getName()+" inheritedRefersh: " + refreshInheritedCount);
 
         // first wee need our own members updated
         if (needsOwnUpdate)
@@ -288,7 +289,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 	 * later re-built on demand. 
 	 */
 	public void invalidate() {
-        System.out.println("NEDComponent invalidate");
+        // System.out.println("NEDComponent invalidate");
         needsOwnUpdate = true;
 		needsUpdate = true;
 	}
@@ -447,6 +448,10 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
     @Override
     public String toString() {
         return "NEDComponent for "+getNEDElement();
+    }
+
+    public void modelChanged(NEDModelEvent event) {
+        invalidate();
     }
 
 }

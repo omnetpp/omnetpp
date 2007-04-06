@@ -3,6 +3,7 @@ package org.omnetpp.inifile.editor.views;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.internal.ole.win32.ITypeInfo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener;
@@ -20,6 +21,7 @@ import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.CompoundModuleNode;
@@ -159,7 +161,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
      * @return Tries to find a ned element up in the ancestor chanin which may have 
      * parameters. ie. simple and submodule, compoundmodule and channel
      */
-    private NEDElement findFirstElementWithParameter(NEDElement element) {
+    private NEDElement findFirstModuleOrSubmodule(NEDElement element) {
         while (element != null) {
             if (element instanceof CompoundModuleNode || element instanceof SimpleModuleNode ||
                     element instanceof SubmoduleNode || element instanceof ModuleInterfaceNode)
@@ -194,30 +196,10 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 				// with editparts in it. NEDElement can be extracted from editparts
 				// via IModelProvider.
 				//
-				NEDElement model = findFirstElementWithParameter(((IModelProvider)element).getNEDModel());
-				if (model instanceof CompoundModuleNode) {
-					CompoundModuleNode node = (CompoundModuleNode)model;
-					String moduleTypeName = node.getName();
-					buildContent(moduleTypeName, null);
+				NEDElement model = findFirstModuleOrSubmodule(((IModelProvider)element).getNEDModel());
+				if (model != null ) {
+					buildContent(model, null);
 					hideMessage();
-				}
-				else if (model instanceof SimpleModuleNode) {
-					SimpleModuleNode node = (SimpleModuleNode)model;
-					String moduleTypeName = node.getName();
-					buildContent(moduleTypeName, null);
-					hideMessage();
-				}
-				else if (model instanceof SubmoduleNode) {
-					SubmoduleNode submodule = (SubmoduleNode)model;
-					String submoduleName = InifileUtils.getSubmoduleFullName(submodule);
-					String submoduleType = InifileUtils.getSubmoduleType(submodule);
-					buildContent(submoduleName, submoduleType, null);
-					hideMessage();
-				} else if (model instanceof ModuleInterfaceNode) {
-                    ModuleInterfaceNode node = (ModuleInterfaceNode)model;
-                    String moduleTypeName = node.getName();
-                    buildContent(moduleTypeName, null);
-                    hideMessage();
                 } else
                     displayMessage("No NED element selected.");
 			}
@@ -234,7 +216,12 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 					displayMessage("Network not specified (no [General]/network= setting)");
 					return;
 				}
-				buildContent(networkName, ana);
+                INEDTypeInfo networkType = NEDResourcesPlugin.getNEDResources().getComponent(networkName);
+                if (networkType == null) {
+                    displayMessage("Unknown module type specified in [General]/network: "+networkName);
+                    return;
+                }
+                buildContent(networkType.getNEDElement(), ana);
 				hideMessage();
 			}
 			
@@ -245,17 +232,12 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 	}
 
 	/**
-	 * Delegates to the other buildContent() method. 
-	 */
-	protected void buildContent(String moduleTypeName, InifileAnalyzer ana) {
-		buildContent(moduleTypeName, moduleTypeName, ana);
-	}
-
-	/**
 	 * Update view to display content that corresponds to the given module, 
 	 * with the specified inifile as configuration. 
+	 * @param module can be Network, CompoundModule, SimpleModule, Submodule
+	 * @param ana Ini file analyzer
 	 */
-	protected abstract void buildContent(String submoduleName, String submoduleType, InifileAnalyzer ana);
+	protected abstract void buildContent(NEDElement module, InifileAnalyzer ana);
 
 
 	/* stuff for subclasses: icons */

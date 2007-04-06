@@ -1,5 +1,6 @@
 package org.omnetpp.inifile.editor.views;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -20,6 +21,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
@@ -164,12 +166,17 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		treeViewer.setInput(null);
 	}
 
-	public void buildContent(String moduleFullPath, String moduleTypeName, InifileAnalyzer ana) {
-		// build tree
+	public void buildContent(NEDElement module, InifileAnalyzer ana) {
+        Assert.isTrue(module instanceof IHasName);
+        // build tree
+        String moduleName = ((IHasName)module).getName();
 		GenericTreeNode root = new GenericTreeNode("root");
 		INEDTypeResolver nedResources = NEDResourcesPlugin.getNEDResources();
-		String moduleFullName = moduleFullPath.replaceFirst("^.*\\.", "");
-		buildTree(root, moduleFullName, moduleFullPath, moduleTypeName, null, nedResources, ana);
+        if (module instanceof SubmoduleNode) {
+            SubmoduleNode smod = (SubmoduleNode)module;
+            buildTree(root, moduleName, moduleName, InifileUtils.getSubmoduleType(smod), smod, nedResources, ana);
+        } else    
+            buildTree(root, moduleName, moduleName, moduleName, null, nedResources, ana);
 
 		// prevent collapsing all treeviewer nodes: only set it on viewer if it's different from old input
 		if (!GenericTreeUtils.treeEquals(root, (GenericTreeNode)treeViewer.getInput())) { 
@@ -198,7 +205,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		// do useful work: add tree node corresponding to this module
 		GenericTreeNode thisNode = addTreeNode(parent, moduleFullName, moduleFullPath, moduleType, thisSubmodule, ana);
 
-		// traverse submodules
+        // traverse submodules
 		for (NEDElement node : moduleType.getSubmods().values()) {
 			SubmoduleNode submodule = (SubmoduleNode) node;
 			String submoduleName = InifileUtils.getSubmoduleFullName(submodule);

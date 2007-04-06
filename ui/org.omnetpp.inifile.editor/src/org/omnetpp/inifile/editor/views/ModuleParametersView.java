@@ -23,6 +23,7 @@ import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.ParamResolution;
+import org.omnetpp.ned.model.NEDElement;
 
 /**
  * Displays module parameters recursively for module type.
@@ -192,7 +193,7 @@ public class ModuleParametersView extends AbstractModuleView {
 	}
 	
 	@Override
-	public void buildContent(String moduleFullPath, String moduleTypeName, InifileAnalyzer ana) {
+	public void buildContent(NEDElement module, InifileAnalyzer ana) {
 		String section = "Parameters"; //XXX
 		ParamResolution[] pars = unassignedOnly ? ana.getUnassignedParams(section) : ana.getParamResolutions(section); //XXX or maybe the resolutions for the selected key, etc
 		tableViewer.setInput(pars);
