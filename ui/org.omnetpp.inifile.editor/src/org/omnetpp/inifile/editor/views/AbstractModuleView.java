@@ -3,7 +3,6 @@ package org.omnetpp.inifile.editor.views;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.internal.ole.win32.ITypeInfo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener;
@@ -16,7 +15,6 @@ import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileSelectionItem;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
-import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.model.NEDElement;
@@ -218,13 +216,12 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 				}
                 INEDTypeInfo networkType = NEDResourcesPlugin.getNEDResources().getComponent(networkName);
                 if (networkType == null) {
-                    displayMessage("Unknown module type specified in [General]/network: "+networkName);
+                    displayMessage("Unknown module type specified for network: "+networkName);
                     return;
                 }
                 buildContent(networkType.getNEDElement(), ana);
 				hideMessage();
 			}
-			
 		}
 		else {
 			displayMessage("No NED element or INI file entry selected.");
