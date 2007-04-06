@@ -635,6 +635,9 @@ public abstract class NEDElement extends PlatformObject
     public void setNEDTypeInfo(INEDTypeInfo typeInfo) {
         Assert.isNotNull(typeInfo);
         Assert.isTrue(this instanceof ITopLevelElement, "TypeInfo should be set only on a TopLevelElement");
+        // remove the old type info and add the new one as a listener
+        getListeners().remove(this.typeInfo);
+        getListeners().add(typeInfo);
         this.typeInfo = typeInfo;
     }
 

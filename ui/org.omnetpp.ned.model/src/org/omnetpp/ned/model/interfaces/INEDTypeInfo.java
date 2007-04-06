@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.notification.INEDChangeListener;
 
 /**
  * Wraps a NED component: a ChannelNode, ChannelInterfaceNode, SimpleModuleNode, 
@@ -23,7 +24,7 @@ import org.omnetpp.ned.model.NEDElement;
  *       - methods returning the NEDElement list instead of simple name list (for all methods)
  *       - access to toplevel components via this interface ??? 
  */
-public interface INEDTypeInfo {
+public interface INEDTypeInfo extends INEDChangeListener {
 	/**
 	 * Convenience method: returns the name of the module/interface/channel/etc.
 	 */

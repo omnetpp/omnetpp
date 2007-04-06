@@ -5,7 +5,6 @@ package org.omnetpp.ned.model.ui;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
@@ -66,7 +65,12 @@ public class NedModelLabelProvider extends LabelProvider {
         else if (model instanceof SubmoduleNodeEx) {
             SubmoduleNodeEx node = (SubmoduleNodeEx)model;
             label = node.getName()+bracketizeIfNotEmpty(node.getVectorSize())+" : ";
-            label += node.getType();  //FIXME "like" !!!
+            String type = node.getLikeType();
+            // if it's not specified use the likeType instead
+            if (type == null || "".equals(type))
+                 label += node.getType();
+            else 
+                label += "like "+node.getLikeType();
         }
         else if (model instanceof ModuleInterfaceNode) {
             ModuleInterfaceNode node = (ModuleInterfaceNode)model;
