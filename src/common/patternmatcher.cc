@@ -349,5 +349,6 @@ const char *PatternMatcher::patternPrefixMatches(const char *line, int suffixoff
 bool PatternMatcher::containsWildcards(const char *pattern)
 {
     return strchr(pattern,'?') || strchr(pattern,'*') ||
-           strchr(pattern,'\\') || strchr(pattern,'{');
+           strchr(pattern,'\\') || strchr(pattern,'{') ||
+           strstr(pattern,"..");
 }
