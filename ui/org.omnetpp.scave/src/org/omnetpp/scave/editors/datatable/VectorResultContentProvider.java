@@ -113,12 +113,12 @@ public class VectorResultContentProvider implements IVirtualTableContentProvider
 	}
 
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		if (reader != null) {
+			reader.delete();
+			reader = null;
+		}
+		
 		if (newInput instanceof VectorResult) {
-			if (reader != null) {
-				reader.delete();
-				reader = null;
-			}
-			
 			VectorResult vector = (VectorResult)newInput;
 			String filename = vector.getFileRun().getFile().getFileSystemFilePath();
 			int vectorId = vector.getVectorId();
