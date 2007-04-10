@@ -43,7 +43,7 @@ import org.omnetpp.scave.model.Inputs;
  */
 public class ResultFilesTracker implements INotifyChangedListener, IResourceChangeListener {
 
-	private ResultFileManagerEx manager; //backreference to the manager it operates on
+	private ResultFileManagerEx manager; //backreference to the manager it operates on, the manager is owned by the editor
 	private Inputs inputs; // backreference to the Inputs element we watch
 
 	private Object lock = new Object();
@@ -52,11 +52,19 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		this.manager = manager;
 		this.inputs = inputs;
 	}
+	
+	public void deactivate()
+	{
+		manager = null;
+	}
 
 	/**
 	 * Listen to EMF model changes.
 	 */
 	public void notifyChanged(Notification notification) {
+		if (manager == null)
+			return;
+		
 		if (notification.isTouch())
 			return;
 
@@ -81,6 +89,9 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	 * as files get created/deleted in the workspace.
 	 */
 	public void resourceChanged(IResourceChangeEvent event) {
+		if (manager == null)
+			return;
+		
 		try {
 			IResourceDelta delta = event.getDelta();
 			if (delta != null)
@@ -128,6 +139,9 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	 * Missing files get loaded, and extra files get unloaded.
 	 */
 	public void synchronize() {
+		if (manager == null)
+			return;
+		
 		System.out.println("ResultFileTracker.synchronize()");
 		//XXX also: must unload files which have been removed from Inputs
 		//FIXME for now, a primitive solution, TO BE REPLACED: unload everything
