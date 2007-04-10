@@ -405,7 +405,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		return new SequenceChartAction("Center", SWT.PUSH) {
 			@Override
 			public void run() {
-				sequenceChart.gotoEvent(event);
+				sequenceChart.gotoElement(event);
 			}
 		};
 	}
@@ -432,7 +432,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		return new SequenceChartAction("Zoom to message", SWT.PUSH) {
 			@Override
 			public void run() {
-				sequenceChart.gotoSimulationTimeRange(msg.getCauseEvent().getSimulationTime().doubleValue(), msg.getConsequenceEvent().getSimulationTime().doubleValue(), (int)(sequenceChart.getViewportWidth() * 0.1));
+				sequenceChart.zoomSimulationTimeRange(msg.getCauseEvent().getSimulationTime().doubleValue(), msg.getConsequenceEvent().getSimulationTime().doubleValue(), (int)(sequenceChart.getViewportWidth() * 0.1));
 			}
 		};
 	}
@@ -441,7 +441,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		return new SequenceChartAction("Goto cause event", SWT.PUSH) {
 			@Override
 			public void run() {
-				sequenceChart.gotoEvent(msg.getCauseEvent());
+				sequenceChart.gotoElement(msg.getCauseEvent());
 			}
 		};
 	}
@@ -450,7 +450,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		return new SequenceChartAction("Goto consequence event", SWT.PUSH) {
 			@Override
 			public void run() {
-				sequenceChart.gotoEvent(msg.getConsequenceEvent());
+				sequenceChart.gotoElement(msg.getConsequenceEvent());
 			}
 		};
 	}
@@ -459,7 +459,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		return new SequenceChartAction("Center", SWT.PUSH) {
 			@Override
 			public void run() {
-				sequenceChart.gotoAxisModule(axisModule);
+				sequenceChart.scrollToAxisModule(axisModule);
 			}
 		};
 	}
@@ -468,7 +468,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		return new SequenceChartAction("Zoom to value", SWT.PUSH) {
 			@Override
 			public void run() {
-				sequenceChart.gotoAxisValue(axisModule, sequenceChart.getSimulationTimeForViewportPixel(x));
+				sequenceChart.zoomToAxisValue(axisModule, sequenceChart.getSimulationTimeForViewportPixel(x));
 			}
 		};
 	}	

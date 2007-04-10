@@ -49,6 +49,7 @@ import org.omnetpp.common.eventlog.EventLogSelection;
 import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.util.TimeUtils;
+import org.omnetpp.common.virtualtable.IVirtualContentWidget;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
@@ -83,7 +84,10 @@ import org.omnetpp.sequencechart.widgets.axisrenderer.IAxisRenderer;
 //TODO proper "hand" cursor - current one is not very intuitive
 //TODO hierarchic sort should be able to reverse order of sorted axes of its submodules
 //TODO rubberband vs. haircross, show them at once
-public class SequenceChart extends CachingCanvas implements ISelectionProvider {
+public class SequenceChart
+	extends CachingCanvas
+	implements IVirtualContentWidget<IEvent>, ISelectionProvider
+{
 	private final static boolean debug = false;
 
 	private static final Color CHART_BACKGROUND_COLOR = ColorFactory.asColor("white");
@@ -131,7 +135,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private static final int TICK_SPACING = 100; // space between ticks in pixels
 	private static final int GUTTER_HEIGHT = 17; // height of top and bottom gutter
 
-	protected Font font = JFaceResources.getDefaultFont();
+	private Font font = JFaceResources.getDefaultFont();
 	
 	private IEventLog eventLog; // contains the data to be displayed
 	private SequenceChartFacade sequenceChartFacade; // helpful facade on eventlog
@@ -147,9 +151,6 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private boolean showEventNumbers;
 	private AxisOrderingMode axisOrderingMode = AxisOrderingMode.MODULE_ID; // specifies the ordering mode of timelines
 
-	private double viewportLeftSimulationTime; // used to restore the visible range of simulation time
-	private double viewportRightSimulationTime;
-	
 	private DefaultInformationControl tooltipWidget; // the current tooltip (Note: SWT's Tooltip cannot be used as it wraps lines)
 	
 	private int dragStartX = -1, dragStartY = -1; // temporary variables for drag handling
@@ -167,7 +168,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * True means the chart will jump to the selection and switch input automatically when it gets notified about a selection change
 	 * even if the input is different from the current one.
 	 */
-	protected boolean followSelection = true;
+	private boolean followSelection = true;
 
 	private ArrayList<SelectionListener> selectionListenerList = new ArrayList<SelectionListener>(); // SWT selection listeners
 	private List<IEvent> selectedEvents = new ArrayList<IEvent>(); // the selection
@@ -178,13 +179,19 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private BigDecimal tickPrefix;
 
 	private static Rectangle TEMP_RECT = new Rectangle();  // tmp var for local calculations (a second Rectangle.SINGLETON)
-    
+
+	/**
+	 * Timeline mode determines the horizontal coordinate system in the sequence chart.
+	 */
 	public enum TimelineMode {
 		LINEAR,
 		STEP,
 		NON_LINEAR
 	}
 
+	/**
+	 * Determines the order of axis in the sequence chart.
+	 */
 	public enum AxisOrderingMode {
 		MANUAL,
 		MODULE_ID,
@@ -212,6 +219,14 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			public void keyPressed(KeyEvent e) {
 				if (e.keyCode == SWT.F5)
 					clearCanvasCacheAndRedraw();
+				else if (e.keyCode == SWT.ARROW_LEFT)
+					moveSelection(-1);
+				else if (e.keyCode == SWT.ARROW_RIGHT)
+					moveSelection(1);
+				else if (e.keyCode == SWT.HOME)
+					gotoBegin();
+				else if (e.keyCode == SWT.END)
+					gotoEnd();
 			}			
 		});
 	}
@@ -235,18 +250,12 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		this.followSelection = followSelection;
 	}
 
-	public void setSequenceChartContributor(SequenceChartContributor sequenceChartContributor) {
-		menuManager = new MenuManager();
-		sequenceChartContributor.contributeToPopupMenu(menuManager);
-		setMenu(menuManager.createContextMenu(this));
-	}
-
 	/**
 	 * Returns chart scale, that is, the number of pixels a "timeline unit" maps to.
      *
 	 * The meaning of "timeline unit" depends on the timeline mode (see enum TimelineMode).
 	 * For LINEAR mode it is <i>second</i> (simulation time), for STEP mode it is <i>event</i>,
-	 * and for NON_LINEAR mode it is calculated as a nonlinear function of simulation time.
+	 * and for NON_LINEAR mode it is calculated as a nonlinear function of simulation time deltas.
 	 */
 	public double getPixelsPerTimelineUnit() {
 		return pixelsPerTimelineUnit;	
@@ -353,24 +362,32 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 
 	/**
-	 * Changes the timeline mode and updates figure accordingly.
-	 * Tries to show the current simulation time after changing the timeline coordinate system.
-	 */
-	public void setTimelineMode(TimelineMode timelineMode) {
-		saveViewportSimulationTimeRange();
-		sequenceChartFacade.setTimelineMode(timelineMode.ordinal());
-		restoreViewportSimulationTimeRange();
-	}
-
-	/**
 	 * Returns the current timeline mode.
 	 */
 	public TimelineMode getTimelineMode() {
 		return TimelineMode.values()[sequenceChartFacade.getTimelineMode()];
 	}
+
+	/**
+	 * Sets the timeline mode and updates the figure accordingly.
+	 * Tries to show the current simulation time range which was visible before the change
+	 * after changing the timeline coordinate system.
+	 */
+	public void setTimelineMode(TimelineMode timelineMode) {
+		double[] leftRightSimulationTimes = getViewportSimulationTimeRange();
+		sequenceChartFacade.setTimelineMode(timelineMode.ordinal());
+		setViewportSimulationTimeRange(leftRightSimulationTimes);
+	}
 	
 	/**
-	 * Changes the axis ordering mode and updates figure accordingly.
+	 * Returns the current axis ordering mode.
+	 */
+	public AxisOrderingMode getAxisOrderingMode() {
+		return axisOrderingMode;
+	}
+	
+	/**
+	 * Sets the axis ordering mode and updates the figure accordingly.
 	 */
 	public void setAxisOrderingMode(AxisOrderingMode axisOrderingMode) {
 		this.axisOrderingMode = axisOrderingMode;
@@ -381,30 +398,29 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 	
 	/**
-	 * Return the current axis ordering mode.
+	 * Returns the currently visible range of simulation times as an array of two doubles.
 	 */
-	public AxisOrderingMode getAxisOrderingMode() {
-		return axisOrderingMode;
-	}
-	
-	/**
-	 * Saves the currently visible range of simulation time.
-	 */
-	public void saveViewportSimulationTimeRange()
+	public double[] getViewportSimulationTimeRange()
 	{
-		viewportLeftSimulationTime = getViewportLeftSimulationTime();
-		viewportRightSimulationTime = getViewportRightSimulationTime();
+		return new double[] {getViewportLeftSimulationTime(), getViewportRightSimulationTime()};
 	}
 	
 	/**
-	 * Restores last saved range of visible simulation time.
+	 * Sets the range of visible simulation times as an array of two doubles.
 	 */
-	public void restoreViewportSimulationTimeRange() {
-		gotoSimulationTimeRange(viewportLeftSimulationTime, viewportRightSimulationTime);
+	public void setViewportSimulationTimeRange(double[] leftRightSimulationTimes) {
+		zoomSimulationTimeRange(leftRightSimulationTimes[0], leftRightSimulationTimes[1]);
+	}
+	
+	/**
+	 * Returns the smallest visible simulation time.
+	 */
+	public double getViewportLeftSimulationTime() {
+		return getSimulationTimeForViewportPixel(0);
 	}
 
 	/**
-	 * Returns the simulation time of the canvas's center.
+	 * Returns the simulation time visible at the canvas's center.
 	 */
 	public double getViewportCenterSimulationTime() {
 		int middleX = getViewportWidth() / 2;
@@ -412,23 +428,137 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 	
 	/**
-	 * Returns the simulation time of the canvas's left.
-	 */
-	public double getViewportLeftSimulationTime() {
-		return getSimulationTimeForViewportPixel(0);
-	}
-	
-	/**
-	 * Returns the simulation time of the canvas's right.
+	 * Returns the biggest visible simulation time.
 	 */
 	public double getViewportRightSimulationTime() {
 		return getSimulationTimeForViewportPixel(getViewportWidth());
 	}
+
+	/*************************************************************************************
+	 * SCROLLING, GOTOING
+	 */
+
+	public void scrollToBegin() {
+		scrollToElement(eventLog.getFirstEvent());
+	}
+
+	public void scrollToEnd() {
+		scrollToElement(eventLog.getLastEvent());
+	}
+
+	public void scroll(int numberOfEvents) {
+		scrollToElement(eventLog.getNeighbourEvent(getSelectionEvent(), numberOfEvents));
+	}
+
+	public void scrollToElement(IEvent event) {
+		scrollVerticalTo(getEventYCoordinate(event.getCPtr()) - getClientArea().height / 2);
+		scrollToSimulationTimeWithCenter(event.getSimulationTime().doubleValue());
+	}
+
+	public void scrollToSelectionElement() {
+		IEvent event = getSelectionEvent();
+
+		if (event != null)
+			scrollToElement(event);
+	}
 	
+	/**
+	 * Scroll the canvas making the simulation time visible at the center.
+	 */
+	public void scrollToSimulationTimeWithCenter(double time) {
+		double xDouble = sequenceChartFacade.getTimelineCoordinateForSimulationTime(time) * pixelsPerTimelineUnit;
+		long x = xDouble < 0 ? 0 : xDouble>Long.MAX_VALUE ? Long.MAX_VALUE : (long)xDouble;
+		scrollHorizontalTo(x - getViewportWidth()/2);
+		redraw();
+	}
+
+	/**
+	 * Scroll the canvas to make the axis module visible.
+	 */
+	public void scrollToAxisModule(ModuleTreeItem axisModule) {
+		for (int i = 0; i < axisModules.size(); i++)
+			if (axisModules.get(i) == axisModule)
+				scrollVerticalTo(axisModuleYs[i] - axisRenderers.get(i).getHeight() / 2 - getViewportHeight() / 2);
+	}
+
+	public void moveSelection(int numberOfEvents) {
+		gotoElement(eventLog.getNeighbourEvent(getSelectionEvent(), numberOfEvents));
+	}
+
+	public void gotoBegin() {
+		IEvent firstEvent = eventLog.getFirstEvent();
+		
+		if (firstEvent != null)
+			setSelectionEvent(firstEvent);
+
+		scrollToBegin();
+	}
+
+	public void gotoEnd() {
+		IEvent lastEvent = eventLog.getLastEvent();
+		
+		if (lastEvent != null)
+			setSelectionEvent(lastEvent);
+
+		scrollToEnd();
+	}
+
+	public void gotoElement(IEvent event) {
+		setSelectionEvent(event);		
+		scrollToElement(event);
+	}
+
+	public void gotoClosestElement(IEvent event) {
+	}
+
+	/*************************************************************************************
+	 * ZOOMING
+	 */
+
+	/**
+	 * Increases pixels per timeline coordinate.
+	 */
+	public void zoomIn() {
+		zoomBy(1.5);
+	}
+
+	/**
+	 * Decreases pixels per timeline coordinate. 
+	 */
+	public void zoomOut() {
+		zoomBy(1.0 / 1.5);
+	}
+
+	/**
+	 * Sets pixel per timeline coordinate by zoomFactor.
+	 */
+	public void zoomBy(double zoomFactor) {
+		double time = getViewportCenterSimulationTime();
+		setPixelsPerTimelineUnit(getPixelsPerTimelineUnit() * zoomFactor);	
+		calculateVirtualSize();
+		calculateModuleYCoordinates();
+		clearCanvasCacheAndRedraw();
+		scrollToSimulationTimeWithCenter(time);
+	}
+
+	/**
+	 * Zoom to the given rectangle, given by pixel coordinates relative to the
+	 * top-left corner of the canvas.
+	 */
+	public void zoomToRectangle(Rectangle r) {
+		double timelineCoordinate = getTimelineCoordinateForViewportPixel(r.x);
+		double timelineUnitDelta = getTimelineCoordinateForViewportPixel(r.right()) - timelineCoordinate;
+		setPixelsPerTimelineUnit(getViewportWidth() / timelineUnitDelta);
+		calculateVirtualSize();
+		calculateModuleYCoordinates();
+		clearCanvasCacheAndRedraw();
+		scrollHorizontalTo(getVirtualPixelForTimelineCoordinate(timelineCoordinate));
+	}
+
 	/**
 	 * Scroll the canvas so to make start and end simulation times visible.
 	 */
-	public void gotoSimulationTimeRange(double startSimulationTime, double endSimulationTime) {
+	public void zoomSimulationTimeRange(double startSimulationTime, double endSimulationTime) {
 		if (!Double.isNaN(endSimulationTime) && startSimulationTime != endSimulationTime) {
 			double timelineUnitDelta = sequenceChartFacade.getTimelineCoordinateForSimulationTime(endSimulationTime) - sequenceChartFacade.getTimelineCoordinateForSimulationTime(startSimulationTime);
 
@@ -446,59 +576,31 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	/**
 	 * Scroll the canvas so to make start and end simulation times visible, but leave some pixels free on both sides.
 	 */
-	public void gotoSimulationTimeRange(double startSimulationTime, double endSimulationTime, int pixelInset) {
+	public void zoomSimulationTimeRange(double startSimulationTime, double endSimulationTime, int pixelInset) {
 		if (pixelInset > 0) {
 			// NOTE: we can't go directly there, so here is an approximation
 			for (int i = 0; i < 3; i++) {
 				double newStartSimulationTime = getSimulationTimeForViewportPixel(getViewportPixelForSimulationTime(startSimulationTime) - pixelInset);
 				double newEndSimulationTime = getSimulationTimeForViewportPixel(getViewportPixelForSimulationTime(endSimulationTime) + pixelInset);
 	
-				gotoSimulationTimeRange(newStartSimulationTime, newEndSimulationTime);
+				zoomSimulationTimeRange(newStartSimulationTime, newEndSimulationTime);
 			}
 		}
 		else
-			gotoSimulationTimeRange(startSimulationTime, endSimulationTime);
-	}
-	
-	/**
-	 * Scroll the canvas so as to make the simulation time visible.
-	 */
-	public void gotoSimulationTimeWithCenter(double time) {
-		double xDouble = sequenceChartFacade.getTimelineCoordinateForSimulationTime(time) * pixelsPerTimelineUnit;
-		long x = xDouble < 0 ? 0 : xDouble>Long.MAX_VALUE ? Long.MAX_VALUE : (long)xDouble;
-		scrollHorizontalTo(x - getViewportWidth()/2);
-		redraw();
+			zoomSimulationTimeRange(startSimulationTime, endSimulationTime);
 	}
 
-	// TODO: distinguish between goto and scroll just as in EventLogTable
-	/**
-	 * Scroll the canvas to make the event visible.
-	 */
-	public void gotoEvent(IEvent e) {
-		scrollVerticalTo(getEventYCoordinate(e.getCPtr()) - getClientArea().height / 2);
-		gotoSimulationTimeWithCenter(e.getSimulationTime().doubleValue());
-	}
-	
-	/**
-	 * Scroll the canvas to make the axis module visible.
-	 */
-	public void gotoAxisModule(ModuleTreeItem axisModule) {
-		for (int i = 0; i < axisModules.size(); i++)
-			if (axisModules.get(i) == axisModule)
-				scrollVerticalTo(axisModuleYs[i] - axisRenderers.get(i).getHeight() / 2 - getViewportHeight() / 2);
-	}
-	
 	/**
 	 * Scroll the canvas to make the value at the given simulation time visible at once.
 	 */
-	public void gotoAxisValue(ModuleTreeItem axisModule, double simulationTime) {
+	public void zoomToAxisValue(ModuleTreeItem axisModule, double simulationTime) {
 		for (int i = 0; i < axisModules.size(); i++)
 			if (axisModules.get(i) == axisModule) {
 				IAxisRenderer axisRenderer = axisRenderers.get(i);
 				
 				if (axisRenderer instanceof AxisVectorBarRenderer) {
 					AxisVectorBarRenderer axisVectorBarRenderer = (AxisVectorBarRenderer)axisRenderer;
-					gotoSimulationTimeRange(
+					zoomSimulationTimeRange(
 						axisVectorBarRenderer.getSimulationTime(axisVectorBarRenderer.getIndex(simulationTime, true)),
 						axisVectorBarRenderer.getSimulationTime(axisVectorBarRenderer.getIndex(simulationTime, false)),
 						(int)(getViewportWidth() * 0.1));
@@ -506,18 +608,10 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			}
 	}
 
-	private ArrayList<ModuleTreeItem> getAllAxisModules(final EventLogInput eventLogInput) {
-		final ArrayList<ModuleTreeItem> modules = new ArrayList<ModuleTreeItem>();
-		eventLogInput.getModuleTreeRoot().visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
-			public void visit(ModuleTreeItem treeItem) {
-				if (treeItem != eventLogInput.getModuleTreeRoot() && treeItem.getSubmodules().length == 0)
-					modules.add(treeItem);
-			}
-		});
+	/*************************************************************************************
+	 * MISC
+	 */
 
-		return modules;
-	}
-	
 	public Object getInput() {
 		return eventLogInput;
 	}
@@ -533,15 +627,37 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		setParameters(eventLogInput.getEventLog(), axisModules, axisVectors);
 	}
 	
+	private ArrayList<ModuleTreeItem> getAllAxisModules(final EventLogInput eventLogInput) {
+		final ArrayList<ModuleTreeItem> modules = new ArrayList<ModuleTreeItem>();
+		eventLogInput.getModuleTreeRoot().visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
+			public void visit(ModuleTreeItem treeItem) {
+				if (treeItem != eventLogInput.getModuleTreeRoot() && treeItem.getSubmodules().length == 0)
+					modules.add(treeItem);
+			}
+		});
+
+		return modules;
+	}
+
+	/**
+	 * Sets the contributor used to build the popup menu in the chart.
+	 */
+	public void setSequenceChartContributor(SequenceChartContributor sequenceChartContributor) {
+		menuManager = new MenuManager();
+		sequenceChartContributor.contributeToPopupMenu(menuManager);
+		setMenu(menuManager.createContextMenu(this));
+	}
+	
 	/**
 	 * Sets event log and axis modules and vector data.
 	 * Tries to keep the simulation time range of the canvas.
 	 */
 	public void setParameters(IEventLog eventLog, ArrayList<ModuleTreeItem> axisModules, ArrayList<XYArray> axisVectors) {
 		boolean firstTime = (this.eventLog == null);
-		
+		double[] leftRightSimulationTimes = null;
+
 		if (!firstTime)
-			saveViewportSimulationTimeRange();
+			leftRightSimulationTimes = getViewportSimulationTimeRange();
 
 		setEventLog(eventLog);
 		setAxisVectors(axisVectors);
@@ -550,48 +666,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		if (!firstTime) {
 			sequenceChartFacade.invalidateTimelineCoordinateSystem();
 			calculatePixelPerTimelineUnit();
-			restoreViewportSimulationTimeRange();
+			setViewportSimulationTimeRange(leftRightSimulationTimes);
 		}
-	}
-
-	/**
-	 * Increases pixels per timeline coordinate.
-	 */
-	public void zoomIn() {
-		zoomBy(1.5);
-	}
-
-	/**
-	 * Decreases pixels per timeline coordinate. 
-	 */
-	public void zoomOut() {
-		zoomBy(1.0 / 1.5);
-	}
-
-	/**
-	 * Changes pixel per timeline coordinate by zoomFactor.
-	 */
-	public void zoomBy(double zoomFactor) {
-		double time = getViewportCenterSimulationTime();
-		setPixelsPerTimelineUnit(getPixelsPerTimelineUnit() * zoomFactor);	
-		calculateVirtualSize();
-		calculateModuleYCoordinates();
-		clearCanvasCacheAndRedraw();
-		gotoSimulationTimeWithCenter(time);
-	}
-
-	/**
-	 * Zoom to the given rectangle, given by pixel coordinates relative to the
-	 * top-left corner of the canvas.
-	 */
-	public void zoomToRectangle(Rectangle r) {
-		double timelineCoordinate = getTimelineCoordinateForViewportPixel(r.x);
-		double timelineUnitDelta = getTimelineCoordinateForViewportPixel(r.right()) - timelineCoordinate;
-		setPixelsPerTimelineUnit(getViewportWidth() / timelineUnitDelta);
-		calculateVirtualSize();
-		calculateModuleYCoordinates();
-		clearCanvasCacheAndRedraw();
-		scrollHorizontalTo(getVirtualPixelForTimelineCoordinate(timelineCoordinate));
 	}
 	
 	/**
@@ -663,6 +739,10 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		clearCanvasCacheAndRedraw();
 	}
 	
+	/*************************************************************************************
+	 * LAZY CALCULATIONS DONE NOT LATER THAN PAINT
+	 */
+
 	/**
 	 * Sorts axis modules depending on timeline ordering mode.
 	 */
@@ -2074,11 +2154,21 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	
 				// go to the time of the first event selected
 				if (selectedEvents.size() > 0)
-					gotoEvent(selectedEvents.get(0));
+					gotoElement(selectedEvents.get(0));
 	
 				redraw();
 			}
 		}
+	}
+
+	/**
+	 * Returns the current selection.
+	 */
+	public IEvent getSelectionEvent() {
+		if (selectedEvents != null && selectedEvents.size() != 0)
+			return selectedEvents.get(0);
+		else
+			return null;
 	}
 	
 	public void setSelectionEvent(IEvent event) {
@@ -2088,6 +2178,10 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		redraw();
 	}
 	
+	/*************************************************************************************
+	 * CACHING
+	 */
+
 	/**
 	 * This class is for optimizing drawing when the chart is zoomed out and
 	 * there's a large number of connection arrows on top of each other.

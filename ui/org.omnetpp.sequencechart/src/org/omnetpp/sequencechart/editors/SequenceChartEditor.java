@@ -136,7 +136,7 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
 		}
 
 		public void restoreLocation() {
-			sequenceChart.gotoSimulationTimeRange(startSimulationTime, endSimulationTime);
+			sequenceChart.zoomSimulationTimeRange(startSimulationTime, endSimulationTime);
 		}
 
 		public void restoreState(IMemento memento) {
@@ -195,7 +195,7 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
     public void gotoMarker(IMarker marker)
     {
 		int eventNumber = marker.getAttribute("EventNumber", -1);
-		sequenceChart.gotoEvent(eventLogInput.getEventLog().getEventForEventNumber(eventNumber));
+		sequenceChart.gotoElement(eventLogInput.getEventLog().getEventForEventNumber(eventNumber));
     }
 
 	private class ResourceChangeListener implements IResourceChangeListener, IResourceDeltaVisitor {
