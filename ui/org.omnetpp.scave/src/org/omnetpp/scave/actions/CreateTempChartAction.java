@@ -32,12 +32,11 @@ public class CreateTempChartAction extends AbstractScaveAction {
 			return;
 
 			String datasetName = "dataset";
-			String[] runidFields = new String[] { FilterUtil.FIELD_FILENAME, FilterUtil.FIELD_RUNNAME};
 			Dataset dataset =
 				ScaveModelUtil.createDataset(
 						datasetName,
 						activePanel.getTable().getSelectedItems(),
-						runidFields);
+						null);
 			String chartName = "chart"; //FIXME generate proper name
 			ResultType type = activePanel.getTable().getDataType();
 			Chart chart = ScaveModelUtil.createChart(chartName, type);
