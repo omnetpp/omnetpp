@@ -17,6 +17,7 @@ import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned.model.pojo.ChannelNode;
 import org.omnetpp.ned.model.pojo.ChannelSpecNode;
+import org.omnetpp.ned.model.pojo.ConnectionGroupNode;
 import org.omnetpp.ned.model.pojo.ConnectionsNode;
 import org.omnetpp.ned.model.pojo.GateNode;
 import org.omnetpp.ned.model.pojo.GatesNode;
@@ -174,7 +175,7 @@ public class NedModelLabelProvider extends LabelProvider {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CONNECTION);
         } else if (model instanceof TypesNode || model instanceof ParametersNode || 
                    model instanceof GatesNode || model instanceof SubmodulesNode || 
-                   model instanceof ConnectionsNode) {
+                   model instanceof ConnectionsNode || model instanceof ConnectionGroupNode) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_FOLDER);
         }
         
