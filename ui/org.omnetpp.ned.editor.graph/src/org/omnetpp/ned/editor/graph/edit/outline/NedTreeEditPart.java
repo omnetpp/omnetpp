@@ -7,6 +7,7 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.RootEditPart;
 import org.eclipse.gef.editparts.AbstractTreeEditPart;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
+import org.eclipse.gef.tools.DirectEditManager;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
@@ -15,7 +16,10 @@ import org.omnetpp.ned.editor.graph.edit.policies.NedTreeEditPolicy;
 import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.model.ex.ChannelInterfaceNodeEx;
+import org.omnetpp.ned.model.ex.ChannelNodeEx;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
+import org.omnetpp.ned.model.ex.ModuleInterfaceNodeEx;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
@@ -29,8 +33,8 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
 public class NedTreeEditPart extends AbstractTreeEditPart implements
         INEDChangeListener, IPropertySourceSupport, IModelProvider {
 
-    private long lastEventSerial;
     private IPropertySource propertySource;
+    protected DirectEditManager manager;
     
 
     /**
@@ -71,7 +75,10 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
 
         // we do not allow the reordering of the content (children) of the following node types 
     	if (getModel() instanceof SubmoduleNodeEx || 
-        	getModel() instanceof CompoundModuleNodeEx ) {
+        	getModel() instanceof CompoundModuleNodeEx ||
+            getModel() instanceof ChannelNodeEx ||
+            getModel() instanceof ChannelInterfaceNodeEx ||
+            getModel() instanceof ModuleInterfaceNodeEx) {
         	removeEditPolicy(EditPolicy.TREE_CONTAINER_ROLE);
         }
     	
@@ -105,13 +112,6 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
     }
 
     public void modelChanged(NEDModelEvent event) {
-        // skip the event processing if te last serial is greater or equal. only newer
-        // events should be processed. this prevent the processing of the same event multiple times
-        if (lastEventSerial >= event.getSerial())
-            return;
-        else // process the even and remeber this serial
-            lastEventSerial = event.getSerial();
-
         totalRefresh();
     }
 
@@ -134,5 +134,4 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
     public void setPropertySource(IPropertySource propertySource) {
         this.propertySource = propertySource;
     }
-
 }

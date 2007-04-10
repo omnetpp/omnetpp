@@ -10,7 +10,6 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.figures.misc.IDirectEditSupport;
-import org.omnetpp.ned.editor.graph.edit.BaseEditPart;
 import org.omnetpp.ned.model.interfaces.IHasName;
 
 /**

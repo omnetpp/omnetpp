@@ -36,6 +36,9 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
 
         IAction action;
 
+        action = getActionRegistry().getAction(ConvertToNewFormatAction.ID);
+        manager.appendToGroup(GEFActionConstants.GROUP_REST, action);
+
         action = getActionRegistry().getAction(ActionFactory.UNDO.getId());
         manager.appendToGroup(GEFActionConstants.GROUP_UNDO, action);
 

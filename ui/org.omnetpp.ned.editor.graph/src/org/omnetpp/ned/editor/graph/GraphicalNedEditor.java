@@ -52,6 +52,7 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
 import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
 import org.omnetpp.ned.editor.graph.actions.ShowPropertyViewAction;
@@ -82,6 +83,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
             super.init(pageSite);
             ActionRegistry registry = getActionRegistry();
             IActionBars bars = pageSite.getActionBars();
+
             String id = ActionFactory.UNDO.getId();
             bars.setGlobalActionHandler(id, registry.getAction(id));
             id = ActionFactory.REDO.getId();
@@ -302,9 +304,9 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
 
-//        action = new ModulePasteTemplateAction(this);
-//        registry.registerAction(action);
-//        getSelectionActions().add(action.getId());
+        action = new ConvertToNewFormatAction(this);
+        registry.registerAction(action);
+        getSelectionActions().add(action.getId());
 
         action = new DirectEditAction((IWorkbenchPart) this);
         registry.registerAction(action);
