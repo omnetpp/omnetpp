@@ -4,6 +4,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 
 public abstract class FormPage extends Composite {
 	private InifileEditor inifileEditor;
@@ -17,6 +18,10 @@ public abstract class FormPage extends Composite {
 		return inifileEditor.getEditorData().getInifileDocument();
 	}
 
+	protected InifileAnalyzer getInifileAnalyzer() {
+		return inifileEditor.getEditorData().getInifileAnalyzer();
+	}
+	
 	/**
 	 * Reads data from the document into the current page.
 	 */

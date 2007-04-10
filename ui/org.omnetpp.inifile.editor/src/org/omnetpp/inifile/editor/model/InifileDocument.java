@@ -35,26 +35,26 @@ public class InifileDocument implements IInifileDocument {
 	private IFile documentFile; // the file of the document
 	private boolean changed; // whether changed since last parsed
 
-	class Line {
+	static class Line {
 		IFile file;
 		int lineNumber; // 1-based
 		int numLines;  // ==1 unless line continues on other lines (trailing backslash)
 		String comment;
 		Object data;
 	};
-	class SectionHeadingLine extends Line {
+	static class SectionHeadingLine extends Line {
 		String sectionName;
 		int lastLine; // last line of section contents
 	}
-	class KeyValueLine extends Line {
+	static class KeyValueLine extends Line {
 		String key;
 		String value;
 	}
-	class IncludeLine extends Line {
+	static class IncludeLine extends Line {
 		String includedFile;
 	}
 
-	class Section {
+	static class Section {
 		ArrayList<SectionHeadingLine> headingLines = new ArrayList<SectionHeadingLine>();
 		LinkedHashMap<String,KeyValueLine> entries = new LinkedHashMap<String, KeyValueLine>();
 		Object data;

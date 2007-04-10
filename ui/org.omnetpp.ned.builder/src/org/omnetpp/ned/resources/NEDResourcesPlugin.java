@@ -141,7 +141,7 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 	public static void openNEDElementInEditor(NEDElement element) {
 		INEDTypeInfo typeInfo = element.getContainerNEDTypeInfo();
 		IFile file = typeInfo.getNEDFile();
-
+		
         try {
             IEditorPart editor = EditorUtil.openEditor(file, NED_EDITOR_ID, true);
 

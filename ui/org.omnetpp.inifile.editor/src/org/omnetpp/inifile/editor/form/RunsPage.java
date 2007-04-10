@@ -1,5 +1,9 @@
 package org.omnetpp.inifile.editor.form;
 
+import java.util.HashMap;
+
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
@@ -8,7 +12,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.common.ui.GenericTreeContentProvider;
+import org.omnetpp.common.ui.GenericTreeLabelProvider;
+import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
+import org.omnetpp.inifile.editor.model.IInifileDocument;
 
 /**
  * Inifile editor page to manage the [Run X] sections in the file.
@@ -17,6 +25,7 @@ import org.omnetpp.inifile.editor.editors.InifileEditor;
  */
 public class RunsPage extends FormPage {
 	private static Font titleFont = new Font(null, "Arial", 10, SWT.BOLD);
+	private TreeViewer treeViewer;
 	
 	public RunsPage(Composite parent, InifileEditor inifileEditor) {
 		super(parent, inifileEditor);
@@ -42,12 +51,62 @@ public class RunsPage extends FormPage {
 		new Label(this, SWT.NONE);
 
 		Label l = new Label(this, SWT.NONE);  //XXX
-		l.setText("TBD...");
+		l.setText("Section inheritance:");
+		
+		treeViewer = new TreeViewer(this, SWT.BORDER);
+		treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		treeViewer.setLabelProvider(new GenericTreeLabelProvider(new LabelProvider()));
+		treeViewer.setContentProvider(new GenericTreeContentProvider());
+		reread();
 	}
 	
 	@Override
 	public void reread() {
-		//TODO
+		IInifileDocument doc = getInifileDocument();
+
+		// create root node
+		GenericTreeNode rootNode = new GenericTreeNode("root");
+		GenericTreeNode generalSectionNode = new GenericTreeNode("[General]");
+		rootNode.addChild(generalSectionNode);
+
+		// build tree
+		HashMap<String,GenericTreeNode> nodes = new HashMap<String, GenericTreeNode>();
+		for (String sectionName : doc.getSectionNames()) {
+			if (sectionName.startsWith("Config ")) {
+				GenericTreeNode node = getOrCreate(nodes, sectionName, false);
+				String extendsName = doc.getValue(sectionName, "extends");
+				if (extendsName == null) {
+					// no "extends=...": falls back to [General]
+					generalSectionNode.addChild(node);
+				}
+				else {
+					// add as child to the section it extends
+					String extendsSectionName = "Config "+extendsName;
+					if (doc.containsSection(extendsSectionName)) {
+						GenericTreeNode extendsSectionNode = getOrCreate(nodes, extendsSectionName, false);
+						extendsSectionNode.addChild(node);
+					}
+					else {
+						// error: extends a nonexisting section. add it anyway
+						GenericTreeNode extendsSectionNode = getOrCreate(nodes, extendsSectionName, true);
+						if (extendsSectionNode.getParent() == null)
+							generalSectionNode.addChild(extendsSectionNode);
+						extendsSectionNode.addChild(node);
+					}
+				}
+			}
+		}
+		treeViewer.setInput(rootNode);
+		treeViewer.expandAll();
+	}
+
+	private GenericTreeNode getOrCreate(HashMap<String, GenericTreeNode> nodes, String sectionName, boolean isMissingSection) {
+		GenericTreeNode node = nodes.get(sectionName);
+		if (node==null) {
+			node = new GenericTreeNode("["+sectionName+"]"+(isMissingSection?" (missing)":""));
+			nodes.put(sectionName, node);
+		}
+		return node;
 	}
 
 	@Override

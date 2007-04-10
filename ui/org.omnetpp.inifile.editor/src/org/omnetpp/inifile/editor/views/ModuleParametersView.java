@@ -10,6 +10,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.deferred.SetModel;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -195,7 +196,13 @@ public class ModuleParametersView extends AbstractModuleView {
 	@Override
 	public void buildContent(NEDElement module, InifileAnalyzer ana) {
 		String section = "Parameters"; //XXX
-		ParamResolution[] pars = unassignedOnly ? ana.getUnassignedParams(section) : ana.getParamResolutions(section); //XXX or maybe the resolutions for the selected key, etc
-		tableViewer.setInput(pars);
+		if (ana==null) {
+			displayMessage("Not an inifile editor."); //XXX
+		}
+		else {
+			hideMessage();
+			ParamResolution[] pars = unassignedOnly ? ana.getUnassignedParams(section) : ana.getParamResolutions(section); //XXX or maybe the resolutions for the selected key, etc
+			tableViewer.setInput(pars);
+		}
 	}
 }
