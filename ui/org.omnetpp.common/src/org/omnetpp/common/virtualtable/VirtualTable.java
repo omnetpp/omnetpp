@@ -49,7 +49,10 @@ import org.omnetpp.common.color.ColorFactory;
  * - the width of the canvas is equal to the width of the table
  * - the height of the canvas is equal to the height of the client area of the scrollable composite minus the header's height
  */
-public class VirtualTable<T> extends Composite implements ISelectionProvider {
+public class VirtualTable<T>
+	extends Composite
+	implements IVirtualContentWidget<T>, ISelectionProvider
+{
 	private static final Color LINE_COLOR = ColorFactory.asColor("grey95");
 
 	private final static boolean debug = false;
@@ -204,6 +207,10 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 			public void keyPressed(KeyEvent e) {
 				if (e.keyCode == SWT.F5)
 					redraw();
+				else if (e.keyCode == SWT.ARROW_LEFT)
+					scrollHorizontal(-10);
+				else if (e.keyCode == SWT.ARROW_RIGHT)
+					scrollHorizontal(10);
 				else if (e.keyCode == SWT.ARROW_UP)
 					moveSelection(-1);
 				else if (e.keyCode == SWT.ARROW_DOWN)
@@ -555,7 +562,7 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 	/**
 	 * Moves the selection with the given number of elements up or down and scrolls if necessary.
 	 */
-	protected void moveSelection(int numberOfElements) {
+	public void moveSelection(int numberOfElements) {
 		T element = getSelectionElement();
 
 		if (element == null)
@@ -575,6 +582,11 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 
 		scrollToElement(element);
 	}
+
+	public void scrollHorizontal(int pixel) {
+		Point p = scrolledComposite.getOrigin();
+		scrolledComposite.setOrigin(p.x + pixel, p.y);
+	}
 	
 	/**
 	 * Scrolls with the given number of elements up or down.
@@ -592,7 +604,7 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 
 		T topElement = getTopVisibleElement();
 
-		int maxDistance = getVisibleElementCount() + 1;
+		int maxDistance = getFullyVisibleElementCount();
 		long distance = topElement == null ? maxDistance : contentProvider.getDistanceToElement(topElement, element, maxDistance);
 
 		if (distance == maxDistance) {
@@ -699,7 +711,7 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 					boolean isSelectedElement = selectionElements != null && selectionElements.contains(element);
 					
 					if (isSelectedElement) {
-						gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION));
+						gc.setBackground(Display.getCurrent().getSystemColor(canvas.isFocusControl() ? SWT.COLOR_LIST_SELECTION : SWT.COLOR_WIDGET_BACKGROUND));
 						gc.fillRectangle(new Rectangle(0, i * getLineHeight(), clipping.x + clipping.width, getLineHeight()));
 					}
 					else
@@ -717,7 +729,7 @@ public class VirtualTable<T> extends Composite implements ISelectionProvider {
 						gc.setTransform(lineTransform);
 						gc.setClipping(new Rectangle(0, 0, column.getWidth(), getLineHeight()));
 
-						if (isSelectedElement)
+						if (isSelectedElement && canvas.isFocusControl())
 							gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
 
 						rowRenderer.drawCell(gc, element, columnOrder[j]);
