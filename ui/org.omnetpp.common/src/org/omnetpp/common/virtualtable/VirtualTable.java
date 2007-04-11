@@ -14,6 +14,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
@@ -190,6 +192,15 @@ public class VirtualTable<T>
 
 	private void createCanvas(Composite parent) {
 		canvas = new Canvas(parent, SWT.DOUBLE_BUFFERED);
+		canvas.addFocusListener(new FocusListener() {
+			public void focusGained(FocusEvent e) {
+				redraw();
+			}
+
+			public void focusLost(FocusEvent e) {
+				redraw();
+			}
+		});
 		canvas.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
 				paint(e.gc);
