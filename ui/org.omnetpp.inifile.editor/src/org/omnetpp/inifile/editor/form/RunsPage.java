@@ -163,11 +163,9 @@ public class RunsPage extends FormPage {
 		buttonGroup.setLayout(new GridLayout(1,false));
 		
 		Button addButton = createButton(buttonGroup, "Add...");
-		//Button editButton = createButton(buttonGroup, "Edit...");
 		Button removeButton = createButton(buttonGroup, "Remove");
 		//new Label(buttonGroup, SWT.NONE);
-		Button upButton = createButton(buttonGroup, "Up");
-		Button downButton = createButton(buttonGroup, "Down");
+		Button renameButton = createButton(buttonGroup, "Rename...");
 		
 		addButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -196,22 +194,17 @@ public class RunsPage extends FormPage {
 
 		removeButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				IStructuredSelection sel = (IStructuredSelection) treeViewer.getSelection();
-				for (Object o : sel.toArray()) {
-					String sectionName = (String) o;  //XXX not exactly
-					getInifileDocument().removeSection(sectionName);
+				String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
+				if (selection.length != 0) {
+					for (String sectionName : selection) {
+						getInifileDocument().removeSection(sectionName); //XXX hmm
+					}
+					reread();
 				}
-				reread();
 			}
 		});
 
-		upButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				//XXX
-			}
-		});
-
-		downButton.addSelectionListener(new SelectionAdapter() {
+		renameButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				//XXX
 			}
