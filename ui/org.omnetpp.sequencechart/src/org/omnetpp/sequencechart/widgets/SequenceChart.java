@@ -26,8 +26,8 @@ import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.events.SelectionEvent;
@@ -152,7 +152,8 @@ public class SequenceChart
 	private AxisOrderingMode axisOrderingMode = AxisOrderingMode.MODULE_ID; // specifies the ordering mode of timelines
 
 	private DefaultInformationControl tooltipWidget; // the current tooltip (Note: SWT's Tooltip cannot be used as it wraps lines)
-	
+
+	private boolean isDragging;
 	private int dragStartX = -1, dragStartY = -1; // temporary variables for drag handling
 	private List<ModuleTreeItem> axisModules; // the modules which should have an axis (they must be part of a module tree!)
 	private List<IAxisRenderer> axisRenderers; // used to draw the axis
@@ -951,6 +952,7 @@ public class SequenceChart
 		if (eventLogInput != null) {
 			Graphics graphics = new SWTGraphics(gc);
 	
+			gc.setAntialias(antiAlias ? SWT.ON : SWT.OFF);
 			graphics.translate(0, GUTTER_HEIGHT);
 			drawAxisLabels(graphics);
 	        drawEventSelectionMarks(graphics);
@@ -1677,6 +1679,7 @@ public class SequenceChart
 	 * Sets up default mouse handling.
 	 */
 	private void setUpMouseHandling() { 
+		// zoom by wheel
 		addListener(SWT.MouseWheel, new Listener() {
 			public void handleEvent(Event event) {
 				if ((event.stateMask & SWT.CTRL)!=0) {
@@ -1691,40 +1694,28 @@ public class SequenceChart
 				}
 			}
 		});
-		// dragging ("hand" cursor) and tooltip
-		addMouseListener(new MouseListener() {
-			public void mouseDoubleClick(MouseEvent e) {}
-			public void mouseDown(MouseEvent e) {
-				setFocus();
 
-				if (e.button == 1) {
-					setCursor(DRAG_CURSOR);
-					dragStartX = e.x;
-					dragStartY = e.y;
-				}
-
-				removeTooltip();
-			}
-			public void mouseUp(MouseEvent e) {
-				setCursor(null); // restore cursor at end of drag
-				dragStartX = dragStartY = -1;
-			}
-    	});
+		// hide tool tip on move
 		addMouseTrackListener(new MouseTrackListener() {
 			public void mouseEnter(MouseEvent e) {
 				redraw();
 			}
+
 			public void mouseExit(MouseEvent e) {
 				redraw();
 			}
+
 			public void mouseHover(MouseEvent e) {
 				if ((e.stateMask & SWT.BUTTON_MASK) == 0)
 					displayTooltip(e.x, e.y);
 			}
 		});
+
+		// dragging
 		addMouseMoveListener(new MouseMoveListener() {
 			public void mouseMove(MouseEvent e) {
 				removeTooltip();
+
 				if (dragStartX != -1 && dragStartY != -1 && (e.stateMask & SWT.BUTTON_MASK) != 0 && (e.stateMask & SWT.MODIFIER_MASK) == 0)
 					mouseDragged(e);
 				else {
@@ -1735,6 +1726,11 @@ public class SequenceChart
 			}
 
 			private void mouseDragged(MouseEvent e) {
+				if (!isDragging)
+					setCursor(DRAG_CURSOR);
+				
+				isDragging = true;
+
 				// scroll by the amount moved since last drag call
 				int dx = e.x - dragStartX;
 				int dy = e.y - dragStartY;
@@ -1744,11 +1740,13 @@ public class SequenceChart
 				dragStartY = e.y;
 			}
 		});
+
 		// selection handling
-		addMouseListener(new MouseListener() {
+		addMouseListener(new MouseAdapter() {
 			public void mouseDoubleClick(MouseEvent me) {
 				ArrayList<IEvent> tmp = new ArrayList<IEvent>();
 				collectStuffUnderMouse(me.x, me.y, tmp, null);
+
 				if (eventListEquals(selectedEvents, tmp)) {
 					fireSelection(true);
 				}
@@ -1759,14 +1757,28 @@ public class SequenceChart
 					redraw();
 				}
 			}
-			public void mouseDown(MouseEvent me) {
-				// TODO: improve mouse handling: starting dragging should not deselect events!
-				if (me.button==1) {
+
+			public void mouseDown(MouseEvent e) {
+				setFocus();
+
+				if (e.button == 1) {
+					dragStartX = e.x;
+					dragStartY = e.y;
+				}
+
+				removeTooltip();
+			}
+
+			public void mouseUp(MouseEvent me) {
+				if (me.button == 1 && !isDragging) {
 					ArrayList<IEvent> tmp = new ArrayList<IEvent>();
+
 					if ((me.stateMask & SWT.CTRL)!=0) // CTRL key extends selection
 						for (IEvent e : selectedEvents) 
 							tmp.add(e);
+
 					collectStuffUnderMouse(me.x, me.y, tmp, null);
+					
 					if (eventListEquals(selectedEvents, tmp)) {
 						fireSelection(false);
 					}
@@ -1776,10 +1788,12 @@ public class SequenceChart
 						fireSelectionChanged();
 						redraw();
 					}
-					
 				}
+
+				setCursor(null); // restore cursor at end of drag
+				dragStartX = dragStartY = -1;
+				isDragging = false;
 			}
-			public void mouseUp(MouseEvent me) {}
 		});
 	}
 
