@@ -39,11 +39,11 @@ public class RunsPage extends FormPage {
 	public static final String ICON_ERROR = "icons/full/obj16/Error.png"; //XXX find better place for it
 	private TreeViewer treeViewer;
 	
-	static class Payload {
+	static class SectionData {
 		String sectionName;
 		boolean hasError;
 		
-		public Payload(String sectionName, boolean isUndefined) {
+		public SectionData(String sectionName, boolean isUndefined) {
 			this.sectionName = sectionName;
 			this.hasError = isUndefined;
 		}
@@ -80,8 +80,8 @@ public class RunsPage extends FormPage {
 			public Image getImage(Object element) {
 				if (element instanceof GenericTreeNode)
 					element = ((GenericTreeNode)element).getPayload();
-				if (element instanceof Payload) {
-					Payload payload = (Payload) element;
+				if (element instanceof SectionData) {
+					SectionData payload = (SectionData) element;
 					return payload.hasError ? InifileEditorPlugin.getImage(ICON_ERROR) : ImageFactory.getImage(ImageFactory.MODEL_IMAGE_FOLDER);
 				}
 				return null; //XXX
@@ -98,44 +98,44 @@ public class RunsPage extends FormPage {
 		viewer.addDragSupport(dndOperations, transfers, new ViewerDragAdapter(viewer));
 		viewer.addDropSupport(dndOperations, transfers, new DropTargetAdapter() {
 			public void drop(DropTargetEvent event) {
-				Payload[] draggedSections = getPayloadsFrom(event.data);
-				Payload targetSection = getPayloadFrom(event.item==null ? null : event.item.getData());
-
-				if (draggedSections.length != 0 && targetSection != null) {
-			    	//System.out.println(draggedSections.length + " items dropped to: "+targetSection);
-			    	String newExtends = targetSection.sectionName.equals("General") ? null : targetSection.sectionName.replaceFirst("Config +", "");
-			    	for (Payload draggedPayload : draggedSections)
-			    		setSectionExtendsKey(draggedPayload.sectionName, newExtends);
+				// note: in theory, the user can drag across different treeViewers
+				// (i.e. from a different inifile editor, or even from a Scave editor!), 
+				// so we have to be careful when looking at the dragged data 
+				String[] draggedSections = getSectionNamesFromTreeSelection((IStructuredSelection) event.data);
+				String targetSectionName = getSectionNameFromTreeNode(event.item==null ? null : event.item.getData());
+				
+				if (draggedSections.length != 0 && targetSectionName != null) {
+			    	//System.out.println(draggedSections.length + " items dropped to: "+targetSectionName);
+			    	String newExtends = targetSectionName.equals("General") ? null : targetSectionName.replaceFirst("Config +", "");
+			    	for (String draggedSectionName : draggedSections)
+			    		if (getInifileDocument().containsSection(draggedSectionName)) // might occur if it was dragged from a different editor's treeviewer...
+			    			setSectionExtendsKey(draggedSectionName, newExtends);
 			    	reread();
 			    }
 			}
-
-			@SuppressWarnings("unchecked")
-			private Payload[] getPayloadsFrom(Object data) {
-				if (data instanceof TreeSelection) {
-					ArrayList list = new ArrayList();
-					for (Object item : ((TreeSelection) data).toArray()) {
-						Payload payload = getPayloadFrom(item);
-						if (payload != null)
-							list.add(payload);
-					}
-					return (Payload[]) list.toArray(new Payload[]{});
-				}
-				return null;
-			}
-
-			private Payload getPayloadFrom(Object data) {
-				if (data instanceof GenericTreeNode) {
-					Object payload = ((GenericTreeNode)data).getPayload();
-					if (payload instanceof Payload)
-						return (Payload) payload;
-				}
-				return null;
-			}
 		});
 	}
+
+	@SuppressWarnings("unchecked")
+	protected static String[] getSectionNamesFromTreeSelection(IStructuredSelection selection) {
+		ArrayList list = new ArrayList();
+		for (Object item : selection.toArray()) {
+			String payload = getSectionNameFromTreeNode(item);
+			if (payload != null)
+				list.add(payload);
+		}
+		return (String[]) list.toArray(new String[]{});
+	}
+
+	protected static String getSectionNameFromTreeNode(Object data) {
+		if (data instanceof GenericTreeNode)
+			data = ((GenericTreeNode)data).getPayload();
+		if (data instanceof SectionData)
+				return ((SectionData) data).sectionName;
+		return null;
+	}
 	
-	private void setSectionExtendsKey(String sectionName, String newExtends) {
+	protected void setSectionExtendsKey(String sectionName, String newExtends) {
 		IInifileDocument doc = getInifileDocument();
 		if (newExtends == null)
 			doc.removeKey(sectionName, "extends");
@@ -209,7 +209,7 @@ public class RunsPage extends FormPage {
 
 		// create root node
 		GenericTreeNode rootNode = new GenericTreeNode("root");
-		GenericTreeNode generalSectionNode = new GenericTreeNode(new Payload("General", false));
+		GenericTreeNode generalSectionNode = new GenericTreeNode(new SectionData("General", false));
 		rootNode.addChild(generalSectionNode);
 
 		// build tree
@@ -231,7 +231,7 @@ public class RunsPage extends FormPage {
 					}
 					else {
 						// "extends=...": is bogus, fall back to [General]
-						((Payload)(node.getPayload())).hasError = true;
+						((SectionData)(node.getPayload())).hasError = true;
 						generalSectionNode.addChild(node);
 					}
 				}
@@ -244,7 +244,7 @@ public class RunsPage extends FormPage {
 	private GenericTreeNode getOrCreate(HashMap<String, GenericTreeNode> nodes, String sectionName, boolean isUndefined) {
 		GenericTreeNode node = nodes.get(sectionName);
 		if (node==null) {
-			node = new GenericTreeNode(new Payload(sectionName, isUndefined));
+			node = new GenericTreeNode(new SectionData(sectionName, isUndefined));
 			nodes.put(sectionName, node);
 		}
 		return node;
