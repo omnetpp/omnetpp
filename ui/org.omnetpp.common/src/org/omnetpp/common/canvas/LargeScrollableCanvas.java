@@ -1,5 +1,6 @@
 package org.omnetpp.common.canvas;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -118,6 +119,30 @@ public abstract class LargeScrollableCanvas extends Canvas {
 		this.viewY = clipY(y);
 		adjustScrollbars();
 		redraw();
+	}
+	
+	public void scrollHorizontalToRange(long x1, long x2) {
+		Assert.isTrue(x2 >= x1);
+		long dx = x2 - x1;
+		
+		if (dx > getViewportWidth())
+			scrollHorizontalTo((x2 + x1 - getViewportWidth()) / 2);
+		else if (x1 < viewX)
+			scrollHorizontalTo(x1);
+		else if (x2 > viewX + getViewportWidth())
+			scrollHorizontalTo(x2 - getViewportWidth());
+	}
+	
+	public void scrollVerticalToRange(long y1, long y2) {
+		Assert.isTrue(y2 >= y1);
+		long dy = y2 - y1;
+		
+		if (dy > getViewportHeight())
+			scrollVerticalTo((y2 + y1 - getViewportHeight()) / 2);
+		else if (y1 < viewY)
+			scrollVerticalTo(y1);
+		else if (y2 > viewY + getVirtualHeight())
+			scrollVerticalTo(y2 - getViewportHeight());
 	}
 	
 	private long clipX(long x) {

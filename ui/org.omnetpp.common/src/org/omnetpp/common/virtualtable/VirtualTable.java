@@ -583,6 +583,9 @@ public class VirtualTable<T>
 		scrollToElement(element);
 	}
 
+	/**
+	 * Scrolls the visible area horizontally with the given amount of pixels.
+	 */
 	public void scrollHorizontal(int pixel) {
 		Point p = scrolledComposite.getOrigin();
 		scrolledComposite.setOrigin(p.x + pixel, p.y);
