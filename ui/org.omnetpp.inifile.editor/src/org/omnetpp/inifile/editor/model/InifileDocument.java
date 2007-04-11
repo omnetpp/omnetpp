@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -424,7 +425,33 @@ public class InifileDocument implements IInifileDocument {
 		parseIfChanged();
 		Section section = sections.get(sectionName);
 		if (section != null) {
-			//TODO remove from IDocument
+			// section might be disconnected (ie more then one heading), so we have to
+			// go deleting in reverse order, otherwise we mess up line numbers as we go
+			SectionHeadingLine[] lines = section.headingLines.toArray(new SectionHeadingLine[]{});
+			ArrayUtils.reverse(lines);
+			boolean hasUndeletableParts = false;
+			boolean deletedSomething = false;
+			for (SectionHeadingLine line : lines) {
+				if (!isEditable(line))
+					hasUndeletableParts = true;
+				else {
+					try {
+						int offset = document.getLineOffset(line.lineNumber-1);
+						int length = document.getLineOffset(line.lastLine-1+line.numLines) - offset;
+						document.replace(offset, length, "");
+						deletedSomething = true;
+					} 
+					catch (BadLocationException e) {
+						throw new RuntimeException("cannot delete section: bad location: "+e.getMessage());
+					}
+				}
+			}
+			if (hasUndeletableParts) {
+				if (deletedSomething)
+					throw new IllegalArgumentException("section ["+sectionName+"] could not be fully deleted, because part of it is defined in an included file");
+				else
+					throw new IllegalArgumentException("section ["+sectionName+"] cannot be deleted, because it is defined in an included file");
+			}
 		}
 	}
 

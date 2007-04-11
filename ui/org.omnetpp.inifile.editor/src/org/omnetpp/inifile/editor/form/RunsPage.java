@@ -163,9 +163,8 @@ public class RunsPage extends FormPage {
 		buttonGroup.setLayout(new GridLayout(1,false));
 		
 		Button addButton = createButton(buttonGroup, "Add...");
-		Button removeButton = createButton(buttonGroup, "Remove");
-		//new Label(buttonGroup, SWT.NONE);
 		Button renameButton = createButton(buttonGroup, "Rename...");
+		Button removeButton = createButton(buttonGroup, "Remove");
 		
 		addButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
