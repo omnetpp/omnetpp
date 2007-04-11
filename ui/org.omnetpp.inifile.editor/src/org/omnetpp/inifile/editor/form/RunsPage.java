@@ -2,10 +2,15 @@ package org.omnetpp.inifile.editor.form;
 
 import java.util.HashMap;
 
+import org.eclipse.emf.edit.ui.dnd.EditingDomainViewerDropAdapter;
+import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
+import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -28,7 +33,7 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
  * @author Andras
  */
 public class RunsPage extends FormPage {
-	public static final String ICON_ERROR = "icons/full/obj16/Error.png";
+	public static final String ICON_ERROR = "icons/full/obj16/Error.png"; //XXX find better place for it
 	private TreeViewer treeViewer;
 	
 	static class Payload {
@@ -66,7 +71,7 @@ public class RunsPage extends FormPage {
 	}
 
 	private TreeViewer createAndConfigureTreeViewer() {
-		TreeViewer treeViewer = new TreeViewer(this, SWT.BORDER);
+		TreeViewer treeViewer = new TreeViewer(this, SWT.MULTI | SWT.BORDER);
 		treeViewer.setLabelProvider(new GenericTreeLabelProvider(new LabelProvider() {
 			@Override
 			public Image getImage(Object element) {
@@ -80,9 +85,17 @@ public class RunsPage extends FormPage {
 			}
 		}));
 		treeViewer.setContentProvider(new GenericTreeContentProvider());
+		setupDragAndDropSupport(treeViewer);
 		return treeViewer;
 	}
 
+	private void setupDragAndDropSupport(TreeViewer viewer) {
+		int dndOperations = DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK;
+		Transfer[] transfers = new Transfer[] { LocalTransfer.getInstance() };
+		viewer.addDragSupport(dndOperations, transfers, new ViewerDragAdapter(viewer));
+		viewer.addDropSupport(dndOperations, transfers, new SectionsDropAdapter(getInifileDocument(), viewer));
+	}
+	
 	private Composite createButtons() {
 		Composite buttonGroup = new Composite(this, SWT.NONE);
 		buttonGroup.setLayout(new GridLayout(1,false));
