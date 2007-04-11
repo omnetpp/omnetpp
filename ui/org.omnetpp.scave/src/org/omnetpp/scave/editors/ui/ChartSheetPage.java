@@ -53,7 +53,7 @@ public class ChartSheetPage extends ScaveEditorPage {
 		return chartsArea;
 	}
 	
-	public void addChart(Chart chart, ChartCanvas view) {
+	private void addChart(Chart chart, ChartCanvas view) {
 		view.setLayoutData(new GridData(320,200));
 		chartsArea.configureChild(view);
 		updaters.add(new ChartUpdater(chart, view, scaveEditor.getResultFileManager()));
@@ -65,8 +65,8 @@ public class ChartSheetPage extends ScaveEditorPage {
 		setPageTitle("Charts: " + getChartSheetName(chartsheet));
 		setFormTitle("Charts: " + getChartSheetName(chartsheet));
 		setBackground(ColorFactory.asColor("white"));
-		setExpandHorizontal(true);
-		setExpandVertical(true);
+		//setExpandHorizontal(true);
+		//setExpandVertical(true);
 		GridLayout layout = new GridLayout();
 		getBody().setLayout(layout);
 		
@@ -105,6 +105,8 @@ public class ChartSheetPage extends ScaveEditorPage {
 				configureChartView(chartControl, chart);
 			}
 		}
+		
+		getContent().setSize(getContent().computeSize(SWT.DEFAULT, SWT.DEFAULT));
 	}
 	
 	@Override
