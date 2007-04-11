@@ -140,10 +140,16 @@ public class RunsPage extends FormPage {
 		if (newExtends == null)
 			doc.removeKey(sectionName, "extends");
 		else {
-			if (!doc.containsKey(sectionName, "extends"))
-				doc.addEntry(sectionName, "extends", newExtends, "", null); //XXX before the first!
-			else 
+			if (doc.containsKey(sectionName, "extends")) {
+				// overwrite
 				doc.setValue(sectionName, "extends", newExtends);
+			} 
+			else {
+				// insert at top
+				String[] keys = doc.getKeys(sectionName);
+				String firstKey = keys.length == 0 ? null : keys[0];
+				doc.addEntry(sectionName, "extends", newExtends, "", firstKey);
+			}
 		}
 	}
 
