@@ -148,6 +148,9 @@ public class ScaveModelAdapterFactory extends AdapterFactoryImpl {
 			public Object caseHistogramChart(HistogramChart object) {
 				return createHistogramChartAdapter();
 			}
+			public Object caseScatterChart(ScatterChart object) {
+				return createScatterChartAdapter();
+			}
 			public Object defaultCase(EObject object) {
 				return createEObjectAdapter();
 			}
@@ -527,6 +530,20 @@ public class ScaveModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createHistogramChartAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.ScatterChart <em>Scatter Chart</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.omnetpp.scave.model.ScatterChart
+	 * @generated
+	 */
+	public Adapter createScatterChartAdapter() {
 		return null;
 	}
 

@@ -89,5 +89,10 @@
     <genClasses ecoreClass="scave.ecore#//BarChart"/>
     <genClasses ecoreClass="scave.ecore#//LineChart"/>
     <genClasses ecoreClass="scave.ecore#//HistogramChart"/>
+    <genClasses ecoreClass="scave.ecore#//ScatterChart">
+      <genFeatures createChild="false" propertyCategory="" propertyDescription=""
+          ecoreFeature="ecore:EAttribute scave.ecore#//ScatterChart/moduleName"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ScatterChart/dataName"/>
+    </genClasses>
   </genPackages>
 </genmodel:GenModel>

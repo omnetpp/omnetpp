@@ -206,6 +206,15 @@ public interface ScaveModelFactory extends EFactory {
 	HistogramChart createHistogramChart();
 
 	/**
+	 * Returns a new object of class '<em>Scatter Chart</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Scatter Chart</em>'.
+	 * @generated
+	 */
+	ScatterChart createScatterChart();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

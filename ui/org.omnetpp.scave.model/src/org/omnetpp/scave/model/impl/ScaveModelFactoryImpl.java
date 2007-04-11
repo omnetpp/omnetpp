@@ -80,6 +80,7 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
 			case ScaveModelPackage.BAR_CHART: return createBarChart();
 			case ScaveModelPackage.LINE_CHART: return createLineChart();
 			case ScaveModelPackage.HISTOGRAM_CHART: return createHistogramChart();
+			case ScaveModelPackage.SCATTER_CHART: return createScatterChart();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -311,6 +312,16 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
 	public HistogramChart createHistogramChart() {
 		HistogramChartImpl histogramChart = new HistogramChartImpl();
 		return histogramChart;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public ScatterChart createScatterChart() {
+		ScatterChartImpl scatterChart = new ScatterChartImpl();
+		return scatterChart;
 	}
 
 	/**

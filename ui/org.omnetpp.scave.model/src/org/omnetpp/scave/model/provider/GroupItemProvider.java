@@ -196,6 +196,11 @@ public class GroupItemProvider
 			(createChildParameter
 				(ScaveModelPackage.Literals.GROUP__ITEMS,
 				 ScaveModelFactory.eINSTANCE.createHistogramChart()));
+
+		newChildDescriptors.add
+			(createChildParameter
+				(ScaveModelPackage.Literals.GROUP__ITEMS,
+				 ScaveModelFactory.eINSTANCE.createScatterChart()));
 	}
 
 	/**

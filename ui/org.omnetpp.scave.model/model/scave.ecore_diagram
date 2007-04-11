@@ -693,6 +693,33 @@
     <element xmi:type="ecore:EClass" href="scave.ecore#//HistogramChart"/>
     <layoutConstraint xmi:type="notation:Bounds" xmi:id="_UHMTMsSdEduZAs0X39ZqSw" x="888" y="756"/>
   </children>
+  <children xmi:type="notation:Node" xmi:id="_CN_pQOgZEduOeJqo_5rgWA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_CN_pQ-gZEduOeJqo_5rgWA" type="4004"/>
+    <children xmi:type="notation:Node" xmi:id="_CN_pROgZEduOeJqo_5rgWA" type="5001">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_CN_pRegZEduOeJqo_5rgWA"/>
+      <styles xmi:type="notation:TitleStyle" xmi:id="_CN_pRugZEduOeJqo_5rgWA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_CN_pR-gZEduOeJqo_5rgWA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_CN_pSOgZEduOeJqo_5rgWA"/>
+      <layoutConstraint xmi:type="notation:Ratio" xmi:id="_H7Eg0OgZEduOeJqo_5rgWA" value="0.1791044776119403"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_CN_pSegZEduOeJqo_5rgWA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_CN_pSugZEduOeJqo_5rgWA"/>
+      <styles xmi:type="notation:TitleStyle" xmi:id="_CN_pS-gZEduOeJqo_5rgWA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_CN_pTOgZEduOeJqo_5rgWA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_CN_pTegZEduOeJqo_5rgWA"/>
+      <layoutConstraint xmi:type="notation:Ratio" xmi:id="_H7Eg0egZEduOeJqo_5rgWA" value="0.1791044776119403"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_CN_pTugZEduOeJqo_5rgWA" type="5003">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_CN_pT-gZEduOeJqo_5rgWA"/>
+      <styles xmi:type="notation:TitleStyle" xmi:id="_CN_pUOgZEduOeJqo_5rgWA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_CN_pUegZEduOeJqo_5rgWA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_CN_pUugZEduOeJqo_5rgWA"/>
+      <layoutConstraint xmi:type="notation:Ratio" xmi:id="_H7Eg0ugZEduOeJqo_5rgWA" value="0.1791044776119403"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_CN_pQegZEduOeJqo_5rgWA"/>
+    <element xmi:type="ecore:EClass" href="scave.ecore#//ScatterChart"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_CN_pQugZEduOeJqo_5rgWA" x="756" y="840"/>
+  </children>
   <styles xmi:type="notation:DiagramStyle" xmi:id="_OLg14eBGEdqGIqWRmKIpGw"/>
   <element xmi:type="ecore:EPackage" href="scave.ecore#/"/>
   <edges xmi:type="notation:Edge" xmi:id="_ivUc0OElEdqDCuPsfR1pRA" type="3004" source="_OMd4IOBGEdqGIqWRmKIpGw" target="_MCNywOElEdqDCuPsfR1pRA">

@@ -1159,6 +1159,70 @@ public interface ScaveModelPackage extends EPackage {
 	int HISTOGRAM_CHART_FEATURE_COUNT = CHART_FEATURE_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.ScatterChartImpl <em>Scatter Chart</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.omnetpp.scave.model.impl.ScatterChartImpl
+	 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getScatterChart()
+	 * @generated
+	 */
+	int SCATTER_CHART = 26;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SCATTER_CHART__NAME = CHART__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Filters</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SCATTER_CHART__FILTERS = CHART__FILTERS;
+
+	/**
+	 * The feature id for the '<em><b>Properties</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SCATTER_CHART__PROPERTIES = CHART__PROPERTIES;
+
+	/**
+	 * The feature id for the '<em><b>Module Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SCATTER_CHART__MODULE_NAME = CHART_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Data Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SCATTER_CHART__DATA_NAME = CHART_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of structural features of the '<em>Scatter Chart</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SCATTER_CHART_FEATURE_COUNT = CHART_FEATURE_COUNT + 2;
+
+	/**
 	 * The meta object id for the '{@link org.omnetpp.scave.model.ResultType <em>Result Type</em>}' enum.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1166,7 +1230,7 @@ public interface ScaveModelPackage extends EPackage {
 	 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getResultType()
 	 * @generated
 	 */
-	int RESULT_TYPE = 26;
+	int RESULT_TYPE = 27;
 
 
 	/**
@@ -1771,6 +1835,38 @@ public interface ScaveModelPackage extends EPackage {
 	EClass getHistogramChart();
 
 	/**
+	 * Returns the meta object for class '{@link org.omnetpp.scave.model.ScatterChart <em>Scatter Chart</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Scatter Chart</em>'.
+	 * @see org.omnetpp.scave.model.ScatterChart
+	 * @generated
+	 */
+	EClass getScatterChart();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.ScatterChart#getModuleName <em>Module Name</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Module Name</em>'.
+	 * @see org.omnetpp.scave.model.ScatterChart#getModuleName()
+	 * @see #getScatterChart()
+	 * @generated
+	 */
+	EAttribute getScatterChart_ModuleName();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.ScatterChart#getDataName <em>Data Name</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Data Name</em>'.
+	 * @see org.omnetpp.scave.model.ScatterChart#getDataName()
+	 * @see #getScatterChart()
+	 * @generated
+	 */
+	EAttribute getScatterChart_DataName();
+
+	/**
 	 * Returns the meta object for enum '{@link org.omnetpp.scave.model.ResultType <em>Result Type</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2309,6 +2405,32 @@ public interface ScaveModelPackage extends EPackage {
 		 * @generated
 		 */
 		EClass HISTOGRAM_CHART = eINSTANCE.getHistogramChart();
+
+		/**
+		 * The meta object literal for the '{@link org.omnetpp.scave.model.impl.ScatterChartImpl <em>Scatter Chart</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.omnetpp.scave.model.impl.ScatterChartImpl
+		 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getScatterChart()
+		 * @generated
+		 */
+		EClass SCATTER_CHART = eINSTANCE.getScatterChart();
+
+		/**
+		 * The meta object literal for the '<em><b>Module Name</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute SCATTER_CHART__MODULE_NAME = eINSTANCE.getScatterChart_ModuleName();
+
+		/**
+		 * The meta object literal for the '<em><b>Data Name</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute SCATTER_CHART__DATA_NAME = eINSTANCE.getScatterChart_DataName();
 
 		/**
 		 * The meta object literal for the '{@link org.omnetpp.scave.model.ResultType <em>Result Type</em>}' enum.

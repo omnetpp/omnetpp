@@ -226,6 +226,11 @@ public class DatasetItemProvider
 			(createChildParameter
 				(ScaveModelPackage.Literals.DATASET__ITEMS,
 				 ScaveModelFactory.eINSTANCE.createHistogramChart()));
+
+		newChildDescriptors.add
+			(createChildParameter
+				(ScaveModelPackage.Literals.DATASET__ITEMS,
+				 ScaveModelFactory.eINSTANCE.createScatterChart()));
 	}
 
 	/**

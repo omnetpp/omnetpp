@@ -516,6 +516,28 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	}
 
 	/**
+	 * This keeps track of the one adapter used for all {@link org.omnetpp.scave.model.ScatterChart} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected ScatterChartItemProvider scatterChartItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link org.omnetpp.scave.model.ScatterChart}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Adapter createScatterChartAdapter() {
+		if (scatterChartItemProvider == null) {
+			scatterChartItemProvider = new ScatterChartItemProvider(this);
+		}
+
+		return scatterChartItemProvider;
+	}
+
+	/**
 	 * This returns the root adapter factory that contains this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -631,6 +653,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 		if (barChartItemProvider != null) barChartItemProvider.dispose();
 		if (lineChartItemProvider != null) lineChartItemProvider.dispose();
 		if (histogramChartItemProvider != null) histogramChartItemProvider.dispose();
+		if (scatterChartItemProvider != null) scatterChartItemProvider.dispose();
 	}
 
 }

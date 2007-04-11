@@ -36,6 +36,7 @@ import org.omnetpp.scave.model.Param;
 import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ResultType;
+import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model.Select;
@@ -230,6 +231,13 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 * @generated
 	 */
 	private EClass histogramChartEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass scatterChartEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -824,6 +832,33 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getScatterChart() {
+		return scatterChartEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getScatterChart_ModuleName() {
+		return (EAttribute)scatterChartEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getScatterChart_DataName() {
+		return (EAttribute)scatterChartEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EEnum getResultType() {
 		return resultTypeEEnum;
 	}
@@ -939,6 +974,10 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 
 		histogramChartEClass = createEClass(HISTOGRAM_CHART);
 
+		scatterChartEClass = createEClass(SCATTER_CHART);
+		createEAttribute(scatterChartEClass, SCATTER_CHART__MODULE_NAME);
+		createEAttribute(scatterChartEClass, SCATTER_CHART__DATA_NAME);
+
 		// Create enums
 		resultTypeEEnum = createEEnum(RESULT_TYPE);
 	}
@@ -983,6 +1022,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		barChartEClass.getESuperTypes().add(this.getChart());
 		lineChartEClass.getESuperTypes().add(this.getChart());
 		histogramChartEClass.getESuperTypes().add(this.getChart());
+		scatterChartEClass.getESuperTypes().add(this.getChart());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(datasetEClass, Dataset.class, "Dataset", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -1067,6 +1107,10 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		initEClass(lineChartEClass, LineChart.class, "LineChart", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(histogramChartEClass, HistogramChart.class, "HistogramChart", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(scatterChartEClass, ScatterChart.class, "ScatterChart", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getScatterChart_ModuleName(), ecorePackage.getEString(), "moduleName", null, 0, 1, ScatterChart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getScatterChart_DataName(), ecorePackage.getEString(), "dataName", null, 0, 1, ScatterChart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Initialize enums and add enum literals
 		initEEnum(resultTypeEEnum, ResultType.class, "ResultType");
