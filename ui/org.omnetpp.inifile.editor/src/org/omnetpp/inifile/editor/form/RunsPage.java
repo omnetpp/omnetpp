@@ -2,62 +2,135 @@ package org.omnetpp.inifile.editor.form;
 
 import java.util.HashMap;
 
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeLabelProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
+import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 
 /**
- * Inifile editor page to manage the [Run X] sections in the file.
+ * Inifile editor page to manage the sections in the file.
  * 
  * @author Andras
  */
 public class RunsPage extends FormPage {
-	private static Font titleFont = new Font(null, "Arial", 10, SWT.BOLD);
+	public static final String ICON_ERROR = "icons/full/obj16/Error.png";
 	private TreeViewer treeViewer;
+	
+	static class Payload {
+		String sectionName;
+		boolean hasError;
+		
+		public Payload(String sectionName, boolean isUndefined) {
+			this.sectionName = sectionName;
+			this.hasError = isUndefined;
+		}
+		
+		@Override
+		public String toString() {
+			return sectionName + (hasError ? " (base section does not exist)" : ""); //XXX not very elegant
+		}
+	}
 	
 	public RunsPage(Composite parent, InifileEditor inifileEditor) {
 		super(parent, inifileEditor);
-		GridLayout gridLayout = new GridLayout(1,false);
-		gridLayout.verticalSpacing = 0;
-		setLayout(gridLayout);
 		
-		// title area (XXX a bit ugly -- re-think layout)
-		Composite titleArea = new Composite(this, SWT.BORDER);
-		GridData gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
-		gridData.heightHint = 40;
-		titleArea.setLayoutData(gridData);
-		titleArea.setBackground(ColorFactory.asColor("white"));
-		titleArea.setLayout(new GridLayout(2, false));
-		Label imageLabel = new Label(titleArea, SWT.NONE);
-		imageLabel.setImage(ImageFactory.getImage(ImageFactory.MODEL_IMAGE_FOLDER)); //XXX 
-		imageLabel.setBackground(ColorFactory.asColor("white"));
-		Label title = new Label(titleArea, SWT.NONE);
-		title.setText("Manage Run Configurations");
-		title.setFont(titleFont);
-		title.setBackground(ColorFactory.asColor("white"));
-		title.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, true, true));
-		new Label(this, SWT.NONE);
+		// layout: 2x2 grid: (label, dummy) / (tree, buttonGroup)
+		setLayout(new GridLayout(2,false));
 
-		Label l = new Label(this, SWT.NONE);  //XXX
-		l.setText("Section inheritance:");
-		
-		treeViewer = new TreeViewer(this, SWT.BORDER);
+		Label label = new Label(this, SWT.NONE);
+		label.setText("Section Inheritance");
+		new Label(this, SWT.NONE); // dummy, for row1col2
+
+		treeViewer = createAndConfigureTreeViewer();
 		treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		treeViewer.setLabelProvider(new GenericTreeLabelProvider(new LabelProvider()));
-		treeViewer.setContentProvider(new GenericTreeContentProvider());
+
+		Composite buttonGroup = createButtons();
+		buttonGroup.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, true));
+		
 		reread();
+	}
+
+	private TreeViewer createAndConfigureTreeViewer() {
+		TreeViewer treeViewer = new TreeViewer(this, SWT.BORDER);
+		treeViewer.setLabelProvider(new GenericTreeLabelProvider(new LabelProvider() {
+			@Override
+			public Image getImage(Object element) {
+				if (element instanceof GenericTreeNode)
+					element = ((GenericTreeNode)element).getPayload();
+				if (element instanceof Payload) {
+					Payload payload = (Payload) element;
+					return payload.hasError ? InifileEditorPlugin.getImage(ICON_ERROR) : ImageFactory.getImage(ImageFactory.MODEL_IMAGE_FOLDER);
+				}
+				return null; //XXX
+			}
+		}));
+		treeViewer.setContentProvider(new GenericTreeContentProvider());
+		return treeViewer;
+	}
+
+	private Composite createButtons() {
+		Composite buttonGroup = new Composite(this, SWT.NONE);
+		buttonGroup.setLayout(new GridLayout(1,false));
+		
+		Button addButton = createButton(buttonGroup, "Add...");
+		//Button editButton = createButton(buttonGroup, "Edit...");
+		Button removeButton = createButton(buttonGroup, "Remove");
+		//new Label(buttonGroup, SWT.NONE);
+		Button upButton = createButton(buttonGroup, "Up");
+		Button downButton = createButton(buttonGroup, "Down");
+		
+		addButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				//XXX
+			}
+		});
+
+		removeButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				IStructuredSelection sel = (IStructuredSelection) treeViewer.getSelection();
+				for (Object o : sel.toArray()) {
+					String sectionName = (String) o;  //XXX not exactly
+					getInifileDocument().removeSection(sectionName);
+				}
+				reread();
+			}
+		});
+
+		upButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				//XXX
+			}
+		});
+
+		downButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				//XXX
+			}
+		});
+
+		return buttonGroup;
+	}
+
+	private Button createButton(Composite buttonGroup, String label) {
+		Button button = new Button(buttonGroup, SWT.PUSH);
+		button.setText(label);
+		button.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
+		return button;
 	}
 	
 	@Override
@@ -66,7 +139,7 @@ public class RunsPage extends FormPage {
 
 		// create root node
 		GenericTreeNode rootNode = new GenericTreeNode("root");
-		GenericTreeNode generalSectionNode = new GenericTreeNode("[General]");
+		GenericTreeNode generalSectionNode = new GenericTreeNode(new Payload("General", false));
 		rootNode.addChild(generalSectionNode);
 
 		// build tree
@@ -87,11 +160,9 @@ public class RunsPage extends FormPage {
 						extendsSectionNode.addChild(node);
 					}
 					else {
-						// error: extends a nonexisting section. add it anyway
-						GenericTreeNode extendsSectionNode = getOrCreate(nodes, extendsSectionName, true);
-						if (extendsSectionNode.getParent() == null)
-							generalSectionNode.addChild(extendsSectionNode);
-						extendsSectionNode.addChild(node);
+						// "extends=...": is bogus, fall back to [General]
+						((Payload)(node.getPayload())).hasError = true;
+						generalSectionNode.addChild(node);
 					}
 				}
 			}
@@ -100,10 +171,10 @@ public class RunsPage extends FormPage {
 		treeViewer.expandAll();
 	}
 
-	private GenericTreeNode getOrCreate(HashMap<String, GenericTreeNode> nodes, String sectionName, boolean isMissingSection) {
+	private GenericTreeNode getOrCreate(HashMap<String, GenericTreeNode> nodes, String sectionName, boolean isUndefined) {
 		GenericTreeNode node = nodes.get(sectionName);
 		if (node==null) {
-			node = new GenericTreeNode("["+sectionName+"]"+(isMissingSection?" (missing)":""));
+			node = new GenericTreeNode(new Payload(sectionName, isUndefined));
 			nodes.put(sectionName, node);
 		}
 		return node;
