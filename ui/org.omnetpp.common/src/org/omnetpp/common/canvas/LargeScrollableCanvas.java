@@ -121,6 +121,9 @@ public abstract class LargeScrollableCanvas extends Canvas {
 		redraw();
 	}
 	
+	/**
+	 * Makes the horizontal range visible with as little scrolling as possible.
+	 */
 	public void scrollHorizontalToRange(long x1, long x2) {
 		Assert.isTrue(x2 >= x1);
 		long dx = x2 - x1;
@@ -133,6 +136,9 @@ public abstract class LargeScrollableCanvas extends Canvas {
 			scrollHorizontalTo(x2 - getViewportWidth());
 	}
 	
+	/**
+	 * Makes the vertical range visible with as little scrolling as possible.
+	 */
 	public void scrollVerticalToRange(long y1, long y2) {
 		Assert.isTrue(y2 >= y1);
 		long dy = y2 - y1;
