@@ -223,11 +223,19 @@ public class SequenceChart
 					moveSelection(-1);
 				else if (e.keyCode == SWT.ARROW_RIGHT)
 					moveSelection(1);
+				else if (e.keyCode == SWT.ARROW_UP)
+					scrollAxes(-axisSpacing - 1);
+				else if (e.keyCode == SWT.ARROW_DOWN)
+					scrollAxes(axisSpacing + 1);
+				else if (e.keyCode == SWT.PAGE_UP)
+					scrollAxes(-getViewportHeight());
+				else if (e.keyCode == SWT.PAGE_DOWN)
+					scrollAxes(getViewportHeight());
 				else if (e.keyCode == SWT.HOME)
 					gotoBegin();
 				else if (e.keyCode == SWT.END)
 					gotoEnd();
-			}			
+			}
 		});
 	}
 
@@ -446,13 +454,23 @@ public class SequenceChart
 		scrollToElement(eventLog.getLastEvent());
 	}
 
+	public void scrollAxes(int dy) {
+		scrollVerticalTo(getViewportTop() + dy);
+	}			
+
 	public void scroll(int numberOfEvents) {
-		scrollToElement(eventLog.getNeighbourEvent(getSelectionEvent(), numberOfEvents));
+		IEvent neighbourEvent = eventLog.getNeighbourEvent(getSelectionEvent(), numberOfEvents);
+
+		if (neighbourEvent != null)
+			scrollToElement(neighbourEvent);
 	}
 
 	public void scrollToElement(IEvent event) {
-		scrollVerticalTo(getEventYCoordinate(event.getCPtr()) - getClientArea().height / 2);
-		scrollToSimulationTimeWithCenter(event.getSimulationTime().doubleValue());
+		long x = getVirtualPixelForSimulationTime(event.getSimulationTime().doubleValue());
+		long y = getEventYCoordinate(event.getCPtr());
+		long d = EVENT_SELECTION_RADIUS * 2;
+		scrollHorizontalToRange(x - d, x + d);
+		scrollVerticalToRange(y - d, y + d);
 	}
 
 	public void scrollToSelectionElement() {
@@ -482,7 +500,10 @@ public class SequenceChart
 	}
 
 	public void moveSelection(int numberOfEvents) {
-		gotoElement(eventLog.getNeighbourEvent(getSelectionEvent(), numberOfEvents));
+		IEvent neighbourEvent = eventLog.getNeighbourEvent(getSelectionEvent(), numberOfEvents);
+
+		if (neighbourEvent != null)
+			gotoElement(neighbourEvent);
 	}
 
 	public void gotoBegin() {
@@ -509,6 +530,7 @@ public class SequenceChart
 	}
 
 	public void gotoClosestElement(IEvent event) {
+		// TODO:
 	}
 
 	/*************************************************************************************
@@ -1638,6 +1660,13 @@ public class SequenceChart
 	public long getVirtualPixelForTimelineCoordinate(double t) {
 		Assert.isTrue(t >= 0);
 		return Math.round(t * pixelsPerTimelineUnit);
+	}
+
+	/**
+	 * Translates simulation time to virtual pixel x coordinate.
+	 */
+	public long getVirtualPixelForSimulationTime(double t) {
+		return getVirtualPixelForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateForSimulationTime(t));
 	}
 
 	/*************************************************************************************
