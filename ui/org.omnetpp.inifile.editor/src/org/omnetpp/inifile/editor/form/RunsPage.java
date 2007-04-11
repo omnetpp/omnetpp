@@ -1,15 +1,18 @@
 package org.omnetpp.inifile.editor.form;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.eclipse.emf.edit.ui.dnd.EditingDomainViewerDropAdapter;
 import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
 import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -93,9 +96,57 @@ public class RunsPage extends FormPage {
 		int dndOperations = DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK;
 		Transfer[] transfers = new Transfer[] { LocalTransfer.getInstance() };
 		viewer.addDragSupport(dndOperations, transfers, new ViewerDragAdapter(viewer));
-		viewer.addDropSupport(dndOperations, transfers, new SectionsDropAdapter(getInifileDocument(), viewer));
+		viewer.addDropSupport(dndOperations, transfers, new DropTargetAdapter() {
+			public void drop(DropTargetEvent event) {
+				Payload[] draggedSections = getPayloadsFrom(event.data);
+				Payload targetSection = getPayloadFrom(event.item==null ? null : event.item.getData());
+
+				if (draggedSections.length != 0 && targetSection != null) {
+			    	//System.out.println(draggedSections.length + " items dropped to: "+targetSection);
+			    	String newExtends = targetSection.sectionName.equals("General") ? null : targetSection.sectionName.replaceFirst("Config +", "");
+			    	for (Payload draggedPayload : draggedSections)
+			    		setSectionExtendsKey(draggedPayload.sectionName, newExtends);
+			    	reread();
+			    }
+			}
+
+			@SuppressWarnings("unchecked")
+			private Payload[] getPayloadsFrom(Object data) {
+				if (data instanceof TreeSelection) {
+					ArrayList list = new ArrayList();
+					for (Object item : ((TreeSelection) data).toArray()) {
+						Payload payload = getPayloadFrom(item);
+						if (payload != null)
+							list.add(payload);
+					}
+					return (Payload[]) list.toArray(new Payload[]{});
+				}
+				return null;
+			}
+
+			private Payload getPayloadFrom(Object data) {
+				if (data instanceof GenericTreeNode) {
+					Object payload = ((GenericTreeNode)data).getPayload();
+					if (payload instanceof Payload)
+						return (Payload) payload;
+				}
+				return null;
+			}
+		});
 	}
 	
+	private void setSectionExtendsKey(String sectionName, String newExtends) {
+		IInifileDocument doc = getInifileDocument();
+		if (newExtends == null)
+			doc.removeKey(sectionName, "extends");
+		else {
+			if (!doc.containsKey(sectionName, "extends"))
+				doc.addEntry(sectionName, "extends", newExtends, "", null); //XXX before the first!
+			else 
+				doc.setValue(sectionName, "extends", newExtends);
+		}
+	}
+
 	private Composite createButtons() {
 		Composite buttonGroup = new Composite(this, SWT.NONE);
 		buttonGroup.setLayout(new GridLayout(1,false));
