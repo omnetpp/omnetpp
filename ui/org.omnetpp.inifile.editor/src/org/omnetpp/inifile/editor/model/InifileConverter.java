@@ -45,19 +45,21 @@ public class InifileConverter {
 	    text = text.replaceAll(MULTILINE+"^([^;#]*?);$", "$1");
 
 	    // merge several [General] sections into one
-//	    $currentSection = "";
-//	    $tmp = "";
-//	    foreach $line (split("\n", $txt)) {
-//	        $line .= "\n";
-//	        if ($line =~ /^\\s*\\[(.*?)\\]/) {
-//	            $thisSection = $1;
-//	            $line = "" if ($thisSection eq $currentSection);
-//	            $currentSection = $thisSection;
-//	        }
-//	        $line = "" if ($line =~ /^\\s*[//;]\\s*\\[(.*?)\\]/);
-//	        $tmp .= $line;
-//	    }
-//	    $txt = $tmp;
+	    String currentSection = "";
+	    StringBuilder tmp = new StringBuilder();
+	    for (String line : text.split("\n")) {
+	        line = line + "\n";
+	        if (line.matches("(?s)^\\s*\\[(.*?)\\].*")) {
+	            String thisSection = line.replaceFirst("(?s)^\\s*\\[(.*?)\\].*", "$1");
+	            if (thisSection.equals(currentSection))
+	            	line = "";
+	            currentSection = thisSection;
+	        }
+	        if (line.matches("(?s)^\\s*[#;]\\s*\\[(.*?)\\].*"))
+	        	line = "" ;
+	        tmp.append(line);
+	    }
+	    text = tmp.toString();
 
 	    return text;
 	}
