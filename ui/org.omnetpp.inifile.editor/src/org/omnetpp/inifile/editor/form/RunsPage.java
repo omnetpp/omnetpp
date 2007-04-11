@@ -5,10 +5,13 @@ import java.util.HashMap;
 
 import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
 import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
+import org.eclipse.jface.dialogs.IInputValidator;
+import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetAdapter;
@@ -106,10 +109,9 @@ public class RunsPage extends FormPage {
 				
 				if (draggedSections.length != 0 && targetSectionName != null) {
 			    	//System.out.println(draggedSections.length + " items dropped to: "+targetSectionName);
-			    	String newExtends = targetSectionName.equals("General") ? null : targetSectionName.replaceFirst("Config +", "");
 			    	for (String draggedSectionName : draggedSections)
 			    		if (getInifileDocument().containsSection(draggedSectionName)) // might occur if it was dragged from a different editor's treeviewer...
-			    			setSectionExtendsKey(draggedSectionName, newExtends);
+			    			setSectionExtendsKey(draggedSectionName, targetSectionName);
 			    	reread();
 			    }
 			}
@@ -117,12 +119,14 @@ public class RunsPage extends FormPage {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected static String[] getSectionNamesFromTreeSelection(IStructuredSelection selection) {
+	protected static String[] getSectionNamesFromTreeSelection(ISelection selection) {
 		ArrayList list = new ArrayList();
-		for (Object item : selection.toArray()) {
-			String payload = getSectionNameFromTreeNode(item);
-			if (payload != null)
-				list.add(payload);
+		if (selection instanceof IStructuredSelection) {
+			for (Object item : ((IStructuredSelection)selection).toArray()) {
+				String payload = getSectionNameFromTreeNode(item);
+				if (payload != null)
+					list.add(payload);
+			}
 		}
 		return (String[]) list.toArray(new String[]{});
 	}
@@ -135,20 +139,21 @@ public class RunsPage extends FormPage {
 		return null;
 	}
 	
-	protected void setSectionExtendsKey(String sectionName, String newExtends) {
+	protected void setSectionExtendsKey(String sectionName, String extendsSectionName) {
 		IInifileDocument doc = getInifileDocument();
-		if (newExtends == null)
+		if (extendsSectionName.equals("General"))
 			doc.removeKey(sectionName, "extends");
 		else {
+			String value = extendsSectionName.replaceAll("^Config +", "");
 			if (doc.containsKey(sectionName, "extends")) {
 				// overwrite
-				doc.setValue(sectionName, "extends", newExtends);
+				doc.setValue(sectionName, "extends", value);
 			} 
 			else {
 				// insert at top
 				String[] keys = doc.getKeys(sectionName);
 				String firstKey = keys.length == 0 ? null : keys[0];
-				doc.addEntry(sectionName, "extends", newExtends, "", firstKey);
+				doc.addEntry(sectionName, "extends", value, "", firstKey);
 			}
 		}
 	}
@@ -166,7 +171,26 @@ public class RunsPage extends FormPage {
 		
 		addButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				//XXX
+				InputDialog dialog = new InputDialog(getShell(), "New Section", "Name for the new section:", "new", new IInputValidator() {
+					public String isValid(String sectionName) {
+						sectionName = sectionName.trim();
+						if (!sectionName.equals("General") && !sectionName.startsWith("Config "))
+							sectionName = "Config "+sectionName;
+						if (getInifileDocument().containsSection(sectionName))
+							return "Section ["+sectionName+"] already exists";
+						return null;
+					}
+				});
+				if (dialog.open()==Window.OK) {
+					String sectionName = dialog.getValue().trim();
+					if (!sectionName.equals("General") && !sectionName.startsWith("Config "))
+						sectionName = "Config "+sectionName;
+					getInifileDocument().addSection(sectionName, null);
+					String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
+					if (selection.length != 0)
+						setSectionExtendsKey(sectionName, selection[0]);
+					reread();
+				}
 			}
 		});
 
