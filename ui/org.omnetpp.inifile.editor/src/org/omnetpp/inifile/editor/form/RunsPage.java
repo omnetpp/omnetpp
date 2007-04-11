@@ -166,18 +166,22 @@ public class RunsPage extends FormPage {
 		Button renameButton = createButton(buttonGroup, "Rename...");
 		Button removeButton = createButton(buttonGroup, "Remove");
 		
+		// in more than one places we'll need to check whether a string is acceptable as a new section's name
+		final IInputValidator newSectionNameValidator = new IInputValidator() {
+			public String isValid(String sectionName) {
+				sectionName = sectionName.trim();
+				if (!sectionName.equals("General") && !sectionName.startsWith("Config "))
+					sectionName = "Config "+sectionName;
+				if (getInifileDocument().containsSection(sectionName))
+					return "Section ["+sectionName+"] already exists";
+				return null;
+			}
+		};
+
+		// configure "add section" button
 		addButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				InputDialog dialog = new InputDialog(getShell(), "New Section", "Name for the new section:", "new", new IInputValidator() {
-					public String isValid(String sectionName) {
-						sectionName = sectionName.trim();
-						if (!sectionName.equals("General") && !sectionName.startsWith("Config "))
-							sectionName = "Config "+sectionName;
-						if (getInifileDocument().containsSection(sectionName))
-							return "Section ["+sectionName+"] already exists";
-						return null;
-					}
-				});
+				InputDialog dialog = new InputDialog(getShell(), "New Section", "Name for the new section:", "new", newSectionNameValidator);
 				if (dialog.open()==Window.OK) {
 					String sectionName = dialog.getValue().trim();
 					if (!sectionName.equals("General") && !sectionName.startsWith("Config "))
@@ -191,6 +195,7 @@ public class RunsPage extends FormPage {
 			}
 		});
 
+		// configure "remove section" button
 		removeButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
@@ -203,9 +208,21 @@ public class RunsPage extends FormPage {
 			}
 		});
 
+		// configure "rename section" button
 		renameButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				//XXX
+				String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
+				if (selection.length == 0)
+					return;
+				String sectionName = selection[0];
+				InputDialog dialog = new InputDialog(getShell(), "Rename Section", "New name for section ["+sectionName+"]:", sectionName.replaceFirst("^Config +", "")+"-1", newSectionNameValidator);
+				if (dialog.open()==Window.OK) {
+					String newSectionName = dialog.getValue().trim();
+					if (!newSectionName.equals("General") && !newSectionName.startsWith("Config "))
+						newSectionName = "Config "+newSectionName;
+					//XXX rename section...
+					reread();
+				}
 			}
 		});
 
