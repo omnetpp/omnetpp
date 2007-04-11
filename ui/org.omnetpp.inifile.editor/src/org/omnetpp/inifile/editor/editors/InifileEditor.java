@@ -7,6 +7,7 @@ import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -29,6 +30,7 @@ import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.inifile.editor.form.InifileFormEditor;
 import org.omnetpp.inifile.editor.model.IInifileChangeListener;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
+import org.omnetpp.inifile.editor.model.InifileConverter;
 import org.omnetpp.inifile.editor.model.InifileDocument;
 import org.omnetpp.inifile.editor.text.InifileTextEditor;
 import org.omnetpp.inifile.editor.views.InifileContentOutlinePage;
@@ -132,6 +134,9 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 				editorData.getInifileAnalyzer().run();
 			}
 		});
+		
+		// if the file is in the old format, offer upgrading it
+		convertOldInifile();
 	}
 
 	protected void updateSelection() {
@@ -233,6 +238,22 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		}
 		else {
 			formEditor.pageDeselected();
+		}
+	}
+
+	/**
+	 * Detect when the file is in the old format, and offer converting it.
+	 */
+	protected void convertOldInifile() {
+		IDocument doc = textEditor.getDocumentProvider().getDocument(getEditorInput());
+		if (InifileConverter.needsConversion(doc.get())) {
+			if (MessageDialog.openQuestion(null, "Old Inifile Format", 
+					"This inifile is in the old (3.x) format, and needs to be converted " +
+					"into the new format. This includes renaming some sections and configuration keys. " +
+					"Do you want to convert the editor contents now?")) {
+				String newText = InifileConverter.convert(doc.get());
+				doc.set(newText);
+			}
 		}
 	}
 

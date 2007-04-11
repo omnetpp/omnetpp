@@ -18,9 +18,30 @@ public class InifileConverter {
 							   "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", 
 							   "Seventeen", "Eighteen", "Nineteen", "Twenty" };
 
-//	public static boolean  
+
+	/**
+	 * Tests whether the given inifile text is in old format (OMNeT++ 3.x) and 
+	 * needs to be converted.
+	 */
+	public static boolean needsConversion(String text) {
+	    String allObsoleteSections = join("|", OBSOLETE_SECTIONS);
+	    text = "\n"+text+"\n";
+	    return text.matches("(?s).*\n\\s*\\[("+allObsoleteSections+"|Run ([0-9]+))\\][^\n]*\n.*");
+	}
+	
+	/**
+	 * Migrates 3.x ini files to 4.x format. This consists of the following:
+	 * 
+	 *  - rename the sections [Parameters], [Cmdenv], [Tkenv], [OutVectors], [Partitioning] to [General]
+	 *  - merge the resulting multiple occurrences of [General] into one
+	 *  - prefix [Cmdenv]/[Tkenv] config names with "cmdenv-" and "tkenv-" (unless already begins with that)
+	 *  - rename sections [Run 1], [Run 2] etc to [Config config1], etc.
+	 *  - rename output vector configuration sections "**.interval=" to "**.record-interval="
+	 *  - rename "**.use-default" to "**.apply-default"
+	 */
 	public static String convert(String text) {
-		final String MULTILINE = "(?m)";  // turns on MULTILINE mode (Perl: s///m) 
+		// Note: this method was created from the Perl script _scripts\migrate\migrateinifile.pl 
+		String MULTILINE = "(?m)";  // turns on regex MULTILINE mode (Perl: s///m) 
 		
 	    String allCmdenvNames = join("|", CMDENV_NAMES);
 	    text = text.replaceAll(MULTILINE+"^(\\s*[;#]?\\s*)("+allCmdenvNames+")\\b", "$1cmdenv-$2");
@@ -38,6 +59,10 @@ public class InifileConverter {
 	    	text = text.replaceAll(MULTILINE+"^(\\s*[;#]?\\s*)\\[Run "+i+"\\]", "$1\\[Config "+NUMBERS[i]+"\\]");
     	text = text.replaceAll(MULTILINE+"^(\\s*[;#]?\\s*)\\[Run ([0-9]+)\\]", "$1\\[Config config$2\\]");
 
+    	//FIXME TODO: rename output vector configuration sections "**.interval=" to "**.record-interval="
+    	//FIXME TODO: rename "**.use-default" to "**.apply-default"
+    	System.out.println("CONVERSION STILL INCOMPLETE!!!!");
+    	
 	    // make exactly one space on both sides of the "=" sign (optional, just cosmetics)
 	    text = text.replaceAll(MULTILINE+"^([^//;=]*?) *= *", "$1 = ");
 
