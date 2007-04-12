@@ -59,7 +59,7 @@ public class ConfigurationRegistry {
     private static final Object TABLESIZE = null;
     private static final Object DEFAULT_MEMORY_LIMIT = null;
 
-    public static final ConfigurationEntry CFGID_RUNS_TO_EXECUTE = addGlobalEntry(
+    public static final ConfigurationEntry CFGID_CMDENV_RUNS_TO_EXECUTE = addGlobalEntry(
     		"cmdenv-runs-to-execute", CFG_STRING, "",
     		"Specifies which simulation runs should be executed. It accepts a comma-separated list " +
     		"of run numbers or run number ranges, e.g. 1,3-4,7-9. If the value is missing, Cmdenv " +
@@ -69,7 +69,7 @@ public class ConfigurationRegistry {
     		"cmdenv-extra-stack-kb", CFG_INT, CMDENV_EXTRASTACK_KB, 
     		"Specifies the extra amount of stack (in kilobytes) that is reserved for each activity() " +
     		"simple module when the simulation is run under Cmdenv.");
-    public static final ConfigurationEntry CFGID_OUTPUT_FILE = addGlobalEntry( 
+    public static final ConfigurationEntry CFGID_CMDENV_OUTPUT_FILE = addGlobalEntry( 
     		"cmdenv-output-file", CFG_FILENAME, "", 
     		"When a filename is specified, Cmdenv redirects standard output into the given file. " +
     		"This is especially useful with parallel simulation. See `fname-append-host' option as well.");
@@ -223,101 +223,101 @@ public class ConfigurationRegistry {
     		"tkenv-extra-stack-kb", CFG_INT, TKENV_EXTRASTACK_KB,
     		"Specifies the extra amount of stack (in kilobytes) that is reserved for each activity() " +
     		"simple module when the simulation is run under Tkenv.");
-    public static final ConfigurationEntry CFGID_DEFAULT_RUN = addGlobalEntry( 
+    public static final ConfigurationEntry CFGID_TKENV_DEFAULT_RUN = addGlobalEntry( 
     		"tkenv-default-run", CFG_INT, 0,
     		"Specifies which run Tkenv should set up automatically on startup. The default is to ask the user.");
-    public static final ConfigurationEntry CFGID_SLOWEXEC_DELAY = addGlobalEntryU( 
+    public static final ConfigurationEntry CFGID_TKENV_SLOWEXEC_DELAY = addGlobalEntryU( 
     		"tkenv-slowexec-delay", "s", 0.3, 
     		"Delay between steps when you slow-execute the simulation.");
-    public static final ConfigurationEntry CFGID_UPDATE_FREQ_FAST = addGlobalEntry( 
+    public static final ConfigurationEntry CFGID_TKENV_UPDATE_FREQ_FAST = addGlobalEntry( 
     		"tkenv-update-freq-fast", CFG_INT, 50, 
     		"Number of events executed between two display updates when in Fast execution mode.");
-    public static final ConfigurationEntry CFGID_UPDATE_FREQ_EXPRESS = addGlobalEntry( 
+    public static final ConfigurationEntry CFGID_TKENV_UPDATE_FREQ_EXPRESS = addGlobalEntry( 
     		"tkenv-update-freq-express", CFG_INT, 10000, 
     		"Number of events executed between two display updates when in Express execution mode.");
-    public static final ConfigurationEntry CFGID_ANIMATION_ENABLED = addGlobalEntry( 
+    public static final ConfigurationEntry CFGID_TKENV_ANIMATION_ENABLED = addGlobalEntry( 
     		"tkenv-animation-enabled", CFG_BOOL, true, 
     		"Enables/disables animation.");
-    public static final ConfigurationEntry CFGID_NEXT_EVENT_MARKERS = addGlobalEntry( 
+    public static final ConfigurationEntry CFGID_TKENV_NEXT_EVENT_MARKERS = addGlobalEntry( 
     		"tkenv-next-event-markers", CFG_BOOL, true, 
     		"Whether to display the next event marker (red rectange).");
-    public static final ConfigurationEntry CFGID_SENDDIRECT_ARROWS = addGlobalEntry( 
+    public static final ConfigurationEntry CFGID_TKENV_SENDDIRECT_ARROWS = addGlobalEntry( 
     		"tkenv-senddirect-arrows", CFG_BOOL, true,
     		"Whether to display arrows during animation of sendDirect() calls.");
-    public static final ConfigurationEntry CFGID_ANIM_METHODCALLS = addGlobalEntry( 
+    public static final ConfigurationEntry CFGID_TKENV_ANIM_METHODCALLS = addGlobalEntry( 
     		"tkenv-anim-methodcalls", CFG_BOOL, true, 
     		"Whether to animate method calls across modules. Only calls to methods which contain " +
     		"Enter_Method() can be animated.");
-    public static final ConfigurationEntry CFGID_METHODCALLS_DELAY = addGlobalEntryU( 
+    public static final ConfigurationEntry CFGID_TKENV_METHODCALLS_DELAY = addGlobalEntryU( 
     		"tkenv-methodcalls-delay", "s", 0.2, 
     		"Sets delay after method call animation.");
-    public static final ConfigurationEntry CFGID_ANIMATION_MSGNAMES = addGlobalEntry( 
+    public static final ConfigurationEntry CFGID_TKENV_ANIMATION_MSGNAMES = addGlobalEntry( 
     		"tkenv-animation-msgnames", CFG_BOOL, true, 
     		"Enables/disables displaying message names during message flow animation.");
-    public static final ConfigurationEntry CFGID_ANIMATION_MSGCLASSNAMES = addGlobalEntry( 
+    public static final ConfigurationEntry CFGID_TKENV_ANIMATION_MSGCLASSNAMES = addGlobalEntry( 
     		"tkenv-animation-msgclassnames", CFG_BOOL, true, 
     		"Enables/disables displaying the C++ class name of messages during animation.");
-    public static final ConfigurationEntry CFGID_ANIMATION_MSGCOLORS = addGlobalEntry( 
+    public static final ConfigurationEntry CFGID_TKENV_ANIMATION_MSGCOLORS = addGlobalEntry( 
     		"tkenv-animation-msgcolors", CFG_BOOL, true, 
     		"Enables/disables using different colors for each message kind during message flow animation.");
-    public static final ConfigurationEntry CFGID_PENGUIN_MODE = addGlobalEntry( 
+    public static final ConfigurationEntry CFGID_TKENV_PENGUIN_MODE = addGlobalEntry( 
     		"tkenv-penguin-mode", CFG_BOOL, false, 
     		"Surprise surprise.");
-    public static final ConfigurationEntry CFGID_SHOW_LAYOUTING = addGlobalEntry( 
+    public static final ConfigurationEntry CFGID_TKENV_SHOW_LAYOUTING = addGlobalEntry( 
     		"tkenv-show-layouting", CFG_BOOL, false, 
     		"Show layouting process of network graphics.");
-    public static final ConfigurationEntry CFGID_USE_NEW_LAYOUTER = addGlobalEntry( 
+    public static final ConfigurationEntry CFGID_TKENV_USE_NEW_LAYOUTER = addGlobalEntry( 
     		"tkenv-use-new-layouter", CFG_BOOL, false, 
     		"Selects between the new and the old (3.x) network layouting algorithms.");
-    public static final ConfigurationEntry CFGID_SHOW_BUBBLES = addGlobalEntry( 
+    public static final ConfigurationEntry CFGID_TKENV_SHOW_BUBBLES = addGlobalEntry( 
     		"tkenv-show-bubbles", CFG_BOOL, true, 
     		"Whether to honor the bubble() calls during animation.");
-    public static final ConfigurationEntry CFGID_ANIMATION_SPEED = addGlobalEntry( 
+    public static final ConfigurationEntry CFGID_TKENV_ANIMATION_SPEED = addGlobalEntry( 
     		"tkenv-animation-speed", CFG_DOUBLE, 1.5, 
     		"Controls the speed of the animation; values in the range 0..3 are accepted.");
-    public static final ConfigurationEntry CFGID_PRINT_BANNERS = addGlobalEntry( 
+    public static final ConfigurationEntry CFGID_TKENV_PRINT_BANNERS = addGlobalEntry( 
     		"tkenv-print-banners", CFG_BOOL, true, 
     		"Enables/disables printing banners for each event.");
-    public static final ConfigurationEntry CFGID_USE_MAINWINDOW = addGlobalEntry( 
+    public static final ConfigurationEntry CFGID_TKENV_USE_MAINWINDOW = addGlobalEntry( 
     		"tkenv-use-mainwindow", CFG_BOOL, true, 
     		"Enables/disables writing ev output to the Tkenv main window.");
-    public static final ConfigurationEntry CFGID_EXPRESSMODE_AUTOUPDATE = addGlobalEntry( 
+    public static final ConfigurationEntry CFGID_TKENV_EXPRESSMODE_AUTOUPDATE = addGlobalEntry( 
     		"tkenv-expressmode-autoupdate", CFG_BOOL, true, 
     		"Enables/disables updating the inspectors during Express mode.");
-    public static final ConfigurationEntry CFGID_IMAGE_PATH = addGlobalEntry( 
+    public static final ConfigurationEntry CFGID_TKENV_IMAGE_PATH = addGlobalEntry( 
     		"tkenv-image-path", CFG_FILENAME, "", 
     		"Specifies the path for loading module icons.");
-    public static final ConfigurationEntry CFGID_PLUGIN_PATH = addGlobalEntry( 
+    public static final ConfigurationEntry CFGID_TKENV_PLUGIN_PATH = addGlobalEntry( 
     		"tkenv-plugin-path", CFG_FILENAME, "", 
     		"Specifies the search path for Tkenv plugins. Tkenv plugins are .tcl files " +
     		"that get evaluated on startup.");
-    public static final ConfigurationEntry CFGID_EXPRESS_MODE = addPerRunEntry(
+    public static final ConfigurationEntry CFGID_CMDENV_EXPRESS_MODE = addPerRunEntry(
     		"cmdenv-express-mode", CFG_BOOL, true, 
     		"Selects ``normal'' (debug/trace) or ``express'' mode.");
-    public static final ConfigurationEntry CFGID_AUTOFLUSH = addPerRunEntry(
+    public static final ConfigurationEntry CFGID_CMDENV_AUTOFLUSH = addPerRunEntry(
     		"cmdenv-autoflush", CFG_BOOL, false, 
     		"Call fflush(stdout) after each event banner or status update; affects both express " +
     		"and normal mode. Turning on autoflush can be useful with printf-style debugging for " +
     		"tracking down program crashes.");
-    public static final ConfigurationEntry CFGID_MODULE_MESSAGES = addPerRunEntry(
+    public static final ConfigurationEntry CFGID_CMDENV_MODULE_MESSAGES = addPerRunEntry(
     		"cmdenv-module-messages", CFG_BOOL, true, 
-    		"When express-mode=false: turns printing module ev<< output on/off.");
-    public static final ConfigurationEntry CFGID_EVENT_BANNERS = addPerRunEntry(
+    		"When cmdenv-express-mode=false: turns printing module ev<< output on/off.");
+    public static final ConfigurationEntry CFGID_CMDENV_EVENT_BANNERS = addPerRunEntry(
     		"cmdenv-event-banners", CFG_BOOL, true, 
-    		"When express-mode=false: turns printing event banners on/off.");
-    public static final ConfigurationEntry CFGID_EVENT_BANNER_DETAILS = addPerRunEntry(
+    		"When cmdenv-express-mode=false: turns printing event banners on/off.");
+    public static final ConfigurationEntry CFGID_CMDENV_EVENT_BANNER_DETAILS = addPerRunEntry(
     		"cmdenv-event-banner-details", CFG_BOOL, false, 
-    		"When express-mode=false: print extra information after event banners.");
-    public static final ConfigurationEntry CFGID_MESSAGE_TRACE = addPerRunEntry(
+    		"When cmdenv-express-mode=false: print extra information after event banners.");
+    public static final ConfigurationEntry CFGID_CMDENV_MESSAGE_TRACE = addPerRunEntry(
     		"cmdenv-message-trace", CFG_BOOL, false, 
-    		"When express-mode=false: print a line per message sending (by send(),scheduleAt(), etc) " +
+    		"When cmdenv-express-mode=false: print a line per message sending (by send(),scheduleAt(), etc) " +
     		"and delivery on the standard output.");
-    public static final ConfigurationEntry CFGID_STATUS_FREQUENCY = addPerRunEntry(
+    public static final ConfigurationEntry CFGID_CMDENV_STATUS_FREQUENCY = addPerRunEntry(
     		"cmdenv-status-frequency", CFG_INT, 100000, 
-    		"When express-mode=true: print status update every n events. Typical values are 100,000...1,000,000.");
-    public static final ConfigurationEntry CFGID_PERFORMANCE_DISPLAY = addPerRunEntry(
+    		"When cmdenv-express-mode=true: print status update every n events. Typical values are 100,000...1,000,000.");
+    public static final ConfigurationEntry CFGID_CMDENV_PERFORMANCE_DISPLAY = addPerRunEntry(
     		"cmdenv-performance-display", CFG_BOOL, true, 
-    		"When express-mode=true: print detailed performance information. Turning it on results in " +
+    		"When cmdenv-express-mode=true: print detailed performance information. Turning it on results in " +
     		"a 3-line entry printed on each update, containing ev/sec, simsec/sec, ev/simsec, number of " +
     		"messages created/still present/currently scheduled in FES.");
     public static final ConfigurationEntry CFGID_OUTPUT_VECTORS_MEMORY_LIMIT = addPerRunEntryU(

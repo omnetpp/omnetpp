@@ -148,7 +148,7 @@ public class InifileAnalyzer {
 		if (e == null) {
 			addError(section, key, "Unknown configuration entry: "+key);
 		}
-		if (key.equals(ConfigurationRegistry.CFGID_EXPRESS_MODE.getName()) && section.equals("General")) {
+		else if (key.equals(ConfigurationRegistry.CFGID_EXTENDS.getName()) && section.equals("General")) {
 			addError(section, key, "Key \""+key+"\" cannot occur in the [General] section");
 		}
 		else if (e.isGlobal() && !section.equals("General")) {
