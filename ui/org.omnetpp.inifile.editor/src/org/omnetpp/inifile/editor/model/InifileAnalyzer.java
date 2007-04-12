@@ -85,7 +85,6 @@ public class InifileAnalyzer {
 		
 		// analyze file
 		for (String section : doc.getSectionNames()) {
-			boolean isParamSection = isParamSection(section);
 			for (String key : doc.getKeys(section)) {
 				switch (getKeyType(key)) {
 				case CONFIG:
@@ -94,27 +93,19 @@ public class InifileAnalyzer {
 					break;
 				case PARAM:
 					//XXX rename **.interval to **.record-interval, and warn for old name here
-					if (isParamSection)
-						doc.setData(section, key, new KeyData());
-					else
-						addError(section, key, "Parameter settings must be in section [Parameters] or in a run-specific section [Run X]");
+					doc.setData(section, key, new KeyData());
 					break;
 				case PER_OBJECT_CONFIG:
-					if (isParamSection)
-						doc.setData(section, key, new KeyData());
-					else
-						addError(section, key, "This configuration must be in section [Parameters] or in a run-specific section [Run X]"); //XXX really?
+					doc.setData(section, key, new KeyData());
 					break;
 				}
 			}
 			
-			if (isParamSection) {
-				doc.setData(section, new SectionData());
-				calculateParamResolutions(section, ned);
-				
-				for (String key : getUnusedParameterKeys(section))
-					addWarning(section, key, "Unused entry (does not match any parameters)");
-			}
+			doc.setData(section, new SectionData());
+			calculateParamResolutions(section, ned);
+
+			for (String key : getUnusedParameterKeys(section))
+				addWarning(section, key, "Unused entry (does not match any parameters)");
 		}
 		System.out.println("Inifile analysed in "+(System.currentTimeMillis()-startTime)+"ms");
 	}
@@ -154,15 +145,14 @@ public class InifileAnalyzer {
 
 	protected void validateConfig(String section, String key, INEDTypeResolver ned) {
 		ConfigurationEntry e = ConfigurationRegistry.getEntry(key);
-		boolean isPerRunSection = section.startsWith("Run ");
 		if (e == null) {
 			addError(section, key, "Unknown configuration entry: "+key);
 		}
-		else if (e.isGlobal() && !section.equals(e.getSection())) {
-			addError(section, key, "Key \""+key+"\" occurs in wrong section, must be in ["+e.getSection()+"]");
+		if (key.equals(ConfigurationRegistry.CFGID_EXPRESS_MODE.getName()) && section.equals("General")) {
+			addError(section, key, "Key \""+key+"\" cannot occur in the [General] section");
 		}
-		else if (!e.isGlobal() && !section.equals(e.getSection()) && !isPerRunSection) {
-			addError(section, key, "Key \""+key+"\" occurs in wrong section, must be in ["+e.getSection()+"], or in a run-specific section [Run X]");
+		else if (e.isGlobal() && !section.equals("General")) {
+			addError(section, key, "Key \""+key+"\" can only be specified globally, in the [General] section");
 		}
 		
 		//XXX check the syntax of the value too, etc...
@@ -234,10 +224,10 @@ public class InifileAnalyzer {
 		boolean iniUseDefault = false;
 		if (doc != null) {
 			String paramFullPath = moduleFullPath + "." + param.getName();
-			iniKey = InifileUtils.lookupParameter(paramFullPath, doc, "Parameters"); //XXX run-specific sections too!
-			iniValue = doc.getValue("Parameters", iniKey);
-			iniUseDefaultKey = InifileUtils.lookupParameter(paramFullPath+".use-default", doc, "Parameters");
-			String iniUseDefaultStr = doc.getValue("Parameters", iniKey);
+			iniKey = InifileUtils.lookupParameter(paramFullPath, doc, "General"); //XXX run-specific sections too!
+			iniValue = doc.getValue("General", iniKey);
+			iniUseDefaultKey = InifileUtils.lookupParameter(paramFullPath+".use-default", doc, "General");
+			String iniUseDefaultStr = doc.getValue("General", iniKey);
 			iniUseDefault = "true".equals(iniUseDefaultStr);
 		}
 
@@ -264,15 +254,8 @@ public class InifileAnalyzer {
 				type = ParamResolutionType.INI;
 			}
 			//XXX return Type.DEFAULTED sometimes
-			return new ParamResolution(moduleFullPath, param, type, "Parameters", iniKey);
+			return new ParamResolution(moduleFullPath, param, type, "General", iniKey);
 		}
-	}
-
-	/**
-	 * Returns whether a section of the given name may contain parameter assignments. 
-	 */
-	public static boolean isParamSection(String section) {
-		return section.equals("Parameters") || section.startsWith("Run ");
 	}
 
 	/**

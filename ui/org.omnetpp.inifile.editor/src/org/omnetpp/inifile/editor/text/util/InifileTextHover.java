@@ -48,26 +48,21 @@ public class InifileTextHover implements ITextHover {
 
 		InifileAnalyzer ana = editorData.getInifileAnalyzer();
 		if (key == null) {
-			if (InifileAnalyzer.isParamSection(section)) {
-				// Parameters section: display unassigned parameters
-				ParamResolution[] resList = ana.getUnassignedParams(section);
-				if (resList.length==0) 
-					return "Section [" + section + "] seems to contain no unassigned parameters ";
-				String text = "Section [" + section + "] does not seem to assign the following parameters: \n";
-				for (ParamResolution res : resList)
-					text += "  - " + res.moduleFullPath + "." +res.paramNode.getName() + "\n";
-				return text;
-			}
-			else {
-				return null;
-			}
+			// Parameters section: display unassigned parameters
+			ParamResolution[] resList = ana.getUnassignedParams(section);
+			if (resList.length==0) 
+				return "Section [" + section + "] seems to contain no unassigned parameters ";
+			String text = "Section [" + section + "] does not seem to assign the following parameters: \n";
+			for (ParamResolution res : resList)
+				text += "  - " + res.moduleFullPath + "." +res.paramNode.getName() + "\n";
+			return text;
 		}
 		else if (keyType==KeyType.CONFIG) {
 			// config key: display description
 			ConfigurationEntry entry = ConfigurationRegistry.getEntry(key);
 			if (entry == null)
 				return null;
-			String text = "["+entry.getSection()+(entry.isGlobal() ? "" : "] or [Run X")+"] / "+entry.getName();
+			String text = "[General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / "+entry.getName();
 			text += " = <" + entry.getType().name().replaceFirst("CFG_", ""); 
 			if (!"".equals(entry.getDefaultValue()))
 				text += ", default: " + entry.getDefaultValue();

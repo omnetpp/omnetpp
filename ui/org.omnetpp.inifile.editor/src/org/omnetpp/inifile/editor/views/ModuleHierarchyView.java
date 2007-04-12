@@ -235,7 +235,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			thisNode.addChild(new GenericTreeNode("sorry, cannot extract parameters from NED yet")); //XXX
 		}
 		else {
-			ParamResolution[] list = ana.getParamResolutionsForModule(moduleFullPath, "Parameters"); //XXX
+			ParamResolution[] list = ana.getParamResolutionsForModule(moduleFullPath, "General"); //XXX
 			for (ParamResolution res : list)
 				thisNode.addChild(new GenericTreeNode(res));
 		}

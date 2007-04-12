@@ -33,13 +33,13 @@ public abstract class FieldEditor extends Composite {
 	}
 
 	protected String getValueFromFile() {
-		String section = entry.getSection(); 
+		String section = "General"; 
 		String key = entry.getName();
 		return inifile.getValue(section, key);
 	}
 
 	protected void setValueInFile(String value) {
-		String section = entry.getSection(); 
+		String section = "General"; 
 		String key = entry.getName();
 		if (!inifile.containsKey(section, key)) {
 			if (!inifile.containsSection(section))
@@ -52,7 +52,7 @@ public abstract class FieldEditor extends Composite {
 	}
 
 	protected void removeFromFile() {
-		String section = entry.getSection(); 
+		String section = "General"; 
 		String key = entry.getName();
 		inifile.removeKey(section, key);  //XXX remove section as well, if it became empty?
 	}
@@ -63,8 +63,8 @@ public abstract class FieldEditor extends Composite {
 		label.setText(labelText);
 		
 		String tooltip = entry.getDescription();
-		tooltip += "\n\nConfigures: ["+entry.getSection()+(entry.isGlobal() ? "" : "] or [Run X")+"] / "+entry.getName()+"=...";
-		IInifileDocument.LineInfo line = inifile.getEntryLineDetails(entry.getSection(), entry.getName()); 
+		tooltip += "\n\nConfigures: [General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / "+entry.getName()+"=...";
+		IInifileDocument.LineInfo line = inifile.getEntryLineDetails("General", entry.getName()); 
 		tooltip += "\n\n"+(line==null ? "Currently set to default." : "Defined at: "+line.getFile().getFullPath().toString()+" line "+line.getLineNumber());
 		label.setToolTipText(StringUtils.breakLines(tooltip, 80));  //XXX we'll need to refresh tooltip after each re-parse!
 		return label;
@@ -81,7 +81,20 @@ public abstract class FieldEditor extends Composite {
 		});
 		return resetButton;
 	}
-	
+
+	protected Button createExpandButton() {
+		final Button expandButton = new Button(this, SWT.PUSH);
+		expandButton.setText(">>");
+		expandButton.setToolTipText("Per-section settings");
+		expandButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				//XXX TODO
+				expandButton.setText(expandButton.getText().equals(">>") ? "<<" : ">>");
+			}
+		});
+		return expandButton;
+	}
+
 	protected void addFocusListenerTo(Control control) {
 		control.addFocusListener(new FocusListener() {
 			public void focusGained(FocusEvent e) {

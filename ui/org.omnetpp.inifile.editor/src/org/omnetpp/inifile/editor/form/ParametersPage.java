@@ -16,6 +16,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
@@ -34,18 +35,29 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
 //XXX validation of keys and values! e.g. shouldn't allow empty key
 //XXX comment handling (stripping/adding of "#")
 public class ParametersPage extends FormPage {
-	private static final String DEFAULT_SECTION = "Parameters";
+	private static final String DEFAULT_SECTION = "General";
 	private TableViewer tableViewer;
 	
 	public ParametersPage(Composite parent, InifileEditor inifileEditor) {
 		super(parent, inifileEditor);
 
-		// layout: 2x2 grid: (label, dummy) / (table, buttonGroup)
+		// layout: 3x2 grid: (label, dummy) / (combobox-with-label, dummy) / (table, buttonGroup)
 		setLayout(new GridLayout(2,false));
 
 		Label label = new Label(this, SWT.NONE);
 		label.setText("Parameter Assignments");
 		new Label(this, SWT.NONE); // dummy, for row1col2
+
+		Composite c = new Composite(this, SWT.NONE);
+		c.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+		new Label(this, SWT.NONE); // dummy, for row2col2
+
+		Label comboLabel = new Label(c, SWT.NONE);
+		comboLabel.setText("Configuration:");
+		Combo combo = new Combo(c, SWT.BORDER);
+		c.setLayout(new GridLayout(2, false));
+		comboLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		combo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
 		tableViewer = createAndConfigureTable();
 		tableViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));

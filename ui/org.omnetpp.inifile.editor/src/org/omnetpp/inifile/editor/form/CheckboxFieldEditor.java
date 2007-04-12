@@ -29,7 +29,7 @@ public class CheckboxFieldEditor extends FieldEditor {
 
 		Assert.isTrue(entry.getType()==ConfigurationEntry.Type.CFG_BOOL);
 
-		GridLayout gridLayout = new GridLayout(3, false);
+		GridLayout gridLayout = new GridLayout(4, false); //XXX 3 or 4
 		gridLayout.marginTop = gridLayout.marginBottom = gridLayout.marginHeight = gridLayout.verticalSpacing = 0;
 		gridLayout.marginHeight = 0;
 		setLayout(gridLayout);
@@ -38,6 +38,7 @@ public class CheckboxFieldEditor extends FieldEditor {
 		checkbox.setBackground(BGCOLOR);
 		label = createLabel(entry, labelText);
 		resetButton = createResetButton();
+		createExpandButton(); //XXX
 
 		checkbox.setLayoutData(new GridData());
 		label.setLayoutData(new GridData());

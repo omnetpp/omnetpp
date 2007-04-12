@@ -38,6 +38,8 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
  * 
  * @author Andras
  */
+//XXX show description= value as tooltip
+//XXX double-click should go there in the inifile text (or in the Parameters page?)
 public class RunsPage extends FormPage {
 	public static final String ICON_ERROR = "icons/full/obj16/Error.png"; //XXX find better place for it
 	private TreeViewer treeViewer;

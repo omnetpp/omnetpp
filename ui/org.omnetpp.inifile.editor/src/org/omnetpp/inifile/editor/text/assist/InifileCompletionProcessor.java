@@ -126,7 +126,7 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 						proposals.add(e.getName()+" = "); //XXX check if section is ok, config not in there yet, etc
 
 					// offer unassigned parameters
-					if (section != null && InifileAnalyzer.isParamSection(section)) {
+					if (section != null) {
 						InifileAnalyzer ana = editorData.getInifileAnalyzer();
 						ParamResolution[] resList = ana.getUnassignedParams(section);
 						

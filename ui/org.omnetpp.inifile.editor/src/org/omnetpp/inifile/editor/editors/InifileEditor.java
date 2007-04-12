@@ -254,6 +254,9 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 				String newText = InifileConverter.convert(doc.get());
 				doc.set(newText);
 			}
+			else {
+				setActivePage(1);  // activate the text editor so that user can see the errors
+			}
 		}
 	}
 
