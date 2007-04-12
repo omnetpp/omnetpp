@@ -37,6 +37,7 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 //XXX comment handling (stripping/adding of "#")
 public class ParametersPage extends FormPage {
 	private TableViewer tableViewer;
+	private Combo sectionsCombo;
 	
 	public ParametersPage(Composite parent, InifileEditor inifileEditor) {
 		super(parent, inifileEditor);
@@ -54,10 +55,10 @@ public class ParametersPage extends FormPage {
 
 		Label comboLabel = new Label(c, SWT.NONE);
 		comboLabel.setText("Configuration:");
-		Combo combo = new Combo(c, SWT.BORDER);
+		sectionsCombo = new Combo(c, SWT.BORDER);
 		c.setLayout(new GridLayout(2, false));
 		comboLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-		combo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		sectionsCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
 		tableViewer = createAndConfigureTable();
 		tableViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -251,8 +252,10 @@ public class ParametersPage extends FormPage {
 
 	@Override
 	public void reread() {
-		//XXX use keys like: "section/key"
 		IInifileDocument doc = getInifileDocument();
+		sectionsCombo.setItems(doc.getSectionNames());
+		sectionsCombo.setVisibleItemCount(Math.min(20, sectionsCombo.getItemCount()));
+		//XXX use keys like: "section/key"
 		//XXX get only dotted keys! if (key.contains("."))...
 		//TODO should introduce rule: parameter refs must contain a dot; to check this in C++ code as well
 		tableViewer.setInput(doc.getKeys(GENERAL)); //XXX or empty array if there's no such section
