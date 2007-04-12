@@ -17,7 +17,7 @@ public class ConfigurationEntry {
       CFG_CUSTOM
     };
 
-    private String name;      // e.g. "cmdenv-sim-time-limit"
+    private String name;      // e.g. "sim-time-limit"
     private boolean isGlobal; // if true, it cannot occur in [Run X] sections
     private Type type;        // entry type
     private String unit;      // if numeric, its unit ("s") or empty string

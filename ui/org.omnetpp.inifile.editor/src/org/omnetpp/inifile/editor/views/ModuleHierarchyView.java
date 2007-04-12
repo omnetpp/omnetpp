@@ -26,6 +26,7 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 /**
  * Displays NED module hierarchy with module parameters, and 
@@ -235,7 +236,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			thisNode.addChild(new GenericTreeNode("sorry, cannot extract parameters from NED yet")); //XXX
 		}
 		else {
-			ParamResolution[] list = ana.getParamResolutionsForModule(moduleFullPath, "General"); //XXX
+			ParamResolution[] list = ana.getParamResolutionsForModule(moduleFullPath, GENERAL); //XXX
 			for (ParamResolution res : list)
 				thisNode.addChild(new GenericTreeNode(res));
 		}

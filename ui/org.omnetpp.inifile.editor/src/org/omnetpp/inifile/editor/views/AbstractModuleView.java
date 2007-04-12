@@ -27,6 +27,7 @@ import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
 import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 /**
  * Abstract base class for views that display information based on a single NED
@@ -209,7 +210,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 				InifileAnalyzer ana = sel.getAnalyzer();
 				IInifileDocument doc = sel.getDocument();
 
-				String networkName = doc.getValue("General", "network"); //XXX or [Run X], if that's the selected one!
+				String networkName = doc.getValue(GENERAL, "network"); //XXX or [Run X], if that's the selected one!
 				if (networkName == null) {
 					displayMessage("Network not specified (no [General]/network= setting)");
 					return;

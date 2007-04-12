@@ -32,6 +32,7 @@ import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 /**
  * Inifile editor page to manage the sections in the file.
@@ -143,7 +144,7 @@ public class RunsPage extends FormPage {
 	
 	protected void setSectionExtendsKey(String sectionName, String extendsSectionName) {
 		IInifileDocument doc = getInifileDocument();
-		if (extendsSectionName.equals("General"))
+		if (extendsSectionName.equals(GENERAL))
 			doc.removeKey(sectionName, "extends");
 		else {
 			String value = extendsSectionName.replaceAll("^Config +", "");
@@ -172,7 +173,7 @@ public class RunsPage extends FormPage {
 		final IInputValidator newSectionNameValidator = new IInputValidator() {
 			public String isValid(String sectionName) {
 				sectionName = sectionName.trim();
-				if (!sectionName.equals("General") && !sectionName.startsWith("Config "))
+				if (!sectionName.equals(GENERAL) && !sectionName.startsWith("Config "))
 					sectionName = "Config "+sectionName;
 				if (getInifileDocument().containsSection(sectionName))
 					return "Section ["+sectionName+"] already exists";
@@ -186,7 +187,7 @@ public class RunsPage extends FormPage {
 				InputDialog dialog = new InputDialog(getShell(), "New Section", "Name for the new section:", "new", newSectionNameValidator);
 				if (dialog.open()==Window.OK) {
 					String sectionName = dialog.getValue().trim();
-					if (!sectionName.equals("General") && !sectionName.startsWith("Config "))
+					if (!sectionName.equals(GENERAL) && !sectionName.startsWith("Config "))
 						sectionName = "Config "+sectionName;
 					getInifileDocument().addSection(sectionName, null);
 					String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
@@ -220,7 +221,7 @@ public class RunsPage extends FormPage {
 				InputDialog dialog = new InputDialog(getShell(), "Rename Section", "New name for section ["+sectionName+"]:", sectionName.replaceFirst("^Config +", "")+"-1", newSectionNameValidator);
 				if (dialog.open()==Window.OK) {
 					String newSectionName = dialog.getValue().trim();
-					if (!newSectionName.equals("General") && !newSectionName.startsWith("Config "))
+					if (!newSectionName.equals(GENERAL) && !newSectionName.startsWith("Config "))
 						newSectionName = "Config "+newSectionName;
 					//XXX rename section...
 					reread();
@@ -244,7 +245,7 @@ public class RunsPage extends FormPage {
 
 		// create root node
 		GenericTreeNode rootNode = new GenericTreeNode("root");
-		GenericTreeNode generalSectionNode = new GenericTreeNode(new SectionData("General", false));
+		GenericTreeNode generalSectionNode = new GenericTreeNode(new SectionData(GENERAL, false));
 		rootNode.addChild(generalSectionNode);
 
 		// build tree

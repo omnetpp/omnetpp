@@ -37,7 +37,7 @@ public class NedCodeColorizerScanner extends RuleBasedScanner {
 		for (int i= 0; i < NedHelper.highlightConstants.length; i++)
 			wordRule.addWord(NedHelper.highlightConstants[i], NedHelper.codeStringToken);
 
-		wordRule.addWord("sim-time-limit", NedHelper.codeKeywordToken);
+		//XXX wordRule.addWord("sim-time-limit", NedHelper.codeKeywordToken);
 
 		rules.add(wordRule);
         

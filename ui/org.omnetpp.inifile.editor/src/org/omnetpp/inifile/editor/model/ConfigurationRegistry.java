@@ -17,7 +17,11 @@ import org.omnetpp.inifile.editor.model.ConfigurationEntry.Type;
  */
 //TODO must be kept in sync with the C++ code
 public class ConfigurationRegistry {
-//	private static List<ConfigurationEntry> entries = new ArrayList<ConfigurationEntry>();
+	/**
+	 * Name of the [General] section
+	 */
+	public static final String GENERAL = "General";
+	
 	private static HashMap<String, ConfigurationEntry> entries = new HashMap<String, ConfigurationEntry>(); 
 	
 	private static ConfigurationEntry addGlobalEntry(String name, Type type, Object defaultValue, String description) {

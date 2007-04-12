@@ -17,6 +17,7 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 /**
  * This is a layer above IInifileDocument, and contains
@@ -148,10 +149,10 @@ public class InifileAnalyzer {
 		if (e == null) {
 			addError(section, key, "Unknown configuration entry: "+key);
 		}
-		else if (key.equals(ConfigurationRegistry.CFGID_EXTENDS.getName()) && section.equals("General")) {
+		else if (key.equals(ConfigurationRegistry.CFGID_EXTENDS.getName()) && section.equals(GENERAL)) {
 			addError(section, key, "Key \""+key+"\" cannot occur in the [General] section");
 		}
-		else if (e.isGlobal() && !section.equals("General")) {
+		else if (e.isGlobal() && !section.equals(GENERAL)) {
 			addError(section, key, "Key \""+key+"\" can only be specified globally, in the [General] section");
 		}
 		
@@ -160,7 +161,7 @@ public class InifileAnalyzer {
 	}
 
 	protected void calculateParamResolutions(String section, INEDTypeResolver ned) {
-		String networkName = doc.getValue("General", "network"); //XXX or [Run X], if that's the selected one!
+		String networkName = doc.getValue(GENERAL, "network"); //XXX or [Run X], if that's the selected one!
 		if (networkName == null) {
 			//XXX displayMessage("Network not specified (no [General]/network= setting)");
 			return;
@@ -224,10 +225,10 @@ public class InifileAnalyzer {
 		boolean iniUseDefault = false;
 		if (doc != null) {
 			String paramFullPath = moduleFullPath + "." + param.getName();
-			iniKey = InifileUtils.lookupParameter(paramFullPath, doc, "General"); //XXX run-specific sections too!
-			iniValue = doc.getValue("General", iniKey);
-			iniUseDefaultKey = InifileUtils.lookupParameter(paramFullPath+".use-default", doc, "General");
-			String iniUseDefaultStr = doc.getValue("General", iniKey);
+			iniKey = InifileUtils.lookupParameter(paramFullPath, doc, GENERAL); //XXX run-specific sections too!
+			iniValue = doc.getValue(GENERAL, iniKey);
+			iniUseDefaultKey = InifileUtils.lookupParameter(paramFullPath+".use-default", doc, GENERAL);
+			String iniUseDefaultStr = doc.getValue(GENERAL, iniKey);
 			iniUseDefault = "true".equals(iniUseDefaultStr);
 		}
 
@@ -254,7 +255,7 @@ public class InifileAnalyzer {
 				type = ParamResolutionType.INI;
 			}
 			//XXX return Type.DEFAULTED sometimes
-			return new ParamResolution(moduleFullPath, param, type, "General", iniKey);
+			return new ParamResolution(moduleFullPath, param, type, GENERAL, iniKey);
 		}
 	}
 

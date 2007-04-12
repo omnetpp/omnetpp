@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 /**
  * For editing module parameters.
@@ -35,7 +36,6 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
 //XXX validation of keys and values! e.g. shouldn't allow empty key
 //XXX comment handling (stripping/adding of "#")
 public class ParametersPage extends FormPage {
-	private static final String DEFAULT_SECTION = "General";
 	private TableViewer tableViewer;
 	
 	public ParametersPage(Composite parent, InifileEditor inifileEditor) {
@@ -88,8 +88,8 @@ public class ParametersPage extends FormPage {
 				String key = (String) element;
 				switch (columnIndex) {
 					case 0: return key;
-					case 1: return getInifileDocument().getValue(DEFAULT_SECTION, key); 
-					case 2: return getInifileDocument().getComment(DEFAULT_SECTION, key);
+					case 1: return getInifileDocument().getValue(GENERAL, key); 
+					case 2: return getInifileDocument().getComment(GENERAL, key);
 					default: throw new IllegalArgumentException();
 				}
 			}
@@ -126,9 +126,9 @@ public class ParametersPage extends FormPage {
 				if (property.equals("key"))
 					return key;
 				else if (property.equals("value"))
-					return nullToEmpty(getInifileDocument().getValue(DEFAULT_SECTION, key)); 
+					return nullToEmpty(getInifileDocument().getValue(GENERAL, key)); 
 				else if (property.equals("comment"))
-					return nullToEmpty(getInifileDocument().getComment(DEFAULT_SECTION, key));
+					return nullToEmpty(getInifileDocument().getComment(GENERAL, key));
 				else
 					return "-";
 			}
@@ -138,16 +138,16 @@ public class ParametersPage extends FormPage {
 			    	element = ((Item) element).getData(); // workaround, see super's comment
 				String key = (String) element;
 				if (property.equals("key")) {
-					getInifileDocument().changeKey(DEFAULT_SECTION, key, (String)value);
+					getInifileDocument().changeKey(GENERAL, key, (String)value);
 					reread(); // tableViewer.refresh() not enough, because input consists of keys
 				}
 				else if (property.equals("value")) {
-					getInifileDocument().setValue(DEFAULT_SECTION, key, (String)value);
+					getInifileDocument().setValue(GENERAL, key, (String)value);
 					tableViewer.refresh(); // if performance gets critical: refresh only if changed
 				}
 				else if (property.equals("comment")) {
 					if (value.equals("")) value = null; // no comment == null
-					getInifileDocument().setComment(DEFAULT_SECTION, key, (String)value);
+					getInifileDocument().setComment(GENERAL, key, (String)value);
 					tableViewer.refresh();// if performance gets critical: refresh only if changed
 				}
 			}
@@ -183,7 +183,7 @@ public class ParametersPage extends FormPage {
 				IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
 				String beforeKey = sel.isEmpty() ? null : (String) sel.getFirstElement();
 				String newKey = "**.newKey";
-				getInifileDocument().addEntry(DEFAULT_SECTION, newKey, "", null, beforeKey); //XXX what if no such section
+				getInifileDocument().addEntry(GENERAL, newKey, "", null, beforeKey); //XXX what if no such section
 				reread();
 				//XXX key must be validated (in InifileDocument). if it causes parse error, the whole table goes away! 
 				tableViewer.editElement(newKey, 0);
@@ -195,7 +195,7 @@ public class ParametersPage extends FormPage {
 				IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
 				for (Object o : sel.toArray()) {
 					String key = (String) o;
-					getInifileDocument().removeKey(DEFAULT_SECTION, key);
+					getInifileDocument().removeKey(GENERAL, key);
 				}
 				reread();
 			}
@@ -211,7 +211,7 @@ public class ParametersPage extends FormPage {
 					Assert.isTrue(pos != -1);
 					if (pos == 0) 
 						break; // hit the top
-					getInifileDocument().moveKey(DEFAULT_SECTION, key, keys[pos-1]);
+					getInifileDocument().moveKey(GENERAL, key, keys[pos-1]);
 					String tmp = keys[pos-1]; keys[pos-1] = keys[pos]; keys[pos] = tmp;
 				}
 				reread();
@@ -231,7 +231,7 @@ public class ParametersPage extends FormPage {
 					Assert.isTrue(pos != -1);
 					if (pos == keys.length-1) 
 						break; // hit the bottom
-					getInifileDocument().moveKey(DEFAULT_SECTION, key, pos==keys.length-2 ? null : keys[pos+2]);
+					getInifileDocument().moveKey(GENERAL, key, pos==keys.length-2 ? null : keys[pos+2]);
 					String tmp = keys[pos+1]; keys[pos+1] = keys[pos]; keys[pos] = tmp;
 				}
 				reread();
@@ -255,7 +255,7 @@ public class ParametersPage extends FormPage {
 		IInifileDocument doc = getInifileDocument();
 		//XXX get only dotted keys! if (key.contains("."))...
 		//TODO should introduce rule: parameter refs must contain a dot; to check this in C++ code as well
-		tableViewer.setInput(doc.getKeys(DEFAULT_SECTION)); //XXX or empty array if there's no such section
+		tableViewer.setInput(doc.getKeys(GENERAL)); //XXX or empty array if there's no such section
 		tableViewer.refresh();
 	}
 

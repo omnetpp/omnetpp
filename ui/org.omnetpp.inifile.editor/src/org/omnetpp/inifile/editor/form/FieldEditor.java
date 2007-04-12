@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 /**
  * Base class for inifile field editors
@@ -33,13 +34,13 @@ public abstract class FieldEditor extends Composite {
 	}
 
 	protected String getValueFromFile() {
-		String section = "General"; 
+		String section = GENERAL; 
 		String key = entry.getName();
 		return inifile.getValue(section, key);
 	}
 
 	protected void setValueInFile(String value) {
-		String section = "General"; 
+		String section = GENERAL; 
 		String key = entry.getName();
 		if (!inifile.containsKey(section, key)) {
 			if (!inifile.containsSection(section))
@@ -52,7 +53,7 @@ public abstract class FieldEditor extends Composite {
 	}
 
 	protected void removeFromFile() {
-		String section = "General"; 
+		String section = GENERAL; 
 		String key = entry.getName();
 		inifile.removeKey(section, key);  //XXX remove section as well, if it became empty?
 	}
@@ -64,7 +65,7 @@ public abstract class FieldEditor extends Composite {
 		
 		String tooltip = entry.getDescription();
 		tooltip += "\n\nConfigures: [General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / "+entry.getName()+"=...";
-		IInifileDocument.LineInfo line = inifile.getEntryLineDetails("General", entry.getName()); 
+		IInifileDocument.LineInfo line = inifile.getEntryLineDetails(GENERAL, entry.getName()); 
 		tooltip += "\n\n"+(line==null ? "Currently set to default." : "Defined at: "+line.getFile().getFullPath().toString()+" line "+line.getLineNumber());
 		label.setToolTipText(StringUtils.breakLines(tooltip, 80));  //XXX we'll need to refresh tooltip after each re-parse!
 		return label;
@@ -84,12 +85,12 @@ public abstract class FieldEditor extends Composite {
 
 	protected Button createExpandButton() {
 		final Button expandButton = new Button(this, SWT.PUSH);
-		expandButton.setText(">>");
+		expandButton.setText("»");
 		expandButton.setToolTipText("Per-section settings");
 		expandButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				//XXX TODO
-				expandButton.setText(expandButton.getText().equals(">>") ? "<<" : ">>");
+				expandButton.setText(expandButton.getText().equals("»") ? "«" : "»");
 			}
 		});
 		return expandButton;
