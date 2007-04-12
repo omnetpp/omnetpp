@@ -3,7 +3,6 @@ package org.omnetpp.inifile.editor.form;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
@@ -37,7 +36,6 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
  * 
  * @author Andras
  */
-//XXX for now it only edits the [Parameters] section, should be extended to run configs as well
 //XXX validation of keys and values! e.g. shouldn't allow empty key
 //XXX comment handling (stripping/adding of "#")
 public class ParametersPage extends FormPage {
@@ -51,6 +49,11 @@ public class ParametersPage extends FormPage {
 		public SectionKey(String section, String key) {
 			this.section = section;
 			this.key = key;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			return getClass()==obj.getClass() && section.equals(((SectionKey)obj).section) && key.equals(((SectionKey)obj).key);
 		}
 	}
 	
@@ -199,7 +202,6 @@ public class ParametersPage extends FormPage {
 		buttonGroup.setLayout(new GridLayout(1,false));
 		
 		Button addButton = createButton(buttonGroup, "Add...");
-		//Button editButton = createButton(buttonGroup, "Edit...");
 		Button removeButton = createButton(buttonGroup, "Remove");
 		//new Label(buttonGroup, SWT.NONE);
 		Button upButton = createButton(buttonGroup, "Up");
@@ -207,10 +209,23 @@ public class ParametersPage extends FormPage {
 		
 		addButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
+				// determine where to insert new element
 				IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
-				String beforeKey = sel.isEmpty() ? null : (String) sel.getFirstElement();
+				SectionKey beforeSectionKey = sel.isEmpty() ? null : (SectionKey) sel.getFirstElement();
+				String section = beforeSectionKey == null ? sectionsCombo.getText() : beforeSectionKey.section;
+				String beforeKey = beforeSectionKey == null ? null : beforeSectionKey.key;
+
+				// generate unique key
+				IInifileDocument doc = getInifileDocument();
 				String newKey = "**.newKey";
-				getInifileDocument().addEntry(GENERAL, newKey, "", null, beforeKey); //XXX what if no such section
+				if (doc.containsKey(section, newKey)) {
+					int i = 1;
+					while (doc.containsKey(section, newKey+i)) i++;
+					newKey = newKey+i;
+				}
+				
+				// insert key and refresh table
+				doc.addEntry(section, newKey, "", null, beforeKey); //XXX what if no such section
 				reread();
 				//XXX key must be validated (in InifileDocument). if it causes parse error, the whole table goes away! 
 				tableViewer.editElement(newKey, 1);
@@ -221,9 +236,10 @@ public class ParametersPage extends FormPage {
 			public void widgetSelected(SelectionEvent e) {
 				IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
 				for (Object o : sel.toArray()) {
-					String key = (String) o;
-					getInifileDocument().removeKey(GENERAL, key);
+					SectionKey item = (SectionKey) o;
+					getInifileDocument().removeKey(item.section, item.key);
 				}
+				tableViewer.getTable().deselectAll();
 				reread();
 			}
 		});
@@ -231,15 +247,15 @@ public class ParametersPage extends FormPage {
 		upButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
-				String[] keys = (String[]) tableViewer.getInput();
+				SectionKey[] items = (SectionKey[]) tableViewer.getInput();
 				for (Object o : sel.toArray()) {
-					String key = (String) o;
-					int pos = ArrayUtils.indexOf(keys, key);
+					SectionKey item = (SectionKey) o;
+					int pos = ArrayUtils.indexOf(items, item);
 					Assert.isTrue(pos != -1);
 					if (pos == 0) 
 						break; // hit the top
-					getInifileDocument().moveKey(GENERAL, key, keys[pos-1]);
-					String tmp = keys[pos-1]; keys[pos-1] = keys[pos]; keys[pos] = tmp;
+					getInifileDocument().moveKey(item.section, item.key, items[pos-1].key);
+					SectionKey tmp = items[pos-1]; items[pos-1] = items[pos]; items[pos] = tmp;
 				}
 				reread();
 				tableViewer.setSelection(sel);
@@ -250,16 +266,16 @@ public class ParametersPage extends FormPage {
 			public void widgetSelected(SelectionEvent e) {
 				IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
 				Object[] array = sel.toArray();
-				String[] keys = (String[]) tableViewer.getInput();
+				SectionKey[] items = (SectionKey[]) tableViewer.getInput();
 				ArrayUtils.reverse(array);  // we must iterate in reverse order
 				for (Object o : array) {
-					String key = (String) o;
-					int pos = ArrayUtils.indexOf(keys, key);
+					SectionKey item = (SectionKey) o;
+					int pos = ArrayUtils.indexOf(items, item);
 					Assert.isTrue(pos != -1);
-					if (pos == keys.length-1) 
+					if (pos == items.length-1) 
 						break; // hit the bottom
-					getInifileDocument().moveKey(GENERAL, key, pos==keys.length-2 ? null : keys[pos+2]);
-					String tmp = keys[pos+1]; keys[pos+1] = keys[pos]; keys[pos] = tmp;
+					getInifileDocument().moveKey(item.section, item.key, pos==items.length-2 ? null : items[pos+2].key);
+					SectionKey tmp = items[pos+1]; items[pos+1] = items[pos]; items[pos] = tmp;
 				}
 				reread();
 				tableViewer.setSelection(sel);
@@ -296,7 +312,7 @@ public class ParametersPage extends FormPage {
 			for (String key : doc.getKeys(section))
 				if (key.contains("."))
 					list.add(new SectionKey(section, key));
-		tableViewer.setInput(list.toArray());
+		tableViewer.setInput(list.toArray(new SectionKey[list.size()]));
 		tableViewer.refresh();
 	}
 
