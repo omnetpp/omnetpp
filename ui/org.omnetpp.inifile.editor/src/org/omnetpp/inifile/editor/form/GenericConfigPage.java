@@ -88,13 +88,13 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
-import org.omnetpp.inifile.editor.model.IInifileDocument;
 
 /**
  * Makeshift form page, just throws in all field editors.
@@ -105,7 +105,8 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
 public class GenericConfigPage extends FormPage {
 	private static Font titleFont = new Font(null, "Arial", 10, SWT.BOLD);
 	private ArrayList<FieldEditor> fieldEditors = new ArrayList<FieldEditor>();
-	private boolean advancedMode = true;
+	private String category;
+	private boolean advancedMode = false;
 	
     public static final String CAT_GENERAL = "General";
     public static final String CAT_ADVANCED = "Advanced";
@@ -132,19 +133,14 @@ public class GenericConfigPage extends FormPage {
     
 	public GenericConfigPage(Composite parent, String category, InifileEditor inifileEditor) {
 		super(parent, inifileEditor);
+		this.category = category;
+		
 		GridLayout gridLayout = new GridLayout(1,false);
 		gridLayout.verticalSpacing = 0;
 		setLayout(gridLayout);
 		
 		createTitle(category);
 		addSpacer();
-
-//		// populate with field editors
-//		Composite form = new Composite(this, SWT.NONE);
-//		form.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-//		gridLayout = new GridLayout(1,false);
-//		gridLayout.verticalSpacing = 0;
-//		form.setLayout(gridLayout);
 
 		createFieldEditors(this, category);
 	}
@@ -304,7 +300,7 @@ public class GenericConfigPage extends FormPage {
 		title.setBackground(ColorFactory.asColor("white"));
 		title.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, true, true));
 		
-		createAdvancedButton(titleArea); //XXX
+		createAdvancedButton(titleArea);
 	}
 
 	private void addMessage(Image image, String text) {
@@ -357,11 +353,25 @@ public class GenericConfigPage extends FormPage {
 		expandButton.setToolTipText("Toggle advanced editing");
 		expandButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				advancedMode = !advancedMode;
-				expandButton.setText(advancedMode ? "« Normal" : "Advanced »");
+				toggleAdvancedMode();
+				
 			}
 		});
 		return expandButton;
+	}
+
+	protected void toggleAdvancedMode() {
+		advancedMode = !advancedMode;
+
+		// remove ALL existing controls (title, field editors, etc...)
+		for (Control c : getChildren())
+			c.dispose();
+		
+		// and recreate them in the current (advanced/normal) mode
+		createTitle(category);
+		addSpacer();
+		createFieldEditors(this, category);
+		layout();
 	}
 
 	@Override

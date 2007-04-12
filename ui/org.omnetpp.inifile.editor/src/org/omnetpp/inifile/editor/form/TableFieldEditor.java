@@ -2,7 +2,6 @@ package org.omnetpp.inifile.editor.form;
 
 import java.util.ArrayList;
 
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -40,7 +39,7 @@ public abstract class TableFieldEditor extends FieldEditor {
 		gridLayout.marginHeight = 2;
 		setLayout(gridLayout);
 
-		createLabel(entry, labelText+":");
+		createLabel(entry, labelText+":  (default: "+(entry.getDefaultValue()==null ? "none" : entry.getDefaultValue().toString())+")");
 		createTableWithButtons(this);
 		reread();
 	}
