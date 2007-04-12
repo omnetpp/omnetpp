@@ -19,7 +19,6 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
  * Base class for inifile field editors
  * @author Andras
  */
-//XXX add ">>" button next to the "Reset" buttons, for config-specific settings
 public abstract class FieldEditor extends Composite {
 	public static final Color BGCOLOR = InifileFormEditor.BGCOLOR;
 
@@ -78,19 +77,6 @@ public abstract class FieldEditor extends Composite {
 			}
 		});
 		return resetButton;
-	}
-
-	protected Button createExpandButton() {
-		final Button expandButton = new Button(this, SWT.PUSH);
-		expandButton.setText("»");
-		expandButton.setToolTipText("Per-section settings");
-		expandButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				//XXX TODO
-				expandButton.setText(expandButton.getText().equals("»") ? "«" : "»");
-			}
-		});
-		return expandButton;
 	}
 
 	protected void addFocusListenerTo(Control control) {

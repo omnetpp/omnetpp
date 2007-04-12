@@ -139,6 +139,7 @@ public abstract class TableFieldEditor extends FieldEditor {
 
 	@Override
 	public void reread() {
+		// find out in which sections this key occurs, and set it to the table as input
 		ArrayList<String> list = new ArrayList<String>();
 		for (String section : inifile.getSectionNames())
 			if (inifile.containsKey(section, entry.getName()))

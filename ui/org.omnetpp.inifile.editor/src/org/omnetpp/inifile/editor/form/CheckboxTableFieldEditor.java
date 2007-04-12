@@ -15,6 +15,13 @@ import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 
+
+/**
+ * Checkbox-table based field editor, for editing boolean config entries
+ * in all sections.
+ * 
+ * @author Andras
+ */
 public class CheckboxTableFieldEditor extends TableFieldEditor {
 
 	public CheckboxTableFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, String labelText) {

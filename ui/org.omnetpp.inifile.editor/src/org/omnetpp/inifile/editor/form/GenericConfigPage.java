@@ -80,10 +80,13 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_WARNI
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -280,7 +283,7 @@ public class GenericConfigPage extends FormPage {
 		gridData.heightHint = 40;
 		titleArea.setLayoutData(gridData);
 		titleArea.setBackground(ColorFactory.asColor("white"));
-		titleArea.setLayout(new GridLayout(2, false));
+		titleArea.setLayout(new GridLayout(3, false));
 		
 		Label imageLabel = new Label(titleArea, SWT.NONE);
 		imageLabel.setImage(ImageFactory.getImage(ImageFactory.MODEL_IMAGE_FOLDER)); //XXX 
@@ -291,6 +294,8 @@ public class GenericConfigPage extends FormPage {
 		title.setFont(titleFont);
 		title.setBackground(ColorFactory.asColor("white"));
 		title.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, true, true));
+		
+		createAdvancedButton(titleArea); //XXX
 	}
 
 	private void addMessage(Image image, String text) {
@@ -321,6 +326,19 @@ public class GenericConfigPage extends FormPage {
 	private void addField(FieldEditor editor) {
 		fieldEditors.add(editor);		
 		editor.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+	}
+
+	protected Button createAdvancedButton(Composite parent) {
+		final Button expandButton = new Button(parent, SWT.PUSH);
+		expandButton.setText("Advanced »");
+		expandButton.setToolTipText("Toggle advanced editing");
+		expandButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				//XXX TODO
+				expandButton.setText(expandButton.getText().equals("Advanced »") ? "« Normal" : "Advanced »");
+			}
+		});
+		return expandButton;
 	}
 
 	@Override

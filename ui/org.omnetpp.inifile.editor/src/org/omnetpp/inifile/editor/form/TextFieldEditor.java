@@ -30,7 +30,7 @@ public class TextFieldEditor extends FieldEditor {
 	public TextFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, String labelText) {
 		super(parent, SWT.NONE, entry, inifile);
 
-		GridLayout gridLayout = new GridLayout(4, false); //XXX hasExpandButton ? 4 : 3
+		GridLayout gridLayout = new GridLayout(3, false);
 		gridLayout.marginTop = gridLayout.marginBottom = gridLayout.marginHeight = gridLayout.verticalSpacing = 0;
 		gridLayout.marginHeight = 2;
 		setLayout(gridLayout);
@@ -38,9 +38,7 @@ public class TextFieldEditor extends FieldEditor {
 		label = createLabel(entry, labelText+":");
 		textField = new Text(this, SWT.SINGLE | SWT.BORDER);
 		resetButton = createResetButton();
-		createExpandButton(); //XXX
 		label.setLayoutData(new GridData());
-		//textField.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 		int width = (entry.getType()==Type.CFG_STRING || entry.getType()==Type.CFG_FILENAME || entry.getType()==Type.CFG_FILENAMES) ? 250 : 50;
 		textField.setLayoutData(new GridData(width, SWT.DEFAULT));
 		resetButton.setLayoutData(new GridData());
