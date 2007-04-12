@@ -383,7 +383,5 @@ namespace std {
 %ignore VectorFileReaderNodeType;
 %include "vectorfilereader.h"
 
-// /* ------------ simultime.h ----------------------- */
-// %ignore SimulTime::ttoa;
-// %include "simultime.h"
-
+/* ------------------ datasorter.h --------------------- */
+%include "datasorter.h"
