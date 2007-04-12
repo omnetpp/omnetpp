@@ -128,7 +128,7 @@ IDVectorVector ScalarDataSorter::doGrouping(const IDList& idlist, GroupingFunc s
         IDVectorVector::iterator i;
         for (i=vv.begin(); i!=vv.end(); ++i)
         {
-            int vvid = (*i)[0];  // first element in IDVector selected by i
+            ID vvid = (*i)[0];  // first element in IDVector selected by i
             const ScalarResult& vvd = resultFileMgr->getScalar(vvid);
             if (sameGroup(d,vvd))
                 break;
@@ -159,7 +159,7 @@ void ScalarDataSorter::sortAndAlign(IDVectorVector& vv, CompareFunc less, Compar
     for (int pos=0; ; pos++)
     {
         // determine "smallest" element in all vectors, on position "pos"
-        int minId = -1;
+        ID minId = -1;
         IDVectorVector::iterator i;
         for (i=vv.begin(); i!=vv.end(); ++i)
             if ((int)i->size()>pos)
@@ -200,6 +200,24 @@ IDVectorVector ScalarDataSorter::groupByModuleAndName(const IDList& idlist)
     return vv;
 }
 
+/*
+ * Returns true iff the jth column is missing
+ * i.e. X value (i=0) is missing or each Y value (i>0) is missing.
+ */
+static bool isMissing(const IDVectorVector &vv, int j)
+{
+    if (vv[0][j]==-1)
+        return true;
+    bool foundY = false;
+    for (int i=1; i<vv.size();++i)
+        if (vv[i][j]!=-1)
+        {
+            foundY = true;
+            break;
+        }
+    return !foundY;
+}
+
 IDVectorVector ScalarDataSorter::prepareScatterPlot(const IDList& idlist, const char *moduleName, const char *scalarName)
 {
     // form groups (IDVectors) by moduleName+scalarName
@@ -237,16 +255,23 @@ IDVectorVector ScalarDataSorter::prepareScatterPlot(const IDList& idlist, const 
     // move elements of the other vectors to the same positions where the
     // X values went.
 
-    // step one: sort X axis
     IDVectorVector vv2;
     vv2.resize(vv.size());
     vv2[0] = vv[0];
-    std::sort(vv2[0].begin(), vv2[0].end(), lessByValue);
 
-    // step two: remove id=-1 elements from the beginning of X series
-    IDVector::iterator firstvalue=vv2[0].begin();
-    while (*firstvalue==-1 && firstvalue!=vv2[0].end()) ++firstvalue;
-    vv2[0].erase(vv2[0].begin(),firstvalue);
+    // step one: remove values where X value is missing or each Y value is missing (id=-1)
+    IDVector::iterator it = vv2[0].begin();
+    int sz = vv[0].size();
+    for (int j=0; j<sz; ++j)
+    {
+        if(isMissing(vv,j))
+            vv2[0].erase(it);
+        else
+            ++it;
+    }
+
+    // step two: sort X axis
+    std::sort(vv2[0].begin(), vv2[0].end(), lessByValue);
 
     // step three: allocate all other vectors in vv2 to be the same length
     // (necessary because we'll fill them in via assignment, NOT push_back() or insert())
@@ -258,7 +283,9 @@ IDVectorVector ScalarDataSorter::prepareScatterPlot(const IDList& idlist, const 
     {
         ID id = vv[0][pos];
         if (id==-1) continue;
-        int destpos = std::find(vv2[0].begin(),vv2[0].end(),id) - vv2[0].begin();
+        IDVector::iterator dest = std::find(vv2[0].begin(),vv2[0].end(),id);
+        if (dest==vv2[0].end()) continue;
+        int destpos = dest - vv2[0].begin();
         for (int k=1; k<(int)vv.size(); k++)
             vv2[k][destpos] = vv[k][pos];
     }
