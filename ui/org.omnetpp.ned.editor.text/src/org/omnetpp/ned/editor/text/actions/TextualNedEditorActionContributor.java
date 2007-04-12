@@ -16,9 +16,7 @@ import org.omnetpp.ned.editor.text.NedEditorMessages;
  * Contributes interesting Java actions to the desktop's Edit menu and the toolbar.
  */
 public class TextualNedEditorActionContributor extends TextEditorActionContributor {
-
 	protected RetargetTextEditorAction fContentAssistProposal;
-	protected RetargetTextEditorAction fContentAssistTip;
 
 	/**
 	 * Default constructor.
@@ -27,8 +25,6 @@ public class TextualNedEditorActionContributor extends TextEditorActionContribut
 		super();
 		fContentAssistProposal= new RetargetTextEditorAction(NedEditorMessages.getResourceBundle(), "ContentAssistProposal."); //$NON-NLS-1$
 		fContentAssistProposal.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS); 
-		fContentAssistTip= new RetargetTextEditorAction(NedEditorMessages.getResourceBundle(), "ContentAssistTip."); //$NON-NLS-1$
-		fContentAssistTip.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_CONTEXT_INFORMATION);
 	}
 	
 	/*
@@ -42,7 +38,6 @@ public class TextualNedEditorActionContributor extends TextEditorActionContribut
 		if (editMenu != null) {
 			editMenu.add(new Separator());
 			editMenu.add(fContentAssistProposal);
-			editMenu.add(fContentAssistTip);
 		}
 	}
 	
@@ -54,7 +49,6 @@ public class TextualNedEditorActionContributor extends TextEditorActionContribut
 			editor= (ITextEditor) part;
 
 		fContentAssistProposal.setAction(getAction(editor, "ContentAssistProposal")); //$NON-NLS-1$
-		fContentAssistTip.setAction(getAction(editor, "ContentAssistTip")); //$NON-NLS-1$
 
 	}
 	
