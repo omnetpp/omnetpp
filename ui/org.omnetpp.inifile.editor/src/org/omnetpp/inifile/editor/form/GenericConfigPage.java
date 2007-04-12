@@ -105,6 +105,7 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
 public class GenericConfigPage extends FormPage {
 	private static Font titleFont = new Font(null, "Arial", 10, SWT.BOLD);
 	private ArrayList<FieldEditor> fieldEditors = new ArrayList<FieldEditor>();
+	private boolean advancedMode = true;
 	
     public static final String CAT_GENERAL = "General";
     public static final String CAT_ADVANCED = "Advanced";
@@ -138,53 +139,63 @@ public class GenericConfigPage extends FormPage {
 		createTitle(category);
 		addSpacer();
 
-		// populate with field editors
+//		// populate with field editors
+//		Composite form = new Composite(this, SWT.NONE);
+//		form.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+//		gridLayout = new GridLayout(1,false);
+//		gridLayout.verticalSpacing = 0;
+//		form.setLayout(gridLayout);
+
+		createFieldEditors(this, category);
+	}
+
+	private void createFieldEditors(Composite form, String category) {
 		if (category.equals(CAT_GENERAL)) {
-			addTextFieldEditor(this, CFGID_NETWORK, "Network to simulate");
+			addTextFieldEditor(form, CFGID_NETWORK, "Network to simulate");
 			addSpacer();
-			Group group1 = createGroup(this, "Setup");
+			Group group1 = createGroup(form, "Setup");
 			addTextFieldEditor(group1, CFGID_PRELOAD_NED_FILES, "NED files to load");
 			addTextFieldEditor(group1, CFGID_USER_INTERFACE, "User interface");
 			addSpacer();
-			Group group2 = createGroup(this, "Stopping condition");
+			Group group2 = createGroup(form, "Stopping condition");
 			addTextFieldEditor(group2, CFGID_SIM_TIME_LIMIT, "Simulation time limit");
 			addTextFieldEditor(group2, CFGID_CPU_TIME_LIMIT, "CPU time limit");
 		}
 		else if (category.equals(CAT_ADVANCED)) {
-			Group group1 = createGroup(this, "Debugging");
+			Group group1 = createGroup(form, "Debugging");
 			addCheckboxFieldEditor(group1, CFGID_DEBUG_ON_ERRORS, "Debug on errors");
 			addCheckboxFieldEditor(group1, CFGID_PRINT_UNDISPOSED, "Dump names of undisposed objects");
 			addSpacer();
-			Group group2 = createGroup(this, "Warnings");
+			Group group2 = createGroup(form, "Warnings");
 			addCheckboxFieldEditor(group2, CFGID_WARNINGS, "Warnings"); //XXX
 			addCheckboxFieldEditor(group2, CFGID_INI_WARNINGS, "Ini warnings"); //XXX
 			addSpacer();
-			addTextFieldEditor(this, CFGID_SIMTIME_SCALE, "Simtime scale exponent");
-			addTextFieldEditor(this, CFGID_TOTAL_STACK_KB, "Total activity() stack (Kb)");
-			addTextFieldEditor(this, CFGID_FINGERPRINT, "Fingerprint to verify");
-			addCheckboxFieldEditor(this, CFGID_PERFORM_GC, "Delete leaked objects on network cleanup");
+			addTextFieldEditor(form, CFGID_SIMTIME_SCALE, "Simtime scale exponent");
+			addTextFieldEditor(form, CFGID_TOTAL_STACK_KB, "Total activity() stack (Kb)");
+			addTextFieldEditor(form, CFGID_FINGERPRINT, "Fingerprint to verify");
+			addCheckboxFieldEditor(form, CFGID_PERFORM_GC, "Delete leaked objects on network cleanup");
 		}
 		else if (category.equals(CAT_RANDOMNUMBERS)) {
-			Group group1 = createGroup(this, "Random Number Generators");
+			Group group1 = createGroup(form, "Random Number Generators");
 			addTextFieldEditor(group1, CFGID_NUM_RNGS, "Number of RNGs");
 			addTextFieldEditor(group1, CFGID_RNG_CLASS, "RNG class");
 		}
 		else if (category.equals(CAT_OUTPUTFILES)) {
-			Group group1 = createGroup(this, "Result collection");
+			Group group1 = createGroup(form, "Result collection");
 			addTextFieldEditor(group1, CFGID_OUTPUT_VECTOR_FILE, "Output vector file");
 			addTextFieldEditor(group1, CFGID_OUTPUT_VECTOR_PRECISION, "Output vector precision");
 			addTextFieldEditor(group1, CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, "Output vectors memory limit");
 			addTextFieldEditor(group1, CFGID_OUTPUT_SCALAR_FILE, "Output scalar file");
 			addTextFieldEditor(group1, CFGID_OUTPUT_SCALAR_PRECISION, "Output scalar precision");
 			addSpacer();
-			addTextFieldEditor(this, CFGID_SNAPSHOT_FILE, "Snapshot file");
-			addTextFieldEditor(this, CFGID_EVENTLOG_FILE, "Eventlog file");
-			addCheckboxFieldEditor(this, CFGID_FNAME_APPEND_HOST, "Append host name to filenames");
+			addTextFieldEditor(form, CFGID_SNAPSHOT_FILE, "Snapshot file");
+			addTextFieldEditor(form, CFGID_EVENTLOG_FILE, "Eventlog file");
+			addCheckboxFieldEditor(form, CFGID_FNAME_APPEND_HOST, "Append host name to filenames");
 		}
 		else if (category.equals(CAT_EXTENSIONS)) {
-			addTextFieldEditor(this, CFGID_LOAD_LIBS, "Shared libraries to load");
+			addTextFieldEditor(form, CFGID_LOAD_LIBS, "Shared libraries to load");
 			addSpacer();
-			Group group1 = createGroup(this, "Extension classes");
+			Group group1 = createGroup(form, "Extension classes");
 			addTextFieldEditor(group1, CFGID_CONFIGURATION_CLASS, "Configuration class");
 			addTextFieldEditor(group1, CFGID_SCHEDULER_CLASS, "Scheduler class");
 			addTextFieldEditor(group1, CFGID_REALTIMESCHEDULER_SCALING, "Real-Time scheduler scaling");
@@ -193,43 +204,43 @@ public class GenericConfigPage extends FormPage {
 			addTextFieldEditor(group1, CFGID_SNAPSHOTMANAGER_CLASS, "Snapshot manager class");
 		}
 		else if (category.equals(CAT_CMDENV)) {
-			addTextFieldEditor(this, CFGID_CMDENV_RUNS_TO_EXECUTE, "Runs to execute");
-			addCheckboxFieldEditor(this, CFGID_CMDENV_EXPRESS_MODE, "Run in Express mode");
+			addTextFieldEditor(form, CFGID_CMDENV_RUNS_TO_EXECUTE, "Runs to execute");
+			addCheckboxFieldEditor(form, CFGID_CMDENV_EXPRESS_MODE, "Run in Express mode");
 			addSpacer();
-			Group group1 = createGroup(this, "Express mode");
+			Group group1 = createGroup(form, "Express mode");
 			addCheckboxFieldEditor(group1, CFGID_CMDENV_PERFORMANCE_DISPLAY, "Display performance data");
 			addTextFieldEditor(group1, CFGID_CMDENV_STATUS_FREQUENCY, "Status frequency");
 			addSpacer();
-			Group group2 = createGroup(this, "Normal (non-Express) mode");
+			Group group2 = createGroup(form, "Normal (non-Express) mode");
 			addCheckboxFieldEditor(group2, CFGID_CMDENV_MODULE_MESSAGES, "Print module messages");
 			addCheckboxFieldEditor(group2, CFGID_CMDENV_EVENT_BANNERS, "Print event banners");
 			addCheckboxFieldEditor(group2, CFGID_CMDENV_EVENT_BANNER_DETAILS, "Detailed event banners");
 			addCheckboxFieldEditor(group2, CFGID_CMDENV_MESSAGE_TRACE, "Message trace");
 			addSpacer();
-			addTextFieldEditor(this, CFGID_CMDENV_EXTRA_STACK_KB, "Cmdenv extra stack (Kb)");
-			addTextFieldEditor(this, CFGID_CMDENV_OUTPUT_FILE, "Log file");
-			addCheckboxFieldEditor(this, CFGID_CMDENV_AUTOFLUSH, "Autoflush output files");
+			addTextFieldEditor(form, CFGID_CMDENV_EXTRA_STACK_KB, "Cmdenv extra stack (Kb)");
+			addTextFieldEditor(form, CFGID_CMDENV_OUTPUT_FILE, "Log file");
+			addCheckboxFieldEditor(form, CFGID_CMDENV_AUTOFLUSH, "Autoflush output files");
 		}
 		else if (category.equals(CAT_TKENV)) {
-			addTextFieldEditor(this, CFGID_TKENV_DEFAULT_RUN, "Default run");
+			addTextFieldEditor(form, CFGID_TKENV_DEFAULT_RUN, "Default run");
 			addSpacer();
-			Group group4 = createGroup(this, "Paths");
+			Group group4 = createGroup(form, "Paths");
 			addTextFieldEditor(group4, CFGID_TKENV_IMAGE_PATH, "Image path");
 			addTextFieldEditor(group4, CFGID_TKENV_PLUGIN_PATH, "Plugin path");
 			addSpacer();
-			addTextFieldEditor(this, CFGID_TKENV_EXTRA_STACK_KB, "Tkenv extra stack (Kb)");
+			addTextFieldEditor(form, CFGID_TKENV_EXTRA_STACK_KB, "Tkenv extra stack (Kb)");
 			addSpacer();
 			addMessage(ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_WARNING),
 					"NOTE: The following settings are only first-time defaults, and settings in .tkenvrc (created by Tkenv\n" +
 					"automatically) will override them. Delete .tkenvrc for these settings to take effect.");
 			addSpacer();
-			Group group5 = createGroup(this, "Execution");
+			Group group5 = createGroup(form, "Execution");
 			addTextFieldEditor(group5, CFGID_TKENV_SLOWEXEC_DELAY, "Slow-exec delay");
 			addTextFieldEditor(group5, CFGID_TKENV_UPDATE_FREQ_FAST, "Update frequency for Fast mode");
 			addTextFieldEditor(group5, CFGID_TKENV_UPDATE_FREQ_EXPRESS, "Update frequency for Express mode");
 			addCheckboxFieldEditor(group5, CFGID_TKENV_EXPRESSMODE_AUTOUPDATE, "Auto-update in Express mode");
 			addSpacer();
-			Group group1 = createGroup(this, "Animation options");
+			Group group1 = createGroup(form, "Animation options");
 			addCheckboxFieldEditor(group1, CFGID_TKENV_ANIMATION_ENABLED, "Enable animation");
 			addCheckboxFieldEditor(group1, CFGID_TKENV_NEXT_EVENT_MARKERS, "Show next event markers");
 			addCheckboxFieldEditor(group1, CFGID_TKENV_SENDDIRECT_ARROWS, "Show SendDirect arrows");
@@ -238,33 +249,33 @@ public class GenericConfigPage extends FormPage {
 			addCheckboxFieldEditor(group1, CFGID_TKENV_ANIMATION_MSGNAMES, "Show message names in animation");
 			addCheckboxFieldEditor(group1, CFGID_TKENV_ANIMATION_MSGCLASSNAMES, "Show message class names in animation");
 			addCheckboxFieldEditor(group1, CFGID_TKENV_ANIMATION_MSGCOLORS, "Colorize messages by message kind");
-			addCheckboxFieldEditor(this, CFGID_TKENV_SHOW_BUBBLES, "Show bubbles");
+			addCheckboxFieldEditor(form, CFGID_TKENV_SHOW_BUBBLES, "Show bubbles");
 			addCheckboxFieldEditor(group1, CFGID_TKENV_PENGUIN_MODE, "Penguin mode");
 			addSpacer();
-			Group group2 = createGroup(this, "Network layouting");
+			Group group2 = createGroup(form, "Network layouting");
 			addCheckboxFieldEditor(group2, CFGID_TKENV_SHOW_LAYOUTING, "Show layouting process");
 			addCheckboxFieldEditor(group2, CFGID_TKENV_USE_NEW_LAYOUTER, "Use new layouter");
-			addTextFieldEditor(this, CFGID_TKENV_ANIMATION_SPEED, "Animation speed");
+			addTextFieldEditor(form, CFGID_TKENV_ANIMATION_SPEED, "Animation speed");
 			addSpacer();
-			Group group3 = createGroup(this, "Logging");
+			Group group3 = createGroup(form, "Logging");
 			addCheckboxFieldEditor(group3, CFGID_TKENV_PRINT_BANNERS, "Print banners");
 			addCheckboxFieldEditor(group3, CFGID_TKENV_USE_MAINWINDOW, "Use main window");
 		}
 		else if (category.equals(CAT_PARSIM)) {
-			Group group1 = createGroup(this, "General");
+			Group group1 = createGroup(form, "General");
 			addCheckboxFieldEditor(group1, CFGID_PARALLEL_SIMULATION, "Parallel simulation");
 			addTextFieldEditor(group1, CFGID_PARSIM_COMMUNICATIONS_CLASS, "Communications class");
 			addTextFieldEditor(group1, CFGID_PARSIM_SYNCHRONIZATION_CLASS, "Synchronization class");
 			addCheckboxFieldEditor(group1, CFGID_PARSIM_DEBUG, "Debug parallel simulation");
 			addSpacer();
-			Group group2 = createGroup(this, "Communications");
+			Group group2 = createGroup(form, "Communications");
 			addTextFieldEditor(group2, CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER, "MPI communications: MPI buffer");
 			addTextFieldEditor(group2, CFGID_PARSIM_NAMEDPIPECOMM_PREFIX, "Named Pipe communications: prefix");
 			addTextFieldEditor(group2, CFGID_PARSIM_FILECOMM_PREFIX, "File-based communications: prefix");
 			addTextFieldEditor(group2, CFGID_PARSIM_FILECOMM_READ_PREFIX, "File-based communications: read prefix");
 			addCheckboxFieldEditor(group2, CFGID_PARSIM_FILECOMM_PRESERVE_READ, "File-based communications: preserve read files");
 			addSpacer();
-			Group group3 = createGroup(this, "Protocol-specific settings");
+			Group group3 = createGroup(form, "Protocol-specific settings");
 			addTextFieldEditor(group3, CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS, "Null Message Protocol: lookahead class");
 			addTextFieldEditor(group3, CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS, "Null Message Protocol: laziness");
 			addTextFieldEditor(group3, CFGID_PARSIM_IDEALSIMULATIONPROTOCOL_TABLESIZE, "Ideal Simulation Protocol: table size");
@@ -272,7 +283,6 @@ public class GenericConfigPage extends FormPage {
 		else {
 			throw new IllegalArgumentException("no such category: "+category);
 		}
-		
 	}
 
 	private void createTitle(String category) {
@@ -323,12 +333,16 @@ public class GenericConfigPage extends FormPage {
 	}
 
 	protected void addTextFieldEditor(Composite parent, ConfigurationEntry e, String label) {
-		FieldEditor editor = new TextFieldEditor(parent, e, getInifileDocument(), label);
+		FieldEditor editor = (advancedMode==false || e.isGlobal()) ? 
+				new TextFieldEditor(parent, e, getInifileDocument(), label) :
+				new TextTableFieldEditor(parent, e, getInifileDocument(), label);
 		addFieldEditor(editor);		
 	}
 
 	protected void addCheckboxFieldEditor(Composite parent, ConfigurationEntry e, String label) {
-		FieldEditor editor = new CheckboxFieldEditor(parent, e, getInifileDocument(), label);
+		FieldEditor editor = (advancedMode==false || e.isGlobal()) ? 
+				new CheckboxFieldEditor(parent, e, getInifileDocument(), label) :
+				new CheckboxTableFieldEditor(parent, e, getInifileDocument(), label);
 		addFieldEditor(editor);		
 	}
 
@@ -339,12 +353,12 @@ public class GenericConfigPage extends FormPage {
 
 	protected Button createAdvancedButton(Composite parent) {
 		final Button expandButton = new Button(parent, SWT.PUSH);
-		expandButton.setText("Advanced »");
+		expandButton.setText(advancedMode ? "« Normal" : "Advanced »");
 		expandButton.setToolTipText("Toggle advanced editing");
 		expandButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				//XXX TODO
-				expandButton.setText(expandButton.getText().equals("Advanced »") ? "« Normal" : "Advanced »");
+				advancedMode = !advancedMode;
+				expandButton.setText(advancedMode ? "« Normal" : "Advanced »");
 			}
 		});
 		return expandButton;
