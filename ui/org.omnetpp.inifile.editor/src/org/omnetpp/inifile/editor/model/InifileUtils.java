@@ -1,5 +1,10 @@
 package org.omnetpp.inifile.editor.model;
 
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
+
+import java.util.ArrayList;
+
+import org.apache.commons.lang.ArrayUtils;
 import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.NEDElement;
@@ -82,5 +87,33 @@ public class InifileUtils {
 		if (StringUtils.isEmpty(submoduleType))
 			submoduleType = submodule.getLikeType();
 		return submoduleType;
+	}
+	
+	/**
+	 * Follows the section "extends" chain back to the [General] section, and returns
+	 * the list of section names (including the given section and [General] as well).
+	 */
+	public static String[] resolveSectionChain(IInifileDocument doc, String section) {
+		ArrayList<String> sectionChain = new ArrayList<String>();
+		if (!section.equals("General")) {
+			String currentSection = section;
+		    while (true) {
+		        if (sectionChain.contains(currentSection))
+		            throw new IllegalStateException("circularity detected in section fallback chain at section ["+currentSection+"]");
+		        sectionChain.add(currentSection);
+		        String extendsName = doc.getValue(currentSection, "extends");
+		        if (extendsName==null)
+		        	break;
+		        currentSection = "Config "+extendsName;
+		    }
+		}
+	    if (doc.containsSection(GENERAL))
+	        sectionChain.add(GENERAL);
+	    return sectionChain.toArray(new String[] {});
+	}
+
+	public static boolean sectionChainContains(IInifileDocument doc, String chainStartSection, String section) {
+		String[] sectionChain = resolveSectionChain(doc, chainStartSection);
+		return ArrayUtils.indexOf(sectionChain, section) >= 0;
 	}
 }

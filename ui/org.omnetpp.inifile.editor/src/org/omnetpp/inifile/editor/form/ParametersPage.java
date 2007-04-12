@@ -1,5 +1,10 @@
 package org.omnetpp.inifile.editor.form;
 
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -25,7 +30,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
+import org.omnetpp.inifile.editor.model.InifileUtils;
 
 /**
  * For editing module parameters.
@@ -38,6 +43,16 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 public class ParametersPage extends FormPage {
 	private TableViewer tableViewer;
 	private Combo sectionsCombo;
+
+	static class SectionKey {
+		String section;
+		String key;
+
+		public SectionKey(String section, String key) {
+			this.section = section;
+			this.key = key;
+		}
+	}
 	
 	public ParametersPage(Composite parent, InifileEditor inifileEditor) {
 		super(parent, inifileEditor);
@@ -55,7 +70,7 @@ public class ParametersPage extends FormPage {
 
 		Label comboLabel = new Label(c, SWT.NONE);
 		comboLabel.setText("Configuration:");
-		sectionsCombo = new Combo(c, SWT.BORDER);
+		sectionsCombo = new Combo(c, SWT.BORDER | SWT.READ_ONLY);
 		c.setLayout(new GridLayout(2, false));
 		comboLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		sectionsCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
@@ -66,6 +81,12 @@ public class ParametersPage extends FormPage {
 		Composite buttonGroup = createButtons();
 		buttonGroup.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, true));
 		
+		sectionsCombo.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				reread();
+			}
+		});
+		
 		reread();
 	}
 
@@ -73,8 +94,9 @@ public class ParametersPage extends FormPage {
 		Table table = new Table(this, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION | SWT.VIRTUAL);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
-		addTableColumn(table, "Key", 200);
-		addTableColumn(table, "Value", 150);
+		addTableColumn(table, "Section", 80);
+		addTableColumn(table, "Key", 180);
+		addTableColumn(table, "Value", 120);
 		addTableColumn(table, "Comment", 200);
 
 		// set up tableViewer, content and label providers
@@ -86,11 +108,12 @@ public class ParametersPage extends FormPage {
 			}
 
 			public String getColumnText(Object element, int columnIndex) {
-				String key = (String) element;
+				SectionKey item = (SectionKey) element;
 				switch (columnIndex) {
-					case 0: return key;
-					case 1: return getInifileDocument().getValue(GENERAL, key); 
-					case 2: return getInifileDocument().getComment(GENERAL, key);
+					case 0: return item.section;
+					case 1: return item.key;
+					case 2: return getInifileDocument().getValue(item.section, item.key); 
+					case 3: return getInifileDocument().getComment(item.section, item.key);
 					default: throw new IllegalArgumentException();
 				}
 			}
@@ -111,25 +134,26 @@ public class ParametersPage extends FormPage {
 
 		//XXX set up content assist. See: addCellEditors() method, ChangeParametersControl.class in JDT
 		//XXX prefix comments with "#" after editing?
-		tableViewer.setColumnProperties(new String[] {"key", "value", "comment"});
-		final CellEditor editors[] = new CellEditor[3];
-		editors[0] = new TableTextCellEditor(tableViewer, 0);
+		tableViewer.setColumnProperties(new String[] {"section", "key", "value", "comment"});
+		final CellEditor editors[] = new CellEditor[4];
+		editors[0] = null;
 		editors[1] = new TableTextCellEditor(tableViewer, 1);
 		editors[2] = new TableTextCellEditor(tableViewer, 2);
+		editors[3] = new TableTextCellEditor(tableViewer, 3);
 		tableViewer.setCellEditors(editors);
 		tableViewer.setCellModifier(new ICellModifier() {
 			public boolean canModify(Object element, String property) {
-				return true;
+				return !property.equals("section");
 			}
 
 			public Object getValue(Object element, String property) {
-				String key = (String) element;
+				SectionKey item = (SectionKey) element;
 				if (property.equals("key"))
-					return key;
+					return item.key;
 				else if (property.equals("value"))
-					return nullToEmpty(getInifileDocument().getValue(GENERAL, key)); 
+					return nullToEmpty(getInifileDocument().getValue(item.section, item.key)); 
 				else if (property.equals("comment"))
-					return nullToEmpty(getInifileDocument().getComment(GENERAL, key));
+					return nullToEmpty(getInifileDocument().getComment(item.section, item.key));
 				else
 					return "-";
 			}
@@ -137,18 +161,20 @@ public class ParametersPage extends FormPage {
 			public void modify(Object element, String property, Object value) {
 			    if (element instanceof Item)
 			    	element = ((Item) element).getData(); // workaround, see super's comment
-				String key = (String) element;
+				SectionKey item = (SectionKey) element;
 				if (property.equals("key")) {
-					getInifileDocument().changeKey(GENERAL, key, (String)value);
-					reread(); // tableViewer.refresh() not enough, because input consists of keys
+					if (!value.equals(item.key)) {
+						getInifileDocument().changeKey(item.section, item.key, (String)value);
+						reread(); // tableViewer.refresh() not enough, because input consists of keys
+					}
 				}
 				else if (property.equals("value")) {
-					getInifileDocument().setValue(GENERAL, key, (String)value);
+					getInifileDocument().setValue(item.section, item.key, (String)value);
 					tableViewer.refresh(); // if performance gets critical: refresh only if changed
 				}
 				else if (property.equals("comment")) {
 					if (value.equals("")) value = null; // no comment == null
-					getInifileDocument().setComment(GENERAL, key, (String)value);
+					getInifileDocument().setComment(item.section, item.key, (String)value);
 					tableViewer.refresh();// if performance gets critical: refresh only if changed
 				}
 			}
@@ -187,7 +213,7 @@ public class ParametersPage extends FormPage {
 				getInifileDocument().addEntry(GENERAL, newKey, "", null, beforeKey); //XXX what if no such section
 				reread();
 				//XXX key must be validated (in InifileDocument). if it causes parse error, the whole table goes away! 
-				tableViewer.editElement(newKey, 0);
+				tableViewer.editElement(newKey, 1);
 			}
 		});
 
@@ -253,12 +279,24 @@ public class ParametersPage extends FormPage {
 	@Override
 	public void reread() {
 		IInifileDocument doc = getInifileDocument();
-		sectionsCombo.setItems(doc.getSectionNames());
+		String selectedSection = sectionsCombo.getText(); 
+		String[] sectionNames = doc.getSectionNames();
+		if (sectionNames.length==0) 
+			sectionNames = new String[] {"General"};  //XXX we lie that [General] exists
+		sectionsCombo.setItems(sectionNames);
 		sectionsCombo.setVisibleItemCount(Math.min(20, sectionsCombo.getItemCount()));
-		//XXX use keys like: "section/key"
-		//XXX get only dotted keys! if (key.contains("."))...
-		//TODO should introduce rule: parameter refs must contain a dot; to check this in C++ code as well
-		tableViewer.setInput(doc.getKeys(GENERAL)); //XXX or empty array if there's no such section
+		int i = ArrayUtils.indexOf(sectionNames, selectedSection);
+		sectionsCombo.select(i<0 ? 0 : i);
+		selectedSection = sectionsCombo.getText(); 
+
+		//XXX [Gneral] is twice?
+		String[] sectionChain = InifileUtils.resolveSectionChain(doc, selectedSection);
+		ArrayList<SectionKey> list = new ArrayList<SectionKey>();
+		for (String section : sectionChain)
+			for (String key : doc.getKeys(section))
+				if (key.contains("."))
+					list.add(new SectionKey(section, key));
+		tableViewer.setInput(list.toArray());
 		tableViewer.refresh();
 	}
 

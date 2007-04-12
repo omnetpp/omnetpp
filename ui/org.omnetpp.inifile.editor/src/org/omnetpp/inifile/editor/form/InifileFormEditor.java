@@ -52,7 +52,7 @@ public class InifileFormEditor extends Composite {
 		form = new Composite(sashForm, SWT.BORDER);  //XXX try to use ScrolledComposite
 		form.setBackground(BGCOLOR);
 		form.setLayout(new FillLayout());
-		sashForm.setWeights(new int[] {1,3});
+		sashForm.setWeights(new int[] {1,4});
 		
 		buildTree();
 

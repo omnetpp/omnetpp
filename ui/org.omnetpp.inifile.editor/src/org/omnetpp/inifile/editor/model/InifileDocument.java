@@ -383,6 +383,18 @@ public class InifileDocument implements IInifileDocument {
 		return section == null ? null : section.entries.keySet().toArray(new String[0]);
 	}
 
+	public String[] getMatchingKeys(String sectionName, String regex) {
+		parseIfChanged();
+		Section section = sections.get(sectionName);
+		if (section == null)
+			return null;
+		ArrayList<String> list = new ArrayList<String>();
+		for (String key : section.entries.keySet())
+			if (regex.matches(key))
+				list.add(key);
+		return list.toArray(new String[list.size()]);
+	}
+
 	public String[] getSectionNames() {
 		parseIfChanged();
 		return sections.keySet().toArray(new String[0]);
@@ -453,6 +465,10 @@ public class InifileDocument implements IInifileDocument {
 					throw new IllegalArgumentException("section ["+sectionName+"] cannot be deleted, because it is defined in an included file");
 			}
 		}
+	}
+
+	public void renameSection(String sectionName, String newName) {
+		// TODO Auto-generated method stub
 	}
 
 	public void addSection(String sectionName, String beforeSectionName) {

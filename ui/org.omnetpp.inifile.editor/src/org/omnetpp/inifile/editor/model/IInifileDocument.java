@@ -116,6 +116,14 @@ public interface IInifileDocument {
 	String[] getKeys(String section);
 
 	/** 
+	 * Returns keys in the given section that match the given regex. Keys are 
+	 * returned in the order they appear. Returns null if section does not exist, 
+	 * and zero-length array if it does not contain entries or no entries matched
+	 * the regex.
+	 */
+	String[] getMatchingKeys(String section, String regex);
+
+	/** 
 	 * Returns list of unique section names. 
 	 */
 	String[] getSectionNames();
@@ -140,6 +148,12 @@ public interface IInifileDocument {
 	 * append.
 	 */
 	void addSection(String sectionName, String beforeSection);
+
+	/** 
+	 * Renames a section. Throws an error if a section with the new name 
+	 * already exists. 
+	 */
+	void renameSection(String sectionName, String newName);
 
 	/** 
 	 * Returns immutable value object with file/line/isreadonly info.

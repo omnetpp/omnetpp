@@ -1,5 +1,7 @@
 package org.omnetpp.inifile.editor.form;
 
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -32,7 +34,7 @@ import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
+import org.omnetpp.inifile.editor.model.InifileUtils;
 
 /**
  * Inifile editor page to manage the sections in the file.
@@ -112,9 +114,11 @@ public class RunsPage extends FormPage {
 				
 				if (draggedSections.length != 0 && targetSectionName != null) {
 			    	//System.out.println(draggedSections.length + " items dropped to: "+targetSectionName);
+					IInifileDocument doc = getInifileDocument();
 			    	for (String draggedSectionName : draggedSections)
 			    		if (getInifileDocument().containsSection(draggedSectionName)) // might occur if it was dragged from a different editor's treeviewer...
-			    			setSectionExtendsKey(draggedSectionName, targetSectionName);
+			    			if (!InifileUtils.sectionChainContains(doc, targetSectionName, draggedSectionName)) // avoid circles
+			    				setSectionExtendsKey(draggedSectionName, targetSectionName);
 			    	reread();
 			    }
 			}
@@ -204,7 +208,7 @@ public class RunsPage extends FormPage {
 				String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
 				if (selection.length != 0) {
 					for (String sectionName : selection) {
-						getInifileDocument().removeSection(sectionName); //XXX hmm
+						getInifileDocument().removeSection(sectionName);
 					}
 					reread();
 				}
@@ -223,7 +227,7 @@ public class RunsPage extends FormPage {
 					String newSectionName = dialog.getValue().trim();
 					if (!newSectionName.equals(GENERAL) && !newSectionName.startsWith("Config "))
 						newSectionName = "Config "+newSectionName;
-					//XXX rename section...
+					getInifileDocument().renameSection(sectionName, newSectionName);
 					reread();
 				}
 			}
@@ -248,6 +252,8 @@ public class RunsPage extends FormPage {
 		GenericTreeNode generalSectionNode = new GenericTreeNode(new SectionData(GENERAL, false));
 		rootNode.addChild(generalSectionNode);
 
+		//FIXME detect circularity!!!!!
+		
 		// build tree
 		HashMap<String,GenericTreeNode> nodes = new HashMap<String, GenericTreeNode>();
 		for (String sectionName : doc.getSectionNames()) {
