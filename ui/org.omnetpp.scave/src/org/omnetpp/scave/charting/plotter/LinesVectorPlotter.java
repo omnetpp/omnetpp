@@ -5,8 +5,8 @@ import static org.omnetpp.common.canvas.ICoordsMapping.NAN_PIX;
 import java.util.HashSet;
 
 import org.eclipse.swt.graphics.GC;
-import org.jfree.data.xy.XYDataset;
 import org.omnetpp.common.canvas.ICoordsMapping;
+import org.omnetpp.scave.charting.dataset.IXYDataset;
 
 /**
  * Vector plotter that connects data points with lines.
@@ -15,7 +15,7 @@ import org.omnetpp.common.canvas.ICoordsMapping;
  */
 public class LinesVectorPlotter extends VectorPlotter {
 
-	public void plot(XYDataset dataset, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
+	public void plot(IXYDataset dataset, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
 		int n = dataset.getItemCount(series);
 		if (n==0)
 			return;
@@ -46,8 +46,8 @@ public class LinesVectorPlotter extends VectorPlotter {
 		int prevSymbolX = Integer.MIN_VALUE;
 		
 		for (int i = first; i <= last; i++) {
-			int x = mapping.toCanvasX(dataset.getXValue(series, i));
-			int y = mapping.toCanvasY(dataset.getYValue(series, i)); // note: this maps +-INF to +-MAXPIX, which works out just fine here
+			int x = mapping.toCanvasX(dataset.getX(series, i));
+			int y = mapping.toCanvasY(dataset.getY(series, i)); // note: this maps +-INF to +-MAXPIX, which works out just fine here
 
 			// for testing: 
 			// if (i%5==0) y = NANPIX;

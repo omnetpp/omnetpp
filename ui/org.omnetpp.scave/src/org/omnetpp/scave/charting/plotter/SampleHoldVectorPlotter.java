@@ -4,6 +4,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.jfree.data.xy.XYDataset;
 import org.omnetpp.common.canvas.ICoordsMapping;
+import org.omnetpp.scave.charting.dataset.IXYDataset;
 
 /**
  * Sample-hold vector plotter
@@ -13,7 +14,7 @@ import org.omnetpp.common.canvas.ICoordsMapping;
 //TODO: backward-sample-hold
 public class SampleHoldVectorPlotter extends VectorPlotter {
 
-	public void plot(XYDataset dataset, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
+	public void plot(IXYDataset dataset, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
 		int n = dataset.getItemCount(series);
 		if (n==0)
 			return;
@@ -30,9 +31,9 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		// (instead of calling drawSymbols()), but since "pin" mode doesn't make much
 		// sense (doesn't show much) for huge amounts of data points, we don't bother.
 		//
-		int prevX = mapping.toCanvasX(dataset.getXValue(series, first));
-		int prevY = mapping.toCanvasY(dataset.getYValue(series, first));
-		boolean prevIsNaN = Double.isNaN(dataset.getYValue(series, first));
+		int prevX = mapping.toCanvasX(dataset.getX(series, first));
+		int prevY = mapping.toCanvasY(dataset.getY(series, first));
+		boolean prevIsNaN = Double.isNaN(dataset.getY(series, first));
 		int maxY = prevY;
 		int minY = prevY;
 		
@@ -41,14 +42,14 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		//gc.setLineStyle(SWT.LINE_DOT);  // faster, but doesn't look as good
 
 		for (int i = first+1; i <= last; i++) {
-			double value = dataset.getYValue(series, i);
+			double value = dataset.getY(series, i);
 
 			// for testing: 
 			//if (i%5==0) value = 0.0/0.0; //NaN
 			
 			boolean isNaN = Double.isNaN(value); // see isNaN handling later
 
-			int x = mapping.toCanvasX(dataset.getXValue(series, i));
+			int x = mapping.toCanvasX(dataset.getX(series, i));
 			int y = mapping.toCanvasY(value); // note: this maps +-INF to +-MAXPIX, which works out just fine here
 
 			// for testing:

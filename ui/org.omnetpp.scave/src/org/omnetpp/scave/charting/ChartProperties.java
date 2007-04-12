@@ -2,6 +2,7 @@ package org.omnetpp.scave.charting;
 
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.emf.edit.command.SetCommand;
@@ -25,6 +26,7 @@ import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ResultType;
+import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.DatasetManager;
@@ -132,7 +134,10 @@ public class ChartProperties extends PropertySource {
 			return new VectorChartProperties(chart, properties, manager);
 		else if (chart instanceof HistogramChart)
 			return new HistogramChartProperties(chart, properties, manager);
-		ScavePlugin.logError(new IllegalArgumentException("chart type unrecognized"));
+		else if (chart instanceof ScatterChart)
+			return new ScatterChartProperties(chart, properties, manager);
+		else 
+			ScavePlugin.logError(new IllegalArgumentException("chart type unrecognized"));
 		return new ChartProperties(chart, properties, manager);
 	}
 
@@ -250,6 +255,55 @@ public class ChartProperties extends PropertySource {
 	public void setLegendAnchoring(LegendAnchor anchoring) { setProperty(PROP_LEGEND_ANCHORING, anchoring); }
 	public LegendAnchor defaultLegendAnchor() { return ChartDefaults.DEFAULT_LEGEND_ANCHOR; }
 
+	/*======================================================================
+	 *                             Line
+	 *======================================================================*/
+	private static final String DEFAULT_LINE_PROPERTIES_ID = "default";
+	
+	public class LineProperties extends PropertySource {
+		private String lineId;
+
+		public LineProperties(String lineId) {
+			this.lineId = lineId;
+		}
+
+		private String propertyName(String baseName) {
+			return lineId == null ? baseName : baseName + "/" + lineId;
+		}
+
+		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_SYMBOL_TYPE,optional=true)
+		public SymbolType getSymbolType() { return getEnumProperty(propertyName(PROP_SYMBOL_TYPE), SymbolType.class); }
+		public void setSymbolType(SymbolType type) { setProperty(propertyName(PROP_SYMBOL_TYPE), type); }
+		public SymbolType defaultSymbolType() { return null; }
+
+		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_SYMBOL_SIZE)
+		public String getSymbolSize() { return getStringProperty(propertyName(PROP_SYMBOL_SIZE)); }
+		public void setSymbolSize(String size) { setProperty(propertyName(PROP_SYMBOL_SIZE), size); }
+		public String defaultSymbolSize() { return null; }
+
+		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_TYPE,optional=true)
+		public LineStyle getLineType() { return getEnumProperty(propertyName(PROP_LINE_TYPE), LineStyle.class); }
+		public void setLineType(LineStyle style) { setProperty(propertyName(PROP_LINE_TYPE), style); }
+		public LineStyle defaultLineType() { return null; }
+	}
+	
+	public class LinesPropertySource extends BasePropertySource {
+		IPropertyDescriptor[] descriptors;
+
+		public LinesPropertySource(IPropertyDescriptor[] descriptors) {
+			this.descriptors = descriptors;
+		}
+
+		public IPropertyDescriptor[] getPropertyDescriptors() {
+			return descriptors;
+		}
+
+		public Object getPropertyValue(Object id) {
+			return new LineProperties(id == DEFAULT_LINE_PROPERTIES_ID ? null : (String)id);
+		}
+	}
+	
+	
 
 	public static class VectorChartProperties extends ChartProperties
 	{
@@ -273,10 +327,8 @@ public class ChartProperties extends PropertySource {
 		/*======================================================================
 		 *                             Lines
 		 *======================================================================*/
-		private static final String DEFAULT_LINE_PROPERTIES_ID = "default";
-
 		@org.omnetpp.common.properties.Property(category="Plot",id="Lines",displayName="Lines")
-		public LinesPropertySource getLineProperties() { return new LinesPropertySource(); }
+		public LinesPropertySource getLineProperties() { return new LinesPropertySource(createLineDescriptors()); }
 
 		@org.omnetpp.common.properties.Property(category="Plot",id=PROP_ANTIALIAS,displayName="antialias")
 		public boolean getAntialias() { return getBooleanProperty(PROP_ANTIALIAS); }
@@ -287,62 +339,23 @@ public class ChartProperties extends PropertySource {
 		public boolean getCaching() { return getBooleanProperty(PROP_CACHING); }
 		public void setCaching(boolean flag) { setProperty(PROP_CACHING, flag); }
 		public boolean defaultCaching() { return ChartDefaults.DEFAULT_CANVAS_CACHING; }
-
+		
 		public LineProperties getLineProperties(String lineId) { return new LineProperties(lineId); }
 
-		public class LinesPropertySource extends BasePropertySource {
+		
+		protected IPropertyDescriptor[] createLineDescriptors() {
 			IPropertyDescriptor[] descriptors;
-
-			public LinesPropertySource() {
-				Dataset dataset;
-				if (chart != null && manager != null &&
-						(dataset = ScaveModelUtil.findEnclosingDataset(chart)) != null) {
-					IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.VECTOR_LITERAL);
-					String[] names = DatasetManager.getResultItemNames(idlist, manager);
-					descriptors = new IPropertyDescriptor[names.length + 1];
-					descriptors[0] = new PropertyDescriptor(DEFAULT_LINE_PROPERTIES_ID, "default");
-					for (int i= 0; i < names.length; ++i)
-						descriptors[i+1] = new PropertyDescriptor(names[i], names[i]);
-				}
-				else
-					descriptors = new IPropertyDescriptor[0];
+			String[] names = DatasetManager.getVectorDataNames(chart, manager);
+			if (names != null) {
+				descriptors = new IPropertyDescriptor[names.length + 1];
+				descriptors[0] = new PropertyDescriptor(DEFAULT_LINE_PROPERTIES_ID, "default");
+				for (int i= 0; i < names.length; ++i)
+					descriptors[i+1] = new PropertyDescriptor(names[i], names[i]);
 			}
-
-			public IPropertyDescriptor[] getPropertyDescriptors() {
-				return descriptors;
-			}
-
-			public Object getPropertyValue(Object id) {
-				return getLineProperties(id == DEFAULT_LINE_PROPERTIES_ID ? null : (String)id);
-			}
-		}
-
-
-		public class LineProperties extends PropertySource {
-			private String lineId;
-
-			public LineProperties(String lineId) {
-				this.lineId = lineId;
-			}
-
-			private String propertyName(String baseName) {
-				return lineId == null ? baseName : baseName + "/" + lineId;
-			}
-
-			@org.omnetpp.common.properties.Property(category="Lines",id=PROP_SYMBOL_TYPE,optional=true)
-			public SymbolType getSymbolType() { return getEnumProperty(propertyName(PROP_SYMBOL_TYPE), SymbolType.class); }
-			public void setSymbolType(SymbolType type) { setProperty(propertyName(PROP_SYMBOL_TYPE), type); }
-			public SymbolType defaultSymbolType() { return null; }
-
-			@org.omnetpp.common.properties.Property(category="Lines",id=PROP_SYMBOL_SIZE)
-			public String getSymbolSize() { return getStringProperty(propertyName(PROP_SYMBOL_SIZE)); }
-			public void setSymbolSize(String size) { setProperty(propertyName(PROP_SYMBOL_SIZE), size); }
-			public String defaultSymbolSize() { return null; }
-
-			@org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_TYPE,optional=true)
-			public LineStyle getLineType() { return getEnumProperty(propertyName(PROP_LINE_TYPE), LineStyle.class); }
-			public void setLineType(LineStyle style) { setProperty(propertyName(PROP_LINE_TYPE), style); }
-			public LineStyle defaultLineType() { return null; }
+			else
+				descriptors = new IPropertyDescriptor[0];
+			
+			return descriptors;
 		}
 	}
 
@@ -384,6 +397,29 @@ public class ChartProperties extends PropertySource {
 		}
 
 		// TODO
+	}
+
+	public static class ScatterChartProperties extends VectorChartProperties
+	{
+		public ScatterChartProperties(Chart chart, List<Property> properties, ResultFileManager manager) {
+			super(chart, properties, manager);
+			Assert.isLegal(chart == null || chart instanceof ScatterChart);
+		}
+		
+		protected IPropertyDescriptor[] createLineDescriptors() {
+			IPropertyDescriptor[] descriptors;
+			String[] names = DatasetManager.getScatterPlotDataNames((ScatterChart)chart, manager);
+			if (names != null) {
+				descriptors = new IPropertyDescriptor[names.length+1];
+				descriptors[0] = new PropertyDescriptor(DEFAULT_LINE_PROPERTIES_ID, "default");
+				for (int i=0; i < names.length; ++i)
+					descriptors[i+1] = new PropertyDescriptor(names[i], names[i]);
+			}
+			else
+				descriptors = new IPropertyDescriptor[0];
+			
+			return descriptors;
+		}
 	}
 
 	/*======================================================================

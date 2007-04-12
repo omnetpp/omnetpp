@@ -39,13 +39,13 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.jfree.data.category.CategoryDataset;
-import org.jfree.data.general.Dataset;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GeomUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
+import org.omnetpp.scave.charting.dataset.IDataset;
+import org.omnetpp.scave.charting.dataset.ScalarDataset;
 
 /**
  * Bar chart.
@@ -53,7 +53,7 @@ import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
  * @author tomi
  */
 public class ScalarChart extends ChartCanvas {
-	private CategoryDataset dataset;
+	private ScalarDataset dataset;
 
 	private LinearAxis valueAxis = new LinearAxis(this, true);
 	private DomainAxis domainAxis = new DomainAxis();
@@ -70,17 +70,17 @@ public class ScalarChart extends ChartCanvas {
 	}
 
 	@Override
-	public void setDataset(Dataset dataset) {
-		if (dataset != null && !(dataset instanceof CategoryDataset))
-			throw new IllegalArgumentException("must be an CategoryDataset");
+	public void setDataset(IDataset dataset) {
+		if (dataset != null && !(dataset instanceof ScalarDataset))
+			throw new IllegalArgumentException("must be an ScalarDataset");
 		
-		this.dataset = (CategoryDataset)dataset;
+		this.dataset = (ScalarDataset)dataset;
 		updateLegend();
 		updateArea();
 		chartChanged();
 	}
 	
-	public CategoryDataset getDataset() {
+	public ScalarDataset getDataset() {
 		return dataset;
 	}
 
@@ -431,7 +431,7 @@ public class ScalarChart extends ChartCanvas {
 			x -= column * (widthBar+hgapMinor);
 			if (x > widthBar)
 				return -1;  // x falls in a minor gap
-			double value = dataset.getValue(row, column).doubleValue();
+			double value = dataset.getValue(row, column);
 			if (value >= barBaseline ? (y < barBaseline || y > value) : (y > barBaseline || y < value))
 				return -1;  // above or below actual bar 
 			return row * cColumns + column; 
@@ -478,12 +478,12 @@ public class ScalarChart extends ChartCanvas {
 		}
 		
 		protected double getTopY(int row, int column) {
-			double value = dataset.getValue(row, column).doubleValue();
+			double value = dataset.getValue(row, column);
 			return (value > barBaseline ? value : barBaseline);
 		}
 		
 		protected double getBottomY(int row, int column) {
-			double value = dataset.getValue(row, column).doubleValue();
+			double value = dataset.getValue(row, column);
 			return (value < barBaseline ? value : barBaseline);
 		}
 	}
@@ -621,7 +621,7 @@ public class ScalarChart extends ChartCanvas {
 				int numColumns = dataset.getColumnCount();
 				int row = rowColumn / numColumns;
 				int column = rowColumn % numColumns;
-				CategoryDataset dataset = getDataset();
+				ScalarDataset dataset = getDataset();
 
 				String tooltipText = (String) dataset.getColumnKey(column) + "\nvalue: " + dataset.getValue(row, column);
 				tooltipWidget = new DefaultInformationControl(getShell());

@@ -24,6 +24,7 @@ import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Param;
 import org.omnetpp.scave.model.Property;
+import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.Select;
 import org.omnetpp.scave.model.SetOperation;
 
@@ -132,6 +133,10 @@ public class ScaveModelLabelProvider extends LabelProvider {
 		else if (element instanceof HistogramChart) {
 			Chart o = (Chart) element;
 			return "histogram chart "+fallback(o.getName(),"<unnamed>");
+		}
+		else if (element instanceof ScatterChart) {
+			Chart o = (Chart) element;
+			return "scatter chart "+fallback(o.getName(),"<unnamed>");
 		}
 		else if (element instanceof Chart) {
 			throw new IllegalArgumentException("unrecognized chart type");

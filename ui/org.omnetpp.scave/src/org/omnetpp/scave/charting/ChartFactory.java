@@ -11,6 +11,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
@@ -34,6 +35,8 @@ public class ChartFactory {
 			return createVectorChart(parent, chart, dataset, manager);
 		if (chart instanceof HistogramChart)
 			return createHistogramChart(parent, chart, dataset, manager);
+		if (chart instanceof org.omnetpp.scave.model.ScatterChart)
+			return createScatterChart(parent, chart, dataset, manager);
 		throw new RuntimeException("unknown chart type");
 	}
 
@@ -44,6 +47,8 @@ public class ChartFactory {
 			populateVectorChart(chart, dataset, manager, (VectorChart)chartCanvas);
 		else if (chart instanceof HistogramChart)
 			;//TODO
+		else if (chart instanceof org.omnetpp.scave.model.ScatterChart)
+			populateScatterChart(chart, dataset, manager, (VectorChart)chartCanvas);
 		else
 			throw new RuntimeException("unknown chart type");
 	}
@@ -70,6 +75,14 @@ public class ChartFactory {
 	public static ChartCanvas createHistogramChart(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager) {
 		return null; //TODO
 	}
+	
+	public static VectorChart createScatterChart(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager) {
+		final VectorChart scatterChart = new VectorChart(parent, SWT.DOUBLE_BUFFERED);
+		scatterChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		setChartProperties(chart, scatterChart);
+		populateScatterChart(chart, dataset, manager, scatterChart);
+		return scatterChart;
+	}
 
 	public static void populateScalarChart(final Chart chart, final Dataset dataset, final ResultFileManager manager, ScalarChart scalarChart) {
 		// perform:
@@ -77,7 +90,7 @@ public class ChartFactory {
 		// but as a background job:
 		//
 		startDatasetEvaluationJob(scalarChart, new IDatasetCalculation() {
-			public org.jfree.data.general.Dataset run(IProgressMonitor progressMonitor) {
+			public IDataset run(IProgressMonitor progressMonitor) {
 				return DatasetManager.createScalarDataset(chart, dataset, manager, progressMonitor);
 			}
 		});
@@ -89,14 +102,26 @@ public class ChartFactory {
 		// but as a background job:
 		//
 		startDatasetEvaluationJob(vectorChart, new IDatasetCalculation() {
-			public org.jfree.data.general.Dataset run(IProgressMonitor progressMonitor) {
+			public IDataset run(IProgressMonitor progressMonitor) {
 				return DatasetManager.createVectorDataset(chart, dataset, manager, progressMonitor);
 			}
 		});
 	}
 
+	public static void populateScatterChart(final Chart chart, final Dataset dataset, final ResultFileManager manager, final VectorChart scatterChart) {
+		// perform:
+		// scatterChart.setDataset(DatasetManager.createScatterPlotDataset(chart, dataset, manager));
+		// but as a background job:
+		//
+		startDatasetEvaluationJob(scatterChart, new IDatasetCalculation() {
+			public IDataset run(IProgressMonitor progressMonitor) {
+				return DatasetManager.createScatterPlotDataset((org.omnetpp.scave.model.ScatterChart)chart, dataset, manager, progressMonitor);
+			}
+		});
+	}
+	
 	interface IDatasetCalculation {
-		public org.jfree.data.general.Dataset run(IProgressMonitor progressMonitor);
+		public IDataset run(IProgressMonitor progressMonitor);
 	}
 	
 	protected static void startDatasetEvaluationJob(final ChartCanvas chartCanvas, final IDatasetCalculation calc) {
@@ -113,7 +138,7 @@ public class ChartFactory {
 				try {
 					// calculate
 					long startTime = System.currentTimeMillis();
-					final org.jfree.data.general.Dataset data = calc.run(monitor);
+					final IDataset data = calc.run(monitor);
 					System.out.println("total dataset creation: "+(System.currentTimeMillis()-startTime)+" ms");
 
 					if (monitor.isCanceled()) {

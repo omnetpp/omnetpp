@@ -19,6 +19,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.charting.dataset.DatasetUtils;
+import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
 
 /**
@@ -167,9 +169,9 @@ class CrossHair {
 			// snap to data point
 			DataPoint dataPoint = dataPoints.isEmpty() ? null : dataPoints.get(0);
 			if (dataPoint != null) {
-				OutputVectorDataset dataset = chart.getDataset();
-				double xx = dataset.getXValue(dataPoint.series, dataPoint.index);
-				double yy = dataset.getYValue(dataPoint.series, dataPoint.index);
+				IXYDataset dataset = chart.getDataset();
+				double xx = dataset.getX(dataPoint.series, dataPoint.index);
+				double yy = dataset.getY(dataPoint.series, dataPoint.index);
 				x = chart.toCanvasX(xx);
 				y = chart.toCanvasY(yy);
 			}
@@ -239,7 +241,7 @@ class CrossHair {
 			gc.fillRectangle(left, top, width + symbolWidth + 4, height + 2);
 			gc.drawRectangle(left, top, width + symbolWidth + 4, height + 2);
 			int currentY = top + 1;
-			OutputVectorDataset dataset = chart.getDataset();
+			IXYDataset dataset = chart.getDataset();
 			for (DataPoint dataPoint : dataPoints) {
 				gc.setForeground(chart.getLineColor(dataPoint.series));
 				String text = getText(dataPoint);
@@ -259,11 +261,11 @@ class CrossHair {
 	}
 
 	private String getText(DataPoint dataPoint) {
-		OutputVectorDataset dataset = chart.getDataset();
+		IXYDataset dataset = chart.getDataset();
 		//String coordinates = String.format("%g, %g", dataset.getXValue(dataPoint.series, dataPoint.index), dataset.getYValue(dataPoint.series, dataPoint.index));
 		BigDecimal xp = dataset.getPreciseX(dataPoint.series, dataPoint.index);
-		double x = dataset.getXValue(dataPoint.series, dataPoint.index);
-		double y = dataset.getYValue(dataPoint.series, dataPoint.index);
+		double x = dataset.getX(dataPoint.series, dataPoint.index);
+		double y = dataset.getY(dataPoint.series, dataPoint.index);
 		String coordinates = (xp != null ? xp.toString() : Double.toString(x))+", "+y;
 		String series = dataset.getSeriesKey(dataPoint.series).toString();
 		series = StringUtils.abbreviate(series, series.length(), 25);
@@ -271,7 +273,7 @@ class CrossHair {
 	}
 
 	private int dataPointsNear(int x, int y, int d, ArrayList<DataPoint> result, int maxCount) {
-		OutputVectorDataset dataset = chart.getDataset();
+		IXYDataset dataset = chart.getDataset();
 		if (dataset==null)
 			return 0;
 
@@ -283,8 +285,8 @@ class CrossHair {
 
 			// then search downwards and upwards for data points close to (x,y)
 			for (int i = mid; i >= 0; --i) {
-				double xx = dataset.getXValue(series, i);
-				double yy = dataset.getYValue(series, i);
+				double xx = dataset.getX(series, i);
+				double yy = dataset.getY(series, i);
 				int dx = chart.toCanvasX(xx) - x;
 				int dy = chart.toCanvasY(yy) - y;
 				if (dx * dx + dy * dy <= d * d) {
@@ -296,8 +298,8 @@ class CrossHair {
 					break;
 			}
 			for (int i = mid + 1; i < dataset.getItemCount(series); ++i) {
-				double xx = dataset.getXValue(series, i);
-				double yy = dataset.getYValue(series, i);
+				double xx = dataset.getX(series, i);
+				double yy = dataset.getY(series, i);
 				int dx = chart.toCanvasX(xx) - x;
 				int dy = chart.toCanvasY(yy) - y;
 				if (dx * dx + dy * dy <= d * d) {

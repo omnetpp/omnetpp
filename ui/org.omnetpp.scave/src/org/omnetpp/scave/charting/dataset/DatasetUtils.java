@@ -1,6 +1,6 @@
-package org.omnetpp.scave.charting;
+package org.omnetpp.scave.charting.dataset;
 
-import org.jfree.data.xy.XYDataset;
+import org.omnetpp.scave.charting.dataset.IXYDataset;
 
 public class DatasetUtils {
 	/**
@@ -8,14 +8,14 @@ public class DatasetUtils {
 	 * either the first of the values that equal "value", or (if there 
 	 * are no such values) the last one which is less than "value". 
 	 */
-	public static int findXLowerLimit(XYDataset dataset, int series, double value){
+	public static int findXLowerLimit(IXYDataset dataset, int series, double value){
 		int high = dataset.getItemCount(series);
 		int low = -1;
 		int mid;
 		while (high - low > 1)
 		{
 			mid = (low + high) >>> 1;
-			if (dataset.getXValue(series, mid) > value)
+			if (dataset.getX(series, mid) > value)
 				high = mid;
 			else
 				low = mid;
@@ -29,14 +29,14 @@ public class DatasetUtils {
 	 * are no such values) the first one which is greater than "value". 
 	 */
 	//XXX to be tested!!!
-	public static int findXUpperLimit(XYDataset dataset, int series, double value){
+	public static int findXUpperLimit(IXYDataset dataset, int series, double value){
 		int high = dataset.getItemCount(series);
 		int low = 0;
 		int mid;
 		while (high - low > 1)
 		{
 			mid = (low + high + 1) >>> 1;
-			if (dataset.getXValue(series, mid) >= value)
+			if (dataset.getX(series, mid) >= value)
 				high = mid;
 			else
 				low = mid;

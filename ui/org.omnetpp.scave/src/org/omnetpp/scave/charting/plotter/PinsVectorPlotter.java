@@ -1,8 +1,8 @@
 package org.omnetpp.scave.charting.plotter;
 
 import org.eclipse.swt.graphics.GC;
-import org.jfree.data.xy.XYDataset;
 import org.omnetpp.common.canvas.ICoordsMapping;
+import org.omnetpp.scave.charting.dataset.IXYDataset;
 
 /**
  * Pins vector plotter
@@ -21,7 +21,7 @@ public class PinsVectorPlotter extends VectorPlotter {
 		this.referenceLevel = referenceLevel;
 	}
 
-	public void plot(XYDataset dataset, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
+	public void plot(IXYDataset dataset, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
 		// dataset index range to iterate over 
 		int[] range = indexRange(dataset, series, gc, mapping);
 		int first = range[0], last = range[1];
@@ -51,11 +51,11 @@ public class PinsVectorPlotter extends VectorPlotter {
 		
 		// draw pins
 		for (int i = first; i <= last; i++) {
-			double value = dataset.getYValue(series, i);
+			double value = dataset.getY(series, i);
 			if ((referenceLevel < lo && value < lo) || (referenceLevel > hi && value > hi) || Double.isNaN(value)) 
 				continue; // pin is off-screen
 
-			int x = mapping.toCanvasX(dataset.getXValue(series, i));
+			int x = mapping.toCanvasX(dataset.getX(series, i));
 			int y = mapping.toCanvasY(value); // note: this maps +-INF to +-MAXPIX, which works out just fine here
 
 			if (prevX != x) {

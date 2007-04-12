@@ -7,14 +7,19 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.jfree.data.category.CategoryDataset;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.omnetpp.scave.charting.OutputVectorDataset;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+import org.eclipse.ui.views.properties.PropertyDescriptor;
+import org.omnetpp.scave.charting.dataset.ScalarDataset;
+import org.omnetpp.scave.charting.dataset.ScatterPlotDataset;
+import org.omnetpp.scave.charting.dataset.VectorDataset;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.IDVector;
+import org.omnetpp.scave.engine.IDVectorVector;
 import org.omnetpp.scave.engine.Node;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Run;
+import org.omnetpp.scave.engine.ScalarDataSorter;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.scave.model.Add;
@@ -29,6 +34,7 @@ import org.omnetpp.scave.model.Discard;
 import org.omnetpp.scave.model.Except;
 import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.ResultType;
+import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.Select;
 import org.omnetpp.scave.model.SelectDeselectOp;
@@ -167,25 +173,69 @@ public class DatasetManager {
 		return result;
 	}
 
-	public static CategoryDataset createScalarDataset(Chart chart, Dataset dataset, ResultFileManager manager, IProgressMonitor progressMonitor) {
+	public static ScalarDataset createScalarDataset(Chart chart, Dataset dataset, ResultFileManager manager, IProgressMonitor progressMonitor) {
 		IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
-		DefaultCategoryDataset ds = new DefaultCategoryDataset();
+		ScalarDataset ds = new ScalarDataset();
 		//TODO update progressMonitor
 		for (int i = 0; i < idlist.size(); ++i) {
 			ScalarResult scalar = manager.getScalar(idlist.get(i));
-			ds.addValue(scalar.getValue(),
-					scalar.getFileRun().getRun().getRunName(),
-					scalar.getModuleName()+"\n"+scalar.getName());
+			ds.addValue(scalar.getFileRun().getRun().getRunName(),
+					    scalar.getModuleName()+"\n"+scalar.getName(),
+					    scalar.getValue());
 		}
 		return ds;
 	}
 
-	public static OutputVectorDataset createVectorDataset(Chart chart, Dataset dataset, ResultFileManager manager, IProgressMonitor progressMonitor) {
+	public static VectorDataset createVectorDataset(Chart chart, Dataset dataset, ResultFileManager manager, IProgressMonitor progressMonitor) {
 		//TODO update progressMonitor
 		XYArray[] dataValues = getDataFromDataset(manager, dataset, chart);
 		IDList idlist = getIDListFromDataset(manager, dataset, chart, ResultType.VECTOR_LITERAL);
 		String[] dataNames = getResultItemIDs(idlist, manager);
-		return new OutputVectorDataset(dataNames, dataValues);
+		return new VectorDataset(dataNames, dataValues);
+	}
+	
+	public static String[] getVectorDataNames(Chart chart, ResultFileManager manager) {
+		Dataset dataset;
+		String[] names = null;
+		if (chart != null && manager != null &&
+				(dataset = ScaveModelUtil.findEnclosingDataset(chart)) != null) {
+			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.VECTOR_LITERAL);
+			names = DatasetManager.getResultItemNames(idlist, manager);
+		}
+		return names;
+	}
+	
+	public static ScatterPlotDataset createScatterPlotDataset(ScatterChart chart, Dataset dataset, ResultFileManager manager, IProgressMonitor progressMonitor) {
+		IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
+		ScalarDataSorter sorter = new ScalarDataSorter(manager);
+		IDVectorVector data = sorter.prepareScatterPlot(idlist, chart.getModuleName(), chart.getDataName());
+		String[] names = getScatterPlotDataNames(chart, manager);
+		return new ScatterPlotDataset(data, names, manager);
+	}
+	
+	public static String[] getScatterPlotDataNames(ScatterChart chart, ResultFileManager manager) {
+		Dataset dataset;
+		String[] names = null;
+		if (chart != null && manager != null &&
+				(dataset = ScaveModelUtil.findEnclosingDataset(chart)) != null) {
+			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
+			ScalarDataSorter sorter = new ScalarDataSorter(manager);
+			IDVectorVector data = sorter.prepareScatterPlot(idlist, chart.getModuleName(), chart.getDataName());
+			names = new String[(int)data.size()-1];
+			for (int i=0; i<names.length; ++i) {
+				IDVector v = data.get(i+1);
+				names[i] = String.valueOf(i);
+				for (int j=0; j<v.size(); ++j) {
+					long id = v.get(j);
+					if (id != -1) {
+						ResultItem item = manager.getItem(id);
+						names[i] = item.getModuleName() + " " + item.getName();
+						break;
+					}
+				}
+			}
+		}
+		return names;
 	}
 
 	public static String[] getResultItemNames(IDList idlist, ResultFileManager manager) {

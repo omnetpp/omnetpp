@@ -39,7 +39,6 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.jfree.data.general.Dataset;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.image.ImageConverter;
@@ -47,6 +46,7 @@ import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.ChartProperties.LegendPosition;
+import org.omnetpp.scave.charting.dataset.IDataset;
 
 /**
  * Base class for all chart widgets.
@@ -83,7 +83,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	/**
 	 * Sets the data to be visualized by the chart.
 	 */
-	abstract void setDataset(Dataset dataset);
+	abstract void setDataset(IDataset dataset);
 	
 	/**
 	 * Calculate positions of chart elements such as title, legend, axis labels, plot area. 

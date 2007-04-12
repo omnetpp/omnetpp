@@ -35,13 +35,14 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.jfree.data.general.Dataset;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartProperties.LineStyle;
 import org.omnetpp.scave.charting.ChartProperties.SymbolType;
+import org.omnetpp.scave.charting.dataset.IDataset;
+import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.plotter.CrossSymbol;
 import org.omnetpp.scave.charting.plotter.DiamondSymbol;
 import org.omnetpp.scave.charting.plotter.DotsVectorPlotter;
@@ -62,7 +63,7 @@ import org.omnetpp.scave.charting.plotter.TriangleSymbol;
  */
 public class VectorChart extends ChartCanvas {
 	
-	private OutputVectorDataset dataset = null;
+	private IXYDataset dataset = null;
 
 	private LinearAxis xAxis = new LinearAxis(this, false);
 	private LinearAxis yAxis = new LinearAxis(this, true);
@@ -88,16 +89,16 @@ public class VectorChart extends ChartCanvas {
 		lineProperties.put(KEY_ALL, new LineProperties());
 	}
 	
-	public OutputVectorDataset getDataset() {
+	public IXYDataset getDataset() {
 		return dataset;
 	}
 
 	@Override
-	public void setDataset(Dataset dataset) {
-		if (dataset != null && !(dataset instanceof OutputVectorDataset))
-			throw new IllegalArgumentException("must be an OutputVectorDataset");
+	public void setDataset(IDataset dataset) {
+		if (dataset != null && !(dataset instanceof IXYDataset))
+			throw new IllegalArgumentException("must be an IXYDataset");
 
-		this.dataset = (OutputVectorDataset)dataset;
+		this.dataset = (IXYDataset)dataset;
 		updateLegend();
 		calculateArea();
 		chartChanged();
@@ -217,7 +218,7 @@ public class VectorChart extends ChartCanvas {
 		}
 		else {
 			// generate one
-			int series = getDataset().indexOf(key);
+			int series = getSeriesIndex(key);
 			Assert.isTrue(series >= 0); // key must be valid
 			switch (series % 6) {
 			case 0: return SymbolType.Square;
@@ -229,6 +230,14 @@ public class VectorChart extends ChartCanvas {
 			default: return null; // never reached  
 			}
 		}
+	}
+	
+	private int getSeriesIndex(String key) {
+		int c = dataset.getSeriesCount();
+		for (int i = 0; i < c; ++i)
+			if (dataset.getSeriesKey(i).equals(key))
+				return i;
+		return -1;
 	}
 	
 	public void setSymbolType(String key, SymbolType symbolType) {
@@ -303,12 +312,14 @@ public class VectorChart extends ChartCanvas {
 			int n = dataset.getItemCount(series);
 			if (n > 0) {
 				// X must be increasing
-				minX = Math.min(minX, dataset.getXValue(series, 0));
-				maxX = Math.max(maxX, dataset.getXValue(series, n-1));
+				minX = Math.min(minX, dataset.getX(series, 0));
+				maxX = Math.max(maxX, dataset.getX(series, n-1));
 				for (int i = 0; i < n; i++) {
-					double y = dataset.getYValue(series, i);
-					minY = Math.min(minY, y);
-					maxY = Math.max(maxY, y);
+					double y = dataset.getY(series, i);
+					if (!Double.isNaN(y)) {
+						minY = Math.min(minY, y);
+						maxY = Math.max(maxY, y);
+					}
 				}
 			}
 		}

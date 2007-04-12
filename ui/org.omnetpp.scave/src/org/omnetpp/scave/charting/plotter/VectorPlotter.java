@@ -4,10 +4,9 @@ import java.util.HashSet;
 
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
-import org.jfree.data.xy.XYDataset;
 import org.omnetpp.common.canvas.ICoordsMapping;
-import org.omnetpp.common.canvas.ZoomableCachingCanvas;
-import org.omnetpp.scave.charting.DatasetUtils;
+import org.omnetpp.scave.charting.dataset.DatasetUtils;
+import org.omnetpp.scave.charting.dataset.IXYDataset;
 
 
 /**
@@ -17,7 +16,7 @@ import org.omnetpp.scave.charting.DatasetUtils;
  */
 public abstract class VectorPlotter implements IVectorPlotter {
 
-	public int[] indexRange(XYDataset dataset, int series, GC gc, ICoordsMapping mapping) {
+	public int[] indexRange(IXYDataset dataset, int series, GC gc, ICoordsMapping mapping) {
 		int n = dataset.getItemCount(series);
 		Rectangle clip = gc.getClipping();
 		int first = DatasetUtils.findXLowerLimit(dataset, series, mapping.fromCanvasX(clip.x));
@@ -27,7 +26,7 @@ public abstract class VectorPlotter implements IVectorPlotter {
 		return new int[] {first, last};
 	}
 
-	public int getNumPointsInXRange(XYDataset dataset, int series, GC gc, ICoordsMapping mapping) {
+	public int getNumPointsInXRange(IXYDataset dataset, int series, GC gc, ICoordsMapping mapping) {
 		int range[] = indexRange(dataset, series, gc, mapping);
 		return range[1] - range[0] + 1;
 	}
@@ -51,7 +50,7 @@ public abstract class VectorPlotter implements IVectorPlotter {
 	/**
 	 * Utility function to plot the symbols
 	 */
-	protected void plotSymbols(XYDataset dataset, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
+	protected void plotSymbols(IXYDataset dataset, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
 		if (symbol == null)
 			return;
 		
@@ -72,11 +71,11 @@ public abstract class VectorPlotter implements IVectorPlotter {
 		HashSet<Integer> yset = new HashSet<Integer>();
 		int prevX = Integer.MIN_VALUE;
 		for (int i = first; i <= last; i++) {
-			double value = dataset.getYValue(series, i);
+			double value = dataset.getY(series, i);
 			if (value < lo || value > hi || Double.isNaN(value))  // even skip coord transform for off-screen values 
 				continue;
 			
-			int x = mapping.toCanvasX(dataset.getXValue(series, i));
+			int x = mapping.toCanvasX(dataset.getX(series, i));
 			int y = mapping.toCanvasY(value);
 			
 			if (prevX != x) {

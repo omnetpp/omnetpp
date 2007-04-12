@@ -33,11 +33,11 @@ import org.omnetpp.scave.charting.ChartProperties;
 import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
 import org.omnetpp.scave.charting.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.ChartProperties.LegendPosition;
+import org.omnetpp.scave.charting.ChartProperties.LineProperties;
 import org.omnetpp.scave.charting.ChartProperties.LineStyle;
 import org.omnetpp.scave.charting.ChartProperties.ScalarChartProperties;
 import org.omnetpp.scave.charting.ChartProperties.SymbolType;
 import org.omnetpp.scave.charting.ChartProperties.VectorChartProperties;
-import org.omnetpp.scave.charting.ChartProperties.VectorChartProperties.LineProperties;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.BarChart;
@@ -46,6 +46,7 @@ import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ResultType;
+import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ScaveModelUtil;
@@ -64,6 +65,13 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	 */
 	private static final EStructuralFeature[] features = new EStructuralFeature[] {
 		ScaveModelPackage.eINSTANCE.getChart_Name(),
+		ScaveModelPackage.eINSTANCE.getChart_Properties(),
+	};
+	
+	private static final EStructuralFeature[] scatterChartFeatures = new EStructuralFeature[] {
+		ScaveModelPackage.eINSTANCE.getChart_Name(),
+		ScaveModelPackage.eINSTANCE.getScatterChart_ModuleName(),
+		ScaveModelPackage.eINSTANCE.getScatterChart_DataName(),
 		ScaveModelPackage.eINSTANCE.getChart_Properties(),
 	};
 
@@ -86,6 +94,8 @@ public class ChartEditForm implements IScaveObjectEditForm {
 
 	// controls
 	private Text nameText;
+	private Text moduleNameText; // for ScatterChart only
+	private Text dataNameText;   // for ScatterChart only
 
 	private Text graphTitleText;
 	private Text graphTitleFontText;
@@ -160,14 +170,20 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	 * Returns the number of features on this form.
 	 */
 	public int getFeatureCount() {
-		return features.length;
+		if (chart instanceof ScatterChart)
+			return scatterChartFeatures.length;
+		else
+			return features.length;
 	}
 
 	/**
 	 * Returns the features edited on this form.
 	 */
 	public EStructuralFeature[] getFeatures() {
-		return features;
+		if (chart instanceof ScatterChart)
+			return scatterChartFeatures;
+		else
+			return features;
 	}
 
 	public void populatePanel(Composite parent) {
@@ -178,6 +194,10 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		// Main
 		panel = createTab("Main", tabfolder, 2);
 		nameText = createTextField("Name", panel);
+		if (chart instanceof ScatterChart) {
+			moduleNameText = createTextField("Module name", panel);
+			dataNameText = createTextField("Data name", panel);
+		}
 		// Titles
 		panel = createTab("Titles", tabfolder, 1);
 		group = createGroup("Graph title", panel);
@@ -344,6 +364,10 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		switch (feature.getFeatureID()) {
 		case ScaveModelPackage.CHART__NAME:
 			return nameText.getText();
+		case ScaveModelPackage.SCATTER_CHART__MODULE_NAME:
+			return moduleNameText != null ? moduleNameText.getText() : null;
+		case ScaveModelPackage.SCATTER_CHART__DATA_NAME:
+			return dataNameText != null ? dataNameText.getText() : null;
 		case ScaveModelPackage.CHART__PROPERTIES:
 			return getProperties();
 		}
@@ -355,6 +379,14 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		switch (feature.getFeatureID()) {
 		case ScaveModelPackage.CHART__NAME:
 			nameText.setText(value == null ? "" : (String)value);
+			break;
+		case ScaveModelPackage.SCATTER_CHART__MODULE_NAME:
+			if (moduleNameText != null)
+				moduleNameText.setText(value == null ? "" : (String)value);
+			break;
+		case ScaveModelPackage.SCATTER_CHART__DATA_NAME:
+			if (dataNameText != null)
+				dataNameText.setText(value == null ? "" : (String)value);
 			break;
 		case ScaveModelPackage.CHART__PROPERTIES:
 			if (value != null)
