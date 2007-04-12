@@ -126,5 +126,17 @@ public class InifileUtils {
 			return "Key "+key+" already exists in section ["+section+"]";
 		return null;
 	}
+
+	public static boolean parseAsBool(String value) {
+		boolean boolValue;
+		if (value.equals("yes") || value.equals("true") || value.equals("on") || value.equals("1"))
+	    	boolValue = true;
+	    else if (value.equals("no") || value.equals("false") || value.equals("off") || value.equals("0"))
+	    	boolValue = false;
+	    else
+	    	boolValue = false; //XXX something invalid: exception?
+		return boolValue;
+	}
+	
 	
 }

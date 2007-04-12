@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Text;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry.Type;
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 /**
  * Text-based editor for inifile entries.
@@ -23,6 +24,7 @@ public class TextFieldEditor extends FieldEditor {
 	private Label label;
 	private Button resetButton;
 	private boolean isEdited;
+	private String section = GENERAL;
 	
 
 	public TextFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, String labelText) {
@@ -62,7 +64,7 @@ public class TextFieldEditor extends FieldEditor {
 
 	@Override
 	public void reread() {
-		String value = getValueFromFile();
+		String value = getValueFromFile(section);
 		if (value==null) {
 			String defaultValue = entry.getDefaultValue()==null ? "" : entry.getDefaultValue().toString(); 
 			textField.setText(defaultValue);
@@ -79,7 +81,7 @@ public class TextFieldEditor extends FieldEditor {
 	public void commit() {
 		if (isEdited) {
 			String value = textField.getText();
-			setValueInFile(value); //XXX
+			setValueInFile(section, value);
 			isEdited = false;
 		}
 	}

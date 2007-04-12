@@ -1,5 +1,7 @@
 package org.omnetpp.inifile.editor.form;
 
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -12,6 +14,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.InifileUtils;
 
 /**
  * Checkbox-based editor for boolean inifile entries.
@@ -23,6 +26,7 @@ public class CheckboxFieldEditor extends FieldEditor {
 	private Label label;
 	private Button resetButton;
 	private boolean isEdited;
+	private String section = GENERAL;
 
 	public CheckboxFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, String labelText) {
 		super(parent, SWT.NONE, entry, inifile);
@@ -52,7 +56,6 @@ public class CheckboxFieldEditor extends FieldEditor {
 				if (!isEdited) {
 					isEdited = true;
 					resetButton.setEnabled(true);
-					//XXX setBackground(new Color(null, 240, 248, 210));
 				}
 			}
 		});
@@ -63,35 +66,24 @@ public class CheckboxFieldEditor extends FieldEditor {
 
 	@Override
 	public void reread() {
-		String value = getValueFromFile();
+		String value = getValueFromFile(section);
 		if (value==null) {
 			boolean defaultValue = entry.getDefaultValue()==null ? false : (Boolean)entry.getDefaultValue(); 
 			checkbox.setSelection(defaultValue);
 			resetButton.setEnabled(false);
 		}
 		else {
-			checkbox.setSelection(parseAsBool(value));
+			checkbox.setSelection(InifileUtils.parseAsBool(value));
 			resetButton.setEnabled(true);
 		}
 		isEdited = false;
 	}
 
-	private boolean parseAsBool(String value) {
-		boolean boolValue;
-		if (value.equals("yes") || value.equals("true") || value.equals("on") || value.equals("1"))
-	    	boolValue = true;
-	    else if (value.equals("no") || value.equals("false") || value.equals("off") || value.equals("0"))
-	    	boolValue = false;
-	    else
-	    	boolValue = false; //XXX something invalid, we take it as false; probably should warn the user or something
-		return boolValue;
-	}
-	
 	@Override
 	public void commit() {
 		if (isEdited) {
 			boolean value = checkbox.getSelection();
-			setValueInFile(value ? "true" : "false");
+			setValueInFile(section, value ? "true" : "false");
 			isEdited = false;
 		}
 	}

@@ -10,7 +10,6 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -25,6 +24,7 @@ import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
@@ -104,11 +104,7 @@ public class ParametersPage extends FormPage {
 		// set up tableViewer, content and label providers
 		final TableViewer tableViewer = new TableViewer(table);
 		tableViewer.setContentProvider(new ArrayContentProvider());
-		tableViewer.setLabelProvider(new ITableLabelProvider() {
-			public Image getColumnImage(Object element, int columnIndex) {
-				return null;
-			}
-
+		tableViewer.setLabelProvider(new TableLabelProvider() {
 			public String getColumnText(Object element, int columnIndex) {
 				SectionKey item = (SectionKey) element;
 				switch (columnIndex) {
@@ -118,19 +114,6 @@ public class ParametersPage extends FormPage {
 					case 3: return getInifileDocument().getComment(item.section, item.key);
 					default: throw new IllegalArgumentException();
 				}
-			}
-
-			public void addListener(ILabelProviderListener listener) {
-			}
-
-			public void dispose() {
-			}
-
-			public boolean isLabelProperty(Object element, String property) {
-				return true;
-			}
-
-			public void removeListener(ILabelProviderListener listener) {
 			}
 		});
 

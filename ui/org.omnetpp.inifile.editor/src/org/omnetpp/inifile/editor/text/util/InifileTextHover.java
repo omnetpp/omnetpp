@@ -50,6 +50,7 @@ public class InifileTextHover implements ITextHover {
 		if (key == null) {
 			// Parameters section: display unassigned parameters
 			ParamResolution[] resList = ana.getUnassignedParams(section);
+			//XXX add description too
 			if (resList.length==0) 
 				return "Section [" + section + "] seems to contain no unassigned parameters ";
 			String text = "Section [" + section + "] does not seem to assign the following parameters: \n";

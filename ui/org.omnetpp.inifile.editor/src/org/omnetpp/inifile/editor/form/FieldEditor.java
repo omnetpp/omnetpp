@@ -33,14 +33,12 @@ public abstract class FieldEditor extends Composite {
 		setBackground(BGCOLOR);
 	}
 
-	protected String getValueFromFile() {
-		String section = GENERAL; 
+	protected String getValueFromFile(String section) {
 		String key = entry.getName();
 		return inifile.getValue(section, key);
 	}
 
-	protected void setValueInFile(String value) {
-		String section = GENERAL; 
+	protected void setValueInFile(String section, String value) {
 		String key = entry.getName();
 		if (!inifile.containsKey(section, key)) {
 			if (!inifile.containsSection(section))
@@ -52,8 +50,7 @@ public abstract class FieldEditor extends Composite {
 		}
 	}
 
-	protected void removeFromFile() {
-		String section = GENERAL; 
+	protected void removeFromFile(String section) {
 		String key = entry.getName();
 		inifile.removeKey(section, key);  //XXX remove section as well, if it became empty?
 	}
@@ -113,7 +110,7 @@ public abstract class FieldEditor extends Composite {
 	public abstract void commit();
 	
 	public void resetToDefault() {
-		removeFromFile();
+		removeFromFile(GENERAL);  //XXX into subclass?
 		reread();
 	}
 	
