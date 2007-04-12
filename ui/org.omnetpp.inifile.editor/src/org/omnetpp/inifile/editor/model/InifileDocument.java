@@ -28,7 +28,9 @@ import org.omnetpp.inifile.editor.InifileEditorPlugin;
  * 
  * @author Andras
  */
-//XXX renameSection() missing
+//XXX validate new keys (after add/rename)! must not contain "=", "#", ";", whitespace, etc...  
+//XXX validate section names (after add/rename)! must not contain "[", "]", "#", ";", newline, tab,...
+//XXX ^^^ see InifileUtils.validateParameterKey too
 public class InifileDocument implements IInifileDocument {
 	public static final String INIFILEPROBLEM_MARKER_ID = InifileEditorPlugin.PLUGIN_ID + ".inifileproblem";
 	
@@ -259,7 +261,7 @@ public class InifileDocument implements IInifileDocument {
 			document.replace(offset, 0, text+"\n");
 		} 
 		catch (BadLocationException e) {
-			throw new RuntimeException("cannot insert line: bad location: "+e.getMessage());
+			throw new RuntimeException("Cannot insert line: bad location: "+e.getMessage());
 		}
 	}
 
@@ -279,7 +281,7 @@ public class InifileDocument implements IInifileDocument {
 			return lineNumberChange;
 		} 
 		catch (BadLocationException e) {
-			throw new RuntimeException("cannot set value: bad location: "+e.getMessage());
+			throw new RuntimeException("Cannot set value: bad location: "+e.getMessage());
 		}
 	}
 
@@ -296,14 +298,14 @@ public class InifileDocument implements IInifileDocument {
     protected KeyValueLine getEntry(String sectionName, String key) {
     	KeyValueLine line = lookupEntry(sectionName, key);
     	if (line == null)
-    		throw new IllegalArgumentException("no such entry: ["+sectionName+"] "+key);
+    		throw new IllegalArgumentException("No such entry: ["+sectionName+"] "+key);
     	return line;
     }
 
     protected KeyValueLine getEditableEntry(String sectionName, String key) {
     	KeyValueLine line = getEntry(sectionName, key);
     	if (!isEditable(line))
-    		throw new IllegalArgumentException("entry is in an included file which cannot be edited: ["+sectionName+"] "+key);
+    		throw new IllegalArgumentException("Entry is in an included file which cannot be edited: ["+sectionName+"] "+key);
     	return line;
     }
 
@@ -323,7 +325,7 @@ public class InifileDocument implements IInifileDocument {
 
 	public void addEntry(String section, String key, String value, String comment, String beforeKey) {
 		if (lookupEntry(section, key) != null)
-			throw new IllegalArgumentException("entry already exists: ["+section+"] "+key);
+			throw new IllegalArgumentException("Key "+key+" already exists in section ["+section+"]");
 
 		// modify IDocument
 		int atLine = beforeKey==null ? getFirstEditableSectionHeading(section).lastLine+1 : getEditableEntry(section, beforeKey).lineNumber;
@@ -352,6 +354,8 @@ public class InifileDocument implements IInifileDocument {
 	public void changeKey(String section, String oldKey, String newKey) {
 		KeyValueLine line = getEditableEntry(section, oldKey);
 		if (!nullSafeEquals(line.key, newKey)) {
+			if (lookupEntry(section, newKey) != null)
+				throw new IllegalArgumentException("Key "+newKey+" already exists in section ["+section+"]");
 			line.key = newKey; 
 			String text = line.key + " = " + line.value + (line.comment == null ? "" : " "+line.comment);
 			replaceLine(line, text);
@@ -408,7 +412,7 @@ public class InifileDocument implements IInifileDocument {
 		parseIfChanged();
 		Section section = sections.get(sectionName);
 		if (section == null)
-			throw new IllegalArgumentException("section does not exist: ["+sectionName+"]");
+			throw new IllegalArgumentException("Section does not exist: ["+sectionName+"]");
 		return section;
 	}
 
@@ -419,7 +423,7 @@ public class InifileDocument implements IInifileDocument {
 		parseIfChanged();
 		Section section = sections.get(sectionName);
 		if (section == null)
-			throw new IllegalArgumentException("section does not exist: ["+sectionName+"]");
+			throw new IllegalArgumentException("Section does not exist: ["+sectionName+"]");
 		for (SectionHeadingLine line : section.headingLines)
 			if (isEditable(line))
 				return line;
@@ -429,7 +433,7 @@ public class InifileDocument implements IInifileDocument {
 	protected SectionHeadingLine getFirstEditableSectionHeading(String sectionName) {
 		SectionHeadingLine line = lookupPreferredSectionHeading(sectionName);
 		if (!isEditable(line))
-			throw new IllegalArgumentException("section is in an included file: ["+sectionName+"]");
+			throw new IllegalArgumentException("Section is in an included file: ["+sectionName+"]");
 		return line;
 	}
 	
@@ -454,15 +458,15 @@ public class InifileDocument implements IInifileDocument {
 						deletedSomething = true;
 					} 
 					catch (BadLocationException e) {
-						throw new RuntimeException("cannot delete section: bad location: "+e.getMessage());
+						throw new RuntimeException("Cannot delete section: bad location: "+e.getMessage());
 					}
 				}
 			}
 			if (hasUndeletableParts) {
 				if (deletedSomething)
-					throw new IllegalArgumentException("section ["+sectionName+"] could not be fully deleted, because part of it is defined in an included file");
+					throw new IllegalArgumentException("Section ["+sectionName+"] could not be fully deleted, because part of it is defined in an included file");
 				else
-					throw new IllegalArgumentException("section ["+sectionName+"] cannot be deleted, because it is defined in an included file");
+					throw new IllegalArgumentException("Section ["+sectionName+"] cannot be deleted, because it is defined in an included file");
 			}
 		}
 	}
@@ -474,7 +478,7 @@ public class InifileDocument implements IInifileDocument {
 	public void addSection(String sectionName, String beforeSectionName) {
 		parseIfChanged();
 		if (sections.get(sectionName) != null)
-			throw new IllegalArgumentException("section already exists: ["+sectionName+"]");
+			throw new IllegalArgumentException("Section already exists: ["+sectionName+"]");
 
 		// find insertion point
 		int lineNumber;
@@ -588,28 +592,28 @@ public class InifileDocument implements IInifileDocument {
 	public Object getKeyData(String section, String key) {
 		KeyValueLine line = lookupEntry(section, key);
     	if (line == null)
-    		throw new IllegalArgumentException("no such entry: ["+section+"] "+key);
+    		throw new IllegalArgumentException("No such entry: ["+section+"] "+key);
 		return line.data;
 	}
 
 	public void setData(String section, String key, Object data) {
 		KeyValueLine line = lookupEntry(section, key);
     	if (line == null)
-    		throw new IllegalArgumentException("no such entry: ["+section+"] "+key);
+    		throw new IllegalArgumentException("No such entry: ["+section+"] "+key);
 		line.data = data;
 	}
 
 	public Object getSectionData(String sectionName) {
 		Section section = sections.get(sectionName);
     	if (section == null)
-    		throw new IllegalArgumentException("no such section: ["+sectionName+"]");
+    		throw new IllegalArgumentException("No such section: ["+sectionName+"]");
 		return section.data;
 	}
 
 	public void setData(String sectionName, Object data) {
 		Section section = sections.get(sectionName);
     	if (section == null)
-    		throw new IllegalArgumentException("no such section: ["+sectionName+"]");
+    		throw new IllegalArgumentException("No such section: ["+sectionName+"]");
 		section.data = data;
 	}
 

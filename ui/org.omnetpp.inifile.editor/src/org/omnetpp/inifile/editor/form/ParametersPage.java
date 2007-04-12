@@ -1,11 +1,10 @@
 package org.omnetpp.inifile.editor.form;
 
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
-
 import java.util.ArrayList;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
@@ -165,19 +164,27 @@ public class ParametersPage extends FormPage {
 			    if (element instanceof Item)
 			    	element = ((Item) element).getData(); // workaround, see super's comment
 				SectionKey item = (SectionKey) element;
+				IInifileDocument doc = getInifileDocument();
 				if (property.equals("key")) {
-					if (!value.equals(item.key)) {
-						getInifileDocument().changeKey(item.section, item.key, (String)value);
-						reread(); // tableViewer.refresh() not enough, because input consists of keys
+					String newKey = (String) value;
+					if (!newKey.equals(item.key)) {
+						String errorText = InifileUtils.validateParameterKey(doc, item.section, newKey);
+						if (errorText==null) {
+							doc.changeKey(item.section, item.key, (String)value);
+							reread(); // tableViewer.refresh() not enough, because input consists of keys
+						}
+						else {
+							MessageDialog.openError(null, "Cannot Rename", "Cannot rename key: "+errorText);
+						}
 					}
 				}
 				else if (property.equals("value")) {
-					getInifileDocument().setValue(item.section, item.key, (String)value);
+					doc.setValue(item.section, item.key, (String)value);
 					tableViewer.refresh(); // if performance gets critical: refresh only if changed
 				}
 				else if (property.equals("comment")) {
 					if (value.equals("")) value = null; // no comment == null
-					getInifileDocument().setComment(item.section, item.key, (String)value);
+					doc.setComment(item.section, item.key, (String)value);
 					tableViewer.refresh();// if performance gets critical: refresh only if changed
 				}
 			}
@@ -227,7 +234,6 @@ public class ParametersPage extends FormPage {
 				// insert key and refresh table
 				doc.addEntry(section, newKey, "", null, beforeKey); //XXX what if no such section
 				reread();
-				//XXX key must be validated (in InifileDocument). if it causes parse error, the whole table goes away! 
 				tableViewer.editElement(newKey, 1);
 			}
 		});
@@ -248,6 +254,7 @@ public class ParametersPage extends FormPage {
 			public void widgetSelected(SelectionEvent e) {
 				IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
 				SectionKey[] items = (SectionKey[]) tableViewer.getInput();
+				//XXX does not work properly
 				for (Object o : sel.toArray()) {
 					SectionKey item = (SectionKey) o;
 					int pos = ArrayUtils.indexOf(items, item);
@@ -268,6 +275,7 @@ public class ParametersPage extends FormPage {
 				Object[] array = sel.toArray();
 				SectionKey[] items = (SectionKey[]) tableViewer.getInput();
 				ArrayUtils.reverse(array);  // we must iterate in reverse order
+				//XXX does not work properly
 				for (Object o : array) {
 					SectionKey item = (SectionKey) o;
 					int pos = ArrayUtils.indexOf(items, item);

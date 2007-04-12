@@ -116,4 +116,15 @@ public class InifileUtils {
 		String[] sectionChain = resolveSectionChain(doc, chainStartSection);
 		return ArrayUtils.indexOf(sectionChain, section) >= 0;
 	}
+	
+	public static String validateParameterKey(IInifileDocument doc, String section, String key) {
+		if (key==null || key.equals(""))
+			return "Key cannot be empty";
+		if (!key.contains("."))
+			return "Parameter keys must contain at least one dot";
+		if (doc.containsKey(section, key))
+			return "Key "+key+" already exists in section ["+section+"]";
+		return null;
+	}
+	
 }
