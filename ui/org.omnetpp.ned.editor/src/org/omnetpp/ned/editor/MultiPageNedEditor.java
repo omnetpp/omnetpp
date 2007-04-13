@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
@@ -28,6 +29,7 @@ import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
+import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 import org.omnetpp.ned.resources.IGotoNedElement;
@@ -79,7 +81,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 		try {
             // setup graphical editor
 			NEDResources res = NEDResourcesPlugin.getNEDResources();
-            NedFileNodeEx modelRoot = (NedFileNodeEx)res.getNEDFileContents(ifile);
+            NedFileNodeEx modelRoot = (NedFileNodeEx)res.getNEDFileModel(ifile);
             graphEditor.setModel(modelRoot);
             graphPageIndex = addPage(graphEditor, getEditorInput());
             setPageText(graphPageIndex,"Graphical");
@@ -97,7 +99,6 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 		} catch (PartInitException e) {
 			e.printStackTrace();  //XXX handle it? let it propagate?
 		}
-        
         
 	}
 	
@@ -128,22 +129,21 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         }
         // end of the hack
 
-        IFile ifile = ((FileEditorInput)getEditorInput()).getFile();
+        IFile file = ((FileEditorInput)getEditorInput()).getFile();
 		NEDResources res = NEDResourcesPlugin.getNEDResources();
         // XXX FIXME this may be a way too slow as invalidates everything
         // it is needed only to display consistency errors correctly during page switching
         // it would be ok to invalidate only the components inside this file
 
+
         if (newPageIndex == textPageIndex) { 
 			// switch from graphics to text:
 			// generate text representation from the model
-			NedFileNodeEx modelRoot = graphEditor.getModel();
-            // generate the text representation
-            textContent = NEDTreeUtil.generateNedSource(modelRoot, true);
+            textContent = NEDTreeUtil.generateNedSource(graphEditor.getModel(), true);
             // put it into the text editor if changed
-            if (!textContent.equals(textEditor.getText())) {
+            if (!textContent.equals(textEditor.getText()) && graphEditor.getEditDomain().getCommandStack().isDirty()) {
                 // TODO refresh the editor annotations to show the error marks
-                res.setNEDFileText(ifile, textContent);
+                res.setNEDFileText(file, textContent);
                 // set the text control content too
                 textEditor.setText(textContent);
             }
@@ -151,16 +151,16 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 		else if (newPageIndex==graphPageIndex) {
 			
 		    // the text has changed in the editor
-		    res.setNEDFileText(ifile, textEditor.getText());
+		    res.setNEDFileText(file, textEditor.getText());
             if (!textContent.equals(textEditor.getText())) {
                 // store the actual text content to be able th detect changes in the future
                 textContent = textEditor.getText();
 			}
-            // set the parsed ned text as a model to the graphical editor 
-            graphEditor.setModel((NedFileNodeEx)res.getNEDFileContents(ifile));
+            // set the parsed ned model to the graphical editor 
+            graphEditor.setModel((NedFileNodeEx)res.getNEDFileModel(file));
 
             // only start in graphics mode if there's no error in the file
-            if (res.containsNEDErrors(ifile)) {
+            if (res.containsNEDErrors(file)) {
                 // this happens if the parsing was unsuccessful when we wanted to switch from text to graph mode
 				// parse error: switch back immediately to text view (we should never have 
 				// switched away from it in the first place)

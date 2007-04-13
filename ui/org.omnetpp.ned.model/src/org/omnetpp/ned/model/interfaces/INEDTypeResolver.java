@@ -30,9 +30,18 @@ public interface INEDTypeResolver {
 	 *  
 	 * @param file - must not be null
 	 */
-	public NEDElement getNEDFileContents(IFile file);
+	public NEDElement getNEDFileModel(IFile file);
 
-	/**
+    /**
+     * Returns parsed and reformatted contents of a NED file. Returns a potentially incomplete text 
+     * if the file has parse errors; one can call containsNEDErrors() to find out 
+     * if that is the case.
+     *  
+     * @param file - must not be null
+     */
+    public String getNEDFileText(IFile file);
+
+    /**
 	 * Returns true if the given NED file has errors.
 	 *  
 	 * @param file - must not be null
