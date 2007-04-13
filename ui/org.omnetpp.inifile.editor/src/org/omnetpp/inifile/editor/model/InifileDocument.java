@@ -406,6 +406,7 @@ public class InifileDocument implements IInifileDocument {
 	}
 
 	public boolean containsSection(String section) {
+		parseIfChanged();
 		return sections.containsKey(section);
 	}
 	
