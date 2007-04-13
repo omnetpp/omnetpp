@@ -83,6 +83,9 @@ public class ImageFactory {
     public final static String TOOLBAR_IMAGE_DISPLAY_MODE = TOOL_IMAGE_DIR + "displaymode";
     public final static String TOOLBAR_IMAGE_ADDFILTERTODATASET = TOOL_IMAGE_DIR + "AddFilterToDataset";
     public final static String TOOLBAR_IMAGE_ADDSELECTEDTODATASET = TOOL_IMAGE_DIR + "AddSelectedToDataset";
+    public final static String TOOLBAR_IMAGE_SHOWSCALARS = TOOL_IMAGE_DIR + "ShowScalars";
+    public final static String TOOLBAR_IMAGE_SHOWVECTORS = TOOL_IMAGE_DIR + "ShowVectors";
+    public final static String TOOLBAR_IMAGE_SHOWHISTOGRAMS = TOOL_IMAGE_DIR + "ShowHistograms";
 
     public final static String MODEL_IMAGE_CHANNEL = MODEL_IMAGE_DIR + "Channel";
     public final static String MODEL_IMAGE_CHANNELINTERFACE = MODEL_IMAGE_DIR + "ChannelInterface";
