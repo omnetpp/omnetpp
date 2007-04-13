@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -17,7 +18,6 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.ScalarDataSorter;
-import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.AddDiscardOp;
@@ -30,6 +30,7 @@ import org.omnetpp.scave.model.Deselect;
 import org.omnetpp.scave.model.Discard;
 import org.omnetpp.scave.model.Except;
 import org.omnetpp.scave.model.Group;
+import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelFactory;
@@ -186,17 +187,6 @@ public class DatasetManager {
 		return new VectorDataset(dataNames, dataValues);
 	}
 	
-	public static String[] getVectorDataNames(Chart chart, ResultFileManager manager) {
-		Dataset dataset;
-		String[] names = null;
-		if (chart != null && manager != null &&
-				(dataset = ScaveModelUtil.findEnclosingDataset(chart)) != null) {
-			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.VECTOR_LITERAL);
-			names = DatasetManager.getResultItemNames(idlist, manager);
-		}
-		return names;
-	}
-	
 	public static ScatterPlotDataset createScatterPlotDataset(ScatterChart chart, ResultFileManager manager, IProgressMonitor monitor) {
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		if (dataset != null) {
@@ -207,11 +197,35 @@ public class DatasetManager {
 		}
 		return null;
 	}
-	
-	public static String[] getResultItemNames(IDList idlist, ResultFileManager manager) {
-		return getResultItemIDs(idlist, manager);
-	}
 
+	public static String[] getYDataNames(Chart chart, ResultFileManager manager) {
+		if (chart == null)
+			return null;
+		return getYDataNames(chart, ScaveModelUtil.findEnclosingDataset(chart), manager);
+	}
+	
+	public static String[] getYDataNames(Chart chart, Dataset dataset, ResultFileManager manager) {
+		if (chart == null || dataset == null || manager == null)
+			return null;
+		
+		if (chart instanceof LineChart) {
+			IDList idlist = getIDListFromDataset(manager, dataset, chart, ResultType.VECTOR_LITERAL);
+			return getResultItemIDs(idlist, manager);
+		}
+		else if (chart instanceof ScatterChart) {
+			ScatterChart sc = (ScatterChart)chart;
+			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
+			ScalarDataSorter sorter = new ScalarDataSorter(manager);
+			IDVectorVector data = sorter.prepareScatterPlot(idlist, sc.getModuleName(), sc.getDataName());
+			return ScatterPlotDataset.computeNames(data, manager);
+		}
+		else
+			Assert.isLegal(false, "Unknown chart type: " + chart.getClass().getName());
+		
+		return null;
+	}
+	
+	
 	/**
 	 * Returns the ids of data items in the <code>idlist</code>.
 	 * The id is formed from the file name, run number, run id, module name,

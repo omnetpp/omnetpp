@@ -143,9 +143,8 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		this.parent = parent;
 		this.manager = manager;
 		this.properties = ChartProperties.createPropertySource(chart, manager);
-		if (chart instanceof LineChart) {
-			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.VECTOR_LITERAL);
-			String[] names = DatasetManager.getResultItemIDs(idlist, manager);
+		if (chart instanceof LineChart || chart instanceof ScatterChart) {
+			String[] names = DatasetManager.getYDataNames(chart, dataset, manager);
 			this.lineNames = new String[names.length + 1];
 			this.lineNames[0] = "all";
 			System.arraycopy(names, 0, this.lineNames, 1, names.length);
@@ -227,7 +226,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		group = createGroup("Grid", panel, 1);
 		showGridCheckbox = createCheckboxField("show grid", group);
 		// Lines
-		if (chart instanceof LineChart) {
+		if (lineNames != null) {
 			panel = createTab("Lines", tabfolder, 2);
 			applyToLinesCombo = createComboField("Apply to lines", panel, lineNames);
 			applyToLinesCombo.addSelectionListener(new SelectionAdapter() {
@@ -416,7 +415,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		newProps.setXYInvert(invertAxesCheckbox.getSelection());
 		newProps.setXYGrid(showGridCheckbox.getSelection());
 		// Lines
-		if (chart instanceof LineChart) {
+		if (lineNames != null) {
 			int index = applyToLinesCombo.getSelectionIndex();
 			String lineId = index <= 0 ? null : lineNames[index];
 			getLineProperties((VectorChartProperties)newProps, lineId);
@@ -517,7 +516,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		invertAxesCheckbox.setSelection(props.getXYInvert());
 		showGridCheckbox.setSelection(props.getXYGrid());
 		// Lines
-		if (chart instanceof LineChart) {
+		if (lineNames != null) {
 			applyToLinesCombo.select(0);
 			updateLinePropertyEditFields((VectorChartProperties)props);
 		}

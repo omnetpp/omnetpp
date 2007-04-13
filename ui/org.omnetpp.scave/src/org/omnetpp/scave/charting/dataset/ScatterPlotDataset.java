@@ -65,7 +65,7 @@ public class ScatterPlotDataset implements IXYDataset {
 		return new BigDecimal(getY(series, item));
 	}
 	
-	private static String[] computeNames(IDVectorVector data, ResultFileManager manager) {
+	public static String[] computeNames(IDVectorVector data, ResultFileManager manager) {
 		String[] names = new String[(int)data.size()-1];
 		for (int i=0; i<names.length; ++i) {
 			IDVector v = data.get(i+1);
