@@ -82,7 +82,6 @@ import java.util.ArrayList;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -91,19 +90,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 
 /**
- * Makeshift form page, just throws in all field editors.
- * TODO design proper forms instead, and throw this out
+ * Form page for configuration entries.
  * 
  * @author Andras
  */
 public class GenericConfigPage extends FormPage {
-	private static Font titleFont = new Font(null, "Arial", 10, SWT.BOLD);
 	private ArrayList<FieldEditor> fieldEditors = new ArrayList<FieldEditor>();
 	private String category;
 	private boolean advancedMode = false;
@@ -116,7 +112,7 @@ public class GenericConfigPage extends FormPage {
     public static final String CAT_TKENV = "Tkenv";
     public static final String CAT_EXTENSIONS = "Extensions";
     public static final String CAT_PARSIM = "Parallel Simulation";
-    //public static final String CAT_OUTPUTVECTORS = "Output Vectors";
+    //XXX public static final String CAT_OUTPUTVECTORS = "Output Vectors";
 
     public static String[] getCategoryNames() {
     	return new String[] {
@@ -139,7 +135,8 @@ public class GenericConfigPage extends FormPage {
 		gridLayout.verticalSpacing = 0;
 		setLayout(gridLayout);
 		
-		createTitle(category);
+		Composite titleArea = createTitle(category);
+		createAdvancedButton(titleArea);
 		addSpacer();
 
 		createFieldEditors(this, category);
@@ -281,28 +278,6 @@ public class GenericConfigPage extends FormPage {
 		}
 	}
 
-	private void createTitle(String category) {
-		// title area (XXX a bit ugly -- re-think layout)
-		Composite titleArea = new Composite(this, SWT.BORDER);
-		GridData gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
-		gridData.heightHint = 40;
-		titleArea.setLayoutData(gridData);
-		titleArea.setBackground(ColorFactory.asColor("white"));
-		titleArea.setLayout(new GridLayout(3, false));
-		
-		Label imageLabel = new Label(titleArea, SWT.NONE);
-		imageLabel.setImage(ImageFactory.getImage(ImageFactory.MODEL_IMAGE_FOLDER)); //XXX 
-		imageLabel.setBackground(ColorFactory.asColor("white"));
-		
-		Label title = new Label(titleArea, SWT.NONE);
-		title.setText(category);
-		title.setFont(titleFont);
-		title.setBackground(ColorFactory.asColor("white"));
-		title.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, true, true));
-		
-		createAdvancedButton(titleArea);
-	}
-
 	private void addMessage(Image image, String text) {
 		Composite warnPanel = new Composite(this, SWT.NONE);
 		warnPanel.setLayout(new GridLayout(2,false));
@@ -366,6 +341,7 @@ public class GenericConfigPage extends FormPage {
 		// remove ALL existing controls (title, field editors, etc...)
 		for (Control c : getChildren())
 			c.dispose();
+		fieldEditors.clear();
 		
 		// and recreate them in the current (advanced/normal) mode
 		createTitle(category);

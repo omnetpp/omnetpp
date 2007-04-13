@@ -40,6 +40,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 public class ParametersPage extends FormPage {
 	private TableViewer tableViewer;
 	private Combo sectionsCombo;
+	private Label sectionChainLabel;
 
 	static class SectionKey {
 		String section;
@@ -62,21 +63,28 @@ public class ParametersPage extends FormPage {
 		// layout: 3x2 grid: (label, dummy) / (combobox-with-label, dummy) / (table, buttonGroup)
 		setLayout(new GridLayout(2,false));
 
-		Label label = new Label(this, SWT.NONE);
-		label.setText("Parameter Assignments");
-		new Label(this, SWT.NONE); // dummy, for row1col2
+		Composite titleArea = createTitle("Parameter Assignments");
+		((GridData)titleArea.getLayoutData()).horizontalSpan = 2;
 
-		Composite c = new Composite(this, SWT.NONE);
-		c.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-		new Label(this, SWT.NONE); // dummy, for row2col2
+		// create combobox
+		Composite comboWithLabel = new Composite(this, SWT.NONE);
+		comboWithLabel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+		new Label(this, SWT.NONE);  // dummy, to fill 2nd column
 
-		Label comboLabel = new Label(c, SWT.NONE);
+		Label comboLabel = new Label(comboWithLabel, SWT.NONE);
 		comboLabel.setText("Configuration:");
-		sectionsCombo = new Combo(c, SWT.BORDER | SWT.READ_ONLY);
-		c.setLayout(new GridLayout(2, false));
+		sectionsCombo = new Combo(comboWithLabel, SWT.BORDER | SWT.READ_ONLY);
+		comboWithLabel.setLayout(new GridLayout(2, false));
 		comboLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		sectionsCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
+		// create section chain label
+		sectionChainLabel = new Label(this, SWT.NONE);
+		sectionChainLabel.setLayoutData(new GridData(SWT.END, SWT.BEGINNING, true, false));
+		sectionChainLabel.setText("    Section fallback chain: n/a");
+		new Label(this, SWT.NONE); // dummy, to fill 2nd column
+
+		// create table and buttons
 		tableViewer = createAndConfigureTable();
 		tableViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
@@ -285,6 +293,7 @@ public class ParametersPage extends FormPage {
 
 	@Override
 	public void reread() {
+		// refresh combo with the current section names, trying to preserve existing selection
 		IInifileDocument doc = getInifileDocument();
 		String selectedSection = sectionsCombo.getText(); 
 		String[] sectionNames = doc.getSectionNames();
@@ -296,15 +305,23 @@ public class ParametersPage extends FormPage {
 		sectionsCombo.select(i<0 ? 0 : i);
 		selectedSection = sectionsCombo.getText(); 
 
-		//XXX [Gneral] is twice?
+		// compute fallback chain for selected section, and fill table with their contents
 		String[] sectionChain = InifileUtils.resolveSectionChain(doc, selectedSection);
 		ArrayList<SectionKey> list = new ArrayList<SectionKey>();
 		for (String section : sectionChain)
 			for (String key : doc.getKeys(section))
 				if (key.contains("."))
 					list.add(new SectionKey(section, key));
+	
 		tableViewer.setInput(list.toArray(new SectionKey[list.size()]));
 		tableViewer.refresh();
+
+		// update "Section fallback chain" label
+		String txt = null;
+		for (String section : sectionChain)
+			txt = txt==null ? section : txt + ", " + section;
+		sectionChainLabel.setText("Section fallback chain: "+txt+" ");
+		sectionChainLabel.getParent().layout();
 	}
 
 	@Override

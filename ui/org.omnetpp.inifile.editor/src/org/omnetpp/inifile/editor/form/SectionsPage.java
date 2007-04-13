@@ -43,7 +43,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
  */
 //XXX show description= value as tooltip
 //XXX double-click should go there in the inifile text (or in the Parameters page?)
-public class RunsPage extends FormPage {
+public class SectionsPage extends FormPage {
 	public static final String ICON_ERROR = "icons/full/obj16/Error.png"; //XXX find better place for it
 	private TreeViewer treeViewer;
 	
@@ -62,16 +62,15 @@ public class RunsPage extends FormPage {
 		}
 	}
 	
-	public RunsPage(Composite parent, InifileEditor inifileEditor) {
+	public SectionsPage(Composite parent, InifileEditor inifileEditor) {
 		super(parent, inifileEditor);
 		
 		// layout: 2x2 grid: (label, dummy) / (tree, buttonGroup)
 		setLayout(new GridLayout(2,false));
 
-		Label label = new Label(this, SWT.NONE);
-		label.setText("Section Inheritance");
-		new Label(this, SWT.NONE); // dummy, for row1col2
-
+		Composite titleArea = createTitle("Section Inheritance");
+		((GridData)titleArea.getLayoutData()).horizontalSpan = 2;
+		
 		treeViewer = createAndConfigureTreeViewer();
 		treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 

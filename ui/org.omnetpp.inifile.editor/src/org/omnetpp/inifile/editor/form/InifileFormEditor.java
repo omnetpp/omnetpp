@@ -108,7 +108,7 @@ public class InifileFormEditor extends Composite {
 		if (category.equals("PARAMETERS"))
 			formPage = new ParametersPage(form, inifileEditor);
 		else if (category.equals("RUNS"))
-			formPage = new RunsPage(form, inifileEditor);
+			formPage = new SectionsPage(form, inifileEditor);
 		else
 			formPage = new GenericConfigPage(form, category, inifileEditor);
 		form.layout();

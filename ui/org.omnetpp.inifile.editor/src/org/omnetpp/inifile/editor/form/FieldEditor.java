@@ -19,6 +19,7 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
  * Base class for inifile field editors
  * @author Andras
  */
+//XXX set tooltip also on the textedit/checkbox control
 public abstract class FieldEditor extends Composite {
 	public static final Color BGCOLOR = InifileFormEditor.BGCOLOR;
 

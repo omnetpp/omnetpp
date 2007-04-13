@@ -85,6 +85,31 @@ public abstract class TableFieldEditor extends FieldEditor {
 		
 	}
 
+	/**
+	 * When creating a new entry: prompts the user for the section in which to insert it.
+	 */
+	protected String askTargetSection() {
+		// collect section which not yet contain this key
+		ArrayList<String> list = new ArrayList<String>();
+		for (String section : inifile.getSectionNames())
+			if (!inifile.containsKey(section, entry.getName()))
+				list.add(section);
+
+		// and pop up a chooser dialog
+		ListDialog dialog = new ListDialog(getShell());
+		dialog.setLabelProvider(new LabelProvider());
+		dialog.setContentProvider(new ArrayContentProvider());
+		dialog.setInput(list.toArray());
+		dialog.setMessage("Select target section:");
+		dialog.setTitle("New Configuration Key");
+		if (dialog.open() == ListDialog.OK)
+			return dialog.getResult()[0].toString();
+		return null;
+	}
+
+	/**
+	 * Generate default value for a new entry (in the given section).
+	 */
 	protected String getDefaultValueFor(String section) {
 		if (entry.getDefaultValue() != null)
 			return entry.getDefaultValue().toString();
@@ -99,24 +124,15 @@ public abstract class TableFieldEditor extends FieldEditor {
 		return "";
 	}
 
-	protected String askTargetSection() {
-		ListDialog dialog = new ListDialog(getShell());
-		dialog.setLabelProvider(new LabelProvider());
-		dialog.setContentProvider(new ArrayContentProvider());
-		dialog.setInput(inifile.getSectionNames());
-		dialog.setMessage("Select target section:");
-		dialog.setTitle("New Configuration Key");
-		if (dialog.open() == ListDialog.OK)
-			return dialog.getResult()[0].toString();
-		return null;
-	}
-
 	/**
 	 * Create the table and add label provider. Content provider and input will be
 	 * managed by the TableFieldEditor base class.
 	 */
 	abstract protected TableViewer createTableViewer(Composite composite);
 
+	/**
+	 * Utility method for subclasses, to add a table column. (Unused here.)
+	 */
 	protected TableColumn addTableColumn(Table table, String label, int width) {
 		TableColumn column = new TableColumn(table, SWT.NONE);
 		column.setText(label);
@@ -131,11 +147,17 @@ public abstract class TableFieldEditor extends FieldEditor {
 		return button;
 	}
 	
+	/**
+	 * Does nothing.
+	 */
 	@Override
 	public void commit() {
 		// table cell editors will autocommit when losing the focus
 	}
 
+	/**
+	 * Refresh table contents.
+	 */
 	@Override
 	public void reread() {
 		// find out in which sections this key occurs, and set it to the table as input
