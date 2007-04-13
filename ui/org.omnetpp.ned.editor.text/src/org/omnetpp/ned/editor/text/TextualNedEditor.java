@@ -31,6 +31,7 @@ public class TextualNedEditor extends TextEditor {
 	private NedContentOutlinePage fOutlinePage;
 	/** The projection support */
 	private ProjectionSupport fProjectionSupport;
+    private String lastContent;
 
 	/**
 	 * Default constructor.
@@ -222,4 +223,21 @@ public class TextualNedEditor extends TextEditor {
 			extension.exposeModelRange(new Region(offset, length));
 		}
 	}
+
+    /**
+     * Marks the current editor content state, so we will be able to detect any change in the editor
+     */
+    public void markContent() {
+        lastContent = getText();
+    }
+
+    /**
+     * @return Whether the content of the editor has changed since the last markContent call.
+     */
+    public boolean hasContentChanged() {
+        if (getText() == null)
+            return lastContent != null;
+        
+        return !(getText().equals(lastContent));
+    }
 }

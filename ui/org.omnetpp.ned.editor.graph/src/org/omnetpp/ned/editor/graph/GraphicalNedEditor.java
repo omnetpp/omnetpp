@@ -16,6 +16,7 @@ import org.eclipse.gef.KeyHandler;
 import org.eclipse.gef.KeyStroke;
 import org.eclipse.gef.MouseWheelHandler;
 import org.eclipse.gef.MouseWheelZoomHandler;
+import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.dnd.TemplateTransferDragSourceListener;
 import org.eclipse.gef.dnd.TemplateTransferDropTargetListener;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
@@ -132,6 +133,8 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
 
     private NedFileNodeEx nedFileModel;
     private SelectionSynchronizer synchronizer;
+    private Command lastUndoCommand;
+    private Command lastRedoCommand;
 
     protected static final String PALETTE_DOCK_LOCATION = "Dock location"; //$NON-NLS-1$
     protected static final String PALETTE_SIZE = "Palette Size"; //$NON-NLS-1$
@@ -374,6 +377,8 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
             return;
 
         nedFileModel = nedModel;
+        // flush the stack so if a new model was added we cannot redo/undo anything
+        getCommandStack().flush();
 
         if (!editorSaving) {
             if (getGraphicalViewer() != null) {
@@ -419,5 +424,21 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
              getGraphicalViewer().select(editPart);
          }
     }
+    
+    /**
+     * Marks the current editor content state, so we will be able to detect any change in the editor
+     */
+    public void markContent() {
+        lastUndoCommand = getCommandStack().getUndoCommand();
+        lastRedoCommand = getCommandStack().getRedoCommand();
+    }
 
+    /**
+     * @return Whether the content of the editor has changed since the last markContent call.
+     */
+    public boolean hasContentChanged() {
+        return !(lastUndoCommand == getCommandStack().getUndoCommand() && lastRedoCommand == getCommandStack().getRedoCommand());
+        
+    }
+    
 }
