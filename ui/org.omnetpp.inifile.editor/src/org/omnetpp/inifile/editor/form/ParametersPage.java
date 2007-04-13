@@ -63,7 +63,7 @@ public class ParametersPage extends FormPage {
 		// layout: 3x2 grid: (label, dummy) / (combobox-with-label, dummy) / (table, buttonGroup)
 		setLayout(new GridLayout(2,false));
 
-		Composite titleArea = createTitle("Parameter Assignments");
+		Composite titleArea = createTitleArea(this, "Parameter Assignments");
 		((GridData)titleArea.getLayoutData()).horizontalSpan = 2;
 
 		// create combobox

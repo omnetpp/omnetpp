@@ -1,0 +1,42 @@
+package org.omnetpp.inifile.editor.form;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.omnetpp.inifile.editor.editors.InifileEditor;
+
+public abstract class ScrolledFormPage extends FormPage {
+	protected Composite form; // the composite being scrolled inside the page
+
+	public ScrolledFormPage(Composite parent, InifileEditor inifileEditor) {
+		super(parent, inifileEditor);
+
+		// we are not ScrolledForm, so create a ScrolledForm child which fills the FormPage
+		this.setLayout(new FillLayout());
+		final ScrolledComposite scrolledComposite = new ScrolledComposite(this, SWT.H_SCROLL | SWT.V_SCROLL);
+
+		// create form which will hold the actual controls -- clients should use "form" as parent
+		form = new Composite(scrolledComposite, SWT.NONE);
+		scrolledComposite.setContent(form);
+
+		scrolledComposite.addControlListener(new ControlAdapter() {
+			public void controlResized(ControlEvent e) {
+				layoutForm();
+			}
+		});
+	}
+
+	/**
+	 * Must be called when form layout is to be updated (children get added/removed, etc)
+	 */
+	protected void layoutForm() {
+		if (getSize().x!=0) {
+			// reset size of content so children can be seen (method 1)
+			form.setSize(form.computeSize(getSize().x, SWT.DEFAULT));
+			form.layout();
+		}
+	}
+}
