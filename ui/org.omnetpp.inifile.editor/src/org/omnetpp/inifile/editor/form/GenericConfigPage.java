@@ -76,6 +76,7 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_TKENV
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_TOTAL_STACK_KB;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_USER_INTERFACE;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_WARNINGS;
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 import java.util.ArrayList;
 
@@ -93,6 +94,7 @@ import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
+import org.omnetpp.inifile.editor.model.IInifileDocument;
 
 /**
  * Form page for configuration entries.
@@ -304,16 +306,16 @@ public class GenericConfigPage extends ScrolledFormPage {
 	}
 
 	protected void addTextFieldEditor(Composite parent, ConfigurationEntry e, String label) {
-		FieldEditor editor = (getAdvancedMode()==false || e.isGlobal()) ? 
-				new TextFieldEditor(parent, e, getInifileDocument(), label) :
-				new TextTableFieldEditor(parent, e, getInifileDocument(), label);
+		FieldEditor editor = (!e.isGlobal() && (getAdvancedMode() || occursOutsideGeneral(e.getName()))) ? 
+				new TextTableFieldEditor(parent, e, getInifileDocument(), label) :
+				new TextFieldEditor(parent, e, getInifileDocument(), label);
 		addFieldEditor(editor);		
 	}
 
 	protected void addCheckboxFieldEditor(Composite parent, ConfigurationEntry e, String label) {
-		FieldEditor editor = (getAdvancedMode()==false || e.isGlobal()) ? 
-				new CheckboxFieldEditor(parent, e, getInifileDocument(), label) :
-				new CheckboxTableFieldEditor(parent, e, getInifileDocument(), label);
+		FieldEditor editor = (!e.isGlobal() && (getAdvancedMode() || occursOutsideGeneral(e.getName()))) ? 
+				new CheckboxTableFieldEditor(parent, e, getInifileDocument(), label) :
+				new CheckboxFieldEditor(parent, e, getInifileDocument(), label);
 		addFieldEditor(editor);		
 	}
 
@@ -322,9 +324,17 @@ public class GenericConfigPage extends ScrolledFormPage {
 		editor.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 	}
 
+	protected boolean occursOutsideGeneral(String key) {
+		IInifileDocument doc = getInifileDocument();
+		for (String section : doc.getSectionNames())
+			if (doc.containsKey(section, key) && !section.equals(GENERAL))
+				return true;
+		return false;
+	}
+	
 	protected Button createAdvancedButton(Composite parent) {
 		final Button expandButton = new Button(parent, SWT.PUSH);
-		expandButton.setText(getAdvancedMode() ? "« General" : "Detailed »");
+		expandButton.setText(getAdvancedMode() ? "« Simple" : "Detailed »");
 		expandButton.setToolTipText("Toggle per-section editing");
 		expandButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -355,6 +365,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 		layoutForm();
 	}
 
+	
 	@Override
 	public void reread() {
 		for (FieldEditor e : fieldEditors)

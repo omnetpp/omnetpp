@@ -6,7 +6,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -18,6 +17,11 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 
 /**
  * Checkbox-based editor for boolean inifile entries.
+ * 
+ * NOTE: This class edits the [General] section ONLY. All other sections
+ * are ignored. For example, the Reset button only removes the setting
+ * from the [Genera] section. When the setting is present outside
+ * [General], the table-based field editor has to be used.
  * 
  * @author Andras
  */
@@ -48,7 +52,6 @@ public class CheckboxFieldEditor extends FieldEditor {
 		label.setLayoutData(new GridData());
 		resetButton.setLayoutData(new GridData());
 
-		
 		reread();
 
 		// enable Reset button on editing
