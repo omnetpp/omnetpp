@@ -5,6 +5,8 @@
 /*--------------------------------------------------------------------------
  * int64 <--> long mapping
  *--------------------------------------------------------------------------*/
+%include "inttypes.h"
+
 %typemap(jni)    int64 "jlong"
 %typemap(jtype)  int64 "long"
 %typemap(jstype) int64 "long"
