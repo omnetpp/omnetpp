@@ -17,6 +17,7 @@ import org.omnetpp.common.ui.TooltipSupport;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.InifileUtils;
 
 /**
  * Base class for inifile field editors
@@ -50,19 +51,15 @@ public abstract class FieldEditor extends Composite {
 
 	protected void setValueInFile(String section, String value) {
 		String key = entry.getName();
-		if (!inifile.containsKey(section, key)) {
-			if (!inifile.containsSection(section))
-				inifile.addSection(section, null); //XXX refine insert position
-			inifile.addEntry(section, key, value, null, null); //XXX refine position
-		}
-		else {
+		if (!inifile.containsKey(section, key))
+			InifileUtils.addEntry(inifile, section, key, value, null);
+		else
 			inifile.setValue(section, key, value);
-		}
 	}
 
 	protected void removeFromFile(String section) {
 		String key = entry.getName();
-		inifile.removeKey(section, key);  //XXX remove section as well, if it became empty?
+		inifile.removeKey(section, key);
 	}
 	
 	protected Label createLabel(ConfigurationEntry entry, String labelText) {

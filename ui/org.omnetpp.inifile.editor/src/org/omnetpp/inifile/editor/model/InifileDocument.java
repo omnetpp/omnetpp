@@ -28,6 +28,7 @@ import org.omnetpp.inifile.editor.InifileEditorPlugin;
  * 
  * @author Andras
  */
+//XXX multi-line comments mess up setValue()/renameSection() !!!
 //XXX validate new keys (after add/rename)! must not contain "=", "#", ";", whitespace, etc...  
 //XXX validate section names (after add/rename)! must not contain "[", "]", "#", ";", newline, tab,...
 //XXX ^^^ see InifileUtils.validateParameterKey too
@@ -366,7 +367,7 @@ public class InifileDocument implements IInifileDocument {
 	public void removeKey(String section, String key) {
 		KeyValueLine line = lookupEntry(section, key);
 		if (line != null) { //XXX isEditable
-			replaceLine(line, null); //XXX what if multi-line
+			replaceLine(line, null);
 		}
 	}
 
@@ -464,7 +465,7 @@ public class InifileDocument implements IInifileDocument {
 			}
 			if (hasUndeletableParts) {
 				if (deletedSomething)
-					throw new IllegalArgumentException("Section ["+sectionName+"] could not be fully deleted, because part of it is defined in an included file");
+					throw new IllegalArgumentException("Section ["+sectionName+"] could only be partially deleted, because part of it was defined in an included file");
 				else
 					throw new IllegalArgumentException("Section ["+sectionName+"] cannot be deleted, because it is defined in an included file");
 			}
@@ -472,7 +473,12 @@ public class InifileDocument implements IInifileDocument {
 	}
 
 	public void renameSection(String sectionName, String newName) {
-		// TODO Auto-generated method stub
+		Section section = lookupSection(sectionName);
+		for (SectionHeadingLine line : section.headingLines)
+			if (!isEditable(line))
+				throw new IllegalArgumentException("Cannot rename section ["+sectionName+"], because it (or part of it) is in an included file");
+		for (SectionHeadingLine line : section.headingLines)
+			replaceLine(line, "[" + newName + "]" + (line.comment == null ? "" : " "+line.comment));
 	}
 
 	public void addSection(String sectionName, String beforeSectionName) {

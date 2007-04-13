@@ -41,6 +41,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
  * 
  * @author Andras
  */
+//XXX let the user edit description= as well
 //XXX show description= value as tooltip
 //XXX double-click should go there in the inifile text (or in the Parameters page?)
 public class SectionsPage extends FormPage {
@@ -158,16 +159,10 @@ public class SectionsPage extends FormPage {
 			doc.removeKey(sectionName, "extends");
 		else {
 			String value = extendsSectionName.replaceAll("^Config +", "");
-			if (doc.containsKey(sectionName, "extends")) {
-				// overwrite
+			if (doc.containsKey(sectionName, "extends"))
 				doc.setValue(sectionName, "extends", value);
-			} 
-			else {
-				// insert at top
-				String[] keys = doc.getKeys(sectionName);
-				String firstKey = keys.length == 0 ? null : keys[0];
-				doc.addEntry(sectionName, "extends", value, "", firstKey);
-			}
+			else
+				InifileUtils.addEntry(doc, sectionName, "extends", value, null);
 		}
 	}
 
@@ -199,7 +194,7 @@ public class SectionsPage extends FormPage {
 					String sectionName = dialog.getValue().trim();
 					if (!sectionName.equals(GENERAL) && !sectionName.startsWith("Config "))
 						sectionName = "Config "+sectionName;
-					getInifileDocument().addSection(sectionName, null);
+					InifileUtils.addSection(getInifileDocument(), sectionName);
 					String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
 					if (selection.length != 0)
 						setSectionExtendsKey(sectionName, selection[0]);
@@ -233,7 +228,7 @@ public class SectionsPage extends FormPage {
 					String newSectionName = dialog.getValue().trim();
 					if (!newSectionName.equals(GENERAL) && !newSectionName.startsWith("Config "))
 						newSectionName = "Config "+newSectionName;
-					getInifileDocument().renameSection(sectionName, newSectionName);
+					InifileUtils.renameSection(getInifileDocument(), sectionName, newSectionName);
 					reread();
 				}
 			}
