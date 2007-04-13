@@ -84,6 +84,7 @@ import org.omnetpp.sequencechart.widgets.axisrenderer.IAxisRenderer;
 //TODO proper "hand" cursor - current one is not very intuitive
 //TODO hierarchic sort should be able to reverse order of sorted axes of its submodules
 //TODO rubberband vs. haircross, show them at once
+//TODO use common.ui.TooltipSupport for tooltips
 public class SequenceChart
 	extends CachingCanvas
 	implements IVirtualContentWidget<IEvent>, ISelectionProvider
