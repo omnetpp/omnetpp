@@ -9,16 +9,27 @@ import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
+import org.omnetpp.inifile.editor.editors.InifileEditorData;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 
+/**
+ * Base class for inifile form editor pages.
+ *
+ * @author Andras
+ */
 public abstract class FormPage extends Composite {
+	public static final int RIGHT_MARGIN = 30; // >= scrollbar width  
 	private static Font titleFont = new Font(null, "Arial", 10, SWT.BOLD);
 	private InifileEditor inifileEditor;
 	
 	public FormPage(Composite parent, InifileEditor inifileEditor) {
 		super(parent, SWT.NONE);
 		this.inifileEditor = inifileEditor;
+	}
+
+	protected InifileEditorData getEditorData() {
+		return inifileEditor.getEditorData();
 	}
 
 	protected IInifileDocument getInifileDocument() {

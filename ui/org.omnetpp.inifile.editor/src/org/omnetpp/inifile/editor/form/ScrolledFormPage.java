@@ -16,12 +16,14 @@ public abstract class ScrolledFormPage extends FormPage {
 
 		// we are not ScrolledForm, so create a ScrolledForm child which fills the FormPage
 		this.setLayout(new FillLayout());
+		//final ScrolledComposite scrolledComposite = new SharedScrolledComposite(this, SWT.H_SCROLL | SWT.V_SCROLL) {};
 		final ScrolledComposite scrolledComposite = new ScrolledComposite(this, SWT.H_SCROLL | SWT.V_SCROLL);
 
 		// create form which will hold the actual controls -- clients should use "form" as parent
 		form = new Composite(scrolledComposite, SWT.NONE);
 		scrolledComposite.setContent(form);
 
+		// handle resizes
 		scrolledComposite.addControlListener(new ControlAdapter() {
 			public void controlResized(ControlEvent e) {
 				layoutForm();
@@ -35,7 +37,7 @@ public abstract class ScrolledFormPage extends FormPage {
 	protected void layoutForm() {
 		if (getSize().x!=0) {
 			// reset size of content so children can be seen (method 1)
-			form.setSize(form.computeSize(getSize().x, SWT.DEFAULT));
+			form.setSize(form.computeSize(getSize().x-RIGHT_MARGIN, SWT.DEFAULT));
 			form.layout();
 		}
 	}

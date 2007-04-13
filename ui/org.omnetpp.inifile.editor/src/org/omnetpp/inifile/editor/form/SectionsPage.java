@@ -67,8 +67,9 @@ public class SectionsPage extends FormPage {
 		
 		// layout: 2x2 grid: (label, dummy) / (tree, buttonGroup)
 		setLayout(new GridLayout(2,false));
+		((GridLayout)getLayout()).marginRight = RIGHT_MARGIN/2;
 
-		Composite titleArea = createTitleArea(this, "Section Inheritance");
+		Composite titleArea = createTitleArea(this, "Sections");
 		((GridData)titleArea.getLayoutData()).horizontalSpan = 2;
 
 		// create section chain label

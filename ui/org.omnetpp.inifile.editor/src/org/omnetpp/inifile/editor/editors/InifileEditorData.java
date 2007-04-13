@@ -1,5 +1,7 @@
 package org.omnetpp.inifile.editor.editors;
 
+import java.util.HashMap;
+
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 
@@ -12,6 +14,11 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 public class InifileEditorData {
 	private IInifileDocument inifileDocument;
 	private InifileAnalyzer inifileAnalyzer;
+
+	/**
+	 * Whether the form page with the given category is in the "Detailed" or "Normal" view 
+	 */
+	public HashMap<String,Boolean> formPageCategoryDetailedFlags = new HashMap<String, Boolean>(); 
 	
 	public void setInifiledocument(IInifileDocument inifileDocument) {
 		this.inifileDocument = inifileDocument;
@@ -21,10 +28,16 @@ public class InifileEditorData {
 		this.inifileAnalyzer = inifileAnalyzer;
 	}
 
+	/**
+	 * Access to inifile contents.
+	 */
 	public IInifileDocument getInifileDocument() {
 		return inifileDocument;
 	}
 
+	/**
+	 * Access to the editor's inifile analyzer. 
+	 */
 	public InifileAnalyzer getInifileAnalyzer() {
 		return inifileAnalyzer;
 	}

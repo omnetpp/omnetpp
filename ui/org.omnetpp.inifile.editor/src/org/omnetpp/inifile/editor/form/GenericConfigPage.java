@@ -102,7 +102,6 @@ import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 public class GenericConfigPage extends ScrolledFormPage {
 	private ArrayList<FieldEditor> fieldEditors = new ArrayList<FieldEditor>();
 	private String category;
-	private boolean advancedMode = false;
 	
     public static final String CAT_GENERAL = "General";
     public static final String CAT_ADVANCED = "Advanced";
@@ -229,10 +228,11 @@ public class GenericConfigPage extends ScrolledFormPage {
 					"automatically) will override them. Delete .tkenvrc for these settings to take effect.");
 			addSpacer(form);
 			Group group5 = createGroup(form, "Execution");
+			addTextFieldEditor(group5, CFGID_TKENV_ANIMATION_SPEED, "Animation speed");
+			addCheckboxFieldEditor(group5, CFGID_TKENV_EXPRESSMODE_AUTOUPDATE, "Auto-update in Express mode");
 			addTextFieldEditor(group5, CFGID_TKENV_SLOWEXEC_DELAY, "Slow-exec delay");
 			addTextFieldEditor(group5, CFGID_TKENV_UPDATE_FREQ_FAST, "Update frequency for Fast mode");
 			addTextFieldEditor(group5, CFGID_TKENV_UPDATE_FREQ_EXPRESS, "Update frequency for Express mode");
-			addCheckboxFieldEditor(group5, CFGID_TKENV_EXPRESSMODE_AUTOUPDATE, "Auto-update in Express mode");
 			addSpacer(form);
 			Group group1 = createGroup(form, "Animation options");
 			addCheckboxFieldEditor(group1, CFGID_TKENV_ANIMATION_ENABLED, "Enable animation");
@@ -243,13 +243,12 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addCheckboxFieldEditor(group1, CFGID_TKENV_ANIMATION_MSGNAMES, "Show message names in animation");
 			addCheckboxFieldEditor(group1, CFGID_TKENV_ANIMATION_MSGCLASSNAMES, "Show message class names in animation");
 			addCheckboxFieldEditor(group1, CFGID_TKENV_ANIMATION_MSGCOLORS, "Colorize messages by message kind");
-			addCheckboxFieldEditor(form, CFGID_TKENV_SHOW_BUBBLES, "Show bubbles");
+			addCheckboxFieldEditor(group1, CFGID_TKENV_SHOW_BUBBLES, "Show bubbles");
 			addCheckboxFieldEditor(group1, CFGID_TKENV_PENGUIN_MODE, "Penguin mode");
 			addSpacer(form);
 			Group group2 = createGroup(form, "Network layouting");
 			addCheckboxFieldEditor(group2, CFGID_TKENV_SHOW_LAYOUTING, "Show layouting process");
 			addCheckboxFieldEditor(group2, CFGID_TKENV_USE_NEW_LAYOUTER, "Use new layouter");
-			addTextFieldEditor(form, CFGID_TKENV_ANIMATION_SPEED, "Animation speed");
 			addSpacer(form);
 			Group group3 = createGroup(form, "Logging");
 			addCheckboxFieldEditor(group3, CFGID_TKENV_PRINT_BANNERS, "Print banners");
@@ -305,14 +304,14 @@ public class GenericConfigPage extends ScrolledFormPage {
 	}
 
 	protected void addTextFieldEditor(Composite parent, ConfigurationEntry e, String label) {
-		FieldEditor editor = (advancedMode==false || e.isGlobal()) ? 
+		FieldEditor editor = (getAdvancedMode()==false || e.isGlobal()) ? 
 				new TextFieldEditor(parent, e, getInifileDocument(), label) :
 				new TextTableFieldEditor(parent, e, getInifileDocument(), label);
 		addFieldEditor(editor);		
 	}
 
 	protected void addCheckboxFieldEditor(Composite parent, ConfigurationEntry e, String label) {
-		FieldEditor editor = (advancedMode==false || e.isGlobal()) ? 
+		FieldEditor editor = (getAdvancedMode()==false || e.isGlobal()) ? 
 				new CheckboxFieldEditor(parent, e, getInifileDocument(), label) :
 				new CheckboxTableFieldEditor(parent, e, getInifileDocument(), label);
 		addFieldEditor(editor);		
@@ -325,19 +324,23 @@ public class GenericConfigPage extends ScrolledFormPage {
 
 	protected Button createAdvancedButton(Composite parent) {
 		final Button expandButton = new Button(parent, SWT.PUSH);
-		expandButton.setText(advancedMode ? "« Normal" : "Advanced »");
-		expandButton.setToolTipText("Toggle advanced editing");
+		expandButton.setText(getAdvancedMode() ? "« General" : "Detailed »");
+		expandButton.setToolTipText("Toggle per-section editing");
 		expandButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				toggleAdvancedMode();
-				
 			}
 		});
 		return expandButton;
 	}
 
+	protected boolean getAdvancedMode() {
+		Boolean b = getEditorData().formPageCategoryDetailedFlags.get(category);
+		return b==null ? false : b;
+	}
+	
 	protected void toggleAdvancedMode() {
-		advancedMode = !advancedMode;
+		getEditorData().formPageCategoryDetailedFlags.put(category, !getAdvancedMode());
 
 		// remove ALL existing controls (title, field editors, etc...)
 		for (Control c : form.getChildren())
