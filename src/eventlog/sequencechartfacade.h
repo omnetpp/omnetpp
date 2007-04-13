@@ -32,6 +32,10 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
 {
     protected:
         long timelineCoordinateSystemVersion;
+        long timelineCoordinateOriginEventNumber;
+        double timelineCoordinateOriginSimulationTime;
+        long timelineCoordinateRangeStartEventNumber;
+        long timelineCoordinateRangeEndEventNumber;
         TimelineMode timelineMode;
 
     public:
@@ -39,19 +43,40 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
         virtual ~SequenceChartFacade() {}
 
         TimelineMode getTimelineMode() { return timelineMode; }
-        void setTimelineMode(TimelineMode timelineMode) { this->timelineMode = timelineMode; invalidateTimelineCoordinateSystem(); }
-        double getTimelineCoordinate(IEvent *event);
-        void invalidateTimelineCoordinateSystem() { timelineCoordinateSystemVersion++; }
-        double Event_getTimelineCoordinate(int64 ptr);
+        void setTimelineMode(TimelineMode timelineMode);
 
+        IEvent *getTimelineCoordinateSystemOriginEvent() { return eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber); }
+        double getNonLinearTimelineCoordinateDelta(double simulationTimeDelta);
+        double getTimelineCoordinate(IEvent *event);
+        double Event_getTimelineCoordinate(int64 ptr);
+        void relocateTimelineCoordinateSystem(IEvent *event);
+
+        IEvent *getEventForNonLinearTimelineCoordinate(double timelineCoordinate, bool &forward);
         IEvent *getLastEventNotAfterTimelineCoordinate(double timelineCoordinate);
         IEvent *getFirstEventNotBeforeTimelineCoordinate(double timelineCoordinate);
 
-        double getSimulationTimeForTimelineCoordinate(double timelineCoordinate);
-        double getTimelineCoordinateForSimulationTime(double simulationTime);
+        /**
+         * Timeline coordinate can be given in the range (-infinity, +infinity).
+         * Simulation time will be in the range [0, lastEventSimulationTime].
+         */
+        double getSimulationTimeForTimelineCoordinate(double timelineCoordinate, bool upperBound = false);
+        /**
+         * Simulation time must be in the range [0, lastEventSimulationTime].
+         * Timeline coordinate will be in the range [0, lastEventTimelineCoordinate] if the
+         * timeline origin is at the first event.
+         */
+        double getTimelineCoordinateForSimulationTime(double simulationTime, bool upperBound = false);
 
         std::vector<int64> *getIntersectingMessageDependencies(int64 startEventPtr, int64 endEventPtr, int lookAroundCount);
         std::vector<int> getApproximateMessageDependencyCountAdjacencyMatrix(std::map<int, int> *moduleIdToAxisIdMap, int numberOfSamples);
+
+    protected:
+
+        void extractSimulationTimesAndTimelineCoordinates(
+            IEvent *event, IEvent *&nextEvent,
+            double &eventSimulationTime, double &eventTimelineCoordinate,
+            double &nextEventSimulationTime, double &nextEventTimelineCoordinate,
+            double &simulationTimeDelta, double &timelineCoordinateDelta);
 };
 
 #endif

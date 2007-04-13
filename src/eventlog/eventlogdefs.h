@@ -28,11 +28,13 @@
 #  define EVENTLOG_API  OPP_DLLIMPORT
 #endif
 
-
 #define PRINT_DEBUG_MESSAGES false
 
 typedef BigDecimal simtime_t;
 
+#ifndef PI
+#define PI        3.141592653589793
+#endif
 
 /**
  * Variables which store event numbers throughout the API may have these 
