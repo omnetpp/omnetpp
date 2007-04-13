@@ -46,15 +46,20 @@ bool parseSimtime(const char *s, simultime_t &dest)
 {
     const char *e;
     simultime_t t;
+    double d;
+
     try {
         t = BigDecimal::parse(s, e);
+        switch (*e)
+        {
+        case '\0': dest = t; return true;
+        // simtime might be given in scientific notation
+        // in older vector files, try to parse as double
+        case 'e': case 'E': if (parseDouble(s, d)) { dest = BigDecimal(d); return true; }
+        }
     } catch (std::exception &e) {
-        return false;
+        // overflow
     }
 
-    if (*e)
-        return false;
-
-    dest = t;
-    return true;
+    return false;
 }
