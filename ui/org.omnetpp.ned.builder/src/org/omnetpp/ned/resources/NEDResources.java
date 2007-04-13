@@ -176,10 +176,44 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         return nedFiles.keySet();
     }
 
-    public synchronized NEDElement getNEDFileContents(IFile file) {
+    public synchronized NEDElement getNEDFileModel(IFile file) {
         if (needsRehash)
             rehash();
         return nedFiles.get(file);
+    }
+
+    /**
+     * NED editors should call this when editor content changes.
+     */
+    public synchronized void setNEDFileModel(IFile file, NEDElement tree) {
+        if (tree == null)
+            forgetNEDFile(file); // XXX rather: it should never be called
+                                    // with tree==null!
+        else
+            storeNEDFileModel(file, tree);
+        rehashIfNeeded();
+    }
+
+    /**
+     * @param file The NED file content we are interested in
+     * @return The textual (reformatted) content of the nedfile (generated from the model)
+     */
+    public synchronized String getNEDFileText(IFile file) {
+        return NEDTreeUtil.generateNedSource(getNEDFileModel(file), true);
+    }
+    
+    /**
+     * NED text editors should call this when editor content changes.
+     * Parses the given text and build a new NED model tree.
+     */
+    public synchronized void setNEDFileText(IFile file, String text) {
+        // parse the NED text and put it into the hash table
+        NEDErrorStore errors = new NEDErrorStore();
+        errors.setPrintToStderr(false);
+
+        NEDElement tree = NEDTreeUtil.parseNedSource(text, errors, file.getLocation().toOSString());
+        setNEDFileModel(file, tree);
+        markerJob.setParseErrorStore(file, errors);
     }
 
     public synchronized boolean containsNEDErrors(IFile file) {
@@ -324,33 +358,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         }
     }
 
-    /**
-     * NED editors should call this when editor content changes.
-     */
-    public synchronized void setNEDFileModel(IFile file, NEDElement tree) {
-        if (tree == null)
-            forgetNEDFile(file); // XXX rather: it should never be called
-                                    // with tree==null!
-        else
-            storeNEDFileModel(file, tree);
-        rehashIfNeeded();
-    }
-
-    /**
-     * NED editors should call this when editor content changes.
-     */
-    public synchronized void setNEDFileText(IFile file, String text) {
-        // parse the NED text and put it into the hash table
-        NEDErrorStore errors = new NEDErrorStore();
-        errors.setPrintToStderr(false);
-
-        NEDElement tree = NEDTreeUtil.parseNedSource(text, errors, file.getLocation().toOSString());
-        setNEDFileModel(file, tree);
-        markerJob.setParseErrorStore(file, errors);
-        // nedParseErrors.put(file, errors);
-        // convertErrorsToMarkers(file, errors);
-    }
-
+    
     /**
      * Gets called from incremental builder.
      */
@@ -375,6 +383,10 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             storeNEDFileModel(file, tree);
     }
 
+    /**
+     * Forget a file, and throws out all cached info.
+     * @param file
+     */
     public synchronized void forgetNEDFile(IFile file) {
         if (nedFiles.containsKey(file)) {
             // remove our model change from the file
@@ -595,7 +607,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      * @return Wheteher the inheritance chain has changed somewhere 
      * (name, extends, adding and removing top level nodes)
      */
-    public static boolean inheritanceMayHaveChanged(NEDModelEvent event) {
+    protected static boolean inheritanceMayHaveChanged(NEDModelEvent event) {
         // if we have changed a toplevel element's name we should rehash
         if (event.getSource() instanceof ITopLevelElement && event instanceof NEDAttributeChangeEvent
                 && SimpleModuleNode.ATT_NAME.equals(((NEDAttributeChangeEvent) event).getAttribute()))
@@ -625,7 +637,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      * @param event
      * @return Whether th display string has changed in the evenet
      */
-    public static boolean displayMayHaveChanged(NEDModelEvent event) {
+    protected static boolean displayMayHaveChanged(NEDModelEvent event) {
         // if we have changed a toplevel element's name we should rehash
         if (event.getSource() instanceof ITopLevelElement && event instanceof NEDAttributeChangeEvent
                 && IDisplayString.ATT_DISPLAYSTRING.equals(((NEDAttributeChangeEvent) event).getAttribute()))
