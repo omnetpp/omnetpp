@@ -40,6 +40,7 @@ public class CheckboxFieldEditor extends FieldEditor {
 		
 		checkbox = new Button(this, SWT.CHECK);
 		checkbox.setBackground(BGCOLOR);
+		tooltipSupport.adapt(checkbox);
 		label = createLabel(entry, labelText);
 		resetButton = createResetButton();
 
@@ -47,6 +48,7 @@ public class CheckboxFieldEditor extends FieldEditor {
 		label.setLayoutData(new GridData());
 		resetButton.setLayoutData(new GridData());
 
+		
 		reread();
 
 		// enable Reset button on editing

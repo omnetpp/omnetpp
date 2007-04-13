@@ -37,6 +37,8 @@ public class TextFieldEditor extends FieldEditor {
 
 		label = createLabel(entry, labelText+":");
 		textField = new Text(this, SWT.SINGLE | SWT.BORDER);
+		tooltipSupport.adapt(textField);
+		
 		resetButton = createResetButton();
 		label.setLayoutData(new GridData());
 		int width = (entry.getType()==Type.CFG_STRING || entry.getType()==Type.CFG_FILENAME || entry.getType()==Type.CFG_FILENAMES) ? 250 : 50;

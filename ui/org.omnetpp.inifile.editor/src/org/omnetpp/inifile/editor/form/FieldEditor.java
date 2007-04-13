@@ -1,5 +1,7 @@
 package org.omnetpp.inifile.editor.form;
 
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -10,27 +12,35 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.omnetpp.common.ui.ITooltipProvider;
+import org.omnetpp.common.ui.TooltipSupport;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 /**
  * Base class for inifile field editors
  * @author Andras
  */
-//XXX set tooltip also on the textedit/checkbox control
 public abstract class FieldEditor extends Composite {
 	public static final Color BGCOLOR = InifileFormEditor.BGCOLOR;
 
 	protected ConfigurationEntry entry;
 	protected IInifileDocument inifile;
+	
+	protected TooltipSupport tooltipSupport;
 
 	public FieldEditor(Composite parent, int style, ConfigurationEntry entry, IInifileDocument inifile) {
 		super(parent, style);
 		this.entry = entry;
 		this.inifile = inifile;
 		setBackground(BGCOLOR);
+
+		tooltipSupport = new TooltipSupport(new ITooltipProvider() {
+			public String getTooltipFor(Control control, int x, int y) {
+				return getTooltipText();
+			}
+		});
 	}
 
 	protected String getValueFromFile(String section) {
@@ -59,13 +69,17 @@ public abstract class FieldEditor extends Composite {
 		Label label = new Label(this, SWT.NONE);
 		label.setBackground(BGCOLOR);
 		label.setText(labelText);
-		
+		tooltipSupport.adapt(label);
+		return label;
+	}
+
+	protected String getTooltipText() {
 		String tooltip = entry.getDescription();
 		tooltip += "\n\nConfigures: [General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / "+entry.getName()+"=...";
 		IInifileDocument.LineInfo line = inifile.getEntryLineDetails(GENERAL, entry.getName()); 
 		tooltip += "\n\n"+(line==null ? "Currently set to default." : "Defined at: "+line.getFile().getFullPath().toString()+" line "+line.getLineNumber());
-		label.setToolTipText(StringUtils.breakLines(tooltip, 80));  //XXX we'll need to refresh tooltip after each re-parse!
-		return label;
+		tooltip = StringUtils.breakLines(tooltip, 80);
+		return tooltip;
 	}
 
 	protected Button createResetButton() {

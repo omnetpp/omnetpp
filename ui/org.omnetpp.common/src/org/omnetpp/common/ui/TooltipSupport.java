@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Control;
  */
 public class TooltipSupport {
 	protected DefaultInformationControl tooltipWidget;
-	protected AllInOneMouseListener mouseListener;
+	protected AllInOneMouseListener mouseListener = new AllInOneMouseListener();
 	protected ITooltipProvider tooltipProvider;
 
 	private class AllInOneMouseListener implements MouseListener, MouseTrackListener, MouseMoveListener {

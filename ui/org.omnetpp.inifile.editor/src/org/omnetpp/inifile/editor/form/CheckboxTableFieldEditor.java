@@ -33,6 +33,7 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
 		Table table = new Table(parent, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION | SWT.CHECK);
 		table.setLayoutData(new GridData(200, 2*table.getItemHeight())); // for some reason, 2* results in 3-line table...
 		CheckboxTableViewer tableViewer = new CheckboxTableViewer(table);
+		tooltipSupport.adapt(table);
 
 		tableViewer.setLabelProvider(new TableLabelProvider() {
 			public String getColumnText(Object element, int columnIndex) {
@@ -51,6 +52,7 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
 				setValueInFile(section, value); 
 			}
 		});
+		
 		return tableViewer; 
 	}
 
