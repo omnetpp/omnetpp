@@ -17,6 +17,8 @@ import org.omnetpp.common.properties.PropertySource;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.charting.dataset.IXYDataset;
+import org.omnetpp.scave.charting.dataset.ScatterPlotDataset;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.BarChart;
@@ -407,18 +409,20 @@ public class ChartProperties extends PropertySource {
 		}
 		
 		protected IPropertyDescriptor[] createLineDescriptors() {
-			IPropertyDescriptor[] descriptors;
-			String[] names = DatasetManager.getScatterPlotDataNames((ScatterChart)chart, manager);
-			if (names != null) {
-				descriptors = new IPropertyDescriptor[names.length+1];
-				descriptors[0] = new PropertyDescriptor(DEFAULT_LINE_PROPERTIES_ID, "default");
-				for (int i=0; i < names.length; ++i)
-					descriptors[i+1] = new PropertyDescriptor(names[i], names[i]);
+			if (chart != null) {
+				IXYDataset ds = DatasetManager.createScatterPlotDataset((ScatterChart)chart, manager, null);
+				if (ds != null) {
+					int count = ds.getSeriesCount() + 1; // +1 for "default"
+					IPropertyDescriptor[] descriptors = new IPropertyDescriptor[count];
+					descriptors[0] = new PropertyDescriptor(DEFAULT_LINE_PROPERTIES_ID, "default");
+					for (int i=1; i < count; ++i) {
+						String name = String.valueOf(ds.getSeriesKey(i-1)); 
+						descriptors[i] = new PropertyDescriptor(name, name);
+					}
+					return descriptors;
+				}
 			}
-			else
-				descriptors = new IPropertyDescriptor[0];
-			
-			return descriptors;
+			return new IPropertyDescriptor[0];
 		}
 	}
 

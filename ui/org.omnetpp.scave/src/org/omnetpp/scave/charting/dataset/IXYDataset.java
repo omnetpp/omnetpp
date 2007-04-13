@@ -20,7 +20,6 @@ public interface IXYDataset extends IDataset {
      * Returns the key for a series.
      *
      * @param series  the series (zero-based index).
-     *
      * @return The key for the series.
      */
     public Comparable getSeriesKey(int series);
@@ -29,7 +28,6 @@ public interface IXYDataset extends IDataset {
      * Returns the number of items in a series.
      *
      * @param series  the series index (zero-based).
-     *
      * @return The item count.
      */
     public int getItemCount(int series);
@@ -41,7 +39,6 @@ public interface IXYDataset extends IDataset {
      * 
      * @param series  the series index (zero-based).
      * @param item  the item index (zero-based).
-     *
      * @return The x-value.
      */
     public double getX(int series, int item);
@@ -51,7 +48,6 @@ public interface IXYDataset extends IDataset {
      * 
      * @param series  the series index (zero-based).
      * @param item  the item index (zero-based).
-     * 
      * @return The x-value.
      */
     public BigDecimal getPreciseX(int series, int item);
@@ -63,7 +59,6 @@ public interface IXYDataset extends IDataset {
      *
      * @param series  the series index (zero-based).
      * @param item  the item index (zero-based).
-     *
      * @return The y-value.
      */
     public double getY(int series, int item);
@@ -73,7 +68,6 @@ public interface IXYDataset extends IDataset {
      * 
      * @param series  the series index (zero-based).
      * @param item  the item index (zero-based).
-     * 
      * @return The y-value.
      */
     public BigDecimal getPreciseY(int series, int item);

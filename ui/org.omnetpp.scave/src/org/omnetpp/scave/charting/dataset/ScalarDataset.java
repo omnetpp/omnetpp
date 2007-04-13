@@ -3,6 +3,15 @@ package org.omnetpp.scave.charting.dataset;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.ScalarResult;
+
+/**
+ * Class storing the dataset of a scalar chart.
+ *
+ * @author tomi
+ */
 public class ScalarDataset implements IScalarDataset {
 
     /** The row keys. */
@@ -14,10 +23,24 @@ public class ScalarDataset implements IScalarDataset {
     /** The row data. */
     private List<List<Double>> rows;
 
+    /**
+     * Creates an empty dataset.
+     */
     public ScalarDataset() {
         this.rowKeys = new ArrayList<Comparable>();
         this.columnKeys = new ArrayList<Comparable>();
         this.rows = new ArrayList<List<Double>>();
+    }
+    
+    /**
+     * Creates a dataset from the given scalars.
+     * The 
+     * @param idlist   the scalars contained by this dataset
+     * @param manager
+     */
+    public ScalarDataset(IDList idlist, ResultFileManager manager) {
+    	this();
+    	addScalars(idlist, manager);
     }
 
     /**
@@ -79,7 +102,16 @@ public class ScalarDataset implements IScalarDataset {
         return result;
     }
     
-    public void addValue(Comparable rowKey, Comparable columnKey, double value) {
+    private void addScalars(IDList idlist, ResultFileManager manager) {
+		for (int i = 0; i < idlist.size(); ++i) {
+			ScalarResult scalar = manager.getScalar(idlist.get(i));
+			addValue(scalar.getFileRun().getRun().getRunName(),
+			         scalar.getModuleName()+"\n"+scalar.getName(),
+				     scalar.getValue());
+		}
+    }
+    
+    private void addValue(Comparable rowKey, Comparable columnKey, double value) {
     	int rowIndex = this.rowKeys.indexOf(rowKey);
     	List<Double> rowData;
     	if (rowIndex >= 0)

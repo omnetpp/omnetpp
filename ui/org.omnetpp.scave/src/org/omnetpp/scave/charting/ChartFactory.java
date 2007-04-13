@@ -40,15 +40,15 @@ public class ChartFactory {
 		throw new RuntimeException("unknown chart type");
 	}
 
-	public static void populateChart(ChartCanvas chartCanvas, Chart chart, Dataset dataset, ResultFileManager manager) {
+	public static void populateChart(ChartCanvas chartCanvas, Chart chart, ResultFileManager manager) {
 		if (chart instanceof BarChart)
-			populateScalarChart(chart, dataset, manager, (ScalarChart)chartCanvas);
+			populateScalarChart(chart, manager, (ScalarChart)chartCanvas);
 		else if (chart instanceof LineChart)
-			populateVectorChart(chart, dataset, manager, (VectorChart)chartCanvas);
+			populateVectorChart(chart, manager, (VectorChart)chartCanvas);
 		else if (chart instanceof HistogramChart)
 			;//TODO
 		else if (chart instanceof org.omnetpp.scave.model.ScatterChart)
-			populateScatterChart(chart, dataset, manager, (VectorChart)chartCanvas);
+			populateScatterChart(chart, manager, (VectorChart)chartCanvas);
 		else
 			throw new RuntimeException("unknown chart type");
 	}
@@ -57,7 +57,7 @@ public class ChartFactory {
 		ScalarChart scalarChart = new ScalarChart(parent, SWT.DOUBLE_BUFFERED);
 		setChartProperties(chart, scalarChart);
 
-		populateScalarChart(chart, dataset, manager, scalarChart);
+		populateScalarChart(chart, manager, scalarChart);
 		
 		return scalarChart;
 	}
@@ -67,7 +67,7 @@ public class ChartFactory {
 		vectorChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		setChartProperties(chart, vectorChart);
 
-		populateVectorChart(chart, dataset, manager, vectorChart);
+		populateVectorChart(chart, manager, vectorChart);
 
 		return vectorChart;
 	}
@@ -80,42 +80,42 @@ public class ChartFactory {
 		final VectorChart scatterChart = new VectorChart(parent, SWT.DOUBLE_BUFFERED);
 		scatterChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		setChartProperties(chart, scatterChart);
-		populateScatterChart(chart, dataset, manager, scatterChart);
+		populateScatterChart(chart, manager, scatterChart);
 		return scatterChart;
 	}
 
-	public static void populateScalarChart(final Chart chart, final Dataset dataset, final ResultFileManager manager, ScalarChart scalarChart) {
+	public static void populateScalarChart(final Chart chart, final ResultFileManager manager, ScalarChart scalarChart) {
 		// perform:
 		// scalarChart.setDataset(DatasetManager.createScalarDataset(chart, dataset, manager, null));
 		// but as a background job:
 		//
 		startDatasetEvaluationJob(scalarChart, new IDatasetCalculation() {
 			public IDataset run(IProgressMonitor progressMonitor) {
-				return DatasetManager.createScalarDataset(chart, dataset, manager, progressMonitor);
+				return DatasetManager.createScalarDataset(chart, manager, progressMonitor);
 			}
 		});
 	}
 
-	public static void populateVectorChart(final Chart chart, final Dataset dataset, final ResultFileManager manager, final VectorChart vectorChart) {
+	public static void populateVectorChart(final Chart chart, final ResultFileManager manager, final VectorChart vectorChart) {
 		// perform:
 		// vectorChart.setDataset(DatasetManager.createVectorDataset(chart, dataset, manager));
 		// but as a background job:
 		//
 		startDatasetEvaluationJob(vectorChart, new IDatasetCalculation() {
 			public IDataset run(IProgressMonitor progressMonitor) {
-				return DatasetManager.createVectorDataset(chart, dataset, manager, progressMonitor);
+				return DatasetManager.createVectorDataset(chart, manager, progressMonitor);
 			}
 		});
 	}
 
-	public static void populateScatterChart(final Chart chart, final Dataset dataset, final ResultFileManager manager, final VectorChart scatterChart) {
+	public static void populateScatterChart(final Chart chart, final ResultFileManager manager, final VectorChart scatterChart) {
 		// perform:
 		// scatterChart.setDataset(DatasetManager.createScatterPlotDataset(chart, dataset, manager));
 		// but as a background job:
 		//
 		startDatasetEvaluationJob(scatterChart, new IDatasetCalculation() {
 			public IDataset run(IProgressMonitor progressMonitor) {
-				return DatasetManager.createScatterPlotDataset((org.omnetpp.scave.model.ScatterChart)chart, dataset, manager, progressMonitor);
+				return DatasetManager.createScatterPlotDataset((org.omnetpp.scave.model.ScatterChart)chart, manager, progressMonitor);
 			}
 		});
 	}

@@ -1,7 +1,11 @@
 package org.omnetpp.scave.charting.dataset;
 
-import org.jfree.data.UnknownKeyException;
 
+/**
+ * Interface for datasets displayed on scalar charts.
+ *
+ * @author tomi
+ */
 public interface IScalarDataset extends IDataset {
 	
     /**
@@ -15,9 +19,7 @@ public interface IScalarDataset extends IDataset {
      * Returns the row key for a given index.
      *
      * @param row  the row index (zero-based).
-     *
      * @return The row key.
-     * 
      * @throws IndexOutOfBoundsException if <code>row</code> is out of bounds.
      */
     public Comparable getRowKey(int row);
@@ -33,10 +35,8 @@ public interface IScalarDataset extends IDataset {
      * Returns the column key for a given index.
      *
      * @param column  the column index (zero-based).
-     *
      * @return The column key.
-     * 
-     * @throws IndexOutOfBoundsException if <code>row</code> is out of bounds.
+     * @throws IndexOutOfBoundsException if <code>column</code> is out of bounds.
      */
     public Comparable getColumnKey(int column);
 
@@ -45,10 +45,8 @@ public interface IScalarDataset extends IDataset {
      *
      * @param rowKey  the row key (<code>null</code> not permitted).
      * @param columnKey  the column key (<code>null</code> not permitted).
-     *
      * @return The value.
-     * 
-     * @throws UnknownKeyException if either key is not recognised.
+     * @throws IndexOutOfBoundsException if <code>row</code> or <code>column</code> is out of bounds.
      */
     public double getValue(int row, int column);
 }

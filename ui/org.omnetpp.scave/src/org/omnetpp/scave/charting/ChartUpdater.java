@@ -4,16 +4,11 @@ import java.util.List;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
-import org.jfree.data.category.CategoryDataset;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
-import org.omnetpp.scave.model.HistogramChart;
-import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelPackage;
-import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -84,8 +79,7 @@ public class ChartUpdater {
 	 * Recalculate chart contents. (Currently called on "Refresh" actions)
 	 */
 	public void updateDataset() {
-		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
-		ChartFactory.populateChart(view, chart, dataset, manager);
+		ChartFactory.populateChart(view, chart, manager);
 	}
 
 }

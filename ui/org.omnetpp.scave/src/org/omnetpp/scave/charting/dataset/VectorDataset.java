@@ -4,6 +4,11 @@ import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.scave.engine.XYArray;
 
+/**
+ * IXYDataset implementation for output vectors.
+ *
+ * @author tomi
+ */
 public class VectorDataset implements IXYDataset {
 	
 	private String[] seriesKeys;
