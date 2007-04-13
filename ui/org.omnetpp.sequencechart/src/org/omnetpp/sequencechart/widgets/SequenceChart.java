@@ -276,22 +276,14 @@ public class SequenceChart
 	 * Set chart scale (number of pixels a "timeline unit" maps to), 
 	 * and adjusts the density of ticks. 
 	 */
-	public void setpixelPerTimelineCoordinate(double pptc) {
-		if (pixelPerTimelineCoordinate != pptc)
-		{
-			double maxPPTU = Long.MAX_VALUE / 2 / sequenceChartFacade.getTimelineCoordinate(eventLog.getLastEvent());
-			
-			// set pixels per sec, and calculate tick spacing
-			if (pptc <= 0)
-				pptc = 1e-12;
-			else if (pptc > maxPPTU)
-				pptc = maxPPTU;
-	
-			pixelPerTimelineCoordinate = pptc;
-			invalidVirtualSize = true;
-			invalidModuleYCoordinates = true;
-			clearCanvasCacheAndRedraw();
-		}
+	public void setpixelPerTimelineCoordinate(double pixelPerTimelineCoordinate) {
+		if (pixelPerTimelineCoordinate <= 0)
+			pixelPerTimelineCoordinate = 1e-12;
+
+		this.pixelPerTimelineCoordinate = pixelPerTimelineCoordinate;
+		invalidVirtualSize = true;
+		invalidModuleYCoordinates = true;
+		clearCanvasCacheAndRedraw();
 	}
 	
 	/**
