@@ -8,10 +8,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -24,14 +21,13 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.dialogs.ListSelectionDialog;
 import org.omnetpp.common.util.CsvWriter;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.VectorResult;
-import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model2.RunAttribute;
 
@@ -102,7 +98,7 @@ public class DataTable extends Table {
 	private static final Column COL_REPLICATION = new Column("Replication", 60, false);
 
 	private int type;
-	private ResultFileManagerEx manager;
+	private ResultFileManager manager;
 	private IDList idlist;
 	private ListenerList listeners;
 	private List<Column> columns;
@@ -156,11 +152,11 @@ public class DataTable extends Table {
 	}
 
 
-	public void setResultFileManager(ResultFileManagerEx manager) {
+	public void setResultFileManager(ResultFileManager manager) {
 		this.manager = manager;
 	}
 
-	public ResultFileManagerEx getResultFileManager() {
+	public ResultFileManager getResultFileManager() {
 		return manager;
 	}
 

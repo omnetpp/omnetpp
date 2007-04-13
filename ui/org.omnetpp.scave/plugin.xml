@@ -77,6 +77,11 @@
            icon="icons/vecfile.png"
            id="org.omnetpp.scave.VectorBrowserView"
            name="Output Vector"/>
+     <view
+           category="org.omnetpp.views"
+           class="org.omnetpp.scave.views.DatasetView"
+           id="org.omnetpp.scave.DatasetView"
+           name="Dataset"/>
   </extension>
   <extension
         id="product"

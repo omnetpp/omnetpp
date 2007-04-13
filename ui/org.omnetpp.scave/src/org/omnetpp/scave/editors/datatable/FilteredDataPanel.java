@@ -11,7 +11,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.FilterHints;
 import org.omnetpp.scave.model2.FilterUtil;
@@ -61,11 +60,11 @@ public class FilteredDataPanel extends Composite {
 		return idlist;
 	}
 
-	public void setResultFileManager(ResultFileManagerEx manager) {
+	public void setResultFileManager(ResultFileManager manager) {
 		table.setResultFileManager(manager);
 	}
 
-	public ResultFileManagerEx getResultFileManager() {
+	public ResultFileManager getResultFileManager() {
 		return table.getResultFileManager();
 	}
 

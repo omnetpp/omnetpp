@@ -188,6 +188,7 @@ public class DatasetManager {
 	}
 	
 	public static ScatterPlotDataset createScatterPlotDataset(ScatterChart chart, ResultFileManager manager, IProgressMonitor monitor) {
+		//TODO update progressMonitor
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		if (dataset != null) {
 			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
