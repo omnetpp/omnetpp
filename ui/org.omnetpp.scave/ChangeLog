@@ -1,3 +1,18 @@
+2007-04-13
+----------
+
+Additions:
+
+   + Scatter plots can be generated from scalar datasets.
+
+   + Added "Dataset View" replacing the data table on the "Dataset" page. (not yet finished)
+
+Fixes:
+
+   + Fixed crash when the project containing the input of an active editor is closed.
+
+   + Creating chart templates from temporary charts works again.
+
 2007-03-30
 ----------
 
