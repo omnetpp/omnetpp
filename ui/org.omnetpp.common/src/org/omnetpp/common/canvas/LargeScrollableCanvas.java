@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.ScrollBar;
  * @author andras
  */
 public abstract class LargeScrollableCanvas extends Canvas {
-	
+
 	private long virtualWidth, virtualHeight; // 64-bit size of the "virtual canvas"
 	private long viewX, viewY; // 64-bit coordinates of top-left corner of the viewport
 	private int hShift, vShift; // used for scrollbar mapping 
@@ -47,12 +47,12 @@ public abstract class LargeScrollableCanvas extends Canvas {
 
 		getHorizontalBar().addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				horizontalBarChanged();
+				horizontalScrollBarChanged();
 			}
 		});
 		getVerticalBar().addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				verticalBarChanged();
+				verticalScrollBarChanged();
 			}
 		});
 	}
@@ -60,7 +60,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	public void setVirtualSize(long width, long height) {
 		this.virtualWidth = width;
 		this.virtualHeight = height;
-		configureScrollbars();
+		configureScrollBars();
 	}
 
 	public long getVirtualHeight() {
@@ -69,7 +69,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 
 	public void setVirtualHeight(long height) {
 		this.virtualHeight = height;
-		configureScrollbars();
+		configureScrollBars();
 	}
 
 	public long getVirtualWidth() {
@@ -78,7 +78,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 
 	public void setVirtualWidth(long width) {
 		this.virtualWidth = width;
-		configureScrollbars();
+		configureScrollBars();
 	}
 
 	/**
@@ -102,13 +102,27 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	public long getViewportBottom() {
 		return viewY + getViewportHeight();
 	}
+	
+	/**
+	 * Scroll horizontally with the given amount of pixels.
+	 */
+	public void scrollHorizontal(long dx) {
+		scrollHorizontalTo(getViewportLeft() + dx);
+	}
+
+	/**
+	 * Scroll vertically with the given amount of pixels.
+	 */
+	public void scrollVertical(long dy) {
+		scrollVerticalTo(getViewportTop() + dy);
+	}
 
 	/**
 	 * Sets viewportLeft.
 	 */
 	public void scrollHorizontalTo(long x) {
 		this.viewX = clipX(x);
-		adjustScrollbars();
+		adjustHorizontalScrollBar();
 		redraw();
 	}
 
@@ -117,7 +131,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	 */
 	public void scrollVerticalTo(long y) {
 		this.viewY = clipY(y);
-		adjustScrollbars();
+		adjustVerticalScrollBar();
 		redraw();
 	}
 	
@@ -151,12 +165,12 @@ public abstract class LargeScrollableCanvas extends Canvas {
 			scrollVerticalTo(y2 - getViewportHeight());
 	}
 	
-	private long clipX(long x) {
-		return clip(x, virtualWidth-getViewportWidth());
+	protected long clipX(long x) {
+		return clip(x, virtualWidth - getViewportWidth());
 	}
 	
-	private long clipY(long y) {
-		return clip(y, virtualHeight-getViewportHeight());
+	protected long clipY(long y) {
+		return clip(y, virtualHeight - getViewportHeight());
 	}
 
 	/**
@@ -179,7 +193,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 
 	public void setViewportRectangle(Rectangle r) {
 		viewportRect = new Rectangle(r.x, r.y, r.width, r.height);
-		configureScrollbars();
+		configureScrollBars();
 	}
 
 	public int virtualToCanvasX(long x) {
@@ -220,12 +234,12 @@ public abstract class LargeScrollableCanvas extends Canvas {
 		return viewportRect.height;
 	}
 
-	private void horizontalBarChanged() {
+	protected void horizontalScrollBarChanged() {
 		viewX = clipX(((long)getHorizontalBar().getSelection()) << hShift);
 		redraw();
 	}
 
-	private void verticalBarChanged() {
+	protected void verticalScrollBarChanged() {
 		viewY = clipY(((long)getVerticalBar().getSelection()) << vShift);
 		redraw();
 	}
@@ -233,22 +247,30 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	/**
 	 * Should be called when viewport or virtual size changes.
 	 */
-	protected void configureScrollbars() {
-		viewX = clipX(viewX);
-		viewY = clipY(viewY);
-		hShift = configureScrollbar(getHorizontalBar(), virtualWidth, viewX, getViewportWidth());
-		vShift = configureScrollbar(getVerticalBar(), virtualHeight, viewY, getViewportHeight());
+	protected void configureScrollBars() {
+		hShift = configureHorizontalScrollBar(getHorizontalBar(), virtualWidth, viewX, getViewportWidth());
+		vShift = configureVerticalScrollBar(getVerticalBar(), virtualHeight, viewY, getViewportHeight());
+	}
+	
+	protected int configureHorizontalScrollBar(ScrollBar scrollBar, long virtualSize, long virtualPosition, int widgetSize) {
+		viewX = clipX(virtualPosition);
+		return configureScrollBar(scrollBar, virtualSize, virtualPosition, widgetSize);
 	}
 
-	private int configureScrollbar(ScrollBar sb, long virtualSize, long virtualPos, int widgetSize) {
+	protected int configureVerticalScrollBar(ScrollBar scrollBar, long virtualSize, long virtualPosition, int widgetSize) {
+		viewY = clipY(virtualPosition);
+		return configureScrollBar(scrollBar, virtualSize, virtualPosition, widgetSize);
+	}
+
+	protected int configureScrollBar(ScrollBar scrollBar, long virtualSize, long virtualPos, int widgetSize) {
 		if (widgetSize >= virtualSize) {
 			// hide scrollbar when not needed
-			sb.setVisible(false);
+			scrollBar.setVisible(false);
 			return 0;
 		}
 		else {
 			// show scrollbar
-			sb.setVisible(true);
+			scrollBar.setVisible(true);
 			
 			// count how many bits we need to shift to fit into 32 bits
 			int shift = 0;
@@ -260,17 +282,20 @@ public abstract class LargeScrollableCanvas extends Canvas {
 			int newSel = (int)(virtualPos >> shift);
 			int newPageIncr = (int)((widgetSize>>shift > 0) ? widgetSize>>shift : 1);
 				
-			sb.setMinimum(0);
-			sb.setMaximum(newMax);
-			sb.setThumb(newThumb);
-			sb.setSelection(newSel);
-			sb.setPageIncrement(newPageIncr);
+			scrollBar.setMinimum(0);
+			scrollBar.setMaximum(newMax);
+			scrollBar.setThumb(newThumb);
+			scrollBar.setSelection(newSel);
+			scrollBar.setPageIncrement(newPageIncr);
 			return shift;
 		}
 	}
 
-	private void adjustScrollbars() {
+	protected void adjustHorizontalScrollBar() {
 		getHorizontalBar().setSelection((int)(viewX >> hShift));
+	}
+
+	protected void adjustVerticalScrollBar() {
 		getVerticalBar().setSelection((int)(viewY >> vShift));
 	}
 }

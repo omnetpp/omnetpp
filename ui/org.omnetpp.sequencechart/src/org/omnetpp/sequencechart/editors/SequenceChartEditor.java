@@ -136,7 +136,7 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
 		}
 
 		public void restoreLocation() {
-			sequenceChart.zoomSimulationTimeRange(startSimulationTime, endSimulationTime);
+			sequenceChart.zoomToSimulationTimeRange(startSimulationTime, endSimulationTime);
 		}
 
 		public void restoreState(IMemento memento) {

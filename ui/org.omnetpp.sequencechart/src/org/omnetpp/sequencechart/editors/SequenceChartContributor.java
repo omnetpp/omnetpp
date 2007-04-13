@@ -432,7 +432,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		return new SequenceChartAction("Zoom to message", SWT.PUSH) {
 			@Override
 			public void run() {
-				sequenceChart.zoomSimulationTimeRange(msg.getCauseEvent().getSimulationTime().doubleValue(), msg.getConsequenceEvent().getSimulationTime().doubleValue(), (int)(sequenceChart.getViewportWidth() * 0.1));
+				sequenceChart.zoomToSimulationTimeRange(msg.getCauseEvent().getSimulationTime().doubleValue(), msg.getConsequenceEvent().getSimulationTime().doubleValue(), (int)(sequenceChart.getViewportWidth() * 0.1));
 			}
 		};
 	}
@@ -468,7 +468,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		return new SequenceChartAction("Zoom to value", SWT.PUSH) {
 			@Override
 			public void run() {
-				sequenceChart.zoomToAxisValue(axisModule, sequenceChart.getSimulationTimeForViewportPixel(x));
+				sequenceChart.zoomToAxisValue(axisModule, sequenceChart.getSimulationTimeForViewportCoordinate(x));
 			}
 		};
 	}	

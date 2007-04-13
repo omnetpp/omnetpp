@@ -42,8 +42,10 @@ public class XYTileCache implements ITileCache {
 	public void add(LargeRect rect, Image image) {
 		// find WHOLE tiles in the image, and extract them
 		GC gc = new GC(image);
-		long startX = rect.x%TILE_WIDTH==0 ? rect.x : rect.x - rect.x%TILE_WIDTH + TILE_WIDTH;
-		long startY = rect.y%TILE_HEIGHT==0 ? rect.y : rect.y - rect.y%TILE_HEIGHT + TILE_HEIGHT;
+		long startX = modulo(rect.x,TILE_WIDTH)==0 ? rect.x : rect.x - modulo(rect.x,TILE_WIDTH) + TILE_WIDTH;
+		long startY = modulo(rect.y,TILE_HEIGHT)==0 ? rect.y : rect.y - modulo(rect.y,TILE_HEIGHT) + TILE_HEIGHT;
+		Assert.isTrue(startX>=rect.x);
+		Assert.isTrue(startY>=rect.y);
 		for (long x = startX; x+TILE_WIDTH<=rect.right(); x+=TILE_WIDTH) {
 			for (long y = startY; y+TILE_HEIGHT<=rect.bottom(); y+=TILE_HEIGHT) {
 				LargePoint key = new LargePoint(x,y);
@@ -103,8 +105,8 @@ public class XYTileCache implements ITileCache {
 		// Return tiles that overlap with "rect"; missing areas are rounded up to form
 		// whole tiles for better caching, and possibly also merged (so that fewer paint() calls
 		// are needed)
-		long startX = rect.x - rect.x%TILE_WIDTH;
-		long startY = rect.y - rect.y%TILE_HEIGHT;
+		long startX = rect.x - modulo(rect.x,TILE_WIDTH);
+		long startY = rect.y - modulo(rect.y,TILE_HEIGHT);
 		LargePoint lookupKey = new LargePoint();
 		for (long x = startX; x<rect.right(); x+=TILE_WIDTH) {
 			for (long y = startY; y<rect.bottom(); y+=TILE_HEIGHT) {
@@ -153,5 +155,9 @@ public class XYTileCache implements ITileCache {
 		}
 		// could not be merged: just add
 		areas.add(r);
+	}
+	
+	private long modulo(long a, long b) {
+		return a < 0 ? a % b + b : a % b;
 	}
 }

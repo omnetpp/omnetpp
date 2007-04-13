@@ -209,7 +209,7 @@ public class VirtualTable<T>
 
 		canvas.addControlListener(new ControlAdapter() {
 			public void controlResized(ControlEvent e) {
-				updateVerticalBarParameters();
+				configureVerticalScrollBar();
 				redraw();
 			}
 		});
@@ -319,7 +319,7 @@ public class VirtualTable<T>
 		this.input = input;
 		getContentProvider().inputChanged(null, null, input);
 		getRowRenderer().setInput(input);
-		updateVerticalBarParameters();
+		configureVerticalScrollBar();
 		gotoBegin();
 	}
 
@@ -329,7 +329,7 @@ public class VirtualTable<T>
 	
 	public void setContentProvider(IVirtualTableContentProvider<T> contentProvider) {
 		this.contentProvider = contentProvider;
-		updateVerticalBarParameters();
+		configureVerticalScrollBar();
 	}
 
 	public IVirtualTableRowRenderer<T> getRowRenderer() {
@@ -528,7 +528,7 @@ public class VirtualTable<T>
 	 * Updates the vertical bar state according to the current canvas and table content sizes.
 	 * Sets minimum, maximum, thumb, page increment, etc.
 	 */
-	public void updateVerticalBarParameters() {
+	public void configureVerticalScrollBar() {
 		ScrollBar verticalBar = getVerticalBar();
 		verticalBar.setMinimum(0);
 

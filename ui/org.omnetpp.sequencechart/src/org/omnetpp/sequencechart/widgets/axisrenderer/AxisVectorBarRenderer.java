@@ -80,8 +80,8 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 				int colorIndex = getValueIndex(i);
 				graphics.setBackgroundColor(ColorFactory.getGoodColor(colorIndex));
 
-				int x1 = sequenceChart.getViewportPixelForSimulationTime(simulationTime);
-				int x2 = sequenceChart.getViewportPixelForSimulationTime(nextSimulationTime);
+				int x1 = sequenceChart.getViewportCoordinateForSimulationTime(simulationTime);
+				int x2 = sequenceChart.getViewportCoordinateForSimulationTime(nextSimulationTime);
 
 				if (phase == 0) {
 					graphics.fillRectangle(x1, 0, x2 - x1, getHeight());

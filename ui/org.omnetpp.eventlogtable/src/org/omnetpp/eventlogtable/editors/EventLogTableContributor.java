@@ -486,7 +486,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			@Override
 			public void run() {
 				eventLogTable.setFilterMode((eventLogTable.getFilterMode() + 1) % 5);
-				eventLogTable.updateVerticalBarParameters();
+				eventLogTable.configureVerticalScrollBar();
 				update();
 			}
 

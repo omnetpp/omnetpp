@@ -77,7 +77,7 @@ SWIG_JAVABODY_METHODS(public, public, BigDecimal)
        long intVal = getIntValue();
        int scale = getScale();
        java.math.BigDecimal d = new java.math.BigDecimal(intVal);
-       return (scale == 0 ? d : d.movePointLeft(scale));
+       return (scale == 0 ? d : d.movePointRight(scale));
     }
 %}
 
