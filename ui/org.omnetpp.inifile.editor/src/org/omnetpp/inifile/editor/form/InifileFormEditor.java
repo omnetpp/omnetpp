@@ -27,6 +27,10 @@ import org.omnetpp.inifile.editor.editors.InifileEditor;
  * @author andras
  */
 public class InifileFormEditor extends Composite {
+	private static final String TREELABEL_SECTIONS = "Sections";
+	private static final String TREELABEL_PARAMETERS = "Parameters";
+	private static final String TREELABEL_CONFIGURATION = "Configuration";
+
 	public static final Color BGCOLOR = null; // or: ColorFactory.asColor("white");
 
 	protected InifileEditor inifileEditor = null;  // backreference to the containing editor
@@ -73,12 +77,16 @@ public class InifileFormEditor extends Composite {
 
 	private void buildTree() {
 		GenericTreeNode root = new GenericTreeNode("root");
+		GenericTreeNode configNode = new GenericTreeNode(TREELABEL_CONFIGURATION); 
+		root.addChild(configNode);
+
 		String[] categories = GenericConfigPage.getCategoryNames();
 		for (String c : categories)
-			root.addChild(new GenericTreeNode(c));
-		root.addChild(new GenericTreeNode("RUNS")); //XXX
-		root.addChild(new GenericTreeNode("PARAMETERS")); //XXX
+			configNode.addChild(new GenericTreeNode(c));
+		root.addChild(new GenericTreeNode(TREELABEL_SECTIONS));
+		root.addChild(new GenericTreeNode(TREELABEL_PARAMETERS));
 		treeViewer.setInput(root);
+		treeViewer.expandAll();
 	}
 	
 	private void addListener(final TreeViewer treeViewer) {
@@ -105,9 +113,12 @@ public class InifileFormEditor extends Composite {
 			formPage.dispose();
 		}
 
-		if (category.equals("PARAMETERS"))
+		if (category.equals(TREELABEL_CONFIGURATION))
+			category = GenericConfigPage.getCategoryNames()[0];
+			
+		if (category.equals(TREELABEL_PARAMETERS))
 			formPage = new ParametersPage(form, inifileEditor);
-		else if (category.equals("RUNS"))
+		else if (category.equals(TREELABEL_SECTIONS))
 			formPage = new SectionsPage(form, inifileEditor);
 		else
 			formPage = new GenericConfigPage(form, category, inifileEditor);

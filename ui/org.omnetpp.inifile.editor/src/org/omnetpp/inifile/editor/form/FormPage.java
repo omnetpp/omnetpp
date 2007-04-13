@@ -42,7 +42,7 @@ public abstract class FormPage extends Composite {
 	/**
 	 * Utility method for subclasses: add a title to the form
 	 */
-	protected Composite createTitle(String category) {
+	protected Composite createTitle(String text) {
 		// title area (XXX a bit ugly -- re-think layout)
 		Composite titleArea = new Composite(this, SWT.BORDER);
 		GridData gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
@@ -56,7 +56,7 @@ public abstract class FormPage extends Composite {
 		imageLabel.setBackground(ColorFactory.asColor("white"));
 		
 		Label title = new Label(titleArea, SWT.NONE);
-		title.setText(category);
+		title.setText(text);
 		title.setFont(titleFont);
 		title.setBackground(ColorFactory.asColor("white"));
 		title.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, true, true));

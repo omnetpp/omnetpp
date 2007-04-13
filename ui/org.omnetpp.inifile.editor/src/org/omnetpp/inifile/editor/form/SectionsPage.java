@@ -70,7 +70,13 @@ public class SectionsPage extends FormPage {
 
 		Composite titleArea = createTitle("Section Inheritance");
 		((GridData)titleArea.getLayoutData()).horizontalSpan = 2;
-		
+
+		// create section chain label
+		Label label = new Label(this, SWT.NONE);
+		label.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+		((GridData)label.getLayoutData()).horizontalSpan = 2;
+		label.setText("\nAdd/remove configuration sections, and edit the fallback sequence of parameter and configuration lookups.");
+
 		treeViewer = createAndConfigureTreeViewer();
 		treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
@@ -91,7 +97,7 @@ public class SectionsPage extends FormPage {
 					SectionData payload = (SectionData) element;
 					return payload.hasError ? InifileEditorPlugin.getImage(ICON_ERROR) : ImageFactory.getImage(ImageFactory.MODEL_IMAGE_FOLDER);
 				}
-				return null; //XXX
+				return null;
 			}
 		}));
 		treeViewer.setContentProvider(new GenericTreeContentProvider());

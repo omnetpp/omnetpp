@@ -81,7 +81,7 @@ public class ParametersPage extends FormPage {
 		// create section chain label
 		sectionChainLabel = new Label(this, SWT.NONE);
 		sectionChainLabel.setLayoutData(new GridData(SWT.END, SWT.BEGINNING, true, false));
-		sectionChainLabel.setText("    Section fallback chain: n/a");
+		sectionChainLabel.setText("Section fallback chain: n/a");
 		new Label(this, SWT.NONE); // dummy, to fill 2nd column
 
 		// create table and buttons
