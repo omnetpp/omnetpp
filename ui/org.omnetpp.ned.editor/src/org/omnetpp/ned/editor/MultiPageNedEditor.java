@@ -12,7 +12,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
@@ -27,9 +26,7 @@ import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.model.NEDElement;
-import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
-import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 import org.omnetpp.ned.resources.IGotoNedElement;
@@ -48,7 +45,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 	private TextualNedEditor textEditor;
     private ResourceTracker resourceListener = new ResourceTracker();
 
-    private String textContent = "";          // the text version of the file the last time we have switched editors
+//    private String textContent = "";          // the text version of the file the last time we have switched editors
 	private int graphPageIndex;
 	private int textPageIndex;
 	private boolean insidePageChange = false;
@@ -80,20 +77,22 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         
 		try {
             // setup graphical editor
-			NEDResources res = NEDResourcesPlugin.getNEDResources();
-            NedFileNodeEx modelRoot = (NedFileNodeEx)res.getNEDFileModel(ifile);
-            graphEditor.setModel(modelRoot);
+            graphEditor.setModel((NedFileNodeEx)NEDResourcesPlugin.getNEDResources().getNEDFileModel(ifile));
+            graphEditor.markContent();
             graphPageIndex = addPage(graphEditor, getEditorInput());
             setPageText(graphPageIndex,"Graphical");
+            
 
             // setup text editor
             // we don't have to set the content because it's set 
             // automatically by the text editor (from the FileEditorInput)
             textPageIndex = addPage(textEditor, getEditorInput());
+            textEditor.markContent();
             setPageText(textPageIndex,"Text");
+            // remember the initial content so we can detect any change later
 
             // switch to graphics mode initially if there's no error in the file
-            if (!res.containsNEDErrors(ifile))
+            if (!NEDResourcesPlugin.getNEDResources().containsNEDErrors(ifile))
                 setActivePage(graphPageIndex);
             
 		} catch (PartInitException e) {
@@ -136,29 +135,25 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         // it would be ok to invalidate only the components inside this file
 
 
-        if (newPageIndex == textPageIndex) { 
-			// switch from graphics to text:
-			// generate text representation from the model
-            textContent = NEDTreeUtil.generateNedSource(graphEditor.getModel(), true);
-            // put it into the text editor if changed
-            if (!textContent.equals(textEditor.getText()) && graphEditor.getEditDomain().getCommandStack().isDirty()) {
-                // TODO refresh the editor annotations to show the error marks
-                res.setNEDFileText(file, textContent);
-                // set the text control content too
-                textEditor.setText(textContent);
-            }
+		// switch from graphics to text:
+        if (newPageIndex == textPageIndex && graphEditor.hasContentChanged()) { 
+            // TODO refresh the editor annotations to show the error marks
+            res.setNEDFileModel(file, graphEditor.getModel());
+            // XXX this is a hack so the NED elements will have a correct source position/location info
+            // after the parser/generator reformats it (maybe we would need a 
+            res.formatNEDFileText(file);
+            // generate text representation from the model
+            textEditor.setText(res.getNEDFileText(file));
+            textEditor.markContent();
 		} 
-		else if (newPageIndex==graphPageIndex) {
-			
-		    // the text has changed in the editor
+		else if (newPageIndex==graphPageIndex && textEditor.hasContentChanged()) {
+            
+			// parse the text editor content if it has changed since the last editor switch
 		    res.setNEDFileText(file, textEditor.getText());
-            if (!textContent.equals(textEditor.getText())) {
-                // store the actual text content to be able th detect changes in the future
-                textContent = textEditor.getText();
-			}
             // set the parsed ned model to the graphical editor 
             graphEditor.setModel((NedFileNodeEx)res.getNEDFileModel(file));
-
+            graphEditor.markContent();
+            
             // only start in graphics mode if there's no error in the file
             if (res.containsNEDErrors(file)) {
                 // this happens if the parsing was unsuccessful when we wanted to switch from text to graph mode
@@ -167,7 +162,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 				setActivePage(textPageIndex);
                 
                 // set an empty content so next time we will try to parse the editor text again
-                textContent = "";
+//                textContent = "";
 				
 				if (!initPhase) {
 					MessageBox messageBox = new MessageBox(getEditorSite().getShell(), SWT.ICON_WARNING | SWT.OK);
@@ -187,16 +182,12 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 		if (getActivePage() == graphPageIndex) { 
 			// switch from graphics to text:
 			// generate text representation from the model
-			NedFileNodeEx modelRoot = graphEditor.getModel();
-            IFile ifile = ((FileEditorInput)getEditorInput()).getFile();
+            IFile file = ((FileEditorInput)getEditorInput()).getFile();
             
             // put the actual model state back to the incremental builder
-    		NEDResourcesPlugin.getNEDResources().setNEDFileModel(ifile, modelRoot);
-            
-            // generate the text representation
-            String textEditorContent = NEDTreeUtil.generateNedSource(modelRoot, true);
+    		NEDResourcesPlugin.getNEDResources().setNEDFileModel(file, graphEditor.getModel());
             // put it into the text editor
-            textEditor.setText(textEditorContent);
+            textEditor.setText(NEDResourcesPlugin.getNEDResources().getNEDFileText(file));
             graphEditor.getEditDomain().getCommandStack().markSaveLocation();
 		}
 		// delegate the save task to the TextEditor's save method
