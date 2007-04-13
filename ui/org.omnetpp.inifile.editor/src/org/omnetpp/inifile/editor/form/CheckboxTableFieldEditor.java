@@ -31,7 +31,7 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
 	protected TableViewer createTableViewer(Composite parent) {
 		// set up table viewer and its label provider
 		Table table = new Table(parent, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION | SWT.CHECK);
-		table.setLayoutData(new GridData(200, 70));
+		table.setLayoutData(new GridData(200, 2*table.getItemHeight())); // for some reason, 2* results in 3-line table...
 		CheckboxTableViewer tableViewer = new CheckboxTableViewer(table);
 
 		tableViewer.setLabelProvider(new TableLabelProvider() {

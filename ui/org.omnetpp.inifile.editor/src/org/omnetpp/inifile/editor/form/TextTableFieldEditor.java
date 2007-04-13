@@ -30,7 +30,7 @@ public class TextTableFieldEditor extends TableFieldEditor {
 	protected TableViewer createTableViewer(Composite parent) {
 		// add table
 		Table table = new Table(parent, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION);
-		table.setLayoutData(new GridData(320, 80));
+		table.setLayoutData(new GridData(320, table.getHeaderHeight()+4*table.getItemHeight()+2));
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 		addTableColumn(table, "Section", 100);

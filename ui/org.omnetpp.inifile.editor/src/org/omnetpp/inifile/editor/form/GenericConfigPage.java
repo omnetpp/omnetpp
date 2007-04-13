@@ -344,7 +344,8 @@ public class GenericConfigPage extends FormPage {
 		fieldEditors.clear();
 		
 		// and recreate them in the current (advanced/normal) mode
-		createTitle(category);
+		Composite titleArea = createTitle(category);
+		createAdvancedButton(titleArea);
 		addSpacer();
 		createFieldEditors(this, category);
 		layout();
