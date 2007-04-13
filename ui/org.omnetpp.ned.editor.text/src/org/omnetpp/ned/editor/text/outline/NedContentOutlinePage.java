@@ -111,7 +111,7 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 
 				// set file contents as input
 				IFile file = fInput.getFile();
-				NEDElement tree = NEDResourcesPlugin.getNEDResources().getNEDFileContents(file);
+				NEDElement tree = NEDResourcesPlugin.getNEDResources().getNEDFileModel(file);
                 viewer.setInput(tree);
 
 				//viewer.expandAll();
