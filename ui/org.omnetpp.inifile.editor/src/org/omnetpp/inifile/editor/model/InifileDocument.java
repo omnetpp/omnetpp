@@ -268,8 +268,8 @@ public class InifileDocument implements IInifileDocument {
 
 	/**
 	 * Replaces line content in IDocument, or if text==null, deletes the line.
-	 * If the line numbers are NOT changed, suppresses re-parsing the document.
-	 * @return true if line numbers have changed, false if not
+	 * Returns false if the line numbers have not changed; in that case, the caller
+	 * may opt for suppressing re-parsing by manually setting the "changed" flag to false.
 	 */
     synchronized protected boolean replaceLine(Line line, String text) {
 		try {
@@ -278,7 +278,6 @@ public class InifileDocument implements IInifileDocument {
 			document.replace(offset, length, text==null ? "" : text+"\n");
 
 			boolean lineNumberChange = (text==null) || (line.numLines != StringUtils.countNewLines(text)+1);
-			changed = lineNumberChange; // force re-parsing because line numbers have shifted, and cancel changed=true setting from documentlistener 
 			return lineNumberChange;
 		} 
 		catch (BadLocationException e) {
@@ -320,7 +319,8 @@ public class InifileDocument implements IInifileDocument {
 		if (!nullSafeEquals(line.value, value)) {
 			line.value = value; 
 			String text = line.key + " = " + line.value + (line.comment == null ? "" : " "+line.comment);
-			replaceLine(line, text);
+			if (!replaceLine(line, text))
+				changed = false; // suppress re-parsing
 		}
 	}
 
@@ -348,7 +348,8 @@ public class InifileDocument implements IInifileDocument {
 		if (!nullSafeEquals(line.comment, comment)) {
 			line.comment = comment; 
 			String text = line.key + " = " + line.value + (line.comment == null ? "" : " "+line.comment);
-			replaceLine(line, text);
+			if (!replaceLine(line, text))
+				changed = false;  // suppress re-parsing
 		}
 	}
 
@@ -357,10 +358,10 @@ public class InifileDocument implements IInifileDocument {
 		if (!nullSafeEquals(line.key, newKey)) {
 			if (lookupEntry(section, newKey) != null)
 				throw new IllegalArgumentException("Key "+newKey+" already exists in section ["+section+"]");
+			//XXX update of data structure here and suppress re-parse?
 			line.key = newKey; 
 			String text = line.key + " = " + line.value + (line.comment == null ? "" : " "+line.comment);
 			replaceLine(line, text);
-			changed = true; // force re-parsing to update hash tables (replaceLine() may have suppressed re-parsing)
 		}
 	}
 
@@ -478,8 +479,11 @@ public class InifileDocument implements IInifileDocument {
 		for (SectionHeadingLine line : section.headingLines)
 			if (!isEditable(line))
 				throw new IllegalArgumentException("Cannot rename section ["+sectionName+"], because it (or part of it) is in an included file");
-		for (SectionHeadingLine line : section.headingLines)
+		for (SectionHeadingLine line : section.headingLines) {
+			//XXX update of data structure here and suppress re-parse?
+			//XXX big problem if line numbers change as the result of replacing!!!!! ie original section name was on two lines using backslash...
 			replaceLine(line, "[" + newName + "]" + (line.comment == null ? "" : " "+line.comment));
+		}
 	}
 
 	public void addSection(String sectionName, String beforeSectionName) {
@@ -514,7 +518,8 @@ public class InifileDocument implements IInifileDocument {
 		if (!nullSafeEquals(line.comment, comment)) {
 			line.comment = comment; 
 			String text = "[" + line.sectionName + "]" + (line.comment == null ? "" : " "+line.comment);
-			replaceLine(line, text);
+			if (!replaceLine(line, text))
+				changed = false; // suppress re-parsing
 		}
 	}
 

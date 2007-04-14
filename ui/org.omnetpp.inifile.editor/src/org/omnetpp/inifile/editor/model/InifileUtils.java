@@ -223,4 +223,5 @@ public class InifileUtils {
 				doc.setValue(section, CFGID_EXTENDS.getName(), newName);
 	}
 
+	//XXX section/config/param/perobjectconfig tooltips have to be generated here as well!!!
 }

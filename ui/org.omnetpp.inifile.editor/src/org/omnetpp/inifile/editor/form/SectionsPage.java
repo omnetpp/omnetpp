@@ -44,6 +44,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 //XXX let the user edit description= as well
 //XXX show description= value as tooltip
 //XXX double-click should go there in the inifile text (or in the Parameters page?)
+//XXX enable/disable buttons as tree selection changes
 public class SectionsPage extends FormPage {
 	public static final String ICON_ERROR = "icons/full/obj16/Error.png"; //XXX find better place for it
 	private TreeViewer treeViewer;
@@ -223,13 +224,15 @@ public class SectionsPage extends FormPage {
 				if (selection.length == 0)
 					return;
 				String sectionName = selection[0];
-				InputDialog dialog = new InputDialog(getShell(), "Rename Section", "New name for section ["+sectionName+"]:", sectionName.replaceFirst("^Config +", "")+"-1", newSectionNameValidator);
-				if (dialog.open()==Window.OK) {
-					String newSectionName = dialog.getValue().trim();
-					if (!newSectionName.equals(GENERAL) && !newSectionName.startsWith("Config "))
-						newSectionName = "Config "+newSectionName;
-					InifileUtils.renameSection(getInifileDocument(), sectionName, newSectionName);
-					reread();
+				if (!sectionName.equals(GENERAL)) { // [General] cannot be renamed
+					InputDialog dialog = new InputDialog(getShell(), "Rename Section", "New name for section ["+sectionName+"]:", sectionName.replaceFirst("^Config +", "")+"-1", newSectionNameValidator);
+					if (dialog.open()==Window.OK) {
+						String newSectionName = dialog.getValue().trim();
+						if (!newSectionName.equals(GENERAL) && !newSectionName.startsWith("Config "))
+							newSectionName = "Config "+newSectionName;
+						InifileUtils.renameSection(getInifileDocument(), sectionName, newSectionName);
+						reread();
+					}
 				}
 			}
 		});
