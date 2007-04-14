@@ -27,6 +27,8 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
  * 
  * @author Andras
  */
+//XXX notification/rerunning should be changed as it is with Inifile:
+//XXX if inifile changed: set flag! (immediately!) then add reanalyzeIfNeeded() calls into getters! 
 public class InifileAnalyzer {
 	public static final String INIFILEANALYZERPROBLEM_MARKER_ID = InifileEditorPlugin.PLUGIN_ID + ".inifileanalyzerproblem";
 	private IInifileDocument doc;
