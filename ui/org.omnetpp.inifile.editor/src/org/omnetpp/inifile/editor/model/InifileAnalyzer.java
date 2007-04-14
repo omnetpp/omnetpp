@@ -20,10 +20,9 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 /**
- * This is a layer above IInifileDocument, and contains
- * info about the relationship of inifile contents and 
- * NED. For example, which inifile parameter settings apply
- * to which NED module parameters.
+ * This is a layer above IInifileDocument, and contains info about the
+ * relationship of inifile contents and NED. For example, which inifile
+ * parameter settings apply to which NED module parameters.
  * 
  * @author Andras
  */

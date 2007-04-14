@@ -90,6 +90,7 @@ public class InifileDocument implements IInifileDocument {
 			public void documentAboutToBeChanged(DocumentEvent event) {}
 			public void documentChanged(DocumentEvent event) {
 				changed = true;
+				fireModelChanged();				
 			}
 		};
 		document.addDocumentListener(listener);
@@ -197,11 +198,12 @@ public class InifileDocument implements IInifileDocument {
 		System.out.println("Inifile parsing: "+(System.currentTimeMillis()-startTime)+"ms");
 		
 		// mark data structure as up to date (even if there was an error, because 
-		// we don't want to keep re-parsing)
+		// we don't want to keep re-parsing again and again)
 		changed = false;
 		
-		// notify listeners
-		fireModelChanged();
+		// NOTE: notify listeners (fireModelChanged()) is NOT done here! It is done 
+		// when the underlying text document (IDocument) changes, just after we set
+		// changed=true.
 	}
 
     @SuppressWarnings("unchecked")
