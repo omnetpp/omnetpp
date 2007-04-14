@@ -5,7 +5,6 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.reconciler.DirtyRegion;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
-import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileDocument;
 
 /**
@@ -32,7 +31,11 @@ public class InifileReconcileStrategy implements IReconcilingStrategy {
 
 	public void reconcile(IRegion partition) {
 		System.out.println("reconcile(IRegion) called");
-		IInifileDocument ini = editorData.getInifileDocument();
-		((InifileDocument)ini).parse();
+		
+		// force parsing and analyzing the file now (they are both lazy and 
+		// wouldn't do that otherwise until a view, a tooltip or something
+		// needs data from them)
+		((InifileDocument)editorData.getInifileDocument()).parse();
+		editorData.getInifileAnalyzer().analyze();
 	}
 }

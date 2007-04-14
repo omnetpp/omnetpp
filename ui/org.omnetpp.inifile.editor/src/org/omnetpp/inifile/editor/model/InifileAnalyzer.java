@@ -1,5 +1,8 @@
 package org.omnetpp.inifile.editor.model;
 
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_EXTENDS;
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -17,7 +20,6 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 /**
  * This is a layer above IInifileDocument, and contains info about the
@@ -31,6 +33,7 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 public class InifileAnalyzer {
 	public static final String INIFILEANALYZERPROBLEM_MARKER_ID = InifileEditorPlugin.PLUGIN_ID + ".inifileanalyzerproblem";
 	private IInifileDocument doc;
+	private boolean changed = true;
 
 	/**
 	 * Classifies inifile keys; see getKeyType().
@@ -62,10 +65,24 @@ public class InifileAnalyzer {
 	 */
 	public InifileAnalyzer(IInifileDocument doc) {
 		this.doc = doc;
+		
+		// hook on inifile changes (unhooking is not necessary, because everything 
+		// will be gc'd when the editor closes)
+		doc.addInifileChangeListener(new IInifileChangeListener() {
+			public void modelChanged() {
+				changed = true;
+			}
+		});
+		
 	}
 
 	public IInifileDocument getDocument() {
 		return doc;
+	}
+
+	public void analyzeIfChanged() {
+		if (changed)
+			analyze();
 	}
 
 	/**
@@ -73,7 +90,7 @@ public class InifileAnalyzer {
 	 * on the IFile, and parameter resolutions (see ParamResolution) are 
 	 * recalculated.
 	 */
-	public void run() {
+	public void analyze() {
 		long startTime = System.currentTimeMillis();
 		INEDTypeResolver ned = NEDResourcesPlugin.getNEDResources();
 		
@@ -84,6 +101,8 @@ public class InifileAnalyzer {
 		} catch (CoreException e) {
 			InifileEditorPlugin.logError(e);
 		}
+		
+		//XXX catch all exceptions during analyzing, and set changed=false in finally{} ? 
 		
 		// analyze file
 		for (String section : doc.getSectionNames()) {
@@ -105,11 +124,15 @@ public class InifileAnalyzer {
 			
 			doc.setData(section, new SectionData());
 			calculateParamResolutions(section, ned);
-
-			for (String key : getUnusedParameterKeys(section))
-				addWarning(section, key, "Unused entry (does not match any parameters)");
 		}
 		System.out.println("Inifile analysed in "+(System.currentTimeMillis()-startTime)+"ms");
+		changed = false;
+
+		// warn for unused param keys; this must be done AFTER changed=false
+		for (String section : doc.getSectionNames())
+			for (String key : getUnusedParameterKeys(section))
+				addWarning(section, key, "Unused entry (does not match any parameters)");
+
 	}
 
 	protected void addError(String section, String message) {
@@ -150,7 +173,7 @@ public class InifileAnalyzer {
 		if (e == null) {
 			addError(section, key, "Unknown configuration entry: "+key);
 		}
-		else if (key.equals(ConfigurationRegistry.CFGID_EXTENDS.getName()) && section.equals(GENERAL)) {
+		else if (key.equals(CFGID_EXTENDS.getName()) && section.equals(GENERAL)) {
 			addError(section, key, "Key \""+key+"\" cannot occur in the [General] section");
 		}
 		else if (e.isGlobal() && !section.equals(GENERAL)) {
@@ -274,6 +297,7 @@ public class InifileAnalyzer {
 	}
 	
 	public boolean isUnusedParameterKey(String section, String key) {
+		analyzeIfChanged();
 		if (getKeyType(key)!=KeyType.PARAM) 
 			return false;
 		KeyData data = (KeyData) doc.getKeyData(section,key);
@@ -285,11 +309,13 @@ public class InifileAnalyzer {
 	 * empty, this key is not used to resolve any module parameters.
 	 */
 	public ParamResolution[] getParamResolutionsForKey(String section, String key) {
+		analyzeIfChanged();
 		KeyData data = (KeyData) doc.getKeyData(section,key);
 		return (data!=null && data.paramResolutions!=null) ? data.paramResolutions.toArray(new ParamResolution[]{}) : new ParamResolution[0]; 
 	}
 
 	public String[] getUnusedParameterKeys(String section) {
+		analyzeIfChanged();
 		ArrayList<String> list = new ArrayList<String>();
 		for (String key : doc.getKeys(section)) 
 			if (isUnusedParameterKey(section, key))
@@ -302,6 +328,7 @@ public class InifileAnalyzer {
 	 * parameters of the given module.  
 	 */
 	public ParamResolution[] getParamResolutionsForModule(String moduleFullPath, String section) {
+		analyzeIfChanged();
 		SectionData data = (SectionData) doc.getSectionData(section);
 		ArrayList<ParamResolution> pars = data==null ? null : data.paramResolutions;
 		if (pars == null || pars.isEmpty())
@@ -320,6 +347,7 @@ public class InifileAnalyzer {
 	 * unassigned parameters as well.  
 	 */
 	public ParamResolution[] getParamResolutions(String section) {
+		analyzeIfChanged();
 		SectionData data = (SectionData) doc.getSectionData(section);
 		return (data!=null && data.paramResolutions!=null) ? data.paramResolutions.toArray(new ParamResolution[]{}) : new ParamResolution[0]; 
 	}
@@ -328,6 +356,7 @@ public class InifileAnalyzer {
 	 * Returns unassigned parameters for the given inifile section.
 	 */
 	public ParamResolution[] getUnassignedParams(String section) {
+		analyzeIfChanged();
 		SectionData data = (SectionData) doc.getSectionData(section);
 		ArrayList<ParamResolution> pars = data==null ? null : data.paramResolutions;
 		if (pars == null || pars.isEmpty())

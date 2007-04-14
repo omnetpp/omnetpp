@@ -127,14 +127,6 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 			}
 		});
 		
-		// we want inifileAnalyzer to run whenever the document was parsed
-		//XXX revise performance-wise (it doesn't have to run immediately)
-		editorData.getInifileDocument().addInifileChangeListener(new IInifileChangeListener() {
-			public void modelChanged() {
-				editorData.getInifileAnalyzer().run();
-			}
-		});
-		
 		// if the file is in the old format, offer upgrading it
 		convertOldInifile();
 	}
