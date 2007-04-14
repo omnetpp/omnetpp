@@ -14,14 +14,14 @@ import org.omnetpp.inifile.editor.model.InifileDocument;
  */
 public class InifileReconcileStrategy implements IReconcilingStrategy {
 	private InifileEditorData editorData = null;
-	private IDocument document = null;
+	//private IDocument document = null;
 
 	public InifileReconcileStrategy(InifileEditorData editorData) {
 		this.editorData = editorData;
 	}
 
 	public void setDocument(IDocument document) {
-		this.document = document;
+		//this.document = document;
 	}
 
 	public void reconcile(DirtyRegion dirtyRegion, IRegion subRegion) {

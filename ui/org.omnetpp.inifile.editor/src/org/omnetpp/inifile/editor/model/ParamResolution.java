@@ -9,7 +9,7 @@ public class ParamResolution {
 	public enum ParamResolutionType {
 		UNASSIGNED, // unassigned parameter
 		NED, // parameter assigned in NED
-		NED_DEFAULT, // parameter set to the default value (**.use-default=true)
+		NED_DEFAULT, // parameter set to the default value (**.apply-default=true)
 		INI, // parameter assigned in inifile, with no default in NED file
 		INI_OVERRIDE, // inifile setting overrides NED default
 		INI_NEDDEFAULT, // inifile sets param to its NED default value

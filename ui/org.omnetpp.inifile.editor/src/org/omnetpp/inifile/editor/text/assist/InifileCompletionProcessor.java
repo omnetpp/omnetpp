@@ -111,11 +111,8 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 			}
 			if (linePrefix.length()==0 || linePrefix.startsWith("[")) {
 				// section heading
-				proposals.add("[General]\n");
-				proposals.add("[Parameters]\n");
-				proposals.add("[Cmdenv]\n");
-				proposals.add("[Tkenv]\n");
-				proposals.add("[Run ");
+				proposals.add("[General]");
+				proposals.add("[Config ");
 			}
 
 			if (!linePrefix.startsWith("[") && !linePrefix.matches("include\\s.*")) {
@@ -131,7 +128,7 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 						ParamResolution[] resList = ana.getUnassignedParams(section);
 						
 						//XXX generate, sort and add each group independently?
-						proposals.add("**.use-default = ");
+						proposals.add("**.apply-default = ");
 						for (ParamResolution res : resList) {
 							// offer three versions for each 
 							//XXX alternative: offer some continuations after each dot?
@@ -139,14 +136,14 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 							proposals.add(res.moduleFullPath.replaceFirst("^[^\\.]+", "**") + "." + res.paramNode.getName() + " = ");
 							proposals.add(res.moduleFullPath + "." +res.paramNode.getName() + " = ");
 
-							// propose .use-default= lines; XXX only if at least some of these parameters have default value
-							proposals.add("**." + res.paramNode.getName() + ".use-default = ");
-							proposals.add(res.moduleFullPath.replaceFirst("^[^\\.]+", "**") + "." + res.paramNode.getName() + ".use-default = ");
-							proposals.add(res.moduleFullPath + "." +res.paramNode.getName() + ".use-default = ");
+							// propose .apply-default= lines; XXX only if at least some of these parameters have default value
+							proposals.add("**." + res.paramNode.getName() + ".apply-default = ");
+							proposals.add(res.moduleFullPath.replaceFirst("^[^\\.]+", "**") + "." + res.paramNode.getName() + ".apply-default = ");
+							proposals.add(res.moduleFullPath + "." +res.paramNode.getName() + ".apply-default = ");
 						}
 					}
 
-					//XXX offer per-object configuration completion? (use-default, etc)
+					//XXX offer per-object configuration completion? (apply-default, etc)
 				}
 				else {
 					// offer value completions
@@ -174,7 +171,7 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 						// parameter value proposals -- possibly depending on the type of the parameter matched
 					}
 					if (InifileAnalyzer.getKeyType(key) == KeyType.PER_OBJECT_CONFIG) {
-						if (key.endsWith(".use-default") || key.endsWith(".ev-output")) {
+						if (key.endsWith(".apply-default") || key.endsWith(".ev-output")) {
 							proposals.add("true\n");
 							proposals.add("false\n");
 						}

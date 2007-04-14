@@ -1,5 +1,7 @@
 package org.omnetpp.inifile.editor.model;
 
+import org.omnetpp.common.util.StringUtils;
+
 public class InifileConverter {
 	public static String[] OBSOLETE_SECTIONS = {"Parameters", "Cmdenv", "Tkenv", "OutVectors", "Partitioning", "DisplayStrings"};
 
@@ -24,7 +26,7 @@ public class InifileConverter {
 	 * needs to be converted.
 	 */
 	public static boolean needsConversion(String text) {
-	    String allObsoleteSections = join("|", OBSOLETE_SECTIONS);
+	    String allObsoleteSections = StringUtils.join(OBSOLETE_SECTIONS, "|");
 	    text = "\n"+text+"\n";
 	    return text.matches("(?s).*\n\\s*\\[("+allObsoleteSections+"|Run ([0-9]+))\\][^\n]*\n.*");
 	}
@@ -37,21 +39,21 @@ public class InifileConverter {
 	 *  - prefix [Cmdenv]/[Tkenv] config names with "cmdenv-" and "tkenv-" (unless already begins with that)
 	 *  - rename sections [Run 1], [Run 2] etc to [Config config1], etc.
 	 *  - rename output vector configuration sections "**.interval=" to "**.record-interval="
-	 *  - rename "**.use-default" to "**.apply-default"
+	 *  - rename "**.apply-default" to "**.apply-default"
 	 */
 	public static String convert(String text) {
 		// Note: this method was created from the Perl script _scripts\migrate\migrateinifile.pl 
 		String MULTILINE = "(?m)";  // turns on regex MULTILINE mode (Perl: s///m) 
 		
-	    String allCmdenvNames = join("|", CMDENV_NAMES);
+	    String allCmdenvNames = StringUtils.join(CMDENV_NAMES, "|");
 	    text = text.replaceAll(MULTILINE+"^(\\s*[;#]?\\s*)("+allCmdenvNames+")\\b", "$1cmdenv-$2");
 
 	    // rename Tkenv keys
-	    String allTkenvNames = join("|", TKENV_NAMES);
+	    String allTkenvNames = StringUtils.join(TKENV_NAMES, "|");
 	    text = text.replaceAll(MULTILINE+"^(\\s*[;#]?\\s*)("+allTkenvNames+")\\b", "$1tkenv-$2");
 
 	    // rename sections to [General]
-	    String allObsoleteSections = join("|", OBSOLETE_SECTIONS);
+	    String allObsoleteSections = StringUtils.join(OBSOLETE_SECTIONS, "|");
 	    text = text.replaceAll(MULTILINE+"^(\\s*[;#]?\\s*)\\[("+allObsoleteSections+")\\]", "$1\\[General\\]");
 
 	    // rename [Run X] sections to [Config configX]
@@ -89,14 +91,14 @@ public class InifileConverter {
 	    return text;
 	}
 
-	private static String join(String separator, String[] parts) {
-		StringBuffer result = new StringBuffer();
-		for (String part : parts) {
-			if (result.length()!=0)
-				result.append(separator);
-			result.append(part);
-		}
-		return result.toString();
-	}
+//	private static String join(String separator, String[] parts) {
+//		StringBuffer result = new StringBuffer();
+//		for (String part : parts) {
+//			if (result.length()!=0)
+//				result.append(separator);
+//			result.append(part);
+//		}
+//		return result.toString();
+//	}
 
 }

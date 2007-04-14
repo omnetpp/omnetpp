@@ -1,6 +1,7 @@
 package org.omnetpp.inifile.editor.model;
 
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_EXTENDS;
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.texteditor.MarkerUtilities;
+import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
@@ -18,6 +20,7 @@ import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
@@ -41,7 +44,7 @@ public class InifileAnalyzer {
 	public enum KeyType {
 		CONFIG, // contains no dot (like sim-time-limit=, etc) 					
 		PARAM,  // contains dot, but no hyphen: parameter setting (like **.app.delay) 
-		PER_OBJECT_CONFIG; // dotted, and contains hyphen (like **.use-default, rng mapping, vector configuration, etc)
+		PER_OBJECT_CONFIG; // dotted, and contains hyphen (like **.apply-default, rng mapping, vector configuration, etc)
 	};
 
 	/**
@@ -106,6 +109,8 @@ public class InifileAnalyzer {
 		
 		// analyze file
 		for (String section : doc.getSectionNames()) {
+			if (!section.equals(GENERAL) && !section.startsWith("Config "))
+				addError(section, "Wrong section name: must be [General] or [Config <name>]");
 			for (String key : doc.getKeys(section)) {
 				switch (getKeyType(key)) {
 				case CONFIG:
@@ -168,10 +173,13 @@ public class InifileAnalyzer {
 		}
     }
 
+    //XXX into InifileUtils?
 	protected void validateConfig(String section, String key, INEDTypeResolver ned) {
+		// check key and if it occurs in the right section
 		ConfigurationEntry e = ConfigurationRegistry.getEntry(key);
 		if (e == null) {
 			addError(section, key, "Unknown configuration entry: "+key);
+			return;
 		}
 		else if (key.equals(CFGID_EXTENDS.getName()) && section.equals(GENERAL)) {
 			addError(section, key, "Key \""+key+"\" cannot occur in the [General] section");
@@ -179,9 +187,71 @@ public class InifileAnalyzer {
 		else if (e.isGlobal() && !section.equals(GENERAL)) {
 			addError(section, key, "Key \""+key+"\" can only be specified globally, in the [General] section");
 		}
+
+		// check value: if it is the right type
+		String value = doc.getValue(section, key);
+		String errorMessage = validateConfigValueByType(value, e.getType());
+		if (errorMessage != null) {
+			addError(section, key, errorMessage);
+			return;
+		}
+
+		if (e.getType()==ConfigurationEntry.Type.CFG_STRING && value.startsWith("\""))
+			value =	Common.parseQuotedString(value); // cannot throw exception: value got validated above
 		
-		//XXX check the syntax of the value too, etc...
-		//XXX check validity of some settings, like network=, preload-ned-files=, etc
+		// check validity of some settings, like network=, preload-ned-files=, etc
+		if (e==CFGID_EXTENDS) {
+			if (!doc.containsSection("Config "+value))
+				addError(section, key, "No such section: [Config "+value+"]");
+		}
+		else if (e==CFGID_NETWORK) {
+			INEDTypeInfo network = ned.getComponent(value);
+			if (network == null) {
+				addError(section, key, "No such NED network: "+value);
+				return;
+			}
+			NEDElement node = network.getNEDElement();
+			if (!(node instanceof CompoundModuleNode) || ((CompoundModuleNode)node).getIsNetwork()==false) {
+				addError(section, key, "Type '"+value+"' was not declared in NED with the keyword 'network'");
+				return;
+			}
+		}
+	}
+
+	//XXX into InifileUtils?
+	private static String validateConfigValueByType(String value, ConfigurationEntry.Type type) {
+		switch (type) {
+			case CFG_BOOL:
+				if (!value.equals("true") && !value.equals("false"))
+					return "Value should be a boolean constant: true or false";
+				break;
+			case CFG_INT:
+				try {
+					Integer.parseInt(value);
+				} catch (NumberFormatException ex) {
+					return "Value should be an integer constant";
+				}
+				break;
+			case CFG_DOUBLE:
+				try {
+					Double.parseDouble(value);
+				} catch (NumberFormatException ex) {
+					return "Value should be a numeric constant (a double)";
+				}
+				break;
+			case CFG_STRING:
+				try {
+					if (value.startsWith("\""))
+						Common.parseQuotedString(value);
+				} catch (RuntimeException ex) {
+					return "Error in string constant: "+ex.getMessage();
+				}
+			case CFG_FILENAME:
+			case CFG_FILENAMES:
+				//XXX
+				break;
+		}
+		return null;
 	}
 
 	protected void calculateParamResolutions(String section, INEDTypeResolver ned) {
@@ -251,7 +321,7 @@ public class InifileAnalyzer {
 			String paramFullPath = moduleFullPath + "." + param.getName();
 			iniKey = InifileUtils.lookupParameter(paramFullPath, doc, GENERAL); //XXX run-specific sections too!
 			iniValue = doc.getValue(GENERAL, iniKey);
-			iniUseDefaultKey = InifileUtils.lookupParameter(paramFullPath+".use-default", doc, GENERAL);
+			iniUseDefaultKey = InifileUtils.lookupParameter(paramFullPath+".apply-default", doc, GENERAL);
 			String iniUseDefaultStr = doc.getValue(GENERAL, iniKey);
 			iniUseDefault = "true".equals(iniUseDefaultStr);
 		}
