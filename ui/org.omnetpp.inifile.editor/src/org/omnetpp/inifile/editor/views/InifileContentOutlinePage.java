@@ -1,8 +1,6 @@
 package org.omnetpp.inifile.editor.views;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -11,16 +9,20 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.texteditor.ITextEditor;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.common.ui.ITooltipProvider;
+import org.omnetpp.common.ui.TooltipSupport;
 import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileChangeListener;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
-import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
+import org.omnetpp.inifile.editor.model.InifileUtils;
 
 /**
  * Content outline page for the inifile editor.
@@ -82,6 +84,16 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 		
 		Assert.isTrue(inifileDocument!=null);
 		getTreeViewer().setInput(inifileDocument);
+		
+ 		// add tooltip support
+ 		TooltipSupport.adapt(getTreeViewer().getTree(), new ITooltipProvider() {
+			public String getTooltipFor(Control control, int x, int y) {
+				Item item = getTreeViewer().getTree().getItem(new Point(x,y));
+				String section = (String) (item==null ? null : item.getData());
+				return section==null ? null : InifileUtils.getSectionTooltip(section, inifileDocument, null);
+			}
+ 		});
+		
 	}
 	
 	/* (non-Javadoc)

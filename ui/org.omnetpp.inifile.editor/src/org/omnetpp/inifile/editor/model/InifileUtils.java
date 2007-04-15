@@ -256,36 +256,52 @@ public class InifileUtils {
 				doc.setValue(section, CFGID_EXTENDS.getKey(), newName);
 	}
 
+	/**
+	 * Generates tooltip for an inifile section.
+	 * @param section  null is accepted
+	 */
 	public static String getSectionTooltip(String section, IInifileDocument doc, InifileAnalyzer analyzer) {
+		if (section == null || !doc.containsSection(section))
+			return null;
+		
 		// name and description
 		String text = "Section ["+section+"]";
 		String description = doc.getValue(section, "description");
 		if (description!=null) 
 			text += " -- " + description;
-		text += "\n\n";
+		text += "\n";
 		
 		// section chain 
 		String[] sectionChain = resolveSectionChain(doc, section);
 		if (sectionChain.length >= 2)
-			text += "Lookup order: " + StringUtils.join(sectionChain, " > ") + "\n\n"; //XXX decide terminology: "Lookup order" or "Section fallback chain" ? also: "," or ">" ? 
+			text += "   fallback order: " + StringUtils.join(sectionChain, " > ") + "\n"; //XXX decide terminology: "Lookup order" or "Section fallback chain" ? also: "," or ">" ? 
 		
 		// unassigned parameters
-		ParamResolution[] resList = analyzer.getUnassignedParams(section);
-		if (resList.length==0) { 
-			text += "This section seems to contain no unassigned NED parameters";
+		if (analyzer != null) {
+			ParamResolution[] resList = analyzer.getUnassignedParams(section);
+			if (resList.length==0) { 
+				text += "\nThis section seems to contain no unassigned NED parameters";
+			}
+			else {
+				text += "\nThis section does not seem to assign the following NED parameters: \n";
+				for (ParamResolution res : resList)
+					text += "  - " + res.moduleFullPath + "." +res.paramNode.getName() + "\n";
+			}
 		}
-		else {
-			text += "This section does not seem to assign the following NED parameters: \n";
-			for (ParamResolution res : resList)
-				text += "  - " + res.moduleFullPath + "." +res.paramNode.getName() + "\n";
-		}
-		return text;
+		return text.trim();
 	}
 
+	/**
+	 * Generate tooltip for an inifile entry.
+	 * @param section  null is accepted
+	 * @param key      null is accepted
+	 */
+	//XXX should tolerate analyzer==null
 	public static String getEntryTooltip(String section, String key, IInifileDocument doc, InifileAnalyzer analyzer) {
-		//XXX section/config/param/perobjectconfig tooltips have to be generated here as well!!!
-		KeyType keyType = (key == null) ? KeyType.CONFIG : InifileAnalyzer.getKeyType(key);
+		if (section == null || key == null || !doc.containsKey(section, key))
+			return null;
 
+		KeyType keyType = (key == null) ? KeyType.CONFIG : InifileAnalyzer.getKeyType(key);
 		if (keyType==KeyType.CONFIG) {
 			// config key: display description
 			ConfigurationEntry entry = ConfigurationRegistry.getEntry(key);
