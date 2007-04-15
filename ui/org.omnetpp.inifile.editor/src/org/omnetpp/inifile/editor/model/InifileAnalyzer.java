@@ -402,10 +402,12 @@ public class InifileAnalyzer {
 		return containsSectionCircles;
 
 	}
+	
 	/**
 	 * Classify an inifile key, based on its syntax.
 	 * XXX syntax rules used here must be enforced throughout the system
 	 */
+	//XXX into InifileUtils? (KeyType too)
 	public static KeyType getKeyType(String key) {
 		if (!key.contains(".")) 
 			return KeyType.CONFIG;  // contains no dot

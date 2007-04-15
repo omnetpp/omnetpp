@@ -5,9 +5,11 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -27,11 +29,13 @@ import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.common.util.DelayedJob;
+import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.form.InifileFormEditor;
 import org.omnetpp.inifile.editor.model.IInifileChangeListener;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileConverter;
 import org.omnetpp.inifile.editor.model.InifileDocument;
+import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.text.InifileTextEditor;
 import org.omnetpp.inifile.editor.views.InifileContentOutlinePage;
 
@@ -40,12 +44,12 @@ import org.omnetpp.inifile.editor.views.InifileContentOutlinePage;
  */
 //FIXME File|Revert is always diabled; same for Redo/Undo
 //XXX should listen on workspace changes (of included ini files)
-public class InifileEditor extends MultiPageEditorPart implements IResourceChangeListener, IGotoMarker {
-	/** The text editor */
+public class InifileEditor extends MultiPageEditorPart implements IResourceChangeListener, IGotoMarker, IGotoInifile {
+	/* editor pages */
 	private InifileTextEditor textEditor;
-	
-	/** Form editor */
 	private InifileFormEditor formEditor;
+	public static final int FORMEDITOR_PAGEINDEX = 0;
+	public static final int TEXTEDITOR_PAGEINDEX = 1;
 
 	/** The data model */
 	private InifileEditorData editorData = new InifileEditorData();
@@ -90,6 +94,9 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 
 		// create texteditor
 		createTextEditorPage();
+
+		// assert page constants are OK
+		Assert.isTrue(getControl(FORMEDITOR_PAGEINDEX)==formEditor && getEditor(TEXTEDITOR_PAGEINDEX)==textEditor);
 		
 		// set up editorData (the InifileDocument)
 		IFile file = ((IFileEditorInput)getEditorInput()).getFile();
@@ -191,14 +198,6 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		setInput(textEditor.getEditorInput());
 	}
 	
-	/* (non-Javadoc)
-	 * Method declared on IGotoMarker
-	 */
-	public void gotoMarker(IMarker marker) {
-		setActivePage(0); //XXX
-		IDE.gotoMarker(textEditor, marker);
-	}
-
 	/**
 	 * The <code>MultiPageEditorExample</code> implementation of this method
 	 * checks that the input is an instance of <code>IFileEditorInput</code>.
@@ -232,7 +231,7 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 			formEditor.pageDeselected();
 		}
 	}
-
+	
 	/**
 	 * Detect when the file is in the old format, and offer converting it.
 	 */
@@ -256,7 +255,7 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	public Object getAdapter(Class required) {
 		if (IContentOutlinePage.class.equals(required)) {
 			if (outlinePage == null) {
-				outlinePage = new InifileContentOutlinePage(textEditor);
+				outlinePage = new InifileContentOutlinePage(this);
 				outlinePage.setInput(getEditorData().getInifileDocument());
 			}
 			return outlinePage;
@@ -278,6 +277,68 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 					}
 				}            
 			});
+		}
+	}
+
+	/* (non-Javadoc)
+	 * Method declared on IGotoMarker
+	 */
+	public void gotoMarker(IMarker marker) {
+		setActivePage(TEXTEDITOR_PAGEINDEX);
+		IDE.gotoMarker(textEditor, marker);
+	}
+
+	/* (non-Javadoc)
+	 * Method declared on IGotoInifile
+	 */
+	public void gotoSection(String section, Mode mode) {
+		if (mode==IGotoInifile.Mode.AUTO)
+			mode = getActivePage()==FORMEDITOR_PAGEINDEX ? IGotoInifile.Mode.FORM : IGotoInifile.Mode.TEXT;
+
+		if (mode==IGotoInifile.Mode.FORM) {
+			setActivePage(FORMEDITOR_PAGEINDEX);
+			formEditor.gotoSection(section);
+		}
+		else if (mode==IGotoInifile.Mode.TEXT) {
+			setActivePage(TEXTEDITOR_PAGEINDEX);
+			LineInfo line = editorData.getInifileDocument().getSectionLineDetails(section);
+			highlightLineInTextEditor(line); 
+		}
+	}
+
+	/* (non-Javadoc)
+	 * Method declared on IGotoInifile
+	 */
+	public void gotoEntry(String section, String key, Mode mode) {
+		if (mode==IGotoInifile.Mode.AUTO)
+			mode = getActivePage()==FORMEDITOR_PAGEINDEX ? IGotoInifile.Mode.FORM : IGotoInifile.Mode.TEXT;
+
+		if (mode==IGotoInifile.Mode.FORM) {
+			setActivePage(FORMEDITOR_PAGEINDEX);
+			formEditor.gotoEntry(section, key);
+		}
+		else if (mode==IGotoInifile.Mode.TEXT) {
+			setActivePage(TEXTEDITOR_PAGEINDEX);
+			LineInfo line = editorData.getInifileDocument().getEntryLineDetails(section, key);
+			highlightLineInTextEditor(line); 
+		}
+	}
+
+	protected void highlightLineInTextEditor(LineInfo line) {
+		if (line==null) {
+			textEditor.resetHighlightRange();
+			return;
+		}
+		//XXX check IFile matches!!!!
+		try {
+			IDocument docu = textEditor.getDocumentProvider().getDocument(textEditor.getEditorInput());
+			int startOffset = docu.getLineOffset(line.getLineNumber()-1);
+			int endOffset = docu.getLineOffset(line.getLineNumber())-1;
+			textEditor.setHighlightRange(startOffset, endOffset-startOffset, true);
+		} catch (BadLocationException e) {
+		}
+		catch (IllegalArgumentException x) {
+			textEditor.resetHighlightRange();
 		}
 	}
 }

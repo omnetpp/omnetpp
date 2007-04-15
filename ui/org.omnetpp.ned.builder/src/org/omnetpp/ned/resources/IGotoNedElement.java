@@ -3,7 +3,9 @@ package org.omnetpp.ned.resources;
 import org.omnetpp.ned.model.NEDElement;
 
 /**
- * interface to allow selection of a toplevel component or a line range from outside of a graphical editor
+ * Interface to allow selection of a toplevel component or a line range from
+ * outside of a graphical editor
+ * 
  * @author rhornig
  */
 public interface IGotoNedElement {

@@ -16,6 +16,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.inifile.editor.IGotoInifile;
+import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileChangeListener;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
@@ -27,15 +29,15 @@ import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 //XXX also: treeView to follow editor's selection
 public class InifileContentOutlinePage extends ContentOutlinePage implements IInifileChangeListener {
 	protected IInifileDocument inifileDocument;
-	protected ITextEditor textEditor;
+	protected InifileEditor inifileEditor;
 
 	/**
 	 * Creates a content outline page using the given provider and the given editor.
 	 * @param editor the editor
 	 */
-	public InifileContentOutlinePage(ITextEditor editor) {
+	public InifileContentOutlinePage(InifileEditor editor) {
 		super();
-		textEditor = editor;
+		inifileEditor = editor;
 	}
 	
 	/* (non-Javadoc)
@@ -92,7 +94,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 		// make text editor to follow outline's selection
 		ISelection selection = event.getSelection();
 		if (selection.isEmpty()) {
-			textEditor.resetHighlightRange();
+			inifileEditor.gotoSection(null, IGotoInifile.Mode.AUTO);
 		}
 		else {
 			// if a line is selected in the outline, highlight it in the text editor
@@ -101,18 +103,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 			Object sel = ((IStructuredSelection) selection).getFirstElement();
 			if (sel instanceof String) {
 				String sectionName = (String) sel;
-
-				LineInfo line = inifileDocument.getSectionLineDetails(sectionName);
-				IDocument docu = textEditor.getDocumentProvider().getDocument(textEditor.getEditorInput());
-				try {
-					int startOffset = docu.getLineOffset(line.getLineNumber()-1);
-					int endOffset = docu.getLineOffset(line.getLineNumber())-1;
-					textEditor.setHighlightRange(startOffset, endOffset-startOffset, true);
-				} catch (BadLocationException e) {
-				}
-				catch (IllegalArgumentException x) {
-					textEditor.resetHighlightRange();
-				}
+				inifileEditor.gotoSection(sectionName, IGotoInifile.Mode.AUTO);
 			}
 		}
 	}

@@ -13,6 +13,7 @@ import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -46,7 +47,6 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 //XXX show description= value as tooltip
 //XXX double-click should go there in the inifile text (or in the Parameters page?)
 //XXX enable/disable buttons as tree selection changes
-//XXX warn user if Analyzer detected circles in the section fallback chain!
 public class SectionsPage extends FormPage {
 	public static final String ICON_ERROR = "icons/full/obj16/Error.png"; //XXX find better place for it
 	private TreeViewer treeViewer;
@@ -60,9 +60,18 @@ public class SectionsPage extends FormPage {
 			this.hasError = isUndefined;
 		}
 		
+		/* label provider maps to this */
 		@Override
 		public String toString() {
 			return sectionName + (hasError ? " (base section does not exist)" : ""); //XXX not very elegant
+		}
+		
+		/* needed for treeViewer.setSelection() to work */
+		@Override
+		public boolean equals(Object obj) {
+			if (obj==null || getClass()!=obj.getClass())
+				return false;
+			return sectionName.equals(((SectionData)obj).sectionName);
 		}
 	}
 	
@@ -307,6 +316,30 @@ public class SectionsPage extends FormPage {
 
 	@Override
 	public void commit() {
-		//TODO
+		// nothing to do
 	}
+
+	@Override
+	public void gotoSection(String section) {
+		treeViewer.setSelection(new StructuredSelection(new GenericTreeNode(new SectionData(section, false))));
+	}
+
+	@Override
+	public void gotoEntry(String section, String key) {
+		gotoSection(section);
+	}
+
+//	protected static Item[] getAllTreeItems(Tree tree) {
+//		List<Item> list = new ArrayList<Item>();
+//		for (TreeItem item : tree.getItems())
+//			collectTreeItems(item, list);
+//		return list.toArray(new Item[]{});
+//	}
+//
+//	private static void collectTreeItems(TreeItem item, List<Item> list) {
+//		list.add(item);
+//		for (TreeItem childItem : item.getItems())
+//			collectTreeItems(childItem, list);
+//	}
+
 }

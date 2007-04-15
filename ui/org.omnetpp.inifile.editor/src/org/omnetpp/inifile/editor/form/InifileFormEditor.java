@@ -20,6 +20,9 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
+import org.omnetpp.inifile.editor.model.InifileAnalyzer;
+import org.omnetpp.inifile.editor.model.InifileUtils;
+import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 
 
 /**
@@ -27,9 +30,9 @@ import org.omnetpp.inifile.editor.editors.InifileEditor;
  * @author andras
  */
 public class InifileFormEditor extends Composite {
-	private static final String TREELABEL_SECTIONS = "Sections";
-	private static final String TREELABEL_PARAMETERS = "Parameters";
-	private static final String TREELABEL_CONFIGURATION = "Configuration";
+	private static final String SECTIONS_NODE = "Sections";
+	private static final String PARAMETERS_NODE = "Parameters";
+	private static final String CONFIGURATION_NODE = "Configuration";
 
 	public static final Color BGCOLOR = null; // or: ColorFactory.asColor("white");
 
@@ -77,14 +80,14 @@ public class InifileFormEditor extends Composite {
 
 	private void buildTree() {
 		GenericTreeNode root = new GenericTreeNode("root");
-		GenericTreeNode configNode = new GenericTreeNode(TREELABEL_CONFIGURATION); 
+		GenericTreeNode configNode = new GenericTreeNode(CONFIGURATION_NODE); 
 		root.addChild(configNode);
 
 		String[] categories = GenericConfigPage.getCategoryNames();
 		for (String c : categories)
 			configNode.addChild(new GenericTreeNode(c));
-		root.addChild(new GenericTreeNode(TREELABEL_SECTIONS));
-		root.addChild(new GenericTreeNode(TREELABEL_PARAMETERS));
+		root.addChild(new GenericTreeNode(SECTIONS_NODE));
+		root.addChild(new GenericTreeNode(PARAMETERS_NODE));
 		treeViewer.setInput(root);
 		treeViewer.expandAll();
 	}
@@ -113,12 +116,12 @@ public class InifileFormEditor extends Composite {
 			formPage.dispose();
 		}
 
-		if (category.equals(TREELABEL_CONFIGURATION))
+		if (category.equals(CONFIGURATION_NODE))
 			category = GenericConfigPage.getCategoryNames()[0];
 			
-		if (category.equals(TREELABEL_PARAMETERS))
+		if (category.equals(PARAMETERS_NODE))
 			formPage = new ParametersPage(form, inifileEditor);
-		else if (category.equals(TREELABEL_SECTIONS))
+		else if (category.equals(SECTIONS_NODE))
 			formPage = new SectionsPage(form, inifileEditor);
 		else
 			formPage = new GenericConfigPage(form, category, inifileEditor);
@@ -146,5 +149,21 @@ public class InifileFormEditor extends Composite {
 	public void pageDeselected() {
 		if (formPage != null) 
 			formPage.commit();
+	}
+
+	public void gotoSection(String section) {
+		showCategoryPage(SECTIONS_NODE);
+		formPage.gotoSection(section);
+	}
+
+	public void gotoEntry(String section, String key) {
+		KeyType keyType = InifileAnalyzer.getKeyType(key);
+		if (keyType==KeyType.PARAM)
+			showCategoryPage(PARAMETERS_NODE);
+		else if (keyType==KeyType.PER_OBJECT_CONFIG)
+			showCategoryPage(PARAMETERS_NODE); //XXX for lack of anything better for now
+		else 
+			showCategoryPage(CONFIGURATION_NODE); //XXX could make more effort to position the right field editor...
+		formPage.gotoEntry(section, key);
 	}
 }

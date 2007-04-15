@@ -73,4 +73,18 @@ public abstract class FormPage extends Composite {
 		return titleArea;
 	}
 
+	/**
+	 * Position the cursor on the given section (as far as possible or makes sense)
+	 */
+	public void gotoSection(String section) {
+		// do nothing by default (subclasses are advised to override)
+	}
+
+	/**
+	 * Position the cursor on the given entry (as far as possible or makes sense)
+	 */
+	public void gotoEntry(String section, String key) {
+		// do nothing by default (subclasses are advised to override)
+	}
+
 }

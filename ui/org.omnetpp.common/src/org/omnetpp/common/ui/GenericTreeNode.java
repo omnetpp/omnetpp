@@ -105,4 +105,17 @@ public class GenericTreeNode {
 	public String toString() {
 		return payload.toString();
 	}
+	
+	/**
+	 * Compares payloads only (of two GenericTreeNodes) 
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj==null || getClass()!=obj.getClass())
+			return false;
+		if (this==obj)
+			return true;
+		GenericTreeNode node = (GenericTreeNode)obj;
+		return node.payload==payload || node.payload.equals(payload);
+	}
 }
