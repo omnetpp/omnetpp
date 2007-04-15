@@ -35,13 +35,12 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
  * 
  * @author Andras
  */
-//XXX notification/rerunning should be changed as it is with Inifile:
-//XXX if inifile changed: set flag! (immediately!) then add reanalyzeIfNeeded() calls into getters! 
 public class InifileAnalyzer {
 	public static final String INIFILEANALYZERPROBLEM_MARKER_ID = InifileEditorPlugin.PLUGIN_ID + ".inifileanalyzerproblem";
 	private IInifileDocument doc;
 	private boolean changed = true;
-
+	private boolean containsSectionCircles; 
+	
 	/**
 	 * Classifies inifile keys; see getKeyType().
 	 */
@@ -114,7 +113,7 @@ public class InifileAnalyzer {
 		// analyze file
 		for (String section : doc.getSectionNames()) {
 			doc.setData(section, new SectionData());
-			if (!section.equals(GENERAL) && !section.startsWith("Config "))
+			if (!section.equals(GENERAL) && !section.startsWith(CONFIG_))
 				addError(section, "Wrong section name: must be [General] or [Config <name>]");
 			
 			for (String key : doc.getKeys(section)) {
@@ -211,7 +210,7 @@ public class InifileAnalyzer {
 
 		// check validity of some settings, like network=, preload-ned-files=, etc
 		if (e==CFGID_EXTENDS) {
-			if (!doc.containsSection("Config "+value))
+			if (!doc.containsSection(CONFIG_+value))
 				addError(section, key, "No such section: [Config "+value+"]");
 		}
 		else if (e==CFGID_NETWORK) {
@@ -265,6 +264,7 @@ public class InifileAnalyzer {
 	}
 
 	protected void detectSectionCircles() {
+		containsSectionCircles = false;
 		Set<String> bogusSections = new HashSet<String>();
 		
 		// check fallback chain for every section, except [General]
@@ -290,6 +290,7 @@ public class InifileAnalyzer {
 		}
 
 		// add error markers
+		containsSectionCircles = !bogusSections.isEmpty();
 		for (String section : bogusSections)
 			addError(section, "circle in the fallback chain at section ["+section+"]");
 	}
@@ -347,7 +348,7 @@ public class InifileAnalyzer {
 	 * XXX probably not good (does not handle all cases): what if parameter is assigned in a submodule decl? 
 	 * what if it's assigned using a /pattern/? this info cannot be expressed in the arg list! 
 	 */
-	public static ParamResolution resolveParameter(String moduleFullPath, ParamNode param, String[] sectionChain, IInifileDocument doc) {
+	protected static ParamResolution resolveParameter(String moduleFullPath, ParamNode param, String[] sectionChain, IInifileDocument doc) {
 		// value in the NED file
 		String nedValue = param.getValue(); //XXX what if parsed expressions?
 		if (StringUtils.isEmpty(nedValue)) nedValue = null;
@@ -397,6 +398,10 @@ public class InifileAnalyzer {
 		return new ParamResolution(moduleFullPath, param, type, iniSection, iniKey);
 	}
 
+	public boolean containsSectionCircles() {
+		return containsSectionCircles;
+
+	}
 	/**
 	 * Classify an inifile key, based on its syntax.
 	 * XXX syntax rules used here must be enforced throughout the system

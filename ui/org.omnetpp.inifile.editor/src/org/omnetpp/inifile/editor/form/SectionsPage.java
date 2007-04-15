@@ -1,5 +1,6 @@
 package org.omnetpp.inifile.editor.form;
 
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 //XXX show description= value as tooltip
 //XXX double-click should go there in the inifile text (or in the Parameters page?)
 //XXX enable/disable buttons as tree selection changes
+//XXX warn user if Analyzer detected circles in the section fallback chain!
 public class SectionsPage extends FormPage {
 	public static final String ICON_ERROR = "icons/full/obj16/Error.png"; //XXX find better place for it
 	private TreeViewer treeViewer;
@@ -80,6 +82,13 @@ public class SectionsPage extends FormPage {
 		((GridData)label.getLayoutData()).horizontalSpan = 2;
 		label.setText("\nAdd/remove configuration sections, and edit the fallback sequence of parameter and configuration lookups.");
 
+		if (getInifileAnalyzer().containsSectionCircles()) {
+			Label label2 = new Label(this, SWT.NONE);
+			label2.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+			((GridData)label2.getLayoutData()).horizontalSpan = 2;
+			label2.setText("NOTE: Sections that form circles (which is illegal) are not displayed here -- switch to text mode to fix them!");
+		}
+		
 		treeViewer = createAndConfigureTreeViewer();
 		treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
@@ -179,8 +188,8 @@ public class SectionsPage extends FormPage {
 		final IInputValidator newSectionNameValidator = new IInputValidator() {
 			public String isValid(String sectionName) {
 				sectionName = sectionName.trim();
-				if (!sectionName.equals(GENERAL) && !sectionName.startsWith("Config "))
-					sectionName = "Config "+sectionName;
+				if (!sectionName.equals(GENERAL) && !sectionName.startsWith(CONFIG_))
+					sectionName = CONFIG_+sectionName;
 				if (getInifileDocument().containsSection(sectionName))
 					return "Section ["+sectionName+"] already exists";
 				return null;
@@ -193,8 +202,8 @@ public class SectionsPage extends FormPage {
 				InputDialog dialog = new InputDialog(getShell(), "New Section", "Name for the new section:", "new", newSectionNameValidator);
 				if (dialog.open()==Window.OK) {
 					String sectionName = dialog.getValue().trim();
-					if (!sectionName.equals(GENERAL) && !sectionName.startsWith("Config "))
-						sectionName = "Config "+sectionName;
+					if (!sectionName.equals(GENERAL) && !sectionName.startsWith(CONFIG_))
+						sectionName = CONFIG_+sectionName;
 					InifileUtils.addSection(getInifileDocument(), sectionName);
 					String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
 					if (selection.length != 0)
@@ -228,8 +237,8 @@ public class SectionsPage extends FormPage {
 					InputDialog dialog = new InputDialog(getShell(), "Rename Section", "New name for section ["+sectionName+"]:", sectionName.replaceFirst("^Config +", "")+"-1", newSectionNameValidator);
 					if (dialog.open()==Window.OK) {
 						String newSectionName = dialog.getValue().trim();
-						if (!newSectionName.equals(GENERAL) && !newSectionName.startsWith("Config "))
-							newSectionName = "Config "+newSectionName;
+						if (!newSectionName.equals(GENERAL) && !newSectionName.startsWith(CONFIG_))
+							newSectionName = CONFIG_+newSectionName;
 						InifileUtils.renameSection(getInifileDocument(), sectionName, newSectionName);
 						reread();
 					}
@@ -261,7 +270,7 @@ public class SectionsPage extends FormPage {
 		// build tree
 		HashMap<String,GenericTreeNode> nodes = new HashMap<String, GenericTreeNode>();
 		for (String sectionName : doc.getSectionNames()) {
-			if (sectionName.startsWith("Config ")) {
+			if (sectionName.startsWith(CONFIG_)) {
 				GenericTreeNode node = getOrCreate(nodes, sectionName, false);
 				String extendsName = doc.getValue(sectionName, "extends");
 				if (extendsName == null) {
@@ -270,7 +279,7 @@ public class SectionsPage extends FormPage {
 				}
 				else {
 					// add as child to the section it extends
-					String extendsSectionName = "Config "+extendsName;
+					String extendsSectionName = CONFIG_+extendsName;
 					if (doc.containsSection(extendsSectionName)) {
 						GenericTreeNode extendsSectionNode = getOrCreate(nodes, extendsSectionName, false);
 						extendsSectionNode.addChild(node);
