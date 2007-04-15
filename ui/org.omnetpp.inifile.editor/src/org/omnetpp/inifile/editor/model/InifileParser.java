@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.CoreException;
  * Parses an ini file. Parse results are passed back via a callback.
  * @author Andras
  */
+//XXX warn/error if a key occurs multiple times in the same section
 public class InifileParser {
 	/** 
 	 * Implement this interface to store ini file contents as it gets parsed. The comment

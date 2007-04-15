@@ -19,6 +19,7 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 /**
  * Presents hover information for ini files.
  */
+//XXX perhaps use InifileUtils.getSectionTooltip() / getEntryTooltip()
 public class InifileTextHover implements ITextHover {
 	private InifileEditorData editorData;
 

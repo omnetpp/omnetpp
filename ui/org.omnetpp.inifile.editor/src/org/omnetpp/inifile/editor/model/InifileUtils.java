@@ -12,6 +12,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
@@ -255,5 +256,50 @@ public class InifileUtils {
 				doc.setValue(section, CFGID_EXTENDS.getKey(), newName);
 	}
 
-	//XXX section/config/param/perobjectconfig tooltips have to be generated here as well!!!
+	public static String getSectionTooltip(String section, IInifileDocument doc, InifileAnalyzer analyzer) {
+		// Parameters section: display unassigned parameters
+		ParamResolution[] resList = analyzer.getUnassignedParams(section);
+		//XXX add description too
+		if (resList.length==0) 
+			return "Section [" + section + "] seems to contain no unassigned parameters ";
+		String text = "Section [" + section + "] does not seem to assign the following parameters: \n";
+		for (ParamResolution res : resList)
+			text += "  - " + res.moduleFullPath + "." +res.paramNode.getName() + "\n";
+		return text;
+	}
+
+	public static String getEntryTooltip(String section, String key, IInifileDocument doc, InifileAnalyzer analyzer) {
+		//XXX section/config/param/perobjectconfig tooltips have to be generated here as well!!!
+		KeyType keyType = (key == null) ? KeyType.CONFIG : InifileAnalyzer.getKeyType(key);
+
+		if (keyType==KeyType.CONFIG) {
+			// config key: display description
+			ConfigurationEntry entry = ConfigurationRegistry.getEntry(key);
+			if (entry == null)
+				return null;
+			String text = "[General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / "+entry.getKey();
+			text += " = <" + entry.getType().name().replaceFirst("CFG_", ""); 
+			if (!"".equals(entry.getDefaultValue()))
+				text += ", default: " + entry.getDefaultValue();
+			text += "> \n\n";
+			text += entry.getDescription() + "\n";
+			return StringUtils.breakLines(text, 80);
+		}
+		else if (keyType == KeyType.PARAM) {
+			// parameter assignment: display which parameters it matches
+			ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
+			if (resList.length==0) 
+				return "Entry \"" + key + "\" does not match any module parameters ";
+			String text = "Entry \"" + key + "\" applies to the following module parameters: \n";
+			for (ParamResolution res : resList)
+				text += "  - " + res.moduleFullPath + "." +res.paramNode.getName() + "\n";
+			return text;
+		}
+		else if (keyType == KeyType.PER_OBJECT_CONFIG) {
+			return null; // TODO
+		}
+		else {
+			return null; // should not happen (invalid key type)
+		}
+	}
 }

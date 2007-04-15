@@ -101,8 +101,8 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		// set up editorData (the InifileDocument)
 		IFile file = ((IFileEditorInput)getEditorInput()).getFile();
 		IDocument document = textEditor.getDocumentProvider().getDocument(getEditorInput());
-		editorData.setInifiledocument(new InifileDocument(document, file));
-		editorData.setInifileAnalyzer(new InifileAnalyzer(editorData.getInifileDocument()));
+		InifileDocument inifileDocument = new InifileDocument(document, file);
+		editorData.initialize(this, inifileDocument, new InifileAnalyzer(inifileDocument));
 
 		// replace original MultiPageSelectionProvider with our own, as we want to
 		// publish our own selection (with InifileSelectionItem) for both pages.

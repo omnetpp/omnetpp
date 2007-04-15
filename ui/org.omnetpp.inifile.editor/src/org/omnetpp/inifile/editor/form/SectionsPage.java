@@ -6,8 +6,6 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.swing.plaf.TreeUI;
-
 import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
 import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
 import org.eclipse.jface.dialogs.IInputValidator;
@@ -26,16 +24,22 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeLabelProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.GenericTreeUtils;
+import org.omnetpp.common.ui.ITooltipProvider;
+import org.omnetpp.common.ui.TooltipSupport;
+import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
@@ -48,8 +52,8 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
  */
 //XXX let the user edit description= as well
 //XXX show description= value as tooltip
-//XXX double-click should go there in the inifile text (or in the Parameters page?)
 //XXX enable/disable buttons as tree selection changes
+//XXX publish section as editor selection!
 public class SectionsPage extends FormPage {
 	private static final String ICON_ERROR = "icons/full/obj16/Error.png"; //XXX find better place for it
 	private static final String CIRCLE_WARNING_TEXT = "NOTE: Sections that form circles (which is illegal) are not displayed here -- switch to text mode to fix them!";
@@ -110,7 +114,7 @@ public class SectionsPage extends FormPage {
 	}
 
 	private TreeViewer createAndConfigureTreeViewer() {
-		TreeViewer treeViewer = new TreeViewer(this, SWT.MULTI | SWT.BORDER);
+		final TreeViewer treeViewer = new TreeViewer(this, SWT.MULTI | SWT.BORDER);
 		treeViewer.setLabelProvider(new GenericTreeLabelProvider(new LabelProvider() {
 			@Override
 			public Image getImage(Object element) {
@@ -124,8 +128,29 @@ public class SectionsPage extends FormPage {
 			}
 		}));
 		treeViewer.setContentProvider(new GenericTreeContentProvider());
-		setupDragAndDropSupport(treeViewer);
-		return treeViewer;
+		
+		// drag and drop support
+ 		setupDragAndDropSupport(treeViewer);
+		
+		// on double-click, show section in the text editor
+ 		treeViewer.getTree().addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetDefaultSelected(SelectionEvent event) {
+				String section = getSectionNameFromTreeNode(event.item==null ? null : event.item.getData());
+				getEditorData().getInifileEditor().gotoSection(section, IGotoInifile.Mode.TEXT);
+			}
+		});
+
+ 		// add tooltip support
+ 		TooltipSupport.adapt(treeViewer.getTree(), new ITooltipProvider() {
+			public String getTooltipFor(Control control, int x, int y) {
+				Item item = treeViewer.getTree().getItem(new Point(x,y));
+				String section = getSectionNameFromTreeNode(item==null ? null : item.getData());
+				return section==null ? null : InifileUtils.getSectionTooltip(section, getInifileDocument(), getInifileAnalyzer());
+			}
+ 		});
+ 		
+ 		return treeViewer;
 	}
 
 	private void setupDragAndDropSupport(TreeViewer viewer) {

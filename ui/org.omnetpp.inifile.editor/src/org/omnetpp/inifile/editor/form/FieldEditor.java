@@ -71,6 +71,7 @@ public abstract class FieldEditor extends Composite {
 	}
 
 	protected String getTooltipText() {
+		//XXX perhaps use InifileUtils.getEntryTooltip()
 		String tooltip = entry.getDescription();
 		tooltip += "\n\nConfigures: [General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / "+entry.getKey()+"=...";
 		IInifileDocument.LineInfo line = inifile.getEntryLineDetails(GENERAL, entry.getKey()); 

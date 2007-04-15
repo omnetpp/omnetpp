@@ -13,17 +13,22 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.omnetpp.common.ui.ITooltipProvider;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
+import org.omnetpp.common.ui.TooltipSupport;
+import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
@@ -36,6 +41,7 @@ import org.omnetpp.inifile.editor.model.SectionKey;
  */
 //XXX validation of keys and values! e.g. shouldn't allow empty key
 //XXX comment handling (stripping/adding of "#")
+//XXX publish selection as editor selection
 public class ParametersPage extends FormPage {
 	private TableViewer tableViewer;
 	private Combo sectionsCombo;
@@ -165,6 +171,24 @@ public class ParametersPage extends FormPage {
 				}
 			}
 		});
+
+		// on double-click, show entry in the text editor
+ 		tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetDefaultSelected(SelectionEvent event) {
+				SectionKey entry = (SectionKey) (event.item==null ? null : event.item.getData());
+				getEditorData().getInifileEditor().gotoEntry(entry.section, entry.key, IGotoInifile.Mode.TEXT);
+			}
+		});
+
+ 		// add tooltip support
+ 		TooltipSupport.adapt(tableViewer.getTable(), new ITooltipProvider() {
+			public String getTooltipFor(Control control, int x, int y) {
+				Item item = tableViewer.getTable().getItem(new Point(x,y));
+				SectionKey entry = (SectionKey) (item==null ? null : item.getData());
+				return entry==null ? null : InifileUtils.getEntryTooltip(entry.section, entry.key, getInifileDocument(), getInifileAnalyzer());
+			}
+ 		});
 		
 		return tableViewer;
 	}

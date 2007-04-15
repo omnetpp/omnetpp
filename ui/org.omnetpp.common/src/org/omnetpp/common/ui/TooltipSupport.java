@@ -4,6 +4,8 @@ import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -29,14 +31,15 @@ import org.eclipse.swt.widgets.Control;
  */
 public class TooltipSupport {
 	protected DefaultInformationControl tooltipWidget;
-	protected AllInOneMouseListener mouseListener = new AllInOneMouseListener();
+	protected AllInOneListener eventListener = new AllInOneListener();
 	protected ITooltipProvider tooltipProvider;
 
-	private class AllInOneMouseListener implements MouseListener, MouseTrackListener, MouseMoveListener {
+	private class AllInOneListener implements MouseListener, MouseTrackListener, MouseMoveListener, KeyListener {
 		public void mouseDoubleClick(MouseEvent e) {}
 		public void mouseUp(MouseEvent e) {}
 		public void mouseEnter(MouseEvent e) {}
 		public void mouseExit(MouseEvent e) {}
+		public void keyReleased(KeyEvent e) {}
 
 		public void mouseHover(MouseEvent e) {
 			if (e.widget instanceof Control && (e.stateMask & SWT.BUTTON_MASK) == 0)
@@ -48,6 +51,10 @@ public class TooltipSupport {
 		}
 
 		public void mouseDown(MouseEvent e) {
+			removeTooltip();
+		}
+		
+		public void keyPressed(KeyEvent e) {
 			removeTooltip();
 		}
 	}
@@ -68,12 +75,20 @@ public class TooltipSupport {
 	}
 
 	/**
+	 * Add tooltip to a control.  
+	 */
+	public static TooltipSupport adapt(Control c, ITooltipProvider tooltipProvider) {
+		return new TooltipSupport(c, tooltipProvider);
+	}
+	
+	/**
 	 * Adds tooltip support for the given control.
 	 */
 	public void adapt(final Control c) {
-		c.addMouseListener(mouseListener);
-		c.addMouseMoveListener(mouseListener);
-		c.addMouseTrackListener(mouseListener);
+		c.addMouseListener(eventListener);
+		c.addMouseMoveListener(eventListener);
+		c.addMouseTrackListener(eventListener);
+		c.addKeyListener(eventListener);
 		c.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
 				forget(c);
@@ -87,9 +102,10 @@ public class TooltipSupport {
 	 * widgetDisposed() automatically.
 	 */
 	public void forget(Control c) {
-		c.removeMouseListener(mouseListener);
-		c.removeMouseMoveListener(mouseListener);
-		c.removeMouseTrackListener(mouseListener);
+		c.removeMouseListener(eventListener);
+		c.removeMouseMoveListener(eventListener);
+		c.removeMouseTrackListener(eventListener);
+		c.removeKeyListener(eventListener);
 	}
 	
 	protected void displayTooltip(Control control, int x, int y) {
