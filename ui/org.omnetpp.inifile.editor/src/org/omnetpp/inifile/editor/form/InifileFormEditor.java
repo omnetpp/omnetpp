@@ -21,7 +21,6 @@ import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
-import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 
 
@@ -30,9 +29,9 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
  * @author andras
  */
 public class InifileFormEditor extends Composite {
-	private static final String SECTIONS_NODE = "Sections";
-	private static final String PARAMETERS_NODE = "Parameters";
-	private static final String CONFIGURATION_NODE = "Configuration";
+	public static final String SECTIONS_PAGE = "Sections";
+	public static final String PARAMETERS_PAGE = "Parameters";
+	public static final String CONFIGURATION_PAGE = "Configuration";
 
 	public static final Color BGCOLOR = null; // or: ColorFactory.asColor("white");
 
@@ -80,14 +79,14 @@ public class InifileFormEditor extends Composite {
 
 	private void buildTree() {
 		GenericTreeNode root = new GenericTreeNode("root");
-		GenericTreeNode configNode = new GenericTreeNode(CONFIGURATION_NODE); 
+		GenericTreeNode configNode = new GenericTreeNode(CONFIGURATION_PAGE); 
 		root.addChild(configNode);
 
 		String[] categories = GenericConfigPage.getCategoryNames();
 		for (String c : categories)
 			configNode.addChild(new GenericTreeNode(c));
-		root.addChild(new GenericTreeNode(SECTIONS_NODE));
-		root.addChild(new GenericTreeNode(PARAMETERS_NODE));
+		root.addChild(new GenericTreeNode(SECTIONS_PAGE));
+		root.addChild(new GenericTreeNode(PARAMETERS_PAGE));
 		treeViewer.setInput(root);
 		treeViewer.expandAll();
 	}
@@ -110,18 +109,22 @@ public class InifileFormEditor extends Composite {
 	 * after committing changes on the current page.
 	 */
 	public void showCategoryPage(String category) {
+		if (formPage != null && formPage.getPageCategory().equals(category))
+			return; // already showing
 		
+		// dispose old page
 		if (formPage != null) {
 			formPage.commit();
 			formPage.dispose();
 		}
 
-		if (category.equals(CONFIGURATION_NODE))
+		// create new page
+		if (category.equals(CONFIGURATION_PAGE))
 			category = GenericConfigPage.getCategoryNames()[0];
 			
-		if (category.equals(PARAMETERS_NODE))
+		if (category.equals(PARAMETERS_PAGE))
 			formPage = new ParametersPage(form, inifileEditor);
-		else if (category.equals(SECTIONS_NODE))
+		else if (category.equals(SECTIONS_PAGE))
 			formPage = new SectionsPage(form, inifileEditor);
 		else
 			formPage = new GenericConfigPage(form, category, inifileEditor);
@@ -152,18 +155,18 @@ public class InifileFormEditor extends Composite {
 	}
 
 	public void gotoSection(String section) {
-		showCategoryPage(SECTIONS_NODE);
+		showCategoryPage(SECTIONS_PAGE);
 		formPage.gotoSection(section);
 	}
 
 	public void gotoEntry(String section, String key) {
 		KeyType keyType = InifileAnalyzer.getKeyType(key);
 		if (keyType==KeyType.PARAM)
-			showCategoryPage(PARAMETERS_NODE);
+			showCategoryPage(PARAMETERS_PAGE);
 		else if (keyType==KeyType.PER_OBJECT_CONFIG)
-			showCategoryPage(PARAMETERS_NODE); //XXX for lack of anything better for now
+			showCategoryPage(PARAMETERS_PAGE); //XXX for lack of anything better for now
 		else 
-			showCategoryPage(CONFIGURATION_NODE); //XXX could make more effort to position the right field editor...
+			showCategoryPage(CONFIGURATION_PAGE); //XXX could make more effort to position the right field editor...
 		formPage.gotoEntry(section, key);
 	}
 }

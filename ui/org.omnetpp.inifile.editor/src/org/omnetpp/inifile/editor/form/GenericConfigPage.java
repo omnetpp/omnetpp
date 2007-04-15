@@ -365,6 +365,10 @@ public class GenericConfigPage extends ScrolledFormPage {
 		layoutForm();
 	}
 
+	@Override
+	public String getPageCategory() {
+		return category;
+	}
 	
 	@Override
 	public void reread() {

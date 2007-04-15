@@ -41,6 +41,12 @@ public abstract class FormPage extends Composite {
 	}
 	
 	/**
+	 * String that identifies the form page, and also gets displayed 
+	 * in the form editor's tree.
+	 */
+	public abstract String getPageCategory();
+	
+	/**
 	 * Reads data from the document into the current page.
 	 */
 	public abstract void reread();

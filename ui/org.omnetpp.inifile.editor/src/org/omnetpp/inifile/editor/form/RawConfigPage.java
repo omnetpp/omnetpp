@@ -35,6 +35,10 @@ public class RawConfigPage extends FormPage {
 			}
 		}
 	}
+
+	public String getPageCategory() {
+		return "(raw)";
+	}
 	
 	@Override
 	public void reread() {

@@ -6,6 +6,8 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.plaf.TreeUI;
+
 import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
 import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
 import org.eclipse.jface.dialogs.IInputValidator;
@@ -33,6 +35,7 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeLabelProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
+import org.omnetpp.common.ui.GenericTreeUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
@@ -48,7 +51,11 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 //XXX double-click should go there in the inifile text (or in the Parameters page?)
 //XXX enable/disable buttons as tree selection changes
 public class SectionsPage extends FormPage {
-	public static final String ICON_ERROR = "icons/full/obj16/Error.png"; //XXX find better place for it
+	private static final String ICON_ERROR = "icons/full/obj16/Error.png"; //XXX find better place for it
+	private static final String CIRCLE_WARNING_TEXT = "NOTE: Sections that form circles (which is illegal) are not displayed here -- switch to text mode to fix them!";
+	private static final String HINT_TEXT = "\nAdd/remove configuration sections, and edit the fallback sequence of parameter and configuration lookups.";
+
+	private Label label;
 	private TreeViewer treeViewer;
 	
 	static class SectionData {
@@ -63,7 +70,7 @@ public class SectionsPage extends FormPage {
 		/* label provider maps to this */
 		@Override
 		public String toString() {
-			return sectionName + (hasError ? " (base section does not exist)" : ""); //XXX not very elegant
+			return sectionName + (hasError ? " (the section it extends does not exist)" : "");
 		}
 		
 		/* needed for treeViewer.setSelection() to work */
@@ -82,22 +89,17 @@ public class SectionsPage extends FormPage {
 		setLayout(new GridLayout(2,false));
 		((GridLayout)getLayout()).marginRight = RIGHT_MARGIN/2;
 
+		// create title
 		Composite titleArea = createTitleArea(this, "Sections");
 		((GridData)titleArea.getLayoutData()).horizontalSpan = 2;
 
 		// create section chain label
-		Label label = new Label(this, SWT.NONE);
+		label = new Label(this, SWT.NONE);
 		label.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		((GridData)label.getLayoutData()).horizontalSpan = 2;
-		label.setText("\nAdd/remove configuration sections, and edit the fallback sequence of parameter and configuration lookups.");
-
-		if (getInifileAnalyzer().containsSectionCircles()) {
-			Label label2 = new Label(this, SWT.NONE);
-			label2.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-			((GridData)label2.getLayoutData()).horizontalSpan = 2;
-			label2.setText("NOTE: Sections that form circles (which is illegal) are not displayed here -- switch to text mode to fix them!");
-		}
+		label.setText(HINT_TEXT);
 		
+		// create treeviewer and buttons
 		treeViewer = createAndConfigureTreeViewer();
 		treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
@@ -266,6 +268,11 @@ public class SectionsPage extends FormPage {
 	}
 	
 	@Override
+	public String getPageCategory() {
+		return InifileFormEditor.SECTIONS_PAGE;
+	}
+
+	@Override
 	public void reread() {
 		IInifileDocument doc = getInifileDocument();
 
@@ -274,7 +281,10 @@ public class SectionsPage extends FormPage {
 		GenericTreeNode generalSectionNode = new GenericTreeNode(new SectionData(GENERAL, false));
 		rootNode.addChild(generalSectionNode);
 
-		//FIXME detect circularity!!!!!
+		// handling circles: they won't appear in the tree (property of the tree
+		// building algorithm), and we warn the user (in the label text, see below)
+		label.setText(!getInifileAnalyzer().containsSectionCircles() ? HINT_TEXT : HINT_TEXT + "\n" + CIRCLE_WARNING_TEXT);
+		layout(true);  // number of lines in label may have changed
 		
 		// build tree
 		HashMap<String,GenericTreeNode> nodes = new HashMap<String, GenericTreeNode>();
@@ -301,8 +311,12 @@ public class SectionsPage extends FormPage {
 				}
 			}
 		}
-		treeViewer.setInput(rootNode);
-		treeViewer.expandAll();
+
+		// reduce flicker: only overwrite existing tree input if it's not the same as this one
+		if (treeViewer.getInput()==null || !GenericTreeUtils.treeEquals(rootNode, (GenericTreeNode)treeViewer.getInput())) {
+			treeViewer.setInput(rootNode);
+			treeViewer.expandAll();
+		}
 	}
 
 	private GenericTreeNode getOrCreate(HashMap<String, GenericTreeNode> nodes, String sectionName, boolean isUndefined) {

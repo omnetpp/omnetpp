@@ -313,4 +313,9 @@ public class ParametersPage extends FormPage {
 	public void commit() {
 		//XXX todo
 	}
+
+	@Override
+	public String getPageCategory() {
+		return InifileFormEditor.PARAMETERS_PAGE;
+	}
 }
