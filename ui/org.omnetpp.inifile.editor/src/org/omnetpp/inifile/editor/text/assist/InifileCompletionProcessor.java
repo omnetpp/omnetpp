@@ -120,7 +120,7 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 				if (!linePrefix.contains("=")) {
 					// offer key completion proposals
 					for (ConfigurationEntry e : ConfigurationRegistry.getEntries())
-						proposals.add(e.getName()+" = "); //XXX check if section is ok, config not in there yet, etc
+						proposals.add(e.getKey()+" = "); //XXX check if section is ok, config not in there yet, etc
 
 					// offer unassigned parameters
 					if (section != null) {

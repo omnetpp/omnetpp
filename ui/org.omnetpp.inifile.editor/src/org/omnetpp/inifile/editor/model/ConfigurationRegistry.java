@@ -21,6 +21,7 @@ public class ConfigurationRegistry {
 	 * Name of the [General] section
 	 */
 	public static final String GENERAL = "General";
+	public static final String CONFIG_ = "Config ";  //XXX make use of this everywhere
 	
 	private static HashMap<String, ConfigurationEntry> entries = new HashMap<String, ConfigurationEntry>(); 
 	

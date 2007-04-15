@@ -15,7 +15,7 @@ public class ParamResolution {
 		INI_NEDDEFAULT, // inifile sets param to its NED default value
 	}
 	
-	// moduleFullPath and paramNode identify the NED parameter 
+	// moduleFullPath and paramNode identify the NED parameter (no wildcards except module vector index "[*]") 
 	public String moduleFullPath;
 	public ParamNode paramNode;
 	// how the parameter value gets resolved: from NED, from inifile, unassigned, etc

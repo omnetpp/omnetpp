@@ -64,7 +64,7 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
 		// interface, so we have to set it explicitly here...
 		ArrayList<String> list = new ArrayList<String>();
 		for (String section : (String[]) tableViewer.getInput())
-			if (InifileUtils.parseAsBool(inifile.getValue(section, entry.getName())))
+			if (InifileUtils.parseAsBool(inifile.getValue(section, entry.getKey())))
 				list.add(section);
 		((CheckboxTableViewer)tableViewer).setCheckedElements(list.toArray());
 	}

@@ -37,7 +37,7 @@ public class ConfigurationEntry {
         this.description = description;
     }
 
-    public String getName() {
+    public String getKey() {
     	return name;
     }
     

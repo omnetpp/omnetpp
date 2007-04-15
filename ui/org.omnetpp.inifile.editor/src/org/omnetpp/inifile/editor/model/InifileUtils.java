@@ -3,6 +3,7 @@ package org.omnetpp.inifile.editor.model;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_DESCRIPTION;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_NETWORK;
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 import java.util.ArrayList;
@@ -25,15 +26,29 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
 public class InifileUtils {
 	/**
 	 * Given a parameter's fullPath, returns the key of the matching
-	 * inifile entry in the given section, or null if it's not 
-	 * in the given inifile section. 
+	 * inifile entry, or null the parameter matches nothing. If hasDefault
+	 * is set, ".apply-default" entries are also considered.
 	 */
-	public static String lookupParameter(String paramFullPath, IInifileDocument doc, String section) {
-		String[] keys = doc.getKeys(section);
-		if (keys != null)
-			for (String key : keys)
+	//XXX this issue is much more complicated, as there may be multiple possibly matching 
+	// inifile entries. For example, we have "net.node[*].power", and inifile contains
+	// "*.node[0..4].power=...", "*.node[5..9].power=...", and "net.node[10..].power=...".
+	// Current code would not match any (!!!), only "net.node[*].power=..." if it existed.
+	// lookupParameter() should actually return multiple matches.
+	//
+	public static SectionKey lookupParameter(String paramFullPath, boolean hasNedDefault, String[] sectionChain, IInifileDocument doc) {
+		String paramApplyDefault = paramFullPath + ".apply-default";
+		boolean considerApplyDefault = hasNedDefault;
+		for (String section : sectionChain) {
+			for (String key : doc.getKeys(section)) {
 				if (new PatternMatcher(key, true, true, true).matches(paramFullPath))
-					return key;
+					return new SectionKey(section, key);
+				if (considerApplyDefault && new PatternMatcher(key, true, true, true).matches(paramApplyDefault))
+					if (doc.getValue(section, key).equals("true"))
+						return new SectionKey(section, key);
+					else
+						considerApplyDefault = false;
+			}
+		}
 		return null;
 	}
 
@@ -97,21 +112,29 @@ public class InifileUtils {
 	}
 	
 	/**
-	 * Follows the section "extends" chain back to the [General] section, and returns
-	 * the list of section names (including the given section and [General] as well).
+	 * Follows the section "extends" chain back to the [General] section, and
+	 * returns the list of section names (including the given section and
+	 * [General] as well).
+	 * 
+	 * Errors (such as nonexistent section, circle in the fallback chain, etc)
+	 * are handled in a forgiving way, and a reasonably complete section chain
+	 * is returned without throwing an exception -- so this method may be safely
+	 * called during any calculation.
 	 */
 	public static String[] resolveSectionChain(IInifileDocument doc, String section) {
 		ArrayList<String> sectionChain = new ArrayList<String>();
-		if (!section.equals("General")) {
+		if (!section.equals(GENERAL)) {
 			String currentSection = section;
 		    while (true) {
+		    	if (!doc.containsSection(currentSection))
+		            break; // error: nonexisting section
 		        if (sectionChain.contains(currentSection))
-		            throw new IllegalStateException("circularity detected in section fallback chain at section ["+currentSection+"]");
+		            break; // error: circle in the fallback chain
 		        sectionChain.add(currentSection);
-		        String extendsName = doc.getValue(currentSection, "extends");
+		        String extendsName = doc.getValue(currentSection, CFGID_EXTENDS.getKey());
 		        if (extendsName==null)
-		        	break;
-		        currentSection = "Config "+extendsName;
+		        	break; // done
+		        currentSection = CONFIG_+extendsName;
 		    }
 		}
 	    if (doc.containsSection(GENERAL))
@@ -198,12 +221,12 @@ public class InifileUtils {
 	}
 
 	private static boolean precedesKey(String key1, String key2) {
-		if (key1.equals(CFGID_EXTENDS.getName())) return true;
-		if (key2.equals(CFGID_EXTENDS.getName())) return false;
-		if (key1.equals(CFGID_DESCRIPTION.getName())) return true;
-		if (key2.equals(CFGID_DESCRIPTION.getName())) return false;
-		if (key1.equals(CFGID_NETWORK.getName())) return true;
-		if (key2.equals(CFGID_NETWORK.getName())) return false;
+		if (key1.equals(CFGID_EXTENDS.getKey())) return true;
+		if (key2.equals(CFGID_EXTENDS.getKey())) return false;
+		if (key1.equals(CFGID_DESCRIPTION.getKey())) return true;
+		if (key2.equals(CFGID_DESCRIPTION.getKey())) return false;
+		if (key1.equals(CFGID_NETWORK.getKey())) return true;
+		if (key2.equals(CFGID_NETWORK.getKey())) return false;
 		if (key1.contains(".")) return false;
 		if (key2.contains(".")) return true;
 		return key1.compareToIgnoreCase(key2) < 0;
@@ -219,8 +242,8 @@ public class InifileUtils {
 		String oldName = oldSectionName.replaceFirst("^Config +", "");
 		String newName = newSectionName.replaceFirst("^Config +", "");
 		for (String section : doc.getSectionNames())
-			if (oldName.equals(doc.getValue(section, CFGID_EXTENDS.getName())))
-				doc.setValue(section, CFGID_EXTENDS.getName(), newName);
+			if (oldName.equals(doc.getValue(section, CFGID_EXTENDS.getKey())))
+				doc.setValue(section, CFGID_EXTENDS.getKey(), newName);
 	}
 
 	//XXX section/config/param/perobjectconfig tooltips have to be generated here as well!!!

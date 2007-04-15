@@ -45,12 +45,12 @@ public abstract class FieldEditor extends Composite {
 	}
 
 	protected String getValueFromFile(String section) {
-		String key = entry.getName();
+		String key = entry.getKey();
 		return inifile.getValue(section, key);
 	}
 
 	protected void setValueInFile(String section, String value) {
-		String key = entry.getName();
+		String key = entry.getKey();
 		if (!inifile.containsKey(section, key))
 			InifileUtils.addEntry(inifile, section, key, value, null);
 		else
@@ -58,7 +58,7 @@ public abstract class FieldEditor extends Composite {
 	}
 
 	protected void removeFromFile(String section) {
-		String key = entry.getName();
+		String key = entry.getKey();
 		inifile.removeKey(section, key);
 	}
 	
@@ -72,8 +72,8 @@ public abstract class FieldEditor extends Composite {
 
 	protected String getTooltipText() {
 		String tooltip = entry.getDescription();
-		tooltip += "\n\nConfigures: [General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / "+entry.getName()+"=...";
-		IInifileDocument.LineInfo line = inifile.getEntryLineDetails(GENERAL, entry.getName()); 
+		tooltip += "\n\nConfigures: [General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / "+entry.getKey()+"=...";
+		IInifileDocument.LineInfo line = inifile.getEntryLineDetails(GENERAL, entry.getKey()); 
 		tooltip += "\n\n"+(line==null ? "Currently set to default." : "Defined at: "+line.getFile().getFullPath().toString()+" line "+line.getLineNumber());
 		tooltip = StringUtils.breakLines(tooltip, 80);
 		return tooltip;

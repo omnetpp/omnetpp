@@ -24,7 +24,7 @@ public class RawConfigPage extends FormPage {
 		// populate with field editors
 		IInifileDocument doc = getInifileDocument();
 		for (ConfigurationEntry e : ConfigurationRegistry.getEntries()) {
-			String label = "The \""+e.getName()+"\" setting";
+			String label = "The \""+e.getKey()+"\" setting";
 			if (e.getType()==ConfigurationEntry.Type.CFG_BOOL) {
 				CheckboxFieldEditor control = new CheckboxFieldEditor(this, e, doc, label);
 				control.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));

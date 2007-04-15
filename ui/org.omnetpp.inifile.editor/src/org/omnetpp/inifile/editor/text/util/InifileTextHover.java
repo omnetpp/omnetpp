@@ -63,7 +63,7 @@ public class InifileTextHover implements ITextHover {
 			ConfigurationEntry entry = ConfigurationRegistry.getEntry(key);
 			if (entry == null)
 				return null;
-			String text = "[General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / "+entry.getName();
+			String text = "[General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / "+entry.getKey();
 			text += " = <" + entry.getType().name().replaceFirst("CFG_", ""); 
 			if (!"".equals(entry.getDefaultValue()))
 				text += ", default: " + entry.getDefaultValue();

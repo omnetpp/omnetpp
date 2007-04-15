@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.texteditor.MarkerUtilities;
 import org.omnetpp.common.engine.Common;
@@ -62,13 +63,13 @@ public class InifileAnalyzer {
 	class SectionData {
 		ArrayList<ParamResolution> paramResolutions;
 	}
-	
+
 	/**
 	 * Constructor.
 	 */
 	public InifileAnalyzer(IInifileDocument doc) {
 		this.doc = doc;
-		
+
 		// hook on inifile changes (unhooking is not necessary, because everything 
 		// will be gc'd when the editor closes)
 		doc.addInifileChangeListener(new IInifileChangeListener() {
@@ -76,7 +77,7 @@ public class InifileAnalyzer {
 				changed = true;
 			}
 		});
-		
+
 	}
 
 	public IInifileDocument getDocument() {
@@ -96,7 +97,7 @@ public class InifileAnalyzer {
 	public void analyze() {
 		long startTime = System.currentTimeMillis();
 		INEDTypeResolver ned = NEDResourcesPlugin.getNEDResources();
-		
+
 		// remove existing markers
 		try {
 			IFile file = doc.getDocumentFile();
@@ -104,13 +105,15 @@ public class InifileAnalyzer {
 		} catch (CoreException e) {
 			InifileEditorPlugin.logError(e);
 		}
-		
+
 		//XXX catch all exceptions during analyzing, and set changed=false in finally{} ? 
-		
+
 		// analyze file
 		for (String section : doc.getSectionNames()) {
+			doc.setData(section, new SectionData());
 			if (!section.equals(GENERAL) && !section.startsWith("Config "))
 				addError(section, "Wrong section name: must be [General] or [Config <name>]");
+			
 			for (String key : doc.getKeys(section)) {
 				switch (getKeyType(key)) {
 				case CONFIG:
@@ -118,7 +121,7 @@ public class InifileAnalyzer {
 					validateConfig(section, key, ned);
 					break;
 				case PARAM:
-					//XXX rename **.interval to **.record-interval, and warn for old name here
+					//XXX rename **.interval (and **.enabled) to **.record-interval, and warn for old name here
 					doc.setData(section, key, new KeyData());
 					break;
 				case PER_OBJECT_CONFIG:
@@ -126,10 +129,15 @@ public class InifileAnalyzer {
 					break;
 				}
 			}
-			
-			doc.setData(section, new SectionData());
-			calculateParamResolutions(section, ned);
 		}
+
+		//XXX todo: detect circles in the fallback chain, and report them
+		// addError(section, "circle detected in section fallback chain at section ["+currentSection+"]");
+		
+		// calculate parameter resolutions for each section
+		for (String section : doc.getSectionNames())
+			calculateParamResolutions(section, ned);
+
 		System.out.println("Inifile analysed in "+(System.currentTimeMillis()-startTime)+"ms");
 		changed = false;
 
@@ -137,7 +145,6 @@ public class InifileAnalyzer {
 		for (String section : doc.getSectionNames())
 			for (String key : getUnusedParameterKeys(section))
 				addWarning(section, key, "Unused entry (does not match any parameters)");
-
 	}
 
 	protected void addError(String section, String message) {
@@ -160,20 +167,20 @@ public class InifileAnalyzer {
 		addMarker(line.getFile(), INIFILEANALYZERPROBLEM_MARKER_ID, IMarker.SEVERITY_WARNING, message, line.getLineNumber()); 
 	}
 
-    @SuppressWarnings("unchecked")
-    private static void addMarker(final IFile file, final String type, int severity, String message, int line) {
-    	try {
-    		HashMap map = new HashMap();
-    		MarkerUtilities.setMessage(map, message);
-    		MarkerUtilities.setLineNumber(map, line);
-    		map.put(IMarker.SEVERITY, severity);
+	@SuppressWarnings("unchecked")
+	private static void addMarker(final IFile file, final String type, int severity, String message, int line) {
+		try {
+			HashMap map = new HashMap();
+			MarkerUtilities.setMessage(map, message);
+			MarkerUtilities.setLineNumber(map, line);
+			map.put(IMarker.SEVERITY, severity);
 			MarkerUtilities.createMarker(file, map, type);
 		} catch (CoreException e) {
 			InifileEditorPlugin.logError(e);
 		}
-    }
+	}
 
-    //XXX into InifileUtils?
+	//XXX into InifileUtils?
 	protected void validateConfig(String section, String key, INEDTypeResolver ned) {
 		// check key and if it occurs in the right section
 		ConfigurationEntry e = ConfigurationRegistry.getEntry(key);
@@ -181,7 +188,7 @@ public class InifileAnalyzer {
 			addError(section, key, "Unknown configuration entry: "+key);
 			return;
 		}
-		else if (key.equals(CFGID_EXTENDS.getName()) && section.equals(GENERAL)) {
+		else if (key.equals(CFGID_EXTENDS.getKey()) && section.equals(GENERAL)) {
 			addError(section, key, "Key \""+key+"\" cannot occur in the [General] section");
 		}
 		else if (e.isGlobal() && !section.equals(GENERAL)) {
@@ -198,7 +205,7 @@ public class InifileAnalyzer {
 
 		if (e.getType()==ConfigurationEntry.Type.CFG_STRING && value.startsWith("\""))
 			value =	Common.parseQuotedString(value); // cannot throw exception: value got validated above
-		
+
 		// check validity of some settings, like network=, preload-ned-files=, etc
 		if (e==CFGID_EXTENDS) {
 			if (!doc.containsSection("Config "+value))
@@ -221,52 +228,54 @@ public class InifileAnalyzer {
 	//XXX into InifileUtils?
 	private static String validateConfigValueByType(String value, ConfigurationEntry.Type type) {
 		switch (type) {
-			case CFG_BOOL:
-				if (!value.equals("true") && !value.equals("false"))
-					return "Value should be a boolean constant: true or false";
-				break;
-			case CFG_INT:
-				try {
-					Integer.parseInt(value);
-				} catch (NumberFormatException ex) {
-					return "Value should be an integer constant";
-				}
-				break;
-			case CFG_DOUBLE:
-				try {
-					Double.parseDouble(value);
-				} catch (NumberFormatException ex) {
-					return "Value should be a numeric constant (a double)";
-				}
-				break;
-			case CFG_STRING:
-				try {
-					if (value.startsWith("\""))
-						Common.parseQuotedString(value);
-				} catch (RuntimeException ex) {
-					return "Error in string constant: "+ex.getMessage();
-				}
-			case CFG_FILENAME:
-			case CFG_FILENAMES:
-				//XXX
-				break;
+		case CFG_BOOL:
+			if (!value.equals("true") && !value.equals("false"))
+				return "Value should be a boolean constant: true or false";
+			break;
+		case CFG_INT:
+			try {
+				Integer.parseInt(value);
+			} catch (NumberFormatException ex) {
+				return "Value should be an integer constant";
+			}
+			break;
+		case CFG_DOUBLE:
+			try {
+				Double.parseDouble(value);
+			} catch (NumberFormatException ex) {
+				return "Value should be a numeric constant (a double)";
+			}
+			break;
+		case CFG_STRING:
+			try {
+				if (value.startsWith("\""))
+					Common.parseQuotedString(value);
+			} catch (RuntimeException ex) {
+				return "Error in string constant: "+ex.getMessage();
+			}
+		case CFG_FILENAME:
+		case CFG_FILENAMES:
+			//XXX
+			break;
 		}
 		return null;
 	}
 
 	protected void calculateParamResolutions(String section, INEDTypeResolver ned) {
-		String networkName = doc.getValue(GENERAL, "network"); //XXX or [Run X], if that's the selected one!
-		if (networkName == null) {
-			//XXX displayMessage("Network not specified (no [General]/network= setting)");
+		String[] sectionChain = InifileUtils.resolveSectionChain(doc, section);
+		String networkName = lookupConfig(sectionChain, CFGID_NETWORK.getKey());
+		if (networkName == null)
+			networkName = CFGID_NETWORK.getDefaultValue().toString(); 
+		if (networkName == null)
 			return;
-		}
 
 		// calculate param resolutions
-		ArrayList<ParamResolution> resList = collectParameters(networkName, networkName, ned);
-		
+		ArrayList<ParamResolution> resList = collectParameters(networkName, networkName, sectionChain, ned);
+
 		// store with every key the list of parameters it resolves
 		for (ParamResolution res : resList) {
 			if (res.key != null) {
+				System.out.println("section="+res.section+" key="+res.key+" entry-exists="+doc.containsKey(res.section, res.key)+" has-keydata="+(doc.getKeyData(res.section, res.key)!=null));
 				((KeyData)doc.getKeyData(res.section, res.key)).paramResolutions.add(res);
 			}
 		}
@@ -277,13 +286,21 @@ public class InifileAnalyzer {
 		doc.setData(section, data);
 	}
 
-	protected ArrayList<ParamResolution> collectParameters(String moduleFullPath, String moduleTypeName, INEDTypeResolver ned) {
+	//XXX into InifileUtils?
+	protected String lookupConfig(String[] sectionChain, String key) {
+		for (String section : sectionChain)
+			if (doc.containsKey(section, key))
+				return doc.getValue(section, key);
+		return null;
+	}
+
+	protected ArrayList<ParamResolution> collectParameters(String moduleFullPath, String moduleTypeName, final String[] sectionChain, INEDTypeResolver ned) {
 		String moduleName = moduleFullPath.replaceFirst("^.*\\.", "");  // stuff after the last dot
 		final IInifileDocument finalDoc = doc;
 		final ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
 		InifileUtils.traverseModuleUsageHierarchy(moduleName, moduleFullPath, moduleTypeName, ned, doc, new IModuleTreeVisitor() {
 			public void visit(String moduleName, String moduleFullPath, INEDTypeInfo moduleType) {
-				collectParameters(list, moduleFullPath, moduleType, finalDoc);
+				collectParameters(list, moduleFullPath, moduleType, sectionChain, finalDoc);
 			}
 			public void visitUnresolved(String moduleName, String moduleFullPath, String moduleTypeName) {
 			}
@@ -291,66 +308,68 @@ public class InifileAnalyzer {
 		return list;
 	}
 
-	protected void collectParameters(ArrayList<ParamResolution> resultList, String moduleFullPath, INEDTypeInfo moduleType, IInifileDocument doc) {
+	protected void collectParameters(ArrayList<ParamResolution> resultList, String moduleFullPath, INEDTypeInfo moduleType, String[] sectionChain, IInifileDocument doc) {
 		for (NEDElement node : moduleType.getParamValues().values()) {
-			resultList.add(resolveParameter(moduleFullPath, (ParamNode)node, doc));
+			resultList.add(resolveParameter(moduleFullPath, (ParamNode)node, sectionChain, doc));
 		}
 	}
 
 	/**
 	 * Determines how a NED parameter gets assigned (inifile, NED file, etc). 
-	 * The IInifile parameter may be null, which means that only parameter 
+	 * The sectionChain and doc parameters may be null, which means that only parameter 
 	 * assignments given in NED will be taken into account.
 	 * 
-	 * XXX should take section name. also: do fallback from [Run X] to [Parameters]!
 	 * XXX probably not good (does not handle all cases): what if parameter is assigned in a submodule decl? 
 	 * what if it's assigned using a /pattern/? this info cannot be expressed in the arg list! 
 	 */
-	public static ParamResolution resolveParameter(String moduleFullPath, ParamNode param, IInifileDocument doc) {
+	public static ParamResolution resolveParameter(String moduleFullPath, ParamNode param, String[] sectionChain, IInifileDocument doc) {
 		// value in the NED file
 		String nedValue = param.getValue(); //XXX what if parsed expressions?
 		if (StringUtils.isEmpty(nedValue)) nedValue = null;
-		boolean isDefault = param.getIsDefault(); //XXX should be used somehow
+		boolean isNedDefault = param.getIsDefault();
 
 		// look up its value in the ini file
+		String iniSection = null;
 		String iniKey = null;
 		String iniValue = null;
-		String iniUseDefaultKey = null;
-		boolean iniUseDefault = false;
-		if (doc != null) {
+		boolean iniApplyDefault = false;
+		if (doc!=null && (nedValue==null || isNedDefault)) {
 			String paramFullPath = moduleFullPath + "." + param.getName();
-			iniKey = InifileUtils.lookupParameter(paramFullPath, doc, GENERAL); //XXX run-specific sections too!
-			iniValue = doc.getValue(GENERAL, iniKey);
-			iniUseDefaultKey = InifileUtils.lookupParameter(paramFullPath+".apply-default", doc, GENERAL);
-			String iniUseDefaultStr = doc.getValue(GENERAL, iniKey);
-			iniUseDefault = "true".equals(iniUseDefaultStr);
+			SectionKey sectionKey = InifileUtils.lookupParameter(paramFullPath, isNedDefault, sectionChain, doc);
+			if (sectionKey!=null) {
+				iniSection = sectionKey.section;
+				iniKey = sectionKey.key;
+				if (isNedDefault && iniKey.endsWith(".apply-default")) {
+					Assert.isTrue("true".equals(doc.getValue(iniSection, iniKey)));
+					iniApplyDefault = true;
+				} 
+				else {
+					iniValue = doc.getValue(iniSection, iniKey);
+				}
+			}
 		}
 
-		//XXX this issue is much more complicated, as there may be multiple possibly matching 
-		// inifile entries. For example, we have "net.node[*].power", and inifile contains
-		// "*.node[0..4].power=...", "*.node[5..9].power=...", and "net.node[10..].power=...".
-		// Current code would not match any (!!!), only "net.node[*].power=..." if it existed.
-		// lookupParameter() should actually return multiple matches. 
-		if (nedValue==null && iniValue==null) {
-			return new ParamResolution(moduleFullPath, param, ParamResolutionType.UNASSIGNED, null, null);
-		}
+		// so, find out how the parameter's going to be assigned...
+		ParamResolutionType type;
+		if (nedValue==null) {
+			if (iniValue!=null)
+				type = ParamResolutionType.INI;
+			else
+				type = ParamResolutionType.UNASSIGNED;
+		}		
 		else {
-			ParamResolutionType type;
-			if (nedValue!=null && iniValue==null) {
-				type = ParamResolutionType.NED; //XXX default(x) or not??
-			}
-			else if (nedValue==null && iniValue!=null) {
-				type = ParamResolutionType.INI;
-			}
-			else if (nedValue.equals(iniValue)) {
+			if (!isNedDefault)
+				type = ParamResolutionType.NED; // value assigned in NED (unchangeable from ini files)
+			else if (iniApplyDefault)
+				type = ParamResolutionType.NED_DEFAULT; // **.apply-default=true
+			else if (iniValue==null)
+				type = ParamResolutionType.UNASSIGNED;
+			else if (nedValue.equals(iniValue))
 				type = ParamResolutionType.INI_NEDDEFAULT;
-			}
-			else {
-				type = ParamResolutionType.INI;
-			}
-			//XXX return Type.DEFAULTED sometimes
-			return new ParamResolution(moduleFullPath, param, type, GENERAL, iniKey);
+			else 
+				type = ParamResolutionType.INI_OVERRIDE;
 		}
+		return new ParamResolution(moduleFullPath, param, type, iniSection, iniKey);
 	}
 
 	/**
@@ -365,7 +384,7 @@ public class InifileAnalyzer {
 		else
 			return KeyType.PER_OBJECT_CONFIG; // contains both dot and hyphen
 	}
-	
+
 	public boolean isUnusedParameterKey(String section, String key) {
 		analyzeIfChanged();
 		if (getKeyType(key)!=KeyType.PARAM) 
@@ -439,5 +458,5 @@ public class InifileAnalyzer {
 				result.add(par);
 		return result.toArray(new ParamResolution[]{});
 	}
-	
+
 }

@@ -27,6 +27,7 @@ import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
+import org.omnetpp.inifile.editor.model.SectionKey;
 
 /**
  * For editing module parameters.
@@ -40,21 +41,6 @@ public class ParametersPage extends FormPage {
 	private Combo sectionsCombo;
 	private Label sectionChainLabel;
 
-	static class SectionKey {
-		String section;
-		String key;
-
-		public SectionKey(String section, String key) {
-			this.section = section;
-			this.key = key;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			return getClass()==obj.getClass() && section.equals(((SectionKey)obj).section) && key.equals(((SectionKey)obj).key);
-		}
-	}
-	
 	public ParametersPage(Composite parent, InifileEditor inifileEditor) {
 		super(parent, inifileEditor);
 

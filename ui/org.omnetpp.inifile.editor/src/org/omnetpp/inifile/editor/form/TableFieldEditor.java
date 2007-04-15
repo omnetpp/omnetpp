@@ -92,7 +92,7 @@ public abstract class TableFieldEditor extends FieldEditor {
 		// collect section which not yet contain this key
 		ArrayList<String> list = new ArrayList<String>();
 		for (String section : inifile.getSectionNames())
-			if (!inifile.containsKey(section, entry.getName()))
+			if (!inifile.containsKey(section, entry.getKey()))
 				list.add(section);
 
 		// and pop up a chooser dialog
@@ -163,7 +163,7 @@ public abstract class TableFieldEditor extends FieldEditor {
 		// find out in which sections this key occurs, and set it to the table as input
 		ArrayList<String> list = new ArrayList<String>();
 		for (String section : inifile.getSectionNames())
-			if (inifile.containsKey(section, entry.getName()))
+			if (inifile.containsKey(section, entry.getKey()))
 				list.add(section);
 		tableViewer.setInput(list.toArray(new String[list.size()]));
 	}

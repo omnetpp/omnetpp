@@ -306,14 +306,14 @@ public class GenericConfigPage extends ScrolledFormPage {
 	}
 
 	protected void addTextFieldEditor(Composite parent, ConfigurationEntry e, String label) {
-		FieldEditor editor = (!e.isGlobal() && (getAdvancedMode() || occursOutsideGeneral(e.getName()))) ? 
+		FieldEditor editor = (!e.isGlobal() && (getAdvancedMode() || occursOutsideGeneral(e.getKey()))) ? 
 				new TextTableFieldEditor(parent, e, getInifileDocument(), label) :
 				new TextFieldEditor(parent, e, getInifileDocument(), label);
 		addFieldEditor(editor);		
 	}
 
 	protected void addCheckboxFieldEditor(Composite parent, ConfigurationEntry e, String label) {
-		FieldEditor editor = (!e.isGlobal() && (getAdvancedMode() || occursOutsideGeneral(e.getName()))) ? 
+		FieldEditor editor = (!e.isGlobal() && (getAdvancedMode() || occursOutsideGeneral(e.getKey()))) ? 
 				new CheckboxTableFieldEditor(parent, e, getInifileDocument(), label) :
 				new CheckboxFieldEditor(parent, e, getInifileDocument(), label);
 		addFieldEditor(editor);		
