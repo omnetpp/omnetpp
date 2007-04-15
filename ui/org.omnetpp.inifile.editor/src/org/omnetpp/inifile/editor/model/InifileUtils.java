@@ -257,14 +257,28 @@ public class InifileUtils {
 	}
 
 	public static String getSectionTooltip(String section, IInifileDocument doc, InifileAnalyzer analyzer) {
-		// Parameters section: display unassigned parameters
+		// name and description
+		String text = "Section ["+section+"]";
+		String description = doc.getValue(section, "description");
+		if (description!=null) 
+			text += " -- " + description;
+		text += "\n\n";
+		
+		// section chain 
+		String[] sectionChain = resolveSectionChain(doc, section);
+		if (sectionChain.length >= 2)
+			text += "Lookup order: " + StringUtils.join(sectionChain, " > ") + "\n\n"; //XXX decide terminology: "Lookup order" or "Section fallback chain" ? also: "," or ">" ? 
+		
+		// unassigned parameters
 		ParamResolution[] resList = analyzer.getUnassignedParams(section);
-		//XXX add description too
-		if (resList.length==0) 
-			return "Section [" + section + "] seems to contain no unassigned parameters ";
-		String text = "Section [" + section + "] does not seem to assign the following parameters: \n";
-		for (ParamResolution res : resList)
-			text += "  - " + res.moduleFullPath + "." +res.paramNode.getName() + "\n";
+		if (resList.length==0) { 
+			text += "This section seems to contain no unassigned NED parameters";
+		}
+		else {
+			text += "This section does not seem to assign the following NED parameters: \n";
+			for (ParamResolution res : resList)
+				text += "  - " + res.moduleFullPath + "." +res.paramNode.getName() + "\n";
+		}
 		return text;
 	}
 
@@ -296,7 +310,7 @@ public class InifileUtils {
 			return text;
 		}
 		else if (keyType == KeyType.PER_OBJECT_CONFIG) {
-			return null; // TODO
+			return null; // TODO (for .apply-default, display unassigned parameters
 		}
 		else {
 			return null; // should not happen (invalid key type)
