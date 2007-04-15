@@ -25,17 +25,28 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
 // i.e. EtherMAC.backoffs and Ieee80211.backoffs.
 public class InifileUtils {
 	/**
+	 * Looks up a configuration value. Returns null if not found.
+	 */
+	protected static String lookupConfig(String[] sectionChain, String key, IInifileDocument doc) {
+		for (String section : sectionChain)
+			if (doc.containsKey(section, key))
+				return doc.getValue(section, key);
+		return null;
+	}
+
+	/**
 	 * Given a parameter's fullPath, returns the key of the matching
 	 * inifile entry, or null the parameter matches nothing. If hasDefault
 	 * is set, ".apply-default" entries are also considered.
 	 */
-	//XXX this issue is much more complicated, as there may be multiple possibly matching 
-	// inifile entries. For example, we have "net.node[*].power", and inifile contains
-	// "*.node[0..4].power=...", "*.node[5..9].power=...", and "net.node[10..].power=...".
-	// Current code would not match any (!!!), only "net.node[*].power=..." if it existed.
-	// lookupParameter() should actually return multiple matches.
-	//
 	public static SectionKey lookupParameter(String paramFullPath, boolean hasNedDefault, String[] sectionChain, IInifileDocument doc) {
+		//
+		//XXX this issue is much more complicated, as there may be multiple possibly matching 
+		// inifile entries. For example, we have "net.node[*].power", and inifile contains
+		// "*.node[0..4].power=...", "*.node[5..9].power=...", and "net.node[10..].power=...".
+		// Current code would not match any (!!!), only "net.node[*].power=..." if it existed.
+		// lookupParameter() should actually return multiple matches.
+		//
 		String paramApplyDefault = paramFullPath + ".apply-default";
 		boolean considerApplyDefault = hasNedDefault;
 		for (String section : sectionChain) {
@@ -168,14 +179,12 @@ public class InifileUtils {
 	 * Parse a boolean config value. Anything not recognized also counts as false.
 	 */
 	public static boolean parseAsBool(String value) {
-		boolean boolValue;
 		if (value.equals("yes") || value.equals("true") || value.equals("on") || value.equals("1"))
-	    	boolValue = true;
+	    	return true;
 	    else if (value.equals("no") || value.equals("false") || value.equals("off") || value.equals("0"))
-	    	boolValue = false;
+	    	return false;
 	    else
-	    	boolValue = false; //XXX something invalid: exception?
-		return boolValue;
+	    	return false; // unrecongnized
 	}
 	
 	/**

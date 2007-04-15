@@ -2,10 +2,13 @@ package org.omnetpp.inifile.editor.model;
 
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_NETWORK;
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -131,8 +134,8 @@ public class InifileAnalyzer {
 			}
 		}
 
-		//XXX todo: detect circles in the fallback chain, and report them
-		// addError(section, "circle detected in section fallback chain at section ["+currentSection+"]");
+		// detect circles in the fallback chain, and report them
+		detectSectionCircles();
 		
 		// calculate parameter resolutions for each section
 		for (String section : doc.getSectionNames())
@@ -261,9 +264,39 @@ public class InifileAnalyzer {
 		return null;
 	}
 
+	protected void detectSectionCircles() {
+		Set<String> bogusSections = new HashSet<String>();
+		
+		// check fallback chain for every section, except [General]
+		for (String section : doc.getSectionNames()) {
+			if (!section.equals(GENERAL)) {
+				// follow section fallback sequence, and detect circle in it
+				Set<String> sectionChain = new HashSet<String>();
+				String currentSection = section;
+				while (true) {
+					if (!doc.containsSection(currentSection))
+						break; // error: nonexisting section
+					if (sectionChain.contains(currentSection)) {
+						bogusSections.add(currentSection);
+						break; // error: circle in the fallback chain
+					}
+					sectionChain.add(currentSection);
+					String extendsName = doc.getValue(currentSection, CFGID_EXTENDS.getKey());
+					if (extendsName==null)
+						break; // done
+					currentSection = CONFIG_+extendsName;
+				}
+			}
+		}
+
+		// add error markers
+		for (String section : bogusSections)
+			addError(section, "circle in the fallback chain at section ["+section+"]");
+	}
+
 	protected void calculateParamResolutions(String section, INEDTypeResolver ned) {
 		String[] sectionChain = InifileUtils.resolveSectionChain(doc, section);
-		String networkName = lookupConfig(sectionChain, CFGID_NETWORK.getKey());
+		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getKey(), doc);
 		if (networkName == null)
 			networkName = CFGID_NETWORK.getDefaultValue().toString(); 
 		if (networkName == null)
@@ -284,14 +317,6 @@ public class InifileAnalyzer {
 		SectionData data = new SectionData();
 		data.paramResolutions = resList;
 		doc.setData(section, data);
-	}
-
-	//XXX into InifileUtils?
-	protected String lookupConfig(String[] sectionChain, String key) {
-		for (String section : sectionChain)
-			if (doc.containsKey(section, key))
-				return doc.getValue(section, key);
-		return null;
 	}
 
 	protected ArrayList<ParamResolution> collectParameters(String moduleFullPath, String moduleTypeName, final String[] sectionChain, INEDTypeResolver ned) {
