@@ -134,7 +134,6 @@ public final class SubmoduleNodeEx extends SubmoduleNode
      * @return All parameters assigned in this submodule's body
      */
     public List<ParamNodeEx> getOwnParams() {
-        // FIXME does not include parameters in param groups !!!
         List<ParamNodeEx> result = new ArrayList<ParamNodeEx>();
         ParametersNode parametersNode = getFirstParametersChild();
         if (parametersNode == null)
@@ -171,7 +170,6 @@ public final class SubmoduleNodeEx extends SubmoduleNode
      * @return All gates assigned in this submodule's body
      */
     public List<GateNodeEx> getOwnGates() {
-        // FIXME does not include parameters in param groups !!!
         List<GateNodeEx> result = new ArrayList<GateNodeEx>();
         GatesNode gatesNode = getFirstGatesChild();
         if (gatesNode == null)
