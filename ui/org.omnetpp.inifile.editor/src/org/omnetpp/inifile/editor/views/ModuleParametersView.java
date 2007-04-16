@@ -1,5 +1,7 @@
 package org.omnetpp.inifile.editor.views;
 
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
+
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -14,8 +16,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.ui.TableLabelProvider;
@@ -25,18 +30,15 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.ned.model.NEDElement;
 
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
-
 
 /**
  * Displays module parameters recursively for module type.
  * @author Andras
  */
-//XXX add ordering support to the table
-//XXX follow selection
 //XXX context menu with "Go to NED file" and "Go to ini file"
-//XXX fix hardcoded "Parameters" section
+//XXX what to assign on double click?
 public class ModuleParametersView extends AbstractModuleView {
+	private Label label;
 	private TableViewer tableViewer;
 	private boolean unassignedOnly = true;
 	private TableColumn parameterColumn;
@@ -80,8 +82,22 @@ public class ModuleParametersView extends AbstractModuleView {
 
 	@Override
 	public Control createViewControl(Composite parent) {
+		Composite container = new Composite(parent, SWT.NONE);
+		GridLayout g = new GridLayout(1, false);
+		g.horizontalSpacing = g.verticalSpacing = g.marginHeight = g.marginWidth = 0;
+		g.marginTop = g.marginBottom = g.marginLeft = g.marginRight = 0;
+		g.verticalSpacing = 1;
+		container.setLayout(g);
+		
+		label = new Label(container, SWT.NONE);
+		label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+
+		Label sep = new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL);
+		sep.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+
 		// create table with columns
-		Table table = new Table(parent, SWT.SINGLE | SWT.FULL_SELECTION);
+		Table table = new Table(container, SWT.SINGLE | SWT.FULL_SELECTION);
+		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		parameterColumn = addTableColumn(table, "Parameter", 300);
@@ -123,7 +139,7 @@ public class ModuleParametersView extends AbstractModuleView {
 		IAction toggleModeAction = createToggleModeAction();
 		getViewSite().getActionBars().getToolBarManager().add(toggleModeAction);
 		
-		return table;
+		return container;
 	}
 
 	protected IAction createToggleModeAction() {
@@ -206,6 +222,7 @@ public class ModuleParametersView extends AbstractModuleView {
 			hideMessage();
 			ParamResolution[] pars = unassignedOnly ? ana.getUnassignedParams(section) : ana.getParamResolutions(section); //XXX or maybe the resolutions for the selected key, etc
 			tableViewer.setInput(pars);
+			label.setText("Section ["+section+"], " + (unassignedOnly ?"unassigned parameters" : "all parameters"));
 		}
 	}
 }

@@ -7,6 +7,7 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
@@ -319,16 +320,7 @@ public class InifileUtils {
 			ConfigurationEntry entry = ConfigurationRegistry.getEntry(key);
 			if (entry == null)
 				return null;
-			String text = "[General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / "+entry.getKey();
-			text += " = <" + entry.getType().name().replaceFirst("CFG_", ""); 
-			if (!"".equals(entry.getDefaultValue()))
-				text += ", default: " + entry.getDefaultValue();
-			text += "> \n\n";
-			text += entry.getDescription() + "\n";
-
-			//XXX add: defined in which sections, with what value! 
-			
-			return StringUtils.breakLines(text, 80);
+			return getConfigTooltip(entry, doc);
 		}
 		else if (keyType == KeyType.PARAM) {
 			// parameter assignment: display which parameters it matches
@@ -346,5 +338,30 @@ public class InifileUtils {
 		else {
 			return null; // should not happen (invalid key type)
 		}
+	}
+
+	/**
+	 * Generates tooltip for a config entry.
+	 */
+	public static String getConfigTooltip(ConfigurationEntry entry, IInifileDocument doc) {
+		String text = "[General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / "+entry.getKey();
+		text += " = <" + entry.getType().name().replaceFirst("CFG_", ""); 
+		if (!"".equals(entry.getDefaultValue()))
+			text += ", default: " + entry.getDefaultValue();
+		text += "> \n\n";
+		text += entry.getDescription() + "\n";
+
+		if (doc != null) {
+			List<String> sectionList = new ArrayList<String>();
+			for (String sec : doc.getSectionNames())
+				if (doc.containsKey(sec, entry.getKey()))
+					sectionList.add(sec);
+			if (sectionList.size()==0)
+				text += "\nCurrently not set in any sections.\n";
+			else
+				text += "\nSet in the following sections: "+StringUtils.join(sectionList.toArray(), ", ")+"\n";
+		}
+		
+		return StringUtils.breakLines(text, 80);
 	}
 }
