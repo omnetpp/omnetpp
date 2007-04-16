@@ -10,7 +10,7 @@
    
    <extension
          id="NedDocumentSetupParticipant"
-         name="%documentSetupParticipantName"
+         name="NED Document Setup Participant"
          point="org.eclipse.core.filebuffers.documentSetup">
       <participant
             extensions="ned"
@@ -27,7 +27,7 @@
       <resolver
             name="Parameters"
             type="param"
-            icon="icons/16/resolver.gif"
+            icon="icons/elcl16/template.gif"
             description="Module parameters"
             contextTypeId="org.omnetpp.ned.editor.text.default"
             class="org.omnetpp.ned.editor.text.assist.NedVariableResolver">
@@ -35,7 +35,7 @@
       <resolver
             name="Module type"
             type="modtype"
-            icon="icons/16/resolver.gif"
+            icon="icons/elcl16/template.gif"
             description="Module type"
             contextTypeId="org.omnetpp.ned.editor.text.default"
             class="org.omnetpp.ned.editor.text.assist.NedVariableResolver">
@@ -44,12 +44,12 @@
             class="org.omnetpp.ned.editor.text.assist.NedVariableResolver"
             contextTypeId="org.omnetpp.ned.editor.text.default"
             description="A NED file"
-            icon="icons/16/resolver.gif"
+            icon="icons/elcl16/template.gif"
             name="Filename"
             type="filename"/>
       <include
       		file="templates/ned.xml"
-      		translations="templates/ned.properties">
+      		>
       </include>
    </extension>
    

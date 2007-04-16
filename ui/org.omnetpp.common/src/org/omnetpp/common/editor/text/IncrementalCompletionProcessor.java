@@ -29,7 +29,7 @@ import org.omnetpp.common.CommonPlugin;
  * Generic incremental type completion processor.
  */
 public abstract class IncrementalCompletionProcessor extends TemplateCompletionProcessor {
-    private static final String DEFAULT_IMAGE = "icons/16/template.gif"; //XXX make sure it exists (copy from nedtexteditor)
+    private static final String DEFAULT_IMAGE = "icons/obj16/template.png"; 
 
     /**
      * Helper comparator calss to compare CompletionProposals using relevance and the the display name 
