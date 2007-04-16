@@ -325,8 +325,10 @@ public class InifileAnalyzer {
 		final IInifileDocument finalDoc = doc;
 		final ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
 		InifileUtils.traverseModuleUsageHierarchy(moduleName, moduleFullPath, moduleTypeName, ned, doc, new IModuleTreeVisitor() {
-			public void visit(String moduleName, String moduleFullPath, INEDTypeInfo moduleType) {
+			public void enter(String moduleName, String moduleFullPath, INEDTypeInfo moduleType) {
 				collectParameters(list, moduleFullPath, moduleType, sectionChain, finalDoc);
+			}
+			public void leave(String moduleName, String moduleFullPath, INEDTypeInfo moduleType) {
 			}
 			public void visitUnresolved(String moduleName, String moduleFullPath, String moduleTypeName) {
 			}
@@ -335,6 +337,7 @@ public class InifileAnalyzer {
 	}
 
 	protected void collectParameters(ArrayList<ParamResolution> resultList, String moduleFullPath, INEDTypeInfo moduleType, String[] sectionChain, IInifileDocument doc) {
+		//FIXME wrong: submodule param assignments get ignored
 		for (NEDElement node : moduleType.getParamValues().values()) {
 			resultList.add(resolveParameter(moduleFullPath, (ParamNode)node, sectionChain, doc));
 		}

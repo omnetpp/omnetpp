@@ -8,6 +8,7 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
@@ -82,14 +83,19 @@ public class InifileUtils {
 	 */
 	public static interface IModuleTreeVisitor {
 		void visitUnresolved(String moduleName, String moduleFullPath, String moduleTypeName);
-		void visit(String moduleName, String moduleFullPath, INEDTypeInfo moduleType);
+		void enter(String moduleName, String moduleFullPath, INEDTypeInfo moduleType);
+		void leave(String moduleName, String moduleFullPath, INEDTypeInfo moduleType);
 	}
 
 	/**
 	 * Traverse the module usage hierarchy, and call methods for the visitor.
 	 */
 	public static void traverseModuleUsageHierarchy(String moduleName, String moduleFullPath, String moduleTypeName, INEDTypeResolver nedResources, IInifileDocument doc, IModuleTreeVisitor visitor) {
-		//FIXME detect circles!!! currently it results in stack overflow
+		Stack<INEDTypeInfo> visitedTypes = new Stack<INEDTypeInfo>();
+		doTraverseModuleUsageHierarchy(moduleName, moduleFullPath, moduleTypeName, nedResources, doc, visitor, visitedTypes);
+	}
+
+	private static void doTraverseModuleUsageHierarchy(String moduleName, String moduleFullPath, String moduleTypeName, INEDTypeResolver nedResources, IInifileDocument doc, IModuleTreeVisitor visitor, Stack<INEDTypeInfo> visitedTypes) {
 		// dig out type info (NED declaration)
 		if (StringUtils.isEmpty(moduleTypeName)) {
 			visitor.visitUnresolved(moduleName, moduleFullPath, null);
@@ -101,8 +107,14 @@ public class InifileUtils {
 			return;
 		}
 
-		// do useful work: add tree node corresponding to this module
-		visitor.visit(moduleName, moduleFullPath, moduleType);
+		// cycle detection
+		if (visitedTypes.contains(moduleType)) {
+			return; //XXX signal cycle!
+		}
+		visitedTypes.push(moduleType);
+		
+		// enter module
+		visitor.enter(moduleName, moduleFullPath, moduleType);
 
 		// traverse submodules
 		for (NEDElement node : moduleType.getSubmods().values()) {
@@ -111,8 +123,13 @@ public class InifileUtils {
 			String submoduleType = getSubmoduleType(submodule);
 
 			// recursive call
-			traverseModuleUsageHierarchy(submoduleName, moduleFullPath+"."+submoduleName, submoduleType, nedResources, doc, visitor);
+			doTraverseModuleUsageHierarchy(submoduleName, moduleFullPath+"."+submoduleName, submoduleType, nedResources, doc, visitor, visitedTypes);
 		}
+
+		// leave module
+		visitor.leave(moduleName, moduleFullPath, moduleType);
+		
+		visitedTypes.pop();
 	}
 
 	/**
