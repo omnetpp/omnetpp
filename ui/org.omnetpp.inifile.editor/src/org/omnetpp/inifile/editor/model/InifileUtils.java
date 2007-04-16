@@ -20,15 +20,27 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
 /**
  * Various lookups in inifiles, making use of NED declarations as well.
+ * This class cannot be instantiated, all functionality is provided via
+ * static methods.
+ * 
  * @author Andras
  */
 //TODO somehow detect if an inifile line matches parameters of more than one module type; that might be an error.
 // i.e. EtherMAC.backoffs and Ieee80211.backoffs.
 public class InifileUtils {
 	/**
+	 * Looks up a configuration value in the given section or its fallback sections.
+	 * Returns null if not found.
+	 */
+	public static String lookupConfig(String section, String key, IInifileDocument doc) {
+		String[] sectionChain = InifileUtils.resolveSectionChain(doc, section);
+		return lookupConfig(sectionChain, key, doc);
+	}
+
+	/**
 	 * Looks up a configuration value. Returns null if not found.
 	 */
-	protected static String lookupConfig(String[] sectionChain, String key, IInifileDocument doc) {
+	public static String lookupConfig(String[] sectionChain, String key, IInifileDocument doc) {
 		for (String section : sectionChain)
 			if (doc.containsKey(section, key))
 				return doc.getValue(section, key);
@@ -313,6 +325,9 @@ public class InifileUtils {
 				text += ", default: " + entry.getDefaultValue();
 			text += "> \n\n";
 			text += entry.getDescription() + "\n";
+
+			//XXX add: defined in which sections, with what value! 
+			
 			return StringUtils.breakLines(text, 80);
 		}
 		else if (keyType == KeyType.PARAM) {
@@ -322,11 +337,11 @@ public class InifileUtils {
 				return "Entry \"" + key + "\" does not match any module parameters ";
 			String text = "Entry \"" + key + "\" applies to the following module parameters: \n";
 			for (ParamResolution res : resList)
-				text += "  - " + res.moduleFullPath + "." +res.paramNode.getName() + "\n";
+				text += "  - " + res.moduleFullPath + "." +res.paramNode.getName() + "\n"; //XXX do we have module type, param type, maybe param doc etc?
 			return text;
 		}
 		else if (keyType == KeyType.PER_OBJECT_CONFIG) {
-			return null; // TODO (for .apply-default, display unassigned parameters
+			return null; // TODO for .apply-default, display parameters to which it applies
 		}
 		else {
 			return null; // should not happen (invalid key type)

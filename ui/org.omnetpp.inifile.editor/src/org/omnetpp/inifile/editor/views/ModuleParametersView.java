@@ -10,7 +10,6 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.deferred.SetModel;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -25,6 +24,9 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.ned.model.NEDElement;
+
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
+
 
 /**
  * Displays module parameters recursively for module type.
@@ -194,12 +196,13 @@ public class ModuleParametersView extends AbstractModuleView {
 	}
 	
 	@Override
-	public void buildContent(NEDElement module, InifileAnalyzer ana) {
-		String section = "Parameters"; //XXX
+	public void buildContent(NEDElement module, InifileAnalyzer ana, String section, String key) {
 		if (ana==null) {
 			displayMessage("Not an inifile editor."); //XXX
 		}
 		else {
+			if (section==null)
+				section = GENERAL;
 			hideMessage();
 			ParamResolution[] pars = unassignedOnly ? ana.getUnassignedParams(section) : ana.getParamResolutions(section); //XXX or maybe the resolutions for the selected key, etc
 			tableViewer.setInput(pars);

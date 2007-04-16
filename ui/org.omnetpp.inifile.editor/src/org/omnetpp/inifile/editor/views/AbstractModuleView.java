@@ -1,5 +1,7 @@
 package org.omnetpp.inifile.editor.views;
 
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_NETWORK;
+
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Image;
@@ -15,6 +17,7 @@ import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileSelectionItem;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
+import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.model.NEDElement;
@@ -27,7 +30,6 @@ import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
 import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 /**
  * Abstract base class for views that display information based on a single NED
@@ -197,7 +199,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 				//
 				NEDElement model = findFirstModuleOrSubmodule(((IModelProvider)element).getNEDModel());
 				if (model != null ) {
-					buildContent(model, null);
+					buildContent(model, null, null, null);
 					hideMessage();
                 } else
                     displayMessage("No NED element selected.");
@@ -207,12 +209,12 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 				// The inifile editor publishes selection in InifileSelectionItems.
 				//
 				InifileSelectionItem sel = (InifileSelectionItem) element;
-				InifileAnalyzer ana = sel.getAnalyzer();
+				InifileAnalyzer analyzer = sel.getAnalyzer();
 				IInifileDocument doc = sel.getDocument();
 
-				String networkName = doc.getValue(GENERAL, "network"); //XXX or [Run X], if that's the selected one!
+				String networkName = InifileUtils.lookupConfig(sel.getSection(), CFGID_NETWORK.getKey(), doc);
 				if (networkName == null) {
-					displayMessage("Network not specified (no [General]/network= setting)");
+					displayMessage("Network not specified (no network= setting in ["+sel.getSection()+"] or the sections it extends)");
 					return;
 				}
                 INEDTypeInfo networkType = NEDResourcesPlugin.getNEDResources().getComponent(networkName);
@@ -220,7 +222,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
                     displayMessage("Unknown module type specified for network: "+networkName);
                     return;
                 }
-                buildContent(networkType.getNEDElement(), ana);
+                buildContent(networkType.getNEDElement(), analyzer, sel.getSection(), sel.getKey());
 				hideMessage();
 			}
 		}
@@ -232,10 +234,12 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 	/**
 	 * Update view to display content that corresponds to the given module, 
 	 * with the specified inifile as configuration. 
-	 * @param module can be Network, CompoundModule, SimpleModule, Submodule
+	 * @param module can be a toplevel type (Network, CompoundModule, SimpleModule), or Submodule
 	 * @param ana Ini file analyzer
+	 * @param key selected section
+	 * @param section selected key
 	 */
-	protected abstract void buildContent(NEDElement module, InifileAnalyzer ana);
+	protected abstract void buildContent(NEDElement module, InifileAnalyzer ana, String section, String key);
 
 
 	/* stuff for subclasses: icons */

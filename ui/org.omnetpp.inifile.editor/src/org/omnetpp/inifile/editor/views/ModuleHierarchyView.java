@@ -173,7 +173,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		treeViewer.setInput(null);
 	}
 
-	public void buildContent(NEDElement module, InifileAnalyzer ana) {
+	public void buildContent(NEDElement module, InifileAnalyzer ana, String section, String key) {
         Assert.isTrue(module instanceof IHasName);
         // build tree
         String moduleName = ((IHasName)module).getName();

@@ -98,7 +98,7 @@ public class ParametersPage extends FormPage {
 		addTableColumn(table, "Section", 80);
 		addTableColumn(table, "Key", 180);
 		addTableColumn(table, "Value", 120);
-		addTableColumn(table, "Comment", 200);
+		addTableColumn(table, "Comment", 80);
 
 		// set up tableViewer, content and label providers
 		final TableViewer tableViewer = new TableViewer(table);
