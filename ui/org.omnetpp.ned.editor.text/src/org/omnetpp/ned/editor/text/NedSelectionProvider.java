@@ -12,8 +12,9 @@ import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
- * A selection listener that attaches to a NED text editor's viewer and delegates
- * to it. In addition it provides Structured selection for selection events
+ * A selection provider that attaches to a NED text editor's viewer and delegates
+ * to it. In addition it provides Structured selection for selection events in the text editor
+ * sending NEDElements as the selectied object
  * 
  * @author rhornig
  */

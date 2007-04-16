@@ -8,26 +8,20 @@ import org.eclipse.jface.text.templates.GlobalTemplateVariables;
  * A very simple context type.
  */
 public class NedContextType extends TemplateContextType {
-
 	/** This context's id */
 	public static final String DEFAULT_CONTEXT_TYPE= "org.omnetpp.ned.editor.text.default"; //$NON-NLS-1$
 
 	/**
-	 * Creates a new XML context type. 
+	 * Creates a new NED context type. 
 	 */
 	public NedContextType() {
-		addGlobalResolvers();
+        addResolver(new GlobalTemplateVariables.Cursor());
+        addResolver(new GlobalTemplateVariables.WordSelection());
+        addResolver(new GlobalTemplateVariables.LineSelection());
+        addResolver(new GlobalTemplateVariables.Dollar());
+        addResolver(new GlobalTemplateVariables.Date());
+        addResolver(new GlobalTemplateVariables.Year());
+        addResolver(new GlobalTemplateVariables.Time());
+        addResolver(new GlobalTemplateVariables.User());
 	}
-
-	private void addGlobalResolvers() {
-		addResolver(new GlobalTemplateVariables.Cursor());
-		addResolver(new GlobalTemplateVariables.WordSelection());
-		addResolver(new GlobalTemplateVariables.LineSelection());
-		addResolver(new GlobalTemplateVariables.Dollar());
-		addResolver(new GlobalTemplateVariables.Date());
-		addResolver(new GlobalTemplateVariables.Year());
-		addResolver(new GlobalTemplateVariables.Time());
-		addResolver(new GlobalTemplateVariables.User());
-	}
-
 }

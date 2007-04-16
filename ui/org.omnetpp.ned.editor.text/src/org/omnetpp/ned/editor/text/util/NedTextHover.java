@@ -1,8 +1,6 @@
 package org.omnetpp.ned.editor.text.util;
 
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -12,14 +10,10 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IFileEditorInput;
 import org.omnetpp.ned.editor.text.NedHelper;
-import org.omnetpp.ned.model.NEDElement;
-import org.omnetpp.ned.model.NEDSourceRegion;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
-import org.omnetpp.ned.resources.NEDResources;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
@@ -44,84 +38,11 @@ public class NedTextHover implements ITextHover {
 		if (component!=null)
 			return NEDTreeUtil.generateNedSource(component.getNEDElement(), true);
 
-		//XXX just for debugging
-		//return getNEDElementsUnderCursor(textViewer, hoverRegion);
-		
 		// otherwise, give up (TODO we might try harder though, ie using context info)
 		return "";
-		//return word;
-		
-//XXX
-//        String msg = "Default";
-//        IDocument doc = textViewer.getDocument();
-//        ITypedRegion region;
-//        if (doc instanceof IDocumentExtension3) {
-//            IDocumentExtension3 docext3 = (IDocumentExtension3) doc;
-//            try {
-//                region = docext3.getPartition(NedOutlinePartitionScanner.PARTITIONING_ID, hoverRegion.getOffset(), false);
-//            } catch (BadLocationException e) {
-//                return msg;
-//            } catch (BadPartitioningException e) {
-//                return msg;
-//            }
-//            return region.getType();
-//            
-//        }
-//        return msg;
-
-//		if (hoverRegion != null) {
-//			try {
-//				if (hoverRegion.getLength() > -1)
-//					return textViewer.getDocument().get(hoverRegion.getOffset(), hoverRegion.getLength());
-//			} catch (BadLocationException x) {
-//			}
-//		}
-//		return NedEditorMessages.getString("NedTextHover.emptySelection"); //$NON-NLS-1$
 	}
 
-	private String getNEDElementsUnderCursor(ITextViewer textViewer, IRegion hoverRegion) {
-		try {
-			// find out line:column
-			INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();    	
-			IDocument docu = textViewer.getDocument();
-			int line = docu.getLineOfOffset(hoverRegion.getOffset());
-			int column = hoverRegion.getOffset() - docu.getLineOffset(line);
-			line++;  // IDocument is 0-based
-			
-			// find out file
-			Assert.isTrue(editor.getEditorInput() instanceof IFileEditorInput); // NEDEditor only accepts file input
-			IFile file = ((IFileEditorInput)editor.getEditorInput()).getFile();
-			
-			// find component and NEDElements under the cursor 
-			INEDTypeInfo c = res.getComponentAt(file, line);
-			String result = "";
-			if (c!=null) {
-				NEDElement[] nodes = c.getNEDElementsAt(line, column);
-				if (nodes!=null) {
-					for (int i=nodes.length-1; i>=0; i--) {
-						result += "<"+nodes[i].getTagName()+">: "+getDocumentRegion(docu, nodes[i].getSourceRegion())+"\n----------\n";
-					}
-				}
-			}
-			if (result.equals("")) 
-				result= "nothing known at line "+line;
-			return result;
-		} catch (BadLocationException e) {
-			return null;
-		}
-	}
 	
-	private String getDocumentRegion(IDocument docu, NEDSourceRegion region) {
-		try {
-			//XXX +column is not good: must take tab chars into account!!
-			int startOffset = docu.getLineOffset(region.startLine-1)+region.startColumn;
-			int endOffset = docu.getLineOffset(region.endLine-1)+region.endColumn;
-			return docu.get(startOffset, endOffset-startOffset);
-		} catch (BadLocationException e) {
-			return null;
-		}
-	}
-    
 	private String getWordUnderCursor(ITextViewer viewer, IRegion region, IWordDetector wordDetector) {
 		try {
 			// if mouse hovers over a selection, return that

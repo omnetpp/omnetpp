@@ -161,7 +161,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
 			} catch (TemplateException e) {
 				continue;
 			}
-			if (template.matches(prefix, context.getContextType().getId()))
+			if (template.matches(prefix, context.getContextType().getId()) && template.getName().startsWith(prefix))
 				matches.add(createProposal(template, context, (IRegion) region, getRelevance(template, prefix)));
 		}
 

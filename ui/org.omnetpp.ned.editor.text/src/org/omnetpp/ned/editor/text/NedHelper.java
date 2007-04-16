@@ -15,7 +15,6 @@ import org.omnetpp.ned.editor.text.assist.NedContextType;
  * This class contains all the possible keywords for syntax highlighting and context assist functions.
  *
  * @author rhornig
- *
  */
 public class NedHelper {
 
@@ -112,16 +111,28 @@ public class NedHelper {
     public final static String[] proposedNedBaseParamTypes = { "bool", "double", "int", "string", "xml" };
     public final static String[] proposedNedParamTypes = { "bool", "double", "int", "string", "xml", "volatile bool", "volatile double", "volatile int", "volatile string", "volatile xml" };
     public final static String[] proposedNedGateTypes = { "inout", "input", "output" };
-    public final static String[] proposedNedGlobalStartingKeywords = { "channel", "channel withcppclass", "channelinterface", "import", "interface", "module", "network", "package", "property", "simple"};
+    public final static String[] proposedNedTopLevelKeywords = { "import", "network", "package", "property"};
+    public final static String[] proposedNedTypeDefinerKeywords = { "channel", "channel withcppclass", "channelinterface", "interface", "module", "simple"};
     public final static String[] proposedNedSectionNameKeywords = {"connections:", "connections allowunconnected:", "gates:", "parameters:", "submodules:", "types:"};
     public final static String[] proposedNedConnsKeywords = {"allowunconnected"};
     public final static String[] proposedNedInheritanceKeywords = {"extends", "like"};
-    public final static String[] proposedNedOtherKeywords = {"if", "index", "this", "typename", "for"};
-    public final static String[] proposedNedFunctions = { "acos", "asin", "atan", "atan2", "bernoulli", "beta", "binomial", "cauchy", "ceil", "chi_square", "const", "cos", "default", "erlang_k", "exp", "exponential", "fabs", "floor", "fmod", "gamma_d", "genk_exponential", "genk_intuniform", "genk_normal", "genk_truncnormal", "genk_uniform", "geometric", "hypergeometric", "hypot", "intuniform", "log", "log10", "lognormal", "max", "min", "negbinomial", "normal", "pareto_shifted", "poisson", "pow", "sin", "sizeof", "sqrt", "student_t", "tan", "triang", "truncnormal", "uniform", "weibull", "xmldoc" };
+    public final static String[] proposedNedOtherExpressionKeywords = {"index", "this"};
     public final static String[] proposedConstants = { "false", "true" };
-    public final static String[] proposedNedComponentPropertyNames = {"display(...)"}; //XXX offer as template! check what gets actually supported! also: "recordstats", "kernel", ... 
-    public final static String[] proposedNedParamPropertyNames = {"prompt(...)", "choice(...)", "classname(...)"}; //XXX check this list before release  
-    public final static String[] proposedNedGatePropertyNames = {"labels(...)", "inlabels(...)", "outlabels(...)"}; //XXX check this list before release
+    
+
+    public final static Template[] proposedNedComponentPropertyTempl = {
+        makeShortTemplate("display(\"i=${icon}\");", "property") 
+    }; // XXX check what gets actually supported! also: "recordstats", "kernel", ...  
+    public final static Template[] proposedNedParamPropertyTempl = {
+        makeShortTemplate("prompt(\"${message}\");", "property"), 
+        makeShortTemplate("choice(${value1}, ${value2});", "property"), 
+        makeShortTemplate("classname(${className});", "property"), 
+    }; //XXX check this list before release  
+    public final static Template[] proposedNedGatePropertyTempl = {
+        makeShortTemplate("labels(${label1});", "property"), 
+        makeShortTemplate("inlabels(${inLabel1})", "property"), 
+        makeShortTemplate("outlabels(${outLabel1})", "property"), 
+    }; //XXX check this list before release
 
     // MSG specific completions - not used currently
     //  public final static String[] proposedMsgTypes = { "bool", "char", "double", "int", "long", "numeric", "short", "string", "unsigned", "xml" };
@@ -185,28 +196,36 @@ public class NedHelper {
     	return new Template(name, description, NedContextType.DEFAULT_CONTEXT_TYPE, pattern, false);
     }
 
+    private static Template makeTemplate(String name, String description, String pattern) {
+        return new Template(name, description, NedContextType.DEFAULT_CONTEXT_TYPE, pattern, false);
+    }
+            
     public final static Template[] proposedNedGlobalTempl = new Template[] {
     	makeTemplate("import", "import NED file", 
     			"import \"${FileName}\";\n"),
         makeTemplate("simple1", "create simple module",
-        		"//\n// TODO description\n//\n"+
+                "//\n// ${description_of_the_simple_module}\n//\n"+
+                "// @author ${user}\n//\n"+
         		"simple ${SomeModule} {\n"+
         		"    parameters:\n"+
         		"    gates:\n"+
         		"}\n${cursor}\n"),
         makeTemplate("simple2", "specialize simple module",
-        		"//\n// TODO description\n//\n"+
+        		"//\n// ${description_of_the_simple_module}\n//\n"+
+                "// @author ${user}\n//\n"+
         		"simple ${SomeModule} extends ${AnotherModule} {\n"+
         		"    parameters:\n"+
         		"}\n${cursor}\n"),
         makeTemplate("simple3", "simple module complying an interface",
-        		"//\n// TODO description\n//\n"+
+        		"//\n// ${description_of_the_simple_module}\n//\n"+
+                "// @author ${user}\n//\n"+
         		"simple ${SomeModule} like ${SomeInterface} {\n"+
         		"    parameters:\n"+
         		"    gates:\n"+
         		"}\n${cursor}\n"),
         makeTemplate("module1", "create compound module",
-        		"//\n// TODO description\n//\n"+
+        		"//\n// ${description_of_the_module}\n//\n"+
+                "// @author ${user}\n//\n"+
         		"module ${SomeModule} {\n"+
         		"    parameters:\n"+
         		"    gates:\n"+
@@ -214,12 +233,14 @@ public class NedHelper {
         		"    connections:\n"+
         		"}\n${cursor}\n"),
         makeTemplate("module2", "specialize compound module",
-        		"//\n// TODO description\n//\n"+
+        		"//\n// ${description_of_the_module}\n//\n"+
+                "// @author ${user}\n//\n"+
         		"module ${SomeModule} extends ${AnotherModule} {\n"+
         		"    parameters:\n"+
         		"}\n${cursor}\n"),
         makeTemplate("module3", "compound module complying an interface",
-        		"//\n// TODO description\n//\n"+
+        		"//\n// ${description_of_the_module}\n//\n"+
+                "// @author ${user}\n//\n"+
         		"module ${SomeModule} like ${SomeInterface} {\n"+
         		"    parameters:\n"+
         		"    gates:\n"+
@@ -227,35 +248,41 @@ public class NedHelper {
         		"    connections:\n"+
         		"}\n${cursor}\n"),
 		makeTemplate("interface", "create module interface",
-				"//\n// TODO description\n//\n"+
+				"//\n// ${description_of_the_interface}\n//\n"+
+                "// @author ${user}\n//\n"+
 				"interface ${SomeInterface} {\n"+
 				"    parameters:\n"+
 				"    gates:\n"+
 				"}\n${cursor}\n"),
         makeTemplate("network1", "create network",
-        		"//\n// TODO description\n//\n"+
+        		"//\n// ${description_of_the_network}\n//\n"+
+                "// @author ${user}\n//\n"+
         		"network ${SomeNetwork} {\n"+
         		"    parameters:\n"+
         		"    submodules:\n"+
         		"    connections:\n"+
         		"}\n${cursor}\n"),
         makeTemplate("network2", "create network instantiating a module",
-        		"//\n// TODO description\n//\n"+
+        		"//\n// ${description_of_the_network}\n//\n"+
+                "// @author ${user}\n//\n"+
         		"network ${SomeNetwork} extends ${SomeModule} {\n"+
         		"    parameters:\n"+
         		"}\n${cursor}\n"),
         makeTemplate("channel1", "create channel",
-        		"//\n// TODO description\n//\n"+
+        		"//\n// ${description_of_the_channel}\n//\n"+
+                "// @author ${user}\n//\n"+
         		"channel ${SomeChannel} {\n"+
         		"    parameters:\n"+
         		"}\n${cursor}\n"),
         makeTemplate("channel2", "channel with underlying C++ class", //XXX revise name
-        		"//\n// TODO description\n//\n"+
+        		"//\n// ${description_of_the_channel}\n//\n"+
+                "// @author ${user}\n//\n"+
         		"channel withcppclass ${SomeChannel} {\n"+
         		"    parameters:\n"+
         		"}\n${cursor}\n"),
         makeTemplate("channelinterface", "create channel interface",
-        		"//\n// TODO description\n//\n"+
+        		"//\n// ${description_of_the_channel_interface}\n//\n"+
+                "// @author ${user}\n//\n"+
         		"channelinterface ${SomeChannelInterface} {\n"+
         		"    parameters:\n"+
         		"    gates:\n"+
@@ -265,9 +292,9 @@ public class NedHelper {
         makeTemplate("submodule1", "submodule",
         		"        ${someSubmodule} : ${SomeModule};\n"),
         makeTemplate("submodule2", "submodule vector",
-		"        ${someSubmodule}[${size}] : ${SomeModule};\n"),
+		        "        ${someSubmodule}[${size}] : ${SomeModule};\n"),
 		makeTemplate("submodule3", "submodule with variable type",
-		"        ${someSubmodule} : <${stringParameter}> like ${SomeInterface};\n"),
+		        "        ${someSubmodule} : <${stringParameter}> like ${SomeInterface};\n"),
         makeTemplate("submodule4", "submodule with parameter settings",
         		"        ${someSubmodule} : ${SomeModule} {\n"+
         		"            //...\n"+
@@ -296,12 +323,54 @@ public class NedHelper {
         makeTemplate("connection7", "connection with predefined channel parameterized",
         		"        ${mod1}.${inout1} <--> ${SomeChannel} {${customParam}=${value};} <--> ${mod2}.${inout2};\n"),
         //XXX with [], with ++, with "where", connection templates...
+
+        // templates based on for loops
+        makeTemplate("forloop", "an empty for loop",
+                "       for ${i} = ${start}..${end} {\n"+
+                "           ${selection}\n"+
+                "       };${cursor}"),
+        makeTemplate("forbus", "connect modules with a bus",
+                "       for ${i} = 0..${n}-1 {\n"+
+                "           ${node1}.${out}[${i}] --> ${node2}.${in}[${i}];\n"+
+                "       };${cursor}"),
+        makeTemplate("forstar", "connect modules in a star topology",
+                "       for ${i} = 0..${n}-1 {\n"+
+                "           ${central}.${out}[${i}] --> ${satellite}[${i}].${in};\n"+
+                "       };${cursor}"),
+        makeTemplate("forbintree", "connect modules in a binary tree topology",
+                "       for ${i} = 0..2^(${height}-1)-2 {\n"+
+                "           ${node}[${i}].${downleft} --> ${node}[2*${i}+1].${fromupper};\n"+
+                "           ${node}[${i}].${downright} --> ${node}[2*${i}+2].${fromupper};\n"+
+                "       };${cursor}"),
+        makeTemplate("forchain", "connect modules in a chain topology",
+                "       for ${i} = 0..${n}-2 {\n"+
+                "           ${node}[${i}].${out} --> ${node}[${i}+1].${in};\n"+
+                "       };${cursor}"),
+        makeTemplate("forfullgraph", "connect modules in a full graph topology",
+                "       for ${i} = 0..${n}-1, for ${j}=0..${n}-1 {\n"+
+                "           ${node}[${i}].${out}[${j}] --> ${node}[${j}].${in}[${i}] if ${i}!=${j};\n"+
+                "       };${cursor}"),
+        makeTemplate("forrandomgraph", "connect modules in a random graph topology",
+                "       for ${i} = 0..${n}-1, for ${j}=0..${n}-1 {\n"+
+                "           ${node}[${i}].${out}[${j}] --> ${node}[${j}].${in}[${i}] if ${i}!=${j} && uniform(0,1) < ${connectedness};\n"+
+                "       };${cursor}"),
+        makeTemplate("formesh", "connect modules in a mesh topology",
+                "       for ${i}=0..${height}-1, for ${j}=0..${width}-1 {\n"+
+                "           ${node}[${i}*${width}+${j}].${down} --> ${node}[(${i}+1)*${width}+${j}].${up} if ${i}!=${height}-1;\n"+
+                "           ${node}[${i}*${width}+${j}].${right} --> ${node}[${i}*${width}+${j}+1].${left} if ${j}!=${width}-1;\n"+
+                "       };${cursor}"),
+        makeTemplate("fortrigrid", "connect modules in a triangle grid topology",
+                "       for i = 0 .. ${rows}*${cols}-1 {\n"+
+                "           ${node}[i].${n} <-- ${node}[i-2*${cols}].${s} if i+1>2*${cols};\n"+
+                "           ${node}[i].${nw} <-- ${node}[${cols}-(i/${cols}+1)%2].${se} if i%(2*${cols})!=0 && i+1>${cols};\n"+
+                "           ${node}[i].${sw} <-- ${node}[i+${cols}-1+(i/${cols})%2].${ne} if i%(2*${cols})!=0 && i<${rows}*${cols}-${cols};\n"+
+                "       };${cursor}"),
+        makeTemplate("forring", "connect modules in a ring topology",
+                "       for ${i} = 0..${n}-1 {\n"+
+                "           ${node}[${i}].${out} --> ${node}[(${i}+1) % ${n}].${in};\n"+
+                "       };${cursor}"),
     };
 
-    private static Template makeTemplate(String name, String description, String pattern) {
-    	return new Template(name, description, NedContextType.DEFAULT_CONTEXT_TYPE, pattern, false);
-    }
-    		
     // whitespace and word detectors for tokenization
     public final static NedWhitespaceDetector nedWhitespaceDetector = new NedWhitespaceDetector();
     public final static NedWordDetector nedWordDetector = new NedWordDetector();

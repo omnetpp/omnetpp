@@ -76,13 +76,7 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 		return new NedDoubleClickSelector();
 	}
 	
-	public String[] getIndentPrefixes(ISourceViewer sourceViewer, String contentType) {
-        // TODO indentation should be configurable
-		return new String[] { "\t", "    " }; //$NON-NLS-1$ //$NON-NLS-2$
-	}
-	
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
-        
 		PresentationReconciler reconciler= new PresentationReconciler();
         // syntax highlighting is using a separate partitioner
 		reconciler.setDocumentPartitioning(NedSyntaxHighlightPartitionScanner.PARTITIONING_ID);
@@ -103,11 +97,6 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 		reconciler.setRepairer(dr, NedSyntaxHighlightPartitionScanner.NED_PRIVATE_DOC);
 
 		return reconciler;
-	}
-	
-	public int getTabWidth(ISourceViewer sourceViewer) {
-        // TODO should be configurable
-		return 4;
 	}
 	
 	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {

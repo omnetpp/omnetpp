@@ -23,34 +23,7 @@
       <contextType
             class="org.omnetpp.ned.editor.text.assist.NedContextType"
             id="org.omnetpp.ned.editor.text.default"
-            name="NED File"/>
-      <resolver
-            name="Parameters"
-            type="param"
-            icon="icons/elcl16/template.gif"
-            description="Module parameters"
-            contextTypeId="org.omnetpp.ned.editor.text.default"
-            class="org.omnetpp.ned.editor.text.assist.NedVariableResolver">
-      </resolver>
-      <resolver
-            name="Module type"
-            type="modtype"
-            icon="icons/elcl16/template.gif"
-            description="Module type"
-            contextTypeId="org.omnetpp.ned.editor.text.default"
-            class="org.omnetpp.ned.editor.text.assist.NedVariableResolver">
-      </resolver>
-      <resolver
-            class="org.omnetpp.ned.editor.text.assist.NedVariableResolver"
-            contextTypeId="org.omnetpp.ned.editor.text.default"
-            description="A NED file"
-            icon="icons/elcl16/template.gif"
-            name="Filename"
-            type="filename"/>
-      <include
-      		file="templates/ned.xml"
-      		>
-      </include>
+            name="NED File global context"/>
    </extension>
    
 </plugin>

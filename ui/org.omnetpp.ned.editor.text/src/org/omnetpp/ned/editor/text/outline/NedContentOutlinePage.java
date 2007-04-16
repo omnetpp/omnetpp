@@ -91,7 +91,7 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 	public void setInput(Object input) {
 		Assert.isTrue(input instanceof IFileEditorInput || input == null);
 		fInput = (IFileEditorInput) input;
-		System.out.println(this+".setInput( " + input+ ") called");
+//		System.out.println(this+".setInput( " + input+ ") called");
 		update();
 	}
 	
@@ -99,7 +99,7 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 	 * Updates the outline page.
 	 */
 	public void update() {
-		System.out.println(this+".update() called");
+//		System.out.println(this+".update() called");
         if (fInput == null) 
             return;
 

@@ -10,6 +10,8 @@ import org.omnetpp.ned.editor.text.NedHelper;
 /**
  * Private NED documentation completion processor.
  */
+
+// TODO maybe enough to derive from IncrementalCompletionProcessor
 public class NedPrivateDocCompletionProcessor extends NedTemplateCompletionProcessor {
 
 	@SuppressWarnings("unchecked")

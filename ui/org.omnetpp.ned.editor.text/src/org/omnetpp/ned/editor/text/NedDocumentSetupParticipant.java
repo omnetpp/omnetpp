@@ -38,13 +38,6 @@ public class NedDocumentSetupParticipant implements IDocumentSetupParticipant {
                 new FastPartitioner(new NedSyntaxHighlightPartitionScanner(), NedSyntaxHighlightPartitionScanner.SUPPORTED_PARTITION_TYPES);
             extension3.setDocumentPartitioner(NedSyntaxHighlightPartitionScanner.PARTITIONING_ID, highlightPartitioner);
             highlightPartitioner.connect(document);
-            
-            // outline partitioner setup
-            // XXX unused code
-            //IDocumentPartitioner outlinePartitioner = 
-            //    new FastPartitioner(new NedOutlinePartitionScanner(), NedOutlinePartitionScanner.SUPPORTED_PARTITION_TYPES);
-            //extension3.setDocumentPartitioner(NedOutlinePartitionScanner.PARTITIONING_ID, outlinePartitioner);
-            //outlinePartitioner.connect(document);
 		}
 	}
 }
