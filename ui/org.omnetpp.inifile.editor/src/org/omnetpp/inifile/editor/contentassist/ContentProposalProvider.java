@@ -93,7 +93,6 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
 					String modifiedContent = content.substring(prefixToMatch.length(), content.length());
 					int modifiedCursorPosition = candidate.getCursorPosition() + modifiedContent.length() - content.length();
 					String description = (StringUtils.isEmpty(candidate.getDescription()) && descriptionSeen) ? "(no description)" : candidate.getDescription();
-					System.out.println("desc seen="+descriptionSeen+" XXX = "+description);
 					result.add(new ContentProposal(modifiedContent, candidate.getLabel(), description, modifiedCursorPosition));
 				}
 			}
