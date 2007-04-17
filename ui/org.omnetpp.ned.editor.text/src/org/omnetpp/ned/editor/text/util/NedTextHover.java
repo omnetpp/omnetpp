@@ -36,7 +36,7 @@ public class NedTextHover implements ITextHover {
 		INEDTypeInfo component = res.getComponent(word);
 		
 		if (component!=null)
-			return NEDTreeUtil.generateNedSource(component.getNEDElement(), true);
+		    return component.getNEDElement().getComment();
 
 		// otherwise, give up (TODO we might try harder though, ie using context info)
 		return "";

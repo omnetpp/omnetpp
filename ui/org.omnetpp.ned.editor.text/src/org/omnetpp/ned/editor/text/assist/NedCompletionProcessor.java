@@ -110,11 +110,9 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 
 			// match various "extends" clauses
 			if (line.matches(".*\\bsimple .* extends"))
-			    // FIXME show only the simplemodule types not all
-				addProposals(viewer, documentOffset, result, res.getModuleNames(), "module type"); 
+				addProposals(viewer, documentOffset, result, res.getAllComponentNamesFilteredBy(NEDResources.SIMPLE_MODULE_FILTER), "simple-module type"); 
 			else if (line.matches(".*\\b(module|network) .* extends"))
-                // FIXME show only the compound module types not all
-				addProposals(viewer, documentOffset, result, res.getModuleNames(), "module type");
+				addProposals(viewer, documentOffset, result, res.getAllComponentNamesFilteredBy(NEDResources.COMPOUND_MODULE_FILTER), "compound-module type");
 			else if (line.matches(".*\\bchannel .* extends"))
 				addProposals(viewer, documentOffset, result, res.getChannelNames(), "channel type");
 			else if (line.matches(".*\\binterface .* extends"))
