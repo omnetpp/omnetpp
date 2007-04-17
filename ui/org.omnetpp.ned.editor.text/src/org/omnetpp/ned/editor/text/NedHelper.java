@@ -16,7 +16,7 @@ import org.omnetpp.ned.editor.text.assist.NedContextType;
  *
  * @author rhornig
  */
-public class NedHelper {
+public final class NedHelper {
 
     /**
      * Convenience method, to return a system default color. Color constants come from SWT class e.g. SWT.COLOR_RED
@@ -38,12 +38,12 @@ public class NedHelper {
     }
 
     /**
-     * Detector for normal NED keywords (may start with letter or _ and contain letter number or _)
+     * Detector for normal NED keywords (may start with letter, @ or _ and contain letter number or _)
      */
     public static class NedWordDetector implements IWordDetector {
 
         public boolean isWordStart(char character) {
-            return Character.isLetter(character) || character == '_';
+            return Character.isLetter(character) || character == '_' || character == '@';
         }
 
         public boolean isWordPart(char character) {
@@ -68,7 +68,7 @@ public class NedHelper {
     /**
      * Detects kewords that athere to the @whatewer syntax, staring with @ and continuing with letters only.
      */
-    static class NedAtWordDetector implements IWordDetector {
+    public static class NedAtWordDetector implements IWordDetector {
 
         public boolean isWordStart(char c) {
             return (c == '@');
@@ -82,7 +82,7 @@ public class NedHelper {
     /**
      * Detects kewords that look like an XML tag.
      */
-    static class NedDocTagDetector implements IWordDetector {
+    public static class NedDocTagDetector implements IWordDetector {
 
         public boolean isWordStart(char c) {
             return (c == '<');
@@ -115,23 +115,32 @@ public class NedHelper {
     public final static String[] proposedNedTypeDefinerKeywords = { "channel", "channel withcppclass", "channelinterface", "interface", "module", "simple"};
     public final static String[] proposedNedSectionNameKeywords = {"connections:", "connections allowunconnected:", "gates:", "parameters:", "submodules:", "types:"};
     public final static String[] proposedNedConnsKeywords = {"allowunconnected"};
-    public final static String[] proposedNedInheritanceKeywords = {"extends", "like"};
     public final static String[] proposedNedOtherExpressionKeywords = {"index", "this"};
     public final static String[] proposedConstants = { "false", "true" };
     
 
+    private static Template makeShortTemplate(String pattern, String description) {
+        String name = pattern.replaceAll("\\$\\{(.*?)\\}", "$1");  // remove ${} from parameters
+        return new Template(name, description, NedContextType.DEFAULT_CONTEXT_TYPE, pattern, false);
+    }
+
+    private static Template makeTemplate(String name, String description, String pattern) {
+        return new Template(name, description, NedContextType.DEFAULT_CONTEXT_TYPE, pattern, false);
+    }
+            
     public final static Template[] proposedNedComponentPropertyTempl = {
-        makeShortTemplate("display(\"i=${icon}\");", "property") 
+        makeShortTemplate("@display(\"i=${icon}\");", "property") 
     }; // XXX check what gets actually supported! also: "recordstats", "kernel", ...  
     public final static Template[] proposedNedParamPropertyTempl = {
-        makeShortTemplate("prompt(\"${message}\");", "property"), 
-        makeShortTemplate("choice(${value1}, ${value2});", "property"), 
-        makeShortTemplate("classname(${className});", "property"), 
+        makeShortTemplate("@prompt(\"${message}\")", "property"), 
+        makeShortTemplate("@choice(${value1}, ${value2})", "property"), 
+        makeShortTemplate("@classname(${className})", "property"), 
+        makeShortTemplate("@unit(${unitName})", "property"), 
     }; //XXX check this list before release  
     public final static Template[] proposedNedGatePropertyTempl = {
-        makeShortTemplate("labels(${label1});", "property"), 
-        makeShortTemplate("inlabels(${inLabel1})", "property"), 
-        makeShortTemplate("outlabels(${outLabel1})", "property"), 
+        makeShortTemplate("@labels(${label1})", "property"), 
+        makeShortTemplate("@inlabels(${inLabel1})", "property"), 
+        makeShortTemplate("@outlabels(${outLabel1})", "property"), 
     }; //XXX check this list before release
 
     // MSG specific completions - not used currently
@@ -191,15 +200,6 @@ public class NedHelper {
     	makeShortTemplate("poisson(${lambda}, ${opt_rngnum})", "distribution"),
     };
 
-    private static Template makeShortTemplate(String pattern, String description) {
-    	String name = pattern.replaceAll("\\$\\{(.*?)\\}", "$1");  // remove ${} from parameters
-    	return new Template(name, description, NedContextType.DEFAULT_CONTEXT_TYPE, pattern, false);
-    }
-
-    private static Template makeTemplate(String name, String description, String pattern) {
-        return new Template(name, description, NedContextType.DEFAULT_CONTEXT_TYPE, pattern, false);
-    }
-            
     public final static Template[] proposedNedGlobalTempl = new Template[] {
     	makeTemplate("import", "import NED file", 
     			"import \"${FileName}\";\n"),

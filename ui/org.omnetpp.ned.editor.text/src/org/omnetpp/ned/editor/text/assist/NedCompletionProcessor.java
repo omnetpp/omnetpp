@@ -111,7 +111,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 			// match various "extends" clauses
 			if (line.matches(".*\\bsimple .* extends"))
 				addProposals(viewer, documentOffset, result, res.getModuleNames(), "module type");
-			else if (line.matches(".*\\bmodule .* extends"))
+			else if (line.matches(".*\\b(module|network) .* extends"))
 				addProposals(viewer, documentOffset, result, res.getModuleNames(), "module type");
 			else if (line.matches(".*\\bchannel .* extends"))
 				addProposals(viewer, documentOffset, result, res.getChannelNames(), "channel type");
@@ -121,17 +121,18 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 				addProposals(viewer, documentOffset, result, res.getChannelInterfaceNames(), "channel interface type");
 
 			// match "like" clauses
-			// XXX match "," as well (multiple interfaces)
-			if (line.matches(".*\\bsimple .* like"))
+			if (line.matches(".*\\bsimple .* like") || line.matches(".*\\bsimple .* like .*,"))
 				addProposals(viewer, documentOffset, result, res.getModuleInterfaceNames(), "module interface type");
-			else if (line.matches(".*\\bmodule .* like"))
+			else if (line.matches(".*\\b(module|network) .* like") || line.matches(".*\\b(module|network) .* like .*,"))
 				addProposals(viewer, documentOffset, result, res.getModuleInterfaceNames(), "module interface type");
-			else if (line.matches(".*\\bchannel .* like"))
+			else if (line.matches(".*\\bchannel .* like") || line.matches(".*\\bchannel .* like .*,"))
 				addProposals(viewer, documentOffset, result, res.getChannelInterfaceNames(), "channel interface type");
 
-            // FIXME handle extends and like separately
-			if (!line.equals("") && !line.matches(".*\\b(extends|like)\\b.*"))
-				addProposals(viewer, documentOffset, result, NedHelper.proposedNedInheritanceKeywords, "keyword");
+			if (!line.equals("") && !line.matches(".*\\b(like|extends)\\b.*") && line.matches(".*\\b(simple|module|network|channel|interface|channelinterface)\\b.*"))
+				addProposals(viewer, documentOffset, result, new String[]{"extends "}, "keyword");
+
+            if (!line.equals("") && !line.matches(".*\\blike\\b.*") && line.matches(".*\\b(simple|module|network|channel)\\b.*"))
+                addProposals(viewer, documentOffset, result, new String[]{"like "}, "keyword");
 		}
 
 		// propose line start: param names, gate names, keywords
@@ -186,21 +187,6 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 			addProposals(viewer, documentOffset, result, NedHelper.proposedNedBaseParamTypes, "parameter type");
 		}
 		
-		// offer existing and standard property names after "@"
-		if (line.matches("@")) {
-			addProposals(viewer, documentOffset, result, NedHelper.proposedNedComponentPropertyTempl);
-			if (info.sectionType == SECT_PARAMETERS && parentComponent!=null)
-				addProposals(viewer, documentOffset, result, parentComponent.getProperties().keySet(), "property");
-			if (info.sectionType == SECT_SUBMODULE_PARAMETERS && submoduleType!=null)
-				addProposals(viewer, documentOffset, result, submoduleType.getProperties().keySet(), "property");
-		}
-		else if (line.endsWith("@")) {
-			if (info.sectionType == SECT_PARAMETERS || info.sectionType == SECT_SUBMODULE_PARAMETERS)
-				addProposals(viewer, documentOffset, result, NedHelper.proposedNedParamPropertyTempl);
-			if (info.sectionType == SECT_GATES || info.sectionType == SECT_SUBMODULE_GATES)
-				addProposals(viewer, documentOffset, result, NedHelper.proposedNedGatePropertyTempl);
-		}
-
 		// expressions: after "=", opening "[", "if" or "for"
 		if (line.contains("=") || line.matches(".*\\b(if|for)\\b.*") || containsOpenBracket(line)) {
 			System.out.println("proposals for expressions");
@@ -237,13 +223,26 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 			}
 			addProposals(viewer, documentOffset, result, NedHelper.proposedConstants, null);
 
-			//addProposals(viewer, documentOffset, result, NedHelper.proposedNedFunctions, "function");
+			addProposals(viewer, documentOffset, result, NedHelper.proposedNedOtherExpressionKeywords, "keyword");
 		    addProposals(viewer, documentOffset, result, NedHelper.proposedNedOperatorsTempl);
 		    addProposals(viewer, documentOffset, result, NedHelper.proposedNedDistributionsTempl);
 		    addProposals(viewer, documentOffset, result, NedHelper.proposedNedFunctionsTempl);
-
-            addProposals(viewer, documentOffset, result, NedHelper.proposedNedOtherExpressionKeywords, "keyword");
 		}
+
+        // offer existing and standard property names after "@"
+        if (line.equals("")) {
+            addProposals(viewer, documentOffset, result, NedHelper.proposedNedComponentPropertyTempl);
+            if (info.sectionType == SECT_PARAMETERS && parentComponent!=null)
+                addProposals(viewer, documentOffset, result, parentComponent.getProperties().keySet(), "property");
+            if (info.sectionType == SECT_SUBMODULE_PARAMETERS && submoduleType!=null)
+                addProposals(viewer, documentOffset, result, submoduleType.getProperties().keySet(), "property");
+        }
+        else if ((line.contains("=") && !line.endsWith("=")) || !line.contains("=")) {
+            if (info.sectionType == SECT_PARAMETERS || info.sectionType == SECT_SUBMODULE_PARAMETERS)
+                addProposals(viewer, documentOffset, result, NedHelper.proposedNedParamPropertyTempl);
+            if (info.sectionType == SECT_GATES || info.sectionType == SECT_SUBMODULE_GATES)
+                addProposals(viewer, documentOffset, result, NedHelper.proposedNedGatePropertyTempl);
+        }
 
 		// complete submodule type name
 		if (info.sectionType == SECT_SUBMODULES) {
@@ -333,7 +332,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 	}
 
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Template[] templates) {
-	    result.addAll(Arrays.asList(createTemplateProposals(viewer, documentOffset, templates)));
+	    result.addAll(Arrays.asList(createTemplateProposals(viewer, documentOffset, NedHelper.nedWordDetector, templates)));
 	}
 
 	private CompletionInfo computeCompletionInfo(ITextViewer viewer, int documentOffset) {
@@ -352,7 +351,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
     		prefix = prefix.replaceAll("(?s)\\s+", " "); // normalize whitespace
     		prefix = prefix.replaceFirst(".*[;\\{\\}]", "");
     		prefix = prefix.replaceFirst(".*\\b(parameters|gates|types|submodules|connections|connections +[a-z]+) *:", "");
-    		String prefix2 = prefix.replaceFirst("[a-zA-Z_][a-zA-Z0-9_]*$", "").trim(); // chop off last word
+    		String prefix2 = prefix.replaceFirst("[a-zA-Z_@][a-zA-Z0-9_]*$", "").trim(); // chop off last word
 
     		// kill {...} regions (including bodies of inner types, etc)
     		while (source.matches("(?s).*\\{[^\\{\\}]*\\}.*"))
@@ -423,7 +422,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 	}
 
 	public char[] getCompletionProposalAutoActivationCharacters() {
-		return new char[] { '.' };
+		return new char[] { '.', '@' };
 	}
 
 	public char[] getContextInformationAutoActivationCharacters() {

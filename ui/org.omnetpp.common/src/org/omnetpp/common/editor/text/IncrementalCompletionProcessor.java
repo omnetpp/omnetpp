@@ -135,7 +135,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
 	 * @see org.eclipse.jface.text.contentassist.IContentAssistProcessor#computeCompletionProposals(org.eclipse.jface.text.ITextViewer, int)
 	 */
 	@SuppressWarnings("unchecked")
-	public ICompletionProposal[] createTemplateProposals(ITextViewer viewer, int offset, Template[] templates) {
+	public ICompletionProposal[] createTemplateProposals(ITextViewer viewer, int offset, IWordDetector wordDetector, Template[] templates) {
 
 		ITextSelection selection= (ITextSelection) viewer.getSelectionProvider().getSelection();
 
@@ -143,15 +143,17 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
 		if (selection.getOffset() == offset)
 			offset= selection.getOffset() + selection.getLength();
 
-		String prefix= extractPrefix(viewer, offset);
-		Region region= new Region(offset - prefix.length(), prefix.length());
-		TemplateContext context= createContext(viewer, region);
+        IRegion wordRegion = detectWordRegion(viewer, offset, wordDetector); 
+        String prefix = "";
+        try {
+            prefix = viewer.getDocument().get(wordRegion.getOffset(), offset - wordRegion.getOffset());
+        } catch (BadLocationException e) { }
+
+		TemplateContext context= createContext(viewer, wordRegion);
 		if (context == null)
 			return new ICompletionProposal[0];
 
 		context.setVariable("selection", selection.getText()); // name of the selection variables {line, word}_selection //$NON-NLS-1$
-
-		//Template[] templates= getTemplates(context.getContextType().getId());
 
 		List<ICompletionProposal> matches = new ArrayList<ICompletionProposal>();
 		for (int i= 0; i < templates.length; i++) {
@@ -162,7 +164,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
 				continue;
 			}
 			if (template.matches(prefix, context.getContextType().getId()) && template.getName().startsWith(prefix))
-				matches.add(createProposal(template, context, (IRegion) region, getRelevance(template, prefix)));
+				matches.add(createProposal(template, context, wordRegion, getRelevance(template, prefix)));
 		}
 
 		Collections.sort(matches, CompletionProposalComparator.getInstance());
