@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Display;
  *
  * @author rhornig
  */
-public final class NedTextEditorHelper {
+public final class NedCompletionHelper {
 
     /** This context's id */
     public static final String DEFAULT_NED_CONTEXT_TYPE= "org.omnetpp.ned.editor.text.default"; //$NON-NLS-1$

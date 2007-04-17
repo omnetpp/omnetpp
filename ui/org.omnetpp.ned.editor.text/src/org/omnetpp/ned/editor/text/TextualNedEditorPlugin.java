@@ -10,7 +10,7 @@ import org.eclipse.jface.text.templates.persistence.TemplateStore;
 import org.eclipse.ui.editors.text.templates.ContributionContextTypeRegistry;
 import org.eclipse.ui.editors.text.templates.ContributionTemplateStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.omnetpp.common.editor.text.NedTextEditorHelper;
+import org.omnetpp.common.editor.text.NedCompletionHelper;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -85,7 +85,7 @@ public class TextualNedEditorPlugin extends AbstractUIPlugin {
         if (fRegistry == null) {
             // create an configure the contexts available in the template editor
             fRegistry= new ContributionContextTypeRegistry();
-            fRegistry.addContextType(NedTextEditorHelper.DEFAULT_NED_CONTEXT_TYPE);
+            fRegistry.addContextType(NedCompletionHelper.DEFAULT_NED_CONTEXT_TYPE);
         }
         return fRegistry;
     }
