@@ -7,17 +7,13 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_USER_
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
-import org.eclipse.jface.fieldassist.IContentProposalProvider;
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
-import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
@@ -31,53 +27,12 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
  * 
  * @author Andras
  */
-public class InifileValueContentProposalProvider implements	IContentProposalProvider {
+public class InifileValueContentProposalProvider extends ContentProposalProvider {
 	private String section;
 	private String key;
 	private IInifileDocument doc;
 	private InifileAnalyzer analyzer;
 
-	/**
-	 * Value object that implements IContentProposal.
-	 */
-	static class ContentProposal implements IContentProposal, Comparable {
-		private String content;
-		private String label;
-		private String description;
-		private int cursorPosition;
-		
-		public ContentProposal(String content, String label, String description) {
-			this(content, label, description, content.length());
-		}
-
-		public ContentProposal(String content, String label, String description, int cursorPosition) {
-			this.content = content;
-			this.label = label;
-			this.description = description;
-			this.cursorPosition = cursorPosition;
-		}
-
-		public String getContent() {
-			return content;
-		}
-
-		public int getCursorPosition() {
-			return cursorPosition;
-		}
-
-		public String getDescription() {
-			return description;
-		}
-
-		public String getLabel() {
-			return label;
-		}
-
-		public int compareTo(Object o) {
-			return label.compareTo(((IContentProposal)o).getLabel());
-		}
-	}
-	
 	public InifileValueContentProposalProvider(String section, String key, IInifileDocument doc, InifileAnalyzer analyzer) {
 		this.section = section;
 		this.key = key;
@@ -90,49 +45,6 @@ public class InifileValueContentProposalProvider implements	IContentProposalProv
 		this.key = key;
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.fieldassist.IContentProposalProvider#getProposals(java.lang.String, int)
-	 */
-	public IContentProposal[] getProposals(String contents, int position) {
-		ArrayList<IContentProposal> result = new ArrayList<IContentProposal>();
-
-		String prefix = contents.substring(0, position);
-		String prefixToMatch = prefix.replaceFirst("^.*?([A-Za-z0-9_]*)$", "$1"); // the last incomplete word
-
-		IContentProposal[] candidates = getProposalCandidates(prefix);
-
-		if (candidates!=null) {
-			Arrays.sort(candidates);
-
-			// check if any of the proposals has description. If they do, we set "(no description)" 
-			// on the others as well. Reason: if left at null, previous tooltip will be shown, 
-			// which is very confusing.
-			boolean descriptionSeen = false;
-			for (IContentProposal p : candidates)
-				if (!StringUtils.isEmpty(p.getDescription()))
-					descriptionSeen = true;
-
-			// collect those candidates that match the last incomplete word in the editor
-			for (IContentProposal candidate : candidates) {
-				String content = candidate.getContent();
-				if (content.startsWith(prefixToMatch) && content.length()!= prefixToMatch.length()) {
-					// from the content, drop the prefix that has already been typed by the user
-					String modifiedContent = content.substring(prefixToMatch.length(), content.length());
-					int modifiedCursorPosition = candidate.getCursorPosition() + modifiedContent.length() - content.length();
-					String description = (StringUtils.isEmpty(candidate.getDescription()) && descriptionSeen) ? "(no description)" : candidate.getDescription();
-					System.out.println("desc seen="+descriptionSeen+" XXX = "+description);
-					result.add(new ContentProposal(modifiedContent, candidate.getLabel(), description, modifiedCursorPosition));
-				}
-			}
-		}
-
-		if (result.isEmpty()) {
-			// returning an empty array or null apparently causes NPE in the framework, so return a blank proposal instead
-			result.add(new ContentProposal("", "(no proposal)", null, 0));
-		}
-		return result.toArray(new IContentProposal[] {});
-	}
-
 	/**
 	 * Generate a list of proposal candidates. They will be sorted and filtered by prefix
 	 * before presenting them to the user.
@@ -214,13 +126,6 @@ public class InifileValueContentProposalProvider implements	IContentProposalProv
 		//			proposals.add("..$2"); //XXX use templated proposals here!
 		//		}
 		return null;
-	}
-	
-	protected static IContentProposal[] toProposals(String[] strings) {
-		IContentProposal[] p = new IContentProposal[strings.length];
-		for (int i=0; i<p.length; i++)
-			p[i] = new ContentProposal(strings[i], strings[i], null);
-		return p;
 	}
 	
 }
