@@ -8,7 +8,8 @@ import org.eclipse.jface.contentassist.IContentAssistSubjectControl;
 import org.eclipse.jface.contentassist.ISubjectControlContentAssistProcessor;
 import org.eclipse.jface.contentassist.SubjectControlContentAssistant;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.internal.text.link.contentassist.HTMLTextPresenter;
+import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControl;
@@ -16,7 +17,6 @@ import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
-import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
@@ -48,6 +48,7 @@ import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.ui.TooltipSupport;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.IGotoInifile;
+import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
@@ -192,7 +193,8 @@ public class ParametersPage extends FormPage {
 		});
 		
 		// set up content assist
-		addContentAssist(editors[2]); //XXX experimental
+		IContentProposalProvider proposalProvider = new InifileValueContentProposalProvider("General", "network", getInifileDocument(), getInifileAnalyzer());//XXX
+		addContentAssist(editors[2], proposalProvider);
 
 		// on double-click, show entry in the text editor
  		tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
@@ -226,7 +228,7 @@ public class ParametersPage extends FormPage {
 		return tableViewer;
 	}
 
-	private static void addContentAssist(final TableTextCellEditor cellEditor) {
+	private static void addContentAssist(final TableTextCellEditor cellEditor, final IContentProposalProvider provider) {
 		// Create a control assist processor.
 		//
 		// Note: this needs to be an ISubjectControlContentAssistProcessor, simply 
@@ -234,7 +236,13 @@ public class ParametersPage extends FormPage {
 		// ContentAssistant.computeCompletionProposals())
 		ISubjectControlContentAssistProcessor processor = new ISubjectControlContentAssistProcessor() {
 			public ICompletionProposal[] computeCompletionProposals(IContentAssistSubjectControl contentAssistSubjectControl, int documentOffset) {
-				return new ICompletionProposal[] {new CompletionProposal("bubu", 0, 0, 0)}; 
+				IContentProposal[] proposals = provider.getProposals(contentAssistSubjectControl.getDocument().get(), documentOffset);
+				
+				// convert IContentProposals to ICompletionProposal
+				ArrayList<ICompletionProposal> result = new ArrayList<ICompletionProposal>();
+				for (IContentProposal p : proposals)
+					result.add(new CompletionProposal(p.getContent(), documentOffset, 0, p.getCursorPosition(), null, p.getLabel(), null, null));
+				return (ICompletionProposal[]) result.toArray(new ICompletionProposal[result.size()]);
 			}
 			public IContextInformation[] computeContextInformation(IContentAssistSubjectControl contentAssistSubjectControl, int documentOffset) {
 				return null;
