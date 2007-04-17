@@ -292,6 +292,10 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         return modules.values();
     }
 
+    public synchronized Collection<INEDTypeInfo> getNetworks() {
+    	return getAllComponentsFilteredBy(NETWORK_FILTER);
+    }
+
     public synchronized Collection<INEDTypeInfo> getChannels() {
         if (needsRehash)
             rehash();
@@ -326,6 +330,10 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         if (needsRehash)
             rehash();
         return modules.keySet();
+    }
+
+    public synchronized Set<String> getNetworkNames() {
+    	return getAllComponentNamesFilteredBy(NETWORK_FILTER);
     }
 
     public synchronized Set<String> getChannelNames() {

@@ -4,11 +4,23 @@ import java.util.ArrayList;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.contentassist.IContentAssistSubjectControl;
+import org.eclipse.jface.contentassist.ISubjectControlContentAssistProcessor;
 import org.eclipse.jface.contentassist.SubjectControlContentAssistant;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.internal.text.link.contentassist.HTMLTextPresenter;
+import org.eclipse.jface.text.DefaultInformationControl;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IInformationControl;
+import org.eclipse.jface.text.IInformationControlCreator;
+import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.jface.text.contentassist.CompletionProposal;
+import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
+import org.eclipse.jface.text.contentassist.IContentAssistant;
+import org.eclipse.jface.text.contentassist.IContextInformation;
+import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -26,8 +38,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.contentassist.ContentAssistHandler;
 import org.omnetpp.common.ui.ITooltipProvider;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
@@ -177,11 +191,71 @@ public class ParametersPage extends FormPage {
 			}
 		});
 		
-//XXX TODO
-//		SubjectControlContentAssistant assistant = new SubjectControlContentAssistant();
-//		IContentAssistProcessor processor = new IContentAssistProcessor();
-//		assistant.setContentAssistProcessor(processor, "???");
-//		editors[2].setContentAssistant(assistant);
+//experimental----------------------------------------------------
+		//XXX TODO
+		// Note: this need to be an ISubjectControlContentAssistProcessor, 
+		// simply being IContentAssistProcessor is not enough! 
+		// (see instanceof in ContentAssistant.computeCompletionProposals())
+		ISubjectControlContentAssistProcessor processor = new ISubjectControlContentAssistProcessor() {
+			public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int offset) {
+				return new ICompletionProposal[] {new CompletionProposal("bubu", 0, 0, 0)}; //XXX
+			}
+			public IContextInformation[] computeContextInformation(ITextViewer viewer, int offset) {
+				return null;
+			}
+			public char[] getCompletionProposalAutoActivationCharacters() {
+				return null;
+			}
+			public char[] getContextInformationAutoActivationCharacters() {
+				return null;
+			}
+			public IContextInformationValidator getContextInformationValidator() {
+				return null;
+			}
+			public String getErrorMessage() {
+				return null;
+			}
+			public ICompletionProposal[] computeCompletionProposals(IContentAssistSubjectControl contentAssistSubjectControl, int documentOffset) {
+				return new ICompletionProposal[] {new CompletionProposal("bubu", 0, 0, 0)}; 
+			}
+			public IContextInformation[] computeContextInformation(IContentAssistSubjectControl contentAssistSubjectControl, int documentOffset) {
+				return null;
+			}
+		};
+
+		//code from ChangeParametersControl.class#573:
+		// installParameterTypeContentAssist(), ChangeParametersControl.class#619:
+		// 1. SubjectControlContentAssistant contentAssistant= ControlContentAssistHelper.createJavaContentAssistant(processor);
+		//		public static SubjectControlContentAssistant createJavaContentAssistant(IContentAssistProcessor processor) {
+		//			final SubjectControlContentAssistant contentAssistant= new SubjectControlContentAssistant();
+		//			
+		//			contentAssistant.setContentAssistProcessor(processor, IDocument.DEFAULT_CONTENT_TYPE);
+		//			
+		//			ContentAssistPreference.configure(contentAssistant, JavaPlugin.getDefault().getPreferenceStore());
+		//			contentAssistant.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
+		//			contentAssistant.setInformationControlCreator(new IInformationControlCreator() {
+		//				public IInformationControl createInformationControl(Shell parent) {
+		//					return new DefaultInformationControl(parent, SWT.NONE, new HTMLTextPresenter(true));
+		//				}
+		//			});
+		//			return contentAssistant;
+		//		}
+		// 2. ContentAssistHandler.createHandlerForText(text, contentAssistant);
+
+		final SubjectControlContentAssistant assistant = new SubjectControlContentAssistant();
+		assistant.setContentAssistProcessor(processor, IDocument.DEFAULT_CONTENT_TYPE);
+
+		//ContentAssistPreference.configure(assistant, JavaPlugin.getDefault().getPreferenceStore());
+		assistant.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
+		assistant.setInformationControlCreator(new IInformationControlCreator() {
+			public IInformationControl createInformationControl(Shell parent) {
+				//return new DefaultInformationControl(parent, SWT.NONE, new HTMLTextPresenter(true));
+				return new DefaultInformationControl(parent);
+			}
+		});
+		ContentAssistHandler.createHandlerForText(editors[2].getText(), assistant);
+		editors[2].setContentAssistant(assistant);
+//------------------------------ 		
 
 		// on double-click, show entry in the text editor
  		tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
@@ -191,6 +265,7 @@ public class ParametersPage extends FormPage {
 				getEditorData().getInifileEditor().gotoEntry(entry.section, entry.key, IGotoInifile.Mode.TEXT);
 			}
 		});
+ 		
 
  		// export the table's selection as editor selection
  		tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {

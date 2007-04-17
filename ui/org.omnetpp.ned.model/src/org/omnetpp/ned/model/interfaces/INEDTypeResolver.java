@@ -92,6 +92,11 @@ public interface INEDTypeResolver {
 	public Collection<INEDTypeInfo> getModules();
 
 	/**
+	 * Returns all networks in the NED files.
+	 */
+	public Collection<INEDTypeInfo> getNetworks();
+
+	/**
 	 * Returns all channels in the NED files.
 	 */
 	public Collection<INEDTypeInfo> getChannels();
@@ -120,11 +125,17 @@ public interface INEDTypeResolver {
      * Returns ALL names reserved (used) in the NED files (including duplicates)
      */
     public Set<String> getReservedNames();
+
     /**
 	 * Returns all module names in the NED files.
 	 */
 	public Set<String> getModuleNames();
 
+    /**
+	 * Returns all network names in the NED files.
+	 */
+	public Set<String> getNetworkNames();
+	
 	/**
 	 * Returns all channel names in the NED files.
 	 */

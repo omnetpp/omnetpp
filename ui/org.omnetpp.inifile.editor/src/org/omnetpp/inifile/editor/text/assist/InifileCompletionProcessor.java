@@ -5,11 +5,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.TextPresentation;
+import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationPresenter;
@@ -18,13 +21,13 @@ import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContextType;
 import org.omnetpp.common.editor.text.IncrementalCompletionProcessor;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
+import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.ParamResolution;
-import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 import org.omnetpp.inifile.editor.text.NedHelper;
 
 /**
@@ -107,7 +110,7 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 				// include directive: offer filenames
 				proposals.add("foo.ini");
 				proposals.add("bar.ini");
-				proposals.add("somethingelse.ini");
+				proposals.add("somethingelse.ini"); //XXX
 			}
 			if (linePrefix.length()==0 || linePrefix.startsWith("[")) {
 				// section heading
@@ -148,41 +151,13 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 				else {
 					// offer value completions
 					String key = linePrefix.replaceFirst("=.*", "").trim();
-					if (InifileAnalyzer.getKeyType(key) == KeyType.CONFIG) {
-						// configuration key: offer value completion based on the type
-						ConfigurationEntry e = ConfigurationRegistry.getEntry(key);
-						if (e != null) {
-							switch (e.getType()) {
-							case CFG_BOOL: 
-								proposals.add("true\n");
-								proposals.add("false\n");
-								break;
-							case CFG_STRING: 
-								proposals.add("\"\"");
-								break;
-							case CFG_FILENAME:
-							case CFG_FILENAMES:
-								//TODO offer file name completion
-								break;
-							}
-						}
-					}
-					if (InifileAnalyzer.getKeyType(key) == KeyType.PARAM) {
-						// parameter value proposals -- possibly depending on the type of the parameter matched
-					}
-					if (InifileAnalyzer.getKeyType(key) == KeyType.PER_OBJECT_CONFIG) {
-						if (key.endsWith(".apply-default") || key.endsWith(".ev-output")) {
-							proposals.add("true\n");
-							proposals.add("false\n");
-						}
-						if (key.endsWith(".record-interval")) {  //XXX name not yet in use!
-							proposals.add("$1..");
-							proposals.add("$1..$2");
-							proposals.add("..$2"); //XXX use templated proposals here!
-						}
-						//XXX what else...?
-					}
+					String value = linePrefix.replaceFirst(".*?=", "").trim();
+					IContentProposalProvider proposalProvider = new InifileValueContentProposalProvider(section, key, doc, editorData.getInifileAnalyzer());
+					IContentProposal[] valueProposals = proposalProvider.getProposals(value, value.length());
 					
+					// re-wrap IContentProposals as ICompletionProposal
+					for (IContentProposal p : valueProposals)
+						result.add(new CompletionProposal(p.getContent(), documentOffset, 0, p.getCursorPosition(), null, p.getLabel(), null, null));
 				}
 			}
 		}
