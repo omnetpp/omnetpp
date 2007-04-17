@@ -10,7 +10,7 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
-import org.omnetpp.ned.editor.text.NedHelper;
+import org.omnetpp.common.editor.text.NedTextEditorHelper;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
@@ -29,7 +29,7 @@ public class NedTextHover implements ITextHover {
 	}
 
 	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
-		String word = getWordUnderCursor(textViewer, hoverRegion, NedHelper.nedWordDetector);
+		String word = getWordUnderCursor(textViewer, hoverRegion, NedTextEditorHelper.nedWordDetector);
 
 		// if we find a NED component with that name, display its source code
 		INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();    	

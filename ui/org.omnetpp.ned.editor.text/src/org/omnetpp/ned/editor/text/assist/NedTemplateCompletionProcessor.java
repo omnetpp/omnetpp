@@ -5,6 +5,7 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContextType;
 import org.omnetpp.common.editor.text.IncrementalCompletionProcessor;
+import org.omnetpp.common.editor.text.NedTextEditorHelper;
 import org.omnetpp.ned.editor.text.TextualNedEditorPlugin;
 
 public class NedTemplateCompletionProcessor extends IncrementalCompletionProcessor {
@@ -14,7 +15,7 @@ public class NedTemplateCompletionProcessor extends IncrementalCompletionProcess
     }
 
     protected TemplateContextType getContextType(ITextViewer viewer, IRegion region) {
-        return TextualNedEditorPlugin.getDefault().getContextTypeRegistry().getContextType(NedContextType.DEFAULT_CONTEXT_TYPE);
+        return TextualNedEditorPlugin.getDefault().getContextTypeRegistry().getContextType(NedTextEditorHelper.DEFAULT_NED_CONTEXT_TYPE);
     }
 
 }

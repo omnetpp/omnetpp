@@ -23,16 +23,6 @@ public class NedContentAssistPartitionScanner extends RuleBasedPartitionScanner 
 	public final static String[] SUPPORTED_PARTITION_TYPES 
         = new String[] { IDocument.DEFAULT_CONTENT_TYPE, NED_CODE, NED_PRIVATE_DOC, NED_DOC , NED_STRING};
 
-    /**
-     * Return the default instance of the scanner
-     * @return
-     */
-/*    public static NedOutlinePartitionScanner getInstance() {
-        if (fgInstance == null)
-            fgInstance = new NedOutlinePartitionScanner();
-        return fgInstance;
-    }
-*/    
 	/**
 	 * Creates the partitioner and sets up the appropriate rules.
 	 */

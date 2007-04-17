@@ -188,6 +188,4 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
         }
         return image;
     }
-
-
 }

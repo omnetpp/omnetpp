@@ -8,8 +8,6 @@ import org.eclipse.jface.text.templates.GlobalTemplateVariables;
  * A very simple context type.
  */
 public class NedContextType extends TemplateContextType {
-	/** This context's id */
-	public static final String DEFAULT_CONTEXT_TYPE= "org.omnetpp.ned.editor.text.default"; //$NON-NLS-1$
 
 	/**
 	 * Creates a new NED context type. 

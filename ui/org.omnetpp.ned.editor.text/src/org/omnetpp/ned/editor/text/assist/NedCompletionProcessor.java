@@ -17,7 +17,7 @@ import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationPresenter;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.jface.text.templates.Template;
-import org.omnetpp.ned.editor.text.NedHelper;
+import org.omnetpp.common.editor.text.NedTextEditorHelper;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
@@ -110,8 +110,10 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 
 			// match various "extends" clauses
 			if (line.matches(".*\\bsimple .* extends"))
-				addProposals(viewer, documentOffset, result, res.getModuleNames(), "module type");
+			    // FIXME show only the simplemodule types not all
+				addProposals(viewer, documentOffset, result, res.getModuleNames(), "module type"); 
 			else if (line.matches(".*\\b(module|network) .* extends"))
+                // FIXME show only the compound module types not all
 				addProposals(viewer, documentOffset, result, res.getModuleNames(), "module type");
 			else if (line.matches(".*\\bchannel .* extends"))
 				addProposals(viewer, documentOffset, result, res.getChannelNames(), "channel type");
@@ -149,42 +151,39 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 
 			// offer param and gate type name keywords
 			if (info.sectionType == SECT_PARAMETERS)
-				addProposals(viewer, documentOffset, result, NedHelper.proposedNedParamTypes, "parameter type");
+				addProposals(viewer, documentOffset, result, NedTextEditorHelper.proposedNedParamTypes, "parameter type");
 			else if (info.sectionType == SECT_GATES)
-				addProposals(viewer, documentOffset, result, NedHelper.proposedNedGateTypes, "gate type");
+				addProposals(viewer, documentOffset, result, NedTextEditorHelper.proposedNedGateTypes, "gate type");
 
 			// provide global start keywords and section names
             // FIXME SECT_TYPES should not contains package, property, network, import keywords
             if (info.sectionType==SECT_GLOBAL) {
-                addProposals(viewer, documentOffset, result, NedHelper.proposedNedTopLevelKeywords, "keyword (top level only)");
-                addProposals(viewer, documentOffset, result, NedHelper.proposedNedTypeDefinerKeywords, "keyword");
+                addProposals(viewer, documentOffset, result, NedTextEditorHelper.proposedNedTopLevelKeywords, "keyword (top level only)");
+                addProposals(viewer, documentOffset, result, NedTextEditorHelper.proposedNedTypeDefinerKeywords, "keyword");
             }
 	    	if (info.sectionType==SECT_TYPES) {
-				addProposals(viewer, documentOffset, result, NedHelper.proposedNedTypeDefinerKeywords, "keyword");
+				addProposals(viewer, documentOffset, result, NedTextEditorHelper.proposedNedTypeDefinerKeywords, "keyword");
 	    	}
             // FIXME offer the following only in correct order (check first for params then gates etc)
-            // FIXME in parameters section offer parameters: only it is an implicit par section  
 	    	else if (info.sectionType==SECT_PARAMETERS || info.sectionType==SECT_GATES ||
 					info.sectionType==SECT_TYPES || info.sectionType==SECT_SUBMODULES) {
-	    		addProposals(viewer, documentOffset, result, NedHelper.proposedNedSectionNameKeywords, "section");
+	    		addProposals(viewer, documentOffset, result, NedTextEditorHelper.proposedNedSectionNameKeywords, "section");
 	    	}
-            // FIXME in parameters section offer parameters: only if it is an implicit par section  
 	    	else if (info.sectionType==SECT_SUBMODULE_PARAMETERS) {
 	    		addProposals(viewer, documentOffset, result, new String[]{"gates:"}, "section");
 	    	}
 
 	    	// offer templates
 	    	if (info.sectionType==SECT_GLOBAL || info.sectionType==SECT_TYPES) {
-			    addProposals(viewer, documentOffset, result, NedHelper.proposedNedGlobalTempl);
-	    	}
-	    	else if (info.sectionType==SECT_SUBMODULES) {
-	    		addProposals(viewer, documentOffset, result, NedHelper.proposedNedSubmoduleTempl);
+			    addProposals(viewer, documentOffset, result, NedTextEditorHelper.proposedNedGlobalTempl);
+	    	} else if (info.sectionType==SECT_SUBMODULES) {
+	    		addProposals(viewer, documentOffset, result, NedTextEditorHelper.proposedNedSubmoduleTempl);
 	    	}
 		}
 
 		// offer double/int/string/xml after "volatile"
 		if (line.equals("volatile")) {
-			addProposals(viewer, documentOffset, result, NedHelper.proposedNedBaseParamTypes, "parameter type");
+			addProposals(viewer, documentOffset, result, NedTextEditorHelper.proposedNedBaseParamTypes, "parameter type");
 		}
 		
 		// expressions: after "=", opening "[", "if" or "for"
@@ -221,17 +220,17 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 					addProposals(viewer, documentOffset, result, parentComponent.getParams().keySet(), "parameter");
 				}
 			}
-			addProposals(viewer, documentOffset, result, NedHelper.proposedConstants, null);
+			addProposals(viewer, documentOffset, result, NedTextEditorHelper.proposedConstants, null);
 
-			addProposals(viewer, documentOffset, result, NedHelper.proposedNedOtherExpressionKeywords, "keyword");
-		    addProposals(viewer, documentOffset, result, NedHelper.proposedNedOperatorsTempl);
-		    addProposals(viewer, documentOffset, result, NedHelper.proposedNedDistributionsTempl);
-		    addProposals(viewer, documentOffset, result, NedHelper.proposedNedFunctionsTempl);
+			addProposals(viewer, documentOffset, result, NedTextEditorHelper.proposedNedOtherExpressionKeywords, "keyword");
+		    addProposals(viewer, documentOffset, result, NedTextEditorHelper.proposedNedOperatorsTempl);
+		    addProposals(viewer, documentOffset, result, NedTextEditorHelper.proposedNedDistributionsTempl);
+		    addProposals(viewer, documentOffset, result, NedTextEditorHelper.proposedNedFunctionsTempl);
 		}
 
         // offer existing and standard property names after "@"
         if (line.equals("")) {
-            addProposals(viewer, documentOffset, result, NedHelper.proposedNedComponentPropertyTempl);
+            addProposals(viewer, documentOffset, result, NedTextEditorHelper.proposedNedComponentPropertyTempl);
             if (info.sectionType == SECT_PARAMETERS && parentComponent!=null)
                 addProposals(viewer, documentOffset, result, parentComponent.getProperties().keySet(), "property");
             if (info.sectionType == SECT_SUBMODULE_PARAMETERS && submoduleType!=null)
@@ -239,9 +238,9 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
         }
         else if ((line.contains("=") && !line.endsWith("=")) || !line.contains("=")) {
             if (info.sectionType == SECT_PARAMETERS || info.sectionType == SECT_SUBMODULE_PARAMETERS)
-                addProposals(viewer, documentOffset, result, NedHelper.proposedNedParamPropertyTempl);
+                addProposals(viewer, documentOffset, result, NedTextEditorHelper.proposedNedParamPropertyTempl);
             if (info.sectionType == SECT_GATES || info.sectionType == SECT_SUBMODULE_GATES)
-                addProposals(viewer, documentOffset, result, NedHelper.proposedNedGatePropertyTempl);
+                addProposals(viewer, documentOffset, result, NedTextEditorHelper.proposedNedGatePropertyTempl);
         }
 
 		// complete submodule type name
@@ -267,7 +266,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 			System.out.println("testing proposals for CONNECTIONS scope");
 			if (line.matches(".*\\bconnections")) {
 				// user forgot "allowunconnected" keyword
-				addProposals(viewer, documentOffset, result, NedHelper.proposedNedConnsKeywords, "keyword");
+				addProposals(viewer, documentOffset, result, NedTextEditorHelper.proposedNedConnsKeywords, "keyword");
 			}
 
 			if (line.equals("") || line.endsWith("-->") || line.endsWith("<-->") || line.endsWith("<--")) {
@@ -289,7 +288,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 	    	}
 
 			// offer templates for connection, loop connection, connection with channel, etc
-		    addProposals(viewer, documentOffset, result, NedHelper.proposedNedConnectionTempl);
+		    addProposals(viewer, documentOffset, result, NedTextEditorHelper.proposedNedConnectionTempl);
 		}
 
 		long millis = System.currentTimeMillis()-startMillis;
@@ -324,15 +323,15 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 	}
 
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, String[] proposals, String description) {
-		result.addAll(createProposals(viewer, documentOffset, NedHelper.nedWordDetector, "", proposals, "", description));
+		result.addAll(createProposals(viewer, documentOffset, NedTextEditorHelper.nedWordDetector, "", proposals, "", description));
 	}
 
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Set<String> proposals, String description) {
-		result.addAll(createProposals(viewer, documentOffset, NedHelper.nedWordDetector, "", proposals.toArray(new String[0]), "", description));
+		result.addAll(createProposals(viewer, documentOffset, NedTextEditorHelper.nedWordDetector, "", proposals.toArray(new String[0]), "", description));
 	}
 
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Template[] templates) {
-	    result.addAll(Arrays.asList(createTemplateProposals(viewer, documentOffset, NedHelper.nedWordDetector, templates)));
+	    result.addAll(Arrays.asList(createTemplateProposals(viewer, documentOffset, NedTextEditorHelper.nedWordDetector, templates)));
 	}
 
 	private CompletionInfo computeCompletionInfo(ITextViewer viewer, int documentOffset) {

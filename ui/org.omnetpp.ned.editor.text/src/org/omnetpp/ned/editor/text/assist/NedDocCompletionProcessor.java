@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
-import org.omnetpp.ned.editor.text.NedHelper;
+import org.omnetpp.common.editor.text.NedTextEditorHelper;
 
 
 
@@ -15,13 +15,13 @@ public class NedDocCompletionProcessor extends NedTemplateCompletionProcessor {
 
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
         List<ICompletionProposal> result = 
-            createProposals(viewer, documentOffset, NedHelper.nedAtWordDetector,
-                    "@", NedHelper.proposedDocKeywords, " ", null);
+            createProposals(viewer, documentOffset, NedTextEditorHelper.nedAtWordDetector,
+                    "@", NedTextEditorHelper.proposedDocKeywords, " ", null);
 
-        result.addAll(createProposals(viewer, documentOffset, NedHelper.nedDocTagDetector, 
-                "<", NedHelper.proposedDocTags, "> ", null));
-        result.addAll(createProposals(viewer, documentOffset, NedHelper.nedDocTagDetector, 
-                "</", NedHelper.proposedDocTags, "> ", null));
+        result.addAll(createProposals(viewer, documentOffset, NedTextEditorHelper.nedDocTagDetector, 
+                "<", NedTextEditorHelper.proposedDocTags, "> ", null));
+        result.addAll(createProposals(viewer, documentOffset, NedTextEditorHelper.nedDocTagDetector, 
+                "</", NedTextEditorHelper.proposedDocTags, "> ", null));
         
 //        Collections.sort(result, CompletionProposalComparator.getInstance());
         return (ICompletionProposal[]) result.toArray(new ICompletionProposal[result.size()]);
