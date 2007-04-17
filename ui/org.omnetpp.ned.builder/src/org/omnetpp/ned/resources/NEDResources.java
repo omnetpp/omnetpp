@@ -1,8 +1,10 @@
 package org.omnetpp.ned.resources;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
@@ -20,6 +22,7 @@ import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.NEDSourceRegion;
 import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
@@ -60,6 +63,24 @@ import org.omnetpp.ned.model.pojo.SimpleModuleNode;
  */
 public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
+    // filters for component access with getAllComponentsFilteredBy
+    public static final IFilter SIMPLE_MODULE_FILTER = new IFilter() {
+        public boolean filter(INEDTypeInfo component) {
+            return component.getNEDElement() instanceof SimpleModuleNode;
+        }
+    };
+    public static final IFilter COMPOUND_MODULE_FILTER = new IFilter() {
+        public boolean filter(INEDTypeInfo component) {
+            return component.getNEDElement() instanceof CompoundModuleNode;
+        }
+    };
+    public static final IFilter NETWORK_FILTER = new IFilter() {
+        public boolean filter(INEDTypeInfo component) {
+            return component.getNEDElement() instanceof CompoundModuleNodeEx &&
+                   ((CompoundModuleNodeEx)component.getNEDElement()).getIsNetwork();
+        }
+    };
+    
     private static final String NED_EXTENSION = "ned";
     // listener list that listenens on all NED changes
     private transient NEDChangeListenerList nedComponentChangeListenerList = null;
@@ -81,10 +102,6 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     // reserved (used) names (contains all names including dupliates)
     private Set<String> reservedNames = new HashSet<String>();
-
-    // last event serials processed by the components. used to be able to skip
-    // duplicated event notification in NEDComponent
-    HashMap<String, Long> eventSerials = new HashMap<String, Long>();
 
     // tables of toplevel components, classified (points into nedFiles trees)
     private boolean needsRehash = false; // if tables below need to be rebuilt
@@ -251,6 +268,22 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         if (needsRehash)
             rehash();
         return components.values();
+    }
+
+    public Collection<INEDTypeInfo> getAllComponentsFilteredBy(IFilter f) {
+        List<INEDTypeInfo> result = new ArrayList<INEDTypeInfo>();
+        for(INEDTypeInfo comp : getAllComponents())
+            if (f.filter(comp))
+                result.add(comp);
+        return result;
+    }
+    
+    public Set<String> getAllComponentNamesFilteredBy(IFilter f) {
+        Set<String> result = new HashSet<String>();
+        for(INEDTypeInfo comp : getAllComponents())
+            if (f.filter(comp))
+                result.add(comp.getName());
+        return result;
     }
 
     public synchronized Collection<INEDTypeInfo> getModules() {
