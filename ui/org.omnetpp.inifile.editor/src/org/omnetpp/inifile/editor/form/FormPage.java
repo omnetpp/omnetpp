@@ -39,7 +39,11 @@ public abstract class FormPage extends Composite {
 	protected InifileAnalyzer getInifileAnalyzer() {
 		return inifileEditor.getEditorData().getInifileAnalyzer();
 	}
-	
+
+	protected void setEditorSelection(String section, String key) {
+		inifileEditor.setSelection(section, key);
+	}
+
 	/**
 	 * String that identifies the form page, and also gets displayed 
 	 * in the form editor's tree.
@@ -80,14 +84,14 @@ public abstract class FormPage extends Composite {
 	}
 
 	/**
-	 * Position the cursor on the given section (as far as possible or makes sense)
+	 * Position the cursor on the given section inside the form page (as far as possible or makes sense)
 	 */
 	public void gotoSection(String section) {
 		// do nothing by default (subclasses are advised to override)
 	}
 
 	/**
-	 * Position the cursor on the given entry (as far as possible or makes sense)
+	 * Position the cursor on the given entry inside the form page (as far as possible or makes sense)
 	 */
 	public void gotoEntry(String section, String key) {
 		// do nothing by default (subclasses are advised to override)

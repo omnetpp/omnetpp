@@ -8,7 +8,9 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -28,6 +30,7 @@ import org.omnetpp.common.ui.ITooltipProvider;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.ui.TooltipSupport;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
@@ -181,6 +184,16 @@ public class ParametersPage extends FormPage {
 			}
 		});
 
+ 		// export the table's selection as editor selection
+ 		tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+				SectionKey entry = (SectionKey) sel.getFirstElement();
+				if (entry!=null)
+					setEditorSelection(entry.section, entry.key);
+			}
+ 		});
+ 		
  		// add tooltip support
  		TooltipSupport.adapt(tableViewer.getTable(), new ITooltipProvider() {
 			public String getTooltipFor(Control control, int x, int y) {
@@ -326,10 +339,7 @@ public class ParametersPage extends FormPage {
 		tableViewer.refresh();
 
 		// update "Section fallback chain" label
-		String txt = null;
-		for (String section : sectionChain)
-			txt = txt==null ? section : txt + ", " + section;
-		sectionChainLabel.setText("Section fallback chain: "+txt+" ");
+		sectionChainLabel.setText("Section fallback chain: "+(sectionChain.length==0 ? "<no sections>" : StringUtils.join(sectionChain, " > ")));
 		sectionChainLabel.getParent().layout();
 	}
 

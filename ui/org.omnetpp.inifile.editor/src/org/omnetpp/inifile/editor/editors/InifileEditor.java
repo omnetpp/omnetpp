@@ -292,34 +292,32 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	 * Method declared on IGotoInifile
 	 */
 	public void gotoSection(String section, Mode mode) {
-		if (mode==IGotoInifile.Mode.AUTO)
-			mode = getActivePage()==FORMEDITOR_PAGEINDEX ? IGotoInifile.Mode.FORM : IGotoInifile.Mode.TEXT;
-
-		if (mode==IGotoInifile.Mode.FORM) {
-			setActivePage(FORMEDITOR_PAGEINDEX);
-			formEditor.gotoSection(section);
-		}
-		else if (mode==IGotoInifile.Mode.TEXT) {
-			setActivePage(TEXTEDITOR_PAGEINDEX);
-			LineInfo line = editorData.getInifileDocument().getSectionLineDetails(section);
-			highlightLineInTextEditor(line); 
-		}
+		gotoSectionOrEntry(section, null, mode);
 	}
 
 	/* (non-Javadoc)
 	 * Method declared on IGotoInifile
 	 */
 	public void gotoEntry(String section, String key, Mode mode) {
+		gotoSectionOrEntry(section, key, mode);
+	}
+	
+	private void gotoSectionOrEntry(String section, String key, Mode mode) {
 		if (mode==IGotoInifile.Mode.AUTO)
 			mode = getActivePage()==FORMEDITOR_PAGEINDEX ? IGotoInifile.Mode.FORM : IGotoInifile.Mode.TEXT;
 
 		if (mode==IGotoInifile.Mode.FORM) {
 			setActivePage(FORMEDITOR_PAGEINDEX);
-			formEditor.gotoEntry(section, key);
+			if (key==null)
+				formEditor.gotoSection(section);
+			else
+				formEditor.gotoEntry(section, key);
 		}
 		else if (mode==IGotoInifile.Mode.TEXT) {
 			setActivePage(TEXTEDITOR_PAGEINDEX);
-			LineInfo line = editorData.getInifileDocument().getEntryLineDetails(section, key);
+			LineInfo line = key==null ? 
+					editorData.getInifileDocument().getSectionLineDetails(section) :
+					editorData.getInifileDocument().getEntryLineDetails(section, key);
 			highlightLineInTextEditor(line); 
 		}
 	}

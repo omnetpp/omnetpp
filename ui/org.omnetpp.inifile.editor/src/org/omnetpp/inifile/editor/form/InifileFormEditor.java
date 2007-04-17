@@ -62,12 +62,13 @@ public class InifileFormEditor extends Composite {
 		
 		buildTree();
 
+		// at this point inifiledocument is not yet set up, so we have to defer showing the form page
 		Display.getCurrent().asyncExec(new Runnable() {
 			public void run() {
 				showCategoryPage(GenericConfigPage.getCategoryNames()[0]);
 			}
-	});
-}
+		});
+	}
 
 	protected TreeViewer createTreeViewer(Composite parent) {
 		final TreeViewer viewer = new TreeViewer(parent, SWT.BORDER);

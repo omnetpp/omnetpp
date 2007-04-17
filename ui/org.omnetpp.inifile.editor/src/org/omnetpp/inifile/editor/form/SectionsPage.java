@@ -11,8 +11,10 @@ import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
@@ -44,6 +46,7 @@ import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
+import org.omnetpp.inifile.editor.model.SectionKey;
 
 /**
  * Inifile editor page to manage the sections in the file.
@@ -139,7 +142,18 @@ public class SectionsPage extends FormPage {
 				String section = getSectionNameFromTreeNode(event.item==null ? null : event.item.getData());
 				getEditorData().getInifileEditor().gotoSection(section, IGotoInifile.Mode.TEXT);
 			}
+
 		});
+
+ 		// export the tree's selection as editor selection
+ 		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+				String section = (String) sel.getFirstElement();
+				if (section!=null)
+					setEditorSelection(section, null);
+			}
+ 		});
 
  		// add tooltip support
  		TooltipSupport.adapt(treeViewer.getTree(), new ITooltipProvider() {
