@@ -32,8 +32,8 @@ public class CheckboxFieldEditor extends FieldEditor {
 	private boolean isEdited;
 	private String section = GENERAL;
 
-	public CheckboxFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, String labelText) {
-		super(parent, SWT.NONE, entry, inifile);
+	public CheckboxFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, FormPage formPage, String labelText) {
+		super(parent, SWT.NONE, entry, inifile, formPage);
 
 		Assert.isTrue(entry.getType()==ConfigurationEntry.Type.CFG_BOOL);
 

@@ -14,7 +14,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.ui.ITooltipProvider;
 import org.omnetpp.common.ui.TooltipSupport;
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
@@ -28,13 +27,15 @@ public abstract class FieldEditor extends Composite {
 
 	protected ConfigurationEntry entry;
 	protected IInifileDocument inifile;
+	protected FormPage formPage; //XXX unfortunately we need it, to be able to call setEditorSelection()
 	
 	protected TooltipSupport tooltipSupport;
 
-	public FieldEditor(Composite parent, int style, ConfigurationEntry entry, IInifileDocument inifile) {
+	public FieldEditor(Composite parent, int style, ConfigurationEntry entry, IInifileDocument inifile, FormPage formPage) {
 		super(parent, style);
 		this.entry = entry;
 		this.inifile = inifile;
+		this.formPage = formPage;
 		setBackground(BGCOLOR);
 
 		tooltipSupport = new TooltipSupport(new ITooltipProvider() {
@@ -95,7 +96,7 @@ public abstract class FieldEditor extends Composite {
 	protected void addFocusListenerTo(Control control) {
 		control.addFocusListener(new FocusListener() {
 			public void focusGained(FocusEvent e) {
-				//XXX position the cursor on the edited entry, and fire InifileEditor selection change
+				formPage.setEditorSelection(GENERAL, entry.getKey());
 			}
 
 			public void focusLost(FocusEvent e) {

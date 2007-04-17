@@ -40,7 +40,8 @@ public abstract class FormPage extends Composite {
 		return inifileEditor.getEditorData().getInifileAnalyzer();
 	}
 
-	protected void setEditorSelection(String section, String key) {
+	// used by field editors as well
+	public void setEditorSelection(String section, String key) {
 		inifileEditor.setSelection(section, key);
 	}
 

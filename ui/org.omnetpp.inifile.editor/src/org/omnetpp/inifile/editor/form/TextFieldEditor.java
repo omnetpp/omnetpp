@@ -32,8 +32,8 @@ public class TextFieldEditor extends FieldEditor {
 	private boolean isEdited;
 	private String section = GENERAL;
 
-	public TextFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, String labelText) {
-		super(parent, SWT.NONE, entry, inifile);
+	public TextFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, FormPage formPage, String labelText) {
+		super(parent, SWT.NONE, entry, inifile, formPage);
 
 		GridLayout gridLayout = new GridLayout(3, false);
 		gridLayout.marginTop = gridLayout.marginBottom = gridLayout.marginHeight = gridLayout.verticalSpacing = 0;

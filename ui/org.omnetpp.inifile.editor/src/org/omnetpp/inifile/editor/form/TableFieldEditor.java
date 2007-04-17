@@ -1,18 +1,25 @@
 package org.omnetpp.inifile.editor.form;
 
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
+
 import java.util.ArrayList;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.dialogs.ListDialog;
@@ -31,8 +38,8 @@ public abstract class TableFieldEditor extends FieldEditor {
 	protected Button removeButton;
 
 
-	public TableFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, String labelText) {
-		super(parent, SWT.NONE, entry, inifile);
+	public TableFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, FormPage formPage, String labelText) {
+		super(parent, SWT.NONE, entry, inifile, formPage);
 
 		GridLayout gridLayout = new GridLayout(1, false);
 		gridLayout.marginTop = gridLayout.marginBottom = gridLayout.marginHeight = gridLayout.verticalSpacing = 0;
@@ -52,6 +59,16 @@ public abstract class TableFieldEditor extends FieldEditor {
 		tableViewer = createTableViewer(composite);
 		tableViewer.setContentProvider(new ArrayContentProvider());
 
+ 		// export the table's selection as editor selection (here we assume that table elements are section name strings)
+ 		tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+				String section = (String) sel.getFirstElement();
+				if (entry!=null)
+					formPage.setEditorSelection(section, entry.getKey());
+			}
+ 		});
+		
 		// add button group
 		Composite buttonGroup = new Composite(composite, SWT.NONE);
 		buttonGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));

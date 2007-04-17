@@ -5,15 +5,22 @@ import java.util.ArrayList;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.omnetpp.common.ui.TableLabelProvider;
+import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
+import org.omnetpp.inifile.editor.model.SectionKey;
 
 
 /**
@@ -24,8 +31,8 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
  */
 public class CheckboxTableFieldEditor extends TableFieldEditor {
 
-	public CheckboxTableFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, String labelText) {
-		super(parent, entry, inifile, labelText);
+	public CheckboxTableFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, FormPage formPage, String labelText) {
+		super(parent, entry, inifile, formPage, labelText);
 	}
 
 	protected TableViewer createTableViewer(Composite parent) {
@@ -53,7 +60,7 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
 			}
 		});
 		
-		return tableViewer; 
+ 		return tableViewer; 
 	}
 
 	@Override

@@ -142,14 +142,13 @@ public class SectionsPage extends FormPage {
 				String section = getSectionNameFromTreeNode(event.item==null ? null : event.item.getData());
 				getEditorData().getInifileEditor().gotoSection(section, IGotoInifile.Mode.TEXT);
 			}
-
 		});
 
  		// export the tree's selection as editor selection
  		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-				String section = (String) sel.getFirstElement();
+				String section = getSectionNameFromTreeNode(sel.getFirstElement());
 				if (section!=null)
 					setEditorSelection(section, null);
 			}

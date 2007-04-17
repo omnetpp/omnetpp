@@ -81,6 +81,8 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -307,15 +309,15 @@ public class GenericConfigPage extends ScrolledFormPage {
 
 	protected void addTextFieldEditor(Composite parent, ConfigurationEntry e, String label) {
 		FieldEditor editor = (!e.isGlobal() && (getAdvancedMode() || occursOutsideGeneral(e.getKey()))) ? 
-				new TextTableFieldEditor(parent, e, getInifileDocument(), label) :
-				new TextFieldEditor(parent, e, getInifileDocument(), label);
+				new TextTableFieldEditor(parent, e, getInifileDocument(), this, label) :
+				new TextFieldEditor(parent, e, getInifileDocument(), this, label);
 		addFieldEditor(editor);		
 	}
 
 	protected void addCheckboxFieldEditor(Composite parent, ConfigurationEntry e, String label) {
 		FieldEditor editor = (!e.isGlobal() && (getAdvancedMode() || occursOutsideGeneral(e.getKey()))) ? 
-				new CheckboxTableFieldEditor(parent, e, getInifileDocument(), label) :
-				new CheckboxFieldEditor(parent, e, getInifileDocument(), label);
+				new CheckboxTableFieldEditor(parent, e, getInifileDocument(), this, label) :
+				new CheckboxFieldEditor(parent, e, getInifileDocument(), this, label);
 		addFieldEditor(editor);		
 	}
 
@@ -334,7 +336,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 	
 	protected Button createAdvancedButton(Composite parent) {
 		final Button expandButton = new Button(parent, SWT.PUSH);
-		expandButton.setText(getAdvancedMode() ? "« Simple" : "Detailed »");
+		expandButton.setText(getAdvancedMode() ? "« Basic" : "Advanced »");
 		expandButton.setToolTipText("Toggle per-section editing");
 		expandButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {

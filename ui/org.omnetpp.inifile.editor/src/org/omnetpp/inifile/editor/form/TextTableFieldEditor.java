@@ -23,8 +23,8 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
  */
 public class TextTableFieldEditor extends TableFieldEditor {
 
-	public TextTableFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, String labelText) {
-		super(parent, entry, inifile, labelText);
+	public TextTableFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, FormPage formPage, String labelText) {
+		super(parent, entry, inifile, formPage, labelText);
 	}
 
 	protected TableViewer createTableViewer(Composite parent) {
