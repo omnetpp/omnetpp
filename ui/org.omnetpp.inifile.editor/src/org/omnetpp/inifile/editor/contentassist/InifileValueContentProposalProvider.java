@@ -1,18 +1,21 @@
 package org.omnetpp.inifile.editor.contentassist;
 
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.*;
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_NETWORK;
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_PRELOAD_NED_FILES;
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_USER_INTERFACE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
-import org.omnetpp.common.engine.Common;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
+import org.omnetpp.inifile.editor.model.InifileUtils;
+import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
@@ -112,42 +115,59 @@ public class InifileValueContentProposalProvider implements	IContentProposalProv
 			return getCandidatesForConfig();
 		}
 		else if (keyType == KeyType.PARAM) {
-//			// parameter assignment: display which parameters it matches
-//			ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
-//			if (resList.length==0) 
-//				return "Entry \"" + key + "\" does not match any module parameters ";
-//			String text = "Entry \"" + key + "\" applies to the following module parameters: \n";
-//			for (ParamResolution res : resList)
-//				text += "  - " + res.moduleFullPath + "." +res.paramNode.getName() + "\n"; //XXX do we have module type, param type, maybe param doc etc?
-//			return text;
-			return null;
+			return getCandidatesForParam();
 		}
 		else if (keyType == KeyType.PER_OBJECT_CONFIG) {
-			return null; // TODO for .apply-default, display parameters to which it applies
+			return null; // TODO handle .apply-default, etc...
 		}
 		else {
 			return null; // should not happen (invalid key type)
 		}
 	}
 
+	/**
+	 * Generate proposals for a config entry
+	 */
 	protected IContentProposal[] getCandidatesForConfig() {
 		ConfigurationEntry entry = ConfigurationRegistry.getEntry(key);
 		if (entry == null)
 			return null;
 
-		if (entry==CFGID_EXTENDS)
-			return toProposals(doc.getSectionNames()); //XXX strip "Config "
-		if (entry==CFGID_NETWORK)
+		if (entry==CFGID_EXTENDS) {
+			ArrayList<String> names = new ArrayList<String>();
+			for (String section : doc.getSectionNames())
+				if (!InifileUtils.sectionChainContains(doc, this.section, section)) // prevent circles
+					names.add(section.replaceFirst("^Config +", ""));
+			return toProposals(names.toArray(new String[]{}));
+		}
+		if (entry==CFGID_NETWORK) {
 			return toProposals(NEDResourcesPlugin.getNEDResources().getModuleNames().toArray(new String[] {}));  //XXX use getNetworkNames()
-		if (entry==CFGID_PRELOAD_NED_FILES)
+		}
+		if (entry==CFGID_PRELOAD_NED_FILES) {
 			return toProposals(new String[] {"*.ned"});
-		if (entry==CFGID_USER_INTERFACE)
+		}
+		if (entry==CFGID_USER_INTERFACE) {
 			return toProposals(new String[] {"Cmdenv", "Tkenv"});
-		if (entry.getType()==ConfigurationEntry.Type.CFG_BOOL)
+		}
+		if (entry.getType()==ConfigurationEntry.Type.CFG_BOOL) {
 			return toProposals(new String[] {"true", "false"});
+		}
 		return null;
 	}
 
+	/** 
+	 * Generate proposals for a module parameter key
+	 */
+	protected IContentProposal[] getCandidatesForParam() {
+		if (analyzer==null)
+			return null; // sorry
+
+		ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
+		for (ParamResolution res : resList)
+			; //TODO
+		return null; //XXX
+	}
+	
 	protected static IContentProposal[] toProposals(String[] strings) {
 		IContentProposal[] p = new IContentProposal[strings.length];
 		for (int i=0; i<p.length; i++)
