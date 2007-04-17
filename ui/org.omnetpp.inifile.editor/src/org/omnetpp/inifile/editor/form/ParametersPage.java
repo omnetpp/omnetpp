@@ -136,7 +136,6 @@ public class ParametersPage extends FormPage {
 			}
 		});
 
-		//XXX set up content assist. See: addCellEditors() method, ChangeParametersControl.class in JDT
 		//XXX prefix comments with "#" after editing?
 		tableViewer.setColumnProperties(new String[] {"section", "key", "value", "comment"});
 		final TableTextCellEditor editors[] = new TableTextCellEditor[4];
@@ -193,7 +192,14 @@ public class ParametersPage extends FormPage {
 		});
 		
 		// set up content assist
-		IContentProposalProvider proposalProvider = new InifileValueContentProposalProvider("General", "network", getInifileDocument(), getInifileAnalyzer());//XXX
+		IContentProposalProvider proposalProvider = new InifileValueContentProposalProvider(null, null, getInifileDocument(), getInifileAnalyzer()) {
+			@Override
+			public IContentProposal[] getProposals(String contents, int position) {
+				SectionKey e = (SectionKey)( (IStructuredSelection)tableViewer.getSelection()).getFirstElement();
+				setInifileEntry(e.section, e.key); // set context for proposal calculation
+				return super.getProposals(contents, position);
+			}
+		};
 		addContentAssist(editors[2], proposalProvider);
 
 		// on double-click, show entry in the text editor

@@ -85,6 +85,11 @@ public class InifileValueContentProposalProvider implements	IContentProposalProv
 		this.analyzer = analyzer;
 	}
 
+	public void setInifileEntry(String section, String key) {
+		this.section = section;
+		this.key = key;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.jface.fieldassist.IContentProposalProvider#getProposals(java.lang.String, int)
 	 */
@@ -186,10 +191,12 @@ public class InifileValueContentProposalProvider implements	IContentProposalProv
 		if (analyzer==null)
 			return null; // sorry
 
-		ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
-		for (ParamResolution res : resList)
-			; //TODO
-		return null; //XXX
+		return toProposals(new String[] {"TODO", "FIXME", "XXX", section, key}); //XXX
+
+//		ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
+//		for (ParamResolution res : resList)
+//			; //TODO
+//		return null; //XXX
 	}
 
 	/**
