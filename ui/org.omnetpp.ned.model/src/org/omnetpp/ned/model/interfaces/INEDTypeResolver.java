@@ -7,6 +7,17 @@ import org.eclipse.core.resources.IFile;
 import org.omnetpp.ned.model.NEDElement;
 
 public interface INEDTypeResolver {
+     /**
+     * 
+     * @author rhornig
+     */
+    interface IFilter {
+        /**
+         * @param component
+         * @return True if it shuld be included in the resuting collection
+         */
+        boolean filter(INEDTypeInfo component);
+    };
 
     /**
      * Mark the whole resolver invalid
@@ -70,6 +81,11 @@ public interface INEDTypeResolver {
 	 */
 	public Collection<INEDTypeInfo> getAllComponents();
 
+    /**
+     * Returns all components in the NED files after applying the filter
+     */
+    public Collection<INEDTypeInfo> getAllComponentsFilteredBy(IFilter filter);
+    
 	/**
 	 * Returns all simple and compound modules in the NED files.
 	 */
@@ -94,6 +110,11 @@ public interface INEDTypeResolver {
      * Returns all VALID component name in the NED files.
      */
     public Set<String> getAllComponentNames();
+
+    /**
+     * Returns all VALID component name in the NED files after filtered by the filter
+     */
+    public Set<String> getAllComponentNamesFilteredBy(IFilter filter);
 
     /**
      * Returns ALL names reserved (used) in the NED files (including duplicates)

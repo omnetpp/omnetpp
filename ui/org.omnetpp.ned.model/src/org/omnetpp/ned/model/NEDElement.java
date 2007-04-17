@@ -18,6 +18,8 @@ import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NEDChangeListenerList;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
+import org.omnetpp.ned.model.pojo.CommentNode;
+import org.omnetpp.ned.model.pojo.NEDElementTags;
 
 /**
  * Base class for objects in a NED object tree, the XML-based
@@ -741,6 +743,24 @@ public abstract class NEDElement extends PlatformObject
      */
     public NEDElement getNEDModel() {
         return this;
+    }
+    
+    /**
+     * @return The banner comment belonging to the element (if any)
+     */
+    public String getComment() {
+        String comment = null;
+        CommentNode cn = (CommentNode)getFirstChildWithAttribute(NEDElementTags.NED_COMMENT,CommentNode.ATT_LOCID, "banner");
+        if (cn != null)
+            comment = cn.getContent().trim();
+        return comment;
+    }
+    
+    /**
+     * @return The re-generated source (text form) of this element 
+     */
+    public String getSource() {
+        return NEDTreeUtil.generateNedSource(this, true);
     }
   /* (non-Javadoc)
      * @see java.lang.Object#toString()
