@@ -191,71 +191,8 @@ public class ParametersPage extends FormPage {
 			}
 		});
 		
-//experimental----------------------------------------------------
-		//XXX TODO
-		// Note: this need to be an ISubjectControlContentAssistProcessor, 
-		// simply being IContentAssistProcessor is not enough! 
-		// (see instanceof in ContentAssistant.computeCompletionProposals())
-		ISubjectControlContentAssistProcessor processor = new ISubjectControlContentAssistProcessor() {
-			public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int offset) {
-				return new ICompletionProposal[] {new CompletionProposal("bubu", 0, 0, 0)}; //XXX
-			}
-			public IContextInformation[] computeContextInformation(ITextViewer viewer, int offset) {
-				return null;
-			}
-			public char[] getCompletionProposalAutoActivationCharacters() {
-				return null;
-			}
-			public char[] getContextInformationAutoActivationCharacters() {
-				return null;
-			}
-			public IContextInformationValidator getContextInformationValidator() {
-				return null;
-			}
-			public String getErrorMessage() {
-				return null;
-			}
-			public ICompletionProposal[] computeCompletionProposals(IContentAssistSubjectControl contentAssistSubjectControl, int documentOffset) {
-				return new ICompletionProposal[] {new CompletionProposal("bubu", 0, 0, 0)}; 
-			}
-			public IContextInformation[] computeContextInformation(IContentAssistSubjectControl contentAssistSubjectControl, int documentOffset) {
-				return null;
-			}
-		};
-
-		//code from ChangeParametersControl.class#573:
-		// installParameterTypeContentAssist(), ChangeParametersControl.class#619:
-		// 1. SubjectControlContentAssistant contentAssistant= ControlContentAssistHelper.createJavaContentAssistant(processor);
-		//		public static SubjectControlContentAssistant createJavaContentAssistant(IContentAssistProcessor processor) {
-		//			final SubjectControlContentAssistant contentAssistant= new SubjectControlContentAssistant();
-		//			
-		//			contentAssistant.setContentAssistProcessor(processor, IDocument.DEFAULT_CONTENT_TYPE);
-		//			
-		//			ContentAssistPreference.configure(contentAssistant, JavaPlugin.getDefault().getPreferenceStore());
-		//			contentAssistant.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
-		//			contentAssistant.setInformationControlCreator(new IInformationControlCreator() {
-		//				public IInformationControl createInformationControl(Shell parent) {
-		//					return new DefaultInformationControl(parent, SWT.NONE, new HTMLTextPresenter(true));
-		//				}
-		//			});
-		//			return contentAssistant;
-		//		}
-		// 2. ContentAssistHandler.createHandlerForText(text, contentAssistant);
-
-		final SubjectControlContentAssistant assistant = new SubjectControlContentAssistant();
-		assistant.setContentAssistProcessor(processor, IDocument.DEFAULT_CONTENT_TYPE);
-
-		//ContentAssistPreference.configure(assistant, JavaPlugin.getDefault().getPreferenceStore());
-		assistant.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
-		assistant.setInformationControlCreator(new IInformationControlCreator() {
-			public IInformationControl createInformationControl(Shell parent) {
-				//return new DefaultInformationControl(parent, SWT.NONE, new HTMLTextPresenter(true));
-				return new DefaultInformationControl(parent);
-			}
-		});
-		ContentAssistHandler.createHandlerForText(editors[2].getText(), assistant);
-		editors[2].setContentAssistant(assistant);
-//------------------------------ 		
+		// set up content assist
+		addContentAssist(editors[2]); //XXX experimental
 
 		// on double-click, show entry in the text editor
  		tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
@@ -287,6 +224,57 @@ public class ParametersPage extends FormPage {
  		});
 		
 		return tableViewer;
+	}
+
+	private static void addContentAssist(final TableTextCellEditor cellEditor) {
+		// Create a control assist processor.
+		//
+		// Note: this needs to be an ISubjectControlContentAssistProcessor, simply 
+		// being IContentAssistProcessor is not enough! (see instanceof in 
+		// ContentAssistant.computeCompletionProposals())
+		ISubjectControlContentAssistProcessor processor = new ISubjectControlContentAssistProcessor() {
+			public ICompletionProposal[] computeCompletionProposals(IContentAssistSubjectControl contentAssistSubjectControl, int documentOffset) {
+				return new ICompletionProposal[] {new CompletionProposal("bubu", 0, 0, 0)}; 
+			}
+			public IContextInformation[] computeContextInformation(IContentAssistSubjectControl contentAssistSubjectControl, int documentOffset) {
+				return null;
+			}
+			public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int offset) {
+				return null; // never called
+			}
+			public IContextInformation[] computeContextInformation(ITextViewer viewer, int offset) {
+				return null;
+			}
+			public char[] getCompletionProposalAutoActivationCharacters() {
+				return null;
+			}
+			public char[] getContextInformationAutoActivationCharacters() {
+				return null;
+			}
+			public IContextInformationValidator getContextInformationValidator() {
+				return null;
+			}
+			public String getErrorMessage() {
+				return null;
+			}
+		};
+
+		// Add content assist the text editor. Code taken from JDT, ChangeParametersControl.java line #573.
+		// ChangeParametersControl.installParameterTypeContentAssist():
+		//  1. SubjectControlContentAssistant contentAssistant= ControlContentAssistHelper.createJavaContentAssistant(processor);
+		//  2. ContentAssistHandler.createHandlerForText(text, contentAssistant);
+
+		final SubjectControlContentAssistant assistant = new SubjectControlContentAssistant();
+		assistant.setContentAssistProcessor(processor, IDocument.DEFAULT_CONTENT_TYPE);
+		assistant.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
+		assistant.setInformationControlCreator(new IInformationControlCreator() {
+			public IInformationControl createInformationControl(Shell parent) {
+				//return new DefaultInformationControl(parent, SWT.NONE, new HTMLTextPresenter(true));
+				return new DefaultInformationControl(parent);
+			}
+		});
+		ContentAssistHandler.createHandlerForText(cellEditor.getText(), assistant);
+		cellEditor.setContentAssistant(assistant);
 	}
 
 	private static String nullToEmpty(String text) {
