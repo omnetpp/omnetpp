@@ -4,7 +4,9 @@ import java.util.ArrayList;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.contentassist.SubjectControlContentAssistant;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
@@ -122,7 +124,7 @@ public class ParametersPage extends FormPage {
 		//XXX set up content assist. See: addCellEditors() method, ChangeParametersControl.class in JDT
 		//XXX prefix comments with "#" after editing?
 		tableViewer.setColumnProperties(new String[] {"section", "key", "value", "comment"});
-		final CellEditor editors[] = new CellEditor[4];
+		final TableTextCellEditor editors[] = new TableTextCellEditor[4];
 		editors[0] = null;
 		editors[1] = new TableTextCellEditor(tableViewer, 1);
 		editors[2] = new TableTextCellEditor(tableViewer, 2);
@@ -174,6 +176,12 @@ public class ParametersPage extends FormPage {
 				}
 			}
 		});
+		
+//XXX TODO
+//		SubjectControlContentAssistant assistant = new SubjectControlContentAssistant();
+//		IContentAssistProcessor processor = new IContentAssistProcessor();
+//		assistant.setContentAssistProcessor(processor, "???");
+//		editors[2].setContentAssistant(assistant);
 
 		// on double-click, show entry in the text editor
  		tableViewer.getTable().addSelectionListener(new SelectionAdapter() {

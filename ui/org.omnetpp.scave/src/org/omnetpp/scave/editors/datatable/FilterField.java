@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.fieldassist.ContentAssistField;
+import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.scave.model2.FilterHints;
 
 public class FilterField extends ContentAssistField {
@@ -18,11 +19,12 @@ public class FilterField extends ContentAssistField {
 				new TextControlCreator(),
 				new TextContentAdapter2(),
 				new FilterContentProposalProvider(),
-				null,  /*commandId. XXX no binding is found for the default command "org.eclipse.ui.edit.text.contentAssist.proposals", that's why it says "null" in the bubble. how to fix it? */
+				ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS,  /*commandId. "null" works equally well. XXX no binding is found for the default command "org.eclipse.ui.edit.text.contentAssist.proposals", that's why it says "null" in the bubble. how to fix it? */
 				"( ".toCharArray() /*auto-activation*/);
 		
 		ContentAssistCommandAdapter commandAdapter = getContentAssistCommandAdapter();
 		final IControlContentAdapter2 contentAdapter = (IControlContentAdapter2)commandAdapter.getControlContentAdapter();
+
 		commandAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_IGNORE);
 		commandAdapter.addContentProposalListener(new IContentProposalListener() {
 			public void proposalAccepted(IContentProposal proposal) {
@@ -35,7 +37,6 @@ public class FilterField extends ContentAssistField {
 						filterProposal.getCursorPosition());
 			}
 		});
-		
 	}
 	
 	public Text getText() {

@@ -2,6 +2,9 @@ package org.omnetpp.inifile.editor.form;
 
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
+import org.eclipse.jface.fieldassist.TextControlCreator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -11,6 +14,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.fieldassist.ContentAssistField;
+import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
+import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry.Type;
@@ -26,6 +32,7 @@ import org.omnetpp.inifile.editor.model.ConfigurationEntry.Type;
  * @author Andras
  */
 public class TextFieldEditor extends FieldEditor {
+	private static final char[] AUTOACTIVATION_CHARS = null; // "( ".toCharArray();
 	private Text textField;
 	private Label label;
 	private Button resetButton;
@@ -35,19 +42,23 @@ public class TextFieldEditor extends FieldEditor {
 	public TextFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, FormPage formPage, String labelText) {
 		super(parent, SWT.NONE, entry, inifile, formPage);
 
+		// layout
 		GridLayout gridLayout = new GridLayout(3, false);
 		gridLayout.marginTop = gridLayout.marginBottom = gridLayout.marginHeight = gridLayout.verticalSpacing = 0;
 		gridLayout.marginHeight = 2;
 		setLayout(gridLayout);
 
+		// child widgets
 		label = createLabel(entry, labelText+":");
-		textField = new Text(this, SWT.SINGLE | SWT.BORDER);
+		ContentAssistField contentAssistField = createContentAssistField();
+		textField = (Text) contentAssistField.getControl();
 		tooltipSupport.adapt(textField);
-
 		resetButton = createResetButton();
+		
+		// set layout data
 		label.setLayoutData(new GridData());
-		int width = (entry.getType()==Type.CFG_STRING || entry.getType()==Type.CFG_FILENAME || entry.getType()==Type.CFG_FILENAMES) ? 250 : 50;
-		textField.setLayoutData(new GridData(width, SWT.DEFAULT));
+		int width = (entry.getType()==Type.CFG_STRING || entry.getType()==Type.CFG_FILENAME || entry.getType()==Type.CFG_FILENAMES) ? 250 : 80;
+		contentAssistField.getLayoutControl().setLayoutData(new GridData(width, SWT.DEFAULT));
 		resetButton.setLayoutData(new GridData());
 
 		reread();
@@ -64,6 +75,18 @@ public class TextFieldEditor extends FieldEditor {
 		
 		// commit on losing focus, etc.
 		addFocusListenerTo(textField);
+	}
+
+	protected ContentAssistField createContentAssistField() {
+		IContentProposalProvider proposalProvider = new InifileValueContentProposalProvider(GENERAL, entry.getKey(), inifile, null);
+		ContentAssistField contentAssistField = 
+			new ContentAssistField(this, SWT.SINGLE | SWT.BORDER,
+					new TextControlCreator(),
+					new TextContentAdapter(),
+					proposalProvider,
+					ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS,
+					AUTOACTIVATION_CHARS);
+		return contentAssistField;
 	}
 
 	@Override

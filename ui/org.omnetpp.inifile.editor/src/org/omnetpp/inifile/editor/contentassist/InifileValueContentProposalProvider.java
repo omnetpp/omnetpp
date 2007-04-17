@@ -1,6 +1,6 @@
 package org.omnetpp.inifile.editor.contentassist;
 
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_EXTENDS;
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.*;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_NETWORK;
 
 import java.util.ArrayList;
@@ -8,6 +8,7 @@ import java.util.Arrays;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.omnetpp.common.engine.Common;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
@@ -25,6 +26,47 @@ public class InifileValueContentProposalProvider implements	IContentProposalProv
 	private IInifileDocument doc;
 	private InifileAnalyzer analyzer;
 
+	/**
+	 * Value object that implements IContentProposal.
+	 */
+	static class ContentProposal implements IContentProposal, Comparable {
+		private String content;
+		private String label;
+		private String description;
+		private int cursorPosition;
+		
+		public ContentProposal(String content, String label, String description) {
+			this(content, label, description, content.length());
+		}
+
+		public ContentProposal(String content, String label, String description, int cursorPosition) {
+			this.content = content;
+			this.label = label;
+			this.description = description;
+			this.cursorPosition = cursorPosition;
+		}
+
+		public String getContent() {
+			return content;
+		}
+
+		public int getCursorPosition() {
+			return cursorPosition;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public String getLabel() {
+			return label;
+		}
+
+		public int compareTo(Object o) {
+			return label.compareTo(((IContentProposal)o).getLabel());
+		}
+	}
+	
 	public InifileValueContentProposalProvider(String section, String key, IInifileDocument doc, InifileAnalyzer analyzer) {
 		this.section = section;
 		this.key = key;
@@ -39,57 +81,32 @@ public class InifileValueContentProposalProvider implements	IContentProposalProv
 		ArrayList<IContentProposal> result = new ArrayList<IContentProposal>();
 
 		String prefix = contents.substring(0, position);
-		String lastIncompleteWord = prefix.replaceFirst("^.*?([A-Za-z0-9_]*)$", "$1");
+		String prefixToMatch = prefix.replaceFirst("^.*?([A-Za-z0-9_]*)$", "$1"); // the last incomplete word
 
-		String[] candidates = getCandidates(prefix);
+		IContentProposal[] candidates = getCandidates(prefix);
 		Arrays.sort(candidates);
 
 		// collect those candidates that match the last incomplete word in the editor
 		if (candidates!=null) {
-			for (final String candidate : candidates) {
-				if (candidate.startsWith(lastIncompleteWord) && candidate.length()!= lastIncompleteWord.length()) {
-					final String content = candidate.substring(lastIncompleteWord.length(), candidate.length());
-					result.add(new IContentProposal() {
-						public String getContent() {
-							return content;
-						}
-						public String getDescription() {
-							return null;
-						}
-						public String getLabel() {
-							return candidate + " (inserts \""+content+"\")"; //XXX
-						}
-						public int getCursorPosition() {
-							return content.length();
-						}
-					});
+			for (IContentProposal candidate : candidates) {
+				String content = candidate.getContent();
+				if (content.startsWith(prefixToMatch) && content.length()!= prefixToMatch.length()) {
+					// from the content, drop the prefix that has already been typed by the user
+					String modifiedContent = content.substring(prefixToMatch.length(), content.length());
+					int modifiedCursorPosition = candidate.getCursorPosition() + modifiedContent.length() - content.length();
+					result.add(new ContentProposal(modifiedContent, candidate.getLabel(), candidate.getDescription(), modifiedCursorPosition));
 				}
 			}
 		}
 
 		if (result.isEmpty()) {
-			// returning an empty array or null apparently causes NPE in the framework, 
-			// so return a blank proposal instead
-			result.add(new IContentProposal() {
-				public String getContent() {
-					return "";
-				}
-				public String getDescription() {
-					return null;
-				}
-				public String getLabel() {
-					return "(no proposal)";
-				}
-				public int getCursorPosition() {
-					return 0;
-				}
-			});
+			// returning an empty array or null apparently causes NPE in the framework, so return a blank proposal instead
+			result.add(new ContentProposal("", "(no proposal)", null, 0));
 		}
-
 		return result.toArray(new IContentProposal[] {});
 	}
 
-	protected String[] getCandidates(String prefix) {
+	protected IContentProposal[] getCandidates(String prefix) {
 		KeyType keyType = (key == null) ? KeyType.CONFIG : InifileAnalyzer.getKeyType(key);
 		if (keyType==KeyType.CONFIG) {
 			return getCandidatesForConfig();
@@ -113,49 +130,29 @@ public class InifileValueContentProposalProvider implements	IContentProposalProv
 		}
 	}
 
-	protected String[] getCandidatesForConfig() {
+	protected IContentProposal[] getCandidatesForConfig() {
 		ConfigurationEntry entry = ConfigurationRegistry.getEntry(key);
 		if (entry == null)
 			return null;
 
-		if (entry==CFGID_EXTENDS) {
-			return doc.getSectionNames(); //XXX strip "Config "
-		}
-		if (entry==CFGID_NETWORK) {
-			return NEDResourcesPlugin.getNEDResources().getModuleNames().toArray(new String[] {});  //XXX use getNetworkNames()
-		}
-
-//
-//		// check value: if it is the right type
-//		String value = doc.getValue(section, key);
-//		String errorMessage = validateConfigValueByType(value, e.getType());
-//		if (errorMessage != null) {
-//			addError(section, key, errorMessage);
-//			return;
-//		}
-//
-//		if (e.getType()==ConfigurationEntry.Type.CFG_STRING && value.startsWith("\""))
-//			value =	Common.parseQuotedString(value); // cannot throw exception: value got validated above
-//
-//		// check validity of some settings, like network=, preload-ned-files=, etc
-//		if (e==CFGID_EXTENDS) {
-//			if (!doc.containsSection(CONFIG_+value))
-//				addError(section, key, "No such section: [Config "+value+"]");
-//		}
-//		else if (e==CFGID_NETWORK) {
-//			INEDTypeInfo network = ned.getComponent(value);
-//			if (network == null) {
-//				addError(section, key, "No such NED network: "+value);
-//				return;
-//			}
-//			NEDElement node = network.getNEDElement();
-//			if (!(node instanceof CompoundModuleNode) || ((CompoundModuleNode)node).getIsNetwork()==false) {
-//				addError(section, key, "Type '"+value+"' was not declared in NED with the keyword 'network'");
-//				return;
-//			}
-//		}
-//		// TODO Auto-generated method stub
+		if (entry==CFGID_EXTENDS)
+			return toProposals(doc.getSectionNames()); //XXX strip "Config "
+		if (entry==CFGID_NETWORK)
+			return toProposals(NEDResourcesPlugin.getNEDResources().getModuleNames().toArray(new String[] {}));  //XXX use getNetworkNames()
+		if (entry==CFGID_PRELOAD_NED_FILES)
+			return toProposals(new String[] {"*.ned"});
+		if (entry==CFGID_USER_INTERFACE)
+			return toProposals(new String[] {"Cmdenv", "Tkenv"});
+		if (entry.getType()==ConfigurationEntry.Type.CFG_BOOL)
+			return toProposals(new String[] {"true", "false"});
 		return null;
 	}
 
+	protected static IContentProposal[] toProposals(String[] strings) {
+		IContentProposal[] p = new IContentProposal[strings.length];
+		for (int i=0; i<p.length; i++)
+			p[i] = new ContentProposal(strings[i], strings[i], null);
+		return p;
+	}
+	
 }
