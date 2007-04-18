@@ -19,7 +19,7 @@ import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
-import org.omnetpp.inifile.editor.model.ConfigurationEntry.Type;
+import org.omnetpp.inifile.editor.model.ConfigurationEntry.DataType;
 
 /**
  * Text-based editor for inifile entries.
@@ -57,7 +57,7 @@ public class TextFieldEditor extends FieldEditor {
 		
 		// set layout data
 		label.setLayoutData(new GridData());
-		int width = (entry.getType()==Type.CFG_STRING || entry.getType()==Type.CFG_FILENAME || entry.getType()==Type.CFG_FILENAMES) ? 250 : 80;
+		int width = (entry.getDataType()==DataType.CFG_STRING || entry.getDataType()==DataType.CFG_FILENAME || entry.getDataType()==DataType.CFG_FILENAMES) ? 250 : 80;
 		contentAssistField.getLayoutControl().setLayoutData(new GridData(width, SWT.DEFAULT));
 		resetButton.setLayoutData(new GridData());
 

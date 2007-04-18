@@ -199,13 +199,13 @@ public class InifileAnalyzer {
 
 		// check value: if it is the right type
 		String value = doc.getValue(section, key);
-		String errorMessage = validateConfigValueByType(value, e.getType());
+		String errorMessage = validateConfigValueByType(value, e.getDataType());
 		if (errorMessage != null) {
 			addError(section, key, errorMessage);
 			return;
 		}
 
-		if (e.getType()==ConfigurationEntry.Type.CFG_STRING && value.startsWith("\""))
+		if (e.getDataType()==ConfigurationEntry.DataType.CFG_STRING && value.startsWith("\""))
 			value =	Common.parseQuotedString(value); // cannot throw exception: value got validated above
 
 		// check validity of some settings, like network=, preload-ned-files=, etc
@@ -228,7 +228,7 @@ public class InifileAnalyzer {
 	}
 
 	//XXX into InifileUtils?
-	private static String validateConfigValueByType(String value, ConfigurationEntry.Type type) {
+	private static String validateConfigValueByType(String value, ConfigurationEntry.DataType type) {
 		switch (type) {
 		case CFG_BOOL:
 			if (!value.equals("true") && !value.equals("false"))
@@ -492,5 +492,4 @@ public class InifileAnalyzer {
 				result.add(par);
 		return result.toArray(new ParamResolution[]{});
 	}
-
 }

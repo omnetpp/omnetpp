@@ -119,7 +119,7 @@ public class SectionsPage extends FormPage {
 		treeViewer.setLabelProvider(new GenericTreeLabelProvider(new LabelProvider() {
 			@Override
 			public String getText(Object element) {
-				String section = (String) element.toString(); //XXX khmm.. rather get it from SectionData
+				String section = getSectionNameFromTreeNode(element);
 				String description = getInifileDocument().getValue(section, CFGID_DESCRIPTION.getKey());
 				return description==null ? section : (section+" -- "+description);
 			}
@@ -241,6 +241,8 @@ public class SectionsPage extends FormPage {
 		final IInputValidator newSectionNameValidator = new IInputValidator() {
 			public String isValid(String sectionName) {
 				sectionName = sectionName.trim();
+				if (sectionName.equals(""))
+					return "Section name cannot be empty";
 				if (!sectionName.equals(GENERAL) && !sectionName.startsWith(CONFIG_))
 					sectionName = CONFIG_+sectionName;
 				if (getInifileDocument().containsSection(sectionName))

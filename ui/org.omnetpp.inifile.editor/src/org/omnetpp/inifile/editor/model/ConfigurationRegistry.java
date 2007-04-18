@@ -1,15 +1,15 @@
 package org.omnetpp.inifile.editor.model;
 
-import static org.omnetpp.inifile.editor.model.ConfigurationEntry.Type.CFG_BOOL;
-import static org.omnetpp.inifile.editor.model.ConfigurationEntry.Type.CFG_DOUBLE;
-import static org.omnetpp.inifile.editor.model.ConfigurationEntry.Type.CFG_FILENAME;
-import static org.omnetpp.inifile.editor.model.ConfigurationEntry.Type.CFG_FILENAMES;
-import static org.omnetpp.inifile.editor.model.ConfigurationEntry.Type.CFG_INT;
-import static org.omnetpp.inifile.editor.model.ConfigurationEntry.Type.CFG_STRING;
+import static org.omnetpp.inifile.editor.model.ConfigurationEntry.DataType.CFG_BOOL;
+import static org.omnetpp.inifile.editor.model.ConfigurationEntry.DataType.CFG_DOUBLE;
+import static org.omnetpp.inifile.editor.model.ConfigurationEntry.DataType.CFG_FILENAME;
+import static org.omnetpp.inifile.editor.model.ConfigurationEntry.DataType.CFG_FILENAMES;
+import static org.omnetpp.inifile.editor.model.ConfigurationEntry.DataType.CFG_INT;
+import static org.omnetpp.inifile.editor.model.ConfigurationEntry.DataType.CFG_STRING;
 
 import java.util.HashMap;
 
-import org.omnetpp.inifile.editor.model.ConfigurationEntry.Type;
+import org.omnetpp.inifile.editor.model.ConfigurationEntry.DataType;
 
 /**
  * Contains the names of supported configuration entries, e.g. [General]/sim-time-limit. 
@@ -25,7 +25,7 @@ public class ConfigurationRegistry {
 	
 	private static HashMap<String, ConfigurationEntry> entries = new HashMap<String, ConfigurationEntry>(); 
 	
-	private static ConfigurationEntry addGlobalEntry(String name, Type type, Object defaultValue, String description) {
+	private static ConfigurationEntry addGlobalEntry(String name, DataType type, Object defaultValue, String description) {
     	ConfigurationEntry e = new ConfigurationEntry(name, true, type, null, defaultValue, description);
     	entries.put(name, e);
     	return e;
@@ -37,7 +37,7 @@ public class ConfigurationRegistry {
     	return e;
     }
     
-	private static ConfigurationEntry addPerRunEntry(String name, Type type, Object defaultValue, String description) {
+	private static ConfigurationEntry addPerRunEntry(String name, DataType type, Object defaultValue, String description) {
     	ConfigurationEntry e = new ConfigurationEntry(name, false, type, null, defaultValue, description);
     	entries.put(name, e);
     	return e;

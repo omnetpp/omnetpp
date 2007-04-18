@@ -130,7 +130,7 @@ public abstract class TableFieldEditor extends FieldEditor {
 	protected String getDefaultValueFor(String section) {
 		if (entry.getDefaultValue() != null)
 			return entry.getDefaultValue().toString();
-		switch (entry.getType()) {
+		switch (entry.getDataType()) {
 			case CFG_BOOL: return "true";
 			case CFG_INT:  return "0";
 			case CFG_DOUBLE: return "0.0";

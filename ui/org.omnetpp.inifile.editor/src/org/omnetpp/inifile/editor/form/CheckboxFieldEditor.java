@@ -35,7 +35,7 @@ public class CheckboxFieldEditor extends FieldEditor {
 	public CheckboxFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, FormPage formPage, String labelText) {
 		super(parent, SWT.NONE, entry, inifile, formPage);
 
-		Assert.isTrue(entry.getType()==ConfigurationEntry.Type.CFG_BOOL);
+		Assert.isTrue(entry.getDataType()==ConfigurationEntry.DataType.CFG_BOOL);
 
 		GridLayout gridLayout = new GridLayout(3, false); 
 		gridLayout.marginTop = gridLayout.marginBottom = gridLayout.marginHeight = gridLayout.verticalSpacing = 0;

@@ -90,7 +90,7 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
 		if (entry==CFGID_USER_INTERFACE) {
 			return toProposals(new String[] {"Cmdenv", "Tkenv"});
 		}
-		if (entry.getType()==ConfigurationEntry.Type.CFG_BOOL) {
+		if (entry.getDataType()==ConfigurationEntry.DataType.CFG_BOOL) {
 			return toProposals(new String[] {"true", "false"});
 		}
 		return null;

@@ -7,7 +7,7 @@ package org.omnetpp.inifile.editor.model;
  */
 public class ConfigurationEntry {
     /** Configuration entry types */
-    public enum Type {
+    public enum DataType {
       CFG_BOOL,
       CFG_INT,
       CFG_DOUBLE,
@@ -17,21 +17,21 @@ public class ConfigurationEntry {
       CFG_CUSTOM
     };
 
-    private String name;      // e.g. "sim-time-limit"
-    private boolean isGlobal; // if true, it cannot occur in [Run X] sections
-    private Type type;        // entry type
-    private String unit;      // if numeric, its unit ("s") or empty string
+    private String name;         // e.g. "sim-time-limit"
+    private boolean isGlobal;    // if true, it cannot occur in [Config X] sections
+    private DataType dataType;   // entry datatype
+    private String unit;         // if numeric, its unit ("s") or empty string
     private Object defaultValue; // the default value
     private String description;  // help text
 
     /**
      * Constructor.
      */
-    ConfigurationEntry(String name, boolean isGlobal, Type type,
+    ConfigurationEntry(String name, boolean isGlobal, DataType dataType,
                  String unit, Object defaultValue, String description) {
         this.name = name;
         this.isGlobal = isGlobal;
-        this.type = type;
+        this.dataType = dataType;
         this.unit = unit;
         this.defaultValue = defaultValue;
         this.description = description;
@@ -45,8 +45,8 @@ public class ConfigurationEntry {
     	return isGlobal;
     }
     
-    public Type getType() {
-    	return type;
+    public DataType getDataType() {
+    	return dataType;
     }
         
 	public Object getDefaultValue() {

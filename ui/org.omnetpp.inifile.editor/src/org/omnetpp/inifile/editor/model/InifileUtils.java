@@ -11,9 +11,14 @@ import java.util.List;
 import java.util.Stack;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.inifile.editor.InifileEditorPlugin;
+import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
@@ -364,7 +369,7 @@ public class InifileUtils {
 	 */
 	public static String getConfigTooltip(ConfigurationEntry entry, IInifileDocument doc) {
 		String text = "[General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / "+entry.getKey();
-		text += " = <" + entry.getType().name().replaceFirst("CFG_", ""); 
+		text += " = <" + entry.getDataType().name().replaceFirst("CFG_", ""); 
 		if (!"".equals(entry.getDefaultValue()))
 			text += ", default: " + entry.getDefaultValue();
 		text += "> \n\n";
@@ -382,5 +387,30 @@ public class InifileUtils {
 		}
 		
 		return StringUtils.breakLines(text, 80);
+	}
+	
+	/**
+	 * Returns the problem markers for a given inifile entry.
+	 */
+	//XXX use this in field editors etc.
+	public static IMarker[] getProblemMarkersFor(String section, String key, IInifileDocument doc) {
+		try {
+			LineInfo line = doc.getEntryLineDetails(section, key);
+			if (line==null)
+				return new IMarker[0];
+			IFile file = line.getFile();
+			IMarker[] markers = file.findMarkers(IMarker.PROBLEM, true, 0);
+			ArrayList<IMarker> result = new ArrayList<IMarker>();
+			for (IMarker marker : markers) {
+				int lineNumber = marker.getAttribute(IMarker.LINE_NUMBER, -1);
+				if (lineNumber == line.getLineNumber())
+					result.add(marker);
+			}
+			return result.toArray(new IMarker[]{});
+		} 
+		catch (CoreException e) {
+			InifileEditorPlugin.logError(e);
+			return new IMarker[0];
+		}
 	}
 }

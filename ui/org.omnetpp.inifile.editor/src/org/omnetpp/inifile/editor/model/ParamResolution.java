@@ -17,11 +17,12 @@ public class ParamResolution {
 	
 	// moduleFullPath and paramNode identify the NED parameter (no wildcards except module vector index "[*]") 
 	public String moduleFullPath;
-	public ParamNode paramNode;
+	public ParamNode paramNode;  //XXX more: SubmoduleNode, param decl node, param value assignment node
 	// how the parameter value gets resolved: from NED, from inifile, unassigned, etc
 	public ParamResolutionType type;
 	// section+key identify the value assignment in the inifile; 
 	// they are null if parameter is assigned from NED
+	//XXX add IFile ?
 	public String section;
 	public String key;
 	
