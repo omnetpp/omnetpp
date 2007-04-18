@@ -19,18 +19,23 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.omnetpp.common.ui.ITooltipProvider;
 import org.omnetpp.common.ui.TableLabelProvider;
+import org.omnetpp.common.ui.TooltipSupport;
 import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
+import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.resources.NEDResources;
@@ -42,7 +47,7 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
  * @author Andras
  */
 //XXX context menu with "Go to NED file" and "Go to ini file"
-//XXX what to assign on double click? ---> go to Inifile or NED file, depending on where the param is defined
+//XXX add tooltip support
 public class ModuleParametersView extends AbstractModuleView {
 	private Label label;
 	private TableViewer tableViewer;
@@ -51,6 +56,7 @@ public class ModuleParametersView extends AbstractModuleView {
 	private TableColumn valueColumn;
 	private TableColumn remarkColumn;
 	private IInifileDocument inifileDocument; // corresponds to the current selection; unfortunately needed by the label provider
+	private InifileAnalyzer inifileAnalyzer; // corresponds to the current selection; unfortunately needed by the label provider
 
 	/**
 	 * Node contents for the GenericTreeNode tree that is displayed in the view
@@ -162,6 +168,26 @@ public class ModuleParametersView extends AbstractModuleView {
 			}
 		});
 		
+ 		// add tooltip support to the table
+ 		TooltipSupport.adapt(tableViewer.getTable(), new ITooltipProvider() {
+			public String getTooltipFor(Control control, int x, int y) {
+				Item item = tableViewer.getTable().getItem(new Point(x,y));
+				Object element = item==null ? null : item.getData();
+				if (element instanceof ParamResolution) {
+					ParamResolution res = (ParamResolution) element;
+					if (res.section!=null && res.key!=null) {
+						//XXX make sure "res" and inifile editor refer to the same IFile!!! 
+						return InifileUtils.getEntryTooltip(res.section, res.key, inifileDocument, inifileAnalyzer);
+					}
+					else if (res.paramNode!=null) {
+						return null; //XXX todo
+					}
+				}
+				return null;
+			}
+ 		});
+		
+		
 		IAction toggleModeAction = createToggleModeAction(); //XXX make it toggle button
 		getViewSite().getActionBars().getToolBarManager().add(toggleModeAction);
 		
@@ -246,7 +272,8 @@ public class ModuleParametersView extends AbstractModuleView {
 			if (section==null)
 				section = GENERAL;
 			hideMessage();
-			inifileDocument = ana.getDocument(); //XXX very ugly solution!!!
+			inifileAnalyzer = ana;
+			inifileDocument = ana.getDocument();
 			ParamResolution[] pars = unassignedOnly ? ana.getUnassignedParams(section) : ana.getParamResolutions(section); //XXX or maybe the resolutions for the selected key, etc
 			tableViewer.setInput(pars);
 			label.setText("Section ["+section+"], " + (unassignedOnly ?"unassigned parameters" : "all parameters"));
