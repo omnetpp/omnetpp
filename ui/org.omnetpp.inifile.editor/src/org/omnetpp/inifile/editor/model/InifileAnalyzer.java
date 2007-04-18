@@ -309,8 +309,10 @@ public class InifileAnalyzer {
 		// store with every key the list of parameters it resolves
 		for (ParamResolution res : resList) {
 			if (res.key != null) {
-				System.out.println("section="+res.section+" key="+res.key+" entry-exists="+doc.containsKey(res.section, res.key)+" has-keydata="+(doc.getKeyData(res.section, res.key)!=null));
+				System.out.println("XXX section="+res.section+" key="+res.key);
+				System.out.println("    section="+res.section+" key="+res.key+" entry-exists="+doc.containsKey(res.section, res.key)+" has-keydata="+(doc.getKeyData(res.section, res.key)!=null));
 				((KeyData)doc.getKeyData(res.section, res.key)).paramResolutions.add(res);
+				System.out.println("ZZZ Done!!!");
 			}
 		}
 

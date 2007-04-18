@@ -61,9 +61,10 @@ public class InifileConverter {
 	    	text = text.replaceAll(MULTILINE+"^(\\s*[;#]?\\s*)\\[Run "+i+"\\]", "$1\\[Config "+NUMBERS[i]+"\\]");
     	text = text.replaceAll(MULTILINE+"^(\\s*[;#]?\\s*)\\[Run ([0-9]+)\\]", "$1\\[Config config$2\\]");
 
-    	//FIXME TODO: rename output vector configuration sections "**.interval=" to "**.record-interval="
-    	//FIXME TODO: rename "**.use-default" to "**.apply-default"
-    	System.out.println("CONVERSION STILL INCOMPLETE!!!!");
+    	// rename .use-default= to .apply-default=, .interval= to .record-interval etc. 
+    	text = text.replaceAll(MULTILINE+"^([^;#\"]*)\\.use-default\\b", "$1.apply-default");
+    	text = text.replaceAll(MULTILINE+"^([^;#\"]*)\\.interval\\b", "$1.record-interval");
+    	text = text.replaceAll(MULTILINE+"^([^;#\"]*)\\.enabled\\b", "$1.record-enabled"); //XXX or what became the new name??
     	
 	    // make exactly one space on both sides of the "=" sign (optional, just cosmetics)
 	    text = text.replaceAll(MULTILINE+"^([^//;=]*?) *= *", "$1 = ");
