@@ -234,7 +234,7 @@ public class SectionsPage extends FormPage {
 		buttonGroup.setLayout(new GridLayout(1,false));
 		
 		Button addButton = createButton(buttonGroup, "Add...");
-		Button renameButton = createButton(buttonGroup, "Rename...");
+		Button renameButton = createButton(buttonGroup, "Rename..."); //XXX turn rename into Edit
 		Button removeButton = createButton(buttonGroup, "Remove");
 		
 		// in more than one places we'll need to check whether a string is acceptable as a new section's name
