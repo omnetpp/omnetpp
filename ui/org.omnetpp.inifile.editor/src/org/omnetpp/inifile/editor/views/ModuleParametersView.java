@@ -118,6 +118,7 @@ public class ModuleParametersView extends AbstractModuleView {
 				Assert.isTrue(columnIndex<=2);
 				if (element instanceof ParamResolution) {
 					ParamResolution par = (ParamResolution) element;
+					Assert.isTrue(inifileDocument!=null);
 					switch (columnIndex) {
 						case 0: return par.moduleFullPath+"."+par.paramNode.getName();
 						case 1: return getValueAndRemark(par, inifileDocument)[0]; // value
@@ -245,6 +246,7 @@ public class ModuleParametersView extends AbstractModuleView {
 			if (section==null)
 				section = GENERAL;
 			hideMessage();
+			inifileDocument = ana.getDocument(); //XXX very ugly solution!!!
 			ParamResolution[] pars = unassignedOnly ? ana.getUnassignedParams(section) : ana.getParamResolutions(section); //XXX or maybe the resolutions for the selected key, etc
 			tableViewer.setInput(pars);
 			label.setText("Section ["+section+"], " + (unassignedOnly ?"unassigned parameters" : "all parameters"));
