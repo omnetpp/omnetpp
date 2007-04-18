@@ -610,7 +610,7 @@ public class InifileDocument implements IInifileDocument {
 		return line.data;
 	}
 
-	public void setData(String section, String key, Object data) {
+	public void setKeyData(String section, String key, Object data) {
 		KeyValueLine line = lookupEntry(section, key);
     	if (line == null)
     		throw new IllegalArgumentException("No such entry: ["+section+"] "+key);
@@ -618,13 +618,15 @@ public class InifileDocument implements IInifileDocument {
 	}
 
 	public Object getSectionData(String sectionName) {
+		parseIfChanged();
 		Section section = sections.get(sectionName);
     	if (section == null)
     		throw new IllegalArgumentException("No such section: ["+sectionName+"]");
 		return section.data;
 	}
 
-	public void setData(String sectionName, Object data) {
+	public void setSectionData(String sectionName, Object data) {
+		parseIfChanged();
 		Section section = sections.get(sectionName);
     	if (section == null)
     		throw new IllegalArgumentException("No such section: ["+sectionName+"]");

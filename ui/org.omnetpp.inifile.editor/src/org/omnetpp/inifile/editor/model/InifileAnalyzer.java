@@ -112,7 +112,7 @@ public class InifileAnalyzer {
 
 		// analyze file
 		for (String section : doc.getSectionNames()) {
-			doc.setData(section, new SectionData());
+			doc.setSectionData(section, new SectionData());
 			if (!section.equals(GENERAL) && !section.startsWith(CONFIG_))
 				addError(section, "Wrong section name: must be [General] or [Config <name>]");
 			
@@ -124,10 +124,10 @@ public class InifileAnalyzer {
 					break;
 				case PARAM:
 					//XXX rename **.interval (and **.enabled) to **.record-interval, and warn for old name here
-					doc.setData(section, key, new KeyData());
+					doc.setKeyData(section, key, new KeyData());
 					break;
 				case PER_OBJECT_CONFIG:
-					doc.setData(section, key, new KeyData());
+					doc.setKeyData(section, key, new KeyData());
 					break;
 				}
 			}
@@ -309,17 +309,14 @@ public class InifileAnalyzer {
 		// store with every key the list of parameters it resolves
 		for (ParamResolution res : resList) {
 			if (res.key != null) {
-				System.out.println("XXX section="+res.section+" key="+res.key);
-				System.out.println("    section="+res.section+" key="+res.key+" entry-exists="+doc.containsKey(res.section, res.key)+" has-keydata="+(doc.getKeyData(res.section, res.key)!=null));
 				((KeyData)doc.getKeyData(res.section, res.key)).paramResolutions.add(res);
-				System.out.println("ZZZ Done!!!");
 			}
 		}
 
 		// store with the section the list of all parameter resolutions (incl unassigned params)
 		SectionData data = new SectionData();
 		data.paramResolutions = resList;
-		doc.setData(section, data);
+		doc.setSectionData(section, data);
 	}
 
 	protected ArrayList<ParamResolution> collectParameters(String moduleFullPath, String moduleTypeName, final String[] sectionChain, INEDTypeResolver ned) {

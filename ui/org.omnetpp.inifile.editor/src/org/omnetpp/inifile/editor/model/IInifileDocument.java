@@ -231,7 +231,7 @@ public interface IInifileDocument {
 	/**
 	 * Attach a (single, unnamed) user data object to the given key.
 	 */
-	void setData(String section, String key, Object data);
+	void setKeyData(String section, String key, Object data);
 
 	/**
 	 * Get user data object attached to the given section.
@@ -241,7 +241,7 @@ public interface IInifileDocument {
 	/**
 	 * Attach a (single, unnamed) user data object to the given section.
 	 */
-	void setData(String section, Object data);
+	void setSectionData(String section, Object data);
 	
 	/**
      * Adds a listener to this document 
