@@ -1,5 +1,6 @@
 package org.omnetpp.inifile.editor.form;
 
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_DESCRIPTION;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
@@ -46,7 +47,6 @@ import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
-import org.omnetpp.inifile.editor.model.SectionKey;
 
 /**
  * Inifile editor page to manage the sections in the file.
@@ -54,13 +54,11 @@ import org.omnetpp.inifile.editor.model.SectionKey;
  * @author Andras
  */
 //XXX let the user edit description= as well
-//XXX show description= value as tooltip
 //XXX enable/disable buttons as tree selection changes
-//XXX publish section as editor selection!
 public class SectionsPage extends FormPage {
 	private static final String ICON_ERROR = "icons/full/obj16/Error.png"; //XXX find better place for it
 	private static final String CIRCLE_WARNING_TEXT = "NOTE: Sections that form circles (which is illegal) are not displayed here -- switch to text mode to fix them!";
-	private static final String HINT_TEXT = "\nAdd/remove configuration sections, and edit the fallback sequence of parameter and configuration lookups.";
+	private static final String HINT_TEXT = "\nDrag&drop sections to edit the fallback sequence of parameter and configuration lookups, or to add/remove/edit sections.";
 
 	private Label label;
 	private TreeViewer treeViewer;
@@ -119,6 +117,12 @@ public class SectionsPage extends FormPage {
 	private TreeViewer createAndConfigureTreeViewer() {
 		final TreeViewer treeViewer = new TreeViewer(this, SWT.MULTI | SWT.BORDER);
 		treeViewer.setLabelProvider(new GenericTreeLabelProvider(new LabelProvider() {
+			@Override
+			public String getText(Object element) {
+				String section = (String) element.toString(); //XXX khmm.. rather get it from SectionData
+				String description = getInifileDocument().getValue(section, CFGID_DESCRIPTION.getKey());
+				return description==null ? section : (section+" -- "+description);
+			}
 			@Override
 			public Image getImage(Object element) {
 				if (element instanceof GenericTreeNode)
