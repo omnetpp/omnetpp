@@ -10,11 +10,13 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -24,11 +26,14 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.ui.TableLabelProvider;
+import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.resources.NEDResources;
+import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 
 /**
@@ -36,7 +41,7 @@ import org.omnetpp.ned.model.NEDElement;
  * @author Andras
  */
 //XXX context menu with "Go to NED file" and "Go to ini file"
-//XXX what to assign on double click?
+//XXX what to assign on double click? ---> go to Inifile or NED file, depending on where the param is defined
 public class ModuleParametersView extends AbstractModuleView {
 	private Label label;
 	private TableViewer tableViewer;
@@ -136,7 +141,26 @@ public class ModuleParametersView extends AbstractModuleView {
 		});
 		tableViewer.setContentProvider(new ArrayContentProvider());
 		
-		IAction toggleModeAction = createToggleModeAction();
+		// add double-click support to the table
+		tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				Object element = ((IStructuredSelection)tableViewer.getSelection()).getFirstElement();
+				if (element instanceof ParamResolution) {
+					ParamResolution res = (ParamResolution) element;
+					if (res.section!=null && res.key!=null) {
+						//XXX make sure "res" and inifile editor refer to the same IFile!!! 
+						if (getActiveEditor() instanceof IGotoInifile)
+							((IGotoInifile)getActiveEditor()).gotoEntry(res.section, res.key, IGotoInifile.Mode.AUTO);
+					}
+					else if (res.paramNode!=null) {
+						NEDResourcesPlugin.openNEDElementInEditor(res.paramNode);
+					}
+				}
+			}
+		});
+		
+		IAction toggleModeAction = createToggleModeAction(); //XXX make it toggle button
 		getViewSite().getActionBars().getToolBarManager().add(toggleModeAction);
 		
 		return container;

@@ -120,7 +120,7 @@ public class InifileDocument implements IInifileDocument {
 		try {
 			documentFile.deleteMarkers(INIFILEPROBLEM_MARKER_ID, true, IResource.DEPTH_ZERO);
 		} catch (CoreException e1) {
-			e1.printStackTrace(); //XXX
+			InifileEditorPlugin.logError(e1);
 		}
 
 		try {

@@ -44,6 +44,7 @@ import org.omnetpp.inifile.editor.views.InifileContentOutlinePage;
  */
 //FIXME File|Revert is always diabled; same for Redo/Undo
 //XXX should listen on workspace changes (of included ini files)
+//XXX does not seem to listen on NED changes???
 public class InifileEditor extends MultiPageEditorPart implements IResourceChangeListener, IGotoMarker, IGotoInifile {
 	/* editor pages */
 	private InifileTextEditor textEditor;
@@ -318,7 +319,7 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 			LineInfo line = key==null ? 
 					editorData.getInifileDocument().getSectionLineDetails(section) :
 					editorData.getInifileDocument().getEntryLineDetails(section, key);
-			highlightLineInTextEditor(line); 
+			highlightLineInTextEditor(line); //XXX highlight the whole section
 		}
 	}
 

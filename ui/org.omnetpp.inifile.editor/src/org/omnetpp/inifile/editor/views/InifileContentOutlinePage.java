@@ -56,7 +56,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 
 			@Override
 			public String getText(Object element) {
-				return "["+(String)element+"]";
+				return (String)element;
 			}
 		});
 		getTreeViewer().setContentProvider(new ITreeContentProvider() {

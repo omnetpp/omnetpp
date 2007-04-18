@@ -41,7 +41,7 @@ public class ParamResolution {
 			return true;
 		if (obj == null)
 			return false;
-		final ParamResolution other = (ParamResolution) obj;
+		final ParamResolution other = (ParamResolution) obj;  //XXX ClassCastException ???
 		if (key == null) {
 			if (other.key != null)
 				return false;
