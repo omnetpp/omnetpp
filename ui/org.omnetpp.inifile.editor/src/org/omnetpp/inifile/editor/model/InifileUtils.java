@@ -341,6 +341,8 @@ public class InifileUtils {
 		}
 		else if (keyType == KeyType.PARAM) {
 			// parameter assignment: display which parameters it matches
+			//XXX show more info: module type name ("TCP"), parameter type name ("double"), its docu maybe
+			//XXX in [General], multiple lines are displayed for the same key! add explanation: "...while examining parameters for [Config Foo]"
 			ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
 			if (resList.length==0) 
 				return "Entry \"" + key + "\" does not match any module parameters ";
