@@ -20,10 +20,8 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
  * Generate proposals for config values, parameter values, per-object config values etc.
- * 
- * Note: although IContentProposalProvider is for field editors, we use this class
- * in the text editor content assist too; we just re-wrap IContentProposals to 
- * ICompletionProposal. 
+ *
+ * Used for the text editor and field editors.
  * 
  * @author Andras
  */

@@ -21,10 +21,9 @@ import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContextType;
 import org.omnetpp.common.editor.text.IncrementalCompletionProcessor;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
+import org.omnetpp.inifile.editor.contentassist.InifileConfigKeyContentProposalProvider;
 import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
-import org.omnetpp.inifile.editor.model.ConfigurationEntry;
-import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.ParamResolution;
@@ -122,8 +121,10 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 				// key-value line
 				if (!linePrefix.contains("=")) {
 					// offer key completion proposals
-					for (ConfigurationEntry e : ConfigurationRegistry.getEntries())
-						proposals.add(e.getKey()+" = "); //XXX check if section is ok, config not in there yet, etc
+					IContentProposalProvider configProposalProvider = new InifileConfigKeyContentProposalProvider(section, true, doc, editorData.getInifileAnalyzer());
+					IContentProposal[] keyProposals = configProposalProvider.getProposals(linePrefix, linePrefix.length());
+					for (IContentProposal p : keyProposals)
+						result.add(convertToCompletionProposal(p, documentOffset));
 
 					// offer unassigned parameters
 					if (section != null) {
@@ -157,7 +158,7 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 					
 					// re-wrap IContentProposals as ICompletionProposal
 					for (IContentProposal p : valueProposals)
-						result.add(new CompletionProposal(p.getContent(), documentOffset, 0, p.getCursorPosition(), null, p.getLabel(), null, null));
+						result.add(convertToCompletionProposal(p, documentOffset));
 				}
 			}
 		}
@@ -194,6 +195,10 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 		return ContextType.NORMAL;
 	}
 
+	private ICompletionProposal convertToCompletionProposal(IContentProposal p, int documentOffset) {
+		return new CompletionProposal(p.getContent(), documentOffset, 0, p.getCursorPosition(), null, p.getLabel(), null, p.getDescription());
+	}
+	
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Set<String> proposals, String description) {
 		result.addAll(createProposals(viewer, documentOffset, NedHelper.spaceSeparatedWordDetector, "", proposals.toArray(new String[0]), "", description));
 	}

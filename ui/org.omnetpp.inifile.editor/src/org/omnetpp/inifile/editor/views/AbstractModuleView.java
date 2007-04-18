@@ -212,6 +212,10 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 				InifileAnalyzer analyzer = sel.getAnalyzer();
 				IInifileDocument doc = sel.getDocument();
 
+				if (sel.getSection()==null) {
+					displayMessage("No section selected.");
+					return;
+				}
 				String networkName = InifileUtils.lookupConfig(sel.getSection(), CFGID_NETWORK.getKey(), doc);
 				if (networkName == null) {
 					displayMessage("Network not specified (no network= setting in ["+sel.getSection()+"] or the sections it extends)");
