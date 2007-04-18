@@ -48,6 +48,7 @@ import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.ui.TooltipSupport;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.IGotoInifile;
+import org.omnetpp.inifile.editor.contentassist.InifileParamKeyContentProposalProvider;
 import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
@@ -191,8 +192,20 @@ public class ParametersPage extends FormPage {
 			}
 		});
 		
-		// set up content assist
-		IContentProposalProvider proposalProvider = new InifileValueContentProposalProvider(null, null, getInifileDocument(), getInifileAnalyzer()) {
+
+		// content assist for the Key column
+		IContentProposalProvider proposalProvider = new InifileParamKeyContentProposalProvider(null, false, getInifileDocument(), getInifileAnalyzer()) {
+			@Override
+			public IContentProposal[] getProposals(String contents, int position) {
+				SectionKey e = (SectionKey)( (IStructuredSelection)tableViewer.getSelection()).getFirstElement();
+				configure(e.section, false); // set context for proposal calculation
+				return super.getProposals(contents, position);
+			}
+		};
+		addContentAssist(editors[1], proposalProvider);
+
+		// content assist for the Value column
+		IContentProposalProvider valueProposalProvider = new InifileValueContentProposalProvider(null, null, getInifileDocument(), getInifileAnalyzer()) {
 			@Override
 			public IContentProposal[] getProposals(String contents, int position) {
 				SectionKey e = (SectionKey)( (IStructuredSelection)tableViewer.getSelection()).getFirstElement();
@@ -200,7 +213,7 @@ public class ParametersPage extends FormPage {
 				return super.getProposals(contents, position);
 			}
 		};
-		addContentAssist(editors[2], proposalProvider);
+		addContentAssist(editors[2], valueProposalProvider);
 
 		// on double-click, show entry in the text editor
  		tableViewer.getTable().addSelectionListener(new SelectionAdapter() {

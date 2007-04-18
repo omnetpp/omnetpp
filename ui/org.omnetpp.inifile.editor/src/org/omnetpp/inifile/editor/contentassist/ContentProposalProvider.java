@@ -28,6 +28,10 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
 		private String description;
 		private int cursorPosition;
 		
+		public ContentProposal(String content) {
+			this(content, content, content, content.length());
+		}
+
 		public ContentProposal(String content, String label, String description) {
 			this(content, label, description, content.length());
 		}

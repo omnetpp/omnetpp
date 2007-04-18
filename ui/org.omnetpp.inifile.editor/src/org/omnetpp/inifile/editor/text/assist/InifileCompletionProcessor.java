@@ -22,11 +22,10 @@ import org.eclipse.jface.text.templates.TemplateContextType;
 import org.omnetpp.common.editor.text.IncrementalCompletionProcessor;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.contentassist.InifileConfigKeyContentProposalProvider;
+import org.omnetpp.inifile.editor.contentassist.InifileParamKeyContentProposalProvider;
 import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
-import org.omnetpp.inifile.editor.model.InifileAnalyzer;
-import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.text.NedHelper;
 
 /**
@@ -128,26 +127,11 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 
 					// offer unassigned parameters
 					if (section != null) {
-						InifileAnalyzer ana = editorData.getInifileAnalyzer();
-						ParamResolution[] resList = ana.getUnassignedParams(section);
-						
-						//XXX generate, sort and add each group independently?
-						proposals.add("**.apply-default = ");
-						for (ParamResolution res : resList) {
-							// offer three versions for each 
-							//XXX alternative: offer some continuations after each dot?
-							proposals.add("**." + res.paramNode.getName() + " = ");
-							proposals.add(res.moduleFullPath.replaceFirst("^[^\\.]+", "**") + "." + res.paramNode.getName() + " = ");
-							proposals.add(res.moduleFullPath + "." +res.paramNode.getName() + " = ");
-
-							// propose .apply-default= lines; XXX only if at least some of these parameters have default value
-							proposals.add("**." + res.paramNode.getName() + ".apply-default = ");
-							proposals.add(res.moduleFullPath.replaceFirst("^[^\\.]+", "**") + "." + res.paramNode.getName() + ".apply-default = ");
-							proposals.add(res.moduleFullPath + "." +res.paramNode.getName() + ".apply-default = ");
-						}
+						IContentProposalProvider paramProposalProvider = new InifileParamKeyContentProposalProvider(section, true, doc, editorData.getInifileAnalyzer());
+						IContentProposal[] paramProposals = paramProposalProvider.getProposals(linePrefix, linePrefix.length());
+						for (IContentProposal p : paramProposals)
+							result.add(convertToCompletionProposal(p, documentOffset));
 					}
-
-					//XXX offer per-object configuration completion? (apply-default, etc)
 				}
 				else {
 					// offer value completions
@@ -201,10 +185,6 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 	
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Set<String> proposals, String description) {
 		result.addAll(createProposals(viewer, documentOffset, NedHelper.spaceSeparatedWordDetector, "", proposals.toArray(new String[0]), "", description));
-	}
-
-	private void addValueProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Set<String> proposals, String description) {
-		result.addAll(createProposals(viewer, documentOffset, NedHelper.inifileWordDetector, "", proposals.toArray(new String[0]), "", description));
 	}
 
 	public IContextInformation[] computeContextInformation(ITextViewer viewer, int documentOffset) {
