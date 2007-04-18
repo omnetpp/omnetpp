@@ -80,14 +80,17 @@ public class InifileFormEditor extends Composite {
 
 	private void buildTree() {
 		GenericTreeNode root = new GenericTreeNode("root");
+
 		GenericTreeNode configNode = new GenericTreeNode(CONFIGURATION_PAGE); 
 		root.addChild(configNode);
-
 		String[] categories = GenericConfigPage.getCategoryNames();
 		for (String c : categories)
 			configNode.addChild(new GenericTreeNode(c));
+
 		root.addChild(new GenericTreeNode(SECTIONS_PAGE));
+
 		root.addChild(new GenericTreeNode(PARAMETERS_PAGE));
+		
 		treeViewer.setInput(root);
 		treeViewer.expandAll();
 	}
