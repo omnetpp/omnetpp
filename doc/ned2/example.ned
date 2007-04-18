@@ -264,7 +264,7 @@ simple TCP1
     parameters:
         int mss; // maximum segmentsize
         int advertisedWindow; // in bytes (Note: normally, NIC queues should be at least this size)
-        string tcpAlgorithmClass1 @choice("TCPTahoe", "TCPReno", "TCPNoCongestionControl", "DumbTCP"); // "..."
+        string tcpAlgorithmClass1 @enum("TCPTahoe", "TCPReno", "TCPNoCongestionControl", "DumbTCP"); // "..."
         string tcpAlgorithmClass2 @classname("ITCPAlgorithm"); // alternative syntax:
                                                              // specify it accepts a class name, and specify base class
         @kernel(starttime=49);
@@ -731,7 +731,7 @@ simple Gen1
         double filelengthBytes2 @unit(bytes);
         double distance2 @unit(meter);
 
-        string className = default("FIFO") @choice("FIFO","LIFO");
+        string className = default("FIFO") @enum("FIFO","LIFO");
 
         double time3 = 10h 30s @unit(sec);
 }

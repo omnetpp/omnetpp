@@ -52,7 +52,7 @@ simple TCP
     parameters:
         int mss;
         int advertisedWindow;
-        string tcpAlgorithmClass @choice("TCPTahoe", "TCPReno", "TCPNoCongestionControl", "DumbTCP");
+        string tcpAlgorithmClass @enum("TCPTahoe", "TCPReno", "TCPNoCongestionControl", "DumbTCP");
         string tcpAlgorithmClass @classname("ITCPAlgorithm");
         @kernel(starttime=49);
         @recordstats[stat1](storeintervall=5; averaging=true);
@@ -390,7 +390,7 @@ simple Gen
         double datarate @unit(bps);
         double filelengthBytes @unit(bytes);
         double distance @unit(meter);
-        string className = default("FIFO") @choice("FIFO", "LIFO");
+        string className = default("FIFO") @enum("FIFO", "LIFO");
         double time = 10h 30s @unit(sec);
 }
 
