@@ -58,7 +58,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 public class SectionsPage extends FormPage {
 	private static final String ICON_ERROR = "icons/full/obj16/Error.png"; //XXX find better place for it
 	private static final String CIRCLE_WARNING_TEXT = "NOTE: Sections that form circles (which is illegal) are not displayed here -- switch to text mode to fix them!";
-	private static final String HINT_TEXT = "\nDrag&drop sections to edit the fallback sequence of parameter and configuration lookups, or to add/remove/edit sections.";
+	private static final String HINT_TEXT = "\nDrag&&drop sections to edit the fallback sequence of parameter and config lookups, or to add/remove/edit sections.";
 
 	private Label label;
 	private TreeViewer treeViewer;

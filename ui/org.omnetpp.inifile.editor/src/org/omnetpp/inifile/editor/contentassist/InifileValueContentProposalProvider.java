@@ -9,6 +9,8 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 import java.util.ArrayList;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
+import org.omnetpp.common.contentassist.ContentProposal;
+import org.omnetpp.common.contentassist.ContentProposalProvider;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;

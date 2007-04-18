@@ -3,6 +3,8 @@ package org.omnetpp.inifile.editor.contentassist;
 import java.util.ArrayList;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
+import org.omnetpp.common.contentassist.ContentProposal;
+import org.omnetpp.common.contentassist.ContentProposalProvider;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.ParamResolution;

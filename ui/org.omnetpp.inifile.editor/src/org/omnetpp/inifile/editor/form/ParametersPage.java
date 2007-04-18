@@ -42,6 +42,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.contentassist.ContentAssistHandler;
+import org.omnetpp.common.contentassist.ContentAssistUtils;
 import org.omnetpp.common.ui.ITooltipProvider;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
@@ -192,7 +193,6 @@ public class ParametersPage extends FormPage {
 			}
 		});
 		
-
 		// content assist for the Key column
 		IContentProposalProvider proposalProvider = new InifileParamKeyContentProposalProvider(null, false, getInifileDocument(), getInifileAnalyzer()) {
 			@Override
@@ -202,7 +202,7 @@ public class ParametersPage extends FormPage {
 				return super.getProposals(contents, position);
 			}
 		};
-		addContentAssist(editors[1], proposalProvider);
+		ContentAssistUtils.addContentAssist(editors[1], proposalProvider);
 
 		// content assist for the Value column
 		IContentProposalProvider valueProposalProvider = new InifileValueContentProposalProvider(null, null, getInifileDocument(), getInifileAnalyzer()) {
@@ -213,7 +213,7 @@ public class ParametersPage extends FormPage {
 				return super.getProposals(contents, position);
 			}
 		};
-		addContentAssist(editors[2], valueProposalProvider);
+		ContentAssistUtils.addContentAssist(editors[2], valueProposalProvider);
 
 		// on double-click, show entry in the text editor
  		tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
@@ -224,7 +224,6 @@ public class ParametersPage extends FormPage {
 			}
 		});
  		
-
  		// export the table's selection as editor selection
  		tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
@@ -245,63 +244,6 @@ public class ParametersPage extends FormPage {
  		});
 		
 		return tableViewer;
-	}
-
-	private static void addContentAssist(final TableTextCellEditor cellEditor, final IContentProposalProvider provider) {
-		// Create a control assist processor.
-		//
-		// Note: this needs to be an ISubjectControlContentAssistProcessor, simply 
-		// being IContentAssistProcessor is not enough! (see instanceof in 
-		// ContentAssistant.computeCompletionProposals())
-		ISubjectControlContentAssistProcessor processor = new ISubjectControlContentAssistProcessor() {
-			public ICompletionProposal[] computeCompletionProposals(IContentAssistSubjectControl contentAssistSubjectControl, int documentOffset) {
-				IContentProposal[] proposals = provider.getProposals(contentAssistSubjectControl.getDocument().get(), documentOffset);
-				
-				// convert IContentProposals to ICompletionProposal
-				ArrayList<ICompletionProposal> result = new ArrayList<ICompletionProposal>();
-				for (IContentProposal p : proposals)
-					result.add(new CompletionProposal(p.getContent(), documentOffset, 0, p.getCursorPosition(), null, p.getLabel(), null, null));
-				return (ICompletionProposal[]) result.toArray(new ICompletionProposal[result.size()]);
-			}
-			public IContextInformation[] computeContextInformation(IContentAssistSubjectControl contentAssistSubjectControl, int documentOffset) {
-				return null;
-			}
-			public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int offset) {
-				return null; // never called
-			}
-			public IContextInformation[] computeContextInformation(ITextViewer viewer, int offset) {
-				return null;
-			}
-			public char[] getCompletionProposalAutoActivationCharacters() {
-				return null;
-			}
-			public char[] getContextInformationAutoActivationCharacters() {
-				return null;
-			}
-			public IContextInformationValidator getContextInformationValidator() {
-				return null;
-			}
-			public String getErrorMessage() {
-				return null;
-			}
-		};
-
-		// Add content assist the text editor. Code taken from JDT, ChangeParametersControl.java line #573.
-		// ChangeParametersControl.installParameterTypeContentAssist():
-		//  1. SubjectControlContentAssistant contentAssistant= ControlContentAssistHelper.createJavaContentAssistant(processor);
-		//  2. ContentAssistHandler.createHandlerForText(text, contentAssistant);
-
-		final SubjectControlContentAssistant assistant = new SubjectControlContentAssistant();
-		assistant.setContentAssistProcessor(processor, IDocument.DEFAULT_CONTENT_TYPE);
-		assistant.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
-		assistant.setInformationControlCreator(new IInformationControlCreator() {
-			public IInformationControl createInformationControl(Shell parent) {
-				//return new DefaultInformationControl(parent, SWT.NONE, new HTMLTextPresenter(true));
-				return new DefaultInformationControl(parent);
-			}
-		});
-		ContentAssistHandler.createHandlerForText(cellEditor.getText(), assistant);
-		cellEditor.setContentAssistant(assistant);
 	}
 
 	private static String nullToEmpty(String text) {

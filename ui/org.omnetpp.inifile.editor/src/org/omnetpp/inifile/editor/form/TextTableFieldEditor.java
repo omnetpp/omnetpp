@@ -1,18 +1,24 @@
 package org.omnetpp.inifile.editor.form;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Table;
+import org.omnetpp.common.contentassist.ContentAssistUtils;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
+import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.SectionKey;
 
 /**
  * Table based field editor for editing textual config entries
@@ -52,9 +58,9 @@ public class TextTableFieldEditor extends TableFieldEditor {
 		});
 		
 		// set up cell editor for value column
-		//XXX set up content assist. See: addCellEditors() method, ChangeParametersControl.class in JDT; see also ParametersPage
 		tableViewer.setColumnProperties(new String[] {"section", "value"});
-		tableViewer.setCellEditors(new CellEditor[] {null, new TableTextCellEditor(tableViewer,1)});
+		TableTextCellEditor[] cellEditors = new TableTextCellEditor[] {null, new TableTextCellEditor(tableViewer,1)};
+		tableViewer.setCellEditors(cellEditors);
 		tableViewer.setCellModifier(new ICellModifier() {
 			public boolean canModify(Object element, String property) {
 				return property.equals("value");
@@ -76,6 +82,17 @@ public class TextTableFieldEditor extends TableFieldEditor {
 			}
 		});
 		
+		// content assist for the Value column
+		IContentProposalProvider valueProposalProvider = new InifileValueContentProposalProvider(null, null, inifile, null) {
+			@Override
+			public IContentProposal[] getProposals(String contents, int position) {
+				String section = (String)( (IStructuredSelection)tableViewer.getSelection()).getFirstElement();
+				setInifileEntry(section, entry.getKey()); // set context for proposal calculation
+				return super.getProposals(contents, position);
+			}
+		};
+		ContentAssistUtils.addContentAssist(cellEditors[1], valueProposalProvider);
+
 		return tableViewer; 
 	}
 	
