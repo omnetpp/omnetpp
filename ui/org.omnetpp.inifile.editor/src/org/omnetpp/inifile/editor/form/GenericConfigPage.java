@@ -336,7 +336,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 	
 	protected Button createAdvancedButton(Composite parent) {
 		final Button expandButton = new Button(parent, SWT.PUSH);
-		expandButton.setText(getAdvancedMode() ? "« Basic" : "Advanced »");
+		expandButton.setText(getAdvancedMode() ? "« Global" : "Per-Config »");
 		expandButton.setToolTipText("Toggle per-section editing");
 		expandButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {

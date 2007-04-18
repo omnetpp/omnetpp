@@ -21,6 +21,7 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
  * 
  * @author Andras
  */
+//XXX add content assist!!!
 public class TextTableFieldEditor extends TableFieldEditor {
 
 	public TextTableFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, FormPage formPage, String labelText) {

@@ -1,6 +1,7 @@
 package org.omnetpp.inifile.editor.views;
 
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
+import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -148,7 +149,7 @@ public class ModuleParametersView extends AbstractModuleView {
 				Object element = ((IStructuredSelection)tableViewer.getSelection()).getFirstElement();
 				if (element instanceof ParamResolution) {
 					ParamResolution res = (ParamResolution) element;
-					if (res.section!=null && res.key!=null) {
+					if (res.section!=null && res.key!=null && res.type!=ParamResolutionType.NED_DEFAULT) {
 						//XXX make sure "res" and inifile editor refer to the same IFile!!! 
 						if (getActiveEditor() instanceof IGotoInifile)
 							((IGotoInifile)getActiveEditor()).gotoEntry(res.section, res.key, IGotoInifile.Mode.AUTO);

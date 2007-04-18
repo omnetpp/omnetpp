@@ -287,7 +287,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 			case NED: value = nedValue; remark = "NED"; break;  
 			case NED_DEFAULT: value = nedValue; remark = "NED default applied"; break;
 			case INI: value = iniValue; remark = "ini"; break;
-			case INI_OVERRIDE: value = iniValue; remark = "ini, overrides NED default "+nedValue; break;
+			case INI_OVERRIDE: value = iniValue; remark = "ini, overrides NED default: "+nedValue; break;
 			case INI_NEDDEFAULT: value = nedValue; remark = "ini, sets same value as NED default"; break;
 			default: throw new IllegalStateException("invalid param resolution type: "+res.type);
 		}
