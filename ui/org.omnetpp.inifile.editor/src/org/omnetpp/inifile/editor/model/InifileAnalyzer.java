@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Stack;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -19,13 +20,14 @@ import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
-import org.omnetpp.inifile.editor.model.InifileUtils.IModuleTreeVisitor;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned.model.pojo.ParamNode;
+import org.omnetpp.ned.model.pojo.SubmoduleNode;
+import org.omnetpp.ned.resources.NEDResources;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
@@ -255,6 +257,7 @@ public class InifileAnalyzer {
 			} catch (RuntimeException ex) {
 				return "Error in string constant: "+ex.getMessage();
 			}
+			break;
 		case CFG_FILENAME:
 		case CFG_FILENAMES:
 			//XXX
@@ -320,18 +323,28 @@ public class InifileAnalyzer {
 	}
 
 	protected ArrayList<ParamResolution> collectParameters(String moduleFullPath, String moduleTypeName, final String[] sectionChain, INEDTypeResolver ned) {
+		//XXX moduleFullPath never used
 		String moduleName = moduleFullPath.replaceFirst("^.*\\.", "");  // stuff after the last dot
 		final IInifileDocument finalDoc = doc;
+		NEDResources res = NEDResourcesPlugin.getNEDResources();
 		final ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
-		InifileUtils.traverseModuleUsageHierarchy(moduleName, moduleFullPath, moduleTypeName, ned, doc, new IModuleTreeVisitor() {
-			public void enter(String moduleName, String moduleFullPath, INEDTypeInfo moduleType) {
-				collectParameters(list, moduleFullPath, moduleType, sectionChain, finalDoc);
+
+		NEDTreeIterator treeIterator = new NEDTreeIterator(res, new NEDTreeIterator.IModuleTreeVisitor() {
+			Stack<String> fullPath = new Stack<String>();
+			public void enter(SubmoduleNode submodule, INEDTypeInfo submoduleType) {
+				fullPath.push(submodule==null ? submoduleType.getName() : InifileUtils.getSubmoduleFullName(submodule));
+				String submoduleFullPath = StringUtils.join(fullPath.toArray(), "."); //XXX optimize here if slow
+				collectParameters(list, submoduleFullPath, submoduleType, sectionChain, finalDoc);
 			}
-			public void leave(String moduleName, String moduleFullPath, INEDTypeInfo moduleType) {
+			public void leave() {
+				fullPath.pop();
 			}
-			public void visitUnresolved(String moduleName, String moduleFullPath, String moduleTypeName) {
-			}
+			public void unresolvedType(SubmoduleNode submodule, String submoduleTypeName) {}
+			public void recursiveType(SubmoduleNode submodule, INEDTypeInfo submoduleType) {}
+			public String resolveLikeType(SubmoduleNode submodule) {return null;}
 		});
+		
+		treeIterator.traverse(moduleTypeName);
 		return list;
 	}
 

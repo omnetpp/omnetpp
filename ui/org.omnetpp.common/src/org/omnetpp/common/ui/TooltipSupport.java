@@ -113,7 +113,7 @@ public class TooltipSupport {
 		if (tooltipText!=null) {
 			tooltipWidget = new DefaultInformationControl(control.getShell());
 			tooltipWidget.setInformation(" "+tooltipText.replaceAll("\n", "\n ")); // prefix each line with a space, for left margin
-			tooltipWidget.setLocation(control.toDisplay(x,y+20));
+			tooltipWidget.setLocation(control.toDisplay(x+5,y+20));
 			Point size = tooltipWidget.computeSizeHint();
 			tooltipWidget.setSize(size.x+3, size.y+3); // add some right/bottom margin 
 			tooltipWidget.setVisible(true);

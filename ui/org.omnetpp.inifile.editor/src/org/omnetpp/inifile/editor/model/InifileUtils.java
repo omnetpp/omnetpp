@@ -8,7 +8,6 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IFile;
@@ -20,9 +19,6 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
-import org.omnetpp.ned.model.NEDElement;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
 /**
@@ -81,60 +77,6 @@ public class InifileUtils {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Visitor for traverseModuleUsageHierarchy().
-	 */
-	public static interface IModuleTreeVisitor {
-		void visitUnresolved(String moduleName, String moduleFullPath, String moduleTypeName);
-		void enter(String moduleName, String moduleFullPath, INEDTypeInfo moduleType);
-		void leave(String moduleName, String moduleFullPath, INEDTypeInfo moduleType);
-	}
-
-	/**
-	 * Traverse the module usage hierarchy, and call methods for the visitor.
-	 */
-	public static void traverseModuleUsageHierarchy(String moduleName, String moduleFullPath, String moduleTypeName, INEDTypeResolver nedResources, IInifileDocument doc, IModuleTreeVisitor visitor) {
-		Stack<INEDTypeInfo> visitedTypes = new Stack<INEDTypeInfo>();
-		doTraverseModuleUsageHierarchy(moduleName, moduleFullPath, moduleTypeName, nedResources, doc, visitor, visitedTypes);
-	}
-
-	private static void doTraverseModuleUsageHierarchy(String moduleName, String moduleFullPath, String moduleTypeName, INEDTypeResolver nedResources, IInifileDocument doc, IModuleTreeVisitor visitor, Stack<INEDTypeInfo> visitedTypes) {
-		// dig out type info (NED declaration)
-		if (StringUtils.isEmpty(moduleTypeName)) {
-			visitor.visitUnresolved(moduleName, moduleFullPath, null);
-			return;
-		}
-		INEDTypeInfo moduleType = nedResources.getComponent(moduleTypeName);
-		if (moduleType == null) {
-			visitor.visitUnresolved(moduleName, moduleFullPath, moduleTypeName);
-			return;
-		}
-
-		// cycle detection
-		if (visitedTypes.contains(moduleType)) {
-			return; //XXX signal cycle!
-		}
-		visitedTypes.push(moduleType);
-		
-		// enter module
-		visitor.enter(moduleName, moduleFullPath, moduleType);
-
-		// traverse submodules
-		for (NEDElement node : moduleType.getSubmods().values()) {
-			SubmoduleNode submodule = (SubmoduleNode) node;
-			String submoduleName = getSubmoduleFullName(submodule);
-			String submoduleType = getSubmoduleType(submodule);
-
-			// recursive call
-			doTraverseModuleUsageHierarchy(submoduleName, moduleFullPath+"."+submoduleName, submoduleType, nedResources, doc, visitor, visitedTypes);
-		}
-
-		// leave module
-		visitor.leave(moduleName, moduleFullPath, moduleType);
-		
-		visitedTypes.pop();
 	}
 
 	/**

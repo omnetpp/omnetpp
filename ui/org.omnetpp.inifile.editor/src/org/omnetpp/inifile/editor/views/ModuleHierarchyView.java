@@ -1,5 +1,7 @@
 package org.omnetpp.inifile.editor.views;
 
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -13,20 +15,21 @@ import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.GenericTreeUtils;
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
+import org.omnetpp.inifile.editor.model.NEDTreeIterator;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.model.pojo.CompoundModuleNode;
+import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 /**
  * Displays NED module hierarchy with module parameters, and 
@@ -114,6 +117,8 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	@Override
 	public Control createViewControl(Composite parent) {
 		treeViewer = new TreeViewer(parent, SWT.SINGLE);
+		
+		// set label provider and content provider 
 		treeViewer.setLabelProvider(new LabelProvider() {
 			@Override
 			public Image getImage(Object element) {
@@ -143,7 +148,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		});
 		treeViewer.setContentProvider(new GenericTreeContentProvider());
 
-		//XXX turn this into an Action and add to context menu as well
+		// on double click, go to NED file or ini file
 		treeViewer.getTree().addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -173,53 +178,54 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		treeViewer.setInput(null);
 	}
 
-	public void buildContent(NEDElement module, InifileAnalyzer ana, String section, String key) {
-        Assert.isTrue(module instanceof IHasName);
+	public void buildContent(NEDElement module, final InifileAnalyzer ana, String section, String key) {
         // build tree
-        String moduleName = ((IHasName)module).getName();
-		GenericTreeNode root = new GenericTreeNode("root");
-		INEDTypeResolver nedResources = NEDResourcesPlugin.getNEDResources();
+        final GenericTreeNode root = new GenericTreeNode("root");
+    	class TreeBuilder implements NEDTreeIterator.IModuleTreeVisitor {
+    		private GenericTreeNode current = root;
+    		public void enter(SubmoduleNode submodule, INEDTypeInfo submoduleType) {
+    			String fullName = submodule==null ? submoduleType.getName() : InifileUtils.getSubmoduleFullName(submodule);
+    			current = addTreeNode(current, fullName, "blabla"+fullName, submoduleType, submodule, ana);
+    		}
+    		public void leave() {
+    			current = current.getParent();
+    		}
+    		public void unresolvedType(SubmoduleNode submodule, String submoduleTypeName) {
+    			String fullName = submodule==null ? submoduleTypeName : InifileUtils.getSubmoduleFullName(submodule);
+    			current.addChild(new GenericTreeNode(fullName+": unresolved type '"+submoduleTypeName+"'")); //XXX
+    		}
+    		public void recursiveType(SubmoduleNode submodule, INEDTypeInfo submoduleType) {
+    			String fullName = submodule==null ? submoduleType.getName() : InifileUtils.getSubmoduleFullName(submodule);
+    			current.addChild(new GenericTreeNode(fullName+": recursive use of type '"+submoduleType.getName()+"'")); //XXX
+    		}
+    		public String resolveLikeType(SubmoduleNode submodule) {
+    			return null;
+    		}
+    	}
+        
+    	INEDTypeResolver nedResources = NEDResourcesPlugin.getNEDResources();
+    	NEDTreeIterator iterator = new NEDTreeIterator(nedResources, new TreeBuilder());
         if (module instanceof SubmoduleNode) {
-            SubmoduleNode smod = (SubmoduleNode)module;
-            buildTree(root, moduleName, moduleName, InifileUtils.getSubmoduleType(smod), smod, nedResources, ana);
-        } else    
-            buildTree(root, moduleName, moduleName, moduleName, null, nedResources, ana);
+            SubmoduleNode submodule = (SubmoduleNode)module;
+            iterator.traverse(submodule);
+        } 
+        else if (module instanceof CompoundModuleNode){
+        	CompoundModuleNode compoundModule = (CompoundModuleNode)module;
+            iterator.traverse(compoundModule.getName());
+        }
+        else if (module instanceof SimpleModuleNode){
+        	SimpleModuleNode simpleModule = (SimpleModuleNode)module;
+            iterator.traverse(simpleModule.getName());
+        }
+        else {
+        	displayMessage("Please select a submodule, compound module or simple module");
+        	return;
+        }
 
 		// prevent collapsing all treeviewer nodes: only set it on viewer if it's different from old input
 		if (!GenericTreeUtils.treeEquals(root, (GenericTreeNode)treeViewer.getInput())) { 
 			treeViewer.setInput(root);
 			this.inifileDocument = ana==null ? null : ana.getDocument();
-		}
-	}
-
-	private void buildTree(GenericTreeNode parent, String moduleFullName, String moduleFullPath, String moduleTypeName, SubmoduleNode thisSubmodule, INEDTypeResolver nedResources, InifileAnalyzer ana) {
-		//FIXME detect circles!!! currently it results in stack overflow
-		// dig out type info (NED declaration)
-		if (StringUtils.isEmpty(moduleTypeName)) {
-			String text = moduleFullName+"  (module type unknown)";
-			GenericTreeNode thisNode = new GenericTreeNode(new ErrorNode(text));  
-			parent.addChild(thisNode);
-			return;
-		}
-		INEDTypeInfo moduleType = nedResources.getComponent(moduleTypeName);
-		if (moduleType == null) {
-			String text = moduleFullName+"  ("+moduleTypeName+" - no such module type)";
-			GenericTreeNode thisNode = new GenericTreeNode(new ErrorNode(text));  
-			parent.addChild(thisNode);
-			return;
-		}
-
-		// do useful work: add tree node corresponding to this module
-		GenericTreeNode thisNode = addTreeNode(parent, moduleFullName, moduleFullPath, moduleType, thisSubmodule, ana);
-
-        // traverse submodules
-		for (NEDElement node : moduleType.getSubmods().values()) {
-			SubmoduleNode submodule = (SubmoduleNode) node;
-			String submoduleName = InifileUtils.getSubmoduleFullName(submodule);
-			String submoduleType = InifileUtils.getSubmoduleType(submodule);
-
-			// recursive call
-			buildTree(thisNode, submoduleName, moduleFullPath+"."+submoduleName, submoduleType, submodule, nedResources, ana);
 		}
 	}
 
