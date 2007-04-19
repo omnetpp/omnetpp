@@ -28,11 +28,10 @@ import org.omnetpp.ned.model.pojo.NEDElementTags;
  * NEDElement provides a DOM-like, generic access to the tree;
  * subclasses additionally provide a typed interface.
  * It extends PlatformObject to have a default IAdaptable implementation
- * primarily for PropertySheet support 
+ * primarily for PropertySheet support. 
  */
 public abstract class NEDElement extends PlatformObject 
-            implements Iterable<NEDElement>, IDisplayStringChangeListener, 
-                       IModelProvider
+            implements Iterable<NEDElement>, IDisplayStringChangeListener, IModelProvider
 {
 	private long id;
 	private String srcloc;
@@ -71,8 +70,7 @@ public abstract class NEDElement extends PlatformObject
 		};
 	}
 
-	protected static boolean stringToBool(String s)
-	{
+	protected static boolean stringToBool(String s)	{
 		if (s.equals("true"))
 			return true;
 		else if (s.equals("false"))
@@ -81,13 +79,11 @@ public abstract class NEDElement extends PlatformObject
 			throw new RuntimeException("invalid attribute value  '"+s+"': should be 'true' or 'false'");
 	}
 
-	protected static String boolToString(boolean b)
-	{
+	protected static String boolToString(boolean b)	{
 		return b ? "true" : "false";
 	}
 
-	protected static int stringToEnum(String s, String vals[], int nums[], int n)
-	{
+	protected static int stringToEnum(String s, String vals[], int nums[], int n) {
 		if (s==null)
 			throw new RuntimeException("attribute cannot be empty: should be one of the allowed words '"+vals[0]+"', etc.");
 		for (int i=0; i<n; i++)
@@ -97,8 +93,7 @@ public abstract class NEDElement extends PlatformObject
 		throw new RuntimeException("invalid attribute value '"+s+"': should be one of the allowed words '"+vals[0]+"', etc.");
 	}
 
-	protected static String enumToString(int b, String vals[], int nums[], int n)
-	{
+	protected static String enumToString(int b, String vals[], int nums[], int n) {
 		for (int i=0; i<n; i++)
 			if (nums[i]==b)
 				return vals[i];
@@ -106,8 +101,7 @@ public abstract class NEDElement extends PlatformObject
 		throw new RuntimeException("invalid integer value "+b+" for enum attribute (not one of '"+vals[0]+"'="+nums[0]+" etc)");
 	}
 
-	protected static void validateEnum(int b, String vals[], int nums[], int n)
-	{
+	protected static void validateEnum(int b, String vals[], int nums[], int n) {
 		// code almost identical to enumToString()
 		for (int i=0; i<n; i++)
 			if (nums[i]==b)
@@ -120,8 +114,7 @@ public abstract class NEDElement extends PlatformObject
 	/**
 	 * Constructor
 	 */
-	public NEDElement()
-	{
+	public NEDElement() {
 		parent = null;
 		firstchild = null;
 		lastchild = null;
@@ -134,8 +127,7 @@ public abstract class NEDElement extends PlatformObject
 	/**
 	 * Constructor. Takes parent element.
 	 */
-	public NEDElement(NEDElement parent)
-	{
+	public NEDElement(NEDElement parent) {
 		super();
 		if (parent != null)
 			parent.appendChild(this);
@@ -156,16 +148,14 @@ public abstract class NEDElement extends PlatformObject
 	/**
 	 * Returns a unique id, originally set by the contructor.
 	 */
-	public long getId()
-	{
+	public long getId() {
 		return id;
 	}
 
 	/**
 	 * Unique id assigned by the constructor can be overwritten here.
 	 */
-	public void setId(long _id)
-	{
+	public void setId(long _id) {
 		id = _id;
 	}
 
@@ -173,8 +163,7 @@ public abstract class NEDElement extends PlatformObject
 	 * Returns a string containing a file/line position showing where this
 	 * element originally came from.
 	 */
-	public String getSourceLocation() 
-	{
+	public String getSourceLocation() {
 		return srcloc;
 	}
 
@@ -182,8 +171,7 @@ public abstract class NEDElement extends PlatformObject
 	 * Sets location string (a string containing a file/line position showing
 	 * where this element originally came from). Called by the (NED/XML) parser.
 	 */
-	public void setSourceLocation(String loc)
-	{
+	public void setSourceLocation(String loc) {
 		srcloc = loc;
 	}
 
@@ -209,8 +197,7 @@ public abstract class NEDElement extends PlatformObject
 	 *
 	 * This method is called from the constructors of derived classes.
 	 */
-	public void applyDefaults()
-	{
+	public void applyDefaults() {
 		int n = getNumAttributes();
 		for (int i=0; i<n; i++)
 		{
@@ -239,8 +226,7 @@ public abstract class NEDElement extends PlatformObject
 	 * Returns the index of the given attribute. It returns -1 if the attribute
 	 * is not found. Relies on getNumAttributes() and getAttributeName().
 	 */
-	public int lookupAttribute(String attr) 
-	{
+	public int lookupAttribute(String attr) {
 		int n = getNumAttributes();
 		for (int i=0; i<n; i++)
 		{
@@ -267,8 +253,7 @@ public abstract class NEDElement extends PlatformObject
 	 *
 	 * It returns null if the given attribute is not found.
 	 */
-	public String getAttribute(String attr)
-	{
+	public String getAttribute(String attr) {
 		int k = lookupAttribute(attr);
 		return getAttribute(k);
 	}
@@ -289,8 +274,7 @@ public abstract class NEDElement extends PlatformObject
 	 *
 	 * If the given attribute is not found, the call has no effect.
 	 */
-	public void setAttribute(String attr, String value)
-	{
+	public void setAttribute(String attr, String value) {
 		int k = lookupAttribute(attr);
 		setAttribute(k,value);
 	}
@@ -311,8 +295,7 @@ public abstract class NEDElement extends PlatformObject
 	 *
 	 * It returns null if the given attribute is not found.
 	 */
-	public String getAttributeDefault(String attr)
-	{
+	public String getAttributeDefault(String attr) {
 		int k = lookupAttribute(attr);
 		return getAttributeDefault(k);
 	}
@@ -320,8 +303,7 @@ public abstract class NEDElement extends PlatformObject
 	/**
 	 * Returns the parent element, or null if this element has no parent.
 	 */
-	public NEDElement getParent()
-	{
+	public NEDElement getParent() {
 		return parent;
 	}
 
@@ -329,8 +311,7 @@ public abstract class NEDElement extends PlatformObject
      * Returns the index'th child element, or null if this element
      * has no children.
      */
-    public NEDElement getChild(int index)
-    {
+    public NEDElement getChild(int index) {
         int i = 0;
         for(NEDElement elem : this) {
             if (i >= index)
@@ -343,8 +324,7 @@ public abstract class NEDElement extends PlatformObject
 	 * Returns pointer to the first child element, or null if this element
 	 * has no children.
 	 */
-	public NEDElement getFirstChild()
-	{
+	public NEDElement getFirstChild() {
 		return firstchild;
 	}
 
@@ -352,8 +332,7 @@ public abstract class NEDElement extends PlatformObject
 	 * Returns pointer to the last child element, or null if this element
 	 * has no children.
 	 */
-	public NEDElement getLastChild() 
-	{
+	public NEDElement getLastChild() {
 		return lastchild;
 	}
 
@@ -372,8 +351,7 @@ public abstract class NEDElement extends PlatformObject
 	 * </pre>
 	 *
 	 */
-	public NEDElement getNextSibling() 
-	{
+	public NEDElement getNextSibling() {
 		return nextsibling;
 	}
 
@@ -381,8 +359,7 @@ public abstract class NEDElement extends PlatformObject
 	 * Returns pointer to the previous sibling of this element (i.e. the previous child
 	 * in the parent element). Returns null if there're no elements before this one.
 	 */
-	public NEDElement getPrevSibling() 
-	{
+	public NEDElement getPrevSibling() {
 		return prevsibling;
 	}
 
@@ -391,8 +368,7 @@ public abstract class NEDElement extends PlatformObject
 	 *
 	 * The node pointer passed should not be null.
 	 */
-	public void appendChild(NEDElement node)
-	{
+	public void appendChild(NEDElement node) {
 		if (node.parent!=null)
 			node.parent.removeChild(node);
 		node.parent = this;
@@ -414,9 +390,8 @@ public abstract class NEDElement extends PlatformObject
 	 * the node is appended at the end of the list. 
 	 * The node pointer passed should not be null.
 	 */
-	public void insertChildBefore(NEDElement where, NEDElement node)
-	{
-		if(where == null) {
+	public void insertChildBefore(NEDElement where, NEDElement node) {
+		if (where == null) {
 			appendChild(node);
 			return;
 		}
@@ -438,8 +413,7 @@ public abstract class NEDElement extends PlatformObject
 	 *
 	 * The pointer passed should be a child of this element.
 	 */
-	public NEDElement removeChild(NEDElement node)
-	{
+	public NEDElement removeChild(NEDElement node) {
 		if (node.prevsibling!=null)
 			node.prevsibling.nextsibling = node.nextsibling;
 		else
@@ -457,8 +431,7 @@ public abstract class NEDElement extends PlatformObject
 	 * Returns pointer to the first child element with the given tag code,
 	 * or null if this element has no such children.
 	 */
-	public NEDElement getFirstChildWithTag(int tagcode)
-	{
+	public NEDElement getFirstChildWithTag(int tagcode) {
 		NEDElement node = firstchild;
 		while (node!=null)
 		{
@@ -483,8 +456,7 @@ public abstract class NEDElement extends PlatformObject
 	 * }
 	 * </pre>
 	 */
-	public NEDElement getNextSiblingWithTag(int tagcode)
-	{
+	public NEDElement getNextSiblingWithTag(int tagcode) {
 		NEDElement node = this.nextsibling;
 		while (node!=null)
 		{
@@ -498,9 +470,8 @@ public abstract class NEDElement extends PlatformObject
 	/**
 	 * Returns the number of child elements.
 	 */
-	public int getNumChildren()
-	{
-		int n=0;
+	public int getNumChildren() {
+		int n = 0;
 		for (NEDElement node = firstchild; node!=null; node = node.getNextSibling())
 			n++;
 		return n;
@@ -509,9 +480,8 @@ public abstract class NEDElement extends PlatformObject
 	/**
 	 * Returns the number of child elements with the given tag code.
 	 */
-	public int getNumChildrenWithTag(int tagcode)
-	{
-		int n=0;
+	public int getNumChildrenWithTag(int tagcode) {
+		int n = 0;
 		for (NEDElement node = firstchild; node!=null; node = node.getNextSibling())
 			if (node.getTagCode()==tagcode)
 				n++;
@@ -522,8 +492,7 @@ public abstract class NEDElement extends PlatformObject
 	 * Returns find first child element with the give tagcode and the given
 	 * attribute (optionally) having the given value. Returns null if not found.
 	 */
-	public NEDElement getFirstChildWithAttribute(int tagcode, String attr, String attrvalue)
-	{
+	public NEDElement getFirstChildWithAttribute(int tagcode, String attr, String attrvalue) {
 		for (NEDElement child=getFirstChildWithTag(tagcode); child!=null; child = child.getNextSiblingWithTag(tagcode))
 		{
 			String val = child.getAttribute(attr);
@@ -537,13 +506,13 @@ public abstract class NEDElement extends PlatformObject
 	 * Climb up in the element tree until it finds an element with the given tagcode.
 	 * Returns null if not found.
 	 */
-	public NEDElement getParentWithTag(int tagcode)
-	{
+	public NEDElement getParentWithTag(int tagcode) {
 		NEDElement parent = this.getParent();
 		while (parent!=null && parent.getTagCode()!=tagcode)
 			parent = parent.getParent();
 		return parent;
 	}
+	
     /**
      * UserData not belonging directly to the model can be stored using a key. If the value
      * is NULL the data will be deleted. 
@@ -570,7 +539,7 @@ public abstract class NEDElement extends PlatformObject
      * remove this node from the parent if any.
      */
     public void removeFromParent() {
-        if(getParent() != null) 
+        if (getParent() != null) 
         	getParent().removeChild(this);
     }
     
@@ -591,12 +560,12 @@ public abstract class NEDElement extends PlatformObject
     public NEDElement dup(NEDElement parent) {
         NEDElement cloned = NEDElementFactoryEx.getInstance().createNodeWithTag(getTagCode());
         
-        // FIXME maybe we should add to the parent at the end, so ther wolud be less notifications
+        // FIXME maybe we should add to the parent at the end, so there would be less notifications
         if (parent != null) 
             parent.appendChild(cloned);
 
-        for(int i = 0; i< getNumAttributes(); ++i) {
-                cloned.setAttribute(i, getAttribute(i));
+        for (int i = 0; i< getNumAttributes(); ++i) {
+        	cloned.setAttribute(i, getAttribute(i));
         }
         
         return cloned;
@@ -616,19 +585,14 @@ public abstract class NEDElement extends PlatformObject
     }
 
     /**
-     * @return The TypeInfo belonging to the containing (toplevel) component 
-     * that was added by the incremental builder (type resolver). Or NULL if none was found.
-     * Cross references and other supporting lists can be accesed via typeInfo
-     * The typeInfo can be NULL if this element is duplicated or invalid
+     * Returns the TypeInfo belonging to the containing (toplevel) component 
+     * that was added by the incremental builder (type resolver). Or null if none was found.
+     * Cross references and other supporting lists can be accessed via typeInfo.
+     * The typeInfo can be NULL if this element is duplicated or invalid.
      */
     public INEDTypeInfo getContainerNEDTypeInfo() {
-        INEDTypeInfo result = null;
-        if (typeInfo != null || getParent() == null)
-            result = typeInfo;
-        else // return the typinfo of the parent
-            result = getParent().getContainerNEDTypeInfo();
-
-        return result;
+    	// if we don't have it, fetch it from the parent
+    	return (typeInfo != null || getParent() == null) ? typeInfo : getParent().getContainerNEDTypeInfo(); 
     }
 
     /**
@@ -725,7 +689,7 @@ public abstract class NEDElement extends PlatformObject
      * @param newValue the old value of the attribute
      */
     protected void fireChildRemoved(NEDElement child) {
-        if(listeners != null && !getListeners().isEnabled())
+        if (listeners != null && !getListeners().isEnabled())
             return;
 
         NEDModelEvent event = 
@@ -749,11 +713,10 @@ public abstract class NEDElement extends PlatformObject
      * @return The banner comment belonging to the element (if any)
      */
     public String getComment() {
-        String comment = null;
-        CommentNode cn = (CommentNode)getFirstChildWithAttribute(NEDElementTags.NED_COMMENT,CommentNode.ATT_LOCID, "banner");
-        if (cn != null)
-            comment = cn.getContent().trim();
-        return comment;
+        CommentNode cn = (CommentNode)getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentNode.ATT_LOCID, "banner");
+        if (cn == null)
+        	cn = (CommentNode)getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentNode.ATT_LOCID, "right");
+        return cn == null ? null : cn.getContent().trim();
     }
     
     /**
@@ -762,7 +725,8 @@ public abstract class NEDElement extends PlatformObject
     public String getSource() {
         return NEDTreeUtil.generateNedSource(this, true);
     }
-  /* (non-Javadoc)
+
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      * For debugging purposes
      */

@@ -7,8 +7,8 @@ import org.omnetpp.ned.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned.model.pojo.ParamNode;
 
 /**
- * @author rhornig
  * Extended parameter node
+ * @author rhornig
  */
 public final class ParamNodeEx extends ParamNode implements IHasName, IHasParent {
 
@@ -21,7 +21,7 @@ public final class ParamNodeEx extends ParamNode implements IHasName, IHasParent
     }
 
     /**
-     * @return Which module or channel or any named alament contains this parameter definition
+     * @return Which module or channel or any named element contains this parameter definition
      */
     public NEDElement getContainingTopLevelElement() {
         NEDElement parent = getParent(); 
