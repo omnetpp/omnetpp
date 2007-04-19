@@ -19,6 +19,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
+import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
 /**
@@ -262,7 +263,7 @@ public class InifileUtils {
 			else {
 				text += "\nThis section does not seem to assign the following NED parameters: \n";
 				for (ParamResolution res : resList)
-					text += "  - " + res.moduleFullPath + "." +res.paramNode.getName() + "\n";
+					text += "  - " + res.moduleFullPath + "." +res.paramValueNode.getName() + "\n";
 			}
 		}
 		return text.trim();
@@ -295,7 +296,7 @@ public class InifileUtils {
 				return "Entry \"" + key + "\" does not match any module parameters ";
 			String text = "Entry \"" + key + "\" applies to the following module parameters: \n";
 			for (ParamResolution res : resList)
-				text += "  - " + res.moduleFullPath + "." +res.paramNode.getName() + "\n"; //XXX do we have module type, param type, maybe param doc etc?
+				text += "  - " + res.moduleFullPath + "." +res.paramValueNode.getName() + " (" + res.paramDeclNode.getAttribute(ParamNode.ATT_TYPE)+ ")\n"; //XXX do we have module type, param type, maybe param doc etc?
 			return text;
 		}
 		else if (keyType == KeyType.PER_OBJECT_CONFIG) {

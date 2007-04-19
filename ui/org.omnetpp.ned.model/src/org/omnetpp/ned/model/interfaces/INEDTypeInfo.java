@@ -60,6 +60,7 @@ public interface INEDTypeInfo extends INEDChangeListener {
 	// TODO comment!
 	// these methods are for members declared on this component (ie exluding inherited ones)
 	// member: gate/param/property/submod/innertype
+	//XXX why not typed where possible? (ie getParams(): ParamNode instead of NEDElement)
     public Map<String, NEDElement> getOwnMembers();
     public Map<String, NEDElement> getOwnParams();
     public Map<String, NEDElement> getOwnParamValues();

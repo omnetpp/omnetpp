@@ -49,14 +49,14 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 			for (ParamResolution res : resList) {
 				// offer three versions for each 
 				//XXX alternative: offer some continuations after each dot?
-				result.add(new ContentProposal("**." + res.paramNode.getName() + "" + eq));
-				result.add(new ContentProposal(res.moduleFullPath.replaceFirst("^[^\\.]+", "**") + "." + res.paramNode.getName() + "" + eq));
-				result.add(new ContentProposal(res.moduleFullPath + "." +res.paramNode.getName() + "" + eq));
+				result.add(new ContentProposal("**." + res.paramValueNode.getName() + "" + eq));
+				result.add(new ContentProposal(res.moduleFullPath.replaceFirst("^[^\\.]+", "**") + "." + res.paramValueNode.getName() + "" + eq));
+				result.add(new ContentProposal(res.moduleFullPath + "." +res.paramValueNode.getName() + "" + eq));
 
 				// propose .apply-default= lines; XXX only if at least some of these parameters have default value
-				result.add(new ContentProposal("**." + res.paramNode.getName() + ".apply-default" + eq));
-				result.add(new ContentProposal(res.moduleFullPath.replaceFirst("^[^\\.]+", "**") + "." + res.paramNode.getName() + ".apply-default" + eq));
-				result.add(new ContentProposal(res.moduleFullPath + "." +res.paramNode.getName() + ".apply-default" + eq));
+				result.add(new ContentProposal("**." + res.paramValueNode.getName() + ".apply-default" + eq));
+				result.add(new ContentProposal(res.moduleFullPath.replaceFirst("^[^\\.]+", "**") + "." + res.paramValueNode.getName() + ".apply-default" + eq));
+				result.add(new ContentProposal(res.moduleFullPath + "." +res.paramValueNode.getName() + ".apply-default" + eq));
 			}
 		}
 

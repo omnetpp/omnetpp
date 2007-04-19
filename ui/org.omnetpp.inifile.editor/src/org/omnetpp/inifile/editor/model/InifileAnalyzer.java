@@ -37,6 +37,12 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
  * 
  * @author Andras
  */
+//XXX consider this:
+//    Net.host[0].p = ...
+//    Net.host[*].p = ...
+// Then host[0] should NOT be warned about being unused!!! 
+// This affects all keys containing an index which is not "*", that is, where key.matches(".*\\[([^*]|(\\*[^]]+))\\].*")
+//
 public class InifileAnalyzer {
 	public static final String INIFILEANALYZERPROBLEM_MARKER_ID = InifileEditorPlugin.PLUGIN_ID + ".inifileanalyzerproblem";
 	private IInifileDocument doc;
@@ -56,7 +62,7 @@ public class InifileAnalyzer {
 	 * Used internally: class of objects attached to IInifileDocument entries 
 	 * (see getKeyData()/setKeyData())
 	 */
-	class KeyData {
+	static class KeyData {
 		ArrayList<ParamResolution> paramResolutions = new ArrayList<ParamResolution>();
 	};
 
@@ -64,7 +70,7 @@ public class InifileAnalyzer {
 	 * Used internally: class of objects attached to IInifileDocument sections 
 	 * (see getSectionData()/setSectionData())
 	 */
-	class SectionData {
+	static class SectionData {
 		ArrayList<ParamResolution> paramResolutions;
 	}
 
@@ -78,17 +84,28 @@ public class InifileAnalyzer {
 		// will be gc'd when the editor closes)
 		doc.addInifileChangeListener(new IInifileChangeListener() {
 			public void modelChanged() {
-				changed = true;
+				InifileAnalyzer.this.modelChanged();
 			}
 		});
-
 	}
 
+	protected synchronized void modelChanged() {
+		changed = true;
+	}
+
+	/**
+	 * Returns the underlying inifile document that gets analyzed.
+	 */
 	public IInifileDocument getDocument() {
 		return doc;
 	}
 
-	public void analyzeIfChanged() {
+	/**
+	 * Analyzes the inifile if it changed since last analyzed. Side effects:
+	 * error/warning markers may be placed on the IFile, and parameter
+	 * resolutions (see ParamResolution) are recalculated.
+	 */
+	public synchronized void analyzeIfChanged() {
 		if (changed)
 			analyze();
 	}
@@ -98,7 +115,7 @@ public class InifileAnalyzer {
 	 * on the IFile, and parameter resolutions (see ParamResolution) are 
 	 * recalculated.
 	 */
-	public void analyze() {
+	public synchronized void analyze() {
 		long startTime = System.currentTimeMillis();
 		INEDTypeResolver ned = NEDResourcesPlugin.getNEDResources();
 
@@ -184,6 +201,9 @@ public class InifileAnalyzer {
 		}
 	}
 
+	/**
+	 * Validate a configuration entry.
+	 */
 	//XXX into InifileUtils?
 	protected void validateConfig(String section, String key, INEDTypeResolver ned) {
 		// check key and if it occurs in the right section
@@ -229,8 +249,11 @@ public class InifileAnalyzer {
 		}
 	}
 
+	/**
+	 * Validate a configuration entry's value.
+	 */
 	//XXX into InifileUtils?
-	private static String validateConfigValueByType(String value, ConfigurationEntry.DataType type) {
+	protected static String validateConfigValueByType(String value, ConfigurationEntry.DataType type) {
 		switch (type) {
 		case CFG_BOOL:
 			if (!value.equals("true") && !value.equals("false"))
@@ -298,8 +321,11 @@ public class InifileAnalyzer {
 			addError(section, "circle in the fallback chain at section ["+section+"]");
 	}
 
-	protected void calculateParamResolutions(String section, INEDTypeResolver ned) {
-		String[] sectionChain = InifileUtils.resolveSectionChain(doc, section);
+	/**
+	 * Calculate how parameters get assigned when the given section is the active one.
+	 */
+	protected void calculateParamResolutions(String activeSection, INEDTypeResolver ned) {
+		String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
 		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getKey(), doc);
 		if (networkName == null)
 			networkName = CFGID_NETWORK.getDefaultValue().toString(); 
@@ -319,7 +345,7 @@ public class InifileAnalyzer {
 		// store with the section the list of all parameter resolutions (incl unassigned params)
 		SectionData data = new SectionData();
 		data.paramResolutions = resList;
-		doc.setSectionData(section, data);
+		doc.setSectionData(activeSection, data);
 	}
 
 	protected ArrayList<ParamResolution> collectParameters(String moduleFullPath, String moduleTypeName, final String[] sectionChain, INEDTypeResolver ned) {
@@ -350,8 +376,10 @@ public class InifileAnalyzer {
 
 	protected void collectParameters(ArrayList<ParamResolution> resultList, String moduleFullPath, INEDTypeInfo moduleType, String[] sectionChain, IInifileDocument doc) {
 		//FIXME wrong: submodule param assignments get ignored
-		for (NEDElement node : moduleType.getParamValues().values()) {
-			resultList.add(resolveParameter(moduleFullPath, (ParamNode)node, sectionChain, doc));
+		for (NEDElement paramValueNode : moduleType.getParamValues().values()) {
+			String paramName = ((ParamNode)paramValueNode).getName();
+			ParamNode paramDeclNode = (ParamNode)moduleType.getParams().get(paramName);
+			resultList.add(resolveParameter(moduleFullPath, paramDeclNode, (ParamNode)paramValueNode, sectionChain, doc));
 		}
 	}
 
@@ -363,11 +391,11 @@ public class InifileAnalyzer {
 	 * XXX probably not good (does not handle all cases): what if parameter is assigned in a submodule decl? 
 	 * what if it's assigned using a /pattern/? this info cannot be expressed in the arg list! 
 	 */
-	protected static ParamResolution resolveParameter(String moduleFullPath, ParamNode param, String[] sectionChain, IInifileDocument doc) {
+	protected static ParamResolution resolveParameter(String moduleFullPath, ParamNode paramDeclNode, ParamNode paramValueNode, String[] sectionChain, IInifileDocument doc) {
 		// value in the NED file
-		String nedValue = param.getValue(); //XXX what if parsed expressions?
+		String nedValue = paramValueNode.getValue(); //XXX what if parsed expressions?
 		if (StringUtils.isEmpty(nedValue)) nedValue = null;
-		boolean isNedDefault = param.getIsDefault();
+		boolean isNedDefault = paramValueNode.getIsDefault();
 
 		// look up its value in the ini file
 		String iniSection = null;
@@ -375,7 +403,7 @@ public class InifileAnalyzer {
 		String iniValue = null;
 		boolean iniApplyDefault = false;
 		if (doc!=null && (nedValue==null || isNedDefault)) {
-			String paramFullPath = moduleFullPath + "." + param.getName();
+			String paramFullPath = moduleFullPath + "." + paramValueNode.getName();
 			SectionKey sectionKey = InifileUtils.lookupParameter(paramFullPath, isNedDefault, sectionChain, doc);
 			if (sectionKey!=null) {
 				iniSection = sectionKey.section;
@@ -410,7 +438,7 @@ public class InifileAnalyzer {
 			else 
 				type = ParamResolutionType.INI_OVERRIDE;
 		}
-		return new ParamResolution(moduleFullPath, param, type, iniSection, iniKey);
+		return new ParamResolution(moduleFullPath, paramDeclNode, paramValueNode, type, iniSection, iniKey);
 	}
 
 	public boolean containsSectionCircles() {
@@ -505,4 +533,5 @@ public class InifileAnalyzer {
 				result.add(par);
 		return result.toArray(new ParamResolution[]{});
 	}
+
 }

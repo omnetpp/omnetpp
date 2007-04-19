@@ -163,8 +163,8 @@ public class ModuleHierarchyView extends AbstractModuleView {
 				}				
 				if (element instanceof ParamResolution) {
 					ParamResolution payload = (ParamResolution) element;
-					if (payload.paramNode != null)
-						NEDResourcesPlugin.openNEDElementInEditor(payload.paramNode);
+					if (payload.paramValueNode != null)
+						NEDResourcesPlugin.openNEDElementInEditor(payload.paramValueNode);
 				}				
 			}
 		});
@@ -254,7 +254,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		String[] tmp = getValueAndRemark(res, doc);
 		String value = tmp[0];
 		String remark = tmp[1];
-		return res.paramNode.getName() + " = " + (value==null ? "" : value+" ") + "(" + remark + ")"; 
+		return res.paramValueNode.getName() + " = " + (value==null ? "" : value+" ") + "(" + remark + ")"; 
 	}
 
 }

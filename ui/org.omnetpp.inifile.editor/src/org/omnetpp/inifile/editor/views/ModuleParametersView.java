@@ -126,7 +126,7 @@ public class ModuleParametersView extends AbstractModuleView {
 					ParamResolution par = (ParamResolution) element;
 					Assert.isTrue(inifileDocument!=null);
 					switch (columnIndex) {
-						case 0: return par.moduleFullPath+"."+par.paramNode.getName();
+						case 0: return par.moduleFullPath+"."+par.paramValueNode.getName();
 						case 1: return getValueAndRemark(par, inifileDocument)[0]; // value
 						case 2: return getValueAndRemark(par, inifileDocument)[1]; // remark
 					}
@@ -161,8 +161,8 @@ public class ModuleParametersView extends AbstractModuleView {
 						if (getActiveEditor() instanceof IGotoInifile)
 							((IGotoInifile)getActiveEditor()).gotoEntry(res.section, res.key, IGotoInifile.Mode.AUTO);
 					}
-					else if (res.paramNode!=null) {
-						NEDResourcesPlugin.openNEDElementInEditor(res.paramNode);
+					else if (res.paramValueNode!=null) {
+						NEDResourcesPlugin.openNEDElementInEditor(res.paramValueNode);
 					}
 				}
 			}
@@ -179,7 +179,7 @@ public class ModuleParametersView extends AbstractModuleView {
 						//XXX make sure "res" and inifile editor refer to the same IFile!!! 
 						return InifileUtils.getEntryTooltip(res.section, res.key, inifileDocument, inifileAnalyzer);
 					}
-					else if (res.paramNode!=null) {
+					else if (res.paramValueNode!=null) {
 						return null; //XXX todo
 					}
 				}
