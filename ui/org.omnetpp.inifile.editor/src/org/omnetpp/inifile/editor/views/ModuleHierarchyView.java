@@ -46,7 +46,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	private IInifileDocument inifileDocument; // corresponds to the current selection; unfortunately needed by the label provider
 
 	/**
-	 * Node contents for the GenericTreeNode tree that is displayed in the view
+	 * A payload class for the GenericTreeNode tree that is displayed in the view
 	 */
 	private static class ErrorNode {
 		String text;
@@ -186,18 +186,18 @@ public class ModuleHierarchyView extends AbstractModuleView {
     		private GenericTreeNode current = root;
     		public void enter(SubmoduleNode submodule, INEDTypeInfo submoduleType) {
     			String fullName = submodule==null ? submoduleType.getName() : InifileUtils.getSubmoduleFullName(submodule);
-    			current = addTreeNode(current, fullName, "blabla"+fullName, submoduleType, submodule, ana);
+    			current = addTreeNode(current, fullName, "blabla"+fullName, submoduleType, submodule, ana); //XXX
     		}
     		public void leave() {
     			current = current.getParent();
     		}
     		public void unresolvedType(SubmoduleNode submodule, String submoduleTypeName) {
     			String fullName = submodule==null ? submoduleTypeName : InifileUtils.getSubmoduleFullName(submodule);
-    			current.addChild(new GenericTreeNode(fullName+": unresolved type '"+submoduleTypeName+"'")); //XXX
+    			current.addChild(new GenericTreeNode(new ErrorNode(fullName+" : unresolved type '"+submoduleTypeName+"'")));
     		}
     		public void recursiveType(SubmoduleNode submodule, INEDTypeInfo submoduleType) {
     			String fullName = submodule==null ? submoduleType.getName() : InifileUtils.getSubmoduleFullName(submodule);
-    			current.addChild(new GenericTreeNode(fullName+": recursive use of type '"+submoduleType.getName()+"'")); //XXX
+    			current.addChild(new GenericTreeNode(new ErrorNode(fullName+" : "+submoduleType.getName()+" -- recursive use of type '"+submoduleType.getName()+"'")));
     		}
     		public String resolveLikeType(SubmoduleNode submodule) {
     			return null;

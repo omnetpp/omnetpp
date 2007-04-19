@@ -2,7 +2,6 @@ package org.omnetpp.inifile.editor.model;
 
 import java.util.Stack;
 
-import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
