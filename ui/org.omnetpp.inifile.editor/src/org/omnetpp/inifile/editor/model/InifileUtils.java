@@ -19,6 +19,8 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
+import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.ex.ParamNodeEx;
 import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
@@ -289,25 +291,44 @@ public class InifileUtils {
 		}
 		else if (keyType == KeyType.PARAM || key.endsWith(".apply-default")) { //XXX
 			// parameter assignment: display which parameters it matches
-			//XXX show more info: module type name ("TCP"), parameter type name ("double"), its docu maybe
-			//XXX in [General], multiple lines are displayed for the same key! add explanation: "...while examining parameters for [Config Foo]"
+			//XXX somehow merge similar entries? (ie where pathModules[] and paramValueNode/paramDeclNode are the same)
 			ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
 			if (resList.length==0) 
 				return "Entry \"" + key + "\" does not match any module parameters ";
 			String text = "Entry \"" + key + "\" applies to the following module parameters: \n";
 			for (ParamResolution res : resList) {
-				text += "  - " + res.moduleFullPath + "." +res.paramValueNode.getName() + 
-						" (" + res.paramDeclNode.getAttribute(ParamNode.ATT_TYPE)+ ")" + 
-						(section.equals(res.activeSection) ? "" : ", for sub-config ["+res.activeSection+"]") + "\n"; //XXX do we have module type, maybe param doc etc?
+				String paramName = res.paramValueNode.getName();
+				String paramDeclaredOn = ((ParamNodeEx)res.paramDeclNode).getContainerNEDTypeInfo().getName();
+				String paramType = res.paramDeclNode.getAttribute(ParamNode.ATT_TYPE);
+				String comment = makeBriefDocu(res.paramDeclNode.getComment(), 40);
+				String optComment = comment==null ? "" : (" -- \"" + comment + "\"");
+				text += "  - " + res.moduleFullPath + "." +paramName;
+				text += " (" + paramDeclaredOn + "." + paramName + " : "+ paramType + optComment + ")"; 
+				text +=	(section.equals(res.activeSection) ? "" : ", for sub-config ["+res.activeSection+"]") + "\n"; //XXX do we have module type, maybe param doc etc?
 			}
 			return text;
 		}
 		else if (keyType == KeyType.PER_OBJECT_CONFIG) {
-			return null; // TODO for .apply-default, display parameters to which it applies
+			return null; // TODO display which modules it applies to, plus comment maybe?
 		}
 		else {
 			return null; // should not happen (invalid key type)
 		}
+	}
+
+	/**
+	 * Formats a NED comment as a one-line doc string. If it is longer than the
+	 * given max length, it gets truncated.
+	 */
+	public static String makeBriefDocu(String comment, int maxlen) {
+		if (comment==null)
+			return null;
+		comment = comment.replaceAll("(?m)^\\s*//", "").trim(); // remove "//"'s
+		comment = comment.replaceFirst("(?s)\n[ \t]*\n.*", "").trim(); // keep only first paragraph
+		comment = comment.replaceAll("(?s)\\s+", " "); // make it one line, and normalize whitespace
+		if (comment.length() > maxlen)
+			comment = comment.substring(0, maxlen)+"...";
+		return comment;
 	}
 
 	/**

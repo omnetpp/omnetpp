@@ -23,6 +23,7 @@ import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.pojo.CompoundModuleNode;
@@ -376,30 +377,38 @@ public class InifileAnalyzer {
 		final ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
 
 		NEDTreeIterator treeIterator = new NEDTreeIterator(res, new IModuleTreeVisitor() {
+			Stack<SubmoduleNode> pathModules = new Stack<SubmoduleNode>(); 
 			Stack<String> fullPath = new Stack<String>();
 			public void enter(SubmoduleNode submodule, INEDTypeInfo submoduleType) {
+				pathModules.push(submodule);
 				fullPath.push(submodule==null ? submoduleType.getName() : InifileUtils.getSubmoduleFullName(submodule));
 				String submoduleFullPath = StringUtils.join(fullPath.toArray(), "."); //XXX optimize here if slow
-				resolveModuleParameters(list, submoduleFullPath, submoduleType, sectionChain, finalDoc);
+				SubmoduleNode[] pathModulesArray = pathModules.toArray(new SubmoduleNode[]{});
+				resolveModuleParameters(list, submoduleFullPath, pathModulesArray, submoduleType, sectionChain, finalDoc);
 			}
 			public void leave() {
 				fullPath.pop();
+				pathModules.pop();
 			}
 			public void unresolvedType(SubmoduleNode submodule, String submoduleTypeName) {}
 			public void recursiveType(SubmoduleNode submodule, INEDTypeInfo submoduleType) {}
-			public String resolveLikeType(SubmoduleNode submodule) {return null;}
+			public String resolveLikeType(SubmoduleNode submodule) {
+				return null; //XXX try to do it
+			}
 		});
 		
 		treeIterator.traverse(networkName);
 		return list;
 	}
 
-	protected void resolveModuleParameters(ArrayList<ParamResolution> resultList, String moduleFullPath, INEDTypeInfo moduleType, String[] sectionChain, IInifileDocument doc) {
-		//FIXME wrong: submodule param assignments get ignored
-		for (NEDElement paramValueNode : moduleType.getParamValues().values()) {
-			String paramName = ((ParamNode)paramValueNode).getName();
+	protected void resolveModuleParameters(ArrayList<ParamResolution> resultList, String moduleFullPath, SubmoduleNode[] pathModules, INEDTypeInfo moduleType, String[] sectionChain, IInifileDocument doc) {
+		for (String paramName : moduleType.getParams().keySet()) {
 			ParamNode paramDeclNode = (ParamNode)moduleType.getParams().get(paramName);
-			resultList.add(resolveParameter(moduleFullPath, paramDeclNode, (ParamNode)paramValueNode, sectionChain, doc));
+			SubmoduleNodeEx submodule = (SubmoduleNodeEx) pathModules[pathModules.length-1];
+			ParamNode paramValueNode = submodule==null ?
+					(ParamNode)moduleType.getParamValues().get(paramName) :
+					(ParamNode)submodule.getParamValues().get(paramName);
+			resultList.add(resolveParameter(moduleFullPath, pathModules, paramDeclNode, paramValueNode, sectionChain, doc));
 		}
 	}
 
@@ -411,7 +420,7 @@ public class InifileAnalyzer {
 	 * XXX probably not good (does not handle all cases): what if parameter is assigned in a submodule decl? 
 	 * what if it's assigned using a /pattern/? this info cannot be expressed in the arg list! 
 	 */
-	protected static ParamResolution resolveParameter(String moduleFullPath, ParamNode paramDeclNode, ParamNode paramValueNode, String[] sectionChain, IInifileDocument doc) {
+	protected static ParamResolution resolveParameter(String moduleFullPath, SubmoduleNode[] pathModules, ParamNode paramDeclNode, ParamNode paramValueNode, String[] sectionChain, IInifileDocument doc) {
 		// value in the NED file
 		String nedValue = paramValueNode.getValue(); //XXX what if parsed expressions?
 		if (StringUtils.isEmpty(nedValue)) nedValue = null;
@@ -459,7 +468,7 @@ public class InifileAnalyzer {
 			else 
 				type = ParamResolutionType.INI_OVERRIDE;
 		}
-		return new ParamResolution(moduleFullPath, paramDeclNode, paramValueNode, type, activeSection, iniSection, iniKey);
+		return new ParamResolution(moduleFullPath, pathModules, paramDeclNode, paramValueNode, type, activeSection, iniSection, iniKey);
 	}
 
 	public boolean containsSectionCircles() {
