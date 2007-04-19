@@ -2,6 +2,10 @@ package org.omnetpp.inifile.editor.model;
 
 import org.omnetpp.common.util.StringUtils;
 
+/**
+ * Converts ini files from 3.x format to 4.0.
+ * @author Andras
+ */
 public class InifileConverter {
 	public static String[] OBSOLETE_SECTIONS = {"Parameters", "Cmdenv", "Tkenv", "OutVectors", "Partitioning", "DisplayStrings"};
 
@@ -65,7 +69,11 @@ public class InifileConverter {
     	text = text.replaceAll(MULTILINE+"^([^;#\"]*)\\.use-default\\b", "$1.apply-default");
     	text = text.replaceAll(MULTILINE+"^([^;#\"]*)\\.interval\\b", "$1.record-interval");
     	text = text.replaceAll(MULTILINE+"^([^;#\"]*)\\.enabled\\b", "$1.record-enabled"); //XXX or what became the new name??
-    	
+
+    	// replace yes/no with true/false
+    	text = text.replaceAll(MULTILINE+"(=\\s*)yes(\\s*([;#].*)?)$", "$1true$2");
+    	text = text.replaceAll(MULTILINE+"(=\\s*)no(\\s*([;#].*)?)$", "$1false$2");
+
 	    // make exactly one space on both sides of the "=" sign (optional, just cosmetics)
 	    text = text.replaceAll(MULTILINE+"^([^//;=]*?) *= *", "$1 = ");
 
@@ -91,15 +99,4 @@ public class InifileConverter {
 
 	    return text;
 	}
-
-//	private static String join(String separator, String[] parts) {
-//		StringBuffer result = new StringBuffer();
-//		for (String part : parts) {
-//			if (result.length()!=0)
-//				result.append(separator);
-//			result.append(part);
-//		}
-//		return result.toString();
-//	}
-
 }
