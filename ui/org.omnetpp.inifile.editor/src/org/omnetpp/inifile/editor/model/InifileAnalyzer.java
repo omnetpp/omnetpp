@@ -8,6 +8,7 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
@@ -63,7 +64,7 @@ public class InifileAnalyzer {
 	 * (see getKeyData()/setKeyData())
 	 */
 	static class KeyData {
-		ArrayList<ParamResolution> paramResolutions = new ArrayList<ParamResolution>();
+		List<ParamResolution> paramResolutions = new ArrayList<ParamResolution>();
 	};
 
 	/**
@@ -71,7 +72,8 @@ public class InifileAnalyzer {
 	 * (see getSectionData()/setSectionData())
 	 */
 	static class SectionData {
-		ArrayList<ParamResolution> paramResolutions;
+		List<ParamResolution> unassignedParams = new ArrayList<ParamResolution>();
+		List<ParamResolution> allParamResolutions = new ArrayList<ParamResolution>(); // incl. unassigned
 	}
 
 	/**
@@ -129,43 +131,34 @@ public class InifileAnalyzer {
 
 		//XXX catch all exceptions during analyzing, and set changed=false in finally{} ? 
 
-		// analyze file
+		// check section names, detect circles in the fallback chains
+		validateSections();
+
+		// validate config entries and parameter keys
 		for (String section : doc.getSectionNames()) {
-			doc.setSectionData(section, new SectionData());
-			if (!section.equals(GENERAL) && !section.startsWith(CONFIG_))
-				addError(section, "Wrong section name: must be [General] or [Config <name>]");
-			
 			for (String key : doc.getKeys(section)) {
 				switch (getKeyType(key)) {
-				case CONFIG:
-					// must be some configuration, look up in the database
-					validateConfig(section, key, ned);
-					break;
-				case PARAM:
-					//XXX rename **.interval (and **.enabled) to **.record-interval, and warn for old name here
-					doc.setKeyData(section, key, new KeyData());
-					break;
-				case PER_OBJECT_CONFIG:
-					doc.setKeyData(section, key, new KeyData());
-					break;
+					case CONFIG: validateConfig(section, key, ned); break;
+					case PARAM:  validateParamKey(section, key, ned); break;
+					case PER_OBJECT_CONFIG: validatePerObjectConfig(section, key, ned); break;
 				}
 			}
 		}
 
-		// detect circles in the fallback chain, and report them
-		detectSectionCircles();
-		
 		// calculate parameter resolutions for each section
-		for (String section : doc.getSectionNames())
-			calculateParamResolutions(section, ned);
+		calculateParamResolutions(ned);
 
-		System.out.println("Inifile analysed in "+(System.currentTimeMillis()-startTime)+"ms");
+		// data structure is done
 		changed = false;
+		
+		//TODO validate each key based on the parameter resolution (if right data type, etc)
 
 		// warn for unused param keys; this must be done AFTER changed=false
 		for (String section : doc.getSectionNames())
 			for (String key : getUnusedParameterKeys(section))
 				addWarning(section, key, "Unused entry (does not match any parameters)");
+
+		System.out.println("Inifile analysed in "+(System.currentTimeMillis()-startTime)+"ms");
 	}
 
 	protected void addError(String section, String message) {
@@ -202,9 +195,47 @@ public class InifileAnalyzer {
 	}
 
 	/**
-	 * Validate a configuration entry.
+	 * Check section names, and detect circles in the fallback sequences ("extends=")
 	 */
-	//XXX into InifileUtils?
+	protected void validateSections() {
+		containsSectionCircles = false;
+		Set<String> bogusSections = new HashSet<String>();
+		
+		// check fallback chain for every section, except [General]
+		for (String section : doc.getSectionNames()) {
+			// check section name
+			if (!section.equals(GENERAL) && !section.startsWith(CONFIG_))
+				addError(section, "Wrong section name: must be [General] or [Config <name>]");
+
+			// follow section fallback sequence, and detect circle in it
+			if (!section.equals(GENERAL)) {
+				Set<String> sectionChain = new HashSet<String>();
+				String currentSection = section;
+				while (true) {
+					if (!doc.containsSection(currentSection))
+						break; // error: nonexisting section
+					if (sectionChain.contains(currentSection)) {
+						bogusSections.add(currentSection);
+						break; // error: circle in the fallback chain
+					}
+					sectionChain.add(currentSection);
+					String extendsName = doc.getValue(currentSection, CFGID_EXTENDS.getKey());
+					if (extendsName==null)
+						break; // done
+					currentSection = CONFIG_+extendsName;
+				}
+			}
+		}
+
+		// add error markers
+		containsSectionCircles = !bogusSections.isEmpty();
+		for (String section : bogusSections)
+			addError(section, "circle in the fallback chain at section ["+section+"]");
+	}
+
+	/**
+	 * Validate a configuration entry (key+value) using ConfigurationRegistry.
+	 */
 	protected void validateConfig(String section, String key, INEDTypeResolver ned) {
 		// check key and if it occurs in the right section
 		ConfigurationEntry e = ConfigurationRegistry.getEntry(key);
@@ -252,7 +283,6 @@ public class InifileAnalyzer {
 	/**
 	 * Validate a configuration entry's value.
 	 */
-	//XXX into InifileUtils?
 	protected static String validateConfigValueByType(String value, ConfigurationEntry.DataType type) {
 		switch (type) {
 		case CFG_BOOL:
@@ -289,68 +319,58 @@ public class InifileAnalyzer {
 		return null;
 	}
 
-	protected void detectSectionCircles() {
-		containsSectionCircles = false;
-		Set<String> bogusSections = new HashSet<String>();
-		
-		// check fallback chain for every section, except [General]
-		for (String section : doc.getSectionNames()) {
-			if (!section.equals(GENERAL)) {
-				// follow section fallback sequence, and detect circle in it
-				Set<String> sectionChain = new HashSet<String>();
-				String currentSection = section;
-				while (true) {
-					if (!doc.containsSection(currentSection))
-						break; // error: nonexisting section
-					if (sectionChain.contains(currentSection)) {
-						bogusSections.add(currentSection);
-						break; // error: circle in the fallback chain
-					}
-					sectionChain.add(currentSection);
-					String extendsName = doc.getValue(currentSection, CFGID_EXTENDS.getKey());
-					if (extendsName==null)
-						break; // done
-					currentSection = CONFIG_+extendsName;
-				}
-			}
-		}
+	protected void validateParamKey(String section, String key, INEDTypeResolver ned) {
+		//TODO
+	}
 
-		// add error markers
-		containsSectionCircles = !bogusSections.isEmpty();
-		for (String section : bogusSections)
-			addError(section, "circle in the fallback chain at section ["+section+"]");
+	protected void validatePerObjectConfig(String section, String key, INEDTypeResolver ned) {
+		//TODO look up in ConfigurationRegistry, etc.
 	}
 
 	/**
 	 * Calculate how parameters get assigned when the given section is the active one.
 	 */
-	protected void calculateParamResolutions(String activeSection, INEDTypeResolver ned) {
-		String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
+	protected void calculateParamResolutions(INEDTypeResolver ned) {
+		// initialize SectionData and KeyData objects
+		System.out.println("calculateParamResolutions: START attaching data");
+		for (String section : doc.getSectionNames()) {
+			doc.setSectionData(section, new SectionData());
+			for (String key : doc.getKeys(section))
+				if (getKeyType(key)!=KeyType.CONFIG)
+					doc.setKeyData(section, key, new KeyData());
+		}
+		System.out.println("calculateParamResolutions: END attaching data");
+		
+		// calculate parameter resolutions for each section
+		for (String activeSection : doc.getSectionNames()) {
+			System.out.println("calculateParamResolutions: PROCESSING with active section="+activeSection);
+
+			// calculate param resolutions
+			List<ParamResolution> resList = collectParameters(activeSection, ned);
+
+			// store with the section the list of all parameter resolutions (incl unassigned params)
+			// store with every key the list of parameters it resolves
+			for (ParamResolution res : resList) {
+				SectionData sectionData = ((SectionData)doc.getSectionData(activeSection));
+				sectionData.allParamResolutions.add(res);
+				if (res.type == ParamResolutionType.UNASSIGNED)
+					sectionData.unassignedParams.add(res);
+
+				if (res.key != null) {
+					((KeyData)doc.getKeyData(res.section, res.key)).paramResolutions.add(res);
+				}
+			}
+		}
+	}
+
+	protected List<ParamResolution> collectParameters(String activeSection, INEDTypeResolver ned) {
+		final String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
 		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getKey(), doc);
 		if (networkName == null)
 			networkName = CFGID_NETWORK.getDefaultValue().toString(); 
 		if (networkName == null)
-			return;
+			return new ArrayList<ParamResolution>();
 
-		// calculate param resolutions
-		ArrayList<ParamResolution> resList = collectParameters(networkName, networkName, sectionChain, ned);
-
-		// store with every key the list of parameters it resolves
-		for (ParamResolution res : resList) {
-			if (res.key != null) {
-				((KeyData)doc.getKeyData(res.section, res.key)).paramResolutions.add(res);
-			}
-		}
-
-		// store with the section the list of all parameter resolutions (incl unassigned params)
-		SectionData data = new SectionData();
-		data.paramResolutions = resList;
-		doc.setSectionData(activeSection, data);
-	}
-
-	protected ArrayList<ParamResolution> collectParameters(String moduleFullPath, String moduleTypeName, final String[] sectionChain, INEDTypeResolver ned) {
-		//XXX moduleFullPath never used
-		String moduleName = moduleFullPath.replaceFirst("^.*\\.", "");  // stuff after the last dot
 		final IInifileDocument finalDoc = doc;
 		NEDResources res = NEDResourcesPlugin.getNEDResources();
 		final ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
@@ -360,7 +380,7 @@ public class InifileAnalyzer {
 			public void enter(SubmoduleNode submodule, INEDTypeInfo submoduleType) {
 				fullPath.push(submodule==null ? submoduleType.getName() : InifileUtils.getSubmoduleFullName(submodule));
 				String submoduleFullPath = StringUtils.join(fullPath.toArray(), "."); //XXX optimize here if slow
-				collectParameters(list, submoduleFullPath, submoduleType, sectionChain, finalDoc);
+				resolveModuleParameters(list, submoduleFullPath, submoduleType, sectionChain, finalDoc);
 			}
 			public void leave() {
 				fullPath.pop();
@@ -370,11 +390,11 @@ public class InifileAnalyzer {
 			public String resolveLikeType(SubmoduleNode submodule) {return null;}
 		});
 		
-		treeIterator.traverse(moduleTypeName);
+		treeIterator.traverse(networkName);
 		return list;
 	}
 
-	protected void collectParameters(ArrayList<ParamResolution> resultList, String moduleFullPath, INEDTypeInfo moduleType, String[] sectionChain, IInifileDocument doc) {
+	protected void resolveModuleParameters(ArrayList<ParamResolution> resultList, String moduleFullPath, INEDTypeInfo moduleType, String[] sectionChain, IInifileDocument doc) {
 		//FIXME wrong: submodule param assignments get ignored
 		for (NEDElement paramValueNode : moduleType.getParamValues().values()) {
 			String paramName = ((ParamNode)paramValueNode).getName();
@@ -398,6 +418,7 @@ public class InifileAnalyzer {
 		boolean isNedDefault = paramValueNode.getIsDefault();
 
 		// look up its value in the ini file
+		String activeSection = doc==null ? null : sectionChain[0];
 		String iniSection = null;
 		String iniKey = null;
 		String iniValue = null;
@@ -438,7 +459,7 @@ public class InifileAnalyzer {
 			else 
 				type = ParamResolutionType.INI_OVERRIDE;
 		}
-		return new ParamResolution(moduleFullPath, paramDeclNode, paramValueNode, type, iniSection, iniKey);
+		return new ParamResolution(moduleFullPath, paramDeclNode, paramValueNode, type, activeSection, iniSection, iniKey);
 	}
 
 	public boolean containsSectionCircles() {
@@ -494,7 +515,7 @@ public class InifileAnalyzer {
 	public ParamResolution[] getParamResolutionsForModule(String moduleFullPath, String section) {
 		analyzeIfChanged();
 		SectionData data = (SectionData) doc.getSectionData(section);
-		ArrayList<ParamResolution> pars = data==null ? null : data.paramResolutions;
+		List<ParamResolution> pars = data==null ? null : data.allParamResolutions;
 		if (pars == null || pars.isEmpty())
 			return new ParamResolution[0]; 
 
@@ -512,8 +533,8 @@ public class InifileAnalyzer {
 	 */
 	public ParamResolution[] getParamResolutions(String section) {
 		analyzeIfChanged();
-		SectionData data = (SectionData) doc.getSectionData(section);
-		return (data!=null && data.paramResolutions!=null) ? data.paramResolutions.toArray(new ParamResolution[]{}) : new ParamResolution[0]; 
+		SectionData sectionData = (SectionData) doc.getSectionData(section);
+		return sectionData.allParamResolutions.toArray(new ParamResolution[]{}); 
 	}
 
 	/**
@@ -521,17 +542,8 @@ public class InifileAnalyzer {
 	 */
 	public ParamResolution[] getUnassignedParams(String section) {
 		analyzeIfChanged();
-		SectionData data = (SectionData) doc.getSectionData(section);
-		ArrayList<ParamResolution> pars = data==null ? null : data.paramResolutions;
-		if (pars == null || pars.isEmpty())
-			return new ParamResolution[0]; 
-
-		// Note: linear search -- can be made more efficient with some lookup table if needed
-		ArrayList<ParamResolution> result = new ArrayList<ParamResolution>();
-		for (ParamResolution par : pars) 
-			if (par.type == ParamResolutionType.UNASSIGNED)
-				result.add(par);
-		return result.toArray(new ParamResolution[]{});
+		SectionData sectionData = (SectionData) doc.getSectionData(section);
+		return sectionData.unassignedParams.toArray(new ParamResolution[]{}); 
 	}
 
 }

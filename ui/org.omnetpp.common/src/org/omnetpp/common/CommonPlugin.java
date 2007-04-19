@@ -73,7 +73,8 @@ public class CommonPlugin extends AbstractUIPlugin {
 		}
 		else {
 			System.err.println(message);
-			exception.printStackTrace();
+			if (exception!=null)
+				exception.printStackTrace();
 		}
 	}
 }

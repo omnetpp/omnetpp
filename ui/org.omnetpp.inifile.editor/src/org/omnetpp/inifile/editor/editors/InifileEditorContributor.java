@@ -1,6 +1,5 @@
 package org.omnetpp.inifile.editor.editors;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -14,7 +13,7 @@ import org.eclipse.ui.ide.IDEActionFactory;
 import org.eclipse.ui.part.MultiPageEditorActionBarContributor;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
-import org.omnetpp.inifile.editor.actions.LaunchSimulatonAction;
+import org.omnetpp.common.editor.ShowViewAction;
 
 /**
  * Manages the installation/deinstallation of global actions for multi-page editors.
@@ -22,15 +21,19 @@ import org.omnetpp.inifile.editor.actions.LaunchSimulatonAction;
  * Multi-page contributor replaces the contributors for the individual editors in the multi-page editor.
  */
 public class InifileEditorContributor extends MultiPageEditorActionBarContributor {
+	public static final String MODULEPARAMETERS_VIEW_ID = "org.omnetpp.inifile.ParameterAssignments";
+	public static final String MODULEHIERARCHY_VIEW_ID = "org.omnetpp.inifile.ModuleHierarchy";
+	
 	private IEditorPart activeEditorPart;
-	private Action launchSimulationAction;
+	private IAction showModuleParametersView = new ShowViewAction(MODULEPARAMETERS_VIEW_ID); 
+	private IAction showModuleHierarchyView = new ShowViewAction(MODULEHIERARCHY_VIEW_ID); 
+
 	
 	/**
 	 * Creates a multi-page contributor.
 	 */
 	public InifileEditorContributor() {
 		super();
-		createActions();
 	}
 	
 	/**
@@ -86,18 +89,16 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
 		}
 	}
 
-	private void createActions() {
-		launchSimulationAction = new LaunchSimulatonAction();
-	}
-
 	public void contributeToMenu(IMenuManager manager) { //XXX refine...
 		IMenuManager menu = new MenuManager("Editor &Menu");
 		manager.prependToGroup(IWorkbenchActionConstants.MB_ADDITIONS, menu);
-		menu.add(launchSimulationAction);
+		menu.add(showModuleParametersView);
+		menu.add(showModuleHierarchyView);
 	}
 
 	public void contributeToToolBar(IToolBarManager manager) {
 		manager.add(new Separator());
-		manager.add(launchSimulationAction);
+		manager.add(showModuleParametersView);
+		manager.add(showModuleHierarchyView);
 	}
 }

@@ -1,9 +1,5 @@
 package org.omnetpp.inifile.editor.model;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.omnetpp.ned.model.pojo.ParamNode;
 
 /**
@@ -18,16 +14,18 @@ public class ParamResolution {
 		INI_OVERRIDE, // inifile setting overrides NED default
 		INI_NEDDEFAULT, // inifile sets param to its NED default value
 	}
-	// this ParamResolution was discovered during analysis of which section;
-	// if several sections produce the same ParamResolution, only one instance
-	// gets created and all sections will be listed in activeSections[] 
-	public Set<String> activeSections = new HashSet<String>();
+	
 	// moduleFullPath and paramNode identify the NED parameter (no wildcards except module vector index "[*]") 
 	public String moduleFullPath; //XXX more: (SubmoduleNode,INEDTypeInfo)+
 	public ParamNode paramDeclNode;  // node where param was declared; not null
 	public ParamNode paramValueNode;  // node where param gets assigned; may be null
+
 	// how the parameter value gets resolved: from NED, from inifile, unassigned, etc
 	public ParamResolutionType type;
+
+	// during analysis of which section
+	public String activeSection; 
+
 	// section+key identify the value assignment in the inifile; 
 	// they are null if parameter is assigned from NED
 	//XXX add IFile ?   
@@ -35,52 +33,15 @@ public class ParamResolution {
 	public String key;
 	
 	// for convenience
-	public ParamResolution(String moduleFullPath, ParamNode paramValueNode, ParamNode paramDeclNode, ParamResolutionType type, String section, String key) {
+	public ParamResolution(String moduleFullPath, ParamNode paramValueNode, ParamNode paramDeclNode, 
+	                       ParamResolutionType type, String activeSection, String section, String key) {
 		this.moduleFullPath = moduleFullPath;
 		this.paramValueNode = paramValueNode;
 		this.paramDeclNode = paramDeclNode;
 		this.type = type;
+		this.activeSection = activeSection;
 		this.section = section;
 		this.key = key;
-	}
-
-	/* (non-Javadoc)
-	 * generated using Eclipse; needed for InifileAnalyzer
-	 */
-	public boolean equalsExceptActiveSections(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		final ParamResolution other = (ParamResolution) obj;
-		if (key == null) {
-			if (other.key != null)
-				return false;
-		} else if (!key.equals(other.key))
-			return false;
-		if (moduleFullPath == null) {
-			if (other.moduleFullPath != null)
-				return false;
-		} else if (!moduleFullPath.equals(other.moduleFullPath))
-			return false;
-		if (paramValueNode == null) {
-			if (other.paramValueNode != null)
-				return false;
-		} else if (!paramValueNode.equals(other.paramValueNode))
-			return false;
-		if (section == null) {
-			if (other.section != null)
-				return false;
-		} else if (!section.equals(other.section))
-			return false;
-		if (type == null) {
-			if (other.type != null)
-				return false;
-		} else if (!type.equals(other.type))
-			return false;
-		return true;
 	}
 
 	/* (non-Javadoc)
@@ -95,10 +56,10 @@ public class ParamResolution {
 		if (getClass() != obj.getClass())
 			return false;
 		final ParamResolution other = (ParamResolution) obj;
-		if (activeSections == null) {
-			if (other.activeSections != null)
+		if (activeSection == null) {
+			if (other.activeSection != null)
 				return false;
-		} else if (!activeSections.equals(other.activeSections))
+		} else if (!activeSection.equals(other.activeSection))
 			return false;
 		if (key == null) {
 			if (other.key != null)
@@ -109,6 +70,11 @@ public class ParamResolution {
 			if (other.moduleFullPath != null)
 				return false;
 		} else if (!moduleFullPath.equals(other.moduleFullPath))
+			return false;
+		if (paramDeclNode == null) {
+			if (other.paramDeclNode != null)
+				return false;
+		} else if (!paramDeclNode.equals(other.paramDeclNode))
 			return false;
 		if (paramValueNode == null) {
 			if (other.paramValueNode != null)
@@ -127,6 +93,5 @@ public class ParamResolution {
 			return false;
 		return true;
 	}
-
 }
 

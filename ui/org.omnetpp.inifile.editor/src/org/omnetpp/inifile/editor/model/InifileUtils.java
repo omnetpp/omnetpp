@@ -287,7 +287,7 @@ public class InifileUtils {
 				return null;
 			return getConfigTooltip(entry, doc);
 		}
-		else if (keyType == KeyType.PARAM) {
+		else if (keyType == KeyType.PARAM || key.endsWith(".apply-default")) { //XXX
 			// parameter assignment: display which parameters it matches
 			//XXX show more info: module type name ("TCP"), parameter type name ("double"), its docu maybe
 			//XXX in [General], multiple lines are displayed for the same key! add explanation: "...while examining parameters for [Config Foo]"
@@ -295,8 +295,11 @@ public class InifileUtils {
 			if (resList.length==0) 
 				return "Entry \"" + key + "\" does not match any module parameters ";
 			String text = "Entry \"" + key + "\" applies to the following module parameters: \n";
-			for (ParamResolution res : resList)
-				text += "  - " + res.moduleFullPath + "." +res.paramValueNode.getName() + " (" + res.paramDeclNode.getAttribute(ParamNode.ATT_TYPE)+ ")\n"; //XXX do we have module type, param type, maybe param doc etc?
+			for (ParamResolution res : resList) {
+				text += "  - " + res.moduleFullPath + "." +res.paramValueNode.getName() + 
+						" (" + res.paramDeclNode.getAttribute(ParamNode.ATT_TYPE)+ ")" + 
+						(section.equals(res.activeSection) ? "" : ", for sub-config ["+res.activeSection+"]") + "\n"; //XXX do we have module type, maybe param doc etc?
+			}
 			return text;
 		}
 		else if (keyType == KeyType.PER_OBJECT_CONFIG) {
