@@ -329,7 +329,7 @@ public class InifileAnalyzer {
 		NEDResources res = NEDResourcesPlugin.getNEDResources();
 		final ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
 
-		NEDTreeIterator treeIterator = new NEDTreeIterator(res, new NEDTreeIterator.IModuleTreeVisitor() {
+		NEDTreeIterator treeIterator = new NEDTreeIterator(res, new IModuleTreeVisitor() {
 			Stack<String> fullPath = new Stack<String>();
 			public void enter(SubmoduleNode submodule, INEDTypeInfo submoduleType) {
 				fullPath.push(submodule==null ? submoduleType.getName() : InifileUtils.getSubmoduleFullName(submodule));

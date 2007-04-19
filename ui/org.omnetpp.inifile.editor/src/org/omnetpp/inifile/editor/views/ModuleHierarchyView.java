@@ -17,6 +17,7 @@ import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.GenericTreeUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.IModuleTreeVisitor;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.NEDTreeIterator;
@@ -181,7 +182,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	public void buildContent(NEDElement module, final InifileAnalyzer ana, String section, String key) {
         // build tree
         final GenericTreeNode root = new GenericTreeNode("root");
-    	class TreeBuilder implements NEDTreeIterator.IModuleTreeVisitor {
+    	class TreeBuilder implements IModuleTreeVisitor {
     		private GenericTreeNode current = root;
     		public void enter(SubmoduleNode submodule, INEDTypeInfo submoduleType) {
     			String fullName = submodule==null ? submoduleType.getName() : InifileUtils.getSubmoduleFullName(submodule);
