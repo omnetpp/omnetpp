@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
 import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ISelection;
@@ -35,6 +36,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
+import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeLabelProvider;
@@ -42,6 +45,7 @@ import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.GenericTreeUtils;
 import org.omnetpp.common.ui.ITooltipProvider;
 import org.omnetpp.common.ui.TooltipSupport;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
@@ -254,12 +258,15 @@ public class SectionsPage extends FormPage {
 		// configure "add section" button
 		addButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				InputDialog dialog = new InputDialog(getShell(), "New Section", "Name for the new section:", "new", newSectionNameValidator);
+				SectionDialog dialog = new SectionDialog(getShell(), "New Section", "Name for the new section:", "new", newSectionNameValidator);
 				if (dialog.open()==Window.OK) {
 					String sectionName = dialog.getValue().trim();
 					if (!sectionName.equals(GENERAL) && !sectionName.startsWith(CONFIG_))
 						sectionName = CONFIG_+sectionName;
 					InifileUtils.addSection(getInifileDocument(), sectionName);
+					String description = dialog.getDescription().trim();
+					if (!description.equals(""))
+						InifileUtils.addEntry(getInifileDocument(), sectionName, CFGID_DESCRIPTION.getKey(), Common.quoteString(description), null);
 					String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
 					if (selection.length != 0)
 						setSectionExtendsKey(sectionName, selection[0]);
@@ -289,6 +296,7 @@ public class SectionsPage extends FormPage {
 					return;
 				String sectionName = selection[0];
 				if (!sectionName.equals(GENERAL)) { // [General] cannot be renamed
+					//XXX use SectionDialog and allow editing of description too
 					InputDialog dialog = new InputDialog(getShell(), "Rename Section", "New name for section ["+sectionName+"]:", sectionName.replaceFirst("^Config +", "")+"-1", newSectionNameValidator);
 					if (dialog.open()==Window.OK) {
 						String newSectionName = dialog.getValue().trim();
