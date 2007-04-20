@@ -18,11 +18,16 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.part.IShowInSource;
+import org.eclipse.ui.part.IShowInTargetList;
 import org.eclipse.ui.part.MultiPageEditorPart;
+import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
+import org.omnetpp.common.IConstants;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.model.NEDElement;
@@ -39,13 +44,12 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
  * FIXME File|Open in Eclipse won't work!!! it creates a JavaFileEditorInput which is NOT an IFileEditorInput!!! 
  */
 public class MultiPageNedEditor extends MultiPageEditorPart implements
-		IGotoNedElement, IGotoMarker {
+		IGotoNedElement, IGotoMarker, IShowInTargetList, IShowInSource {
 
     private GraphicalNedEditor graphEditor;
 	private TextualNedEditor textEditor;
     private ResourceTracker resourceListener = new ResourceTracker();
 
-//    private String textContent = "";          // the text version of the file the last time we have switched editors
 	private int graphPageIndex;
 	private int textPageIndex;
 	private boolean insidePageChange = false;
@@ -310,5 +314,18 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
             } catch (BadLocationException e) {
             }
         }
+    }
+
+    // provides show in view options
+    public String[] getShowInTargetIds() {
+        return new String[] {IPageLayout.ID_PROP_SHEET,
+                             IPageLayout.ID_OUTLINE,
+                             IPageLayout.ID_RES_NAV,
+                             IConstants.MODULEHIERARCHY_VIEW_ID,
+                             IConstants.MODULEPARAMETERS_VIEW_ID};
+    }
+
+    public ShowInContext getShowInContext() {
+        return new ShowInContext(getEditorInput(), getSite().getSelectionProvider().getSelection());
     }
 }
