@@ -204,6 +204,8 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		validateChildren(node);
 	}
 
+    // FIXME inner types should be checked if they are already defined
+    // global types are overridden by the local inner type definition
 	protected void validateElement(ParamNode node) {
 		// structural, not checked by the DTD
 
