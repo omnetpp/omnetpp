@@ -69,7 +69,7 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
 		}
 
 		if (result.isEmpty()) {
-			// returning an empty array or null apparently causes NPE in the framework, so return a blank proposal instead
+			// WORKAROUND: returning an empty array or null apparently causes NPE in the framework, so return a blank proposal instead
 			//XXX may cause multiple "(no proposal)" strings to appear in the text editor completion
 			result.add(new ContentProposal("", "(no proposal)", null, 0));
 		}

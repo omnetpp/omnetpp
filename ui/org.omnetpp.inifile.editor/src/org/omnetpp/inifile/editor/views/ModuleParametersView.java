@@ -195,7 +195,7 @@ public class ModuleParametersView extends AbstractModuleView {
 	}
 
 	protected IAction createToggleModeAction() {
-		Action action = new Action("Toggle display mode", InifileEditorPlugin.getImageDescriptor("icons/unsetparameters.gif")) {
+		Action action = new Action("Toggle display mode", InifileEditorPlugin.getImageDescriptor("icons/unsetparameters.png")) {
 			@Override
 			public void run() {
 				unassignedOnly = !unassignedOnly;

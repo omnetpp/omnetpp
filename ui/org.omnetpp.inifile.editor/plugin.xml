@@ -69,7 +69,7 @@
      <view
            category="org.omnetpp.views"
            class="org.omnetpp.inifile.editor.views.ModuleParametersView"
-           icon="icons/unsetparameters.gif"
+           icon="icons/unsetparameters.png"
            id="org.omnetpp.inifile.ParameterAssignments"
            name="NED Parameter Assignments"/>
   </extension>
