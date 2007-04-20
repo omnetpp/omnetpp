@@ -2,9 +2,7 @@ package org.omnetpp.ned.editor.graph.actions;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.UnexecutableCommand;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IWorkbenchPart;
-import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.commands.ConvertNedVersionCommand;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
@@ -18,17 +16,14 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
 public class ConvertToNewFormatAction extends org.eclipse.gef.ui.actions.SelectionAction {
 
     public static final String ID = "ConvertToNewFormat";
-    public static final String MENUNAME = "Convert to New Format";
-    public static final String TOOLTIP = "Converts the ned file to new format";
-    public static final ImageDescriptor IMAGE = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_PROPERTIES);
+    public static final String MENUNAME = "Convert to OMNeT++ 4.0 format";
+    public static final String TOOLTIP = "Converts the NED file into the new OMNeT++ 4.0 format";
 
     public ConvertToNewFormatAction(IWorkbenchPart part) {
         super(part);
         setText(MENUNAME);
         setId(ID);
         setToolTipText(TOOLTIP);
-        setImageDescriptor(IMAGE);
-        setHoverImageDescriptor(IMAGE);
     }
 
     @Override

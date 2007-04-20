@@ -8,7 +8,13 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.osgi.util.NLS;
+import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
+import org.eclipse.ui.actions.ContributionItemFactory;
+import org.eclipse.ui.keys.IBindingService;
 import org.omnetpp.common.image.ImageFactory;
 
 /**
@@ -34,10 +40,13 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
     public void buildContextMenu(IMenuManager manager) {
         GEFActionConstants.addStandardActionGroups(manager);
 
+        IWorkbenchWindow wwin = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
         IAction action;
 
+        // add convert menu ONLY if its meaningful
         action = getActionRegistry().getAction(ConvertToNewFormatAction.ID);
-        manager.appendToGroup(GEFActionConstants.GROUP_REST, action);
+        if (action.isEnabled())
+            manager.appendToGroup(GEFActionConstants.GROUP_REST, action);
 
         action = getActionRegistry().getAction(ActionFactory.UNDO.getId());
         manager.appendToGroup(GEFActionConstants.GROUP_UNDO, action);
@@ -45,7 +54,10 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
         action = getActionRegistry().getAction(ActionFactory.REDO.getId());
         manager.appendToGroup(GEFActionConstants.GROUP_UNDO, action);
 
-
+        MenuManager showInSubMenu= new MenuManager(getShowInMenuLabel());
+        showInSubMenu.add(ContributionItemFactory.VIEWS_SHOW_IN.create(wwin));
+        manager.appendToGroup(GEFActionConstants.GROUP_VIEW, showInSubMenu);
+        
 // COPY,CUT,PASTE is not currently 
 //        action = getActionRegistry().getAction(ActionFactory.PASTE.getId());
 //        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
@@ -63,7 +75,7 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
         action = getActionRegistry().getAction(ReLayoutAction.ID);
         if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
 
-        action = getActionRegistry().getAction(ShowPropertyViewAction.ID);
+        action = getActionRegistry().getAction(IPageLayout.ID_PROP_SHEET);
         action.setEnabled(true);
         if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_VIEW, action);
 
@@ -92,6 +104,19 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
 
         if (!submenu.isEmpty()) manager.appendToGroup(GEFActionConstants.GROUP_REST, submenu);
 
+    }
+
+    private String getShowInMenuLabel() {
+        String keyBinding= null;
+        
+        IBindingService bindingService= (IBindingService)PlatformUI.getWorkbench().getAdapter(IBindingService.class);
+        if (bindingService != null)
+            keyBinding= bindingService.getBestActiveBindingFormattedFor("org.eclipse.ui.navigate.showInQuickMenu"); //$NON-NLS-1$
+        
+        if (keyBinding == null)
+            keyBinding= ""; //$NON-NLS-1$
+        
+        return NLS.bind("Show In \t{0}",keyBinding);
     }
 
     private ActionRegistry getActionRegistry() {

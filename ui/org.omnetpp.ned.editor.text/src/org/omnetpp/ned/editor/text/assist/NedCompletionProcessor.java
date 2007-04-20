@@ -31,7 +31,6 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
 //    org.eclipse.jdt.ui.actions.IJavaEditorActionDefinitionIds
 //    org.eclipse.jdt.internal.ui.infoviews.SourceView
 //    org.eclipse.jdt.ui.actions.OpenEditorActionGroup
-// FIXME gets confused inside the "types:" section
 /**
  * NED completion processor.
  */
@@ -40,6 +39,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 	/**
 	 * Simple content assist tip closer. The tip is valid in a range
 	 * of 5 characters around its popup location.
+     * TODO implement correctly the context information
 	 */
 	protected static class Validator implements IContextInformationValidator, IContextInformationPresenter {
 
@@ -88,7 +88,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 	protected IContextInformationValidator fValidator= new Validator();
 
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
-		long startMillis = System.currentTimeMillis(); // measure time
+		// long startMillis = System.currentTimeMillis(); // measure time
 
 		List<ICompletionProposal> result = new ArrayList<ICompletionProposal>();
 

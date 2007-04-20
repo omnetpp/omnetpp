@@ -48,15 +48,16 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
 import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
-import org.omnetpp.ned.editor.graph.actions.ShowPropertyViewAction;
 import org.omnetpp.ned.editor.graph.actions.UnpinAction;
 import org.omnetpp.ned.editor.graph.dnd.TextTransferDropTargetListener;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
@@ -315,7 +316,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
 
-        action = new ShowPropertyViewAction((IWorkbenchPart) this);
+        action = new ShowViewAction(IPageLayout.ID_PROP_SHEET);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
 
