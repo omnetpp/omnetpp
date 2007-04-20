@@ -15,7 +15,12 @@ import org.omnetpp.common.CommonPlugin;
 public class ShowViewAction extends Action {
 	private String viewID;
 
+	/**
+     * A generic view displayer. the action's id is the same as the view id 
+	 * @param viewID to be shown
+	 */
 	public ShowViewAction(String viewID) {
+        setId(viewID);
 		IViewDescriptor viewDesc = PlatformUI.getWorkbench().getViewRegistry().find(viewID);
 		if (viewDesc == null) 
 			throw new IllegalArgumentException("No such view registered: "+viewID);
