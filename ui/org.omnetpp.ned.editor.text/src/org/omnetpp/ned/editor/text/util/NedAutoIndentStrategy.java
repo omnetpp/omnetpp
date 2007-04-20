@@ -1,11 +1,14 @@
 package org.omnetpp.ned.editor.text.util;
 
 
-import org.eclipse.jface.text.*;
-import org.omnetpp.ned.editor.text.NedEditorMessages;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.DefaultIndentLineAutoEditStrategy;
+import org.eclipse.jface.text.DocumentCommand;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.TextUtilities;
+import org.omnetpp.ned.editor.text.TextualNedEditorPlugin;
 
 
-// TODO autoindent strategy must be matched to NED format (make use of lineContainsSectionKeyword())
 /**
  * Auto indent line strategy sensitive to brackets.
  */
@@ -161,7 +164,7 @@ public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 	 * @return the content of the given line without the leading whitespace
 	 * @throws BadLocationException in case <code>line</code> is invalid in the document
 	 */
-	 protected String getIndentOfLine(IDocument document, int line) throws BadLocationException {
+	 public String getIndentOfLine(IDocument document, int line) throws BadLocationException {
 		if (line > -1) {
 			int start= document.getLineOffset(line);
 			int end= start + document.getLineLength(line) - 1;
@@ -263,14 +266,15 @@ public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 				int start= document.getLineOffset(line);
 				int whiteend= findEndOfWhiteSpace(document, start, command.offset);
 				buf.append(document.get(start, whiteend - start));
-				if (getBracketCount(document, start, command.offset, true) > 0) {
-					buf.append('\t');
+				if (getBracketCount(document, start, command.offset, true) > 0
+                        || lineContainsSectionKeyword(document, line)) {
+					buf.append("    ");
 				}
 			}
 			command.text= buf.toString();
 
 		} catch (BadLocationException excp) {
-			System.out.println(NedEditorMessages.getString("AutoIndent.error.bad_location_1")); //$NON-NLS-1$
+            TextualNedEditorPlugin.logError(excp);
 		}
 	}
 	
@@ -306,7 +310,7 @@ public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 				}
 			}
 		} catch (BadLocationException excp) {
-			System.out.println(NedEditorMessages.getString("AutoIndent.error.bad_location_2")); //$NON-NLS-1$
+            TextualNedEditorPlugin.logError(excp);
 		}
 	}
 }

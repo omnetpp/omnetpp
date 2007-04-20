@@ -106,9 +106,9 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 
 		if (info.sectionType==SECT_GLOBAL || info.sectionType==SECT_TYPES)
 		{
-			System.out.println("testing proposals for GLOBAL and TYPES scope");
+			// System.out.println("testing proposals for GLOBAL and TYPES scope");
 
-			// match various "extends" clauses
+			// match various "extends" and "like" clauses and offer component types
 			if (line.matches(".*\\bsimple .* extends"))
 				addProposals(viewer, documentOffset, result, res.getAllComponentNamesFilteredBy(NEDResources.SIMPLE_MODULE_FILTER), "simple-module type"); 
 			else if (line.matches(".*\\b(module|network) .* extends"))
@@ -154,20 +154,19 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 				addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedGateTypes, "gate type");
 
 			// provide global start keywords and section names
-            // FIXME SECT_TYPES should not contains package, property, network, import keywords
             if (info.sectionType==SECT_GLOBAL) {
-                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedTopLevelKeywords, "keyword (top level only)");
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedTopLevelKeywords, "keyword (top level)");
                 addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedTypeDefinerKeywords, "keyword");
-            }
-	    	if (info.sectionType==SECT_TYPES) {
+            } else if (info.sectionType==SECT_PARAMETERS) {
+                addProposals(viewer, documentOffset, result, new String[]{"connections:", "connections allowunconnected:", "gates:", "parameters:", "submodules:", "types:"}, "section");
+            } else if (info.sectionType==SECT_GATES) {
+                addProposals(viewer, documentOffset, result, new String[]{"connections:", "connections allowunconnected:", "submodules:", "types:"}, "section");
+            } else if (info.sectionType==SECT_TYPES) {
 				addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedTypeDefinerKeywords, "keyword");
-	    	}
-            // FIXME offer the following only in correct order (check first for params then gates etc)
-	    	else if (info.sectionType==SECT_PARAMETERS || info.sectionType==SECT_GATES ||
-					info.sectionType==SECT_TYPES || info.sectionType==SECT_SUBMODULES) {
-	    		addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSectionNameKeywords, "section");
-	    	}
-	    	else if (info.sectionType==SECT_SUBMODULE_PARAMETERS) {
+                addProposals(viewer, documentOffset, result, new String[]{"connections:", "connections allowunconnected:", "submodules:"}, "section");
+	    	} else if (info.sectionType==SECT_SUBMODULES) {
+                addProposals(viewer, documentOffset, result, new String[]{"connections:", "connections allowunconnected:"}, "section");
+            } else if (info.sectionType==SECT_SUBMODULE_PARAMETERS) {
 	    		addProposals(viewer, documentOffset, result, new String[]{"gates:"}, "section");
 	    	}
 
@@ -186,7 +185,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 		
 		// expressions: after "=", opening "[", "if" or "for"
 		if (line.contains("=") || line.matches(".*\\b(if|for)\\b.*") || containsOpenBracket(line)) {
-			System.out.println("proposals for expressions");
+			// System.out.println("proposals for expressions");
 
 			// offer parameter names, gate names, types,...
 			if (line.matches(".*\\bthis *\\.")) {
@@ -204,7 +203,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 	    		// after dot: offer params (and after sizeof(), gates too) of given submodule
 	    		if (parentComponent!=null) {
 					String submodTypeName = extractSubmoduleTypeName(line, parentComponent);
-					System.out.println(" offering params of type "+submodTypeName);
+					// System.out.println(" offering params of type "+submodTypeName);
 					INEDTypeInfo submodType = res.getComponent(submodTypeName);
 					if (submodType!=null) {
 						if (line.matches(".*\\bsizeof *\\(.*"))
@@ -228,9 +227,10 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 
         // offer existing and standard property names after "@"
         if (line.equals("")) {
-            addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedComponentPropertyTempl);
-            if (info.sectionType == SECT_PARAMETERS && parentComponent!=null)
+            if (info.sectionType == SECT_PARAMETERS && parentComponent!=null) {
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedComponentPropertyTempl);
                 addProposals(viewer, documentOffset, result, parentComponent.getProperties().keySet(), "property");
+            }
             if (info.sectionType == SECT_SUBMODULE_PARAMETERS && submoduleType!=null)
                 addProposals(viewer, documentOffset, result, submoduleType.getProperties().keySet(), "property");
         }
@@ -243,7 +243,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 
 		// complete submodule type name
 		if (info.sectionType == SECT_SUBMODULES) {
-			System.out.println("testing proposals for SUBMODULES scope");
+			// System.out.println("testing proposals for SUBMODULES scope");
 			if (line.matches(".*:")) {
 				// XXX offer "like" template too
 				addProposals(viewer, documentOffset, result, res.getModuleNames(), "module type");
@@ -261,7 +261,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 		}
 
 		if (info.sectionType == SECT_CONNECTIONS) {
-			System.out.println("testing proposals for CONNECTIONS scope");
+			// System.out.println("testing proposals for CONNECTIONS scope");
 			if (line.matches(".*\\bconnections")) {
 				// user forgot "allowunconnected" keyword
 				addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedConnsKeywords, "keyword");
@@ -278,7 +278,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 	    		// after dot: offer gates of given submodule
 	    		if (parentComponent!=null) {
 					String submodTypeName = extractSubmoduleTypeName(line, parentComponent);
-					System.out.println(" offering gates of type "+submodTypeName);
+					// System.out.println(" offering gates of type "+submodTypeName);
 					INEDTypeInfo submodType = res.getComponent(submodTypeName);
 					if (submodType!=null)
 						addProposals(viewer, documentOffset, result, submodType.getGates().keySet(), "gate");
@@ -286,11 +286,12 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 	    	}
 
 			// offer templates for connection, loop connection, connection with channel, etc
-		    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedConnectionTempl);
+            if (line.equals(""))
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedConnectionTempl);
 		}
 
-		long millis = System.currentTimeMillis()-startMillis;
-		System.out.println("Proposal creation: "+millis+"ms");
+		// long millis = System.currentTimeMillis()-startMillis;
+		// System.out.println("Proposal creation: "+millis+"ms");
 
 	    return (ICompletionProposal[]) result.toArray(new ICompletionProposal[result.size()]);
 	}
@@ -358,20 +359,23 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 			int sectionType;
 			if (source.matches("(?s).*\\bconnections\\b.*"))
 				sectionType = SECT_CONNECTIONS;
-			else if (source.matches("(?s).*\\btypes\\b.*"))
-				sectionType = SECT_TYPES;
 			else if (source.matches("(?s).*\\bsubmodules\\b.*\\bgates\\b.*"))
 				sectionType = SECT_SUBMODULE_GATES;
 			else if (source.matches("(?s).*\\bsubmodules\\b.*\\{.*"))
 				sectionType = SECT_SUBMODULE_PARAMETERS;
 			else if (source.matches("(?s).*\\bsubmodules\\b.*"))
 				sectionType = SECT_SUBMODULES;
+			else if (source.matches("(?s).*\\btypes\\b.*"))
+			    sectionType = SECT_TYPES;
 			else if (source.matches("(?s).*\\bgates\\b.*"))
 				sectionType = SECT_GATES;
 			else if (source.matches("(?s).*\\{.*"))
 				sectionType = SECT_PARAMETERS;
 			else
 				sectionType = SECT_GLOBAL;
+            
+            // eliminate the types: section
+            source = source.replaceAll("(?s)\\btypes\\b[^{]*?\\b(submodules|connections)\\b", "$1");
 
 			// detect module name: identifier after last "simple", "module", etc.
 			String pat = "(?s).*(simple|module|network|channel|interface|channelinterface)\\s+(withcppclass\\s+)?([A-Za-z_][A-Za-z0-9_]+)";
@@ -390,9 +394,9 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 			}
 
 			//System.out.println(">>>"+source+"<<<");
-			System.out.println("SECTIONTYPE:"+sectionType+"  COMPONENT:"+componentName+"  SUBMODTYPENAME:"+submoduleTypeName);
-			System.out.println("PREFIX: >>"+prefix+"<<");
-			System.out.println("PREFIX2: >>"+prefix2+"<<");
+//			System.out.println("SECTIONTYPE:"+sectionType+"  COMPONENT:"+componentName+"  SUBMODTYPENAME:"+submoduleTypeName);
+//			System.out.println("PREFIX: >>"+prefix+"<<");
+//			System.out.println("PREFIX2: >>"+prefix2+"<<");
 
 			CompletionInfo ret = new CompletionInfo();
 			ret.linePrefix = prefix;

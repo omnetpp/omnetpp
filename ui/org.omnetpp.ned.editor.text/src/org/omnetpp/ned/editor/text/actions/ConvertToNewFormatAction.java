@@ -26,8 +26,9 @@ public class ConvertToNewFormatAction extends TextEditorAction {
         IFile ifile = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
         NedFileNodeEx nedFileNode = (NedFileNodeEx)NEDResourcesPlugin.getNEDResources().getNEDFileModel(ifile);
         // enable only if the model does not have a syntax error and in V1 format
-        setEnabled(!NEDResourcesPlugin.getNEDResources().containsNEDErrors(ifile) && 
-                   !"2".equals(nedFileNode.getVersion()));
+        setEnabled(nedFileNode != null 
+                   && !NEDResourcesPlugin.getNEDResources().containsNEDErrors(ifile) 
+                   && !"2".equals(nedFileNode.getVersion()));
     }
     
     @Override

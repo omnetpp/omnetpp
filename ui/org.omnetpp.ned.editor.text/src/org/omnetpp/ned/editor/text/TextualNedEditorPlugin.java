@@ -24,7 +24,7 @@ public class TextualNedEditorPlugin extends AbstractUIPlugin {
     /** Key to store custom templates. */
     private static final String CUSTOM_TEMPLATES_KEY = "org.omnetpp.ned.editor.text.customtemplates"; //$NON-NLS-1$
 	
-	private static TextualNedEditorPlugin fgInstance;
+	private static TextualNedEditorPlugin plugin;
 	//private NedContentAssistPartitionScanner fPartitionScanner;
 	
     /** The template store. */
@@ -39,7 +39,7 @@ public class TextualNedEditorPlugin extends AbstractUIPlugin {
 	 */
     public TextualNedEditorPlugin() {
         super();
-        fgInstance= this;
+        plugin= this;
     }
 	
     @Override
@@ -55,7 +55,7 @@ public class TextualNedEditorPlugin extends AbstractUIPlugin {
 	 * @return the default plugin instance
 	 */
 	public static TextualNedEditorPlugin getDefault() {
-		return fgInstance;
+		return plugin;
 	}
 	
 
@@ -92,5 +92,19 @@ public class TextualNedEditorPlugin extends AbstractUIPlugin {
 
     public static ImageDescriptor imageDescriptorFromPlugin(String image_path) {
         return AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, image_path);
+    }
+
+    public static void logError(Throwable exception) {
+        logError(exception.toString(), exception);
+    }
+    
+    public static void logError(String message, Throwable exception) {
+        if (plugin != null) {
+            plugin.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
+        }
+        else {
+            System.err.println(message);
+            exception.printStackTrace();
+        }
     }
 }

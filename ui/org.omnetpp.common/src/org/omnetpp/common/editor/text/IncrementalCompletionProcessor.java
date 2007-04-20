@@ -17,6 +17,7 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.rules.IWordDetector;
+import org.eclipse.jface.text.templates.SimpleTemplateVariableResolver;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateCompletionProcessor;
 import org.eclipse.jface.text.templates.TemplateContext;
@@ -24,6 +25,7 @@ import org.eclipse.jface.text.templates.TemplateException;
 import org.eclipse.jface.text.templates.TemplateProposal;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.util.StringUtils;
 
 /**
  * Generic incremental type completion processor.
@@ -31,6 +33,13 @@ import org.omnetpp.common.CommonPlugin;
 public abstract class IncrementalCompletionProcessor extends TemplateCompletionProcessor {
     private static final String DEFAULT_IMAGE = "icons/obj16/template.png"; 
 
+    public class  IndentTemplateVariableResolver extends SimpleTemplateVariableResolver {
+        protected IndentTemplateVariableResolver(String value) {
+            super("indent", "Indentation template variable");
+            setEvaluationString(value);
+        }
+    }
+    
     /**
      * Helper comparator calss to compare CompletionProposals using relevance and the the display name 
      */
@@ -150,6 +159,19 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
         } catch (BadLocationException e) { }
 
 		TemplateContext context= createContext(viewer, wordRegion);
+        // set the current indentation in a variable so we will be able to use ${indent} in templates
+        // ${indent} is implicitly added after each \n char during the creation of templae proposals
+        String indentPrefix = "";
+        try {
+            int lineStartOffset = viewer.getDocument().getLineInformationOfOffset(offset).getOffset();
+            // get the line's first part (till the beginning of the prefix string) and replace tabs with
+            // 4 spaces
+            indentPrefix = viewer.getDocument().get(lineStartOffset, wordRegion.getOffset()-lineStartOffset).replace("\t", "    ");
+            // turn it int spaces only with the same length
+            indentPrefix = StringUtils.repeat(" ", indentPrefix.length());
+        } catch (BadLocationException e1) { }
+        context.getContextType().addResolver(new IndentTemplateVariableResolver(indentPrefix));
+        
 		if (context == null)
 			return new ICompletionProposal[0];
 

@@ -1,11 +1,11 @@
 package org.omnetpp.ned.editor.text.assist;
 
-import org.eclipse.jface.text.templates.TemplateContextType;
 import org.eclipse.jface.text.templates.GlobalTemplateVariables;
+import org.eclipse.jface.text.templates.TemplateContextType;
 
 
 /**
- * A very simple context type.
+ * A very simple context type. also inserts the templates
  */
 public class NedContextType extends TemplateContextType {
 
@@ -22,4 +22,5 @@ public class NedContextType extends TemplateContextType {
         addResolver(new GlobalTemplateVariables.Time());
         addResolver(new GlobalTemplateVariables.User());
 	}
+
 }
