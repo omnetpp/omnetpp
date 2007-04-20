@@ -56,7 +56,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 //XXX let the user edit description= as well
 //XXX enable/disable buttons as tree selection changes
 public class SectionsPage extends FormPage {
-	private static final String ICON_ERROR = "icons/full/obj16/Error.png"; //XXX find better place for it
+	private static final Image ICON_ERROR = InifileEditorPlugin.getImage("icons/full/obj16/Error.png");
 	private static final String CIRCLE_WARNING_TEXT = "NOTE: Sections that form circles (which is illegal) are not displayed here -- switch to text mode to fix them!";
 	private static final String HINT_TEXT = "\nDrag&&drop sections to edit the fallback sequence of parameter and config lookups, or to add/remove/edit sections.";
 
@@ -129,7 +129,7 @@ public class SectionsPage extends FormPage {
 					element = ((GenericTreeNode)element).getPayload();
 				if (element instanceof SectionData) {
 					SectionData payload = (SectionData) element;
-					return payload.hasError ? InifileEditorPlugin.getImage(ICON_ERROR) : ImageFactory.getImage(ImageFactory.MODEL_IMAGE_FOLDER);
+					return payload.hasError ? ICON_ERROR : ImageFactory.getImage(ImageFactory.MODEL_IMAGE_FOLDER); //XXX cache icon!
 				}
 				return null;
 			}

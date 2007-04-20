@@ -7,6 +7,7 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
  * Value object, stores the result of a parameter resolution.
  */
 public class ParamResolution {
+	
 	public enum ParamResolutionType {
 		UNASSIGNED, // unassigned parameter
 		NED, // parameter assigned in NED

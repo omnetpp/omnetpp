@@ -133,7 +133,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 				else if (element instanceof ParamResolution)
 					return suggestImage(((ParamResolution) element).type);
 				else if (element instanceof ErrorNode)
-					return InifileEditorPlugin.getImage(ICON_ERROR);
+					return ICON_ERROR;
 				else
 					return null;
 			}

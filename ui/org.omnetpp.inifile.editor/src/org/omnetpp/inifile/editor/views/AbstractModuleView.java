@@ -6,7 +6,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
@@ -250,24 +249,24 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 
 
 	/* stuff for subclasses: icons */
-	public static final String ICON_ERROR = "icons/full/obj16/Error.png";
-	public static final String ICON_UNASSIGNEDPAR = "icons/full/obj16/UnassignedPar.png";
-	public static final String ICON_NEDPAR = "icons/full/obj16/NedPar.png";
-	public static final String ICON_NEDDEFAULTPAR = "icons/full/obj16/IniPar.png"; //XXX
-	public static final String ICON_INIPAR = "icons/full/obj16/IniPar.png";
-	public static final String ICON_INIPARREDUNDANT = "icons/full/obj16/IniParRedundant.png";
+	public static final Image ICON_ERROR = InifileEditorPlugin.getImage("icons/full/obj16/Error.png");
+	public static final Image ICON_UNASSIGNEDPAR = InifileEditorPlugin.getImage("icons/full/obj16/UnassignedPar.png");
+	public static final Image ICON_NEDPAR = InifileEditorPlugin.getImage("icons/full/obj16/NedPar.png");
+	public static final Image ICON_NEDDEFAULTPAR = InifileEditorPlugin.getImage("icons/full/obj16/IniPar.png"); //XXX
+	public static final Image ICON_INIPAR = InifileEditorPlugin.getImage("icons/full/obj16/IniPar.png");
+	public static final Image ICON_INIPARREDUNDANT = InifileEditorPlugin.getImage("icons/full/obj16/IniParRedundant.png");
 	
 	/**
 	 * Helper function: suggests an icon for a table or tree entry.
 	 */
 	protected static Image suggestImage(ParamResolutionType type) {
 		switch (type) {
-			case UNASSIGNED: return InifileEditorPlugin.getImage(ICON_UNASSIGNEDPAR);
-			case NED: return InifileEditorPlugin.getImage(ICON_NEDPAR);
-			case NED_DEFAULT: return InifileEditorPlugin.getImage(ICON_NEDDEFAULTPAR);
-			case INI: return InifileEditorPlugin.getImage(ICON_INIPAR);
-			case INI_OVERRIDE:  return InifileEditorPlugin.getImage(ICON_INIPAR); 
-			case INI_NEDDEFAULT: return InifileEditorPlugin.getImage(ICON_INIPARREDUNDANT);
+			case UNASSIGNED: return ICON_UNASSIGNEDPAR;
+			case NED: return ICON_NEDPAR;
+			case NED_DEFAULT: return ICON_NEDDEFAULTPAR;
+			case INI: return ICON_INIPAR;
+			case INI_OVERRIDE:  return ICON_INIPAR; 
+			case INI_NEDDEFAULT: return ICON_INIPARREDUNDANT;
 		}
 		return null;
 	}

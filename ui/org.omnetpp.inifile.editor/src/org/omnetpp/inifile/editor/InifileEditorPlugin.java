@@ -77,8 +77,12 @@ public class InifileEditorPlugin extends AbstractUIPlugin {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 	
+	/**
+	 * Creates an image. IMPORTANT: The image is NOT cached! Callers 
+	 * are responsible for disposal of the image. 
+	 */
 	public static Image getImage(String path) {
-		return getImageDescriptor(path).createImage(); //XXX cache it! use ImageRegistry or something
+		return getImageDescriptor(path).createImage();
 	}
 	
 }

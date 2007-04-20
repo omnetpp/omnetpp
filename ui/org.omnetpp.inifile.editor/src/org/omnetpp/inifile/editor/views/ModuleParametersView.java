@@ -108,7 +108,7 @@ public class ModuleParametersView extends AbstractModuleView {
 		sep.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
 		// create table with columns
-		Table table = new Table(container, SWT.SINGLE | SWT.FULL_SELECTION);
+		Table table = new Table(container, SWT.SINGLE | SWT.FULL_SELECTION | SWT.VIRTUAL);
 		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
@@ -141,7 +141,7 @@ public class ModuleParametersView extends AbstractModuleView {
 				if (element instanceof ParamResolution)
 					return suggestImage(((ParamResolution) element).type);
 				else if (element instanceof ErrorNode)
-					return InifileEditorPlugin.getImage(ICON_ERROR);
+					return ICON_ERROR;
 				else
 					return null;
 			}
@@ -274,7 +274,8 @@ public class ModuleParametersView extends AbstractModuleView {
 			hideMessage();
 			inifileAnalyzer = ana;
 			inifileDocument = ana.getDocument();
-			ParamResolution[] pars = unassignedOnly ? ana.getUnassignedParams(section) : ana.getParamResolutions(section); //XXX or maybe the resolutions for the selected key, etc
+			ParamResolution[] pars = unassignedOnly ? ana.getUnassignedParams(section) : ana.getParamResolutions(section);
+			System.out.println("ModuleParametersView: "+pars.length+" lines");
 			tableViewer.setInput(pars);
 			label.setText("Section ["+section+"], " + (unassignedOnly ?"unassigned parameters" : "all parameters"));
 		}
