@@ -62,7 +62,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 public class SectionsPage extends FormPage {
 	private static final Image ICON_ERROR = InifileEditorPlugin.getImage("icons/full/obj16/Error.png");
 	private static final String CIRCLE_WARNING_TEXT = "NOTE: Sections that form circles (which is illegal) are not displayed here -- switch to text mode to fix them!";
-	private static final String HINT_TEXT = "\nDrag&&drop sections to edit the fallback sequence of parameter and config lookups, or to add/remove/edit sections.";
+	private static final String HINT_TEXT = "\nDrag and drop sections to edit the fallback chains of parameter and configuration lookups.";
 
 	private Label label;
 	private TreeViewer treeViewer;
