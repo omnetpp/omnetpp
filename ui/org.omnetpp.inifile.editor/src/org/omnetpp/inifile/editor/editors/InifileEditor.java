@@ -25,7 +25,10 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.part.IShowInSource;
+import org.eclipse.ui.part.IShowInTargetList;
 import org.eclipse.ui.part.MultiPageEditorPart;
+import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.common.util.DelayedJob;
@@ -45,7 +48,7 @@ import org.omnetpp.inifile.editor.views.InifileContentOutlinePage;
 //FIXME File|Revert is always diabled; same for Redo/Undo
 //XXX should listen on workspace changes (of included ini files)
 //XXX does not seem to listen on NED changes???
-public class InifileEditor extends MultiPageEditorPart implements IResourceChangeListener, IGotoMarker, IGotoInifile {
+public class InifileEditor extends MultiPageEditorPart implements IResourceChangeListener, IGotoMarker, IGotoInifile, IShowInSource, IShowInTargetList {
 	/* editor pages */
 	private InifileTextEditor textEditor;
 	private InifileFormEditor formEditor;
@@ -339,5 +342,19 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		catch (IllegalArgumentException x) {
 			textEditor.resetHighlightRange();
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.part.IShowInSource#getShowInContext()
+	 */
+	public ShowInContext getShowInContext() {
+		return new ShowInContext(getEditorInput(), getSite().getSelectionProvider().getSelection());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.part.IShowInTargetList#getShowInTargetIds()
+	 */
+	public String[] getShowInTargetIds() {
+		return new String[] {InifileEditorContributor.MODULEHIERARCHY_VIEW_ID, InifileEditorContributor.MODULEPARAMETERS_VIEW_ID};
 	}
 }

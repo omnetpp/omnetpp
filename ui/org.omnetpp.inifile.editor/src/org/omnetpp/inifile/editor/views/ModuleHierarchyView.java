@@ -2,6 +2,8 @@ package org.omnetpp.inifile.editor.views;
 
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
+import java.util.Stack;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -15,6 +17,7 @@ import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.GenericTreeUtils;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.IModuleTreeVisitor;
@@ -179,17 +182,22 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		treeViewer.setInput(null);
 	}
 
-	public void buildContent(NEDElement module, final InifileAnalyzer ana, String section, String key) {
+	public void buildContent(NEDElement module, final InifileAnalyzer ana, final String section, String key) {
         // build tree
         final GenericTreeNode root = new GenericTreeNode("root");
     	class TreeBuilder implements IModuleTreeVisitor {
     		private GenericTreeNode current = root;
+			private Stack<String> fullPathStack = new Stack<String>();
+
     		public void enter(SubmoduleNode submodule, INEDTypeInfo submoduleType) {
     			String fullName = submodule==null ? submoduleType.getName() : InifileUtils.getSubmoduleFullName(submodule);
-    			current = addTreeNode(current, fullName, "blabla"+fullName, submoduleType, submodule, ana); //XXX
+				fullPathStack.push(fullName);
+				String fullPath = StringUtils.join(fullPathStack.toArray(), "."); //XXX optimize here if slow
+    			current = addTreeNode(current, fullName, fullPath, submoduleType, submodule, section, ana);
     		}
     		public void leave() {
     			current = current.getParent();
+				fullPathStack.pop();
     		}
     		public void unresolvedType(SubmoduleNode submodule, String submoduleTypeName) {
     			String fullName = submodule==null ? submoduleTypeName : InifileUtils.getSubmoduleFullName(submodule);
@@ -233,7 +241,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	/**
 	 * Adds a node to the tree. The new node describes the module and its parameters.
 	 */
-	private static GenericTreeNode addTreeNode(GenericTreeNode parent, String moduleFullName, String moduleFullPath, INEDTypeInfo moduleType, SubmoduleNode thisSubmodule, InifileAnalyzer ana) {
+	private static GenericTreeNode addTreeNode(GenericTreeNode parent, String moduleFullName, String moduleFullPath, INEDTypeInfo moduleType, SubmoduleNode thisSubmodule, String activeSection, InifileAnalyzer ana) {
 		String moduleText = moduleFullName+"  ("+moduleType.getName()+")";
 		GenericTreeNode thisNode = new GenericTreeNode(new ModuleNode(moduleText, thisSubmodule==null ? moduleType.getNEDElement() : thisSubmodule));
 		parent.addChild(thisNode);
@@ -243,7 +251,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			thisNode.addChild(new GenericTreeNode("sorry, cannot extract parameters from NED yet")); //XXX
 		}
 		else {
-			ParamResolution[] list = ana.getParamResolutionsForModule(moduleFullPath, GENERAL); //XXX
+			ParamResolution[] list = ana.getParamResolutionsForModule(moduleFullPath, activeSection); 
 			for (ParamResolution res : list)
 				thisNode.addChild(new GenericTreeNode(res));
 		}

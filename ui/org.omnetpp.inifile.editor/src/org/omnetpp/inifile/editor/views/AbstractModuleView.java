@@ -6,10 +6,13 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.part.IShowInTarget;
+import org.eclipse.ui.part.ShowInContext;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.StringUtils;
@@ -39,7 +42,7 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
  * 
  * @author Andras
  */
-public abstract class AbstractModuleView extends ViewWithMessagePart {
+public abstract class AbstractModuleView extends ViewWithMessagePart implements IShowInTarget {
 	private ISelectionListener selectionChangedListener;
 	private IPartListener partListener;
 	private INEDChangeListener nedChangeListener;
@@ -293,5 +296,12 @@ public abstract class AbstractModuleView extends ViewWithMessagePart {
 		}
 		if (res.key!=null) remark += "; see ["+res.section+"] / " + res.key + "=" + iniValue;
 		return new String[] {value, remark}; 
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.part.IShowInTarget#show(org.eclipse.ui.part.ShowInContext)
+	 */
+	public boolean show(ShowInContext context) {
+		return true;
 	}
 }

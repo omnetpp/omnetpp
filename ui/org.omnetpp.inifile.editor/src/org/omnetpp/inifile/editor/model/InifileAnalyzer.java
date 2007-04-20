@@ -130,6 +130,7 @@ public class InifileAnalyzer {
 			InifileEditorPlugin.logError(e);
 		}
 
+		//FIXME FIXME FIXME resolve race conditions! ie reconciler may re-parse document while we are analyzing!!!!!!!
 		//XXX catch all exceptions during analyzing, and set changed=false in finally{} ? 
 
 		// check section names, detect circles in the fallback chains
@@ -378,16 +379,16 @@ public class InifileAnalyzer {
 
 		NEDTreeIterator treeIterator = new NEDTreeIterator(res, new IModuleTreeVisitor() {
 			Stack<SubmoduleNode> pathModules = new Stack<SubmoduleNode>(); 
-			Stack<String> fullPath = new Stack<String>();
+			Stack<String> fullPathStack = new Stack<String>();
 			public void enter(SubmoduleNode submodule, INEDTypeInfo submoduleType) {
 				pathModules.push(submodule);
-				fullPath.push(submodule==null ? submoduleType.getName() : InifileUtils.getSubmoduleFullName(submodule));
-				String submoduleFullPath = StringUtils.join(fullPath.toArray(), "."); //XXX optimize here if slow
+				fullPathStack.push(submodule==null ? submoduleType.getName() : InifileUtils.getSubmoduleFullName(submodule));
+				String submoduleFullPath = StringUtils.join(fullPathStack.toArray(), "."); //XXX optimize here if slow
 				SubmoduleNode[] pathModulesArray = pathModules.toArray(new SubmoduleNode[]{});
 				resolveModuleParameters(list, submoduleFullPath, pathModulesArray, submoduleType, sectionChain, finalDoc);
 			}
 			public void leave() {
-				fullPath.pop();
+				fullPathStack.pop();
 				pathModules.pop();
 			}
 			public void unresolvedType(SubmoduleNode submodule, String submoduleTypeName) {}
