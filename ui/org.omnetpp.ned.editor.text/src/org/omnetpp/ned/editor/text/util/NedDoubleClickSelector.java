@@ -7,7 +7,7 @@ import org.eclipse.jface.text.ITextDoubleClickStrategy;
 import org.eclipse.jface.text.ITextViewer;
 
 /**
- * Double click strategy aware of Java identifier syntax rules.
+ * Double click strategy aware of NED identifier syntax rules.
  */
 public class NedDoubleClickSelector implements ITextDoubleClickStrategy {
 

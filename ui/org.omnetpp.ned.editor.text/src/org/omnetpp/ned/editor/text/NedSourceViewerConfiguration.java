@@ -9,6 +9,8 @@ import org.eclipse.jface.text.ITextDoubleClickStrategy;
 import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
+import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
+import org.eclipse.jface.text.hyperlink.URLHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.reconciler.IReconciler;
@@ -26,6 +28,7 @@ import org.omnetpp.ned.editor.text.highlight.NedCodeColorizerScanner;
 import org.omnetpp.ned.editor.text.highlight.NedDocColorizerScanner;
 import org.omnetpp.ned.editor.text.highlight.NedPrivateDocColorizerScanner;
 import org.omnetpp.ned.editor.text.highlight.NedSyntaxHighlightPartitionScanner;
+import org.omnetpp.ned.editor.text.util.NEDHyperlinkDetector;
 import org.omnetpp.ned.editor.text.util.NedAnnotationHover;
 import org.omnetpp.ned.editor.text.util.NedAutoIndentStrategy;
 import org.omnetpp.ned.editor.text.util.NedDoubleClickSelector;
@@ -45,6 +48,10 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
 		return new NedAnnotationHover();
 	}
+
+    public String[] getIndentPrefixes(ISourceViewer sourceViewer, String contentType) {
+        return new String[] { "    ", "" }; 
+    }
 		
 	public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
 		IAutoEditStrategy strategy= (IDocument.DEFAULT_CONTENT_TYPE.equals(contentType) ? new NedAutoIndentStrategy() : new DefaultIndentLineAutoEditStrategy());
@@ -68,8 +75,8 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 		return assistant;
 	}
 	
-	public String getDefaultPrefix(ISourceViewer sourceViewer, String contentType) {
-		return (NedContentAssistPartitionScanner.NED_DOC.equals(contentType) ? "// " : null); //$NON-NLS-1$
+	public String[] getDefaultPrefixes(ISourceViewer sourceViewer, String contentType) {
+		return new String[] {NedContentAssistPartitionScanner.NED_DOC.equals(contentType) ? "// " : null};
 	}
 	
 	public ITextDoubleClickStrategy getDoubleClickStrategy(ISourceViewer sourceViewer, String contentType) {
@@ -116,4 +123,12 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 		reconciler.setDelay(500);
 		return reconciler;
 	}
+    
+    @Override
+    public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
+        if (sourceViewer == null)
+            return null;
+
+        return new IHyperlinkDetector[] { new URLHyperlinkDetector(), new NEDHyperlinkDetector() };
+    }
 }
