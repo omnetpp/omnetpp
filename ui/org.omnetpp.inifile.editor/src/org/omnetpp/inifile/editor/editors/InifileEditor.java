@@ -345,14 +345,14 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.IShowInSource#getShowInContext()
+	 * Method declared on IShowInSource
 	 */
 	public ShowInContext getShowInContext() {
 		return new ShowInContext(getEditorInput(), getSite().getSelectionProvider().getSelection());
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.IShowInTargetList#getShowInTargetIds()
+	 * Method declared on IShowInTargetList
 	 */
 	public String[] getShowInTargetIds() {
 		return new String[] {InifileEditorContributor.MODULEHIERARCHY_VIEW_ID, InifileEditorContributor.MODULEPARAMETERS_VIEW_ID};

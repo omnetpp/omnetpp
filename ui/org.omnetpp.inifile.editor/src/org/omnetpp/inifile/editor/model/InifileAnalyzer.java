@@ -333,33 +333,40 @@ public class InifileAnalyzer {
 	 * Calculate how parameters get assigned when the given section is the active one.
 	 */
 	protected void calculateParamResolutions(INEDTypeResolver ned) {
-		// initialize SectionData and KeyData objects
-		System.out.println("calculateParamResolutions: START attaching data");
-		for (String section : doc.getSectionNames()) {
-			doc.setSectionData(section, new SectionData());
-			for (String key : doc.getKeys(section))
-				if (getKeyType(key)!=KeyType.CONFIG)
-					doc.setKeyData(section, key, new KeyData());
-		}
-		System.out.println("calculateParamResolutions: END attaching data");
-		
-		// calculate parameter resolutions for each section
-		for (String activeSection : doc.getSectionNames()) {
-			System.out.println("calculateParamResolutions: PROCESSING with active section="+activeSection);
+		// we need to prevent InifileDocument from getting re-parsed while we are 
+		// analyzing it. In particular, re-parse and re-analyze triggered by the 
+		// reconciler and a view (e.g.the Module Parameters view) have been observed
+		// to collide that way.
+		synchronized (doc) {
+			
+			// initialize SectionData and KeyData objects
+			System.out.println("calculateParamResolutions: START attaching data");
+			for (String section : doc.getSectionNames()) {
+				doc.setSectionData(section, new SectionData());
+				for (String key : doc.getKeys(section))
+					if (getKeyType(key)!=KeyType.CONFIG)
+						doc.setKeyData(section, key, new KeyData());
+			}
+			System.out.println("calculateParamResolutions: END attaching data");
 
-			// calculate param resolutions
-			List<ParamResolution> resList = collectParameters(activeSection, ned);
+			// calculate parameter resolutions for each section
+			for (String activeSection : doc.getSectionNames()) {
+				System.out.println("calculateParamResolutions: PROCESSING with active section="+activeSection);
 
-			// store with the section the list of all parameter resolutions (incl unassigned params)
-			// store with every key the list of parameters it resolves
-			for (ParamResolution res : resList) {
-				SectionData sectionData = ((SectionData)doc.getSectionData(activeSection));
-				sectionData.allParamResolutions.add(res);
-				if (res.type == ParamResolutionType.UNASSIGNED)
-					sectionData.unassignedParams.add(res);
+				// calculate param resolutions
+				List<ParamResolution> resList = collectParameters(activeSection, ned);
 
-				if (res.key != null) {
-					((KeyData)doc.getKeyData(res.section, res.key)).paramResolutions.add(res);
+				// store with the section the list of all parameter resolutions (incl unassigned params)
+				// store with every key the list of parameters it resolves
+				for (ParamResolution res : resList) {
+					SectionData sectionData = ((SectionData)doc.getSectionData(activeSection));
+					sectionData.allParamResolutions.add(res);
+					if (res.type == ParamResolutionType.UNASSIGNED)
+						sectionData.unassignedParams.add(res);
+
+					if (res.key != null) {
+						((KeyData)doc.getKeyData(res.section, res.key)).paramResolutions.add(res);
+					}
 				}
 			}
 		}

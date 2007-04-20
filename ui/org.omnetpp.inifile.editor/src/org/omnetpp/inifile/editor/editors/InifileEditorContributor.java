@@ -14,6 +14,7 @@ import org.eclipse.ui.part.MultiPageEditorActionBarContributor;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.omnetpp.common.editor.ShowViewAction;
+import org.omnetpp.inifile.editor.actions.OpenNedTypeAction;
 
 /**
  * Manages the installation/deinstallation of global actions for multi-page editors.
@@ -25,6 +26,7 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
 	public static final String MODULEHIERARCHY_VIEW_ID = "org.omnetpp.inifile.ModuleHierarchy";
 	
 	private IEditorPart activeEditorPart;
+	private IAction openNedTypeAction = new OpenNedTypeAction(); 
 	private IAction showModuleParametersView = new ShowViewAction(MODULEPARAMETERS_VIEW_ID); 
 	private IAction showModuleHierarchyView = new ShowViewAction(MODULEHIERARCHY_VIEW_ID); 
 
@@ -92,12 +94,14 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
 	public void contributeToMenu(IMenuManager manager) { //XXX refine...
 		IMenuManager menu = new MenuManager("Editor &Menu");
 		manager.prependToGroup(IWorkbenchActionConstants.MB_ADDITIONS, menu);
+		menu.add(openNedTypeAction);
 		menu.add(showModuleParametersView);
 		menu.add(showModuleHierarchyView);
 	}
 
 	public void contributeToToolBar(IToolBarManager manager) {
 		manager.add(new Separator());
+		manager.add(openNedTypeAction);
 		manager.add(showModuleParametersView);
 		manager.add(showModuleHierarchyView);
 	}
