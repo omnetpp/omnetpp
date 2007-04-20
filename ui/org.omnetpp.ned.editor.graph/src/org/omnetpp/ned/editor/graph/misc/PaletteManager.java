@@ -131,7 +131,7 @@ public class PaletteManager implements INEDChangeListener {
             
             // create the tool entry
             CombinedTemplateCreationEntry combined = new CombinedTemplateCreationEntry(
-                    name, "A submodule with type "+name,
+                    name, comp.getNEDElement().getComment(),
                     new ModelFactory(SubmoduleNodeEx.getStaticTagName(),name.toLowerCase(), name), 
                     imageDescNorm, imageDescLarge );
             // add to the selected drawer
@@ -161,11 +161,11 @@ public class PaletteManager implements INEDChangeListener {
         Collections.sort(channelNames);
         
         for(String name : channelNames) {
-
+            INEDTypeInfo comp = NEDResourcesPlugin.getNEDResources().getComponent(name);
             ConnectionCreationToolEntry tool 
                = new ConnectionCreationToolEntry(
                     name,
-                    "Create a connection using the "+name+" type as channel",
+                    comp.getNEDElement().getComment(),
                     new ModelFactory(ConnectionNodeEx.getStaticTagName(),name.toLowerCase(), name), 
                     ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION),
                     ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)//$NON-NLS-1$
