@@ -182,7 +182,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		treeViewer.setInput(null);
 	}
 
-	public void buildContent(NEDElement module, final InifileAnalyzer ana, final String section, String key) {
+	public void buildContent(NEDElement module, final InifileAnalyzer analyzer, final String section, String key) {
         // build tree
         final GenericTreeNode root = new GenericTreeNode("root");
     	class TreeBuilder implements IModuleTreeVisitor {
@@ -193,7 +193,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
     			String fullName = submodule==null ? submoduleType.getName() : InifileUtils.getSubmoduleFullName(submodule);
 				fullPathStack.push(fullName);
 				String fullPath = StringUtils.join(fullPathStack.toArray(), "."); //XXX optimize here if slow
-    			current = addTreeNode(current, fullName, fullPath, submoduleType, submodule, section, ana);
+    			current = addTreeNode(current, fullName, fullPath, submoduleType, submodule, section, analyzer);
     		}
     		public void leave() {
     			current = current.getParent();
@@ -233,8 +233,9 @@ public class ModuleHierarchyView extends AbstractModuleView {
 
 		// prevent collapsing all treeviewer nodes: only set it on viewer if it's different from old input
 		if (!GenericTreeUtils.treeEquals(root, (GenericTreeNode)treeViewer.getInput())) { 
+			this.inifileDocument = analyzer==null ? null : analyzer.getDocument();
 			treeViewer.setInput(root);
-			this.inifileDocument = ana==null ? null : ana.getDocument();
+			treeViewer.expandToLevel(2); //XXX collapses when switching to another editor then back. Remember selected element for each editor? use WeakHashMap?
 		}
 	}
 

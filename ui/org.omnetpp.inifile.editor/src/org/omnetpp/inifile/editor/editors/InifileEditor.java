@@ -20,6 +20,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
@@ -356,6 +357,13 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	 * Method declared on IShowInTargetList
 	 */
 	public String[] getShowInTargetIds() {
-		return new String[] {IConstants.MODULEHIERARCHY_VIEW_ID, IConstants.MODULEPARAMETERS_VIEW_ID};
+		// contents of the "Show In..." context menu
+		return new String[] {
+				IConstants.MODULEHIERARCHY_VIEW_ID, 
+				IConstants.MODULEPARAMETERS_VIEW_ID,
+				IPageLayout.ID_OUTLINE,
+				IPageLayout.ID_PROBLEM_VIEW,
+				IPageLayout.ID_RES_NAV,
+				};
 	}
 }
