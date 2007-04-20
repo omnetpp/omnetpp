@@ -34,6 +34,7 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
 	private InifileAnalyzer analyzer;
 
 	public InifileValueContentProposalProvider(String section, String key, IInifileDocument doc, InifileAnalyzer analyzer) {
+		super(false);
 		this.section = section;
 		this.key = key;
 		this.doc = doc;

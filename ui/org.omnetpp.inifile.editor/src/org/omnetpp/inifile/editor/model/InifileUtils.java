@@ -264,8 +264,13 @@ public class InifileUtils {
 			}
 			else {
 				text += "\nThis section does not seem to assign the following NED parameters: \n";
-				for (ParamResolution res : resList)
+				int n = Math.min(resList.length, 8);
+				for (int i=0; i<n; i++) {
+					ParamResolution res = resList[i];
 					text += "  - " + res.moduleFullPath + "." +res.paramValueNode.getName() + "\n";
+				}
+				if (resList.length > n) 
+					text += "    ...\n";
 			}
 		}
 		return text.trim();
@@ -289,14 +294,17 @@ public class InifileUtils {
 				return null;
 			return getConfigTooltip(entry, doc);
 		}
-		else if (keyType == KeyType.PARAM || key.endsWith(".apply-default")) { //XXX
+		else if (keyType == KeyType.PARAM || key.endsWith(".apply-default")) { //XXX hardcoded key name
 			// parameter assignment: display which parameters it matches
 			//XXX somehow merge similar entries? (ie where pathModules[] and paramValueNode/paramDeclNode are the same)
 			ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
 			if (resList.length==0) 
 				return "Entry \"" + key + "\" does not match any module parameters ";
+
 			String text = "Entry \"" + key + "\" applies to the following module parameters: \n";
-			for (ParamResolution res : resList) {
+			int n = Math.min(resList.length, 8);
+			for (int i=0; i<n; i++) {
+				ParamResolution res = resList[i];
 				String paramName = res.paramValueNode.getName();
 				String paramDeclaredOn = ((ParamNodeEx)res.paramDeclNode).getContainerNEDTypeInfo().getName();
 				String paramType = res.paramDeclNode.getAttribute(ParamNode.ATT_TYPE);
@@ -306,6 +314,8 @@ public class InifileUtils {
 				text += " (" + paramDeclaredOn + "." + paramName + " : "+ paramType + optComment + ")"; 
 				text +=	(section.equals(res.activeSection) ? "" : ", for sub-config ["+res.activeSection+"]") + "\n"; //XXX do we have module type, maybe param doc etc?
 			}
+			if (resList.length > n) 
+				text += "    ...\n";
 			return text;
 		}
 		else if (keyType == KeyType.PER_OBJECT_CONFIG) {

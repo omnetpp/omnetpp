@@ -19,6 +19,17 @@ import org.omnetpp.common.util.StringUtils;
  * @author Andras
  */
 public abstract class ContentProposalProvider implements IContentProposalProvider {
+	private boolean useWholePrefix = false;
+	
+	/**
+	 * Constructor.
+	 * @param useWholePrefix whether the whole substring before the cursor needs to be 
+	 *                       be matched by completions (false: only the last "word").
+	 */
+	public ContentProposalProvider(boolean useWholePrefix) {
+		this.useWholePrefix = useWholePrefix;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.jface.fieldassist.IContentProposalProvider#getProposals(java.lang.String, int)
 	 */
@@ -29,7 +40,7 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
 		
 		// calculate the last word that the user started to type. This is the basis of
 		// proposal filtering: they have to start with this prefix.
-		String prefixToMatch = getPrefixToMatch(prefix);
+		String prefixToMatch = useWholePrefix ? prefix : getSuffixToComplete(prefix);
 
 		IContentProposal[] candidates = getProposalCandidates(prefix);
 
@@ -59,14 +70,23 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
 
 		if (result.isEmpty()) {
 			// returning an empty array or null apparently causes NPE in the framework, so return a blank proposal instead
+			//XXX may cause multiple "(no proposal)" strings to appear in the text editor completion
 			result.add(new ContentProposal("", "(no proposal)", null, 0));
 		}
 		return result.toArray(new IContentProposal[] {});
 	}
 
-	protected String getPrefixToMatch(String prefix) {
-		//return prefix; -- use this when the line should only contain one word (e.g.true/false)
-		return prefix.replaceFirst("^.*?([A-Za-z0-9_]*)$", "$1");
+	/**
+	 * Return the suffix of the text (the last, incomplete "word" the user is typing) 
+	 * for which completions will be provided.
+	 * 
+	 *  Default version detects words (A-Z, a-z, 0-9, underscore); this can be overridden
+	 *  in subclasses.
+	 */
+	protected String getSuffixToComplete(String text) {
+		// calculate the last word that the user started to type. This is the basis of
+		// proposal filtering: they have to start with this prefix.
+		return text.replaceFirst("^.*?([A-Za-z0-9_]*)$", "$1");
 	}
 
 	/**

@@ -28,6 +28,7 @@ public class InifileConfigKeyContentProposalProvider extends ContentProposalProv
 	private InifileAnalyzer analyzer;
 
 	public InifileConfigKeyContentProposalProvider(String section, boolean addEqualSign, IInifileDocument doc, InifileAnalyzer analyzer) {
+		super(true);
 		this.section = section;
 		this.addEqualSign = addEqualSign;
 		this.doc = doc;
@@ -38,19 +39,20 @@ public class InifileConfigKeyContentProposalProvider extends ContentProposalProv
 		this.section = section;
 		this.addEqualSign = addEqualSign;
 	}
-	
+
 	/**
 	 * Generate a list of proposal candidates. They will be sorted and filtered by prefix
 	 * before presenting them to the user.
 	 */
 	protected IContentProposal[] getProposalCandidates(String prefix) {
 		ArrayList<IContentProposal> result = new ArrayList<IContentProposal>();
-		for (ConfigurationEntry e : ConfigurationRegistry.getEntries())
-			if (!doc.containsKey(section, e.getKey())) // don't propose those already there
-				if (!section.equals(GENERAL) || e!=CFGID_EXTENDS) {// don't propose "extends" in [General]
-					String content = e.getKey()+(addEqualSign ? " = " : "");
-					result.add(new ContentProposal(content, content, InifileUtils.getConfigTooltip(e, doc)));
-				}
+		// idea considered and discarded: don't propose those already there (would confuse user)
+		for (ConfigurationEntry e : ConfigurationRegistry.getEntries()) {
+			if (!section.equals(GENERAL) || e!=CFGID_EXTENDS) {// don't propose "extends" in [General]
+				String content = e.getKey()+(addEqualSign ? " = " : "");
+				result.add(new ContentProposal(content, content, InifileUtils.getConfigTooltip(e, doc)));
+			}
+		}
 		return result.toArray(new IContentProposal[]{});
 	}
 }

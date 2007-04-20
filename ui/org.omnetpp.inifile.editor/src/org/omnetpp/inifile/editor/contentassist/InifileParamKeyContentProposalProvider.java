@@ -23,6 +23,7 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 	private InifileAnalyzer analyzer;
 
 	public InifileParamKeyContentProposalProvider(String section, boolean addEqualSign, IInifileDocument doc, InifileAnalyzer analyzer) {
+		super(true);
 		this.section = section;
 		this.addEqualSign = addEqualSign;
 		this.doc = doc;
@@ -58,6 +59,8 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 				result.add(new ContentProposal(res.moduleFullPath.replaceFirst("^[^\\.]+", "**") + "." + res.paramValueNode.getName() + ".apply-default" + eq));
 				result.add(new ContentProposal(res.moduleFullPath + "." +res.paramValueNode.getName() + ".apply-default" + eq));
 			}
+			
+			return result.toArray(new IContentProposal[]{});
 		}
 
 		return null;

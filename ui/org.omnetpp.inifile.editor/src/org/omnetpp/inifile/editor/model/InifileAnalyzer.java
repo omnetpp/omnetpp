@@ -360,7 +360,7 @@ public class InifileAnalyzer {
 				// store with every key the list of parameters it resolves
 				for (ParamResolution res : resList) {
 					SectionData sectionData = ((SectionData)doc.getSectionData(activeSection));
-					sectionData.allParamResolutions.add(res);
+					sectionData.allParamResolutions.add(res); //XXX NPE!!!!
 					if (res.type == ParamResolutionType.UNASSIGNED)
 						sectionData.unassignedParams.add(res);
 
