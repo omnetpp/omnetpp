@@ -1,4 +1,4 @@
-package org.omnetpp.inifile.editor.actions;
+package org.omnetpp.ned.actions;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -7,7 +7,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.dialogs.ListDialog;
-import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.resources.NEDResources;
@@ -17,7 +16,7 @@ public class OpenNedTypeAction extends Action {
 	public OpenNedTypeAction() {
 		setText("Open NED Type");
 		setToolTipText("Open NED Type");
-		setImageDescriptor(InifileEditorPlugin.getImageDescriptor("icons/opennedtype.gif"));
+		setImageDescriptor(NEDResourcesPlugin.getImageDescriptor("icons/full/etool16/opennedtype.gif"));
 	}
 
 	public void run() {

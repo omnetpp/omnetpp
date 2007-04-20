@@ -13,8 +13,9 @@ import org.eclipse.ui.ide.IDEActionFactory;
 import org.eclipse.ui.part.MultiPageEditorActionBarContributor;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
+import org.omnetpp.common.IConstants;
 import org.omnetpp.common.editor.ShowViewAction;
-import org.omnetpp.inifile.editor.actions.OpenNedTypeAction;
+import org.omnetpp.ned.actions.OpenNedTypeAction;
 
 /**
  * Manages the installation/deinstallation of global actions for multi-page editors.
@@ -22,13 +23,10 @@ import org.omnetpp.inifile.editor.actions.OpenNedTypeAction;
  * Multi-page contributor replaces the contributors for the individual editors in the multi-page editor.
  */
 public class InifileEditorContributor extends MultiPageEditorActionBarContributor {
-	public static final String MODULEPARAMETERS_VIEW_ID = "org.omnetpp.inifile.ParameterAssignments";
-	public static final String MODULEHIERARCHY_VIEW_ID = "org.omnetpp.inifile.ModuleHierarchy";
-	
 	private IEditorPart activeEditorPart;
 	private IAction openNedTypeAction = new OpenNedTypeAction(); 
-	private IAction showModuleParametersView = new ShowViewAction(MODULEPARAMETERS_VIEW_ID); 
-	private IAction showModuleHierarchyView = new ShowViewAction(MODULEHIERARCHY_VIEW_ID); 
+	private IAction showModuleParametersView = new ShowViewAction(IConstants.MODULEPARAMETERS_VIEW_ID); 
+	private IAction showModuleHierarchyView = new ShowViewAction(IConstants.MODULEHIERARCHY_VIEW_ID); 
 
 	
 	/**

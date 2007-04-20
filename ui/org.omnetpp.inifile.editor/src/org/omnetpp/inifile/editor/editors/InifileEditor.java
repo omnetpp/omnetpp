@@ -30,6 +30,7 @@ import org.eclipse.ui.part.IShowInTargetList;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.omnetpp.common.IConstants;
 import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.inifile.editor.IGotoInifile;
@@ -355,6 +356,6 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	 * Method declared on IShowInTargetList
 	 */
 	public String[] getShowInTargetIds() {
-		return new String[] {InifileEditorContributor.MODULEHIERARCHY_VIEW_ID, InifileEditorContributor.MODULEPARAMETERS_VIEW_ID};
+		return new String[] {IConstants.MODULEHIERARCHY_VIEW_ID, IConstants.MODULEPARAMETERS_VIEW_ID};
 	}
 }
