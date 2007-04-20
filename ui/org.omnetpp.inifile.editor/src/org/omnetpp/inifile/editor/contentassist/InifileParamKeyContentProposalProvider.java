@@ -1,6 +1,10 @@
 package org.omnetpp.inifile.editor.contentassist;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.omnetpp.common.contentassist.ContentProposal;
@@ -42,24 +46,30 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 	protected IContentProposal[] getProposalCandidates(String prefix) {
 		if (section != null) {
 			String eq = addEqualSign ? " = " : "";
-			ArrayList<IContentProposal> result = new ArrayList<IContentProposal>();
 			ParamResolution[] resList = analyzer.getUnassignedParams(section);
-			
+
+			Set<String> proposals = new HashSet<String>(); 
 			//XXX offer only one step at a time?
-			result.add(new ContentProposal("**.apply-default" + eq));
+			proposals.add("**.apply-default" + eq);
 			for (ParamResolution res : resList) {
 				// offer three versions for each 
 				//XXX alternative: offer some continuations after each dot?
-				result.add(new ContentProposal("**." + res.paramValueNode.getName() + "" + eq));
-				result.add(new ContentProposal(res.moduleFullPath.replaceFirst("^[^\\.]+", "**") + "." + res.paramValueNode.getName() + "" + eq));
-				result.add(new ContentProposal(res.moduleFullPath + "." +res.paramValueNode.getName() + "" + eq));
+				proposals.add("**." + res.paramValueNode.getName() + "" + eq);
+				proposals.add(res.moduleFullPath.replaceFirst("^[^\\.]+", "**") + "." + res.paramValueNode.getName() + "" + eq);
+				proposals.add(res.moduleFullPath + "." +res.paramValueNode.getName() + "" + eq);
 
 				// propose .apply-default= lines; XXX only if at least some of these parameters have default value
-				result.add(new ContentProposal("**." + res.paramValueNode.getName() + ".apply-default" + eq));
-				result.add(new ContentProposal(res.moduleFullPath.replaceFirst("^[^\\.]+", "**") + "." + res.paramValueNode.getName() + ".apply-default" + eq));
-				result.add(new ContentProposal(res.moduleFullPath + "." +res.paramValueNode.getName() + ".apply-default" + eq));
+				proposals.add("**." + res.paramValueNode.getName() + ".apply-default" + eq);
+				proposals.add(res.moduleFullPath.replaceFirst("^[^\\.]+", "**") + "." + res.paramValueNode.getName() + ".apply-default" + eq);
+				proposals.add(res.moduleFullPath + "." +res.paramValueNode.getName() + ".apply-default" + eq);
 			}
 			
+			// sort, and convert to IContentProposal[]
+			String[] a = proposals.toArray(new String[]{});
+			Arrays.sort(a);
+			ArrayList<IContentProposal> result = new ArrayList<IContentProposal>();
+			for (String x : a)
+				result.add(new ContentProposal(x));
 			return result.toArray(new IContentProposal[]{});
 		}
 

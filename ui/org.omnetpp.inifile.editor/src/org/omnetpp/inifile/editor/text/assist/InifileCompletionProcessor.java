@@ -122,15 +122,13 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 					// offer key completion proposals
 					IContentProposalProvider configProposalProvider = new InifileConfigKeyContentProposalProvider(section, true, doc, editorData.getInifileAnalyzer());
 					IContentProposal[] keyProposals = configProposalProvider.getProposals(linePrefix, linePrefix.length());
-					for (IContentProposal p : keyProposals)
-						result.add(convertToCompletionProposal(p, documentOffset));
+					addProposals(result, keyProposals, documentOffset);
 
 					// offer unassigned parameters
 					if (section != null) {
 						IContentProposalProvider paramProposalProvider = new InifileParamKeyContentProposalProvider(section, true, doc, editorData.getInifileAnalyzer());
 						IContentProposal[] paramProposals = paramProposalProvider.getProposals(linePrefix, linePrefix.length());
-						for (IContentProposal p : paramProposals)
-							result.add(convertToCompletionProposal(p, documentOffset));
+						addProposals(result, paramProposals, documentOffset);
 					}
 				}
 				else {
@@ -141,8 +139,7 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 					IContentProposal[] valueProposals = proposalProvider.getProposals(value, value.length());
 					
 					// re-wrap IContentProposals as ICompletionProposal
-					for (IContentProposal p : valueProposals)
-						result.add(convertToCompletionProposal(p, documentOffset));
+					addProposals(result, valueProposals, documentOffset);
 				}
 			}
 		}
@@ -179,11 +176,18 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 		return ContextType.NORMAL;
 	}
 
-	private ICompletionProposal convertToCompletionProposal(IContentProposal p, int documentOffset) {
+	protected static void addProposals(List<ICompletionProposal> result, IContentProposal[] paramProposals, int documentOffset) {
+		if (paramProposals.length==1 && paramProposals[0].getContent().equals(""))
+			return;  // workaround: don't add "(no proposal)" proposal -- see ContentProposalProvider class
+		for (IContentProposal p : paramProposals)
+			result.add(convertToCompletionProposal(p, documentOffset));
+	}
+
+	protected static ICompletionProposal convertToCompletionProposal(IContentProposal p, int documentOffset) {
 		return new CompletionProposal(p.getContent(), documentOffset, 0, p.getCursorPosition(), null, p.getLabel(), null, p.getDescription());
 	}
 	
-	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Set<String> proposals, String description) {
+	protected void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Set<String> proposals, String description) {
 		result.addAll(createProposals(viewer, documentOffset, NedHelper.spaceSeparatedWordDetector, "", proposals.toArray(new String[0]), "", description));
 	}
 
@@ -192,13 +196,11 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 	}
 
 	public char[] getCompletionProposalAutoActivationCharacters() {
-		//return null;
 		return new char[] { '.', '=' };
 	}
 
 	public char[] getContextInformationAutoActivationCharacters() {
-		return null;
-		//XXX return new char[] { '(' };
+		return null;  //XXX new char[] { '(' };
 	}
 
 	public IContextInformationValidator getContextInformationValidator() {
