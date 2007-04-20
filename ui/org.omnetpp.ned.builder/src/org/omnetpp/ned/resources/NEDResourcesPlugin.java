@@ -139,20 +139,30 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 	 * @param element must NOT be null, and MUST be part of the model (i.e. in NEDResourcesPlugin)
 	 */
 	public static void openNEDElementInEditor(NEDElement element) {
-		INEDTypeInfo typeInfo = element.getContainerNEDTypeInfo();
-		IFile file = typeInfo.getNEDFile();
-		
+        openNEDElementInEditor(element, IGotoNedElement.Mode.AUTOMATIC);
+	}
+
+    /**
+     * Opens the given NEDElement in a NED editor, and positions the cursor on it.
+     * @param element must NOT be null, and MUST be part of the model (i.e. in NEDResourcesPlugin)
+     * @param mode IGotoNedElement.Mode whether the editor should be opened in text or grahical mode
+     *             or in automatic mode 
+     */
+    public static void openNEDElementInEditor(NEDElement element, IGotoNedElement.Mode mode) {
+        INEDTypeInfo typeInfo = element.getContainerNEDTypeInfo();
+        IFile file = typeInfo.getNEDFile();
+        
         try {
             IEditorPart editor = EditorUtil.openEditor(file, NED_EDITOR_ID, true);
-
+            
             // select the component so it will be visible in the opened editor
             if (editor instanceof IGotoNedElement) {
-            		((IGotoNedElement)editor).showInEditor(element, IGotoNedElement.Mode.AUTOMATIC);
+                ((IGotoNedElement)editor).showInEditor(element, mode);
             }
         } catch (PartInitException e) {
-        	// no message dialog is needed, because the platform displays an erroreditpart anyway 
+            // no message dialog is needed, because the platform displays an erroreditpart anyway 
             logError("Cannot open NED editor", e);
         }
-	}
+    }
 	
 }
