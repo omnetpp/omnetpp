@@ -5,6 +5,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.text.BadLocationException;
@@ -104,11 +110,25 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 			if ("include".startsWith(linePrefix)) {
 				proposals.add("include ");
 			}
-			if (linePrefix.matches("include\\s.*")) {
-				// include directive: offer filenames
-				proposals.add("foo.ini");
-				proposals.add("bar.ini");
-				proposals.add("somethingelse.ini"); //XXX
+			if (linePrefix.matches("include\\b.*")) {
+				// include directive: offer directories and ini files (relative to the edited file)
+				try {
+					IContainer currentDir = doc.getDocumentFile().getParent();
+					String arg = linePrefix.replaceFirst("include\\b\\s*(.*)", "$1"); 
+					String argDir = arg.replaceFirst("(.*/)", "$1"); // stuff up to the last "/"
+					IResource dir = argDir.equals("") ? currentDir : currentDir.findMember(new Path(argDir));
+					if (dir != null && dir instanceof IFolder) {
+						for (IResource resource : ((IFolder)dir).members()) {
+							if (resource instanceof IFile && "ini".equals(resource.getFileExtension()))
+								proposals.add(argDir + resource.getName());
+							if (resource instanceof IFolder)
+								proposals.add(argDir + resource.getName()+"/");
+						}
+						proposals.add(argDir + "../");
+					}
+				} catch (CoreException e) {
+					InifileEditorPlugin.logError(e);
+				}
 			}
 			if (linePrefix.length()==0 || linePrefix.startsWith("[")) {
 				// section heading
@@ -119,17 +139,17 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 			if (!linePrefix.startsWith("[") && !linePrefix.matches("include\\s.*")) {
 				// key-value line
 				if (!linePrefix.contains("=")) {
-					// offer key completion proposals
-					IContentProposalProvider configProposalProvider = new InifileConfigKeyContentProposalProvider(section, true, doc, editorData.getInifileAnalyzer());
-					IContentProposal[] keyProposals = configProposalProvider.getProposals(linePrefix, linePrefix.length());
-					addProposals(result, keyProposals, documentOffset);
-
-					// offer unassigned parameters
+					// offer parameter keys
 					if (section != null) {
 						IContentProposalProvider paramProposalProvider = new InifileParamKeyContentProposalProvider(section, true, doc, editorData.getInifileAnalyzer());
 						IContentProposal[] paramProposals = paramProposalProvider.getProposals(linePrefix, linePrefix.length());
 						addProposals(result, paramProposals, documentOffset);
 					}
+
+					// offer configuration keys
+					IContentProposalProvider configProposalProvider = new InifileConfigKeyContentProposalProvider(section, true, doc, editorData.getInifileAnalyzer());
+					IContentProposal[] keyProposals = configProposalProvider.getProposals(linePrefix, linePrefix.length());
+					addProposals(result, keyProposals, documentOffset);
 				}
 				else {
 					// offer value completions

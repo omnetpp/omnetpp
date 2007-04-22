@@ -7,17 +7,25 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_USER_
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.text.templates.Template;
 import org.omnetpp.common.contentassist.ContentProposal;
 import org.omnetpp.common.contentassist.ContentProposalProvider;
+import org.omnetpp.common.editor.text.NedCompletionHelper;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
+import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
+import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
@@ -45,7 +53,7 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
 		this.section = section;
 		this.key = key;
 	}
-	
+
 	/**
 	 * Generate a list of proposal candidates. They will be sorted and filtered by prefix
 	 * before presenting them to the user.
@@ -104,29 +112,69 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
 		if (analyzer==null)
 			return null; // sorry
 
-		return toProposals(new String[] {"TODO", "FIXME", "XXX", section, key}); //XXX
+		ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
 
-//		ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
-//		for (ParamResolution res : resList)
-//			; //TODO
-//		return null; //XXX
+		// collect unique param nodes
+		Set<ParamNode> paramSet = new HashSet<ParamNode>();
+		for (ParamResolution res : resList)
+			paramSet.add(res.paramDeclNode);
+
+		// determine param type (all params matched must have the same type)
+		int dataType = -1;
+		for (ParamNode par : paramSet) {
+			if (dataType == -1)
+				dataType = par.getType();
+			else if (dataType != par.getType())
+				return null; // just refuse to suggest anything if types are inconsistent
+		}
+
+		// generate proposals
+		//XXX offer default value?
+		//XXX make use of parameter's @choice etc properties?
+		String[] p = null;
+		switch (dataType) {
+		case NEDElementUtil.NED_PARTYPE_BOOL: 
+			p = new String[] {"true", "false"}; 
+			break;
+		case NEDElementUtil.NED_PARTYPE_INT: 
+		case NEDElementUtil.NED_PARTYPE_DOUBLE:
+			//XXX shoulds use it as template...
+			p = templatesToProposals(NedCompletionHelper.proposedNedDistributionsTempl); 
+			break;
+		case NEDElementUtil.NED_PARTYPE_STRING: 
+			p = new String[] {"\"\""}; 
+			break;
+		case NEDElementUtil.NED_PARTYPE_XML: 
+			p = new String[] {"xmldoc(\"filename\")", "xmldoc(\"filename\", \"xpath\")"}; 
+			break; //XXX should be template?
+		}
+		return p==null ? null : toProposals(p);
+	}
+
+	protected static String[] templatesToProposals(Template[] templates) {
+		String[] s = new String[templates.length];
+		for (int i=0; i<templates.length; i++) {
+			Template template = templates[i];
+			s[i] = template.getName(); //XXX not very clean, or good even...
+		}
+		return s;
 	}
 
 	/**
 	 * Generate proposals for per-object configuration keys
 	 */
 	protected IContentProposal[] getCandidatesForPerObjectConfig() {
-		//XXX TODO...		
-		//		if (key.endsWith(".apply-default") || key.endsWith(".ev-output")) {
-		//			proposals.add("true\n");
-		//			proposals.add("false\n");
-		//		}
-		//		if (key.endsWith(".record-interval")) { 
-		//			proposals.add("$1..");
-		//			proposals.add("$1..$2");
-		//			proposals.add("..$2"); //XXX use templated proposals here!
-		//		}
-		return null;
+		List<String> proposals = new ArrayList<String>();
+		if (key.endsWith(".apply-default") || key.endsWith(".ev-output")) {
+			proposals.add("true\n");
+			proposals.add("false\n");
+		}
+		if (key.endsWith(".record-interval")) { 
+			proposals.add("$1..");
+			proposals.add("$1..$2");
+			proposals.add("..$2"); //XXX use templated proposals here!
+		}
+		return toProposals(proposals.toArray(new String[]{}));
 	}
-	
+
 }

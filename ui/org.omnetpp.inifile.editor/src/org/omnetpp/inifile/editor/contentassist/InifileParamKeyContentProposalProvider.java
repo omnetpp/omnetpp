@@ -21,6 +21,8 @@ import org.omnetpp.inifile.editor.model.ParamResolution;
  * @author Andras
  */
 //XXX for this to work well, parser SHOULD NOT STOP ON THE FIRST ERROR!!! should just go on.
+//XXX suggest apply-default for parameters that have default value?
+//XXX add icons (different icon for modules, parameters, apply-default, config,...)
 public class InifileParamKeyContentProposalProvider extends ContentProposalProvider {
 	private String section;
 	private boolean addEqualSign = false;
@@ -46,7 +48,6 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 	 */
 	protected IContentProposal[] getProposalCandidates(String prefix) {
 		if (section != null) {
-			String eq = addEqualSign ? " = " : "";
 			ParamResolution[] resList = analyzer.getUnassignedParams(section);
 
 			// collect unique full paths
@@ -57,7 +58,7 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 			Set<String> moduleProposals = new HashSet<String>();
 			Set<String> paramProposals = new HashSet<String>();
 			Set<String> otherProposals = new HashSet<String>();
-			
+
 			// find last "**" or "." ==> (part1,rest)
 			int lastDotPos = prefix.lastIndexOf('.');
 			int lastXXPos = prefix.lastIndexOf("**");
@@ -65,6 +66,9 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 			String prefixPart1 = prefix.substring(0, restPos);  // if no dot or **, prefixPart1 will be ""
 			String prefixRest = prefix.substring(restPos);
 			//System.out.println("prefix: "+prefixPart1+" + "+prefixRest);
+
+			// after "*" or "**" we'll want to add an extra dot
+			String optDot = prefix.endsWith("*") ? "." : ""; 
 			
 			// check every fullPath:
 			PatternMatcher prefixPart1Matcher = new PatternMatcher(prefixPart1, true, true, true);
@@ -84,11 +88,11 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 							// offer only the next submodule (i.e. rest up to the next dot)
 							int restDotPos = fullPathRest.indexOf('.');
 							String nextSubmodule = fullPathRest.substring(0, restDotPos+1);
-							moduleProposals.add(prefixPart1+nextSubmodule);
+							moduleProposals.add(prefixPart1+optDot+nextSubmodule);
 						}
 						else {
 							// if rest contains no dot, then it is the last segment of fullpath: the parameter name
-							paramProposals.add(prefixPart1+fullPathRest);
+							paramProposals.add(prefixPart1+optDot+fullPathRest);
 						}
 					}
 				}
@@ -96,16 +100,19 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 
 			// add ** and * as proposals, if it looks appropriate
 			if (!prefixPart1.endsWith("*") && !prefixPart1.endsWith("*.") && !moduleProposals.isEmpty()) {
-				String prefixPart1dot = prefixPart1.endsWith(".") ? prefixPart1 : (prefixPart1+"."); 
+				String prefixPart1dot = (prefixPart1.length()==0 || prefixPart1.endsWith(".")) ? prefixPart1 : (prefixPart1+"."); 
 				otherProposals.add(prefixPart1dot+"*.");
 				otherProposals.add(prefixPart1dot+"**.");
 			}
 			
+			if (!doc.containsKey(section, "**.apply-default"))
+				otherProposals.add("**.apply-default");
+			
 			// convert strings to actual proposals, and return them
 			List<IContentProposal> proposals = new ArrayList<IContentProposal>();
-			addProposals(proposals, moduleProposals, "", "");
-			addProposals(proposals, paramProposals, " = ", " = ");
-			addProposals(proposals, otherProposals, "", "");
+			addProposals(proposals, moduleProposals, "");
+			addProposals(proposals, paramProposals, ""); 
+			addProposals(proposals, otherProposals, "");
 
 			return proposals.toArray(new IContentProposal[]{});
 		}
@@ -113,8 +120,13 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 		return null;
 	}
 
-	private void addProposals(List<IContentProposal> proposals, Set<String> texts, String suffix, String labelSuffix) {
-		for (String text : texts)
-			proposals.add(new ContentProposal(text+suffix, text+labelSuffix, null));
+	private void addProposals(List<IContentProposal> proposals, Set<String> texts, String label) {
+		if (!label.equals(""))
+			label = " -- " + label;
+		for (String text : texts) {
+			if (!text.endsWith(".") && addEqualSign) 
+				text += " = "; 
+			proposals.add(new ContentProposal(text, text+label, null));
+		}
 	}
 }

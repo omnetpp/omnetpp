@@ -25,8 +25,7 @@ public class InifileReconcileStrategy implements IReconcilingStrategy {
 	}
 
 	public void reconcile(DirtyRegion dirtyRegion, IRegion subRegion) {
-		// XXX this does not seem to get called, at least in our setup...
-		System.out.println("reconcile(DirtyRegion,IRegion) called");
+		// not called in our setup
 	}
 
 	public void reconcile(IRegion partition) {
