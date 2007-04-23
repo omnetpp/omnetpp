@@ -368,8 +368,10 @@ public class InifileAnalyzer {
 			if (dataType == NED_PARTYPE_INT)  
 				dataType = NED_PARTYPE_DOUBLE;
 
-			if (valueType!=-1 && valueType!=dataType)
-				addError(section, key, "Wrong data type: "+dataType+" expected"); //XXX
+			if (valueType!=-1 && valueType!=dataType) {
+				String typeName = resList[0].paramDeclNode.getAttribute(ParamNode.ATT_TYPE);
+				addError(section, key, "Wrong data type: "+typeName+" expected"); //XXX
+			}
 		}
 	}
 
