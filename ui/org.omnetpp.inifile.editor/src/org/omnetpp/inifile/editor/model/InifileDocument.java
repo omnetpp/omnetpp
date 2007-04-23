@@ -11,7 +11,11 @@ import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
@@ -19,6 +23,9 @@ import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.ui.texteditor.MarkerUtilities;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
+import org.omnetpp.ned.model.notification.INEDChangeListener;
+import org.omnetpp.ned.model.notification.NEDModelEvent;
+import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
  * Standard implementation of IInifileDocument. Setters change the 
@@ -28,6 +35,7 @@ import org.omnetpp.inifile.editor.InifileEditorPlugin;
  * 
  * @author Andras
  */
+//XXX thread safety: make the entire class synchronized ?
 //XXX validate new keys (after add/rename)! must not contain "=", "#", ";", whitespace, etc...  
 //XXX validate section names (after add/rename)! must not contain "[", "]", "#", ";", newline, tab,...
 //XXX ^^^ see InifileUtils.validateParameterKey too
@@ -75,7 +83,9 @@ public class InifileDocument implements IInifileDocument {
 	private ArrayList<IncludeLine> bottomIncludes = new ArrayList<IncludeLine>();
 
 	// listeners
-	private IDocumentListener listener; // we listen on IDocument
+	private IDocumentListener documentListener; // we listen on IDocument
+	private IResourceChangeListener resourceChangeListener; // we listen on the workspace
+	private INEDChangeListener nedChangeListener; // we listen on NED changes
 	private InifileChangeListenerList listeners = new InifileChangeListenerList(); // clients that listen on us
 
 
@@ -85,23 +95,57 @@ public class InifileDocument implements IInifileDocument {
 		this.changed = true;
 
 		// listen on changes so we know when we need to re-parse
-		listener = new IDocumentListener() {
+		hookListeners();
+	}
+
+	protected void hookListeners() {
+		// listen on text editor changes
+		documentListener = new IDocumentListener() {
 			public void documentAboutToBeChanged(DocumentEvent event) {}
 			public void documentChanged(DocumentEvent event) {
-				synchronized (InifileDocument.this) {
-					changed = true;
-					fireModelChanged();				
+				markAsChanged();				
+			}
+		};
+		document.addDocumentListener(documentListener);
+
+		// listen of workspace changes (we need to invalidate the doc when an included inifile has changed)
+		resourceChangeListener = new IResourceChangeListener() {
+			public void resourceChanged(IResourceChangeEvent event) {
+				if (event.getType() == IResourceChangeEvent.POST_CHANGE) {
+					IResource resource = event.getResource();
+					if (resource instanceof IFile && resource.getFileExtension().equals("ini")) {
+						markAsChanged();
+					}
 				}
 			}
 		};
-		document.addDocumentListener(listener);
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener);
+		
+		// listen on NED changes as well
+		nedChangeListener = new INEDChangeListener() {
+			public void modelChanged(NEDModelEvent event) {
+				markAsChanged();
+			}
+		};
+		NEDResourcesPlugin.getNEDResources().getNEDModelChangeListenerList().add(nedChangeListener);
+	}
+
+	public synchronized void markAsChanged() {
+		changed = true;
+		fireModelChanged();
 	}
 
 	/** 
 	 * To be called from the editor!
 	 */ 
 	public void dispose() {
-		document.removeDocumentListener(listener);
+		unhookListeners();
+	}
+
+	protected void unhookListeners() {
+		document.removeDocumentListener(documentListener);
+		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
+		NEDResourcesPlugin.getNEDResources().getNEDModelChangeListenerList().remove(nedChangeListener);
 	}
 
 	synchronized public void parseIfChanged() {
@@ -120,79 +164,101 @@ public class InifileDocument implements IInifileDocument {
 
 		try {
 			documentFile.deleteMarkers(INIFILEPROBLEM_MARKER_ID, true, IResource.DEPTH_ZERO);
+			//XXX remove from included files too?
 		} catch (CoreException e1) {
 			InifileEditorPlugin.logError(e1);
 		}
 
-		try {
-			new InifileParser().parse(streamReader, new InifileParser.ParserCallback() {
-				Section currentSection = null;
-				SectionHeadingLine currentSectionHeading = null;
-				IFile currentFile = documentFile; 
+		class Callback implements InifileParser.ParserCallback {
+			Section currentSection = null;
+			SectionHeadingLine currentSectionHeading = null;
+			IFile currentFile; 
 
-				public void blankOrCommentLine(int lineNumber, int numLines, String rawLine, String comment) {
-					// ignore
+			public Callback(IFile file) {
+				this.currentFile = file;
+			}
+
+			public void blankOrCommentLine(int lineNumber, int numLines, String rawLine, String comment) {
+				// ignore
+			}
+
+			public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String comment) {
+				// add if such section not yet exists
+				Section section = sections.get(sectionName);
+				if (section == null) {
+					section = new Section();
+					sections.put(sectionName, section);
 				}
 
-				public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String comment) {
-					// add if such section not yet exists
-					Section section = sections.get(sectionName);
-					if (section == null) {
-						section = new Section();
-						sections.put(sectionName, section);
-					}
+				// add line
+				SectionHeadingLine line = new SectionHeadingLine();
+				line.file = currentFile;
+				line.lineNumber = lineNumber;
+				line.numLines = numLines;
+				line.comment = comment;
+				line.sectionName = sectionName;
+				line.lastLine = line.lineNumber + line.numLines - 1;
+				section.headingLines.add(line);
+				mainFileSectionHeadingLines.add(line);
+				currentSection = section;
+				currentSectionHeading = line;
+			}
 
-					// add line
-					SectionHeadingLine line = new SectionHeadingLine();
+			public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String comment) {
+				if (currentSection==null)
+					addError(currentFile, lineNumber, "Entry occurs before first section heading");
+				else if (currentSection.entries.containsKey(key)) {
+					KeyValueLine line = currentSection.entries.get(key);
+					String location = (line.file==currentFile ? "" : line.file.getName()+" ") + "line " + line.lineNumber;
+					addWarning(currentFile, lineNumber, "Duplicate key, ignored (see "+location+")");
+				}
+				else {
+					KeyValueLine line = new KeyValueLine();
 					line.file = currentFile;
 					line.lineNumber = lineNumber;
 					line.numLines = numLines;
 					line.comment = comment;
-					line.sectionName = sectionName;
-					line.lastLine = line.lineNumber + line.numLines - 1;
-					section.headingLines.add(line);
-					mainFileSectionHeadingLines.add(line);
-					currentSection = section;
-					currentSectionHeading = line;
+					line.key = key;
+					line.value = value;
+					mainFileKeyValueLines.add(line);
+					currentSection.entries.put(key, line);
+					currentSectionHeading.lastLine = line.lineNumber + line.numLines - 1;
 				}
+			}
 
-				public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String comment) {
-					if (currentSection==null)
-						addError(currentFile, lineNumber, "Entry occurs before first section heading");
-					else if (currentSection.entries.containsKey(key))
-						addWarning(currentFile, lineNumber, "Duplicate key, ignored");
-					else {
-						KeyValueLine line = new KeyValueLine();
-						line.file = currentFile;
-						line.lineNumber = lineNumber;
-						line.numLines = numLines;
-						line.comment = comment;
-						line.key = key;
-						line.value = value;
-						mainFileKeyValueLines.add(line);
-						currentSection.entries.put(key, line);
-						currentSectionHeading.lastLine = line.lineNumber + line.numLines - 1;
+			public void directiveLine(int lineNumber, int numLines, String rawLine, String directive, String args, String comment) {
+				if (!directive.equals("include"))
+					addError(currentFile, lineNumber, "Unknown directive");
+				else { 
+					IncludeLine line = new IncludeLine();
+					line.file = currentFile;
+					line.lineNumber = lineNumber;
+					line.numLines = numLines;
+					line.comment = comment;
+					line.includedFile = args;
+
+					// recursively parse the included file
+					try {
+						IFile file = currentFile.getParent().getFile(new Path(line.includedFile));
+						new InifileParser().parse(file, new Callback(file));
+					} 
+					catch (ParseException e) {
+						addError(currentFile, e.getLineNumber(), e.getMessage());
+					} catch (IOException e) {
+						addError(currentFile, lineNumber, e.getMessage());
+					} catch (CoreException e) {
+						addError(currentFile, lineNumber, e.getMessage());
 					}
 				}
+			}
 
-				public void directiveLine(int lineNumber, int numLines, String rawLine, String directive, String args, String comment) {
-					if (!directive.equals("include"))
-						addError(currentFile, lineNumber, "Unknown directive");
-					else { 
-						IncludeLine line = new IncludeLine();
-						line.file = currentFile;
-						line.lineNumber = lineNumber;
-						line.numLines = numLines;
-						line.comment = comment;
-						line.includedFile = args;
-						// TODO: at this point, we should recursively parse that file as well
-					}
-				}
+			public void parseError(int lineNumber, int numLines, String message) {
+				addError(currentFile, lineNumber, message);
+			}
+		}
 
-				public void parseError(int lineNumber, int numLines, String message) {
-					addError(currentFile, lineNumber, message);
-				}
-			});
+		try {
+			new InifileParser().parse(streamReader, new Callback(documentFile));
 		} 
 		catch (IOException e) {
 			// cannot happen with string input
@@ -264,8 +330,9 @@ public class InifileDocument implements IInifileDocument {
 	}
 
 	/**
-	 * Adds a line to IDocument at the given lineNumber (1-based). Existing lineNumber
-	 * will be shifted down. Line text is to be specified without the trailing newline.
+	 * Adds a line to IDocument at the given lineNumber (1-based). Existing line
+	 * at lineNumber will be shifted down. Line text is to be specified without
+	 * the trailing newline.
 	 */
 	synchronized protected void addLineAt(int lineNumber, String text) {
 		try {
@@ -304,12 +371,18 @@ public class InifileDocument implements IInifileDocument {
 		return lookupEntry(section, key) != null;
 	}
 
+	/**
+	 * Returns the given entry, or null if it does not exist.
+	 */
 	protected KeyValueLine lookupEntry(String sectionName, String key) {
 		parseIfChanged();
 		Section section = sections.get(sectionName);
 		return section == null ? null : section.entries.get(key);
 	}
 
+	/**
+	 * Returns the given entry; throws exception if entry does not exist.
+	 */
 	protected KeyValueLine getEntry(String sectionName, String key) {
 		KeyValueLine line = lookupEntry(sectionName, key);
 		if (line == null)
@@ -317,6 +390,9 @@ public class InifileDocument implements IInifileDocument {
 		return line;
 	}
 
+	/**
+	 * Returns the given entry; throws exception if entry does not exist, or it is in an included file.
+	 */
 	protected KeyValueLine getEditableEntry(String sectionName, String key) {
 		KeyValueLine line = getEntry(sectionName, key);
 		if (!isEditable(line))
@@ -380,10 +456,8 @@ public class InifileDocument implements IInifileDocument {
 	}
 
 	public void removeKey(String section, String key) {
-		KeyValueLine line = lookupEntry(section, key);
-		if (line != null) { //XXX isEditable
-			replaceLine(line, null);
-		}
+		KeyValueLine line = getEditableEntry(section, key);
+		replaceLine(line, null);
 	}
 
 	public void moveKey(String section, String key, String beforeKey) {

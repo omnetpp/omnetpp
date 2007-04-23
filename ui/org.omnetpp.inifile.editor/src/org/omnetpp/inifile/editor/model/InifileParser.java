@@ -118,7 +118,11 @@ public class InifileParser {
 				// include directive
 				String directive = "include";
 				String rest = line.substring(directive.length());
-				int endPos = findEndContent(rest, 0, reader.getLineNumber());
+				int endPos = findEndContent(rest, 0);
+				if (endPos == -1) {
+					callback.parseError(lineNumber, numLines, "Unterminated string constant");
+					continue;
+				}
 				String args = rest.substring(0, endPos).trim();
 				String comment = (endPos==rest.length()) ? null : rest.substring(endPos);
 				callback.directiveLine(lineNumber, numLines, rawLine, directive, args, comment);
@@ -136,7 +140,11 @@ public class InifileParser {
 			}
 			else {
 				// key = value
-				int endPos = findEndContent(line, 0, reader.getLineNumber());
+				int endPos = findEndContent(line, 0);
+				if (endPos == -1) {
+					callback.parseError(lineNumber, numLines, "Unterminated string constant");
+					continue;
+				}
 				String comment = (endPos==line.length()) ? null : line.substring(endPos);
 				String keyValue = line.substring(0, endPos);
 				int equalSignPos = keyValue.indexOf('=');
@@ -158,9 +166,11 @@ public class InifileParser {
 	/**
 	 * Returns the position of the comment on the given line (i.e. the position of the
 	 * # or ; character), or line.length() if no comment is found. String literals
-	 * are recognized and skipped properly. 
+	 * are recognized and skipped properly.
+	 * 
+	 * Returns -1 if line contains an unterminated string literal.
 	 */
-	private static int findEndContent(String line, int fromPos, int currentLineNumber) throws ParseException {
+	private static int findEndContent(String line, int fromPos) {
 		int k = fromPos;
 		while (k < line.length()) {
 			switch (line.charAt(k)) {
@@ -173,7 +183,7 @@ public class InifileParser {
 					k++;  
 				}
 				if (k >= line.length())
-					; //XXX callback.parseError(currentLineNumber, "unterminated string literal");
+					return -1; // meaning "unterminated string literal"
 				k++;
 				break;
 			case '#': case ';':

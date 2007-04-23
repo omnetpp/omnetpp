@@ -47,10 +47,12 @@ public class InifileConfigKeyContentProposalProvider extends ContentProposalProv
 	protected IContentProposal[] getProposalCandidates(String prefix) {
 		ArrayList<IContentProposal> result = new ArrayList<IContentProposal>();
 		// idea considered and discarded: don't propose those already there (would confuse user)
-		for (ConfigurationEntry e : ConfigurationRegistry.getEntries()) {
-			if (!section.equals(GENERAL) || e!=CFGID_EXTENDS) {// don't propose "extends" in [General]
-				String content = e.getKey()+(addEqualSign ? " = " : "");
-				result.add(new ContentProposal(content, content, InifileUtils.getConfigTooltip(e, doc)));
+		if (section != null) {
+			for (ConfigurationEntry e : ConfigurationRegistry.getEntries()) {
+				if (!section.equals(GENERAL) || e!=CFGID_EXTENDS) {// don't propose "extends" in [General]
+					String content = e.getKey()+(addEqualSign ? " = " : "");
+					result.add(new ContentProposal(content, content, InifileUtils.getConfigTooltip(e, doc)));
+				}
 			}
 		}
 		return result.toArray(new IContentProposal[]{});

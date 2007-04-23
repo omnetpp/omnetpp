@@ -2,6 +2,7 @@ package org.omnetpp.inifile.editor.editors;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -48,8 +49,6 @@ import org.omnetpp.inifile.editor.views.InifileContentOutlinePage;
  * Editor for omnetpp.ini files.
  */
 //FIXME File|Revert is always diabled; same for Redo/Undo
-//XXX should listen on workspace changes (of included ini files)
-//XXX does not seem to listen on NED changes???
 public class InifileEditor extends MultiPageEditorPart implements IResourceChangeListener, IGotoMarker, IGotoInifile, IShowInSource, IShowInTargetList {
 	/* editor pages */
 	private InifileTextEditor textEditor;
@@ -271,13 +270,14 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	/**
 	 * Called on workspace changes.
 	 */
-	public void resourceChanged(final IResourceChangeEvent event){
+	public void resourceChanged(IResourceChangeEvent event) {
 		// close editor on project close
 		if (event.getType() == IResourceChangeEvent.PRE_CLOSE) {
 			final IEditorPart thisEditor = this;
+			final IResource resource = event.getResource();
 			Display.getDefault().asyncExec(new Runnable(){
 				public void run(){
-					if (((FileEditorInput)thisEditor.getEditorInput()).getFile().getProject().equals(event.getResource())) {
+					if (((FileEditorInput)thisEditor.getEditorInput()).getFile().getProject().equals(resource)) {
 						thisEditor.getSite().getPage().closeEditor(thisEditor, true);
 					}
 				}            

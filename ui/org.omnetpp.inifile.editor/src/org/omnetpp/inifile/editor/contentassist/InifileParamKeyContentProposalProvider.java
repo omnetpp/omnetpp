@@ -20,7 +20,6 @@ import org.omnetpp.inifile.editor.model.ParamResolution;
  * 
  * @author Andras
  */
-//XXX for this to work well, parser SHOULD NOT STOP ON THE FIRST ERROR!!! should just go on.
 //XXX suggest apply-default for parameters that have default value?
 //XXX add icons (different icon for modules, parameters, apply-default, config,...)
 public class InifileParamKeyContentProposalProvider extends ContentProposalProvider {
