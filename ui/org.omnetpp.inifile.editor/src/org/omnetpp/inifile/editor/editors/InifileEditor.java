@@ -148,7 +148,6 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		int cursorLine = textEditor.getCursorLine();
 		String section = getEditorData().getInifileDocument().getSectionForLine(cursorLine);
 		String key = getEditorData().getInifileDocument().getKeyForLine(cursorLine);
-		System.out.println("Line: "+cursorLine+" section:"+section+" key="+key);
 		setSelection(section, key);
 	}
 

@@ -178,7 +178,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 		if (isDisposed())
 			return;
 		
-        System.out.println("*** CONTENT REBUILD");
+        //System.out.println("*** CONTENT REBUILD");
 		IEditorPart activeEditor = getActiveEditor();
 		if (activeEditor==null) {
 			displayMessage("There is no active editor.");

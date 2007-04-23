@@ -1,7 +1,6 @@
 package org.omnetpp.inifile.editor.views;
 
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
-import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -17,7 +16,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -37,8 +35,8 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
+import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.model.NEDElement;
-import org.omnetpp.ned.resources.NEDResources;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 
@@ -264,18 +262,17 @@ public class ModuleParametersView extends AbstractModuleView {
 	}
 	
 	@Override
-	public void buildContent(NEDElement module, InifileAnalyzer ana, String section, String key) {
-		if (ana==null) {
+	public void buildContent(NEDElement module, InifileAnalyzer analyzer, String section, String key) {
+		if (analyzer==null) {
 			displayMessage("Not an inifile editor."); //XXX
 		}
 		else {
 			if (section==null)
 				section = GENERAL;
 			hideMessage();
-			inifileAnalyzer = ana;
-			inifileDocument = ana.getDocument();
-			ParamResolution[] pars = unassignedOnly ? ana.getUnassignedParams(section) : ana.getParamResolutions(section);
-			System.out.println("ModuleParametersView: "+pars.length+" lines");
+			inifileAnalyzer = analyzer;
+			inifileDocument = analyzer.getDocument();
+			ParamResolution[] pars = unassignedOnly ? analyzer.getUnassignedParams(section) : analyzer.getParamResolutions(section);
 			tableViewer.setInput(pars);
 			label.setText("Section ["+section+"], " + (unassignedOnly ?"unassigned parameters" : "all parameters"));
 		}

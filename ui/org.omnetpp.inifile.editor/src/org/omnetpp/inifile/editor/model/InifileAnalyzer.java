@@ -5,6 +5,8 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_NETWO
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
+import static org.omnetpp.ned.model.NEDElementUtil.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +25,7 @@ import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
@@ -36,6 +39,12 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
  * This is a layer above IInifileDocument, and contains info about the
  * relationship of inifile contents and NED. For example, which inifile
  * parameter settings apply to which NED module parameters.
+ * 
+ * Implementation note: there are several synchronized(doc) { } blocks in the
+ * code. This is necessary because e.g. we need to prevent InifileDocument from
+ * getting re-parsed while we are analyzing it. In particular, any two of the
+ * following threads may collide: reconciler, content assist, update of the
+ * Module Parameters view.
  * 
  * @author Andras
  */
@@ -137,10 +146,16 @@ public class InifileAnalyzer {
 
 			//XXX catch all exceptions during analyzing, and set changed=false in finally{} ? 
 
+			// calculate parameter resolutions for each section
+			calculateParamResolutions(ned);
+
+			// data structure is done
+			changed = false;
+
 			// check section names, detect circles in the fallback chains
 			validateSections();
 
-			// validate config entries and parameter keys
+			// validate config entries and parameter keys; this must be done AFTER changed=false
 			for (String section : doc.getSectionNames()) {
 				for (String key : doc.getKeys(section)) {
 					switch (getKeyType(key)) {
@@ -151,20 +166,12 @@ public class InifileAnalyzer {
 				}
 			}
 
-			// calculate parameter resolutions for each section
-			calculateParamResolutions(ned);
-
-			// data structure is done
-			changed = false;
-
-			//TODO validate each key based on the parameter resolution (if right data type, etc)
-
 			// warn for unused param keys; this must be done AFTER changed=false
 			for (String section : doc.getSectionNames())
 				for (String key : getUnusedParameterKeys(section))
 					addWarning(section, key, "Unused entry (does not match any parameters)");
 
-			System.out.println("Inifile analysed in "+(System.currentTimeMillis()-startTime)+"ms");
+			System.out.println("Inifile analyzed in "+(System.currentTimeMillis()-startTime)+"ms");
 		}
 	}
 
@@ -327,7 +334,43 @@ public class InifileAnalyzer {
 	}
 
 	protected void validateParamKey(String section, String key, INEDTypeResolver ned) {
-		//TODO
+		// value cannot be empty
+		String value = doc.getValue(section, key).trim();
+		if (value.equals("")) {
+			addError(section, key, "Value cannot be empty");
+			return;
+		}
+		
+		// check parameter types are consistent with each other
+		ParamResolution[] resList = getParamResolutionsForKey(section, key);
+		int dataType = -1;
+		for (ParamResolution res : resList) {
+			if (dataType == -1)
+				dataType = res.paramDeclNode.getType();
+			else if (dataType != res.paramDeclNode.getType()) {
+				addError(section, key, "Entry matches parameters of different data types");
+				return;
+			}
+		}
+
+		// check value is consistent with the data type
+		if (dataType != -1) {
+			int valueType = -1;
+			if (value.equals("true") || value.equals("false"))
+				valueType = NED_PARTYPE_BOOL;
+			else if (value.startsWith("\""))
+				valueType = NED_PARTYPE_STRING;
+			else if (value.matches("[-+0-9.eE]+"))
+				valueType = NED_PARTYPE_DOUBLE;
+			else if (value.startsWith("xmldoc"))
+				valueType = NED_PARTYPE_XML;
+
+			if (dataType == NED_PARTYPE_INT)  
+				dataType = NED_PARTYPE_DOUBLE;
+
+			if (valueType!=-1 && valueType!=dataType)
+				addError(section, key, "Wrong data type: "+dataType+" expected"); //XXX
+		}
 	}
 
 	protected void validatePerObjectConfig(String section, String key, INEDTypeResolver ned) {
@@ -338,13 +381,6 @@ public class InifileAnalyzer {
 	 * Calculate how parameters get assigned when the given section is the active one.
 	 */
 	protected void calculateParamResolutions(INEDTypeResolver ned) {
-		// we need to prevent InifileDocument from getting re-parsed while we are 
-		// analyzing it. In particular, re-parse and re-analyze triggered by the 
-		// reconciler and a view (e.g.the Module Parameters view) have been observed
-		// to collide that way.
-		System.out.println(Thread.currentThread().getId()+" ANALYZE: before sync");
-		System.out.println(Thread.currentThread().getId()+" ANALYZE: started");
-
 		// initialize SectionData and KeyData objects
 		for (String section : doc.getSectionNames()) {
 			doc.setSectionData(section, new SectionData());
@@ -371,7 +407,6 @@ public class InifileAnalyzer {
 				}
 			}
 		}
-		System.out.println(Thread.currentThread().getId()+" ANALYZE: done");
 	}
 
 	protected List<ParamResolution> collectParameters(String activeSection, INEDTypeResolver ned) {

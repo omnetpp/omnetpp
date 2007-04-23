@@ -90,7 +90,6 @@ public class InifileDocument implements IInifileDocument {
 			public void documentAboutToBeChanged(DocumentEvent event) {}
 			public void documentChanged(DocumentEvent event) {
 				synchronized (InifileDocument.this) {
-					System.out.println(Thread.currentThread().getId()+" DOCUMENT CHANGED!");
 					changed = true;
 					fireModelChanged();				
 				}
@@ -112,8 +111,6 @@ public class InifileDocument implements IInifileDocument {
 	}
 
 	synchronized public void parse() {
-		System.out.println(Thread.currentThread().getId()+" PARSING: started");
-		
 		sections.clear();
 		mainFileKeyValueLines.clear();
 		mainFileSectionHeadingLines.clear();
@@ -199,8 +196,7 @@ public class InifileDocument implements IInifileDocument {
 		catch (ParseException e) {
 		    addMarker(documentFile, INIFILEPROBLEM_MARKER_ID, IMarker.SEVERITY_ERROR, e.getMessage(), e.getLineNumber());
 		}
-		System.out.println(Thread.currentThread().getId()+" PARSING: done");
-		//System.out.println(Thread.currentThread().getId()+" Inifile parsing: "+(System.currentTimeMillis()-startTime)+"ms");
+		System.out.println("Inifile parsing: "+(System.currentTimeMillis()-startTime)+"ms");
 		
 		// mark data structure as up to date (even if there was an error, because 
 		// we don't want to keep re-parsing again and again)
