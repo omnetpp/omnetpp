@@ -1,7 +1,10 @@
 package org.omnetpp.scave.views;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.edit.provider.IChangeNotifier;
+import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
@@ -21,6 +24,7 @@ import org.omnetpp.scave.editors.datatable.DataTable;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.model.ResultType;
@@ -33,7 +37,6 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  * @author tomi
  */
 // work in progress ...
-// TODO update tables on input file and model change
 // TODO add icon
 public class DatasetView extends ViewWithMessagePart {
 
@@ -45,6 +48,7 @@ public class DatasetView extends ViewWithMessagePart {
 	private FilteredDataPanel scalarsPanel;
 	private FilteredDataPanel histogramsPanel;
 	
+	private ScaveEditor activeEditor;
 	private Dataset selectedDataset;
 	private DatasetItem selectedItem;
 	
@@ -53,6 +57,10 @@ public class DatasetView extends ViewWithMessagePart {
 	private IAction showHistogramsAction;
 	
 	protected ISelectionListener selectionChangedListener;
+	private IResultFilesChangeListener resultFilesChangeListener;
+	private INotifyChangedListener modelChangeListener;
+	
+	
 	private static final IDList EMPTY = new IDList();
 	
 	
@@ -60,7 +68,7 @@ public class DatasetView extends ViewWithMessagePart {
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
-		hookSelectionChangedListener();
+		hookListeners();
 		createToolbarButtons();
 	}
 
@@ -92,26 +100,52 @@ public class DatasetView extends ViewWithMessagePart {
 		manager.add(showScalarsAction);	// TODO: make buttons radio-style
 		manager.add(showVectorsAction);
 		manager.add(showHistogramsAction);
+		
+		showVectorsAction.setChecked(true);
 	}
 	
 	@Override
 	public void dispose() {
-		unhookSelectionChangedListener();
+		unhookListeners();
 		super.dispose();
 	}
 
-	private void hookSelectionChangedListener() {
+	private void hookListeners() {
 		selectionChangedListener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				setViewerInput(selection);
+				workbechSelectionChanged(selection);
 			}
 		};
 		getSite().getPage().addPostSelectionListener(selectionChangedListener);
+		
+		if (activeEditor != null) {
+			activeEditor.getResultFileManager().addListener(resultFilesChangeListener =
+				new IResultFilesChangeListener() {
+				public void resultFileManagerChanged(ResultFileManager manager) {
+					updateDataTable();
+				}
+			});
+			
+			IChangeNotifier notifier = (IChangeNotifier)activeEditor.getAdapterFactory();
+			notifier.addListener(modelChangeListener = new INotifyChangedListener() {
+				public void notifyChanged(Notification notification) {
+					updateDataTable();
+				}
+			});
+		}
 	}
 	
-	private void unhookSelectionChangedListener() {
+	private void unhookListeners() {
 		if (selectionChangedListener != null)
 			getSite().getPage().removePostSelectionListener(selectionChangedListener);
+		
+		if (resultFilesChangeListener != null)
+			activeEditor.getResultFileManager().removeListener(resultFilesChangeListener);
+
+		if (modelChangeListener != null) {
+			IChangeNotifier notifier = (IChangeNotifier)activeEditor.getAdapterFactory();
+			notifier.removeListener(modelChangeListener);
+		}
 	}
 	
 	private void setVisibleTable(FilteredDataPanel table) {
@@ -119,57 +153,107 @@ public class DatasetView extends ViewWithMessagePart {
 		panel.layout();
 	}
 	
-	private void setViewerInput(ISelection selection) {
-		if (getActiveEditor() instanceof ScaveEditor &&
-				selection instanceof IStructuredSelection) {
-			ScaveEditor editor = (ScaveEditor)getActiveEditor();
-			Object selected = ((IStructuredSelection)selection).getFirstElement();
-			if (selected instanceof EObject) {
-				Dataset dataset = ScaveModelUtil.findEnclosingOrSelf((EObject)selected, Dataset.class);
-				DatasetItem item = ScaveModelUtil.findEnclosingOrSelf((EObject)selected, DatasetItem.class);
-				if (dataset != selectedDataset || item != selectedItem) {
-					updateTables(dataset, item, editor);
-					return;
-				}
-			}
+	private void setSelectedAction(IAction action) {
+		action.setChecked(true);
+		if (action == showScalarsAction) {
+			showVectorsAction.setChecked(false);
+			showHistogramsAction.setChecked(false);
 		}
-		
-		updateTables(null, null, null);
+		else if (action == showVectorsAction) {
+			showScalarsAction.setChecked(false);
+			showHistogramsAction.setChecked(false);
+		}
+		else if (action == showHistogramsAction) {
+			showScalarsAction.setChecked(false);
+			showVectorsAction.setChecked(false);
+		}
 	}
 	
-	private void updateTables(Dataset dataset, DatasetItem item, ScaveEditor editor) {
-		if (dataset != null) {
-			// set inputs of tables
-			ResultFileManager manager = editor.getResultFileManager();
-			IDList scalars = DatasetManager.getIDListFromDataset(manager, dataset, item, ResultType.SCALAR_LITERAL);
-			IDList vectors = DatasetManager.getIDListFromDataset(manager, dataset, item, ResultType.VECTOR_LITERAL);
-			IDList histograms = DatasetManager.getIDListFromDataset(manager, dataset, item, ResultType.HISTOGRAM_LITERAL);
-			scalarsPanel.setResultFileManager(manager);
-			vectorsPanel.setResultFileManager(manager);
-			histogramsPanel.setResultFileManager(manager);
+	
+	private void workbechSelectionChanged(ISelection selection) {
+		if (getActiveEditor() instanceof ScaveEditor)
+			setActiveEditor((ScaveEditor)getActiveEditor());
+		else
+			setActiveEditor(null);
+			
+		if (selection instanceof IStructuredSelection &&
+				((IStructuredSelection)selection).getFirstElement() instanceof EObject) {
+			ScaveEditor editor = (ScaveEditor)getActiveEditor();
+			EObject selected = (EObject)((IStructuredSelection)selection).getFirstElement();
+			Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(selected, Dataset.class);
+			DatasetItem item = ScaveModelUtil.findEnclosingOrSelf(selected, DatasetItem.class);
+			setInput(dataset, item);
+		}
+		else {
+			setInput(null, null);
+		}
+	}
+	
+	private void setActiveEditor(ScaveEditor editor) {
+		if (editor != activeEditor) {
+			if (activeEditor != null)
+				unhookListeners();
+			activeEditor = editor;
+			if (activeEditor != null) {
+				hookListeners();
+			}
+			
+			if (activeEditor != null) {
+				ResultFileManager manager = activeEditor.getResultFileManager();
+				scalarsPanel.setResultFileManager(manager);
+				vectorsPanel.setResultFileManager(manager);
+				histogramsPanel.setResultFileManager(manager);
+			}
+			else {
+				scalarsPanel.setResultFileManager(null);
+				vectorsPanel.setResultFileManager(null);
+				histogramsPanel.setResultFileManager(null);
+			}
+		}
+	}
+	
+	/**
+	 * Make the first table containing items visible.
+	 */
+	private void switchToNonEmptyTable() {
+		FilteredDataPanel control = (FilteredDataPanel)layout.topControl;
+		IAction action = null;
+		if (control.getIDList().isEmpty()) {
+			control = null;
+			if (!scalarsPanel.getIDList().isEmpty()) { control = scalarsPanel; action = showScalarsAction; }
+			if (!vectorsPanel.getIDList().isEmpty()) { control = vectorsPanel; action = showVectorsAction; }
+			if (!histogramsPanel.getIDList().isEmpty()) { control = histogramsPanel; action = showHistogramsAction; }
+			if (control != null)
+				setVisibleTable(control);
+			if (action != null)
+				setSelectedAction(action);
+		}
+		
+	}
+	
+	private void setInput(Dataset dataset, DatasetItem item) {
+		if (selectedDataset != dataset || selectedItem != item) {
+			selectedDataset = dataset;
+			selectedItem = item;
+			updateDataTable();
+			switchToNonEmptyTable();
+		}
+	}
+	
+	private void updateDataTable() {
+		if (activeEditor != null && selectedDataset != null) {
+			ResultFileManager manager = activeEditor.getResultFileManager();
+			IDList scalars = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, ResultType.SCALAR_LITERAL);
+			IDList vectors = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, ResultType.VECTOR_LITERAL);
+			IDList histograms = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, ResultType.HISTOGRAM_LITERAL);
 			scalarsPanel.setIDList(scalars);
 			vectorsPanel.setIDList(vectors);
 			histogramsPanel.setIDList(histograms);
-			selectedDataset = dataset;
-			selectedItem = item;
-			
-			// set visible table
-			FilteredDataPanel control = (FilteredDataPanel)layout.topControl;
-			if (control.getIDList().isEmpty()) {
-				control = null;
-				if (!scalars.isEmpty()) control = scalarsPanel;
-				if (!vectors.isEmpty()) control = vectorsPanel;
-				if (!histograms.isEmpty()) control = histogramsPanel;
-				if (control != null)
-					setVisibleTable(control);
-			}
 		}
 		else {
-//			scalarsPanel.setIDList(EMPTY);
-//			vectorsPanel.setIDList(EMPTY);
-//			histogramsPanel.setIDList(EMPTY);
-			selectedDataset = null;
-			selectedItem = null;
+			scalarsPanel.setIDList(EMPTY);
+			vectorsPanel.setIDList(EMPTY);
+			histogramsPanel.setIDList(EMPTY);
 		}
 	}
 	
@@ -178,6 +262,8 @@ public class DatasetView extends ViewWithMessagePart {
 		Control table;
 		
 		public ShowTableAction(ResultType type) {
+			super(null, IAction.AS_RADIO_BUTTON);
+
 			switch (type.getValue()) {
 			case ResultType.SCALAR:
 				setText("Show scalars");

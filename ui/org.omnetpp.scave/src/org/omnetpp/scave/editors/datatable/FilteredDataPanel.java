@@ -35,6 +35,8 @@ public class FilteredDataPanel extends Composite {
 	private FilteringPanel filterPanel;
 	private DataTable table;
 	private IDList idlist; // the unfiltered data list
+	
+	private static final IDList EMPTY_IDLIST = new IDList();
 
 	public FilteredDataPanel(Composite parent, int style, int type) {
 		super(parent, style);
@@ -85,7 +87,6 @@ public class FilteredDataPanel extends Composite {
 					switchToAdvancedFilter();
 			}
 		});
-
 	}
 
 	protected void configureFilterPanel() {
@@ -116,12 +117,20 @@ public class FilteredDataPanel extends Composite {
 	}
 
 	public FilterHints getFilterHints() {
-		return new FilterHints(table.getResultFileManager(), idlist);
+		if (table.getResultFileManager() != null)
+			return new FilterHints(table.getResultFileManager(), idlist);
+		else
+			return new FilterHints();
 	}
 
 	protected void runFilter() {
 		Assert.isTrue(idlist!=null);
-		if (isFilterPatternValid()) {
+		
+		if (table.getResultFileManager() == null) {
+			// no resultfilemanager, show empty table
+			table.setIDList(EMPTY_IDLIST);
+		}
+		else if (isFilterPatternValid()) {
 			// run the filter on the unfiltered IDList, and set the result to the table
 			Filter filter = getFilter();
 			IDList filteredIDList = ScaveModelUtil.filterIDList(idlist, filter, table.getResultFileManager());

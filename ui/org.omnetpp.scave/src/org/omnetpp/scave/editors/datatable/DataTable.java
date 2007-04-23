@@ -106,6 +106,8 @@ public class DataTable extends Table {
 
 	// holds actions for the context menu for this data table
 	private MenuManager contextMenuManager = new MenuManager("#PopupMenu");
+	
+	private static final ResultItem[] NULL_SELECTION = new ResultItem[0];
 
 
 	public DataTable(Composite parent, int style, int type) {
@@ -205,6 +207,9 @@ public class DataTable extends Table {
 	}
 
 	public ResultItem[] getSelectedItems() {
+		if (manager == null)
+			return NULL_SELECTION;
+		
 		int[] selectionIndices = getSelectionIndices();
 		ResultItem[] items = new ResultItem[selectionIndices.length];
 
@@ -274,6 +279,9 @@ public class DataTable extends Table {
 	}
 
 	public void sortBy(Column column, int direction) {
+		if (manager == null)
+			return;
+		
 		boolean ascending = direction == SWT.UP;
 		if (COL_DIRECTORY.equals(column))
 			idlist.sortByDirectory(manager, ascending);
@@ -324,6 +332,9 @@ public class DataTable extends Table {
 	}
 
 	protected void fillTableLine(TableItem item, int lineNumber) {
+		if (manager == null)
+			return;
+		
 		long id = idlist.get(lineNumber);
 		ResultItem result = type == TYPE_SCALAR ? manager.getScalar(id) :
 							type == TYPE_VECTOR ? manager.getVector(id) :
@@ -392,6 +403,9 @@ public class DataTable extends Table {
 	}
 
 	protected void toCSV(CsvWriter writer, int lineNumber) {
+		if (manager == null)
+			return;
+		
 		ResultItem result = manager.getItem(idlist.get(lineNumber));
 
 		for (int i = 0; i < columns.size(); ++i) {
