@@ -9,6 +9,8 @@ import org.eclipse.jface.text.ITextDoubleClickStrategy;
 import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
+import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
+import org.eclipse.jface.text.hyperlink.URLHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.reconciler.IReconciler;
@@ -24,6 +26,7 @@ import org.omnetpp.inifile.editor.text.highlight.NedCodeColorizerScanner;
 import org.omnetpp.inifile.editor.text.highlight.NedDocColorizerScanner;
 import org.omnetpp.inifile.editor.text.util.InifileAnnotationHover;
 import org.omnetpp.inifile.editor.text.util.InifileTextHover;
+import org.omnetpp.ned.misc.NEDHyperlinkDetector;
 
 /**
  * Configuration for a SourceViewer which shows an inifile.
@@ -85,11 +88,6 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
 		return reconciler;
 	}
 	
-	public int getTabWidth(ISourceViewer sourceViewer) {
-        // TODO should be configurable
-		return 4;
-	}
-	
 	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
 		return new InifileTextHover(editorData);
 	}
@@ -107,4 +105,12 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
 		reconciler.setDelay(500);
 		return reconciler;
 	}
+
+    @Override
+    public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
+        if (sourceViewer == null)
+            return null;
+
+        return new IHyperlinkDetector[] { new URLHyperlinkDetector(), new NEDHyperlinkDetector() };
+    }
 }
