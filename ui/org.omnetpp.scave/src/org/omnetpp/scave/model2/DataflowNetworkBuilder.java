@@ -166,6 +166,16 @@ public class DataflowNetworkBuilder {
 
 		modelSwitch.doSwitch(dataset);
 	}
+	
+	/**
+	 * Builds a dataflow network for reading the data of the given vectors.
+	 */
+	public void build(IDList idlist) {
+		for (int i = 0; i < (int)idlist.size(); ++i) {
+			addSourceNode(idlist.get(i));
+		}
+		close();
+	}
 
 	/**
 	 * Adds an arraybuilder node for each open ports.

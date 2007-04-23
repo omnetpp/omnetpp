@@ -11,6 +11,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.omnetpp.scave.charting.dataset.ScalarDataset;
 import org.omnetpp.scave.charting.dataset.ScatterPlotDataset;
 import org.omnetpp.scave.charting.dataset.VectorDataset;
+import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.IDVectorVector;
 import org.omnetpp.scave.engine.Node;
@@ -156,18 +157,37 @@ public class DatasetManager {
 		builder.build(dataset, lastItemToProcess);
 		builder.close();
 
-		List<Node> outputs = builder.getOutputs();
-
-		builder.getDataflowManager().dump();
-
+		List<Node> arrayBuilders = builder.getOutputs();
+		DataflowManager dataflowManager = builder.getDataflowManager();
+		
+		dataflowManager.dump();
+		return executeDataflowNetwork(dataflowManager, arrayBuilders);
+	}
+	
+	public static XYArray getDataOfVector(ResultFileManager manager, long id) {
+		IDList idlist = new IDList();
+		idlist.add(id);
+		XYArray[] data = getDataOfVectors(manager, idlist);
+		Assert.isTrue(data != null && data.length == 1);
+		return data[0];
+	}
+	
+	public static XYArray[] getDataOfVectors(ResultFileManager manager, IDList idlist) {
+		DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
+		builder.build(idlist);
+		builder.close();
+		return executeDataflowNetwork(builder.getDataflowManager(), builder.getOutputs());
+	}
+	
+	private static XYArray[] executeDataflowNetwork(DataflowManager manager, List<Node> arrayBuilders) {
 		long startTime = System.currentTimeMillis();
-		if (outputs.size() > 0) // XXX DataflowManager crashes when there are no sinks
-			builder.getDataflowManager().execute();
+		if (arrayBuilders.size() > 0) // XXX DataflowManager crashes when there are no sinks
+			manager.execute();
 		System.out.println("dataflow network: "+(System.currentTimeMillis()-startTime)+" ms");
 
-		XYArray[] result = new XYArray[outputs.size()];
+		XYArray[] result = new XYArray[arrayBuilders.size()];
 		for (int i = 0; i < result.length; ++i)
-			result[i] = outputs.get(i).getArray();
+			result[i] = arrayBuilders.get(i).getArray();
 		return result;
 	}
 
