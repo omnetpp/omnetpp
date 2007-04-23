@@ -7,7 +7,10 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IFile;
@@ -31,8 +34,6 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
  * 
  * @author Andras
  */
-//TODO somehow detect if an inifile line matches parameters of more than one module type; that might be an error.
-// i.e. EtherMAC.backoffs and Ieee80211.backoffs.
 public class InifileUtils {
 	/**
 	 * Looks up a configuration value in the given section or its fallback sections.
@@ -296,27 +297,7 @@ public class InifileUtils {
 		}
 		else if (keyType == KeyType.PARAM || key.endsWith(".apply-default")) { //XXX hardcoded key name
 			// parameter assignment: display which parameters it matches
-			//XXX somehow merge similar entries? (ie where pathModules[] and paramValueNode/paramDeclNode are the same)
-			ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
-			if (resList.length==0) 
-				return "Entry \"" + key + "\" does not match any module parameters ";
-
-			String text = "Entry \"" + key + "\" applies to the following module parameters: \n";
-			int n = Math.min(resList.length, 8);
-			for (int i=0; i<n; i++) {
-				ParamResolution res = resList[i];
-				String paramName = res.paramValueNode.getName();
-				String paramDeclaredOn = ((ParamNodeEx)res.paramDeclNode).getContainerNEDTypeInfo().getName();
-				String paramType = res.paramDeclNode.getAttribute(ParamNode.ATT_TYPE);
-				String comment = makeBriefDocu(res.paramDeclNode.getComment(), 40);
-				String optComment = comment==null ? "" : (" -- \"" + comment + "\"");
-				text += "  - " + res.moduleFullPath + "." +paramName;
-				text += " (" + paramDeclaredOn + "." + paramName + " : "+ paramType + optComment + ")"; 
-				text +=	(section.equals(res.activeSection) ? "" : ", for sub-config ["+res.activeSection+"]") + "\n"; //XXX do we have module type, maybe param doc etc?
-			}
-			if (resList.length > n) 
-				text += "    ...\n";
-			return text;
+			return getParamKeyTooltip(section, key, analyzer);
 		}
 		else if (keyType == KeyType.PER_OBJECT_CONFIG) {
 			return null; // TODO display which modules it applies to, plus comment maybe?
@@ -324,21 +305,6 @@ public class InifileUtils {
 		else {
 			return null; // should not happen (invalid key type)
 		}
-	}
-
-	/**
-	 * Formats a NED comment as a one-line doc string. If it is longer than the
-	 * given max length, it gets truncated.
-	 */
-	public static String makeBriefDocu(String comment, int maxlen) {
-		if (comment==null)
-			return null;
-		comment = comment.replaceAll("(?m)^\\s*//", "").trim(); // remove "//"'s
-		comment = comment.replaceFirst("(?s)\n[ \t]*\n.*", "").trim(); // keep only first paragraph
-		comment = comment.replaceAll("(?s)\\s+", " "); // make it one line, and normalize whitespace
-		if (comment.length() > maxlen)
-			comment = comment.substring(0, maxlen)+"...";
-		return comment;
 	}
 
 	/**
@@ -365,6 +331,76 @@ public class InifileUtils {
 		
 		return StringUtils.breakLines(text, 80);
 	}
+	
+	/**
+	 * Generate config for a param key entry
+	 */
+	public static String getParamKeyTooltip(String section, String key, InifileAnalyzer analyzer) {
+		//XXX somehow merge similar entries? (ie where pathModules[] and paramValueNode/paramDeclNode are the same)
+		ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
+		if (resList.length==0) 
+			return "Entry \"" + key + "\" does not match any module parameters ";
+
+		// merge similar entries
+		Set<ParamNode> paramDeclNodes = new LinkedHashSet<ParamNode>();
+		for (ParamResolution res : resList)
+			paramDeclNodes.add(res.paramDeclNode);
+			
+		String text = "Entry \"" + key + "\" applies to the following module parameters: \n";
+		for (ParamNode paramDeclNode : paramDeclNodes) {
+			String paramName = paramDeclNode.getName();
+			String paramType = paramDeclNode.getAttribute(ParamNode.ATT_TYPE);
+			String paramDeclaredOn = ((ParamNodeEx)paramDeclNode).getContainerNEDTypeInfo().getName();
+			String comment = makeBriefDocu(paramDeclNode.getComment(), 60);
+			String optComment = comment==null ? "" : (" -- \"" + comment + "\"");
+
+			text += "\n  " + paramDeclaredOn + "." + paramName + " : "+ paramType + optComment + "\n"; 
+			
+			int count = 0;
+			for (ParamResolution res : resList) {
+				if (res.paramDeclNode == paramDeclNode) {
+					if (++count > 4) {
+						text += "   ...\n";
+						break;
+					}
+					text +=	"   - " + res.moduleFullPath + (section.equals(res.activeSection) ? "" : ", for sub-config ["+res.activeSection+"]") + "\n";
+				}
+			}
+		}
+		return text;
+		
+//		int n = Math.min(resList.length, 8);
+//		for (int i=0; i<n; i++) {
+//			ParamResolution res = resList[i];
+//			String paramName = res.paramValueNode.getName();
+//			String paramDeclaredOn = ((ParamNodeEx)res.paramDeclNode).getContainerNEDTypeInfo().getName();
+//			String paramType = res.paramDeclNode.getAttribute(ParamNode.ATT_TYPE);
+//			String comment = makeBriefDocu(res.paramDeclNode.getComment(), 40);
+//			String optComment = comment==null ? "" : (" -- \"" + comment + "\"");
+//			text += "  - " + res.moduleFullPath + "." +paramName;
+//			text += " (" + paramDeclaredOn + "." + paramName + " : "+ paramType + optComment + ")"; 
+//			text +=	(section.equals(res.activeSection) ? "" : ", for sub-config ["+res.activeSection+"]") + "\n"; //XXX do we have module type, maybe param doc etc?
+//		}
+//		if (resList.length > n) 
+//			text += "    ...\n";
+//		return text;
+	}
+
+	/**
+	 * Formats a NED comment as a one-line doc string. If it is longer than the
+	 * given max length, it gets truncated.
+	 */
+	public static String makeBriefDocu(String comment, int maxlen) {
+		if (comment==null)
+			return null;
+		comment = comment.replaceAll("(?m)^\\s*//", "").trim(); // remove "//"'s
+		comment = comment.replaceFirst("(?s)\n[ \t]*\n.*", "").trim(); // keep only first paragraph
+		comment = comment.replaceAll("(?s)\\s+", " "); // make it one line, and normalize whitespace
+		if (comment.length() > maxlen)
+			comment = comment.substring(0, maxlen)+"...";
+		return comment;
+	}
+
 	
 	/**
 	 * Returns the problem markers for a given inifile entry.
