@@ -101,7 +101,7 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
 	protected static IContentProposal[] toProposals(String[] strings) {
 		IContentProposal[] p = new IContentProposal[strings.length];
 		for (int i=0; i<p.length; i++)
-			p[i] = new ContentProposal(strings[i], strings[i], null);
+			p[i] = new ContentProposal(strings[i], strings[i].trim(), null);
 		return p;
 	}
 	

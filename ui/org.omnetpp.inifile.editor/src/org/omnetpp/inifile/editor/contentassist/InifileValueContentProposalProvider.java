@@ -166,8 +166,8 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
 	protected IContentProposal[] getCandidatesForPerObjectConfig() {
 		List<String> proposals = new ArrayList<String>();
 		if (key.endsWith(".apply-default") || key.endsWith(".ev-output")) {
-			proposals.add("true\n");
-			proposals.add("false\n");
+			proposals.add("true");
+			proposals.add("false");
 		}
 		if (key.endsWith(".record-interval")) { 
 			proposals.add("$1..");

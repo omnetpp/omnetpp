@@ -28,13 +28,12 @@ import org.omnetpp.inifile.editor.InifileEditorPlugin;
  * 
  * @author Andras
  */
-//XXX multi-line comments mess up setValue()/renameSection() !!!
 //XXX validate new keys (after add/rename)! must not contain "=", "#", ";", whitespace, etc...  
 //XXX validate section names (after add/rename)! must not contain "[", "]", "#", ";", newline, tab,...
 //XXX ^^^ see InifileUtils.validateParameterKey too
 public class InifileDocument implements IInifileDocument {
 	public static final String INIFILEPROBLEM_MARKER_ID = InifileEditorPlugin.PLUGIN_ID + ".inifileproblem";
-	
+
 	private IDocument document; // the document we are manipulating
 	private IFile documentFile; // the file of the document
 	private boolean changed; // whether changed since last parsed
@@ -66,11 +65,11 @@ public class InifileDocument implements IInifileDocument {
 
 	// primary data structure: sections, keys
 	private LinkedHashMap<String,Section> sections = new LinkedHashMap<String,Section>();
-	
+
 	// reverse (linenumber-to-section/key) mapping
 	private ArrayList<SectionHeadingLine> mainFileSectionHeadingLines = new ArrayList<SectionHeadingLine>(); 
 	private ArrayList<KeyValueLine> mainFileKeyValueLines = new ArrayList<KeyValueLine>();
-	
+
 	// include directives
 	private ArrayList<IncludeLine> topIncludes = new ArrayList<IncludeLine>();
 	private ArrayList<IncludeLine> bottomIncludes = new ArrayList<IncludeLine>();
@@ -118,7 +117,7 @@ public class InifileDocument implements IInifileDocument {
 		bottomIncludes.clear();
 		long startTime = System.currentTimeMillis();
 		Reader streamReader = new StringReader(document.get());
-        
+
 		try {
 			documentFile.deleteMarkers(INIFILEPROBLEM_MARKER_ID, true, IResource.DEPTH_ZERO);
 		} catch (CoreException e1) {
@@ -131,34 +130,42 @@ public class InifileDocument implements IInifileDocument {
 				SectionHeadingLine currentSectionHeading = null;
 				IFile currentFile = documentFile; 
 
-				public void blankOrCommentLine(int lineNumber, String rawLine, String comment) {
+				public void blankOrCommentLine(int lineNumber, int numLines, String rawLine, String comment) {
 					// ignore
 				}
 
-				public void directiveLine(int lineNumber, String rawLine, String directive, String args, String comment) {
-					if (directive.equals("include")) {
-						IncludeLine line = new IncludeLine();
-						line.file = currentFile;
-						line.lineNumber = lineNumber;
-						line.numLines = 1; //XXX
-						line.comment = comment;
-						line.includedFile = args;
-						// TODO: at this point, we should recursively parse that file as well
+				public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String comment) {
+					// add if such section not yet exists
+					Section section = sections.get(sectionName);
+					if (section == null) {
+						section = new Section();
+						sections.put(sectionName, section);
 					}
+
+					// add line
+					SectionHeadingLine line = new SectionHeadingLine();
+					line.file = currentFile;
+					line.lineNumber = lineNumber;
+					line.numLines = numLines;
+					line.comment = comment;
+					line.sectionName = sectionName;
+					line.lastLine = line.lineNumber + line.numLines - 1;
+					section.headingLines.add(line);
+					mainFileSectionHeadingLines.add(line);
+					currentSection = section;
+					currentSectionHeading = line;
 				}
 
-				public void incompleteLine(int lineNumber, String rawLine) {
-					//XXX eliminate
-				}
-
-				public void keyValueLine(int lineNumber, String rawLine, String key, String value, String comment) {
+				public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String comment) {
 					if (currentSection==null)
-						throw new ParseException("entry occurs before first section heading", lineNumber);
-					if (!currentSection.entries.containsKey(key)) {
+						addError(currentFile, lineNumber, "Entry occurs before first section heading");
+					else if (currentSection.entries.containsKey(key))
+						addWarning(currentFile, lineNumber, "Duplicate key, ignored");
+					else {
 						KeyValueLine line = new KeyValueLine();
 						line.file = currentFile;
 						line.lineNumber = lineNumber;
-						line.numLines = 1; //XXX
+						line.numLines = numLines;
 						line.comment = comment;
 						line.key = key;
 						line.value = value;
@@ -168,25 +175,22 @@ public class InifileDocument implements IInifileDocument {
 					}
 				}
 
-				public void sectionHeadingLine(int lineNumber, String rawLine, String sectionName, String comment) {
-					// add if such section not yet exists
-					Section section = sections.get(sectionName);
-					if (section == null) {
-						section = new Section();
-						sections.put(sectionName, section);
+				public void directiveLine(int lineNumber, int numLines, String rawLine, String directive, String args, String comment) {
+					if (!directive.equals("include"))
+						addError(currentFile, lineNumber, "Unknown directive");
+					else { 
+						IncludeLine line = new IncludeLine();
+						line.file = currentFile;
+						line.lineNumber = lineNumber;
+						line.numLines = numLines;
+						line.comment = comment;
+						line.includedFile = args;
+						// TODO: at this point, we should recursively parse that file as well
 					}
-					// add line
-					SectionHeadingLine line = new SectionHeadingLine();
-					line.file = currentFile;
-					line.lineNumber = lineNumber;
-					line.numLines = 1; //XXX include continued lines!
-					line.comment = comment;
-					line.sectionName = sectionName;
-					line.lastLine = line.lineNumber + line.numLines - 1;
-					section.headingLines.add(line);
-					mainFileSectionHeadingLines.add(line);
-					currentSection = section;
-					currentSectionHeading = line;
+				}
+
+				public void parseError(int lineNumber, int numLines, String message) {
+					addError(currentFile, lineNumber, message);
 				}
 			});
 		} 
@@ -194,45 +198,53 @@ public class InifileDocument implements IInifileDocument {
 			// cannot happen with string input
 		} 
 		catch (ParseException e) {
-		    addMarker(documentFile, INIFILEPROBLEM_MARKER_ID, IMarker.SEVERITY_ERROR, e.getMessage(), e.getLineNumber());
+			addError(documentFile, e.getLineNumber(), e.getMessage());
 		}
 		System.out.println("Inifile parsing: "+(System.currentTimeMillis()-startTime)+"ms");
-		
+
 		// mark data structure as up to date (even if there was an error, because 
 		// we don't want to keep re-parsing again and again)
 		changed = false;
-		
+
 		// NOTE: notify listeners (fireModelChanged()) is NOT done here! It is done 
 		// when the underlying text document (IDocument) changes, just after we set
 		// changed=true.
 	}
 
-    @SuppressWarnings("unchecked")
-    private static void addMarker(final IFile file, final String type, int severity, String message, int line) {
-    	try {
-    		HashMap map = new HashMap();
-    		MarkerUtilities.setMessage(map, message);
-    		MarkerUtilities.setLineNumber(map, line);
-    		map.put(IMarker.SEVERITY, severity);
+	protected void addError(IFile file, int line, String message) {
+		addMarker(file, INIFILEPROBLEM_MARKER_ID, IMarker.SEVERITY_ERROR, message, line); 
+	}
+
+	protected void addWarning(IFile file, int line, String message) {
+		addMarker(file, INIFILEPROBLEM_MARKER_ID, IMarker.SEVERITY_WARNING, message, line); 
+	}
+
+	@SuppressWarnings("unchecked")
+	private static void addMarker(final IFile file, final String type, int severity, String message, int line) {
+		try {
+			HashMap map = new HashMap();
+			MarkerUtilities.setMessage(map, message);
+			MarkerUtilities.setLineNumber(map, line);
+			map.put(IMarker.SEVERITY, severity);
 			MarkerUtilities.createMarker(file, map, type);
 		} catch (CoreException e) {
 			InifileEditorPlugin.logError(e);
 		}
-    }
+	}
 
-    public void dump() {
-    	for (String sectionName : sections.keySet()) {
-    		System.out.println("Section "+sectionName);
-    		Section section = sections.get(sectionName);
-    		for (SectionHeadingLine line : section.headingLines) {
-    			System.out.println("  headingLine: line="+line.lineNumber+"  sectionName="+line.sectionName);
-    		}
-    		for (String key : section.entries.keySet()) {
-    			KeyValueLine line = section.entries.get(key);
-    			System.out.println("  keyValueLine: line="+line.lineNumber+"  key="+line.key+" value="+line.value);
-    		}
-    	}
-    	System.out.println("Includes:");
+	public void dump() {
+		for (String sectionName : sections.keySet()) {
+			System.out.println("Section "+sectionName);
+			Section section = sections.get(sectionName);
+			for (SectionHeadingLine line : section.headingLines) {
+				System.out.println("  headingLine: line="+line.lineNumber+"  sectionName="+line.sectionName);
+			}
+			for (String key : section.entries.keySet()) {
+				KeyValueLine line = section.entries.get(key);
+				System.out.println("  keyValueLine: line="+line.lineNumber+"  key="+line.key+" value="+line.value);
+			}
+		}
+		System.out.println("Includes:");
 		for (IncludeLine line : topIncludes) {
 			System.out.println("  topInclude: line="+line.lineNumber+"  file="+line.includedFile);
 		}
@@ -241,21 +253,21 @@ public class InifileDocument implements IInifileDocument {
 		}
 		System.out.println("num section heading lines: "+mainFileSectionHeadingLines.size());
 		System.out.println("num key-value lines: "+mainFileKeyValueLines.size());
-    }
-    
-    protected boolean isEditable(Line line) {
-    	return line.file == documentFile;
-    }
+	}
 
-    protected static boolean nullSafeEquals(String first, String second) {
-    	return first==null ? second == null : first.equals(second);
-    }
-    
+	protected boolean isEditable(Line line) {
+		return line.file == documentFile;
+	}
+
+	protected static boolean nullSafeEquals(String first, String second) {
+		return first==null ? second == null : first.equals(second);
+	}
+
 	/**
 	 * Adds a line to IDocument at the given lineNumber (1-based). Existing lineNumber
 	 * will be shifted down. Line text is to be specified without the trailing newline.
 	 */
-    synchronized protected void addLineAt(int lineNumber, String text) {
+	synchronized protected void addLineAt(int lineNumber, String text) {
 		try {
 			if (lineNumber==document.getNumberOfLines()+1) {
 				// adding a line at the bottom
@@ -274,7 +286,7 @@ public class InifileDocument implements IInifileDocument {
 	 * Returns false if the line numbers have not changed; in that case, the caller
 	 * may opt for suppressing re-parsing by manually setting the "changed" flag to false.
 	 */
-    synchronized protected boolean replaceLine(Line line, String text) {
+	synchronized protected boolean replaceLine(Line line, String text) {
 		try {
 			int offset = document.getLineOffset(line.lineNumber-1);
 			int length = document.getLineOffset(line.lineNumber-1+line.numLines) - offset;
@@ -291,32 +303,32 @@ public class InifileDocument implements IInifileDocument {
 	public boolean containsKey(String section, String key) {
 		return lookupEntry(section, key) != null;
 	}
-  
-    protected KeyValueLine lookupEntry(String sectionName, String key) {
-    	parseIfChanged();
-    	Section section = sections.get(sectionName);
-    	return section == null ? null : section.entries.get(key);
-    }
-    
-    protected KeyValueLine getEntry(String sectionName, String key) {
-    	KeyValueLine line = lookupEntry(sectionName, key);
-    	if (line == null)
-    		throw new IllegalArgumentException("No such entry: ["+sectionName+"] "+key);
-    	return line;
-    }
 
-    protected KeyValueLine getEditableEntry(String sectionName, String key) {
-    	KeyValueLine line = getEntry(sectionName, key);
-    	if (!isEditable(line))
-    		throw new IllegalArgumentException("Entry is in an included file which cannot be edited: ["+sectionName+"] "+key);
-    	return line;
-    }
+	protected KeyValueLine lookupEntry(String sectionName, String key) {
+		parseIfChanged();
+		Section section = sections.get(sectionName);
+		return section == null ? null : section.entries.get(key);
+	}
 
-    public String getValue(String section, String key) {
+	protected KeyValueLine getEntry(String sectionName, String key) {
+		KeyValueLine line = lookupEntry(sectionName, key);
+		if (line == null)
+			throw new IllegalArgumentException("No such entry: ["+sectionName+"] "+key);
+		return line;
+	}
+
+	protected KeyValueLine getEditableEntry(String sectionName, String key) {
+		KeyValueLine line = getEntry(sectionName, key);
+		if (!isEditable(line))
+			throw new IllegalArgumentException("Entry is in an included file which cannot be edited: ["+sectionName+"] "+key);
+		return line;
+	}
+
+	public String getValue(String section, String key) {
 		KeyValueLine line = lookupEntry(section, key);
 		return line == null ? null : line.value;
 	}
-	
+
 	public void setValue(String section, String key, String value) {
 		KeyValueLine line = getEditableEntry(section, key);
 		if (!nullSafeEquals(line.value, value)) {
@@ -361,7 +373,6 @@ public class InifileDocument implements IInifileDocument {
 		if (!nullSafeEquals(line.key, newKey)) {
 			if (lookupEntry(section, newKey) != null)
 				throw new IllegalArgumentException("Key "+newKey+" already exists in section ["+section+"]");
-			//XXX update of data structure here and suppress re-parse?
 			line.key = newKey; 
 			String text = line.key + " = " + line.value + (line.comment == null ? "" : " "+line.comment);
 			replaceLine(line, text);
@@ -413,7 +424,7 @@ public class InifileDocument implements IInifileDocument {
 		parseIfChanged();
 		return sections.containsKey(section);
 	}
-	
+
 	protected Section lookupSection(String sectionName) {
 		parseIfChanged();
 		Section section = sections.get(sectionName);
@@ -442,7 +453,7 @@ public class InifileDocument implements IInifileDocument {
 			throw new IllegalArgumentException("Section is in an included file: ["+sectionName+"]");
 		return line;
 	}
-	
+
 	public void removeSection(String sectionName) {
 		parseIfChanged();
 		Section section = sections.get(sectionName);
@@ -483,7 +494,6 @@ public class InifileDocument implements IInifileDocument {
 			if (!isEditable(line))
 				throw new IllegalArgumentException("Cannot rename section ["+sectionName+"], because it (or part of it) is in an included file");
 		for (SectionHeadingLine line : section.headingLines) {
-			//XXX update of data structure here and suppress re-parse?
 			//XXX big problem if line numbers change as the result of replacing!!!!! ie original section name was on two lines using backslash...
 			replaceLine(line, "[" + newName + "]" + (line.comment == null ? "" : " "+line.comment));
 		}
@@ -498,8 +508,8 @@ public class InifileDocument implements IInifileDocument {
 		int lineNumber;
 		if (beforeSectionName==null)                                       
 			lineNumber = bottomIncludes.isEmpty() ? document.getNumberOfLines()+1 : bottomIncludes.get(0).lineNumber;
-		else
-			lineNumber = getFirstEditableSectionHeading(beforeSectionName).lineNumber;
+			else
+				lineNumber = getFirstEditableSectionHeading(beforeSectionName).lineNumber;
 
 		// modify IDocument
 		String text = "[" + sectionName + "]";
@@ -537,21 +547,19 @@ public class InifileDocument implements IInifileDocument {
 			i++;
 		return i==-1 ? null : mainFileSectionHeadingLines.get(i);
 	}
-	
+
 	public String getKeyForLine(int lineNumber) {
 		SectionHeadingLine sectionHeadingLine = findSectionHeadingLine(lineNumber);
 		if (sectionHeadingLine == null)
 			return null;
 
-		// find key in that section
-		//XXX use binary search, or map<int,Line>, etc
-		for (KeyValueLine line : mainFileKeyValueLines) {
+		// find key in that section (note: linear search, optimize if needed)
+		for (KeyValueLine line : mainFileKeyValueLines)
 			if (line.lineNumber==lineNumber)
 				return line.key;
-		}
 		return null;
 	}
-	
+
 	public String[] getTopIncludes() {
 		parseIfChanged();
 		return null; //TODO
@@ -582,55 +590,55 @@ public class InifileDocument implements IInifileDocument {
 		//TODO
 	}
 
-    /**
-     * Adds a listener to this document 
-     */
+	/**
+	 * Adds a listener to this document 
+	 */
 	public void addInifileChangeListener(IInifileChangeListener listener) {
-        listeners.add(listener);
-    }
+		listeners.add(listener);
+	}
 
 	/**
-     * Adds a listener to this document 
-     */
+	 * Adds a listener to this document 
+	 */
 	public void removeInifileChangeListener(IInifileChangeListener listener) {
-        listeners.remove(listener);
-    }
-	
+		listeners.remove(listener);
+	}
+
 	/**
-     * Fires a model change event by notifying listeners.
-     */
-    public void fireModelChanged() {
-        if (listeners != null && listeners.isEnabled())
-        	listeners.fireModelChanged();
-    }
+	 * Fires a model change event by notifying listeners.
+	 */
+	public void fireModelChanged() {
+		if (listeners != null && listeners.isEnabled())
+			listeners.fireModelChanged();
+	}
 
 	public Object getKeyData(String section, String key) {
 		KeyValueLine line = lookupEntry(section, key);
-    	if (line == null)
-    		throw new IllegalArgumentException("No such entry: ["+section+"] "+key);
+		if (line == null)
+			throw new IllegalArgumentException("No such entry: ["+section+"] "+key);
 		return line.data;
 	}
 
 	public void setKeyData(String section, String key, Object data) {
 		KeyValueLine line = lookupEntry(section, key);
-    	if (line == null)
-    		throw new IllegalArgumentException("No such entry: ["+section+"] "+key);
+		if (line == null)
+			throw new IllegalArgumentException("No such entry: ["+section+"] "+key);
 		line.data = data;
 	}
 
 	public Object getSectionData(String sectionName) {
 		parseIfChanged();
 		Section section = sections.get(sectionName);
-    	if (section == null)
-    		throw new IllegalArgumentException("No such section: ["+sectionName+"]");
+		if (section == null)
+			throw new IllegalArgumentException("No such section: ["+sectionName+"]");
 		return section.data;
 	}
 
 	public void setSectionData(String sectionName, Object data) {
 		parseIfChanged();
 		Section section = sections.get(sectionName);
-    	if (section == null)
-    		throw new IllegalArgumentException("No such section: ["+sectionName+"]");
+		if (section == null)
+			throw new IllegalArgumentException("No such section: ["+sectionName+"]");
 		section.data = data;
 	}
 
