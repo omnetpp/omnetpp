@@ -93,6 +93,8 @@ void cOutVector::setUnit(const char *unit)
     ev.setVectorAttribute(handle, "unit", unit);
 }
 
+//FIXME crashes when called before setName()
+//FIXME enum name doesn't get written out to the file
 void cOutVector::setEnum(const char *registeredEnumName)
 {
     cEnum *enumDecl = cEnum::find(registeredEnumName);
