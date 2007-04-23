@@ -370,7 +370,7 @@ public class InifileAnalyzer {
 
 			if (valueType!=-1 && valueType!=dataType) {
 				String typeName = resList[0].paramDeclNode.getAttribute(ParamNode.ATT_TYPE);
-				addError(section, key, "Wrong data type: "+typeName+" expected"); //XXX
+				addError(section, key, "Wrong data type: "+typeName+" expected");
 			}
 		}
 	}
