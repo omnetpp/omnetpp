@@ -24,7 +24,6 @@ Eclipse-LazyStart: true
 Export-Package: org.omnetpp.ned.editor.graph,
  org.omnetpp.ned.editor.graph.actions,
  org.omnetpp.ned.editor.graph.commands,
- org.omnetpp.ned.editor.graph.dnd,
  org.omnetpp.ned.editor.graph.edit,
  org.omnetpp.ned.editor.graph.edit.policies,
  org.omnetpp.ned.editor.graph.misc,

@@ -41,7 +41,6 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.util.TransferDropTargetListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
@@ -56,7 +55,6 @@ import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
 import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
 import org.omnetpp.ned.editor.graph.actions.UnpinAction;
-import org.omnetpp.ned.editor.graph.dnd.TextTransferDropTargetListener;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
 import org.omnetpp.ned.editor.graph.misc.NedSelectionSynchronizer;
@@ -259,10 +257,10 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         getGraphicalViewer().setContents(getModel());
 
         // TODO do we need these?
-        getGraphicalViewer().addDropTargetListener((TransferDropTargetListener)
-    			new TemplateTransferDropTargetListener(getGraphicalViewer()));
-        getGraphicalViewer().addDropTargetListener((TransferDropTargetListener)
-        		new TextTransferDropTargetListener(getGraphicalViewer(), TextTransfer.getInstance()));
+//        getGraphicalViewer().addDropTargetListener((TransferDropTargetListener)
+//    			new TemplateTransferDropTargetListener(getGraphicalViewer()));
+//        getGraphicalViewer().addDropTargetListener((TransferDropTargetListener)
+//        		new TextTransferDropTargetListener(getGraphicalViewer(), TextTransfer.getInstance()));
     }
 
     /* (non-Javadoc)
