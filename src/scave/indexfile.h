@@ -111,6 +111,8 @@ struct Block {
 
 typedef std::vector<Block> Blocks;
 
+typedef std::map<std::string, std::string> StringMap;
+
 /**
  * Entry for one vector in the index.
  */
@@ -119,6 +121,7 @@ struct VectorData {
     std::string moduleName;
     std::string name;
     std::string columns;
+    StringMap attributes;
     long blockSize;
     Statistics stat;
     Blocks blocks;
@@ -184,8 +187,6 @@ struct VectorData {
 };
 
 typedef std::vector<VectorData> Vectors;
-
-typedef std::map<std::string, std::string> StringMap;
 
 /**
  * Run attributes written into the index file.
@@ -319,6 +320,10 @@ class SCAVE_API IndexFileWriter
          * Writes out the declaration of a vector.
          */
         void writeVectorDeclaration(const VectorData& vector);
+        /**
+         * Writes out the attributes of a vector.
+         */
+        void writeVectorAttributes(const VectorData& vector);
         /**
          * Writes out a block of the specified vector.
          */

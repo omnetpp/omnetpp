@@ -747,7 +747,8 @@ static std::string fileNameToSlash(const char *fileName)
     return res;
 }
 
-void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRunRef, ResultFile *fileRef, int lineNum)
+void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRunRef, ResultItem *&resultItemRef,
+                                    ResultFile *fileRef, int lineNum)
 {
     // ignore empty lines
     if (numTokens==0 || vec[0][0]=='#')
@@ -825,12 +826,19 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
         if (numTokens<3)
             throw opp_runtime_error("invalid result file: 'attr <name> <value>' expected, line %d", lineNum);
 
-        // store attribute
-        fileRunRef->runRef->attributes[vec[1]] = vec[2];
+        if (resultItemRef == NULL)
+        {
+            // store attribute
+            fileRunRef->runRef->attributes[vec[1]] = vec[2];
 
-        // the "runNumber" attribute is also stored separately
-        if (!strcmp(vec[1], "runNumber"))
-            fileRunRef->runRef->runNumber = atoi(vec[2]);
+            // the "runNumber" attribute is also stored separately
+            if (!strcmp(vec[1], "runNumber"))
+                fileRunRef->runRef->runNumber = atoi(vec[2]);
+        }
+        else
+        {
+            resultItemRef->attributes[vec[1]] = vec[2];
+        }
     }
     else if (vec[0][0]=='p' && !strcmp(vec[0],"param"))
     {
@@ -851,6 +859,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
             throw opp_runtime_error("invalid scalar file syntax: invalid value column, line %d", lineNum);
 
         addScalar(fileRunRef, vec[1], vec[2], value);
+        resultItemRef = &fileRef->scalarResults.back();
         return;
     }
     else if (vec[0][0]=='v' && !strcmp(vec[0],"vector"))
@@ -882,6 +891,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
         vecdata.sumSqr = NaN;
 
         fileRef->vectorResults.push_back(vecdata);
+        resultItemRef = &fileRef->scalarResults.back();
     }
     else if (isdigit(vec[0][0]) && numTokens>=3)
     {
@@ -928,8 +938,6 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
     splitFileName(fileRef->filePath.c_str(), fileRef->directory, fileRef->fileName);
     fileRef->fileSystemFilePath = fileSystemFileName;
 
-    FileRun *fileRunRef = NULL;
-
     // if vector file and has index, load vectors from the index file
     if (IndexFile::isVectorFile(fileSystemFileName) && IndexFile::isIndexFileUpToDate(fileSystemFileName))
     {
@@ -942,12 +950,14 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
     FileReader freader(fileSystemFileName);
     char *line;
     LineTokenizer tokenizer;
+    FileRun *fileRunRef = NULL;
+    ResultItem *resultItemRef = NULL;
     while ((line=freader.getNextLineBufferPointer())!=NULL)
     {
         int len = freader.getLastLineLength();
         int numTokens = tokenizer.tokenize(line, len);
         char **tokens = tokenizer.tokens();
-        processLine(tokens, numTokens, fileRunRef, fileRef, freader.getNumReadLines());
+        processLine(tokens, numTokens, fileRunRef, resultItemRef, fileRef, freader.getNumReadLines());
     }
 
     fileRef->numLines = freader.getNumReadLines();
@@ -976,6 +986,7 @@ void ResultFileManager::loadVectorsFromIndex(const char *filename, ResultFile *f
     {
         VectorResult vectorResult;
         vectorResult.fileRunRef = fileRunRef;
+        vectorResult.attributes = StringMap(vectorRef->attributes);
         vectorResult.vectorId = vectorRef->vectorId;
         vectorResult.moduleNameRef = stringSetFindOrInsert(moduleNames, vectorRef->moduleName);
         vectorResult.nameRef = stringSetFindOrInsert(names, vectorRef->name);

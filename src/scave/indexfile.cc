@@ -386,6 +386,11 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
         index->vectors.push_back(vector);
         numOfEntries = 0;
     }
+    else if (tokens[0][0] == 'a' && strcmp(tokens[0], "attr") == 0 && index->vectors.size() > 0) // vector attr
+    {
+        CHECK(numTokens == 3, "malformed vector attribute", lineNum);
+        index->vectors.back().attributes[tokens[1]] = tokens[2];
+    }
     else if (tokens[0][0] == 'f' && strcmp(tokens[0], "file") == 0)
     {
         long fileSize, lastModified;
@@ -399,7 +404,7 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
     {
         return;
     }
-    else
+    else // blocks
     {
         CHECK(index->vectors.size() > 0, "missing vector definition", lineNum);
         CHECK(numTokens >= 9, "missing fields from block", lineNum);
@@ -488,7 +493,7 @@ void IndexFileWriter::writeRun(const RunData &run)
     run.writeToFile(file, filename.c_str());
 }
 
-void IndexFileWriter::writeVector(const VectorData& vector)
+void IndexFileWriter::writeVector(const VectorData &vector)
 {
     if (file == NULL)
         openFile();
@@ -497,6 +502,7 @@ void IndexFileWriter::writeVector(const VectorData& vector)
     if (numBlocks > 0)
     {
         writeVectorDeclaration(vector);
+        writeVectorAttributes(vector);
 
         for (int i=0; i<numBlocks; i++)
         {
@@ -505,7 +511,7 @@ void IndexFileWriter::writeVector(const VectorData& vector)
     }
 }
 
-void IndexFileWriter::writeVectorDeclaration(const VectorData& vector)
+void IndexFileWriter::writeVectorDeclaration(const VectorData &vector)
 {
     CHECK(fprintf(file, "vector %d  %s  %s  %s  %ld  %ld  %.*g  %.*g  %.*g  %.*g\n",
           vector.vectorId, QUOTE(vector.moduleName.c_str()), QUOTE(vector.name.c_str()), vector.columns.c_str(),
@@ -514,7 +520,15 @@ void IndexFileWriter::writeVectorDeclaration(const VectorData& vector)
 
 }
 
-void IndexFileWriter::writeBlock(const VectorData &vector, const Block& block)
+void IndexFileWriter::writeVectorAttributes(const VectorData &vector)
+{
+    for (StringMap::const_iterator it=vector.attributes.begin(); it != vector.attributes.end(); ++it)
+    {
+        CHECK(fprintf(file, "attr %s %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
+    }
+}
+
+void IndexFileWriter::writeBlock(const VectorData &vector, const Block &block)
 {
     static char buff1[64], buff2[64];
     char *e;

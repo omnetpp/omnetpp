@@ -32,6 +32,8 @@ class ResultFile;
 class FileRun;
 class ResultFileManager;
 
+typedef std::map<std::string, std::string> StringMap;
+
 /**
  * Item in an output scalar or output vector file. Represents common properties
  * of an output vector or output scalar.
@@ -41,6 +43,7 @@ struct SCAVE_API ResultItem
     FileRun *fileRunRef; // backref to containing FileRun
     std::string *moduleNameRef; // points into ResultFileManager's StringSet
     std::string *nameRef; // scalarname or vectorname; points into ResultFileManager's StringSet
+    StringMap attributes; // metadata in key/value form
 };
 
 /**
@@ -103,8 +106,6 @@ struct SCAVE_API ResultFile
     int numLines;
     int numUnrecognizedLines;
 };
-
-typedef std::map<std::string, std::string> StringMap;
 
 /**
  * Represents a run. If several scalar or vector files contain
@@ -209,7 +210,7 @@ class SCAVE_API ResultFileManager
     Run *addRun();
     FileRun *addFileRun(ResultFile *file, Run *run);  // associates a ResultFile with a Run
 
-    void processLine(char **vec, int numTokens, FileRun *&fileRunRef, ResultFile *fileRef, int lineNum);
+    void processLine(char **vec, int numTokens, FileRun *&fileRunRef, ResultItem *&resultItemRef, ResultFile *fileRef, int lineNum);
     void addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, double value);
 
     ResultFile *getFileForID(ID id) const; // checks for NULL

@@ -56,6 +56,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName)
     int numTokens, lineNo, numOfUnrecognizedLines = 0;
     int currentVectorId = -1;
     VectorData *currentVectorRef = NULL;
+    VectorData *lastVectorDecl = NULL;
     Block currentBlock;
 
     while ((line=reader.getNextLineBufferPointer())!=NULL)
@@ -68,10 +69,22 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName)
         if (numTokens == 0 || tokens[0][0] == '#')
             continue;
         else if (tokens[0][0] == 'r' && strcmp(tokens[0], "run") == 0 ||
-                 tokens[0][0] == 'a' && strcmp(tokens[0], "attr") == 0 ||
                  tokens[0][0] == 'p' && strcmp(tokens[0], "param") == 0)
         {
             index.run.parseLine(tokens, numTokens, vectorFileName, lineNo);
+        }
+        else if (tokens[0][0] == 'a' && strcmp(tokens[0], "attr") == 0)
+        {
+            if (lastVectorDecl == NULL) // run attribute
+            {
+                index.run.parseLine(tokens, numTokens, vectorFileName, lineNo);
+            }
+            else // vector attribute
+            {
+                if (numTokens < 3)
+                    throw ResultFileFormatException("vector file indexer: missing attribute name or value", vectorFileName, lineNo);
+                lastVectorDecl->attributes[tokens[1]] = tokens[2];
+            }
         }
         else if (tokens[0][0] == 'v' && strcmp(tokens[0], "vector") == 0)
         {
@@ -87,6 +100,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName)
             vector.blockSize = 0;
 
             index.addVector(vector);
+            lastVectorDecl = &index.vectors.back();
         }
         else // data line
         {
