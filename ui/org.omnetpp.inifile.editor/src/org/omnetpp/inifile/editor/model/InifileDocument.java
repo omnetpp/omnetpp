@@ -13,6 +13,8 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
@@ -20,6 +22,7 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.texteditor.MarkerUtilities;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
@@ -112,9 +115,31 @@ public class InifileDocument implements IInifileDocument {
 		resourceChangeListener = new IResourceChangeListener() {
 			public void resourceChanged(IResourceChangeEvent event) {
 				if (event.getType() == IResourceChangeEvent.POST_CHANGE) {
-					IResource resource = event.getResource();
-					if (resource instanceof IFile && resource.getFileExtension().equals("ini")) {
-						markAsChanged();
+					try {
+						// we need to traverse the delta to find out if there's an ini file in it [sigh...]
+						final boolean result[] = new boolean[] {false}; // for holding the result
+						event.getDelta().accept(new IResourceDeltaVisitor() {
+							public boolean visit(IResourceDelta delta) throws CoreException {
+								IResource resource = delta.getResource();
+								if (delta.getKind()==IResourceDelta.CHANGED && (delta.getFlags() & IResourceDelta.CONTENT)!=0 && 
+									resource instanceof IFile && resource.getFileExtension().equals("ini") && resource!=documentFile)
+									result[0] = true;
+								return result[0]==false;
+							}
+						});
+						// looks like if there are multiple files open, we can cause a workspace 
+						// deadlock if we invalidate here, so we defer it 
+						//XXX even this can cause VERY STRANGE THINGS to happen (infinite notification loops?)
+						// so better leave out the whole thing?
+						if (result[0]) {
+							Display.getDefault().asyncExec(new Runnable() {
+								public void run() {
+									markAsChanged();
+								}
+							});
+						}
+					} catch (CoreException e) {
+						InifileEditorPlugin.logError(e);
 					}
 				}
 			}
@@ -199,7 +224,8 @@ public class InifileDocument implements IInifileDocument {
 				line.sectionName = sectionName;
 				line.lastLine = line.lineNumber + line.numLines - 1;
 				section.headingLines.add(line);
-				mainFileSectionHeadingLines.add(line);
+				if (currentFile == documentFile)
+					mainFileSectionHeadingLines.add(line);
 				currentSection = section;
 				currentSectionHeading = line;
 			}
@@ -220,7 +246,8 @@ public class InifileDocument implements IInifileDocument {
 					line.comment = comment;
 					line.key = key;
 					line.value = value;
-					mainFileKeyValueLines.add(line);
+					if (currentFile == documentFile)
+						mainFileKeyValueLines.add(line);
 					currentSection.entries.put(key, line);
 					currentSectionHeading.lastLine = line.lineNumber + line.numLines - 1;
 				}
@@ -629,7 +656,7 @@ public class InifileDocument implements IInifileDocument {
 
 		// find key in that section (note: linear search, optimize if needed)
 		for (KeyValueLine line : mainFileKeyValueLines)
-			if (line.lineNumber==lineNumber)
+			if (line.lineNumber <= lineNumber && lineNumber < line.lineNumber+line.numLines)
 				return line.key;
 		return null;
 	}

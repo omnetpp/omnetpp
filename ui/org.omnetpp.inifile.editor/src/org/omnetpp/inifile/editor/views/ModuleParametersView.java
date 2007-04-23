@@ -122,7 +122,7 @@ public class ModuleParametersView extends AbstractModuleView {
 				Assert.isTrue(columnIndex<=2);
 				if (element instanceof ParamResolution) {
 					ParamResolution par = (ParamResolution) element;
-					Assert.isTrue(inifileDocument!=null);
+					Assert.isTrue(inifileDocument!=null); //FIXME FIXME null may actually occur here!!!!
 					switch (columnIndex) {
 						case 0: return par.moduleFullPath+"."+par.paramValueNode.getName();
 						case 1: return getValueAndRemark(par, inifileDocument)[0]; // value
