@@ -24,36 +24,19 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 		
  		IFolderLayout folder = layout.createFolder("left", IPageLayout.LEFT, (float)0.25, editorArea); //$NON-NLS-1$
 		folder.addView(IPageLayout.ID_RES_NAV);
-		layout.addView(IPageLayout.ID_OUTLINE, IPageLayout.BOTTOM, (float)0.75, IPageLayout.ID_RES_NAV);
+        IFolderLayout blfolder = layout.createFolder("leftbottom", IPageLayout.BOTTOM, (float)0.50, "left"); //$NON-NLS-1$
+        blfolder.addView(IPageLayout.ID_PROP_SHEET);
+        blfolder.addView(IPageLayout.ID_OUTLINE);
 		
 		IFolderLayout outputfolder = layout.createFolder("bottom", IPageLayout.BOTTOM, (float)0.75, editorArea); //$NON-NLS-1$
 		outputfolder.addView(IPageLayout.ID_PROBLEM_VIEW);
-		outputfolder.addView(IPageLayout.ID_PROP_SHEET);
-		outputfolder.addView(IPageLayout.ID_TASK_LIST);
+		outputfolder.addPlaceholder(IPageLayout.ID_TASK_LIST);
 		outputfolder.addPlaceholder(IPageLayout.ID_BOOKMARKS);
 		outputfolder.addPlaceholder(IProgressConstants.PROGRESS_VIEW_ID);
-//XXX JDT stuff commented out
-//		outputfolder.addPlaceholder(NewSearchUI.SEARCH_VIEW_ID);
-//		outputfolder.addPlaceholder(IConsoleConstants.ID_CONSOLE_VIEW);
 		
 		// actionsets
-//		layout.addActionSet(IDebugUIConstants.LAUNCH_ACTION_SET);
-//		layout.addActionSet(JavaUI.ID_ACTION_SET);
-//		layout.addActionSet(JavaUI.ID_ELEMENT_CREATION_ACTION_SET);
 		layout.addActionSet(IPageLayout.ID_NAVIGATE_ACTION_SET);
 		
-//		// views - java
-//		layout.addShowViewShortcut(JavaUI.ID_PACKAGES);
-//		layout.addShowViewShortcut(JavaUI.ID_TYPE_HIERARCHY);
-//		layout.addShowViewShortcut(JavaUI.ID_SOURCE_VIEW);
-//		layout.addShowViewShortcut(JavaUI.ID_JAVADOC_VIEW);
-//
-//		// views - search
-//		layout.addShowViewShortcut(NewSearchUI.SEARCH_VIEW_ID);
-//		
-//		// views - debugging
-//		layout.addShowViewShortcut(IConsoleConstants.ID_CONSOLE_VIEW);
-
 		// views - standard workbench
 		layout.addShowViewShortcut(IPageLayout.ID_OUTLINE);
 		layout.addShowViewShortcut(IPageLayout.ID_PROP_SHEET);
