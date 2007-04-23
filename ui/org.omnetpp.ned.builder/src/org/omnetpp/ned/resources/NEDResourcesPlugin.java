@@ -8,6 +8,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -150,6 +153,16 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
     public static void openNEDElementInEditor(NEDElement element, IGotoNedElement.Mode mode) {
         INEDTypeInfo typeInfo = element.getContainerNEDTypeInfo();
         IFile file = typeInfo.getNEDFile();
+        
+        // check if file is null. it is a built in type in this case
+        if (file == null) {
+            MessageBox messageBox = new MessageBox(Display.getDefault().getActiveShell(), SWT.ICON_WARNING | SWT.OK);
+            messageBox.setText("Warning");
+            messageBox.setMessage("Built in types cannot be opened for editing!");
+            messageBox.open();
+            return;
+        }
+            
         
         try {
             IEditorPart editor = EditorUtil.openEditor(file, true);

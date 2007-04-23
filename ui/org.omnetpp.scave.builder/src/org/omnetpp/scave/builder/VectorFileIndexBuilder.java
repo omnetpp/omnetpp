@@ -24,8 +24,6 @@ import org.eclipse.core.runtime.OperationCanceledException;
 
 public class VectorFileIndexBuilder extends IncrementalProjectBuilder {
 
-	public static final String BUILDER_ID = "org.omnetpp.scave.builder.vectorfileindexer";
-	
 	private Queue<IFile> filesToBeIndexed = new ConcurrentLinkedQueue<IFile>();
 	
 	@Override

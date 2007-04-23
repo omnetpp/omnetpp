@@ -5,7 +5,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
-import org.omnetpp.scave.builder.VectorFileIndexBuilder;
+import org.omnetpp.common.IConstants;
 
 public class OmnetppNature implements IProjectNature {
 
@@ -28,14 +28,14 @@ public class OmnetppNature implements IProjectNature {
 		boolean hasNEDBuidler = false;
 		boolean hasIndexer = false;
 		for (int i = 0; i < commands.length; ++i) {
-			if (commands[i].getBuilderName().equals(VectorFileIndexBuilder.BUILDER_ID))
+			if (commands[i].getBuilderName().equals(IConstants.VECTORFILEINDEXER_BUILDER_ID))
 				hasIndexer = true;
 			if (hasNEDBuidler && hasIndexer)
 				break;
 		}
 		
 		if (!hasIndexer)
-			addBuilderToProject(VectorFileIndexBuilder.BUILDER_ID);
+			addBuilderToProject(IConstants.VECTORFILEINDEXER_BUILDER_ID);
 	}
 
 	/*
@@ -44,7 +44,7 @@ public class OmnetppNature implements IProjectNature {
 	 * @see org.eclipse.core.resources.IProjectNature#deconfigure()
 	 */
 	public void deconfigure() throws CoreException {
-		removeBuilderFromProject(VectorFileIndexBuilder.BUILDER_ID);
+		removeBuilderFromProject(IConstants.VECTORFILEINDEXER_BUILDER_ID);
 	}
 	
 	public void addBuilderToProject(String id) throws CoreException {

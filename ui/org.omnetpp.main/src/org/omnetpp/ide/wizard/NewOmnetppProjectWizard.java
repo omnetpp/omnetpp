@@ -22,9 +22,9 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
+import org.omnetpp.common.IConstants;
 import org.omnetpp.ide.Activator;
 import org.omnetpp.ide.OmnetppNature;
-import org.omnetpp.scave.builder.VectorFileIndexBuilder;
 
 public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
 	
@@ -69,7 +69,7 @@ public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
         description.setLocation(newPath);
         description.setNatureIds(new String[] {OmnetppNature.NATURE_ID});
         ICommand vciBuildSpec = description.newCommand();
-        vciBuildSpec.setBuilderName(VectorFileIndexBuilder.BUILDER_ID);
+        vciBuildSpec.setBuilderName(IConstants.VECTORFILEINDEXER_BUILDER_ID);
         description.setBuildSpec(new ICommand[] {vciBuildSpec});
 		
         // define the operation to create a new project
