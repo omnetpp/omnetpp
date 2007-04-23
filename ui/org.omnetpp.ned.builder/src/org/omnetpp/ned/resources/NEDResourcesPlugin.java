@@ -20,7 +20,6 @@ import org.osgi.framework.BundleContext;
  * The main plugin class to be used in the desktop.
  */
 public class NEDResourcesPlugin extends AbstractUIPlugin {
-    public final static String NED_EDITOR_ID = "org.omnetpp.ned.editor";
 
     public static String PLUGIN_ID;
     
@@ -153,7 +152,7 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
         IFile file = typeInfo.getNEDFile();
         
         try {
-            IEditorPart editor = EditorUtil.openEditor(file, NED_EDITOR_ID, true);
+            IEditorPart editor = EditorUtil.openEditor(file, true);
             
             // select the component so it will be visible in the opened editor
             if (editor instanceof IGotoNedElement) {
