@@ -1,9 +1,12 @@
 package org.omnetpp.ned.actions;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.dialogs.ListDialog;
@@ -12,7 +15,7 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.resources.NEDResources;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
-public class OpenNedTypeAction extends Action {
+public class OpenNedTypeAction extends Action implements IWorkbenchWindowActionDelegate {
 	public OpenNedTypeAction() {
 		setText("Open NED Type");
 		setToolTipText("Open NED Type");
@@ -47,5 +50,18 @@ public class OpenNedTypeAction extends Action {
 			NEDResourcesPlugin.openNEDElementInEditor(component.getNEDElement());  //XXX null?
 		}
 	}
+
+    public void dispose() {
+    }
+
+    public void init(IWorkbenchWindow window) {
+    }
+
+    public void run(IAction action) {
+        run();
+    }
+
+    public void selectionChanged(IAction action, ISelection selection) {
+    }
 
 }

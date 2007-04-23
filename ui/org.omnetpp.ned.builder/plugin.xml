@@ -15,4 +15,38 @@
       <persistent value="false"/> 
       <super type="org.eclipse.core.resources.problemmarker"/> 
    </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            description="All actions global to OMNEST/OMNeT++ NED editing"
+            id="org.omnetpp.ned.ActionSet"
+            label="OMNEST/OMNeT++"
+            visible="true">
+         <action
+               class="org.omnetpp.ned.actions.OpenNedTypeAction"
+               definitionId="org.omnetpp.ned.openNedType"
+               icon="icons/full/etool16/opennedtype.gif"
+               id="openNedType"
+               label="Open NED Type..."
+               menubarPath="navigate/open.ext2"
+               style="push"
+               toolbarPath="org.eclipse.search.searchActionSet/Search"
+               tooltip="Open NED Type"/>
+      </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            categoryId="org.eclipse.ui.category.navigate"
+            description="Open NED Type"
+            id="org.omnetpp.ned.openNedType"
+            name="Open Ned Type"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="org.omnetpp.ned.openNedType"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+N"/>
+   </extension>
 </plugin>
