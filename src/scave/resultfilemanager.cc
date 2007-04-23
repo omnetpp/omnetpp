@@ -37,6 +37,45 @@
 static double zero = 0.0;
 static double NaN = zero / zero;
 
+ResultItem::Type ResultItem::getType() const
+{
+    StringMap::const_iterator it = attributes.find("type");
+    if (it != attributes.end())
+    {
+        if (attributes.find("enum") != attributes.end())
+            return TYPE_ENUM;
+        else
+            return TYPE_DOUBLE;
+    }
+    else
+    {
+        const std::string &type = it->second;
+        if (type == "int")
+            return TYPE_INT;
+        else if (type == "double")
+            return TYPE_DOUBLE;
+        else if (type == "enum")
+            return TYPE_ENUM;
+        else
+            throw opp_runtime_error("Unknown type: %s", type.c_str());
+    }
+}
+
+EnumType* ResultItem::getEnum() const
+{
+    StringMap::const_iterator it = attributes.find("enum");
+    if (it != attributes.end())
+    {
+        EnumType *enumPtr = new EnumType();
+        enumPtr->parseFromString(it->second.c_str());
+        return enumPtr;
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
 double VectorResult::mean() const
 {
     return count>0 ? sum/count : NaN;
@@ -59,6 +98,29 @@ double VectorResult::variance() const
 double VectorResult::stddev() const
 {
     return sqrt( variance() );
+}
+
+VectorResult::InterpolationMode VectorResult::getInterpolationMode() const
+{
+    StringMap::const_iterator it = attributes.find("interpolationmode");
+    if (it != attributes.end())
+    {
+        const std::string &mode = it->second;
+        if (mode == "none")
+            return NONE;
+        else if (mode == "sample-hold")
+            return SAMPLE_HOLD;
+        else if (mode == "backward-sample-hold")
+            return BACKWARD_SAMPLE_HOLD;
+        else if (mode == "linear")
+            return LINEAR;
+        else
+            throw new opp_runtime_error("Unknown interpolation mode: %s", mode.c_str());
+    }
+    else
+    {
+        return NONE;
+    }
 }
 
 ResultFileManager::ResultFileManager()

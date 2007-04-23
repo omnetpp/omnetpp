@@ -21,7 +21,7 @@ OBJS= arraybuilder.obj channel.obj commonnodes.obj compoundfilter.obj \
       vectorfilereader.obj vectorfilewriter.obj windowavg.obj \
       xyplotnode.obj octaveexport.obj indexedvectorfile.obj \
       vectorfileindexer.obj indexfile.obj scaveutils.obj \
-      scaveexception.obj
+      scaveexception.obj enumtype.obj
 
 #
 # Automatic rules

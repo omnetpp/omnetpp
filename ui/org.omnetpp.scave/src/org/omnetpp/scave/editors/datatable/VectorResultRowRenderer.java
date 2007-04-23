@@ -10,7 +10,9 @@ import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.virtualtable.IVirtualTableRowRenderer;
+import org.omnetpp.scave.engine.EnumType;
 import org.omnetpp.scave.engine.OutputVectorEntry;
+import org.omnetpp.scave.engine.VectorResult;
 
 /**
  * Implementation of the IVirtualTableItemProvier interface for
@@ -26,9 +28,16 @@ public class VectorResultRowRenderer extends LabelProvider implements IVirtualTa
 
 	protected Font font = JFaceResources.getDefaultFont();
 
+	protected EnumType enumType;
 	protected int fontHeight;
 	
 	public void setInput(Object input) {
+		if (input instanceof VectorResult) {
+			VectorResult vector = (VectorResult)input;
+			enumType = vector.getEnum();
+		}
+		else
+			enumType = null;
 	}
 
 	public int getRowHeight(GC gc) {
@@ -57,7 +66,14 @@ public class VectorResultRowRenderer extends LabelProvider implements IVirtualTa
 				gc.drawText((time != null ? time.toString() : ""), HORIZONTAL_SPACING, 0);
 				break;
 			case 2:
-				gc.drawText(String.valueOf(entry.getValue()), HORIZONTAL_SPACING, 0);
+				double value = entry.getValue(); // XXX add entry.getEnumValue(), entry.getIntValue(), etc.
+				if (enumType != null) {
+					String name = enumType.nameOf((int)Math.round(value));
+					gc.drawText(name!=null?name:"?", HORIZONTAL_SPACING, 0);
+				}
+				else {
+					gc.drawText(String.valueOf(entry.getValue()), HORIZONTAL_SPACING, 0);
+				}
 				break;
 			case 3:
 				gc.drawText(String.valueOf(entry.getEventNumber()), HORIZONTAL_SPACING, 0);

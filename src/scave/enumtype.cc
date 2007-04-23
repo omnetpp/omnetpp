@@ -1,0 +1,101 @@
+//=========================================================================
+//  ENUM.CC - part of
+//
+//                  OMNeT++/OMNEST
+//           Discrete System Simulation in C++
+//
+//   Member functions of
+//    EnumType : maps between enum names and enum values
+//
+//  Author: Andras Varga
+//
+//=========================================================================
+
+/*--------------------------------------------------------------*
+  Copyright (C) 1992-2005 Andras Varga
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
+#include <sstream>
+#include "stringtokenizer.h"
+#include "scaveutils.h"
+#include "enumtype.h"
+
+
+EnumType::EnumType(const EnumType& list)
+{
+     operator=(list);
+}
+
+EnumType::EnumType()
+{
+}
+
+EnumType::~EnumType()
+{
+}
+
+EnumType& EnumType::operator=(const EnumType& other)
+{
+    valueToNameMap = other.valueToNameMap;
+    nameToValueMap = other.nameToValueMap;
+    return *this;
+}
+
+void EnumType::insert(int value, const char *name)
+{
+    valueToNameMap[value] = name;
+    nameToValueMap[name] = value;
+}
+
+const char *EnumType::nameOf(int value) const
+{
+    std::map<int,std::string>::const_iterator it = valueToNameMap.find(value);
+    return it==valueToNameMap.end() ? NULL : it->second.c_str();
+}
+
+int EnumType::valueOf(const char *name) const
+{
+    std::map<std::string,int>::const_iterator it = nameToValueMap.find(name);
+    return it==nameToValueMap.end() ? -1 : it->second;
+}
+
+std::string EnumType::toString() const
+{
+    std::stringstream out;
+    for (std::map<std::string,int>::const_iterator it=nameToValueMap.begin(); it!=nameToValueMap.end(); ++it)
+    {
+        if (it!=nameToValueMap.begin())
+            out << ", ";
+        out << it->first << "=" << it->second;
+    }
+    return out.str();
+}
+
+void EnumType::parseFromString(const char *str)
+{
+    valueToNameMap.clear();
+    nameToValueMap.clear();
+
+    StringTokenizer tokenizer(str, ", ");
+    int value = -1;
+    while (tokenizer.hasMoreTokens())
+    {
+        std::string nameValue = tokenizer.nextToken();
+        std::string::size_type pos = nameValue.find('=');
+        if (pos == std::string::npos)
+        {
+            insert(++value, nameValue.c_str());
+        }
+        else
+        {
+            std::string name = nameValue.substr(0, pos);
+            std::string valueStr = nameValue.substr(pos+1);
+            if (!parseInt(valueStr.c_str(), value))
+                throw opp_runtime_error("Enum value must be an int, found: %s", valueStr.c_str());
+            insert(value, name.c_str());
+        }
+    }
+}

@@ -4,6 +4,7 @@
 
 %{
 #include "scavedefs.h"
+#include "enumtype.h"
 #include "idlist.h"
 #include "resultfilemanager.h"
 #include "datasorter.h"
@@ -154,6 +155,10 @@ namespace std {
    %template(IntVector) vector<int>;
 
 };
+
+%ignore EnumType::insert;
+%ignore EnumType::parseFromString;
+%include "enumtype.h"
 
 
 %typemap(javacode) IDList %{

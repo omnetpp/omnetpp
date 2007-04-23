@@ -24,6 +24,7 @@
 #include <list>
 
 #include "idlist.h"
+#include "enumtype.h"
 #include "exception.h"
 #include "commonutil.h"
 
@@ -40,10 +41,15 @@ typedef std::map<std::string, std::string> StringMap;
  */
 struct SCAVE_API ResultItem
 {
+    enum Type { TYPE_INT, TYPE_DOUBLE, TYPE_ENUM };
+
     FileRun *fileRunRef; // backref to containing FileRun
     std::string *moduleNameRef; // points into ResultFileManager's StringSet
     std::string *nameRef; // scalarname or vectorname; points into ResultFileManager's StringSet
     StringMap attributes; // metadata in key/value form
+
+    Type getType() const;
+    EnumType* getEnum() const;
 };
 
 /**
@@ -60,6 +66,8 @@ struct SCAVE_API ScalarResult : public ResultItem
  */
 struct SCAVE_API VectorResult : public ResultItem
 {
+    enum InterpolationMode { NONE, SAMPLE_HOLD, BACKWARD_SAMPLE_HOLD, LINEAR };
+
     int vectorId;
     std::string columns;
     long count;
@@ -71,6 +79,8 @@ struct SCAVE_API VectorResult : public ResultItem
     double mean() const;
     double variance() const;
     double stddev() const;
+
+    InterpolationMode getInterpolationMode() const;
 };
 
 /**
