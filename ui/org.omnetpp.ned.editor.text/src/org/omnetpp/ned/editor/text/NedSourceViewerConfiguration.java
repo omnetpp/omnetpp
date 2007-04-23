@@ -28,11 +28,11 @@ import org.omnetpp.ned.editor.text.highlight.NedCodeColorizerScanner;
 import org.omnetpp.ned.editor.text.highlight.NedDocColorizerScanner;
 import org.omnetpp.ned.editor.text.highlight.NedPrivateDocColorizerScanner;
 import org.omnetpp.ned.editor.text.highlight.NedSyntaxHighlightPartitionScanner;
-import org.omnetpp.ned.editor.text.util.NEDHyperlinkDetector;
 import org.omnetpp.ned.editor.text.util.NedAnnotationHover;
 import org.omnetpp.ned.editor.text.util.NedAutoIndentStrategy;
 import org.omnetpp.ned.editor.text.util.NedDoubleClickSelector;
 import org.omnetpp.ned.editor.text.util.NedTextHover;
+import org.omnetpp.ned.misc.NEDHyperlinkDetector;
 
 /**
  * Configuration for an <code>SourceViewer</code> which shows NED code.

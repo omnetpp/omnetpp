@@ -17,7 +17,6 @@ import org.eclipse.gef.KeyStroke;
 import org.eclipse.gef.MouseWheelHandler;
 import org.eclipse.gef.MouseWheelZoomHandler;
 import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.dnd.TemplateTransferDragSourceListener;
 import org.eclipse.gef.dnd.TemplateTransferDropTargetListener;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
@@ -31,8 +30,6 @@ import org.eclipse.gef.ui.actions.MatchWidthAction;
 import org.eclipse.gef.ui.actions.ToggleSnapToGeometryAction;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
-import org.eclipse.gef.ui.palette.PaletteViewer;
-import org.eclipse.gef.ui.palette.PaletteViewerProvider;
 import org.eclipse.gef.ui.parts.ContentOutlinePage;
 import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
 import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
@@ -62,7 +59,6 @@ import org.omnetpp.ned.editor.graph.actions.UnpinAction;
 import org.omnetpp.ned.editor.graph.dnd.TextTransferDropTargetListener;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
-import org.omnetpp.ned.editor.graph.misc.ModulePaletteCustomizer;
 import org.omnetpp.ned.editor.graph.misc.NedSelectionSynchronizer;
 import org.omnetpp.ned.editor.graph.misc.PaletteManager;
 import org.omnetpp.ned.editor.graph.properties.view.BasePreferrerPropertySheetSorter;
@@ -137,13 +133,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
     private Command lastUndoCommand;
     private Command lastRedoCommand;
 
-    protected static final String PALETTE_DOCK_LOCATION = "Dock location"; //$NON-NLS-1$
-    protected static final String PALETTE_SIZE = "Palette Size"; //$NON-NLS-1$
-    protected static final String PALETTE_STATE = "Palette state"; //$NON-NLS-1$
-    protected static final int DEFAULT_PALETTE_SIZE = 130;
-
     public GraphicalNedEditor() {
-        GraphicalNedEditorPlugin.getDefault().getPreferenceStore().setDefault(PALETTE_SIZE, DEFAULT_PALETTE_SIZE);
         setEditDomain(new DefaultEditDomain(this));
     }
 
@@ -214,19 +204,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
     }
 
     @Override
-    protected PaletteViewerProvider createPaletteViewerProvider() {
-        return new PaletteViewerProvider(getEditDomain()) {
-
-            @Override
-            protected void configurePaletteViewer(PaletteViewer viewer) {
-                super.configurePaletteViewer(viewer);
-                viewer.setCustomizer(new ModulePaletteCustomizer());
-                viewer.addDragSourceListener(new TemplateTransferDragSourceListener(viewer));
-            }
-        };
-    }
-
-    @Override
     public DefaultEditDomain getEditDomain() {
         // overridden to make it visible
         return super.getEditDomain();
@@ -235,7 +212,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
     @Override
     public void doSave(final IProgressMonitor progressMonitor) {
         Assert.isTrue(false, "save is not implemented");
-    			getCommandStack().markSaveLocation();
     }
 
     /* (non-Javadoc)

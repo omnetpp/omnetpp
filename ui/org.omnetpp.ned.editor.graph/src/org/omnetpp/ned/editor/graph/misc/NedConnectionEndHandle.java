@@ -12,8 +12,7 @@ import org.eclipse.gef.tools.ConnectionEndpointTracker;
  * This is treated differently than the start of the Connection.
  * Redefined to provide Ned
  */
-public final class NedConnectionEndHandle
-	extends ConnectionHandle
+public final class NedConnectionEndHandle extends ConnectionHandle
 {
 
 /**

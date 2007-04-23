@@ -20,8 +20,9 @@ import org.omnetpp.ned.model.pojo.GateNode;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 
 /**
- * @author rhornig
  * Helper class that allows to choose a connection for a module pair (src , dest)
+ * 
+ * @author rhornig
  */
 public class ConnectionChooser {
     private static final String DEFAULT_INDEX = "0";

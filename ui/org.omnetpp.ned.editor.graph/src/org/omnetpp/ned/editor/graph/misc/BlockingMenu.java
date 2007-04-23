@@ -8,8 +8,9 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
 /**
- * @author rhornig
  * A popup menu that blocks the execution until an item is selected or the menu is cancelled.
+ * 
+ * @author rhornig
  */
 public class BlockingMenu extends Menu {
 	MenuItem selectedMenuItem = null;
