@@ -40,17 +40,17 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
  * @author Andras
  */
 //XXX consider this:
-//    Net.host[0].p = ...
-//    Net.host[*].p = ...
-// Then host[0] should NOT be warned about being unused!!! 
-// This affects all keys containing an index which is not "*", that is, where key.matches(".*\\[([^*]|(\\*[^]]+))\\].*")
-//
+//Net.host[0].p = ...
+//Net.host[*].p = ...
+//Then host[0] should NOT be warned about being unused!!! 
+//This affects all keys containing an index which is not "*", that is, where key.matches(".*\\[([^*]|(\\*[^]]+))\\].*")
+
 public class InifileAnalyzer {
 	public static final String INIFILEANALYZERPROBLEM_MARKER_ID = InifileEditorPlugin.PLUGIN_ID + ".inifileanalyzerproblem";
 	private IInifileDocument doc;
 	private boolean changed = true;
 	private boolean containsSectionCircles; 
-	
+
 	/**
 	 * Classifies inifile keys; see getKeyType().
 	 */
@@ -92,8 +92,10 @@ public class InifileAnalyzer {
 		});
 	}
 
-	protected synchronized void modelChanged() {
-		changed = true;
+	protected void modelChanged() {
+		synchronized (doc) {
+			changed = true;
+		}
 	}
 
 	/**
@@ -108,9 +110,11 @@ public class InifileAnalyzer {
 	 * error/warning markers may be placed on the IFile, and parameter
 	 * resolutions (see ParamResolution) are recalculated.
 	 */
-	public synchronized void analyzeIfChanged() {
-		if (changed)
-			analyze();
+	public void analyzeIfChanged() {
+		synchronized (doc) {
+			if (changed)
+				analyze();
+		}
 	}
 
 	/**
@@ -118,49 +122,50 @@ public class InifileAnalyzer {
 	 * on the IFile, and parameter resolutions (see ParamResolution) are 
 	 * recalculated.
 	 */
-	public synchronized void analyze() {
-		long startTime = System.currentTimeMillis();
-		INEDTypeResolver ned = NEDResourcesPlugin.getNEDResources();
+	public void analyze() {
+		synchronized (doc) {
+			long startTime = System.currentTimeMillis();
+			INEDTypeResolver ned = NEDResourcesPlugin.getNEDResources();
 
-		// remove existing markers
-		try {
-			IFile file = doc.getDocumentFile();
-			file.deleteMarkers(INIFILEANALYZERPROBLEM_MARKER_ID, true, 0);
-		} catch (CoreException e) {
-			InifileEditorPlugin.logError(e);
-		}
+			// remove existing markers
+			try {
+				IFile file = doc.getDocumentFile();
+				file.deleteMarkers(INIFILEANALYZERPROBLEM_MARKER_ID, true, 0);
+			} catch (CoreException e) {
+				InifileEditorPlugin.logError(e);
+			}
 
-		//FIXME FIXME FIXME resolve race conditions! ie reconciler may re-parse document while we are analyzing!!!!!!!
-		//XXX catch all exceptions during analyzing, and set changed=false in finally{} ? 
+			//XXX catch all exceptions during analyzing, and set changed=false in finally{} ? 
 
-		// check section names, detect circles in the fallback chains
-		validateSections();
+			// check section names, detect circles in the fallback chains
+			validateSections();
 
-		// validate config entries and parameter keys
-		for (String section : doc.getSectionNames()) {
-			for (String key : doc.getKeys(section)) {
-				switch (getKeyType(key)) {
+			// validate config entries and parameter keys
+			for (String section : doc.getSectionNames()) {
+				for (String key : doc.getKeys(section)) {
+					switch (getKeyType(key)) {
 					case CONFIG: validateConfig(section, key, ned); break;
 					case PARAM:  validateParamKey(section, key, ned); break;
 					case PER_OBJECT_CONFIG: validatePerObjectConfig(section, key, ned); break;
+					}
 				}
 			}
+
+			// calculate parameter resolutions for each section
+			calculateParamResolutions(ned);
+
+			// data structure is done
+			changed = false;
+
+			//TODO validate each key based on the parameter resolution (if right data type, etc)
+
+			// warn for unused param keys; this must be done AFTER changed=false
+			for (String section : doc.getSectionNames())
+				for (String key : getUnusedParameterKeys(section))
+					addWarning(section, key, "Unused entry (does not match any parameters)");
+
+			System.out.println("Inifile analysed in "+(System.currentTimeMillis()-startTime)+"ms");
 		}
-
-		// calculate parameter resolutions for each section
-		calculateParamResolutions(ned);
-
-		// data structure is done
-		changed = false;
-		
-		//TODO validate each key based on the parameter resolution (if right data type, etc)
-
-		// warn for unused param keys; this must be done AFTER changed=false
-		for (String section : doc.getSectionNames())
-			for (String key : getUnusedParameterKeys(section))
-				addWarning(section, key, "Unused entry (does not match any parameters)");
-
-		System.out.println("Inifile analysed in "+(System.currentTimeMillis()-startTime)+"ms");
 	}
 
 	protected void addError(String section, String message) {
@@ -202,7 +207,7 @@ public class InifileAnalyzer {
 	protected void validateSections() {
 		containsSectionCircles = false;
 		Set<String> bogusSections = new HashSet<String>();
-		
+
 		// check fallback chain for every section, except [General]
 		for (String section : doc.getSectionNames()) {
 			// check section name
@@ -337,39 +342,36 @@ public class InifileAnalyzer {
 		// analyzing it. In particular, re-parse and re-analyze triggered by the 
 		// reconciler and a view (e.g.the Module Parameters view) have been observed
 		// to collide that way.
-		synchronized (doc) {
-			
-			// initialize SectionData and KeyData objects
-			System.out.println("calculateParamResolutions: START attaching data");
-			for (String section : doc.getSectionNames()) {
-				doc.setSectionData(section, new SectionData());
-				for (String key : doc.getKeys(section))
-					if (getKeyType(key)!=KeyType.CONFIG)
-						doc.setKeyData(section, key, new KeyData());
-			}
-			System.out.println("calculateParamResolutions: END attaching data");
+		System.out.println(Thread.currentThread().getId()+" ANALYZE: before sync");
+		System.out.println(Thread.currentThread().getId()+" ANALYZE: started");
 
-			// calculate parameter resolutions for each section
-			for (String activeSection : doc.getSectionNames()) {
-				System.out.println("calculateParamResolutions: PROCESSING with active section="+activeSection);
+		// initialize SectionData and KeyData objects
+		for (String section : doc.getSectionNames()) {
+			doc.setSectionData(section, new SectionData());
+			for (String key : doc.getKeys(section))
+				if (getKeyType(key)!=KeyType.CONFIG)
+					doc.setKeyData(section, key, new KeyData());
+		}
 
-				// calculate param resolutions
-				List<ParamResolution> resList = collectParameters(activeSection, ned);
+		// calculate parameter resolutions for each section
+		for (String activeSection : doc.getSectionNames()) {
+			// calculate param resolutions
+			List<ParamResolution> resList = collectParameters(activeSection, ned);
 
-				// store with the section the list of all parameter resolutions (incl unassigned params)
-				// store with every key the list of parameters it resolves
-				for (ParamResolution res : resList) {
-					SectionData sectionData = ((SectionData)doc.getSectionData(activeSection));
-					sectionData.allParamResolutions.add(res); //XXX NPE!!!!
-					if (res.type == ParamResolutionType.UNASSIGNED)
-						sectionData.unassignedParams.add(res);
+			// store with the section the list of all parameter resolutions (incl unassigned params)
+			// store with every key the list of parameters it resolves
+			for (ParamResolution res : resList) {
+				SectionData sectionData = ((SectionData)doc.getSectionData(activeSection));
+				sectionData.allParamResolutions.add(res);
+				if (res.type == ParamResolutionType.UNASSIGNED)
+					sectionData.unassignedParams.add(res);
 
-					if (res.key != null) {
-						((KeyData)doc.getKeyData(res.section, res.key)).paramResolutions.add(res);
-					}
+				if (res.key != null) {
+					((KeyData)doc.getKeyData(res.section, res.key)).paramResolutions.add(res);
 				}
 			}
 		}
+		System.out.println(Thread.currentThread().getId()+" ANALYZE: done");
 	}
 
 	protected List<ParamResolution> collectParameters(String activeSection, INEDTypeResolver ned) {
@@ -404,7 +406,7 @@ public class InifileAnalyzer {
 				return null; //XXX try to do it
 			}
 		});
-		
+
 		treeIterator.traverse(networkName);
 		return list;
 	}
@@ -415,8 +417,8 @@ public class InifileAnalyzer {
 			SubmoduleNodeEx submodule = (SubmoduleNodeEx) pathModules[pathModules.length-1];
 			ParamNode paramValueNode = submodule==null ?
 					(ParamNode)moduleType.getParamValues().get(paramName) :
-					(ParamNode)submodule.getParamValues().get(paramName);
-			resultList.add(resolveParameter(moduleFullPath, pathModules, paramDeclNode, paramValueNode, sectionChain, doc));
+						(ParamNode)submodule.getParamValues().get(paramName);
+					resultList.add(resolveParameter(moduleFullPath, pathModules, paramDeclNode, paramValueNode, sectionChain, doc));
 		}
 	}
 
@@ -481,9 +483,8 @@ public class InifileAnalyzer {
 
 	public boolean containsSectionCircles() {
 		return containsSectionCircles;
-
 	}
-	
+
 	/**
 	 * Classify an inifile key, based on its syntax.
 	 * XXX syntax rules used here must be enforced throughout the system
@@ -499,11 +500,13 @@ public class InifileAnalyzer {
 	}
 
 	public boolean isUnusedParameterKey(String section, String key) {
-		analyzeIfChanged();
-		if (getKeyType(key)!=KeyType.PARAM) 
-			return false;
-		KeyData data = (KeyData) doc.getKeyData(section,key);
-		return data!=null && data.paramResolutions!=null && data.paramResolutions.isEmpty(); 
+		synchronized (doc) {
+			analyzeIfChanged();
+			if (getKeyType(key)!=KeyType.PARAM) 
+				return false;
+			KeyData data = (KeyData) doc.getKeyData(section,key);
+			return data!=null && data.paramResolutions!=null && data.paramResolutions.isEmpty();
+		}
 	}
 
 	/**
@@ -511,18 +514,22 @@ public class InifileAnalyzer {
 	 * empty, this key is not used to resolve any module parameters.
 	 */
 	public ParamResolution[] getParamResolutionsForKey(String section, String key) {
-		analyzeIfChanged();
-		KeyData data = (KeyData) doc.getKeyData(section,key);
-		return (data!=null && data.paramResolutions!=null) ? data.paramResolutions.toArray(new ParamResolution[]{}) : new ParamResolution[0]; 
+		synchronized (doc) {
+			analyzeIfChanged();
+			KeyData data = (KeyData) doc.getKeyData(section,key);
+			return (data!=null && data.paramResolutions!=null) ? data.paramResolutions.toArray(new ParamResolution[]{}) : new ParamResolution[0];
+		}
 	}
 
 	public String[] getUnusedParameterKeys(String section) {
-		analyzeIfChanged();
-		ArrayList<String> list = new ArrayList<String>();
-		for (String key : doc.getKeys(section)) 
-			if (isUnusedParameterKey(section, key))
-				list.add(key);
-		return list.toArray(new String[list.size()]);
+		synchronized (doc) {
+			analyzeIfChanged();
+			ArrayList<String> list = new ArrayList<String>();
+			for (String key : doc.getKeys(section)) 
+				if (isUnusedParameterKey(section, key))
+					list.add(key);
+			return list.toArray(new String[list.size()]);
+		}
 	}
 
 	/**
@@ -530,18 +537,20 @@ public class InifileAnalyzer {
 	 * parameters of the given module.  
 	 */
 	public ParamResolution[] getParamResolutionsForModule(String moduleFullPath, String section) {
-		analyzeIfChanged();
-		SectionData data = (SectionData) doc.getSectionData(section);
-		List<ParamResolution> pars = data==null ? null : data.allParamResolutions;
-		if (pars == null || pars.isEmpty())
-			return new ParamResolution[0]; 
+		synchronized (doc) {
+			analyzeIfChanged();
+			SectionData data = (SectionData) doc.getSectionData(section);
+			List<ParamResolution> pars = data==null ? null : data.allParamResolutions;
+			if (pars == null || pars.isEmpty())
+				return new ParamResolution[0]; 
 
-		// Note: linear search -- can be made more efficient with some lookup table if needed
-		ArrayList<ParamResolution> result = new ArrayList<ParamResolution>();
-		for (ParamResolution par : pars) 
-			if (par.moduleFullPath.equals(moduleFullPath))
-				result.add(par);
-		return result.toArray(new ParamResolution[]{});
+			// Note: linear search -- can be made more efficient with some lookup table if needed
+			ArrayList<ParamResolution> result = new ArrayList<ParamResolution>();
+			for (ParamResolution par : pars) 
+				if (par.moduleFullPath.equals(moduleFullPath))
+					result.add(par);
+			return result.toArray(new ParamResolution[]{});
+		}
 	}
 
 	/**
@@ -549,18 +558,22 @@ public class InifileAnalyzer {
 	 * unassigned parameters as well.  
 	 */
 	public ParamResolution[] getParamResolutions(String section) {
-		analyzeIfChanged();
-		SectionData sectionData = (SectionData) doc.getSectionData(section);
-		return sectionData.allParamResolutions.toArray(new ParamResolution[]{}); 
+		synchronized (doc) {
+			analyzeIfChanged();
+			SectionData sectionData = (SectionData) doc.getSectionData(section);
+			return sectionData.allParamResolutions.toArray(new ParamResolution[]{});
+		}
 	}
 
 	/**
 	 * Returns unassigned parameters for the given inifile section.
 	 */
 	public ParamResolution[] getUnassignedParams(String section) {
-		analyzeIfChanged();
-		SectionData sectionData = (SectionData) doc.getSectionData(section);
-		return sectionData.unassignedParams.toArray(new ParamResolution[]{}); 
+		synchronized (doc) {
+			analyzeIfChanged();
+			SectionData sectionData = (SectionData) doc.getSectionData(section);
+			return sectionData.unassignedParams.toArray(new ParamResolution[]{});
+		}
 	}
 
 }

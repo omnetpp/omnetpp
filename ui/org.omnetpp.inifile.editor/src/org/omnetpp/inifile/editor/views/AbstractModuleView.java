@@ -137,22 +137,22 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 	}
 
 	public void workbenchSelectionChanged() {
-		System.out.println("*** SELECTIONCHANGE");
+		//System.out.println("*** SELECTIONCHANGE");
 		scheduleRebuildContent();
 	}
 
 	protected void viewActivated() {
-		System.out.println("*** VIEW ACTIVATED");
+		//System.out.println("*** VIEW ACTIVATED");
 		scheduleRebuildContent();
 	}
 
 	protected void activeEditorChanged() {
-		System.out.println("*** ACTIVE EDITOR CHANGED");
+		//System.out.println("*** ACTIVE EDITOR CHANGED");
 		scheduleRebuildContent();
 	}
 
 	protected void nedModelChanged() {
-		System.out.println("*** NED MODEL CHANGE");
+		//System.out.println("*** NED MODEL CHANGE");
 		scheduleRebuildContent();
 	}
 
