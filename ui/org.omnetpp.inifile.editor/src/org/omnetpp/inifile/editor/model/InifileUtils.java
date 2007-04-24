@@ -7,7 +7,6 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,7 +21,6 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
-import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.ex.ParamNodeEx;
 import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
@@ -351,7 +349,7 @@ public class InifileUtils {
 			String paramName = paramDeclNode.getName();
 			String paramType = paramDeclNode.getAttribute(ParamNode.ATT_TYPE);
 			String paramDeclaredOn = ((ParamNodeEx)paramDeclNode).getContainerNEDTypeInfo().getName();
-			String comment = makeBriefDocu(paramDeclNode.getComment(), 60);
+			String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 60);
 			String optComment = comment==null ? "" : (" -- \"" + comment + "\"");
 
 			text += "\n  " + paramDeclaredOn + "." + paramName + " : "+ paramType + optComment + "\n"; 
@@ -386,22 +384,6 @@ public class InifileUtils {
 //		return text;
 	}
 
-	/**
-	 * Formats a NED comment as a one-line doc string. If it is longer than the
-	 * given max length, it gets truncated.
-	 */
-	public static String makeBriefDocu(String comment, int maxlen) {
-		if (comment==null)
-			return null;
-		comment = comment.replaceAll("(?m)^\\s*//", "").trim(); // remove "//"'s
-		comment = comment.replaceFirst("(?s)\n[ \t]*\n.*", "").trim(); // keep only first paragraph
-		comment = comment.replaceAll("(?s)\\s+", " "); // make it one line, and normalize whitespace
-		if (comment.length() > maxlen)
-			comment = comment.substring(0, maxlen)+"...";
-		return comment;
-	}
-
-	
 	/**
 	 * Returns the problem markers for a given inifile entry.
 	 */

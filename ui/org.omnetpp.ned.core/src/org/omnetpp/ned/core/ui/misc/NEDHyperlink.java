@@ -1,4 +1,4 @@
-package org.omnetpp.ned.core.ui;
+package org.omnetpp.ned.core.ui.misc;
 
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.hyperlink.IHyperlink;

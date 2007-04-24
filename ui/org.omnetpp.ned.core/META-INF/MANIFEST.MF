@@ -13,7 +13,7 @@ Require-Bundle: org.eclipse.ui,
  org.omnetpp.ide.nativelibs,
  org.eclipse.jface.text
 Eclipse-LazyStart: true
-Export-Package: org.omnetpp.ned.actions,
- org.omnetpp.ned.core,
- org.omnetpp.ned.misc
+Export-Package: org.omnetpp.ned.core,
+ org.omnetpp.ned.core.ui.actions,
+ org.omnetpp.ned.core.ui.misc
 Bundle-Vendor: OpenSim Ltd.

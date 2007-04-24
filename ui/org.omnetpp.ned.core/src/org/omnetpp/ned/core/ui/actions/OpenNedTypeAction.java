@@ -1,4 +1,4 @@
-package org.omnetpp.ned.actions;
+package org.omnetpp.ned.core.ui.actions;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;

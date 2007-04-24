@@ -23,7 +23,7 @@
             label="OMNEST/OMNeT++"
             visible="true">
          <action
-               class="org.omnetpp.ned.actions.OpenNedTypeAction"
+               class="org.omnetpp.ned.core.ui.actions.OpenNedTypeAction"
                definitionId="org.omnetpp.ned.openNedType"
                icon="icons/full/etool16/opennedtype.gif"
                id="openNedType"

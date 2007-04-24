@@ -26,7 +26,7 @@ import org.omnetpp.inifile.editor.text.highlight.NedCodeColorizerScanner;
 import org.omnetpp.inifile.editor.text.highlight.NedDocColorizerScanner;
 import org.omnetpp.inifile.editor.text.util.InifileAnnotationHover;
 import org.omnetpp.inifile.editor.text.util.InifileTextHover;
-import org.omnetpp.ned.misc.NEDHyperlinkDetector;
+import org.omnetpp.ned.core.ui.misc.NEDHyperlinkDetector;
 
 /**
  * Configuration for a SourceViewer which shows an inifile.
