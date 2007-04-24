@@ -80,7 +80,7 @@
       <plugin id="org.omnetpp.ide.nativelibs.macosx" fragment="true"/>
       <plugin id="org.omnetpp.ide.nativelibs.win32.x86" fragment="true"/>
       <plugin id="org.omnetpp.main"/>
-      <plugin id="org.omnetpp.ned.builder"/>
+      <plugin id="org.omnetpp.ned.core"/>
       <plugin id="org.omnetpp.ned.editor"/>
       <plugin id="org.omnetpp.ned.editor.graph"/>
       <plugin id="org.omnetpp.ned.editor.text"/>

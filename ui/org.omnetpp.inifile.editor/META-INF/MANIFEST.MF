@@ -15,8 +15,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.views,
  org.eclipse.ui.forms,
  org.omnetpp.common,
- org.omnetpp.ned.builder,
  org.omnetpp.ned.model,
+ org.omnetpp.ned.core,
  org.omnetpp.ide.nativelibs,
  org.eclipse.emf.edit.ui
 Eclipse-LazyStart: true

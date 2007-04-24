@@ -150,13 +150,6 @@ We hope you&apos;ll enjoy working with OMNeT++/OMNEST.
          unpack="false"/>
 
    <plugin
-         id="org.omnetpp.ned.builder"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.omnetpp.ide.nativelibs"
          download-size="0"
          install-size="0"
@@ -188,5 +181,12 @@ We hope you&apos;ll enjoy working with OMNeT++/OMNEST.
          install-size="0"
          version="0.0.0"
          fragment="true"/>
+
+   <plugin
+         id="org.omnetpp.ned.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>
