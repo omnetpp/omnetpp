@@ -29,4 +29,26 @@
       </wizard>
    </extension>
 
+<!-- =========================================================================== -->
+<!-- Text based NED editor                                                       -->
+<!-- =========================================================================== -->
+
+   
+   <extension
+         id="NedDocumentSetupParticipant"
+         name="NED Document Setup Participant"
+         point="org.eclipse.core.filebuffers.documentSetup">
+      <participant
+            extensions="ned"
+            class="org.omnetpp.ned.editor.text.NedDocumentSetupParticipant">
+      </participant>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.editors.templates">
+      <contextType
+            class="org.omnetpp.ned.editor.text.assist.NedContextType"
+            id="org.omnetpp.ned.editor.text.default"
+            name="NED File global context"/>
+   </extension>
 </plugin>
