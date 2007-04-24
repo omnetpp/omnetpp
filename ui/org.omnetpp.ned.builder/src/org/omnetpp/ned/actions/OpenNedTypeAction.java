@@ -14,6 +14,11 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.resources.NEDResources;
 import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
+/**
+ * Action to open a NED type selection dialog.
+ * 
+ * @author rhornig
+ */
 public class OpenNedTypeAction implements IWorkbenchWindowActionDelegate {
     public void init(IWorkbenchWindow window) {
     }

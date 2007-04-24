@@ -31,11 +31,11 @@ public class NEDHyperlinkDetector implements IHyperlinkDetector {
         int wordLength = wordEnd-wordStart;
         
         String word = text.substring(wordStart, wordEnd);
-        INEDTypeInfo nedComonentUnderCursor = NEDResourcesPlugin.getNEDResources().getComponent(word);
-        if (nedComonentUnderCursor != null)
+        INEDTypeInfo nedComponentUnderCursor = NEDResourcesPlugin.getNEDResources().getComponent(word);
+        if (nedComponentUnderCursor != null)
             return new IHyperlink[] {new NEDHyperlink(new Region(wordStart, wordLength),
-                                                      nedComonentUnderCursor.getNEDElement())};
-        // if not found among component we do not create a hyperlink
+                                                      nedComponentUnderCursor.getNEDElement())};
+        // if not found among the components we do not create a hyperlink
         return null;
     }
 
