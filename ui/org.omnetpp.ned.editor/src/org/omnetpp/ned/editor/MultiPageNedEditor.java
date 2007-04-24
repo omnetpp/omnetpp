@@ -28,15 +28,15 @@ import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.omnetpp.common.IConstants;
+import org.omnetpp.ned.core.IGotoNedElement;
+import org.omnetpp.ned.core.NEDResources;
+import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
-import org.omnetpp.ned.resources.IGotoNedElement;
-import org.omnetpp.ned.resources.NEDResources;
-import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
  * Multi-page NED editor.
