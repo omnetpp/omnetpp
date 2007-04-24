@@ -47,6 +47,11 @@ class SIM_API cPlaceHolderModule : public cModule // so, noncopyable
     virtual ~cPlaceHolderModule();
     //@}
 
+
+    //FIXME XXX override className() like in cDynamicModule(), to return NED type!
+    //XXX also add isPlaceHolder() then? otherwise it's indistinguishable from "normal" modules!
+
+    
     /** @name Redefined cModule functions */
     //@{
 
