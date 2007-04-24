@@ -141,6 +141,14 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		
 		// if the file is in the old format, offer upgrading it
 		convertOldInifile();
+		
+		// schedule initial analysis of the inifile
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				((InifileDocument)editorData.getInifileDocument()).parse();
+				editorData.getInifileAnalyzer().analyze();
+			}
+		});
 	}
 
 	protected void updateSelection() {
@@ -242,9 +250,10 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	protected void convertOldInifile() {
 		IDocument doc = textEditor.getDocumentProvider().getDocument(getEditorInput());
 		if (InifileConverter.needsConversion(doc.get())) {
-			if (MessageDialog.openQuestion(null, "Old Inifile Format", 
-					"This inifile is in the old (3.x) format, and needs to be converted " +
-					"into the new format. This includes renaming some sections and configuration keys. " +
+			String fileName = getEditorInput().getName();
+			if (MessageDialog.openQuestion(null, "Old Ini File Format", 
+					"File \""+fileName+"\" is in the old (3.x) format, and needs to be converted. " +
+					"This includes renaming some sections and configuration keys. " +
 					"Do you want to convert the editor contents now?")) {
 				String newText = InifileConverter.convert(doc.get());
 				doc.set(newText);
