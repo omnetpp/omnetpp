@@ -1,10 +1,10 @@
 package org.omnetpp.inifile.editor.actions;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import javax.swing.text.TableView;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -22,7 +22,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.dialogs.SelectionDialog;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 
 
@@ -32,11 +31,20 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
  * and label provider objects. The <code>getResult</code> method returns the
  * selected elements.
  */
-public class AddInifileKeysDialog extends SelectionDialog {
-	// table input and providers for populating this dialog
-    private Object inputElement;
+public class AddInifileKeysDialog extends TrayDialog {
+	// the final collection of selected elements, or null if this dialog was
+	// canceled
+	private Object[] result;
+
+	private String title;
+	private String message = "";
+	
+	// table input and providers 
     private ILabelProvider labelProvider;
     private IStructuredContentProvider contentProvider;
+    
+    private enum KeyType { PARAM_ONLY, MODULE_AND_PARAM, FULLPATH };
+    private KeyType keyType = KeyType.PARAM_ONLY;
 
     // the visual selection widget group
     CheckboxTableViewer listViewer;
@@ -46,27 +54,32 @@ public class AddInifileKeysDialog extends SelectionDialog {
     private final static int SIZING_SELECTION_WIDGET_WIDTH = 300;
 
     /**
-     * Creates a list selection dialog.
-     *
-     * @param parentShell the parent shell
-     * @param input	the root element to populate this dialog with
-     * @param contentProvider the content provider for navigating the model
-     * @param labelProvider the label provider for displaying model elements
-     * @param message the message to be displayed at the top of this dialog, or
-     *    <code>null</code> to display a default message
+     * Creates the dialog.
      */
     public AddInifileKeysDialog(Shell parentShell, InifileAnalyzer analyzer, String message) {
         super(parentShell);
-        setTitle("Generate Inifile Contents"); //XXX
-        inputElement = new String[] {"one", "two", "three"};
+        setTitle("Generate Inifile Contents");
         this.contentProvider = new ArrayContentProvider();
         this.labelProvider = new LabelProvider();
         setMessage(message!=null ? message : "Choose keys to be added to the file.");
     }
 
-    /**
+	/**
+	 * Sets the title for this dialog.
+	 */
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	/**
+	 * Sets the message for this dialog.
+	 */
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	/**
      * Add the selection and deselection buttons to the dialog.
-     * @param composite org.eclipse.swt.widgets.Composite
      */
     private void addSelectionButtons(Composite composite) {
         Composite buttonComposite = new Composite(composite, SWT.NONE);
@@ -96,18 +109,6 @@ public class AddInifileKeysDialog extends SelectionDialog {
         deselectButton.addSelectionListener(listener);
     }
 
-    /**
-     * Visually checks the previously-specified elements in this dialog's list 
-     * viewer.
-     */
-    private void checkInitialSelections() {
-        Iterator itemsToCheck = getInitialElementSelections().iterator();
-
-        while (itemsToCheck.hasNext()) {
-			listViewer.setChecked(itemsToCheck.next(), true);
-		}
-    }
-
     /* (non-Javadoc)
      * Method declared on Dialog.
      */
@@ -127,12 +128,10 @@ public class AddInifileKeysDialog extends SelectionDialog {
 		group.setLayout(new GridLayout(1, false));
 
         // radiobuttons
-		Button b1 = new Button(group, SWT.RADIO);
-        Button b2 = new Button(group, SWT.RADIO);
-        Button b3 = new Button(group, SWT.RADIO);
-        b1.setText("Parameter name only (**.queueSize)");
-        b2.setText("Module and parameter only (**.mac.queueSize)");
-        b3.setText("Full path (Network.host[*].mac.queueSize)");
+		Button b = createRadioButton(group, "Parameter name only (**.queueSize)", KeyType.PARAM_ONLY);
+		createRadioButton(group, "Module and parameter only (**.mac.queueSize)", KeyType.MODULE_AND_PARAM);
+		createRadioButton(group, "Full path (Network.host[*].mac.queueSize)", KeyType.FULLPATH);
+		b.setSelection(true);
         
 		// table group
         Group group2 = new Group(composite, SWT.NONE);
@@ -149,45 +148,69 @@ public class AddInifileKeysDialog extends SelectionDialog {
 
         listViewer.setLabelProvider(labelProvider);
         listViewer.setContentProvider(contentProvider);
-        listViewer.setInput(inputElement);
-
         addSelectionButtons(group2);
 
-        // initialize page
-        if (!getInitialElementSelections().isEmpty()) {
-			checkInitialSelections();
-		}
-
+        buildTableContents();
+        
         Dialog.applyDialogFont(composite);
         
         return composite;
     }
 
-    /**
-     * Returns the viewer used to show the list.
-     */
-    protected CheckboxTableViewer getViewer() {
-        return listViewer;
-    }
+	protected Button createRadioButton(Group group, String label, final KeyType value) {
+		Button rb = new Button(group, SWT.RADIO);
+		rb.setText(label);
+		rb.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				if (keyType != value) { 
+					keyType = value;
+					buildTableContents();
+				}
+			}
+		});
+		return rb;
+	}
 
-    /**
-     * Builds a list of the selected elements for later
-     * retrieval by the client and closes this dialog.
-     */
     @SuppressWarnings("unchecked")
 	protected void okPressed() {
-        // Get the input children.
-        Object[] children = contentProvider.getElements(inputElement);
-
-        // Build a list of selected children.
-        if (children != null) {
-            ArrayList list = new ArrayList();
-            for (Object element : children)
-                if (listViewer.getChecked(element))
-					list.add(element);
-            setResult(list);
-        }
-
+    	result = listViewer.getCheckedElements();
         super.okPressed();
     }
+
+	protected void buildTableContents() {
+		Object[] inputElement = new String[] {"one", "two", "three", keyType.toString()};
+		listViewer.setInput(inputElement);
+	}
+
+    
+	protected void configureShell(Shell shell) {
+		super.configureShell(shell);
+		if (title != null)
+			shell.setText(title);
+	}
+
+	/**
+	 * Creates the message area for this dialog.
+	 */
+	protected Label createMessageArea(Composite composite) {
+		Label label = new Label(composite, SWT.NONE);
+		if (message != null) {
+			label.setText(message);
+		}
+		label.setFont(composite.getFont());
+		return label;
+	}
+
+	protected void createButtonsForButtonBar(Composite parent) {
+		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
+		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+	}
+
+	/**
+	 * Returns the list of selections made by the user, or <code>null</code>
+	 * if the selection was canceled.
+	 */
+	public Object[] getResult() {
+		return result;
+	}
 }
