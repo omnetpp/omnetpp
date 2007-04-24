@@ -29,11 +29,12 @@ import org.omnetpp.inifile.editor.model.ParamResolution;
 
 
 /**
- * A standard dialog which solicits a list of selections from the user.
- * This class is configured with an arbitrary data model represented by content
- * and label provider objects. The <code>getResult</code> method returns the
- * selected elements.
+ * Dialog for choosing parameter keys to be inserted into the ini file.
+ * @author Andras
  */
+//XXX combo for selecting the section
+//XXX suggest apply-default too if doc doesn't already contain it
+//XXX filter for duplicates
 public class AddInifileKeysDialog extends TrayDialog {
 	// the keys to be inserted into the file
 	private String[] result;
@@ -61,6 +62,8 @@ public class AddInifileKeysDialog extends TrayDialog {
         setTitle("Generate Inifile Contents");
         setMessage(message!=null ? message : "Choose keys to be added to the file.");
         this.analyzer = analyzer;
+
+        setShellStyle(getShellStyle() | SWT.MAX | SWT.RESIZE);
     }
 
 	/**
@@ -136,7 +139,7 @@ public class AddInifileKeysDialog extends TrayDialog {
         
 		// table group
         Group group2 = new Group(composite, SWT.NONE);
-		group2.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+		group2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		group2.setText("Keys to insert");
 		group2.setLayout(new GridLayout(1, false));
         

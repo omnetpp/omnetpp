@@ -16,7 +16,7 @@ public class AddInifileKeysAction extends Action {
 	public AddInifileKeysAction() {
 		setText("Add Missing Keys");
 		setToolTipText("Add Missing Keys");
-		setImageDescriptor(InifileEditorPlugin.getImageDescriptor("icons/launchsim.gif"));
+		setImageDescriptor(InifileEditorPlugin.getImageDescriptor("icons/genkeys.png"));
 	}
 
 	public void run() {
@@ -32,7 +32,7 @@ public class AddInifileKeysAction extends Action {
 				String section = dialog.getSection();
 				for (String key : keys)
 					if (!doc.containsKey(section, key))
-						InifileUtils.addEntry(doc, section, key, "TBD", null);
+						InifileUtils.addEntry(doc, section, key, "TODO", null); //XXX generate value
 			}
 		}
 	}
