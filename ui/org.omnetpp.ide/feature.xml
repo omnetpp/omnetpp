@@ -87,20 +87,6 @@ We hope you&apos;ll enjoy working with OMNeT++/OMNEST.
          unpack="false"/>
 
    <plugin
-         id="org.omnetpp.ned.editor.graph"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.omnetpp.ned.editor.text"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.omnetpp.ned.model"
          download-size="0"
          install-size="0"
