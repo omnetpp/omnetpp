@@ -16,9 +16,9 @@ import org.eclipse.swt.graphics.RGB;
 
 
 /**
- * @author rhornig
  * An ImageDescriptor used in NED editor. Supports coloring and preferred size. 
  *
+ * @author rhornig
  */
 public class NedImageDescriptor extends ImageDescriptor {
 

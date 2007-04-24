@@ -23,6 +23,10 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Shell;
 
+/**
+ * COnvert between AWT and SWT image and suports rescaling
+ * @author rhornig
+ */
 public class ImageConverter {
 
 	public static BufferedImage convertToAWT(Image swtImage) {
