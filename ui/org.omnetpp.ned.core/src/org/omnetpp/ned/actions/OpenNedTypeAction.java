@@ -9,10 +9,10 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.dialogs.ListDialog;
+import org.omnetpp.ned.core.NEDResources;
+import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.resources.NEDResources;
-import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
  * Action to open a NED type selection dialog.

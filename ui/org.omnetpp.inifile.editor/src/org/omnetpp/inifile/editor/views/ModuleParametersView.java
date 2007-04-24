@@ -36,8 +36,8 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
+import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.NEDElement;
-import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 
 /**

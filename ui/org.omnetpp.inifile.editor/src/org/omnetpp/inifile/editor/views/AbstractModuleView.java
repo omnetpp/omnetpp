@@ -22,6 +22,7 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
+import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
@@ -31,7 +32,6 @@ import org.omnetpp.ned.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
 import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
-import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
  * Abstract base class for views that display information based on a single NED

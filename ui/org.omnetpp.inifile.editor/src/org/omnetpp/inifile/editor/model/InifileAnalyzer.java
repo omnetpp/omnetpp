@@ -24,6 +24,8 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
+import org.omnetpp.ned.core.NEDResources;
+import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
@@ -32,8 +34,6 @@ import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
-import org.omnetpp.ned.resources.NEDResources;
-import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
  * This is a layer above IInifileDocument, and contains info about the

@@ -23,10 +23,10 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
+import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.pojo.ParamNode;
-import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
  * Generate proposals for config values, parameter values, per-object config values etc.

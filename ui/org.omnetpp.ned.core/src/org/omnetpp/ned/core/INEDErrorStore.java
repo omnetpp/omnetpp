@@ -1,4 +1,4 @@
-package org.omnetpp.ned.resources;
+package org.omnetpp.ned.core;
 
 import org.omnetpp.ned.model.NEDElement;
 

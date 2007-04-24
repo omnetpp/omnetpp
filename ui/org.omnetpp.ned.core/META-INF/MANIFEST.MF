@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: OMNEST/OMNeT++ NED File Resource Management
 Bundle-SymbolicName: org.omnetpp.ned.core;singleton:=true
 Bundle-Version: 4.0.0
-Bundle-Activator: org.omnetpp.ned.resources.NEDResourcesPlugin
+Bundle-Activator: org.omnetpp.ned.core.NEDResourcesPlugin
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -14,6 +14,6 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jface.text
 Eclipse-LazyStart: true
 Export-Package: org.omnetpp.ned.actions,
- org.omnetpp.ned.misc,
- org.omnetpp.ned.resources
+ org.omnetpp.ned.core,
+ org.omnetpp.ned.misc
 Bundle-Vendor: OpenSim Ltd.

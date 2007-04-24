@@ -1,4 +1,4 @@
-package org.omnetpp.ned.resources;
+package org.omnetpp.ned.core;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;

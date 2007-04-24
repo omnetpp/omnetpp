@@ -2,9 +2,9 @@ package org.omnetpp.ned.misc;
 
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
+import org.omnetpp.ned.core.IGotoNedElement;
+import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.NEDElement;
-import org.omnetpp.ned.resources.IGotoNedElement;
-import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
  * Represents a Hyperlink that points to a NED type
