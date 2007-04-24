@@ -25,6 +25,7 @@ import org.omnetpp.inifile.editor.text.highlight.InifileSyntaxHighlightPartition
 import org.omnetpp.inifile.editor.text.highlight.NedCodeColorizerScanner;
 import org.omnetpp.inifile.editor.text.highlight.NedDocColorizerScanner;
 import org.omnetpp.inifile.editor.text.util.InifileAnnotationHover;
+import org.omnetpp.inifile.editor.text.util.InifileHyperlinkDetector;
 import org.omnetpp.inifile.editor.text.util.InifileTextHover;
 import org.omnetpp.ned.core.ui.misc.NEDHyperlinkDetector;
 
@@ -108,9 +109,10 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
 
     @Override
     public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
-        if (sourceViewer == null)
-            return null;
-
-        return new IHyperlinkDetector[] { new URLHyperlinkDetector(), new NEDHyperlinkDetector() };
+        return new IHyperlinkDetector[] { 
+    		new URLHyperlinkDetector(), 
+    		new InifileHyperlinkDetector(editorData), 
+    		new NEDHyperlinkDetector() 
+        };
     }
 }
