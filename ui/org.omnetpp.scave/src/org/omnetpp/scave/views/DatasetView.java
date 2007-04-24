@@ -20,6 +20,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.editors.datatable.ChooseTableColumnsAction;
 import org.omnetpp.scave.editors.datatable.DataTable;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.engine.IDList;
@@ -70,6 +71,9 @@ public class DatasetView extends ViewWithMessagePart {
 		super.createPartControl(parent);
 		hookListeners();
 		createToolbarButtons();
+		createContextMenu(vectorsPanel);
+		createContextMenu(scalarsPanel);
+		createContextMenu(histogramsPanel);
 	}
 
 
@@ -102,6 +106,11 @@ public class DatasetView extends ViewWithMessagePart {
 		manager.add(showHistogramsAction);
 		
 		showVectorsAction.setChecked(true);
+	}
+	
+	private void createContextMenu(FilteredDataPanel panel) {
+		DataTable table = panel.getTable();
+		table.getContextMenuManager().add(new ChooseTableColumnsAction(table));
 	}
 	
 	@Override
