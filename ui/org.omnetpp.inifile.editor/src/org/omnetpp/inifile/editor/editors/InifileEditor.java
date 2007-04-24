@@ -152,6 +152,7 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 				try {
 					IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 					workbenchPage.showView(IConstants.MODULEPARAMETERS_VIEW_ID);
+					workbenchPage.activate(InifileEditor.this); // otherwise editor mysteriously loses focus
 				} catch (PartInitException e) {
 					InifileEditorPlugin.logError(e);
 				}

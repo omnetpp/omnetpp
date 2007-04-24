@@ -21,7 +21,7 @@ public class AddInifileKeysAction extends Action {
 		IEditorInput iniInput = iniEditor.getEditorInput();
 		IFileEditorInput iniFileInput = (IFileEditorInput)iniInput;
 
-		AddInifileKeysDialog dialog = new AddInifileKeysDialog(null, null, "Hello");
+		AddInifileKeysDialog dialog = new AddInifileKeysDialog(null, null, null);
 		dialog.open();
 	}
 
