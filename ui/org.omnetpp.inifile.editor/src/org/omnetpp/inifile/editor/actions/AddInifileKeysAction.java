@@ -1,12 +1,13 @@
 package org.omnetpp.inifile.editor.actions;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
+import org.omnetpp.inifile.editor.editors.InifileEditor;
+import org.omnetpp.inifile.editor.editors.InifileEditorData;
 
 public class AddInifileKeysAction extends Action {
 	public AddInifileKeysAction() {
@@ -16,13 +17,15 @@ public class AddInifileKeysAction extends Action {
 	}
 
 	public void run() {
-		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		IEditorPart iniEditor = page.getActiveEditor();
-		IEditorInput iniInput = iniEditor.getEditorInput();
-		IFileEditorInput iniFileInput = (IFileEditorInput)iniInput;
-
-		AddInifileKeysDialog dialog = new AddInifileKeysDialog(null, null, null);
-		dialog.open();
+		IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		IWorkbenchPage page = workbenchWindow.getActivePage();
+		IEditorPart editor = page.getActiveEditor();
+		if (editor instanceof InifileEditor) {
+			InifileEditor e = (InifileEditor) editor;
+			InifileEditorData editorData = e.getEditorData();
+			AddInifileKeysDialog dialog = new AddInifileKeysDialog(workbenchWindow.getShell(), null, editorData.getInifileAnalyzer());
+			dialog.open();
+		}
 	}
 
 }

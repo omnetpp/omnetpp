@@ -1,5 +1,7 @@
 package org.omnetpp.inifile.editor.actions;
 
+import java.util.ArrayList;
+
 import javax.swing.text.TableView;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -23,6 +25,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
+import org.omnetpp.inifile.editor.model.ParamResolution;
 
 
 /**
@@ -32,22 +35,19 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
  * selected elements.
  */
 public class AddInifileKeysDialog extends TrayDialog {
-	// the final collection of selected elements, or null if this dialog was
-	// canceled
-	private Object[] result;
+	// the keys to be inserted into the file
+	private String[] result;
 
 	private String title;
 	private String message = "";
 	
-	// table input and providers 
-    private ILabelProvider labelProvider;
-    private IStructuredContentProvider contentProvider;
-    
-    private enum KeyType { PARAM_ONLY, MODULE_AND_PARAM, FULLPATH };
+    private enum KeyType { PARAM_ONLY, MODULE_AND_PARAM, ANYNETWORK_FULLPATH, FULLPATH };
     private KeyType keyType = KeyType.PARAM_ONLY;
 
     // the visual selection widget group
-    CheckboxTableViewer listViewer;
+    private CheckboxTableViewer listViewer;
+
+	private InifileAnalyzer analyzer;
 
     // sizing constants
     private final static int SIZING_SELECTION_WIDGET_HEIGHT = 80;
@@ -56,12 +56,11 @@ public class AddInifileKeysDialog extends TrayDialog {
     /**
      * Creates the dialog.
      */
-    public AddInifileKeysDialog(Shell parentShell, InifileAnalyzer analyzer, String message) {
+    public AddInifileKeysDialog(Shell parentShell, String message, InifileAnalyzer analyzer) {
         super(parentShell);
         setTitle("Generate Inifile Contents");
-        this.contentProvider = new ArrayContentProvider();
-        this.labelProvider = new LabelProvider();
         setMessage(message!=null ? message : "Choose keys to be added to the file.");
+        this.analyzer = analyzer;
     }
 
 	/**
@@ -119,7 +118,7 @@ public class AddInifileKeysDialog extends TrayDialog {
         createMessageArea(composite);
 
         Button applyDefault = new Button(composite, SWT.CHECK);
-        applyDefault.setText("Apply default value of parameters that have one");
+        applyDefault.setText("Apply default value of parameters that have one"); //XXX does not work
         
 		// radiobutton group
         Group group = new Group(composite, SWT.NONE);
@@ -130,6 +129,7 @@ public class AddInifileKeysDialog extends TrayDialog {
         // radiobuttons
 		Button b = createRadioButton(group, "Parameter name only (**.queueSize)", KeyType.PARAM_ONLY);
 		createRadioButton(group, "Module and parameter only (**.mac.queueSize)", KeyType.MODULE_AND_PARAM);
+		createRadioButton(group, "Full path except network name (*.host[*].mac.queueSize)", KeyType.ANYNETWORK_FULLPATH);
 		createRadioButton(group, "Full path (Network.host[*].mac.queueSize)", KeyType.FULLPATH);
 		b.setSelection(true);
         
@@ -146,11 +146,19 @@ public class AddInifileKeysDialog extends TrayDialog {
         data.widthHint = SIZING_SELECTION_WIDGET_WIDTH;
         listViewer.getTable().setLayoutData(data);
 
-        listViewer.setLabelProvider(labelProvider);
-        listViewer.setContentProvider(contentProvider);
+        listViewer.setContentProvider(new ArrayContentProvider());
+        listViewer.setLabelProvider(new LabelProvider() {
+			@Override
+			public String getText(Object element) {
+				ParamResolution res = (ParamResolution) element;
+				return getKeyFor(res);
+			}
+        });
+
         addSelectionButtons(group2);
 
         buildTableContents();
+        listViewer.setAllChecked(true);
         
         Dialog.applyDialogFont(composite);
         
@@ -173,15 +181,20 @@ public class AddInifileKeysDialog extends TrayDialog {
 
     @SuppressWarnings("unchecked")
 	protected void okPressed() {
-    	result = listViewer.getCheckedElements();
+    	ArrayList<String> result = new ArrayList<String>(); 
+    	for (Object res : listViewer.getCheckedElements())
+    		result.add(getKeyFor((ParamResolution)res));
+    	this.result = result.toArray(new String[]{});
         super.okPressed();
     }
 
 	protected void buildTableContents() {
-		Object[] inputElement = new String[] {"one", "two", "three", keyType.toString()};
-		listViewer.setInput(inputElement);
+		ParamResolution[] currentInput = (ParamResolution[]) listViewer.getInput();
+		ParamResolution[] unassignedParams = analyzer.getUnassignedParams("General"); //XXX
+		if (!unassignedParams.equals(currentInput))
+			listViewer.setInput(unassignedParams);
+		listViewer.refresh();
 	}
-
     
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
@@ -210,7 +223,19 @@ public class AddInifileKeysDialog extends TrayDialog {
 	 * Returns the list of selections made by the user, or <code>null</code>
 	 * if the selection was canceled.
 	 */
-	public Object[] getResult() {
+	public String[] getResult() {
 		return result;
+	}
+
+	protected String getKeyFor(ParamResolution res) {
+		String paramName = res.paramDeclNode.getName();
+		String fullPath = res.moduleFullPath;
+		switch (keyType) {
+			case PARAM_ONLY: return "**."+paramName;
+			case MODULE_AND_PARAM: return fullPath.replaceFirst(".*?(\\.[^.]*)?$", "**$1")+"."+paramName;
+			case ANYNETWORK_FULLPATH: return fullPath.replaceFirst("^[^.]*", "*") + "." + paramName;
+			case FULLPATH: return fullPath + "." + paramName;
+			default: return null;
+		}
 	}
 }
