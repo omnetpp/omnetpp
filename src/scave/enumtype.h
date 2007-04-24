@@ -21,6 +21,8 @@
 #define __ENUMTYPE_H
 
 #include <map>
+#include <vector>
+#include <string>
 #include "scavedefs.h"
 
 /**
@@ -67,9 +69,15 @@ class SCAVE_API EnumType
     const char *nameOf(int value) const;
 
     /**
-     * Look up string and return numeric code. If not found, return -1.
+     * Look up string and return numeric code. If not found,
+     * return the second argument.
      */
-    int valueOf(const char *name) const;
+    int valueOf(const char *name, int fallback=-1) const;
+
+    /**
+     * Returns the names of the enum members sorted by their values.
+     */
+    std::vector<std::string> names() const;
 
     /**
      * String representation of the definition of this enum.

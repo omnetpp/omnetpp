@@ -19,6 +19,7 @@
 *--------------------------------------------------------------*/
 
 #include <sstream>
+#include <algorithm>
 #include "stringtokenizer.h"
 #include "scaveutils.h"
 #include "enumtype.h"
@@ -56,10 +57,29 @@ const char *EnumType::nameOf(int value) const
     return it==valueToNameMap.end() ? NULL : it->second.c_str();
 }
 
-int EnumType::valueOf(const char *name) const
+int EnumType::valueOf(const char *name, int fallback) const
 {
     std::map<std::string,int>::const_iterator it = nameToValueMap.find(name);
-    return it==nameToValueMap.end() ? -1 : it->second;
+    return it==nameToValueMap.end() ? fallback : it->second;
+}
+
+static bool less(std::pair<int,std::string> &left, std::pair<int,std::string> &right)
+{
+    return left.first < right.first;
+}
+
+static std::string second(std::pair<int,std::string> pair)
+{
+    return pair.second;
+}
+
+std::vector<std::string> EnumType::names() const
+{
+    std::vector<std::pair<int,std::string> > pairs(valueToNameMap.begin(), valueToNameMap.end());
+    std::sort(pairs.begin(), pairs.end(), less);
+    std::vector<std::string> names(pairs.size());
+    std::transform(pairs.begin(), pairs.end(), names.begin(), second);
+    return names;
 }
 
 std::string EnumType::toString() const
