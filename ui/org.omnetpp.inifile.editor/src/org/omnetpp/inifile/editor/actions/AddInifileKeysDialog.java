@@ -42,7 +42,7 @@ public class AddInifileKeysDialog extends TrayDialog {
 	private String message = "";
 	
     private enum KeyType { PARAM_ONLY, MODULE_AND_PARAM, ANYNETWORK_FULLPATH, FULLPATH };
-    private KeyType keyType = KeyType.PARAM_ONLY;
+    private KeyType keyType;
 
     // the visual selection widget group
     private CheckboxTableViewer listViewer;
@@ -127,11 +127,12 @@ public class AddInifileKeysDialog extends TrayDialog {
 		group.setLayout(new GridLayout(1, false));
 
         // radiobuttons
-		Button b = createRadioButton(group, "Parameter name only (**.queueSize)", KeyType.PARAM_ONLY);
-		createRadioButton(group, "Module and parameter only (**.mac.queueSize)", KeyType.MODULE_AND_PARAM);
+		createRadioButton(group, "Parameter name only (**.queueSize)", KeyType.PARAM_ONLY);
+		Button b = createRadioButton(group, "Module and parameter only (**.mac.queueSize)", KeyType.MODULE_AND_PARAM);
 		createRadioButton(group, "Full path except network name (*.host[*].mac.queueSize)", KeyType.ANYNETWORK_FULLPATH);
 		createRadioButton(group, "Full path (Network.host[*].mac.queueSize)", KeyType.FULLPATH);
 		b.setSelection(true);
+		keyType = KeyType.MODULE_AND_PARAM; // must agree with selected radiobutton
         
 		// table group
         Group group2 = new Group(composite, SWT.NONE);
@@ -223,7 +224,7 @@ public class AddInifileKeysDialog extends TrayDialog {
 	 * Returns the list of selections made by the user, or <code>null</code>
 	 * if the selection was canceled.
 	 */
-	public String[] getResult() {
+	public String[] getKeys() {
 		return result;
 	}
 
@@ -237,5 +238,10 @@ public class AddInifileKeysDialog extends TrayDialog {
 			case FULLPATH: return fullPath + "." + paramName;
 			default: return null;
 		}
+	}
+
+	public String getSection() {
+		// TODO Auto-generated method stub
+		return "General";
 	}
 }
