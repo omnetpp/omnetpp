@@ -23,7 +23,9 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPropertyListener;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
@@ -36,6 +38,7 @@ import org.omnetpp.common.IConstants;
 import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.inifile.editor.IGotoInifile;
+import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.form.InifileFormEditor;
 import org.omnetpp.inifile.editor.model.IInifileChangeListener;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
@@ -139,15 +142,24 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 			}
 		});
 		
-		// if the file is in the old format, offer upgrading it
-		convertOldInifile();
-		
-		// schedule initial analysis of the inifile
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
+				// schedule initial analysis of the inifile
 				((InifileDocument)editorData.getInifileDocument()).parse();
 				editorData.getInifileAnalyzer().analyze();
+				
+				// open the "Module Parameters" view
+				try {
+					IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+					workbenchPage.showView(IConstants.MODULEPARAMETERS_VIEW_ID);
+				} catch (PartInitException e) {
+					InifileEditorPlugin.logError(e);
+				}
+
+				// if the file is in the old format, offer upgrading it
+				convertOldInifile();
 			}
+
 		});
 	}
 
