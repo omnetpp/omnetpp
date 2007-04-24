@@ -132,7 +132,7 @@ public class DatasetView extends ViewWithMessagePart {
 			public void partActivated(IWorkbenchPart part) {
 				if (part instanceof ScaveEditor)
 					activeEditorChanged((ScaveEditor)part);
-				else
+				else if (part instanceof IEditorPart)
 					activeEditorChanged(null);
 			}
 
