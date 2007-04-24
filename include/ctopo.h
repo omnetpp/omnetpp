@@ -385,6 +385,9 @@ class SIM_API cTopology : public cOwnedObject
      */
     void extractFromNetwork(int (*selfunc)(cModule *,void *), void *userdata=NULL);
 
+    //XXX add extractByName()
+    //XXX why selfunc retval is "int"?? should be bool!!!
+
     /**
      * Extracts model topology by module type (classnames). Includes into
      * the graph all modules whose className() is one of the strings
