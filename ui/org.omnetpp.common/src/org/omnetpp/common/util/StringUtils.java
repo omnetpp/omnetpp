@@ -85,6 +85,11 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 		return buf.toString();
 	}
 
+	/**
+     * 
+	 * @param text
+	 * @return The number of new line chars in the text
+	 */
 	public static int countNewLines(String text) {
 		int newlineCount = 0;
 		int pos = text.indexOf('\n');
@@ -96,9 +101,24 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 	}
 	
 	/**
-	 * Returns true iff string is null or "".
+	 * Returns true if string is null or "".
 	 */
 	public static boolean isEmpty(String string) {
 		return string==null || "".equals(string);
 	}
+
+    /**
+     * Formats a NED comment as a one-line doc string. If it is longer than the
+     * given max length, it gets truncated.
+     */
+    public static String makeBriefDocu(String comment, int maxlen) {
+        if (comment==null)
+            return null;
+        comment = comment.replaceAll("(?m)^\\s*//", "").trim(); // remove "//"'s
+        comment = comment.replaceFirst("(?s)\n[ \t]*\n.*", "").trim(); // keep only first paragraph
+        comment = comment.replaceAll("(?s)\\s+", " "); // make it one line, and normalize whitespace
+        if (comment.length() > maxlen)
+            comment = comment.substring(0, maxlen)+"...";
+        return comment;
+    }
 }
