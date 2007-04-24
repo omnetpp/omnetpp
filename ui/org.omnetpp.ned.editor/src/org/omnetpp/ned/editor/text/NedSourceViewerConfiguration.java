@@ -20,6 +20,7 @@ import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.ui.IEditorPart;
+import org.omnetpp.ned.core.ui.misc.NEDHyperlinkDetector;
 import org.omnetpp.ned.editor.text.assist.NedCompletionProcessor;
 import org.omnetpp.ned.editor.text.assist.NedContentAssistPartitionScanner;
 import org.omnetpp.ned.editor.text.assist.NedDocCompletionProcessor;
@@ -32,7 +33,6 @@ import org.omnetpp.ned.editor.text.util.NedAnnotationHover;
 import org.omnetpp.ned.editor.text.util.NedAutoIndentStrategy;
 import org.omnetpp.ned.editor.text.util.NedDoubleClickSelector;
 import org.omnetpp.ned.editor.text.util.NedTextHover;
-import org.omnetpp.ned.misc.NEDHyperlinkDetector;
 
 /**
  * Configuration for an <code>SourceViewer</code> which shows NED code.
