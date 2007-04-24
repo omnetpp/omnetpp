@@ -15,7 +15,10 @@ import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.ViewWithMessagePart;
@@ -49,7 +52,7 @@ public class DatasetView extends ViewWithMessagePart {
 	private FilteredDataPanel scalarsPanel;
 	private FilteredDataPanel histogramsPanel;
 	
-	private ScaveEditor activeEditor;
+	private ScaveEditor activeScaveEditor;
 	private Dataset selectedDataset;
 	private DatasetItem selectedItem;
 	
@@ -57,19 +60,17 @@ public class DatasetView extends ViewWithMessagePart {
 	private IAction showVectorsAction;
 	private IAction showHistogramsAction;
 	
-	protected ISelectionListener selectionChangedListener;
+	private ISelectionListener selectionChangedListener;
+	private IPartListener partListener;
 	private IResultFilesChangeListener resultFilesChangeListener;
 	private INotifyChangedListener modelChangeListener;
 	
-	
 	private static final IDList EMPTY = new IDList();
-	
-	
 	
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
-		hookListeners();
+		hookPageListeners();
 		createToolbarButtons();
 		createContextMenu(vectorsPanel);
 		createContextMenu(scalarsPanel);
@@ -101,7 +102,7 @@ public class DatasetView extends ViewWithMessagePart {
 		showVectorsAction = new ShowTableAction(ResultType.VECTOR_LITERAL);
 		showHistogramsAction = new ShowTableAction(ResultType.HISTOGRAM_LITERAL);
 		IToolBarManager manager = getViewSite().getActionBars().getToolBarManager();
-		manager.add(showScalarsAction);	// TODO: make buttons radio-style
+		manager.add(showScalarsAction);
 		manager.add(showVectorsAction);
 		manager.add(showHistogramsAction);
 		
@@ -115,27 +116,56 @@ public class DatasetView extends ViewWithMessagePart {
 	
 	@Override
 	public void dispose() {
-		unhookListeners();
+		unhookPageListeners();
 		super.dispose();
 	}
 
-	private void hookListeners() {
+	private void hookPageListeners() {
 		selectionChangedListener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 				workbechSelectionChanged(selection);
 			}
 		};
 		getSite().getPage().addPostSelectionListener(selectionChangedListener);
+	
+		partListener = new IPartListener() {
+			public void partActivated(IWorkbenchPart part) {
+				if (part instanceof ScaveEditor)
+					activeEditorChanged((ScaveEditor)part);
+				else
+					activeEditorChanged(null);
+			}
+
+			public void partBroughtToTop(IWorkbenchPart part) {
+			}
+
+			public void partClosed(IWorkbenchPart part) {
+				if (part == activeScaveEditor)
+					activeEditorChanged(null);
+			}
+
+			public void partDeactivated(IWorkbenchPart part) {
+			}
+
+			public void partOpened(IWorkbenchPart part) {
+			}
+		};
+		getSite().getPage().addPartListener(partListener);
 		
-		if (activeEditor != null) {
-			activeEditor.getResultFileManager().addListener(resultFilesChangeListener =
+		activeEditorChanged(getActiveEditor());
+	}
+	
+	private void hookEditorListeners(IEditorPart editor) {
+		if (editor instanceof ScaveEditor) {
+			ScaveEditor scaveEditor = (ScaveEditor)editor;
+			scaveEditor.getResultFileManager().addListener(resultFilesChangeListener =
 				new IResultFilesChangeListener() {
 				public void resultFileManagerChanged(ResultFileManager manager) {
 					updateDataTable();
 				}
 			});
 			
-			IChangeNotifier notifier = (IChangeNotifier)activeEditor.getAdapterFactory();
+			IChangeNotifier notifier = (IChangeNotifier)scaveEditor.getAdapterFactory();
 			notifier.addListener(modelChangeListener = new INotifyChangedListener() {
 				public void notifyChanged(Notification notification) {
 					updateDataTable();
@@ -144,16 +174,28 @@ public class DatasetView extends ViewWithMessagePart {
 		}
 	}
 	
-	private void unhookListeners() {
-		if (selectionChangedListener != null)
-			getSite().getPage().removePostSelectionListener(selectionChangedListener);
-		
-		if (resultFilesChangeListener != null)
-			activeEditor.getResultFileManager().removeListener(resultFilesChangeListener);
-
-		if (modelChangeListener != null) {
-			IChangeNotifier notifier = (IChangeNotifier)activeEditor.getAdapterFactory();
-			notifier.removeListener(modelChangeListener);
+	private void unhookPageListeners() {
+		IWorkbenchPage page = getSite().getPage();
+		if (selectionChangedListener != null) {
+			page.removePostSelectionListener(selectionChangedListener);
+			selectionChangedListener = null;
+		}
+		if (partListener != null) {
+			page.removePartListener(partListener);
+			partListener = null;
+		}
+	}
+	
+	private void unhookEditorListeners(IEditorPart editor) {
+		if (editor instanceof ScaveEditor) {
+			ScaveEditor scaveEditor = (ScaveEditor)editor;
+			if (resultFilesChangeListener != null)
+				scaveEditor.getResultFileManager().removeListener(resultFilesChangeListener);
+	
+			if (modelChangeListener != null) {
+				IChangeNotifier notifier = (IChangeNotifier)scaveEditor.getAdapterFactory();
+				notifier.removeListener(modelChangeListener);
+			}
 		}
 	}
 	
@@ -178,45 +220,39 @@ public class DatasetView extends ViewWithMessagePart {
 		}
 	}
 	
-	
 	private void workbechSelectionChanged(ISelection selection) {
-		if (getActiveEditor() instanceof ScaveEditor)
-			setActiveEditor((ScaveEditor)getActiveEditor());
-		else
-			setActiveEditor(null);
-			
 		if (selection instanceof IStructuredSelection &&
 				((IStructuredSelection)selection).getFirstElement() instanceof EObject) {
-			ScaveEditor editor = (ScaveEditor)getActiveEditor();
 			EObject selected = (EObject)((IStructuredSelection)selection).getFirstElement();
 			Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(selected, Dataset.class);
 			DatasetItem item = ScaveModelUtil.findEnclosingOrSelf(selected, DatasetItem.class);
 			setInput(dataset, item);
+			hideMessage();
 		}
 		else {
 			setInput(null, null);
+			displayMessage("No dataset item selected.");
 		}
 	}
 	
-	private void setActiveEditor(ScaveEditor editor) {
-		if (editor != activeEditor) {
-			if (activeEditor != null)
-				unhookListeners();
-			activeEditor = editor;
-			if (activeEditor != null) {
-				hookListeners();
-			}
+	private void activeEditorChanged(IEditorPart editor) {
+		if (editor != activeScaveEditor) {
+			unhookEditorListeners(activeScaveEditor);
+			activeScaveEditor = editor instanceof ScaveEditor ? (ScaveEditor)editor : null;
+			hookEditorListeners(activeScaveEditor);
 			
-			if (activeEditor != null) {
-				ResultFileManager manager = activeEditor.getResultFileManager();
+			if (activeScaveEditor != null) {
+				ResultFileManager manager = activeScaveEditor.getResultFileManager();
 				scalarsPanel.setResultFileManager(manager);
 				vectorsPanel.setResultFileManager(manager);
 				histogramsPanel.setResultFileManager(manager);
+				hideMessage();
 			}
 			else {
 				scalarsPanel.setResultFileManager(null);
 				vectorsPanel.setResultFileManager(null);
 				histogramsPanel.setResultFileManager(null);
+				displayMessage("No active scave editor.");
 			}
 		}
 	}
@@ -250,8 +286,8 @@ public class DatasetView extends ViewWithMessagePart {
 	}
 	
 	private void updateDataTable() {
-		if (activeEditor != null && selectedDataset != null) {
-			ResultFileManager manager = activeEditor.getResultFileManager();
+		if (activeScaveEditor != null && selectedDataset != null) {
+			ResultFileManager manager = activeScaveEditor.getResultFileManager();
 			IDList scalars = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, ResultType.SCALAR_LITERAL);
 			IDList vectors = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, ResultType.VECTOR_LITERAL);
 			IDList histograms = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, ResultType.HISTOGRAM_LITERAL);
