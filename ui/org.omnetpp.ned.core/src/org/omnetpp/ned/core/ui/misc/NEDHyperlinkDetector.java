@@ -1,4 +1,4 @@
-package org.omnetpp.ned.misc;
+package org.omnetpp.ned.core.ui.misc;
 
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
@@ -7,6 +7,7 @@ import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.omnetpp.common.editor.text.NedCompletionHelper.NedWordDetector;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.ui.misc.NEDHyperlink;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 
 public class NEDHyperlinkDetector implements IHyperlinkDetector {
