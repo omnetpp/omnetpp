@@ -18,11 +18,11 @@ import org.eclipse.jface.text.contentassist.IContextInformationPresenter;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.jface.text.templates.Template;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
+import org.omnetpp.ned.core.NEDResources;
+import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
-import org.omnetpp.ned.resources.NEDResources;
-import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 // TODO a better structure is needed for storing the completion proposals
 // TODO context help can be supported, to show the documentation of the proposed keyword

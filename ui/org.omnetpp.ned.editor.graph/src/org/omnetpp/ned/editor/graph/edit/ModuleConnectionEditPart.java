@@ -10,6 +10,7 @@ import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.omnetpp.figures.ConnectionFigure;
+import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEndpointEditPolicy;
 import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
@@ -17,7 +18,6 @@ import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
-import org.omnetpp.ned.resources.NEDResourcesPlugin;
 /**
  * Implements a Connection Editpart to represnt a Wire like connection.
  * 

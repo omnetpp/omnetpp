@@ -8,8 +8,8 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.part.FileEditorInput;
+import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.NEDElement;
-import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
  * A selection provider that attaches to a NED text editor's viewer and delegates

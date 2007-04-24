@@ -6,6 +6,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.omnetpp.common.displaymodel.DisplayString;
+import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ExtendsPropertySource;
@@ -14,7 +15,6 @@ import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.model.ex.ChannelNodeEx;
-import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
  * @author rhornig

@@ -51,6 +51,7 @@ import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.common.editor.ShowViewAction;
+import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
 import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
@@ -63,7 +64,6 @@ import org.omnetpp.ned.editor.graph.properties.view.BasePreferrerPropertySheetSo
 import org.omnetpp.ned.editor.graph.properties.view.PropertySheetPageEx;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
-import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 
 public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {

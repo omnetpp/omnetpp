@@ -11,10 +11,10 @@ import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
+import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
-import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
  * Example implementation for an <code>ITextHover</code> which hovers over NED code.
