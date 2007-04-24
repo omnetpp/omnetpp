@@ -48,7 +48,15 @@ struct SCAVE_API ResultItem
     std::string *nameRef; // scalarname or vectorname; points into ResultFileManager's StringSet
     StringMap attributes; // metadata in key/value form
 
+    /**
+     * Returns the type of this result item (INT,DOUBLE,ENUM).
+     * If neither "type" nor "enum" attribute is given it returns DOUBLE.
+     */
     Type getType() const;
+    /**
+     * Returns a pointer to the enum type described by the "enum" attribute
+     * or NULL if no "enum" attribute.
+     */
     EnumType* getEnum() const;
 };
 
@@ -66,7 +74,7 @@ struct SCAVE_API ScalarResult : public ResultItem
  */
 struct SCAVE_API VectorResult : public ResultItem
 {
-    enum InterpolationMode { NONE, SAMPLE_HOLD, BACKWARD_SAMPLE_HOLD, LINEAR };
+    enum InterpolationMode { UNSPECIFIED, NONE, SAMPLE_HOLD, BACKWARD_SAMPLE_HOLD, LINEAR };
 
     int vectorId;
     std::string columns;
@@ -80,6 +88,10 @@ struct SCAVE_API VectorResult : public ResultItem
     double variance() const;
     double stddev() const;
 
+    /**
+     * Returns the value of the "interpolation-mode" attribute as an InterpolationMode,
+     * defaults to UNSPECIFIED.
+     */
     InterpolationMode getInterpolationMode() const;
 };
 

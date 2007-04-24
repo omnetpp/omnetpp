@@ -129,6 +129,7 @@ datasorter.obj: datasorter.cc \
   datasorter.h \
   ../common/stringutil.h \
   idlist.h \
+  enumtype.h \
   ../common/exception.h \
   scavedefs.h \
   ../common/bigdecimal.h \
@@ -146,6 +147,14 @@ diffquot.obj: diffquot.cc \
   commonnodes.h \
   nodetype.h \
   dataflowmanager.h
+enumtype.obj: enumtype.cc \
+  ../common/stringtokenizer.h \
+  scaveutils.h \
+  enumtype.h \
+  ../common/commondefs.h \
+  scavedefs.h \
+  ../common/bigdecimal.h \
+  ../common/exception.h
 filewriter.obj: filewriter.cc \
   channel.h \
   filewriter.h \
@@ -178,6 +187,7 @@ idlist.obj: idlist.cc \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/exception.h \
+  enumtype.h \
   ../common/commonutil.h
 indexedvectorfile.obj: indexedvectorfile.cc \
   ../common/exception.h \
@@ -196,7 +206,8 @@ indexedvectorfile.obj: indexedvectorfile.cc \
   nodetype.h \
   resultfilemanager.h \
   dataflowmanager.h \
-  idlist.h
+  idlist.h \
+  enumtype.h
 indexfile.obj: indexfile.cc \
   ../common/exception.h \
   ../common/filereader.h \
@@ -261,6 +272,7 @@ nodetyperegistry.obj: nodetyperegistry.cc \
   ../common/linetokenizer.h \
   resultfilemanager.h \
   idlist.h \
+  enumtype.h \
   indexfile.h
 octaveexport.obj: octaveexport.cc \
   octaveexport.h \
@@ -283,6 +295,7 @@ resultfilemanager.obj: resultfilemanager.cc \
   scavedefs.h \
   ../common/bigdecimal.h \
   idlist.h \
+  enumtype.h \
   ../common/commonutil.h
 scaveexception.obj: scaveexception.cc \
   scaveexception.h \
@@ -305,6 +318,7 @@ scavetool.obj: scavetool.cc \
   octaveexport.h \
   ../common/stringutil.h \
   idlist.h \
+  enumtype.h \
   ../common/exception.h \
   ../common/commonutil.h \
   scavedefs.h \
@@ -361,7 +375,8 @@ vectorfileindexer.obj: vectorfileindexer.cc \
   scavedefs.h \
   ../common/bigdecimal.h \
   resultfilemanager.h \
-  idlist.h
+  idlist.h \
+  enumtype.h
 vectorfilereader.obj: vectorfilereader.cc \
   channel.h \
   scaveutils.h \
@@ -377,7 +392,8 @@ vectorfilereader.obj: vectorfilereader.cc \
   ../common/linetokenizer.h \
   resultfilemanager.h \
   dataflowmanager.h \
-  idlist.h
+  idlist.h \
+  enumtype.h
 vectorfilewriter.obj: vectorfilewriter.cc \
   channel.h \
   vectorfilewriter.h \
@@ -391,7 +407,8 @@ vectorfilewriter.obj: vectorfilewriter.cc \
   nodetype.h \
   resultfilemanager.h \
   dataflowmanager.h \
-  idlist.h
+  idlist.h \
+  enumtype.h
 windowavg.obj: windowavg.cc \
   channel.h \
   windowavg.h \

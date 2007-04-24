@@ -119,7 +119,7 @@ VectorResult::InterpolationMode VectorResult::getInterpolationMode() const
     }
     else
     {
-        return NONE;
+        return UNSPECIFIED;
     }
 }
 
