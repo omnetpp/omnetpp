@@ -11,7 +11,7 @@ import org.omnetpp.inifile.editor.editors.InifileEditorData;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.ParamResolution;
-import org.omnetpp.ned.misc.NEDHyperlink;
+import org.omnetpp.ned.core.ui.misc.NEDHyperlink;
 import org.omnetpp.ned.model.NEDElement;
 
 /**

@@ -125,10 +125,8 @@
       <plugin id="org.omnetpp.figures"/>
       <plugin id="org.omnetpp.inifile.editor"/>
       <plugin id="org.omnetpp.main"/>
-      <plugin id="org.omnetpp.ned.builder"/>
+      <plugin id="org.omnetpp.ned.core"/>
       <plugin id="org.omnetpp.ned.editor"/>
-      <plugin id="org.omnetpp.ned.editor.graph"/>
-      <plugin id="org.omnetpp.ned.editor.text"/>
       <plugin id="org.omnetpp.ned.model"/>
       <plugin id="org.omnetpp.scave"/>
       <plugin id="org.omnetpp.scave.builder"/>

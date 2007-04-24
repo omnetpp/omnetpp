@@ -89,7 +89,7 @@
       <plugin id="org.junit"/>
       <plugin id="org.omnetpp.common"/>
       <plugin id="org.omnetpp.main"/>
-      <plugin id="org.omnetpp.ned.builder"/>
+      <plugin id="org.omnetpp.ned.core"/>
       <plugin id="org.omnetpp.ned.model"/>
       <plugin id="org.omnetpp.scave"/>
       <plugin id="org.omnetpp.scave.builder"/>
