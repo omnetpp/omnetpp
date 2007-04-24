@@ -16,8 +16,8 @@ import org.omnetpp.ned.engine.NEDErrorStore;
 
 public class ProblemMarkerJob extends WorkspaceJob {
 
-    public static final String NEDPROBLEM_MARKERID = "org.omnetpp.ned.builder.nedproblem";
-    public static final String NEDCONSISTENCYPROBLEM_MARKERID = "org.omnetpp.ned.builder.nedconsistencyproblem";
+    public static final String NEDPROBLEM_MARKERID = "org.omnetpp.ned.core.nedproblem";
+    public static final String NEDCONSISTENCYPROBLEM_MARKERID = "org.omnetpp.ned.core.nedconsistencyproblem";
 
     protected HashMap<IFile, NEDErrorStore> nedParseErrors = new HashMap<IFile, NEDErrorStore>();
     protected HashMap<IFile, NEDErrorStore> nedConsistencyErrors = new HashMap<IFile, NEDErrorStore>();
