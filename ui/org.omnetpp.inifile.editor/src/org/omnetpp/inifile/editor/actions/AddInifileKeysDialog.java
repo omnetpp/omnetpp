@@ -34,7 +34,8 @@ import org.omnetpp.inifile.editor.model.ParamResolution;
  * Dialog for choosing parameter keys to be inserted into the ini file.
  * @author Andras
  */
-//XXX filter for duplicates
+//XXX filter for duplicates in the listbox
+//XXX doesn't work if there's no [General] section
 public class AddInifileKeysDialog extends TitleAreaDialog {
 	private String title;
 	private InifileAnalyzer analyzer;
@@ -62,11 +63,12 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
     /**
      * Creates the dialog.
      */
-    public AddInifileKeysDialog(Shell parentShell, InifileAnalyzer analyzer) {
+    public AddInifileKeysDialog(Shell parentShell, InifileAnalyzer analyzer, String initialSection) {
         super(parentShell);
         setShellStyle(getShellStyle() | SWT.MAX | SWT.RESIZE);
         this.analyzer = analyzer;
         this.title = "Add Inifile Keys";
+        this.selectedSection = initialSection;
     }
 
 	protected void configureShell(Shell shell) {
@@ -217,8 +219,10 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 
     protected void buildTableContents() {
 		// refresh combo with the current section names, trying to preserve existing selection
+    	// Note: initially, sectionsCombo is empty, and selectedSection contains the default section to activate.
 		IInifileDocument doc = analyzer.getDocument();
-		selectedSection = sectionsCombo.getText();
+		if (!sectionsCombo.getText().equals(""))
+			selectedSection = sectionsCombo.getText();
 		String[] sectionNames = doc.getSectionNames();
 		if (sectionNames.length==0) 
 			sectionNames = new String[] {"General"};  //XXX we lie that [General] exists
