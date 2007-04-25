@@ -1,17 +1,14 @@
 package org.omnetpp.inifile.editor.actions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
-import javax.swing.text.TableView;
-
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
-import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
-import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -20,12 +17,16 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
+import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 
 
@@ -36,21 +37,24 @@ import org.omnetpp.inifile.editor.model.ParamResolution;
 //XXX combo for selecting the section
 //XXX suggest apply-default too if doc doesn't already contain it
 //XXX filter for duplicates
-public class AddInifileKeysDialog extends TitleAreaDialog { //TrayDialog {
-	// the keys to be inserted into the file
-	private String[] result;
-
+public class AddInifileKeysDialog extends TitleAreaDialog {
 	private String title;
+	private InifileAnalyzer analyzer;
 	
+	// widgets
+    private Combo sectionsCombo;
+	private Label sectionChainLabel;
+    private CheckboxTableViewer listViewer;
+
+    // dialog state
     private enum KeyType { PARAM_ONLY, MODULE_AND_PARAM, ANYNETWORK_FULLPATH, FULLPATH };
     private KeyType keyType;
 
-    // the visual selection widget group
-    private CheckboxTableViewer listViewer;
+	// the keys to be inserted into the file
+	private String[] result;
+	private String selectedSection;
 
-	private InifileAnalyzer analyzer;
-
-    // sizing constants
+	// sizing constants
     private final static int SIZING_SELECTION_WIDGET_HEIGHT = 80;
     private final static int SIZING_SELECTION_WIDGET_WIDTH = 300;
 
@@ -100,7 +104,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog { //TrayDialog {
      */
     protected Control createDialogArea(Composite parent) {
         setTitle("Add Inifile Keys");
-        setMessage("Choose keys to be added to the file.");
+        setMessage("Generate keys into the ini file for currently unassigned parameters.");
     	
         // page group
         Composite dialogArea = (Composite) super.createDialogArea(parent);
@@ -109,9 +113,43 @@ public class AddInifileKeysDialog extends TitleAreaDialog { //TrayDialog {
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         composite.setLayout(new GridLayout(1,false));
 
-        // "apply-default" checkbox
-        Button applyDefault = new Button(composite, SWT.CHECK);
-        applyDefault.setText("Apply default value of parameters that have one"); //XXX does not work
+		// Section combobox
+		Composite comboWithLabel = new Composite(composite, SWT.NONE);
+		comboWithLabel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+
+		Label comboLabel = new Label(comboWithLabel, SWT.NONE);
+		comboLabel.setText("Section:");
+		sectionsCombo = new Combo(comboWithLabel, SWT.BORDER | SWT.READ_ONLY);
+		comboWithLabel.setLayout(new GridLayout(2, false));
+		comboLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		sectionsCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+
+		sectionChainLabel = new Label(composite, SWT.NONE);
+		sectionChainLabel.setLayoutData(new GridData(SWT.END, SWT.BEGINNING, true, false));
+		sectionChainLabel.setText("Section fallback chain: n/a  ");
+
+		sectionsCombo.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				buildTableContents();
+			}
+		});
+		
+//		// radiobutton group
+//        Group group1 = new Group(composite, SWT.NONE);
+//		group1.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+//		group1.setText("Keys to insert");
+//		group1.setLayout(new GridLayout(1, false));
+//
+//        // radiobuttons
+//		createRadioButton(group1, "Unassigned parameters", KeyType.PARAM_ONLY);
+//		createRadioButton(group1, "All parameters", KeyType.PARAM_ONLY);
+//		
+//        // "apply-default" checkbox
+//        Button applyDefault = new Button(group1, SWT.CHECK);
+//        applyDefault.setText("Apply default values of parameters that have one (add **.apply-default=true)"); //XXX does not work
+//        GridData gridData = new GridData();
+//        gridData.horizontalIndent = 10;
+//        applyDefault.setLayoutData(gridData);
         
 		// radiobutton group
         Group group = new Group(composite, SWT.NONE);
@@ -130,7 +168,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog { //TrayDialog {
 		// table group
         Group group2 = new Group(composite, SWT.NONE);
 		group2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		group2.setText("Keys to insert");
+		group2.setText("Select keys to insert");
 		group2.setLayout(new GridLayout(1, false));
         
         // table and buttons
@@ -152,7 +190,6 @@ public class AddInifileKeysDialog extends TitleAreaDialog { //TrayDialog {
         addSelectionButtons(group2);
 
         buildTableContents();
-        listViewer.setAllChecked(true);
         
         Dialog.applyDialogFont(composite);
         
@@ -183,10 +220,31 @@ public class AddInifileKeysDialog extends TitleAreaDialog { //TrayDialog {
     }
 
 	protected void buildTableContents() {
+		// refresh combo with the current section names, trying to preserve existing selection
+		IInifileDocument doc = analyzer.getDocument();
+		selectedSection = sectionsCombo.getText();
+		String[] sectionNames = doc.getSectionNames();
+		if (sectionNames.length==0) 
+			sectionNames = new String[] {"General"};  //XXX we lie that [General] exists
+		sectionsCombo.setItems(sectionNames);
+		sectionsCombo.setVisibleItemCount(Math.min(20, sectionsCombo.getItemCount()));
+		int i = ArrayUtils.indexOf(sectionNames, selectedSection);
+		sectionsCombo.select(i<0 ? 0 : i);
+		selectedSection = sectionsCombo.getText(); 
+
+		// compute fallback chain for selected section, and fill table with their contents
+		String[] sectionChain = InifileUtils.resolveSectionChain(doc, selectedSection);
+
+		// update "Section fallback chain" label
+		sectionChainLabel.setText("Section fallback chain: "+(sectionChain.length==0 ? "<no sections>  " : StringUtils.join(sectionChain, " > ")+"  "));
+		sectionChainLabel.getParent().layout();
+		
 		ParamResolution[] currentInput = (ParamResolution[]) listViewer.getInput();
-		ParamResolution[] unassignedParams = analyzer.getUnassignedParams("General"); //XXX
-		if (!unassignedParams.equals(currentInput))
+		ParamResolution[] unassignedParams = analyzer.getUnassignedParams(selectedSection);
+		if (!Arrays.equals(unassignedParams, currentInput)) {
 			listViewer.setInput(unassignedParams);
+			listViewer.setAllChecked(true);
+		}
 		listViewer.refresh();
 	}
     
@@ -222,7 +280,6 @@ public class AddInifileKeysDialog extends TitleAreaDialog { //TrayDialog {
 	}
 
 	public String getSection() {
-		// TODO Auto-generated method stub
-		return "General";
+		return selectedSection;
 	}
 }
