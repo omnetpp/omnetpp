@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.Display;
  *
  */
 //XXX TODO rename, revise, possibly remove...
-public class NedHelper {
+public class InifileTextEditorHelper {
 	public static final String DEFAULT_CONTEXT_TYPE= "org.omnetpp.ned.editor.text.default"; //$NON-NLS-1$
 
     /**
@@ -148,7 +148,7 @@ public class NedHelper {
 
     private static Template makeShortTemplate(String pattern, String description) {
     	String name = pattern.replaceAll("\\$\\{(.*?)\\}", "$1");  // remove ${} from parameters
-    	return new Template(name, description, NedHelper.DEFAULT_CONTEXT_TYPE, pattern, false);
+    	return new Template(name, description, InifileTextEditorHelper.DEFAULT_CONTEXT_TYPE, pattern, false);
     }
 
     // whitespace and word detectors for tokenization

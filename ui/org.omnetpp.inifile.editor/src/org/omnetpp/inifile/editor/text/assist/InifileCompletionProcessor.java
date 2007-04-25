@@ -32,7 +32,7 @@ import org.omnetpp.inifile.editor.contentassist.InifileParamKeyContentProposalPr
 import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
-import org.omnetpp.inifile.editor.text.NedHelper;
+import org.omnetpp.inifile.editor.text.InifileTextEditorHelper;
 
 /**
  * Computes completion proposals for ini files.
@@ -208,7 +208,7 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 	}
 	
 	protected void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Set<String> proposals, String description) {
-		result.addAll(createProposals(viewer, documentOffset, NedHelper.spaceSeparatedWordDetector, "", proposals.toArray(new String[0]), "", description));
+		result.addAll(createProposals(viewer, documentOffset, InifileTextEditorHelper.spaceSeparatedWordDetector, "", proposals.toArray(new String[0]), "", description));
 	}
 
 	public IContextInformation[] computeContextInformation(ITextViewer viewer, int documentOffset) {

@@ -22,12 +22,11 @@ public class InifileSyntaxHighlightPartitionScanner extends RuleBasedPartitionSc
 	 * Creates the partitioner and sets up the appropriate rules.
 	 */
 	public InifileSyntaxHighlightPartitionScanner() {
-		super();
-
 		// Add rule for single-line comments.
 		IToken nedDocToken = new Token(INI_COMMENT);
-		IPredicateRule commentRule = new EndOfLineRule("#", nedDocToken);
+		IPredicateRule commentRule1 = new EndOfLineRule("#", nedDocToken);
+		IPredicateRule commentRule2 = new EndOfLineRule(";", nedDocToken);
 
-		setPredicateRules(new IPredicateRule[] {commentRule});
+		setPredicateRules(new IPredicateRule[] {commentRule1, commentRule2});
 	}
 }

@@ -36,8 +36,6 @@ public class NedSyntaxHighlightPartitionScanner extends RuleBasedPartitionScanne
         // Add rule for single line comments.
 		rules.add(new EndOfLineRule("//", nedDocToken)); //$NON-NLS-1$
 
-		IPredicateRule[] result= new IPredicateRule[rules.size()];
-		rules.toArray(result);
-		setPredicateRules(result);
+		setPredicateRules(rules.toArray(new IPredicateRule[]{}));
 	}
 }

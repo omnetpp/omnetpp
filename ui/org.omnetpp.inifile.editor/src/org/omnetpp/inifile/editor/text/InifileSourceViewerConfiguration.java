@@ -22,8 +22,8 @@ import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
 import org.omnetpp.inifile.editor.text.assist.InifileCompletionProcessor;
 import org.omnetpp.inifile.editor.text.highlight.InifileSyntaxHighlightPartitionScanner;
-import org.omnetpp.inifile.editor.text.highlight.NedCodeColorizerScanner;
-import org.omnetpp.inifile.editor.text.highlight.NedDocColorizerScanner;
+import org.omnetpp.inifile.editor.text.highlight.InifileCodeColorizerScanner;
+import org.omnetpp.inifile.editor.text.highlight.InifileCommentColorizerScanner;
 import org.omnetpp.inifile.editor.text.util.InifileAnnotationHover;
 import org.omnetpp.inifile.editor.text.util.InifileHyperlinkDetector;
 import org.omnetpp.inifile.editor.text.util.InifileTextHover;
@@ -76,13 +76,13 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
         // syntax highlighting is using a separate partitioner
 		reconciler.setDocumentPartitioning(InifileSyntaxHighlightPartitionScanner.PARTITIONING_ID);
 
-        // colorizers for ned code
-		DefaultDamagerRepairer dr = new DefaultDamagerRepairer(new NedCodeColorizerScanner());
+        // colorizers for inifile code
+		DefaultDamagerRepairer dr = new DefaultDamagerRepairer(new InifileCodeColorizerScanner());
 		reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 
-        // colorizer for normal ned doc 
-		dr = new DefaultDamagerRepairer(new NedDocColorizerScanner());
+        // colorizer for comments 
+		dr = new DefaultDamagerRepairer(new InifileCommentColorizerScanner());
 		reconciler.setDamager(dr, InifileSyntaxHighlightPartitionScanner.INI_COMMENT);
 		reconciler.setRepairer(dr, InifileSyntaxHighlightPartitionScanner.INI_COMMENT);
         
