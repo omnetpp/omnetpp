@@ -16,7 +16,7 @@ public class InifileCommentColorizerScanner extends RuleBasedScanner {
 	 */
 	 public InifileCommentColorizerScanner() {
         // this is the default token for a comment
-        setDefaultReturnToken(InifileTextEditorHelper.docDefaultToken);
+        setDefaultReturnToken(InifileTextEditorHelper.commentToken);
 
 		List<IRule> list = new ArrayList<IRule>();
 		// add rules if needed...
