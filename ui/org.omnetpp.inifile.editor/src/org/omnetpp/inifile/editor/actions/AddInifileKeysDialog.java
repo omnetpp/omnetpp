@@ -253,7 +253,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 			// only choose those that don't have a default value
 			ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
 			for (ParamResolution res : unassignedParams)
-				if (res.paramValueNode == null)
+				if (res.paramValueNode == null || StringUtils.isEmpty(res.paramValueNode.getValue()))
 					list.add(res);
 			unassignedParams = list.toArray(new ParamResolution[]{});
 		}
