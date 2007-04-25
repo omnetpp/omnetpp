@@ -34,8 +34,6 @@ import org.omnetpp.inifile.editor.model.ParamResolution;
  * Dialog for choosing parameter keys to be inserted into the ini file.
  * @author Andras
  */
-//XXX combo for selecting the section
-//XXX suggest apply-default too if doc doesn't already contain it
 //XXX filter for duplicates
 public class AddInifileKeysDialog extends TitleAreaDialog {
 	private String title;
@@ -44,15 +42,18 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 	// widgets
     private Combo sectionsCombo;
 	private Label sectionChainLabel;
+	private Button skipCheckbox;
+	private Button addApplyCheckbox;
     private CheckboxTableViewer listViewer;
 
     // dialog state
     private enum KeyType { PARAM_ONLY, MODULE_AND_PARAM, ANYNETWORK_FULLPATH, FULLPATH };
     private KeyType keyType;
 
-	// the keys to be inserted into the file
-	private String[] result;
-	private String selectedSection;
+	// the result
+    private String[] keysToAdd;
+    private String selectedSection;
+    private boolean addApplyDefault;
 
 	// sizing constants
     private final static int SIZING_SELECTION_WIDGET_HEIGHT = 80;
@@ -68,36 +69,11 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
         this.title = "Add Inifile Keys";
     }
 
-	/**
-     * Add the selection and deselection buttons to the dialog.
-     */
-    private void addSelectionButtons(Composite composite) {
-        Composite buttonComposite = new Composite(composite, SWT.NONE);
-        GridLayout layout = new GridLayout();
-        layout.numColumns = 0;
-		layout.marginWidth = 0;
-		layout.horizontalSpacing = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_SPACING);
-        buttonComposite.setLayout(layout);
-        buttonComposite.setLayoutData(new GridData(SWT.END, SWT.TOP, true, false));
-
-        Button selectButton = createButton(buttonComposite, IDialogConstants.SELECT_ALL_ID, "Select All", false);
-
-        SelectionListener listener = new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-                listViewer.setAllChecked(true);
-            }
-        };
-        selectButton.addSelectionListener(listener);
-
-        Button deselectButton = createButton(buttonComposite, IDialogConstants.DESELECT_ALL_ID, "Deselect All", false);
-
-        listener = new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-                listViewer.setAllChecked(false);
-            }
-        };
-        deselectButton.addSelectionListener(listener);
-    }
+	protected void configureShell(Shell shell) {
+		super.configureShell(shell);
+		if (title != null)
+			shell.setText(title);
+	}
 
     /* (non-Javadoc)
      * Method declared on Dialog.
@@ -134,23 +110,6 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 			}
 		});
 		
-//		// radiobutton group
-//        Group group1 = new Group(composite, SWT.NONE);
-//		group1.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-//		group1.setText("Keys to insert");
-//		group1.setLayout(new GridLayout(1, false));
-//
-//        // radiobuttons
-//		createRadioButton(group1, "Unassigned parameters", KeyType.PARAM_ONLY);
-//		createRadioButton(group1, "All parameters", KeyType.PARAM_ONLY);
-//		
-//        // "apply-default" checkbox
-//        Button applyDefault = new Button(group1, SWT.CHECK);
-//        applyDefault.setText("Apply default values of parameters that have one (add **.apply-default=true)"); //XXX does not work
-//        GridData gridData = new GridData();
-//        gridData.horizontalIndent = 10;
-//        applyDefault.setLayoutData(gridData);
-        
 		// radiobutton group
         Group group = new Group(composite, SWT.NONE);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
@@ -170,7 +129,22 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 		group2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		group2.setText("Select keys to insert");
 		group2.setLayout(new GridLayout(1, false));
-        
+      
+		// checkboxes
+		skipCheckbox = new Button(group2, SWT.CHECK);
+		skipCheckbox.setText("Skip parameters that have a default value");
+		addApplyCheckbox = new Button(group2, SWT.CHECK);
+		addApplyCheckbox.setText("Insert corresponding \"**.apply-default=true\" line into the file");
+		skipCheckbox.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				addApplyCheckbox.setSelection(skipCheckbox.getSelection());
+				buildTableContents();
+			}
+		});
+		GridData gridData = new GridData();
+		gridData.horizontalIndent = 20;
+		addApplyCheckbox.setLayoutData(gridData);
+		
         // table and buttons
 		listViewer = CheckboxTableViewer.newCheckList(group2, SWT.BORDER);
         GridData data = new GridData(GridData.FILL_BOTH);
@@ -196,7 +170,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
         return composite;
     }
 
-	protected Button createRadioButton(Group group, String label, final KeyType value) {
+    protected Button createRadioButton(Group group, String label, final KeyType value) {
 		Button rb = new Button(group, SWT.RADIO);
 		rb.setText(label);
 		rb.addSelectionListener(new SelectionAdapter() {
@@ -210,16 +184,38 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 		return rb;
 	}
 
-    @SuppressWarnings("unchecked")
-	protected void okPressed() {
-    	ArrayList<String> result = new ArrayList<String>(); 
-    	for (Object res : listViewer.getCheckedElements())
-    		result.add(getKeyFor((ParamResolution)res));
-    	this.result = result.toArray(new String[]{});
-        super.okPressed();
+	/**
+     * Add the selection and deselection buttons to the dialog.
+     */
+    private void addSelectionButtons(Composite composite) {
+        Composite buttonComposite = new Composite(composite, SWT.NONE);
+        GridLayout layout = new GridLayout();
+        layout.numColumns = 0;
+		layout.marginWidth = 0;
+		layout.horizontalSpacing = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_SPACING);
+        buttonComposite.setLayout(layout);
+        buttonComposite.setLayoutData(new GridData(SWT.END, SWT.TOP, true, false));
+
+        Button selectButton = createButton(buttonComposite, IDialogConstants.SELECT_ALL_ID, "Select All", false);
+
+        SelectionListener listener = new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                listViewer.setAllChecked(true);
+            }
+        };
+        selectButton.addSelectionListener(listener);
+
+        Button deselectButton = createButton(buttonComposite, IDialogConstants.DESELECT_ALL_ID, "Deselect All", false);
+
+        listener = new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                listViewer.setAllChecked(false);
+            }
+        };
+        deselectButton.addSelectionListener(listener);
     }
 
-	protected void buildTableContents() {
+    protected void buildTableContents() {
 		// refresh combo with the current section names, trying to preserve existing selection
 		IInifileDocument doc = analyzer.getDocument();
 		selectedSection = sectionsCombo.getText();
@@ -230,7 +226,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 		sectionsCombo.setVisibleItemCount(Math.min(20, sectionsCombo.getItemCount()));
 		int i = ArrayUtils.indexOf(sectionNames, selectedSection);
 		sectionsCombo.select(i<0 ? 0 : i);
-		selectedSection = sectionsCombo.getText(); 
+		selectedSection = sectionsCombo.getText();
 
 		// compute fallback chain for selected section, and fill table with their contents
 		String[] sectionChain = InifileUtils.resolveSectionChain(doc, selectedSection);
@@ -239,8 +235,29 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 		sectionChainLabel.setText("Section fallback chain: "+(sectionChain.length==0 ? "<no sections>  " : StringUtils.join(sectionChain, " > ")+"  "));
 		sectionChainLabel.getParent().layout();
 		
+		String apply = doc.getValue(selectedSection, "**.apply-default");
+		if (apply != null && apply.equals("true")) {
+			skipCheckbox.setSelection(false);
+			skipCheckbox.setEnabled(false);
+			addApplyCheckbox.setSelection(false);
+			addApplyCheckbox.setEnabled(false);
+		}
+		else {
+			skipCheckbox.setEnabled(true);
+			addApplyCheckbox.setEnabled(skipCheckbox.getSelection());
+		}
+		
 		ParamResolution[] currentInput = (ParamResolution[]) listViewer.getInput();
 		ParamResolution[] unassignedParams = analyzer.getUnassignedParams(selectedSection);
+		if (skipCheckbox.getSelection()) {
+			// only choose those that don't have a default value
+			ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
+			for (ParamResolution res : unassignedParams)
+				if (res.paramValueNode == null)
+					list.add(res);
+			unassignedParams = list.toArray(new ParamResolution[]{});
+		}
+
 		if (!Arrays.equals(unassignedParams, currentInput)) {
 			listViewer.setInput(unassignedParams);
 			listViewer.setAllChecked(true);
@@ -248,23 +265,9 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 		listViewer.refresh();
 	}
     
-	protected void configureShell(Shell shell) {
-		super.configureShell(shell);
-		if (title != null)
-			shell.setText(title);
-	}
-
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
 		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
-	}
-
-	/**
-	 * Returns the list of selections made by the user, or <code>null</code>
-	 * if the selection was canceled.
-	 */
-	public String[] getKeys() {
-		return result;
 	}
 
 	protected String getKeyFor(ParamResolution res) {
@@ -278,8 +281,37 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 			default: return null;
 		}
 	}
+	
+    @SuppressWarnings("unchecked")
+	protected void okPressed() {
+    	// save dialog state into variables, so that client can retrieve them after 
+    	// the dialog was disposed
+    	ArrayList<String> result = new ArrayList<String>(); 
+    	for (Object res : listViewer.getCheckedElements())
+    		result.add(getKeyFor((ParamResolution)res));
+    	this.keysToAdd = result.toArray(new String[]{});
+    	this.addApplyDefault = addApplyCheckbox.getEnabled() && addApplyCheckbox.getSelection();
+        super.okPressed();
+    }
+	
+	/**
+	 * Returns the list of keys to be inserted into the file.
+	 */
+	public String[] getKeys() {
+		return keysToAdd;
+	}
 
+	/**
+	 * Returns the section to insert the keys into.
+	 */
 	public String getSection() {
 		return selectedSection;
+	}
+
+	/**
+	 * Returns whether a "**.apply-default = true" line should be inserted
+	 */
+	public boolean getAddApplyDefault() {
+		return addApplyDefault;
 	}
 }

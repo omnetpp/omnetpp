@@ -33,6 +33,8 @@ public class AddInifileKeysAction extends Action {
 				for (String key : keys)
 					if (!doc.containsKey(section, key))
 						InifileUtils.addEntry(doc, section, key, "", null);
+				if (dialog.getAddApplyDefault())
+					InifileUtils.addEntry(doc, section, "**.apply-default", "true", null);
 			}
 		}
 	}
