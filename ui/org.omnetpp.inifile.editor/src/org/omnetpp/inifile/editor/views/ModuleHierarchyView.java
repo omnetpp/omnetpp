@@ -166,7 +166,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 				}				
 				if (element instanceof ParamResolution) {
 					ParamResolution payload = (ParamResolution) element;
-					if (payload.paramValueNode != null)
+					if (payload.paramValueNode != null) //XXX or: paramDeclNode
 						NEDResourcesPlugin.openNEDElementInEditor(payload.paramValueNode);
 				}				
 			}
@@ -263,7 +263,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		String[] tmp = getValueAndRemark(res, doc);
 		String value = tmp[0];
 		String remark = tmp[1];
-		return res.paramValueNode.getName() + " = " + (value==null ? "" : value+" ") + "(" + remark + ")"; 
+		return res.paramDeclNode.getName() + " = " + (value==null ? "" : value+" ") + "(" + remark + ")"; 
 	}
 
 }

@@ -4,8 +4,11 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_EXTEN
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
-
-import static org.omnetpp.ned.model.NEDElementUtil.*;
+import static org.omnetpp.ned.model.NEDElementUtil.NED_PARTYPE_BOOL;
+import static org.omnetpp.ned.model.NEDElementUtil.NED_PARTYPE_DOUBLE;
+import static org.omnetpp.ned.model.NEDElementUtil.NED_PARTYPE_INT;
+import static org.omnetpp.ned.model.NEDElementUtil.NED_PARTYPE_STRING;
+import static org.omnetpp.ned.model.NEDElementUtil.NED_PARTYPE_XML;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +30,6 @@ import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.NEDElement;
-import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
@@ -440,7 +442,21 @@ public class InifileAnalyzer {
 			public void unresolvedType(SubmoduleNode submodule, String submoduleTypeName) {}
 			public void recursiveType(SubmoduleNode submodule, INEDTypeInfo submoduleType) {}
 			public String resolveLikeType(SubmoduleNode submodule) {
-				return null; //XXX try to do it
+				String likeParamName = submodule.getLikeParam();
+				if (!likeParamName.matches("[A-Za-z0-9_]+"))
+					return null;  // sorry, we are only prepared to resolve parent module parameters
+				String paramFullPath = StringUtils.join(fullPathStack.toArray(), ".") + "." + likeParamName;
+				boolean hasNedDefault = false; //XXX rather, look it up in ParamNode!
+				SectionKey sectionKey = InifileUtils.lookupParameter(paramFullPath, hasNedDefault, sectionChain, doc);
+				if (sectionKey == null)
+					return null; // bad luck: unassigned?
+				String value = doc.getValue(sectionKey.section, sectionKey.key);
+				try {
+					value = Common.parseQuotedString(value);
+				} catch (RuntimeException e) {
+					return null; // something is wrong: not a string constant?
+				}
+				return value;
 			}
 		});
 
@@ -454,8 +470,8 @@ public class InifileAnalyzer {
 			SubmoduleNodeEx submodule = (SubmoduleNodeEx) pathModules[pathModules.length-1];
 			ParamNode paramValueNode = submodule==null ?
 					(ParamNode)moduleType.getParamValues().get(paramName) :
-						(ParamNode)submodule.getParamValues().get(paramName);
-					resultList.add(resolveParameter(moduleFullPath, pathModules, paramDeclNode, paramValueNode, sectionChain, doc));
+					(ParamNode)submodule.getParamValues().get(paramName);
+			resultList.add(resolveParameter(moduleFullPath, pathModules, paramDeclNode, paramValueNode, sectionChain, doc));
 		}
 	}
 
@@ -469,9 +485,9 @@ public class InifileAnalyzer {
 	 */
 	protected static ParamResolution resolveParameter(String moduleFullPath, SubmoduleNode[] pathModules, ParamNode paramDeclNode, ParamNode paramValueNode, String[] sectionChain, IInifileDocument doc) {
 		// value in the NED file
-		String nedValue = paramValueNode.getValue(); //XXX what if parsed expressions?
+		String nedValue = paramValueNode==null ? null : paramValueNode.getValue(); //XXX what if parsed expressions?
 		if (StringUtils.isEmpty(nedValue)) nedValue = null;
-		boolean isNedDefault = paramValueNode.getIsDefault();
+		boolean isNedDefault = paramValueNode==null ? false : paramValueNode.getIsDefault();
 
 		// look up its value in the ini file
 		String activeSection = doc==null ? null : sectionChain[0];
@@ -480,7 +496,7 @@ public class InifileAnalyzer {
 		String iniValue = null;
 		boolean iniApplyDefault = false;
 		if (doc!=null && (nedValue==null || isNedDefault)) {
-			String paramFullPath = moduleFullPath + "." + paramValueNode.getName();
+			String paramFullPath = moduleFullPath + "." + paramDeclNode.getName();
 			SectionKey sectionKey = InifileUtils.lookupParameter(paramFullPath, isNedDefault, sectionChain, doc);
 			if (sectionKey!=null) {
 				iniSection = sectionKey.section;

@@ -266,7 +266,7 @@ public class InifileUtils {
 				int n = Math.min(resList.length, 8);
 				for (int i=0; i<n; i++) {
 					ParamResolution res = resList[i];
-					text += "  - " + res.moduleFullPath + "." +res.paramValueNode.getName() + "\n";
+					text += "  - " + res.moduleFullPath + "." +res.paramDeclNode.getName() + "\n";
 				}
 				if (resList.length > n) 
 					text += "    ...\n";

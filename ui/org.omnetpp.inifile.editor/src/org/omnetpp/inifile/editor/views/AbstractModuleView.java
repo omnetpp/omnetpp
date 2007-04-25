@@ -273,7 +273,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 
 	protected static String[] getValueAndRemark(ParamResolution res, IInifileDocument doc) {
 		// value in the NED file
-		String nedValue = res.paramValueNode.getValue(); //XXX what if parsed expressions?
+		String nedValue = res.paramValueNode==null ? null : res.paramValueNode.getValue(); //XXX what if parsed expressions?
 		if (StringUtils.isEmpty(nedValue)) 
 			nedValue = null;
 	

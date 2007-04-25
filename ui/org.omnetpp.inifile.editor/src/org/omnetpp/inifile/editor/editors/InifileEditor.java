@@ -141,7 +141,7 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 				postSelectionChangedJob.restartTimer();
 			}
 		});
-		
+
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				// schedule initial analysis of the inifile

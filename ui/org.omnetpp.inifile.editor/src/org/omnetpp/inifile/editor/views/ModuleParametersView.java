@@ -124,7 +124,7 @@ public class ModuleParametersView extends AbstractModuleView {
 					ParamResolution par = (ParamResolution) element;
 					Assert.isTrue(inifileDocument!=null); //FIXME FIXME null may actually occur here!!!!
 					switch (columnIndex) {
-						case 0: return par.moduleFullPath+"."+par.paramValueNode.getName();
+						case 0: return par.moduleFullPath+"."+par.paramDeclNode.getName();
 						case 1: return getValueAndRemark(par, inifileDocument)[0]; // value
 						case 2: return getValueAndRemark(par, inifileDocument)[1]; // remark
 					}
@@ -159,7 +159,7 @@ public class ModuleParametersView extends AbstractModuleView {
 						if (getActiveEditor() instanceof IGotoInifile)
 							((IGotoInifile)getActiveEditor()).gotoEntry(res.section, res.key, IGotoInifile.Mode.AUTO);
 					}
-					else if (res.paramValueNode!=null) {
+					else if (res.paramValueNode!=null) { //XXX or: use paramDeclNode?
 						NEDResourcesPlugin.openNEDElementInEditor(res.paramValueNode);
 					}
 				}
@@ -179,6 +179,9 @@ public class ModuleParametersView extends AbstractModuleView {
 					}
 					else if (res.paramValueNode!=null) {
 						return null; //XXX todo
+					}
+					else {
+						//XXX todo: use paramDeclNode, it is never null
 					}
 				}
 				return null;

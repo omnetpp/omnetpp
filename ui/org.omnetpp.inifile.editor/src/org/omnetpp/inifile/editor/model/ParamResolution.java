@@ -43,12 +43,12 @@ public class ParamResolution {
 	
 	// for convenience
 	public ParamResolution(String moduleFullPath, SubmoduleNode[] pathModules, 
-			               ParamNode paramValueNode, ParamNode paramDeclNode, ParamResolutionType type, 
+			               ParamNode paramDeclNode, ParamNode paramValueNode, ParamResolutionType type, 
 			               String activeSection, String section, String key) {
 		this.moduleFullPath = moduleFullPath;
 		this.pathModules = pathModules;
-		this.paramValueNode = paramValueNode;
 		this.paramDeclNode = paramDeclNode;
+		this.paramValueNode = paramValueNode;
 		this.type = type;
 		this.activeSection = activeSection;
 		this.section = section;

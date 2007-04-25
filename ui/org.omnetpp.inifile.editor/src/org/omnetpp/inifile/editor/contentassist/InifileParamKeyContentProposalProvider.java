@@ -52,7 +52,7 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 			// collect unique full paths
 			Set<String> fullPaths = new HashSet<String>(); 
 			for (ParamResolution res : resList)
-				fullPaths.add(res.moduleFullPath + "." +res.paramValueNode.getName());
+				fullPaths.add(res.moduleFullPath + "." +res.paramDeclNode.getName());
 
 			Set<String> moduleProposals = new HashSet<String>();
 			Set<String> paramProposals = new HashSet<String>();
