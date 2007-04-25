@@ -23,6 +23,7 @@ public class InifileSyntaxHighlightPartitionScanner extends RuleBasedPartitionSc
 	 */
 	public InifileSyntaxHighlightPartitionScanner() {
 		// Add rule for single-line comments.
+		//XXX problem: this also fires inside string constants... 
 		IToken nedDocToken = new Token(INI_COMMENT);
 		IPredicateRule commentRule1 = new EndOfLineRule("#", nedDocToken);
 		IPredicateRule commentRule2 = new EndOfLineRule(";", nedDocToken);
