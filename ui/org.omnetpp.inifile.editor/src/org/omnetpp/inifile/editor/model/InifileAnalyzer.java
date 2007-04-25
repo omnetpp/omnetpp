@@ -340,7 +340,7 @@ public class InifileAnalyzer {
 			addError(section, key, "Value cannot be empty");
 			return;
 		}
-		
+
 		// check parameter types are consistent with each other
 		ParamResolution[] resList = getParamResolutionsForKey(section, key);
 		int dataType = -1;

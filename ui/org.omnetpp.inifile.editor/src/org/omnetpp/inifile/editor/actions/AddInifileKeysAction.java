@@ -32,7 +32,7 @@ public class AddInifileKeysAction extends Action {
 				String section = dialog.getSection();
 				for (String key : keys)
 					if (!doc.containsKey(section, key))
-						InifileUtils.addEntry(doc, section, key, "TODO", null); //XXX generate value
+						InifileUtils.addEntry(doc, section, key, "", null);
 			}
 		}
 	}
