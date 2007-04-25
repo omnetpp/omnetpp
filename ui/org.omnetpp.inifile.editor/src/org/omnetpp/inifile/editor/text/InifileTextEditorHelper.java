@@ -16,14 +16,12 @@ import org.eclipse.swt.widgets.Display;
  * @author rhornig
  *
  */
-//XXX TODO rename, revise, possibly remove...
+//XXX revise...
 public class InifileTextEditorHelper {
-	public static final String DEFAULT_CONTEXT_TYPE= "org.omnetpp.ned.editor.text.default"; //$NON-NLS-1$
+	public static final String DEFAULT_CONTEXT_TYPE = "org.omnetpp.inifile.editor.default";
 
     /**
      * Convenience method, to return a system default color. Color constants come from SWT class e.g. SWT.COLOR_RED
-     * @param color
-     * @return
      */
     public static Color getColor(int color) {
         return Display.getDefault().getSystemColor(color);
@@ -69,29 +67,14 @@ public class InifileTextEditorHelper {
     }
 
     // word lists for syntax highlighting
-    // TODO these are both for NED and MSG files. Once a separate MSG editor is done keywords should be split
-    public final static String[] highlightPrivateDocTodo = { "CHECKME", "FIXME", "TBD", "TODO" };
-    public final static String[] highlightDocKeywords = { "author", "bug", "date", "see", "since", "todo", "version", "warning" };
-    public final static String[] highlightNedFunctions = { "acos", "asin", "atan", "atan2", "bernoulli", "beta", "binomial", "cauchy", "ceil", "chi_square", "const", "cos", "default", "erlang_k", "exp", "exponential", "fabs", "floor", "fmod", "gamma_d", "genk_exponential", "genk_intuniform", "genk_normal", "genk_truncnormal", "genk_uniform", "geometric", "hypergeometric", "hypot", "intuniform", "log", "log10", "lognormal", "max", "min", "negbinomial", "normal", "pareto_shifted", "poisson", "pow", "sin", "sizeof", "sqrt", "student_t", "tan", "triang", "truncnormal", "uniform", "weibull", "xmldoc" };
-    public final static String[] highlightConstants = { "false", "true" };
+    public final static String[] highlightCommentTodo = { "CHECKME", "FIXME", "TBD", "TODO" };
+    public final static String[] highlightCommentKeywords = { "author", "bug", "date", "see", "since", "todo", "version", "warning" };
+    public final static String[] highlightNedFunctions = { "acos", "asin", "atan", "atan2", "bernoulli", "beta", "binomial", "cauchy", "ceil", "chi_square", "cos", "erlang_k", "exp", "exponential", "fabs", "floor", "fmod", "gamma_d", "genk_exponential", "genk_intuniform", "genk_normal", "genk_truncnormal", "genk_uniform", "geometric", "hypergeometric", "hypot", "intuniform", "log", "log10", "lognormal", "max", "min", "negbinomial", "normal", "pareto_shifted", "poisson", "pow", "sin", "sqrt", "student_t", "tan", "triang", "truncnormal", "uniform", "weibull" };
+    public final static String[] highlightNedKeywords = { "index", "this", "typename", "const", "default", "sizeof", "xmldoc" };
+    public final static String[] highlightNedConstants = { "false", "true" };
 
     // word lists for completion
-    public final static String[] proposedPrivateDocTodo = highlightPrivateDocTodo;
-    public final static String[] proposedDocKeywords = highlightDocKeywords;
-    public final static String[] proposedNedBaseParamTypes = { "bool", "double", "int", "string", "xml" };
-    public final static String[] proposedNedParamTypes = { "bool", "double", "int", "string", "xml", "volatile bool", "volatile double", "volatile int", "volatile string", "volatile xml" };
-    public final static String[] proposedNedGateTypes = { "inout", "input", "output" };
-    public final static String[] proposedNedGlobalStartingKeywords = { "channel", "channel withcppclass", "channelinterface", "import", "interface", "module", "network", "package", "property", "simple"};
-    public final static String[] proposedNedSectionNameKeywords = {"connections:", "connections allowunconnected:", "gates:", "parameters:", "submodules:", "types:"};
-    public final static String[] proposedNedConnsKeywords = {"allowunconnected"};
-    public final static String[] proposedNedInheritanceKeywords = {"extends", "like"};
-    public final static String[] proposedNedOtherKeywords = {"if", "index", "this", "typename", "for"};
-    public final static String[] proposedNedFunctions = { "acos", "asin", "atan", "atan2", "bernoulli", "beta", "binomial", "cauchy", "ceil", "chi_square", "const", "cos", "default", "erlang_k", "exp", "exponential", "fabs", "floor", "fmod", "gamma_d", "genk_exponential", "genk_intuniform", "genk_normal", "genk_truncnormal", "genk_uniform", "geometric", "hypergeometric", "hypot", "intuniform", "log", "log10", "lognormal", "max", "min", "negbinomial", "normal", "pareto_shifted", "poisson", "pow", "sin", "sizeof", "sqrt", "student_t", "tan", "triang", "truncnormal", "uniform", "weibull", "xmldoc" };
-    public final static String[] proposedConstants = { "false", "true" };
-    public final static String[] proposedNedComponentPropertyNames = {"display(...)"}; //XXX offer as template! check what gets actually supported! also: "recordstats", "kernel", ... 
-    public final static String[] proposedNedParamPropertyNames = {"prompt(...)", "choice(...)", "classname(...)"}; //XXX check this list before release  
-    public final static String[] proposedNedGatePropertyNames = {"labels(...)", "inlabels(...)", "outlabels(...)"}; //XXX check this list before release
-
+    public final static String[] proposedNedKeywords = {"index", "this", "typename"};
     
     public final static Template[] proposedNedOperatorsTempl = new Template[] {
     	makeShortTemplate("const(${x})", "operator"),
@@ -160,9 +143,10 @@ public class InifileTextEditorHelper {
     // TODO these styles should be configurable
     public final static IToken commentToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GRAY), null, SWT.ITALIC));
     public final static IToken codeDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_BLACK)));
+    public final static IToken codeIdentifierToken = new Token(new TextAttribute(getColor(SWT.COLOR_BLACK)));
     public final static IToken codeConfigKeyToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_RED)));
-    public final static IToken codeFunctionToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_MAGENTA), null, SWT.BOLD));
-    public final static IToken codeIdentifierToken = new Token(new TextAttribute(getColor(SWT.COLOR_BLACK))); //XXX needed?
+    public final static IToken codeKeywordToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_MAGENTA), null, SWT.BOLD));
+    public final static IToken codeFunctionToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_MAGENTA)));
     public final static IToken codeStringToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
     public final static IToken codeNumberToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
 
