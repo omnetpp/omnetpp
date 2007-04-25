@@ -25,7 +25,7 @@ public class AddInifileKeysAction extends Action {
 		IEditorPart editor = page.getActiveEditor();
 		if (editor instanceof InifileEditor) {
 			InifileEditorData editorData = ((InifileEditor) editor).getEditorData();
-			AddInifileKeysDialog dialog = new AddInifileKeysDialog(workbenchWindow.getShell(), null, editorData.getInifileAnalyzer());
+			AddInifileKeysDialog dialog = new AddInifileKeysDialog(workbenchWindow.getShell(), editorData.getInifileAnalyzer());
 			if (dialog.open()==Dialog.OK) {
 				String[] keys = dialog.getKeys();
 				IInifileDocument doc = editorData.getInifileDocument();

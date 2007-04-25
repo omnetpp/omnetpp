@@ -6,6 +6,7 @@ import javax.swing.text.TableView;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
@@ -35,12 +36,11 @@ import org.omnetpp.inifile.editor.model.ParamResolution;
 //XXX combo for selecting the section
 //XXX suggest apply-default too if doc doesn't already contain it
 //XXX filter for duplicates
-public class AddInifileKeysDialog extends TrayDialog {
+public class AddInifileKeysDialog extends TitleAreaDialog { //TrayDialog {
 	// the keys to be inserted into the file
 	private String[] result;
 
 	private String title;
-	private String message = "";
 	
     private enum KeyType { PARAM_ONLY, MODULE_AND_PARAM, ANYNETWORK_FULLPATH, FULLPATH };
     private KeyType keyType;
@@ -57,28 +57,12 @@ public class AddInifileKeysDialog extends TrayDialog {
     /**
      * Creates the dialog.
      */
-    public AddInifileKeysDialog(Shell parentShell, String message, InifileAnalyzer analyzer) {
+    public AddInifileKeysDialog(Shell parentShell, InifileAnalyzer analyzer) {
         super(parentShell);
-        setTitle("Generate Inifile Contents");
-        setMessage(message!=null ? message : "Choose keys to be added to the file.");
-        this.analyzer = analyzer;
-
         setShellStyle(getShellStyle() | SWT.MAX | SWT.RESIZE);
+        this.analyzer = analyzer;
+        this.title = "Add Inifile Keys";
     }
-
-	/**
-	 * Sets the title for this dialog.
-	 */
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	/**
-	 * Sets the message for this dialog.
-	 */
-	public void setMessage(String message) {
-		this.message = message;
-	}
 
 	/**
      * Add the selection and deselection buttons to the dialog.
@@ -115,11 +99,17 @@ public class AddInifileKeysDialog extends TrayDialog {
      * Method declared on Dialog.
      */
     protected Control createDialogArea(Composite parent) {
+        setTitle("Add Inifile Keys");
+        setMessage("Choose keys to be added to the file.");
+    	
         // page group
-        Composite composite = (Composite) super.createDialogArea(parent);
-        initializeDialogUnits(composite);
-        createMessageArea(composite);
+        Composite dialogArea = (Composite) super.createDialogArea(parent);
 
+        Composite composite = new Composite(dialogArea, SWT.NONE);
+        composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        composite.setLayout(new GridLayout(1,false));
+
+        // "apply-default" checkbox
         Button applyDefault = new Button(composite, SWT.CHECK);
         applyDefault.setText("Apply default value of parameters that have one"); //XXX does not work
         
@@ -204,18 +194,6 @@ public class AddInifileKeysDialog extends TrayDialog {
 		super.configureShell(shell);
 		if (title != null)
 			shell.setText(title);
-	}
-
-	/**
-	 * Creates the message area for this dialog.
-	 */
-	protected Label createMessageArea(Composite composite) {
-		Label label = new Label(composite, SWT.NONE);
-		if (message != null) {
-			label.setText(message);
-		}
-		label.setFont(composite.getFont());
-		return label;
 	}
 
 	protected void createButtonsForButtonBar(Composite parent) {
