@@ -19,10 +19,13 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.ScalarDataSorter;
+import org.omnetpp.scave.engine.ScalarFields;
+import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.AddDiscardOp;
 import org.omnetpp.scave.model.Apply;
+import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Compute;
 import org.omnetpp.scave.model.Dataset;
@@ -191,13 +194,16 @@ public class DatasetManager {
 		return result;
 	}
 
-	public static ScalarDataset createScalarDataset(Chart chart, ResultFileManager manager, IProgressMonitor progressMonitor) {
+	@SuppressWarnings("unchecked")
+	public static ScalarDataset createScalarDataset(BarChart chart, ResultFileManager manager, IProgressMonitor progressMonitor) {
 		//TODO update progressMonitor
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
-		return new ScalarDataset(idlist, manager);
+		List<String> fieldNames = (List<String>)chart.getGroupBy();
+		ScalarFields fields = fieldNames != null ?  new ScalarFields(StringVector.fromArray(fieldNames.toArray(new String[fieldNames.size()]))) : null;
+ 		return new ScalarDataset(idlist, fields, manager);
 	}
-
+	
 	public static VectorDataset createVectorDataset(Chart chart, ResultFileManager manager, IProgressMonitor progressMonitor) {
 		//TODO update progressMonitor
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);

@@ -19,6 +19,7 @@ import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Property;
+import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
@@ -30,30 +31,30 @@ public class ChartFactory {
 	public static ChartCanvas createChart(Composite parent, Chart chart, ResultFileManager manager) {
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		if (chart instanceof BarChart)
-			return createScalarChart(parent, chart, dataset, manager);
+			return createScalarChart(parent, (BarChart)chart, dataset, manager);
 		if (chart instanceof LineChart)
-			return createVectorChart(parent, chart, dataset, manager);
+			return createVectorChart(parent, (LineChart)chart, dataset, manager);
 		if (chart instanceof HistogramChart)
-			return createHistogramChart(parent, chart, dataset, manager);
-		if (chart instanceof org.omnetpp.scave.model.ScatterChart)
-			return createScatterChart(parent, chart, dataset, manager);
+			return createHistogramChart(parent, (HistogramChart)chart, dataset, manager);
+		if (chart instanceof ScatterChart)
+			return createScatterChart(parent, (ScatterChart)chart, dataset, manager);
 		throw new RuntimeException("unknown chart type");
 	}
 
 	public static void populateChart(ChartCanvas chartCanvas, Chart chart, ResultFileManager manager) {
 		if (chart instanceof BarChart)
-			populateScalarChart(chart, manager, (ScalarChart)chartCanvas);
+			populateScalarChart((BarChart)chart, manager, (ScalarChart)chartCanvas);
 		else if (chart instanceof LineChart)
-			populateVectorChart(chart, manager, (VectorChart)chartCanvas);
+			populateVectorChart((LineChart)chart, manager, (VectorChart)chartCanvas);
 		else if (chart instanceof HistogramChart)
 			;//TODO
-		else if (chart instanceof org.omnetpp.scave.model.ScatterChart)
-			populateScatterChart(chart, manager, (VectorChart)chartCanvas);
+		else if (chart instanceof ScatterChart)
+			populateScatterChart((ScatterChart)chart, manager, (VectorChart)chartCanvas);
 		else
 			throw new RuntimeException("unknown chart type");
 	}
 	
-	public static ScalarChart createScalarChart(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager) {
+	public static ScalarChart createScalarChart(Composite parent, BarChart chart, Dataset dataset, ResultFileManager manager) {
 		ScalarChart scalarChart = new ScalarChart(parent, SWT.DOUBLE_BUFFERED);
 		setChartProperties(chart, scalarChart);
 
@@ -62,7 +63,7 @@ public class ChartFactory {
 		return scalarChart;
 	}
 
-	public static VectorChart createVectorChart(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager) {
+	public static VectorChart createVectorChart(Composite parent, LineChart chart, Dataset dataset, ResultFileManager manager) {
 		final VectorChart vectorChart = new VectorChart(parent, SWT.DOUBLE_BUFFERED);
 		vectorChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		setChartProperties(chart, vectorChart);
@@ -72,11 +73,11 @@ public class ChartFactory {
 		return vectorChart;
 	}
 
-	public static ChartCanvas createHistogramChart(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager) {
+	public static ChartCanvas createHistogramChart(Composite parent, HistogramChart chart, Dataset dataset, ResultFileManager manager) {
 		return null; //TODO
 	}
 	
-	public static VectorChart createScatterChart(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager) {
+	public static VectorChart createScatterChart(Composite parent, ScatterChart chart, Dataset dataset, ResultFileManager manager) {
 		final VectorChart scatterChart = new VectorChart(parent, SWT.DOUBLE_BUFFERED);
 		scatterChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		setChartProperties(chart, scatterChart);
@@ -84,7 +85,7 @@ public class ChartFactory {
 		return scatterChart;
 	}
 
-	public static void populateScalarChart(final Chart chart, final ResultFileManager manager, ScalarChart scalarChart) {
+	public static void populateScalarChart(final BarChart chart, final ResultFileManager manager, ScalarChart scalarChart) {
 		// perform:
 		// scalarChart.setDataset(DatasetManager.createScalarDataset(chart, dataset, manager, null));
 		// but as a background job:
@@ -96,7 +97,7 @@ public class ChartFactory {
 		});
 	}
 
-	public static void populateVectorChart(final Chart chart, final ResultFileManager manager, final VectorChart vectorChart) {
+	public static void populateVectorChart(final LineChart chart, final ResultFileManager manager, final VectorChart vectorChart) {
 		// perform:
 		// vectorChart.setDataset(DatasetManager.createVectorDataset(chart, dataset, manager));
 		// but as a background job:
@@ -108,7 +109,7 @@ public class ChartFactory {
 		});
 	}
 
-	public static void populateScatterChart(final Chart chart, final ResultFileManager manager, final VectorChart scatterChart) {
+	public static void populateScatterChart(final ScatterChart chart, final ResultFileManager manager, final VectorChart scatterChart) {
 		// perform:
 		// scatterChart.setDataset(DatasetManager.createScatterPlotDataset(chart, dataset, manager));
 		// but as a background job:

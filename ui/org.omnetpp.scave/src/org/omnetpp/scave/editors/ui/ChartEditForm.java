@@ -59,29 +59,31 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  * @author tomi
  */
 public class ChartEditForm implements IScaveObjectEditForm {
+	
+	private static final ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
 
 	/**
 	 * Features edited on this form.
 	 */
 	private static final EStructuralFeature[] features = new EStructuralFeature[] {
-		ScaveModelPackage.eINSTANCE.getChart_Name(),
-		ScaveModelPackage.eINSTANCE.getChart_Properties(),
+		pkg.getChart_Name(),
+		pkg.getChart_Properties(),
 	};
 	
 	private static final EStructuralFeature[] scatterChartFeatures = new EStructuralFeature[] {
-		ScaveModelPackage.eINSTANCE.getChart_Name(),
-		ScaveModelPackage.eINSTANCE.getScatterChart_ModuleName(),
-		ScaveModelPackage.eINSTANCE.getScatterChart_DataName(),
-		ScaveModelPackage.eINSTANCE.getChart_Properties(),
+		pkg.getChart_Name(),
+		pkg.getScatterChart_ModuleName(),
+		pkg.getScatterChart_DataName(),
+		pkg.getChart_Properties(),
 	};
-
+	
 	/**
 	 * The edited chart.
 	 */
-	private Chart chart;
-	private EObject parent;
-	private ResultFileManager manager;
-	private ChartProperties properties;
+	protected Chart chart;
+	protected EObject parent;
+	protected ResultFileManager manager;
+	protected ChartProperties properties;
 
 	private String[] lineNames;
 
@@ -131,11 +133,11 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	/**
 	 * Number of visible items in combos.
 	 */
-	private static final int VISIBLE_ITEM_COUNT = 15;
+	protected static final int VISIBLE_ITEM_COUNT = 15;
 
-	private static final String UNSET = "(no change)";
+	protected static final String UNSET = "(no change)";
 
-	private static final String USER_DATA_KEY = "ChartEditForm";
+	protected static final String USER_DATA_KEY = "ChartEditForm";
 
 	public ChartEditForm(Chart chart, EObject parent, ResultFileManager manager) {
 		Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
@@ -169,10 +171,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	 * Returns the number of features on this form.
 	 */
 	public int getFeatureCount() {
-		if (chart instanceof ScatterChart)
-			return scatterChartFeatures.length;
-		else
-			return features.length;
+		return getFeatures().length;
 	}
 
 	/**
@@ -192,11 +191,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		TabFolder tabfolder = createTabFolder(parent);
 		// Main
 		panel = createTab("Main", tabfolder, 2);
-		nameText = createTextField("Name", panel);
-		if (chart instanceof ScatterChart) {
-			moduleNameText = createTextField("Module name", panel);
-			dataNameText = createTextField("Data name", panel);
-		}
+		populateTab("Main", panel);
 		// Titles
 		panel = createTab("Titles", tabfolder, 1);
 		group = createGroup("Graph title", panel);
@@ -259,6 +254,16 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		legendPositionRadios = createRadioGroup("Position", panel, 3, LegendPosition.class, false);
 		legendAnchorRadios = createRadioGroup("Anchoring", panel, 4, LegendAnchor.class, false);
 	}
+	
+	protected void populateTab(String name, Composite panel) {
+		if ("Main".equals(name)) {
+			nameText = createTextField("Name", panel);
+			if (chart instanceof ScatterChart) {
+				moduleNameText = createTextField("Module name", panel);
+				dataNameText = createTextField("Data name", panel);
+			}
+		}
+	}
 
 	private TabFolder createTabFolder(Composite parent) {
 		TabFolder tabfolder = new TabFolder(parent, SWT.NONE);
@@ -276,25 +281,29 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		return panel;
 	}
 
-	private Group createGroup(String text, Composite parent) {
+	protected Group createGroup(String text, Composite parent) {
 		return createGroup(text, parent, 2);
 	}
 
-	private Group createGroup(String text, Composite parent, int numOfColumns) {
+	protected Group createGroup(String text, Composite parent, int numOfColumns) {
+		return createGroup(text, parent, 1, numOfColumns);
+	}
+	
+	protected Group createGroup(String text, Composite parent, int colSpan, int numOfColumns) {
 		Group group = new Group(parent, SWT.NONE);
-		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, colSpan, 1));
 		group.setLayout(new GridLayout(numOfColumns, false));
 		group.setText(text);
 		return group;
 	}
 
-	private Label createLabel(String text, Composite parent) {
+	protected Label createLabel(String text, Composite parent) {
 		Label label = new Label(parent, SWT.NONE);
 		label.setText(text);
 		return label;
 	}
 
-	private Text createTextField(String labelText, Composite parent) {
+	protected Text createTextField(String labelText, Composite parent) {
 		if (labelText != null)
 			createLabel(labelText, parent);
 		Text text = new Text(parent, SWT.BORDER);
@@ -302,11 +311,11 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		return text;
 	}
 
-	private CCombo createComboField(String labelText, Composite parent, String[] items) {
+	protected CCombo createComboField(String labelText, Composite parent, String[] items) {
 		return createComboField(labelText, parent, items, false);
 	}
 
-	private CCombo createComboField(String labelText, Composite parent, String[] items, boolean optional) {
+	protected CCombo createComboField(String labelText, Composite parent, String[] items, boolean optional) {
 		Label label = new Label(parent, SWT.NONE);
 		label.setText(labelText);
 		int style = SWT.BORDER; //type == null ? SWT.BORDER : SWT.BORDER | SWT.READ_ONLY;
@@ -318,7 +327,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		return combo;
 	}
 
-	private CCombo createComboField(String labelText, Composite parent, Class<? extends Enum<?>> type, boolean optional) {
+	protected CCombo createComboField(String labelText, Composite parent, Class<? extends Enum<?>> type, boolean optional) {
 		Enum<?>[] values = type.getEnumConstants();
 		String[] items = new String[values.length];
 		for (int i = 0; i < values.length; ++i)
@@ -326,14 +335,19 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		return createComboField(labelText, parent, items, optional);
 	}
 
-	private Button createCheckboxField(String labelText, Composite parent) {
+	protected Button createCheckboxField(String labelText, Composite parent) {
+		return createCheckboxField(labelText, parent, null);
+	}
+	
+	protected Button createCheckboxField(String labelText, Composite parent, Object value) {
 		Button checkbox = new Button(parent, SWT.CHECK);
 		checkbox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		checkbox.setText(labelText);
+		checkbox.setData(USER_DATA_KEY, value);
 		return checkbox;
 	}
 
-	private Button createRadioField(String labelText, Composite parent, Object value) {
+	protected Button createRadioField(String labelText, Composite parent, Object value) {
 		Button radio = new Button(parent, SWT.RADIO);
 		radio.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		radio.setText(labelText);
@@ -341,7 +355,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		return radio;
 	}
 
-	private Button[] createRadioGroup(String groupLabel, Composite parent, int numOfColumns, Class<? extends Enum<?>> type, boolean optional, String... radioLabels) {
+	protected Button[] createRadioGroup(String groupLabel, Composite parent, int numOfColumns, Class<? extends Enum<?>> type, boolean optional, String... radioLabels) {
 		Group group = createGroup(groupLabel, parent, numOfColumns);
 		Enum<?>[] values = type.getEnumConstants();
 		int numOfRadios = optional ? values.length + 1 : values.length;

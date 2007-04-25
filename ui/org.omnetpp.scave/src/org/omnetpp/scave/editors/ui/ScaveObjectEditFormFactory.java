@@ -4,6 +4,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Dataset;
@@ -45,6 +46,8 @@ public class ScaveObjectEditFormFactory {
 	 */
 	public IScaveObjectEditForm createForm(EObject object, EObject parent, ResultFileManager manager) {
 		
+		if (object instanceof BarChart)
+			return new BarChartEditForm((Chart)object, parent, manager);
 		if (object instanceof Chart)
 			return new ChartEditForm((Chart)object, parent, manager);
 		else if (object instanceof ChartSheet)

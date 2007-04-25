@@ -30,8 +30,51 @@
 
 ResultFileManager *ScalarDataSorter::tmpScalarMgr;
 
+StringVector ScalarFields::getFieldNames()
+{
+    StringVector names = StringVector();
+    names.push_back("file");
+    names.push_back("run");
+    names.push_back("module");
+    names.push_back("name");
+    return names;
+}
 
+ScalarFields::ScalarFields(const StringVector &fieldNames)
+{
+    fields = 0;
+    for (StringVector::const_iterator it = fieldNames.begin(); it != fieldNames.end(); ++it)
+    {
+        if (*it == "file") fields |= FILE;
+        else if (*it == "run") fields |= RUN;
+        else if (*it == "module") fields |= MODULE;
+        else if (*it == "name") fields |= NAME;
+    }
+}
 
+/*
+ * Grouping functions
+ */
+template<class T>
+class MemberGroupingFunc
+{
+    private:
+        typedef bool (T::*GroupingFunc)(const ScalarResult&, const ScalarResult&);
+        T &object;
+        GroupingFunc func;
+    public:
+        MemberGroupingFunc(T &object, GroupingFunc func) : object(object), func(func) {}
+        bool operator()(const ScalarResult& d1, const ScalarResult& d2) { return (object.*func)(d1, d2); }
+};
+
+bool ScalarFields::sameGroup(const ScalarResult& d1, const ScalarResult& d2)
+{
+    if (hasField(FILE) && d1.fileRunRef->fileRef != d2.fileRunRef->fileRef) return false;
+    if (hasField(RUN) && d1.fileRunRef->runRef != d2.fileRunRef->runRef) return false;
+    if (hasField(MODULE) && d1.moduleNameRef != d2.moduleNameRef) return false;
+    if (hasField(NAME) && d1.nameRef != d2.nameRef) return false;
+    return true;
+}
 
 bool ScalarDataSorter::sameGroupFileRunScalar(const ScalarResult& d1, const ScalarResult& d2)
 {
@@ -46,6 +89,51 @@ bool ScalarDataSorter::sameGroupModuleScalar(const ScalarResult& d1, const Scala
 bool ScalarDataSorter::sameGroupFileRunModule(const ScalarResult& d1, const ScalarResult& d2)
 {
     return d1.fileRunRef==d2.fileRunRef && d1.moduleNameRef==d2.moduleNameRef;
+}
+
+/*
+ * Compare functions
+ */
+template<class T>
+class MemberCompareFunc
+{
+    private:
+        typedef bool (T::*CompareFunc)(ID id1, ID id2, ResultFileManager *manager);
+        ResultFileManager *manager;
+        T &object;
+        CompareFunc func;
+    public:
+        MemberCompareFunc(T &object, CompareFunc func, ResultFileManager *manager)
+            : object(object), func(func), manager(manager) {}
+        bool operator()(ID id1, ID id2) { return (object.*func)(id1, id2, manager); }
+};
+
+bool ScalarFields::less(ID id1, ID id2, ResultFileManager *manager)
+{
+    if (id1==-1 || id2==-1) return id2!=-1; // -1 is the smallest
+    const ScalarResult& d1 = manager->getScalar(id1);
+    const ScalarResult& d2 = manager->getScalar(id2);
+    if (hasField(FILE) && strdictcmp(d1.fileRunRef->fileRef->filePath.c_str(), d2.fileRunRef->fileRef->filePath.c_str()) < 0)
+        return true;
+    if (hasField(RUN) && strdictcmp(d1.fileRunRef->runRef->runName.c_str(), d2.fileRunRef->runRef->runName.c_str()) < 0) 
+        return true;
+    if (hasField(MODULE) && strdictcmp(d1.moduleNameRef->c_str(), d2.moduleNameRef->c_str()) < 0)
+        return true;
+    if (hasField(NAME) && strdictcmp(d1.nameRef->c_str(), d2.nameRef->c_str()) < 0)
+        return true;
+    return false;
+}
+
+bool ScalarFields::equal(ID id1, ID id2, ResultFileManager *manager)
+{
+    if (id1==-1 || id2==-1) return id1==id2;
+    const ScalarResult& d1 = manager->getScalar(id1);
+    const ScalarResult& d2 = manager->getScalar(id2);
+    if (hasField(FILE) && d1.fileRunRef->fileRef != d2.fileRunRef->fileRef) return false;
+    if (hasField(RUN) && d1.fileRunRef->runRef != d2.fileRunRef->runRef) return false;
+    if (hasField(MODULE) && d1.moduleNameRef != d2.moduleNameRef) return false;
+    if (hasField(NAME) && d1.nameRef != d2.nameRef) return false;
+    return true;
 }
 
 bool ScalarDataSorter::lessByModuleRef(ID id1, ID id2)
@@ -110,8 +198,8 @@ bool ScalarDataSorter::lessByValue(ID id1, ID id2)
     return d1.value < d2.value;
 }
 
-
-IDVectorVector ScalarDataSorter::doGrouping(const IDList& idlist, GroupingFunc sameGroup)
+template<class GroupingFn>
+IDVectorVector ScalarDataSorter::doGrouping(const IDList& idlist, GroupingFn sameGroup)
 {
     tmpScalarMgr = resultFileMgr;
 
@@ -146,7 +234,8 @@ IDVectorVector ScalarDataSorter::doGrouping(const IDList& idlist, GroupingFunc s
     return vv;
 }
 
-void ScalarDataSorter::sortAndAlign(IDVectorVector& vv, CompareFunc less, CompareFunc equal)
+template <class LessFn, class EqualFn>
+void ScalarDataSorter::sortAndAlign(IDVectorVector& vv, LessFn less, EqualFn equal)
 {
     tmpScalarMgr = resultFileMgr;
 
@@ -197,6 +286,16 @@ IDVectorVector ScalarDataSorter::groupByModuleAndName(const IDList& idlist)
     // every group is of same length, and same indices contain same fileRef+runNumber
     sortAndAlign(vv, lessByFileAndRun, equalByFileAndRun);
 
+    return vv;
+}
+
+IDVectorVector ScalarDataSorter::groupByFields(const IDList& idlist, ScalarFields fields)
+{
+    IDVectorVector vv = doGrouping(idlist, MemberGroupingFunc<ScalarFields>(fields, &ScalarFields::sameGroup));
+
+    sortAndAlign(vv,
+        MemberCompareFunc<ScalarFields>(fields.complement(), &ScalarFields::less, resultFileMgr),
+        MemberCompareFunc<ScalarFields>(fields.complement(), &ScalarFields::equal, resultFileMgr));
     return vv;
 }
 

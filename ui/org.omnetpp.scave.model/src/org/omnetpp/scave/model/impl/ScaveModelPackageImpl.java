@@ -814,6 +814,15 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getBarChart_GroupBy() {
+		return (EAttribute)barChartEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getLineChart() {
 		return lineChartEClass;
 	}
@@ -969,6 +978,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		computeEClass = createEClass(COMPUTE);
 
 		barChartEClass = createEClass(BAR_CHART);
+		createEAttribute(barChartEClass, BAR_CHART__GROUP_BY);
 
 		lineChartEClass = createEClass(LINE_CHART);
 
@@ -1103,6 +1113,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		initEClass(computeEClass, Compute.class, "Compute", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(barChartEClass, BarChart.class, "BarChart", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getBarChart_GroupBy(), ecorePackage.getEString(), "groupBy", null, 0, -1, BarChart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
 
 		initEClass(lineChartEClass, LineChart.class, "LineChart", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 

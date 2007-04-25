@@ -96,7 +96,10 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Apply" eSuperTypes="#//ProcessingOp"/>
   <eClassifiers xsi:type="ecore:EClass" name="Compute" eSuperTypes="#//ProcessingOp"/>
-  <eClassifiers xsi:type="ecore:EClass" name="BarChart" eSuperTypes="#//Chart"/>
+  <eClassifiers xsi:type="ecore:EClass" name="BarChart" eSuperTypes="#//Chart">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="groupBy" ordered="false"
+        upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="LineChart" eSuperTypes="#//Chart"/>
   <eClassifiers xsi:type="ecore:EClass" name="HistogramChart" eSuperTypes="#//Chart"/>
   <eClassifiers xsi:type="ecore:EClass" name="ScatterChart" eSuperTypes="#//Chart">

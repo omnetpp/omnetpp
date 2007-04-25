@@ -22,6 +22,7 @@
 #endif
 
 #include <algorithm>
+#include <functional>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -33,6 +34,32 @@
 
 typedef std::vector<ID> IDVector;
 typedef std::vector<IDVector> IDVectorVector;
+typedef std::vector<std::string> StringVector;
+
+class ScalarFields
+{
+    public:
+        static const int FILE      = 0x01;
+        static const int RUN       = 0x02;
+        static const int MODULE    = 0x04;
+        static const int NAME      = 0x08;
+        static const int ALL       = FILE | RUN | MODULE | NAME;
+    private:
+        int fields;
+    public:
+        static StringVector getFieldNames();
+
+        ScalarFields(int fields) : fields(fields) {}
+        ScalarFields(int fields, int except) : fields(fields & ~except) {};
+        ScalarFields(const StringVector &fieldNames);
+        
+        ScalarFields complement() { return ScalarFields(ALL, fields); }
+        bool hasField(int field) const { return (fields & field) == field; }
+        
+        bool sameGroup(const ScalarResult& d1, const ScalarResult& d2);
+        bool less(ID id1, ID id2, ResultFileManager *manager);
+        bool equal(ID id1, ID id2, ResultFileManager *manager);
+};
 
 /**
  * Helps to organize scalars in a ResultFileManager into bar charts,
@@ -61,21 +88,22 @@ class SCAVE_API ScalarDataSorter
     static bool lessByValue(ID id1, ID id2);
 
     /**
-     * Form groups (IDVectors) by the grouping function passed
-     * (sameGroupFileRunScalar, sameGroupModuleScalar or sameGroupFileRunModule).
+     * Form groups (IDVectors) by the grouping function passed.
+     * The grouping function called with two ScalarResult and returns true iff
+     * the two scalar is in the same group.
      */
-    IDVectorVector doGrouping(const IDList& idlist, GroupingFunc sameGroup);
+    template<class GroupingFn>
+    IDVectorVector doGrouping(const IDList& idlist, GroupingFn sameGroup);
 
     /**
      * Sort every group (IDVectors) in place by the sorting function given
-     * (lessByModuleRef,lessByFileAndRun, lessByScalarNameRef, lessByValue),
      * and aligns.
      *
      * Then inserts "null" elements (id=-1) so that every group is of same length,
-     * and same indices are "equal", by the eqaual function passed
-     * (equalByModuleRef,equalByFileAndRun, equalByScalarNameRef).
+     * and same indices are "equal", by the equal function passed.
      */
-    void sortAndAlign(IDVectorVector& vv, CompareFunc less, CompareFunc equal);
+    template<class LessFn, class EqualFn>
+    void sortAndAlign(IDVectorVector& vv, LessFn less, EqualFn equal);
 
   public:
     /**
@@ -97,6 +125,14 @@ class SCAVE_API ScalarDataSorter
      * every group is of same length, and the same indices contain the same runRef.
      */
     IDVectorVector groupByModuleAndName(const IDList& idlist);
+
+    /**
+     * Form groups (IDVectors) by the specified fields.
+     * Then order each group, and insert "null" elements (id=-1)
+     * so that every group is of same length, and the same indices contain
+     * the same values of the non-grouping fields.
+     */
+    IDVectorVector groupByFields(const IDList& idlist, ScalarFields fields);
 
     /**
      * Group and align data for a scatter plot. The first vector will contain the

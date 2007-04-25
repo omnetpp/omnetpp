@@ -496,32 +496,34 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		// close pages whose content was deleted, except temporary datasets/charts
 		// (temporary objects are not deleted, but they can be moved into the persistent analysis)
 		if (notification.getNotifier() instanceof EObject && !isTemporaryObject((EObject)notification.getNotifier())) {
-			List<EObject> deletedObjects = null;
+			List deletedObjects = null;
 			switch (notification.getEventType()) {
 			case Notification.REMOVE: 
-				deletedObjects = new ArrayList<EObject>();
-				deletedObjects.add((EObject)notification.getOldValue());
+				deletedObjects = new ArrayList();
+				deletedObjects.add(notification.getOldValue());
 				break;
 			case Notification.REMOVE_MANY:
-				deletedObjects = (List<EObject>)notification.getOldValue();
+				deletedObjects = (List)notification.getOldValue();
 				break;
 			}
 		
 			if (deletedObjects != null) {
-				for (EObject object : deletedObjects) {
-					TreeIterator contents = object.eAllContents();
-					// iterate on contents including object
-					for (Object next = object; next != null; next = contents.hasNext() ? contents.next() : null) {
-						if (next instanceof Dataset) {
-							closePage((Dataset)next);
-						}
-						else if (next instanceof Chart) {
-							closePage((Chart)next);
-							contents.prune();
-						}
-						else if (next instanceof ChartSheet) {
-							closePage((ChartSheet)next);
-							contents.prune();
+				for (Object object : deletedObjects) {
+					if (object instanceof EObject) {
+						TreeIterator contents = ((EObject)object).eAllContents();
+						// iterate on contents including object
+						for (Object next = object; next != null; next = contents.hasNext() ? contents.next() : null) {
+							if (next instanceof Dataset) {
+								closePage((Dataset)next);
+							}
+							else if (next instanceof Chart) {
+								closePage((Chart)next);
+								contents.prune();
+							}
+							else if (next instanceof ChartSheet) {
+								closePage((ChartSheet)next);
+								contents.prune();
+							}
 						}
 					}
 				}

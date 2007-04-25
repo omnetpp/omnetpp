@@ -1,10 +1,20 @@
 package org.omnetpp.scave.charting.dataset;
 
+import static org.omnetpp.scave.engine.ScalarFields.ALL;
+import static org.omnetpp.scave.engine.ScalarFields.FILE;
+import static org.omnetpp.scave.engine.ScalarFields.MODULE;
+import static org.omnetpp.scave.engine.ScalarFields.NAME;
+import static org.omnetpp.scave.engine.ScalarFields.RUN;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.IDVector;
+import org.omnetpp.scave.engine.IDVectorVector;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.ScalarDataSorter;
+import org.omnetpp.scave.engine.ScalarFields;
 import org.omnetpp.scave.engine.ScalarResult;
 
 /**
@@ -13,8 +23,10 @@ import org.omnetpp.scave.engine.ScalarResult;
  * @author tomi
  */
 public class ScalarDataset implements IScalarDataset {
+	
+	private static ScalarFields defaultGrouping = new ScalarFields(ALL, MODULE);
 
-    /** The row keys. */
+	/** The row keys. */
     private List<Comparable> rowKeys;
 
     /** The column keys. */
@@ -39,8 +51,18 @@ public class ScalarDataset implements IScalarDataset {
      * @param manager
      */
     public ScalarDataset(IDList idlist, ResultFileManager manager) {
+    	this(idlist, defaultGrouping, manager);
+    }
+    
+    public ScalarDataset(IDList idlist, int groupingFields, ResultFileManager manager) {
+    	this(idlist, new ScalarFields(groupingFields), manager);
+    }
+    
+    public ScalarDataset(IDList idlist, ScalarFields groupingFields, ResultFileManager manager) {
     	this();
-    	addScalars(idlist, manager);
+    	if (groupingFields == null)
+    		groupingFields = defaultGrouping;
+    	addScalars(idlist, groupingFields, manager);
     }
 
     /**
@@ -102,43 +124,61 @@ public class ScalarDataset implements IScalarDataset {
         return result;
     }
     
-    private void addScalars(IDList idlist, ResultFileManager manager) {
-		for (int i = 0; i < idlist.size(); ++i) {
-			ScalarResult scalar = manager.getScalar(idlist.get(i));
-			addValue(scalar.getFileRun().getRun().getRunName(),
-			         scalar.getModuleName()+"\n"+scalar.getName(),
-				     scalar.getValue());
-		}
+    private void addScalars(IDList idlist, ScalarFields groupingFields, ResultFileManager manager) {
+    	ScalarFields nongroupingFields = groupingFields.complement();
+    	ScalarDataSorter sorter = new ScalarDataSorter(manager);
+    	IDVectorVector groups = sorter.groupByFields(idlist, groupingFields);
+    	
+    	for (int rowIndex=0; rowIndex < groups.size(); ++rowIndex) {
+    		IDVector group = groups.get(rowIndex);
+    		Comparable rowKey = null;
+    		List<Double> row = new ArrayList<Double>((int)group.size());
+    		for (int colIndex = 0; colIndex < group.size(); ++colIndex) {
+    			// add place for key for the column if this is the first row 
+    			// (each group has the same number of ids)
+    			if (rowIndex == 0)
+        			columnKeys.add(null);
+
+        		long id = group.get(colIndex);
+    			if (id != -1) {
+    				ScalarResult scalar = manager.getScalar(id);
+    				if (rowKey == null)
+    					rowKey = keyFor(scalar, groupingFields);
+    				if (columnKeys.get(colIndex) == null)
+    					columnKeys.set(colIndex, keyFor(scalar, nongroupingFields));
+    				row.add(scalar.getValue());
+    			}
+    			else {
+    				row.add(Double.NaN);
+    			}
+    		}
+    		
+    		// add non-empty rows
+    		if (rowKey != null) {
+    			rowKeys.add(rowKey);
+    			rows.add(row);
+    		}
+    	}
+    	
+    	// remove empty columns
+    	int colIndex;
+    	while ((colIndex=columnKeys.indexOf(null)) >= 0) {
+    		columnKeys.remove(colIndex);
+    		for (List<Double> row : rows) {
+    			if (colIndex < row.size())
+    				row.remove(colIndex);
+    		}
+    	}
     }
     
-    private void addValue(Comparable rowKey, Comparable columnKey, double value) {
-    	int rowIndex = this.rowKeys.indexOf(rowKey);
-    	List<Double> rowData;
-    	if (rowIndex >= 0)
-    		rowData = this.rows.get(rowIndex);
-    	else
-    		rowData = addRow(rowKey);
-    	int columnIndex = this.columnKeys.indexOf(columnKey);
-    	if (columnIndex < 0)
-    		columnIndex = addColumn(columnKey);
-    	rowData.set(columnIndex, value);
-    }
-    
-    private List<Double> addRow(Comparable rowKey) {
-    	List<Double> rowData = new ArrayList<Double>();
-    	int c = getColumnCount();
-    	for (int i = 0; i < c; ++i)
-    		rowData.add(Double.NaN);
-    	this.rowKeys.add(rowKey);
-    	this.rows.add(rowData);
-    	return rowData;
-    }
-    
-    private int addColumn(Comparable columnKey) {
-    	int c = getColumnCount();
-    	this.columnKeys.add(columnKey);
-    	for (List<Double> rowData : this.rows)
-    		rowData.add(Double.NaN);
-    	return c;
+    private Comparable keyFor(ScalarResult scalar, ScalarFields fields) {
+    	StringBuffer sb = new StringBuffer();
+    	char sep = ',';
+    	if (fields.hasField(FILE)) sb.append(scalar.getFileRun().getFile().getFileName()).append(sep);
+    	if (fields.hasField(RUN)) sb.append(scalar.getFileRun().getRun().getRunName()).append(sep);
+    	if (fields.hasField(MODULE)) sb.append(scalar.getModuleName()).append(sep);
+    	if (fields.hasField(NAME)) sb.append(scalar.getName()).append(sep);
+    	if (sb.length() > 0) sb.deleteCharAt(sb.length()-1); // delete last ','
+    	return sb.toString();
     }
 }
