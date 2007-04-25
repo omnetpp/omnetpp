@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.texteditor.MarkerUtilities;
 import org.omnetpp.common.engine.Common;
+import org.omnetpp.common.engine.UnitConversion;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
@@ -268,7 +269,7 @@ public class InifileAnalyzer {
 
 		// check value: if it is the right type
 		String value = doc.getValue(section, key);
-		String errorMessage = validateConfigValueByType(value, e.getDataType());
+		String errorMessage = validateConfigValueByType(value, e);
 		if (errorMessage != null) {
 			addError(section, key, errorMessage);
 			return;
@@ -299,8 +300,8 @@ public class InifileAnalyzer {
 	/**
 	 * Validate a configuration entry's value.
 	 */
-	protected static String validateConfigValueByType(String value, ConfigurationEntry.DataType type) {
-		switch (type) {
+	protected static String validateConfigValueByType(String value, ConfigurationEntry e) {
+		switch (e.getDataType()) {
 		case CFG_BOOL:
 			if (!value.equals("true") && !value.equals("false"))
 				return "Value should be a boolean constant: true or false";
@@ -313,16 +314,25 @@ public class InifileAnalyzer {
 			}
 			break;
 		case CFG_DOUBLE:
-			try {
-				Double.parseDouble(value);
-			} catch (NumberFormatException ex) {
-				return "Value should be a numeric constant (a double)";
+			if (e.getUnit()==null) {
+				try {
+					Double.parseDouble(value);
+				} catch (NumberFormatException ex) {
+					return "Value should be a numeric constant (a double)";
+				}
+			}
+			else {
+				try {
+					UnitConversion.parseQuantity(value, e.getUnit());
+				} catch (RuntimeException ex) {
+					return StringUtils.capitalize(ex.getMessage());
+				}
 			}
 			break;
 		case CFG_STRING:
 			try {
 				if (value.startsWith("\""))
-					Common.parseQuotedString(value);
+					Common.parseQuotedString(value);  //XXX wrong: what if it's an expression like "foo"+"bar" ?
 			} catch (RuntimeException ex) {
 				return "Error in string constant: "+ex.getMessage();
 			}
