@@ -30,7 +30,7 @@ public class ScatterPlotDataset implements IXYDataset {
 		return (int)data.size() - 1;
 	}
 
-	public Comparable getSeriesKey(int series) {
+	public String getSeriesKey(int series) {
 		return dataNames[series];
 	}
 

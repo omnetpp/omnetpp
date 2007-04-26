@@ -27,10 +27,10 @@ public class ScalarDataset implements IScalarDataset {
 	private static ScalarFields defaultGrouping = new ScalarFields(ALL, MODULE);
 
 	/** The row keys. */
-    private List<Comparable> rowKeys;
+    private List<String> rowKeys;
 
     /** The column keys. */
-    private List<Comparable> columnKeys;
+    private List<String> columnKeys;
 
     /** The row data. */
     private List<List<Double>> rows;
@@ -39,8 +39,8 @@ public class ScalarDataset implements IScalarDataset {
      * Creates an empty dataset.
      */
     public ScalarDataset() {
-        this.rowKeys = new ArrayList<Comparable>();
-        this.columnKeys = new ArrayList<Comparable>();
+        this.rowKeys = new ArrayList<String>();
+        this.columnKeys = new ArrayList<String>();
         this.rows = new ArrayList<List<Double>>();
     }
     
@@ -82,7 +82,7 @@ public class ScalarDataset implements IScalarDataset {
      *
      * @return The row index.
      */
-    public Comparable getRowKey(int row) {
+    public String getRowKey(int row) {
         return this.rowKeys.get(row);
     }
 
@@ -102,7 +102,7 @@ public class ScalarDataset implements IScalarDataset {
      *
      * @return The key.
      */
-    public Comparable getColumnKey(int column) {
+    public String getColumnKey(int column) {
         return this.columnKeys.get(column);
     }
 
@@ -131,7 +131,7 @@ public class ScalarDataset implements IScalarDataset {
     	
     	for (int rowIndex=0; rowIndex < groups.size(); ++rowIndex) {
     		IDVector group = groups.get(rowIndex);
-    		Comparable rowKey = null;
+    		String rowKey = null;
     		List<Double> row = new ArrayList<Double>((int)group.size());
     		for (int colIndex = 0; colIndex < group.size(); ++colIndex) {
     			// add place for key for the column if this is the first row 
@@ -171,7 +171,7 @@ public class ScalarDataset implements IScalarDataset {
     	}
     }
     
-    private Comparable keyFor(ScalarResult scalar, ScalarFields fields) {
+    private String keyFor(ScalarResult scalar, ScalarFields fields) {
     	StringBuffer sb = new StringBuffer();
     	char sep = ',';
     	if (fields.hasField(FILE)) sb.append(scalar.getFileRun().getFile().getFileName()).append(sep);

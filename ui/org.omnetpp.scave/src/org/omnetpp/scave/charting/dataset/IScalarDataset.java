@@ -22,7 +22,7 @@ public interface IScalarDataset extends IDataset {
      * @return The row key.
      * @throws IndexOutOfBoundsException if <code>row</code> is out of bounds.
      */
-    public Comparable getRowKey(int row);
+    public String getRowKey(int row);
 
     /**
      * Returns the column count.
@@ -38,7 +38,7 @@ public interface IScalarDataset extends IDataset {
      * @return The column key.
      * @throws IndexOutOfBoundsException if <code>column</code> is out of bounds.
      */
-    public Comparable getColumnKey(int column);
+    public String getColumnKey(int column);
 
     /**
      * Returns the value associated with the specified keys.

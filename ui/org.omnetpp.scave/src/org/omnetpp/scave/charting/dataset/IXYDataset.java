@@ -22,7 +22,7 @@ public interface IXYDataset extends IDataset {
      * @param series  the series (zero-based index).
      * @return The key for the series.
      */
-    public Comparable getSeriesKey(int series);
+    public String getSeriesKey(int series);
     
     /**
      * Returns the number of items in a series.

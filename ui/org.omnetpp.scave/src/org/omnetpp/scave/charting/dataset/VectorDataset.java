@@ -29,7 +29,7 @@ public class VectorDataset implements IXYDataset {
 		return seriesData.length;
 	}
 
-	public Comparable getSeriesKey(int series) {
+	public String getSeriesKey(int series) {
 		return seriesKeys[series];
 	}
 
