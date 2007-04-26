@@ -36,6 +36,7 @@ import org.omnetpp.inifile.editor.model.ParamResolution;
  */
 //XXX filter for duplicates in the listbox
 //XXX doesn't work if there's no [General] section
+//XXX in the dialog: warn if inifile doesn't have "network=" setting for that section
 public class AddInifileKeysDialog extends TitleAreaDialog {
 	private String title;
 	private InifileAnalyzer analyzer;
@@ -69,6 +70,8 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
         this.analyzer = analyzer;
         this.title = "Add Inifile Keys";
         this.selectedSection = initialSection;
+        if (analyzer.getDocument().getSectionNames().length==0)
+        	throw new IllegalStateException("Inifile should contain at least one section.");
     }
 
 	protected void configureShell(Shell shell) {

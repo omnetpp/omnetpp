@@ -1,12 +1,18 @@
 package org.omnetpp.inifile.editor.actions;
 
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_NETWORK;
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
@@ -33,21 +39,31 @@ public class AddInifileKeysAction extends Action {
 		IWorkbenchPage page = workbenchWindow.getActivePage();
 		IEditorPart editor = page.getActiveEditor();
 		if (editor instanceof InifileEditor) {
-			// dig out currently selected section in the editor...
+			// dig out the inifile analyzer
 			InifileEditor inifileEditor = ((InifileEditor) editor);
+			InifileEditorData editorData = inifileEditor.getEditorData();
+			InifileAnalyzer analyzer = editorData.getInifileAnalyzer();
+			IInifileDocument doc = editorData.getInifileDocument();
+
+			// does the inifile have sections at all?
+			if (doc.getSectionNames().length==0) {
+				MessageDialog.openConfirm(workbenchWindow.getShell(), "Empty Ini File", 
+					"Ini file contains no sections or settings, please choose a NED network first.");
+				doc.addSection(GENERAL, null);
+				doc.addEntry(GENERAL, CFGID_NETWORK.getKey(), "", null, null);
+				inifileEditor.gotoEntry(GENERAL, CFGID_NETWORK.getKey(), IGotoInifile.Mode.AUTO);
+				return;
+			}
+			
+			// determine currently selected section in the editor...
 			IStructuredSelection editorSelection = (IStructuredSelection) inifileEditor.getSite().getSelectionProvider().getSelection();
 			InifileSelectionItem selectionItem = (InifileSelectionItem) editorSelection.getFirstElement();
 			String initialSection = selectionItem==null ? null : selectionItem.getSection();
-			
-			// ...and the inifile analyzer
-			InifileEditorData editorData = inifileEditor.getEditorData();
-			InifileAnalyzer analyzer = editorData.getInifileAnalyzer();
 			
 			// open the dialog
 			AddInifileKeysDialog dialog = new AddInifileKeysDialog(workbenchWindow.getShell(), analyzer, initialSection);
 			if (dialog.open()==Dialog.OK) {
 				// add user-selected keys to the document, and also **.apply-default if chosen by the user
-				IInifileDocument doc = editorData.getInifileDocument();
 				String[] keys = dialog.getKeys();
 				String section = dialog.getSection();
 				for (String key : keys)
