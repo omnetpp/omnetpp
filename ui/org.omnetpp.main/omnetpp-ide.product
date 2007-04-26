@@ -20,7 +20,7 @@
    <splash
       location="org.omnetpp.main"
       startupProgressRect="10,10,300,10"
-      startupMessageRect="10,30,500,25"
+      startupMessageRect="10,20,500,25"
       startupForegroundColor="000000" />
    <launcher name="omnetide">
       <macosx icon="/org.omnetpp.main/icons/omnest.icns"/>
@@ -31,6 +31,8 @@
       </win>
    </launcher>
 
+   <vm>
+   </vm>
 
    <plugins>
       <plugin id="com.ibm.icu"/>
@@ -136,11 +138,10 @@
    </plugins>
 
    <features>
-      <feature id="org.eclipse.cdt" version="3.1.2.200702150621"/>
-      <feature id="org.eclipse.emf" version="2.2.2.v200702131851"/>
-      <feature id="org.eclipse.gef" version="3.2.2.v20070208"/>
-      <feature id="org.eclipse.platform" version="3.2.2.r322_v20070119-RQghndJN8IM0MsK"/>
-      <feature id="org.eclipse.rcp" version="3.2.2.r322_v20070104-8pcviKVqd8J7C1U"/>
+      <feature id="org.eclipse.cdt" version="4.0.0.200703302000"/>
+      <feature id="org.eclipse.emf" version="2.3.0.v200703291501"/>
+      <feature id="org.eclipse.gef" version="3.3.0.v20070330"/>
+      <feature id="org.eclipse.platform" version="3.3.0.v20070316b-_-9MEhFxiXZ2gosKM6M-3_Hu9MqL"/>
       <feature id="org.omnetpp.ide" version="4.0.0"/>
    </features>
 

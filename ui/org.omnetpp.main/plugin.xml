@@ -6,7 +6,7 @@
          name="OMNeT++ Integrated Development Environment"
 	 point="org.eclipse.core.runtime.products">
       <product name="OMNeT++ IDE" application="org.eclipse.ui.ide.workbench" description="%productBlurb">
-          <property name="appName" value="OMNeT++ Integrated Development Environment"/>
+          <property name="appName" value="OMNeT++ IDE"/>
           <property name="preferenceCustomization" value="plugin_customization.ini"/>
          <property
           		name="introTitle"
@@ -31,7 +31,7 @@
           value="000000"/>
     <property
           name="startupMessageRect"
-          value="10,30,500,25"/>
+          value="10,20,500,25"/>
     <property
           name="startupProgressRect"
           value="10,10,300,10"/>

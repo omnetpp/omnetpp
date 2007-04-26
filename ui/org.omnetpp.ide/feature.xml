@@ -42,137 +42,140 @@ We hope you&apos;ll enjoy working with OMNeT++/OMNEST.
    <requires>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.core.filesystem"/>
+      <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.ui.views"/>
       <import plugin="org.eclipse.jface"/>
       <import plugin="org.eclipse.draw2d"/>
       <import plugin="org.eclipse.ui.ide"/>
-      <import plugin="org.eclipse.gef"/>
+      <import plugin="org.omnetpp.ide.nativelibs"/>
       <import plugin="org.eclipse.jface.text"/>
-      <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.ui.editors"/>
       <import plugin="org.eclipse.ui.workbench.texteditor"/>
-      <import plugin="org.eclipse.ui.workbench"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.omnetpp.common"/>
+      <import plugin="org.eclipse.gef"/>
       <import plugin="org.eclipse.ui.forms"/>
-      <import plugin="org.eclipse.emf.ecore.xmi"/>
+      <import plugin="org.omnetpp.ned.model"/>
+      <import plugin="org.omnetpp.ned.core"/>
       <import plugin="org.eclipse.emf.edit.ui"/>
+      <import plugin="org.omnetpp.figures"/>
+      <import plugin="org.omnetpp.scave.model"/>
+      <import plugin="org.omnetpp.scave.builder"/>
+      <import plugin="org.eclipse.emf.ecore.xmi"/>
+      <import plugin="org.eclipse.ui.ide.application"/>
+      <import plugin="org.eclipse.platform"/>
    </requires>
 
    <plugin
          id="org.omnetpp.common"
          download-size="0"
          install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.omnetpp.figures"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.omnetpp.inifile.editor"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.omnetpp.ned.editor"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.omnetpp.ned.model"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.omnetpp.scave.builder"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
+         version="4.0.0"
          unpack="false"/>
 
    <plugin
          id="org.omnetpp.eventlogtable"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="4.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.omnetpp.sequencechart"
+         id="org.omnetpp.figures"
          download-size="0"
          install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.omnetpp.scave"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.omnetpp.scave.model"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.omnetpp.main"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
+         version="4.0.0"
          unpack="false"/>
 
    <plugin
          id="org.omnetpp.ide.nativelibs"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="4.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.omnetpp.ide.nativelibs.macosx"
-         os="macosx"
+         id="org.omnetpp.ide.nativelibs.linux.x86"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="4.0.0"
+         fragment="true"/>
+
+   <plugin
+         id="org.omnetpp.ide.nativelibs.macosx"
+         download-size="0"
+         install-size="0"
+         version="4.0.0"
          fragment="true"/>
 
    <plugin
          id="org.omnetpp.ide.nativelibs.win32.x86"
-         os="win32"
-         arch="x86"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="4.0.0"
          fragment="true"/>
 
    <plugin
-         id="org.omnetpp.ide.nativelibs.linux.x86"
-         os="linux"
-         arch="x86"
+         id="org.omnetpp.inifile.editor"
          download-size="0"
          install-size="0"
-         version="0.0.0"
-         fragment="true"/>
+         version="4.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.main"
+         download-size="0"
+         install-size="0"
+         version="4.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.omnetpp.ned.core"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="4.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.ned.editor"
+         download-size="0"
+         install-size="0"
+         version="4.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.ned.model"
+         download-size="0"
+         install-size="0"
+         version="4.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.scave"
+         download-size="0"
+         install-size="0"
+         version="4.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.scave.builder"
+         download-size="0"
+         install-size="0"
+         version="4.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.scave.model"
+         download-size="0"
+         install-size="0"
+         version="4.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.sequencechart"
+         download-size="0"
+         install-size="0"
+         version="4.0.0"
          unpack="false"/>
 
 </feature>

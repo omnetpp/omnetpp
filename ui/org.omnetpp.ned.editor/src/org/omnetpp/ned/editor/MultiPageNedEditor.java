@@ -100,7 +100,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
                 setActivePage(graphPageIndex);
             
 		} catch (PartInitException e) {
-			e.printStackTrace();  //XXX handle it? let it propagate?
+		    NedEditorPlugin.logError(e);
 		}
         
 	}
