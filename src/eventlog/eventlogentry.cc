@@ -16,8 +16,8 @@
 #include "eventlogentry.h"
 #include "eventlogentryfactory.h"
 
-char EventLogEntry::buffer[100];
-LineTokenizer EventLogEntry::tokenizer;
+char EventLogEntry::buffer[128];
+LineTokenizer EventLogEntry::tokenizer(32768);
 
 EventLogEntry::EventLogEntry()
 {

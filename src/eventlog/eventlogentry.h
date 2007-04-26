@@ -34,7 +34,7 @@ class EVENTLOG_API EventLogEntry : public MatchExpression::Matchable
 
     protected:
         Event* event; // back pointer
-        static char buffer[100];
+        static char buffer[128];
         static LineTokenizer tokenizer; // not thread safe
 
     public:
