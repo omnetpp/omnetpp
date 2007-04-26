@@ -116,7 +116,7 @@ Register_PerRunConfigEntry(CFGID_SIM_TIME_LIMIT, "sim-time-limit",  "General", C
 Register_PerRunConfigEntry(CFGID_CPU_TIME_LIMIT, "cpu-time-limit",  "General", CFG_TIME,  0.0, "Stops the simulation when CPU usage has reached the given limit. The default is no limit.");
 Register_PerRunConfigEntry(CFGID_FINGERPRINT, "fingerprint",  "General", CFG_STRING,  "", "The expected fingerprint, suitable for crude regression tests. If present, the actual fingerprint is calculated during simulation, and compared against the expected one.");
 Register_PerRunConfigEntry(CFGID_EVENTLOG_FILE, "eventlog-file",  "General", CFG_FILENAME,  "", "Name of the event log file to generate. If emtpy, no file is generated.");
-Register_GlobalConfigEntry(CFGID_EVENT_LOG_MESSAGE_DETAIL_PATTERN, "event-log-message-detail-pattern", "General", CFG_CUSTOM, "", "A list of patterns separated by '|' character which will be used to write message detail information into the event log for each message sent during the simulation. The message detail will be presented in the sequence chart tool. Each pattern starts with an object pattern optionally followed by ':' character and a comma separated list of field name patterns. In the object pattern and/or/not/* and various field matcher expressions can be used. The field pattern contains a wildcard expressions matched against field names.");
+Register_GlobalConfigEntry(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-message-detail-pattern", "General", CFG_CUSTOM, "", "A list of patterns separated by '|' character which will be used to write message detail information into the event log for each message sent during the simulation. The message detail will be presented in the sequence chart tool. Each pattern starts with an object pattern optionally followed by ':' character and a comma separated list of field name patterns. In the object pattern and/or/not/* and various field matcher expressions can be used. The field pattern contains a wildcard expressions matched against field names.");
 
 //-------------------------------------------------------------
 
@@ -126,7 +126,7 @@ ObjectPrinter *eventLogObjectPrinter = NULL;
 static void setupEventLogObjectPrinter()
 {
      // set up event log object printer
-     const char *eventLogMessageDetailPattern = ev.config()->getAsCustom(CFGID_EVENT_LOG_MESSAGE_DETAIL_PATTERN);
+     const char *eventLogMessageDetailPattern = ev.config()->getAsCustom(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN);
 
      if (eventLogMessageDetailPattern) {
          std::vector<MatchExpression> *objectMatchExpressions = new std::vector<MatchExpression>;
@@ -699,16 +699,6 @@ cConfiguration *TOmnetApp::getConfig()
 }
 
 //-------------------------------------------------------------
-
-
-/*
-std::string libs = inifile->getAsFilenames(CFGID_LOAD_LIBS);
-*/
-/*
-event-log-message-detail = *Message && fieldName(*a) && not(fieldName(alma)):
-
-TCPSegment:alma,korte;TCPSegment:alma,korte
-*/
 
 void TOmnetApp::bubble(cModule *mod, const char *text)
 {
