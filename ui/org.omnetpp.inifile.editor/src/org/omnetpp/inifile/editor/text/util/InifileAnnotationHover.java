@@ -18,17 +18,18 @@ public class InifileAnnotationHover implements IAnnotationHover {
     /* (non-Javadoc)
 	 * Method declared on IAnnotationHover
 	 */
+	@SuppressWarnings("unchecked")
 	public String getHoverInfo(ISourceViewer sourceViewer, int lineNumber) {
-        Iterator annIter = sourceViewer.getAnnotationModel().getAnnotationIterator();
 		try {
             String annotationText = "";
             
+            Iterator annIter = sourceViewer.getAnnotationModel().getAnnotationIterator();
             while (annIter.hasNext()) {
                 Annotation ann = (Annotation)annIter.next();
                 Position currPos = sourceViewer.getAnnotationModel().getPosition(ann);
                 
                 if (currPos == null) {
-                	System.out.println("Annotation ignored: "+ann);
+                	System.out.println("Annotation ignored: "+ann); //XXX
                 	continue;
                 }
                 

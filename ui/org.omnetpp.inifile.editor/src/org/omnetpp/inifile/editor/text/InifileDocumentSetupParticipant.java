@@ -10,7 +10,6 @@ import org.omnetpp.inifile.editor.text.highlight.InifileSyntaxHighlightPartition
 /**
  * Configures the inifile text editor by adding various features into it 
  */
-//TODO "F3 Goto declaration" or ctrl-click "Follow Hyperlink" feature
 //FIXME: trying to use ctrl-H "Search" with NED files open result in "SWTException: Invalid thread access"!
 public class InifileDocumentSetupParticipant implements IDocumentSetupParticipant {
 	

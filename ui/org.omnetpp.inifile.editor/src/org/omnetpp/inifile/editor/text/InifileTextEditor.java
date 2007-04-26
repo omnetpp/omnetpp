@@ -1,7 +1,6 @@
 package org.omnetpp.inifile.editor.text;
 
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.text.ITextViewerExtension5;
@@ -11,11 +10,9 @@ import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.TextOperationAction;
-import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.text.actions.DefineFoldingRegionAction;
 
@@ -50,64 +47,14 @@ public class InifileTextEditor extends TextEditor {
 		
 		IAction a= new TextOperationAction(InifileEditorMessages.getResourceBundle(), "ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS); //$NON-NLS-1$
 		a.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
-		setAction("ContentAssistProposal", a); //$NON-NLS-1$
+		setAction("ContentAssistProposal", a); 
 		
-		a= new TextOperationAction(InifileEditorMessages.getResourceBundle(), "ContentAssistTip.", this, ISourceViewer.CONTENTASSIST_CONTEXT_INFORMATION);  //$NON-NLS-1$
+		a = new TextOperationAction(InifileEditorMessages.getResourceBundle(), "ContentAssistTip.", this, ISourceViewer.CONTENTASSIST_CONTEXT_INFORMATION);  //$NON-NLS-1$
 		a.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_CONTEXT_INFORMATION);
-		setAction("ContentAssistTip", a); //$NON-NLS-1$
+		setAction("ContentAssistTip", a);
 		
-		a= new DefineFoldingRegionAction(InifileEditorMessages.getResourceBundle(), "DefineFoldingRegion.", this); //$NON-NLS-1$
-		setAction("DefineFoldingRegion", a); //$NON-NLS-1$
-	}
-	
-//XXX make sure this isn't needed after all
-//	/** The <code>TextualNedEditor</code> implementation of this 
-//	 * <code>AbstractTextEditor</code> method performs any extra 
-//	 * revert behavior required by the ned editor.
-//	 */
-//	public void doRevertToSaved() {
-//		super.doRevertToSaved();
-//		if (fOutlinePage != null)
-//			fOutlinePage.update();
-//	}
-	
-//XXX make sure this isn't needed after all
-//	/** The <code>TextualNedEditor</code> implementation of this 
-//	 * <code>AbstractTextEditor</code> method performs any extra 
-//	 * save behavior required by the ned editor.
-//	 * 
-//	 * @param monitor the progress monitor
-//	 */
-//	public void doSave(IProgressMonitor monitor) {
-//		super.doSave(monitor);
-//		if (fOutlinePage != null)
-//			fOutlinePage.update();
-//	}
-	
-//XXX make sure this isn't needed after all
-//	/** The <code>TextualNedEditor</code> implementation of this 
-//	 * <code>AbstractTextEditor</code> method performs any extra 
-//	 * save as behavior required by the ned editor.
-//	 */
-//	public void doSaveAs() {
-//		super.doSaveAs();
-//		if (fOutlinePage != null)
-//			fOutlinePage.update();
-//	}
-	
-	/** The <code>TextualNedEditor</code> implementation of this 
-	 * <code>AbstractTextEditor</code> method performs sets the 
-	 * input of the outline page after AbstractTextEditor has set input.
-	 * 
-	 * @param input the editor input
-	 * @throws CoreException in case the input can not be set
-	 */ 
-	public void doSetInput(IEditorInput input) throws CoreException {
-		super.doSetInput(input);
-		//XXX when to parse the input? does reconcile get called?
-//XXX update the outline page		
-//		if (fOutlinePage != null)
-//			fOutlinePage.setInput(input);
+		a = new DefineFoldingRegionAction(InifileEditorMessages.getResourceBundle(), "DefineFoldingRegion.", this); //$NON-NLS-1$
+		setAction("DefineFoldingRegion", a);
 	}
 	
 	/**
@@ -130,19 +77,16 @@ public class InifileTextEditor extends TextEditor {
 	 */
 	protected void editorContextMenuAboutToShow(IMenuManager menu) {
 		super.editorContextMenuAboutToShow(menu);
-		addAction(menu, "ContentAssistProposal"); //$NON-NLS-1$
-		addAction(menu, "ContentAssistTip"); //$NON-NLS-1$
-		addAction(menu, "DefineFoldingRegion");  //$NON-NLS-1$
+		addAction(menu, "ContentAssistProposal"); 
+		addAction(menu, "ContentAssistTip"); 
+		addAction(menu, "DefineFoldingRegion");
 	}
 	
-	/** The <code>TextualNedEditor</code> implementation of this 
-	 * <code>AbstractTextEditor</code> method gets
-	 * the ned content outline page if request is for a an 
-	 * outline page.
-	 * 
-	 * @param required the required type
-	 * @return an adapter for the required type or <code>null</code>
+	/** 
+	 * Return projection support for the editor.
 	 */ 
+	@Override
+    @SuppressWarnings("unchecked")
 	public Object getAdapter(Class required) {
 		if (projectionSupport != null) {
 			Object adapter = projectionSupport.getAdapter(getSourceViewer(), required);
@@ -158,10 +102,10 @@ public class InifileTextEditor extends TextEditor {
 	 */
 	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
 		
-		fAnnotationAccess= createAnnotationAccess();
-		fOverviewRuler= createOverviewRuler(getSharedColors());
+		fAnnotationAccess = createAnnotationAccess();
+		fOverviewRuler = createOverviewRuler(getSharedColors());
 		
-		ISourceViewer viewer= new ProjectionViewer(parent, ruler, getOverviewRuler(), isOverviewRulerVisible(), styles);
+		ISourceViewer viewer = new ProjectionViewer(parent, ruler, getOverviewRuler(), isOverviewRulerVisible(), styles);
 		// ensure decoration support has been created and configured.
 		getSourceViewerDecorationSupport(viewer);
 

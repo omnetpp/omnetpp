@@ -151,8 +151,10 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 				// open the "Module Parameters" view
 				try {
 					IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-					workbenchPage.showView(IConstants.MODULEPARAMETERS_VIEW_ID);
-					workbenchPage.activate(InifileEditor.this); // otherwise editor mysteriously loses focus
+					if (workbenchPage != null) { // note: may be null during platform startup...
+						workbenchPage.showView(IConstants.MODULEPARAMETERS_VIEW_ID);
+						workbenchPage.activate(InifileEditor.this); // otherwise editor loses focus
+					}
 				} catch (PartInitException e) {
 					InifileEditorPlugin.logError(e);
 				}
@@ -278,6 +280,7 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	}
 
 	@Override
+    @SuppressWarnings("unchecked")
 	public Object getAdapter(Class required) {
 		if (IContentOutlinePage.class.equals(required)) {
 			if (outlinePage == null) {
@@ -359,7 +362,8 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 			IDocument docu = textEditor.getDocumentProvider().getDocument(textEditor.getEditorInput());
 			int startOffset = docu.getLineOffset(line.getLineNumber()-1);
 			int endOffset = docu.getLineOffset(line.getLineNumber())-1;
-			textEditor.setHighlightRange(startOffset, endOffset-startOffset, true);
+			textEditor.setHighlightRange(endOffset, 0, true); // move cursor to end of selected line
+			textEditor.setHighlightRange(startOffset, endOffset-startOffset, false); // set range without moving cursor
 		} catch (BadLocationException e) {
 		}
 		catch (IllegalArgumentException x) {

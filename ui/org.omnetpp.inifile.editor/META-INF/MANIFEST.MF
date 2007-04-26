@@ -4,7 +4,6 @@ Bundle-Name: OMNEST/OMNeT++ INI File Editor
 Bundle-SymbolicName: org.omnetpp.inifile.editor; singleton:=true
 Bundle-Version: 4.0.0
 Bundle-Activator: org.omnetpp.inifile.editor.InifileEditorPlugin
-Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jface.text,
  org.eclipse.core.resources,
