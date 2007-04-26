@@ -185,7 +185,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         
         ScalableRootEditPart root = new ScalableRootEditPart();
 
-        List zoomLevels = new ArrayList(3);
+        List<String> zoomLevels = new ArrayList<String>(3);
         zoomLevels.add(ZoomManager.FIT_ALL);
         zoomLevels.add(ZoomManager.FIT_WIDTH);
         zoomLevels.add(ZoomManager.FIT_HEIGHT);
@@ -230,6 +230,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
      * Adds content outline and zoom support
      */
     @Override
+    @SuppressWarnings("unchecked")
     public Object getAdapter(Class type) {
         if (type == org.eclipse.ui.views.properties.IPropertySheetPage.class) {
             PropertySheetPageEx page = new PropertySheetPageEx();

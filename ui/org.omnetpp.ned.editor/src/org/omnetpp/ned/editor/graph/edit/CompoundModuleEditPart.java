@@ -76,6 +76,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Object getAdapter(Class key) {
         if (key == AutoexposeHelper.class) return new ViewportAutoexposeHelper(this);
         if (key == ExposeHelper.class) return new ViewportExposeHelper(this);
