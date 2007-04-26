@@ -953,32 +953,6 @@ public class SequenceChart
 	}
 	
 	/**
-	 * If the current pixels/sec setting doesn't look useful for the current event log,
-	 * suggest a better one. Otherwise just returns the old value. The current settings
-	 * are not changed.
-	 */
-	public double suggestpixelPerTimelineCoordinate() {
-		int numEvents = eventLog.getApproximateNumberOfEvents();
-
-		// adjust pixelPerTimelineCoordinate if it's way out of the range that makes sense
-		if (numEvents >= 2) {
-			double tStart = sequenceChartFacade.getTimelineCoordinate(eventLog.getFirstEvent());
-			double tEnd = sequenceChartFacade.getTimelineCoordinate(eventLog.getLastEvent());
-			double eventsPerTimelineUnit = numEvents / (tEnd - tStart);
-
-			double minPixelPerTimelineCoordinate = eventsPerTimelineUnit * 10;  // we want at least 10 pixel/event
-			double maxPixelPerTimelineCoordinate = eventsPerTimelineUnit * (getViewportWidth() / 10);  // we want at least 10 events on the chart
-
-			if (pixelPerTimelineCoordinate < minPixelPerTimelineCoordinate)
-				return minPixelPerTimelineCoordinate;
-			else if (pixelPerTimelineCoordinate > maxPixelPerTimelineCoordinate)
-				return maxPixelPerTimelineCoordinate;
-		}
-
-		return pixelPerTimelineCoordinate; // the current setting is fine
-	}
-	
-	/**
 	 * Calculates initial pixelPerTimelineUnit.
 	 */
 	private void calculatePixelPerTimelineUnit() {
