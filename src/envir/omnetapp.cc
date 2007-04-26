@@ -85,9 +85,6 @@ using std::ostream;
 // used; it was only made a static to reduce per-module stack size with activity().
 static char buffer[1024];
 
-// used to write message details into the event log during the simulation
-ObjectPrinter *eventLogObjectPrinter = NULL;
-
 #define CREATE_BY_CLASSNAME(var,classname,baseclass,description) \
      baseclass *var ## _tmp = (baseclass *) createOne(classname); \
      var = dynamic_cast<baseclass *>(var ## _tmp); \
@@ -120,6 +117,51 @@ Register_PerRunConfigEntry(CFGID_CPU_TIME_LIMIT, "cpu-time-limit",  "General", C
 Register_PerRunConfigEntry(CFGID_FINGERPRINT, "fingerprint",  "General", CFG_STRING,  "", "The expected fingerprint, suitable for crude regression tests. If present, the actual fingerprint is calculated during simulation, and compared against the expected one.");
 Register_PerRunConfigEntry(CFGID_EVENTLOG_FILE, "eventlog-file",  "General", CFG_FILENAME,  "", "Name of the event log file to generate. If emtpy, no file is generated.");
 Register_GlobalConfigEntry(CFGID_EVENT_LOG_MESSAGE_DETAIL_PATTERN, "event-log-message-detail-pattern", "General", CFG_CUSTOM, "", "A list of patterns separated by '|' character which will be used to write message detail information into the event log for each message sent during the simulation. The message detail will be presented in the sequence chart tool. Each pattern starts with an object pattern optionally followed by ':' character and a comma separated list of field name patterns. In the object pattern and/or/not/* and various field matcher expressions can be used. The field pattern contains a wildcard expressions matched against field names.");
+
+//-------------------------------------------------------------
+
+// used to write message details into the event log during the simulation
+ObjectPrinter *eventLogObjectPrinter = NULL;
+
+static void setupEventLogObjectPrinter()
+{
+     // set up event log object printer
+     const char *eventLogMessageDetailPattern = ev.config()->getAsCustom(CFGID_EVENT_LOG_MESSAGE_DETAIL_PATTERN);
+
+     if (eventLogMessageDetailPattern) {
+         std::vector<MatchExpression> *objectMatchExpressions = new std::vector<MatchExpression>;
+         std::vector<std::vector<PatternMatcher> > *fieldNamePatternMatchersList = new std::vector<std::vector<PatternMatcher> >;
+
+         StringTokenizer tokenizer(eventLogMessageDetailPattern, "|"); // TODO: use ; when it does not mean comment anymore
+         std::vector<std::string> patterns = tokenizer.asVector();
+
+         for (int i = 0; i < (int)patterns.size(); i++) {
+             char *objectPattern = (char *)patterns[i].c_str();
+             char *fieldNamePattern = strchr(objectPattern, ':');
+
+             if (fieldNamePattern) {
+                 *fieldNamePattern = '\0';
+                 StringTokenizer fieldNameTokenizer(fieldNamePattern + 1, ",");
+                 std::vector<std::string> fieldNamePatterns = fieldNameTokenizer.asVector();
+                 std::vector<PatternMatcher> fieldNamePatternMatchers;
+
+                 for (int j = 0; j < (int)fieldNamePatterns.size(); j++)
+                     fieldNamePatternMatchers.push_back(PatternMatcher(fieldNamePatterns[j].c_str(), false, false, false));
+
+                 fieldNamePatternMatchersList->push_back(fieldNamePatternMatchers);
+             }
+             else {
+                 std::vector<PatternMatcher> fieldNamePatternMatchers;
+                 fieldNamePatternMatchers.push_back(PatternMatcher("*", false, false, false));
+                 fieldNamePatternMatchersList->push_back(fieldNamePatternMatchers);
+             }
+
+             objectMatchExpressions->push_back(MatchExpression(objectPattern, false, false, false));
+         }
+
+         eventLogObjectPrinter = new ObjectPrinter(objectMatchExpressions, fieldNamePatternMatchersList, 3);
+     }
+}
 
 //-------------------------------------------------------------
 
@@ -260,42 +302,7 @@ void TOmnetApp::setup()
              simulation.doneLoadingNedFiles();
          }
 
-         // set up object printer
-         const char *eventLogMessageDetailPattern = ev.config()->getAsCustom(CFGID_EVENT_LOG_MESSAGE_DETAIL_PATTERN);
-
-         if (eventLogMessageDetailPattern) {
-             std::vector<MatchExpression> *objectMatchExpressions = new std::vector<MatchExpression>;
-             std::vector<std::vector<PatternMatcher> > *fieldNamePatternMatchersList = new std::vector<std::vector<PatternMatcher> >;
-
-             StringTokenizer tokenizer(eventLogMessageDetailPattern, "|"); // TODO: use ; when it does not mean comment anymore
-             std::vector<std::string> patterns = tokenizer.asVector();
-
-             for (int i = 0; i < (int)patterns.size(); i++) {
-                 char *objectPattern = (char *)patterns[i].c_str();
-                 char *fieldNamePattern = strchr(objectPattern, ':');
-
-                 if (fieldNamePattern) {
-                     *fieldNamePattern = '\0';
-                     StringTokenizer fieldNameTokenizer(fieldNamePattern + 1, ",");
-                     std::vector<std::string> fieldNamePatterns = fieldNameTokenizer.asVector();
-                     std::vector<PatternMatcher> fieldNamePatternMatchers;
-
-                     for (int j = 0; j < (int)fieldNamePatterns.size(); j++)
-                         fieldNamePatternMatchers.push_back(PatternMatcher(fieldNamePatterns[j].c_str(), false, false, false));
-
-                     fieldNamePatternMatchersList->push_back(fieldNamePatternMatchers);
-                 }
-                 else {
-                     std::vector<PatternMatcher> fieldNamePatternMatchers;
-                     fieldNamePatternMatchers.push_back(PatternMatcher("*", false, false, false));
-                     fieldNamePatternMatchersList->push_back(fieldNamePatternMatchers);
-                 }
-
-                 objectMatchExpressions->push_back(MatchExpression(objectPattern, false, false, false));
-             }
-
-             eventLogObjectPrinter = new ObjectPrinter(objectMatchExpressions, fieldNamePatternMatchersList, 3);
-         }
+         setupEventLogObjectPrinter();
      }
      catch (std::exception& e)
      {
