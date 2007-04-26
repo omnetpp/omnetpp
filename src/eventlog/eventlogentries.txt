@@ -93,6 +93,7 @@ BS BeginSendEntry
    l long messageLength  0
    p int messagePriority 0
    er bool hasBitError   false
+   d string detail       NULL
    //XXX and many other fields, including message contents
 }
 

@@ -25,6 +25,7 @@
 SequenceChartFacade::SequenceChartFacade(IEventLog *eventLog) : EventLogFacade(eventLog)
 {
     timelineCoordinateSystemVersion = 0;
+    timelineMode = NON_LINEAR;
     relocateTimelineCoordinateSystem(eventLog->getFirstEvent());
 }
 

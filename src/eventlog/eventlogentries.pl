@@ -73,6 +73,10 @@ while (<FILE>)
       if ($5 ne "") {
          $classHasOptField = 1;
          $fieldDefault  = $5;
+         $mandatory = 0;
+      }
+      else {
+         $mandatory = 1;
       }
 
       $fieldCType = $fieldType;
@@ -83,7 +87,7 @@ while (<FILE>)
          CTYPE => $fieldCType,
          PRINTFTYPE => $fieldPrintfType,
          NAME => $fieldName,
-         HASDEFAULT => $5 ne "",
+         MANDATORY => $mandatory,
          DEFAULTVALUE => $fieldDefault,
       };
 
@@ -244,15 +248,15 @@ foreach $class (@classes)
       {
         $parserFunction = "getSimtimeToken";
       }
-      if ($field->{HASDEFAULT})
+      if ($field->{MANDATORY})
       {
-         $hasDefault = "false";
+         $mandatory = "true";
       }
       else
       {
-         $hasDefault = "true";
+         $mandatory = "false";
       }
-      print ENTRIES_CC_FILE "    $field->{NAME} = $parserFunction(tokens, numTokens, \"$field->{CODE}\", $hasDefault, $field->{NAME});\n";
+      print ENTRIES_CC_FILE "    $field->{NAME} = $parserFunction(tokens, numTokens, \"$field->{CODE}\", $mandatory, $field->{NAME});\n";
    }
    print ENTRIES_CC_FILE "}\n\n";
 
@@ -275,7 +279,7 @@ foreach $class (@classes)
       elsif ($field->{TYPE} eq "simtime_t")
       {
          print ENTRIES_CC_FILE "    if ($field->{NAME} != $field->{DEFAULTVALUE})\n";
-         print ENTRIES_CC_FILE "        fprintf(fout, \" $field->{CODE} $field->{PRINTFTYPE}\", 16, $field->{NAME});\n";
+         print ENTRIES_CC_FILE "        fprintf(fout, \" $field->{CODE} $field->{PRINTFTYPE}\", $field->{NAME}.str(buffer));\n";
       }
       else
       {
