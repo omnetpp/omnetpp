@@ -9,7 +9,9 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.InputFile;
+import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.ProcessingOp;
+import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.SetOperation;
 
 /**
@@ -48,7 +50,11 @@ public class ScaveObjectEditFormFactory {
 		
 		if (object instanceof BarChart)
 			return new BarChartEditForm((Chart)object, parent, manager);
-		if (object instanceof Chart)
+		else if (object instanceof ScatterChart)
+			return new ScatterChartEditForm((Chart)object, parent, manager);
+		else if (object instanceof LineChart)
+			return new LineChartEditForm((Chart)object, parent, manager);
+		else if (object instanceof Chart)
 			return new ChartEditForm((Chart)object, parent, manager);
 		else if (object instanceof ChartSheet)
 			return new ChartSheetEditForm((ChartSheet)object, parent);
