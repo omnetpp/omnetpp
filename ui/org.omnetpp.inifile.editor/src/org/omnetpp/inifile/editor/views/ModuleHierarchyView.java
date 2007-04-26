@@ -1,10 +1,7 @@
 package org.omnetpp.inifile.editor.views;
 
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
-
 import java.util.Stack;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -18,7 +15,6 @@ import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.GenericTreeUtils;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.IModuleTreeVisitor;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
@@ -28,7 +24,6 @@ import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
-import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.pojo.CompoundModuleNode;
@@ -183,7 +178,10 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	}
 
 	public void buildContent(NEDElement module, final InifileAnalyzer analyzer, final String section, String key) {
-        // build tree
+		final IInifileDocument doc = analyzer==null ? null : analyzer.getDocument();
+		final String[] sectionChain = doc==null ? null : InifileUtils.resolveSectionChain(doc, section);
+
+		// build tree
         final GenericTreeNode root = new GenericTreeNode("root");
     	class TreeBuilder implements IModuleTreeVisitor {
     		private GenericTreeNode current = root;
@@ -208,7 +206,10 @@ public class ModuleHierarchyView extends AbstractModuleView {
     			current.addChild(new GenericTreeNode(new ErrorNode(fullName+" : "+submoduleType.getName()+" -- recursive use of type '"+submoduleType.getName()+"'")));
     		}
     		public String resolveLikeType(SubmoduleNode submodule) {
-    			return null;
+    			if (analyzer == null)
+    				return null;
+				String moduleFullPath = StringUtils.join(fullPathStack.toArray(), ".");
+				return InifileUtils.resolveLikeParam(moduleFullPath, submodule, sectionChain, doc);
     		}
     	}
         

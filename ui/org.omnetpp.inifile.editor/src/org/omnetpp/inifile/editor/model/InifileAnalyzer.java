@@ -452,21 +452,8 @@ public class InifileAnalyzer {
 			public void unresolvedType(SubmoduleNode submodule, String submoduleTypeName) {}
 			public void recursiveType(SubmoduleNode submodule, INEDTypeInfo submoduleType) {}
 			public String resolveLikeType(SubmoduleNode submodule) {
-				String likeParamName = submodule.getLikeParam();
-				if (!likeParamName.matches("[A-Za-z0-9_]+"))
-					return null;  // sorry, we are only prepared to resolve parent module parameters
-				String paramFullPath = StringUtils.join(fullPathStack.toArray(), ".") + "." + likeParamName;
-				boolean hasNedDefault = false; //XXX rather, look it up in ParamNode!
-				SectionKey sectionKey = InifileUtils.lookupParameter(paramFullPath, hasNedDefault, sectionChain, doc);
-				if (sectionKey == null)
-					return null; // bad luck: unassigned?
-				String value = doc.getValue(sectionKey.section, sectionKey.key);
-				try {
-					value = Common.parseQuotedString(value);
-				} catch (RuntimeException e) {
-					return null; // something is wrong: not a string constant?
-				}
-				return value;
+				String moduleFullPath = StringUtils.join(fullPathStack.toArray(), ".");
+				return InifileUtils.resolveLikeParam(moduleFullPath, submodule, sectionChain, doc);
 			}
 		});
 

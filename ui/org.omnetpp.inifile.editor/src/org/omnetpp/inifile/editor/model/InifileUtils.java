@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
@@ -89,6 +90,28 @@ public class InifileUtils {
 		if (!StringUtils.isEmpty(submodule.getVectorSize())) //XXX what if parsed expressions are in use?
 			submoduleName += "[*]"; //XXX
 		return submoduleName;
+	}
+
+	/**
+	 * Resolves the run-time type of a "like" submodule, using the parameter 
+	 * settings in the inifile. Returns null if the lookup is unsuccessful.
+	 */
+	public static String resolveLikeParam(String moduleFullPath, SubmoduleNode submodule, String[] sectionChain, IInifileDocument doc) {
+		String likeParamName = submodule.getLikeParam();
+		if (!likeParamName.matches("[A-Za-z0-9_]+"))
+			return null;  // sorry, we are only prepared to resolve parent module parameters
+		String paramFullPath = moduleFullPath + "." + likeParamName;
+		boolean hasNedDefault = false; //XXX rather, look it up in ParamNode!
+		SectionKey sectionKey = InifileUtils.lookupParameter(paramFullPath, hasNedDefault, sectionChain, doc);
+		if (sectionKey == null)
+			return null; // bad luck: unassigned?
+		String value = doc.getValue(sectionKey.section, sectionKey.key);
+		try {
+			value = Common.parseQuotedString(value);
+		} catch (RuntimeException e) {
+			return null; // something is wrong: not a string constant?
+		}
+		return value;
 	}
 
 	/**
