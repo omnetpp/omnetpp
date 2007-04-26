@@ -33,7 +33,7 @@ public class SequenceChartView extends ViewWithMessagePart {
 					sequenceChart.setSelection(selection);
 
 				if (sequenceChart.getInput() == null)
-					displayMessage("No event log available");
+					showMessage("No event log available");
 				else
 					hideMessage();
 			}

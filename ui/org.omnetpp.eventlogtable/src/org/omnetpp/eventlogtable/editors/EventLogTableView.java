@@ -36,7 +36,7 @@ public class EventLogTableView extends ViewWithMessagePart {
 					eventLogTable.setSelection(selection);
 
 				if (eventLogTable.getInput() == null)
-					displayMessage("No event log available");
+					showMessage("No event log available");
 				else
 					hideMessage();
 			}

@@ -176,8 +176,8 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	}
 
 	@Override
-	protected void displayMessage(String text) {
-		super.displayMessage(text);
+	protected void showMessage(String text) {
+		super.showMessage(text);
 		inifileDocument = null;
 		treeViewer.setInput(null);
 	}
@@ -227,7 +227,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
             iterator.traverse(simpleModule.getName());
         }
         else {
-        	displayMessage("Please select a submodule, compound module or simple module");
+        	showMessage("Please select a submodule, compound module or simple module");
         	return;
         }
 

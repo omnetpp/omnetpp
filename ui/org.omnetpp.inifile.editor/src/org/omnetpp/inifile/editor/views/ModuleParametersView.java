@@ -260,16 +260,17 @@ public class ModuleParametersView extends AbstractModuleView {
 	}
 
 	@Override
-	protected void displayMessage(String text) {
-		super.displayMessage(text);
+	protected void showMessage(String text) {
+		inifileAnalyzer = null;
 		inifileDocument = null;
-		tableViewer.setInput(null);
+		tableViewer.setInput(new Object[0]);
+		super.showMessage(text);
 	}
 	
 	@Override
 	public void buildContent(NEDElement module, InifileAnalyzer analyzer, String section, String key) {
 		if (analyzer==null) {
-			displayMessage("Not an inifile editor."); //XXX
+			showMessage("Not an inifile editor."); //XXX
 		}
 		else {
 			if (section==null)
@@ -279,7 +280,7 @@ public class ModuleParametersView extends AbstractModuleView {
 			inifileDocument = analyzer.getDocument();
 			ParamResolution[] pars = unassignedOnly ? analyzer.getUnassignedParams(section) : analyzer.getParamResolutions(section);
 			tableViewer.setInput(pars);
-			label.setText("Section ["+section+"], " + (unassignedOnly ?"unassigned parameters" : "all parameters"));
+			label.setText("Section ["+section+"], " + (unassignedOnly ? "unassigned parameters" : "all parameters"));
 		}
 	}
 }

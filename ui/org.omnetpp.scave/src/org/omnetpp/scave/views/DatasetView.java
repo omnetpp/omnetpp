@@ -231,7 +231,7 @@ public class DatasetView extends ViewWithMessagePart {
 		}
 		else {
 			setInput(null, null);
-			displayMessage("No dataset item selected.");
+			showMessage("No dataset item selected.");
 		}
 	}
 	
@@ -252,7 +252,7 @@ public class DatasetView extends ViewWithMessagePart {
 				scalarsPanel.setResultFileManager(null);
 				vectorsPanel.setResultFileManager(null);
 				histogramsPanel.setResultFileManager(null);
-				displayMessage("No active scave editor.");
+				showMessage("No active scave editor.");
 			}
 		}
 	}

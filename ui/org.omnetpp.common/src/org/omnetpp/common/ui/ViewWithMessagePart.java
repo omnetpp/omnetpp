@@ -55,7 +55,7 @@ public abstract class ViewWithMessagePart extends ViewPart {
 	/**
 	 * Display a message (such as "Nothing to show") instead of the contents.
 	 */
-	protected void displayMessage(String text) {
+	protected void showMessage(String text) {
 		messageLabel.setText(text);
 		if (isVisible(viewControl)) {
 			setVisible(messageLabel, true);

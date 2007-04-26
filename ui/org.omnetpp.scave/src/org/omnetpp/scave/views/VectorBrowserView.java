@@ -175,7 +175,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 				}
 			} else {
 				String fileInWorkspace = input.getFileRun().getFile().getFilePath();
-				displayMessage("Vector content cannot be browsed, because the index file (.vci) " +
+				showMessage("Vector content cannot be browsed, because the index file (.vci) " +
 							   "for \""+fileInWorkspace+"\" is missing or out of date.");
 			}
 		}

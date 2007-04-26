@@ -181,13 +181,13 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
         //System.out.println("*** CONTENT REBUILD");
 		IEditorPart activeEditor = getActiveEditor();
 		if (activeEditor==null) {
-			displayMessage("There is no active editor.");
+			showMessage("There is no active editor.");
 			return;
 		}
 
 		ISelection selection = getActiveEditorSelection();
 		if (selection==null) {
-			displayMessage("Nothing is selected.");
+			showMessage("Nothing is selected.");
 			return;
 		}
 		
@@ -201,10 +201,10 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 				//
 				NEDElement model = findFirstModuleOrSubmodule(((IModelProvider)element).getNEDModel());
 				if (model != null ) {
-					buildContent(model, null, null, null);
 					hideMessage();
+					buildContent(model, null, null, null);
                 } else
-                    displayMessage("No NED element selected.");
+                    showMessage("No NED element selected.");
 			}
 			else if (element instanceof InifileSelectionItem) {
 				//
@@ -215,25 +215,26 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 				IInifileDocument doc = sel.getDocument();
 
 				if (sel.getSection()==null) {
-					displayMessage("No section selected.");
+					showMessage("No section selected.");
 					return;
 				}
 				String networkName = InifileUtils.lookupConfig(sel.getSection(), CFGID_NETWORK.getKey(), doc);
-				if (networkName == null) {
-					displayMessage("Network not specified (no network= setting in ["+sel.getSection()+"] or the sections it extends)");
+				if (StringUtils.isEmpty(networkName)) {
+					showMessage("Network not specified (no network= setting in ["+sel.getSection()+"] or the sections it extends)");
 					return;
 				}
                 INEDTypeInfo networkType = NEDResourcesPlugin.getNEDResources().getComponent(networkName);
                 if (networkType == null) {
-                    displayMessage("Unknown module type specified for network: "+networkName);
+                    showMessage("Unknown module type specified for network: "+networkName);
                     return;
                 }
+
+                hideMessage();
                 buildContent(networkType.getNEDElement(), analyzer, sel.getSection(), sel.getKey());
-				hideMessage();
 			}
 		}
 		else {
-			displayMessage("No NED element or INI file entry selected.");
+			showMessage("No NED element or INI file entry selected.");
 		}
 	}
 
