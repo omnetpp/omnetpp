@@ -66,6 +66,7 @@ public class ImageFactory {
     public final static String SEQUENCE_CHART_IMAGE_DECREASE_SPACING = TOOL_IMAGE_DIR + "displaymode";
     public final static String SEQUENCE_CHART_IMAGE_DENSE_AXES = TOOL_IMAGE_DIR + "displaymode";
     public final static String SEQUENCE_CHART_IMAGE_BALANCED_AXES = TOOL_IMAGE_DIR + "displaymode";
+	public static final String SEQUENCE_CHART_IMAGE_ATTACH_VECTOR_TO_AXIS = TOOL_IMAGE_DIR + "displaymode"; 
 
     public final static String TOOLBAR_IMAGE_UNPIN = TOOL_IMAGE_DIR + "unpin";
     public final static String TOOLBAR_IMAGE_PROPERTIES = TOOL_IMAGE_DIR + "properties";
@@ -118,7 +119,7 @@ public class ImageFactory {
     public static final int SIZE_S = 60; 
     public static final int SIZE_NORMAL = 100; 
     public static final int SIZE_L = 150; 
-    public static final int SIZE_VL = 250; 
+    public static final int SIZE_VL = 250;
 
     static {
         imageDirs = new String[0];

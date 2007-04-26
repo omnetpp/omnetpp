@@ -15,7 +15,8 @@ public class ColorFactory {
 
     private static ColorRegistry str2rgbRegistry = new ColorRegistry();
     private static HashMap<RGB, String> rgb2strMap = new HashMap<RGB, String>();
-    private static Color[] goodChartColors; 
+    private static Color[] goodDarkColors; 
+    private static Color[] goodLightColors; 
     
     static {
         addMapping("antiqueWhite",new RGB(250,235,215));
@@ -559,7 +560,7 @@ public class ColorFactory {
         addMapping("yellow3",new RGB(205,205,0));
         addMapping("yellow4",new RGB(139,139,0));
 
-        goodChartColors = new Color[] {
+        goodDarkColors = new Color[] {
         		ColorFactory.asColor("darkblue"),
         		ColorFactory.asColor("red2"),
         		ColorFactory.asColor("darkGreen"),
@@ -574,6 +575,20 @@ public class ColorFactory {
         		ColorFactory.asColor("yellow"), 
         		ColorFactory.asColor("black"), 
         		ColorFactory.asColor("purple"), 
+        		//XXX add more
+        };
+
+        goodLightColors = new Color[] {
+        		ColorFactory.asColor("lightCoral"),
+        		ColorFactory.asColor("lightBlue"),
+        		ColorFactory.asColor("lightGreen"),
+        		ColorFactory.asColor("lightYellow"), 
+        		ColorFactory.asColor("lightCyan"), 
+        		ColorFactory.asColor("plum1"), 
+        		ColorFactory.asColor("lightSalmon"), 
+        		ColorFactory.asColor("lightPink"), 
+        		ColorFactory.asColor("lightGrey"), 
+        		ColorFactory.asColor("mediumPurple"), 
         		//XXX add more
         };
 	};
@@ -655,10 +670,16 @@ public class ColorFactory {
     }
 
 	/**
-	 * Returns a "good" color.
+	 * Returns a "good" dark color.
 	 */
-    public static Color getGoodColor(int i) {
-		return goodChartColors[i % goodChartColors.length];
+    public static Color getGoodDarkColor(int i) {
+		return goodDarkColors[i % goodDarkColors.length];
 	}
     
+	/**
+	 * Returns a "good" light color.
+	 */
+    public static Color getGoodLightColor(int i) {
+		return goodLightColors[i % goodLightColors.length];
+	}
 }

@@ -3,6 +3,7 @@ package org.omnetpp.sequencechart.editors;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.action.IMenuListener;
@@ -11,22 +12,37 @@ import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.dialogs.ElementListSelectionDialog;
+import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.eclipse.ui.texteditor.StatusLineContributionItem;
+import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.MessageDependency;
+import org.omnetpp.scave.engine.EnumType;
+import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.ResultItem;
+import org.omnetpp.scave.engine.XYArray;
+import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
+import org.omnetpp.sequencechart.widgets.SequenceChart.AxisSpacingMode;
+import org.omnetpp.sequencechart.widgets.axisrenderer.AxisVectorBarRenderer;
 
 
 public class SequenceChartContributor extends EditorActionBarContributor {
@@ -132,9 +148,11 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 				final ModuleTreeItem axisModule = sequenceChart.findAxisAt(p.y);
 				if (axisModule != null) {
 					IMenuManager subMenuManager = new MenuManager(sequenceChart.getAxisText(axisModule));
+					menuManager.add(subMenuManager);
 
 					subMenuManager.add(createCenterAxisAction(axisModule));
 					subMenuManager.add(createZoomToAxisValueAction(axisModule, p.x));
+					subMenuManager.add(createAttachVectorToAxisAction(axisModule));
 					menuManager.add(separatorAction);
 				}
 
@@ -351,6 +369,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		return new SequenceChartAction("Increase spacing", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_INCREASE_SPACING)) {
 			@Override
 			public void run() {
+				sequenceChart.setAxisSpacingMode(AxisSpacingMode.MANUAL);
 				sequenceChart.setAxisSpacing(sequenceChart.getAxisSpacing() + 5);
 			}
 		};
@@ -360,6 +379,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		return new SequenceChartAction("Decrease spacing", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_DECREASE_SPACING)) {
 			@Override
 			public void run() {
+				sequenceChart.setAxisSpacingMode(AxisSpacingMode.MANUAL);
 				sequenceChart.setAxisSpacing(sequenceChart.getAxisSpacing() - 5);
 			}
 		};
@@ -387,6 +407,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		return new SequenceChartAction("Dense axes", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_DENSE_AXES)) {
 			@Override
 			public void run() {
+				sequenceChart.setAxisSpacingMode(AxisSpacingMode.MANUAL);
 				sequenceChart.setAxisSpacing(16);
 			}
 		};
@@ -396,7 +417,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		return new SequenceChartAction("Balanced axes", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_BALANCED_AXES)) {
 			@Override
 			public void run() {
-				sequenceChart.setAxisSpacing(-1);
+				sequenceChart.setAxisSpacingMode(AxisSpacingMode.AUTO);
 			}
 		};
 	}
@@ -472,6 +493,85 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			}
 		};
 	}	
+
+	private SequenceChartAction createAttachVectorToAxisAction(final ModuleTreeItem axisModule) {
+		return new SequenceChartAction("Attach vector to axis", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_ATTACH_VECTOR_TO_AXIS)) {
+			@Override
+			public void run() {
+				// open a vector file with the same name as the sequence chart's input file name with .vec extension
+				EventLogInput eventLogInput = (EventLogInput)sequenceChart.getInput();
+				IPath vectorFileName = eventLogInput.getFile().getLocation().removeFileExtension().addFileExtension("vec");
+				final ResultFileManager resultFileManager = new ResultFileManager();
+
+				try {
+					resultFileManager.loadFile(vectorFileName.toOSString());
+				}
+				catch (Throwable t) {
+					// ask for a file if not found a valid one
+					FileDialog fileDialog = new FileDialog(Display.getDefault().getActiveShell());
+
+					fileDialog.setText("Select a vector file");
+					fileDialog.setFilterExtensions(new String[] {"*.vec"});
+					fileDialog.setFilterPath(eventLogInput.getFile().getRawLocation().toString());
+					String resultFileName = fileDialog.open();
+
+					if (resultFileName != null) {
+						try {
+							resultFileManager.loadFile(resultFileName);
+						}
+						catch (Throwable te) {
+							MessageDialog.openError(null, "Error", "Could not open vector file " + resultFileName);						
+						}
+					}
+					else
+						return;
+				}
+
+				// select a vector from the loaded file
+				IDList idList = resultFileManager.getAllVectors();
+
+				ElementListSelectionDialog dialog = new ElementListSelectionDialog(null, new LabelProvider() {
+					@Override
+					public String getText(Object element) {
+						long id = (Long)element;
+						ResultItem resultItem = resultFileManager.getItem(id);
+						
+						return resultItem.getModuleName() + ":" + resultItem.getName();
+					}
+					
+				});
+				dialog.setFilter(axisModule.getModuleFullPath());
+				dialog.setElements(idList.toArray());
+				dialog.setMessage("Select a vector to attach:");
+				dialog.setTitle("Vector selection");
+				
+				if (dialog.open() == ListDialog.OK) {
+					long id = (Long)dialog.getFirstResult();
+					ResultItem resultItem = resultFileManager.getItem(id);
+					EnumType enumType = resultItem.getEnum();
+					
+					if (enumType == null)
+						MessageDialog.openError(null, "Error", "The selected vector is not of type enum");
+					else {							
+						XYArray data = DatasetManager.getDataOfVector(resultFileManager, id);
+						String[] names = new String[] {
+								"IDLE",
+						        "DEFER",
+						        "WAITDIFS",
+						        "BACKOFF",
+						        "WAITACK",
+						        "WAITBROADCAST",
+						        "WAITCTS",
+						        "WAITSIFS",
+						        "RECEIVE",
+						};
+
+						sequenceChart.setAxisRenderer(axisModule, new AxisVectorBarRenderer(sequenceChart, names, data));
+					}
+				}
+			}
+		};
+	}
 
 	private StatusLineContributionItem createTimelineModeStatus() {
 		return new StatusLineContributionItem("Timeline mode") {

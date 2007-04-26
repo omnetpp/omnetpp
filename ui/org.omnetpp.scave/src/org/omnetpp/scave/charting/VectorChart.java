@@ -471,7 +471,7 @@ public class VectorChart extends ChartCanvas {
 	}
 	
 	public Color getLineColor(int series) {
-		return ColorFactory.getGoodColor(series);
+		return ColorFactory.getGoodDarkColor(series);
 	}
 
 	@Override

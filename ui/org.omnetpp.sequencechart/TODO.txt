@@ -59,6 +59,8 @@ Features:
  - support specifying the vector file to be displayed on the axis
  - display a separator where the timeline is filtered (timeline is not linear to pixel coordinates)
  - make sequence chart scrollbars virtual (can't tell the exact size of the canvas)
+ - write key frames during simulation to avoid linear search for reusing messages and to be able to precisely
+   display message dependencies which go far away
 
 Known bugs:
  - hierarchical sorting sequence chart axes based on crossing arrows is broken

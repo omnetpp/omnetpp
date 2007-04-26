@@ -27,22 +27,12 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 
 	protected XYArray data;
 
-	// TODO: extract meta data
-	private String[] names = new String[] {
-			"IDLE",
-	        "DEFER",
-	        "WAITDIFS",
-	        "BACKOFF",
-	        "WAITACK",
-	        "WAITBROADCAST",
-	        "WAITCTS",
-	        "WAITSIFS",
-	        "RECEIVE",
-	};
+	protected String[] names;
 
-	public AxisVectorBarRenderer(SequenceChart sequenceChart, XYArray data) {
+	public AxisVectorBarRenderer(SequenceChart sequenceChart, String[] names, XYArray data) {
 		this.sequenceChart = sequenceChart;
 		this.data = data;
+		this.names = names;
 	}
 
 	public int getHeight() {
@@ -75,10 +65,10 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 		for (int phase = 0; phase < 2; phase++)
 			for (int i = startIndex; i < endIndex; i++) {
 				double simulationTime = getSimulationTime(i);
-				double nextSimulationTime = (i == size - 1) ? endSimulationTime : getSimulationTime(i + 1);
+				double nextSimulationTime = Math.min(endSimulationTime, (i == size - 1) ? endSimulationTime : getSimulationTime(i + 1));
 
 				int colorIndex = getValueIndex(i);
-				graphics.setBackgroundColor(ColorFactory.getGoodColor(colorIndex));
+				graphics.setBackgroundColor(ColorFactory.getGoodLightColor(colorIndex));
 
 				int x1 = sequenceChart.getViewportCoordinateForSimulationTime(simulationTime);
 				int x2 = sequenceChart.getViewportCoordinateForSimulationTime(nextSimulationTime);

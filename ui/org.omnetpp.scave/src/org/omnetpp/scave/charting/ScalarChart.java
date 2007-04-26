@@ -438,7 +438,7 @@ public class ScalarChart extends ChartCanvas {
 		}
 		
 		protected Color getBarColor(int column) {
-			return ColorFactory.getGoodColor(column);
+			return ColorFactory.getGoodDarkColor(column);
 		}
 		
 		protected Rectangle getBarRectangle(int row, int column) {
