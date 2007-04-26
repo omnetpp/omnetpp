@@ -59,10 +59,21 @@ UnitConversion::UnitDesc *UnitConversion::lookupUnit(const char *unit)
 bool UnitConversion::readNumber(const char *&s, double& number)
 {
     while (isspace(*s)) s++;
+
     int len;
     if (sscanf(s, "%lf%n", &number, &len) <= 0)
         return false; // no number read
     s+=len;
+
+//FIXME use this code instead:
+//    char *endp;
+//    number = strtod(s, &endp);
+//    if (s==endp)
+//        return false; // no number read
+//    if (errno==ERANGE)
+//        throw opp_runtime_error("overflow or underflow during conversion of `%s'", s);
+//    s = endp;
+    
     while (isspace(*s)) s++;
     return true; // OK
 }

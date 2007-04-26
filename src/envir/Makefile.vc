@@ -220,28 +220,30 @@ cxmldoccache.obj: cxmldoccache.cc \
   ../../include/opp_string.h \
   ../nedxml/nedxmldefs.h
 eventlog.obj: eventlog.cc \
+  eventlogwriter.h \
   eventlog.h \
   ../../include/csimulation.h \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
   ../../include/cdisplaystring.h \
+  envdefs.h \
+  ../../include/cexception.h \
   ../../include/simkerneldefs.h \
-  ../../include/util.h \
-  ../../include/globals.h \
-  ../../include/cmsgheap.h \
-  ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/util.h \
+  ../../include/globals.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/cnamedobject.h \
-  ../../include/cexception.h \
-  ../../include/opp_string.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
@@ -253,6 +255,17 @@ eventlog.obj: eventlog.cc \
   ../../include/cexpression.h \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h
+eventlogwriter.obj: eventlogwriter.cc \
+  eventlogwriter.h \
+  envdefs.h \
+  ../../include/cexception.h \
+  ../../include/simkerneldefs.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/util.h
 filemgrs.obj: filemgrs.cc \
   ../../include/simkerneldefs.h \
   ../../include/cenvir.h \
@@ -391,6 +404,7 @@ omnetapp.obj: omnetapp.cc \
   omnetapp.h \
   appreg.h \
   fsutils.h \
+  eventlogwriter.h \
   ../../include/ccoroutine.h \
   ../../include/csimulation.h \
   ../../include/cscheduler.h \

@@ -33,11 +33,11 @@ class ObjectPrinter
         int indentSize;
         char buffer[1024];
         std::vector<MatchExpression> *objectMatchExpressions;
-        std::vector<std::vector<PatternMatcher>> *fieldNamePatternMatchersList;
+        std::vector<std::vector<PatternMatcher> > *fieldNamePatternMatchersList;
 
     public:
         ObjectPrinter(std::vector<MatchExpression> *objectMatchExpressions,
-                      std::vector<std::vector<PatternMatcher>> *fieldNamePatternMatchersList,
+                      std::vector<std::vector<PatternMatcher> > *fieldNamePatternMatchersList,
                       int indentSize);
         virtual ~ObjectPrinter();
 

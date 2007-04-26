@@ -40,6 +40,7 @@ using std::ostream;
 using std::ofstream;
 using std::ios;
 
+//XXX split up this file by classes -- it's too big
 
 Register_Class(cFileOutputVectorManager);
 
@@ -89,16 +90,17 @@ void cFileOutputVectorManager::closeFile()
     }
 }
 
-/**
- * Collects the attributes and module parameters of the current run from the configuration.
- *
- * Keys for module parameters should contain an '.' and must not contain '-',
- * otherwise they are handled as run attributes.
- */
 void cFileOutputVectorManager::initRun()
 {
     if (!run.initialised)
     {
+        // Collect the attributes and module parameters of the current run
+        // from the configuration.
+        //
+        // Keys for module parameters should contain an '.' and must not contain '-',
+        // otherwise they are handled as run attributes.
+        //
+        //XXX I'll need to review both the comment and the code -- Andras
         cConfiguration *config = ev.config();
         const char *section = config->getPerRunSectionName();
         run.runId = ev.app->getRunId();
@@ -120,7 +122,7 @@ void cFileOutputVectorManager::initRun()
                 std::vector<opp_string>::size_type size = entries.size();
 
                 if (size % 2 != 0)
-                    fprintf(stderr, "WARNING: getEntriesWithPrefix(\"%s\", \"\", \"\") returned odd number of strings. Section will be skipped.", sectionName);
+                    fprintf(stderr, "WARNING: getEntriesWithPrefix(\"%s\", \"\", \"\") returned odd number of strings. Section will be skipped.", sectionName); //FIXME use assert instead!
 
                 if (size == 0 || size % 2 != 0)
                     continue;

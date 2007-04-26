@@ -265,7 +265,7 @@ void TOmnetApp::setup()
 
          if (eventLogMessageDetailPattern) {
              std::vector<MatchExpression> *objectMatchExpressions = new std::vector<MatchExpression>;
-             std::vector<std::vector<PatternMatcher>> *fieldNamePatternMatchersList = new std::vector<std::vector<PatternMatcher>>;
+             std::vector<std::vector<PatternMatcher> > *fieldNamePatternMatchersList = new std::vector<std::vector<PatternMatcher> >;
 
              StringTokenizer tokenizer(eventLogMessageDetailPattern, "|"); // TODO: use ; when it does not mean comment anymore
              std::vector<std::string> patterns = tokenizer.asVector();

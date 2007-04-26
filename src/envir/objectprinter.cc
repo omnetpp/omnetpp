@@ -47,7 +47,7 @@ static bool defaultRecurseInto(void *object, cClassDescriptor *descriptor, int f
  */
 
 ObjectPrinter::ObjectPrinter(std::vector<MatchExpression> *objectMatchExpressions,
-                             std::vector<std::vector<PatternMatcher>> *fieldNamePatternMatchersList,
+                             std::vector<std::vector<PatternMatcher> > *fieldNamePatternMatchersList,
                              int indentSize)
 {
     Assert(objectMatchExpressions->size() == fieldNamePatternMatchersList->size());
@@ -97,7 +97,7 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
 
             int size = isArray ? descriptor->getArraySize(object, fieldIndex) : 1;
             for (int elementIndex = 0; elementIndex < size; elementIndex++) {
-                void *fieldValue = isCompound ? descriptor->getFieldStructPointer(object, fieldIndex, elementIndex) : NULL;        
+                void *fieldValue = isCompound ? descriptor->getFieldStructPointer(object, fieldIndex, elementIndex) : NULL;
 
                 if (!defaultRecurseInto(object, descriptor, fieldIndex, fieldValue, level) ||
                     (descriptor->extendsCObject() && !matchesObjectField((cObject *)object, fieldName)))
@@ -105,7 +105,7 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
 
                 printIndent(ostream, level);
                 ostream << fieldType << " ";
-                
+
                 if (isPointer)
                     ostream << "*";
                 ostream << fieldName;
