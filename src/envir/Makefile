@@ -11,7 +11,7 @@ COPTS=$(CFLAGS) $(AKAROA_CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/pla
 
 OBJS=args.o cenvir.o cinifile.o main.o omnetapp.o fsutils.o \
      speedmtr.o filemgrs.o akoutvectormgr.o matchableobject.o \
-     akaroarng.o cxmldoccache.o ivfilemgr.o eventlogwriter.o
+     akaroarng.o cxmldoccache.o ivfilemgr.o eventlogwriter.o objectprinter.o
 
 #
 # Automatic rules

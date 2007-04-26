@@ -19,7 +19,7 @@ IMPLIBS=../sim/sim_std.lib ../nedxml/nedxml.lib ../common/common.lib
 
 OBJS=args.obj cenvir.obj cinifile.obj main.obj omnetapp.obj fsutils.obj \
      speedmtr.obj filemgrs.obj akoutvectormgr.obj matchableobject.obj \
-     akaroarng.obj cxmldoccache.obj ivfilemgr.obj eventlogwriter.obj
+     akaroarng.obj cxmldoccache.obj ivfilemgr.obj eventlogwriter.obj objectprinter.obj
 
 
 #
