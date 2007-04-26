@@ -58,6 +58,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     std::string baseclassname;
     cClassDescriptor *baseclassdesc;
     int inheritancechainlength;
+    int extendscobject;
 
   protected:
     // utility functions for converting from/to strings
@@ -126,6 +127,11 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
      * Returns the descriptor for the base class, if available.
      */
     virtual cClassDescriptor *getBaseClassDescriptor();
+
+    /**
+     * Returns true if cObject's class descriptor is present on the inheritance chain.
+     */
+    bool extendsCObject();
 
     /**
      * Returns the number of base classes up to the root -- as far as
