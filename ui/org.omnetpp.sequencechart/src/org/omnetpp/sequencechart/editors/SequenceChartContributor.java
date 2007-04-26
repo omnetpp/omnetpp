@@ -554,18 +554,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 						MessageDialog.openError(null, "Error", "The selected vector is not of type enum");
 					else {							
 						XYArray data = DatasetManager.getDataOfVector(resultFileManager, id);
-						String[] names = new String[] {
-								"IDLE",
-						        "DEFER",
-						        "WAITDIFS",
-						        "BACKOFF",
-						        "WAITACK",
-						        "WAITBROADCAST",
-						        "WAITCTS",
-						        "WAITSIFS",
-						        "RECEIVE",
-						};
-
+						String[] names = enumType.names().toArray();
 						sequenceChart.setAxisRenderer(axisModule, new AxisVectorBarRenderer(sequenceChart, names, data));
 					}
 				}

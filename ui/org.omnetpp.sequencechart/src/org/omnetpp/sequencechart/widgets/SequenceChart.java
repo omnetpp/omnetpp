@@ -301,15 +301,11 @@ public class SequenceChart
 	}
 	
 	/**
-	 * Set chart scale (number of pixels a "timeline unit" maps to), 
-	 * and adjusts the density of ticks. 
+	 * Set chart scale (number of pixels a "timeline unit" maps to).
 	 */
-	public void setpixelPerTimelineCoordinate(double pixelPerTimelineCoordinate) {
-		if (pixelPerTimelineCoordinate <= 0)
-			pixelPerTimelineCoordinate = 1e-12;
-
+	public void setPixelPerTimelineCoordinate(double pixelPerTimelineCoordinate) {
+		Assert.isTrue(pixelPerTimelineCoordinate > 0);
 		this.pixelPerTimelineCoordinate = pixelPerTimelineCoordinate;
-		invalidVirtualSize = true;
 		clearCanvasCacheAndRedraw();
 	}
 	
@@ -699,7 +695,7 @@ public class SequenceChart
 	 */
 	public void zoomBy(double zoomFactor) {
 		double time = getViewportCenterSimulationTime();
-		setpixelPerTimelineCoordinate(getpixelPerTimelineCoordinate() * zoomFactor);	
+		setPixelPerTimelineCoordinate(getpixelPerTimelineCoordinate() * zoomFactor);	
 		calculateVirtualSize();
 		clearCanvasCacheAndRedraw();
 		scrollToSimulationTimeWithCenter(time);
@@ -712,7 +708,7 @@ public class SequenceChart
 	public void zoomToRectangle(Rectangle r) {
 		double timelineCoordinate = getTimelineCoordinateForViewportCoordinate(r.x);
 		double timelineCoordinateDelta = getTimelineCoordinateForViewportCoordinate(r.right()) - timelineCoordinate;
-		setpixelPerTimelineCoordinate(getViewportWidth() / timelineCoordinateDelta);
+		setPixelPerTimelineCoordinate(getViewportWidth() / timelineCoordinateDelta);
 		calculateVirtualSize();
 		clearCanvasCacheAndRedraw();
 		scrollHorizontal(getViewportCoordinateForTimelineCoordinate(timelineCoordinate));
@@ -726,7 +722,7 @@ public class SequenceChart
 			double timelineUnitDelta = sequenceChartFacade.getTimelineCoordinateForSimulationTime(endSimulationTime) - sequenceChartFacade.getTimelineCoordinateForSimulationTime(startSimulationTime);
 
 			if (timelineUnitDelta > 0)
-				setpixelPerTimelineCoordinate(getViewportWidth() / timelineUnitDelta);
+				setPixelPerTimelineCoordinate(getViewportWidth() / timelineUnitDelta);
 		}
 
 		scrollHorizontal(getViewportCoordinateForSimulationTime(startSimulationTime));
@@ -970,13 +966,13 @@ public class SequenceChart
 			double tEnd = sequenceChartFacade.getTimelineCoordinate(eventLog.getLastEvent());
 			double eventsPerTimelineUnit = numEvents / (tEnd - tStart);
 
-			double minpixelPerTimelineCoordinate = eventsPerTimelineUnit * 10;  // we want at least 10 pixel/event
-			double maxpixelPerTimelineCoordinate = eventsPerTimelineUnit * (getViewportWidth() / 10);  // we want at least 10 events on the chart
+			double minPixelPerTimelineCoordinate = eventsPerTimelineUnit * 10;  // we want at least 10 pixel/event
+			double maxPixelPerTimelineCoordinate = eventsPerTimelineUnit * (getViewportWidth() / 10);  // we want at least 10 events on the chart
 
-			if (pixelPerTimelineCoordinate < minpixelPerTimelineCoordinate)
-				return minpixelPerTimelineCoordinate;
-			else if (pixelPerTimelineCoordinate > maxpixelPerTimelineCoordinate)
-				return maxpixelPerTimelineCoordinate;
+			if (pixelPerTimelineCoordinate < minPixelPerTimelineCoordinate)
+				return minPixelPerTimelineCoordinate;
+			else if (pixelPerTimelineCoordinate > maxPixelPerTimelineCoordinate)
+				return maxPixelPerTimelineCoordinate;
 		}
 
 		return pixelPerTimelineCoordinate; // the current setting is fine
@@ -986,12 +982,11 @@ public class SequenceChart
 	 * Calculates initial pixelPerTimelineUnit.
 	 */
 	private void calculatePixelPerTimelineUnit() {
-		int numEvents = eventLog.getApproximateNumberOfEvents();
-		if (pixelPerTimelineCoordinate == -1 && numEvents > 50)
-			// initial value shows the first 50 events
-			pixelPerTimelineCoordinate = getViewportWidth() / sequenceChartFacade.getTimelineCoordinate(eventLog.getNeighbourEvent(eventLog.getFirstEvent(), 50));
-		else
-			setpixelPerTimelineCoordinate(suggestpixelPerTimelineCoordinate());
+		if (pixelPerTimelineCoordinate == -1) {
+			int distance = Math.min(50, eventLog.getApproximateNumberOfEvents());
+
+			setPixelPerTimelineCoordinate(getViewportWidth() / sequenceChartFacade.getTimelineCoordinate(eventLog.getNeighbourEvent(eventLog.getFirstEvent(), distance - 1)));
+		}
 	}
 
 	/**
@@ -2008,11 +2003,11 @@ public class SequenceChart
 		switch (kind) {
 			case MessageDependencyKind.SEND:
 				beginSendEntry = msg.getCauseBeginSendEntry();
-				result = "sending message (";
+				result = "sending";
 				break;
 			case MessageDependencyKind.REUSE:
 				beginSendEntry = msg.getConsequenceBeginSendEntry();
-				result = "reusing message (";
+				result = "reusing";
 				break;
 			case MessageDependencyKind.FILTERED:
 				result = sequenceChartFacade.MessageDependency_getCauseMessageName(messageDependencyPtr) +
@@ -2022,9 +2017,17 @@ public class SequenceChart
 		}
 		
 		if (kind != MessageDependencyKind.FILTERED) {
-			result += beginSendEntry.getMessageClassName() + ") " + beginSendEntry.getMessageFullName() +
-					  " (#" + msg.getCauseEventNumber() + " -> #" + msg.getConsequenceEventNumber() + ")\n" +
-					  beginSendEntry.getDetail();
+			String detail = beginSendEntry.getDetail();
+			
+			result += " message ";
+			
+			if (detail == null)
+				result += "(" + beginSendEntry.getMessageClassName() + ") ";
+
+			result += beginSendEntry.getMessageFullName() + " (#" + msg.getCauseEventNumber() + " -> #" + msg.getConsequenceEventNumber() + ")";
+
+			if (detail != null)
+				result += "\n" + detail;
 		}
 			
 		return result;
