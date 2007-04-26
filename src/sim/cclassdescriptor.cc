@@ -154,6 +154,7 @@ cNoncopyableOwnedObject(classname, false)
     baseclassname = _baseclassname ? _baseclassname : "";
     baseclassdesc = NULL;
     inheritancechainlength = 1;
+    extendscobject = -1;
 }
 
 cClassDescriptor::~cClassDescriptor()
@@ -169,6 +170,24 @@ cClassDescriptor *cClassDescriptor::getBaseClassDescriptor()
             inheritancechainlength = 1 + baseclassdesc->getInheritanceChainLength();
     }
     return baseclassdesc;
+}
+
+bool cClassDescriptor::extendsCObject()
+{
+    if (extendscobject == -1) {
+        extendscobject = false;
+        cClassDescriptor *current = this;
+
+        while (current) {
+            if (!strcmp("cObject", current->name())) {
+                extendscobject = true;
+                break;
+            }
+            else
+                current = current->getBaseClassDescriptor();
+        }
+    }
+    return extendscobject;
 }
 
 int cClassDescriptor::getInheritanceChainLength()
