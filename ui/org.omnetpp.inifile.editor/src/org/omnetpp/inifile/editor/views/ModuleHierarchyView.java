@@ -2,8 +2,16 @@ package org.omnetpp.inifile.editor.views;
 
 import java.util.Stack;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -18,12 +26,17 @@ import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.GenericTreeUtils;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.inifile.editor.IGotoInifile;
+import org.omnetpp.inifile.editor.InifileEditorPlugin;
+import org.omnetpp.inifile.editor.actions.ActionExt;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.IModuleTreeVisitor;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.NEDTreeIterator;
 import org.omnetpp.inifile.editor.model.ParamResolution;
+import org.omnetpp.inifile.editor.model.SectionKey;
+import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
@@ -43,11 +56,11 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
  */
 //XXX create another view: Hierarchy (inheritance tree); and call this Usage? Nesting? Tree? Containment?
 //XXX follow selection
-//XXX context menu with "Go to NED file" and "Go to ini file"
 //XXX "like" submodule with unresolved type does not appear as such!!!
 public class ModuleHierarchyView extends AbstractModuleView {
 	private TreeViewer treeViewer;
-	private IInifileDocument inifileDocument; // corresponds to the current selection; unfortunately needed by the label provider
+	private IInifileDocument inifileDocument; // corresponds to the current selection; needed by the label provider
+	private MenuManager contextMenuManager = new MenuManager("#PopupMenu");
 
 	/**
 	 * A payload class for the GenericTreeNode tree that is displayed in the view
@@ -114,6 +127,12 @@ public class ModuleHierarchyView extends AbstractModuleView {
 
 	@Override
 	public Control createViewControl(Composite parent) {
+		createTreeViewer(parent);
+		createActions();
+		return treeViewer.getTree();
+	}
+
+	private void createTreeViewer(Composite parent) {
 		treeViewer = new TreeViewer(parent, SWT.SINGLE);
 
 		// set label provider and content provider
@@ -170,34 +189,85 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			}
 		});
 		treeViewer.setContentProvider(new GenericTreeContentProvider());
+		
+		// create context menu
+ 		getViewSite().registerContextMenu(contextMenuManager, treeViewer);
+ 		treeViewer.getTree().setMenu(contextMenuManager.createContextMenu(treeViewer.getTree()));
 
-		// on double click, go to NED file or ini file
-		treeViewer.getTree().addSelectionListener(new SelectionAdapter() {
+	}
+
+	private void createActions() {
+		//XXX this is the same code as in ModuleParametersView
+		final ActionExt gotoInifileAction = new ActionExt("Goto Ini File") {
 			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
+			public void run() {
+				SectionKey sel = getSectionKeyFromSelection();
+				if (sel!=null && getActiveEditor() instanceof IGotoInifile)
+					((IGotoInifile)getActiveEditor()).gotoEntry(sel.section, sel.key, IGotoInifile.Mode.AUTO);
+			}
+			public void selectionChanged(SelectionChangedEvent event) {
+				SectionKey sel = getSectionKeyFromSelection();
+				setEnabled(sel!=null);
+			}
+			private SectionKey getSectionKeyFromSelection() {
+				Object element = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
+				if (element instanceof GenericTreeNode)
+					element = ((GenericTreeNode)element).getPayload();
+				if (element instanceof ParamResolution) {
+					ParamResolution res = (ParamResolution) element;
+					if (res.section!=null && res.key!=null && res.type!=ParamResolutionType.NED_DEFAULT)
+						return new SectionKey(res.section, res.key);
+				}
+				return null;
+			}
+		};
+		
+		final ActionExt gotoNedFileAction = new ActionExt("Go to NED file", null) {
+			@Override
+			public void run() {
+				INEDElement sel = getNEDElementFromSelection();
+				if (sel != null)
+					NEDResourcesPlugin.openNEDElementInEditor(sel);
+			}
+			public void selectionChanged(SelectionChangedEvent event) {
+				INEDElement sel = getNEDElementFromSelection();
+				setEnabled(sel != null);
+			}
+			private INEDElement getNEDElementFromSelection() {
 				Object element = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
 				if (element instanceof GenericTreeNode)
 					element = ((GenericTreeNode)element).getPayload();
 				if (element instanceof ModuleNode) {
 					ModuleNode payload = (ModuleNode) element;
 					if (payload.submoduleNode != null)
-						NEDResourcesPlugin.openNEDElementInEditor(payload.submoduleNode);
+						return payload.submoduleNode;
 					else if (payload.submoduleType != null)
-						NEDResourcesPlugin.openNEDElementInEditor(payload.submoduleType);
+						return payload.submoduleType;  //XXX two separate actions? (useful with "like", because we could go to the actual type/to submodule decl)
 				}
 				if (element instanceof ParamResolution) {
-					ParamResolution payload = (ParamResolution) element;
-					if (payload.paramValueNode != null)
-						NEDResourcesPlugin.openNEDElementInEditor(payload.paramValueNode);
-					else if (payload.paramDeclNode != null)
-						NEDResourcesPlugin.openNEDElementInEditor(payload.paramDeclNode);
+					ParamResolution res = (ParamResolution) element;
+					return res.paramValueNode;
 				}
+				return null;
+			}
+		};
+	
+		treeViewer.addSelectionChangedListener(gotoInifileAction);
+		treeViewer.addSelectionChangedListener(gotoNedFileAction);
+	
+		// add double-click support to the table
+		treeViewer.getTree().addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				gotoNedFileAction.run();
 			}
 		});
-
-		return treeViewer.getTree();
+	
+		// build menus and toolbar
+		contextMenuManager.add(gotoInifileAction);
+		contextMenuManager.add(gotoNedFileAction);
 	}
-
+	
 	@Override
 	protected void showMessage(String text) {
 		super.showMessage(text);
