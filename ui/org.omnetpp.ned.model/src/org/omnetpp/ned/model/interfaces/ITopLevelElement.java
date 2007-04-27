@@ -1,11 +1,13 @@
 package org.omnetpp.ned.model.interfaces;
 
+import org.omnetpp.ned.model.INEDElement;
+
 /**
  * A marker interface to mark all elements that can be used as top level in a nedfile
  * @author rhornig
  */
-//XXX why not extends IHasParent, IHasName, IHasAncestors? maybe also IHasDisplayString and IHasParameters
-//XXX format comments: make @author rhornig *follow* the class doc!
-public interface ITopLevelElement {
+//XXX extend IHasDisplayString and IHasParameters too?
+public interface ITopLevelElement extends INEDElement, 
+	IHasParent, IHasName, IHasAncestors {
 
 }
