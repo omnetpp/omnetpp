@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
-import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasInterfaces;
 import org.omnetpp.ned.model.pojo.InterfaceNameNode;
 

@@ -8,7 +8,7 @@ import org.omnetpp.ned.model.INEDElement;
  * Interface for aquiring parameter lists for the object
  * @author rhornig
  */
-public interface IHasParameters {
+public interface IHasParameters extends INEDElement {
 
     /**
      * @return The name / parameter node association. You SHOULD NOT modify the returned

@@ -8,7 +8,7 @@ import org.omnetpp.ned.model.INEDElement;
  * Elements that may contain gates
  * @author rhornig
  */
-public interface IHasGates {
+public interface IHasGates extends INEDElement {
 
     /**
      * @return All Gate elements

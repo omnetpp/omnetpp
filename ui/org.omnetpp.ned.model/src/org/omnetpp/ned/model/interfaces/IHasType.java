@@ -6,7 +6,7 @@ import org.omnetpp.ned.model.INEDElement;
  * Elements that have type-like property
  * @author rhornig
  */
-public interface IHasType {
+public interface IHasType extends INEDElement {
     /**
      * @return The type of the object
      */

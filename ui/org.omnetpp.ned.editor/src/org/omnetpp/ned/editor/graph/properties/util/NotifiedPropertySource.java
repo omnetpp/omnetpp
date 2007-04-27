@@ -15,12 +15,12 @@ abstract public class NotifiedPropertySource
     /**
      * Default construtor doesn't register itself as a model listener
      */
-    NotifiedPropertySource() {
+    public NotifiedPropertySource() {
     }
 
-    NotifiedPropertySource(INEDElement model) {
-        // register the propertysource as a listener for the model so it will be notified
-        // once someone changes the underlying model
+    public NotifiedPropertySource(INEDElement model) {
+        // register the propertysource as a listener for the model, 
+    	// so it will be notified when someone changes the underlying model
         model.getListeners().add(this);
     }
 
