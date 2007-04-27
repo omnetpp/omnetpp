@@ -26,7 +26,8 @@
 #include "filternodes.h"
 #include "filewriter.h"
 #include "arraybuilder.h"
-#include "octaveexport.h"
+//#include "octaveexport.h"
+#include "export.h"
 #include "stringutil.h"
 
 
@@ -56,7 +57,7 @@ void printUsage()
        "    -a <function>   apply the given processing to the vector (see syntax below)\n"
        "                    This option may occur multiple times.\n"
        "    -O <filename>   output file name\n"   //FIXME separate file for vectors and scalars I guess
-       "    -F <formatname> format of output file: vec, sca, ...\n" //TODO
+       "    -F <formatname> format of output file: vec, sca, matlab, octave, csv, ...\n" //TODO
        "    -V              print info about progress (verbose)\n"
        //TODO option: print matching vectorIDs and exit
        //TODO: dump scalars too!!!
@@ -84,6 +85,19 @@ void printUsage()
     );
 }
 
+// TODO create registry
+ScaveExport *createExporter(const std::string &name)
+{
+    if (name == "octave")
+        return new OctaveTextExport;
+    else if (name == "matlab")
+        return new MatlabScriptExport;
+    else if (name == "csv")
+        return new CsvExport;
+    else
+        return NULL;
+}
+
 int filterCommand(int argc, char **argv)
 {
     // options
@@ -98,11 +112,6 @@ int filterCommand(int argc, char **argv)
     std::vector<std::string> opt_filterList;
     std::vector<std::string> opt_fileNames;
     StringMap opt_runAttrPatterns; //FIXME options to fill this
-
-    //FIXME only exactly one of the next ones may be true
-    bool opt_writeVectorFile = true;    //TODO create option for this
-    bool opt_writeSeparateFiles = false; //TODO create option for this
-    bool opt_writeOctaveFile = false; //TODO create option for this
 
     // parse options
     bool endOpts = false;
@@ -136,6 +145,11 @@ int filterCommand(int argc, char **argv)
         else
             {fprintf(stderr, "unknown option `%s'", opt);return 1;}
     }
+
+    // only exactly one of the next ones may be true
+    bool opt_writeVectorFile = (opt_outputFormat.empty() || opt_outputFormat == "vec");
+    bool opt_writeSeparateFiles = false; //TODO create option for this
+    bool opt_writeExportFile = !(opt_writeVectorFile || opt_writeSeparateFiles);
 
     try
     {
@@ -278,7 +292,7 @@ int filterCommand(int argc, char **argv)
                 dataflowManager.connect(vectorPorts[i], &(writerNode->in));
             }
         }
-        else if (opt_writeOctaveFile)
+        else if (opt_writeExportFile)
         {
             // for Octave, we must build arrays
             if (opt_verbose) printf("adding array builders for Octave output\n");
@@ -299,24 +313,47 @@ int filterCommand(int argc, char **argv)
         if (opt_verbose) printf("running dataflow network...\n");
         dataflowManager.execute();
 
-        if (opt_writeOctaveFile)
+        if (opt_writeExportFile)
         {
-            // here we have to actually save it
-            OctaveExport exporter("data.octave"); //XXX filename
-            for (int i=0; i<vectorIDList.size(); i++)
+            ScaveExport *exporter = createExporter(opt_outputFormat);
+            if (exporter)
             {
-                const VectorResult& vector = resultFileManager.getVector(vectorIDList.get(i));
-                std::string uniqueName = exporter.makeUniqueName(vector.nameRef->c_str());
+                try
+                {
+                    std::string fileName = exporter->makeFileName(opt_outputFileName);
+                    exporter->open(fileName);
+                    // write vectors
+                    for (int i=0; i<vectorIDList.size(); i++)
+                    {
+                        const VectorResult& vector = resultFileManager.getVector(vectorIDList.get(i));
+                        std::string uniqueName = *vector.nameRef; // TODO
+                        std::string descr = *vector.nameRef + "; "
+                                          + *vector.moduleNameRef + "; "
+                                          + vector.fileRunRef->fileRef->fileSystemFilePath + "; "
+                                          + vector.fileRunRef->runRef->runName;
+                        XYArray *xyArray = arrayBuilders[i]->getArray();
+                        exporter->saveVector(uniqueName, descr, xyArray);
+                        delete xyArray;
+                    }
+                    // write scalars
+                    if (!scalarIDList.isEmpty())
+                        exporter->saveScalars("scalars", "scalar desc", scalarIDList,
+                            ScalarFields(ScalarFields::ALL, ScalarFields::NAME), resultFileManager);
 
-                std::string descr = *vector.nameRef + "; "
-                                  + *vector.moduleNameRef + "; "
-                                  + vector.fileRunRef->fileRef->fileSystemFilePath + "; "
-                                  + vector.fileRunRef->runRef->runName;
-                XYArray *xyArray = arrayBuilders[i]->getArray();
-                exporter.saveVector(uniqueName.c_str(), descr.c_str(), xyArray);
-                delete xyArray;
+                    exporter->close();
+                    delete exporter;
+                }
+                catch (std::exception&)
+                {
+                    delete exporter;
+                    throw;
+                }
             }
-            exporter.close();
+            else
+            {
+                fprintf(stdout, "Unknown output file format: %s\n", opt_outputFormat.c_str());
+                return 1;
+            }
         }
 
         if (opt_verbose) printf("done\n");

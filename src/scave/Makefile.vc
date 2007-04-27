@@ -19,9 +19,9 @@ OBJS= arraybuilder.obj channel.obj commonnodes.obj compoundfilter.obj \
       idlist.obj mergernodes.obj nodetype.obj nodetyperegistry.obj \
       resultfilemanager.obj slidingwinavg.obj \
       vectorfilereader.obj vectorfilewriter.obj windowavg.obj \
-      xyplotnode.obj octaveexport.obj indexedvectorfile.obj \
+      xyplotnode.obj indexedvectorfile.obj \
       vectorfileindexer.obj indexfile.obj scaveutils.obj \
-      scaveexception.obj enumtype.obj
+      scaveexception.obj enumtype.obj export.obj
 
 #
 # Automatic rules
@@ -154,6 +154,13 @@ enumtype.obj: enumtype.cc \
   ../common/commondefs.h \
   scavedefs.h \
   ../common/bigdecimal.h \
+  ../common/exception.h
+export.obj: export.cc \
+  export.h \
+  scavedefs.h \
+  ../common/bigdecimal.h \
+  xyarray.h \
+  ../common/commondefs.h \
   ../common/exception.h
 filewriter.obj: filewriter.cc \
   channel.h \
@@ -315,7 +322,7 @@ scavetool.obj: scavetool.cc \
   filternodes.h \
   filewriter.h \
   arraybuilder.h \
-  octaveexport.h \
+  export.h \
   ../common/stringutil.h \
   idlist.h \
   enumtype.h \
