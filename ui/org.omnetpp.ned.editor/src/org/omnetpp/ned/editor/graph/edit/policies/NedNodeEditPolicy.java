@@ -17,12 +17,12 @@ import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned.model.interfaces.INamedGraphNode;
 
 /**
- * Handle all connection related requests for graphically represented nodes (compound and submodules) 
- * @author rhornig
+ * Handle all connection related requests for graphically represented nodes (compound and submodules)
  *
+ * @author rhornig
  */
 public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
-	
+
 	// Used to give feedback during dragging
 	@Override
 	protected Connection createDummyConnection(Request req) {
@@ -39,9 +39,9 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
         ConnectionCommand command = new ConnectionCommand(conn, getModuleEditPart().getCompoundModulePart(), srcEP, null);
         command.setSrcModule(getGraphNodeModel());
         GateAnchor anchor = (GateAnchor)getModuleEditPart().getSourceConnectionAnchor(request);
-        if (anchor == null) 
+        if (anchor == null)
         	return UnexecutableCommand.INSTANCE;
-        
+
         request.setStartCommand(command);
         return command;
     }
@@ -53,9 +53,9 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
         command.setDestModule(getGraphNodeModel());
         command.setDestEditPart((ModuleEditPart)request.getTargetEditPart());
         GateAnchor anchor = (GateAnchor)getModuleEditPart().getTargetConnectionAnchor(request);
-        if (anchor == null) 
+        if (anchor == null)
         	return UnexecutableCommand.INSTANCE;
-        
+
         return command;
     }
 
@@ -64,11 +64,11 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
     	ConnectionNodeEx conn = (ConnectionNodeEx) request.getConnectionEditPart().getModel();
         ModuleEditPart srcEP = (ModuleEditPart)request.getConnectionEditPart().getSource();
         ModuleEditPart targetEP = (ModuleEditPart)request.getTarget();
-        ConnectionCommand cmd = new ConnectionCommand(conn, getModuleEditPart().getCompoundModulePart(), 
+        ConnectionCommand cmd = new ConnectionCommand(conn, getModuleEditPart().getCompoundModulePart(),
                                                       srcEP, targetEP);
 
         GateAnchor anchor = (GateAnchor)getModuleEditPart().getTargetConnectionAnchor(request);
-        if (anchor == null) 
+        if (anchor == null)
         	return UnexecutableCommand.INSTANCE;
 
         cmd.setDestModule(getGraphNodeModel());
@@ -81,21 +81,21 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
     	ConnectionNodeEx conn = (ConnectionNodeEx) request.getConnectionEditPart().getModel();
         ModuleEditPart targetEP = (ModuleEditPart)request.getConnectionEditPart().getTarget();
         ModuleEditPart srcEP = (ModuleEditPart)request.getTarget();
-        ConnectionCommand cmd = new ConnectionCommand(conn, getModuleEditPart().getCompoundModulePart(), 
+        ConnectionCommand cmd = new ConnectionCommand(conn, getModuleEditPart().getCompoundModulePart(),
                                                       srcEP, targetEP);
 
         GateAnchor anchor = (GateAnchor)getModuleEditPart().getSourceConnectionAnchor(request);
-        if (anchor == null) 
+        if (anchor == null)
         	return UnexecutableCommand.INSTANCE;
-        
+
         cmd.setSrcModule(getGraphNodeModel());
         cmd.setDestModule(conn.getDestModuleRef());
         return cmd;
     }
-    
+
     /**
      * Feedback should be added to the scaled feedback layer.
-     * 
+     *
      * @see org.eclipse.gef.editpolicies.GraphicalEditPolicy#getFeedbackLayer()
      */
     @Override

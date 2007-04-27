@@ -10,8 +10,8 @@ import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IHasName;
 
 /**
- * @author rhornig
  * Property source to display all submodules for a given compound module
+ * @author rhornig
  */
 public class GateListPropertySource extends NotifiedPropertySource {
     public final static String CATEGORY = "gates";

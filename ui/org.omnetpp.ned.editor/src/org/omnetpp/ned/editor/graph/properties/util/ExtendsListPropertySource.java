@@ -9,8 +9,8 @@ import org.omnetpp.ned.model.interfaces.IHasAncestors;
 import org.omnetpp.ned.model.pojo.ExtendsNode;
 
 /**
- * @author rhornig
  * Property source to display all submodules for a given compound module
+ * @author rhornig
  */
 public class ExtendsListPropertySource extends NotifiedPropertySource {
     public final static String CATEGORY = "extends";

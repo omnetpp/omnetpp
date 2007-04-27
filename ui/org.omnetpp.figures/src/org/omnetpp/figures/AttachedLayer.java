@@ -4,9 +4,10 @@ import org.eclipse.draw2d.*;
 import org.eclipse.draw2d.geometry.*;
 
 /**
- * @author rhornig
  * Container layer that hooks itself to its reference figure and relatively locates itself
- * to it using the provided locator.  By default it has a StackLayout and not opaque.
+ * to it using the provided locator. By default it has a StackLayout and is not opaque.
+ *
+ * @author rhornig
  */
 public class AttachedLayer extends Layer implements AncestorListener {
 
@@ -16,7 +17,7 @@ public class AttachedLayer extends Layer implements AncestorListener {
     protected PrecisionPoint attachedPoint;
     protected Point translation = new Point(0,0);
 
-    public AttachedLayer(IFigure refFig, PrecisionPoint refPoint, 
+    public AttachedLayer(IFigure refFig, PrecisionPoint refPoint,
                            IFigure attachedFig, PrecisionPoint attachedPoint,
                            Point translation) {
         super();
@@ -26,7 +27,7 @@ public class AttachedLayer extends Layer implements AncestorListener {
         this.attachedPoint = attachedPoint;
         this.translation = (translation == null) ? new Point(0,0) : translation;
         setLayoutManager(new StackLayout());
-        
+
         // add the attached fig as our child
         add(attachedFig);
 
@@ -37,13 +38,13 @@ public class AttachedLayer extends Layer implements AncestorListener {
         // This MAY cause that this object is still kept in memory even after removing it from
         // its parent because the referenceFigure still keep a a reference to it in the ancestorListener list
         // general problem: is it possible to manipulate a listenerList while processing an event fired for
-        // this listener? 
-        // FIXME should be fixed once the issue is resolved in draw2d 
-        // (should provide a way of firing to all listener, even if the listener list is beeing modified) 
+        // this listener?
+        // FIXME should be fixed once the issue is resolved in draw2d
+        // (should provide a way of firing to all listener, even if the listener list is beeing modified)
         refFigure.addAncestorListener(this);
     }
 
-    
+
 //    @Override
 //    public void addNotify() {
 //        super.addNotify();
@@ -69,11 +70,11 @@ public class AttachedLayer extends Layer implements AncestorListener {
      * @param parentFig A figure to be used as a parent fo the newly created wrapper figure
      * @return the wrapper figure used the attach the two figures
      */
-    public AttachedLayer(IFigure refFig, int refLoc, 
+    public AttachedLayer(IFigure refFig, int refLoc,
                                          IFigure attachedFig, int attachedLoc) {
         this(refFig, locToPrecPoint(refLoc), attachedFig, locToPrecPoint(attachedLoc), null);
     }
-    
+
     public AttachedLayer(IFigure refFig, int refLoc, IFigure attachedFig, int attachedLoc, int dx, int dy) {
         this(refFig, locToPrecPoint(refLoc), attachedFig, locToPrecPoint(attachedLoc), new Point(dx,dy));
     }
@@ -108,7 +109,7 @@ public class AttachedLayer extends Layer implements AncestorListener {
         this.refPoint = refPoint;
         this.attachedPoint = attachedPoint;
     }
-    
+
     public void setRefPoints(int refLoc, int attachedLoc) {
         this.refPoint = locToPrecPoint(refLoc);
         this.attachedPoint = locToPrecPoint(attachedLoc);
@@ -133,10 +134,10 @@ public class AttachedLayer extends Layer implements AncestorListener {
     }
 
     /**
-     * Returns the figure's reference point in absolute coordinates 
+     * Returns the figure's reference point in absolute coordinates
      * @param figure the figure whose reference point is requested
      * @param relRefPoint The relative placement of the refPoint in the bounding rectangle
-     * @return the reference point relative to the figure's upper left corner 
+     * @return the reference point relative to the figure's upper left corner
      */
     protected Point getRefPoint(IFigure figure, PrecisionPoint relRefPoint) {
         Rectangle bounds = figure.getBounds();
@@ -144,7 +145,7 @@ public class AttachedLayer extends Layer implements AncestorListener {
                          (bounds.height -1 ) * relRefPoint.preciseY);
     }
 
-    // set the bounds of this figure based on the relative data and the place of the reference figure 
+    // set the bounds of this figure based on the relative data and the place of the reference figure
     protected void relocate() {
           Rectangle bounds = refFigure.getBounds().getCopy();
 
@@ -156,7 +157,7 @@ public class AttachedLayer extends Layer implements AncestorListener {
           refFigure.translateToAbsolute(bounds);
           attachedFigure.translateToRelative(bounds);
           bounds.translate(getRefPoint(refFigure, refPoint));
-          bounds.translate(getRefPoint(attachedFigure, attachedPoint).negate()); 
+          bounds.translate(getRefPoint(attachedFigure, attachedPoint).negate());
           bounds.translate(translation);
           attachedFigure.setBounds(bounds);
           // set the contaniner position too (no border/inset calculation)

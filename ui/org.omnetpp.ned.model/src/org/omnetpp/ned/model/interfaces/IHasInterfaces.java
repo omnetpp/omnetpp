@@ -5,8 +5,8 @@ import java.util.List;
 import org.omnetpp.ned.model.pojo.InterfaceNameNode;
 
 /**
- * @author rhornig
  * Objects that can implement other interfaces
+ * @author rhornig
  */
 public interface IHasInterfaces {
 

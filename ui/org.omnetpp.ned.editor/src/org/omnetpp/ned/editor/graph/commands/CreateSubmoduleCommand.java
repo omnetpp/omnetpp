@@ -6,8 +6,8 @@ import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 
 /**
+ * Adds a newly created Submodule element to a compound module.
  * @author rhornig
- * Adds a newly created Submodule element to a compound module. 
  */
 public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
 
@@ -17,16 +17,16 @@ public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
     // TODO substitute index based positioning with sibling based one
     private int index = -1;
 
-    
+
     public CreateSubmoduleCommand(CompoundModuleNodeEx parent, SubmoduleNodeEx child) {
     	this.child = child;
     	this.parent = parent;
     }
-    
+
     @Override
     public boolean canExecute() {
-        return child != null && parent != null && 
-        		child instanceof SubmoduleNodeEx && 
+        return child != null && parent != null &&
+        		child instanceof SubmoduleNodeEx &&
         		parent instanceof CompoundModuleNodeEx;
     }
 

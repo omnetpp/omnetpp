@@ -7,8 +7,8 @@ import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 
 /**
- * @author rhornig
  * A property source that is notified of the underlying model changes
+ * @author rhornig
  */
 abstract public class NotifiedPropertySource
                             implements IPropertySource2, INEDChangeListener {

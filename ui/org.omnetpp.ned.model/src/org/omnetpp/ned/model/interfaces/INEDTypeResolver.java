@@ -6,10 +6,14 @@ import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.omnetpp.ned.model.INEDElement;
 
+/*
+ * For accessing NED types.
+ *
+ * @author Andras
+ */
 public interface INEDTypeResolver {
-     /**
-     *
-     * @author rhornig
+    /**
+     * Interface for filtering methods like getAllComponentNamesFilteredBy().
      */
     interface IFilter {
         /**

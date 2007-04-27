@@ -4,8 +4,8 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.pojo.NEDElementFactory;
 
 /**
- * @author rhornig
  * Create model elements based on string or numeric id
+ * @author rhornig
  */
 public final class NEDElementFactoryEx extends NEDElementFactory {
 

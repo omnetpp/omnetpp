@@ -27,8 +27,8 @@ import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 /**
  * Layout policy used in the top levele NedFile element allowing a vertical, toolbar like
  * layout, rearange of components.
- * @author rhornig
  *
+ * @author rhornig
  */
 public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 

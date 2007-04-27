@@ -10,8 +10,8 @@ import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.ned.model.INEDElement;
 
 /**
- * @author rhornig
  * Merges several IPropertySource into a single PropertySource (flattens structure)
+ * @author rhornig
  */
 public class MergedPropertySource implements IPropertySource2 {
     public static final String BASE_CATEGORY = "Base";

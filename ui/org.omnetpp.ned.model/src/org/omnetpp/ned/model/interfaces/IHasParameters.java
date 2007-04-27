@@ -5,8 +5,8 @@ import java.util.Map;
 import org.omnetpp.ned.model.INEDElement;
 
 /**
- * @author rhornig
  * Interface for aquiring parameter lists for the object
+ * @author rhornig
  */
 public interface IHasParameters {
 

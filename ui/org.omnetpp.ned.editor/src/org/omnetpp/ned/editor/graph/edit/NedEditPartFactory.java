@@ -10,10 +10,11 @@ import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned.model.interfaces.ITopLevelElement;
 
 /**
- * @author rhornig
  * Factory to create corresponding controller objects for the modell objects.
  * Only model objects ecplicitly handled here will have a controleer and a visulal
- * counterpart in the editor 
+ * counterpart in the editor
+ *
+ * @author rhornig
  */
 public class NedEditPartFactory implements EditPartFactory {
 
@@ -22,7 +23,7 @@ public class NedEditPartFactory implements EditPartFactory {
 
         EditPart child = null;
 
-        if (model instanceof NedFileNodeEx) 
+        if (model instanceof NedFileNodeEx)
         	child = new NedFileEditPart();
         else if (model instanceof CompoundModuleNodeEx)
             child = new CompoundModuleEditPart();

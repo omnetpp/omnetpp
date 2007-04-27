@@ -8,8 +8,8 @@ import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.model.ex.ChannelInterfaceNodeEx;
 
 /**
- * @author rhornig
  * Property source for channel interfaces
+ * @author rhornig
  */
 public class ChannelInterfacePropertySource extends MergedPropertySource {
 

@@ -11,8 +11,8 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * @author rhornig
  * Places the cell editor over the provided label (and sets its fontsize too)
+ * @author rhornig
  */
 public class LabelCellEditorLocator implements CellEditorLocator {
     protected Label label;
@@ -29,7 +29,7 @@ public class LabelCellEditorLocator implements CellEditorLocator {
     /**
      * Creates a new LabelCellEditorLocator for the given Label
      * @param label
-     * @param centerAlign whether to align the center of the cell editor to the center of the label 
+     * @param centerAlign whether to align the center of the cell editor to the center of the label
      */
     public LabelCellEditorLocator(Label label, boolean centerAlign) {
         this.label = label;

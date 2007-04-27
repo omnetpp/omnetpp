@@ -8,8 +8,8 @@ import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 
 /**
- * @author rhornig
  * Property source to display all submodules for a given compound module
+ * @author rhornig
  */
 public class SubmoduleListPropertySource extends NotifiedPropertySource {
     public final static String CATEGORY = "submodules";
@@ -18,7 +18,7 @@ public class SubmoduleListPropertySource extends NotifiedPropertySource {
     protected PropertyDescriptor[] pdesc;
     protected int totalSubmoduleCount;
     protected int inheritedSubmoduleCount;
-    
+
     public SubmoduleListPropertySource(CompoundModuleNodeEx model) {
         super(model);
         this.model = model;
@@ -27,7 +27,7 @@ public class SubmoduleListPropertySource extends NotifiedPropertySource {
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
         List<SubmoduleNodeEx> submodules = model.getSubmodules();
-        
+
         pdesc = new PropertyDescriptor[submodules.size()];
         totalSubmoduleCount = inheritedSubmoduleCount = 0;
         for(SubmoduleNodeEx smodule : submodules) {
@@ -36,7 +36,7 @@ public class SubmoduleListPropertySource extends NotifiedPropertySource {
                 inheritedSubmoduleCount++;
                 definedIn= " (inherited from "+smodule.getCompoundModule().getName()+")";
             }
-            String typeString = "".equals(smodule.getLikeType()) || smodule.getLikeType() == null ? 
+            String typeString = "".equals(smodule.getLikeType()) || smodule.getLikeType() == null ?
                             smodule.getType() : "<"+smodule.getLikeParam()+"> like "+smodule.getLikeType();
             pdesc[totalSubmoduleCount] = new PropertyDescriptor(smodule, typeString);
             pdesc[totalSubmoduleCount].setCategory(CATEGORY);
@@ -44,7 +44,7 @@ public class SubmoduleListPropertySource extends NotifiedPropertySource {
                                                         +definedIn+" - (read only)");
             totalSubmoduleCount++;
         }
-        
+
         return pdesc;
     }
 
@@ -53,9 +53,9 @@ public class SubmoduleListPropertySource extends NotifiedPropertySource {
         // just a little summary - show the number of submodules
         String summary = "";
         // if the property descriptor is not yet build, build it now
-        if (pdesc == null) 
+        if (pdesc == null)
             getPropertyDescriptors();
-        
+
         if (pdesc != null )
             summary ="total: "+totalSubmoduleCount+" (inherited: "+inheritedSubmoduleCount+")";
         return summary;
@@ -65,7 +65,7 @@ public class SubmoduleListPropertySource extends NotifiedPropertySource {
     public Object getPropertyValue(Object id) {
         if (!(id instanceof SubmoduleNodeEx))
             return getEditableValue();
-        
+
         return ((SubmoduleNodeEx)id).getNameWithIndex();
     }
 

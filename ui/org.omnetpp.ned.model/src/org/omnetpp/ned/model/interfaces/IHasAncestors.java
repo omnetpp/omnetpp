@@ -6,13 +6,12 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.pojo.ExtendsNode;
 
 /**
- * @author rhornig
  * Objects that can extend other objects, ie they are derived objects.
+ * @author rhornig
  */
 public interface IHasAncestors {
 
     /**
-     *
      * @return The base object's name (ONLY the first extends node name returned)
      */
     public String getFirstExtends();

@@ -3,9 +3,10 @@ package org.omnetpp.ned.editor.graph.properties.view;
 import org.eclipse.ui.views.properties.PropertySheetSorter;
 
 /**
- * @author rhornig
  * This class shorts the properties almost alphabetically EXCEPT it places
  * the "Base" category at the beginning of the sheet.
+ *
+ * @author rhornig
  */
 public class BasePreferrerPropertySheetSorter extends PropertySheetSorter {
 

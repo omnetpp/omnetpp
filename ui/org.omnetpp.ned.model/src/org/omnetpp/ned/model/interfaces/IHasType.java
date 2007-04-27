@@ -3,8 +3,8 @@ package org.omnetpp.ned.model.interfaces;
 import org.omnetpp.ned.model.INEDElement;
 
 /**
- * @author rhornig
  * Elements that have type-like property
+ * @author rhornig
  */
 public interface IHasType {
     /**

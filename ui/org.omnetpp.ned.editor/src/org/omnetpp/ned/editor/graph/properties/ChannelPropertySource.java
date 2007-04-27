@@ -17,8 +17,8 @@ import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.model.ex.ChannelNodeEx;
 
 /**
- * @author rhornig
  * Property source for channels
+ * @author rhornig
  */
 public class ChannelPropertySource extends MergedPropertySource {
 
@@ -31,7 +31,7 @@ public class ChannelPropertySource extends MergedPropertySource {
             setDisplayString(model.getDisplayString());
             // define which properties should be displayed in the property sheet
             // we do not support all properties currently, just colow, width ans style
-            supportedProperties.addAll(EnumSet.range(DisplayString.Prop.CONNECTION_COL, 
+            supportedProperties.addAll(EnumSet.range(DisplayString.Prop.CONNECTION_COL,
                     								 DisplayString.Prop.CONNECTION_STYLE));
             supportedProperties.addAll(EnumSet.range(DisplayString.Prop.TEXT, DisplayString.Prop.TEXTPOS));
             supportedProperties.add(DisplayString.Prop.TOOLTIP);

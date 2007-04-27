@@ -11,35 +11,35 @@ import org.eclipse.draw2d.geometry.Point;
 
 /**
  * This class is responsible for parsing and creating display strings in the correct format.
- * Defines all possible properties that can be used and also adds meta information to the 
+ * Defines all possible properties that can be used and also adds meta information to the
  * properties
- * @author rhornig
  *
+ * @author rhornig
  */
 // FIXME default handling is still not ok. Block size etc is not defaults to -1 if left empty
 public class DisplayString implements IDisplayString {
-    
+
     // contains the default fallback values for the different tags if a variable is used in that position
-    public static final DisplayString VARIABLE_DEFAULTS 
+    public static final DisplayString VARIABLE_DEFAULTS
         = new DisplayString("i=,,30;i2=,,30;b=40,40,rect,#8080ff,black,2;t=,t,blue;r=100,,black,1;bgb=-1,-1,grey75,black,2;bgg=100,1,grey50");
     // contains the default fallback values for the different tags if it is empty
-    public static final DisplayString EMPTY_DEFAULTS 
+    public static final DisplayString EMPTY_DEFAULTS
         = new DisplayString("i=,,30;i2=,,30;b=-1,-1,rect,#8080ff,black,2;t=,t,blue;r=,,black,1;bgb=-1,-1,grey75,black,2;bgg=,1,grey50");
 
     // hold default values (if specified in derived calsses)
-    // first look in 'this' then in 'defaults' then in 'variableDefaults' or 'emptyDefaults' 
-    protected DisplayString variableDefaults = null; 
+    // first look in 'this' then in 'defaults' then in 'variableDefaults' or 'emptyDefaults'
+    protected DisplayString variableDefaults = null;
     protected DisplayString emptyDefaults = null;
     // use only a week reference so if the referenced fallback displaystring is deleted
     // along with the containing model element, it will not be held in the memory
     protected WeakReference<DisplayString> defaults = null;
     // whether notification is enabled or not
     protected boolean notifyEnabled = true;
-    
+
     // the owner of the displaystring
     protected IHasDisplayString owner = null;
-    
-    // map that stores the currently available tag instances 
+
+    // map that stores the currently available tag instances
     private Map<String, TagInstance> tagMap = new LinkedHashMap<String, TagInstance>();
 
     public class TagInstance {
@@ -56,21 +56,21 @@ public class DisplayString implements IDisplayString {
             if (tagString != null)
                 parseTag(tagString);
         }
-        
+
         /**
          * @return The tagname
          */
         public String getName() {
-            return name;   
+            return name;
         }
-        
+
         /**
          * Returns a tag argument at the given position
          * @param pos
-         * @return The value os that position or <code>EMPTY_VALUE</code> if does not exist 
+         * @return The value os that position or <code>EMPTY_VALUE</code> if does not exist
          */
         public String getArg(int pos) {
-            if (pos < 0 || pos >= args.size() || args.get(pos) == null) 
+            if (pos < 0 || pos >= args.size() || args.get(pos) == null)
                 return EMPTY_VALUE;
             return args.get(pos);
         }
@@ -85,17 +85,17 @@ public class DisplayString implements IDisplayString {
             args.setSize(Math.max(args.size(), pos+1));
             args.set(pos, newValue);
         }
-        
+
         /**
          * Check if the tag's value is default
          * @return <code>true</code> if ALL tag values are missing or have the default value
          */
         public boolean isDefault() {
             for(String val : args)
-                if(val != null && !EMPTY_VALUE.equals(val)) return false; 
+                if(val != null && !EMPTY_VALUE.equals(val)) return false;
             return true;
         }
-        
+
         /**
          * @return the values part of the tag
          */
@@ -107,17 +107,17 @@ public class DisplayString implements IDisplayString {
                 if(args.get(endPos) != null && !EMPTY_VALUE.equals(args.get(endPos))) break;
             // if there are unnecessary default values at the end, throw them away
             if(endPos < args.size() - 1) args.setSize(endPos + 1);
-            
+
             boolean firstArg = true;
             for (String val : args) {
                 if(firstArg) firstArg = false;
-                    else sb.append(','); 
-                
+                    else sb.append(',');
+
                 if (val != null) sb.append(val);
             }
             return sb.toString();
         }
-        
+
         /**
          * @return the string representation of the tag or <code>EMPTY_VALUE</code>
          * if all the args are default
@@ -127,7 +127,7 @@ public class DisplayString implements IDisplayString {
             if (isDefault()) return EMPTY_VALUE;
             return getName()+"="+getArgString();
         }
-        
+
         // parse a single tag and its values into a string vector
         private void parseTag(String tagStr) {
             args = new Vector<String>(2);
@@ -143,11 +143,11 @@ public class DisplayString implements IDisplayString {
         }
     }
 
-    
+
     /**
      * Create a display string tokenizer class only derived classes alowed to be created
-     * @param owner owner of the displaystring object (who has this displaystring) owner 
-     * 		  will be notified about changes 
+     * @param owner owner of the displaystring object (who has this displaystring) owner
+     * 		  will be notified about changes
      * @param value The string to be parsed
      */
     public DisplayString(IHasDisplayString owner, String value) {
@@ -185,8 +185,8 @@ public class DisplayString implements IDisplayString {
      * Returns the value of the given tag on the given position
      * @param tag TagInstance to be checked
      * @param pos Position (0 based)
-     * @return TagInstance arg's value or <code>EMPTY_VALUE</code> if empty 
-     * or <code>null</code> if tag does not exist at all 
+     * @return TagInstance arg's value or <code>EMPTY_VALUE</code> if empty
+     * or <code>null</code> if tag does not exist at all
      */
     protected String getTagArg(Tag tag, int pos) {
         TagInstance tagInst = getTag(tag);
@@ -197,20 +197,20 @@ public class DisplayString implements IDisplayString {
         if(val == null) val = TagInstance.EMPTY_VALUE;
         return val;
     }
-    
+
     /**
      * @param tagName
      * @param pos
-     * @param defaultDspStr generic defaults 
+     * @param defaultDspStr generic defaults
      * @param defaultVariableDspStr defaults used if a variable is present at the location
-     * @return TagInstance arg's value or <code>EMPTY_VALUE</code> if empty and no default is defined 
+     * @return TagInstance arg's value or <code>EMPTY_VALUE</code> if empty and no default is defined
      * or <code>null</code> if tag does not exist at all. If a default diplay string was
      * provided with <code>setDefaults</code> it tries to look up the property from there
-     *  
+     *
      */
     protected String getTagArgUsingDefs(Tag tagName, int pos) {
         TagInstance tag = getTag(tagName);
-        // if the tag does'nt exist do not apply any defaults 
+        // if the tag does'nt exist do not apply any defaults
         if (tag == null) {
         	// if there is a default diplay string delegate the request there
         	if (getDefaults() != null)
@@ -221,9 +221,9 @@ public class DisplayString implements IDisplayString {
         // get the value
         String value = tag.getArg(pos);
         // if tag was present, but the argument was empty, look for default values
-        if (TagInstance.EMPTY_VALUE.equals(value) && getDefaults() != null) 
+        if (TagInstance.EMPTY_VALUE.equals(value) && getDefaults() != null)
             value = getDefaults().getTagArgUsingDefs(tagName, pos);
-        // look for variable defaults 
+        // look for variable defaults
         if (variableDefaults!=null && value!=null && value.startsWith("$"))
             value = variableDefaults.getTagArg(tagName, pos);
         // if the value is still empty or null get the local default values  if any
@@ -232,7 +232,7 @@ public class DisplayString implements IDisplayString {
         // if no default was defined for this tag/argument return empty value
         if (value == null)
             return TagInstance.EMPTY_VALUE;
-        
+
         return value;
     }
 
@@ -254,7 +254,7 @@ public class DisplayString implements IDisplayString {
         }
         tagInstance.setArg(pos, newValue);
     }
-    
+
     /**
      * Returns the tag with a given name
      * @param tag equested tagname
@@ -263,7 +263,7 @@ public class DisplayString implements IDisplayString {
     protected TagInstance getTag(Tag tag) {
         return tagMap.get(tag.name());
     }
-    
+
     /**
      * Set the displayString and parse it from the given string
      * @param newValue Display string to be parsed
@@ -298,7 +298,7 @@ public class DisplayString implements IDisplayString {
                 sb.append(tagVal);
             }
         }
-        
+
         return sb.toString();
     }
 
@@ -313,7 +313,7 @@ public class DisplayString implements IDisplayString {
     /**
      * Returns the property value as an Integer
      * @param property
-     * @return The value as Integer or 0 if value was empty or non number, 
+     * @return The value as Integer or 0 if value was empty or non number,
      *  and <code>null</code> if the tag was not present at all
      */
     public Integer getAsInteger(Prop property) {
@@ -349,15 +349,15 @@ public class DisplayString implements IDisplayString {
     public Integer getAsIntegerDef(Prop property) {
         String strVal = getAsStringDef(property);
         // if tag not present at all
-        if(strVal == null || TagInstance.EMPTY_VALUE.equals(strVal)) 
+        if(strVal == null || TagInstance.EMPTY_VALUE.equals(strVal))
         	return null;
-        
+
         try {
             return Integer.valueOf(strVal);
         } catch (NumberFormatException e) { }
         return new Integer(0);
     }
-    
+
     /* (non-Javadoc)
 	 * @see org.omnetpp.ned2.model.IDisplayString#getAsIntDef(org.omnetpp.ned2.model.DisplayString.Prop, int)
 	 */
@@ -376,11 +376,11 @@ public class DisplayString implements IDisplayString {
         } catch (NumberFormatException e) { }
         return defValue;
 	}
-	
+
 	/**
      * Sets the specified property to the given value in the displaystring
      * @param property Property to be set
-     * @param newValue 
+     * @param newValue
      */
     public void set(Prop property, String newValue) {
         String oldValue = getAsString(property);
@@ -393,27 +393,27 @@ public class DisplayString implements IDisplayString {
         setTagArg(property.getTag(), property.getPos(), String.valueOf(newValue));
         fireDisplayStringChanged(property, newValue, oldValue);
     }
-    
+
     /* (non-Javadoc)
 	 * @see org.omnetpp.ned2.model.IDisplayString#getScale()
 	 */
 	public float getScale() {
 		return getAsFloatDef(Prop.MODULE_SCALE, 1.0f);
 	}
-    
+
     // helper functions for setting and getting the location and size properties
 	/**
 	 */
 	/**
      * Converts the provided value (in pixel) to unit
-     * @param pixel 
+     * @param pixel
      * @param overrideScale If not NULL it will be used as scaling factor instead of the stored one
      * @return Value in units
 	 */
 	public final float pixel2unit(int pixel, Float overrideScale) {
         if (overrideScale != null)
             return pixel / overrideScale;
-        
+
 		return  pixel / getScale();
 	}
 
@@ -426,10 +426,10 @@ public class DisplayString implements IDisplayString {
 	public final int unit2pixel(float unit, Float overrideScale) {
         if (overrideScale != null)
             return (int)(unit * overrideScale);
-        
+
 		return (int)(unit * getScale());
 	}
-	
+
     /**
      * Returns the range converted to pixels
      * @return
@@ -449,7 +449,7 @@ public class DisplayString implements IDisplayString {
         // if it's unspecified in any direction we should return a NULL constraint
         if (x == null || y == null)
             return null;
-        
+
         return new Point (unit2pixel(x, scale), unit2pixel(y, scale));
     }
 
@@ -465,7 +465,7 @@ public class DisplayString implements IDisplayString {
         if (location == null) {
             set(Prop.X, null);
             set(Prop.Y, null);
-        } else { 
+        } else {
             set(Prop.X, String.valueOf(pixel2unit(location.x, scale)));
             set(Prop.Y, String.valueOf(pixel2unit(location.y, scale)));
         }
@@ -482,10 +482,10 @@ public class DisplayString implements IDisplayString {
 	 */
     public Dimension getSize(Float scale) {
     	int width = unit2pixel(getAsFloatDef(Prop.WIDTH, -1.0f), scale);
-        width = width > 0 ? width : -1; 
+        width = width > 0 ? width : -1;
         int height = unit2pixel(getAsFloatDef(Prop.HEIGHT, -1.0f), scale);
-        height = height > 0 ? height : -1; 
-        
+        height = height > 0 ? height : -1;
+
         return new Dimension(width, height);
     }
 
@@ -499,13 +499,13 @@ public class DisplayString implements IDisplayString {
     	boolean tempNotifyState = notifyEnabled;
     	notifyEnabled = false;
         // if the size is unspecified, remove the size constraint from the model
-        if (size == null || size.width < 0 ) 
+        if (size == null || size.width < 0 )
             set(Prop.WIDTH, null);
         else
             set(Prop.WIDTH, String.valueOf(pixel2unit(size.width, scale)));
 
         // if the size is unspecified, remove the size constraint from the model
-        if (size == null || size.height < 0) 
+        if (size == null || size.height < 0)
             set(Prop.HEIGHT, null);
         else
             set(Prop.HEIGHT, String.valueOf(pixel2unit(size.height, scale)));
@@ -517,16 +517,16 @@ public class DisplayString implements IDisplayString {
     	// which coordinate has changed
     	fireDisplayStringChanged(Prop.HEIGHT, null, null);
     }
-    
+
     /**
      * @return The size of module (pixel) if represented as compound (bgb tag)
      */
     public Dimension getCompoundSize(Float scale) {
     	int width = unit2pixel(getAsFloatDef(Prop.MODULE_WIDTH, -1.0f), scale);
-        width = width > 0 ? width : -1; 
+        width = width > 0 ? width : -1;
         int height = unit2pixel(getAsFloatDef(Prop.MODULE_HEIGHT, -1.0f), scale);
-        height = height > 0 ? height : -1; 
-        
+        height = height > 0 ? height : -1;
+
         return new Dimension(width, height);
     }
 
@@ -540,13 +540,13 @@ public class DisplayString implements IDisplayString {
     	boolean tempNotifyState = notifyEnabled;
     	notifyEnabled = false;
         // if the size is unspecified, remove the size constraint from the model
-        if (size == null || size.width < 0 ) 
+        if (size == null || size.width < 0 )
             set(Prop.MODULE_WIDTH, null);
         else
             set(Prop.MODULE_WIDTH, String.valueOf(pixel2unit(size.width, scale)));
 
         // if the size is unspecified, remove the size constraint from the model
-        if (size == null || size.height < 0) 
+        if (size == null || size.height < 0)
             set(Prop.MODULE_HEIGHT, null);
         else
             set(Prop.MODULE_HEIGHT, String.valueOf(pixel2unit(size.height, scale)));
@@ -570,19 +570,19 @@ public class DisplayString implements IDisplayString {
     	notifyEnabled = false;
     	setLocation(loc, scale);
     	setSize(size, scale);
-    	
+
         // restore original notify state
     	notifyEnabled = tempNotifyState;
     	// we have explicitly disabled the notification, so we have to send it now manually
     	// be aware that size change always generates an width change notification regardless
     	// which coordinate has changed
-    	
+
     	// if the layout constraint has changed we send out an X coordinate changed event
     	fireDisplayStringChanged(Prop.X, null, null);
     }
-    
+
     /**
-     * Fire a property change notification 
+     * Fire a property change notification
      * @param changedProperty The changed property or NULL if it cannot be identified
      */
     /**

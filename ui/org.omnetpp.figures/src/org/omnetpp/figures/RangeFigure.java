@@ -5,9 +5,10 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.swt.SWT;
 
 /**
- * @author rhornig
  * A figure representing a range around submodules. Used tipically in wireless simulation
  * to denote transmission/interference range
+ *
+ * @author rhornig
  */
 public class RangeFigure extends Ellipse {
 

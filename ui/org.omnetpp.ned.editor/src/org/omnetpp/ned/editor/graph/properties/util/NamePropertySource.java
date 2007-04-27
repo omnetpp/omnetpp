@@ -7,8 +7,8 @@ import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.omnetpp.ned.model.interfaces.IHasName;
 
 /**
- * @author rhornig
  * A property source for displaying names
+ * @author rhornig
  */
 public class NamePropertySource implements IPropertySource2 {
 
@@ -16,10 +16,10 @@ public class NamePropertySource implements IPropertySource2 {
     protected IHasName model;
 
     public enum Prop { Name }
-    
+
     public NamePropertySource(IHasName namedNodeModel) {
         model = namedNodeModel;
-        
+
         // set up property descriptors
         PropertyDescriptor nameProp = new TextPropertyDescriptor(Prop.Name, "name");
         nameProp.setAlwaysIncompatible(true);
@@ -38,8 +38,8 @@ public class NamePropertySource implements IPropertySource2 {
     }
 
     public Object getPropertyValue(Object propName) {
-        if (Prop.Name.equals(propName)) { 
-            return model.getName(); 
+        if (Prop.Name.equals(propName)) {
+            return model.getName();
         }
         return null;
     }

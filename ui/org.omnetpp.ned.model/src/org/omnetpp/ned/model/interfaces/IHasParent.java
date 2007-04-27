@@ -3,8 +3,8 @@ package org.omnetpp.ned.model.interfaces;
 import org.omnetpp.ned.model.INEDElement;
 
 /**
- * @author rhornig
  * An object that can be added / removed to/from the model tree
+ * @author rhornig
  */
 public interface IHasParent {
 

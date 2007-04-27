@@ -8,8 +8,8 @@ import org.omnetpp.ned.model.interfaces.INamedGraphNode;
 
 /**
  * Change the size and location of the submodule
- * @author rhornig
  *
+ * @author rhornig
  */
 public class SetConstraintCommand extends Command {
 
@@ -32,7 +32,7 @@ public class SetConstraintCommand extends Command {
     public String getLabel() {
     	if (newPos == null )
     		return "Unpin " + module.getName();
-        if (newSize != null && !newSize.equals(oldSize)) 
+        if (newSize != null && !newSize.equals(oldSize))
             return "Resize " + module.getName();
         return "Move " + module.getName();
     }

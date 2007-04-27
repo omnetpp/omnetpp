@@ -39,9 +39,10 @@ import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.PropertyNode;
 
 /**
- * @author rhornig
  * Responsible for managing palette entries and keeping them in sync with
  * the components in NEDResources plugin
+ *
+ * @author rhornig
  */
 // TODO currently the whole palette is rebuilt on each model change
 // this is not necessay. Detect the changes in the palette and add/remove/modify only

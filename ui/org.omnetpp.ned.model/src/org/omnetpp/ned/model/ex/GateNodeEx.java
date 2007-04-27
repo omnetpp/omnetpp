@@ -8,8 +8,8 @@ import org.omnetpp.ned.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned.model.pojo.GateNode;
 
 /**
- * @author rhornig
  * Extended GateNode
+ * @author rhornig
  */
 public final class GateNodeEx extends GateNode implements IHasIndex, IHasName, IHasParent {
 

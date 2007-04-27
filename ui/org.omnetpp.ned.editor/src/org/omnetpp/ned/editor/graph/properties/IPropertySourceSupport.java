@@ -3,11 +3,11 @@ package org.omnetpp.ned.editor.graph.properties;
 import org.eclipse.ui.views.properties.IPropertySource;
 
 /**
- * @author rhornig
  * Objects that support property sheets should implement this interface
+ * @author rhornig
  */
 public interface IPropertySourceSupport {
-    
+
     /**
      * @return The cached property source (if any)
      */

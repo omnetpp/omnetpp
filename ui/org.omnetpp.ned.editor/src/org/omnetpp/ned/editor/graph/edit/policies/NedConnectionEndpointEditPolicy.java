@@ -12,8 +12,8 @@ import org.omnetpp.ned.editor.graph.misc.NedConnectionEndHandle;
 import org.omnetpp.ned.editor.graph.misc.NedConnectionStartHandle;
 
 /**
- * @author rhornig
  * Defines selection handle creation/removal
+ * @author rhornig
  */
 public class NedConnectionEndpointEditPolicy extends ConnectionEndpointEditPolicy {
 
@@ -26,14 +26,14 @@ public class NedConnectionEndpointEditPolicy extends ConnectionEndpointEditPolic
         super.addSelectionHandles();
 
         getConnectionFigure().setLineWidth(getConnectionFigure().getLocalLineWidth() + 1);
-        Color color = PolicyUtil.isEditable(getHost()) ? 
+        Color color = PolicyUtil.isEditable(getHost()) ?
                             ColorFactory.highlight : ColorFactory.lowlight;
         getConnectionFigure().setForegroundColor(color);
     }
 
     /* (non-Javadoc)
      * @see org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy#createSelectionHandles()
-     * Redefine to create special connection handles that return NedConnectionEndpointTracker 
+     * Redefine to create special connection handles that return NedConnectionEndpointTracker
      */
     @SuppressWarnings("unchecked")
     @Override

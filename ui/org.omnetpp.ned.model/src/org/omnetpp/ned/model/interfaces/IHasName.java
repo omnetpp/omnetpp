@@ -1,19 +1,19 @@
 package org.omnetpp.ned.model.interfaces;
 
 /**
- * @author rhornig
  * Objects that have a name property
+ * @author rhornig
  */
 public interface IHasName {
 
 	static String INITIAL_NAME = "unnamed";
 	/**
-	 * Returns name attribute 
+	 * Returns name attribute
 	 */
 	public String getName();
 
 	/**
-	 * Sets name attribute 
+	 * Sets name attribute
 	 */
 	public void setName(String name);
 

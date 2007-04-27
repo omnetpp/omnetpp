@@ -9,8 +9,8 @@ import org.omnetpp.figures.CompoundModuleGateAnchor;
 /**
  * Very basic straight connection router. It handles a CompoundModuleGateAnchor
  * differently so reference point can be calculated correctly.
- * @author rhornig
  *
+ * @author rhornig
  */
 public class CompoundModuleConnectionRouter extends AbstractRouter
 {
@@ -22,8 +22,8 @@ public class CompoundModuleConnectionRouter extends AbstractRouter
 
 	/**
 	 * Routes the given Connection directly between the source and target anchors.
-	 * Handles CompoundModuleGateAnchors differently, because they cannor provide a 
-	 * reference point without knowing the other end's reference point 
+	 * Handles CompoundModuleGateAnchors differently, because they cannor provide a
+	 * reference point without knowing the other end's reference point
 	 * @param conn the connection to be routed
 	 */
 	public void route(Connection conn) {
@@ -40,7 +40,7 @@ public class CompoundModuleConnectionRouter extends AbstractRouter
 	protected Point getEndPoint(Connection conn) {
 		Point ref = conn.getSourceAnchor().getReferencePoint();
 		// if the source anchor is a compound module anchor use the anchor location as reference point
-		if (conn.getSourceAnchor() instanceof CompoundModuleGateAnchor) 
+		if (conn.getSourceAnchor() instanceof CompoundModuleGateAnchor)
 			ref = conn.getSourceAnchor().getLocation(conn.getTargetAnchor().getReferencePoint());
 		return new Point((conn.getTargetAnchor().getLocation(ref)));
 	}
@@ -48,9 +48,9 @@ public class CompoundModuleConnectionRouter extends AbstractRouter
 	protected Point getStartPoint(Connection conn) {
 		Point ref = conn.getTargetAnchor().getReferencePoint();
 		// if the target anchor is a compound module anchor use the anchor location as reference point
-		if (conn.getTargetAnchor() instanceof CompoundModuleGateAnchor) 
+		if (conn.getTargetAnchor() instanceof CompoundModuleGateAnchor)
 			ref = conn.getTargetAnchor().getLocation(conn.getSourceAnchor().getReferencePoint());
-		
+
 		return new Point(conn.getSourceAnchor().getLocation(ref));
 	}
 }

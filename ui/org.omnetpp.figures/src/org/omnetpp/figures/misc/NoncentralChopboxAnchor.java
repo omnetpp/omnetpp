@@ -7,18 +7,18 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.handles.HandleBounds;
 
 /**
+ * Creates a special chopbox anchor, where the reference point is not the owner figure's center
  * @author rhornig
- * Creates a special chopbox anchor, where the reference point is not the owner figure's center 
  */
 public class NoncentralChopboxAnchor extends GateAnchor {
 
     // centrum point (relative in owner area ie 0.0 - 1.0)
     private double relRefPointX = 0.5f;
     private double relRefPointY = 0.5f;
-    
+
     /**
      * An anchor where the connections can be directed to any particular point
-     * in the owner's area (by default towards the center of the owner). 
+     * in the owner's area (by default towards the center of the owner).
      * @param owner Owner figue
      */
     public NoncentralChopboxAnchor(IFigure owner) {
@@ -47,16 +47,16 @@ public class NoncentralChopboxAnchor extends GateAnchor {
 
     @Override
     protected Rectangle getBox() {
-        // if the owner is a label use only its icon area 
+        // if the owner is a label use only its icon area
         if(getOwner() instanceof HandleBounds) {
             Rectangle ib = ((HandleBounds)getOwner()).getHandleBounds();
             return ib;
         }
-            
+
         return super.getBox();
     }
 
-    
+
     // TODO maybe implement a constraint that the anchor should move only on allowed sides of the box
     @Override
     public Point getLocation(Point foreignRef) {
@@ -78,15 +78,15 @@ public class NoncentralChopboxAnchor extends GateAnchor {
 //            return defLoc;
             return o;
         }
-        
+
 
         if (r.isEmpty() || (foreignRef.x == o.x && foreignRef.y == o.y))
             return new Point(o.x, o.y);  //This avoids divide-by-zero
 
         double dx = foreignRef.x - o.x;
         double dy = foreignRef.y - o.y;
-        
-        //r.width, r.height, dx, and dy are guaranteed to be non-zero here. 
+
+        //r.width, r.height, dx, and dy are guaranteed to be non-zero here.
 
         double scale = Math.min( Math.abs((dx > 0) ? (1.0f - relRefPointX)*r.width/dx : relRefPointX*r.width/dx),
                       Math.abs((dy > 0) ? (1.0f - relRefPointY)*r.height/dy : relRefPointY*r.height/dy));
@@ -95,7 +95,7 @@ public class NoncentralChopboxAnchor extends GateAnchor {
     }
 
     /**
-     * Reference point is the same where the connections are heading 
+     * Reference point is the same where the connections are heading
      * @see org.eclipse.draw2d.ConnectionAnchor#getReferencePoint()
      */
     @Override
@@ -112,16 +112,16 @@ public class NoncentralChopboxAnchor extends GateAnchor {
     public double getRelRefPointX() {
         return relRefPointX;
     }
-    
+
     public void setRelRefPointX(double rX) {
         this.relRefPointX = rX;
         fireAnchorMoved();
     }
-    
+
     public double getRelRefPointY() {
         return relRefPointY;
     }
-    
+
     public void setRelRefPointY(double rY) {
         this.relRefPointY = rY;
         fireAnchorMoved();

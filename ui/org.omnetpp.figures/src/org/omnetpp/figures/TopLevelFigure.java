@@ -11,20 +11,20 @@ import org.omnetpp.figures.misc.IDirectEditSupport;
 import org.omnetpp.figures.misc.LabelCellEditorLocator;
 
 /**
- * @author rhornig
  * Figure to represent top level components like SImpleModule, CHannel,CHannel IF and Module IF
+ * @author rhornig
  */
 public class TopLevelFigure extends Label implements IDirectEditSupport {
 
     private String tmpName;
-    
-    protected void setShape(Image img, 
-            String shape, int shapeWidth, int shapeHeight, 
+
+    protected void setShape(Image img,
+            String shape, int shapeWidth, int shapeHeight,
             Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
         // handle defaults. if no size is given and no icon is present use a default icon
         if(shapeWidth <= 0 && shapeHeight <= 0 && img == null)
             img = ImageFactory.getImage(ImageFactory.DEFAULT_KEY);
-        
+
         setIcon(img);
     }
 
@@ -37,15 +37,15 @@ public class TopLevelFigure extends Label implements IDirectEditSupport {
         // shape support
         String imgSize = dps.getAsStringDef(IDisplayString.Prop.IMAGESIZE);
         Image img = ImageFactory.getImage(
-        		dps.getAsStringDef(IDisplayString.Prop.IMAGE), 
+        		dps.getAsStringDef(IDisplayString.Prop.IMAGE),
         		imgSize,
         		ColorFactory.asRGB(dps.getAsStringDef(IDisplayString.Prop.IMAGECOLOR)),
         		dps.getAsIntDef(IDisplayString.Prop.IMAGECOLORPCT,0));
 
         // set the figure properties
-        setShape(img, 
-        		dps.getAsStringDef(IDisplayString.Prop.SHAPE), 
-        		dps.getSize(null).width, 
+        setShape(img,
+        		dps.getAsStringDef(IDisplayString.Prop.SHAPE),
+        		dps.getSize(null).width,
         		dps.getSize(null).height,
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.FILLCOL)),
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.BORDERCOL)),
@@ -53,7 +53,7 @@ public class TopLevelFigure extends Label implements IDirectEditSupport {
 
         invalidate();
 	}
-	
+
     public CellEditorLocator getDirectEditCellEditorLocator() {
         return new LabelCellEditorLocator(this);
     }
@@ -72,7 +72,7 @@ public class TopLevelFigure extends Label implements IDirectEditSupport {
                 setText(tmpName);
         }
     }
-    
+
     @Override
 	public String toString() {
 	    return getClass().getSimpleName()+" "+getText();

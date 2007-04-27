@@ -10,14 +10,15 @@ import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned.model.pojo.ConnectionNode;
 
 /**
- * @author rhornig
- * Special connection tool that requests additional information regarding gate association at the 
+ * Special connection tool that requests additional information regarding gate association at the
  * end of connection creation. It pops up a menu with all gate pairs for selection.
+ *
+ * @author rhornig
  */
-// CHECKME we can use COnnectionDragCreationTool for a dran'n drop type behvior
+// CHECKME we can use ConnectionDragCreationTool for a dran'n drop type behvior
 public class NedConnectionCreationTool extends ConnectionCreationTool {
 
-	// override the method to fix a GEF BUGFIX 
+	// override the method to fix a GEF BUGFIX
 	@Override
 	protected boolean handleButtonDown(int button) {
 		// BUGFIX START
@@ -45,15 +46,15 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
 	protected boolean handleCreateConnection() {
 		ConnectionCommand endCommand = (ConnectionCommand)getCommand();
     	setCurrentCommand(endCommand);
-    	
+
         if (endCommand == null)
             return false;
-        
+
         endCommand.setDestGate(null);
         endCommand.setSrcGate(null);
     	// ask the user about which gates should be connected, ask for both source and destination gates
 		ConnectionNode selectedConn = ConnectionChooser.open(endCommand);
-		
+
     	eraseSourceFeedback();
 
     	// if no selection was made, cancel the command
@@ -61,7 +62,7 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
 			// revert the connection change (user cancel - do not execute the command)
 			return false;
 		}
-    	
+
 		// copy the selected connection attributes to the command
     	ConnectionNode templateConn = endCommand.getConnectionTemplate();
 		ConnectionCommand.copyConn(selectedConn, templateConn);
@@ -70,12 +71,12 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
     	return true;
 	}
 
-	
-	
-	// filter which editparts can be used as connection source or target 
+
+
+	// filter which editparts can be used as connection source or target
 	@Override
 	protected EditPartViewer.Conditional getTargetingConditional() {
-		
+
 		return new EditPartViewer.Conditional() {
 			public boolean evaluate(EditPart editpart) {
 				// during the connection creation, check if the target editpart is a valid editpart
@@ -83,8 +84,8 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
 				if (isInState(STATE_CONNECTION_STARTED)) {
 					EditPart srcEditPart = ((CreateConnectionRequest)getTargetRequest()).getSourceEditPart();
 					EditPart destEditPart = editpart;
-                    
-                    if (srcEditPart == null || destEditPart == null || 
+
+                    if (srcEditPart == null || destEditPart == null ||
                             !(srcEditPart instanceof ModuleEditPart) || !(destEditPart instanceof ModuleEditPart))
                         return false;
 
@@ -96,7 +97,7 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
 					CompoundModuleEditPart cmep = (CompoundModuleEditPart)editpart;
 					return cmep.isOnBorder(getLocation().x, getLocation().y);
 				}
-				
+
 				return editpart.isSelectable();
 			}
 		};

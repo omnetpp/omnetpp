@@ -5,8 +5,8 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasName;
 
 /**
- * @author rhornig
  * Rename any element which has a name attribute
+ * @author rhornig
  */
 public class RenameCommand extends Command {
     private IHasName target;

@@ -4,9 +4,10 @@ import org.eclipse.draw2d.FreeformLayer;
 import org.eclipse.draw2d.geometry.Rectangle;
 
 /**
- * @author rhornig
  * A special freeform layer that always report 0 size as extent so it will not be used
  * during the calculation of the size of parent freeformpane
+ *
+ * @author rhornig
  */
 public class NonExtendableFreeformLayer extends FreeformLayer {
 

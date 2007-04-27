@@ -26,8 +26,8 @@ import org.omnetpp.figures.CompoundModuleGateAnchor;
 
 /**
  * Copied the ShortestPathConnectionRouter. Modified to handle CompoundModuleGateAnchors specially.
+ *
  * @author rhornig
- * 
  */
 public class CompoundModuleShortestPathConnectionRouter extends AbstractRouter
 {
@@ -72,7 +72,7 @@ public class CompoundModuleShortestPathConnectionRouter extends AbstractRouter
 	 * avoid. Any time a child of the container moves, one or more connections will be
 	 * revalidated to process the new obstacle locations. The connections being routed must
 	 * not be contained within the container.
-	 * 
+	 *
 	 * @param container the container
 	 */
 	public CompoundModuleShortestPathConnectionRouter(IFigure container) {
@@ -175,14 +175,14 @@ public class CompoundModuleShortestPathConnectionRouter extends AbstractRouter
 			// CHANGED to support CompoundModuleGateAnchors
 			Point start = conn.getSourceAnchor().getReferencePoint().getCopy();
 			// if the source anchor is a compound module anchor use the anchor location as reference point
-			if (conn.getSourceAnchor() instanceof CompoundModuleGateAnchor) 
+			if (conn.getSourceAnchor() instanceof CompoundModuleGateAnchor)
 				start = conn.getSourceAnchor().getLocation(conn.getTargetAnchor().getReferencePoint()).getCopy();
 			Point end = conn.getTargetAnchor().getReferencePoint().getCopy();
 			// if the target anchor is a compound module anchor use the anchor location as reference point
-			if (conn.getTargetAnchor() instanceof CompoundModuleGateAnchor) 
+			if (conn.getTargetAnchor() instanceof CompoundModuleGateAnchor)
 				end = conn.getTargetAnchor().getLocation(conn.getSourceAnchor().getReferencePoint());
 			// ENDCHANGE
-			
+
 			container.translateToRelative(start);
 			container.translateToRelative(end);
 
@@ -300,7 +300,7 @@ public class CompoundModuleShortestPathConnectionRouter extends AbstractRouter
 	 * Sets the default space that should be maintained on either side of a connection. This
 	 * causes the connections to be separated from each other and from the obstacles. The
 	 * default value is 4.
-	 * 
+	 *
 	 * @param spacing the connection spacing
 	 * @since 3.2
 	 */

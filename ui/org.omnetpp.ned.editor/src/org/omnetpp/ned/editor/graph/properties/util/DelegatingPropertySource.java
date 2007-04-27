@@ -5,9 +5,10 @@ import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 
 /**
+ * A property source that delagates all functions to another, except that provides its own
+ * descriptor, and as a value provides the other property source
+ *
  * @author rhornig
- * A property source that delagates all functions to an other except provides its own
- * descirptor, and as a value provides the other property source
  */
 public class DelegatingPropertySource implements IPropertySource2 {
         public enum Prop { ID };
@@ -16,7 +17,7 @@ public class DelegatingPropertySource implements IPropertySource2 {
 
         public DelegatingPropertySource(IPropertySource2 delegateTo, String name, String descr) {
             this.delegateTo = delegateTo;
-            
+
 
             PropertyDescriptor propDesc = new PropertyDescriptor(this, name);
             propDesc.setCategory(MergedPropertySource.BASE_CATEGORY);
@@ -36,7 +37,7 @@ public class DelegatingPropertySource implements IPropertySource2 {
         public Object getPropertyValue(Object propName) {
             if (this.equals(propName))
                 return delegateTo;
-            
+
             return null;
         }
 

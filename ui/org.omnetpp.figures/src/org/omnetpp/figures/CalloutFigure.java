@@ -5,18 +5,18 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 
 /**
- * @author rhornig
  * A figure that resembles a cartoon style callout box. Can show/hide itself using a timer
+ * @author rhornig
  */
 // you may attach the figure to an other figure at specific anchor points, for example:
-// parent.add(new AttachedLayer(attachToFigure, PositionConstants.NORTH, 
+// parent.add(new AttachedLayer(attachToFigure, PositionConstants.NORTH,
 //                              calloutFigure, PositionConstants.SOUTH_WEST));
 
 // TODO implement background timeout and hiding the expired entries
 public class CalloutFigure extends Layer {
-    
+
     private Layer bubbleLayer = new Layer();
-    private Shape mainShape = new RoundedRectangle(); 
+    private Shape mainShape = new RoundedRectangle();
 
     public CalloutFigure() {
         setLayoutManager(new ToolbarLayout());
@@ -39,7 +39,7 @@ public class CalloutFigure extends Layer {
         fig.setBorder(new MarginBorder(3));
         mainShape.add(fig);
     }
-    
+
     public void clearCallout() {
         setVisible(false);
         mainShape.removeAll();

@@ -6,8 +6,8 @@ import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.swt.SWT;
 
 /**
- * @author rhornig
  * Top level figure corresponding to a NED file
+ * @author rhornig
  */
 public class NedFileFigure extends Layer {
     // global switch for antialiasing

@@ -4,9 +4,10 @@ import org.eclipse.core.runtime.Assert;
 import org.omnetpp.ned.model.INEDElement;
 
 /**
- * @author rhornig
  * Notifies about a structural change in the model. A model element was added or removed
  * to/from the model.
+ *
+ * @author rhornig
  */
 public class NEDStructuralChangeEvent extends NEDModelEvent {
     public enum Type {INSERTION, REMOVAL} ;

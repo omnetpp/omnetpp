@@ -19,28 +19,29 @@ import org.eclipse.jface.viewers.LabelProviderChangedEvent;
 import org.omnetpp.common.image.ImageFactory;
 
 /**
- * @author rhornig
  * Decorates IResources if they have error or warning markers. Attaches to the workspace and
  * listens to all changes in the resources.
+ *
+ * @author rhornig
  */
 public class ProblemDecorator implements ILightweightLabelDecorator, IResourceChangeListener {
-    
+
     private ListenerList fListeners;
 	private final static int quadrant = IDecoration.BOTTOM_LEFT;
-    private final static int checkDepth = IResource.DEPTH_INFINITE; 
-    
+    private final static int checkDepth = IResource.DEPTH_INFINITE;
+
     public ProblemDecorator() {
         // we want to listen for workspce changes
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this, IResourceChangeEvent.POST_CHANGE);
     }
-    
+
     /* (non-Javadoc)
      * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
      */
     public void dispose() {
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
     }
-    
+
     /**
      * Calculates the max severity of the given resource
      * @param resource
@@ -59,10 +60,10 @@ public class ProblemDecorator implements ILightweightLabelDecorator, IResourceCh
         }
         return maxLevel;
     }
-    
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.jface.viewers.ILightweightLabelDecorator#decorate(java.lang.Object, org.eclipse.jface.viewers.IDecoration)
-     * checks the resource for warning and error markers and decorates the image 
+     * checks the resource for warning and error markers and decorates the image
 	 */
 	public void decorate(Object element, IDecoration decoration) {
         if (element instanceof IResource) {
@@ -71,7 +72,7 @@ public class ProblemDecorator implements ILightweightLabelDecorator, IResourceCh
 
             if (sevLevel == IMarker.SEVERITY_ERROR)
                 decoration.addOverlay(ImageFactory.getDescriptor(ImageFactory.DECORATOR_IMAGE_ERROR), quadrant);
-            
+
             if (sevLevel == IMarker.SEVERITY_WARNING)
                 decoration.addOverlay(ImageFactory.getDescriptor(ImageFactory.DECORATOR_IMAGE_WARNING), quadrant);
         }
@@ -89,7 +90,7 @@ public class ProblemDecorator implements ILightweightLabelDecorator, IResourceCh
             fListeners= new ListenerList();
         }
         fListeners.add(listener);
-    }   
+    }
 
     /* (non-Javadoc)
      * @see IBaseLabelProvider#removeListener(ILabelProviderListener)
@@ -109,7 +110,7 @@ public class ProblemDecorator implements ILightweightLabelDecorator, IResourceCh
             // gather all resources affected by a (marker) change
             final List<IResource> resourceList = new ArrayList<IResource>(5);
             try {
-                event.getDelta().accept(            
+                event.getDelta().accept(
                         new IResourceDeltaVisitor() {
                             public boolean visit(IResourceDelta delta) {
                                 // we are interested only in marker annotation changes

@@ -9,8 +9,8 @@ import org.omnetpp.ned.model.interfaces.IHasInterfaces;
 import org.omnetpp.ned.model.pojo.InterfaceNameNode;
 
 /**
- * @author rhornig
  * Property source to display whis components are implemented
+ * @author rhornig
  */
 public class InterfacesListPropertySource extends NotifiedPropertySource {
     public final static String CATEGORY = "like";

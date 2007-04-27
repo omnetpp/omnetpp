@@ -6,8 +6,8 @@ import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 
 /**
  * Change the size and location of a compound module (location cannot be changed)
- * @author rhornig
  *
+ * @author rhornig
  */
 public class SetCompoundModuleConstraintCommand extends Command {
 

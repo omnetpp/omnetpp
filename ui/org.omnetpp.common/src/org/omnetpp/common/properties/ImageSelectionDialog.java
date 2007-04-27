@@ -14,9 +14,8 @@ import org.omnetpp.common.image.ImageFactory;
 public class ImageSelectionDialog extends ElementListSelectionDialog {
 
 	protected String initialSelection = null;
-	
+
 	/**
-	 * @author rhornig
 	 * Text and icon provider
 	 */
 	public static class ImageFactoryLabelProvider extends LabelProvider {
@@ -27,21 +26,21 @@ public class ImageSelectionDialog extends ElementListSelectionDialog {
 				return "(none/default)";
 			return super.getText(element);
 		}
-		
+
 		@Override
 		public Image getImage(Object element) {
 			if ("".equals(element))
 				return null;
-			
+
 			return ImageFactory.getImage((String)element, "", null, 0) ;
 		}
 	}
 
 	public ImageSelectionDialog(Shell parentShell, String initialValue) {
 		super(parentShell, new ImageFactoryLabelProvider());
-		
+
 		initialSelection = initialValue;
-		
+
 		setTitle("Select image");
 		setAllowDuplicates(false);
 		setDialogHelpAvailable(false);
@@ -55,16 +54,16 @@ public class ImageSelectionDialog extends ElementListSelectionDialog {
 		{
 			selectedElements.add(initialSelection);
 			setInitialElementSelections(selectedElements);
-		} 
+		}
 
 		// set the list to be displayed
 		List<String> elements = ImageFactory.getImageNameList();
-		// add an empty image to be able to clear 
+		// add an empty image to be able to clear
 		elements.add(0, "");
 		setElements(elements.toArray());
 	}
-	
-	
+
+
 	@Override
 	protected Label createMessageArea(Composite composite) {
 		// we do not need the message part...

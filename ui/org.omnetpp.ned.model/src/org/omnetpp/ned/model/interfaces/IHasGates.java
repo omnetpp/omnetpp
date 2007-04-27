@@ -5,8 +5,8 @@ import java.util.Map;
 import org.omnetpp.ned.model.INEDElement;
 
 /**
- * @author rhornig
  * Elements that may contain gates
+ * @author rhornig
  */
 public interface IHasGates {
 

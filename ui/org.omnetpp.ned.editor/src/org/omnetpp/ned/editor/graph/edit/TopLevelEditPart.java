@@ -14,10 +14,11 @@ import org.omnetpp.ned.model.pojo.ChannelNode;
 import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
 
 /**
- * @author rhornig
  * Controller object for toplevel elements in the ned file like:
  * SimpleModule, Channel, CHannelInterface and interface.
  * (NOTE: compound module has it's own controller)
+ *
+ * @author rhornig
  */
 public class TopLevelEditPart extends BaseEditPart {
 

@@ -10,8 +10,8 @@ import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 
 /**
- * @author rhornig
  * Property source to display all parameters for a given component
+ * @author rhornig
  */
 public class ParameterListPropertySource extends NotifiedPropertySource {
     public final static String CATEGORY = "parameters";

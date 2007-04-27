@@ -11,9 +11,9 @@ import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.ITopLevelElement;
 
 /**
- * @author rhornig
  * Allows the creation of new top level model element like, channels, simple modules
  * and compound modules
+ * @author rhornig
  */
 public class CreateToplevelComponentCommand extends Command {
     private INEDElement child;

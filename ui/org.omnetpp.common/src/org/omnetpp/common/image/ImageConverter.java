@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * COnvert between AWT and SWT image and suports rescaling
+ * Convert between AWT and SWT image, and suports rescaling
  * @author rhornig
  */
 public class ImageConverter {
@@ -42,7 +42,7 @@ public class ImageConverter {
 		BufferedImage scaledAwtImage = getResampledAWTImage(awtImage, width, height);
 		return convertToSWT(device, scaledAwtImage);
 	}
-	
+
 	public static BufferedImage convertToAWT(ImageData data) {
 		ColorModel colorModel = null;
 		PaletteData palette = data.palette;
@@ -77,7 +77,7 @@ public class ImageConverter {
 				colorModel = new IndexColorModel(data.depth, rgbs.length, red, green, blue, data.transparentPixel);
 			} else {
 				colorModel = new IndexColorModel(data.depth, rgbs.length, red, green, blue);
-			}		
+			}
 			BufferedImage bufferedImage = new BufferedImage(colorModel, colorModel.createCompatibleWritableRaster(data.width, data.height), false, null);
 			WritableRaster raster = bufferedImage.getRaster();
 			int[] pixelArray = new int[1];
@@ -105,9 +105,9 @@ public class ImageConverter {
 					int pixel = palette.getPixel(new RGB(pixelArray[0], pixelArray[1], pixelArray[2]));
 					data.setPixel(x, y, pixel);
 				}
-			}		
-			return data;		
-		} 
+			}
+			return data;
+		}
 		else if (bufferedImage.getColorModel() instanceof ComponentColorModel) {
 			Assert.isTrue(false, "converting from this colormodel not implemented");
 			//XXX does not work, to be debugged
@@ -124,9 +124,9 @@ public class ImageConverter {
 					data.setPixel(x, y, pixel);
 					data.setAlpha(x, y, pixelArray[0]);
 				}
-			}		
-			return data;		
-		} 
+			}
+			return data;
+		}
 		else if (bufferedImage.getColorModel() instanceof IndexColorModel) {
 			IndexColorModel colorModel = (IndexColorModel)bufferedImage.getColorModel();
 			int size = colorModel.getMapSize();
@@ -183,11 +183,11 @@ public class ImageConverter {
 		g2d.dispose();
 
 		return resultImage;
-	}    
+	}
 
 	/**
 	 * Invokes getResampledImage() with zero insets.
-	 * 
+	 *
 	 * @author Andras
 	 */
 	public static Image getResampledImage(Image image, int width, int height) {
@@ -198,21 +198,21 @@ public class ImageConverter {
 	 * Resizes an image to the given size, preserving aspect ratio, and leaving
 	 * some margin (insets). Performs high-quality resampling, and preserves
 	 * transparency (alpha) information.
-	 * 
+	 *
 	 * @author Andras
 	 */
 	public static Image getResampledImage(Image image, int width, int height, int leftInset, int topInset, int rightInset, int bottomInset) {
 		if (image==null)
 			throw new IllegalArgumentException("image cannot be null");
         return new Image(null, getResampledImageData(image.getImageData(), width, height, leftInset, topInset, rightInset, bottomInset));
-	}    
-	
+	}
+
     public static ImageData getResampledImageData(ImageData imageData, int width, int height, int leftInset, int topInset, int rightInset, int bottomInset) {
         if (imageData==null)
             throw new IllegalArgumentException("imageData cannot be null");
         if (width <= leftInset+rightInset || height <= topInset+bottomInset)
             throw new IllegalArgumentException("invalid width, height, or insets values");
-        
+
         // calculate scaled image width/height, preserving aspect ratio
         int scaledHeight = height - topInset - bottomInset;
         int scaledWidth = width - leftInset - rightInset;
@@ -220,11 +220,11 @@ public class ImageConverter {
         double scaleY = (double) scaledHeight / (double) imageData.height;
         if (scaleX < scaleY)
             scaledHeight = (int) (scaleX * (scaledHeight / scaleY));
-        else 
+        else
             scaledWidth = (int) (scaleY * (scaledWidth / scaleX));
         int xoff = (width-scaledWidth+1)/2;
         int yoff = (height-scaledHeight+1)/2;
-        
+
         // produce a high-quality re-sampled image (but transparency got lost along the way)
         Image scaledImage = new Image(null, width, height);
         GC gc = new GC(scaledImage);
@@ -276,21 +276,21 @@ public class ImageConverter {
             scaledAlphaImage.dispose();
             return resultImage.getImageData();
         }
-        else if (imageData.getTransparencyType()==SWT.TRANSPARENCY_MASK || imageData.getTransparencyType()==SWT.TRANSPARENCY_PIXEL) { 
-            // This is likely a gif image. Just set our background color as the transparent color. 
+        else if (imageData.getTransparencyType()==SWT.TRANSPARENCY_MASK || imageData.getTransparencyType()==SWT.TRANSPARENCY_PIXEL) {
+            // This is likely a gif image. Just set our background color as the transparent color.
             ImageData resultData = scaledImage.getImageData();
             resultData.transparentPixel = resultData.palette.getPixel(backgroundColor.getRGB());
             scaledImage.dispose();
             Image resultImage = new Image(null, resultData);
             return resultImage.getImageData();
         }
-        else { 
+        else {
             // TRANSPARENCY_NONE
             return scaledImage.getImageData();
         }
-    }    
+    }
 	//	static { testImageResizing(); }
-	
+
 	protected static void testImageResizing() {
 		Shell shell = new Shell((Shell)null, SWT.SHELL_TRIM);
 		shell.setSize(750, 500);
@@ -298,7 +298,7 @@ public class ImageConverter {
 		Canvas canvas = new Canvas(shell, SWT.NONE);
 		shell.layout();
 		shell.open();
-		
+
 		int k = 0;
 		GC gc = new GC(canvas);
 		for (String s : ImageFactory.getImageNameList()) {
@@ -316,6 +316,6 @@ public class ImageConverter {
 			k++;
 		}
 	}
-	
+
 }
 

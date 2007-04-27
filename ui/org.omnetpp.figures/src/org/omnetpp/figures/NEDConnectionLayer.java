@@ -6,17 +6,18 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 
 /**
- * @author rhornig
  * A special layer used in compound module, for holding the connecions. This
  * layer overrides the getFreeFormExtent method, do the size of this layer will not be
  * used durnig the calculation of compound module size.
+ *
+ * @author rhornig
  */
 public class NEDConnectionLayer extends ConnectionLayer {
-    
+
     /* (non-Javadoc)
      * @see org.eclipse.draw2d.FreeformLayer#getFreeformExtent()
-     * This method is overridden so the size of a NEDConnecionLayer is not counted during 
-     * compound module size calculation. This prevents showing the scrollbars if we move 
+     * This method is overridden so the size of a NEDConnecionLayer is not counted during
+     * compound module size calculation. This prevents showing the scrollbars if we move
      * a connection endpoint out of the compound module
      */
     @Override
