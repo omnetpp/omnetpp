@@ -3,10 +3,10 @@ Sequence Chart
 
 Features:
  + display content according to simulation log file or in memory filter
- - timeline mode:
+ + timeline mode:
    + linear
    + step
-   - non-linear
+   + non-linear
  - sort axis by:
    + user specified manual order
    + module id
@@ -15,7 +15,7 @@ Features:
    - minimizing axis crossing message sends hierarchically (place sibling modules next to each other)
  - zoom:
    + zoom in and out by clicking on the buttons
-   - zoom in and out by + and - keys
+   + zoom in and out by + and - keys
    + mark zoom area with control and left drag
    - zoom to fit whole file in current window (small files only)
    - zoom to normal detail level
@@ -25,6 +25,8 @@ Features:
    + display arrow heads
    - display axis names
    - display simulation time gutter
+   - display info
+   - display zero simulation time ranges
  + display simulation time for horizontal mouse position on gutter
  + show multiple tooltip information:
    + event information
@@ -34,16 +36,16 @@ Features:
    + event's processing compound or simple module selected from the module tree
    - trace selected event
  + increase and decrease spacing between axis
- - mouse wheel
-   - scrolls up and down among axis
+ + mouse wheel
+   + scrolls up and down among axis
    + holding control increases and decreases zoom level
-   - holding shift navigates back and forward in navigation history
+   + holding shift scrolls horizontally
  - context menu:
-   - axis
+   + axis
      + split space among axis evently
      + make axis dense
-     - center axis
-     - fit axis state to window
+     + center axis
+     + fit axis state value to window
    - event
      + center on window
      - trace
@@ -56,13 +58,14 @@ Features:
  + double click traces the selected event and switches to filered view
  - bookmark selected events
  - switch back to unfiltered view
- - support specifying the vector file to be displayed on the axis
+ + support specifying a vector from a vector file to be displayed on the axis
  - display a separator where the timeline is filtered (timeline is not linear to pixel coordinates)
- - make sequence chart scrollbars virtual (can't tell the exact size of the canvas)
+ + make sequence chart horizontal scrollbar virtual (can't tell the exact size of the canvas)
+ + scrolling with the horizontal scroll bar arrows and click near the thumb
  - write key frames during simulation to avoid linear search for reusing messages and to be able to precisely
    display message dependencies which go far away
 
 Known bugs:
  - hierarchical sorting sequence chart axes based on crossing arrows is broken
- - non linear timeline mode is broken
  - tracing events sometimes kills eclipse
+ 

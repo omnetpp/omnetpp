@@ -47,16 +47,14 @@ Features:
  + navigation history
  + toolbar
  - property view
- - viewer/editor mode
- - remember event log table position for the corresponding sequence chart,
+ + viewer/editor mode
+ + remember event log table position for the corresponding sequence chart,
    so when activating the sequence chart again then the event log viewer can show the last visited position
  - display a separator (in case of an in memory filter) where subsequent lines are not
    subsequent in the simulation log file
  - double click on events switches to filter mode and traces the selected event
- - single click? goes in the corresponding sequence chart to the selected event
+ + single click goes in the corresponding sequence chart to the selected event
  - export current in memory filter as a log file
+ - hot keys for popup menu actions
 
 Known bugs:
- - filter and display mode combo boxes do not have selections
- - hot keys for popup menu actions
- - raw mode displays simulation time with 16 digits precision which is not as good as long int could be

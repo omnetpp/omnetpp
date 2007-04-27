@@ -149,7 +149,7 @@ public class SequenceChart
 	private EventLogInput eventLogInput;
 	private SequenceChartFacade sequenceChartFacade; // helpful facade on eventlog
 	
-	private int fixPointViewportCoordinate;
+	private int fixPointViewportCoordinate; // the viewport coordinate of the coordinate system origin stored in the facade
 	
 	private double pixelPerTimelineCoordinate = -1;
 	private boolean antiAlias = true;  // antialiasing -- this gets turned on/off automatically
@@ -266,6 +266,10 @@ public class SequenceChart
 					gotoBegin();
 				else if (e.keyCode == SWT.END)
 					gotoEnd();
+				else if (e.keyCode == SWT.KEYPAD_ADD || e.character == '+')
+					zoomIn();
+				else if (e.keyCode == SWT.KEYPAD_SUBTRACT || e.character == '-')
+					zoomOut();
 			}
 		});
 	}
@@ -492,6 +496,7 @@ public class SequenceChart
 
 	@Override
 	protected long clipX(long x) {
+		// the position of the visible area is not limited to a [0, max] range
 		return x;
 	}
 
@@ -547,10 +552,24 @@ public class SequenceChart
 
 
 	@Override
-	protected void horizontalScrollBarChanged() {
+	protected void horizontalScrollBarChanged(SelectionEvent e) {
 		ScrollBar scrollBar = getHorizontalBar();
 		double percentage = (double)scrollBar.getSelection() / (scrollBar.getMaximum() - scrollBar.getThumb());
-		scrollToElement(eventLog.getApproximateEventAt(percentage));
+
+		if (e.detail == SWT.ARROW_UP)
+			scroll(-1);
+		else if (e.detail == SWT.ARROW_DOWN)
+			scroll(1);
+		else if (e.detail == SWT.PAGE_UP)
+			scroll(-10);
+		else if (e.detail == SWT.PAGE_DOWN)
+			scroll(10);
+		else if (percentage == 0)
+			scrollToBegin();
+		else if (percentage == 1)
+			scrollToEnd();
+		else
+			scrollToElement(eventLog.getApproximateEventAt(percentage));
 	}
 
 	@Override
@@ -572,7 +591,21 @@ public class SequenceChart
 	}			
 
 	public void scroll(int numberOfEvents) {
-		IEvent neighbourEvent = eventLog.getNeighbourEvent(getSelectionEvent(), numberOfEvents);
+		long[] eventPtrRange = getFirstLastEventInPixelRange(0, getViewportWidth());
+		long startEventPtr = eventPtrRange[0];
+		long endEventPtr = eventPtrRange[1];
+		long eventPtr;
+
+		if (numberOfEvents < 0) {
+			eventPtr = startEventPtr;
+			numberOfEvents++;
+		}
+		else {
+			eventPtr = endEventPtr;
+			numberOfEvents--;
+		}
+
+		IEvent neighbourEvent = eventLog.getNeighbourEvent(sequenceChartFacade.Event_getEvent(eventPtr), numberOfEvents);
 
 		if (neighbourEvent != null)
 			scrollToElement(neighbourEvent);
@@ -590,8 +623,18 @@ public class SequenceChart
 		long endEventPtr = eventPtrRange[1];
 		boolean found = false;
 
+		// look one event backward
+		long previousEventPtr = sequenceChartFacade.Event_getPreviousEvent(startEventPtr);
+		if (previousEventPtr != 0)
+			startEventPtr = previousEventPtr;
+
+		// and forward so that one additional event scrolling can be done with less distraction
+		long nextEventPtr = sequenceChartFacade.Event_getNextEvent(endEventPtr);
+		if (nextEventPtr != 0)
+			endEventPtr = nextEventPtr;
+
 		for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.Event_getNextEvent(eventPtr)) {
-			if (eventPtr == event.getCPtr() && getEventXViewportCoordinate(eventPtr) > d && getEventXViewportCoordinate(eventPtr) < getViewportWidth() - d)
+			if (eventPtr == event.getCPtr())
 				found = true;
 			
 			if (eventPtr == endEventPtr)
@@ -603,11 +646,11 @@ public class SequenceChart
 			clearCanvasCache();
 		}
 		else {
-			int x = getEventXViewportCoordinate(event.getCPtr());
+			long x = getViewportLeft() + getEventXViewportCoordinate(event.getCPtr());
 			scrollHorizontalToRange(x - d, x + d);
 		}
 
-		int y = getEventYViewportCoordinate(event.getCPtr()) + (int)getViewportTop();
+		long y = getViewportTop() + getEventYViewportCoordinate(event.getCPtr());
 		scrollVerticalToRange(y - d, y + d);
 		adjustHorizontalScrollBar();
 		redraw();
@@ -1549,8 +1592,8 @@ public class SequenceChart
 	 */
 	private void calculateTicks() {
 		ticks = new ArrayList<BigDecimal>();
-		BigDecimal leftSimulationTime = new BigDecimal(getViewportLeftSimulationTime());
-		BigDecimal rightSimulationTime = new BigDecimal(getViewportRightSimulationTime());
+		BigDecimal leftSimulationTime = calculateTick(0, 1);
+		BigDecimal rightSimulationTime = calculateTick(getViewportWidth(), 1);
 		tickPrefix = TimeUtils.commonPrefix(leftSimulationTime, rightSimulationTime);
 
 		if (getTimelineMode() == TimelineMode.LINEAR) {
@@ -1590,84 +1633,126 @@ public class SequenceChart
 	}
 
 	/**
-	 * Calculates a single tick near simulation time. The range and position is defined in terms of pixels.
-	 * Minimizes the number of characters to have a short tick label and returns the simulation time to be printed.
+	 * Calculates a single tick near simulation time. The range and position is defined in terms of viewport pixels.
+	 * Minimizes the number of digits to have a short tick label and returns the simulation time to be printed.
 	 */
 	private BigDecimal calculateTick(int x, double tickRange) {
+		// query the last simulation time so that times after that will never appear
 		double lastSimulationTimeAsDouble = eventLog.getLastEvent().getSimulationTime().doubleValue();
 		BigDecimal lastSimulationTime = eventLog.getLastEvent().getSimulationTime().toBigDecimal();
+		
+		// query the simulation time for the given coordinate
 		double simulationTimeAsDouble = getSimulationTimeForViewportCoordinate(x);
 		BigDecimal simulationTime = simulationTimeAsDouble == lastSimulationTimeAsDouble ? lastSimulationTime : new BigDecimal(simulationTimeAsDouble);
 
-		// defines the range of valid simulation times for the tick
+		// defines the range of valid simulation times for the given tick range
 		double minSimulationTimeAsDouble = getSimulationTimeForViewportCoordinate(x - tickRange / 2);
 		double maxSimulationTimeAsDouble = getSimulationTimeForViewportCoordinate(x + tickRange / 2);
 		BigDecimal tMin = simulationTimeAsDouble == lastSimulationTimeAsDouble ? lastSimulationTime : new BigDecimal(minSimulationTimeAsDouble);
 		BigDecimal tMax = simulationTimeAsDouble == lastSimulationTimeAsDouble ? lastSimulationTime : new BigDecimal(maxSimulationTimeAsDouble);
+
+		// check some invariants
 		Assert.isTrue(tMin.compareTo(simulationTime) <= 0);
 		Assert.isTrue(tMax.compareTo(simulationTime) >= 0);
 		Assert.isTrue(tMin.compareTo(tMax) <= 0);
 
-		// number of digits
-		int tMinPrecision = tMin.stripTrailingZeros().precision();
-		int tMaxPrecision = tMax.stripTrailingZeros().precision();
-		int tDeltaPrecision = tMax.subtract(tMin).stripTrailingZeros().precision();
-		int precision = Math.max(1, 1 + Math.max(tMinPrecision - tDeltaPrecision, tMaxPrecision - tDeltaPrecision));
-		// estabilish initial rounding contextes
-		MathContext mcMin = new MathContext(precision, RoundingMode.FLOOR);
-		MathContext mcMax = new MathContext(precision, RoundingMode.CEILING);
-		BigDecimal tRoundedMin = simulationTime;
-		BigDecimal tRoundedMax = simulationTime;
-		BigDecimal tBestRoundedMin = simulationTime;
-		BigDecimal tBestRoundedMax = simulationTime;
+		if (minSimulationTimeAsDouble == maxSimulationTimeAsDouble) {
+			long[] eventPtrRange = getFirstLastEventInPixelRange(x, x);
+			long startEventPtr = eventPtrRange[0];
+			long endEventPtr = eventPtrRange[1];
+			int count = 0;
 
-		// decrease precision and check if values still fit in range
-		do
-		{
-			if (mcMin.getPrecision() > 0) {
-				tRoundedMin = simulationTime.round(mcMin);
-	
-				if (tRoundedMin.compareTo(tMin) > 0)
-					tBestRoundedMin = tRoundedMin;
-
-				mcMin = new MathContext(mcMin.getPrecision() - 1, RoundingMode.FLOOR);
+			// find out the precise simulation time for the zero simulation time range around the given viewport pixel
+			for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.Event_getNextEvent(eventPtr)) {
+				count++;
+				
+				if (eventPtr == endEventPtr)
+					break;
 			}
-
-			if (mcMax.getPrecision() > 0) {
-				tRoundedMax = simulationTime.round(mcMax);
-	
-				if (tRoundedMax.compareTo(tMax) < 0)
-					tBestRoundedMin = tRoundedMax;
-
-				mcMax = new MathContext(mcMax.getPrecision() - 1, RoundingMode.CEILING);
-			}
-		}
-		while (mcMin.getPrecision() > 0 || mcMax.getPrecision() > 0);
-		
-		tBestRoundedMin = calculateTickBestLastDigit(tBestRoundedMin, tMin, tMax);
-		tBestRoundedMax = calculateTickBestLastDigit(tBestRoundedMax, tMin, tMax);
-		
-		if (tBestRoundedMin.precision() < tBestRoundedMax.precision())
-			return tBestRoundedMin;
-		else if (tBestRoundedMin.precision() > tBestRoundedMax.precision())
-			return tBestRoundedMax;
-		else {
-			String sBestMin = tBestRoundedMin.toPlainString();
-			String sBestMax = tBestRoundedMax.toPlainString();
 			
-			if (sBestMin.charAt(sBestMin.length() - 1) == '5')
+			if (minSimulationTimeAsDouble == 0)
+				return BigDecimal.ZERO; // the very beginning
+			else if (count == 1)
+				return sequenceChartFacade.Event_getSimulationTime(startEventPtr).toBigDecimal();
+			else if (count == 1) {
+				// find the one which is closer
+				double startSimulationTime = sequenceChartFacade.Event_getSimulationTime(startEventPtr).doubleValue();
+				double endSimulationTime = sequenceChartFacade.Event_getSimulationTime(endEventPtr).doubleValue();
+				
+				if (Math.abs(minSimulationTimeAsDouble - startSimulationTime) < Math.abs(endSimulationTime - minSimulationTimeAsDouble))
+					return sequenceChartFacade.Event_getSimulationTime(startEventPtr).toBigDecimal();
+				else
+					return sequenceChartFacade.Event_getSimulationTime(endEventPtr).toBigDecimal();
+			}
+			else
+				return sequenceChartFacade.Event_getSimulationTime(sequenceChartFacade.Event_getNextEvent(startEventPtr)).toBigDecimal();
+		}
+		else {
+			// the idea is to round the simulation time to the shortest (in terms of digits) value
+			// as long as it still fits into the range of min and max
+			// number of digits
+			int tMinPrecision = tMin.stripTrailingZeros().precision();
+			int tMaxPrecision = tMax.stripTrailingZeros().precision();
+			int tDeltaPrecision = tMax.subtract(tMin).stripTrailingZeros().precision();
+			int precision = Math.max(1, 1 + Math.max(tMinPrecision - tDeltaPrecision, tMaxPrecision - tDeltaPrecision));
+			// estabilish initial rounding contextes
+			MathContext mcMin = new MathContext(precision, RoundingMode.FLOOR);
+			MathContext mcMax = new MathContext(precision, RoundingMode.CEILING);
+			BigDecimal tRoundedMin = simulationTime;
+			BigDecimal tRoundedMax = simulationTime;
+			BigDecimal tBestRoundedMin = simulationTime;
+			BigDecimal tBestRoundedMax = simulationTime;
+	
+			// decrease precision and check if values still fit in range
+			do
+			{
+				if (mcMin.getPrecision() > 0) {
+					tRoundedMin = simulationTime.round(mcMin);
+		
+					if (tRoundedMin.compareTo(tMin) > 0)
+						tBestRoundedMin = tRoundedMin;
+	
+					mcMin = new MathContext(mcMin.getPrecision() - 1, RoundingMode.FLOOR);
+				}
+	
+				if (mcMax.getPrecision() > 0) {
+					tRoundedMax = simulationTime.round(mcMax);
+		
+					if (tRoundedMax.compareTo(tMax) < 0)
+						tBestRoundedMin = tRoundedMax;
+	
+					mcMax = new MathContext(mcMax.getPrecision() - 1, RoundingMode.CEILING);
+				}
+			}
+			while (mcMin.getPrecision() > 0 || mcMax.getPrecision() > 0);
+
+			// the last digit might be still rounded to 2 or 5
+			tBestRoundedMin = calculateTickBestLastDigit(tBestRoundedMin, tMin, tMax);
+			tBestRoundedMax = calculateTickBestLastDigit(tBestRoundedMax, tMin, tMax);
+
+			// find the best solution by looking at the number of digits and the last digit
+			if (tBestRoundedMin.precision() < tBestRoundedMax.precision())
 				return tBestRoundedMin;
-
-			if (sBestMax.charAt(sBestMax.length() - 1) == '5')
+			else if (tBestRoundedMin.precision() > tBestRoundedMax.precision())
 				return tBestRoundedMax;
-
-			if ((sBestMin.charAt(sBestMin.length() - 1) - '0') % 2 == 0)
+			else {
+				String sBestMin = tBestRoundedMin.toPlainString();
+				String sBestMax = tBestRoundedMax.toPlainString();
+				
+				if (sBestMin.charAt(sBestMin.length() - 1) == '5')
+					return tBestRoundedMin;
+	
+				if (sBestMax.charAt(sBestMax.length() - 1) == '5')
+					return tBestRoundedMax;
+	
+				if ((sBestMin.charAt(sBestMin.length() - 1) - '0') % 2 == 0)
+					return tBestRoundedMin;
+	
+				if ((sBestMax.charAt(sBestMin.length() - 1) - '0') % 2 == 0)
+					return tBestRoundedMax;
+	
 				return tBestRoundedMin;
-
-			if ((sBestMax.charAt(sBestMin.length() - 1) - '0') % 2 == 0)
-				return tBestRoundedMax;
-
-			return tBestRoundedMin;
+			}
 		}
 	}
 

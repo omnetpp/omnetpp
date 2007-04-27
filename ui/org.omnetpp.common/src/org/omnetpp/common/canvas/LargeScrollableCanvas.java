@@ -47,12 +47,12 @@ public abstract class LargeScrollableCanvas extends Canvas {
 
 		getHorizontalBar().addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				horizontalScrollBarChanged();
+				horizontalScrollBarChanged(e);
 			}
 		});
 		getVerticalBar().addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				verticalScrollBarChanged();
+				verticalScrollBarChanged(e);
 			}
 		});
 	}
@@ -161,7 +161,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 			scrollVerticalTo((y2 + y1 - getViewportHeight()) / 2);
 		else if (y1 < viewY)
 			scrollVerticalTo(y1);
-		else if (y2 > viewY + getVirtualHeight())
+		else if (y2 > viewY + getViewportHeight())
 			scrollVerticalTo(y2 - getViewportHeight());
 	}
 	
@@ -234,12 +234,12 @@ public abstract class LargeScrollableCanvas extends Canvas {
 		return viewportRect.height;
 	}
 
-	protected void horizontalScrollBarChanged() {
+	protected void horizontalScrollBarChanged(SelectionEvent e) {
 		viewX = clipX(((long)getHorizontalBar().getSelection()) << hShift);
 		redraw();
 	}
 
-	protected void verticalScrollBarChanged() {
+	protected void verticalScrollBarChanged(SelectionEvent e) {
 		viewY = clipY(((long)getVerticalBar().getSelection()) << vShift);
 		redraw();
 	}
