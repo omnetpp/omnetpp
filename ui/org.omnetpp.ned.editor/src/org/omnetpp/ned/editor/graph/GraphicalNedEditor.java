@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.gef.ContextMenuProvider;
@@ -66,8 +65,7 @@ import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
 import org.omnetpp.ned.editor.graph.misc.NedSelectionSynchronizer;
 import org.omnetpp.ned.editor.graph.misc.PaletteManager;
-import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
-import org.omnetpp.ned.editor.graph.properties.NedPropertySourceAdapterFactory;
+import org.omnetpp.ned.editor.graph.properties.NedEditPartPropertySourceProvider;
 import org.omnetpp.ned.editor.graph.properties.view.BasePreferrerPropertySheetSorter;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
@@ -152,6 +150,15 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
             bars.setGlobalActionHandler(id, getActionRegistry().getAction(id));
             bars.updateActionBars();
         }
+
+        @Override
+        public void createControl(Composite parent) {
+            super.createControl(parent);
+            // source provider for editparts
+            // we should not call this in the init method, because it causes NPE
+            // BUG see: https://bugs.eclipse.org/bugs/show_bug.cgi?id=159747
+            setPropertySourceProvider(new NedEditPartPropertySourceProvider());
+        }
         
         @Override
         public void makeContributions(IMenuManager menuManager, IToolBarManager toolBarManager,
@@ -179,10 +186,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
 
     public GraphicalNedEditor() {
         setEditDomain(new DefaultEditDomain(this));
-
-        // register the PropertySourceFactory for the different model elements
-        Platform.getAdapterManager().registerAdapters(new NedPropertySourceAdapterFactory(), 
-                IPropertySourceSupport.class);
     }
 
     @Override
