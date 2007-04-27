@@ -18,11 +18,20 @@
 #include "eventlogentry.h"
 #include "messagedependency.h"
 
-MessageDependency::MessageDependency(IEventLog *eventLog,
-    long causeEventNumber, int causeBeginSendEntryNumber,
-    long consequenceEventNumber, int consequenceBeginSendEntryNumber)
+/**************************************************/
+
+IMessageDependency::IMessageDependency(IEventLog *eventLog)
 {
     this->eventLog = eventLog;
+}
+
+/**************************************************/
+
+MessageDependency::MessageDependency(IEventLog *eventLog,
+                                     long causeEventNumber, int causeBeginSendEntryNumber,
+                                     long consequenceEventNumber, int consequenceBeginSendEntryNumber)
+    : IMessageDependency(eventLog)
+{
     this->causeEventNumber = causeEventNumber;
     this->consequenceEventNumber = consequenceEventNumber;
     this->causeBeginSendEntryNumber = causeBeginSendEntryNumber;
@@ -204,12 +213,12 @@ MessageReuse *MessageReuse::duplicate(IEventLog *eventLog)
 
 /**************************************************/
 
-MessageSend::MessageSend(IEventLog *eventLog, long senderEventNumber, int BeginSendEntryNumber)
-    : MessageDependency(eventLog, senderEventNumber, BeginSendEntryNumber, EVENT_NOT_YET_CALCULATED, -1)
+MessageSend::MessageSend(IEventLog *eventLog, long senderEventNumber, int beginSendEntryNumber)
+    : MessageDependency(eventLog, senderEventNumber, beginSendEntryNumber, EVENT_NOT_YET_CALCULATED, -1)
 {
 }
 
-MessageSend* MessageSend::duplicate(IEventLog *eventLog)
+MessageSend *MessageSend::duplicate(IEventLog *eventLog)
 {
     MessageSend *messageSend = new MessageSend(*this);
     messageSend->eventLog = eventLog;
@@ -217,51 +226,27 @@ MessageSend* MessageSend::duplicate(IEventLog *eventLog)
 }
 
 /**************************************************/
-FilteredMessageDependency::FilteredMessageDependency(IEventLog *eventLog,
-    long causeEventNumber, int causeBeginSendEntryNumber,
-    long middleEventNumber, int middleBeginSendEntryNumber,
-    long consequenceEventNumber, int consequenceBeginSendEntryNumber)
-    : MessageDependency(eventLog, causeEventNumber, causeBeginSendEntryNumber, consequenceEventNumber, consequenceBeginSendEntryNumber)
+
+FilteredMessageDependency::FilteredMessageDependency(IEventLog *eventLog, IMessageDependency *beginMessageDependency, IMessageDependency *endMessageDependency)
+    : IMessageDependency(eventLog)
 {
-    this->middleEventNumber = middleEventNumber;
-    this->middleBeginSendEntryNumber = middleBeginSendEntryNumber;
+    this->beginMessageDependency = beginMessageDependency;
+    this->endMessageDependency = endMessageDependency;
 }
 
-FilteredMessageDependency* FilteredMessageDependency::duplicate(IEventLog *eventLog)
+FilteredMessageDependency::~FilteredMessageDependency()
 {
-    FilteredMessageDependency *filteredMessageDependency = new FilteredMessageDependency(*this);
-    filteredMessageDependency->eventLog = eventLog;
-    return filteredMessageDependency;
+    delete beginMessageDependency;
+    delete endMessageDependency;
 }
 
-IEvent *FilteredMessageDependency::getMiddleEvent()
+FilteredMessageDependency *FilteredMessageDependency::duplicate(IEventLog *eventLog)
 {
-    return eventLog->getEventForEventNumber(middleEventNumber);
-}
-
-simtime_t FilteredMessageDependency::getMiddleTime()
-{
-    return getMiddleEvent()->getSimulationTime();
-}
-
-BeginSendEntry *FilteredMessageDependency::getMiddleBeginSendEntry()
-{
-    Assert(middleBeginSendEntryNumber != -1);
-    return (BeginSendEntry *)getMiddleEvent()->getEventLogEntry(middleBeginSendEntryNumber);
-}
-
-void FilteredMessageDependency::printMiddle(FILE *file)
-{
-    if (getMiddleEventNumber() >= 0)
-       getMiddleEvent()->getEventEntry()->print(file);
-
-    if (getMiddleBeginSendEntryNumber() != -1)
-       getMiddleBeginSendEntry()->print(file);
+    return new FilteredMessageDependency(eventLog, beginMessageDependency->duplicate(eventLog), endMessageDependency->duplicate(eventLog));
 }
 
 void FilteredMessageDependency::print(FILE *file)
 {
-    printCause(file);
-    printMiddle(file);
-    printConsequence(file);
+    beginMessageDependency->print(file);
+    endMessageDependency->print(file);
 }

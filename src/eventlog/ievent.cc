@@ -23,12 +23,6 @@ IEvent::IEvent()
     cachedTimelineCoordinateSystemVersion = -1;
 }
 
-bool IEvent::isSelfEvent()
-{
-    BeginSendEntry *beginSendEntry = getCauseBeginSendEntry();
-    return beginSendEntry && dynamic_cast<EndSendEntry *>(getCauseEvent()->getEventLogEntry(beginSendEntry->getIndex() + 1));
-}
-
 int IEvent::findBeginSendEntryIndex(int messageId)
 {
     // find the "BS" or "SA" line in the cause event

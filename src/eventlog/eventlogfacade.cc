@@ -95,16 +95,22 @@ MessageDependency* EventLogFacade::MessageDependency_getMessageDependency(int64 
     return (MessageDependency*)ptr;
 }
 
-const char *EventLogFacade::MessageDependency_getCauseMessageName(int64 ptr)
+const char *EventLogFacade::MessageDependency_getMessageName(int64 ptr)
 {
     PTR(ptr);
-    return ((MessageDependency*)ptr)->getCauseBeginSendEntry()->messageFullName;
+    return ((MessageDependency*)ptr)->getBeginSendEntry()->messageFullName;
 }
 
-const char *EventLogFacade::MessageDependency_getConsequenceMessageName(int64 ptr)
+const char *EventLogFacade::FilteredMessageDependency_getBeginMessageName(int64 ptr)
 {
     PTR(ptr);
-    return ((MessageDependency*)ptr)->getConsequenceBeginSendEntry()->messageFullName;
+    return ((FilteredMessageDependency*)ptr)->getBeginMessageDependency()->getBeginSendEntry()->messageFullName;
+}
+
+const char *EventLogFacade::FilteredMessageDependency_getEndMessageName(int64 ptr)
+{
+    PTR(ptr);
+    return ((FilteredMessageDependency*)ptr)->getEndMessageDependency()->getBeginSendEntry()->messageFullName;
 }
 
 MessageDependencyKind EventLogFacade::MessageDependency_getKind(int64 ptr)
@@ -145,10 +151,4 @@ int64 EventLogFacade::MessageDependency_getConsequenceEvent(int64 ptr)
 {
     PTR(ptr);
     return (int64)((MessageDependency*)ptr)->getConsequenceEvent();
-}
-
-const char *EventLogFacade::FilteredMessageDependency_getMiddleMessageName(int64 ptr)
-{
-    PTR(ptr);
-    return ((FilteredMessageDependency*)ptr)->getMiddleBeginSendEntry()->messageFullName;
 }

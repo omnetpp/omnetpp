@@ -42,14 +42,14 @@ Event::~Event()
 
     if (causes)
     {
-        for (MessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
+        for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
             delete *it;
         delete causes;
     }
 
     if (consequences)
     {
-        for (MessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
+        for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
             delete *it;
         delete consequences;
     }
@@ -169,6 +169,12 @@ EventLogMessageEntry *Event::getEventLogMessage(int index)
     throw opp_runtime_error("index out of range");
 }
 
+bool Event::isSelfEvent()
+{
+    BeginSendEntry *beginSendEntry = getCauseBeginSendEntry();
+    return beginSendEntry && dynamic_cast<EndSendEntry *>(getCauseEvent()->getEventLogEntry(beginSendEntry->getIndex() + 1));
+}
+
 Event *Event::getPreviousEvent()
 {
     if (!previousEvent && eventLog->getFirstEvent() != this)
@@ -229,11 +235,11 @@ MessageSend *Event::getCause()
     return cause;
 }
 
-MessageDependencyList *Event::getCauses()
+IMessageDependencyList *Event::getCauses()
 {
     if (!causes)
     {
-        causes = new MessageDependencyList();
+        causes = new IMessageDependencyList();
 
         if (getCause())
             // using "ce" from "E" line
@@ -258,11 +264,11 @@ MessageDependencyList *Event::getCauses()
     return causes;
 }
 
-MessageDependencyList *Event::getConsequences()
+IMessageDependencyList *Event::getConsequences()
 {
     if (!consequences)
     {
-        consequences = new MessageDependencyList();
+        consequences = new IMessageDependencyList();
 
         for (int beginSendEntryNumber = 0; beginSendEntryNumber < (int)eventLogEntries.size(); beginSendEntryNumber++)
         {

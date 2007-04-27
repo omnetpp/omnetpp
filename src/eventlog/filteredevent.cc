@@ -33,14 +33,14 @@ FilteredEvent::~FilteredEvent()
 
     if (causes)
     {
-        for (MessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
+        for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
             delete *it;
         delete causes;
     }
 
     if (consequences)
     {
-        for (MessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
+        for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
             delete *it;
         delete consequences;
     }
@@ -103,21 +103,22 @@ FilteredEvent *FilteredEvent::getCauseEvent()
 
 BeginSendEntry *FilteredEvent::getCauseBeginSendEntry()
 {
-    if (getCause())
-        return getCause()->getCauseBeginSendEntry();
+    IMessageDependency *cause = getCause();
+    if (cause)
+        return cause->getBeginSendEntry();
     else
         return NULL;
 }
 
-MessageDependency *FilteredEvent::getCause()
+IMessageDependency *FilteredEvent::getCause()
 {
     if (cause == NULL)
     {
         IEvent *causeEvent = getEvent();
-        MessageDependency *causeMessageDependency = causeEvent->getCause();
+        IMessageDependency *causeMessageDependency = causeEvent->getCause();
 
         if (causeMessageDependency) {
-            MessageDependency *messageDependency;
+            IMessageDependency *messageDependency;
 
             while (causeEvent && (messageDependency = causeEvent->getCause()))
             {
@@ -126,10 +127,7 @@ MessageDependency *FilteredEvent::getCause()
                     if (messageDependency == causeMessageDependency)
                         cause = messageDependency->duplicate(filteredEventLog);
                     else
-                        cause = new FilteredMessageDependency(filteredEventLog,
-                            messageDependency->getCauseEventNumber(), messageDependency->getCauseBeginSendEntryNumber(),
-                            causeMessageDependency->getCauseEventNumber(), causeMessageDependency->getCauseBeginSendEntryNumber(),
-                            getEventNumber(), -1);
+                        cause = new FilteredMessageDependency(filteredEventLog, messageDependency, causeMessageDependency);
                 }
 
                 causeEvent = causeEvent->getCauseEvent();
@@ -140,27 +138,27 @@ MessageDependency *FilteredEvent::getCause()
     return cause;
 }
 
-MessageDependencyList *FilteredEvent::getCauses()
+IMessageDependencyList *FilteredEvent::getCauses()
 {
     if (causes == NULL)
     {
-        causes = new MessageDependencyList();
-        getCauses(getEvent(), -1, 0);
+        causes = new IMessageDependencyList();
+        getCauses(getEvent(), NULL, 0);
     }
 
     return causes;
 }
 
-MessageDependencyList *FilteredEvent::getCauses(IEvent *event, int consequenceBeginSendEntryNumber, int level)
+IMessageDependencyList *FilteredEvent::getCauses(IEvent *event, IMessageDependency *endMessageDependency, int level)
 {
     // returns a list of dependencies, where the consequence is this event,
     // and the other end is no further away than getMaxCauseDepth() and
     // no events in between match the filter
-    MessageDependencyList *eventCauses = event->getCauses();
+    IMessageDependencyList *eventCauses = event->getCauses();
 
-    for (MessageDependencyList::iterator it = eventCauses->begin(); it != eventCauses->end(); it++)
+    for (IMessageDependencyList::iterator it = eventCauses->begin(); it != eventCauses->end(); it++)
     {
-        MessageDependency *messageDependency = *it;
+        IMessageDependency *messageDependency = *it;
         IEvent *causeEvent = messageDependency->getCauseEvent();
 
         //printf("*** Checking at level %d for cause event number %ld\n", level, causeEvent->getEventNumber());
@@ -169,39 +167,37 @@ MessageDependencyList *FilteredEvent::getCauses(IEvent *event, int consequenceBe
             if (level == 0)
                 causes->push_back(messageDependency->duplicate(filteredEventLog));
             else
-                causes->push_back(new FilteredMessageDependency(filteredEventLog,
-                    messageDependency->getCauseEventNumber(), messageDependency->getCauseBeginSendEntryNumber(),
-                    messageDependency->getConsequenceEventNumber(), messageDependency->getConsequenceBeginSendEntryNumber(),
-                    getEventNumber(), consequenceBeginSendEntryNumber));
+                // TODO: this makes the middle numbers -1 sometimes 
+                causes->push_back(new FilteredMessageDependency(filteredEventLog, messageDependency, endMessageDependency));
         }
         else if (level < filteredEventLog->getMaxCauseDepth())
             getCauses(causeEvent,
-                level == 0 ? messageDependency->getConsequenceBeginSendEntryNumber() : consequenceBeginSendEntryNumber,
+                level == 0 ? messageDependency : endMessageDependency,
                 level + 1);
     }
 
     return causes;
 }
 
-MessageDependencyList *FilteredEvent::getConsequences()
+IMessageDependencyList *FilteredEvent::getConsequences()
 {
     if (consequences == NULL)
     {
-        consequences = new MessageDependencyList();
-        getConsequences(getEvent(), -1, 0);
+        consequences = new IMessageDependencyList();
+        getConsequences(getEvent(), NULL, 0);
     }
 
     return consequences;
 }
 
-MessageDependencyList *FilteredEvent::getConsequences(IEvent *event, int causeBeginSendEntryNumber, int level)
+IMessageDependencyList *FilteredEvent::getConsequences(IEvent *event, IMessageDependency *beginMessageDependency, int level)
 {
     // similar to getCause
-    MessageDependencyList *eventConsequences = event->getConsequences();
+    IMessageDependencyList *eventConsequences = event->getConsequences();
 
-    for (MessageDependencyList::iterator it = eventConsequences->begin(); it != eventConsequences->end(); it++)
+    for (IMessageDependencyList::iterator it = eventConsequences->begin(); it != eventConsequences->end(); it++)
     {
-        MessageDependency *messageDependency = *it;
+        IMessageDependency *messageDependency = *it;
         IEvent *consequenceEvent = messageDependency->getConsequenceEvent();
 
         if (consequenceEvent == NULL)
@@ -213,14 +209,12 @@ MessageDependencyList *FilteredEvent::getConsequences(IEvent *event, int causeBe
             if (level == 0)
                 consequences->push_back(messageDependency->duplicate(filteredEventLog));
             else
-                consequences->push_back(new FilteredMessageDependency(filteredEventLog,
-                    getEventNumber(), causeBeginSendEntryNumber,
-                    messageDependency->getCauseEventNumber(), messageDependency->getCauseBeginSendEntryNumber(),
-                    messageDependency->getConsequenceEventNumber(), messageDependency->getConsequenceBeginSendEntryNumber()));
+                // TODO: this makes the middle numbers -1 sometimes 
+                consequences->push_back(new FilteredMessageDependency(filteredEventLog, beginMessageDependency, messageDependency));
         }
         else if (level < filteredEventLog->getMaxConsequenceDepth())
             getConsequences(consequenceEvent,
-                level == 0 ? messageDependency->getCauseBeginSendEntryNumber() : causeBeginSendEntryNumber,
+                level == 0 ? messageDependency : beginMessageDependency,
                 level + 1);
     }
 

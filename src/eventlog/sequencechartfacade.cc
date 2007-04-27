@@ -83,6 +83,8 @@ double SequenceChartFacade::getTimelineCoordinate(IEvent *event)
                     bool forward = event->getEventNumber() > timelineCoordinateRangeEndEventNumber;
                     IEvent *currentEvent = eventLog->getEventForEventNumber(forward ? timelineCoordinateRangeEndEventNumber : timelineCoordinateRangeStartEventNumber);
 
+                    // TODO: when switching to a filtered event log the timeline coordinate cache becomes invalid
+                    // TODO: what else?
                     Assert(event->getEventNumber() < timelineCoordinateRangeStartEventNumber || timelineCoordinateRangeEndEventNumber < event->getEventNumber()); 
 
                     do {
@@ -352,10 +354,10 @@ std::vector<int64> *SequenceChartFacade::getIntersectingMessageDependencies(int6
 
     // look after requrested range
     for (event = endEvent, i = 0; i < lookAroundCount && event; event = event->getNextEvent(), i++) {
-        MessageDependencyList *causes = event->getCauses();
+        IMessageDependencyList *causes = event->getCauses();
 
-        for (MessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++) {
-            MessageDependency *messageDependency = *it;
+        for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++) {
+            IMessageDependency *messageDependency = *it;
             long eventNumber = messageDependency->getCauseEventNumber();
 
             // store only if refers inside or before the requested range
@@ -368,10 +370,10 @@ std::vector<int64> *SequenceChartFacade::getIntersectingMessageDependencies(int6
 
     // look before requrested range
     for (event = startEvent, i = 0; i < lookAroundCount && event; event = event->getPreviousEvent(), i++) {
-        MessageDependencyList *consequences = event->getConsequences();
+        IMessageDependencyList *consequences = event->getConsequences();
 
-        for (MessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++) {
-            MessageDependency *messageDependency = *it;
+        for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++) {
+            IMessageDependency *messageDependency = *it;
             long eventNumber = messageDependency->getConsequenceEventNumber();
 
             // store only if refers outside the requested plus look around range
@@ -382,15 +384,15 @@ std::vector<int64> *SequenceChartFacade::getIntersectingMessageDependencies(int6
 
     // look at requested range
     for (IEvent *event = startEvent; event != endEvent; event = event->getNextEvent()) {
-        MessageDependencyList *causes = event->getCauses();
+        IMessageDependencyList *causes = event->getCauses();
 
-        for (MessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
+        for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
             messageDependencies.insert((int64)*it);
 
-        MessageDependencyList *consequences = event->getConsequences();
+        IMessageDependencyList *consequences = event->getConsequences();
 
-        for (MessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++) {
-            MessageDependency *messageDependency = *it;
+        for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++) {
+            IMessageDependency *messageDependency = *it;
             long eventNumber = messageDependency->getConsequenceEventNumber();
 
             // store only if refers outside the requested plus look around range
@@ -425,10 +427,10 @@ std::vector<int> SequenceChartFacade::getApproximateMessageDependencyCountAdjace
         IEvent *event = eventLog->getApproximateEventAt(percentage);
 
         if (eventNumbers.find(event->getEventNumber()) == eventNumbers.end()) {
-            MessageDependencyList *causes = event->getCauses();
+            IMessageDependencyList *causes = event->getCauses();
 
-            for (MessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++) {
-                MessageDependency *messageDependency = *it;
+            for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++) {
+                IMessageDependency *messageDependency = *it;
                 IEvent *causeEvent = messageDependency->getCauseEvent();
                 IEvent *consequenceEvent = messageDependency->getConsequenceEvent();
 

@@ -49,18 +49,15 @@ class EVENTLOG_API EventLogFacade
         bool Event_isSelfEvent(int64 ptr);
 
         MessageDependency* MessageDependency_getMessageDependency(int64 ptr);
-        const char *MessageDependency_getCauseMessageName(int64 ptr);
-        const char *MessageDependency_getConsequenceMessageName(int64 ptr);
+        const char *MessageDependency_getMessageName(int64 ptr);
+        const char *FilteredMessageDependency_getBeginMessageName(int64 ptr);
+        const char *FilteredMessageDependency_getEndMessageName(int64 ptr);
         MessageDependencyKind MessageDependency_getKind(int64 ptr);
         bool MessageDependency_isMessageSend(int64 ptr);
         bool MessageDependency_isMessageReuse(int64 ptr);
         bool MessageDependency_isFilteredMessageDependency(int64 ptr);
         int64 MessageDependency_getCauseEvent(int64 ptr);
         int64 MessageDependency_getConsequenceEvent(int64 ptr);
-
-        const char *FilteredMessageDependency_getMiddleMessageName(int64 ptr);
 };
 
 #endif
-
-

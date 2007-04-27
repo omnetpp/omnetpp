@@ -54,8 +54,8 @@ long FilteredEventLog::getApproximateNumberOfEvents()
     if (approximateNumberOfEvents == -1)
     {
         if (tracedEventNumber != -1) {
-            // TODO: this is clearly not good and should return a much better approximationk
-            // TODO: maybe start from traced event number and go forward/backward and return approximation
+            // TODO: this is clearly not good and should return a much better approximation
+            // TODO: maybe start from traced event number and go forward/backward and return approximation based on that?
             return 1000;
         }
         else {
@@ -277,6 +277,7 @@ FilteredEvent *FilteredEventLog::getEventForEventNumber(long eventNumber, MatchK
 
     IEvent *event = eventLog->getEventForEventNumber(eventNumber, matchKind);
 
+    // TODO: make it similar to getEventForSimulationTime!
     if (event) {
         if (matchKind == EXACT) {
             if (matchesFilter(event))
@@ -291,17 +292,56 @@ FilteredEvent *FilteredEventLog::getEventForEventNumber(long eventNumber, MatchK
 
 FilteredEvent *FilteredEventLog::getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind)
 {
-    // TODO:
-    throw opp_runtime_error("Not yet implemented");
+    IEvent *event = eventLog->getEventForSimulationTime(simulationTime, matchKind);
+
+    if (event) {
+        switch (matchKind) {
+            case EXACT:
+                if (matchesFilter(event))
+                    return cacheFilteredEvent(event->getEventNumber());
+                break;
+            case FIRST_OR_PREVIOUS:
+                if (event->getSimulationTime() == simulationTime) {
+                    IEvent *lastEvent = eventLog->getEventForSimulationTime(simulationTime, LAST_OR_NEXT);
+                    IEvent *matchingEvent = getMatchingEventInDirection(event->getEventNumber(), lastEvent->getEventNumber(), true);
+
+                    if (matchingEvent)
+                        return cacheFilteredEvent(matchingEvent->getEventNumber());
+                }
+
+                return getMatchingEventInDirection(event->getEventNumber(), false);
+            case FIRST_OR_NEXT:
+                return getMatchingEventInDirection(event->getEventNumber(), true);
+            case LAST_OR_PREVIOUS:
+                return getMatchingEventInDirection(event->getEventNumber(), false);
+            case LAST_OR_NEXT:
+                if (event->getSimulationTime() == simulationTime) {
+                    IEvent *firstEvent = eventLog->getEventForSimulationTime(simulationTime, FIRST_OR_PREVIOUS);
+                    IEvent *matchingEvent = getMatchingEventInDirection(event->getEventNumber(), firstEvent->getEventNumber(), false);
+
+                    if (matchingEvent)
+                        return cacheFilteredEvent(matchingEvent->getEventNumber());
+                }
+
+                return getMatchingEventInDirection(event->getEventNumber(), true);
+        }
+    }
+
+    return NULL;
 }
 
 EventLogEntry *FilteredEventLog::findEventLogEntry(EventLogEntry *start, const char *search, bool forward)
 {
     // TODO:
-    throw opp_runtime_error("Not yet implemented");
+    throw opp_runtime_error("Not yet implemented: findEventLogEntry");
 }
 
 FilteredEvent* FilteredEventLog::getMatchingEventInDirection(long eventNumber, bool forward)
+{
+    return getMatchingEventInDirection(eventNumber, -1, forward);
+}
+
+FilteredEvent* FilteredEventLog::getMatchingEventInDirection(long eventNumber, long stopEventNumber, bool forward)
 {
     Assert(eventNumber >= 0);
     IEvent *event = eventLog->getEventForEventNumber(eventNumber);
@@ -324,12 +364,18 @@ FilteredEvent* FilteredEventLog::getMatchingEventInDirection(long eventNumber, b
 
             if (lastEventNumber != -1 && eventNumber > lastEventNumber)
                 return NULL;
+
+            if (stopEventNumber != -1 && eventNumber > stopEventNumber)
+                return NULL;
         }
         else {
             eventNumber--;
             event = event->getPreviousEvent();
 
             if (firstEventNumber != -1 && eventNumber < firstEventNumber)
+                return NULL;
+
+            if (stopEventNumber != -1 && eventNumber < stopEventNumber)
                 return NULL;
         }
     }
@@ -350,11 +396,11 @@ bool FilteredEventLog::isCauseOfTracedEvent(IEvent *cause)
     // returns true if "consequence" can be reached from "cause", using
     // the consequences chain. We use depth-first search.
     bool result = false;
-    MessageDependencyList *consequences = cause->getConsequences();
+    IMessageDependencyList *consequences = cause->getConsequences();
 
-    for (MessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
+    for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
     {
-        MessageDependency *messageDependency = *it;
+        IMessageDependency *messageDependency = *it;
         IEvent *consequenceEvent = messageDependency->getConsequenceEvent();
 
         if (consequenceEvent)
@@ -387,11 +433,11 @@ bool FilteredEventLog::isConsequenceOfTracedEvent(IEvent *consequence)
 
     // like consequenceEvent(), but searching from the opposite direction
     bool result = false;
-    MessageDependencyList *causes = consequence->getCauses();
+    IMessageDependencyList *causes = consequence->getCauses();
 
-    for (MessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
+    for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
     {
-        MessageDependency *messageDependency = *it;
+        IMessageDependency *messageDependency = *it;
         IEvent *causeEvent = messageDependency->getCauseEvent();
 
         if (causeEvent)

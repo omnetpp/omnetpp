@@ -28,7 +28,7 @@ class EventLog;
 
 /**
  * Manages all event log entries for a single event. (All lines belonging to an "E" line.)
- * Returned Event*, EventLogEntry*, EventEntry*, MessageSend*, MessageDependencyList* pointers should not be
+ * Returned Event*, EventLogEntry*, EventEntry*, MessageSend*, IMessageDependencyList* pointers should not be
  * remembered by callers, because they may get deleted when the event is
  * thrown out of the eventlog cache.
  */
@@ -49,8 +49,8 @@ class EVENTLOG_API Event : public IEvent
          * A is a cause of B if and only if B is a consequence of A.
          */
         MessageSend *cause; // the message send which is processed in this event
-        MessageDependencyList *causes; // the arrival message sends of messages which we send in this event
-        MessageDependencyList *consequences; // message sends in this event
+        IMessageDependencyList *causes; // the arrival message sends of messages which we send in this event
+        IMessageDependencyList *consequences; // message sends in this event
 
         Event *getReuserEvent(int &beginSendEntryNumber);
 
@@ -85,14 +85,15 @@ class EVENTLOG_API Event : public IEvent
         virtual long getMessageId() { return eventEntry->messageId; }
         virtual long getCauseEventNumber() { return eventEntry->causeEventNumber; }
 
+        virtual bool isSelfEvent();
         virtual Event *getPreviousEvent();
         virtual Event *getNextEvent();
 
         virtual Event *getCauseEvent();
         virtual BeginSendEntry *getCauseBeginSendEntry();
         virtual MessageSend *getCause();
-        virtual MessageDependencyList *getCauses();
-        virtual MessageDependencyList *getConsequences();
+        virtual IMessageDependencyList *getCauses();
+        virtual IMessageDependencyList *getConsequences();
 
         virtual void print(FILE *file = stdout, bool outputEventLogMessages = true);
 };

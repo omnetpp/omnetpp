@@ -92,6 +92,7 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
 
         bool matchesFilter(IEvent *event);
         FilteredEvent *getMatchingEventInDirection(long startEventNumber, bool forward);
+        FilteredEvent *getMatchingEventInDirection(long startEventNumber, long stopEventNumber, bool forward);
 
         // IEventLog interface
         virtual long getNumParsedEvents() { return eventLog->getNumParsedEvents(); }

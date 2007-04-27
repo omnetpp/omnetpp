@@ -90,9 +90,9 @@ class EVENTLOG_API IEvent
          */
         virtual IEvent *getCauseEvent() = 0;
         virtual BeginSendEntry *getCauseBeginSendEntry() = 0;
-        virtual MessageDependency *getCause() = 0;
-        virtual MessageDependencyList *getCauses() = 0;
-        virtual MessageDependencyList *getConsequences() = 0;
+        virtual IMessageDependency *getCause() = 0;
+        virtual IMessageDependencyList *getCauses() = 0;
+        virtual IMessageDependencyList *getConsequences() = 0;
 
         /**
          * Print all entries of this event.
@@ -105,14 +105,14 @@ class EVENTLOG_API IEvent
         virtual ModuleCreatedEntry *getModuleCreatedEntry() = 0;
 
         /**
-         * Returns the index of the begin send entry where the give message was sent.
+         * Returns the index of the begin send entry where the given message was sent.
          */
         virtual int findBeginSendEntryIndex(int messageId);
 
         /**
          * Returns true if the received message was a self message.
          */
-        virtual bool isSelfEvent();
+        virtual bool isSelfEvent() = 0;
 
         /**
          * Used to maintain the double linked list.
