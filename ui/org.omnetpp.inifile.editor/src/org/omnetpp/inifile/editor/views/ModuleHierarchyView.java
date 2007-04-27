@@ -183,7 +183,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 					if (payload.submoduleNode != null)
 						NEDResourcesPlugin.openNEDElementInEditor(payload.submoduleNode);
 					else if (payload.submoduleType != null)
-						NEDResourcesPlugin.openNEDElementInEditor((INEDElement)payload.submoduleType);
+						NEDResourcesPlugin.openNEDElementInEditor(payload.submoduleType);
 				}
 				if (element instanceof ParamResolution) {
 					ParamResolution payload = (ParamResolution) element;

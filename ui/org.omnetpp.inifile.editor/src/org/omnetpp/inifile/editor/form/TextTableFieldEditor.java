@@ -3,7 +3,6 @@ package org.omnetpp.inifile.editor.form;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
-import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -18,7 +17,6 @@ import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
-import org.omnetpp.inifile.editor.model.SectionKey;
 
 /**
  * Table based field editor for editing textual config entries

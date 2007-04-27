@@ -22,10 +22,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
-import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned.model.ex.ParamNodeEx;
-import org.omnetpp.ned.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 

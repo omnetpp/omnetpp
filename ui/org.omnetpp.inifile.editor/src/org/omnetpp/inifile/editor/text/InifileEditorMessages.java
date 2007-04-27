@@ -6,7 +6,7 @@ import java.util.ResourceBundle;
 //XXX possibly remove it; we currently don't use resource bundles
 public class InifileEditorMessages {
 
-	private static final String RESOURCE_BUNDLE= InifileEditorMessages.class.getName();//$NON-NLS-1$
+	private static final String RESOURCE_BUNDLE= InifileEditorMessages.class.getName();
 
 	private static ResourceBundle fgResourceBundle= ResourceBundle.getBundle(RESOURCE_BUNDLE);
 

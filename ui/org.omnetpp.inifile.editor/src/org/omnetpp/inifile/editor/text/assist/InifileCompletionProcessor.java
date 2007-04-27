@@ -165,7 +165,7 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 		}
 
 		addProposals(viewer, documentOffset, result, proposals, null);
-		return (ICompletionProposal[]) result.toArray(new ICompletionProposal[result.size()]);
+		return result.toArray(new ICompletionProposal[result.size()]);
 	}
 
 	enum ContextType {NORMAL, COMMENT, STRINGLITERAL};
