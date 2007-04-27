@@ -22,7 +22,7 @@ public class GateListPropertySource extends NotifiedPropertySource {
     protected int inheritedParamCount;
 
     public GateListPropertySource(IHasGates model) {
-        super((INEDElement)model);
+        super(model);
         this.model = model;
     }
 

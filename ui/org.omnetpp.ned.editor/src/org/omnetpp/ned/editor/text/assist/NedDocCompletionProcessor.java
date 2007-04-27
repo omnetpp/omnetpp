@@ -24,7 +24,7 @@ public class NedDocCompletionProcessor extends NedTemplateCompletionProcessor {
                 "</", NedCompletionHelper.proposedDocTags, "> ", null));
         
 //        Collections.sort(result, CompletionProposalComparator.getInstance());
-        return (ICompletionProposal[]) result.toArray(new ICompletionProposal[result.size()]);
+        return result.toArray(new ICompletionProposal[result.size()]);
     } 
 
     public char[] getCompletionProposalAutoActivationCharacters() {

@@ -19,7 +19,7 @@ public class NedPrivateDocCompletionProcessor extends NedTemplateCompletionProce
                     "", NedCompletionHelper.proposedPrivateDocTodo, " ", null);
 
         Collections.sort(result, CompletionProposalComparator.getInstance());
-        return (ICompletionProposal[]) result.toArray(new ICompletionProposal[result.size()]);
+        return result.toArray(new ICompletionProposal[result.size()]);
     } 
 
 }

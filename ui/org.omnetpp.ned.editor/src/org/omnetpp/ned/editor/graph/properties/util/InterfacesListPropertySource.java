@@ -19,7 +19,7 @@ public class InterfacesListPropertySource extends NotifiedPropertySource {
     protected PropertyDescriptor[] pdesc;
 
     public InterfacesListPropertySource(IHasInterfaces model) {
-        super((INEDElement)model);
+        super(model);
         this.model = model;
     }
 

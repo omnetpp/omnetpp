@@ -293,7 +293,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
 			snode = (ConnectionsNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementFactoryEx.NED_CONNECTIONS, this);
 
 		// add it to the connections subnode
-		snode.insertChildBefore(insertBefore, (INEDElement)conn);
+		snode.insertChildBefore(insertBefore, conn);
 	}
 
     /**

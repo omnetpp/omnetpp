@@ -151,7 +151,7 @@ public class PaletteManager implements INEDChangeListener {
                 "Create connections between submodules, or submodule and parent module",
                 new ModelFactory(ConnectionNodeEx.getStaticTagName()),
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION),
-                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)//$NON-NLS-1$
+                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)
         );
         // sets the required connection tool
         defConnTool.setToolClass(NedConnectionCreationTool.class);
@@ -170,7 +170,7 @@ public class PaletteManager implements INEDChangeListener {
                     StringUtils.makeBriefDocu(comp.getNEDElement().getComment(), 300),
                     new ModelFactory(ConnectionNodeEx.getStaticTagName(),name.toLowerCase(), name),
                     ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION),
-                    ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)//$NON-NLS-1$
+                    ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)
             );
             // sets the required connection tool
             tool.setToolClass(NedConnectionCreationTool.class);

@@ -22,7 +22,7 @@ public class ParameterListPropertySource extends NotifiedPropertySource {
     protected int inheritedParamCount;
 
     public ParameterListPropertySource(IHasParameters model) {
-        super((INEDElement)model);
+        super(model);
         this.model = model;
     }
 

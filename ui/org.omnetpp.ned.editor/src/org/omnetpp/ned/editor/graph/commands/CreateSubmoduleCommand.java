@@ -36,7 +36,7 @@ public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
 
         if (rect != null) {
             // get the scaling factor from the container module
-            float scale = ((CompoundModuleNodeEx)parent).getDisplayString().getScale();
+            float scale = parent.getDisplayString().getScale();
             child.getDisplayString().setConstraint(rect.getLocation(), rect.getSize(), scale);
         }
         redo();

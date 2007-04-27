@@ -5,7 +5,7 @@ import java.util.ResourceBundle;
 
 public class NedEditorMessages {
 
-	private static final String RESOURCE_BUNDLE= NedEditorMessages.class.getName();//$NON-NLS-1$
+	private static final String RESOURCE_BUNDLE= NedEditorMessages.class.getName();
 
 	private static ResourceBundle fgResourceBundle= ResourceBundle.getBundle(RESOURCE_BUNDLE);
 

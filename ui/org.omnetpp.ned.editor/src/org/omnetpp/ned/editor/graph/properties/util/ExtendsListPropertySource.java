@@ -19,7 +19,7 @@ public class ExtendsListPropertySource extends NotifiedPropertySource {
     protected PropertyDescriptor[] pdesc;
 
     public ExtendsListPropertySource(IHasAncestors model) {
-        super((INEDElement)model);
+        super(model);
         this.model = model;
     }
 

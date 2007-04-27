@@ -59,7 +59,7 @@ public class CloneSubmoduleCommand extends Command {
             
         ConnectionsNode connectionParent = null;
         if (parent instanceof CompoundModuleNodeEx)
-            connectionParent = ((CompoundModuleNodeEx)parent).getFirstConnectionsChild();
+            connectionParent = parent.getFirstConnectionsChild();
         
         ConnectionNodeEx newConn = (ConnectionNodeEx)oldConn.deepDup(null);
             

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IHasIndex;

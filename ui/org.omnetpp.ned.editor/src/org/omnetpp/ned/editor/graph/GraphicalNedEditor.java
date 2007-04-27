@@ -366,11 +366,11 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
 
-        action = new UnpinAction((IWorkbenchPart)this);
+        action = new UnpinAction(this);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
 
-        action = new ReLayoutAction((IWorkbenchPart)this);
+        action = new ReLayoutAction(this);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
     }
