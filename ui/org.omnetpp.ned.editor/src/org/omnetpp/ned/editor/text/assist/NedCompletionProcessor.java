@@ -20,7 +20,7 @@ import org.eclipse.jface.text.templates.Template;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
@@ -110,7 +110,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 
 			// match various "extends" and "like" clauses and offer component types
 			if (line.matches(".*\\bsimple .* extends"))
-				addProposals(viewer, documentOffset, result, res.getAllComponentNamesFilteredBy(NEDResources.SIMPLE_MODULE_FILTER), "simple-module type"); 
+				addProposals(viewer, documentOffset, result, res.getAllComponentNamesFilteredBy(NEDResources.SIMPLE_MODULE_FILTER), "simple-module type");
 			else if (line.matches(".*\\b(module|network) .* extends"))
 				addProposals(viewer, documentOffset, result, res.getAllComponentNamesFilteredBy(NEDResources.COMPOUND_MODULE_FILTER), "compound-module type");
 			else if (line.matches(".*\\bchannel .* extends"))
@@ -182,7 +182,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 		if (line.equals("volatile")) {
 			addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedBaseParamTypes, "parameter type");
 		}
-		
+
 		// expressions: after "=", opening "[", "if" or "for"
 		if (line.contains("=") || line.matches(".*\\b(if|for)\\b.*") || containsOpenBracket(line)) {
 			// System.out.println("proposals for expressions");
@@ -309,7 +309,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 		Matcher matcher = Pattern.compile("([A-Za-z_][A-Za-z0-9_]*) *(\\[[^\\[\\]]*\\])? *\\.$").matcher(line);
 		if (matcher.find()) { // use find() because line may start with garbage
 			String submoduleName = matcher.group(1);
-			NEDElement submodNode = parentComponent.getMembers().get(submoduleName);
+			INEDElement submodNode = parentComponent.getMembers().get(submoduleName);
 			if (submodNode instanceof SubmoduleNode) {
 				SubmoduleNode submod = (SubmoduleNode) submodNode;
 				String submodTypeName = submod.getType();
@@ -373,7 +373,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 				sectionType = SECT_PARAMETERS;
 			else
 				sectionType = SECT_GLOBAL;
-            
+
             // eliminate the types: section
             source = source.replaceAll("(?s)\\btypes\\b[^{]*?\\b(submodules|connections)\\b", "$1");
 

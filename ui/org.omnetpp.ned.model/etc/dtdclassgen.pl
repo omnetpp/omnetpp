@@ -262,7 +262,7 @@ foreach $element (@elements)
     print JAVA "        applyDefaults();\n";
     print JAVA "    }\n\n";
     print JAVA "    /** You should never create an instance directly, use factory class instead */\n";
-    print JAVA "    protected $elementclass(NEDElement parent) {\n";
+    print JAVA "    protected $elementclass(INEDElement parent) {\n";
     print JAVA "        super(parent);\n";
     print JAVA "        applyDefaults();\n";
     print JAVA "    }\n\n";
@@ -432,10 +432,10 @@ print JAVA "    public static void setInstance(NEDElementFactory inst) {\n";
 print JAVA "        instance = inst;\n";
 print JAVA "    }\n";
 print JAVA "\n";
-print JAVA "    public NEDElement createNodeWithTag(String tagname) {\n";
+print JAVA "    public INEDElement createNodeWithTag(String tagname) {\n";
 print JAVA "        return createNodeWithTag(tagname, null);\n";
 print JAVA "    }\n\n";
-print JAVA "    public NEDElement createNodeWithTag(String tagname, NEDElement parent) {\n";
+print JAVA "    public INEDElement createNodeWithTag(String tagname, INEDElement parent) {\n";
 foreach $element (@elements)
 {
     print JAVA "        if (tagname.equals($elementclass{$element}.getStaticTagName()))\n";
@@ -445,11 +445,11 @@ print JAVA "        else\n";
 print JAVA "            throw new RuntimeException(\"invalid tagname \"+tagname);\n";
 print JAVA "    }\n\n";
 
-print JAVA "    public NEDElement createNodeWithTag(int tagcode) {\n";
+print JAVA "    public INEDElement createNodeWithTag(int tagcode) {\n";
 print JAVA "        return createNodeWithTag(tagcode, null);\n";
 print JAVA "    }\n\n";
 
-print JAVA "    public NEDElement createNodeWithTag(int tagcode, NEDElement parent) {\n";
+print JAVA "    public INEDElement createNodeWithTag(int tagcode, INEDElement parent) {\n";
 foreach $element (@elements)
 {
     print JAVA "        if (tagcode==$enumname{$element})\n";
@@ -475,8 +475,8 @@ print JAVA " * GENERATED CLASS. Base class for NED validators.\n";
 print JAVA " */\n";
 print JAVA "public abstract class AbstractNEDValidator implements NEDElementTags\n";
 print JAVA "{\n";
-print JAVA "    abstract public void validate(NEDElement node);\n\n";
-print JAVA "    protected void validateElement(NEDElement node) {\n";
+print JAVA "    abstract public void validate(INEDElement node);\n\n";
+print JAVA "    protected void validateElement(INEDElement node) {\n";
 print JAVA "        switch (node.getTagCode()) {\n";
 foreach $element (@elements)
 {

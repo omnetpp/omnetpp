@@ -12,11 +12,11 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.ned.core.ui.misc.NEDHyperlink;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 
 /**
  * Adds hyperlinks to the ini file.
- * 
+ *
  * @author Andras
  */
 public class InifileHyperlinkDetector implements IHyperlinkDetector {
@@ -53,11 +53,11 @@ public class InifileHyperlinkDetector implements IHyperlinkDetector {
 			// NED element to go to
 			InifileAnalyzer analyzer = editorData.getInifileAnalyzer();
 			ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
-			NEDElement node = resList.length==0 ? null : resList[0].paramValueNode!=null ? resList[0].paramValueNode : resList[0].paramDeclNode;
+			INEDElement node = resList.length==0 ? null : resList[0].paramValueNode!=null ? resList[0].paramValueNode : resList[0].paramDeclNode;
 			if (node == null)
 				return null;
-			
-			// add hyperlink on the key 
+
+			// add hyperlink on the key
 			return new IHyperlink[] {new NEDHyperlink(new Region(lineOffset+keyPos, key.length()), node)};
 
     	} catch (BadLocationException e) {

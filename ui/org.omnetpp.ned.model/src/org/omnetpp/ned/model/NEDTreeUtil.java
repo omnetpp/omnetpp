@@ -40,7 +40,7 @@ public class NEDTreeUtil {
 	 * 
 	 * @param keepSyntax if set, sources parsed in old syntax (NED-1) will be generated in old syntax as well 
 	 */
-	public static String generateNedSource(org.omnetpp.ned.model.NEDElement treeRoot, boolean keepSyntax) {
+	public static String generateNedSource(INEDElement treeRoot, boolean keepSyntax) {
 		// XXX for debugging
         //System.out.println(generateXmlFromPojoElementTree(treeRoot,""));
         
@@ -63,7 +63,7 @@ public class NEDTreeUtil {
 	 * a tree may be returned even if there were errors. Callers should check the 
 	 * NEDErrorStore.
 	 */
-	public static org.omnetpp.ned.model.NEDElement parseNedSource(String source, NEDErrorStore errors, String fileName) {
+	public static INEDElement parseNedSource(String source, NEDErrorStore errors, String fileName) {
         return parse(source, fileName, errors);
 	}
 
@@ -72,7 +72,7 @@ public class NEDTreeUtil {
 	 * a tree may be returned even if there were errors. Callers should check the 
 	 * NEDErrorStore.
 	 */
-	public static org.omnetpp.ned.model.NEDElement loadNedSource(String filename, NEDErrorStore errors) {
+	public static INEDElement loadNedSource(String filename, NEDErrorStore errors) {
         return parse(null, filename, errors);
 	}
 
@@ -80,7 +80,7 @@ public class NEDTreeUtil {
 	 * Parse the given source or the given file. Try to return a non-null tree even in case 
 	 * of parse errors. However, returned tree is always guaranteed to conform to the DTD. 
 	 */
-	private static org.omnetpp.ned.model.NEDElement parse(String source, String filename, NEDErrorStore errors) {
+	private static INEDElement parse(String source, String filename, NEDErrorStore errors) {
 		Assert.isTrue(filename != null); 
 		try {
 			// parse
@@ -123,7 +123,7 @@ public class NEDTreeUtil {
             }
 
 			// convert tree to pure Java objects
-			org.omnetpp.ned.model.NEDElement pojoTree = swig2pojo(swigTree, null, errors);
+			INEDElement pojoTree = swig2pojo(swigTree, null, errors);
 
 			// XXX for debugging 
 			// System.out.println(generateXmlFromPojoElementTree(pojoTree, "")); 
@@ -142,8 +142,8 @@ public class NEDTreeUtil {
 	 * Converts a native C++ (SWIG-wrapped) NEDElement tree to a plain java tree.  
 	 * WARNING there are two different NEDElement types hadled in this function. 
 	 */
-	public static org.omnetpp.ned.model.NEDElement swig2pojo(NEDElement swigNode, org.omnetpp.ned.model.NEDElement parent, NEDErrorStore errors) {
-		org.omnetpp.ned.model.NEDElement pojoNode = null; 
+	public static INEDElement swig2pojo(NEDElement swigNode, INEDElement parent, NEDErrorStore errors) {
+		INEDElement pojoNode = null; 
 		try {
 			pojoNode = NEDElementFactory.getInstance().createNodeWithTag(swigNode.getTagCode(), parent);
 
@@ -188,7 +188,7 @@ public class NEDTreeUtil {
 	 * Converts a plain java NEDElement tree to a native C++ (SWIG-wrapped) tree.  
 	 * WARNING there are two differenet NEDElement types hadled in this function. 
 	 */
-	public static NEDElement pojo2swig(org.omnetpp.ned.model.NEDElement pojoNode) {
+	public static NEDElement pojo2swig(INEDElement pojoNode) {
 
 		NEDElement swigNode = org.omnetpp.ned.engine.NEDElementFactory.getInstance()
 				.createNodeWithTag(pojoNode.getTagCode());
@@ -202,8 +202,7 @@ public class NEDTreeUtil {
 		swigNode.setSourceLocation(pojoNode.getSourceLocation());
 
 		// create child nodes
-		for (org.omnetpp.ned.model.NEDElement child = pojoNode.getFirstChild(); 
-					child != null; child = child.getNextSibling()) {
+		for (INEDElement child = pojoNode.getFirstChild(); child != null; child = child.getNextSibling()) {
             NEDElement convertedChild = pojo2swig(child); 
 			if (convertedChild != null) 
                 swigNode.appendChild(convertedChild);
@@ -218,10 +217,9 @@ public class NEDTreeUtil {
      * (ie. empty channelSpec objects etc.)
      * @param pojoNode Node to be filtered
      */
-    protected static void filterPojoTree(org.omnetpp.ned.model.NEDElement pojoNode) {
+    protected static void filterPojoTree(INEDElement pojoNode) {
         // filter the child nodes first
-        for (org.omnetpp.ned.model.NEDElement child = pojoNode.getFirstChild(); 
-                    child != null; child = child.getNextSibling()) {
+        for (INEDElement child = pojoNode.getFirstChild(); child != null; child = child.getNextSibling()) {
             filterPojoTree(child);
         }
 
@@ -271,7 +269,7 @@ public class NEDTreeUtil {
 		return result;
 	}
 
-	public static String generateXmlFromPojoElementTree(org.omnetpp.ned.model.NEDElement pojoNode, String indent) {
+	public static String generateXmlFromPojoElementTree(INEDElement pojoNode, String indent) {
 		String result = indent;
 		result += "<" + pojoNode.getTagName();
 		for (int i = 0; i < pojoNode.getNumAttributes(); ++i)
@@ -286,8 +284,7 @@ public class NEDTreeUtil {
 			result += "/> " +  debugString + "\n";
 		} else {
 			result += "> " +  debugString + "\n";
-			for (org.omnetpp.ned.model.NEDElement child = pojoNode.getFirstChild(); child != null; child = child
-					.getNextSibling())
+			for (INEDElement child = pojoNode.getFirstChild(); child != null; child = child.getNextSibling())
 				result += generateXmlFromPojoElementTree(child, indent + "  ");
 
 			result += indent + "</" + pojoNode.getTagName() + ">\n";
@@ -313,7 +310,7 @@ public class NEDTreeUtil {
      * @param tree2
      * @return Whether the two trees are equal
      */
-    public static boolean isNEDTreeEqual(org.omnetpp.ned.model.NEDElement tree1, org.omnetpp.ned.model.NEDElement tree2) {
+    public static boolean isNEDTreeEqual(INEDElement tree1, INEDElement tree2) {
         if (tree1.getTagCode() != tree2.getTagCode())
             return false;
         
@@ -325,8 +322,8 @@ public class NEDTreeUtil {
                 return false;
         }
         
-        org.omnetpp.ned.model.NEDElement child1 = tree1.getFirstChild();
-        org.omnetpp.ned.model.NEDElement child2 = tree2.getFirstChild();
+        INEDElement child1 = tree1.getFirstChild();
+        INEDElement child2 = tree2.getFirstChild();
         
         while (child1 != null && child2!=null) {
             // TODO comments node may be ignored here

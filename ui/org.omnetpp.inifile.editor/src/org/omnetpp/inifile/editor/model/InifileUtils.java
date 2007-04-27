@@ -22,7 +22,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned.model.ex.ParamNodeEx;
 import org.omnetpp.ned.model.pojo.CompoundModuleNode;
@@ -33,7 +33,7 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
  * Various lookups in inifiles, making use of NED declarations as well.
  * This class cannot be instantiated, all functionality is provided via
  * static methods.
- * 
+ *
  * @author Andras
  */
 public class InifileUtils {
@@ -63,7 +63,7 @@ public class InifileUtils {
 	 */
 	public static SectionKey lookupParameter(String paramFullPath, boolean hasNedDefault, String[] sectionChain, IInifileDocument doc) {
 		//
-		//XXX this issue is much more complicated, as there may be multiple possibly matching 
+		//XXX this issue is much more complicated, as there may be multiple possibly matching
 		// inifile entries. For example, we have "net.node[*].power", and inifile contains
 		// "*.node[0..4].power=...", "*.node[5..9].power=...", and "net.node[10..].power=...".
 		// Current code would not match any (!!!), only "net.node[*].power=..." if it existed.
@@ -96,7 +96,7 @@ public class InifileUtils {
 	}
 
 	/**
-	 * Resolves the run-time type of a "like" submodule, using the parameter 
+	 * Resolves the run-time type of a "like" submodule, using the parameter
 	 * settings in the inifile. Returns null if the lookup is unsuccessful.
 	 */
 	public static String resolveLikeParam(String moduleFullPath, SubmoduleNode submodule, String activeSection, InifileAnalyzer analyzer, IInifileDocument doc) {
@@ -104,7 +104,7 @@ public class InifileUtils {
 		String likeParamName = submodule.getLikeParam();
 		if (!likeParamName.matches("[A-Za-z0-9_]+"))
 			return null;  // sorry, we are only prepared to resolve parent module parameters (but not expressions)
-		
+
 		// look up parameter value
 		ParamResolution res = analyzer.getResolutionForModuleParam(moduleFullPath, likeParamName, activeSection);
 		if (res == null)
@@ -130,12 +130,12 @@ public class InifileUtils {
 			submoduleType = submodule.getLikeType();
 		return submoduleType;
 	}
-	
+
 	/**
 	 * Follows the section "extends" chain back to the [General] section, and
 	 * returns the list of section names (including the given section and
 	 * [General] as well).
-	 * 
+	 *
 	 * Errors (such as nonexistent section, circle in the fallback chain, etc)
 	 * are handled in a forgiving way, and a reasonably complete section chain
 	 * is returned without throwing an exception -- so this method may be safely
@@ -163,14 +163,14 @@ public class InifileUtils {
 	}
 
 	/**
-	 * Whether the section chain contains the given section. Useful for detecting 
+	 * Whether the section chain contains the given section. Useful for detecting
 	 * circles in the "extends" hierarchy.
 	 */
 	public static boolean sectionChainContains(IInifileDocument doc, String chainStartSection, String section) {
 		String[] sectionChain = resolveSectionChain(doc, chainStartSection);
 		return ArrayUtils.indexOf(sectionChain, section) >= 0;
 	}
-	
+
 	/**
 	 * Useful as a basis for an IInputValidator, e.g. for a cell editor or InputDialog.
 	 */
@@ -195,13 +195,13 @@ public class InifileUtils {
 	    else
 	    	return false; // unrecongnized
 	}
-	
+
 	/**
 	 * Insert a section at the right place in the file.
 	 * [General] at top, and other sections ordered alphabetically.
 	 */
 	public static void addSection(IInifileDocument doc, String newSection) {
-		if (doc.containsSection(newSection)) 
+		if (doc.containsSection(newSection))
 			return;
 		String[] sections = doc.getSectionNames();
 		if (newSection.equals(GENERAL)) {
@@ -212,7 +212,7 @@ public class InifileUtils {
 			if (section.compareToIgnoreCase(newSection) > 0 && !section.equals(GENERAL)) {
 				doc.addSection(newSection, section);
 				return;
-			}				
+			}
 		}
 		doc.addSection(newSection, null);
 	}
@@ -220,7 +220,7 @@ public class InifileUtils {
 	/**
 	 * Insert a key at the right place in the file. Config keys at top
 	 * (extends= first, description= next, network= after, and the
-	 * rest follows in alphabetical order), then parameters.  
+	 * rest follows in alphabetical order), then parameters.
 	 * If even the section is not present, it is added first.
 	 * The entry MUST NOT exist yet.
 	 */
@@ -233,7 +233,7 @@ public class InifileUtils {
 			if (precedesKey(newKey, key)) {
 				doc.addEntry(section, newKey, value, comment, key);
 				return;
-			}				
+			}
 		}
 		doc.addEntry(section, newKey, value, comment, null);
 	}
@@ -249,7 +249,7 @@ public class InifileUtils {
 		if (key2.contains(".")) return true;
 		return key1.compareToIgnoreCase(key2) < 0;
 	}
-	
+
 	/**
 	 * Renames the given section. Also changes the extends= keys in other sections
 	 * that refer to it.
@@ -271,23 +271,23 @@ public class InifileUtils {
 	public static String getSectionTooltip(String section, IInifileDocument doc, InifileAnalyzer analyzer) {
 		if (section == null || !doc.containsSection(section))
 			return null;
-		
+
 		// name and description
 		String text = "Section ["+section+"]";
 		String description = doc.getValue(section, "description");
-		if (description!=null) 
+		if (description!=null)
 			text += " -- " + description;
 		text += "\n";
-		
-		// section chain 
+
+		// section chain
 		String[] sectionChain = resolveSectionChain(doc, section);
 		if (sectionChain.length >= 2)
-			text += "   fallback order: " + StringUtils.join(sectionChain, " > ") + "\n"; //XXX decide terminology: "Lookup order" or "Section fallback chain" ? also: "," or ">" ? 
-		
+			text += "   fallback order: " + StringUtils.join(sectionChain, " > ") + "\n"; //XXX decide terminology: "Lookup order" or "Section fallback chain" ? also: "," or ">" ?
+
 		// unassigned parameters
 		if (analyzer != null) {
 			ParamResolution[] resList = analyzer.getUnassignedParams(section);
-			if (resList.length==0) { 
+			if (resList.length==0) {
 				text += "\nThis section seems to contain no unassigned NED parameters";
 			}
 			else {
@@ -297,7 +297,7 @@ public class InifileUtils {
 					ParamResolution res = resList[i];
 					text += "  - " + res.moduleFullPath + "." +res.paramDeclNode.getName() + "\n";
 				}
-				if (resList.length > n) 
+				if (resList.length > n)
 					text += "    ...\n";
 			}
 		}
@@ -339,7 +339,7 @@ public class InifileUtils {
 	 */
 	public static String getConfigTooltip(ConfigurationEntry entry, IInifileDocument doc) {
 		String text = "[General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / "+entry.getKey();
-		text += " = <" + entry.getDataType().name().replaceFirst("CFG_", ""); 
+		text += " = <" + entry.getDataType().name().replaceFirst("CFG_", "");
 		if (!"".equals(entry.getDefaultValue()))
 			text += ", default: " + entry.getDefaultValue();
 		text += "> \n\n";
@@ -355,24 +355,24 @@ public class InifileUtils {
 			else
 				text += "\nSet in the following sections: "+StringUtils.join(sectionList.toArray(), ", ")+"\n";
 		}
-		
+
 		return StringUtils.breakLines(text, 80);
 	}
-	
+
 	/**
 	 * Generate config for a param key entry
 	 */
 	public static String getParamKeyTooltip(String section, String key, InifileAnalyzer analyzer) {
 		//XXX somehow merge similar entries? (ie where pathModules[] and paramValueNode/paramDeclNode are the same)
 		ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
-		if (resList.length==0) 
+		if (resList.length==0)
 			return "Entry \"" + key + "\" does not match any module parameters ";
 
 		// merge similar entries
 		Set<ParamNode> paramDeclNodes = new LinkedHashSet<ParamNode>();
 		for (ParamResolution res : resList)
 			paramDeclNodes.add(res.paramDeclNode);
-			
+
 		String text = "Entry \"" + key + "\" applies to the following module parameters: \n";
 		for (ParamNode paramDeclNode : paramDeclNodes) {
 			String paramName = paramDeclNode.getName();
@@ -381,8 +381,8 @@ public class InifileUtils {
 			String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 60);
 			String optComment = comment==null ? "" : (" -- \"" + comment + "\"");
 
-			text += "\n  " + paramDeclaredOn + "." + paramName + " : "+ paramType + optComment + "\n"; 
-			
+			text += "\n  " + paramDeclaredOn + "." + paramName + " : "+ paramType + optComment + "\n";
+
 			int count = 0;
 			for (ParamResolution res : resList) {
 				if (res.paramDeclNode == paramDeclNode) {
@@ -395,7 +395,7 @@ public class InifileUtils {
 			}
 		}
 		return text;
-		
+
 //		int n = Math.min(resList.length, 8);
 //		for (int i=0; i<n; i++) {
 //			ParamResolution res = resList[i];
@@ -405,10 +405,10 @@ public class InifileUtils {
 //			String comment = makeBriefDocu(res.paramDeclNode.getComment(), 40);
 //			String optComment = comment==null ? "" : (" -- \"" + comment + "\"");
 //			text += "  - " + res.moduleFullPath + "." +paramName;
-//			text += " (" + paramDeclaredOn + "." + paramName + " : "+ paramType + optComment + ")"; 
+//			text += " (" + paramDeclaredOn + "." + paramName + " : "+ paramType + optComment + ")";
 //			text +=	(section.equals(res.activeSection) ? "" : ", for sub-config ["+res.activeSection+"]") + "\n"; //XXX do we have module type, maybe param doc etc?
 //		}
-//		if (resList.length > n) 
+//		if (resList.length > n)
 //			text += "    ...\n";
 //		return text;
 	}
@@ -431,7 +431,7 @@ public class InifileUtils {
 					result.add(marker);
 			}
 			return result.toArray(new IMarker[]{});
-		} 
+		}
 		catch (CoreException e) {
 			InifileEditorPlugin.logError(e);
 			return new IMarker[0];

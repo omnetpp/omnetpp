@@ -18,7 +18,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.ned.engine.NEDErrorCategory;
 import org.omnetpp.ned.engine.NEDErrorStore;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.NEDSourceRegion;
 import org.omnetpp.ned.model.NEDTreeUtil;
@@ -49,16 +49,16 @@ import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 /**
  * Parses all NED files in the workspace and makes them available for other
  * plugins for consistence checks among NED files etc.
- * 
+ *
  * It listens to workspace resource changes and modifies it content based on
  * change notifications
- * 
+ *
  * XXX should do full rebuild when Eclipse starts up!!! XXX default installation
  * should have "workspace auto refresh" enabled, and "Problems view" shown!!!
  * XXX when something changes, we always rebuild INEDComponents. This is not
  * needed -- rather, we should just call NEDComponent.componentsChanged()!
  * (PERFORMANCE)
- * 
+ *
  * @author andras
  */
 public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
@@ -80,19 +80,19 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                    ((CompoundModuleNodeEx)component.getNEDElement()).getIsNetwork();
         }
     };
-    
+
     private static final String NED_EXTENSION = "ned";
     // listener list that listenens on all NED changes
     private transient NEDChangeListenerList nedComponentChangeListenerList = null;
     private transient NEDChangeListenerList nedModelChangeListenerList = null;
-    private INEDChangeListener nedModelChangeListener = 
+    private INEDChangeListener nedModelChangeListener =
                         new INEDChangeListener() {
                             public void modelChanged(NEDModelEvent event) {
                                 nedModelChanged(event);
-                            }   
+                            }
                         };
     // stores parsed contents of NED files
-    private HashMap<IFile, NEDElement> nedFiles = new HashMap<IFile, NEDElement>();
+    private HashMap<IFile, INEDElement> nedFiles = new HashMap<IFile, INEDElement>();
     private ProblemMarkerJob markerJob = new ProblemMarkerJob("Updating problem markers");
 
     private HashMap<IFile, Integer> connectCount = new HashMap<IFile, Integer>();
@@ -105,7 +105,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     // tables of toplevel components, classified (points into nedFiles trees)
     private boolean needsRehash = false; // if tables below need to be rebuilt
-    
+
     private HashMap<String, INEDTypeInfo> modules = new HashMap<String, INEDTypeInfo>();
     private HashMap<String, INEDTypeInfo> channels = new HashMap<String, INEDTypeInfo>();
     private HashMap<String, INEDTypeInfo> moduleInterfaces = new HashMap<String, INEDTypeInfo>();
@@ -170,7 +170,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     /* utility method */
-    protected NEDElement createGate(String name, int type) {
+    protected INEDElement createGate(String name, int type) {
         GateNode g = (GateNode) NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_GATE);
         g.setName(name);
         g.setType(type);
@@ -178,7 +178,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     /* utility method */
-    protected NEDElement createImplicitChannelParameter(String name, int type) {
+    protected INEDElement createImplicitChannelParameter(String name, int type) {
         ParamNode param = (ParamNode) NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_PARAM);
         param.setName(name);
         param.setType(type);
@@ -193,7 +193,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         return nedFiles.keySet();
     }
 
-    public synchronized NEDElement getNEDFileModel(IFile file) {
+    public synchronized INEDElement getNEDFileModel(IFile file) {
         if (needsRehash)
             rehash();
         return nedFiles.get(file);
@@ -202,7 +202,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     /**
      * NED editors should call this when editor content changes.
      */
-    public synchronized void setNEDFileModel(IFile file, NEDElement tree) {
+    public synchronized void setNEDFileModel(IFile file, INEDElement tree) {
         if (tree == null)
             forgetNEDFile(file); // XXX rather: it should never be called
                                     // with tree==null!
@@ -218,7 +218,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     public synchronized String getNEDFileText(IFile file) {
         return NEDTreeUtil.generateNedSource(getNEDFileModel(file), true);
     }
-    
+
     /**
      * NED text editors should call this when editor content changes.
      * Parses the given text and build a new NED model tree.
@@ -228,7 +228,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         NEDErrorStore errors = new NEDErrorStore();
         errors.setPrintToStderr(false);
 
-        NEDElement tree = NEDTreeUtil.parseNedSource(text, errors, file.getLocation().toOSString());
+        INEDElement tree = NEDTreeUtil.parseNedSource(text, errors, file.getLocation().toOSString());
         setNEDFileModel(file, tree);
         markerJob.setParseErrorStore(file, errors);
     }
@@ -250,13 +250,13 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         return null;
     }
 
-    public synchronized NEDElement getNEDElementAt(IFile file, int line, int column) {
+    public synchronized INEDElement getNEDElementAt(IFile file, int line, int column) {
         line++;  // IDocument is 0-based
-        
-        // find component and NEDElements under the cursor 
+
+        // find component and NEDElements under the cursor
         INEDTypeInfo c = getComponentAt(file, line);
         if (c!=null) {
-            NEDElement[] nodes = c.getNEDElementsAt(line, column);
+            INEDElement[] nodes = c.getNEDElementsAt(line, column);
             if (nodes!=null && nodes.length>0) {
                 return nodes[nodes.length-1];
             }
@@ -277,7 +277,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                 result.add(comp);
         return result;
     }
-    
+
     public Set<String> getAllComponentNamesFilteredBy(IFilter f) {
         Set<String> result = new HashSet<String>();
         for(INEDTypeInfo comp : getAllComponents())
@@ -360,7 +360,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         return components.get(name);
     }
 
-    public synchronized INEDTypeInfo wrapNEDElement(NEDElement componentNode) {
+    public synchronized INEDTypeInfo wrapNEDElement(INEDElement componentNode) {
         return new NEDComponent(componentNode, null, this);
     }
 
@@ -399,7 +399,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         }
     }
 
-    
+
     /**
      * Gets called from incremental builder.
      */
@@ -414,7 +414,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         // parse the NED file and put it into the hash table
         String fileName = file.getLocation().toOSString();
         NEDErrorStore errors = new NEDErrorStore();
-        NEDElement tree = NEDTreeUtil.loadNedSource(fileName, errors);
+        INEDElement tree = NEDTreeUtil.loadNedSource(fileName, errors);
         markerJob.setParseErrorStore(file, errors);
 
         // only store it if there were no errors
@@ -438,11 +438,11 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         }
     }
 
-    private synchronized void storeNEDFileModel(IFile file, NEDElement tree) {
+    private synchronized void storeNEDFileModel(IFile file, INEDElement tree) {
         // store NED file contents
         Assert.isTrue(tree != null);
 
-        NEDElement oldTree = nedFiles.get(file);
+        INEDElement oldTree = nedFiles.get(file);
         // if the new tree has changed, we have to rehash everything
         if (oldTree == null || !NEDTreeUtil.isNEDTreeEqual(oldTree, tree)) {
             needsRehash = true;
@@ -495,8 +495,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             // iterate on NED file contents, and register each component in our
             // hash tables
             //XXX should be recursive, and collect inner types as well (store them as "TopleveTtype.InnerType) or something
-            NEDElement tree = nedFiles.get(file);
-            for (NEDElement node : tree) {
+            INEDElement tree = nedFiles.get(file);
+            for (INEDElement node : tree) {
                 // find node's name and where it should be inserted
                 String name = null;
                 HashMap<String, INEDTypeInfo> map = null;
@@ -566,7 +566,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         for (IFile file : nedFiles.keySet()) {
             final NEDErrorStore consistencyErrors = markerJob.getConsistencyErrorStore(file);
             INEDErrorStore errors = new INEDErrorStore() { // XXX make a better one
-                public void add(NEDElement context, String message) {
+                public void add(INEDElement context, String message) {
                     consistencyErrors.add(context.getSourceLocation(), 2, message);
                 }
             };
@@ -591,18 +591,18 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     // ******************* notification helpers ************************************
 
     /**
-     * @return The listener list attached to the plugin which is notified about 
-     * TOP LEVEL COMPONENT changes (name, inheritance and visual appearence changes) 
+     * @return The listener list attached to the plugin which is notified about
+     * TOP LEVEL COMPONENT changes (name, inheritance and visual appearence changes)
      */
     public NEDChangeListenerList getNEDComponentChangeListenerList() {
         if (nedComponentChangeListenerList == null)
             nedComponentChangeListenerList = new NEDChangeListenerList();
         return nedComponentChangeListenerList;
     }
-    
+
     /**
-     * @return The listener list attached to the plugin which is notified about 
-     * ANY change in the NED model (ie. any change in any file) 
+     * @return The listener list attached to the plugin which is notified about
+     * ANY change in the NED model (ie. any change in any file)
      */
     public NEDChangeListenerList getNEDModelChangeListenerList() {
         if (nedModelChangeListenerList == null)
@@ -618,7 +618,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         System.out.println("NEDRESOURCES NOTIFY: "+event);
         // fire a component changed event if inheritance, naming or visual representation
         // has changed
-        boolean inheritanceChanged = inheritanceMayHaveChanged(event); 
+        boolean inheritanceChanged = inheritanceMayHaveChanged(event);
         if (inheritanceChanged) {
             System.out.println("Invalidating because of: " + event);
             invalidate();
@@ -645,7 +645,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     /**
      * @param event
-     * @return Wheteher the inheritance chain has changed somewhere 
+     * @return Wheteher the inheritance chain has changed somewhere
      * (name, extends, adding and removing top level nodes)
      */
     protected static boolean inheritanceMayHaveChanged(NEDModelEvent event) {
@@ -741,7 +741,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     public void formatNEDFileText(IFile file) {
         // TODO provid a much better implementation which wich DOES NOT change the identity if the
         // NED elements in the model ONLY the source location attributes are updated inthe NED model
-        
+
         // for the moment we re read the whole model
         // this changes the underlying model
         setNEDFileText(file, getNEDFileText(file));

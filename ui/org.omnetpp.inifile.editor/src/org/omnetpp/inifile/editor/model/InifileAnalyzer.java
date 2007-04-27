@@ -30,7 +30,7 @@ import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
@@ -42,38 +42,38 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
  * This is a layer above IInifileDocument, and contains info about the
  * relationship of inifile contents and NED. For example, which inifile
  * parameter settings apply to which NED module parameters.
- * 
+ *
  * Implementation note: there are several synchronized(doc) { } blocks in the
  * code. This is necessary because e.g. we need to prevent InifileDocument from
  * getting re-parsed while we are analyzing it. In particular, any two of the
  * following threads may collide: reconciler, content assist, update of the
  * Module Parameters view.
- * 
+ *
  * @author Andras
  */
 //XXX consider this:
 //Net.host[0].p = ...
 //Net.host[*].p = ...
-//Then host[0] should NOT be warned about being unused!!! 
+//Then host[0] should NOT be warned about being unused!!!
 //This affects all keys containing an index which is not "*", that is, where key.matches(".*\\[([^*]|(\\*[^]]+))\\].*")
 
 public class InifileAnalyzer {
 	public static final String INIFILEANALYZERPROBLEM_MARKER_ID = InifileEditorPlugin.PLUGIN_ID + ".inifileanalyzerproblem";
 	private IInifileDocument doc;
 	private boolean changed = true;
-	private boolean containsSectionCircles; 
+	private boolean containsSectionCircles;
 
 	/**
 	 * Classifies inifile keys; see getKeyType().
 	 */
 	public enum KeyType {
-		CONFIG, // contains no dot (like sim-time-limit=, etc) 					
-		PARAM,  // contains dot, but no hyphen: parameter setting (like **.app.delay) 
+		CONFIG, // contains no dot (like sim-time-limit=, etc)
+		PARAM,  // contains dot, but no hyphen: parameter setting (like **.app.delay)
 		PER_OBJECT_CONFIG; // dotted, and contains hyphen (like **.apply-default, rng mapping, vector configuration, etc)
 	};
 
 	/**
-	 * Used internally: class of objects attached to IInifileDocument entries 
+	 * Used internally: class of objects attached to IInifileDocument entries
 	 * (see getKeyData()/setKeyData())
 	 */
 	static class KeyData {
@@ -81,7 +81,7 @@ public class InifileAnalyzer {
 	};
 
 	/**
-	 * Used internally: class of objects attached to IInifileDocument sections 
+	 * Used internally: class of objects attached to IInifileDocument sections
 	 * (see getSectionData()/setSectionData())
 	 */
 	static class SectionData {
@@ -95,7 +95,7 @@ public class InifileAnalyzer {
 	public InifileAnalyzer(IInifileDocument doc) {
 		this.doc = doc;
 
-		// hook on inifile changes (unhooking is not necessary, because everything 
+		// hook on inifile changes (unhooking is not necessary, because everything
 		// will be gc'd when the editor closes)
 		doc.addInifileChangeListener(new IInifileChangeListener() {
 			public void modelChanged() {
@@ -131,7 +131,7 @@ public class InifileAnalyzer {
 
 	/**
 	 * Analyzes the inifile. Side effects: error/warning markers may be placed
-	 * on the IFile, and parameter resolutions (see ParamResolution) are 
+	 * on the IFile, and parameter resolutions (see ParamResolution) are
 	 * recalculated.
 	 */
 	public void analyze() {
@@ -147,7 +147,7 @@ public class InifileAnalyzer {
 				InifileEditorPlugin.logError(e);
 			}
 
-			//XXX catch all exceptions during analyzing, and set changed=false in finally{} ? 
+			//XXX catch all exceptions during analyzing, and set changed=false in finally{} ?
 
 			// calculate parameter resolutions for each section
 			calculateParamResolutions(ned);
@@ -180,22 +180,22 @@ public class InifileAnalyzer {
 
 	protected void addError(String section, String message) {
 		LineInfo line = doc.getSectionLineDetails(section);
-		addMarker(line.getFile(), INIFILEANALYZERPROBLEM_MARKER_ID, IMarker.SEVERITY_ERROR, message, line.getLineNumber()); 
+		addMarker(line.getFile(), INIFILEANALYZERPROBLEM_MARKER_ID, IMarker.SEVERITY_ERROR, message, line.getLineNumber());
 	}
 
 	protected void addError(String section, String key, String message) {
 		LineInfo line = doc.getEntryLineDetails(section, key);
-		addMarker(line.getFile(), INIFILEANALYZERPROBLEM_MARKER_ID, IMarker.SEVERITY_ERROR, message, line.getLineNumber()); 
+		addMarker(line.getFile(), INIFILEANALYZERPROBLEM_MARKER_ID, IMarker.SEVERITY_ERROR, message, line.getLineNumber());
 	}
 
 	protected void addWarning(String section, String message) {
 		LineInfo line = doc.getSectionLineDetails(section);
-		addMarker(line.getFile(), INIFILEANALYZERPROBLEM_MARKER_ID, IMarker.SEVERITY_WARNING, message, line.getLineNumber()); 
+		addMarker(line.getFile(), INIFILEANALYZERPROBLEM_MARKER_ID, IMarker.SEVERITY_WARNING, message, line.getLineNumber());
 	}
 
 	protected void addWarning(String section, String key, String message) {
 		LineInfo line = doc.getEntryLineDetails(section, key);
-		addMarker(line.getFile(), INIFILEANALYZERPROBLEM_MARKER_ID, IMarker.SEVERITY_WARNING, message, line.getLineNumber()); 
+		addMarker(line.getFile(), INIFILEANALYZERPROBLEM_MARKER_ID, IMarker.SEVERITY_WARNING, message, line.getLineNumber());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -289,7 +289,7 @@ public class InifileAnalyzer {
 				addError(section, key, "No such NED network: "+value);
 				return;
 			}
-			NEDElement node = network.getNEDElement();
+			INEDElement node = network.getNEDElement();
 			if (!(node instanceof CompoundModuleNode) || ((CompoundModuleNode)node).getIsNetwork()==false) {
 				addError(section, key, "Type '"+value+"' was not declared in NED with the keyword 'network'");
 				return;
@@ -377,7 +377,7 @@ public class InifileAnalyzer {
 			else if (value.startsWith("xmldoc"))
 				valueType = NED_PARTYPE_XML;
 
-			if (dataType == NED_PARTYPE_INT)  
+			if (dataType == NED_PARTYPE_INT)
 				dataType = NED_PARTYPE_DOUBLE;
 
 			if (valueType!=-1 && valueType!=dataType) {
@@ -427,7 +427,7 @@ public class InifileAnalyzer {
 		final String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
 		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getKey(), doc);
 		if (networkName == null)
-			networkName = CFGID_NETWORK.getDefaultValue().toString(); 
+			networkName = CFGID_NETWORK.getDefaultValue().toString();
 		if (networkName == null)
 			return new ArrayList<ParamResolution>();
 
@@ -436,7 +436,7 @@ public class InifileAnalyzer {
 		final ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
 
 		NEDTreeIterator treeIterator = new NEDTreeIterator(res, new IModuleTreeVisitor() {
-			Stack<SubmoduleNode> pathModules = new Stack<SubmoduleNode>(); 
+			Stack<SubmoduleNode> pathModules = new Stack<SubmoduleNode>();
 			Stack<String> fullPathStack = new Stack<String>();
 
 			public void enter(SubmoduleNode submodule, INEDTypeInfo submoduleType) {
@@ -452,7 +452,7 @@ public class InifileAnalyzer {
 			}
 
 			public void unresolvedType(SubmoduleNode submodule, String submoduleTypeName) {}
-			
+
 			public void recursiveType(SubmoduleNode submodule, INEDTypeInfo submoduleType) {}
 
 			public String resolveLikeType(SubmoduleNode submodule) {
@@ -463,11 +463,11 @@ public class InifileAnalyzer {
 				String likeParamName = submodule.getLikeParam();
 				if (!likeParamName.matches("[A-Za-z0-9_]+"))
 					return null;  // sorry, we are only prepared to resolve parent module parameters (but not expressions)
-				
+
 				// look up parameter value (note: we cannot use resolveLikeParam() here yet)
 				String moduleFullPath = StringUtils.join(fullPathStack.toArray(), ".");
 				ParamResolution res = null;
-				for (ParamResolution r : list) 
+				for (ParamResolution r : list)
 					if (r.paramDeclNode.getName().equals(likeParamName) && r.moduleFullPath.equals(moduleFullPath))
 						{res = r; break;}
 				if (res == null)
@@ -500,12 +500,12 @@ public class InifileAnalyzer {
 	}
 
 	/**
-	 * Determines how a NED parameter gets assigned (inifile, NED file, etc). 
-	 * The sectionChain and doc parameters may be null, which means that only parameter 
+	 * Determines how a NED parameter gets assigned (inifile, NED file, etc).
+	 * The sectionChain and doc parameters may be null, which means that only parameter
 	 * assignments given in NED will be taken into account.
-	 * 
-	 * XXX probably not good (does not handle all cases): what if parameter is assigned in a submodule decl? 
-	 * what if it's assigned using a /pattern/? this info cannot be expressed in the arg list! 
+	 *
+	 * XXX probably not good (does not handle all cases): what if parameter is assigned in a submodule decl?
+	 * what if it's assigned using a /pattern/? this info cannot be expressed in the arg list!
 	 */
 	protected static ParamResolution resolveParameter(String moduleFullPath, SubmoduleNode[] pathModules, ParamNode paramDeclNode, ParamNode paramValueNode, String[] sectionChain, IInifileDocument doc) {
 		// value in the NED file
@@ -528,7 +528,7 @@ public class InifileAnalyzer {
 				if (isNedDefault && iniKey.endsWith(".apply-default")) {
 					Assert.isTrue("true".equals(doc.getValue(iniSection, iniKey)));
 					iniApplyDefault = true;
-				} 
+				}
 				else {
 					iniValue = doc.getValue(iniSection, iniKey);
 				}
@@ -542,7 +542,7 @@ public class InifileAnalyzer {
 				type = ParamResolutionType.INI;
 			else
 				type = ParamResolutionType.UNASSIGNED;
-		}		
+		}
 		else {
 			if (!isNedDefault)
 				type = ParamResolutionType.NED; // value assigned in NED (unchangeable from ini files)
@@ -552,7 +552,7 @@ public class InifileAnalyzer {
 				type = ParamResolutionType.UNASSIGNED;
 			else if (nedValue.equals(iniValue))
 				type = ParamResolutionType.INI_NEDDEFAULT;
-			else 
+			else
 				type = ParamResolutionType.INI_OVERRIDE;
 		}
 		return new ParamResolution(moduleFullPath, pathModules, paramDeclNode, paramValueNode, type, activeSection, iniSection, iniKey);
@@ -568,7 +568,7 @@ public class InifileAnalyzer {
 	 */
 	//XXX into InifileUtils? (KeyType too)
 	public static KeyType getKeyType(String key) {
-		if (!key.contains(".")) 
+		if (!key.contains("."))
 			return KeyType.CONFIG;  // contains no dot
 		else if (!key.contains("-"))
 			return KeyType.PARAM; // contains dot, but no hyphen
@@ -579,7 +579,7 @@ public class InifileAnalyzer {
 	public boolean isUnusedParameterKey(String section, String key) {
 		synchronized (doc) {
 			analyzeIfChanged();
-			if (getKeyType(key)!=KeyType.PARAM) 
+			if (getKeyType(key)!=KeyType.PARAM)
 				return false;
 			KeyData data = (KeyData) doc.getKeyData(section,key);
 			return data!=null && data.paramResolutions!=null && data.paramResolutions.isEmpty();
@@ -602,7 +602,7 @@ public class InifileAnalyzer {
 		synchronized (doc) {
 			analyzeIfChanged();
 			ArrayList<String> list = new ArrayList<String>();
-			for (String key : doc.getKeys(section)) 
+			for (String key : doc.getKeys(section))
 				if (isUnusedParameterKey(section, key))
 					list.add(key);
 			return list.toArray(new String[list.size()]);
@@ -610,8 +610,8 @@ public class InifileAnalyzer {
 	}
 
 	/**
-	 * Returns parameter resolutions from the given section that correspond to the 
-	 * parameters of the given module.  
+	 * Returns parameter resolutions from the given section that correspond to the
+	 * parameters of the given module.
 	 */
 	public ParamResolution[] getParamResolutionsForModule(String moduleFullPath, String section) {
 		synchronized (doc) {
@@ -619,11 +619,11 @@ public class InifileAnalyzer {
 			SectionData data = (SectionData) doc.getSectionData(section);
 			List<ParamResolution> pars = data==null ? null : data.allParamResolutions;
 			if (pars == null || pars.isEmpty())
-				return new ParamResolution[0]; 
+				return new ParamResolution[0];
 
 			// Note: linear search -- can be made more efficient with some lookup table if needed
 			ArrayList<ParamResolution> result = new ArrayList<ParamResolution>();
-			for (ParamResolution par : pars) 
+			for (ParamResolution par : pars)
 				if (par.moduleFullPath.equals(moduleFullPath))
 					result.add(par);
 			return result.toArray(new ParamResolution[]{});
@@ -632,7 +632,7 @@ public class InifileAnalyzer {
 
 	/**
 	 * Returns the resolution of the given module parameter from the given section,
-	 * or null if not found.  
+	 * or null if not found.
 	 */
 	public ParamResolution getResolutionForModuleParam(String moduleFullPath, String paramName, String section) {
 		synchronized (doc) {
@@ -640,10 +640,10 @@ public class InifileAnalyzer {
 			SectionData data = (SectionData) doc.getSectionData(section);
 			List<ParamResolution> pars = data==null ? null : data.allParamResolutions;
 			if (pars == null || pars.isEmpty())
-				return null; 
+				return null;
 
 			// Note: linear search -- can be made more efficient with some lookup table if needed
-			for (ParamResolution par : pars) 
+			for (ParamResolution par : pars)
 				if (par.paramDeclNode.getName().equals(paramName) && par.moduleFullPath.equals(moduleFullPath))
 					return par;
 			return null;
@@ -652,7 +652,7 @@ public class InifileAnalyzer {
 
 	/**
 	 * Returns all parameter resolutions for the given inifile section; this includes
-	 * unassigned parameters as well.  
+	 * unassigned parameters as well.
 	 */
 	public ParamResolution[] getParamResolutions(String section) {
 		synchronized (doc) {
@@ -675,9 +675,9 @@ public class InifileAnalyzer {
 
 	public static String getParamValue(ParamResolution res, IInifileDocument doc) {
 		switch (res.type) {
-			case UNASSIGNED: 
+			case UNASSIGNED:
 				return null;
-			case NED: case NED_DEFAULT: 
+			case NED: case NED_DEFAULT:
 				return res.paramValueNode.getValue();
 			case INI: case INI_OVERRIDE: case INI_NEDDEFAULT:
 				return doc.getValue(res.section, res.key);
@@ -689,16 +689,16 @@ public class InifileAnalyzer {
 		String remark;
 		switch (res.type) {
 			case UNASSIGNED: remark = "unassigned"; break;
-			case NED: remark = "NED"; break;  
+			case NED: remark = "NED"; break;
 			case NED_DEFAULT: remark = "NED default applied"; break;
 			case INI: remark = "ini"; break;
 			case INI_OVERRIDE: remark = "ini, overrides NED default: "+res.paramValueNode.getValue(); break;
 			case INI_NEDDEFAULT: remark = "ini, sets same value as NED default"; break;
 			default: throw new IllegalStateException("invalid param resolution type: "+res.type);
 		}
-		if (res.key!=null) 
+		if (res.key!=null)
 			remark += "; see ["+res.section+"] / " + res.key + "=" + doc.getValue(res.section, res.key);
-		return remark; 
+		return remark;
 	}
 
 }

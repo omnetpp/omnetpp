@@ -3,17 +3,17 @@ package org.omnetpp.ned.editor.graph.misc;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.ui.parts.SelectionSynchronizer;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 
 /**
  * Special syncronizer that syncs any selected editpart to the first editpart wich is found among
  * the ancestors. Returns null if no suitable editpart found in the viewer
- * 
+ *
  * @author rhornig
  */
 public class NedSelectionSynchronizer extends SelectionSynchronizer {
-  
+
     /**
      * Maps the given editpart from one viewer to an editpart in another viewer. It returns
      * <code>null</code> if there is no corresponding part. Travels along the ancestestors toward
@@ -25,10 +25,10 @@ public class NedSelectionSynchronizer extends SelectionSynchronizer {
     @Override
     protected EditPart convert(EditPartViewer viewer, EditPart part) {
         if (part instanceof IModelProvider) {
-            NEDElement model = ((IModelProvider)part).getNEDModel();
+            INEDElement model = ((IModelProvider)part).getNEDModel();
             while (model != null) {
                 EditPart ep = (EditPart)viewer.getEditPartRegistry().get(model);
-                if (ep != null) 
+                if (ep != null)
                     return ep;
                 // not matching, check the parent too
                 model = model.getParent();

@@ -3,7 +3,7 @@ package org.omnetpp.ned.core;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
@@ -61,7 +61,7 @@ import org.omnetpp.ned.model.pojo.UnknownNode;
 
 /**
  * Validates consistency of NED files.
- * 
+ *
  * @author andras
  */
 //
@@ -74,8 +74,8 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 	INEDErrorStore errors;
 
 	// the component currently being validated
-	NEDElement componentNode;
-	
+	INEDElement componentNode;
+
 	// non-null while we're validating a submodule
 	SubmoduleNode submoduleNode;
 	INEDTypeInfo submoduleType; // null for the "like *" case(!); valid while submoduleNode!=null
@@ -85,23 +85,23 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 	INEDTypeInfo channelSpecType; // may be null; valid while channelSpecNode!=null
 
 	// members of the component currently being validated
-	HashMap<String, NEDElement> members = new HashMap<String, NEDElement>();
+	HashMap<String, INEDElement> members = new HashMap<String, INEDElement>();
 
 	// contents of the "types:" section of the component currently being validated
 	HashMap<String, INEDTypeInfo> innerTypes = new HashMap<String, INEDTypeInfo>();
-	
+
 	public NEDValidator(INEDTypeResolver resolver, INEDErrorStore errors) {
 		this.resolver = resolver;
 		this.errors = errors;
 	}
 
 	@Override
-	public void validate(NEDElement node) {
+	public void validate(INEDElement node) {
 		validateElement(node);
 	}
 
-	protected void validateChildren(NEDElement node) {
-		for (NEDElement child : node)
+	protected void validateChildren(INEDElement node) {
+		for (INEDElement child : node)
 			validate(child);
 	}
 
@@ -151,49 +151,49 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 			else
 			    members.put(memberName, e.getMembers().get(memberName));
 		}
-		
+
 		// then process children
 		validateChildren(node);
 	}
 
 	protected void validateElement(InterfaceNameNode node) {
-		// nothing to do here: compliance to "like" interfaces will be checked 
-		// after we finished validating the component 
+		// nothing to do here: compliance to "like" interfaces will be checked
+		// after we finished validating the component
 		validateChildren(node);
 	}
 
 	protected void validateElement(SimpleModuleNode node) {
-		doValidateComponent(node); 
+		doValidateComponent(node);
 	}
 
 	protected void validateElement(ModuleInterfaceNode node) {
-		doValidateComponent(node); 
+		doValidateComponent(node);
 	}
 
 	protected void validateElement(CompoundModuleNode node) {
-		doValidateComponent(node); 
+		doValidateComponent(node);
 	}
 
 	protected void validateElement(ChannelInterfaceNode node) {
-		doValidateComponent(node); 
+		doValidateComponent(node);
 	}
 
 	protected void validateElement(ChannelNode node) {
 		//XXX check: exactly one of "extends" and "withcppclass" must be present!!!
-		doValidateComponent(node); 
+		doValidateComponent(node);
 	}
 
 	/* utility method */
-	protected void doValidateComponent(NEDElement node) {
+	protected void doValidateComponent(INEDElement node) {
         // init
 		componentNode = node;
 		Assert.isTrue(members.isEmpty());
 		Assert.isTrue(innerTypes.isEmpty());
-		
+
 		// do the work
 		validateChildren(node);
 		//XXX check compliance to "like" interfaces
-		
+
 		// clean up
 		componentNode = null;
 		members.clear();
@@ -340,22 +340,22 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 	}
 
 	protected void validateElement(TypesNode node) {
-		for (NEDElement child : node) {
+		for (INEDElement child : node) {
 			NEDValidator validator = new NEDValidator(resolver, errors);
 			switch (child.getTagCode()) {
-				case NED_COMMENT: 
+				case NED_COMMENT:
 					break;
 				case NED_SIMPLE_MODULE:
 				case NED_MODULE_INTERFACE:
 				case NED_COMPOUND_MODULE:
 				case NED_CHANNEL_INTERFACE:
-				case NED_CHANNEL: 
+				case NED_CHANNEL:
 					validator.validate(child);
 					String name = child.getAttribute("name");
 					innerTypes.put(name, resolver.wrapNEDElement(child));
 					members.put(name, child);
 					break;
-				default: 
+				default:
 					Assert.isTrue(false, "unexpected element type: "+child.getTagName());
 			}
 		}
@@ -367,9 +367,9 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 
 	protected void validateElement(SubmoduleNode node) {
 		// find submodule type
-		String name = node.getName();  
-		String typeName = node.getType();  
-		String likeTypeName = node.getLikeType();  
+		String name = node.getName();
+		String typeName = node.getType();
+		String likeTypeName = node.getLikeType();
 		if (typeName!=null && !typeName.equals("")) {
 			// normal case
 			submoduleType = resolveTypeName(typeName);
@@ -405,7 +405,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 			errors.add(node, "no type info for '"+name+"'");  // should never happen
 			return;
 		}
-		
+
 		// validate contents
 		submoduleNode = node;
 		validateChildren(node);
@@ -429,8 +429,8 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 
 	protected void validateElement(ChannelSpecNode node) {
 		// find channel type
-		String typeName = node.getType();  
-		String likeTypeName = node.getLikeType();  
+		String typeName = node.getType();
+		String likeTypeName = node.getLikeType();
 		if (typeName!=null && !typeName.equals("")) {
 			// normal case
 			channelSpecType = resolveTypeName(typeName);
@@ -506,7 +506,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 	}
 
 	/*------MSG----------------------------------------------------*/
-	
+
 	protected void validateElement(MsgFileNode node) {
 		validateChildren(node);
 	}

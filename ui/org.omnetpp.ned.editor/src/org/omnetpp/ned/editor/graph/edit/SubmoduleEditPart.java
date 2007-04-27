@@ -10,7 +10,7 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.figures.misc.GateAnchor;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 
 
@@ -21,9 +21,9 @@ public class SubmoduleEditPart extends ModuleEditPart {
     protected void createEditPolicies() {
         super.createEditPolicies();
     }
-    /** 
+    /**
      * Returns a newly created Figure of this.
-     * 
+     *
      * @return A new Figure of this.
      */
     @Override
@@ -35,7 +35,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
 
     /**
      * Returns the Figure for this as an SubmoduleFigure.
-     * 
+     *
      * @return Figure of this as a SubmoduleFigure
      */
     public SubmoduleFigure getSubmoduleFigure() {
@@ -48,10 +48,10 @@ public class SubmoduleEditPart extends ModuleEditPart {
     public SubmoduleNodeEx getSubmoduleModel() {
         return (SubmoduleNodeEx)getModel();
     }
-    
+
 	/**
-	 * Compute the source connection anchor to be assigned based on the current mouse 
-	 * location and available gates. 
+	 * Compute the source connection anchor to be assigned based on the current mouse
+	 * location and available gates.
 	 * @param p current mouse coordinates
 	 * @return The selected connection anchor
 	 */
@@ -70,7 +70,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
 
     /**
      * Returns a list of connections for which this is the srcModule.
-     * 
+     *
      * @return List of connections.
      */
     @Override
@@ -81,7 +81,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
 
     /**
      * Returns a list of connections for which this is the destModule.
-     * 
+     *
      * @return List of connections.
      */
     @Override
@@ -95,10 +95,10 @@ public class SubmoduleEditPart extends ModuleEditPart {
      */
     @Override
     protected void refreshVisuals() {
-        
+
         // define the properties that determine the visual appearence
     	SubmoduleNodeEx submNode = (SubmoduleNodeEx)getModel();
-    	
+
     	// set module name and vector size
     	String nameToDisplay = submNode.getName();
     	// add [size] if it's a module vector
@@ -109,7 +109,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
     	// parse a dispaly string, so it's easier to get values from it.
     	// for other visula properties
         DisplayString dps = submNode.getEffectiveDisplayString();
-        
+
         // get the scale factor for this submodule (coming from the containing compound module's displaystring)
         float scale = getScale();
         // set it in the figure, so size and range indicator can use it
@@ -129,18 +129,18 @@ public class SubmoduleEditPart extends ModuleEditPart {
         // TODO implement a separate PIN decoration decorator figure in submodule figure
         if (dps.getLocation(scale) != null)
         	getSubmoduleFigure().setImageDecoration(ImageFactory.getImage(ImageFactory.DEFAULT_PIN));
-        
+
     }
 
     public float getScale() {
         // get the container compound module's scaling factor
         return ((CompoundModuleEditPart)getParent()).getScale();
     }
-    
+
     public boolean isEditable() {
         // editable only if the parent controllers model is the same as the model's parent
         // ie the submodule is defined in this compound module (not inherited)
-        return super.isEditable() && 
+        return super.isEditable() &&
                 (getParent().getModel() == ((SubmoduleNodeEx)getModel()).getCompoundModule());
     }
 
@@ -154,7 +154,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
      * open the type of component for double click
      */
     @Override
-    protected NEDElement getNEDElementToOpen() {
+    protected INEDElement getNEDElementToOpen() {
         return getSubmoduleModel().getEffectiveTypeRef();
     }
 }

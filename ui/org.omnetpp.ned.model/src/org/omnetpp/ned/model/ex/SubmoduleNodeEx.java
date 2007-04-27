@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IHasIndex;
 import org.omnetpp.ned.model.interfaces.IHasName;
@@ -21,7 +21,7 @@ import org.omnetpp.ned.model.pojo.ParametersNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
 public final class SubmoduleNodeEx extends SubmoduleNode
-                            implements INamedGraphNode, IHasIndex, IHasType, 
+                            implements INamedGraphNode, IHasIndex, IHasType,
                                        IHasParameters, IHasGates {
 
     protected DisplayString displayString = null;
@@ -30,7 +30,7 @@ public final class SubmoduleNodeEx extends SubmoduleNode
         init();
 	}
 
-    protected SubmoduleNodeEx(NEDElement parent) {
+    protected SubmoduleNodeEx(INEDElement parent) {
 		super(parent);
         init();
 	}
@@ -46,7 +46,7 @@ public final class SubmoduleNodeEx extends SubmoduleNode
             result += "["+getVectorSize()+"]";
         return result;
     }
-    
+
     @Override
     public void setName(String val) {
         if (getCompoundModule() != null) {
@@ -74,14 +74,14 @@ public final class SubmoduleNodeEx extends SubmoduleNode
     }
 
     /**
-     * Returns the effective display string for this submodule, assuming 
+     * Returns the effective display string for this submodule, assuming
      * that the submodule's actual type is the compound or simple module type
      * passed in the <code>submoduleType</code> parameter. This is useful
      * when the submodule is a "like" submodule, whose the actual submodule
-     * type (not the <code>likeType</code>) is known. The latter usually 
-     * comes from an ini file or some other source outside the NEDElement tree. 
+     * type (not the <code>likeType</code>) is known. The latter usually
+     * comes from an ini file or some other source outside the INEDElement tree.
      * Used within the inifile editor.
-     * 
+     *
      * @param submoduleType  a CompoundModuleNodeEx or a SimpleModuleNodeEx
      */
     public DisplayString getEffectiveDisplayString(IModuleTypeNode submoduleType) {
@@ -92,17 +92,17 @@ public final class SubmoduleNodeEx extends SubmoduleNode
 	 * @return The compound module containing the definition of this connection
 	 */
 	public CompoundModuleNodeEx getCompoundModule() {
-        NEDElement parent = getParent(); 
-        while (parent != null && !(parent instanceof CompoundModuleNodeEx)) 
+        INEDElement parent = getParent();
+        while (parent != null && !(parent instanceof CompoundModuleNodeEx))
             parent = parent.getParent();
         return (CompoundModuleNodeEx)parent;
 	}
-    
+
 	// connection related methods
-    
+
 	/**
-	 * @return All source connections that connect to this node and defined 
-     * in the parent compound module. connections defined in derived modules 
+	 * @return All source connections that connect to this node and defined
+     * in the parent compound module. connections defined in derived modules
      * are NOT included here
 	 */
 	public List<ConnectionNodeEx> getSrcConnections() {
@@ -110,8 +110,8 @@ public final class SubmoduleNodeEx extends SubmoduleNode
 	}
 
     /**
-     * @return All connections that connect to this node and defined in the 
-     * parent compound module. connections defined in derived modules are 
+     * @return All connections that connect to this node and defined in the
+     * parent compound module. connections defined in derived modules are
      * NOT included here
      */
 	public List<ConnectionNodeEx> getDestConnections() {
@@ -126,14 +126,14 @@ public final class SubmoduleNodeEx extends SubmoduleNode
     // type support
     public INEDTypeInfo getTypeNEDTypeInfo() {
         String typeName = getEffectiveType();
-        INEDTypeInfo typeInfo = getContainerNEDTypeInfo(); 
+        INEDTypeInfo typeInfo = getContainerNEDTypeInfo();
         if ( typeName == null || "".equals(typeName) || typeInfo == null)
             return null;
 
         return typeInfo.getResolver().getComponent(typeName);
     }
 
-    public NEDElement getEffectiveTypeRef() {
+    public INEDElement getEffectiveTypeRef() {
         INEDTypeInfo it = getTypeNEDTypeInfo();
         return it == null ? null : it.getNEDElement();
     }
@@ -146,7 +146,7 @@ public final class SubmoduleNodeEx extends SubmoduleNode
 
         return type;
     }
-    
+
     /**
      * @return All parameters assigned in this submodule's body
      */
@@ -155,30 +155,30 @@ public final class SubmoduleNodeEx extends SubmoduleNode
         ParametersNode parametersNode = getFirstParametersChild();
         if (parametersNode == null)
             return result;
-        for(NEDElement currChild : parametersNode)
+        for(INEDElement currChild : parametersNode)
             if (currChild instanceof ParamNodeEx)
                 result.add((ParamNodeEx)currChild);
 
         return result;
     }
-    
+
     // parameter query support
-    public Map<String, NEDElement> getParamValues() {
+    public Map<String, INEDElement> getParamValues() {
         INEDTypeInfo info = getTypeNEDTypeInfo();
-        Map<String, NEDElement> result = 
-            (info == null) ? new HashMap<String, NEDElement>() : new HashMap<String, NEDElement>(info.getParamValues());
-        
+        Map<String, INEDElement> result =
+            (info == null) ? new HashMap<String, INEDElement>() : new HashMap<String, INEDElement>(info.getParamValues());
+
         // add our own assigned parameters
-        for (ParamNodeEx ownParam : getOwnParams()) 
+        for (ParamNodeEx ownParam : getOwnParams())
             result.put(ownParam.getName(), ownParam);
-        
+
         return result;
     }
 
-    public Map<String, NEDElement> getParams() {
+    public Map<String, INEDElement> getParams() {
         INEDTypeInfo info = getTypeNEDTypeInfo();
         if (info == null)
-            return new HashMap<String, NEDElement>();
+            return new HashMap<String, INEDElement>();
         return info.getParams();
     }
 
@@ -191,29 +191,29 @@ public final class SubmoduleNodeEx extends SubmoduleNode
         GatesNode gatesNode = getFirstGatesChild();
         if (gatesNode == null)
             return result;
-        for(NEDElement currChild : gatesNode)
+        for(INEDElement currChild : gatesNode)
             if (currChild instanceof GateNodeEx)
                 result.add((GateNodeEx)currChild);
 
         return result;
     }
 
-    public Map<String, NEDElement> getGateSizes() {
+    public Map<String, INEDElement> getGateSizes() {
         INEDTypeInfo info = getTypeNEDTypeInfo();
-        Map<String, NEDElement> result = 
-            (info == null) ? new HashMap<String, NEDElement>() : new HashMap<String, NEDElement>(info.getGateSizes());
-        
+        Map<String, INEDElement> result =
+            (info == null) ? new HashMap<String, INEDElement>() : new HashMap<String, INEDElement>(info.getGateSizes());
+
         // add our own assigned parameters
-        for (GateNodeEx ownGate : getOwnGates()) 
+        for (GateNodeEx ownGate : getOwnGates())
             result.put(ownGate.getName(), ownGate);
-        
+
         return result;
     }
 
-    public Map<String, NEDElement> getGates() {
+    public Map<String, INEDElement> getGates() {
         INEDTypeInfo info = getTypeNEDTypeInfo();
         if (info == null)
-            return new HashMap<String, NEDElement>();
+            return new HashMap<String, INEDElement>();
         return info.getGates();
     }
 

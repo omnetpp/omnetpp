@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasAncestors;
 import org.omnetpp.ned.model.pojo.ExtendsNode;
 
@@ -17,16 +17,16 @@ public class ExtendsListPropertySource extends NotifiedPropertySource {
     public final static String DESCRIPTION = "List of componets this component extends - (read only)";
     protected IHasAncestors model;
     protected PropertyDescriptor[] pdesc;
-    
+
     public ExtendsListPropertySource(IHasAncestors model) {
-        super((NEDElement)model);
+        super((INEDElement)model);
         this.model = model;
     }
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
         List<ExtendsNode> extendsList = model.getAllExtends();
-        
+
         pdesc = new PropertyDescriptor[extendsList.size()];
         int totalCount = 0;
         for(ExtendsNode extendsElement : extendsList) {
@@ -35,17 +35,17 @@ public class ExtendsListPropertySource extends NotifiedPropertySource {
             pdesc[totalCount].setDescription("Component "+extendsElement.getName()+" - (read only)");
             totalCount++;
         }
-        
+
         return pdesc;
     }
 
     @Override
     public Object getEditableValue() {
         StringBuilder summary = new StringBuilder("");
-        
+
         for(ExtendsNode extendsElement : model.getAllExtends())
             summary.append(extendsElement.getName()+",");
-        
+
         // strip the trailing ',' char
         summary.setLength(Math.max(summary.length()-1, 0));
 

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.omnetpp.ned.model.ui;
 
@@ -9,7 +9,7 @@ import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned.model.ex.ConnectionNodeEx;
@@ -31,36 +31,36 @@ import org.omnetpp.ned.model.pojo.SubmodulesNode;
 import org.omnetpp.ned.model.pojo.TypesNode;
 
 /**
- * Label provider for NEDElement tree node. Assumes unparsed expressions.
- * 
+ * Label provider for INEDElement tree node. Assumes unparsed expressions.
+ *
  * @author rhornig
  */
 public class NedModelLabelProvider extends LabelProvider {
 
 	public String getText(Object obj) {
-        NEDElement model = (NEDElement)obj;
+        INEDElement model = (INEDElement)obj;
         String label = "???";
-        
+
         if (model instanceof ImportNode) {
             ImportNode node = (ImportNode)model;
             label = "import \""+node.getFilename()+"\"";
-        } 
+        }
         else if (model instanceof PropertyNode) {
             PropertyNode node = (PropertyNode)model;
             label = "@"+node.getName(); //FIXME TODO: produce value by visiting children
-        } 
+        }
         else if (model instanceof ParamNode) {
             ParamNode node = (ParamNode)model;
             String attType = node.getAttribute(ParamNode.ATT_TYPE);
             label = "".equals(attType) ? "" : attType+" ";
             label += node.getName();
-        } 
+        }
         else if (model instanceof SimpleModuleNode) {
             SimpleModuleNode node = (SimpleModuleNode)model;
             label = "simple "+node.getName();
-        } 
+        }
         else if (model instanceof CompoundModuleNodeEx) {
-            CompoundModuleNodeEx node = (CompoundModuleNodeEx)model;           
+            CompoundModuleNodeEx node = (CompoundModuleNodeEx)model;
             label = ((node.getIsNetwork()) ? "network " : "module ")+node.getName();
         }
         else if (model instanceof SubmoduleNodeEx) {
@@ -69,7 +69,7 @@ public class NedModelLabelProvider extends LabelProvider {
             String likeType = node.getLikeType();
             if (likeType == null || "".equals(likeType))
                  label += node.getType();
-            else 
+            else
                 label += "like "+node.getLikeType();
         }
         else if (model instanceof ModuleInterfaceNode) {
@@ -79,15 +79,15 @@ public class NedModelLabelProvider extends LabelProvider {
         else if (model instanceof ChannelInterfaceNode) {
             ChannelInterfaceNode node = (ChannelInterfaceNode)model;
             label = "channelinterface "+node.getName();
-        } 
+        }
         else if (model instanceof ChannelSpecNode) {
             ChannelSpecNode node = (ChannelSpecNode)model;
             label = "channel "+node.getType();
-        } 
+        }
         else if (model instanceof ChannelNode) {
             ChannelNode node = (ChannelNode)model;
             label = "channel "+node.getName();
-        } 
+        }
         else if (model instanceof GateNode) {
             GateNode node = (GateNode)model;
             String attType = node.getAttribute(ParamNode.ATT_TYPE);
@@ -95,7 +95,7 @@ public class NedModelLabelProvider extends LabelProvider {
             label += node.getName();
             String vectorSizeInBrackets = bracketizeIfNotEmpty(node.getVectorSize());
             label += vectorSizeInBrackets.equals("") ? (node.getIsVector() ? "[]" : "") : vectorSizeInBrackets;
-        } 
+        }
         else if (model instanceof ConnectionNodeEx) {
             ConnectionNodeEx node = (ConnectionNodeEx)model;
             StringBuffer srclabel = new StringBuffer();
@@ -106,7 +106,7 @@ public class NedModelLabelProvider extends LabelProvider {
             }
             srclabel.append(node.getSrcGate());
             srclabel.append(bracketizeIfNotEmpty(node.getSrcGateIndex()));
-            
+
             StringBuffer destlabel = new StringBuffer();
             if(!"".equals(node.getDestModule())) {
                 destlabel.append(node.getDestModule());
@@ -126,20 +126,20 @@ public class NedModelLabelProvider extends LabelProvider {
                     label = srclabel + " <--> " + destlabel;
                 break;
             }
-        } 
+        }
         else {
             label = model.getTagName();
         }
-        
+
         return label;
 	}
 
 	private static String bracketizeIfNotEmpty(String attr) {
 		return (attr==null || attr.equals("")) ? "" : "["+attr+"]";
 	}
-	
+
 	public Image getImage(Object obj) {
-        NEDElement model = (NEDElement)obj;
+        INEDElement model = (INEDElement)obj;
         Image image = null;
         if (model instanceof IHasDisplayString) {
             DisplayString dps = ((IHasDisplayString) model).getEffectiveDisplayString();
@@ -172,12 +172,12 @@ public class NedModelLabelProvider extends LabelProvider {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_GATE);
         } else if (model instanceof ConnectionNodeEx) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CONNECTION);
-        } else if (model instanceof TypesNode || model instanceof ParametersNode || 
-                   model instanceof GatesNode || model instanceof SubmodulesNode || 
+        } else if (model instanceof TypesNode || model instanceof ParametersNode ||
+                   model instanceof GatesNode || model instanceof SubmodulesNode ||
                    model instanceof ConnectionsNode || model instanceof ConnectionGroupNode) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_FOLDER);
         }
-        
+
         return image;
 	}
 }

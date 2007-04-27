@@ -2,7 +2,7 @@ package org.omnetpp.ned.model.interfaces;
 
 import java.util.Map;
 
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 
 /**
  * @author rhornig
@@ -13,11 +13,11 @@ public interface IHasGates {
     /**
      * @return All Gate elements
      */
-    Map<String, NEDElement> getGates();
+    Map<String, INEDElement> getGates();
 
     /**
      * @return All Gate elements wheter size is specified
      */
-    Map<String, NEDElement> getGateSizes();
+    Map<String, INEDElement> getGateSizes();
 
 }

@@ -13,7 +13,7 @@ import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedDirectEditPolicy;
 import org.omnetpp.ned.editor.graph.misc.RenameDirectEditManager;
 import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 
@@ -39,12 +39,12 @@ abstract public class BaseEditPart
     }
 
     /**
-     * Returns the model associated with this as a NEDElement.
+     * Returns the model associated with this as a INEDElement.
      *
      * @return The model of this as a NedElement.
      */
-    public NEDElement getNEDModel() {
-        return (NEDElement) getModel();
+    public INEDElement getNEDModel() {
+        return (INEDElement) getModel();
     }
 
     /**
@@ -117,9 +117,9 @@ abstract public class BaseEditPart
      * Performs a direct edit operation on the part
      */
     protected void performDirectEdit() {
-        if (manager == null && (getFigure() instanceof IDirectEditSupport) 
+        if (manager == null && (getFigure() instanceof IDirectEditSupport)
                 && getNEDModel() instanceof IHasName) {
-            IDirectEditSupport deSupport = (IDirectEditSupport)getFigure();  
+            IDirectEditSupport deSupport = (IDirectEditSupport)getFigure();
             manager = new RenameDirectEditManager(this, TextCellEditor.class,deSupport);
         }
         if (manager != null)
@@ -136,5 +136,5 @@ abstract public class BaseEditPart
     /**
      * @return Should return the type name that must be opened if the user double clicks the module
      */
-    protected abstract NEDElement getNEDElementToOpen();
+    protected abstract INEDElement getNEDElementToOpen();
 }

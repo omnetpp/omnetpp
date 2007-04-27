@@ -15,7 +15,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.common.editor.EditorUtil;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.osgi.framework.BundleContext;
 
@@ -25,7 +25,7 @@ import org.osgi.framework.BundleContext;
 public class NEDResourcesPlugin extends AbstractUIPlugin {
 
     public static String PLUGIN_ID;
-    
+
 	//The shared instance.
 	private static NEDResourcesPlugin plugin;
 
@@ -46,7 +46,7 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 		super.start(context);
 
         PLUGIN_ID = getBundle().getSymbolicName();
-        
+
         System.out.println("NEDResourcesPlugin started");
 
         ResourcesPlugin.getWorkspace().addResourceChangeListener(NEDResourcesPlugin.getNEDResources());
@@ -54,15 +54,15 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 
         // XXX this is most probably NOT the way to archieve that
 		// all NED files get parsed on startup. At minimum, this should
-		// be done in the background, as a long-running operation with an 
+		// be done in the background, as a long-running operation with an
 		// IProgressMonitor...
-		// Cf. quote from org.eclipse.core.runtime.Plugin: 
-		//   "Note 2: This method is intended to perform simple initialization 
-		//   of the plug-in environment. The platform may terminate initializers 
+		// Cf. quote from org.eclipse.core.runtime.Plugin:
+		//   "Note 2: This method is intended to perform simple initialization
+		//   of the plug-in environment. The platform may terminate initializers
 		//   that do not complete in a timely fashion."
 		// So we should find a better way.
 		readAllNedFilesInWorkspace();
-        
+
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 	public static void logError(Throwable exception) {
 		logError(exception.toString(), exception);
 	}
-	
+
 	public static void logError(String message, Throwable exception) {
 		if (plugin != null) {
 			plugin.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
@@ -135,25 +135,25 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 			exception.printStackTrace();
 		}
 	}
-	
+
 	/**
-	 * Opens the given NEDElement in a NED editor, and positions the cursor on it.
+	 * Opens the given INEDElement in a NED editor, and positions the cursor on it.
 	 * @param element must NOT be null, and MUST be part of the model (i.e. in NEDResourcesPlugin)
 	 */
-	public static void openNEDElementInEditor(NEDElement element) {
+	public static void openNEDElementInEditor(INEDElement element) {
         openNEDElementInEditor(element, IGotoNedElement.Mode.AUTOMATIC);
 	}
 
     /**
-     * Opens the given NEDElement in a NED editor, and positions the cursor on it.
+     * Opens the given INEDElement in a NED editor, and positions the cursor on it.
      * @param element must NOT be null, and MUST be part of the model (i.e. in NEDResourcesPlugin)
      * @param mode IGotoNedElement.Mode whether the editor should be opened in text or grahical mode
-     *             or in automatic mode 
+     *             or in automatic mode
      */
-    public static void openNEDElementInEditor(NEDElement element, IGotoNedElement.Mode mode) {
+    public static void openNEDElementInEditor(INEDElement element, IGotoNedElement.Mode mode) {
         INEDTypeInfo typeInfo = element.getContainerNEDTypeInfo();
         IFile file = typeInfo.getNEDFile();
-        
+
         // check if file is null. it is a built in type in this case
         if (file == null) {
             MessageBox messageBox = new MessageBox(Display.getDefault().getActiveShell(), SWT.ICON_WARNING | SWT.OK);
@@ -162,19 +162,19 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
             messageBox.open();
             return;
         }
-            
-        
+
+
         try {
             IEditorPart editor = EditorUtil.openEditor(file, true);
-            
+
             // select the component so it will be visible in the opened editor
             if (editor instanceof IGotoNedElement) {
                 ((IGotoNedElement)editor).showInEditor(element, mode);
             }
         } catch (PartInitException e) {
-            // no message dialog is needed, because the platform displays an erroreditpart anyway 
+            // no message dialog is needed, because the platform displays an erroreditpart anyway
             logError("Cannot open NED editor", e);
         }
     }
-	
+
 }

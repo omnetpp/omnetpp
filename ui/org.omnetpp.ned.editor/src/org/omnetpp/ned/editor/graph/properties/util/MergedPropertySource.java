@@ -7,7 +7,7 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 
 /**
  * @author rhornig
@@ -18,39 +18,39 @@ public class MergedPropertySource implements IPropertySource2 {
 
 	List<IPropertySource> mergedList = new ArrayList<IPropertySource>();
 
-    private boolean readOnly = false; 
-	
-	public MergedPropertySource(NEDElement model) {
+    private boolean readOnly = false;
+
+	public MergedPropertySource(INEDElement model) {
         // register the propertysource as a listener for the model so it will be notified
         // once someone changes the underlying model
 //        model.getListeners().add(this);
     }
 
     /**
-	 * Adds a propertysource to be merged into this 
+	 * Adds a propertysource to be merged into this
 	 * @param ps
 	 */
 	public void mergePropertySource(IPropertySource ps) {
 		mergedList.add(ps);
 	}
-	
+
 	public boolean isPropertyResettable(Object id) {
 		// ask all regitered PS if it knows about this
 		for(IPropertySource psrc : mergedList)
-			if (psrc instanceof IPropertySource2) 
+			if (psrc instanceof IPropertySource2)
 				if (((IPropertySource2)psrc).isPropertyResettable(id))
 					return true;
-			
+
 		return false;
 	}
 
 	public boolean isPropertySet(Object id) {
 		// ask all regitered PS if it knows about this
 		for(IPropertySource psrc : mergedList)
-			if (psrc instanceof IPropertySource2) 
+			if (psrc instanceof IPropertySource2)
 				if (((IPropertySource2)psrc).isPropertySet(id))
 					return true;
-			
+
 		return false;
 	}
 
@@ -63,11 +63,11 @@ public class MergedPropertySource implements IPropertySource2 {
 	public IPropertyDescriptor[] getPropertyDescriptors() {
 		List<IPropertyDescriptor> mergedPDList = new ArrayList<IPropertyDescriptor>();
 		// walk trhough all property source and merge its descriptors into a single list
-		for(IPropertySource psrc : mergedList) 
+		for(IPropertySource psrc : mergedList)
 			for(IPropertyDescriptor pdesc : psrc.getPropertyDescriptors()) {
-                if (readOnly && (pdesc.getClass()!=PropertyDescriptor.class)) {  
+                if (readOnly && (pdesc.getClass()!=PropertyDescriptor.class)) {
                     // if we are read only, replace the property descriptor with a readonly one
-                    PropertyDescriptor readOnlyPDesc = 
+                    PropertyDescriptor readOnlyPDesc =
                         new PropertyDescriptor(pdesc.getId(), pdesc.getDisplayName());
                     readOnlyPDesc.setCategory(pdesc.getCategory());
                     readOnlyPDesc.setDescription(pdesc.getDescription()+" - (read only)");
@@ -75,7 +75,7 @@ public class MergedPropertySource implements IPropertySource2 {
                 } else
                     mergedPDList.add(pdesc);
             }
-		
+
 		return mergedPDList.toArray(new IPropertyDescriptor[mergedPDList.size()]);
 	}
 
@@ -85,7 +85,7 @@ public class MergedPropertySource implements IPropertySource2 {
 			Object result = psrc.getPropertyValue(id);
 			if (result != null) return result;
 		}
-			
+
 		return null;
 	}
 
@@ -110,5 +110,5 @@ public class MergedPropertySource implements IPropertySource2 {
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
     }
-    
+
 }

@@ -37,7 +37,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 
 
 /**
@@ -98,7 +98,7 @@ public class ModuleParametersView extends AbstractModuleView {
 		g.marginTop = g.marginBottom = g.marginLeft = g.marginRight = 0;
 		g.verticalSpacing = 1;
 		container.setLayout(g);
-		
+
 		label = new Label(container, SWT.NONE);
 		label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
@@ -113,7 +113,7 @@ public class ModuleParametersView extends AbstractModuleView {
 		parameterColumn = addTableColumn(table, "Parameter", 300);
 		valueColumn = addTableColumn(table, "Value", 100);
 		remarkColumn = addTableColumn(table, "Remark", 300);
-		
+
 		// add a TableViewer on top
 		tableViewer = new TableViewer(table);
 		tableViewer.setLabelProvider(new TableLabelProvider() {
@@ -143,10 +143,10 @@ public class ModuleParametersView extends AbstractModuleView {
 				else
 					return null;
 			}
-			
+
 		});
 		tableViewer.setContentProvider(new ArrayContentProvider());
-		
+
 		// add double-click support to the table
 		tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -155,7 +155,7 @@ public class ModuleParametersView extends AbstractModuleView {
 				if (element instanceof ParamResolution) {
 					ParamResolution res = (ParamResolution) element;
 					if (res.section!=null && res.key!=null && res.type!=ParamResolutionType.NED_DEFAULT) {
-						//XXX make sure "res" and inifile editor refer to the same IFile!!! 
+						//XXX make sure "res" and inifile editor refer to the same IFile!!!
 						if (getActiveEditor() instanceof IGotoInifile)
 							((IGotoInifile)getActiveEditor()).gotoEntry(res.section, res.key, IGotoInifile.Mode.AUTO);
 					}
@@ -165,7 +165,7 @@ public class ModuleParametersView extends AbstractModuleView {
 				}
 			}
 		});
-		
+
  		// add tooltip support to the table
  		TooltipSupport.adapt(tableViewer.getTable(), new ITooltipProvider() {
 			public String getTooltipFor(Control control, int x, int y) {
@@ -174,7 +174,7 @@ public class ModuleParametersView extends AbstractModuleView {
 				if (element instanceof ParamResolution) {
 					ParamResolution res = (ParamResolution) element;
 					if (res.section!=null && res.key!=null) {
-						//XXX make sure "res" and inifile editor refer to the same IFile!!! 
+						//XXX make sure "res" and inifile editor refer to the same IFile!!!
 						return InifileUtils.getEntryTooltip(res.section, res.key, inifileDocument, inifileAnalyzer);
 					}
 					else if (res.paramValueNode!=null) {
@@ -187,16 +187,16 @@ public class ModuleParametersView extends AbstractModuleView {
 				return null;
 			}
  		});
-		
-		
+
+
 		IAction toggleModeAction = createToggleModeAction(); //XXX make it toggle button
 		getViewSite().getActionBars().getToolBarManager().add(toggleModeAction);
-		
+
 		return container;
 	}
 
 	protected IAction createToggleModeAction() {
-		
+
 		Action action = new Action("Toggle display mode", IAction.AS_CHECK_BOX) {
 			@Override
 			public void run() {
@@ -227,14 +227,14 @@ public class ModuleParametersView extends AbstractModuleView {
 	@SuppressWarnings("unchecked")
 	protected void sortTableInput(TableColumn column, int sortDirection) {
 		Object[] input = (Object[]) tableViewer.getInput();
-		
+
 		if (input != null) {
 			int columnNumber = -1;
 			if (column == parameterColumn)
 				columnNumber = 0;
 			else if (column == valueColumn)
 				columnNumber = 1;
-			else if (column == remarkColumn) 
+			else if (column == remarkColumn)
 				columnNumber = 2;
 
 			// sort using the label provider
@@ -266,9 +266,9 @@ public class ModuleParametersView extends AbstractModuleView {
 		tableViewer.setInput(new Object[0]);
 		super.showMessage(text);
 	}
-	
+
 	@Override
-	public void buildContent(NEDElement module, InifileAnalyzer analyzer, String section, String key) {
+	public void buildContent(INEDElement module, InifileAnalyzer analyzer, String section, String key) {
 		if (analyzer==null) {
 			showMessage("Not an inifile editor."); //XXX
 		}

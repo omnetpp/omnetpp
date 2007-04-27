@@ -17,7 +17,7 @@ import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDSourceRegion;
 import org.omnetpp.ned.model.NEDTreeUtil;
 
@@ -32,7 +32,7 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 
 	/**
 	 * Creates a content outline page using the given provider and the given editor.
-	 * 
+	 *
 	 * @param provider the document provider
 	 * @param editor the editor
 	 */
@@ -41,7 +41,7 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 		fDocumentProvider= provider;
 		fTextEditor= editor;
 	}
-	
+
 	/* (non-Javadoc)
 	 * Method declared on ContentOutlinePage
 	 */
@@ -53,7 +53,7 @@ public class NedContentOutlinePage extends ContentOutlinePage {
         getTreeViewer().addSelectionChangedListener(this);
         update();
 	}
-	
+
 	/* (non-Javadoc)
 	 * Method declared on ContentOutlinePage; called back from treeviewer.
 	 */
@@ -65,7 +65,7 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 		if (selection.isEmpty())
 			fTextEditor.resetHighlightRange();
 		else {
-			NEDElement node = (NEDElement) ((IStructuredSelection) selection).getFirstElement();
+			INEDElement node = (INEDElement) ((IStructuredSelection) selection).getFirstElement();
 			//System.out.println("selected: "+node);
 			NEDSourceRegion region = node.getSourceRegion();
 			if (region!=null) {
@@ -82,10 +82,10 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 			}
 		}
 	}
-	
+
 	/**
 	 * Sets the input of the outline page
-	 * 
+	 *
 	 * @param input the input of this outline page
 	 */
 	public void setInput(Object input) {
@@ -94,13 +94,13 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 //		System.out.println(this+".setInput( " + input+ ") called");
 		update();
 	}
-	
+
 	/**
 	 * Updates the outline page.
 	 */
 	public void update() {
 //		System.out.println(this+".update() called");
-        if (fInput == null) 
+        if (fInput == null)
             return;
 
 		TreeViewer viewer = getTreeViewer();
@@ -111,7 +111,7 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 
 				// set file contents as input
 				IFile file = fInput.getFile();
-				NEDElement tree = NEDResourcesPlugin.getNEDResources().getNEDFileModel(file);
+				INEDElement tree = NEDResourcesPlugin.getNEDResources().getNEDFileModel(file);
                 viewer.setInput(tree);
 
 				//viewer.expandAll();

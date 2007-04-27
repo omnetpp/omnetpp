@@ -3,11 +3,11 @@ package org.omnetpp.common.computedstate;
 /*
 import java.util.Map;
 
-import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.INEDElement;
 
-    private allPropertiesState ComputedState<HashMap<String, NEDElement>>;
+    private allPropertiesState ComputedState<HashMap<String, INEDElement>>;
 
-    public Map<String, NEDElement> getAllProperties() {
+    public Map<String, INEDElement> getAllProperties() {
 	   return allPropertiesState.xxx(new IComputation() {
  		   public Object compute() {
 			   HashMap copy = getParent().getAllProperties();
@@ -32,7 +32,7 @@ import org.omnetpp.ned2.model.NEDElement;
  		   public Object compute() {
 		        // define the properties that determine the visual appearence
 		    	SubmoduleNodeEx submNode = (SubmoduleNodeEx)getModel();
-		    	
+
 		    	// set module name and vector size
 		    	String nameToDisplay = submNode.getName();
 		    	// add [size] if it's a module vector
@@ -54,7 +54,7 @@ public class ComputedTest {
 	   });
 
    private ComputedState<Integer> xState = new ComputedState<Integer>();
-   
+
    private ComputedState<Integer> cState = new ComputedState<Integer>();
 
    private ComputedState<Integer> dState = new ComputedState<Integer>();
@@ -62,11 +62,11 @@ public class ComputedTest {
    public int getA() {
 	   return aState.getValue();
    }
-   
+
    public void setA(int a) {
 	   aState.setValue(a);
    }
-   
+
    public int getB() {
 	   // return bState.recomputeIfInvalid();
 
@@ -77,7 +77,7 @@ public class ComputedTest {
  		   }
 	   });
    }
-   
+
    public int getX() {
 	   return xState.recomputeIfInvalidAs(new IComputation() {
  		   public Object compute() {
@@ -86,7 +86,7 @@ public class ComputedTest {
  		   }
 	   });
    }
-   
+
    public int getC() {
 	   return cState.recomputeIfInvalidAs(new IComputation() {
  		   public Object compute() {
@@ -94,7 +94,7 @@ public class ComputedTest {
  		   }
 	   });
    }
-   
+
    public int getD() {
 	   return dState.recomputeIfInvalidAs(new IComputation() {
  		   public Object compute() {
@@ -102,7 +102,7 @@ public class ComputedTest {
  		   }
 	   });
    }
-   
+
    public static void main(String[] args) {
 	   final ComputedTest test1 = new ComputedTest();
 

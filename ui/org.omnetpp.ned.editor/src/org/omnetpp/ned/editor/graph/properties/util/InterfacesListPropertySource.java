@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasInterfaces;
 import org.omnetpp.ned.model.pojo.InterfaceNameNode;
 
@@ -17,16 +17,16 @@ public class InterfacesListPropertySource extends NotifiedPropertySource {
     public final static String DESCRIPTION = "List of componets this component implements - (read only)";
     protected IHasInterfaces model;
     protected PropertyDescriptor[] pdesc;
-    
+
     public InterfacesListPropertySource(IHasInterfaces model) {
-        super((NEDElement)model);
+        super((INEDElement)model);
         this.model = model;
     }
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
         List<InterfaceNameNode> interfacesList = model.getAllInterfaces();
-        
+
         pdesc = new PropertyDescriptor[interfacesList.size()];
         int totalCount = 0;
         for(InterfaceNameNode interfaceElement : interfacesList) {
@@ -35,17 +35,17 @@ public class InterfacesListPropertySource extends NotifiedPropertySource {
             pdesc[totalCount].setDescription("Component "+interfaceElement.getName()+" - (read only)");
             totalCount++;
         }
-        
+
         return pdesc;
     }
 
     @Override
     public Object getEditableValue() {
         StringBuilder summary = new StringBuilder("");
-        
+
         for(InterfaceNameNode interfaceElement : model.getAllInterfaces())
             summary.append(interfaceElement.getName()+",");
-        
+
         // strip the trailing ',' char
         summary.setLength(Math.max(summary.length()-1, 0));
 

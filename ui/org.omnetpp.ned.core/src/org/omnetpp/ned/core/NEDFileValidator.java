@@ -1,7 +1,7 @@
 package org.omnetpp.ned.core;
 
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
@@ -16,7 +16,7 @@ import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 
 /**
  * Validates consistency of NED files.
- * 
+ *
  * @author andras
  */
 //FIXME validation of embedded types!!!!
@@ -32,7 +32,7 @@ public class NEDFileValidator implements NEDElementUtil, NEDElementTags {
 	}
 
 	public void validate(NedFileNode node) {
-		for (NEDElement child : node) {
+		for (INEDElement child : node) {
 			NEDValidator validator = new NEDValidator(resolver, errors);
 			switch (child.getTagCode()) {
 			case NED_COMMENT: break;

@@ -23,15 +23,15 @@ import org.omnetpp.ned.model.pojo.NEDElementTags;
 
 /**
  * Base class for objects in a NED object tree, the XML-based
- * in-memory representation for NED files. An instance of a NEDElement
+ * in-memory representation for NED files. An instance of a INEDElement
  * subclass represent an XML element.
- * NEDElement provides a DOM-like, generic access to the tree;
+ * INEDElement provides a DOM-like, generic access to the tree;
  * subclasses additionally provide a typed interface.
  * It extends PlatformObject to have a default IAdaptable implementation
- * primarily for PropertySheet support. 
+ * primarily for PropertySheet support.
  */
-public abstract class NEDElement extends PlatformObject 
-            implements Iterable<NEDElement>, IDisplayStringChangeListener, IModelProvider
+public abstract class NEDElement extends PlatformObject
+            implements INEDElement, IDisplayStringChangeListener, IModelProvider
 {
 	private long id;
 	private String srcloc;
@@ -44,20 +44,20 @@ public abstract class NEDElement extends PlatformObject
 	private static long lastid;
     private HashMap<Object,Object> userData;
     private INEDTypeInfo typeInfo;
-    
+
     private transient NEDChangeListenerList listeners = null;
 
-	public Iterator<NEDElement> iterator() {
-		final NEDElement e = this;
-		return new Iterator<NEDElement> () {
-			private NEDElement oldChild = null;
-			private NEDElement child = e.getFirstChild();
+	public Iterator<INEDElement> iterator() {
+		final INEDElement e = this;
+		return new Iterator<INEDElement> () {
+			private INEDElement oldChild = null;
+			private INEDElement child = e.getFirstChild();
 
 			public boolean hasNext() {
 				return child != null;
 			}
 
-			public NEDElement next() {
+			public INEDElement next() {
 				oldChild = child;
 				child = child.getNextSibling();
 				return oldChild;
@@ -127,7 +127,7 @@ public abstract class NEDElement extends PlatformObject
 	/**
 	 * Constructor. Takes parent element.
 	 */
-	public NEDElement(NEDElement parent) {
+	public NEDElement(INEDElement parent) {
 		super();
 		if (parent != null)
 			parent.appendChild(this);
@@ -303,7 +303,7 @@ public abstract class NEDElement extends PlatformObject
 	/**
 	 * Returns the parent element, or null if this element has no parent.
 	 */
-	public NEDElement getParent() {
+	public INEDElement getParent() {
 		return parent;
 	}
 
@@ -311,9 +311,9 @@ public abstract class NEDElement extends PlatformObject
      * Returns the index'th child element, or null if this element
      * has no children.
      */
-    public NEDElement getChild(int index) {
+    public INEDElement getChild(int index) {
         int i = 0;
-        for(NEDElement elem : this) {
+        for(INEDElement elem : this) {
             if (i >= index)
                 return elem;
         }
@@ -324,7 +324,7 @@ public abstract class NEDElement extends PlatformObject
 	 * Returns pointer to the first child element, or null if this element
 	 * has no children.
 	 */
-	public NEDElement getFirstChild() {
+	public INEDElement getFirstChild() {
 		return firstchild;
 	}
 
@@ -332,7 +332,7 @@ public abstract class NEDElement extends PlatformObject
 	 * Returns pointer to the last child element, or null if this element
 	 * has no children.
 	 */
-	public NEDElement getLastChild() {
+	public INEDElement getLastChild() {
 		return lastchild;
 	}
 
@@ -344,14 +344,14 @@ public abstract class NEDElement extends PlatformObject
 	 * the child list:
 	 *
 	 * <pre>
-	 * for (NEDElement *child=node.getFirstChild(); child; child = child.getNextSibling())
+	 * for (INEDElement *child=node.getFirstChild(); child; child = child.getNextSibling())
 	 * {
 	 *    ...
 	 * }
 	 * </pre>
 	 *
 	 */
-	public NEDElement getNextSibling() {
+	public INEDElement getNextSibling() {
 		return nextsibling;
 	}
 
@@ -359,7 +359,7 @@ public abstract class NEDElement extends PlatformObject
 	 * Returns pointer to the previous sibling of this element (i.e. the previous child
 	 * in the parent element). Returns null if there're no elements before this one.
 	 */
-	public NEDElement getPrevSibling() {
+	public INEDElement getPrevSibling() {
 		return prevsibling;
 	}
 
@@ -368,7 +368,8 @@ public abstract class NEDElement extends PlatformObject
 	 *
 	 * The node pointer passed should not be null.
 	 */
-	public void appendChild(NEDElement node) {
+	public void appendChild(INEDElement inode) {
+		NEDElement node = (NEDElement) inode;
 		if (node.parent!=null)
 			node.parent.removeChild(node);
 		node.parent = this;
@@ -387,14 +388,16 @@ public abstract class NEDElement extends PlatformObject
 	 * in the child element list.
 	 *
 	 * The where element must be a child of this element. If where == NULL
-	 * the node is appended at the end of the list. 
+	 * the node is appended at the end of the list.
 	 * The node pointer passed should not be null.
 	 */
-	public void insertChildBefore(NEDElement where, NEDElement node) {
-		if (where == null) {
-			appendChild(node);
+	public void insertChildBefore(INEDElement iwhere, INEDElement inode) {
+		if (iwhere == null) {
+			appendChild(inode);
 			return;
 		}
+		NEDElement node = (NEDElement) inode;
+		NEDElement where = (NEDElement) iwhere;
 		if (node.parent!=null)
 			node.parent.removeChild(node);
 		node.parent = this;
@@ -413,7 +416,8 @@ public abstract class NEDElement extends PlatformObject
 	 *
 	 * The pointer passed should be a child of this element.
 	 */
-	public NEDElement removeChild(NEDElement node) {
+	public INEDElement removeChild(INEDElement inode) {
+		NEDElement node = (NEDElement) inode;
 		if (node.prevsibling!=null)
 			node.prevsibling.nextsibling = node.nextsibling;
 		else
@@ -431,8 +435,8 @@ public abstract class NEDElement extends PlatformObject
 	 * Returns pointer to the first child element with the given tag code,
 	 * or null if this element has no such children.
 	 */
-	public NEDElement getFirstChildWithTag(int tagcode) {
-		NEDElement node = firstchild;
+	public INEDElement getFirstChildWithTag(int tagcode) {
+		INEDElement node = firstchild;
 		while (node!=null)
 		{
 			if (node.getTagCode()==tagcode)
@@ -450,14 +454,14 @@ public abstract class NEDElement extends PlatformObject
 	 * to loop through elements with a certain tag code in the child list:
 	 *
 	 * <pre>
-	 * for (NEDElement *child=node.getFirstChildWithTag(tagcode); child; child = child.getNextSiblingWithTag(tagcode))
+	 * for (INEDElement *child=node.getFirstChildWithTag(tagcode); child; child = child.getNextSiblingWithTag(tagcode))
 	 * {
 	 *     ...
 	 * }
 	 * </pre>
 	 */
-	public NEDElement getNextSiblingWithTag(int tagcode) {
-		NEDElement node = this.nextsibling;
+	public INEDElement getNextSiblingWithTag(int tagcode) {
+		INEDElement node = this.nextsibling;
 		while (node!=null)
 		{
 			if (node.getTagCode()==tagcode)
@@ -472,7 +476,7 @@ public abstract class NEDElement extends PlatformObject
 	 */
 	public int getNumChildren() {
 		int n = 0;
-		for (NEDElement node = firstchild; node!=null; node = node.getNextSibling())
+		for (INEDElement node = firstchild; node!=null; node = node.getNextSibling())
 			n++;
 		return n;
 	}
@@ -482,7 +486,7 @@ public abstract class NEDElement extends PlatformObject
 	 */
 	public int getNumChildrenWithTag(int tagcode) {
 		int n = 0;
-		for (NEDElement node = firstchild; node!=null; node = node.getNextSibling())
+		for (INEDElement node = firstchild; node!=null; node = node.getNextSibling())
 			if (node.getTagCode()==tagcode)
 				n++;
 		return n;
@@ -492,8 +496,8 @@ public abstract class NEDElement extends PlatformObject
 	 * Returns find first child element with the give tagcode and the given
 	 * attribute (optionally) having the given value. Returns null if not found.
 	 */
-	public NEDElement getFirstChildWithAttribute(int tagcode, String attr, String attrvalue) {
-		for (NEDElement child=getFirstChildWithTag(tagcode); child!=null; child = child.getNextSiblingWithTag(tagcode))
+	public INEDElement getFirstChildWithAttribute(int tagcode, String attr, String attrvalue) {
+		for (INEDElement child=getFirstChildWithTag(tagcode); child!=null; child = child.getNextSiblingWithTag(tagcode))
 		{
 			String val = child.getAttribute(attr);
 			if (val!=null && val.equals(attrvalue))
@@ -506,26 +510,26 @@ public abstract class NEDElement extends PlatformObject
 	 * Climb up in the element tree until it finds an element with the given tagcode.
 	 * Returns null if not found.
 	 */
-	public NEDElement getParentWithTag(int tagcode) {
-		NEDElement parent = this.getParent();
+	public INEDElement getParentWithTag(int tagcode) {
+		INEDElement parent = this.getParent();
 		while (parent!=null && parent.getTagCode()!=tagcode)
 			parent = parent.getParent();
 		return parent;
 	}
-	
+
     /**
      * UserData not belonging directly to the model can be stored using a key. If the value
-     * is NULL the data will be deleted. 
+     * is NULL the data will be deleted.
      */
     public void setUserData(Object key, Object value) {
         if (userData == null)
             userData = new HashMap<Object,Object>();
         if(value != null)
             userData.put(key, value);
-        else 
+        else
             userData.remove(key);
     }
-    
+
     /**
      * @return User specific data, not belonging to the model directly
      */
@@ -534,19 +538,19 @@ public abstract class NEDElement extends PlatformObject
             return userData.get(key);
         return null;
     }
-    
+
     /**
      * remove this node from the parent if any.
      */
     public void removeFromParent() {
-        if (getParent() != null) 
+        if (getParent() != null)
         	getParent().removeChild(this);
     }
-    
+
     public boolean hasChildren() {
     	return getFirstChild() != null;
     }
-    
+
     /**
      * @return Derived classes can override to print extra transient data for debugging
      */
@@ -557,42 +561,42 @@ public abstract class NEDElement extends PlatformObject
     /**
      * Creates a shallow copy of the tree, but removes it from the tree hierarchy and throws away all children
      */
-    public NEDElement dup(NEDElement parent) {
-        NEDElement cloned = NEDElementFactoryEx.getInstance().createNodeWithTag(getTagCode());
-        
+    public INEDElement dup(INEDElement parent) {
+        INEDElement cloned = NEDElementFactoryEx.getInstance().createNodeWithTag(getTagCode());
+
         // FIXME maybe we should add to the parent at the end, so there would be less notifications
-        if (parent != null) 
+        if (parent != null)
             parent.appendChild(cloned);
 
         for (int i = 0; i< getNumAttributes(); ++i) {
         	cloned.setAttribute(i, getAttribute(i));
         }
-        
+
         return cloned;
     }
-    
+
     /**
      * Creates a deep copy of the tree, optionally providing the new node's parent too
      * @return
      */
-    public NEDElement deepDup(NEDElement parent) {
-        NEDElement result = dup(parent);
-        
-        for (NEDElement child : this) 
+    public INEDElement deepDup(INEDElement parent) {
+        INEDElement result = dup(parent);
+
+        for (INEDElement child : this)
             child.deepDup(result);
-        
+
         return result;
     }
 
     /**
-     * Returns the TypeInfo belonging to the containing (toplevel) component 
+     * Returns the TypeInfo belonging to the containing (toplevel) component
      * that was added by the incremental builder (type resolver). Or null if none was found.
      * Cross references and other supporting lists can be accessed via typeInfo.
      * The typeInfo can be NULL if this element is duplicated or invalid.
      */
     public INEDTypeInfo getContainerNEDTypeInfo() {
     	// if we don't have it, fetch it from the parent
-    	return (typeInfo != null || getParent() == null) ? typeInfo : getParent().getContainerNEDTypeInfo(); 
+    	return (typeInfo != null || getParent() == null) ? typeInfo : getParent().getContainerNEDTypeInfo();
     }
 
     /**
@@ -610,14 +614,14 @@ public abstract class NEDElement extends PlatformObject
     // ******************* notification helpers ************************************
 
     /**
-     * @return The listener list attached to this element 
+     * @return The listener list attached to this element
      */
     public NEDChangeListenerList getListeners() {
         if (listeners == null)
             listeners = new NEDChangeListenerList();
         return listeners;
     }
-    
+
     /**
      * Fires a model change element (forwards it to he listener list if any)
      * @param event
@@ -628,25 +632,25 @@ public abstract class NEDElement extends PlatformObject
         //forward to the listerList
         listeners.fireModelChanged(event);
     }
-    
+
     /* (non-Javadoc)
      * @see org.omnetpp.common.displaymodel.IDisplayStringChangeListener#propertyChanged(org.omnetpp.common.displaymodel.IDisplayString, org.omnetpp.common.displaymodel.IDisplayString.Prop, java.lang.Object, java.lang.Object)
      * this method pass back the modified display string to the model, but it should be called only if the element
      * really support the additional display string property (ie. IHasDisplayString)
-     * also fires a model attribute change event (converts the propertyChange event to attribute change) 
+     * also fires a model attribute change event (converts the propertyChange event to attribute change)
      */
     public void propertyChanged(IDisplayString source, Prop changedProp, Object newValue, Object oldValue) {
         Assert.isTrue(this instanceof IHasDisplayString, "propertyChanged should be called only as a result of notificaton from an attached DisplayString");
         // syncronize it to the underlying model
         NEDElementUtilEx.setDisplayString(this, source.toString());
-        String propertyName = 
+        String propertyName =
             IDisplayString.ATT_DISPLAYSTRING + (changedProp != null ? "."+changedProp : "");
         fireAttributeChanged(propertyName, newValue, oldValue);
     }
 
     /**
      * Walk upwards in  the tree and send the notification when a listener exists for that node.
-     * Fires notification only if the notification on the starting node's listener list is enebled 
+     * Fires notification only if the notification on the starting node's listener list is enebled
      * @param attr the attribute under change
      * @param newValue the new value of the attribute
      * @param newValue the old value of the attribute
@@ -656,7 +660,7 @@ public abstract class NEDElement extends PlatformObject
             return;
 
         NEDModelEvent event = new NEDAttributeChangeEvent(this, attr, newValue, oldValue);
-        NEDElement node = this;
+        INEDElement node = this;
         while (node != null) {
             node.fireModelChanged(event);
             node = node.getParent();
@@ -664,18 +668,18 @@ public abstract class NEDElement extends PlatformObject
     }
 
     /**
-     * Walk upwards in  the tree and send the notification when a listener exists for that node 
+     * Walk upwards in  the tree and send the notification when a listener exists for that node
      * @param attr the attribute under change
      * @param newValue the new value of the attribute
      * @param newValue the old value of the attribute
      */
-    protected void fireChildInserted(NEDElement child, NEDElement where) {
+    protected void fireChildInserted(INEDElement child, INEDElement where) {
         if(listeners != null && !getListeners().isEnabled())
             return;
 
-        NEDModelEvent event = 
-            new NEDStructuralChangeEvent(this, child, NEDStructuralChangeEvent.Type.INSERTION, where, null); 
-        NEDElement node = this;
+        NEDModelEvent event =
+            new NEDStructuralChangeEvent(this, child, NEDStructuralChangeEvent.Type.INSERTION, where, null);
+        INEDElement node = this;
         while (node != null) {
             node.fireModelChanged(event);
             node = node.getParent();
@@ -683,32 +687,32 @@ public abstract class NEDElement extends PlatformObject
     }
 
     /**
-     * Walk upwards in  the tree and send the notification when a listener exists for that node 
+     * Walk upwards in  the tree and send the notification when a listener exists for that node
      * @param attr the attribute under change
      * @param newValue the new value of the attribute
      * @param newValue the old value of the attribute
      */
-    protected void fireChildRemoved(NEDElement child) {
+    protected void fireChildRemoved(INEDElement child) {
         if (listeners != null && !getListeners().isEnabled())
             return;
 
-        NEDModelEvent event = 
-            new NEDStructuralChangeEvent(this, child, NEDStructuralChangeEvent.Type.REMOVAL, null, child.getNextSibling()); 
-        NEDElement node = this;
+        NEDModelEvent event =
+            new NEDStructuralChangeEvent(this, child, NEDStructuralChangeEvent.Type.REMOVAL, null, child.getNextSibling());
+        INEDElement node = this;
         while (node != null) {
             node.fireModelChanged(event);
             node = node.getParent();
         }
     }
-    
+
     /* (non-Javadoc)
      * @see org.omnetpp.ned.model.interfaces.IModelProvider#getModel()
      * We provide ourselves as a model
      */
-    public NEDElement getNEDModel() {
+    public INEDElement getNEDModel() {
         return this;
     }
-    
+
     /**
      * @return The banner comment belonging to the element (if any)
      */
@@ -718,9 +722,9 @@ public abstract class NEDElement extends PlatformObject
         	cn = (CommentNode)getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentNode.ATT_LOCID, "right");
         return cn == null ? null : cn.getContent().trim();
     }
-    
+
     /**
-     * @return The re-generated source (text form) of this element 
+     * @return The re-generated source (text form) of this element
      */
     public String getSource() {
         return NEDTreeUtil.generateNedSource(this, true);

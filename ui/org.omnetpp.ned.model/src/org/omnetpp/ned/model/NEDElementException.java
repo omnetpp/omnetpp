@@ -1,20 +1,21 @@
 package org.omnetpp.ned.model;
 
+
 /**
- * Exception that may be thrown from NEDElement operations,
+ * Exception that may be thrown from INEDElement operations,
  * e.g. from trying to set an attribute to an invalid value.
  *
  */
 public class NEDElementException extends RuntimeException {
 	private static final long serialVersionUID = 1L; // to suppress warning
-	private NEDElement node;
+	private INEDElement node;
 
-	public NEDElementException(NEDElement node, String message) {
+	public NEDElementException(INEDElement node, String message) {
 		super(message);
 		this.node = node;
 	}
-	
-	NEDElement getNode() {
+
+	INEDElement getNode() {
 		return node;
 	}
 }

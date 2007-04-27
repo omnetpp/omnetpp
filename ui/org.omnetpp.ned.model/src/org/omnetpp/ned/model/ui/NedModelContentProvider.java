@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned.model.pojo.ChannelNode;
 import org.omnetpp.ned.model.pojo.ChannelSpecNode;
@@ -43,20 +43,20 @@ public class NedModelContentProvider implements ITreeContentProvider {
 	}
 
 	public Object getParent(Object child) {
-		return ((NEDElement)child).getParent();
+		return ((INEDElement)child).getParent();
 	}
 
 	public Object[] getChildren(Object parent) {
-        List<NEDElement> result = new ArrayList<NEDElement>();
-        NEDElement currElem = ((NEDElement)parent);
-        
+        List<INEDElement> result = new ArrayList<INEDElement>();
+        INEDElement currElem = ((INEDElement)parent);
+
         // if this is a channel spec we will give back the parameters subnode's children
         if (currElem instanceof ChannelSpecNode)
             currElem = ((ChannelSpecNode)currElem).getFirstParametersChild();
         if(currElem == null)
             return result.toArray();
-        
-        for(NEDElement child : currElem) {
+
+        for(INEDElement child : currElem) {
             // display only the following classes
             if ((child instanceof NedFileNode) ||
                     (child instanceof ImportNode) ||
@@ -76,7 +76,7 @@ public class NedModelContentProvider implements ITreeContentProvider {
                     (child instanceof ConnectionNode) ||
                     (child instanceof ConnectionGroupNode) ||
                     (child instanceof TypesNode) ||
-                    (child instanceof ChannelSpecNode)) 
+                    (child instanceof ChannelSpecNode))
                 result.add(child);
         }
         return result.toArray();

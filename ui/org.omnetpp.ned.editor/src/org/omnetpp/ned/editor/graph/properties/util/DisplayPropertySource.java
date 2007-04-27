@@ -11,7 +11,7 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.common.properties.ImagePropertyDescriptor;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 
 //TODO Colors cannot be edited by hand. A derived ColorCellEditor is required
@@ -21,23 +21,23 @@ import org.omnetpp.ned.model.notification.NEDModelEvent;
 //TODO implement getColorProperty/Def too so unknown colors will be displayed as default
 abstract public class DisplayPropertySource extends NotifiedPropertySource {
 
-    // string parser for handling the parsing of the display string tags 
+    // string parser for handling the parsing of the display string tags
     protected DisplayString displayString = null;
     // property descriptor for the sheet (could be static if pushed uper)
     protected IPropertyDescriptor[] propertyDescArray = null;
-    // by default supports all possible properties defined in DisplayString 
-    protected EnumSet<DisplayString.Prop> supportedProperties 
+    // by default supports all possible properties defined in DisplayString
+    protected EnumSet<DisplayString.Prop> supportedProperties
                   = EnumSet.noneOf(DisplayString.Prop.class);
     // the model that we are attached to
     private IHasDisplayString model;
 
     public DisplayPropertySource(IHasDisplayString model) {
-        super((NEDElement)model);
+        super((INEDElement)model);
         this.model = model;
         // by default we provide only  the single line display property editor
         supportedProperties.add(DisplayString.Prop.DISPLAY);
     }
-    
+
 //    @Override
     public void modelChanged(NEDModelEvent event) {
         if(model != null)
@@ -61,20 +61,20 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
             pdesc = new ImagePropertyDescriptor(prop, prop.getVisibleName());
         else if(prop.getType() == DisplayString.PropType.COLOR)
             pdesc = new ColorPropertyDescriptor(prop, prop.getVisibleName());
-        else 
+        else
             pdesc = new PropertyDescriptor(prop, prop.getVisibleName());  // read only editor
 
         // set the other parameters
         pdesc.setCategory(prop.getGroup().name());
         pdesc.setDescription(prop.getVisibleDesc());
-        // the one line display string descriptor should be always incompatible, so selecting 
+        // the one line display string descriptor should be always incompatible, so selecting
         // two or more items will autamiically hide this composite property
         if (prop == DisplayString.Prop.DISPLAY)
             pdesc.setAlwaysIncompatible(true);
-        
+
         return pdesc;
     }
-    
+
     protected void createPropertyDescriptors() {
         int i = 0;
         propertyDescArray = new IPropertyDescriptor[supportedProperties.size()];
@@ -89,7 +89,7 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
     public IPropertyDescriptor[] getPropertyDescriptors() {
         if (propertyDescArray == null)
             createPropertyDescriptors();
-        
+
         return propertyDescArray;
     }
 
@@ -99,7 +99,7 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
 
     public void setDisplayString(DisplayString displayString) {
         this.displayString = displayString;
-    } 
+    }
 
     @Override
     public Object getEditableValue() {
@@ -109,31 +109,31 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
     // property request for property sheet
     @Override
     public Object getPropertyValue(Object propObj) {
-    	if (!(propObj instanceof DisplayString.Prop)) 
+    	if (!(propObj instanceof DisplayString.Prop))
     		return null;
-    	
+
         // check if we requested the "sigle line" DISPLAY property
         if(propObj == DisplayString.Prop.DISPLAY)
         	return getEditableValue();
 
         DisplayString.Prop prop = (DisplayString.Prop)propObj;
-        // otherwise look for a single tag/attribute 
+        // otherwise look for a single tag/attribute
         String tagVal = displayString.getAsString(prop);
         // if the property does not exists yet, return default empty value
-        if (tagVal == null) 
-            tagVal = DisplayString.TagInstance.EMPTY_VALUE; 
-        
+        if (tagVal == null)
+            tagVal = DisplayString.TagInstance.EMPTY_VALUE;
+
         if(prop.getType() == DisplayString.PropType.COLOR)
             return ColorFactory.asRGB(tagVal);
-        
+
         return tagVal;
     }
 
     @Override
     public void setPropertyValue(Object propObj, Object value) {
-    	if (!(propObj instanceof DisplayString.Prop)) 
+    	if (!(propObj instanceof DisplayString.Prop))
     		return;
-    	
+
         // check if we requested the "sigle line" DISPLAY property
         if(propObj == DisplayString.Prop.DISPLAY) {
         	displayString.set((String)value);
@@ -145,17 +145,17 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
         // if it is a color, convert it to string
         if(value instanceof RGB)
             value = ColorFactory.asString((RGB)value);
-        
-        if (value != null)        
+
+        if (value != null)
             displayString.set(prop, value.toString());
-        else 
+        else
             displayString.set(prop, null);
-        
+
     }
 
     @Override
     public void resetPropertyValue(Object prop) {
-    	if (!(prop instanceof DisplayString.Prop)) 
+    	if (!(prop instanceof DisplayString.Prop))
     		return;
 
         // check if we requested the "sigle line" DISPLAY property, reset the whole display string
@@ -170,12 +170,12 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
 
     @Override
     public boolean isPropertySet(Object prop) {
-    	if (!(prop instanceof DisplayString.Prop)) 
+    	if (!(prop instanceof DisplayString.Prop))
     		return false;
 
         // check if we requested the "sigle line" DISPLAY property
         if(prop == DisplayString.Prop.DISPLAY)
-            return !"".equals(displayString.toString()); 
+            return !"".equals(displayString.toString());
 
         // otherwise check a single attribute
         String val = displayString.getAsString((DisplayString.Prop)prop);
@@ -191,5 +191,5 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
     public boolean isPropertyResettable(Object id) {
         return true;
     }
-    
+
 }

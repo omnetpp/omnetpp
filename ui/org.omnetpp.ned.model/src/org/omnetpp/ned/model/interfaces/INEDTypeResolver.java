@@ -4,11 +4,11 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 
 public interface INEDTypeResolver {
      /**
-     * 
+     *
      * @author rhornig
      */
     interface IFilter {
@@ -23,58 +23,58 @@ public interface INEDTypeResolver {
      * Mark the whole resolver invalid
      */
     public void invalidate();
-    
+
     /**
      * Recalculate everything if the state is invalid
      */
     public void rehashIfNeeded();
-    
+
 	/**
 	 * Returns NED files in the workspace.
 	 */
 	public Set<IFile> getNEDFiles();
 
 	/**
-	 * Returns parsed contents of a NED file. Returns a potentially incomplete tree 
-	 * if the file has parse errors; one can call containsNEDErrors() to find out 
+	 * Returns parsed contents of a NED file. Returns a potentially incomplete tree
+	 * if the file has parse errors; one can call containsNEDErrors() to find out
 	 * if that is the case.
-	 *  
+	 *
 	 * @param file - must not be null
 	 */
-	public NEDElement getNEDFileModel(IFile file);
+	public INEDElement getNEDFileModel(IFile file);
 
     /**
-     * Returns parsed and reformatted contents of a NED file. Returns a potentially incomplete text 
-     * if the file has parse errors; one can call containsNEDErrors() to find out 
+     * Returns parsed and reformatted contents of a NED file. Returns a potentially incomplete text
+     * if the file has parse errors; one can call containsNEDErrors() to find out
      * if that is the case.
-     *  
+     *
      * @param file - must not be null
      */
     public String getNEDFileText(IFile file);
 
     /**
 	 * Returns true if the given NED file has errors.
-	 *  
+	 *
 	 * @param file - must not be null
 	 */
 	public boolean containsNEDErrors(IFile file);
-	
+
 	/**
-	 * Returns a component declated at the given file/line. The line number should 
-	 * point into the declaration of the component. Returns null if no such component 
+	 * Returns a component declated at the given file/line. The line number should
+	 * point into the declaration of the component. Returns null if no such component
 	 * was found.
-	 *  
+	 *
 	 * @param file - must not be null
 	 */
 	public INEDTypeInfo getComponentAt(IFile file, int lineNumber);
-	
+
     /**
-     * Returns a NEDElement at the given file/line/column. returns nul if no ned element
+     * Returns a INEDElement at the given file/line/column. returns nul if no ned element
      * found under the position
-     *  
+     *
      * @param file - must not be null
      */
-    public NEDElement getNEDElementAt(IFile file, int line, int column);
+    public INEDElement getNEDElementAt(IFile file, int line, int column);
 
     /**
 	 * Returns all components in the NED files.
@@ -85,7 +85,7 @@ public interface INEDTypeResolver {
      * Returns all components in the NED files after applying the filter
      */
     public Collection<INEDTypeInfo> getAllComponentsFilteredBy(IFilter filter);
-    
+
 	/**
 	 * Returns all simple and compound modules in the NED files.
 	 */
@@ -135,7 +135,7 @@ public interface INEDTypeResolver {
 	 * Returns all network names in the NED files.
 	 */
 	public Set<String> getNetworkNames();
-	
+
 	/**
 	 * Returns all channel names in the NED files.
 	 */
@@ -157,10 +157,10 @@ public interface INEDTypeResolver {
 	public INEDTypeInfo getComponent(String name);
 
 	/**
-	 * Creates and returns an INEDTypeInfo for the given NEDElement representing
+	 * Creates and returns an INEDTypeInfo for the given INEDElement representing
 	 * a module type, channel type, etc. The component will NOT be registered
 	 * in the resolver. This method was created for handling inner types.
 	 */
-	public INEDTypeInfo wrapNEDElement(NEDElement componentNode);
-	
+	public INEDTypeInfo wrapNEDElement(INEDElement componentNode);
+
 }

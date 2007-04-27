@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IModuleTypeNode;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INamedGraphNode;
@@ -26,7 +26,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
 		init();
 	}
 
-    protected CompoundModuleNodeEx(NEDElement parent) {
+    protected CompoundModuleNodeEx(INEDElement parent) {
 		super(parent);
 		init();
 	}
@@ -40,7 +40,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
 			displayString = new DisplayString(this, NEDElementUtilEx.getDisplayString(this));
 		return displayString;
 	}
-    
+
     public DisplayString getEffectiveDisplayString() {
         return NEDElementUtilEx.getEffectiveDisplayString(this);
     }
@@ -56,24 +56,24 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
 		SubmodulesNode submodulesNode = getFirstSubmodulesChild();
 		if (submodulesNode == null)
 			return result;
-		for(NEDElement currChild : submodulesNode)
+		for(INEDElement currChild : submodulesNode)
 			if (currChild instanceof SubmoduleNodeEx)
 				result.add((SubmoduleNodeEx)currChild);
 
 		return result;
 	}
-    
+
     /**
-     * @return All direct and inherited submodules 
+     * @return All direct and inherited submodules
      */
     public List<SubmoduleNodeEx> getSubmodules() {
         List<SubmoduleNodeEx> result = getOwnSubmodules();
-        
+
         // FIXME beware this can lead to an infite recursion if we have a circle in the extend chanin
-        NEDElement extendsElem = getFirstExtendsRef();
-        if (extendsElem != null && extendsElem instanceof CompoundModuleNodeEx) 
+        INEDElement extendsElem = getFirstExtendsRef();
+        if (extendsElem != null && extendsElem instanceof CompoundModuleNodeEx)
             result.addAll(((CompoundModuleNodeEx)extendsElem).getSubmodules());
-        
+
         return result;
     }
 
@@ -92,7 +92,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
 
     /**
      * @param submoduleName
-     * @return The submodule (in all ancestor modules) with the provided name (or NULL if 
+     * @return The submodule (in all ancestor modules) with the provided name (or NULL if
      * not found)
      */
     public SubmoduleNodeEx getSubmoduleByName(String submoduleName) {
@@ -102,8 +102,8 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
             return submoduleNode;
         // then look in ancestors
         // FIXME beware this can lead to an infinite recursion if we have a circle in the extend chanin
-        NEDElement extendsElem = getFirstExtendsRef();
-        if (extendsElem != null && extendsElem instanceof CompoundModuleNodeEx) 
+        INEDElement extendsElem = getFirstExtendsRef();
+        if (extendsElem != null && extendsElem instanceof CompoundModuleNodeEx)
             return ((CompoundModuleNodeEx)extendsElem).getSubmoduleByName(submoduleName);
 
         // not found
@@ -143,7 +143,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
 		if (snode == null)
 			snode = (SubmodulesNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementFactoryEx.NED_SUBMODULES, this);
 
-		NEDElement insertBefore = snode.getFirstChild();
+		INEDElement insertBefore = snode.getFirstChild();
 		for(int i=0; (i<index) && (insertBefore!=null); ++i)
 			insertBefore = insertBefore.getNextSibling();
 
@@ -168,7 +168,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
     // connection related methods
 
     /**
-     * 
+     *
      * @param srcName srcModule to filter for ("" for compound module and NULL if not filtering is required)
      * @param srcGate source gate name to filter or NULL if no filtering needed
      * @param destName destModule to filter for ("" for compound module and NULL if not filtering is required)
@@ -177,29 +177,29 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
      */
     private List<ConnectionNodeEx> getOwnConnections(String srcName, String srcGate, String destName, String destGate) {
         List<ConnectionNodeEx> result = new ArrayList<ConnectionNodeEx>();
-        NEDElement connectionsNode = getFirstConnectionsChild();
+        INEDElement connectionsNode = getFirstConnectionsChild();
         if (connectionsNode != null)
             gatherConnections(connectionsNode, srcName, srcGate, destName, destGate, result);
         return result;
     }
 
     /**
-     * @return 
+     * @return
      */
-    private void gatherConnections(NEDElement parent, String srcName, String srcGate, String destName, String destGate, List<ConnectionNodeEx> result) {
-        for(NEDElement currChild : parent) {
+    private void gatherConnections(INEDElement parent, String srcName, String srcGate, String destName, String destGate, List<ConnectionNodeEx> result) {
+        for(INEDElement currChild : parent) {
             if (currChild instanceof ConnectionNodeEx) {
                 ConnectionNodeEx connChild = (ConnectionNodeEx)currChild;
                 // by default add the connection
                 if (srcName != null && !srcName.equals(connChild.getSrcModule()))
                     continue;
-                
+
                 if (srcGate != null && !srcGate.equals(connChild.getSrcGate()))
                     continue;
 
                 if (destName != null && !destName.equals(connChild.getDestModule()))
                     continue;
-                
+
                 if (destGate != null && !destGate.equals(connChild.getDestGate()))
                     continue;
 
@@ -215,9 +215,9 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
             }
         }
     }
-    
-    
-    
+
+
+
     /**
      * @param srcName srcModule to filter for ("" for compound module and NULL if not filtering is required)
      * @param srcGate source gate name to filter or NULL if no filtering needed
@@ -227,15 +227,15 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
      */
     public List<ConnectionNodeEx> getConnections(String srcName, String srcGate, String destName, String destGate) {
         List<ConnectionNodeEx> result = getOwnConnections(srcName, srcGate, destName, destGate);
-        
+
         // FIXME beware this can lead to an infite recursion if we have a circle in the extend chanin
-        NEDElement extendsElem = getFirstExtendsRef();
-        if (extendsElem != null && extendsElem instanceof CompoundModuleNodeEx)  
+        INEDElement extendsElem = getFirstExtendsRef();
+        if (extendsElem != null && extendsElem instanceof CompoundModuleNodeEx)
             result.addAll(((CompoundModuleNodeEx)extendsElem).getConnections(srcName, srcGate, destName, destGate));
-        
+
         return result;
     }
-    
+
     /**
      * Returns ALL VALID connections contained in / and inherited by this module where this module is the source
      * @return
@@ -253,7 +253,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
     }
 
     /**
-     * Returns ALL VALID connections contained in / and inherited by the provided module 
+     * Returns ALL VALID connections contained in / and inherited by the provided module
      * where this module is the source
      * @return
      */
@@ -262,7 +262,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
     }
 
     /**
-     * Returns ALL VALID connections contained in / and inherited by the provided module 
+     * Returns ALL VALID connections contained in / and inherited by the provided module
      * where this module is the destinaion
      * @return
      */
@@ -280,7 +280,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
 
     /**
      * Add this connection to the model (connections section)
-     * @param insertBefore The sibling connection before we want to insert our conn 
+     * @param insertBefore The sibling connection before we want to insert our conn
      * @param conn
      */
 	public void insertConnection(ConnectionNodeEx insertBefore, ConnectionNodeEx conn) {
@@ -293,7 +293,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
 			snode = (ConnectionsNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementFactoryEx.NED_CONNECTIONS, this);
 
 		// add it to the connections subnode
-		snode.insertChildBefore(insertBefore, (NEDElement)conn);
+		snode.insertChildBefore(insertBefore, (INEDElement)conn);
 	}
 
     /**
@@ -319,15 +319,15 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
     }
 
     public INEDTypeInfo getFirstExtendsNEDTypeInfo() {
-        String extendsName = getFirstExtends(); 
-        INEDTypeInfo typeInfo = getContainerNEDTypeInfo(); 
+        String extendsName = getFirstExtends();
+        INEDTypeInfo typeInfo = getContainerNEDTypeInfo();
         if ( extendsName == null || "".equals(extendsName) || typeInfo == null)
             return null;
 
         return typeInfo.getResolver().getComponent(extendsName);
     }
 
-    public NEDElement getFirstExtendsRef() {
+    public INEDElement getFirstExtendsRef() {
         INEDTypeInfo it = getFirstExtendsNEDTypeInfo();
         return it == null ? null : it.getNEDElement();
     }
@@ -338,27 +338,27 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
         if (extendsNode == null)
             return result;
 
-        for(NEDElement currChild : extendsNode)
+        for(INEDElement currChild : extendsNode)
             if (currChild instanceof ExtendsNode)
                 result.add(extendsNode);
-        
+
         return result;
     }
     // parameter query support
-    public Map<String, NEDElement> getParamValues() {
+    public Map<String, INEDElement> getParamValues() {
         return getContainerNEDTypeInfo().getParamValues();
     }
 
-    public Map<String, NEDElement> getParams() {
+    public Map<String, INEDElement> getParams() {
         return getContainerNEDTypeInfo().getParams();
     }
 
     // gate support
-    public Map<String, NEDElement> getGateSizes() {
+    public Map<String, INEDElement> getGateSizes() {
         return getContainerNEDTypeInfo().getGateSizes();
     }
 
-    public Map<String, NEDElement> getGates() {
+    public Map<String, INEDElement> getGates() {
         return getContainerNEDTypeInfo().getGates();
     }
 
@@ -366,7 +366,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
     public List<InterfaceNameNode> getAllInterfaces() {
         List<InterfaceNameNode> result = new ArrayList<InterfaceNameNode>();
 
-        for(NEDElement currChild : this)
+        for(INEDElement currChild : this)
             if (currChild instanceof InterfaceNameNode)
                 result.add((InterfaceNameNode)currChild);
 

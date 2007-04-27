@@ -1,6 +1,6 @@
 package org.omnetpp.ned.model.ex;
 
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasIndex;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasParent;
@@ -17,7 +17,7 @@ public final class GateNodeEx extends GateNode implements IHasIndex, IHasName, I
         super();
     }
 
-    protected GateNodeEx(NEDElement parent) {
+    protected GateNodeEx(INEDElement parent) {
         super(parent);
     }
 
@@ -31,9 +31,9 @@ public final class GateNodeEx extends GateNode implements IHasIndex, IHasName, I
     /**
      * @return Which module  contains this gate definition
      */
-    public NEDElement getContainingTopLevelElement() {
-        NEDElement parent = getParent(); 
-        while (parent != null && !(parent instanceof ITopLevelElement)) 
+    public INEDElement getContainingTopLevelElement() {
+        INEDElement parent = getParent();
+        while (parent != null && !(parent instanceof ITopLevelElement))
             parent = parent.getParent();
         return parent;
     }

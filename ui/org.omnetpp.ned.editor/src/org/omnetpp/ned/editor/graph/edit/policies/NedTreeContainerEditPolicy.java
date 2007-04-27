@@ -10,7 +10,7 @@ import org.eclipse.gef.editpolicies.TreeContainerEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 import org.omnetpp.ned.editor.graph.commands.ReorderCommand;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 
 public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
 
@@ -22,14 +22,14 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
         EditPart insertBeforeEditPart = null;
         if (newIndex >= 0 && newIndex < getHost().getChildren().size() )
         	insertBeforeEditPart = (EditPart)getHost().getChildren().get(newIndex);
-        
+
         for (EditPart editPart2move : (List<EditPart>)request.getEditParts()) {
-            if (insertBeforeEditPart == null || 
+            if (insertBeforeEditPart == null ||
             		insertBeforeEditPart.getModel() == editPart2move.getModel()) {
               command.add(UnexecutableCommand.INSTANCE);
               return command;
             }
-            command.add(new ReorderCommand((NEDElement)insertBeforeEditPart.getModel(), (NEDElement)editPart2move.getModel()));
+            command.add(new ReorderCommand((INEDElement)insertBeforeEditPart.getModel(), (INEDElement)editPart2move.getModel()));
         }
         return command;
     }

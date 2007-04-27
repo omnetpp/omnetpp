@@ -9,13 +9,13 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 
 /**
  * A selection provider that attaches to a NED text editor's viewer and delegates
  * to it. In addition it provides Structured selection for selection events in the text editor
  * sending NEDElements as the selectied object
- * 
+ *
  * @author rhornig
  */
 public class NedSelectionProvider implements IPostSelectionProvider {
@@ -38,8 +38,8 @@ public class NedSelectionProvider implements IPostSelectionProvider {
          * @see org.eclipse.jface.viewers.ISelectionProvider#getSelection()
          */
         public ISelection getSelection() {
-          ISelection selection = fNedTextEditor.getSelectionProvider().getSelection(); 
-              
+          ISelection selection = fNedTextEditor.getSelectionProvider().getSelection();
+
                     // calculate the ned element under the current position
                     int offset = ((ITextSelection)selection).getOffset();
                     int line;
@@ -47,13 +47,13 @@ public class NedSelectionProvider implements IPostSelectionProvider {
                         line = fNedTextEditor.getDocument().getLineOfOffset(offset);
                         int column = offset - fNedTextEditor.getDocument().getLineOffset(line);
                         IFile file = ((FileEditorInput) fNedTextEditor.getEditorInput()).getFile();
-                        NEDElement selectedElement = NEDResourcesPlugin.getNEDResources().getNEDElementAt(file, line, column);
+                        INEDElement selectedElement = NEDResourcesPlugin.getNEDResources().getNEDElementAt(file, line, column);
                         // create a structured selection
                         selection = (selectedElement != null) ? new StructuredSelection(selectedElement)
                         : StructuredSelection.EMPTY;
                     } catch (BadLocationException e) {
                     }
-            
+
             return selection;
         }
 

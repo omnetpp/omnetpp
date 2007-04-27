@@ -25,7 +25,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.NEDTreeIterator;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned.model.interfaces.IModuleTypeNode;
@@ -36,9 +36,9 @@ import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
 /**
- * Displays NED module hierarchy with module parameters, and 
+ * Displays NED module hierarchy with module parameters, and
  * optionally, values assigned in ini files.
- * 
+ *
  * @author Andras
  */
 //XXX create another view: Hierarchy (inheritance tree); and call this Usage? Nesting? Tree? Containment?
@@ -85,7 +85,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	private static class ModuleNode {
 		String moduleFullPath;
 		SubmoduleNodeEx submoduleNode; // null at the root
-		IModuleTypeNode submoduleType; // CompoundModuleNode or SimpleModuleNode; null if type is unknown 
+		IModuleTypeNode submoduleType; // CompoundModuleNode or SimpleModuleNode; null if type is unknown
 
 		/* for convenience */
 		public ModuleNode(String moduleFullPath, SubmoduleNodeEx submoduleNode, IModuleTypeNode submoduleType) {
@@ -103,8 +103,8 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			if (obj == null || getClass() != obj.getClass())
 				return false;
 			final ModuleNode other = (ModuleNode) obj;
-			return moduleFullPath.equals(other.moduleFullPath) && 
-				   submoduleNode == other.submoduleNode && 
+			return moduleFullPath.equals(other.moduleFullPath) &&
+				   submoduleNode == other.submoduleNode &&
 				   submoduleType == other.submoduleType;
 		}
 	}
@@ -115,12 +115,12 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	@Override
 	public Control createViewControl(Composite parent) {
 		treeViewer = new TreeViewer(parent, SWT.SINGLE);
-		
-		// set label provider and content provider 
+
+		// set label provider and content provider
 		treeViewer.setLabelProvider(new LabelProvider() {
 			@Override
 			public Image getImage(Object element) {
-				if (element instanceof GenericTreeNode) 
+				if (element instanceof GenericTreeNode)
 					element = ((GenericTreeNode)element).getPayload();
 				if (element instanceof ModuleNode) {
 					ModuleNode mn = (ModuleNode) element;
@@ -143,25 +143,25 @@ public class ModuleHierarchyView extends AbstractModuleView {
 
 			@Override
 			public String getText(Object element) {
-				if (element instanceof GenericTreeNode) 
+				if (element instanceof GenericTreeNode)
 					element = ((GenericTreeNode)element).getPayload();
 				if (element instanceof ModuleNode) {
 					ModuleNode mn = (ModuleNode) element;
 					if (mn.submoduleNode == null) // this is the tree root
-						return mn.submoduleType.getName(); 
+						return mn.submoduleType.getName();
 					String typeName = mn.submoduleNode.getType();
 		            String label = mn.submoduleNode.getName()+bracketizeIfNotEmpty(mn.submoduleNode.getVectorSize())+" : ";
 		            if (typeName != null && !typeName.equals(""))
 		            	label += typeName;
 		            else if (mn.submoduleType != null)
 		            	label += mn.submoduleType.getName();
-		            else 
+		            else
 		                label += "like "+mn.submoduleNode.getLikeType();
 		            return label;
 				}
 				else if (element instanceof ParamResolution)
 					return getLabelFor((ParamResolution) element, inifileDocument);
-				else 
+				else
 					return element.toString();
 			}
 
@@ -183,15 +183,15 @@ public class ModuleHierarchyView extends AbstractModuleView {
 					if (payload.submoduleNode != null)
 						NEDResourcesPlugin.openNEDElementInEditor(payload.submoduleNode);
 					else if (payload.submoduleType != null)
-						NEDResourcesPlugin.openNEDElementInEditor((NEDElement)payload.submoduleType);
-				}				
+						NEDResourcesPlugin.openNEDElementInEditor((INEDElement)payload.submoduleType);
+				}
 				if (element instanceof ParamResolution) {
 					ParamResolution payload = (ParamResolution) element;
-					if (payload.paramValueNode != null) 
+					if (payload.paramValueNode != null)
 						NEDResourcesPlugin.openNEDElementInEditor(payload.paramValueNode);
 					else if (payload.paramDeclNode != null)
 						NEDResourcesPlugin.openNEDElementInEditor(payload.paramDeclNode);
-				}				
+				}
 			}
 		});
 
@@ -205,7 +205,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		treeViewer.setInput(null);
 	}
 
-	public void buildContent(NEDElement module, final InifileAnalyzer analyzer, final String section, String key) {
+	public void buildContent(INEDElement module, final InifileAnalyzer analyzer, final String section, String key) {
 		final IInifileDocument doc = analyzer==null ? null : analyzer.getDocument();
 		final String[] sectionChain = doc==null ? null : InifileUtils.resolveSectionChain(doc, section);
 
@@ -240,13 +240,13 @@ public class ModuleHierarchyView extends AbstractModuleView {
 				return InifileUtils.resolveLikeParam(moduleFullPath, submodule, section, analyzer, doc);
     		}
     	}
-        
+
     	INEDTypeResolver nedResources = NEDResourcesPlugin.getNEDResources();
     	NEDTreeIterator iterator = new NEDTreeIterator(nedResources, new TreeBuilder());
         if (module instanceof SubmoduleNode) {
             SubmoduleNode submodule = (SubmoduleNode)module;
             iterator.traverse(submodule);
-        } 
+        }
         else if (module instanceof CompoundModuleNode){
         	CompoundModuleNode compoundModule = (CompoundModuleNode)module;
             iterator.traverse(compoundModule.getName());
@@ -261,7 +261,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
         }
 
 		// prevent collapsing all treeviewer nodes: only set it on viewer if it's different from old input
-		if (!GenericTreeUtils.treeEquals(root, (GenericTreeNode)treeViewer.getInput())) { 
+		if (!GenericTreeUtils.treeEquals(root, (GenericTreeNode)treeViewer.getInput())) {
 			this.inifileDocument = analyzer==null ? null : analyzer.getDocument();
 			treeViewer.setInput(root);
 			treeViewer.expandToLevel(2); //XXX collapses when switching to another editor then back. Remember selected element for each editor? use WeakHashMap?
@@ -281,7 +281,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			thisNode.addChild(new GenericTreeNode("sorry, cannot extract parameters from NED yet")); //XXX
 		}
 		else {
-			ParamResolution[] list = analyzer.getParamResolutionsForModule(moduleFullPath, activeSection); 
+			ParamResolution[] list = analyzer.getParamResolutionsForModule(moduleFullPath, activeSection);
 			for (ParamResolution res : list)
 				thisNode.addChild(new GenericTreeNode(res));
 		}
@@ -291,7 +291,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	protected static String getLabelFor(ParamResolution res, IInifileDocument doc) {
 		String value = InifileAnalyzer.getParamValue(res, doc);
 		String remark = InifileAnalyzer.getParamRemark(res, doc);
-		return res.paramDeclNode.getName() + " = " + (value==null ? "" : value+" ") + "(" + remark + ")"; 
+		return res.paramDeclNode.getName() + " = " + (value==null ? "" : value+" ") + "(" + remark + ")";
 	}
 
 }

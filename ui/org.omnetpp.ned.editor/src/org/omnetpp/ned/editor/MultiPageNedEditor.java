@@ -33,15 +33,15 @@ import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
 /**
  * Multi-page NED editor.
- * 
- * FIXME File|Open in Eclipse won't work!!! it creates a JavaFileEditorInput which is NOT an IFileEditorInput!!! 
+ *
+ * FIXME File|Open in Eclipse won't work!!! it creates a JavaFileEditorInput which is NOT an IFileEditorInput!!!
  */
 public class MultiPageNedEditor extends MultiPageEditorPart implements
 		IGotoNedElement, IGotoMarker, IShowInTargetList, IShowInSource {
@@ -54,16 +54,16 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 	private int textPageIndex;
 	private boolean insidePageChange = false;
     private boolean initPhase = true;
-	
+
 	public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
 		super.init(site, editorInput);
 		setPartName(editorInput.getName());
         if (!(editorInput instanceof IFileEditorInput))
             throw new PartInitException("Invalid input type!");
-        
+
         NEDResourcesPlugin.getNEDResources().connect(((IFileEditorInput)editorInput).getFile());
 	}
-    
+
     @Override
     public void dispose() {
         ((IFileEditorInput)getEditorInput()).getFile()
@@ -76,19 +76,19 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 	protected void createPages() {
 		graphEditor = new GraphicalNedEditor();
 		textEditor = new TextualNedEditor();
-        
+
         IFile ifile = ((FileEditorInput)getEditorInput()).getFile();
-        
+
 		try {
             // setup graphical editor
             graphEditor.setModel((NedFileNodeEx)NEDResourcesPlugin.getNEDResources().getNEDFileModel(ifile));
             graphEditor.markContent();
             graphPageIndex = addPage(graphEditor, getEditorInput());
             setPageText(graphPageIndex,"Graphical");
-            
+
 
             // setup text editor
-            // we don't have to set the content because it's set 
+            // we don't have to set the content because it's set
             // automatically by the text editor (from the FileEditorInput)
             textPageIndex = addPage(textEditor, getEditorInput());
             textEditor.markContent();
@@ -98,19 +98,19 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
             // switch to graphics mode initially if there's no error in the file
             if (!NEDResourcesPlugin.getNEDResources().containsNEDErrors(ifile))
                 setActivePage(graphPageIndex);
-            
+
 		} catch (PartInitException e) {
 		    NedEditorPlugin.logError(e);
 		}
-        
+
 	}
-	
+
 	@Override
 	protected void pageChange(int newPageIndex) {
 	    //	prevent recursive call from setActivePage() below
 	    if (insidePageChange)
 	        return;
-	    
+
 	    insidePageChange = true;
 
         super.pageChange(newPageIndex);
@@ -122,7 +122,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         // this can be removed
         // on each page change we emulate a close/open cycle of the multipage editor, this removed the associated
         // outline page, so the outline view will re-request the multipageeditor for a ContentOutlinePage (via getAdapter)
-        // the current implementation of MultipageEditorPart.getAdapter delegates this request to the active 
+        // the current implementation of MultipageEditorPart.getAdapter delegates this request to the active
         // embedded editor.
         ContentOutline coutline = (ContentOutline)getEditorSite().getPage().findView("org.eclipse.ui.views.ContentOutline");
         if (coutline != null) {
@@ -140,34 +140,34 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 
 
 		// switch from graphics to text:
-        if (newPageIndex == textPageIndex && graphEditor.hasContentChanged()) { 
+        if (newPageIndex == textPageIndex && graphEditor.hasContentChanged()) {
             // TODO refresh the editor annotations to show the error marks
             res.setNEDFileModel(file, graphEditor.getModel());
             // XXX this is a hack so the NED elements will have a correct source position/location info
-            // after the parser/generator reformats it (maybe we would need a 
+            // after the parser/generator reformats it (maybe we would need a
             res.formatNEDFileText(file);
             // generate text representation from the model
             textEditor.setText(res.getNEDFileText(file));
             textEditor.markContent();
-		} 
+		}
 		else if (newPageIndex==graphPageIndex && textEditor.hasContentChanged()) {
-            
+
 			// parse the text editor content if it has changed since the last editor switch
 		    res.setNEDFileText(file, textEditor.getText());
-            // set the parsed ned model to the graphical editor 
+            // set the parsed ned model to the graphical editor
             graphEditor.setModel((NedFileNodeEx)res.getNEDFileModel(file));
             graphEditor.markContent();
-            
+
             // only start in graphics mode if there's no error in the file
             if (res.containsNEDErrors(file)) {
                 // this happens if the parsing was unsuccessful when we wanted to switch from text to graph mode
-				// parse error: switch back immediately to text view (we should never have 
+				// parse error: switch back immediately to text view (we should never have
 				// switched away from it in the first place)
 				setActivePage(textPageIndex);
-                
+
                 // set an empty content so next time we will try to parse the editor text again
 //                textContent = "";
-				
+
 				if (!initPhase) {
 					MessageBox messageBox = new MessageBox(getEditorSite().getShell(), SWT.ICON_WARNING | SWT.OK);
 					messageBox.setText("Warning");
@@ -183,11 +183,11 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		if (getActivePage() == graphPageIndex) { 
+		if (getActivePage() == graphPageIndex) {
 			// switch from graphics to text:
 			// generate text representation from the model
             IFile file = ((FileEditorInput)getEditorInput()).getFile();
-            
+
             // put the actual model state back to the incremental builder
     		NEDResourcesPlugin.getNEDResources().setNEDFileModel(file, graphEditor.getModel());
             // put it into the text editor
@@ -203,7 +203,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         // TODO add save as support
         Assert.isTrue(false, "save as not implemented");
     }
-    
+
 	@Override
 	public boolean isSaveAsAllowed() {
         // we do not support save as...
@@ -217,7 +217,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
     protected void closeEditor(boolean save) {
         getSite().getPage().closeEditor(this, save);
     }
-    
+
     @Override
     protected void setInput(IEditorInput input) {
         if (getEditorInput() != null) {
@@ -275,11 +275,11 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
             } else if (delta.getKind() == IResourceDelta.CHANGED) {
                 // guard that we shoul dnot reload while save is in progress
 //                if (!editorSaving) {
-                  
+
                   // the file was overwritten somehow (could have been
                   // replaced by another version in the respository)
                   // TODO ask the user and reload the file
-                
+
 //                }
             }
             return false;
@@ -293,12 +293,12 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         if (gm != null)
             gm.gotoMarker(marker);
     }
-    
-    public void showInEditor(NEDElement model, Mode mode) {
+
+    public void showInEditor(INEDElement model, Mode mode) {
         if (mode == Mode.AUTOMATIC) {
             mode = (model instanceof ITopLevelElement || model instanceof SubmoduleNode) ? Mode.GRAPHICAL : Mode.TEXT;
         }
-        
+
         if (mode == Mode.GRAPHICAL) {
             setActivePage(graphPageIndex);
             graphEditor.reveal(model);
@@ -308,8 +308,8 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
             try {
                 int startLine = model.getSourceRegion().startLine;
                 int endLine = model.getSourceRegion().endLine;
-                textEditor.setHighlightRange(document.getLineOffset(startLine-1), 
-                                             document.getLineOffset(endLine-1)+document.getLineLength(endLine-1), 
+                textEditor.setHighlightRange(document.getLineOffset(startLine-1),
+                                             document.getLineOffset(endLine-1)+document.getLineLength(endLine-1),
                                              true);
             } catch (BadLocationException e) {
             }

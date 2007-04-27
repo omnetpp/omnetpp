@@ -11,7 +11,7 @@ import org.eclipse.gef.SnapToHelper;
 import org.omnetpp.figures.NedFileFigure;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.edit.policies.NedFileLayoutEditPolicy;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
@@ -32,7 +32,7 @@ public class NedFileEditPart extends BaseEditPart  implements INEDChangeListener
 
         // NedFile cannot be connectoed to anything via connections
         installEditPolicy(EditPolicy.NODE_ROLE, null);
-        // 
+        //
         installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE, null);
         // nedfile cannot be selected
         installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, null);
@@ -51,7 +51,7 @@ public class NedFileEditPart extends BaseEditPart  implements INEDChangeListener
         // attache to the resources plugin so we will be notified about any change in the model
         NEDResourcesPlugin.getNEDResources().getNEDModelChangeListenerList().add(this);
     }
-    
+
     @Override
     public void deactivate() {
         if (!isActive()) return;
@@ -60,7 +60,7 @@ public class NedFileEditPart extends BaseEditPart  implements INEDChangeListener
     }
     /**
      * Returns a Figure to represent this.
-     * 
+     *
      * @return Figure.
      */
     @Override
@@ -97,10 +97,10 @@ public class NedFileEditPart extends BaseEditPart  implements INEDChangeListener
 
     /* (non-Javadoc)
      * @see org.omnetpp.ned.editor.graph.edit.BaseEditPart#getTypeNameForDblClickOpen()
-     * do not open anything on double click 
+     * do not open anything on double click
      */
     @Override
-    protected NEDElement getNEDElementToOpen() {
+    protected INEDElement getNEDElementToOpen() {
         return null;
     }
 
@@ -108,4 +108,4 @@ public class NedFileEditPart extends BaseEditPart  implements INEDChangeListener
         // we do a full refresh in response of a change
         totalRefresh();
     }
-}    
+}

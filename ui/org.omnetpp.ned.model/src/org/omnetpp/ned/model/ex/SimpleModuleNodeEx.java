@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IModuleTypeNode;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.pojo.ExtendsNode;
@@ -13,15 +13,15 @@ import org.omnetpp.ned.model.pojo.InterfaceNameNode;
 import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 
 public final class SimpleModuleNodeEx extends SimpleModuleNode implements IModuleTypeNode {
-	
+
 
 	protected DisplayString displayString = null;
-	
+
     protected SimpleModuleNodeEx() {
         init();
 	}
 
-    protected SimpleModuleNodeEx(NEDElement parent) {
+    protected SimpleModuleNodeEx(INEDElement parent) {
 		super(parent);
         init();
 	}
@@ -29,19 +29,19 @@ public final class SimpleModuleNodeEx extends SimpleModuleNode implements IModul
     private void init() {
         setName("unnamed");
     }
-    
+
 	public DisplayString getDisplayString() {
 		if (displayString == null) {
 			displayString = new DisplayString(this, NEDElementUtilEx.getDisplayString(this));
 		}
 		return displayString;
 	}
-	
+
     public DisplayString getEffectiveDisplayString() {
         return NEDElementUtilEx.getEffectiveDisplayString(this);
     }
 
-    // EXTENDS SUPPORT 
+    // EXTENDS SUPPORT
     public String getFirstExtends() {
         return NEDElementUtilEx.getFirstExtends(this);
     }
@@ -51,15 +51,15 @@ public final class SimpleModuleNodeEx extends SimpleModuleNode implements IModul
     }
 
     public INEDTypeInfo getFirstExtendsNEDTypeInfo() {
-        String extendsName = getFirstExtends(); 
-        INEDTypeInfo typeInfo = getContainerNEDTypeInfo(); 
+        String extendsName = getFirstExtends();
+        INEDTypeInfo typeInfo = getContainerNEDTypeInfo();
         if ( extendsName == null || "".equals(extendsName) || typeInfo == null)
             return null;
 
         return typeInfo.getResolver().getComponent(extendsName);
     }
 
-    public NEDElement getFirstExtendsRef() {
+    public INEDElement getFirstExtendsRef() {
         INEDTypeInfo it = getFirstExtendsNEDTypeInfo();
         return it == null ? null : it.getNEDElement();
     }
@@ -70,28 +70,28 @@ public final class SimpleModuleNodeEx extends SimpleModuleNode implements IModul
         if (extendsNode == null)
             return result;
 
-        for(NEDElement currChild : extendsNode)
+        for(INEDElement currChild : extendsNode)
             if (currChild instanceof ExtendsNode)
                 result.add(extendsNode);
-        
+
         return result;
     }
 
     // parameter query support
-    public Map<String, NEDElement> getParamValues() {
+    public Map<String, INEDElement> getParamValues() {
         return getContainerNEDTypeInfo().getParamValues();
     }
 
-    public Map<String, NEDElement> getParams() {
+    public Map<String, INEDElement> getParams() {
         return getContainerNEDTypeInfo().getParams();
     }
 
     // gate support
-    public Map<String, NEDElement> getGateSizes() {
+    public Map<String, INEDElement> getGateSizes() {
         return getContainerNEDTypeInfo().getGateSizes();
     }
 
-    public Map<String, NEDElement> getGates() {
+    public Map<String, INEDElement> getGates() {
         return getContainerNEDTypeInfo().getGates();
     }
 
@@ -99,7 +99,7 @@ public final class SimpleModuleNodeEx extends SimpleModuleNode implements IModul
     public List<InterfaceNameNode> getAllInterfaces() {
         List<InterfaceNameNode> result = new ArrayList<InterfaceNameNode>();
 
-        for(NEDElement currChild : this)
+        for(INEDElement currChild : this)
             if (currChild instanceof InterfaceNameNode)
                 result.add((InterfaceNameNode)currChild);
 

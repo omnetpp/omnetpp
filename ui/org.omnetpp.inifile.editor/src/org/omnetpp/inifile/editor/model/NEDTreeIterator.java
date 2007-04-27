@@ -3,7 +3,7 @@ package org.omnetpp.inifile.editor.model;
 import java.util.Stack;
 
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
@@ -19,13 +19,13 @@ public class NEDTreeIterator {
 	private Stack<INEDTypeInfo> visitedTypes = new Stack<INEDTypeInfo>(); // circle detection
 
 	/**
-	 * Constructor 
+	 * Constructor
 	 */
 	public NEDTreeIterator(INEDTypeResolver nedResources, IModuleTreeVisitor visitor) {
 		this.nedResources = nedResources;
 		this.visitor = visitor;
 	}
-	
+
 	/**
 	 * Traverse the module usage hierarchy, and call methods for the visitor.
 	 */
@@ -64,7 +64,7 @@ public class NEDTreeIterator {
 		visitor.enter(module, moduleType);
 
 		// traverse submodules
-		for (NEDElement node : moduleType.getSubmods().values()) {
+		for (INEDElement node : moduleType.getSubmods().values()) {
 			// dig out type info (NED declaration)
 			SubmoduleNode submodule = (SubmoduleNode) node;
 			String submoduleTypeName = resolveTypeName(submodule);

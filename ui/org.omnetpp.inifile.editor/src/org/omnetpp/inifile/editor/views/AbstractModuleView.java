@@ -23,7 +23,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
@@ -35,10 +35,10 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
 /**
  * Abstract base class for views that display information based on a single NED
- * module or network type, and possibly an inifile. Subclasses are expected to 
- * implement the buildContent() method, which will be invoked whenever the 
+ * module or network type, and possibly an inifile. Subclasses are expected to
+ * implement the buildContent() method, which will be invoked whenever the
  * selection changes, or there is a change in NED or ini files.
- * 
+ *
  * @author Andras
  */
 public abstract class AbstractModuleView extends ViewWithMessagePart implements IShowInTarget {
@@ -50,7 +50,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
             rebuildContent();
         }
     };
-	
+
 	public AbstractModuleView() {
 	}
 
@@ -76,9 +76,9 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 		};
 		getSite().getPage().addPostSelectionListener(selectionChangedListener);
         getSite().getPage().addSelectionListener(selectionChangedListener);
-		
-		// Listens to workbench changes, and invokes activeEditorChanged() whenever the 
-		// active editor changes. Listening on workbench changes is needed because 
+
+		// Listens to workbench changes, and invokes activeEditorChanged() whenever the
+		// active editor changes. Listening on workbench changes is needed because
 		// editor don't always send selection changes when they get opened or closed.
 		//
 		// NOTE: the view only gets workbench events while it is visible. So we also
@@ -87,7 +87,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 		final IEditorPart initialEditor = getActiveEditor();
 		partListener = new IPartListener() {
 			private IEditorPart activeEditor = initialEditor;
-			
+
 			public void partActivated(IWorkbenchPart part) {
 				if (part == AbstractModuleView.this) {
 					viewActivated();
@@ -115,8 +115,8 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 			}
 		};
 		getSite().getPage().addPartListener(partListener);
-		
-		// Listen on NED changes as well (note: inifile changes arrive as selection changes) 
+
+		// Listen on NED changes as well (note: inifile changes arrive as selection changes)
 		nedChangeListener = new INEDChangeListener() {
 			public void modelChanged(NEDModelEvent event) {
 				nedModelChanged();
@@ -124,7 +124,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 		};
 		NEDResourcesPlugin.getNEDResources().getNEDModelChangeListenerList().add(nedChangeListener);
 	}
-	
+
 	protected void unhookListeners() {
 		if (selectionChangedListener != null)
 			getSite().getPage().removePostSelectionListener(selectionChangedListener);
@@ -161,10 +161,10 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 	}
 
     /**
-     * @return Tries to find a ned element up in the ancestor chanin which may have 
+     * @return Tries to find a ned element up in the ancestor chanin which may have
      * parameters. ie. simple and submodule, compoundmodule and channel
      */
-    private NEDElement findFirstModuleOrSubmodule(NEDElement element) {
+    private INEDElement findFirstModuleOrSubmodule(INEDElement element) {
         while (element != null) {
             if (element instanceof CompoundModuleNode || element instanceof SimpleModuleNode ||
                     element instanceof SubmoduleNode || element instanceof ModuleInterfaceNode)
@@ -173,11 +173,11 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
         }
         return element;
     }
-    
+
 	public void rebuildContent() {
 		if (isDisposed())
 			return;
-		
+
         //System.out.println("*** CONTENT REBUILD");
 		IEditorPart activeEditor = getActiveEditor();
 		if (activeEditor==null) {
@@ -190,16 +190,16 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 			showMessage("Nothing is selected.");
 			return;
 		}
-		
+
 		if (selection instanceof IStructuredSelection && !selection.isEmpty()) {
 			Object element = ((IStructuredSelection)selection).getFirstElement();
 			if (element instanceof IModelProvider) {
 				//
 				// The NED graphical editor publishes selection as an IStructuredSelection,
-				// with editparts in it. NEDElement can be extracted from editparts
+				// with editparts in it. INEDElement can be extracted from editparts
 				// via IModelProvider.
 				//
-				NEDElement model = findFirstModuleOrSubmodule(((IModelProvider)element).getNEDModel());
+				INEDElement model = findFirstModuleOrSubmodule(((IModelProvider)element).getNEDModel());
 				if (model != null ) {
 					hideMessage();
 					buildContent(model, null, null, null);
@@ -239,14 +239,14 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 	}
 
 	/**
-	 * Update view to display content that corresponds to the given module, 
-	 * with the specified inifile as configuration. 
+	 * Update view to display content that corresponds to the given module,
+	 * with the specified inifile as configuration.
 	 * @param module can be a toplevel type (Network, CompoundModule, SimpleModule), or Submodule
 	 * @param ana Ini file analyzer
 	 * @param key selected section
 	 * @param section selected key
 	 */
-	protected abstract void buildContent(NEDElement module, InifileAnalyzer ana, String section, String key);
+	protected abstract void buildContent(INEDElement module, InifileAnalyzer ana, String section, String key);
 
 
 	/* stuff for subclasses: icons */
@@ -256,7 +256,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 	public static final Image ICON_NEDDEFAULTPAR = InifileEditorPlugin.getImage("icons/full/obj16/IniPar.png"); //XXX
 	public static final Image ICON_INIPAR = InifileEditorPlugin.getImage("icons/full/obj16/IniPar.png");
 	public static final Image ICON_INIPARREDUNDANT = InifileEditorPlugin.getImage("icons/full/obj16/IniParRedundant.png");
-	
+
 	/**
 	 * Helper function: suggests an icon for a table or tree entry.
 	 */
@@ -266,7 +266,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 			case NED: return ICON_NEDPAR;
 			case NED_DEFAULT: return ICON_NEDDEFAULTPAR;
 			case INI: return ICON_INIPAR;
-			case INI_OVERRIDE:  return ICON_INIPAR; 
+			case INI_OVERRIDE:  return ICON_INIPAR;
 			case INI_NEDDEFAULT: return ICON_INIPARREDUNDANT;
 		}
 		return null;

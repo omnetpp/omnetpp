@@ -3,7 +3,7 @@ package org.omnetpp.ned.model.notification;
 
 /**
  * @author rhornig
- * Supports a listener list used for change and structural notification in a NEDElement tree
+ * Supports a listener list used for change and structural notification in a INEDElement tree
  */
 public class NEDChangeListenerList {
 
@@ -39,7 +39,7 @@ public class NEDChangeListenerList {
 
 	/**
 	 * @return The listener list's copy so adding/removing listeners during
-     * notification is allowed. 
+     * notification is allowed.
 	 */
 	public INEDChangeListener[] getListeners() {
 		// make a copy, just in case there are adds/removes during iteration
@@ -70,7 +70,7 @@ public class NEDChangeListenerList {
 
     /**
      * Fires a model change event to all listeners if event sending is enabled
-     * @param event 
+     * @param event
      */
     public void fireModelChanged(NEDModelEvent event) {
         if (enabled)

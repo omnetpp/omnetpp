@@ -1,6 +1,6 @@
 package org.omnetpp.ned.model.ex;
 
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.pojo.NEDElementFactory;
 
 /**
@@ -9,7 +9,7 @@ import org.omnetpp.ned.model.pojo.NEDElementFactory;
  */
 public final class NEDElementFactoryEx extends NEDElementFactory {
 
-	public NEDElement createNodeWithTag(String tagname, NEDElement parent) {
+	public INEDElement createNodeWithTag(String tagname, INEDElement parent) {
         if (tagname.equals(NedFileNodeEx.getStaticTagName()))
             return new NedFileNodeEx(parent);
         if (tagname.equals(CompoundModuleNodeEx.getStaticTagName()))
@@ -34,7 +34,7 @@ public final class NEDElementFactoryEx extends NEDElementFactory {
         return super.createNodeWithTag(tagname, parent);
 	}
 
-	public NEDElement createNodeWithTag(int tagcode, NEDElement parent) {
+	public INEDElement createNodeWithTag(int tagcode, INEDElement parent) {
         if (tagcode==NED_NED_FILE)
             return new NedFileNodeEx(parent);
         if (tagcode==NED_COMPOUND_MODULE)
@@ -55,7 +55,7 @@ public final class NEDElementFactoryEx extends NEDElementFactory {
             return new GateNodeEx(parent);
         if (tagcode==NED_PARAM)
             return new ParamNodeEx(parent);
-        
+
 		return super.createNodeWithTag(tagcode, parent);
 	}
 }

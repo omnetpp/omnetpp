@@ -14,19 +14,19 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEndpointEditPolicy;
 import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 /**
  * Implements a Connection Editpart to represnt a Wire like connection.
- * 
+ *
  */
-public class ModuleConnectionEditPart extends AbstractConnectionEditPart 
-                    implements IReadOnlySupport, 
+public class ModuleConnectionEditPart extends AbstractConnectionEditPart
+                    implements IReadOnlySupport,
                                IPropertySourceSupport, IModelProvider {
 
-	private EditPart sourceEditPartEx; 
+	private EditPart sourceEditPartEx;
 	private EditPart targetEditPartEx;
     private boolean editable = true;
     private IPropertySource propertySource;
@@ -78,7 +78,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
     public void setSource(EditPart editPart) {
     	if (sourceEditPartEx == editPart)
     		return;
-    	
+
     	sourceEditPartEx = editPart;
     	if (sourceEditPartEx != null) {
     		// attach the connection edit part to the compound module as a parent
@@ -125,18 +125,18 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
 
     /**
      * Returns a newly created Figure to represent the connection.
-     * 
+     *
      * @return The created Figure.
      */
     @Override
     protected IFigure createFigure() {
         ConnectionFigure conn = new ConnectionFigure();
-        return conn;    
+        return conn;
     }
 
     /**
      * Returns the model associated to this editpart as a ConnectionNodeEx
-     * 
+     *
      * @return Model of this as <code>Wire</code>
      */
     protected ConnectionNodeEx getConnectionModel() {
@@ -146,11 +146,11 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
     /**
      * Refreshes the visual aspects of this, based upon the model (Wire). It
      * changes the wire color depending on the state of Wire.
-     * 
+     *
      */
     @Override
     protected void refreshVisuals() {
-        ConnectionFigure cfig = (ConnectionFigure)getConnectionFigure();  
+        ConnectionFigure cfig = (ConnectionFigure)getConnectionFigure();
         cfig.setDisplayString(getConnectionModel().getEffectiveDisplayString());
         cfig.setArrowEnabled(getConnectionModel().getArrowDirection() != NEDElementUtil.NED_ARROWDIR_BIDIR);
     }
@@ -158,18 +158,18 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
     public void setEditable(boolean editable) {
         this.editable = editable;
     }
-    
+
     public boolean isEditable() {
-        boolean isEditable 
+        boolean isEditable
             = editable && (getParent().getModel() == ((ConnectionNodeEx)getModel()).getCompoundModule());
         if (!isEditable)
             return false;
-        // otherwise check what about the parent. if parent is read only we should return its state 
+        // otherwise check what about the parent. if parent is read only we should return its state
         if (getParent() instanceof IReadOnlySupport)
             return ((IReadOnlySupport)getParent()).isEditable();
         return true;
     }
-    
+
     @Override
     public void performRequest(Request req) {
         super.performRequest(req);
@@ -178,20 +178,20 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
             NEDResourcesPlugin.openNEDElementInEditor(getConnectionModel().getEffectiveTypeRef());
         }
     }
-    
+
     /**
      * @return The compound module part this connection part belongs to
      */
     public CompoundModuleEditPart getCompoundModulePart() {
         return (CompoundModuleEditPart)getParent();
     }
-    
+
     /* (non-Javadoc)
      * @see org.eclipse.gef.editparts.AbstractEditPart#registerModel()
      * Override the default behavior because each compound module has it's own registry for connection model
      * connection part mapping (instead of the default impl. one map for the whole viewer)
      * The connection part creation is looking also in this registry
-     * @see org.omnetpp.ned.editor.graph.edit.ModuleEditPart#createOrFindConnection(java.lang.Object) 
+     * @see org.omnetpp.ned.editor.graph.edit.ModuleEditPart#createOrFindConnection(java.lang.Object)
      */
     protected void registerModel() {
         getCompoundModulePart().getModelToConnectionPartsRegistry().put(getModel(), this);
@@ -202,7 +202,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
      * Override the default behavior because each compound module has it's own registry for connection model
      * connection part mapping (instead of the default impl. one map for the whole viewer)
      * The connection part creation is looking also in this registry
-     * @see org.omnetpp.ned.editor.graph.edit.ModuleEditPart#createOrFindConnection(java.lang.Object) 
+     * @see org.omnetpp.ned.editor.graph.edit.ModuleEditPart#createOrFindConnection(java.lang.Object)
      */
     protected void unregisterModel() {
         Map registry = getCompoundModulePart().getModelToConnectionPartsRegistry();
@@ -218,8 +218,8 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
         this.propertySource = propertySource;
     }
 
-    public NEDElement getNEDModel() {
-        return (NEDElement)getModel();
+    public INEDElement getNEDModel() {
+        return (INEDElement)getModel();
     }
 }
 

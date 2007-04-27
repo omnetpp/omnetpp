@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasAncestors;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
@@ -16,8 +16,8 @@ import org.omnetpp.ned.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned.model.pojo.ExtendsNode;
 
-public final class ChannelInterfaceNodeEx extends ChannelInterfaceNode 
-		implements IHasDisplayString, IHasAncestors, IHasParent, 
+public final class ChannelInterfaceNodeEx extends ChannelInterfaceNode
+		implements IHasDisplayString, IHasAncestors, IHasParent,
                    IHasName, ITopLevelElement, IHasParameters {
 
 	protected DisplayString displayString = null;
@@ -26,7 +26,7 @@ public final class ChannelInterfaceNodeEx extends ChannelInterfaceNode
 		super();
 	}
 
-    protected ChannelInterfaceNodeEx(NEDElement parent) {
+    protected ChannelInterfaceNodeEx(INEDElement parent) {
 		super(parent);
 	}
 
@@ -36,12 +36,12 @@ public final class ChannelInterfaceNodeEx extends ChannelInterfaceNode
 		}
 		return displayString;
 	}
-	
+
     public DisplayString getEffectiveDisplayString() {
         return NEDElementUtilEx.getEffectiveDisplayString(this);
     }
 
-    // EXTENDS SUPPORT 
+    // EXTENDS SUPPORT
     public String getFirstExtends() {
         return NEDElementUtilEx.getFirstExtends(this);
     }
@@ -51,15 +51,15 @@ public final class ChannelInterfaceNodeEx extends ChannelInterfaceNode
     }
 
     public INEDTypeInfo getFirstExtendsNEDTypeInfo() {
-        String extendsName = getFirstExtends(); 
-        INEDTypeInfo typeInfo = getContainerNEDTypeInfo(); 
+        String extendsName = getFirstExtends();
+        INEDTypeInfo typeInfo = getContainerNEDTypeInfo();
         if ( extendsName == null || "".equals(extendsName) || typeInfo == null)
             return null;
 
         return typeInfo.getResolver().getComponent(extendsName);
     }
 
-    public NEDElement getFirstExtendsRef() {
+    public INEDElement getFirstExtendsRef() {
         INEDTypeInfo it = getFirstExtendsNEDTypeInfo();
         return it == null ? null : it.getNEDElement();
     }
@@ -67,19 +67,19 @@ public final class ChannelInterfaceNodeEx extends ChannelInterfaceNode
     public List<ExtendsNode> getAllExtends() {
         List<ExtendsNode> result = new ArrayList<ExtendsNode>();
 
-        for(NEDElement currChild : this)
+        for(INEDElement currChild : this)
             if (currChild instanceof ExtendsNode)
                 result.add((ExtendsNode)currChild);
-        
+
         return result;
     }
 
     // parameter list support
-    public Map<String, NEDElement> getParamValues() {
+    public Map<String, INEDElement> getParamValues() {
         return getContainerNEDTypeInfo().getParamValues();
     }
 
-    public Map<String, NEDElement> getParams() {
+    public Map<String, INEDElement> getParams() {
         return getContainerNEDTypeInfo().getParams();
     }
 

@@ -7,7 +7,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementException;
 import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.interfaces.IHasAncestors;
@@ -31,23 +31,23 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
 public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 	public static final String DISPLAY_PROPERTY = "display";
-	
+
 	/**
 	 * @param node The node in question
 	 * @return The display string in unparesed form
 	 */
-	public static String getDisplayString(NEDElement node) {
+	public static String getDisplayString(INEDElement node) {
         // channel node is special. we have to look inside the channelSpec node for the display string
         if (node instanceof ConnectionNode) {
-            NEDElement channelSpecNode = node.getFirstChildWithTag(NED_CHANNEL_SPEC);
+            INEDElement channelSpecNode = node.getFirstChildWithTag(NED_CHANNEL_SPEC);
             node = channelSpecNode;
         }
-        
+
         if (node == null) return null;
-        
-        NEDElement parametersNode = node.getFirstChildWithTag(NED_PARAMETERS);
+
+        INEDElement parametersNode = node.getFirstChildWithTag(NED_PARAMETERS);
         if (parametersNode != null)
-			for(NEDElement currElement : parametersNode)
+			for(INEDElement currElement : parametersNode)
 				if(currElement instanceof PropertyNode) {
 					PropertyNode currProp = (PropertyNode)currElement;
 					if(DISPLAY_PROPERTY.equals(currProp.getName()))
@@ -57,17 +57,17 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 	}
 
     /**
-     * Gets the effective displaystring (parsed )belonging to a node. It uses 
+     * Gets the effective displaystring (parsed )belonging to a node. It uses
      * the node's type or the base node (extends) as a fallback displaystring.
      * BEWARE that this method adjusts the display string's 'Default' property,
      * ie. sets it to an other displayString object which represents the type
-     * or base type's display string. 
+     * or base type's display string.
      * @param node
-     * @return The parsed display string 
+     * @return The parsed display string
      */
     public static DisplayString getEffectiveDisplayString(IHasDisplayString node) {
         DisplayString result = node.getDisplayString();
-        NEDElement defaultNode = null;
+        INEDElement defaultNode = null;
         // if node supports typing use the type's diplay property
         if (node instanceof IHasType)
             defaultNode = ((IHasType)node).getEffectiveTypeRef();
@@ -88,14 +88,14 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
     }
 
     /**
-     * Returns the effective display string for this submodule, assuming 
+     * Returns the effective display string for this submodule, assuming
      * that the submodule's actual type is the compound or simple module type
      * passed in the <code>submoduleType</code> parameter. This is useful
      * when the submodule is a "like" submodule, whose the actual submodule
-     * type (not the <code>likeType</code>) is known. The latter usually 
-     * comes from an ini file or some other source outside the NEDElement tree. 
+     * type (not the <code>likeType</code>) is known. The latter usually
+     * comes from an ini file or some other source outside the INEDElement tree.
      * Used within the inifile editor.
-     * 
+     *
      * @param submoduleNode  the submodule
      * @param submoduleType  a CompoundModuleNodeEx or a SimpleModuleNodeEx
      */
@@ -105,14 +105,14 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
         result.setDefaults(submoduleType.getEffectiveDisplayString());
         return result;
     }
-    
+
 	/**
 	 * Sets the display property of a given node.
 	 * PATH: PARAMETERS -> PROPERTY -> PROPERTYKEY -> LITERAL.VALUE
 	 * @param node Component node that can have display string
 	 * @param dspString
 	 */
-	public static void setDisplayString(NEDElement node, String dspString) {
+	public static void setDisplayString(INEDElement node, String dspString) {
 		// check if it's a supported node type
 		if (!(node instanceof CompoundModuleNode) &&
 			!(node instanceof SubmoduleNode) &&
@@ -123,11 +123,11 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 			!(node instanceof ChannelInterfaceNode) &&
 			!(node instanceof ChannelSpecNode))
 				throw new NEDElementException(node, "Node does not support display property");
-		
-		// the connection node is special because the display string is stored inside its 
+
+		// the connection node is special because the display string is stored inside its
         // channel spec node, so we must create that too
         if (node instanceof ConnectionNode) {
-            NEDElement channelSpecNode = node.getFirstChildWithTag(NED_CHANNEL_SPEC);
+            INEDElement channelSpecNode = node.getFirstChildWithTag(NED_CHANNEL_SPEC);
             if (channelSpecNode == null) {
                 channelSpecNode = NEDElementFactoryEx.getInstance().createNodeWithTag(NED_CHANNEL_SPEC);
                 node.appendChild(channelSpecNode);
@@ -135,18 +135,18 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
             // use the new channel spec node as the container of display string
             node = channelSpecNode;
         }
-            
-        
+
+
 		// look for the parameters block (in therory it must be present)
-		NEDElement paramsNode = node.getFirstChildWithTag(NED_PARAMETERS);
+		INEDElement paramsNode = node.getFirstChildWithTag(NED_PARAMETERS);
 		if (paramsNode == null) {
 			paramsNode = NEDElementFactoryEx.getInstance().createNodeWithTag(NED_PARAMETERS);
             ((ParametersNode)paramsNode).setIsImplicit(true);
 			node.appendChild(paramsNode);
 		}
-		
+
 		// look for the first property parameter, named as display
-		NEDElement displayPropertyNode = paramsNode.getFirstChildWithAttribute(NED_PROPERTY, PropertyNode.ATT_NAME, DISPLAY_PROPERTY); 
+		INEDElement displayPropertyNode = paramsNode.getFirstChildWithAttribute(NED_PROPERTY, PropertyNode.ATT_NAME, DISPLAY_PROPERTY);
 		if (displayPropertyNode == null) {
 			displayPropertyNode = NEDElementFactoryEx.getInstance().createNodeWithTag(NED_PROPERTY);
 			((PropertyNode)displayPropertyNode).setName(DISPLAY_PROPERTY);
@@ -158,37 +158,37 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
             paramsNode.removeChild(displayPropertyNode);
             return;
         }
-		
+
 		// look for propertykey
-		NEDElement propertyKeyNode = displayPropertyNode.getFirstChildWithAttribute(NED_PROPERTY_KEY, PropertyKeyNode.ATT_NAME, ""); 
+		INEDElement propertyKeyNode = displayPropertyNode.getFirstChildWithAttribute(NED_PROPERTY_KEY, PropertyKeyNode.ATT_NAME, "");
 		if (propertyKeyNode == null) {
 			propertyKeyNode = NEDElementFactoryEx.getInstance().createNodeWithTag(NED_PROPERTY_KEY);
 			displayPropertyNode.appendChild(propertyKeyNode);
 		}
 
 		// look for literal
-		LiteralNode literalNode = (LiteralNode)propertyKeyNode.getFirstChildWithTag(NED_LITERAL); 
+		LiteralNode literalNode = (LiteralNode)propertyKeyNode.getFirstChildWithTag(NED_LITERAL);
 		if (literalNode == null) {
 			literalNode = (LiteralNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NED_LITERAL);
 			propertyKeyNode.appendChild(literalNode);
 		}
-		
+
 		boolean isNotifyEnabled = literalNode.getListeners().isEnabled();
 		literalNode.getListeners().setEnabled(false);
 		// finally set the value of display string
 		literalNode.setType(NED_CONST_STRING);
 		literalNode.setValue(dspString);
-		// invalidate the text representation so next time the code will 
+		// invalidate the text representation so next time the code will
 		// be generated from VALUE not from the text attribute
 		literalNode.setText(null);
 		// set notification back to the original state
 		literalNode.getListeners().setEnabled(isNotifyEnabled);
 	}
-	
+
     /**
      * @return The name of the first extends nod (or null if none present)
      */
-    public static String getFirstExtends(NEDElement node) {
+    public static String getFirstExtends(INEDElement node) {
         ExtendsNode extendsNode = (ExtendsNode)node.getFirstChildWithTag(NED_EXTENDS);
         if(extendsNode == null)
             return null;
@@ -201,7 +201,7 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
      * @param node The node which extends the provided type
      * @param ext The name of the type that is extended
      */
-    public static void setFirstExtends(NEDElement node, String ext) {
+    public static void setFirstExtends(INEDElement node, String ext) {
         ExtendsNode extendsNode = (ExtendsNode)node.getFirstChildWithTag(NED_EXTENDS);
             if (extendsNode == null && ext != null && !"".equals(ext)) {
                 extendsNode = (ExtendsNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NED_EXTENDS);
@@ -225,10 +225,10 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 		if (pkn == null ) return null;
 		LiteralNode ln = pkn.getFirstLiteralChild();
 		if (ln == null ) return null;
-		
+
 		return ln.getValue();
 	}
-    
+
     /**
      * @return The name of component but stripped any digits from the right ie: name123 would be name
      */
@@ -241,7 +241,7 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
     }
 
     /**
-     * Calculates a unique name for the provided model element 
+     * Calculates a unique name for the provided model element
      * @param namedElement
      * @param contextCollection A collection of IHasName elements wich proviedes a context in which the name should be unique
      * @return The new unique name, or the original name if it was unique
@@ -256,15 +256,15 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
         // there is an other module with the same name, so find a new name
         String baseName = getNameBase(currentName);
         int i = 1;
-        while(contextCollection.contains(new String(baseName+i))) 
+        while(contextCollection.contains(new String(baseName+i)))
             i++;
 
         // we've found a unique name
         return baseName+i;
     }
-    
+
     /**
-     * Calculates a unique name for the provided model element 
+     * Calculates a unique name for the provided model element
      * @param namedElement
      * @param contextCollection A collection of strings wich proviedes a context in which the name should be unique
      * @return The new unique name, or the original name if it was unique
@@ -277,5 +277,5 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
                 nameSet.add(sm.getName());
         return getUniqueNameFor(namedElement, nameSet);
     }
-    
+
 }

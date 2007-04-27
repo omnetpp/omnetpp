@@ -4,7 +4,7 @@ import java.util.Set;
 
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
@@ -12,24 +12,24 @@ import org.omnetpp.ned.model.interfaces.ITopLevelElement;
 
 /**
  * @author rhornig
- * Allows the creation of new top level model element like, channels, simple modules 
+ * Allows the creation of new top level model element like, channels, simple modules
  * and compound modules
  */
 public class CreateToplevelComponentCommand extends Command {
-    private NEDElement child;
-    private NEDElement parent;
-    private NEDElement insertBefore;
+    private INEDElement child;
+    private INEDElement parent;
+    private INEDElement insertBefore;
 
-    
-    public CreateToplevelComponentCommand(NEDElement parent, NEDElement where, NEDElement child) {
+
+    public CreateToplevelComponentCommand(INEDElement parent, INEDElement where, INEDElement child) {
     	this.child = child;
     	this.parent = parent;
     	this.insertBefore = where;
     }
-    
+
     @Override
     public boolean canExecute() {
-        return child != null && parent != null && 
+        return child != null && parent != null &&
         		parent instanceof NedFileNodeEx &&
         		child instanceof ITopLevelElement;
     }
@@ -42,7 +42,7 @@ public class CreateToplevelComponentCommand extends Command {
 
     @Override
     public void redo() {
-        
+
         if ((child instanceof IHasName) && (child instanceof ITopLevelElement)) {
             IHasName namedChild = (IHasName)child;
             // if no name is present set to default

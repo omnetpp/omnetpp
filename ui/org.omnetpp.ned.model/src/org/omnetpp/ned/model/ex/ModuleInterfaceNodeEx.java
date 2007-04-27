@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasAncestors;
 import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IHasName;
@@ -17,9 +17,9 @@ import org.omnetpp.ned.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned.model.pojo.ExtendsNode;
 import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
 
-public final class ModuleInterfaceNodeEx extends ModuleInterfaceNode 
-		implements IHasDisplayString, IHasParent, 
-                   IHasAncestors, IHasName, ITopLevelElement, 
+public final class ModuleInterfaceNodeEx extends ModuleInterfaceNode
+		implements IHasDisplayString, IHasParent,
+                   IHasAncestors, IHasName, ITopLevelElement,
                    IHasParameters, IHasGates {
 
 	protected DisplayString displayString = null;
@@ -28,7 +28,7 @@ public final class ModuleInterfaceNodeEx extends ModuleInterfaceNode
 		super();
 	}
 
-    protected ModuleInterfaceNodeEx(NEDElement parent) {
+    protected ModuleInterfaceNodeEx(INEDElement parent) {
 		super(parent);
 	}
 
@@ -43,7 +43,7 @@ public final class ModuleInterfaceNodeEx extends ModuleInterfaceNode
         return NEDElementUtilEx.getEffectiveDisplayString(this);
     }
 
-    // EXTENDS SUPPORT 
+    // EXTENDS SUPPORT
     public String getFirstExtends() {
         return NEDElementUtilEx.getFirstExtends(this);
     }
@@ -53,15 +53,15 @@ public final class ModuleInterfaceNodeEx extends ModuleInterfaceNode
     }
 
     public INEDTypeInfo getFirstExtendsNEDTypeInfo() {
-        String extendsName = getFirstExtends(); 
-        INEDTypeInfo typeInfo = getContainerNEDTypeInfo(); 
+        String extendsName = getFirstExtends();
+        INEDTypeInfo typeInfo = getContainerNEDTypeInfo();
         if ( extendsName == null || "".equals(extendsName) || typeInfo == null)
             return null;
 
         return typeInfo.getResolver().getComponent(extendsName);
     }
 
-    public NEDElement getFirstExtendsRef() {
+    public INEDElement getFirstExtendsRef() {
         INEDTypeInfo it = getFirstExtendsNEDTypeInfo();
         return it == null ? null : it.getNEDElement();
     }
@@ -72,28 +72,28 @@ public final class ModuleInterfaceNodeEx extends ModuleInterfaceNode
         if (extendsNode == null)
             return result;
 
-        for(NEDElement currChild : extendsNode)
+        for(INEDElement currChild : extendsNode)
             if (currChild instanceof ExtendsNode)
                 result.add(extendsNode);
-        
+
         return result;
     }
 
     // parameter query support
-    public Map<String, NEDElement> getParamValues() {
+    public Map<String, INEDElement> getParamValues() {
         return getContainerNEDTypeInfo().getParamValues();
     }
 
-    public Map<String, NEDElement> getParams() {
+    public Map<String, INEDElement> getParams() {
         return getContainerNEDTypeInfo().getParams();
     }
 
     // gate support
-    public Map<String, NEDElement> getGateSizes() {
+    public Map<String, INEDElement> getGateSizes() {
         return getContainerNEDTypeInfo().getGateSizes();
     }
 
-    public Map<String, NEDElement> getGates() {
+    public Map<String, INEDElement> getGates() {
         return getContainerNEDTypeInfo().getGates();
     }
 

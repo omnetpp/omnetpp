@@ -67,7 +67,7 @@ import org.omnetpp.ned.editor.graph.misc.NedSelectionSynchronizer;
 import org.omnetpp.ned.editor.graph.misc.PaletteManager;
 import org.omnetpp.ned.editor.graph.properties.NedEditPartPropertySourceProvider;
 import org.omnetpp.ned.editor.graph.properties.view.BasePreferrerPropertySheetSorter;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
 
 
@@ -141,7 +141,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
             setSorter(new BasePreferrerPropertySheetSorter());
             // integrates the GEF undo/redo stack
             setRootEntry(new UndoablePropertySheetEntry(getCommandStack()));
-            
+
             // install global actions
             IActionBars bars = pageSite.getActionBars();
             String id = ActionFactory.UNDO.getId();
@@ -165,7 +165,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
                 IStatusLineManager statusLineManager) {
 
             super.makeContributions(menuManager, toolBarManager, statusLineManager);
-            
+
             // TODO should be added to the global menu instead of the local toolbar
             toolBarManager.add(getActionRegistry().getAction(ActionFactory.UNDO.getId()));
             toolBarManager.add(getActionRegistry().getAction(ActionFactory.REDO.getId()));
@@ -193,14 +193,14 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         NEDResourcesPlugin.getNEDResources().getNEDComponentChangeListenerList().remove(paletteManager);
         super.dispose();
     }
-    
+
     @Override
     protected SelectionSynchronizer getSelectionSynchronizer() {
         if (synchronizer == null)
             synchronizer = new NedSelectionSynchronizer();
         return synchronizer;
     }
-    
+
     protected PaletteRoot getPaletteRoot() {
         if (paletteManager == null) {
             paletteManager = new PaletteManager(this);
@@ -222,7 +222,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
     protected void configureGraphicalViewer() {
         super.configureGraphicalViewer();
         ScrollingGraphicalViewer viewer = (ScrollingGraphicalViewer) getGraphicalViewer();
-        
+
         ScalableRootEditPart root = new ScalableRootEditPart();
 
         List<String> zoomLevels = new ArrayList<String>(3);
@@ -279,7 +279,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
                 propertySheetPage = new NedPropertySheetPage();
             return propertySheetPage;
         }
-        
+
         if (type == IContentOutlinePage.class) {
             if (outlinePage == null)
                 outlinePage = new NedOutlinePage(new TreeViewer());
@@ -298,7 +298,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
     protected KeyHandler getCommonKeyHandler() {
         if (sharedKeyHandler == null) {
             sharedKeyHandler = new KeyHandler();
-            sharedKeyHandler.put(KeyStroke.getPressed(SWT.F2, 0), 
+            sharedKeyHandler.put(KeyStroke.getPressed(SWT.F2, 0),
                                  getActionRegistry().getAction(GEFActionConstants.DIRECT_EDIT));
         }
         return sharedKeyHandler;
@@ -429,24 +429,24 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
     }
 
     /**
-     * Reveals a model element in the editor (or its nearest ancestor which 
+     * Reveals a model element in the editor (or its nearest ancestor which
      * has an associated editPart)
      * @param model
      */
-    public void reveal(NEDElement model) {
+    public void reveal(INEDElement model) {
         EditPart editPart = null;
-         while( (model != null) && 
+         while( (model != null) &&
                 (editPart = (EditPart)getGraphicalViewer().getEditPartRegistry().get(model)) == null)
              model = model.getParent();
-        
+
          if (editPart == null) {
              getGraphicalViewer().deselectAll();
-         } else { 
+         } else {
              getGraphicalViewer().reveal(editPart);
              getGraphicalViewer().select(editPart);
          }
     }
-    
+
     /**
      * Marks the current editor content state, so we will be able to detect any change in the editor
      * used for editor change optimization
@@ -461,7 +461,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
      */
     public boolean hasContentChanged() {
         return !(lastUndoCommand == getCommandStack().getUndoCommand() && lastRedoCommand == getCommandStack().getRedoCommand());
-        
+
     }
-    
+
 }

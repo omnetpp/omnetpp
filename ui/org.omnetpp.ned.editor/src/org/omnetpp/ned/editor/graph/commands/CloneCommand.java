@@ -6,24 +6,24 @@ import java.util.Set;
 
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.ITopLevelElement;
 
 /**
- * Clones a set of {@link NEDElement} (copy operation)
+ * Clones a set of {@link INEDElement} (copy operation)
  * @author rhornig
  */
 public class CloneCommand extends Command {
 
-    private List<NEDElement> newNodes;
+    private List<INEDElement> newNodes;
     // nodes that should be cloned by the command
-    private List<NEDElement> nodes;
+    private List<INEDElement> nodes;
     // parent node where cloned nodes should go
-    private NEDElement parent;
+    private INEDElement parent;
     // sibling node before the cloned nodes should be inserted (null means insertion at the end)
-    private NEDElement insertBefore;
+    private INEDElement insertBefore;
 
     /**
      * Creates a generic cloning command that is able to clon any number of nodes and add them
@@ -32,30 +32,30 @@ public class CloneCommand extends Command {
      * @param insertBefore A sibling in the parent before we should insert the cloned nodes
      *        <code>null</code> should be used to insert at the end of the childlist
      */
-    public CloneCommand(NEDElement parent, NEDElement insertBefore) {
+    public CloneCommand(INEDElement parent, INEDElement insertBefore) {
         super("Clone");
         this.parent = parent;
         this.insertBefore = insertBefore;
-        nodes = new LinkedList<NEDElement>();
+        nodes = new LinkedList<INEDElement>();
     }
-    
+
     /**
-     * Add a new {@link NEDElement} to the cloning list.
+     * Add a new {@link INEDElement} to the cloning list.
      * @param nodeToBeCloned
      */
-    public void addPart(NEDElement nodeToBeCloned) {
+    public void addPart(INEDElement nodeToBeCloned) {
         nodes.add(nodeToBeCloned);
     }
-    
+
     @Override
     public boolean canExecute() {
     	return parent != null && nodes.size() > 0;
     }
 
     // clone just a single node and insert it into the correct posistion
-    protected NEDElement clonePart(NEDElement oldNode ) {
+    protected INEDElement clonePart(INEDElement oldNode ) {
         // duplicate the subtree but do not add to the new parent yet
-    	NEDElement newNode = oldNode.deepDup(null);
+    	INEDElement newNode = oldNode.deepDup(null);
         // set a unique name is this is a named toplevel element
         if ((newNode instanceof IHasName) && (newNode instanceof ITopLevelElement)) {
             Set<String> context = NEDResourcesPlugin.getNEDResources().getReservedNames();
@@ -67,7 +67,7 @@ public class CloneCommand extends Command {
 
         // keep track of the new modules so we can delete them in undo
         newNodes.add(newNode);
-        
+
         return newNode;
     }
 
@@ -78,14 +78,14 @@ public class CloneCommand extends Command {
 
     @Override
     public void redo() {
-        newNodes = new LinkedList<NEDElement>();
-        for (NEDElement toBeCloned : nodes)
+        newNodes = new LinkedList<INEDElement>();
+        for (INEDElement toBeCloned : nodes)
         	clonePart(toBeCloned);
     }
 
     @Override
     public void undo() {
-        for (NEDElement mod : newNodes)
+        for (INEDElement mod : newNodes)
             mod.removeFromParent();
     }
 

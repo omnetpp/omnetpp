@@ -1,6 +1,6 @@
 package org.omnetpp.ned.model.interfaces;
 
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 
 /**
  * Can provide a NED Model. Allows that we access the model from any selection
@@ -9,5 +9,5 @@ import org.omnetpp.ned.model.NEDElement;
  * @author rhornig
  */
 public interface IModelProvider {
-    public NEDElement getNEDModel();
+    public INEDElement getNEDModel();
 }

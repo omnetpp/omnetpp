@@ -6,7 +6,7 @@ import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.TopLevelFigure;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasAncestors;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
@@ -22,8 +22,8 @@ import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
 public class TopLevelEditPart extends BaseEditPart {
 
     /**
-     * Returns the model associated with this as a NEDElement.
-     * 
+     * Returns the model associated with this as a INEDElement.
+     *
      * @return The model of this as a NedElement.
      */
     @Override
@@ -38,7 +38,7 @@ public class TopLevelEditPart extends BaseEditPart {
     	if (getModel() instanceof IHasName) {
     		// set module name and vector size
     		String nameToDisplay = ((IHasName)getModel()).getName();
-            
+
             if (getModel() instanceof ChannelInterfaceNode)
                 nameToDisplay = "Channel interface: " + nameToDisplay;
             else if (getModel() instanceof ChannelNode)
@@ -53,7 +53,7 @@ public class TopLevelEditPart extends BaseEditPart {
     	// for other visual properties
     	if (getModel() instanceof IHasDisplayString) {
     		DisplayString dps = ((IHasDisplayString)getModel()).getEffectiveDisplayString();
-            
+
     		((TopLevelFigure)getFigure()).setDisplayString(dps);
 
             // set icon names for the channel and module/channel interface figures
@@ -65,23 +65,23 @@ public class TopLevelEditPart extends BaseEditPart {
                 image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CHANNEL);
             else if (getModel() instanceof ModuleInterfaceNode)
                 image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_INTERFACE);
-            
+
             if (image != null)
                 ((TopLevelFigure)getFigure()).setIcon(image);
-            
+
     	}
-        
+
 	}
-    
+
     /* (non-Javadoc)
      * @see org.omnetpp.ned.editor.graph.edit.BaseEditPart#getTypeNameForDblClickOpen()
      * open the first base component for double click
      */
     @Override
-    protected NEDElement getNEDElementToOpen() {
+    protected INEDElement getNEDElementToOpen() {
         if (getModel() instanceof IHasAncestors)
             return ((IHasAncestors)getNEDModel()).getFirstExtendsRef();
-        
+
         return null;
     }
 }

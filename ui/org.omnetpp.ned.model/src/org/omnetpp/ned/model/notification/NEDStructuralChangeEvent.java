@@ -1,7 +1,7 @@
 package org.omnetpp.ned.model.notification;
 
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 
 /**
  * @author rhornig
@@ -11,21 +11,21 @@ import org.omnetpp.ned.model.NEDElement;
 public class NEDStructuralChangeEvent extends NEDModelEvent {
     public enum Type {INSERTION, REMOVAL} ;
     protected Type type;
-    protected NEDElement child;
-    protected NEDElement oldLocation;
-    protected NEDElement newLocation;
+    protected INEDElement child;
+    protected INEDElement oldLocation;
+    protected INEDElement newLocation;
 
     /**
      * @param source The model element causing the event
      * @param child The new child node currently inserted/removed
      * @param type The type of the event
-     * @param newLocation The (child) node BEFORE the newly inseted/moved node 
+     * @param newLocation The (child) node BEFORE the newly inseted/moved node
      *        (NULL means appended at the end)
-     * @param oldLocation The (child) node BEFORE the old removed/moved node 
+     * @param oldLocation The (child) node BEFORE the old removed/moved node
      *        (NULL means removed at the end)
      */
-    public NEDStructuralChangeEvent(NEDElement source, NEDElement child, Type type, 
-                            NEDElement newLocation,NEDElement oldLocation) {
+    public NEDStructuralChangeEvent(INEDElement source, INEDElement child, Type type,
+                            INEDElement newLocation,INEDElement oldLocation) {
         super(source);
         Assert.isNotNull(child);
         Assert.isNotNull(type);
@@ -38,7 +38,7 @@ public class NEDStructuralChangeEvent extends NEDModelEvent {
     /**
      * @return The new child node that was inserted
      */
-    public NEDElement getChild() {
+    public INEDElement getChild() {
         return child;
     }
 
@@ -46,7 +46,7 @@ public class NEDStructuralChangeEvent extends NEDModelEvent {
      * @return The location of the change (The new child was removed before this node)
      *         (or was removed at the end if it's NULL)
      */
-    public NEDElement getOldLocation() {
+    public INEDElement getOldLocation() {
         return oldLocation;
     }
 
@@ -54,17 +54,17 @@ public class NEDStructuralChangeEvent extends NEDModelEvent {
      * @return The location of the change (The new child was added before this node)
      *         (or was appended at the end if it's NULL)
      */
-    public NEDElement getNewLocation() {
+    public INEDElement getNewLocation() {
         return newLocation;
     }
 
     /**
-     * @return The type of this change. 
+     * @return The type of this change.
      */
     public Type getType() {
         return type;
     }
-    
+
     @Override
     public String toString() {
         String nameString = child.getAttribute("name");

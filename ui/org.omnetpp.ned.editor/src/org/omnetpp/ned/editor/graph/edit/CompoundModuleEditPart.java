@@ -25,7 +25,7 @@ import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.CompoundModuleGateAnchor;
 import org.omnetpp.figures.misc.GateAnchor;
 import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 
 public class CompoundModuleEditPart extends ModuleEditPart {
@@ -38,7 +38,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     @Override
     protected void createEditPolicies() {
         super.createEditPolicies();
-        installEditPolicy(EditPolicy.LAYOUT_ROLE, 
+        installEditPolicy(EditPolicy.LAYOUT_ROLE,
                           new CompoundModuleLayoutEditPolicy((XYLayout) getContentPane().getLayoutManager()));
         installEditPolicy("Snap Feedback", new SnapFeedbackPolicy()); //$NON-NLS-1$
     }
@@ -95,7 +95,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
                 ss[i] = (SnapToHelper) snapStrategies.get(i);
             return new CompoundSnapToHelper(ss);
         }
-        
+
         return super.getAdapter(key);
     }
 
@@ -104,10 +104,10 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         // return all submodule including inherited ones
     	return getCompoundModuleModel().getSubmodules();
     }
-    
+
     /**
      * Returns a list of connections for which this is the srcModule.
-     * 
+     *
      * @return List of connections.
      */
     @Override
@@ -117,7 +117,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 
     /**
      * Returns a list of connections for which this is the destModule.
-     * 
+     *
      * @return List of connections.
      */
     @Override
@@ -145,10 +145,10 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 	public boolean isOnBorder(int x, int y) {
 		return getCompoundModuleFigure().isOnBorder(x, y);
 	}
-	
+
 	/**
-	 * Compute the source connection anchor to be assigned based on the current mouse 
-	 * location and available gates. 
+	 * Compute the source connection anchor to be assigned based on the current mouse
+	 * location and available gates.
 	 * @param p current mouse coordinates
 	 * @return The selected connection anchor
 	 */
@@ -166,7 +166,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 //		return new CompoundModuleGateAnchor(getFigure());
         return gateAnchor;
 	}
-    
+
     /**
      * @return The current scaling factor of the compound module
      */
@@ -180,7 +180,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     }
 
     /**
-     * @return The MAP that contains the connection model - controller associations 
+     * @return The MAP that contains the connection model - controller associations
      */
     public Map<Object, ConnectionEditPart> getModelToConnectionPartsRegistry() {
         return modelToConnectionPartsRegistry;
@@ -191,7 +191,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      * open the first base component for double click
      */
     @Override
-    protected NEDElement getNEDElementToOpen() {
+    protected INEDElement getNEDElementToOpen() {
         return getCompoundModuleModel().getFirstExtendsRef();
     }
 }

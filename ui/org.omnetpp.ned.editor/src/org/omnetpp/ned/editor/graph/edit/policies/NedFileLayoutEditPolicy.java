@@ -21,7 +21,7 @@ import org.omnetpp.ned.editor.graph.commands.CreateToplevelComponentCommand;
 import org.omnetpp.ned.editor.graph.commands.ReorderCommand;
 import org.omnetpp.ned.editor.graph.commands.SetCompoundModuleConstraintCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 
 /**
@@ -44,15 +44,15 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
             policy.setResizeDirections(PositionConstants.SOUTH_EAST);
         else  // and no resize for other types
             policy.setResizeDirections(PositionConstants.NONE);
-            
+
         if (!PolicyUtil.isEditable(child)) {
             policy.setResizeDirections(PositionConstants.NONE);
             policy.setDragAllowed(false);
         }
-        
+
 		return policy;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.gef.editpolicies.FlowLayoutEditPolicy#isHorizontal()
 	 * WARNING we override this function so it is possible to use the ToolbarLayout
@@ -63,24 +63,24 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 	protected boolean isHorizontal() {
 		return false;
 	}
-	
+
 	// TODO implement generic clone command
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Command getCloneCommand(ChangeBoundsRequest request) {
-		
+
 		EditPart iPoint = getInsertionReference(request);
-		NEDElement insertBeforeNode = (iPoint != null) ? (NEDElement)iPoint.getModel() : null;
-		NEDElement parent = (NEDElement)getHost().getModel();
+		INEDElement insertBeforeNode = (iPoint != null) ? (INEDElement)iPoint.getModel() : null;
+		INEDElement parent = (INEDElement)getHost().getModel();
 		CloneCommand cloneCmd = new CloneCommand(parent, insertBeforeNode);
 
 		// iterate through all involved editparts and add their model to the coning list
 		for (GraphicalEditPart currPart : (List<GraphicalEditPart>)request.getEditParts())
-			cloneCmd.addPart((NEDElement)currPart.getModel());
-		
+			cloneCmd.addPart((INEDElement)currPart.getModel());
+
 		return cloneCmd;
 	}
-		
+
 	// adding an already existing node is not supported
 	protected Command createAddCommand(EditPart child, EditPart after) {
 		return null;
@@ -88,19 +88,19 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.gef.editpolicies.OrderedLayoutEditPolicy#createMoveChildCommand(org.eclipse.gef.EditPart, org.eclipse.gef.EditPart)
-	 * if wherePart is null we must insert the child at the end  
+	 * if wherePart is null we must insert the child at the end
 	 */
 	protected Command createMoveChildCommand(EditPart movedPart, EditPart wherePart) {
-		NEDElement where = (wherePart != null) ? (NEDElement)wherePart.getModel() : null;
-		NEDElement node = (NEDElement)movedPart.getModel();
+		INEDElement where = (wherePart != null) ? (INEDElement)wherePart.getModel() : null;
+		INEDElement node = (INEDElement)movedPart.getModel();
 		return new ReorderCommand(where, node);
 	}
 
 	protected Command getCreateCommand(CreateRequest request) {
-		NEDElement newElement = (NEDElement)request.getNewObject();
+		INEDElement newElement = (INEDElement)request.getNewObject();
 		EditPart insertionPoint = getInsertionReference(request);
-		NEDElement where = (insertionPoint != null) ? (NEDElement)insertionPoint.getModel() : null;
-		NEDElement parent = (NEDElement)getHost().getModel();
+		INEDElement where = (insertionPoint != null) ? (INEDElement)insertionPoint.getModel() : null;
+		INEDElement parent = (INEDElement)getHost().getModel();
 		return new CreateToplevelComponentCommand(parent, where, newElement);
 	}
 	/**
@@ -119,7 +119,7 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 		}
 		return resize.unwrap();
 	}
-	
+
     protected Command createChangeConstraintCommand(ChangeBoundsRequest request,
     						EditPart child, Object constraint) {
         // HACK for fixing issue when the model returns unspecified size (-1,-1)
@@ -131,19 +131,19 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
         if (modelConstraint.width < 0) modelConstraint.x += figureBounds.width / 2;
         if (modelConstraint.height < 0) modelConstraint.y += figureBounds.height / 2;
 
-        // create the constraint change command 
+        // create the constraint change command
         if (child.getModel() instanceof CompoundModuleNodeEx) {
             CompoundModuleNodeEx module = (CompoundModuleNodeEx) child.getModel();
             SetCompoundModuleConstraintCommand cmd = new SetCompoundModuleConstraintCommand(module);
             cmd.setSize(modelConstraint.getSize());
-            
+
             // if size constrant is not specified, then remove it from the model too
             // TODO is this needed?
             if ((modelConstraint.width < 0 || modelConstraint.height < 0) && module.getDisplayString().getCompoundSize(null) == null)
                 cmd.setSize(null);
             return cmd;
-        } 
-        
+        }
+
         return UnexecutableCommand.INSTANCE;
     }
 

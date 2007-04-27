@@ -1,7 +1,7 @@
 package org.omnetpp.ned.model;
 
 /**
- * Constants for NEDElement and subclasses
+ * Constants for INEDElement and subclasses
  */
 public interface NEDElementUtil
 {

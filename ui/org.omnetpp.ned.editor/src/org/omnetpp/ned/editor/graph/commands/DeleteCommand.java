@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.gef.commands.Command;
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned.model.interfaces.IHasConnections;
@@ -12,8 +12,8 @@ import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.pojo.ConnectionsNode;
 
 /**
- * Deletes an object from the model and as a sepcial case also removes all 
- * associated connections if the object was a SubmoduleNode 
+ * Deletes an object from the model and as a sepcial case also removes all
+ * associated connections if the object was a SubmoduleNode
  * @author rhornig
  */
 public class DeleteCommand extends Command {
@@ -26,23 +26,23 @@ public class DeleteCommand extends Command {
         public IHasConnections srcModule;             // the src module the connection was originally attached to
         public IHasConnections destModule;            // the dest module the connection was originally attached to
     }
-    
+
     private static class ElementUndoItem {
-        public NEDElement node;
-        public NEDElement parent;
-        public NEDElement nextSibling;
+        public INEDElement node;
+        public INEDElement parent;
+        public INEDElement nextSibling;
     }
 
-    private ElementUndoItem elementUndoItem = new ElementUndoItem(); 
+    private ElementUndoItem elementUndoItem = new ElementUndoItem();
     private List<ConnectionUndoItem> connectionUndoItems = new ArrayList<ConnectionUndoItem>();
 
-    public DeleteCommand(NEDElement toBeDeleted) {
+    public DeleteCommand(INEDElement toBeDeleted) {
     	super();
     	elementUndoItem.node = toBeDeleted;
     	elementUndoItem.parent = toBeDeleted.getParent();
     	elementUndoItem.nextSibling = toBeDeleted.getNextSibling();
     }
-    
+
     @Override
     public void execute() {
         // FIXME label is not used by this comand. Maybe a BUG???
@@ -50,7 +50,7 @@ public class DeleteCommand extends Command {
     	if (elementUndoItem.node instanceof IHasName)
     		label += " "+((IHasName)elementUndoItem.node).getName();
         setLabel(label);
-     
+
         primExecute();
     }
 
@@ -81,7 +81,7 @@ public class DeleteCommand extends Command {
             wire.setDestModuleRef(null);    // detach the destination end of the connections
            	wire.removeFromParent();
         }
-        
+
         for (ConnectionNodeEx wire : module.getDestConnections()) {
             // store all data required to undo the operation
             ConnectionUndoItem uitem = new ConnectionUndoItem();
@@ -102,12 +102,12 @@ public class DeleteCommand extends Command {
     	// check if the element is a submodule, because its connections should be deleted too
     	if (elementUndoItem.node instanceof SubmoduleNodeEx)
     		deleteConnections((SubmoduleNodeEx)elementUndoItem.node);
-    	
+
         elementUndoItem.node.removeFromParent();
     }
 
     private void restoreConnections() {
-        // we have to iterate backwards, so all element will be put 
+        // we have to iterate backwards, so all element will be put
         // back into its correct place
         for (int i = connectionUndoItems.size()-1; i>=0; --i) {
             ConnectionUndoItem ui = connectionUndoItems.get(i);

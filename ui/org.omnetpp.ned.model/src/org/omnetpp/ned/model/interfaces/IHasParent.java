@@ -1,6 +1,6 @@
 package org.omnetpp.ned.model.interfaces;
 
-import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.INEDElement;
 
 /**
  * @author rhornig
@@ -16,5 +16,5 @@ public interface IHasParent {
 	/**
 	 * @return The parent of the given model element (if inserted into the model)
 	 */
-	public NEDElement getParent();
+	public INEDElement getParent();
 }
