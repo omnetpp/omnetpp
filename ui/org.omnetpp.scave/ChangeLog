@@ -1,3 +1,15 @@
+2007-04-27
+----------
+
+Additions:
+
+   + Enum attributes are read from the vector files and enum values are 
+     displayed as strings in the "VectorBrowser" view.
+
+   + Groups can be specified for bar charts.
+
+   + Exporting filtered data in matlab and csv format is available from scavetool.
+
 2007-04-13
 ----------
 
