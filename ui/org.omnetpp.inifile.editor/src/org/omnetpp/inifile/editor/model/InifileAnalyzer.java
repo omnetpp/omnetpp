@@ -673,6 +673,7 @@ public class InifileAnalyzer {
 		}
 	}
 
+	//XXX to InifileUtils?
 	public static String getParamValue(ParamResolution res, IInifileDocument doc) {
 		switch (res.type) {
 			case UNASSIGNED:
@@ -688,7 +689,12 @@ public class InifileAnalyzer {
 	public static String getParamRemark(ParamResolution res, IInifileDocument doc) {
 		String remark;
 		switch (res.type) {
-			case UNASSIGNED: remark = "unassigned"; break;
+			case UNASSIGNED: remark = "unassigned"; 
+				if (res.paramValueNode != null) 
+					remark += " (NED default: "+res.paramValueNode.getValue()+")"; 
+				else
+					remark += " (no NED default)";
+				break;
 			case NED: remark = "NED"; break;
 			case NED_DEFAULT: remark = "NED default applied"; break;
 			case INI: remark = "ini"; break;

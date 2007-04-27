@@ -45,11 +45,12 @@ public abstract class ViewWithMessagePart extends ViewPart {
 	abstract protected Control createViewControl(Composite parent);
 
 	/**
-	 * Sets the focus. Override if the focus should be set to a child of viewControl.
+	 * By default, Sets the focus to the message label. Override in subclasses
+	 * to set the focus to the appropriate table or tree control.
 	 */
 	@Override
 	public void setFocus() {
-		viewControl.setFocus();
+		messageLabel.setFocus(); //XXX this does nothing: label cannot have the focus. Use readonly Text instead of Label? (as in InputDialog)
 	}
 
 	/**
@@ -63,6 +64,14 @@ public abstract class ViewWithMessagePart extends ViewPart {
 		}
 	}
 
+	/**
+	 * Returns when the message is showing instead of the view contents.
+	 * @see showMessage() 
+	 */
+	public boolean isShowingMessage() {
+		return isVisible(messageLabel);
+	}
+	
 	protected boolean isDisposed() {
 		return messageLabel.isDisposed() || viewControl.isDisposed();
 	}

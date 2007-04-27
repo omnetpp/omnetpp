@@ -9,9 +9,15 @@ import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -31,21 +37,21 @@ import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TooltipSupport;
 import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
+import org.omnetpp.inifile.editor.actions.ActionExt;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
+import org.omnetpp.inifile.editor.model.SectionKey;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
 
 
 /**
- * Displays module parameters recursively for module type.
+ * Displays module parameters recursively for a module type.
  * @author Andras
  */
-//XXX context menu with "Go to NED file" and "Go to ini file"
-//XXX add tooltip support
 public class ModuleParametersView extends AbstractModuleView {
 	private Label label;
 	private TableViewer tableViewer;
@@ -55,37 +61,7 @@ public class ModuleParametersView extends AbstractModuleView {
 	private TableColumn remarkColumn;
 	private IInifileDocument inifileDocument; // corresponds to the current selection; unfortunately needed by the label provider
 	private InifileAnalyzer inifileAnalyzer; // corresponds to the current selection; unfortunately needed by the label provider
-
-	/**
-	 * Node contents for the GenericTreeNode tree that is displayed in the view
-	 */
-	//XXX needed?
-	private static class ErrorNode {
-		String text;
-		ErrorNode(String text) {
-			this.text = text;
-		}
-		@Override
-		public String toString() {
-			return text;
-		}
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			final ErrorNode other = (ErrorNode) obj;
-			if (text == null) {
-				if (other.text != null)
-					return false;
-			} else if (!text.equals(other.text))
-				return false;
-			return true;
-		}
-	}
+	private MenuManager contextMenuManager = new MenuManager("#PopupMenu");
 
 	public ModuleParametersView() {
 	}
@@ -99,12 +75,24 @@ public class ModuleParametersView extends AbstractModuleView {
 		g.verticalSpacing = 1;
 		container.setLayout(g);
 
+		// add label to show the active section 
 		label = new Label(container, SWT.NONE);
 		label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
 		Label sep = new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL);
 		sep.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
+		// add table viewer and set it as selection provider
+		createTableViewer(container);
+ 		getViewSite().setSelectionProvider(tableViewer);
+
+		// add actions
+ 		createActions();
+		
+		return container;
+	}
+
+	private void createTableViewer(Composite container) {
 		// create table with columns
 		Table table = new Table(container, SWT.SINGLE | SWT.FULL_SELECTION | SWT.VIRTUAL);
 		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -138,33 +126,12 @@ public class ModuleParametersView extends AbstractModuleView {
 					return null;
 				if (element instanceof ParamResolution)
 					return suggestImage(((ParamResolution) element).type);
-				else if (element instanceof ErrorNode)
-					return ICON_ERROR;
 				else
 					return null;
 			}
 
 		});
 		tableViewer.setContentProvider(new ArrayContentProvider());
-
-		// add double-click support to the table
-		tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				Object element = ((IStructuredSelection)tableViewer.getSelection()).getFirstElement();
-				if (element instanceof ParamResolution) {
-					ParamResolution res = (ParamResolution) element;
-					if (res.section!=null && res.key!=null && res.type!=ParamResolutionType.NED_DEFAULT) {
-						//XXX make sure "res" and inifile editor refer to the same IFile!!!
-						if (getActiveEditor() instanceof IGotoInifile)
-							((IGotoInifile)getActiveEditor()).gotoEntry(res.section, res.key, IGotoInifile.Mode.AUTO);
-					}
-					else if (res.paramValueNode!=null) { //XXX or: use paramDeclNode?
-						NEDResourcesPlugin.openNEDElementInEditor(res.paramValueNode);
-					}
-				}
-			}
-		});
 
  		// add tooltip support to the table
  		TooltipSupport.adapt(tableViewer.getTable(), new ITooltipProvider() {
@@ -187,25 +154,11 @@ public class ModuleParametersView extends AbstractModuleView {
 				return null;
 			}
  		});
+ 		
+		// create context menu
+ 		getViewSite().registerContextMenu(contextMenuManager, tableViewer);
+		tableViewer.getTable().setMenu(contextMenuManager.createContextMenu(tableViewer.getTable()));
 
-
-		IAction toggleModeAction = createToggleModeAction(); //XXX make it toggle button
-		getViewSite().getActionBars().getToolBarManager().add(toggleModeAction);
-
-		return container;
-	}
-
-	protected IAction createToggleModeAction() {
-
-		Action action = new Action("Toggle display mode", IAction.AS_CHECK_BOX) {
-			@Override
-			public void run() {
-				unassignedOnly = !unassignedOnly;
-				rebuildContent();
-			}
-		};
-		action.setImageDescriptor(InifileEditorPlugin.getImageDescriptor("icons/unsetparameters.png"));
-		return action;
 	}
 
 	private TableColumn addTableColumn(final Table table, String text, int width) {
@@ -222,6 +175,94 @@ public class ModuleParametersView extends AbstractModuleView {
 			}
 		});
 		return column;
+	}
+
+	private void createActions() {
+		Action toggleModeAction = new ActionExt("Show all", IAction.AS_CHECK_BOX, 
+				InifileEditorPlugin.getImageDescriptor("icons/unsetparameters.png")) {
+			@Override
+			public void run() {
+				unassignedOnly = !unassignedOnly;
+				rebuildContent();
+			}
+		};
+		
+		final ActionExt gotoInifileAction = new ActionExt("Goto Ini File") {
+			@Override
+			public void run() {
+				SectionKey sel = getSectionKeyFromSelection();
+				if (sel!=null && getActiveEditor() instanceof IGotoInifile)
+					((IGotoInifile)getActiveEditor()).gotoEntry(sel.section, sel.key, IGotoInifile.Mode.AUTO);
+			}
+			public void selectionChanged(SelectionChangedEvent event) {
+				SectionKey sel = getSectionKeyFromSelection();
+				setEnabled(sel!=null);
+			}
+			private SectionKey getSectionKeyFromSelection() {
+				Object element = ((IStructuredSelection)tableViewer.getSelection()).getFirstElement();
+				if (element instanceof ParamResolution) {
+					ParamResolution res = (ParamResolution) element;
+					if (res.section!=null && res.key!=null && res.type!=ParamResolutionType.NED_DEFAULT)
+						return new SectionKey(res.section, res.key);
+				}
+				return null;
+			}
+		};
+		
+		class GotoNedFileAction extends ActionExt {
+			boolean gotoDecl;
+			GotoNedFileAction(String text, ImageDescriptor image, boolean gotoDecl) {
+				super(text, image);
+				this.gotoDecl = gotoDecl;
+			}
+			@Override
+			public void run() {
+				INEDElement sel = getNEDElementFromSelection();
+				if (sel!=null)
+					NEDResourcesPlugin.openNEDElementInEditor(sel);
+			}
+			public void selectionChanged(SelectionChangedEvent event) {
+				INEDElement sel = getNEDElementFromSelection();
+				setEnabled(sel!=null);
+			}
+			private INEDElement getNEDElementFromSelection() {
+				Object element = ((IStructuredSelection)tableViewer.getSelection()).getFirstElement();
+				if (element instanceof ParamResolution) {
+					ParamResolution res = (ParamResolution) element;
+					// experimental: don't enable "Go to NED declaration" if it's the same as "Go to NED value"
+					// return gotoDecl ? (res.paramDeclNode==res.paramValueNode ? null : res.paramDeclNode) : res.paramValueNode;
+					return gotoDecl ? res.paramDeclNode : res.paramValueNode;
+				}
+				return null;
+			}
+		};
+		ActionExt gotoNedDeclarationAction = new GotoNedFileAction("Go to NED declaration", null, true); 
+		ActionExt gotoNedValueAction = new GotoNedFileAction("Go to NED value", null, false); 
+	
+		tableViewer.addSelectionChangedListener(gotoInifileAction);
+		tableViewer.addSelectionChangedListener(gotoNedValueAction);
+		tableViewer.addSelectionChangedListener(gotoNedDeclarationAction);
+	
+		// add double-click support to the table
+		tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				gotoInifileAction.run();
+			}
+		});
+	
+		// build menus and toolbar
+		contextMenuManager.add(gotoInifileAction);
+		contextMenuManager.add(gotoNedValueAction);
+		contextMenuManager.add(gotoNedDeclarationAction);
+		contextMenuManager.add(new Separator());
+		contextMenuManager.add(toggleModeAction);
+	
+		IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
+		toolBarManager.add(toggleModeAction);
+	
+		IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
+		menuManager.add(toggleModeAction);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -268,9 +309,17 @@ public class ModuleParametersView extends AbstractModuleView {
 	}
 
 	@Override
+	public void setFocus() {
+		if (isShowingMessage())
+			super.setFocus();
+		else 
+			tableViewer.getTable().setFocus();
+	}
+
+	@Override
 	public void buildContent(INEDElement module, InifileAnalyzer analyzer, String section, String key) {
 		if (analyzer==null) {
-			showMessage("Not an inifile editor."); //XXX
+			showMessage("Not an inifile editor."); //XXX well, show the params of the selected NED subtree!
 		}
 		else {
 			if (section==null)
@@ -283,4 +332,5 @@ public class ModuleParametersView extends AbstractModuleView {
 			label.setText("Section ["+section+"], " + (unassignedOnly ? "unassigned parameters" : "all parameters"));
 		}
 	}
+
 }

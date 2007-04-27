@@ -266,7 +266,7 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		IDocument doc = textEditor.getDocumentProvider().getDocument(getEditorInput());
 		if (InifileConverter.needsConversion(doc.get())) {
 			String fileName = getEditorInput().getName();
-			if (MessageDialog.openQuestion(null, "Old Ini File Format", 
+			if (MessageDialog.openQuestion(getSite().getShell(), "Old Ini File Format", 
 					"File \""+fileName+"\" is in the old (3.x) format, and needs to be converted. " +
 					"This includes renaming some sections and configuration keys. " +
 					"Do you want to convert the editor contents now?")) {
@@ -361,7 +361,7 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		try {
 			IDocument docu = textEditor.getDocumentProvider().getDocument(textEditor.getEditorInput());
 			int startOffset = docu.getLineOffset(line.getLineNumber()-1);
-			int endOffset = docu.getLineOffset(line.getLineNumber())-1;
+			int endOffset = docu.getLineOffset(line.getLineNumber())-2;
 			textEditor.setHighlightRange(endOffset, 0, true); // move cursor to end of selected line
 			textEditor.setHighlightRange(startOffset, endOffset-startOffset, false); // set range without moving cursor
 		} catch (BadLocationException e) {

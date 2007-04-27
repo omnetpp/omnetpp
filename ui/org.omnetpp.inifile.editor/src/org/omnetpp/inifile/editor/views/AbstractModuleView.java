@@ -2,6 +2,10 @@ package org.omnetpp.inifile.editor.views;
 
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_NETWORK;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Image;

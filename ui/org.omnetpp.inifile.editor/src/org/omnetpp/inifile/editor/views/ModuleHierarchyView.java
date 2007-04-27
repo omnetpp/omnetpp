@@ -205,6 +205,14 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		treeViewer.setInput(null);
 	}
 
+	@Override
+	public void setFocus() {
+		if (isShowingMessage())
+			super.setFocus();
+		else 
+			treeViewer.getTree().setFocus();
+	}
+
 	public void buildContent(INEDElement module, final InifileAnalyzer analyzer, final String section, String key) {
 		final IInifileDocument doc = analyzer==null ? null : analyzer.getDocument();
 		final String[] sectionChain = doc==null ? null : InifileUtils.resolveSectionChain(doc, section);
