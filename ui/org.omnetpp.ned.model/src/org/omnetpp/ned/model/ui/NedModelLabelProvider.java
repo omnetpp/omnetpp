@@ -66,9 +66,8 @@ public class NedModelLabelProvider extends LabelProvider {
         else if (model instanceof SubmoduleNodeEx) {
             SubmoduleNodeEx node = (SubmoduleNodeEx)model;
             label = node.getName()+bracketizeIfNotEmpty(node.getVectorSize())+" : ";
-            String type = node.getLikeType();
-            // if it's not specified use the likeType instead
-            if (type == null || "".equals(type))
+            String likeType = node.getLikeType();
+            if (likeType == null || "".equals(likeType))
                  label += node.getType();
             else 
                 label += "like "+node.getLikeType();

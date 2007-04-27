@@ -22,7 +22,10 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
+import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned.model.ex.ParamNodeEx;
+import org.omnetpp.ned.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
@@ -96,20 +99,23 @@ public class InifileUtils {
 	 * Resolves the run-time type of a "like" submodule, using the parameter 
 	 * settings in the inifile. Returns null if the lookup is unsuccessful.
 	 */
-	public static String resolveLikeParam(String moduleFullPath, SubmoduleNode submodule, String[] sectionChain, IInifileDocument doc) {
+	public static String resolveLikeParam(String moduleFullPath, SubmoduleNode submodule, String activeSection, InifileAnalyzer analyzer, IInifileDocument doc) {
+		// get like parameter name
 		String likeParamName = submodule.getLikeParam();
 		if (!likeParamName.matches("[A-Za-z0-9_]+"))
-			return null;  // sorry, we are only prepared to resolve parent module parameters
-		String paramFullPath = moduleFullPath + "." + likeParamName;
-		boolean hasNedDefault = false; //XXX rather, look it up in ParamNode!
-		SectionKey sectionKey = InifileUtils.lookupParameter(paramFullPath, hasNedDefault, sectionChain, doc);
-		if (sectionKey == null)
-			return null; // bad luck: unassigned?
-		String value = doc.getValue(sectionKey.section, sectionKey.key);
+			return null;  // sorry, we are only prepared to resolve parent module parameters (but not expressions)
+		
+		// look up parameter value
+		ParamResolution res = analyzer.getResolutionForModuleParam(moduleFullPath, likeParamName, activeSection);
+		if (res == null)
+			return null; // likely no such parameter
+		String value = InifileAnalyzer.getParamValue(res, doc);
+		if (value == null)
+			return null; // likely unassigned
 		try {
 			value = Common.parseQuotedString(value);
 		} catch (RuntimeException e) {
-			return null; // something is wrong: not a string constant?
+			return null; // something is wrong: value is not a string constant?
 		}
 		return value;
 	}

@@ -19,6 +19,7 @@ import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.model.ex.SimpleModuleNodeEx;
+import org.omnetpp.ned.model.interfaces.IHasName;
 
 public class SimpleModulePropertySource extends MergedPropertySource {
 

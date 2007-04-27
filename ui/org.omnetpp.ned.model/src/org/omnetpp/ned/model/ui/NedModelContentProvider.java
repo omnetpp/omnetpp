@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.omnetpp.ned.model.ui;
 
 import java.util.ArrayList;
@@ -30,8 +27,8 @@ import org.omnetpp.ned.model.pojo.SubmodulesNode;
 import org.omnetpp.ned.model.pojo.TypesNode;
 
 /**
- * @author rhornig
  * A content provider that gives a basic overview structure for a ned model tree
+ * @author rhornig
  */
 public class NedModelContentProvider implements ITreeContentProvider {
 
@@ -50,7 +47,7 @@ public class NedModelContentProvider implements ITreeContentProvider {
 	}
 
 	public Object[] getChildren(Object parent) {
-        List result = new ArrayList();
+        List<NEDElement> result = new ArrayList<NEDElement>();
         NEDElement currElem = ((NEDElement)parent);
         
         // if this is a channel spec we will give back the parameters subnode's children

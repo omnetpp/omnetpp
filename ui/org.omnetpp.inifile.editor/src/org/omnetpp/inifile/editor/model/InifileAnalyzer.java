@@ -423,7 +423,7 @@ public class InifileAnalyzer {
 		}
 	}
 
-	protected List<ParamResolution> collectParameters(String activeSection, INEDTypeResolver ned) {
+	protected List<ParamResolution> collectParameters(final String activeSection, INEDTypeResolver ned) {
 		final String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
 		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getKey(), doc);
 		if (networkName == null)
@@ -438,6 +438,7 @@ public class InifileAnalyzer {
 		NEDTreeIterator treeIterator = new NEDTreeIterator(res, new IModuleTreeVisitor() {
 			Stack<SubmoduleNode> pathModules = new Stack<SubmoduleNode>(); 
 			Stack<String> fullPathStack = new Stack<String>();
+
 			public void enter(SubmoduleNode submodule, INEDTypeInfo submoduleType) {
 				pathModules.push(submodule);
 				fullPathStack.push(submodule==null ? submoduleType.getName() : InifileUtils.getSubmoduleFullName(submodule));
@@ -449,11 +450,37 @@ public class InifileAnalyzer {
 				fullPathStack.pop();
 				pathModules.pop();
 			}
+
 			public void unresolvedType(SubmoduleNode submodule, String submoduleTypeName) {}
+			
 			public void recursiveType(SubmoduleNode submodule, INEDTypeInfo submoduleType) {}
+
 			public String resolveLikeType(SubmoduleNode submodule) {
+				// Note: we cannot use InifileUtils.resolveLikeParam(), as that calls
+				// resolveLikeParam() relies on the data structure we are currently building
+
+				// get like parameter name
+				String likeParamName = submodule.getLikeParam();
+				if (!likeParamName.matches("[A-Za-z0-9_]+"))
+					return null;  // sorry, we are only prepared to resolve parent module parameters (but not expressions)
+				
+				// look up parameter value (note: we cannot use resolveLikeParam() here yet)
 				String moduleFullPath = StringUtils.join(fullPathStack.toArray(), ".");
-				return InifileUtils.resolveLikeParam(moduleFullPath, submodule, sectionChain, doc);
+				ParamResolution res = null;
+				for (ParamResolution r : list) 
+					if (r.paramDeclNode.getName().equals(likeParamName) && r.moduleFullPath.equals(moduleFullPath))
+						{res = r; break;}
+				if (res == null)
+					return null; // likely no such parameter
+				String value = getParamValue(res, doc);
+				if (value == null)
+					return null; // likely unassigned
+				try {
+					value = Common.parseQuotedString(value);
+				} catch (RuntimeException e) {
+					return null; // something is wrong: value is not a string constant?
+				}
+				return value;
 			}
 		});
 
@@ -604,6 +631,26 @@ public class InifileAnalyzer {
 	}
 
 	/**
+	 * Returns the resolution of the given module parameter from the given section,
+	 * or null if not found.  
+	 */
+	public ParamResolution getResolutionForModuleParam(String moduleFullPath, String paramName, String section) {
+		synchronized (doc) {
+			analyzeIfChanged();
+			SectionData data = (SectionData) doc.getSectionData(section);
+			List<ParamResolution> pars = data==null ? null : data.allParamResolutions;
+			if (pars == null || pars.isEmpty())
+				return null; 
+
+			// Note: linear search -- can be made more efficient with some lookup table if needed
+			for (ParamResolution par : pars) 
+				if (par.paramDeclNode.getName().equals(paramName) && par.moduleFullPath.equals(moduleFullPath))
+					return par;
+			return null;
+		}
+	}
+
+	/**
 	 * Returns all parameter resolutions for the given inifile section; this includes
 	 * unassigned parameters as well.  
 	 */
@@ -624,6 +671,34 @@ public class InifileAnalyzer {
 			SectionData sectionData = (SectionData) doc.getSectionData(section);
 			return sectionData.unassignedParams.toArray(new ParamResolution[]{});
 		}
+	}
+
+	public static String getParamValue(ParamResolution res, IInifileDocument doc) {
+		switch (res.type) {
+			case UNASSIGNED: 
+				return null;
+			case NED: case NED_DEFAULT: 
+				return res.paramValueNode.getValue();
+			case INI: case INI_OVERRIDE: case INI_NEDDEFAULT:
+				return doc.getValue(res.section, res.key);
+			default: throw new IllegalArgumentException("invalid param resolution type: "+res.type);
+		}
+	}
+
+	public static String getParamRemark(ParamResolution res, IInifileDocument doc) {
+		String remark;
+		switch (res.type) {
+			case UNASSIGNED: remark = "unassigned"; break;
+			case NED: remark = "NED"; break;  
+			case NED_DEFAULT: remark = "NED default applied"; break;
+			case INI: remark = "ini"; break;
+			case INI_OVERRIDE: remark = "ini, overrides NED default: "+res.paramValueNode.getValue(); break;
+			case INI_NEDDEFAULT: remark = "ini, sets same value as NED default"; break;
+			default: throw new IllegalStateException("invalid param resolution type: "+res.type);
+		}
+		if (res.key!=null) 
+			remark += "; see ["+res.section+"] / " + res.key + "=" + doc.getValue(res.section, res.key);
+		return remark; 
 	}
 
 }

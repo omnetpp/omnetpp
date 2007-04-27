@@ -272,31 +272,6 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 		return null;
 	}
 
-	protected static String[] getValueAndRemark(ParamResolution res, IInifileDocument doc) {
-		// value in the NED file
-		String nedValue = res.paramValueNode==null ? null : res.paramValueNode.getValue(); //XXX what if parsed expressions?
-		if (StringUtils.isEmpty(nedValue)) 
-			nedValue = null;
-	
-		// look up its value in the ini file
-		String iniValue = null;
-		if (doc != null && res.key != null)
-			iniValue = doc.getValue(res.section, res.key);
-	
-		String value;
-		String remark;
-		switch (res.type) {
-			case UNASSIGNED: value = null; remark = "unassigned"; break;
-			case NED: value = nedValue; remark = "NED"; break;  
-			case NED_DEFAULT: value = nedValue; remark = "NED default applied"; break;
-			case INI: value = iniValue; remark = "ini"; break;
-			case INI_OVERRIDE: value = iniValue; remark = "ini, overrides NED default: "+nedValue; break;
-			case INI_NEDDEFAULT: value = nedValue; remark = "ini, sets same value as NED default"; break;
-			default: throw new IllegalStateException("invalid param resolution type: "+res.type);
-		}
-		if (res.key!=null) remark += "; see ["+res.section+"] / " + res.key + "=" + iniValue;
-		return new String[] {value, remark}; 
-	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.part.IShowInTarget#show(org.eclipse.ui.part.ShowInContext)

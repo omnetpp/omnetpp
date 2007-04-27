@@ -89,7 +89,7 @@ public class NEDTreeIterator {
 		if (StringUtils.isEmpty(submoduleTypeName)) {
 			submoduleTypeName = visitor.resolveLikeType(submodule);
 			if (submoduleTypeName==null) {
-				submoduleTypeName = submodule.getLikeType(); // use the interface if actual module type is not available
+				submoduleTypeName = submodule.getLikeType(); //XXX why???? use the interface if actual module type is not available
 			}
 		}
 		return submoduleTypeName;

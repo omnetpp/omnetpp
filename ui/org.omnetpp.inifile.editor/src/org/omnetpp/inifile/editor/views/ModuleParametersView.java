@@ -121,12 +121,12 @@ public class ModuleParametersView extends AbstractModuleView {
 			public String getColumnText(Object element, int columnIndex) {
 				Assert.isTrue(columnIndex<=2);
 				if (element instanceof ParamResolution) {
-					ParamResolution par = (ParamResolution) element;
+					ParamResolution res = (ParamResolution) element;
 					Assert.isTrue(inifileDocument!=null);
 					switch (columnIndex) {
-						case 0: return par.moduleFullPath+"."+par.paramDeclNode.getName();
-						case 1: return getValueAndRemark(par, inifileDocument)[0]; // value
-						case 2: return getValueAndRemark(par, inifileDocument)[1]; // remark
+						case 0: return res.moduleFullPath+"."+res.paramDeclNode.getName();
+						case 1: return InifileAnalyzer.getParamValue(res, inifileDocument);
+						case 2: return InifileAnalyzer.getParamRemark(res, inifileDocument);
 					}
 				}
 				return columnIndex==0 ? element.toString() : "";

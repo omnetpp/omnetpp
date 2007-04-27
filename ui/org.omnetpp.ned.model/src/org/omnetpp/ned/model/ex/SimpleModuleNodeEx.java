@@ -5,24 +5,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.ned.model.NEDElement;
-import org.omnetpp.ned.model.interfaces.IHasAncestors;
-import org.omnetpp.ned.model.interfaces.IHasGates;
-import org.omnetpp.ned.model.interfaces.IHasInterfaces;
-import org.omnetpp.ned.model.interfaces.IHasName;
-import org.omnetpp.ned.model.interfaces.IHasParameters;
-import org.omnetpp.ned.model.interfaces.IHasParent;
+import org.omnetpp.ned.model.interfaces.IModuleTypeNode;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned.model.pojo.ExtendsNode;
 import org.omnetpp.ned.model.pojo.InterfaceNameNode;
 import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 
-public final class SimpleModuleNodeEx extends SimpleModuleNode 
-				implements IHasDisplayString, IHasParent, 
-                           IHasName, IHasAncestors, IHasInterfaces,
-                           ITopLevelElement, IHasParameters, IHasGates  {
+public final class SimpleModuleNodeEx extends SimpleModuleNode implements IModuleTypeNode {
+	
+
 	protected DisplayString displayString = null;
 	
     protected SimpleModuleNodeEx() {

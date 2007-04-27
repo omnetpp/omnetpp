@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.omnetpp.common.displaymodel.DisplayString;
+import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IHasIndex;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.IHasType;
+import org.omnetpp.ned.model.interfaces.IModuleTypeNode;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INamedGraphNode;
 import org.omnetpp.ned.model.pojo.GatesNode;
@@ -69,6 +71,21 @@ public final class SubmoduleNodeEx extends SubmoduleNode
 
     public DisplayString getEffectiveDisplayString() {
         return NEDElementUtilEx.getEffectiveDisplayString(this);
+    }
+
+    /**
+     * Returns the effective display string for this submodule, assuming 
+     * that the submodule's actual type is the compound or simple module type
+     * passed in the <code>submoduleType</code> parameter. This is useful
+     * when the submodule is a "like" submodule, whose the actual submodule
+     * type (not the <code>likeType</code>) is known. The latter usually 
+     * comes from an ini file or some other source outside the NEDElement tree. 
+     * Used within the inifile editor.
+     * 
+     * @param submoduleType  a CompoundModuleNodeEx or a SimpleModuleNodeEx
+     */
+    public DisplayString getEffectiveDisplayString(IModuleTypeNode submoduleType) {
+        return NEDElementUtilEx.getEffectiveDisplayString(this, submoduleType);
     }
 
 	/**

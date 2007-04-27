@@ -13,6 +13,7 @@ import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.interfaces.IHasAncestors;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasType;
+import org.omnetpp.ned.model.interfaces.IModuleTypeNode;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned.model.pojo.ChannelNode;
 import org.omnetpp.ned.model.pojo.ChannelSpecNode;
@@ -58,11 +59,11 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
     /**
      * Gets the effective displaystring (parsed )belonging to a node. It uses 
      * the node's type or the base node (extends) as a fallback displaystring.
-     * BEWARE thet this method adjusts the display string's 'Default' property,
+     * BEWARE that this method adjusts the display string's 'Default' property,
      * ie. sets it to an other displayString object which represents the type
      * or base type's display string. 
      * @param node
-     * @return The parsed displaystring (with defaults set to 
+     * @return The parsed display string 
      */
     public static DisplayString getEffectiveDisplayString(IHasDisplayString node) {
         DisplayString result = node.getDisplayString();
@@ -85,7 +86,26 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
         result.setDefaults(((IHasDisplayString)defaultNode).getEffectiveDisplayString());
         return result;
     }
-	
+
+    /**
+     * Returns the effective display string for this submodule, assuming 
+     * that the submodule's actual type is the compound or simple module type
+     * passed in the <code>submoduleType</code> parameter. This is useful
+     * when the submodule is a "like" submodule, whose the actual submodule
+     * type (not the <code>likeType</code>) is known. The latter usually 
+     * comes from an ini file or some other source outside the NEDElement tree. 
+     * Used within the inifile editor.
+     * 
+     * @param submoduleNode  the submodule
+     * @param submoduleType  a CompoundModuleNodeEx or a SimpleModuleNodeEx
+     */
+    public static DisplayString getEffectiveDisplayString(SubmoduleNodeEx submoduleNode, IModuleTypeNode submoduleType) {
+        DisplayString result = submoduleNode.getDisplayString();
+        Assert.isTrue(submoduleType instanceof SimpleModuleNodeEx || submoduleType instanceof CompoundModuleNodeEx);
+        result.setDefaults(submoduleType.getEffectiveDisplayString());
+        return result;
+    }
+    
 	/**
 	 * Sets the display property of a given node.
 	 * PATH: PARAMETERS -> PROPERTY -> PROPERTYKEY -> LITERAL.VALUE
