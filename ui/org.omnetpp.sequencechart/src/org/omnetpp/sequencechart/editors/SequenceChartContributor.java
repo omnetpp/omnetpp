@@ -30,9 +30,12 @@ import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.eclipse.ui.texteditor.StatusLineContributionItem;
 import org.omnetpp.common.eventlog.EventLogInput;
+import org.omnetpp.common.eventlog.ModuleTreeDialog;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.IEvent;
+import org.omnetpp.eventlog.engine.IntVector;
 import org.omnetpp.eventlog.engine.MessageDependency;
 import org.omnetpp.scave.engine.EnumType;
 import org.omnetpp.scave.engine.IDList;
@@ -56,6 +59,8 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 
 	protected SequenceChartMenuAction axisOrderingModeAction;
 
+	protected SequenceChartAction FilterModulesAction;
+	
 	protected SequenceChartAction showEventNumbersAction;
 
 	protected SequenceChartAction showMessageNamesAction;
@@ -77,11 +82,12 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	protected SequenceChartAction balancedAxesAction;
 
 	protected StatusLineContributionItem timelineModeStatus;
-	
+
 	public SequenceChartContributor() {
 		this.separatorAction = new Separator();
 		this.timelineModeAction = createTimelineModeAction();
 		this.axisOrderingModeAction = createAxisOrderingModeAction();
+		this.FilterModulesAction = createFilterModulesAction();
 		this.showEventNumbersAction = createShowEventNumbersAction();
 		this.showMessageNamesAction = createShowMessageNamesAction();
 		this.showReuseMessagesAction = createShowReuseMessagesAction();
@@ -159,6 +165,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 				// static menu
 				menuManager.add(timelineModeAction);
 				menuManager.add(axisOrderingModeAction);
+				menuManager.add(FilterModulesAction);
 				menuManager.add(separatorAction);
 				menuManager.add(showEventNumbersAction);
 				menuManager.add(showMessageNamesAction);
@@ -182,6 +189,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
 		toolBarManager.add(timelineModeAction);
 		toolBarManager.add(axisOrderingModeAction);
+		toolBarManager.add(FilterModulesAction);
 		toolBarManager.add(separatorAction);
 		toolBarManager.add(showEventNumbersAction);
 		toolBarManager.add(showMessageNamesAction);
@@ -293,6 +301,35 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 						});
 					}
 				};
+			}
+		};
+	}
+	
+	private SequenceChartAction createFilterModulesAction() {
+		return new SequenceChartAction("Filter modules...", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_SHOW_EVENT_NUMBERS)) {
+			@Override
+			public void run() {
+				ModuleTreeDialog dialog = new ModuleTreeDialog(null, sequenceChart.getInput().getModuleTreeRoot(), sequenceChart.getAxisModules());
+				dialog.open();
+
+				Object[] selectedModules = dialog.getResult(); 
+				if (selectedModules != null) { // not cancelled
+					IntVector moduleIds = new IntVector();
+					ArrayList<ModuleTreeItem> selectedAxisModules = new ArrayList<ModuleTreeItem>();
+					for (Object selected : selectedModules) {
+						ModuleTreeItem selectedModule = (ModuleTreeItem)selected;
+						selectedAxisModules.add(selectedModule);
+						moduleIds.add(selectedModule.getModuleId());
+					}
+
+					EventLogInput eventLogInput = sequenceChart.getInput();
+					FilteredEventLog filteredEventLog = new FilteredEventLog(eventLogInput.getEventLog());
+					filteredEventLog.setModuleIds(moduleIds);
+					EventLogInput filteredEventLogInput = new EventLogInput(eventLogInput.getFile(), filteredEventLog);
+
+					sequenceChart.setInput(filteredEventLogInput);
+					sequenceChart.setAxisModules(selectedAxisModules);
+				}
 			}
 		};
 	}

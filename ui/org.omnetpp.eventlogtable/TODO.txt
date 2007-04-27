@@ -56,5 +56,7 @@ Features:
  + single click goes in the corresponding sequence chart to the selected event
  - export current in memory filter as a log file
  - hot keys for popup menu actions
+ - expand/collapse events (isExpandedInEventLogTable)
 
 Known bugs:
+ - filtering does not work

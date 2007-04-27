@@ -68,4 +68,6 @@ Features:
 Known bugs:
  - hierarchical sorting sequence chart axes based on crossing arrows is broken
  - tracing events sometimes kills eclipse
+ - filtering does not work
+ 
  

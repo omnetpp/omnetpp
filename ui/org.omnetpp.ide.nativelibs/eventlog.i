@@ -139,6 +139,9 @@ namespace std {
 
    //%template(StringMap) map<string,string>;
 
+   specialize_std_vector(IMessageDependency*);
+   %template(IMessageDependencyList) vector<IMessageDependency*>;
+
    specialize_std_vector(MessageDependency*);
    %template(MessageDependencyList) vector<MessageDependency*>;
 
@@ -239,7 +242,7 @@ import java.lang.reflect.Constructor;
     }
 %}
 
-%typemap(javacode) MessageDependency %{
+%typemap(javacode) IMessageDependency %{
     public long getCPtr() {
         return swigCPtr;
     }

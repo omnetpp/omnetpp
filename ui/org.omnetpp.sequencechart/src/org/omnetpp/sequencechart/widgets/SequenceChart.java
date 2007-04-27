@@ -54,6 +54,7 @@ import org.omnetpp.common.virtualtable.IVirtualContentWidget;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlog.engine.IMessageDependency;
 import org.omnetpp.eventlog.engine.Int64Vector;
 import org.omnetpp.eventlog.engine.MessageDependency;
 import org.omnetpp.eventlog.engine.MessageDependencyKind;
@@ -816,7 +817,7 @@ public class SequenceChart
 	/**
 	 * Returns the currently displayed EventLogInput object.
 	 */
-	public Object getInput() {
+	public EventLogInput getInput() {
 		return eventLogInput;
 	}
 
@@ -843,9 +844,6 @@ public class SequenceChart
 		fireSelectionChanged();
 
 		setAxisModules(getAllAxisModules(eventLogInput));
-		for (ModuleTreeItem axisModule : axisModules)
-			setAxisRenderer(axisModule, new AxisLineRenderer(this));
-		calculateAxisModuleIndices();
 		
 		if (!firstTime) {
 			calculatePixelPerTimelineUnit();
@@ -890,6 +888,10 @@ public class SequenceChart
 		return eventLog;
 	}
 	
+	public ArrayList<ModuleTreeItem> getAxisModules() {
+		return axisModules;
+	}
+	
 	/**
 	 * Sets which modules should have axes. Items in axisModules
 	 * should point to elements in the moduleTree. 
@@ -897,6 +899,10 @@ public class SequenceChart
 	public void setAxisModules(ArrayList<ModuleTreeItem> axisModules) {
 		this.axisModules = axisModules;
 		this.axisRenderers = new IAxisRenderer[axisModules.size()];
+
+		for (ModuleTreeItem axisModule : axisModules)
+			setAxisRenderer(axisModule, new AxisLineRenderer(this));
+		calculateAxisModuleIndices();
 
 		axisModuleYs = null;
 		invalidVirtualSize = true;
@@ -1399,9 +1405,10 @@ public class SequenceChart
 	private void drawMessageArrow(Graphics graphics, long messageDependencyPtr, VLineBuffer vlineBuffer) {
 		long causeEventPtr = sequenceChartFacade.MessageDependency_getCauseEvent(messageDependencyPtr);
 		long consequenceEventPtr = sequenceChartFacade.MessageDependency_getConsequenceEvent(messageDependencyPtr);
-		boolean isMessageSend = sequenceChartFacade.MessageDependency_isMessageSend(messageDependencyPtr);
+		int messageDependencyKind = sequenceChartFacade.MessageDependency_getKind(messageDependencyPtr);
+		boolean isMessageSend = messageDependencyKind == MessageDependencyKind.SEND;
 
-		if (!isMessageSend && !showReuseMessages)
+		if (messageDependencyKind == MessageDependencyKind.REUSE && !showReuseMessages)
 			return;
 
 		// TODO: we probably do not need this, it's checked in C++ anyway
@@ -1426,17 +1433,17 @@ public class SequenceChart
 		// message name (as label on the arrow)
 		String arrowLabel = null;
 		if (showMessageNames) {
-			switch (sequenceChartFacade.MessageDependency_getKind(messageDependencyPtr)) {
+			switch (messageDependencyKind ) {
 				case MessageDependencyKind.SEND:
-					arrowLabel = sequenceChartFacade.MessageDependency_getCauseMessageName(messageDependencyPtr);
+					arrowLabel = sequenceChartFacade.MessageDependency_getMessageName(messageDependencyPtr);
 					break;
 				case MessageDependencyKind.REUSE:
 					arrowLabel = "Reuse";
 					break;
 				case MessageDependencyKind.FILTERED:
-					arrowLabel = sequenceChartFacade.MessageDependency_getCauseMessageName(messageDependencyPtr) +
+					arrowLabel = sequenceChartFacade.FilteredMessageDependency_getBeginMessageName(messageDependencyPtr) +
 								 " -> " +
-								 sequenceChartFacade.FilteredMessageDependency_getMiddleMessageName(messageDependencyPtr);
+								 sequenceChartFacade.FilteredMessageDependency_getEndMessageName(messageDependencyPtr);
 					break;
 			}
 		}
@@ -2069,9 +2076,7 @@ public class SequenceChart
 				result = "reusing";
 				break;
 			case MessageDependencyKind.FILTERED:
-				result = sequenceChartFacade.MessageDependency_getCauseMessageName(messageDependencyPtr) +
-						 " -> " +
-						 sequenceChartFacade.FilteredMessageDependency_getMiddleMessageName(messageDependencyPtr);
+				result = "filtered";
 				break;
 		}
 		
@@ -2102,8 +2107,8 @@ public class SequenceChart
 			+ moduleCreatedEntry.getFullName()
 			+ " (id = " + event.getModuleId() + ")";
 		
-		MessageDependency messageDependency = event.getCause();
-		BeginSendEntry beginSendEntry = messageDependency == null ? null : messageDependency.getCauseBeginSendEntry();
+		IMessageDependency messageDependency = event.getCause();
+		BeginSendEntry beginSendEntry = messageDependency == null ? null : messageDependency.getBeginSendEntry();
 
 		if (beginSendEntry != null)
 			result += "  message (" + beginSendEntry.getMessageClassName() + ") " + beginSendEntry.getMessageFullName();
@@ -2164,6 +2169,7 @@ public class SequenceChart
         		for (int i = 0; i < messageDependencies.size(); i++) {
         			long messageDependencyPtr = messageDependencies.get(i);
 
+        			// TODO: what about not shown messages
             		if (messageArrowContainsPoint(messageDependencyPtr, mouseX, mouseY, MOUSE_TOLERANCE))
             			msgs.add(sequenceChartFacade.MessageDependency_getMessageDependency(messageDependencyPtr));
         		}

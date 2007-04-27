@@ -34,6 +34,14 @@ public class EventLogInput {
 	 * Root of the module tree present in the event log file.
 	 */
 	protected ModuleTreeItem moduleTree;
+	
+	public EventLogInput() {
+	}
+
+	public EventLogInput(IFile file, IEventLog eventLog) {
+		this.file = file;
+		this.eventLog = eventLog;
+	}
 
 	public IFile getFile() {
 		return file;

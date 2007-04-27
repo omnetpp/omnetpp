@@ -32,9 +32,9 @@ import org.omnetpp.eventlog.engine.BeginSendEntry;
 import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlog.engine.IMessageDependency;
+import org.omnetpp.eventlog.engine.IMessageDependencyList;
 import org.omnetpp.eventlog.engine.MatchKind;
-import org.omnetpp.eventlog.engine.MessageDependency;
-import org.omnetpp.eventlog.engine.MessageDependencyList;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 
 
@@ -197,12 +197,12 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 				if (eventLogEntry == null)
 					return null;
 				else {
-					MessageDependency cause = eventLogEntry.getEvent().getCause();
+					IMessageDependency cause = eventLogEntry.getEvent().getCause();
 					
 					if (cause == null)
 						return null;
 					else
-						return cause.getCauseBeginSendEntry();
+						return cause.getBeginSendEntry();
 				}
 			}
 		};
@@ -225,13 +225,13 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 				if (eventLogEntry != null) {
 					IEvent event = eventLogEntry.getEvent();
-					MessageDependencyList consequences = event.getConsequences();
+					IMessageDependencyList consequences = event.getConsequences();
 					
 					for (int i = 0; i < consequences.size(); i++) {
-						MessageDependency consequence = consequences.get(i);
+						IMessageDependency consequence = consequences.get(i);
 
 						if (eventLogTable.getEventLogTableFacade().MessageDependency_isMessageSend(consequence.getCPtr()) &&
-							consequence.getCauseBeginSendEntry().equals(eventLogEntry))
+							consequence.getBeginSendEntry().equals(eventLogEntry))
 						{
 							IEvent consequenceEvent = consequence.getConsequenceEvent();
 							
@@ -263,12 +263,13 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 				if (eventLogEntry != null) {
 					IEvent event = eventLogEntry.getEvent();
-					MessageDependencyList causes = event.getCauses();
+					IMessageDependencyList causes = event.getCauses();
 					
 					for (int i = 0; i < causes.size(); i++) {
-						MessageDependency cause = causes.get(i);
+						IMessageDependency cause = causes.get(i);
+
 						if (eventLogTable.getEventLogTableFacade().MessageDependency_isMessageReuse(cause.getCPtr()) &&
-							cause.getConsequenceBeginSendEntry().equals(eventLogEntry)) {
+							cause.getBeginSendEntry().equals(eventLogEntry)) {
 							IEvent causeEvent = cause.getCauseEvent();
 							
 							if (causeEvent != null)
@@ -299,12 +300,13 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 				if (eventLogEntry != null) {
 					IEvent event = eventLogEntry.getEvent();
-					MessageDependencyList consequences = event.getConsequences();
+					IMessageDependencyList consequences = event.getConsequences();
 					
 					for (int i = 0; i < consequences.size(); i++) {
-						MessageDependency consequence = consequences.get(i);
+						IMessageDependency consequence = consequences.get(i);
+
 						if (eventLogTable.getEventLogTableFacade().MessageDependency_isMessageReuse(consequence.getCPtr())) {
-							BeginSendEntry beginSendEntry = consequence.getConsequenceBeginSendEntry();
+							BeginSendEntry beginSendEntry = consequence.getBeginSendEntry();
 							
 							if (beginSendEntry != null)
 								return beginSendEntry;

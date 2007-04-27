@@ -30,7 +30,7 @@ import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.EventLogMessageEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
-import org.omnetpp.eventlog.engine.MessageDependency;
+import org.omnetpp.eventlog.engine.IMessageDependency;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.ModuleDeletedEntry;
 import org.omnetpp.eventlog.engine.ModuleDisplayStringChangedEntry;
@@ -165,12 +165,12 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 				switch (eventLogInput.getEventLogTableFacade().getDisplayMode()) {
 					case 0:
 						if (eventLogEntry instanceof EventEntry) {
-							MessageDependency cause = event.getCause();
+							IMessageDependency cause = event.getCause();
 				
 							drawText("Event in ", CONSTANT_TEXT_COLOR);
 							drawModuleDescription(event.getModuleId());
 							
-							BeginSendEntry beginSendEntry = cause != null ? cause.getCauseBeginSendEntry() : null;
+							BeginSendEntry beginSendEntry = cause != null ? cause.getBeginSendEntry() : null;
 							if (beginSendEntry != null) {
 								drawText(" on arrival of ", CONSTANT_TEXT_COLOR);
 								
