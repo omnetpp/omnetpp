@@ -39,6 +39,9 @@ import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.gef.ui.properties.UndoablePropertySheetEntry;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IStatusLineManager;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.util.TransferDropTargetListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
@@ -51,6 +54,8 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
@@ -64,7 +69,6 @@ import org.omnetpp.ned.editor.graph.misc.PaletteManager;
 import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
 import org.omnetpp.ned.editor.graph.properties.NedPropertySourceAdapterFactory;
 import org.omnetpp.ned.editor.graph.properties.view.BasePreferrerPropertySheetSorter;
-import org.omnetpp.ned.editor.graph.properties.view.PropertySheetPageEx;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
 
@@ -75,9 +79,12 @@ import org.omnetpp.ned.model.ex.NedFileNodeEx;
  */
 public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
 
-    class OutlinePage extends ContentOutlinePage {
-
-        public OutlinePage(EditPartViewer viewer) {
+    /**
+     * Outling viewer for graphical ned editor
+     * @author rhornig
+     */
+    class NedOutlinePage extends ContentOutlinePage {
+        public NedOutlinePage(EditPartViewer viewer) {
             super(viewer);
         }
 
@@ -87,7 +94,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
             // register actions for the ediotr
             ActionRegistry registry = getActionRegistry();
             IActionBars bars = pageSite.getActionBars();
-
             String id = ActionFactory.UNDO.getId();
             bars.setGlobalActionHandler(id, registry.getAction(id));
             id = ActionFactory.REDO.getId();
@@ -97,22 +103,16 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
             bars.updateActionBars();
         }
 
-        protected void configureOutlineViewer() {
+        @Override
+        public void createControl(Composite parent) {
+            super.createControl(parent);
             getViewer().setEditDomain(getEditDomain());
             getViewer().setEditPartFactory(new NedTreeEditPartFactory());
             ContextMenuProvider provider = new GNEDContextMenuProvider(getViewer(), getActionRegistry());
             getViewer().setContextMenu(provider);
-            getSite().registerContextMenu("org.omnetpp.ned.editor.graph.outline.contextmenu", //$NON-NLS-1$
-                    provider, getSite().getSelectionProvider());
             getViewer().setKeyHandler(getCommonKeyHandler());
             getViewer().addDropTargetListener((TransferDropTargetListener)
-        			new TemplateTransferDropTargetListener(getViewer()));
-        }
-
-        @Override
-        public void createControl(Composite parent) {
-            super.createControl(parent);
-            configureOutlineViewer();
+                    new TemplateTransferDropTargetListener(getViewer()));
             getSelectionSynchronizer().addViewer(getViewer());
             setContents(getModel());
         }
@@ -129,13 +129,51 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
 
     }
 
+    /**
+     * Ned Property sheet page for the graphical ned editor
+     * @author rhornig
+     */
+    public class NedPropertySheetPage extends PropertySheetPage {
+
+        @Override
+        public void init(IPageSite pageSite) {
+            super.init(pageSite);
+            // set a sorter that places the Base group at the beginning. the rest
+            // is alphabetically sorted
+            setSorter(new BasePreferrerPropertySheetSorter());
+            // integrates the GEF undo/redo stack
+            setRootEntry(new UndoablePropertySheetEntry(getCommandStack()));
+            
+            // install global actions
+            IActionBars bars = pageSite.getActionBars();
+            String id = ActionFactory.UNDO.getId();
+            bars.setGlobalActionHandler(id, getActionRegistry().getAction(id));
+            id = ActionFactory.REDO.getId();
+            bars.setGlobalActionHandler(id, getActionRegistry().getAction(id));
+            bars.updateActionBars();
+        }
+        
+        @Override
+        public void makeContributions(IMenuManager menuManager, IToolBarManager toolBarManager,
+                IStatusLineManager statusLineManager) {
+
+            super.makeContributions(menuManager, toolBarManager, statusLineManager);
+            
+            // TODO should be added to the global menu instead of the local toolbar
+            toolBarManager.add(getActionRegistry().getAction(ActionFactory.UNDO.getId()));
+            toolBarManager.add(getActionRegistry().getAction(ActionFactory.REDO.getId()));
+        }
+    }
+
+    // ===== MAIN GRAPHIC NED EDITOR ==================================================
     private KeyHandler sharedKeyHandler;
     private PaletteManager paletteManager;
-    private OutlinePage outlinePage;
+    private NedOutlinePage outlinePage;
+    private NedPropertySheetPage propertySheetPage;
     private boolean editorSaving = false;
-
     private NedFileNodeEx nedFileModel;
     private SelectionSynchronizer synchronizer;
+    // last state of the command stack (used to detect changes since last page switch)
     private Command lastUndoCommand;
     private Command lastRedoCommand;
 
@@ -145,7 +183,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         // register the PropertySourceFactory for the different model elements
         Platform.getAdapterManager().registerAdapters(new NedPropertySourceAdapterFactory(), 
                 IPropertySourceSupport.class);
-
     }
 
     @Override
@@ -202,7 +239,9 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         viewer.setEditPartFactory(new NedEditPartFactory());
         ContextMenuProvider provider = new GNEDContextMenuProvider(viewer, getActionRegistry());
         viewer.setContextMenu(provider);
-        getSite().registerContextMenu("org.omnetpp.ned.editor.graph.contextmenu", provider, viewer);
+        // NOTE: we do not register the context menu so external plugins will not be able to contribute to it
+        // if we ever need external contribution, uncomment the following line
+        // getSite().registerContextMenu(provider, viewer);
         viewer.setKeyHandler(new GraphicalViewerKeyHandler(viewer).setParent(getCommonKeyHandler()));
 
         loadProperties();
@@ -229,20 +268,18 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
      * @see org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette#getAdapter(java.lang.Class)
      * Adds content outline and zoom support
      */
-    @Override
     @SuppressWarnings("unchecked")
+    @Override
     public Object getAdapter(Class type) {
-        if (type == org.eclipse.ui.views.properties.IPropertySheetPage.class) {
-            PropertySheetPageEx page = new PropertySheetPageEx();
-            // customize the property sheet with a custom sorter (to place the "Base"
-            // category at the beginning)
-            page.setSorter(new BasePreferrerPropertySheetSorter());
-            page.setRootEntry(new UndoablePropertySheetEntry(getCommandStack()));
-            return page;
+        if (type == IPropertySheetPage.class) {
+            if (propertySheetPage == null )
+                propertySheetPage = new NedPropertySheetPage();
+            return propertySheetPage;
         }
+        
         if (type == IContentOutlinePage.class) {
             if (outlinePage == null)
-                outlinePage = new OutlinePage(new TreeViewer());
+                outlinePage = new NedOutlinePage(new TreeViewer());
             return outlinePage;
         }
         if (type == ZoomManager.class)
@@ -258,8 +295,8 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
     protected KeyHandler getCommonKeyHandler() {
         if (sharedKeyHandler == null) {
             sharedKeyHandler = new KeyHandler();
-            sharedKeyHandler.put(KeyStroke.getPressed(SWT.F2, 0), getActionRegistry().getAction(
-                    GEFActionConstants.DIRECT_EDIT));
+            sharedKeyHandler.put(KeyStroke.getPressed(SWT.F2, 0), 
+                                 getActionRegistry().getAction(GEFActionConstants.DIRECT_EDIT));
         }
         return sharedKeyHandler;
     }

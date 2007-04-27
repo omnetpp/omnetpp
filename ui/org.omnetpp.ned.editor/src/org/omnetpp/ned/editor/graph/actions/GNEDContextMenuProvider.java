@@ -18,9 +18,9 @@ import org.eclipse.ui.keys.IBindingService;
 import org.omnetpp.common.image.ImageFactory;
 
 /**
- * Adds actions to the context menus in the editor area
+ * Adds actions to the context menu in the graphical editor area
+ * 
  * @author rhornig
- *
  */
 public class GNEDContextMenuProvider extends ContextMenuProvider {
 
@@ -58,10 +58,6 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
         showInSubMenu.add(ContributionItemFactory.VIEWS_SHOW_IN.create(wwin));
         manager.appendToGroup(GEFActionConstants.GROUP_VIEW, showInSubMenu);
         
-// COPY,CUT,PASTE is not currently 
-//        action = getActionRegistry().getAction(ActionFactory.PASTE.getId());
-//        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
-
         action = getActionRegistry().getAction(ActionFactory.DELETE.getId());
         if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
 
