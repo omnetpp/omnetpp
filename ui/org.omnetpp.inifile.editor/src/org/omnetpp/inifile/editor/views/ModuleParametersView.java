@@ -53,6 +53,7 @@ import org.omnetpp.ned.model.INEDElement;
  * @author Andras
  */
 //XXX "Pin" functionality (ie pretend that active editor and selection does not change)
+//XXX restore selection across editors (see ModuleHierarchyView for example)
 public class ModuleParametersView extends AbstractModuleView {
 	private Label label;
 	private TableViewer tableViewer;

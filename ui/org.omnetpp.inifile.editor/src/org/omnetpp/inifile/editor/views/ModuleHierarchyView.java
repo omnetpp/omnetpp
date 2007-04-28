@@ -3,7 +3,11 @@ package org.omnetpp.inifile.editor.views;
 import java.util.Stack;
 import java.util.WeakHashMap;
 
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -25,6 +29,7 @@ import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.GenericTreeUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.IGotoInifile;
+import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.actions.ActionExt;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.IModuleTreeVisitor;
@@ -58,6 +63,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	private TreeViewer treeViewer;
 	private IInifileDocument inifileDocument; // corresponds to the current selection; needed by the label provider
 	private MenuManager contextMenuManager = new MenuManager("#PopupMenu");
+	private boolean isPinned;  //XXX todo: if true, ignore inputs that are different from the "pinned" one
 
 	// hashmap to save/restore view's state when switching across editors 
 	private WeakHashMap<IEditorInput, ISelection> selectedElements = new WeakHashMap<IEditorInput, ISelection>();
@@ -205,6 +211,14 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	}
 
 	private void createActions() {
+		ActionExt pinAction = new ActionExt("Pin current tree", IAction.AS_CHECK_BOX, 
+				InifileEditorPlugin.getImageDescriptor("icons/pin.gif")) {
+			@Override
+			public void run() {
+				isPinned = !isPinned;
+			}
+		};
+		
 		//XXX this is the same code as in ModuleParametersView
 		final ActionExt gotoInifileAction = new ActionExt("Goto Ini File") {
 			@Override
@@ -298,7 +312,15 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		contextMenuManager.add(gotoInifileAction);
 		contextMenuManager.add(gotoNedAction);
 		contextMenuManager.add(gotoNedDeclAction);
-	}
+		contextMenuManager.add(new Separator());
+		contextMenuManager.add(pinAction);
+
+		IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
+		toolBarManager.add(pinAction);
+	
+		IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
+		menuManager.add(pinAction);
+}
 	
 	@Override
 	protected void showMessage(String text) {
