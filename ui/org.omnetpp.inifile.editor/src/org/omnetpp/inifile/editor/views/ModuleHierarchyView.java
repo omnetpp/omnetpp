@@ -21,6 +21,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
@@ -63,7 +64,6 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	private TreeViewer treeViewer;
 	private IInifileDocument inifileDocument; // corresponds to the current selection; needed by the label provider
 	private MenuManager contextMenuManager = new MenuManager("#PopupMenu");
-	private boolean isPinned;  //XXX todo: if true, ignore inputs that are different from the "pinned" one
 
 	// hashmap to save/restore view's state when switching across editors 
 	private WeakHashMap<IEditorInput, ISelection> selectedElements = new WeakHashMap<IEditorInput, ISelection>();
@@ -200,7 +200,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				if (!event.getSelection().isEmpty())
-					selectedElements.put(getActiveEditor().getEditorInput(), event.getSelection());
+					selectedElements.put(getAssociatedEditor().getEditorInput(), event.getSelection());
 			}
 		});
 
@@ -211,21 +211,18 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	}
 
 	private void createActions() {
-		ActionExt pinAction = new ActionExt("Pin current tree", IAction.AS_CHECK_BOX, 
-				InifileEditorPlugin.getImageDescriptor("icons/pin.gif")) {
-			@Override
-			public void run() {
-				isPinned = !isPinned;
-			}
-		};
+		IAction pinAction = createPinAction();
 		
-		//XXX this is the same code as in ModuleParametersView
+		//XXX this is (almost) the same code as in ModuleParametersView
 		final ActionExt gotoInifileAction = new ActionExt("Goto Ini File") {
 			@Override
 			public void run() {
 				SectionKey sel = getSectionKeyFromSelection();
-				if (sel!=null && getActiveEditor() instanceof IGotoInifile)
-					((IGotoInifile)getActiveEditor()).gotoEntry(sel.section, sel.key, IGotoInifile.Mode.AUTO);
+				IEditorPart associatedEditor = getAssociatedEditor();
+				if (sel != null && associatedEditor instanceof IGotoInifile) {
+					activateEditor(associatedEditor);
+					((IGotoInifile)associatedEditor).gotoEntry(sel.section, sel.key, IGotoInifile.Mode.AUTO);
+				}
 			}
 			public void selectionChanged(SelectionChangedEvent event) {
 				SectionKey sel = getSectionKeyFromSelection();
@@ -397,7 +394,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			treeViewer.setInput(root);
 			
 			// try to preserve selection
-			ISelection oldSelection = selectedElements.get(getActiveEditor().getEditorInput());
+			ISelection oldSelection = selectedElements.get(getAssociatedEditor().getEditorInput());
 			if (oldSelection != null)
 				treeViewer.setSelection(oldSelection, true);
 			else

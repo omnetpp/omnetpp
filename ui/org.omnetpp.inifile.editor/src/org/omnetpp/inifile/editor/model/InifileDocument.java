@@ -38,7 +38,7 @@ import org.omnetpp.ned.model.notification.NEDModelEvent;
  * 
  * @author Andras
  */
-//XXX thread safety: make the entire class synchronized ?
+//XXX FIXME TODO BUG: OUR nedChangeListener DOES NOT GET CALLED FROM NEDRESOURCESPLUGIN!!!! 
 //XXX validate new keys (after add/rename)! must not contain "=", "#", ";", whitespace, etc...  
 //XXX validate section names (after add/rename)! must not contain "[", "]", "#", ";", newline, tab,...
 //XXX ^^^ see InifileUtils.validateParameterKey too

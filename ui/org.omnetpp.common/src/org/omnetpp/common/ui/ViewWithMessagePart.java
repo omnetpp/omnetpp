@@ -130,4 +130,17 @@ public abstract class ViewWithMessagePart extends ViewPart {
 	protected ISelection getWorkbenchSelection() {
 		return getSite()==null ? null : getSite().getWorkbenchWindow().getSelectionService().getSelection();
 	}
+
+	/**
+	 * Utility method: Activates the given editor (unless it's already the active one).
+	 */
+	protected void activateEditor(IEditorPart editor) {
+		if (getActiveEditor() != editor) {
+			IWorkbenchPartSite site = getSite();
+			IWorkbenchPage activePage = site==null ? null : site.getWorkbenchWindow().getActivePage();
+			if (activePage != null)
+				activePage.activate(editor);
+		}
+	}
+
 }

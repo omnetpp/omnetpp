@@ -2,10 +2,7 @@ package org.omnetpp.inifile.editor.views;
 
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_NETWORK;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Image;
@@ -20,6 +17,7 @@ import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
+import org.omnetpp.inifile.editor.actions.ActionExt;
 import org.omnetpp.inifile.editor.editors.InifileSelectionItem;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
@@ -45,6 +43,9 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
  * @author Andras
  */
 public abstract class AbstractModuleView extends ViewWithMessagePart implements IShowInTarget {
+	private IEditorPart pinnedToEditor = null;
+	private ISelection pinnedToEditorSelection = null;
+	
 	private ISelectionListener selectionChangedListener;
 	private IPartListener partListener;
 	private INEDChangeListener nedChangeListener;
@@ -105,6 +106,12 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 			}
 
 			public void partClosed(IWorkbenchPart part) {
+				if (part == pinnedToEditor) {
+					pinnedToEditor = null;
+					pinnedToEditorSelection = null;
+					//XXX todo: reset "Pin" action
+					activeEditorChanged(); //XXX ???
+				}
 				if (part == activeEditor) {
 					activeEditor = null;
 					activeEditorChanged();
@@ -163,9 +170,43 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
         rebuildContentJob.restartTimer();
 	}
 
-    /**
-     * @return Tries to find a ned element up in the ancestor chanin which may have
-     * parameters. ie. simple and submodule, compoundmodule and channel
+	protected IAction createPinAction() {
+		return new ActionExt("Pin current tree", IAction.AS_CHECK_BOX, 
+				InifileEditorPlugin.getImageDescriptor("icons/pin.gif")) {
+			@Override
+			public void run() {
+				if (isChecked()) {
+					// pin
+					pinnedToEditor = getActiveEditor();
+					pinnedToEditorSelection = getActiveEditorSelection();
+				}
+				else {
+					// unpin
+					pinnedToEditor = null;
+					pinnedToEditorSelection = null;
+				}
+			}
+		};
+	}	
+
+	/**
+	 * Returns the editor the view is pinned to, or the active editor if the view is not pinned.
+	 */
+	protected IEditorPart getAssociatedEditor() {
+		return pinnedToEditor != null ? pinnedToEditor : getActiveEditor();
+	}
+
+	/**
+	 * Returns the pinned selection if the view is pinned, or the active editor's selection 
+	 * if the view is not pinned.
+	 */
+	protected ISelection getAssociatedEditorSelection() {
+		return pinnedToEditorSelection != null ? pinnedToEditorSelection : getActiveEditorSelection();
+	}
+	
+	/**
+     * Tries to find a NED element among the parents which may have
+     * parameters (simple module, compound module, channel, submodule).
      */
     private INEDElement findFirstModuleOrSubmodule(INEDElement element) {
         while (element != null) {
@@ -174,21 +215,25 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
                 return element;
             element = element.getParent();
         }
-        return element;
+        return null;
     }
 
 	public void rebuildContent() {
 		if (isDisposed())
 			return;
 
+		// Note: we make no attempt to filter out selection changes while view is pinned
+		// to a different editor (i.e. not the active editor), because we might miss updates.
+		//XXX check.
+		
         //System.out.println("*** CONTENT REBUILD");
-		IEditorPart activeEditor = getActiveEditor();
+		IEditorPart activeEditor = getAssociatedEditor();
 		if (activeEditor==null) {
 			showMessage("There is no active editor.");
 			return;
 		}
 
-		ISelection selection = getActiveEditorSelection();
+		ISelection selection = getAssociatedEditorSelection();
 		if (selection==null) {
 			showMessage("Nothing is selected.");
 			return;
