@@ -58,7 +58,6 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
  * @author Andras
  */
 //XXX "like" submodule with unresolved type does not appear as such!!!
-//XXX "Pin" functionality (ie pretend that active editor and selection does not change)
 public class ModuleHierarchyView extends AbstractModuleView {
 	private TreeViewer treeViewer;
 	private IInifileDocument inifileDocument; // corresponds to the current selection; needed by the label provider
@@ -392,12 +391,13 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			this.inifileDocument = analyzer==null ? null : analyzer.getDocument();
 			treeViewer.setInput(root);
 			
+			// open root node (useful in case preserving the selection fails)
+			treeViewer.expandToLevel(2);  
+
 			// try to preserve selection
 			ISelection oldSelection = selectedElements.get(getAssociatedEditor().getEditorInput());
 			if (oldSelection != null)
 				treeViewer.setSelection(oldSelection, true);
-			else
-				treeViewer.expandToLevel(2); // by default, open root node 
 		}
 
 		// refresh the viewer anyway, because e.g. parameter value changes are not reflected in the input tree

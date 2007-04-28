@@ -4,6 +4,7 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.WeakHashMap;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
@@ -15,6 +16,8 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -32,6 +35,7 @@ import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.omnetpp.common.ui.ITooltipProvider;
 import org.omnetpp.common.ui.TableLabelProvider;
@@ -55,6 +59,7 @@ import org.omnetpp.ned.model.INEDElement;
  */
 //XXX restore selection across editors (see ModuleHierarchyView for example)
 //XXX show status: which editor we are pinned to
+//XXX disable "pin" action while view shows message (not contents) ? 
 public class ModuleParametersView extends AbstractModuleView {
 	private Label label;
 	private TableViewer tableViewer;
@@ -65,6 +70,9 @@ public class ModuleParametersView extends AbstractModuleView {
 	private IInifileDocument inifileDocument; // corresponds to the current selection; unfortunately needed by the label provider
 	private InifileAnalyzer inifileAnalyzer; // corresponds to the current selection; unfortunately needed by the label provider
 	private MenuManager contextMenuManager = new MenuManager("#PopupMenu");
+	
+	// hashmap to save/restore view's state when switching across editors 
+	private WeakHashMap<IEditorInput, ISelection> selectedElements = new WeakHashMap<IEditorInput, ISelection>();
 
 	public ModuleParametersView() {
 	}
@@ -157,7 +165,15 @@ public class ModuleParametersView extends AbstractModuleView {
 				return null;
 			}
  		});
- 		
+
+		// remember selection (we'll try to restore it after table rebuild)
+		tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				if (!event.getSelection().isEmpty())
+					selectedElements.put(getAssociatedEditor().getEditorInput(), event.getSelection());
+			}
+		});
+
 		// create context menu
  		getViewSite().registerContextMenu(contextMenuManager, tableViewer);
 		tableViewer.getTable().setMenu(contextMenuManager.createContextMenu(tableViewer.getTable()));
@@ -336,10 +352,19 @@ public class ModuleParametersView extends AbstractModuleView {
 			if (section==null)
 				section = GENERAL;
 			hideMessage();
+			
+			// update table contents
 			inifileAnalyzer = analyzer;
 			inifileDocument = analyzer.getDocument();
 			ParamResolution[] pars = unassignedOnly ? analyzer.getUnassignedParams(section) : analyzer.getParamResolutions(section);
 			tableViewer.setInput(pars);
+
+			// try to preserve selection
+			ISelection oldSelection = selectedElements.get(getAssociatedEditor().getEditorInput());
+			if (oldSelection != null)
+				tableViewer.setSelection(oldSelection, true);
+
+			// update label
 			label.setText("Section ["+section+"], " + (unassignedOnly ? "unassigned parameters" : "all parameters"));
 		}
 	}
