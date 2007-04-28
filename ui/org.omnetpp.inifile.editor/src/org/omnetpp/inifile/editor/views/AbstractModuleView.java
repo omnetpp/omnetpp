@@ -45,6 +45,7 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
 public abstract class AbstractModuleView extends ViewWithMessagePart implements IShowInTarget {
 	private IEditorPart pinnedToEditor = null;
 	private ISelection pinnedToEditorSelection = null;
+	private IAction pinAction;
 	
 	private ISelectionListener selectionChangedListener;
 	private IPartListener partListener;
@@ -107,10 +108,11 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 
 			public void partClosed(IWorkbenchPart part) {
 				if (part == pinnedToEditor) {
+					// unpin on closing of the editor we're pinned to
 					pinnedToEditor = null;
 					pinnedToEditorSelection = null;
-					//XXX todo: reset "Pin" action
-					activeEditorChanged(); //XXX ???
+					pinAction.setChecked(false);
+					activeEditorChanged();
 				}
 				if (part == activeEditor) {
 					activeEditor = null;
@@ -170,23 +172,25 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
         rebuildContentJob.restartTimer();
 	}
 
-	protected IAction createPinAction() {
-		return new ActionExt("Pin current tree", IAction.AS_CHECK_BOX, 
-				InifileEditorPlugin.getImageDescriptor("icons/pin.gif")) {
-			@Override
-			public void run() {
-				if (isChecked()) {
-					// pin
-					pinnedToEditor = getActiveEditor();
-					pinnedToEditorSelection = getActiveEditorSelection();
+	protected IAction getOrCreatePinAction() {
+		if (pinAction == null) {
+			pinAction = new ActionExt("Pin", IAction.AS_CHECK_BOX, InifileEditorPlugin.getImageDescriptor("icons/pin.gif")) {
+				@Override
+				public void run() {
+					if (isChecked()) {
+						// pin
+						pinnedToEditor = getActiveEditor();
+						pinnedToEditorSelection = getActiveEditorSelection();
+					}
+					else {
+						// unpin
+						pinnedToEditor = null;
+						pinnedToEditorSelection = null;
+					}
 				}
-				else {
-					// unpin
-					pinnedToEditor = null;
-					pinnedToEditorSelection = null;
-				}
-			}
-		};
+			};
+		} 
+		return pinAction;
 	}	
 
 	/**

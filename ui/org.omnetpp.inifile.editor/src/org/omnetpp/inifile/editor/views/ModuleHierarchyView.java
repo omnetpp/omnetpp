@@ -30,7 +30,6 @@ import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.GenericTreeUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.IGotoInifile;
-import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.actions.ActionExt;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.IModuleTreeVisitor;
@@ -211,7 +210,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	}
 
 	private void createActions() {
-		IAction pinAction = createPinAction();
+		IAction pinAction = getOrCreatePinAction();
 		
 		//XXX this is (almost) the same code as in ModuleParametersView
 		final ActionExt gotoInifileAction = new ActionExt("Goto Ini File") {

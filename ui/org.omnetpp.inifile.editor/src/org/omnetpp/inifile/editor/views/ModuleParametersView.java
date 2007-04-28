@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.IEditorPart;
 import org.omnetpp.common.ui.ITooltipProvider;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TooltipSupport;
@@ -52,8 +53,8 @@ import org.omnetpp.ned.model.INEDElement;
  * Displays module parameters recursively for a module type.
  * @author Andras
  */
-//XXX "Pin" functionality (ie pretend that active editor and selection does not change)
 //XXX restore selection across editors (see ModuleHierarchyView for example)
+//XXX show status: which editor we are pinned to
 public class ModuleParametersView extends AbstractModuleView {
 	private Label label;
 	private TableViewer tableViewer;
@@ -180,6 +181,8 @@ public class ModuleParametersView extends AbstractModuleView {
 	}
 
 	private void createActions() {
+		IAction pinAction = getOrCreatePinAction();
+
 		Action toggleModeAction = new ActionExt("Show all", IAction.AS_CHECK_BOX, 
 				InifileEditorPlugin.getImageDescriptor("icons/unsetparameters.png")) {
 			@Override
@@ -193,8 +196,11 @@ public class ModuleParametersView extends AbstractModuleView {
 			@Override
 			public void run() {
 				SectionKey sel = getSectionKeyFromSelection();
-				if (sel!=null && getActiveEditor() instanceof IGotoInifile)
-					((IGotoInifile)getActiveEditor()).gotoEntry(sel.section, sel.key, IGotoInifile.Mode.AUTO);
+				IEditorPart associatedEditor = getAssociatedEditor();
+				if (sel!=null && associatedEditor instanceof IGotoInifile) {
+					activateEditor(associatedEditor);
+					((IGotoInifile)associatedEditor).gotoEntry(sel.section, sel.key, IGotoInifile.Mode.AUTO);
+				}
 			}
 			public void selectionChanged(SelectionChangedEvent event) {
 				SectionKey sel = getSectionKeyFromSelection();
@@ -259,12 +265,15 @@ public class ModuleParametersView extends AbstractModuleView {
 		contextMenuManager.add(gotoNedDeclarationAction);
 		contextMenuManager.add(new Separator());
 		contextMenuManager.add(toggleModeAction);
+		contextMenuManager.add(pinAction);
 	
 		IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
 		toolBarManager.add(toggleModeAction);
+		toolBarManager.add(pinAction);
 	
 		IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
 		menuManager.add(toggleModeAction);
+		menuManager.add(pinAction);
 	}
 
 	@SuppressWarnings("unchecked")
