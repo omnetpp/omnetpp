@@ -101,6 +101,9 @@ public class GenericTreeNode {
 		return child;
 	}
 	
+	/**
+	 * Delegates to payload's toString().
+	 */
 	@Override
 	public String toString() {
 		return payload.toString();

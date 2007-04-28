@@ -52,6 +52,7 @@ import org.omnetpp.ned.model.INEDElement;
  * Displays module parameters recursively for a module type.
  * @author Andras
  */
+//XXX "Pin" functionality (ie pretend that active editor and selection does not change)
 public class ModuleParametersView extends AbstractModuleView {
 	private Label label;
 	private TableViewer tableViewer;
@@ -230,8 +231,8 @@ public class ModuleParametersView extends AbstractModuleView {
 				if (element instanceof ParamResolution) {
 					ParamResolution res = (ParamResolution) element;
 					// experimental: don't enable "Go to NED declaration" if it's the same as "Go to NED value"
-					// return gotoDecl ? (res.paramDeclNode==res.paramValueNode ? null : res.paramDeclNode) : res.paramValueNode;
-					return gotoDecl ? res.paramDeclNode : res.paramValueNode;
+					return gotoDecl ? (res.paramDeclNode==res.paramValueNode ? null : res.paramDeclNode) : res.paramValueNode;
+					//return gotoDecl ? res.paramDeclNode : res.paramValueNode;
 				}
 				return null;
 			}

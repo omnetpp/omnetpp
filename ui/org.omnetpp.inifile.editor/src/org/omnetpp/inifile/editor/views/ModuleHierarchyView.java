@@ -1,14 +1,11 @@
 package org.omnetpp.inifile.editor.views;
 
 import java.util.Stack;
+import java.util.WeakHashMap;
 
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -19,6 +16,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.IEditorInput;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
@@ -27,7 +25,6 @@ import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.GenericTreeUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.IGotoInifile;
-import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.actions.ActionExt;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.IModuleTreeVisitor;
@@ -55,13 +52,15 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
  *
  * @author Andras
  */
-//XXX create another view: Hierarchy (inheritance tree); and call this Usage? Nesting? Tree? Containment?
-//XXX follow selection
 //XXX "like" submodule with unresolved type does not appear as such!!!
+//XXX "Pin" functionality (ie pretend that active editor and selection does not change)
 public class ModuleHierarchyView extends AbstractModuleView {
 	private TreeViewer treeViewer;
 	private IInifileDocument inifileDocument; // corresponds to the current selection; needed by the label provider
 	private MenuManager contextMenuManager = new MenuManager("#PopupMenu");
+
+	// hashmap to save/restore view's state when switching across editors 
+	private WeakHashMap<IEditorInput, ISelection> selectedElements = new WeakHashMap<IEditorInput, ISelection>();
 
 	/**
 	 * A payload class for the GenericTreeNode tree that is displayed in the view
@@ -191,6 +190,14 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		});
 		treeViewer.setContentProvider(new GenericTreeContentProvider());
 		
+		// remember selection (we'll try to restore it after tree rebuild)
+		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				if (!event.getSelection().isEmpty())
+					selectedElements.put(getActiveEditor().getEditorInput(), event.getSelection());
+			}
+		});
+
 		// create context menu
  		getViewSite().registerContextMenu(contextMenuManager, treeViewer);
  		treeViewer.getTree().setMenu(contextMenuManager.createContextMenu(treeViewer.getTree()));
@@ -251,7 +258,9 @@ public class ModuleHierarchyView extends AbstractModuleView {
 				}
 				if (element instanceof ParamResolution) {
 					ParamResolution res = (ParamResolution) element;
-					return gotoDecl ? res.paramDeclNode : res.paramValueNode; 
+					// experimental: don't enable "Go to NED declaration" if it's the same as "Go to NED value"
+					return gotoDecl ? (res.paramDeclNode==res.paramValueNode ? null : res.paramDeclNode) : res.paramValueNode;
+					//return gotoDecl ? res.paramDeclNode : res.paramValueNode; 
 				}
 				return null;
 			}
@@ -277,7 +286,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		treeViewer.addSelectionChangedListener(gotoNedAction);
 		treeViewer.addSelectionChangedListener(gotoNedDeclAction);
 	
-		// add double-click support to the table
+		// add double-click support to the tree
 		treeViewer.getTree().addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -308,7 +317,6 @@ public class ModuleHierarchyView extends AbstractModuleView {
 
 	public void buildContent(INEDElement module, final InifileAnalyzer analyzer, final String section, String key) {
 		final IInifileDocument doc = analyzer==null ? null : analyzer.getDocument();
-		final String[] sectionChain = doc==null ? null : InifileUtils.resolveSectionChain(doc, section);
 
 		// build tree
         final GenericTreeNode root = new GenericTreeNode("root");
@@ -365,8 +373,17 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		if (!GenericTreeUtils.treeEquals(root, (GenericTreeNode)treeViewer.getInput())) {
 			this.inifileDocument = analyzer==null ? null : analyzer.getDocument();
 			treeViewer.setInput(root);
-			treeViewer.expandToLevel(2); //XXX collapses when switching to another editor then back. Remember selected element for each editor? use WeakHashMap?
+			
+			// try to preserve selection
+			ISelection oldSelection = selectedElements.get(getActiveEditor().getEditorInput());
+			if (oldSelection != null)
+				treeViewer.setSelection(oldSelection, true);
+			else
+				treeViewer.expandToLevel(2); // by default, open root node 
 		}
+
+		// refresh the viewer anyway, because e.g. parameter value changes are not reflected in the input tree
+		treeViewer.refresh();
 	}
 
 	/**
