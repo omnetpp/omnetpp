@@ -29,6 +29,8 @@ import org.eclipse.swt.widgets.Control;
  *   
  * @author Andras
  */
+//XXX problem: if mouse is near the right-bottom corner of the screen, tooltip comes
+// up right under the mouse cursor, and won't go away on mouse movement. solution: better placement?
 public class TooltipSupport {
 	protected DefaultInformationControl tooltipWidget;
 	protected AllInOneListener eventListener = new AllInOneListener();

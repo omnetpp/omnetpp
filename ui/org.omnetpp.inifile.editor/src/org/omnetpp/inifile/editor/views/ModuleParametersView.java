@@ -57,7 +57,6 @@ import org.omnetpp.ned.model.INEDElement;
  * Displays module parameters recursively for a module type.
  * @author Andras
  */
-//XXX restore selection across editors (see ModuleHierarchyView for example)
 //XXX show status: which editor we are pinned to
 //XXX disable "pin" action while view shows message (not contents) ? 
 public class ModuleParametersView extends AbstractModuleView {
