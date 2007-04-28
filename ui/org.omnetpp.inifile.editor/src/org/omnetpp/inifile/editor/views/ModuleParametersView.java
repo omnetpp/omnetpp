@@ -236,8 +236,8 @@ public class ModuleParametersView extends AbstractModuleView {
 				return null;
 			}
 		};
-		ActionExt gotoNedDeclarationAction = new GotoNedFileAction("Go to NED declaration", null, true); 
-		ActionExt gotoNedValueAction = new GotoNedFileAction("Go to NED value", null, false); 
+		ActionExt gotoNedDeclarationAction = new GotoNedFileAction("Open NED declaration", null, true); 
+		ActionExt gotoNedValueAction = new GotoNedFileAction("Open NED value", null, false); 
 	
 		tableViewer.addSelectionChangedListener(gotoInifileAction);
 		tableViewer.addSelectionChangedListener(gotoNedValueAction);

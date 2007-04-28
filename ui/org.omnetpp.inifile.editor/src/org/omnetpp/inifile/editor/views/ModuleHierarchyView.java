@@ -45,6 +45,7 @@ import org.omnetpp.ned.model.interfaces.IModuleTypeNode;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.pojo.CompoundModuleNode;
+import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
@@ -222,7 +223,13 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			}
 		};
 		
-		final ActionExt gotoNedFileAction = new ActionExt("Go to NED file", null) {
+		class GotoNedFileAction extends ActionExt {
+			boolean gotoDecl;
+			GotoNedFileAction(boolean gotoDecl) {
+				super();
+				this.gotoDecl = gotoDecl;
+				updateLabel(null);
+			}
 			@Override
 			public void run() {
 				INEDElement sel = getNEDElementFromSelection();
@@ -232,6 +239,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			public void selectionChanged(SelectionChangedEvent event) {
 				INEDElement sel = getNEDElementFromSelection();
 				setEnabled(sel != null);
+				updateLabel(sel);
 			}
 			private INEDElement getNEDElementFromSelection() {
 				Object element = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
@@ -239,33 +247,48 @@ public class ModuleHierarchyView extends AbstractModuleView {
 					element = ((GenericTreeNode)element).getPayload();
 				if (element instanceof ModuleNode) {
 					ModuleNode payload = (ModuleNode) element;
-					if (payload.submoduleNode != null)
-						return payload.submoduleNode;
-					else if (payload.submoduleType != null)
-						return payload.submoduleType;  //XXX two separate actions? (useful with "like", because we could go to the actual type/to submodule decl)
+					return gotoDecl ? payload.submoduleType : payload.submoduleNode;
 				}
 				if (element instanceof ParamResolution) {
 					ParamResolution res = (ParamResolution) element;
-					return res.paramValueNode;
+					return gotoDecl ? res.paramDeclNode : res.paramValueNode; 
 				}
 				return null;
 			}
+			private void updateLabel(INEDElement node) {
+				if (gotoDecl) {
+					if (node instanceof ParamNode)
+						setText("Open parameter declaration");
+					else
+						setText("Open type declaration");
+				}
+				else {
+					if (node instanceof ParamNode)
+						setText("Open parameter");
+					else
+						setText("Open submodule");
+				}
+			}
 		};
+ 		final ActionExt gotoNedAction = new GotoNedFileAction(false); 
+		ActionExt gotoNedDeclAction = new GotoNedFileAction(true); 
 	
 		treeViewer.addSelectionChangedListener(gotoInifileAction);
-		treeViewer.addSelectionChangedListener(gotoNedFileAction);
+		treeViewer.addSelectionChangedListener(gotoNedAction);
+		treeViewer.addSelectionChangedListener(gotoNedDeclAction);
 	
 		// add double-click support to the table
 		treeViewer.getTree().addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
-				gotoNedFileAction.run();
+				gotoNedAction.run();
 			}
 		});
 	
 		// build menus and toolbar
 		contextMenuManager.add(gotoInifileAction);
-		contextMenuManager.add(gotoNedFileAction);
+		contextMenuManager.add(gotoNedAction);
+		contextMenuManager.add(gotoNedDeclAction);
 	}
 	
 	@Override
