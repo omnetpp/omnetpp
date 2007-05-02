@@ -363,9 +363,10 @@ public class ModuleParametersView extends AbstractModuleView {
 				tableViewer.setSelection(oldSelection, true);
 
 			// update label
-			String text = "Section ["+section+"], " + (unassignedOnly ? "unassigned parameters" : "all parameters");
+			String text = "Section ["+section+"]"; 
 			if (getPinnedToEditor() != null)
-				text += "  (Pinned to: " + getPinnedToEditor().getEditorInput().getName() + ")"; 
+				text += " of " + getPinnedToEditor().getEditorInput().getName() + " (pinned)"; 
+			text += ", " + (unassignedOnly ? "unassigned parameters" : "all parameters");
 			label.setText(text);
 		}
 	}

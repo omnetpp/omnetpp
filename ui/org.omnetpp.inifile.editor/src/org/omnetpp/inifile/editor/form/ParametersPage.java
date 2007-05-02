@@ -46,6 +46,7 @@ import org.omnetpp.inifile.editor.model.SectionKey;
  * 
  * @author Andras
  */
+//XXX combobox should publish editor selection 
 //XXX validation of keys and values! e.g. shouldn't allow empty key
 //XXX comment handling (stripping/adding of "#")
 //XXX editing stuff inside included files causes exception without user feedback -- pop up error dialog?
@@ -91,6 +92,12 @@ public class ParametersPage extends FormPage {
 		
 		sectionsCombo.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
+				// publish section as editor selection
+				String selectedSection = sectionsCombo.getText(); 
+				if (getInifileDocument().containsSection(selectedSection))
+					setEditorSelection(selectedSection, null);
+				
+				// refresh table contents, etc.
 				reread();
 			}
 		});
