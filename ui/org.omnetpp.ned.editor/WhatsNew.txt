@@ -1,3 +1,6 @@
+  + global undo/redo is working if the Property View is the acive view
+  + property sheets do not scroll randomly when a group opened/closed
+- 070422 ====== A1 version =====
 - 061201
   + double clicking on a top level element opens its base component
   + inherited submodules cannot be deleted, moved, resized and they are selected

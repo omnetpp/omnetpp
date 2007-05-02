@@ -1,5 +1,6 @@
 package org.omnetpp.ned.editor.graph;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
@@ -38,9 +39,6 @@ import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.gef.ui.properties.UndoablePropertySheetEntry;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.IStatusLineManager;
-import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.util.TransferDropTargetListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
@@ -50,6 +48,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
+import org.eclipse.ui.part.CellEditorActionHandler;
 import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
@@ -57,6 +56,7 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
 import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
@@ -141,14 +141,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
             setSorter(new BasePreferrerPropertySheetSorter());
             // integrates the GEF undo/redo stack
             setRootEntry(new UndoablePropertySheetEntry(getCommandStack()));
-
-            // install global actions
-            IActionBars bars = pageSite.getActionBars();
-            String id = ActionFactory.UNDO.getId();
-            bars.setGlobalActionHandler(id, getActionRegistry().getAction(id));
-            id = ActionFactory.REDO.getId();
-            bars.setGlobalActionHandler(id, getActionRegistry().getAction(id));
-            bars.updateActionBars();
         }
 
         @Override
@@ -158,18 +150,39 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
             // we should not call this in the init method, because it causes NPE
             // BUG see: https://bugs.eclipse.org/bugs/show_bug.cgi?id=159747
             setPropertySourceProvider(new NedEditPartPropertySourceProvider());
+            
+            // set up a context menu with undo/redo items
         }
         
         @Override
-        public void makeContributions(IMenuManager menuManager, IToolBarManager toolBarManager,
-                IStatusLineManager statusLineManager) {
-
-            super.makeContributions(menuManager, toolBarManager, statusLineManager);
-
-            // TODO should be added to the global menu instead of the local toolbar
-            toolBarManager.add(getActionRegistry().getAction(ActionFactory.UNDO.getId()));
-            toolBarManager.add(getActionRegistry().getAction(ActionFactory.REDO.getId()));
+        public void setActionBars(IActionBars actionBars) {
+            super.setActionBars(actionBars);
+            // hook the editor's global undo/redo action to the cell editor
+            getCellEditorActionHandler().setUndoAction(getActionRegistry().getAction(ActionFactory.UNDO.getId()));
+            getCellEditorActionHandler().setRedoAction(getActionRegistry().getAction(ActionFactory.REDO.getId()));
         }
+        
+        
+        // BUG https://bugs.eclipse.org/bugs/show_bug.cgi?id=185081
+        /**
+         * in eclipse no accessor for the private field so it is not possible to override 
+         * the setActionBars method. Once it is fixed remove this method.
+         * @return The private cell editor handler, so it is possible to override set ection bars.
+         */
+        public CellEditorActionHandler getCellEditorActionHandler() {
+            CellEditorActionHandler result = null;
+            try {
+                // get it with reflection
+                Field declaredField = PropertySheetPage.class.getDeclaredField("cellEditorActionHandler");
+                declaredField.setAccessible(true);
+                result = (CellEditorActionHandler)declaredField.get(this);
+                declaredField.setAccessible(false);
+            } catch (Exception e) {
+                NedEditorPlugin.logError(e);
+            } 
+            return result;
+        }
+
     }
 
     // ===== MAIN GRAPHIC NED EDITOR ==================================================
