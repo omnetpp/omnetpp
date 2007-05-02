@@ -199,7 +199,7 @@ public class ModuleParametersView extends AbstractModuleView {
 		IAction pinAction = getOrCreatePinAction();
 
 		Action toggleModeAction = new ActionExt("Show all", IAction.AS_CHECK_BOX, 
-				InifileEditorPlugin.getImageDescriptor("icons/unsetparameters.png")) {
+				InifileEditorPlugin.getImageDescriptor("icons/filter_ps.gif")) {
 			@Override
 			public void run() {
 				unassignedOnly = !unassignedOnly;
