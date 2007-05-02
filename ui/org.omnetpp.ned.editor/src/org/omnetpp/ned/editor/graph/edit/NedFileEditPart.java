@@ -8,6 +8,7 @@ import org.eclipse.gef.CompoundSnapToHelper;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.SnapToGeometry;
 import org.eclipse.gef.SnapToHelper;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.figures.NedFileFigure;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.edit.policies.NedFileLayoutEditPolicy;
@@ -106,6 +107,14 @@ public class NedFileEditPart extends BaseEditPart  implements INEDChangeListener
 
     public void modelChanged(NEDModelEvent event) {
         // we do a full refresh in response of a change
-        totalRefresh();
+        // if we are in a background thread, refresh later when UI thread is active
+        if (Display.getCurrent() == null)
+            Display.getDefault().asyncExec(new Runnable() {
+                public void run() {
+                    totalRefresh();
+                }
+            });
+        else // refresh in the current UI thread 
+            totalRefresh();
     }
 }

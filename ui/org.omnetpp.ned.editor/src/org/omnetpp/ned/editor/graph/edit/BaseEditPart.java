@@ -109,7 +109,9 @@ abstract public class BaseEditPart
             performDirectEdit();
         // let's open or activate a new editor if somone has double clicked the component
         if (RequestConstants.REQ_OPEN.equals(req.getType())) {
-            NEDResourcesPlugin.openNEDElementInEditor(getNEDElementToOpen());
+            INEDElement elementToOpen= getNEDElementToOpen();
+            if (elementToOpen != null)
+                NEDResourcesPlugin.openNEDElementInEditor(elementToOpen);
         }
     }
 

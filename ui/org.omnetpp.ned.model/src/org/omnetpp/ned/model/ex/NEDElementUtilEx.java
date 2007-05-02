@@ -170,6 +170,7 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 		LiteralNode literalNode = (LiteralNode)propertyKeyNode.getFirstChildWithTag(NED_LITERAL);
 		if (literalNode == null) {
 			literalNode = (LiteralNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NED_LITERAL);
+	        literalNode.setType(NED_CONST_STRING);
 			propertyKeyNode.appendChild(literalNode);
 		}
 

@@ -9,6 +9,7 @@ import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
@@ -47,13 +48,21 @@ public class NedModelLabelProvider extends LabelProvider {
         }
         else if (model instanceof PropertyNode) {
             PropertyNode node = (PropertyNode)model;
-            label = "@"+node.getName(); //FIXME TODO: produce value by visiting children
+            label = node.getName(); //FIXME TODO: produce value by visiting children
         }
         else if (model instanceof ParamNode) {
             ParamNode node = (ParamNode)model;
             String attType = node.getAttribute(ParamNode.ATT_TYPE);
             label = "".equals(attType) ? "" : attType+" ";
             label += node.getName();
+            
+            if (StringUtils.isNotEmpty(node.getValue())) {
+                if (node.getIsDefault() )
+                    label += " = default("+node.getValue()+")";
+                else
+                    label += " = "+ node.getValue();
+            }
+            
         }
         else if (model instanceof SimpleModuleNode) {
             SimpleModuleNode node = (SimpleModuleNode)model;
@@ -137,7 +146,7 @@ public class NedModelLabelProvider extends LabelProvider {
 	private static String bracketizeIfNotEmpty(String attr) {
 		return (attr==null || attr.equals("")) ? "" : "["+attr+"]";
 	}
-
+	
 	public Image getImage(Object obj) {
         INEDElement model = (INEDElement)obj;
         Image image = null;

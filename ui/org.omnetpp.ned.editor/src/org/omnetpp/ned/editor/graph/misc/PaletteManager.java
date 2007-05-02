@@ -17,9 +17,11 @@ import org.eclipse.gef.palette.PanningSelectionToolEntry;
 import org.eclipse.gef.palette.ToolEntry;
 import org.eclipse.gef.tools.MarqueeSelectionTool;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
@@ -51,30 +53,43 @@ public class PaletteManager implements INEDChangeListener {
     GraphicalNedEditor hostingEditor;
     PaletteRoot nedPalette = new PaletteRoot();
     PaletteContainer toolsDrawer, componentsDrwawer;
+    DelayedJob paletteUpdaterJob = new DelayedJob(200) {
+        public void run() {
+            buildPalette();
+        }
+    };
 
     public PaletteManager(GraphicalNedEditor hostingEditor) {
         super();
         this.hostingEditor = hostingEditor;
         toolsDrawer = createToolsDrawer(nedPalette);
         componentsDrwawer = createComponentsDrawer();
+        buildPalette();
     }
 
     /* (non-Javadoc)
      * @see org.omnetpp.ned.model.notification.INEDChangeListener#modelChanged(org.omnetpp.ned.model.notification.NEDModelEvent)
      * Called when a change occured in the module which forces palette redraw
+     * NOTE: this notification can arrive in any thread (even in a backgrund thread)
      */
     public void modelChanged(NEDModelEvent event) {
+        paletteUpdaterJob.restartTimer();
+    }
+
+    public PaletteRoot getRootPalette() {
+        return nedPalette;
+    }
+
+    /**
+     * Builds the palette (all drawers)
+     */
+    public void buildPalette() {
         nedPalette.getChildren().clear();
         nedPalette.add(toolsDrawer);
         nedPalette.add(componentsDrwawer);
         nedPalette.addAll(createSubmodulesDrawer());
     }
-
-    public PaletteRoot getRootPalette() {
-        modelChanged(null);
-        return nedPalette;
-    }
-
+    
     /**
      * creates several submodule drawers using currently parsed types
      * and using the GROUP property as the drawer name

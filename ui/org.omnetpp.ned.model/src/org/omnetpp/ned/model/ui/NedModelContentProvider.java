@@ -59,7 +59,8 @@ public class NedModelContentProvider implements ITreeContentProvider {
         for(INEDElement child : currElem) {
             // display only the following classes
             if ((child instanceof NedFileNode) ||
-                    (child instanceof ImportNode) ||
+//                    (child instanceof ImportNode) ||
+//                    (child instanceof PropertyNode) ||
                     (child instanceof ChannelNode) ||
                     (child instanceof ChannelInterfaceNode) ||
                     (child instanceof SimpleModuleNode) ||
@@ -72,7 +73,6 @@ public class NedModelContentProvider implements ITreeContentProvider {
                     (child instanceof SubmoduleNode) ||
                     (child instanceof GateNode) ||
                     (child instanceof ParamNode) ||
-                    (child instanceof PropertyNode) ||
                     (child instanceof ConnectionNode) ||
                     (child instanceof ConnectionGroupNode) ||
                     (child instanceof TypesNode) ||
