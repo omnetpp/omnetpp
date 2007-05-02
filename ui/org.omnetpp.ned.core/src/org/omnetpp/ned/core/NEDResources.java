@@ -449,6 +449,11 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             nedFiles.put(file, tree);
             // add ourselves to the tree root as a listener
             tree.getListeners().add(nedModelChangeListener);
+            // remove ourselves from the old tree which is no longer used
+            if (oldTree != null)
+                oldTree.getListeners().remove(nedModelChangeListener);
+            // fire a ned change notification (new tree added)
+            nedModelChanged(new NEDStructuralChangeEvent(tree, tree, NEDStructuralChangeEvent.Type.INSERTION,tree,tree));
         }
     }
 

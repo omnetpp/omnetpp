@@ -4,6 +4,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -141,6 +142,7 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 	 * @param element must NOT be null, and MUST be part of the model (i.e. in NEDResourcesPlugin)
 	 */
 	public static void openNEDElementInEditor(INEDElement element) {
+	    Assert.isNotNull(element);
         openNEDElementInEditor(element, IGotoNedElement.Mode.AUTOMATIC);
 	}
 
