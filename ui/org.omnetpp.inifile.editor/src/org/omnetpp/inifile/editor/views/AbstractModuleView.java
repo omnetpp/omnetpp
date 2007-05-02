@@ -109,9 +109,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 			public void partClosed(IWorkbenchPart part) {
 				if (part == pinnedToEditor) {
 					// unpin on closing of the editor we're pinned to
-					pinnedToEditor = null;
-					pinnedToEditorSelection = null;
-					pinAction.setChecked(false);
+					unpin();
 					activeEditorChanged();
 				}
 				if (part == activeEditor) {
@@ -177,16 +175,10 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 			pinAction = new ActionExt("Pin", IAction.AS_CHECK_BOX, InifileEditorPlugin.getImageDescriptor("icons/pin.gif")) {
 				@Override
 				public void run() {
-					if (isChecked()) {
-						// pin
-						pinnedToEditor = getActiveEditor();
-						pinnedToEditorSelection = getActiveEditorSelection();
-					}
-					else {
-						// unpin
-						pinnedToEditor = null;
-						pinnedToEditorSelection = null;
-					}
+					if (isChecked())
+						pin();
+					else
+						unpin();
 				}
 			};
 		} 
@@ -208,6 +200,40 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 		return pinnedToEditorSelection != null ? pinnedToEditorSelection : getActiveEditorSelection();
 	}
 	
+	/**
+	 * Pin the view to the current editor's current selection.
+	 */
+	public void pin() {
+		pinnedToEditor = getActiveEditor();
+		pinnedToEditorSelection = getActiveEditorSelection();
+		pinAction.setChecked(true);
+        rebuildContent();  // to update label: "Pinned to: ..."
+	}
+
+	/**
+	 * Unpin the view: let it follow the active editor selection.
+	 */
+	public void unpin() {
+		pinnedToEditor = null;
+		pinnedToEditorSelection = null;
+		pinAction.setChecked(false);
+        rebuildContent();
+	}
+
+	/**
+	 * Returns the editor this view is pinned to (see Pin action), or null if view is not pinned.
+	 */
+	public IEditorPart getPinnedToEditor() {
+		return pinnedToEditor;
+	}
+
+	/**
+	 * Returns the selection this view is pinned to (see Pin action), or null if view is not pinned.
+	 */
+	public ISelection getPinnedToEditorSelection() {
+		return pinnedToEditorSelection;
+	}
+
 	/**
      * Tries to find a NED element among the parents which may have
      * parameters (simple module, compound module, channel, submodule).

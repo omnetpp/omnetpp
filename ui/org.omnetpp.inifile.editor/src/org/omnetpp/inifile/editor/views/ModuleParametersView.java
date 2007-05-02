@@ -57,7 +57,6 @@ import org.omnetpp.ned.model.INEDElement;
  * Displays module parameters recursively for a module type.
  * @author Andras
  */
-//XXX show status: which editor we are pinned to
 //XXX disable "pin" action while view shows message (not contents) ? 
 public class ModuleParametersView extends AbstractModuleView {
 	private Label label;
@@ -364,7 +363,10 @@ public class ModuleParametersView extends AbstractModuleView {
 				tableViewer.setSelection(oldSelection, true);
 
 			// update label
-			label.setText("Section ["+section+"], " + (unassignedOnly ? "unassigned parameters" : "all parameters"));
+			String text = "Section ["+section+"], " + (unassignedOnly ? "unassigned parameters" : "all parameters");
+			if (getPinnedToEditor() != null)
+				text += "  (Pinned to: " + getPinnedToEditor().getEditorInput().getName() + ")"; 
+			label.setText(text);
 		}
 	}
 
