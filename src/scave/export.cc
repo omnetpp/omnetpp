@@ -21,8 +21,10 @@
 #include "export.h"
 
 using namespace std;
-using DataTable::Column;
-using DataTable::ColumnType;
+
+//XXX unfortunately, VC8.0 doesn't like the following lines, so Column needs to be fully qualified in the source...
+//using DataTable::Column;
+//using DataTable::ColumnType;
 
 /*
  */
@@ -55,7 +57,7 @@ string XYDataTable::getStringValue(int row, int col) const
     return "";
 }
 
-BigDecimal XYDataTable::getBigDecimalValue(int row, int col) const 
+BigDecimal XYDataTable::getBigDecimalValue(int row, int col) const
 {
     if (col == 0)
     {
@@ -83,7 +85,7 @@ ScalarDataTable::ScalarDataTable(const std::string name, const std::string descr
 {
     ScalarDataSorter sorter(&manager);
     scalars = sorter.groupByFields(idlist, groupBy);
-    
+
     // add a column for each grouping field
     if (groupBy.hasField(ScalarFields::FILE))   header.push_back(Column("File", STRING));
     if (groupBy.hasField(ScalarFields::RUN))    header.push_back(Column("Run", STRING));
@@ -252,7 +254,7 @@ string MatlabScriptExport::makeFileName(const string name)
 void MatlabScriptExport::saveTable(const DataTable &table, int startRow, int endRow)
 {
     writeDescriptionField(table);
-    writeColumnFields(table, startRow, endRow);    
+    writeColumnFields(table, startRow, endRow);
 }
 
 void MatlabScriptExport::writeDescriptionField(const DataTable &table)
@@ -264,7 +266,7 @@ void MatlabScriptExport::writeColumnFields(const DataTable &table, int startRow,
 {
     for (int col = 0; col < table.numOfColumns(); ++col)
     {
-        Column column = table.column(col);
+        DataTable::Column column = table.column(col);
 
         out << makeIdentifier(table.name) + "." + makeIdentifier(column.name) << "=[" << '\n';
         switch (column.type)
@@ -354,7 +356,7 @@ void OctaveTextExport::writeColumnFields(const DataTable &table, int startRow, i
 {
     for (int col=0; col<table.numOfColumns(); ++col)
     {
-        Column column = table.column(col);
+        DataTable::Column column = table.column(col);
         switch (column.type)
         {
         case DataTable::DOUBLE: writeDoubleColumn(table, col, startRow, endRow); break;
@@ -366,7 +368,7 @@ void OctaveTextExport::writeColumnFields(const DataTable &table, int startRow, i
 
 void OctaveTextExport::writeDoubleColumn(const DataTable &table, int col, int startRow, int endRow)
 {
-    Column column = table.column(col);
+    DataTable::Column column = table.column(col);
     out << "# name: " << makeIdentifier(column.name) << "\n"
            "# type: cell\n"
            "# rows: 1\n"
@@ -394,7 +396,7 @@ void OctaveTextExport::writeDoubleColumn(const DataTable &table, int col, int st
 
 void OctaveTextExport::writeBigDecimalColumn(const DataTable &table, int col, int startRow, int endRow)
 {
-    Column column = table.column(col);
+    DataTable::Column column = table.column(col);
     out << "# name: " << makeIdentifier(column.name) << "\n"
            "# type: cell\n"
            "# rows: 1\n"
@@ -412,7 +414,7 @@ void OctaveTextExport::writeBigDecimalColumn(const DataTable &table, int col, in
 
 void OctaveTextExport::writeStringColumn(const DataTable &table, int col, int startRow, int endRow)
 {
-    Column column = table.column(col);
+    DataTable::Column column = table.column(col);
     out << "# name: " << makeIdentifier(column.name) << "\n"
            "# type: cell\n"
            "# rows: 1\n"
@@ -456,7 +458,7 @@ void CsvExport::writeHeader(const DataTable &table)
     {
         if (col > 0)
             out << ",";
-        Column column = table.column(col);
+        DataTable::Column column = table.column(col);
         writeString(column.name);
     }
     out << "\r\n";
@@ -466,7 +468,7 @@ void CsvExport::writeRow(const DataTable &table, int row)
 {
     for (int col = 0; col < table.numOfColumns(); ++col)
     {
-        Column column = table.column(col);
+        DataTable::Column column = table.column(col);
         if (col > 0)
             out << ",";
         switch (column.type)
