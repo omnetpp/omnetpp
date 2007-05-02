@@ -65,6 +65,8 @@ NEDElement *createNodeWithTag(int tagcode, NEDElement *parent)
 
 void storePos(NEDElement *node, YYLTYPE pos)
 {
+    np->getSource()->trimSpaceAndComments(pos);
+
     assert(node);
     NEDSourceRegion region;
     region.startLine = pos.first_line;
