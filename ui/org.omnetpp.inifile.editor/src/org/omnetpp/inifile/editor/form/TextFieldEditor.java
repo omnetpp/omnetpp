@@ -75,6 +75,10 @@ public class TextFieldEditor extends FieldEditor {
 		
 		// commit on losing focus, etc.
 		addFocusListenerTo(textField);
+		
+		addFocusTransfer(label, textField);
+		addFocusTransfer(this, textField);
+
 	}
 
 	protected ContentAssistField createContentAssistField() {

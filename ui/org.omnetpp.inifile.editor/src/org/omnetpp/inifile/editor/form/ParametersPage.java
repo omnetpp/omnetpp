@@ -346,6 +346,11 @@ public class ParametersPage extends FormPage {
 	}
 
 	@Override
+	public boolean setFocus() {
+		return sectionsCombo.setFocus();
+	}
+
+	@Override
 	public void reread() {
 		// refresh combo with the current section names, trying to preserve existing selection
 		IInifileDocument doc = getInifileDocument();

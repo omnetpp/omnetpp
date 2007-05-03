@@ -34,7 +34,7 @@ public class InifileFormEditor extends Composite {
 	public static final String PARAMETERS_PAGE = "Parameters";
 	public static final String CONFIGURATION_PAGE = "Configuration";
 
-	public static final Color BGCOLOR = null; // or: ColorFactory.asColor("white");
+	public static final Color BGCOLOR = null;
 
 	protected InifileEditor inifileEditor = null;  // backreference to the containing editor
 	private TreeViewer treeViewer;
@@ -56,7 +56,7 @@ public class InifileFormEditor extends Composite {
 		sashForm.setBackground(BGCOLOR);
 		
 		treeViewer = createTreeViewer(sashForm);
-		form = new Composite(sashForm, SWT.BORDER);  //XXX try to use ScrolledComposite
+		form = new Composite(sashForm, SWT.BORDER);
 		form.setBackground(BGCOLOR);
 		form.setLayout(new FillLayout());
 		sashForm.setWeights(new int[] {1,4});
@@ -99,6 +99,7 @@ public class InifileFormEditor extends Composite {
 	
 	private void addListener(final TreeViewer treeViewer) {
 		((Tree) treeViewer.getControl()).addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				ISelection selection = treeViewer.getSelection();
 				if (selection.isEmpty())
@@ -106,6 +107,11 @@ public class InifileFormEditor extends Composite {
 				Object sel = ((IStructuredSelection) selection).getFirstElement();
 				String selected = (String) ((GenericTreeNode)sel).getPayload();
 				showCategoryPage(selected);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				formPage.setFocus();
 			}
 		});
 	}

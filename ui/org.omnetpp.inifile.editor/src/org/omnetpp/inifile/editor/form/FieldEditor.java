@@ -5,6 +5,8 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
@@ -113,5 +115,16 @@ public abstract class FieldEditor extends Composite {
 		removeFromFile(GENERAL);  //XXX into subclass?
 		reread();
 	}
-	
+
+	/** 
+	 * Utility function: sets up a mouse listener so when a composite or label is clicked,
+	 * another control (editfield etc) gets the focus.
+	 */
+	protected static void addFocusTransfer(final Control widgetClicked, final Control widgetToFocus) {
+		widgetClicked.addMouseListener(new MouseAdapter() {
+			public void mouseDown(MouseEvent e) {
+				widgetToFocus.setFocus();
+			}
+		});
+	}
 }

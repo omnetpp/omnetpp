@@ -66,6 +66,9 @@ public class CheckboxFieldEditor extends FieldEditor {
 		
 		// commit on losing focus, etc.
 		addFocusListenerTo(checkbox);
+		
+		addFocusTransfer(label, checkbox);
+		addFocusTransfer(this, checkbox);
 	}
 
 	@Override

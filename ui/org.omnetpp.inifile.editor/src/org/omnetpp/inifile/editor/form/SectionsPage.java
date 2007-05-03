@@ -318,6 +318,11 @@ public class SectionsPage extends FormPage {
 	}
 	
 	@Override
+	public boolean setFocus() {
+		return treeViewer.getTree().setFocus();
+	}
+
+	@Override
 	public String getPageCategory() {
 		return InifileFormEditor.SECTIONS_PAGE;
 	}

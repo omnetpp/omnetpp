@@ -16,8 +16,8 @@ public abstract class ScrolledFormPage extends FormPage {
 
 		// we are not ScrolledForm, so create a ScrolledForm child which fills the FormPage
 		this.setLayout(new FillLayout());
-		//final ScrolledComposite scrolledComposite = new SharedScrolledComposite(this, SWT.H_SCROLL | SWT.V_SCROLL) {};
 		final ScrolledComposite scrolledComposite = new ScrolledComposite(this, SWT.H_SCROLL | SWT.V_SCROLL);
+		scrolledComposite.getVerticalBar().setIncrement(10); // mouse wheel step
 
 		// create form which will hold the actual controls -- clients should use "form" as parent
 		form = new Composite(scrolledComposite, SWT.NONE);

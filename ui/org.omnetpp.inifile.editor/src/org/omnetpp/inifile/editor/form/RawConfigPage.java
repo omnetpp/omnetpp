@@ -39,6 +39,11 @@ public class RawConfigPage extends FormPage {
 	public String getPageCategory() {
 		return "(raw)";
 	}
+
+	@Override
+	public boolean setFocus() {
+		return getChildren()[0].setFocus(); // refine if needed
+	}
 	
 	@Override
 	public void reread() {

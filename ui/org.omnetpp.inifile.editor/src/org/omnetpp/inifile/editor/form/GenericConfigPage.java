@@ -81,6 +81,8 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -142,6 +144,13 @@ public class GenericConfigPage extends ScrolledFormPage {
 
 		createFieldEditors(form, category);
 		layoutForm();
+		
+		// obtain focus if background is clicked
+		form.addMouseListener(new MouseAdapter() {
+			public void mouseDown(MouseEvent e) {
+				setFocus();
+			}
+		});
 	}
 
 	private void createFieldEditors(Composite form, String category) {
@@ -294,7 +303,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 	}
 
 	private Group createGroup(Composite parent, String groupLabel) {
-		Group group = new Group(parent, SWT.NONE);
+		final Group group = new Group(parent, SWT.NONE);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		group.setText(groupLabel);
 
@@ -302,6 +311,16 @@ public class GenericConfigPage extends ScrolledFormPage {
 		gridLayout.verticalSpacing = 0;
 		gridLayout.marginHeight = 5;
 		group.setLayout(gridLayout);
+		
+		// when group background is clicked, transfer focus to first field editor in it
+		group.addMouseListener(new MouseAdapter() {
+			public void mouseDown(MouseEvent e) {
+				for (Control c : group.getChildren())
+					if (c instanceof FieldEditor)
+						{c.setFocus(); return;}
+			}
+		});
+		
 		return group;
 	}
 
@@ -370,6 +389,11 @@ public class GenericConfigPage extends ScrolledFormPage {
 		return category;
 	}
 	
+	@Override
+	public boolean setFocus() {
+		return fieldEditors.get(0).setFocus();
+	}
+
 	@Override
 	public void reread() {
 		for (FieldEditor e : fieldEditors)

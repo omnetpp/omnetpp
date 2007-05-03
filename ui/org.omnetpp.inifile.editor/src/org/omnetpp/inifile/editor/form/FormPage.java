@@ -62,6 +62,11 @@ public abstract class FormPage extends Composite {
 	public abstract void commit();
 
 	/**
+	 * Set the focus to an appropriate control in the form page. 
+	 */
+	public abstract boolean setFocus();
+	
+	/**
 	 * Utility method for subclasses: add a title to the form
 	 */
 	protected Composite createTitleArea(Composite parent, String category) {
