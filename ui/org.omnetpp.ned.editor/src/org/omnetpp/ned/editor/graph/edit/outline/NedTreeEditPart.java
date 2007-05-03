@@ -8,6 +8,7 @@ import org.eclipse.gef.RootEditPart;
 import org.eclipse.gef.editparts.AbstractTreeEditPart;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.eclipse.gef.tools.DirectEditManager;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
@@ -112,7 +113,16 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
     }
 
     public void modelChanged(NEDModelEvent event) {
-        totalRefresh();
+        // we do a full refresh in response of a change
+        // if we are in a background thread, refresh later when UI thread is active
+        if (Display.getCurrent() == null)
+            Display.getDefault().asyncExec(new Runnable() {
+                public void run() {
+                    totalRefresh();
+                }
+            });
+        else // refresh in the current UI thread 
+            totalRefresh();
     }
 
     /**

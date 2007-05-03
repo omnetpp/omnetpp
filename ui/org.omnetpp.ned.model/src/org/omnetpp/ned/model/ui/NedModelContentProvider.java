@@ -1,6 +1,7 @@
 package org.omnetpp.ned.model.ui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -15,7 +16,6 @@ import org.omnetpp.ned.model.pojo.ConnectionNode;
 import org.omnetpp.ned.model.pojo.ConnectionsNode;
 import org.omnetpp.ned.model.pojo.GateNode;
 import org.omnetpp.ned.model.pojo.GatesNode;
-import org.omnetpp.ned.model.pojo.ImportNode;
 import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
 import org.omnetpp.ned.model.pojo.NedFileNode;
 import org.omnetpp.ned.model.pojo.ParamNode;
@@ -47,8 +47,9 @@ public class NedModelContentProvider implements ITreeContentProvider {
 	}
 
 	// TODO maybe we should provide a more flatter layout (skipping the parameters, gates, suboldules, types, connections nodes)
-	public Object[] getChildren(Object parent) {
-        List<INEDElement> result = new ArrayList<INEDElement>();
+	@SuppressWarnings("unchecked")
+    public Object[] getChildren(Object parent) {
+        List result = new ArrayList();
         INEDElement currElem = ((INEDElement)parent);
 
         // if this is a channel spec we will give back the parameters subnode's children
@@ -61,24 +62,26 @@ public class NedModelContentProvider implements ITreeContentProvider {
             // display only the following classes
             if ((child instanceof NedFileNode) ||
 //                    (child instanceof ImportNode) ||
-//                    (child instanceof PropertyNode) ||
+                    (child instanceof PropertyNode && parent instanceof ParametersNode) ||
                     (child instanceof ChannelNode) ||
                     (child instanceof ChannelInterfaceNode) ||
                     (child instanceof SimpleModuleNode) ||
                     (child instanceof CompoundModuleNode) ||
                     (child instanceof ModuleInterfaceNode) ||
-                    (child instanceof GatesNode) ||
-                    (child instanceof ParametersNode) ||
-                    (child instanceof ConnectionsNode) ||
-                    (child instanceof SubmodulesNode) ||
                     (child instanceof SubmoduleNode) ||
                     (child instanceof GateNode) ||
                     (child instanceof ParamNode) ||
                     (child instanceof ConnectionNode) ||
                     (child instanceof ConnectionGroupNode) ||
-                    (child instanceof TypesNode) ||
                     (child instanceof ChannelSpecNode))
                 result.add(child);
+            // flatten the following nodes to the first level
+            if ((child instanceof ParametersNode) ||
+                    (child instanceof GatesNode) ||
+                    (child instanceof ConnectionsNode) ||
+                    (child instanceof SubmodulesNode) ||
+                    (child instanceof TypesNode))
+                result.addAll(Arrays.asList(getChildren(child)));
         }
         return result.toArray();
 	}

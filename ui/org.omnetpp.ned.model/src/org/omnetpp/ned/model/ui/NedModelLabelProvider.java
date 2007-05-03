@@ -11,7 +11,6 @@ import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
@@ -24,6 +23,7 @@ import org.omnetpp.ned.model.pojo.GateNode;
 import org.omnetpp.ned.model.pojo.GatesNode;
 import org.omnetpp.ned.model.pojo.ImportNode;
 import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
+import org.omnetpp.ned.model.pojo.NEDElementTags;
 import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.model.pojo.ParametersNode;
 import org.omnetpp.ned.model.pojo.PropertyNode;
@@ -46,9 +46,11 @@ public class NedModelLabelProvider extends LabelProvider {
             ImportNode node = (ImportNode)model;
             label = "import \""+node.getFilename()+"\"";
         }
+        else if (model instanceof ConnectionGroupNode) {
+            label = StringUtils.substringBefore(getSourceWithoutComments(model), " {");;
+        }
         else if (model instanceof PropertyNode) {
-            PropertyNode node = (PropertyNode)model;
-            label = node.getName(); //FIXME TODO: produce value by visiting children
+            label = StringUtils.strip(getSourceWithoutComments(model), "@;");
         }
         else if (model instanceof ParamNode) {
             ParamNode node = (ParamNode)model;
@@ -106,35 +108,7 @@ public class NedModelLabelProvider extends LabelProvider {
             label += vectorSizeInBrackets.equals("") ? (node.getIsVector() ? "[]" : "") : vectorSizeInBrackets;
         }
         else if (model instanceof ConnectionNodeEx) {
-            ConnectionNodeEx node = (ConnectionNodeEx)model;
-            StringBuffer srclabel = new StringBuffer();
-            if (!"".equals(node.getSrcModule())) {
-                srclabel.append(node.getSrcModule());
-                srclabel.append(bracketizeIfNotEmpty(node.getSrcModuleIndex()));
-                srclabel.append(".");
-            }
-            srclabel.append(node.getSrcGate());
-            srclabel.append(bracketizeIfNotEmpty(node.getSrcGateIndex()));
-
-            StringBuffer destlabel = new StringBuffer();
-            if(!"".equals(node.getDestModule())) {
-                destlabel.append(node.getDestModule());
-                destlabel.append(bracketizeIfNotEmpty(node.getDestModuleIndex()));
-                destlabel.append(".");
-            }
-            destlabel.append(node.getDestGate());
-            destlabel.append(bracketizeIfNotEmpty(node.getDestGateIndex()));
-            switch (node.getArrowDirection()) {
-                case NEDElementUtil.NED_ARROWDIR_L2R :
-                    label = srclabel + " --> " + destlabel;
-                    break;
-                case NEDElementUtil.NED_ARROWDIR_R2L :
-                    label = destlabel + " <-- " + srclabel;
-                    break;
-                default :
-                    label = srclabel + " <--> " + destlabel;
-                break;
-            }
+            label = StringUtils.strip(getSourceWithoutComments(model), ";");
         }
         else {
             label = model.getTagName();
@@ -147,7 +121,15 @@ public class NedModelLabelProvider extends LabelProvider {
 		return (attr==null || attr.equals("")) ? "" : "["+attr+"]";
 	}
 	
-	public Image getImage(Object obj) {
+    private static String getSourceWithoutComments(INEDElement element) {
+        INEDElement node = element.deepDup(null);
+        // remove all comment nodes
+        while(node.getFirstChildWithTag(NEDElementTags.NED_COMMENT) != null)
+            node.getFirstChildWithTag(NEDElementTags.NED_COMMENT).removeFromParent();
+        return StringUtils.stripToEmpty(StringUtils.substringBefore(node.getSource(), "\n"));
+    }
+
+    public Image getImage(Object obj) {
         INEDElement model = (INEDElement)obj;
         Image image = null;
         if (model instanceof IHasDisplayString) {
