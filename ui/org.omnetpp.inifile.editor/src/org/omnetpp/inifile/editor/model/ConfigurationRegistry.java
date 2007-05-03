@@ -21,7 +21,8 @@ public class ConfigurationRegistry {
 	 * Name of the [General] section
 	 */
 	public static final String GENERAL = "General";
-	public static final String CONFIG_ = "Config ";  //XXX make use of this everywhere
+	public static final String CONFIG_ = "Config ";
+	public static final String EXTENDS; // see bottom of file
 	
 	private static HashMap<String, ConfigurationEntry> entries = new HashMap<String, ConfigurationEntry>(); 
 	
@@ -357,5 +358,8 @@ public class ConfigurationRegistry {
     public static final ConfigurationEntry CFGID_EVENTLOG_FILE = addPerRunEntry(
     		"eventlog-file", CFG_FILENAME, "",
     		"Name of the event log file to generate. If emtpy, no file is generated.");
-    
+
+    static {
+    	 EXTENDS = CFGID_EXTENDS.getKey();
+    }
 }

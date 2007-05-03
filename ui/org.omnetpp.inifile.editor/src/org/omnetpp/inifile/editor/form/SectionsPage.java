@@ -2,6 +2,7 @@ package org.omnetpp.inifile.editor.form;
 
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_DESCRIPTION;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CONFIG_;
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 import java.util.ArrayList;
@@ -221,13 +222,13 @@ public class SectionsPage extends FormPage {
 	protected void setSectionExtendsKey(String sectionName, String extendsSectionName) {
 		IInifileDocument doc = getInifileDocument();
 		if (extendsSectionName.equals(GENERAL))
-			doc.removeKey(sectionName, "extends");
+			doc.removeKey(sectionName, EXTENDS);
 		else {
 			String value = extendsSectionName.replaceAll("^Config +", "");
-			if (doc.containsKey(sectionName, "extends"))
-				doc.setValue(sectionName, "extends", value);
+			if (doc.containsKey(sectionName, EXTENDS))
+				doc.setValue(sectionName, EXTENDS, value);
 			else
-				InifileUtils.addEntry(doc, sectionName, "extends", value, null);
+				InifileUtils.addEntry(doc, sectionName, EXTENDS, value, null);
 		}
 	}
 
@@ -346,7 +347,7 @@ public class SectionsPage extends FormPage {
 		for (String sectionName : doc.getSectionNames()) {
 			if (sectionName.startsWith(CONFIG_)) {
 				GenericTreeNode node = getOrCreate(nodes, sectionName, false);
-				String extendsName = doc.getValue(sectionName, "extends");
+				String extendsName = doc.getValue(sectionName, EXTENDS);
 				if (extendsName == null) {
 					// no "extends=...": falls back to [General]
 					generalSectionNode.addChild(node);
