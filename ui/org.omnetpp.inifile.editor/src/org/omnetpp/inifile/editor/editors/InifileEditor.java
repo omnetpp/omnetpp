@@ -145,8 +145,10 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				// schedule initial analysis of the inifile
-				((InifileDocument)editorData.getInifileDocument()).parse();
-				editorData.getInifileAnalyzer().analyze();
+				InifileDocument doc = (InifileDocument) editorData.getInifileDocument();
+				InifileAnalyzer analyzer = editorData.getInifileAnalyzer();
+				doc.parse();
+				analyzer.analyze();
 				
 				// open the "Module Parameters" view
 				try {
@@ -161,6 +163,11 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 
 				// if the file is in the old format, offer upgrading it
 				convertOldInifile();
+				
+				// publish an initial selection (select first section)
+				String[] sectionNames = doc.getSectionNames();
+				if (sectionNames.length > 0)
+					setSelection(sectionNames[0], null);
 			}
 
 		});
