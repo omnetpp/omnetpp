@@ -136,7 +136,6 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	public Control createViewControl(Composite parent) {
 		createTreeViewer(parent);
 		createActions();
-		setContentDescription("Hejehoooo!!!");
 		return treeViewer.getTree();
 	}
 

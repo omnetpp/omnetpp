@@ -8,7 +8,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPartSite;
@@ -22,7 +21,6 @@ import org.eclipse.ui.part.ViewPart;
  * @author Andras
  */
 public abstract class ViewWithMessagePart extends ViewPart {
-	private Label messageLabel;
 	private Control viewControl;
 
 	public void createPartControl(Composite parent) {
@@ -30,10 +28,6 @@ public abstract class ViewWithMessagePart extends ViewPart {
 		layout.marginWidth = layout.marginHeight = 0;
 		parent.setLayout(layout);
 	
-		messageLabel = new Label(parent, SWT.WRAP);
-		messageLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		setVisible(messageLabel, false);
-		
 		viewControl = createViewControl(parent);
 		viewControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 	}
@@ -50,18 +44,17 @@ public abstract class ViewWithMessagePart extends ViewPart {
 	 */
 	@Override
 	public void setFocus() {
-		messageLabel.setFocus(); //XXX this does nothing: label cannot have the focus. Use readonly Text instead of Label? (as in InputDialog)
+		//XXX choose a widget that can own the focus, even if a message is shown instead of viewControl
+		// Note: looks like labels cannot have focus. Use a readonly Text instead of Label? (as in InputDialog)
 	}
 
 	/**
 	 * Display a message (such as "Nothing to show") instead of the contents.
 	 */
 	protected void showMessage(String text) {
-		messageLabel.setText(text);
-		if (isVisible(viewControl)) {
-			setVisible(messageLabel, true);
+		setContentDescription(text);
+		if (isVisible(viewControl))
 			setVisible(viewControl, false);
-		}
 	}
 
 	/**
@@ -69,11 +62,11 @@ public abstract class ViewWithMessagePart extends ViewPart {
 	 * @see showMessage() 
 	 */
 	public boolean isShowingMessage() {
-		return isVisible(messageLabel);
+		return !isVisible(viewControl);
 	}
 	
 	protected boolean isDisposed() {
-		return messageLabel.isDisposed() || viewControl.isDisposed();
+		return viewControl.isDisposed();
 	}
 	
 	/**
@@ -81,8 +74,8 @@ public abstract class ViewWithMessagePart extends ViewPart {
 	 */
 	protected void hideMessage() {
 		if (!isVisible(viewControl)) {
-			setVisible(messageLabel, false);
 			setVisible(viewControl, true);
+			setContentDescription(""); // clear any previous message
 		}
 	}
 
@@ -142,5 +135,4 @@ public abstract class ViewWithMessagePart extends ViewPart {
 				activePage.activate(editor);
 		}
 	}
-
 }
