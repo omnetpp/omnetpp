@@ -337,8 +337,10 @@ public class InifileUtils {
 	public static String getConfigTooltip(ConfigurationEntry entry, IInifileDocument doc) {
 		String text = "[General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / "+entry.getKey();
 		text += " = <" + entry.getDataType().name().replaceFirst("CFG_", "");
-		if (!"".equals(entry.getDefaultValue()))
+		if (entry.getDefaultValue()!=null && !entry.getDefaultValue().equals(""))
 			text += ", default: " + entry.getDefaultValue();
+		if (entry.getUnit()!=null)
+			text += ", unit: "+entry.getUnit();
 		text += "> \n\n";
 		text += entry.getDescription() + "\n";
 
