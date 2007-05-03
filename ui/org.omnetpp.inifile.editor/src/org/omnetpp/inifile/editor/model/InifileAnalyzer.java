@@ -488,7 +488,7 @@ public class InifileAnalyzer {
 		return list;
 	}
 
-	protected void resolveModuleParameters(ArrayList<ParamResolution> resultList, String moduleFullPath, SubmoduleNode[] pathModules, INEDTypeInfo moduleType, String[] sectionChain, IInifileDocument doc) {
+	protected static void resolveModuleParameters(ArrayList<ParamResolution> resultList, String moduleFullPath, SubmoduleNode[] pathModules, INEDTypeInfo moduleType, String[] sectionChain, IInifileDocument doc) {
 		for (String paramName : moduleType.getParams().keySet()) {
 			ParamNode paramDeclNode = (ParamNode)moduleType.getParams().get(paramName);
 			SubmoduleNodeEx submodule = (SubmoduleNodeEx) pathModules[pathModules.length-1];
