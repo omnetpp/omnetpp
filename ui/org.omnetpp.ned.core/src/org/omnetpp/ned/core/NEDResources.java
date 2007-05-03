@@ -583,12 +583,12 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         markerJob.schedule();
 
         long dt = System.currentTimeMillis() - startMillis;
-        System.out.println("rehash() took " + dt + "ms");
+        // System.out.println("rehash() took " + dt + "ms");
     }
 
     public synchronized void invalidate() {
         if (!needsRehash) {
-            System.out.println("NEDResources invalidated");
+            // System.out.println("NEDResources invalidated");
             needsRehash = true;
         }
     }
@@ -620,12 +620,12 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      * @param event
      */
     protected void nedModelChanged(NEDModelEvent event) {
-        System.out.println("NEDRESOURCES NOTIFY: "+event);
+        // System.out.println("NEDRESOURCES NOTIFY: "+event);
         // fire a component changed event if inheritance, naming or visual representation
         // has changed
         boolean inheritanceChanged = inheritanceMayHaveChanged(event);
         if (inheritanceChanged) {
-            System.out.println("Invalidating because of: " + event);
+            // System.out.println("Invalidating because of: " + event);
             invalidate();
             rehashIfNeeded();
         }
@@ -639,13 +639,13 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
         // notify generic listeners (like NedFileEditParts who refresh themselves
         // in response to this notification)
-        long startMillis = System.currentTimeMillis();
+        // long startMillis = System.currentTimeMillis();
 
         if(nedModelChangeListenerList != null && getNEDModelChangeListenerList().isEnabled())
             nedModelChangeListenerList.fireModelChanged(event);
 
-        long dt = System.currentTimeMillis() - startMillis;
-        System.out.println("visual notification took " + dt + "ms");
+        // long dt = System.currentTimeMillis() - startMillis;
+        // System.out.println("visual notification took " + dt + "ms");
     }
 
     /**
@@ -731,7 +731,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             });
 
         } catch (CoreException e) {
-            System.out.println("Error during workspace change notification: " + e);
+            NEDResourcesPlugin.logError("Error during workspace change notification: ", e);
         } finally {
             rehashIfNeeded();
         }
