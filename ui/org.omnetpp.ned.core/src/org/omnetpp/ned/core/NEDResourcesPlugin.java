@@ -48,7 +48,7 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 
         PLUGIN_ID = getBundle().getSymbolicName();
 
-        System.out.println("NEDResourcesPlugin started");
+//        System.out.println("NEDResourcesPlugin started");
 
         ResourcesPlugin.getWorkspace().addResourceChangeListener(NEDResourcesPlugin.getNEDResources());
 
@@ -73,7 +73,7 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(NEDResourcesPlugin.getNEDResources());
 		plugin = null;
         super.stop(context);
-        System.out.println("NEDResourcesPlugin stopped");
+//        System.out.println("NEDResourcesPlugin stopped");
 	}
 
 	/**
