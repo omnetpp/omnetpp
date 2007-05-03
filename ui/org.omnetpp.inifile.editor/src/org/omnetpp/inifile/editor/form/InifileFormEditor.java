@@ -115,6 +115,10 @@ public class InifileFormEditor extends Composite {
 	 * after committing changes on the current page.
 	 */
 	public void showCategoryPage(String category) {
+		// root tree node is a shortcut to "General" 
+		if (category.equals(CONFIGURATION_PAGE))
+			category = GenericConfigPage.getCategoryNames()[0];
+
 		if (formPage != null && formPage.getPageCategory().equals(category))
 			return; // already showing
 		
@@ -125,9 +129,6 @@ public class InifileFormEditor extends Composite {
 		}
 
 		// create new page
-		if (category.equals(CONFIGURATION_PAGE))
-			category = GenericConfigPage.getCategoryNames()[0];
-			
 		if (category.equals(PARAMETERS_PAGE))
 			formPage = new ParametersPage(form, inifileEditor);
 		else if (category.equals(SECTIONS_PAGE))
