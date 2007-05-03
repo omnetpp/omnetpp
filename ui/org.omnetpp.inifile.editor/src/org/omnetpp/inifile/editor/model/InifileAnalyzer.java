@@ -28,7 +28,6 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
-import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
@@ -406,7 +405,7 @@ public class InifileAnalyzer {
 		// calculate parameter resolutions for each section
 		for (String activeSection : doc.getSectionNames()) {
 			// calculate param resolutions
-			List<ParamResolution> resList = collectParameters(activeSection, ned);
+			List<ParamResolution> resList = collectParameters(activeSection);
 
 			// store with the section the list of all parameter resolutions (incl unassigned params)
 			// store with every key the list of parameters it resolves
@@ -423,7 +422,7 @@ public class InifileAnalyzer {
 		}
 	}
 
-	protected List<ParamResolution> collectParameters(final String activeSection, INEDTypeResolver ned) {
+	protected List<ParamResolution> collectParameters(final String activeSection) {
 		final String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
 		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getKey(), doc);
 		if (networkName == null)
@@ -431,11 +430,37 @@ public class InifileAnalyzer {
 		if (networkName == null)
 			return new ArrayList<ParamResolution>();
 
-		final IInifileDocument finalDoc = doc;
-		NEDResources res = NEDResourcesPlugin.getNEDResources();
-		final ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
+		ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
+		INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
+		NEDTreeTraversal treeTraversal = new NEDTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, sectionChain, doc));
+		treeTraversal.traverse(networkName);
+		return list;
+	}
 
-		NEDTreeTraversal treeTraversal = new NEDTreeTraversal(res, new IModuleTreeVisitor() {
+	/**
+	 * Collects parameters of a module type (recursively), *without* an inifile present.  
+	 */
+	public static List<ParamResolution> collectParameters(INEDTypeInfo moduleType) {
+		ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
+		INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
+		NEDTreeTraversal treeTraversal = new NEDTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, null, null));
+		treeTraversal.traverse(moduleType);
+		return list;
+	}
+	
+	/**
+	 * Collects parameters of a submodule subtree, *without* an inifile present.  
+	 */
+	public static List<ParamResolution> collectParameters(SubmoduleNode submodule) {
+		ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
+		INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
+		NEDTreeTraversal treeTraversal = new NEDTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, null, null));
+		treeTraversal.traverse(submodule);
+		return list;
+	}
+
+	protected static IModuleTreeVisitor createParamCollectingNedTreeVisitor(final ArrayList<ParamResolution> list, INEDTypeResolver res, final String[] sectionChain, final IInifileDocument doc) {
+		return new IModuleTreeVisitor() {
 			Stack<SubmoduleNode> pathModules = new Stack<SubmoduleNode>();
 			Stack<String> fullPathStack = new Stack<String>();
 
@@ -444,7 +469,7 @@ public class InifileAnalyzer {
 				fullPathStack.push(submodule==null ? submoduleType.getName() : InifileUtils.getSubmoduleFullName(submodule));
 				String submoduleFullPath = StringUtils.join(fullPathStack.toArray(), "."); //XXX optimize here if slow
 				SubmoduleNode[] pathModulesArray = pathModules.toArray(new SubmoduleNode[]{});
-				resolveModuleParameters(list, submoduleFullPath, pathModulesArray, submoduleType, sectionChain, finalDoc);
+				resolveModuleParameters(list, submoduleFullPath, pathModulesArray, submoduleType, sectionChain, doc);
 			}
 			public void leave() {
 				fullPathStack.pop();
@@ -482,10 +507,7 @@ public class InifileAnalyzer {
 				}
 				return value;
 			}
-		});
-
-		treeTraversal.traverse(networkName);
-		return list;
+		};
 	}
 
 	protected static void resolveModuleParameters(ArrayList<ParamResolution> resultList, String moduleFullPath, SubmoduleNode[] pathModules, INEDTypeInfo moduleType, String[] sectionChain, IInifileDocument doc) {

@@ -49,13 +49,17 @@ import org.omnetpp.inifile.editor.model.SectionKey;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.interfaces.ITopLevelElement;
+import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
 
 /**
  * Displays module parameters recursively for a module type.
  * @author Andras
  */
-//XXX disable "pin" action while view shows message (not contents) ? 
+//XXX disable "pin" action while view shows message (not contents) ?
+//XXX when NED editor is the current: table ordering doesn't work
+//XXX when there's no NED default, it says: default is ""
 public class ModuleParametersView extends AbstractModuleView {
 	private TableViewer tableViewer;
 	private boolean unassignedOnly = true;
@@ -104,7 +108,6 @@ public class ModuleParametersView extends AbstractModuleView {
 				Assert.isTrue(columnIndex<=2);
 				if (element instanceof ParamResolution) {
 					ParamResolution res = (ParamResolution) element;
-					Assert.isTrue(inifileDocument!=null);
 					switch (columnIndex) {
 						case 0: return res.moduleFullPath+"."+res.paramDeclNode.getName();
 						case 1: return InifileAnalyzer.getParamValue(res, inifileDocument);
@@ -328,8 +331,26 @@ public class ModuleParametersView extends AbstractModuleView {
 
 	@Override
 	public void buildContent(INEDElement module, InifileAnalyzer analyzer, String section, String key) {
+		//XXX factor out common part of the two "if" branches
 		if (analyzer==null) {
-			showMessage("Not an inifile editor."); //XXX well, show the params of the selected NED subtree!
+			ParamResolution[] pars = null;
+			if (module instanceof SubmoduleNode)
+				pars = InifileAnalyzer.collectParameters((SubmoduleNode)module).toArray(new ParamResolution[]{});
+			else if (module instanceof ITopLevelElement)
+				pars = InifileAnalyzer.collectParameters(((ITopLevelElement)module).getContainerNEDTypeInfo()).toArray(new ParamResolution[]{});
+			if (pars == null) {
+				showMessage("NED element should be a module type or a submodule.");
+				return;
+			}
+
+			tableViewer.setInput(pars);
+
+			// try to preserve selection
+			ISelection oldSelection = selectedElements.get(getAssociatedEditor().getEditorInput());
+			if (oldSelection != null)
+				tableViewer.setSelection(oldSelection, true);
+			
+			//XXX set label
 		}
 		else {
 			if (section==null)
