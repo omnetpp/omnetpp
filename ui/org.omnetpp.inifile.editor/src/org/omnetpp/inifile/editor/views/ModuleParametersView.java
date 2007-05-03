@@ -155,7 +155,7 @@ public class ModuleParametersView extends AbstractModuleView {
 		// remember selection (we'll try to restore it after table rebuild)
 		tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
-				if (!event.getSelection().isEmpty())
+				if (!event.getSelection().isEmpty() && getAssociatedEditor()!=null)
 					selectedElements.put(getAssociatedEditor().getEditorInput(), event.getSelection());
 			}
 		});
