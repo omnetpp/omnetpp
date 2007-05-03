@@ -435,7 +435,7 @@ public class InifileAnalyzer {
 		NEDResources res = NEDResourcesPlugin.getNEDResources();
 		final ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
 
-		NEDTreeIterator treeIterator = new NEDTreeIterator(res, new IModuleTreeVisitor() {
+		NEDTreeTraversal treeTraversal = new NEDTreeTraversal(res, new IModuleTreeVisitor() {
 			Stack<SubmoduleNode> pathModules = new Stack<SubmoduleNode>();
 			Stack<String> fullPathStack = new Stack<String>();
 
@@ -484,7 +484,7 @@ public class InifileAnalyzer {
 			}
 		});
 
-		treeIterator.traverse(networkName);
+		treeTraversal.traverse(networkName);
 		return list;
 	}
 

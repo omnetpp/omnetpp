@@ -35,7 +35,7 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.IModuleTreeVisitor;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
-import org.omnetpp.inifile.editor.model.NEDTreeIterator;
+import org.omnetpp.inifile.editor.model.NEDTreeTraversal;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.SectionKey;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
@@ -370,7 +370,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
     	}
 
     	INEDTypeResolver nedResources = NEDResourcesPlugin.getNEDResources();
-    	NEDTreeIterator iterator = new NEDTreeIterator(nedResources, new TreeBuilder());
+    	NEDTreeTraversal iterator = new NEDTreeTraversal(nedResources, new TreeBuilder());
         if (module instanceof SubmoduleNode) {
             SubmoduleNode submodule = (SubmoduleNode)module;
             iterator.traverse(submodule);

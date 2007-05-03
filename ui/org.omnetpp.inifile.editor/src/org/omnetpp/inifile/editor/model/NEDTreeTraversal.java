@@ -13,7 +13,7 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
  * Traverses NED module type usage hierarchy.
  * @author Andras
  */
-public class NEDTreeIterator {
+public class NEDTreeTraversal {
 	private INEDTypeResolver nedResources;
 	private IModuleTreeVisitor visitor;
 	private Stack<INEDTypeInfo> visitedTypes = new Stack<INEDTypeInfo>(); // circle detection
@@ -21,7 +21,7 @@ public class NEDTreeIterator {
 	/**
 	 * Constructor
 	 */
-	public NEDTreeIterator(INEDTypeResolver nedResources, IModuleTreeVisitor visitor) {
+	public NEDTreeTraversal(INEDTypeResolver nedResources, IModuleTreeVisitor visitor) {
 		this.nedResources = nedResources;
 		this.visitor = visitor;
 	}
