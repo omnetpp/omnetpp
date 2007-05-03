@@ -46,6 +46,7 @@ public class NedModelContentProvider implements ITreeContentProvider {
 		return ((INEDElement)child).getParent();
 	}
 
+	// TODO maybe we should provide a more flatter layout (skipping the parameters, gates, suboldules, types, connections nodes)
 	public Object[] getChildren(Object parent) {
         List<INEDElement> result = new ArrayList<INEDElement>();
         INEDElement currElem = ((INEDElement)parent);
