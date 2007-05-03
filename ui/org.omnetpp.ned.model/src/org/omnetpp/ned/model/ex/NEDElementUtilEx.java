@@ -234,11 +234,10 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
      * @return The name of component but stripped any digits from the right ie: name123 would be name
      */
     private static String getNameBase(String name) {
-        String nameBase = name;
-        int i=nameBase.length()-1;
-        while(i>=0 && Character.isDigit(nameBase.charAt(i))) --i;
+        int i = name.length()-1;
+        while (i>=0 && Character.isDigit(name.charAt(i))) --i;
         // strip away the digits at the end
-        return nameBase.substring(0,i+1);
+        return name.substring(0,i+1);
     }
 
     /**
@@ -277,6 +276,15 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
             if (sm != namedElement)
                 nameSet.add(sm.getName());
         return getUniqueNameFor(namedElement, nameSet);
+    }
+    
+    /**
+     * Returns the element type as a lower case string suitable for displaying 
+     * in the UI; e.g. for a SimpleModuleNode it returns "simple module". 
+     */
+    public static String getReadableTagName(INEDElement node) {
+    	// this is a simple solution, replace with more sophisticated code if needed
+    	return node.getTagName().replace('-', ' ');
     }
 
 }

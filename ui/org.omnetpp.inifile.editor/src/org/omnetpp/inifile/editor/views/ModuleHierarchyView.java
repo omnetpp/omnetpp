@@ -42,7 +42,9 @@ import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IModuleTypeNode;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
@@ -134,6 +136,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	public Control createViewControl(Composite parent) {
 		createTreeViewer(parent);
 		createActions();
+		setContentDescription("Hejehoooo!!!");
 		return treeViewer.getTree();
 	}
 
@@ -206,7 +209,6 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		// create context menu
  		getViewSite().registerContextMenu(contextMenuManager, treeViewer);
  		treeViewer.getTree().setMenu(contextMenuManager.createContextMenu(treeViewer.getTree()));
-
 	}
 
 	private void createActions() {
@@ -403,6 +405,18 @@ public class ModuleHierarchyView extends AbstractModuleView {
 
 		// refresh the viewer anyway, because e.g. parameter value changes are not reflected in the input tree
 		treeViewer.refresh();
+		
+		// update label
+		String text = "";
+		if (module != null) {
+			if (module instanceof IHasName)
+				text = StringUtils.capitalize(NEDElementUtilEx.getReadableTagName(module)) + " " + ((IHasName)module).getName(); 
+			if (module instanceof SubmoduleNodeEx)
+				text += " of module " + ((SubmoduleNodeEx)module).getCompoundModule().getName();
+			if (getPinnedToEditor() != null)
+				text += ", in " + getPinnedToEditor().getEditorInput().getName() + " (pinned)";
+		}
+		setContentDescription(text);
 	}
 
 	/**

@@ -27,12 +27,10 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Item;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IEditorInput;
@@ -59,7 +57,6 @@ import org.omnetpp.ned.model.INEDElement;
  */
 //XXX disable "pin" action while view shows message (not contents) ? 
 public class ModuleParametersView extends AbstractModuleView {
-	private Label label;
 	private TableViewer tableViewer;
 	private boolean unassignedOnly = true;
 	private TableColumn parameterColumn;
@@ -78,18 +75,7 @@ public class ModuleParametersView extends AbstractModuleView {
 	@Override
 	public Control createViewControl(Composite parent) {
 		Composite container = new Composite(parent, SWT.NONE);
-		GridLayout g = new GridLayout(1, false);
-		g.horizontalSpacing = g.verticalSpacing = g.marginHeight = g.marginWidth = 0;
-		g.marginTop = g.marginBottom = g.marginLeft = g.marginRight = 0;
-		g.verticalSpacing = 1;
-		container.setLayout(g);
-
-		// add label to show the active section 
-		label = new Label(container, SWT.NONE);
-		label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-
-		Label sep = new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL);
-		sep.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		container.setLayout(new FillLayout());
 
 		// add table viewer and set it as selection provider
 		createTableViewer(container);
@@ -104,7 +90,6 @@ public class ModuleParametersView extends AbstractModuleView {
 	private void createTableViewer(Composite container) {
 		// create table with columns
 		Table table = new Table(container, SWT.SINGLE | SWT.FULL_SELECTION | SWT.VIRTUAL);
-		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		parameterColumn = addTableColumn(table, "Parameter", 300);
@@ -365,9 +350,9 @@ public class ModuleParametersView extends AbstractModuleView {
 			// update label
 			String text = "Section ["+section+"]"; 
 			if (getPinnedToEditor() != null)
-				text += " of " + getPinnedToEditor().getEditorInput().getName() + " (pinned)"; 
+				text += " in " + getPinnedToEditor().getEditorInput().getName() + " (pinned)"; 
 			text += ", " + (unassignedOnly ? "unassigned parameters" : "all parameters");
-			label.setText(text);
+			setContentDescription(text);
 		}
 	}
 
