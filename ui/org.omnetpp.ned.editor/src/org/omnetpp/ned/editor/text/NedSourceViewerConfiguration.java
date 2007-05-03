@@ -7,6 +7,7 @@ import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextDoubleClickStrategy;
 import org.eclipse.jface.text.ITextHover;
+import org.eclipse.jface.text.IUndoManager;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
@@ -33,6 +34,7 @@ import org.omnetpp.ned.editor.text.util.NedAnnotationHover;
 import org.omnetpp.ned.editor.text.util.NedAutoIndentStrategy;
 import org.omnetpp.ned.editor.text.util.NedDoubleClickSelector;
 import org.omnetpp.ned.editor.text.util.NedTextHover;
+import org.omnetpp.ned.editor.text.util.NedTextViewerUndoManager;
 
 /**
  * Configuration for an <code>SourceViewer</code> which shows NED code.
@@ -130,5 +132,10 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
             return null;
 
         return new IHyperlinkDetector[] { new URLHyperlinkDetector(), new NEDHyperlinkDetector() };
+    }
+    
+    @Override
+    public IUndoManager getUndoManager(ISourceViewer sourceViewer) {
+        return new NedTextViewerUndoManager(25);
     }
 }
