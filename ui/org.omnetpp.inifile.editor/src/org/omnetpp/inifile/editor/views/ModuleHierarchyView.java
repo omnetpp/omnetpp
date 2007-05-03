@@ -59,8 +59,8 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
  *
  * @author Andras
  */
-//XXX show status: which editor we are pinned to
 //XXX "like" submodule with unresolved type does not appear as such!!!
+//XXX add tooltip support!
 public class ModuleHierarchyView extends AbstractModuleView {
 	private TreeViewer treeViewer;
 	private IInifileDocument inifileDocument; // corresponds to the current selection; needed by the label provider

@@ -38,9 +38,6 @@ public class TooltipSupport {
 
 	private class AllInOneListener implements MouseListener, MouseTrackListener, MouseMoveListener, KeyListener {
 		public void mouseDoubleClick(MouseEvent e) {}
-		public void mouseUp(MouseEvent e) {}
-		public void mouseEnter(MouseEvent e) {}
-		public void mouseExit(MouseEvent e) {}
 		public void keyReleased(KeyEvent e) {}
 
 		public void mouseHover(MouseEvent e) {
@@ -57,6 +54,18 @@ public class TooltipSupport {
 		}
 		
 		public void keyPressed(KeyEvent e) {
+			removeTooltip();
+		}
+
+		public void mouseUp(MouseEvent e) {
+			removeTooltip();
+		}
+
+		public void mouseEnter(MouseEvent e) {
+			removeTooltip();
+		}
+
+		public void mouseExit(MouseEvent e) {
 			removeTooltip();
 		}
 	}

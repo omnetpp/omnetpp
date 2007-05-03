@@ -3,6 +3,7 @@ package org.omnetpp.inifile.editor.form;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
@@ -93,6 +94,7 @@ public class InifileFormEditor extends Composite {
 		
 		treeViewer.setInput(root);
 		treeViewer.expandAll();
+		treeViewer.setSelection(new StructuredSelection(new GenericTreeNode(categories[0])));
 	}
 	
 	private void addListener(final TreeViewer treeViewer) {

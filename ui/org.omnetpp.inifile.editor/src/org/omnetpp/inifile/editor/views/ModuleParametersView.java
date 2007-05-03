@@ -60,6 +60,7 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
 //XXX disable "pin" action while view shows message (not contents) ?
 //XXX when NED editor is the current: table ordering doesn't work
 //XXX when there's no NED default, it says: default is ""
+//XXX some tooltip for unassigned parameters too
 public class ModuleParametersView extends AbstractModuleView {
 	private TableViewer tableViewer;
 	private boolean unassignedOnly = true;
