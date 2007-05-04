@@ -1,5 +1,6 @@
 package org.omnetpp.ned.editor;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -7,7 +8,6 @@ import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.text.BadLocationException;
@@ -57,19 +57,54 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 
 	public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
 		super.init(site, editorInput);
-		setPartName(editorInput.getName());
+//		setPartName(editorInput.getName());
         if (!(editorInput instanceof IFileEditorInput))
             throw new PartInitException("Invalid input type!");
+        setInput(editorInput);
 
-        NEDResourcesPlugin.getNEDResources().connect(((IFileEditorInput)editorInput).getFile());
+//        NEDResourcesPlugin.getNEDResources().connect(((IFileEditorInput)editorInput).getFile());
 	}
 
     @Override
     public void dispose() {
-        ((IFileEditorInput)getEditorInput()).getFile()
-                .getWorkspace().removeResourceChangeListener(resourceListener);
-        NEDResourcesPlugin.getNEDResources().disconnect(((IFileEditorInput)getEditorInput()).getFile());
+        // detach the editor file from the core plugin and do not set a new file 
+        setInput(null);  
+//        ((IFileEditorInput)getEditorInput()).getFile()
+//                .getWorkspace().removeResourceChangeListener(resourceListener);
+//        NEDResourcesPlugin.getNEDResources().disconnect(((IFileEditorInput)getEditorInput()).getFile());
         super.dispose();
+    }
+    
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.part.EditorPart#setInput(org.eclipse.ui.IEditorInput)
+     * Add remove listeners on input change
+     */
+    @Override
+    protected void setInput(IEditorInput input) {
+        // do nothing if no change has occured
+        if (ObjectUtils.equals(getEditorInput(), input))
+            return;
+        // remove the listeners from the old file
+        if (getEditorInput() != null) {
+            IFile file = ((IFileEditorInput) getEditorInput()).getFile();
+            file.getWorkspace().removeResourceChangeListener(resourceListener);
+            NEDResourcesPlugin.getNEDResources().disconnect(file);
+        }
+
+        super.setInput(input);
+        // set the input on the embedded editors
+        if (graphEditor != null)
+            graphEditor.setInput(input);
+        if (textEditor != null)
+            textEditor.setInput(input);
+        
+        // add listeners to the new file in workspace and in the ned resource manager
+        if (getEditorInput() != null) {
+            IFile file = ((IFileEditorInput) getEditorInput()).getFile();
+            file.getWorkspace().addResourceChangeListener(resourceListener);
+            NEDResourcesPlugin.getNEDResources().connect(file);
+            setPartName(file.getName());
+        }
     }
 
 	@Override
@@ -77,13 +112,13 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 		graphEditor = new GraphicalNedEditor();
 		textEditor = new TextualNedEditor();
 
-        IFile ifile = ((FileEditorInput)getEditorInput()).getFile();
+        IFile file = ((FileEditorInput)getEditorInput()).getFile();
 
 		try {
             // setup graphical editor
-            graphEditor.setModel((NedFileNodeEx)NEDResourcesPlugin.getNEDResources().getNEDFileModel(ifile));
-            graphEditor.markContent();
+//            graphEditor.setModel((NedFileNodeEx)NEDResourcesPlugin.getNEDResources().getNEDFileModel(ifile));
             graphPageIndex = addPage(graphEditor, getEditorInput());
+            graphEditor.markContent();
             setPageText(graphPageIndex,"Graphical");
 
 
@@ -96,7 +131,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
             // remember the initial content so we can detect any change later
 
             // switch to graphics mode initially if there's no error in the file
-            if (!NEDResourcesPlugin.getNEDResources().containsNEDErrors(ifile))
+            if (!NEDResourcesPlugin.getNEDResources().containsNEDErrors(file))
                 setActivePage(graphPageIndex);
 
 		} catch (PartInitException e) {
@@ -181,9 +216,13 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         initPhase = false;
 	}
 
-	@Override
-	public void doSave(IProgressMonitor monitor) {
-		if (getActivePage() == graphPageIndex) {
+    /**
+     * Prepares the content of the text editor before save
+     * if we are in a graphical mode it generate the text version and puts it into the
+     * text editor
+     */
+    private void prepareForSave() {
+        if (getActivePage() == graphPageIndex) {
 			// switch from graphics to text:
 			// generate text representation from the model
             IFile file = ((FileEditorInput)getEditorInput()).getFile();
@@ -194,20 +233,25 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
             textEditor.setText(NEDResourcesPlugin.getNEDResources().getNEDFileText(file));
             graphEditor.getEditDomain().getCommandStack().markSaveLocation();
 		}
-		// delegate the save task to the TextEditor's save method
-		textEditor.doSave(monitor);
-	}
+    }
 
     @Override
+    public void doSave(IProgressMonitor monitor) {
+        prepareForSave();
+        // delegate the save task to the TextEditor's save method
+        textEditor.doSave(monitor);
+    }
+    
+    @Override
     public void doSaveAs() {
-        // TODO add save as support
-        Assert.isTrue(false, "save as not implemented");
+        prepareForSave();
+        textEditor.doSaveAs();
+        setInput(textEditor.getEditorInput());
     }
 
 	@Override
 	public boolean isSaveAsAllowed() {
-        // we do not support save as...
-		return false;
+		return true;
 	}
 
     /**
@@ -216,22 +260,6 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
      */
     protected void closeEditor(boolean save) {
         getSite().getPage().closeEditor(this, save);
-    }
-
-    @Override
-    protected void setInput(IEditorInput input) {
-        if (getEditorInput() != null) {
-            IFile file = ((IFileEditorInput) getEditorInput()).getFile();
-            file.getWorkspace().removeResourceChangeListener(resourceListener);
-        }
-
-        super.setInput(input);
-
-        if (getEditorInput() != null) {
-            IFile file = ((IFileEditorInput) getEditorInput()).getFile();
-            file.getWorkspace().addResourceChangeListener(resourceListener);
-            setPartName(file.getName());
-        }
     }
 
     // resource management open, close the editor depending on workspace notification

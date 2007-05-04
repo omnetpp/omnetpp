@@ -49,6 +49,7 @@ import org.eclipse.text.undo.IDocumentUndoManager;
  */
 // NOTE This is the copy of TextViewerUndoManager except that it does not set the 
 // autoinsert strategies and do not select the text on undo
+// se uncommented and marked lines
 public class NedTextViewerUndoManager implements IUndoManager, IUndoManagerExtension {
 
     /**
@@ -172,10 +173,12 @@ public class NedTextViewerUndoManager implements IUndoManager, IUndoManagerExten
                 if (fTextViewer != null) {
                     StyledText widget= fTextViewer.getTextWidget();
                     if (widget != null && !widget.isDisposed() && (widget.isFocusControl()))// || fTextViewer.getTextWidget() == control))
+// chahanged by rhornig
                         selectAndReveal(event.getOffset(), 
                                 event.getText() == null || 
                                 (event.getOffset()==0 && fTextViewer.getDocument().getLength()==event.getText().length())
                                    ? 0 : event.getText().length());
+// end change                    
                 }
             }   
         }
@@ -438,14 +441,3 @@ public class NedTextViewerUndoManager implements IUndoManager, IUndoManagerExten
         }
     }
 }
-
-//public class NedTextViewerUndoManager extends TextViewerUndoManager {
-//
-//    public NedTextViewerUndoManager(int undoLevel) {
-//        super(undoLevel);
-//    }
-//    
-//    private void selectAndReveal(int offset, int length) {
-//    }
-//    
-//}

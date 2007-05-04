@@ -46,11 +46,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IKeyBindingService;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.CellEditorActionHandler;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
@@ -232,7 +236,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
     	super.commandStackChanged(event);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked" })
 	@Override
     protected void configureGraphicalViewer() {
         super.configureGraphicalViewer();
@@ -264,11 +268,20 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
 
         loadProperties();
 
-        // Actions
+        // create some actions here because they need an installed viewer
+        IAction action = new ToggleSnapToGeometryAction(viewer);
+        getActionRegistry().registerAction(action);
 
-        IAction snapAction = new ToggleSnapToGeometryAction(getGraphicalViewer());
-        getActionRegistry().registerAction(snapAction);
-
+        
+        // register global actions to the keybinding service otherwise the CTRL-Z CTRL-Y and DEL
+        // will be captured by the text editor after switching there
+        ActionRegistry registry = getActionRegistry();
+        String id = ActionFactory.UNDO.getId();
+        getEditorSite().getKeyBindingService().registerAction(registry.getAction(id));
+        id = ActionFactory.REDO.getId();
+        getEditorSite().getKeyBindingService().registerAction(registry.getAction(id));
+        id = ActionFactory.DELETE.getId();
+        getEditorSite().getKeyBindingService().registerAction(registry.getAction(id));
     }
 
     @Override
@@ -388,15 +401,11 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         action = new ReLayoutAction(this);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
+
     }
 
     protected FigureCanvas getEditor() {
         return (FigureCanvas) getGraphicalViewer().getControl();
-    }
-
-    @Override
-    public boolean isSaveAsAllowed() {
-        return true;
     }
 
     protected void loadProperties() {
@@ -405,6 +414,21 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
                 MouseWheelZoomHandler.SINGLETON);
     }
 
+    @Override
+    public void setInput(IEditorInput input) {
+        super.setInput(input);
+        if (input == null) {
+            setModel(null);
+            return;
+        }
+        
+        Assert.isTrue(input instanceof IFileEditorInput, "Input of Graphical NED editor must be an IFileEditorInput");
+        NedFileNodeEx newModel = (NedFileNodeEx)NEDResourcesPlugin.getNEDResources()
+                                    .getNEDFileModel(((FileEditorInput)getEditorInput()).getFile());
+        
+        setModel(newModel);
+    }
+    
     public NedFileNodeEx getModel() {
         return nedFileModel;
     }
