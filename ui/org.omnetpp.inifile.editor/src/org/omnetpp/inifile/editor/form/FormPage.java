@@ -7,7 +7,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
@@ -72,13 +72,15 @@ public abstract class FormPage extends Composite {
 	protected Composite createTitleArea(Composite parent, String category) {
 		Composite titleArea = new Composite(parent, SWT.BORDER);
 		GridData gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
-		gridData.heightHint = 40;
+		gridData.heightHint = 44;
 		titleArea.setLayoutData(gridData);
 		titleArea.setBackground(ColorFactory.asColor("white"));
 		titleArea.setLayout(new GridLayout(3, false));
+		((GridLayout)titleArea.getLayout()).horizontalSpacing = 12;
+		((GridLayout)titleArea.getLayout()).marginWidth = 10;
 		
 		Label imageLabel = new Label(titleArea, SWT.NONE);
-		imageLabel.setImage(ImageFactory.getImage(ImageFactory.MODEL_IMAGE_FOLDER)); //XXX 
+		imageLabel.setImage(InifileEditorPlugin.getImage("icons/formpage_banner.png")); //XXX better image needed!!!
 		imageLabel.setBackground(ColorFactory.asColor("white"));
 		
 		Label title = new Label(titleArea, SWT.NONE);
