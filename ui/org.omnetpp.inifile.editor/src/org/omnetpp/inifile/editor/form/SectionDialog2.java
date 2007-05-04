@@ -1,5 +1,7 @@
 package org.omnetpp.inifile.editor.form;
 
+import java.util.ArrayList;
+
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
@@ -15,6 +17,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.ParamResolution;
 
 /**
  * Edit section name and its description. 
@@ -90,6 +93,12 @@ public class SectionDialog2 extends TitleAreaDialog {
 		createLabel(group2, "NED Network:", parent.getFont());
 		networkNameText = new Text(group2, SWT.SINGLE | SWT.BORDER);
 		networkNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+		// fill dialog fields with initial contents
+        if (sectionName!=null) sectionNameText.setText(sectionName);
+        if (description!=null) descriptionText.setText(description);
+        if (extendsSection!=null) extendsCombo.setText(extendsSection);
+        if (networkName!=null) networkNameText.setText(networkName);
 		
 		return composite;
 	}
@@ -124,16 +133,46 @@ public class SectionDialog2 extends TitleAreaDialog {
         }
     }
 
-    protected void buttonPressed(int buttonId) {
-        description = (buttonId == IDialogConstants.OK_ID) ? descriptionText.getText() : null;
-        super.buttonPressed(buttonId);
+    @SuppressWarnings("unchecked")
+	protected void okPressed() {
+    	// save dialog state into variables, so that client can retrieve them after the dialog was disposed
+        sectionName = sectionNameText.getText();
+        description = descriptionText.getText();
+        extendsSection = extendsCombo.getText();
+        networkName = networkNameText.getText();
+        super.okPressed();
     }
-	
-	public void setDescription(String quotedText) {
-		descriptionText.setText(quotedText);
+
+	public String getSectionName() {
+		return sectionName;
+	}
+
+	public void setSectionName(String sectionName) {
+		this.sectionName = sectionName;
 	}
 
 	public String getDescription() {
 		return description;
 	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getExtendsSection() {
+		return extendsSection;
+	}
+
+	public void setExtendsSection(String extendsSection) {
+		this.extendsSection = extendsSection;
+	}
+
+	public String getNetworkName() {
+		return networkName;
+	}
+
+	public void setNetworkName(String networkName) {
+		this.networkName = networkName;
+	}
+	
 }
