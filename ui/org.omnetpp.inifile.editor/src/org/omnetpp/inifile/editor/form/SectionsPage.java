@@ -10,8 +10,6 @@ import java.util.HashMap;
 
 import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
 import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
-import org.eclipse.jface.dialogs.IInputValidator;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -237,13 +235,14 @@ public class SectionsPage extends FormPage {
 		buttonGroup.setLayout(new GridLayout(1,false));
 		
 		Button addButton = createButton(buttonGroup, "Add...");
-		Button renameButton = createButton(buttonGroup, "Rename..."); //XXX turn rename into Edit
-		Button removeButton = createButton(buttonGroup, "Remove");
+		Button editButton = createButton(buttonGroup, "Edit...");
+		Button removeButton = createButton(buttonGroup, "Remove"); //XXX bind to DEL key too
 		
 		// configure "add section" button
 		addButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				SectionDialog dialog = new SectionDialog(getShell(), "New Section", "Create new section", getInifileDocument(), null);
+				dialog.setSectionName("New");
 				String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
 				if (selection.length != 0)
 					dialog.setExtendsSection(selection[0]);
@@ -262,21 +261,8 @@ public class SectionsPage extends FormPage {
 			}
 		});
 
-		// configure "remove section" button
-		removeButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
-				if (selection.length != 0) {
-					for (String sectionName : selection) {
-						getInifileDocument().removeSection(sectionName);
-					}
-					reread();
-				}
-			}
-		});
-
-		// configure "rename section" button
-		renameButton.addSelectionListener(new SelectionAdapter() {
+		// configure "edit/rename section" button
+		editButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
 				if (selection.length == 0)
@@ -294,6 +280,19 @@ public class SectionsPage extends FormPage {
 						; //XXX add/remove/set description
 					//XXX add/remove/set extends
 					//XXX add/remove/set network
+					reread();
+				}
+			}
+		});
+
+		// configure "remove section" button
+		removeButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
+				if (selection.length != 0) {
+					for (String sectionName : selection) {
+						getInifileDocument().removeSection(sectionName);
+					}
 					reread();
 				}
 			}
