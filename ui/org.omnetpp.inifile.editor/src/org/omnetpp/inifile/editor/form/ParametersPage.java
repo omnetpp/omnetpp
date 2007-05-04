@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
@@ -34,10 +35,12 @@ import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.ui.TooltipSupport;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.IGotoInifile;
+import org.omnetpp.inifile.editor.actions.AddInifileKeysDialog;
 import org.omnetpp.inifile.editor.contentassist.InifileParamKeyContentProposalProvider;
 import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.SectionKey;
 
@@ -86,22 +89,22 @@ public class ParametersPage extends FormPage {
 		// create table and buttons
 		tableViewer = createAndConfigureTable();
 		tableViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		
+
 		Composite buttonGroup = createButtons();
 		buttonGroup.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, true));
-		
+
 		sectionsCombo.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				// publish section as editor selection
 				String selectedSection = sectionsCombo.getText(); 
 				if (getInifileDocument().containsSection(selectedSection)) // because we may have lied that [General] existed
 					setEditorSelection(selectedSection, null);
-				
+
 				// refresh table contents, etc.
 				reread();
 			}
 		});
-		
+
 		reread();
 	}
 
@@ -121,11 +124,11 @@ public class ParametersPage extends FormPage {
 			public String getColumnText(Object element, int columnIndex) {
 				SectionKey item = (SectionKey) element;
 				switch (columnIndex) {
-					case 0: return item.section;
-					case 1: return item.key;
-					case 2: return getInifileDocument().getValue(item.section, item.key); 
-					case 3: return getInifileDocument().getComment(item.section, item.key);
-					default: throw new IllegalArgumentException();
+				case 0: return item.section;
+				case 1: return item.key;
+				case 2: return getInifileDocument().getValue(item.section, item.key); 
+				case 3: return getInifileDocument().getComment(item.section, item.key);
+				default: throw new IllegalArgumentException();
 				}
 			}
 		});
@@ -156,8 +159,8 @@ public class ParametersPage extends FormPage {
 			}
 
 			public void modify(Object element, String property, Object value) {
-			    if (element instanceof Item)
-			    	element = ((Item) element).getData(); // workaround, see super's comment
+				if (element instanceof Item)
+					element = ((Item) element).getData(); // workaround, see super's comment
 				SectionKey item = (SectionKey) element;
 				IInifileDocument doc = getInifileDocument();
 				if (property.equals("key")) {
@@ -184,7 +187,7 @@ public class ParametersPage extends FormPage {
 				}
 			}
 		});
-		
+
 		// content assist for the Key column
 		IContentProposalProvider proposalProvider = new InifileParamKeyContentProposalProvider(null, false, getInifileDocument(), getInifileAnalyzer()) {
 			@Override
@@ -208,40 +211,40 @@ public class ParametersPage extends FormPage {
 		ContentAssistUtils.addContentAssist(editors[2], valueProposalProvider);
 
 		// on double-click, show entry in the text editor
- 		tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
+		tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent event) {
 				SectionKey entry = (SectionKey) (event.item==null ? null : event.item.getData());
 				getEditorData().getInifileEditor().gotoEntry(entry.section, entry.key, IGotoInifile.Mode.TEXT);
 			}
 		});
- 		
- 		// export the table's selection as editor selection
- 		tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+		// export the table's selection as editor selection
+		tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
 				SectionKey entry = (SectionKey) sel.getFirstElement();
 				if (entry!=null)
 					setEditorSelection(entry.section, entry.key);
 			}
- 		});
- 		
- 		// add tooltip support
- 		TooltipSupport.adapt(tableViewer.getTable(), new ITooltipProvider() {
+		});
+
+		// add tooltip support
+		TooltipSupport.adapt(tableViewer.getTable(), new ITooltipProvider() {
 			public String getTooltipFor(Control control, int x, int y) {
 				Item item = tableViewer.getTable().getItem(new Point(x,y));
 				SectionKey entry = (SectionKey) (item==null ? null : item.getData());
 				return entry==null ? null : InifileUtils.getEntryTooltip(entry.section, entry.key, getInifileDocument(), getInifileAnalyzer());
 			}
- 		});
-		
+		});
+
 		return tableViewer;
 	}
 
 	private static String nullToEmpty(String text) {
 		return text == null ? "" : text;
 	}
-	
+
 	private TableColumn addTableColumn(Table table, String label, int width) {
 		TableColumn column = new TableColumn(table, SWT.NONE);
 		column.setText(label);
@@ -252,13 +255,15 @@ public class ParametersPage extends FormPage {
 	private Composite createButtons() {
 		Composite buttonGroup = new Composite(this, SWT.NONE);
 		buttonGroup.setLayout(new GridLayout(1,false));
-		
-		Button addButton = createButton(buttonGroup, "Add...");
+
+		Button addButton = createButton(buttonGroup, "Add");
 		Button removeButton = createButton(buttonGroup, "Remove");
 		//new Label(buttonGroup, SWT.NONE);
 		Button upButton = createButton(buttonGroup, "Up");
 		Button downButton = createButton(buttonGroup, "Down");
-		
+		new Label(buttonGroup, SWT.NONE);
+		Button addMissingButton = createButton(buttonGroup, "Add missing...");
+
 		addButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				// determine where to insert new element
@@ -275,7 +280,7 @@ public class ParametersPage extends FormPage {
 					while (doc.containsKey(section, newKey+i)) i++;
 					newKey = newKey+i;
 				}
-				
+
 				// insert key and refresh table
 				doc.addEntry(section, newKey, "", null, beforeKey); //XXX what if no such section
 				reread();
@@ -335,6 +340,34 @@ public class ParametersPage extends FormPage {
 			}
 		});
 
+		addMissingButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				String selectedSection = sectionsCombo.getText();
+				InifileAnalyzer analyzer = getInifileAnalyzer();
+				IInifileDocument doc = analyzer.getDocument();
+
+				// open the dialog
+				AddInifileKeysDialog dialog = new AddInifileKeysDialog(getShell(), analyzer, selectedSection);
+				if (dialog.open()==Dialog.OK) {
+					// save selection
+					IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
+
+					// add user-selected keys to the document, and also **.apply-default if chosen by the user
+					String[] keys = dialog.getKeys();
+					String section = dialog.getSection();
+					for (String key : keys)
+						if (!doc.containsKey(section, key))
+							InifileUtils.addEntry(doc, section, key, "", null);
+					if (dialog.getAddApplyDefault())
+						InifileUtils.addEntry(doc, section, "**.apply-default", "true", null);
+
+					// refresh table and restore selection
+					reread();
+					tableViewer.setSelection(sel);
+				}
+			}
+		});
+
 		return buttonGroup;
 	}
 
@@ -371,7 +404,7 @@ public class ParametersPage extends FormPage {
 			for (String key : doc.getKeys(section))
 				if (key.contains("."))
 					list.add(new SectionKey(section, key));
-	
+
 		tableViewer.setInput(list.toArray(new SectionKey[list.size()]));
 		tableViewer.refresh();
 
