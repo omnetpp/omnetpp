@@ -1,20 +1,28 @@
 package org.omnetpp.common.properties;
 
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.image.ImageFactory;
 
 /**
@@ -22,36 +30,59 @@ import org.omnetpp.common.image.ImageFactory;
  * 
  * @author Andras
  */
+//XXX validate
 public class ImageSelectionDialog extends Dialog {
 	private static final int RIGHT_MARGIN = 30;
-	
+
 	// widgets
+	private Combo filterCombo;
+	private Label statusLabel;
 	private ScrolledComposite scrolledComposite; 
 	private Composite imageCanvas; 
 	private Button okButton;
 	
+	// state
+	private String[] imageNames;
+
 	// result
 	private String selection = null;
 
-	
+
 	public ImageSelectionDialog(Shell parentShell, String initialValue) {
 		super(parentShell);
-        setShellStyle(getShellStyle() | SWT.MAX | SWT.RESIZE);
+		setShellStyle(getShellStyle() | SWT.MAX | SWT.RESIZE);
 		selection = initialValue;
+		imageNames = ImageFactory.getImageNameList().toArray(new String[]{});
 	}
 
 	@Override
-    protected void configureShell(Shell shell) {
-        super.configureShell(shell);
+	protected void configureShell(Shell shell) {
+		super.configureShell(shell);
 		shell.setText("Select Image");
-    }
+	}
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		Composite composite = (Composite) super.createDialogArea(parent);
-        composite.setLayout(new GridLayout(1,false));
+		Composite dialogArea = (Composite) super.createDialogArea(parent);
 
-		scrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
+		Composite composite = new Composite(dialogArea, SWT.NONE);
+		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		composite.setLayout(new GridLayout(1,false));
+
+		// label and filter combo
+		Label label = new Label(composite, SWT.NONE);
+		label.setText("Select Image (? = any character, * = any string)");
+		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		label.setFont(parent.getFont());
+		filterCombo = new Combo(composite, SWT.BORDER);
+		filterCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+		statusLabel = new Label(composite, SWT.NONE);
+		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		label.setFont(parent.getFont());
+		
+		// scrolled composite for the images
+		scrolledComposite = new ScrolledComposite(composite, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		scrolledComposite.getVerticalBar().setIncrement(10); // mouse wheel step
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gridData.widthHint = 600;
@@ -61,7 +92,7 @@ public class ImageSelectionDialog extends Dialog {
 		// create inner composite to the icons
 		imageCanvas = new Composite(scrolledComposite, SWT.NONE);
 		scrolledComposite.setContent(imageCanvas);
-        imageCanvas.setLayout(new RowLayout());
+		imageCanvas.setLayout(new RowLayout());
 
 		// handle resizes
 		scrolledComposite.addControlListener(new ControlAdapter() {
@@ -69,82 +100,21 @@ public class ImageSelectionDialog extends Dialog {
 				layoutForm();
 			}
 		});
-        
-		for (final String imageName : ImageFactory.getImageNameList()) {
-			Button b = new Button(imageCanvas, SWT.FLAT);
-			b.setImage(ImageFactory.getImage(imageName));
-			b.setToolTipText(imageName);
-			b.addSelectionListener(new SelectionListener() {
-				public void widgetSelected(SelectionEvent e) {
-					imageSelected(imageName);
-				}
 
-				public void widgetDefaultSelected(SelectionEvent e) {
-					imageSelected(imageName);
-					okPressed();
-				}
-			});
-		}
-        
-        
-//        Group group1 = createGroup(composite, "Name and description");
-//        
-//		// section name field
-//		createLabel(group1, "Section Name:", parent.getFont());
-//		sectionNameText = new Text(group1, SWT.SINGLE | SWT.BORDER);
-//		sectionNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-//
-//		// description field
-//		createLabel(group1, "Description (optional):", parent.getFont());
-//		descriptionText = new Text(group1, SWT.SINGLE | SWT.BORDER);
-//		descriptionText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-//
-//        Group group2 = createGroup(composite, "Basic configuration");
-//
-//		// "extends" section field
-//		createLabel(group2, "Fall back to section:", parent.getFont());
-//		extendsCombo = new Combo(group2, SWT.READ_ONLY | SWT.BORDER);
-//		extendsCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-//
-//		// network name field
-//		createLabel(group2, "NED Network:", parent.getFont());
-//		networkCombo = new Combo(group2, SWT.BORDER);
-//		networkCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-//
-//		// fill "sections" combo
-//		//XXX don't offer sections which would create a circle!!!!!!!!
-//		String[] sectionNames = doc.getSectionNames();
-//		if (sectionNames.length==0) 
-//			sectionNames = new String[] {"General"};  //XXX we lie that [General] exists
-//		extendsCombo.setItems(sectionNames);
-//		extendsCombo.setVisibleItemCount(Math.min(20, extendsCombo.getItemCount()));
-//		extendsCombo.select(0);
-//
-//		// fill network combo
-//		Set<String> networkNames = NEDResourcesPlugin.getNEDResources().getNetworkNames();
-//		networkCombo.setItems(networkNames.toArray(new String[] {}));
-//		networkCombo.setVisibleItemCount(Math.min(20, networkCombo.getItemCount()));
-//		
-//		// fill dialog fields with initial contents
-//		if (newSectionName!=null) sectionNameText.setText(newSectionName);
-//        if (description!=null) descriptionText.setText(description);
-//        if (extendsSection!=null) extendsCombo.setText(extendsSection); 
-//        if (networkName!=null) networkCombo.setText(networkName);
-//		sectionNameText.selectAll();
-//		descriptionText.selectAll();
-//        
-//        // set up validation on content changes
-//        ModifyListener listener = new ModifyListener() {
-//            public void modifyText(ModifyEvent e) {
-//                validateDialogContents();
-//            }
-//        };
-//        sectionNameText.addModifyListener(listener);
-//
-//        // focus on first field
-//		sectionNameText.setFocus();
-//
-		return composite;
+		// add the images
+		populate();
+
+        // set up validation on content changes
+        filterCombo.addModifyListener(new ModifyListener() {
+            public void modifyText(ModifyEvent e) {
+                populate();
+            }
+        });
+		
+		// focus on first field
+		filterCombo.setFocus();
+
+		return dialogArea;
 	}
 
 	protected void layoutForm() {
@@ -154,22 +124,95 @@ public class ImageSelectionDialog extends Dialog {
 			imageCanvas.layout();
 		}
 	}
-	
+
 	protected void createButtonsForButtonBar(Composite parent) {
-        okButton = createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
-        createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
-    }
-	
+		okButton = createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
+		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+	}
+
+	protected void populate() {
+		long startTime = System.currentTimeMillis();
+
+		// regex-ify the filter string
+		String filter = filterCombo.getText().trim();
+		filter = filter.replace("\\", "\\\\");
+		filter = filter.replace(".", "\\.");
+		filter = filter.replace("[", "\\[");
+		filter = filter.replace("]", "\\]");
+		filter = filter.replace("(", "\\(");
+		filter = filter.replace(")", "\\)");
+		filter = filter.replace("?", ".?");
+		filter = filter.replace("*", ".*");
+		filter = ".*" + filter + ".*";
+
+		Pattern pattern = null;
+		try {
+			pattern = Pattern.compile(filter);
+		} 
+		catch (PatternSyntaxException e) {
+			statusLabel.setText("Invalid filter string");
+			CommonPlugin.logError(e);
+			layoutForm();
+			return;
+		}
+		
+		// remove existing images
+		for (Control c : imageCanvas.getChildren())
+			c.dispose();
+
+		// add new images
+		int count = 0;
+		String theImage = null;
+		for (final String imageName : imageNames) {
+			if (pattern.matcher(imageName).matches()) {
+				count++;
+				theImage = imageName;
+				Button b = new Button(imageCanvas, SWT.PUSH);
+				b.setImage(ImageFactory.getImage(imageName));
+				b.setToolTipText(imageName);
+				b.addSelectionListener(new SelectionListener() {
+					public void widgetSelected(SelectionEvent e) {
+						imageSelected(imageName);
+					}
+
+					public void widgetDefaultSelected(SelectionEvent e) {
+						//XXX never called for a Button -- sorry...
+						imageSelected(imageName);
+						okPressed();
+					}
+				});
+			}
+		}
+		
+		layoutForm();
+		
+		// update status line
+		statusLabel.setText("Filter matches "+count+" images out of "+imageNames.length+".");
+		
+		if (count == 1) {
+			// selection got narrowed down to one image: make that the user's choice
+			imageSelected(theImage);
+		}
+		else {
+			// invalidate user's previous selection
+			selection = null;
+			if (okButton != null)  // it is null initially
+				okButton.setEnabled(false);
+		}
+		
+		System.out.println("Dialog refresh: "+(System.currentTimeMillis()-startTime)+"ms");
+	}
+
 	protected void imageSelected(String imageName) {
 		selection = imageName;
+		okButton.setEnabled(true);
 	}
 
 	protected void okPressed() {
-        super.okPressed();  // nothing to do here
-    }
+		super.okPressed();  // nothing to do here
+	}
 
 	public String getFirstResult() {
 		return selection;
 	}
-	
 }
