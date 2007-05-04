@@ -470,7 +470,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      * duplicate names only get detected when this gets run!
      */
     private synchronized void rehash() {
-        long startMillis = System.currentTimeMillis();
+        // long startMillis = System.currentTimeMillis();
 
         if (!needsRehash)
             return;
@@ -582,7 +582,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
         markerJob.schedule();
 
-        long dt = System.currentTimeMillis() - startMillis;
+        // long dt = System.currentTimeMillis() - startMillis;
         // System.out.println("rehash() took " + dt + "ms");
     }
 
