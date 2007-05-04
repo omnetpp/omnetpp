@@ -19,7 +19,9 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.InifileUtils;
 
 /**
  * Edit section name and some of its attributes 
@@ -40,6 +42,8 @@ public class SectionDialog extends TitleAreaDialog {
 	private Combo extendsCombo;
 	private Text networkNameText;
     private Button okButton;
+
+    private boolean insideValidation = false;
 
 	// dialog result
     private String newSectionName;
@@ -162,10 +166,28 @@ public class SectionDialog extends TitleAreaDialog {
     }
 
 	protected void validateDialogContents() {
-		String errorMessage = validate();
+		// prevent notification loops
+		if (insideValidation) return;
+		insideValidation = true;
+		
+		// if as section with "network=" is selected, make it impossible to override here
+        extendsSection = extendsCombo.getText();
+        String inheritedNetworkName = InifileUtils.lookupConfig(extendsSection, ConfigurationRegistry.CFGID_NETWORK.getKey(), doc);
+        if (inheritedNetworkName != null) {
+        	networkNameText.setText(inheritedNetworkName);
+        	networkNameText.setEnabled(false);
+        }
+        else {
+        	networkNameText.setEnabled(true);
+        }
+        
+		// validate contents
+        String errorMessage = validate();
 		setErrorMessage(errorMessage);
 		if (okButton != null)  // it is initially null
 			okButton.setEnabled(errorMessage==null);
+		
+		insideValidation = false;
 	}
 
 	protected String validate() {
@@ -179,7 +201,6 @@ public class SectionDialog extends TitleAreaDialog {
 		if (doc.containsSection(sectionName) && (originalSectionName==null || !originalSectionName.equals(sectionName)))
 			return "Section ["+sectionName+"] already exists";
 
-		//XXX disable networkName if base sections have it!!
 		//XXX further validation...
 
 		return null;
