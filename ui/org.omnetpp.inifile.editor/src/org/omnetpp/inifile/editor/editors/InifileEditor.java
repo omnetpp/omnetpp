@@ -59,11 +59,8 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	public static final int FORMEDITOR_PAGEINDEX = 0;
 	public static final int TEXTEDITOR_PAGEINDEX = 1;
 
-	/** The data model */
 	private InifileEditorData editorData = new InifileEditorData();
-
 	private InifileContentOutlinePage outlinePage;
-
 	private DelayedJob postSelectionChangedJob;
 	
 	/**
@@ -76,6 +73,14 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
  
 	public InifileEditorData getEditorData() {
 		return editorData;
+	}
+
+	public InifileTextEditor getTextEditor() {
+		return textEditor;
+	}
+
+	public InifileFormEditor getFormEditor() {
+		return formEditor;
 	}
 	
 	/**

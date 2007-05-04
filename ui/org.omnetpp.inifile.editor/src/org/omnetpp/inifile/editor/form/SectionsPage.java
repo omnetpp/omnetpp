@@ -140,12 +140,14 @@ public class SectionsPage extends FormPage {
 		// drag and drop support
  		setupDragAndDropSupport(treeViewer);
 		
-		// on double-click, show section in the text editor
+		// on double-click, show section in the parameters page
  		treeViewer.getTree().addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent event) {
 				String section = getSectionNameFromTreeNode(event.item==null ? null : event.item.getData());
-				getEditorData().getInifileEditor().gotoSection(section, IGotoInifile.Mode.TEXT);
+				InifileFormEditor formEditor = getEditorData().getInifileEditor().getFormEditor();
+				formEditor.showCategoryPage(InifileFormEditor.PARAMETERS_PAGE);
+				formEditor.getFormPage().gotoSection(section);
 			}
 		});
 
@@ -154,7 +156,7 @@ public class SectionsPage extends FormPage {
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
 				String section = getSectionNameFromTreeNode(sel.getFirstElement());
-				if (section!=null)
+				if (section != null)
 					setEditorSelection(section, null);
 			}
  		});

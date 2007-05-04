@@ -301,7 +301,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		treeViewer.getTree().addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
-				gotoNedAction.run();
+				gotoInifileAction.run();
 			}
 		});
 	

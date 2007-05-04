@@ -379,6 +379,19 @@ public class ParametersPage extends FormPage {
 	}
 
 	@Override
+	public void gotoSection(String section) {
+		sectionsCombo.setText(section);
+		reread(); // refresh page contents
+	}
+
+	@Override
+	public void gotoEntry(String section, String key) {
+		sectionsCombo.setText(section);
+		reread(); // refresh page contents
+		//XXX if key is a param key, select it in the table!
+	}
+	
+	@Override
 	public boolean setFocus() {
 		return sectionsCombo.setFocus();
 	}

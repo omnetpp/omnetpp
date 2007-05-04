@@ -47,7 +47,11 @@ public class InifileFormEditor extends Composite {
 		createControl();
 	}
 
-	private void createControl() {
+	public FormPage getFormPage() {
+		return formPage;
+	}
+	
+	protected void createControl() {
 		// create and layout a banner and a content area
 		setBackground(BGCOLOR);
 		setLayout(new GridLayout());
@@ -79,7 +83,7 @@ public class InifileFormEditor extends Composite {
 		return viewer;
 	}
 
-	private void buildTree() {
+	protected void buildTree() {
 		GenericTreeNode root = new GenericTreeNode("root");
 
 		GenericTreeNode configNode = new GenericTreeNode(CONFIGURATION_PAGE); 
@@ -97,7 +101,7 @@ public class InifileFormEditor extends Composite {
 		treeViewer.setSelection(new StructuredSelection(new GenericTreeNode(categories[0])));
 	}
 	
-	private void addListener(final TreeViewer treeViewer) {
+	protected void addListener(final TreeViewer treeViewer) {
 		((Tree) treeViewer.getControl()).addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
@@ -120,13 +124,18 @@ public class InifileFormEditor extends Composite {
 	 * Shows the form page belonging to the given category (i.e. tree node),
 	 * after committing changes on the current page.
 	 */
-	public void showCategoryPage(String category) {
+	public FormPage showCategoryPage(String category) {
+		// adjust tree selection (needed if we are invoked programmatically)
+		Object sel = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
+		if (!category.equals(((GenericTreeNode)sel).getPayload()))
+			treeViewer.setSelection(new StructuredSelection(new GenericTreeNode(category)));
+		
 		// root tree node is a shortcut to "General" 
 		if (category.equals(CONFIGURATION_PAGE))
 			category = GenericConfigPage.getCategoryNames()[0];
 
 		if (formPage != null && formPage.getPageCategory().equals(category))
-			return; // already showing
+			return formPage; // already showing
 		
 		// dispose old page
 		if (formPage != null) {
@@ -142,6 +151,7 @@ public class InifileFormEditor extends Composite {
 		else
 			formPage = new GenericConfigPage(form, category, inifileEditor);
 		form.layout();
+		return formPage;
 	}
 
 	//XXX currently unused
