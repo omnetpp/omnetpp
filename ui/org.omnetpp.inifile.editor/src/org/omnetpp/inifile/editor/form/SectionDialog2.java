@@ -1,7 +1,5 @@
 package org.omnetpp.inifile.editor.form;
 
-import java.util.ArrayList;
-
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
@@ -17,7 +15,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
-import org.omnetpp.inifile.editor.model.ParamResolution;
 
 /**
  * Edit section name and its description. 
@@ -86,7 +83,7 @@ public class SectionDialog2 extends TitleAreaDialog {
 
 		// "extends" section
 		createLabel(group2, "Fall back to section:", parent.getFont());
-		extendsCombo = new Combo(group2, SWT.SINGLE | SWT.BORDER);
+		extendsCombo = new Combo(group2, SWT.READ_ONLY | SWT.BORDER);
 		extendsCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		// network name
@@ -94,8 +91,16 @@ public class SectionDialog2 extends TitleAreaDialog {
 		networkNameText = new Text(group2, SWT.SINGLE | SWT.BORDER);
 		networkNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
+		// fill "sections" combo
+		String[] sectionNames = doc.getSectionNames();
+		if (sectionNames.length==0) 
+			sectionNames = new String[] {"General"};  //XXX we lie that [General] exists
+		extendsCombo.setItems(sectionNames);
+		extendsCombo.setVisibleItemCount(Math.min(20, extendsCombo.getItemCount()));
+		extendsCombo.select(0);
+
 		// fill dialog fields with initial contents
-        if (sectionName!=null) sectionNameText.setText(sectionName);
+		if (sectionName!=null) sectionNameText.setText(sectionName);
         if (description!=null) descriptionText.setText(description);
         if (extendsSection!=null) extendsCombo.setText(extendsSection);
         if (networkName!=null) networkNameText.setText(networkName);
