@@ -247,6 +247,21 @@ public class InifileUtils {
 		return key1.compareToIgnoreCase(key2) < 0;
 	}
 
+	public static void addOrSetOrRemoveEntry(IInifileDocument doc, String section, String key, String value) {
+		if (value==null) {
+			// remove
+			if (doc.containsKey(section, key))
+				doc.removeKey(section, key);
+		}
+		else {
+			// set or add
+			if (!doc.containsKey(section, key))
+				addEntry(doc, section, key, value, null);
+			else if (!value.equals(doc.getValue(section, key)))
+				doc.setValue(section, key, value);
+		}
+	}
+
 	/**
 	 * Renames the given section. Also changes the extends= keys in other sections
 	 * that refer to it.
@@ -272,7 +287,7 @@ public class InifileUtils {
 		// name and description
 		String text = "Section ["+section+"]";
 		String description = doc.getValue(section, "description");
-		if (description!=null)
+		if (description != null)
 			text += " -- " + description;
 		text += "\n";
 

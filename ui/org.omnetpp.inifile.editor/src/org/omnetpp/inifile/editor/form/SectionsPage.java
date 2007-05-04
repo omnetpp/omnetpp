@@ -1,6 +1,7 @@
 package org.omnetpp.inifile.editor.form;
 
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_DESCRIPTION;
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
@@ -34,7 +35,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
-import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeLabelProvider;
@@ -241,73 +241,110 @@ public class SectionsPage extends FormPage {
 		// configure "add section" button
 		addButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				SectionDialog dialog = new SectionDialog(getShell(), "New Section", "Create new section", getInifileDocument(), null);
-				dialog.setSectionName("New");
-				String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
-				if (selection.length != 0)
-					dialog.setExtendsSection(selection[0]);
-				if (dialog.open()==Window.OK) {
-					String sectionName = dialog.getSectionName();
-					InifileUtils.addSection(getInifileDocument(), sectionName);
-					String description = dialog.getDescription();
-					if (!description.equals(""))
-						InifileUtils.addEntry(getInifileDocument(), sectionName, CFGID_DESCRIPTION.getKey(), Common.quoteString(description), null);
-					String extendsSection = dialog.getExtendsSection();
-					if (!extendsSection.equals(""))
-						setSectionExtendsKey(sectionName, extendsSection);
-					//XXX set network
-					reread();
-				}
+				createNewSection();
 			}
 		});
 
 		// configure "edit/rename section" button
 		editButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
-				if (selection.length == 0)
-					return;
-				String sectionName = selection[0];
-				SectionDialog dialog = new SectionDialog(getShell(), "Rename/Edit Section", "Rename or edit section", getInifileDocument(), sectionName);
-				if (dialog.open()==Window.OK) {
-					String newSectionName = dialog.getSectionName();
-					InifileUtils.addSection(getInifileDocument(), sectionName);
-					if (!newSectionName.equals(sectionName))
-						InifileUtils.renameSection(getInifileDocument(), sectionName, newSectionName);
-					// Note: renaming is done, we have to use newSectionName from here on
-					String description = dialog.getDescription();
-					if (!description.equals(""))  
-						; //XXX add/remove/set description
-					//XXX add/remove/set extends
-					//XXX add/remove/set network
-					reread();
-				}
+				editSelectedSection();
 			}
 		});
 
 		// configure "remove section" button
 		removeButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
-				if (selection.length != 0) {
-					for (String sectionName : selection) {
-						getInifileDocument().removeSection(sectionName);
-					}
-					reread();
-				}
+				removeSelectedSection();
 			}
 		});
 
 		return buttonGroup;
 	}
 
-	private Button createButton(Composite buttonGroup, String label) {
+	protected static Button createButton(Composite buttonGroup, String label) {
 		Button button = new Button(buttonGroup, SWT.PUSH);
 		button.setText(label);
 		button.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
 		return button;
 	}
 	
+	/**
+	 * Invoked by clicking on the "New Section" button
+	 */
+	protected void createNewSection() {
+		// create and configure dialog
+		IInifileDocument doc = getInifileDocument();
+		SectionDialog dialog = new SectionDialog(getShell(), "New Section", "Create new section", doc, null);
+		dialog.setSectionName("New");
+		String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
+		if (selection.length != 0)
+			dialog.setExtendsSection(selection[0]);
+		
+		// open the dialog
+		if (dialog.open()==Window.OK) {
+			String sectionName = dialog.getSectionName();
+			InifileUtils.addSection(doc, sectionName);
+
+			String description = dialog.getDescription();
+			InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getKey(), description.equals("") ? null : description);			
+
+			String extendsSection = dialog.getExtendsSection();
+			String extendsName = extendsSection.equals(GENERAL) ? null : extendsSection.replaceFirst(CONFIG_, "");
+			InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, extendsName);			
+
+			String networkName = dialog.getNetworkName();
+			InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_NETWORK.getKey(), networkName.equals("") ? null : networkName);			
+
+			reread();
+		}
+	}
+
+	/**
+	 * Invoked by clicking on the "Edit Section" button
+	 */
+	protected void editSelectedSection() {
+		// create and configure dialog
+		String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
+		if (selection.length == 0)
+			return;
+		String oldSectionName = selection[0];
+		IInifileDocument doc = getInifileDocument();
+		SectionDialog dialog = new SectionDialog(getShell(), "Rename/Edit Section", "Rename or edit section ["+oldSectionName+"]", doc, oldSectionName);
+
+		// open the dialog
+		if (dialog.open()==Window.OK) {
+			String sectionName = dialog.getSectionName();
+			if (!sectionName.equals(oldSectionName))
+				InifileUtils.renameSection(doc, oldSectionName, sectionName);
+
+			String description = dialog.getDescription();
+			InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getKey(), description.equals("") ? null : description);			
+
+			String extendsSection = dialog.getExtendsSection();
+			String extendsName = extendsSection.equals(GENERAL) ? null : extendsSection.replaceFirst(CONFIG_, "");
+			InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, extendsName);			
+
+			String networkName = dialog.getNetworkName();
+			InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_NETWORK.getKey(), networkName.equals("") ? null : networkName);			
+
+			reread();
+		}
+	}
+
+	/**
+	 * Invoked by clicking on the "Remove Section" button
+	 */
+	protected void removeSelectedSection() {
+		String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
+		if (selection.length != 0) {
+			for (String sectionName : selection) {
+				getInifileDocument().removeSection(sectionName);
+			}
+			reread();
+		}
+	}
+
 	@Override
 	public boolean setFocus() {
 		return treeViewer.getTree().setFocus();
@@ -363,6 +400,8 @@ public class SectionsPage extends FormPage {
 			treeViewer.setInput(rootNode);
 			treeViewer.expandAll();
 		}
+		
+		treeViewer.refresh();  // refresh labels anyway
 	}
 
 	private GenericTreeNode getOrCreate(HashMap<String, GenericTreeNode> nodes, String sectionName, boolean isUndefined) {
@@ -388,18 +427,5 @@ public class SectionsPage extends FormPage {
 	public void gotoEntry(String section, String key) {
 		gotoSection(section);
 	}
-
-//	protected static Item[] getAllTreeItems(Tree tree) {
-//		List<Item> list = new ArrayList<Item>();
-//		for (TreeItem item : tree.getItems())
-//			collectTreeItems(item, list);
-//		return list.toArray(new Item[]{});
-//	}
-//
-//	private static void collectTreeItems(TreeItem item, List<Item> list) {
-//		list.add(item);
-//		for (TreeItem childItem : item.getItems())
-//			collectTreeItems(childItem, list);
-//	}
 
 }

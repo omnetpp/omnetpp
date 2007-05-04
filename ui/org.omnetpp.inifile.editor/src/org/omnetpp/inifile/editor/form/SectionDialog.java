@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.omnetpp.common.engine.Common;
 import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
@@ -71,7 +72,10 @@ public class SectionDialog extends TitleAreaDialog {
 		if (sectionName != null && doc.containsSection(sectionName)) {
 			newSectionName = originalSectionName;
 			description = doc.getValue(sectionName, ConfigurationRegistry.CFGID_DESCRIPTION.getKey());
+			if (description != null)
+				try {description = Common.parseQuotedString(description);} catch (RuntimeException e) {}
 			extendsSection = doc.getValue(sectionName, ConfigurationRegistry.CFGID_EXTENDS.getKey());
+			extendsSection = extendsSection==null ? GENERAL : CONFIG_ + extendsSection;
 			networkName = doc.getValue(sectionName, ConfigurationRegistry.CFGID_NETWORK.getKey());;
 		}
 	}
@@ -118,6 +122,7 @@ public class SectionDialog extends TitleAreaDialog {
 		networkCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		// fill "sections" combo
+		//XXX don't offer sections which would create a circle!!!!!!!!
 		String[] sectionNames = doc.getSectionNames();
 		if (sectionNames.length==0) 
 			sectionNames = new String[] {"General"};  //XXX we lie that [General] exists
@@ -133,7 +138,7 @@ public class SectionDialog extends TitleAreaDialog {
 		// fill dialog fields with initial contents
 		if (newSectionName!=null) sectionNameText.setText(newSectionName);
         if (description!=null) descriptionText.setText(description);
-        if (extendsSection!=null) extendsCombo.setText(extendsSection);
+        if (extendsSection!=null) extendsCombo.setText(extendsSection); 
         if (networkName!=null) networkCombo.setText(networkName);
 		sectionNameText.selectAll();
 		descriptionText.selectAll();
@@ -189,9 +194,9 @@ public class SectionDialog extends TitleAreaDialog {
 		
 		// if as section with "network=" is selected, make it impossible to override here
         extendsSection = extendsCombo.getText();
+        String ownNetworkName = doc.getValue(originalSectionName, ConfigurationRegistry.CFGID_NETWORK.getKey());
         String inheritedNetworkName = InifileUtils.lookupConfig(extendsSection, ConfigurationRegistry.CFGID_NETWORK.getKey(), doc);
-        if (inheritedNetworkName != null) {
-        	//XXX we probably shouldn't do this if it's *already* existing in the edited section....
+        if (ownNetworkName == null && inheritedNetworkName != null) {
         	networkCombo.setText(inheritedNetworkName);
         	networkCombo.setEnabled(false);
         }
@@ -219,7 +224,7 @@ public class SectionDialog extends TitleAreaDialog {
 		if (doc.containsSection(sectionName) && (originalSectionName==null || !originalSectionName.equals(sectionName)))
 			return "Section ["+sectionName+"] already exists";
 
-		//XXX further validation (if network is OK, etc)...
+		//XXX check that selected network exists
 
 		return null;
 	}
@@ -232,7 +237,7 @@ public class SectionDialog extends TitleAreaDialog {
 			newSectionName = CONFIG_+newSectionName;
         description = descriptionText.getText().trim();
         extendsSection = extendsCombo.getText().trim();
-        networkName = networkCombo.getText().trim();
+        networkName = networkCombo.isEnabled() ? networkCombo.getText().trim() : "";
         super.okPressed();
     }
 
@@ -245,10 +250,12 @@ public class SectionDialog extends TitleAreaDialog {
 	}
 
 	public String getDescription() {
-		return description;
+		return description.equals("") ? "" : Common.quoteString(description);
 	}
 
 	public void setDescription(String description) {
+		if (description != null)
+			try {description = Common.parseQuotedString(description);} catch (RuntimeException e) {}
 		this.description = description;
 	}
 
