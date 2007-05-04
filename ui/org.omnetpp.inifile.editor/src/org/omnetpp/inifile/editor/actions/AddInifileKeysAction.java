@@ -54,6 +54,8 @@ public class AddInifileKeysAction extends Action {
 				return;
 			}
 			
+			//XXX what if network name is invalid? check it inside the dialog??
+			
 			// determine currently selected section in the editor...
 			IStructuredSelection editorSelection = (IStructuredSelection) inifileEditor.getSite().getSelectionProvider().getSelection();
 			InifileSelectionItem selectionItem = (InifileSelectionItem) editorSelection.getFirstElement();

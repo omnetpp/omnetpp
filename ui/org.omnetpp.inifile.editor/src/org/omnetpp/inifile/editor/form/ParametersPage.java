@@ -46,10 +46,10 @@ import org.omnetpp.inifile.editor.model.SectionKey;
  * 
  * @author Andras
  */
-//XXX combobox should publish editor selection 
 //XXX validation of keys and values! e.g. shouldn't allow empty key
 //XXX comment handling (stripping/adding of "#")
 //XXX editing stuff inside included files causes exception without user feedback -- pop up error dialog?
+//XXX add status label below the table: "34 unassigned parameters"
 public class ParametersPage extends FormPage {
 	private TableViewer tableViewer;
 	private Combo sectionsCombo;
@@ -94,7 +94,7 @@ public class ParametersPage extends FormPage {
 			public void widgetSelected(SelectionEvent e) {
 				// publish section as editor selection
 				String selectedSection = sectionsCombo.getText(); 
-				if (getInifileDocument().containsSection(selectedSection))
+				if (getInifileDocument().containsSection(selectedSection)) // because we may have lied that [General] existed
 					setEditorSelection(selectedSection, null);
 				
 				// refresh table contents, etc.

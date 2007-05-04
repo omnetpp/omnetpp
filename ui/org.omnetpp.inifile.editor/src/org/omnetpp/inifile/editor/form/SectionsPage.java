@@ -240,35 +240,23 @@ public class SectionsPage extends FormPage {
 		Button renameButton = createButton(buttonGroup, "Rename..."); //XXX turn rename into Edit
 		Button removeButton = createButton(buttonGroup, "Remove");
 		
-		// in more than one places we'll need to check whether a string is acceptable as a new section's name
-		final IInputValidator newSectionNameValidator = new IInputValidator() {
-			public String isValid(String sectionName) {
-				sectionName = sectionName.trim();
-				if (sectionName.equals(""))
-					return "Section name cannot be empty";
-				if (!sectionName.equals(GENERAL) && !sectionName.startsWith(CONFIG_))
-					sectionName = CONFIG_+sectionName;
-				if (getInifileDocument().containsSection(sectionName))
-					return "Section ["+sectionName+"] already exists";
-				return null;
-			}
-		};
-
 		// configure "add section" button
 		addButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				SectionDialog dialog = new SectionDialog(getShell(), "New Section", "Name for the new section:", "new", newSectionNameValidator);
+				SectionDialog dialog = new SectionDialog(getShell(), "New Section", "Create new section", getInifileDocument(), null);
+				String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
+				if (selection.length != 0)
+					dialog.setExtendsSection(selection[0]);
 				if (dialog.open()==Window.OK) {
-					String sectionName = dialog.getValue().trim();
-					if (!sectionName.equals(GENERAL) && !sectionName.startsWith(CONFIG_))
-						sectionName = CONFIG_+sectionName;
+					String sectionName = dialog.getSectionName();
 					InifileUtils.addSection(getInifileDocument(), sectionName);
-					String description = dialog.getDescription().trim();
+					String description = dialog.getDescription();
 					if (!description.equals(""))
 						InifileUtils.addEntry(getInifileDocument(), sectionName, CFGID_DESCRIPTION.getKey(), Common.quoteString(description), null);
-					String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
-					if (selection.length != 0)
-						setSectionExtendsKey(sectionName, selection[0]);
+					String extendsSection = dialog.getExtendsSection();
+					if (!extendsSection.equals(""))
+						setSectionExtendsKey(sectionName, extendsSection);
+					//XXX set network
 					reread();
 				}
 			}
@@ -294,16 +282,19 @@ public class SectionsPage extends FormPage {
 				if (selection.length == 0)
 					return;
 				String sectionName = selection[0];
-				if (!sectionName.equals(GENERAL)) { // [General] cannot be renamed
-					//XXX use SectionDialog and allow editing of description too
-					InputDialog dialog = new InputDialog(getShell(), "Rename Section", "New name for section ["+sectionName+"]:", sectionName.replaceFirst("^Config +", "")+"-1", newSectionNameValidator);
-					if (dialog.open()==Window.OK) {
-						String newSectionName = dialog.getValue().trim();
-						if (!newSectionName.equals(GENERAL) && !newSectionName.startsWith(CONFIG_))
-							newSectionName = CONFIG_+newSectionName;
+				SectionDialog dialog = new SectionDialog(getShell(), "Rename/Edit Section", "Rename or edit section", getInifileDocument(), sectionName);
+				if (dialog.open()==Window.OK) {
+					String newSectionName = dialog.getSectionName();
+					InifileUtils.addSection(getInifileDocument(), sectionName);
+					if (!newSectionName.equals(sectionName))
 						InifileUtils.renameSection(getInifileDocument(), sectionName, newSectionName);
-						reread();
-					}
+					// Note: renaming is done, we have to use newSectionName from here on
+					String description = dialog.getDescription();
+					if (!description.equals(""))  
+						; //XXX add/remove/set description
+					//XXX add/remove/set extends
+					//XXX add/remove/set network
+					reread();
 				}
 			}
 		});
