@@ -1,5 +1,9 @@
 package org.omnetpp.common.properties;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -13,6 +17,8 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -23,6 +29,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.image.ImageConverter;
 import org.omnetpp.common.image.ImageFactory;
 
 /**
@@ -30,8 +37,9 @@ import org.omnetpp.common.image.ImageFactory;
  * 
  * @author Andras
  */
-//XXX validate
 public class ImageSelectionDialog extends Dialog {
+	private static final int HEIGHT = 350;
+	private static final int WIDTH = 500;
 	private static final int RIGHT_MARGIN = 30;
 
 	// widgets
@@ -71,7 +79,7 @@ public class ImageSelectionDialog extends Dialog {
 
 		// label and filter combo
 		Label label = new Label(composite, SWT.NONE);
-		label.setText("Select Image (? = any character, * = any string)");
+		label.setText("Select Image (substring search, ? = any character, * = any string)");
 		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		label.setFont(parent.getFont());
 		filterCombo = new Combo(composite, SWT.BORDER);
@@ -85,8 +93,8 @@ public class ImageSelectionDialog extends Dialog {
 		scrolledComposite = new ScrolledComposite(composite, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		scrolledComposite.getVerticalBar().setIncrement(10); // mouse wheel step
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gridData.widthHint = 600;
-		gridData.heightHint = 400;
+		gridData.widthHint = WIDTH;
+		gridData.heightHint = HEIGHT;
 		scrolledComposite.setLayoutData(gridData);
 
 		// create inner composite to the icons
@@ -101,6 +109,9 @@ public class ImageSelectionDialog extends Dialog {
 			}
 		});
 
+		filterCombo.setItems(getImageFilters());
+		filterCombo.setVisibleItemCount(Math.min(20, filterCombo.getItemCount()));
+		
 		// add the images
 		populate();
 
@@ -128,6 +139,26 @@ public class ImageSelectionDialog extends Dialog {
 	protected void createButtonsForButtonBar(Composite parent) {
 		okButton = createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
 		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+	}
+
+	protected String[] getImageFilters() {
+		ArrayList<String> result = new ArrayList<String>();
+		result.add("");
+		
+		// collect toplevel folders
+		Set<String> uniqueFolders = new HashSet<String>();
+		for (String name : imageNames)
+			if (name.contains("/"))
+				uniqueFolders.add(name.replaceFirst("/.*", "/"));
+		String[] folders = uniqueFolders.toArray(new String[]{});
+		Arrays.sort(folders);
+		result.addAll(Arrays.asList(folders));
+
+		// add all concrete images as well
+		result.add("--------");
+		result.addAll(Arrays.asList(imageNames));
+
+		return result.toArray(new String[]{});
 	}
 
 	protected void populate() {
@@ -167,10 +198,21 @@ public class ImageSelectionDialog extends Dialog {
 			if (pattern.matcher(imageName).matches()) {
 				count++;
 				theImage = imageName;
-				Button b = new Button(imageCanvas, SWT.PUSH);
-				b.setImage(ImageFactory.getImage(imageName));
-				b.setToolTipText(imageName);
-				b.addSelectionListener(new SelectionListener() {
+
+				// produce image and tooltip
+				Image image = ImageFactory.getImage(imageName);
+				Rectangle bounds = image.getBounds();
+				String tooltip = imageName + " (" + bounds.width + "x" + bounds.height + ")";
+				if (bounds.width > 64 || bounds.height > 64) {
+					image = ImageConverter.getResampledImage(image, 64, 64);  //XXX will have to be disposed!!!!
+					tooltip += " [scaled back for display]";
+				}
+
+				// create button
+				Button button = new Button(imageCanvas, SWT.PUSH);
+				button.setImage(image);
+				button.setToolTipText(tooltip);
+				button.addSelectionListener(new SelectionListener() {
 					public void widgetSelected(SelectionEvent e) {
 						imageSelected(imageName);
 					}
@@ -189,23 +231,17 @@ public class ImageSelectionDialog extends Dialog {
 		// update status line
 		statusLabel.setText("Filter matches "+count+" images out of "+imageNames.length+".");
 		
-		if (count == 1) {
-			// selection got narrowed down to one image: make that the user's choice
-			imageSelected(theImage);
-		}
-		else {
-			// invalidate user's previous selection
-			selection = null;
-			if (okButton != null)  // it is null initially
-				okButton.setEnabled(false);
-		}
+		// if selection got narrowed down to one image: make that the user's choice;
+		// otherwise invalidate user's previous selection
+		imageSelected(count==1 ? theImage : null);
 		
 		System.out.println("Dialog refresh: "+(System.currentTimeMillis()-startTime)+"ms");
 	}
 
 	protected void imageSelected(String imageName) {
 		selection = imageName;
-		okButton.setEnabled(true);
+		if (okButton != null)  // it is null initially
+			okButton.setEnabled(selection != null);
 	}
 
 	protected void okPressed() {
