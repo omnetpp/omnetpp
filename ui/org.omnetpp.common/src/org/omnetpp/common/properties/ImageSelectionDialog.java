@@ -15,6 +15,9 @@ import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
@@ -48,7 +51,7 @@ public class ImageSelectionDialog extends Dialog {
 	private ScrolledComposite scrolledComposite; 
 	private Composite imageCanvas; 
 	private Button okButton;
-	
+
 	// state
 	private String[] imageNames;
 
@@ -88,7 +91,7 @@ public class ImageSelectionDialog extends Dialog {
 		statusLabel = new Label(composite, SWT.NONE);
 		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		label.setFont(parent.getFont());
-		
+
 		// scrolled composite for the images
 		scrolledComposite = new ScrolledComposite(composite, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		scrolledComposite.getVerticalBar().setIncrement(10); // mouse wheel step
@@ -111,17 +114,19 @@ public class ImageSelectionDialog extends Dialog {
 
 		filterCombo.setItems(getImageFilters());
 		filterCombo.setVisibleItemCount(Math.min(20, filterCombo.getItemCount()));
-		
+		if (selection != null)
+			filterCombo.setText(selection);
+
 		// add the images
 		populate();
 
-        // set up validation on content changes
-        filterCombo.addModifyListener(new ModifyListener() {
-            public void modifyText(ModifyEvent e) {
-                populate();
-            }
-        });
-		
+		// set up validation on content changes
+		filterCombo.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				populate();
+			}
+		});
+
 		// focus on first field
 		filterCombo.setFocus();
 
@@ -144,7 +149,7 @@ public class ImageSelectionDialog extends Dialog {
 	protected String[] getImageFilters() {
 		ArrayList<String> result = new ArrayList<String>();
 		result.add("");
-		
+
 		// collect toplevel folders
 		Set<String> uniqueFolders = new HashSet<String>();
 		for (String name : imageNames)
@@ -162,8 +167,6 @@ public class ImageSelectionDialog extends Dialog {
 	}
 
 	protected void populate() {
-		long startTime = System.currentTimeMillis();
-
 		// regex-ify the filter string
 		String filter = filterCombo.getText().trim();
 		filter = filter.replace("\\", "\\\\");
@@ -186,7 +189,7 @@ public class ImageSelectionDialog extends Dialog {
 			layoutForm();
 			return;
 		}
-		
+
 		// remove existing images
 		for (Control c : imageCanvas.getChildren())
 			c.dispose();
@@ -212,30 +215,29 @@ public class ImageSelectionDialog extends Dialog {
 				Button button = new Button(imageCanvas, SWT.PUSH);
 				button.setImage(image);
 				button.setToolTipText(tooltip);
-				button.addSelectionListener(new SelectionListener() {
+				button.addSelectionListener(new SelectionAdapter() {
 					public void widgetSelected(SelectionEvent e) {
 						imageSelected(imageName);
 					}
-
-					public void widgetDefaultSelected(SelectionEvent e) {
-						//XXX never called for a Button -- sorry...
+				});
+				// unfortunately, widgetDefaultSelected() does not work for a button, so:
+				button.addMouseListener(new MouseAdapter() {
+					public void mouseDoubleClick(MouseEvent e) {
 						imageSelected(imageName);
 						okPressed();
 					}
 				});
 			}
 		}
-		
+
 		layoutForm();
-		
+
 		// update status line
-		statusLabel.setText("Filter matches "+count+" images out of "+imageNames.length+".");
-		
+		statusLabel.setText("Filter matches "+count+" image"+(count==1?"":"s")+" out of "+imageNames.length+".");
+
 		// if selection got narrowed down to one image: make that the user's choice;
 		// otherwise invalidate user's previous selection
 		imageSelected(count==1 ? theImage : null);
-		
-		System.out.println("Dialog refresh: "+(System.currentTimeMillis()-startTime)+"ms");
 	}
 
 	protected void imageSelected(String imageName) {
