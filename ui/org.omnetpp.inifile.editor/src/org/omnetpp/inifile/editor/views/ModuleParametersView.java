@@ -57,10 +57,10 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
  * Displays module parameters recursively for a module type.
  * @author Andras
  */
-//XXX disable "pin" action while view shows message (not contents) ?
-//XXX when NED editor is the current: table ordering doesn't work
-//XXX when there's no NED default, it says: default is ""
+//XXX disable "pin" action while view shows message (i.e. no contents) ?
 //XXX some tooltip for unassigned parameters too
+//XXX table sorting doesn't work
+//XXX scrolling using the scrollbar doesn't work properly (cannot scroll selection off the screen)
 public class ModuleParametersView extends AbstractModuleView {
 	private TableViewer tableViewer;
 	private boolean unassignedOnly = true;
@@ -195,7 +195,7 @@ public class ModuleParametersView extends AbstractModuleView {
 			}
 		};
 		
-		final ActionExt gotoInifileAction = new ActionExt("Goto Ini File") {
+		final ActionExt gotoInifileAction = new ActionExt("Show in Ini File") {
 			@Override
 			public void run() {
 				SectionKey sel = getSectionKeyFromSelection();
@@ -240,15 +240,17 @@ public class ModuleParametersView extends AbstractModuleView {
 				Object element = ((IStructuredSelection)tableViewer.getSelection()).getFirstElement();
 				if (element instanceof ParamResolution) {
 					ParamResolution res = (ParamResolution) element;
-					// experimental: don't enable "Go to NED declaration" if it's the same as "Go to NED value"
-					return gotoDecl ? (res.paramDeclNode==res.paramValueNode ? null : res.paramDeclNode) : res.paramValueNode;
-					//return gotoDecl ? res.paramDeclNode : res.paramValueNode;
+					//return gotoDecl ? res.paramDeclNode : res.paramValueNode; 
+					// experimental: disable "Open NED declaration" if it's the same as "Open NED value"
+					//return gotoDecl ? (res.paramDeclNode==res.paramValueNode ? null : res.paramDeclNode) : res.paramValueNode;
+					// experimental: disable "Open NED Value" if it's the same as the declaration
+					return gotoDecl ? res.paramDeclNode : (res.paramDeclNode==res.paramValueNode ? null : res.paramValueNode);
 				}
 				return null;
 			}
 		};
-		ActionExt gotoNedDeclarationAction = new GotoNedFileAction("Open NED declaration", null, true); 
-		ActionExt gotoNedValueAction = new GotoNedFileAction("Open NED value", null, false); 
+		ActionExt gotoNedDeclarationAction = new GotoNedFileAction("Open NED Declaration", null, true); 
+		ActionExt gotoNedValueAction = new GotoNedFileAction("Open NED Value", null, false); 
 	
 		tableViewer.addSelectionChangedListener(gotoInifileAction);
 		tableViewer.addSelectionChangedListener(gotoNedValueAction);

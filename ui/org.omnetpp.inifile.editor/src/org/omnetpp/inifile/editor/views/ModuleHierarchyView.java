@@ -214,7 +214,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		IAction pinAction = getOrCreatePinAction();
 		
 		//XXX this is (almost) the same code as in ModuleParametersView
-		final ActionExt gotoInifileAction = new ActionExt("Goto Ini File") {
+		final ActionExt gotoInifileAction = new ActionExt("Show in Ini File") {
 			@Override
 			public void run() {
 				SectionKey sel = getSectionKeyFromSelection();
@@ -269,24 +269,26 @@ public class ModuleHierarchyView extends AbstractModuleView {
 				}
 				if (element instanceof ParamResolution) {
 					ParamResolution res = (ParamResolution) element;
-					// experimental: don't enable "Go to NED declaration" if it's the same as "Go to NED value"
-					return gotoDecl ? (res.paramDeclNode==res.paramValueNode ? null : res.paramDeclNode) : res.paramValueNode;
 					//return gotoDecl ? res.paramDeclNode : res.paramValueNode; 
+					// experimental: disable "Open NED declaration" if it's the same as "Open NED value"
+					//return gotoDecl ? (res.paramDeclNode==res.paramValueNode ? null : res.paramDeclNode) : res.paramValueNode;
+					// experimental: disable "Open NED Value" if it's the same as the declaration
+					return gotoDecl ? res.paramDeclNode : (res.paramDeclNode==res.paramValueNode ? null : res.paramValueNode);
 				}
 				return null;
 			}
 			private void updateLabel(INEDElement node) {
 				if (gotoDecl) {
 					if (node instanceof ParamNode)
-						setText("Open parameter declaration");
+						setText("Open NED Declaration");
 					else
-						setText("Open type declaration");
+						setText("Open NED Declaration");
 				}
 				else {
 					if (node instanceof ParamNode)
-						setText("Open parameter");
+						setText("Open NED Value");
 					else
-						setText("Open submodule");
+						setText("Open NED Submodule");
 				}
 			}
 		};
@@ -428,7 +430,9 @@ public class ModuleHierarchyView extends AbstractModuleView {
 
 		if (analyzer == null) {
 			// no inifile available, we only have NED info
-			thisNode.addChild(new GenericTreeNode("sorry, cannot extract parameters from NED yet")); //XXX
+			ParamResolution[] list = InifileAnalyzer.resolveModuleParameters(moduleFullPath, (SubmoduleNodeEx)thisSubmodule, moduleType);
+			for (ParamResolution res : list)
+				thisNode.addChild(new GenericTreeNode(res));
 		}
 		else {
 			ParamResolution[] list = analyzer.getParamResolutionsForModule(moduleFullPath, activeSection);

@@ -511,12 +511,14 @@ public class InifileAnalyzer {
 	}
 
 	protected static void resolveModuleParameters(ArrayList<ParamResolution> resultList, String moduleFullPath, SubmoduleNode[] pathModules, INEDTypeInfo moduleType, String[] sectionChain, IInifileDocument doc) {
+		SubmoduleNodeEx submodule = (SubmoduleNodeEx) pathModules[pathModules.length-1];
 		for (String paramName : moduleType.getParams().keySet()) {
 			ParamNode paramDeclNode = (ParamNode)moduleType.getParams().get(paramName);
-			SubmoduleNodeEx submodule = (SubmoduleNodeEx) pathModules[pathModules.length-1];
 			ParamNode paramValueNode = submodule==null ?
 					(ParamNode)moduleType.getParamValues().get(paramName) :
 					(ParamNode)submodule.getParamValues().get(paramName);
+			if (paramValueNode != null && StringUtils.isEmpty(paramValueNode.getValue()))
+				paramValueNode = null;
 			resultList.add(resolveParameter(moduleFullPath, pathModules, paramDeclNode, paramValueNode, sectionChain, doc));
 		}
 	}
@@ -580,6 +582,23 @@ public class InifileAnalyzer {
 		return new ParamResolution(moduleFullPath, pathModules, paramDeclNode, paramValueNode, type, activeSection, iniSection, iniKey);
 	}
 
+	/**
+	 * Resolve parameters of a module type or submodule, based solely on NED information.
+	 */
+	public static ParamResolution[] resolveModuleParameters(String moduleFullPath, SubmoduleNodeEx submodule, INEDTypeInfo moduleType) {
+		ArrayList<ParamResolution> resultList = new ArrayList<ParamResolution>();
+		for (String paramName : moduleType.getParams().keySet()) {
+			ParamNode paramDeclNode = (ParamNode)moduleType.getParams().get(paramName);
+			ParamNode paramValueNode = submodule==null ?
+					(ParamNode)moduleType.getParamValues().get(paramName) :
+					(ParamNode)submodule.getParamValues().get(paramName);
+			if (paramValueNode != null && StringUtils.isEmpty(paramValueNode.getValue()))
+				paramValueNode = null;
+			resultList.add(resolveParameter(moduleFullPath, null, paramDeclNode, paramValueNode, null, null));
+		}
+		return resultList.toArray(new ParamResolution[]{});
+	}
+	
 	public boolean containsSectionCircles() {
 		return containsSectionCircles;
 	}
@@ -715,7 +734,7 @@ public class InifileAnalyzer {
 				if (res.paramValueNode != null) 
 					remark += " (NED default: "+res.paramValueNode.getValue()+")"; 
 				else
-					remark += " (no NED default)";
+					; //remark += " (no NED default)";
 				break;
 			case NED: remark = "NED"; break;
 			case NED_DEFAULT: remark = "NED default applied"; break;
