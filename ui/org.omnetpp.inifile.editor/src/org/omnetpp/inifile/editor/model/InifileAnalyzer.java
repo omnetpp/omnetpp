@@ -20,10 +20,9 @@ import java.util.Stack;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.ui.texteditor.MarkerUtilities;
 import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.engine.UnitConversion;
+import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
@@ -61,6 +60,7 @@ public class InifileAnalyzer {
 	private IInifileDocument doc;
 	private boolean changed = true;
 	private boolean containsSectionCircles;
+	private ProblemMarkerSynchronizer markerSynchronizer; // only used during analyze()
 
 	/**
 	 * Classifies inifile keys; see getKeyType().
@@ -138,13 +138,9 @@ public class InifileAnalyzer {
 			long startTime = System.currentTimeMillis();
 			INEDTypeResolver ned = NEDResourcesPlugin.getNEDResources();
 
-			// remove existing markers
-			try {
-				IFile file = doc.getDocumentFile();
-				file.deleteMarkers(INIFILEANALYZERPROBLEM_MARKER_ID, true, 0);
-			} catch (CoreException e) {
-				InifileEditorPlugin.logError(e);
-			}
+			// collected errors/warnings in a ProblemMarkerSynchronizer
+			markerSynchronizer = new ProblemMarkerSynchronizer(INIFILEANALYZERPROBLEM_MARKER_ID);
+			//XXX register all include files in the synchronizer!!!!
 
 			//XXX catch all exceptions during analyzing, and set changed=false in finally{} ?
 
@@ -174,6 +170,10 @@ public class InifileAnalyzer {
 					addWarning(section, key, "Unused entry (does not match any parameters)");
 
 			System.out.println("Inifile analyzed in "+(System.currentTimeMillis()-startTime)+"ms");
+
+			// synchronize detected problems with the file's existing markers
+			markerSynchronizer.run();
+			markerSynchronizer = null;
 		}
 	}
 
@@ -198,16 +198,12 @@ public class InifileAnalyzer {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void addMarker(final IFile file, final String type, int severity, String message, int line) {
-		try {
-			HashMap map = new HashMap();
-			MarkerUtilities.setMessage(map, message);
-			MarkerUtilities.setLineNumber(map, line);
-			map.put(IMarker.SEVERITY, severity);
-			MarkerUtilities.createMarker(file, map, type);
-		} catch (CoreException e) {
-			InifileEditorPlugin.logError(e);
-		}
+	private void addMarker(final IFile file, final String type, int severity, String message, int line) {
+		HashMap map = new HashMap();
+		map.put(IMarker.MESSAGE, message);
+		map.put(IMarker.LINE_NUMBER, line);
+		map.put(IMarker.SEVERITY, severity);
+		markerSynchronizer.addMarker(file, type, map);
 	}
 
 	/**
