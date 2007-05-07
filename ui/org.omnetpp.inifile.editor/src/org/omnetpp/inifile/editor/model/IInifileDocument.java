@@ -72,6 +72,17 @@ public interface IInifileDocument {
 	void addEntry(String section, String key, String value, String comment, String beforeKey);
 
 	/**
+	 * Creates several new entries in one operation. If any of the keys already exists, 
+	 * the method throws an exception without changing the document. Also throws exception
+	 * when section or beforeKey does not exist, or any of the arrays are wrong (see below).  
+	 * @param keys  may not be null or contain nulls
+	 * @param values may be null; when non-null, size must match keys[], and may contain nulls
+	 * @param comments may be null; when non-null, size must match keys[], and may contain nulls
+	 * @param beforeKey may be null (meaning append) 
+	 */
+	void addEntries(String section, String[] keys, String[] values, String[] comments, String beforeKey);
+
+	/**
 	 * Returns immutable value object with file/line/isreadonly info.
 	 * Returns null if section, or key in it does not exist.  
 	 */

@@ -355,9 +355,7 @@ public class ParametersPage extends FormPage {
 					// add user-selected keys to the document, and also **.apply-default if chosen by the user
 					String[] keys = dialog.getKeys();
 					String section = dialog.getSection();
-					for (String key : keys)
-						if (!doc.containsKey(section, key))
-							InifileUtils.addEntry(doc, section, key, "", null);
+					doc.addEntries(section, keys, null, null, null);
 					if (dialog.getAddApplyDefault())
 						InifileUtils.addEntry(doc, section, "**.apply-default", "true", null);
 

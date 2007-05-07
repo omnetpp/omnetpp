@@ -38,7 +38,6 @@ import org.omnetpp.ned.model.notification.NEDModelEvent;
  * 
  * @author Andras
  */
-//XXX FIXME TODO BUG: OUR nedChangeListener DOES NOT GET CALLED FROM NEDRESOURCESPLUGIN!!!! 
 //XXX validate new keys (after add/rename)! must not contain "=", "#", ";", whitespace, etc...  
 //XXX validate section names (after add/rename)! must not contain "[", "]", "#", ";", newline, tab,...
 //XXX ^^^ see InifileUtils.validateParameterKey too
@@ -452,6 +451,28 @@ public class InifileDocument implements IInifileDocument {
 		addLineAt(atLine, text);
 	}
 
+	public void addEntries(String section, String[] keys, String[] values, String[] comments, String beforeKey) {
+		// validate keys
+		for (String key : keys)
+			if (lookupEntry(section, key) != null)
+				throw new IllegalArgumentException("Key "+key+" already exists in section ["+section+"]");
+		
+		// assemble text to insert
+		String text = "";
+		for (int i=0; i<keys.length; i++) {
+			String line = keys[i] + " = ";
+			if (values != null && values[i] != null)
+				line += values[i];
+			if (comments != null && comments[i] != null)
+				line += comments[i];
+			text += line + "\n";
+		}
+		
+		// perform insertion (also checks that section exists)
+		int atLine = beforeKey==null ? getFirstEditableSectionHeading(section).lastLine+1 : getEditableEntry(section, beforeKey).lineNumber;
+		addLineAt(atLine, text.trim());  // trim(): because addLine() already inserts a trailing "\n" 
+	}
+	
 	public LineInfo getEntryLineDetails(String section, String key) {
 		KeyValueLine line = lookupEntry(section, key);
 		return line==null ? null : new LineInfo(line.file, line.lineNumber, !isEditable(line));
