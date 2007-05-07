@@ -7,9 +7,11 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
+import org.omnetpp.inifile.editor.model.IInifileChangeListener;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 
@@ -23,11 +25,45 @@ public abstract class FormPage extends Composite {
 	private static Font titleFont = new Font(null, "Arial", 10, SWT.BOLD);
 	private InifileEditor inifileEditor;
 	
+	// IMPLEMENTATION NOTE: HOW TO KEEP FORM PAGES UP-TO-DATE.
+	//
+	// Form pages should keep themselves up-to-date (e.g. by invoking their 
+	// reread() method) whenever they directly change the document. For changes 
+	// caused by other events (e.g. toolbar actions like AddMissingKeys),
+	// there is an InifileListener which rereads the form after 1000ms
+	// if that wasn't done until that time automatically.
+	//
+	// See fields "delayedRereadListener" and "delayedRereadJob" which participate 
+	// in this mechanism.
+	//
+	private IInifileChangeListener delayedRereadListener = new IInifileChangeListener() {
+		public void modelChanged() {
+			// we only need to schedule an update if the form editor is displayed;
+			// if text editor is displayed, switching to form mode will re-read
+			// form contents anyway.
+			if (inifileEditor.isFormPageDisplayed())
+				delayedRereadJob.restartTimer();
+		}
+	};
+
+	private DelayedJob delayedRereadJob = new DelayedJob(1000) {
+		public void run() {
+			reread();  //XXX TODO: reread() should cancel the timer!!!
+		}
+	};
+	
 	public FormPage(Composite parent, InifileEditor inifileEditor) {
 		super(parent, SWT.NONE);
 		this.inifileEditor = inifileEditor;
+		getInifileDocument().addInifileChangeListener(delayedRereadListener);
 	}
 
+	@Override
+	public void dispose() {
+		getInifileDocument().removeInifileChangeListener(delayedRereadListener);
+		super.dispose();
+	}
+	
 	protected InifileEditorData getEditorData() {
 		return inifileEditor.getEditorData();
 	}

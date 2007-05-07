@@ -198,7 +198,7 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	/**
 	 * Adds an editor page at the last position.
 	 */
-	public int addEditorPage(Control page, String label) {
+	protected int addEditorPage(Control page, String label) {
 		int index = addPage(page);
 		setPageText(index, label);
 		return index;
@@ -269,6 +269,13 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		else {
 			formEditor.pageDeselected();
 		}
+	}
+
+	/**
+	 * Returns true if the editor is currently switched to the form editor.
+	 */
+	public boolean isFormPageDisplayed() {
+		return getActivePage()==FORMEDITOR_PAGEINDEX;
 	}
 	
 	/**
