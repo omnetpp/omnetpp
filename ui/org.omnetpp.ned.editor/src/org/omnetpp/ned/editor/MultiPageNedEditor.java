@@ -10,6 +10,7 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.swt.SWT;
@@ -197,11 +198,8 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 				setActivePage(textPageIndex);
 
 				if (!initPhase) {
-					MessageBox messageBox = new MessageBox(getEditorSite().getShell(), SWT.ICON_WARNING | SWT.OK);
-					messageBox.setText("Warning");
-					messageBox.setMessage("The editor contents has errors, switching is not possible. "+
-					                      "Please fix the errors first.");
-					messageBox.open();
+		            MessageDialog.openError(Display.getDefault().getActiveShell(), "Error", 
+		                    "The editor contents has errors, switching is not possible. Please fix the errors first.");
 	            }
 			}
 		}
