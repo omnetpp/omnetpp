@@ -34,9 +34,20 @@ public class ProblemMarkerSynchronizer {
 		Map<String, Object> attrs;
 	}
 
+	// data for markers to synchronize
 	private HashMap<IFile, List<MarkerData>> markerTable = new HashMap<IFile, List<MarkerData>>();
+	private String markerBaseType;
+
+	// statistics
+	private int markersAdded = 0;
+	private int markersRemoved = 0;
 
 	public ProblemMarkerSynchronizer() {
+		this(IMarker.PROBLEM);
+	}
+
+	public ProblemMarkerSynchronizer(String markerBaseType) {
+		this.markerBaseType = markerBaseType; 
 	}
 
 	/**
@@ -78,6 +89,7 @@ public class ProblemMarkerSynchronizer {
 	}
 
 	protected void addRemoveMarkers() throws CoreException {
+		// process each file registered
 		for (IFile file : markerTable.keySet()) {
 			List<MarkerData> list = markerTable.get(file);
 
@@ -87,11 +99,17 @@ public class ProblemMarkerSynchronizer {
 					createMarker(file, markerData);
 
 			// remove IFile markers which aren't in our table
-			IMarker[] markers = file.findMarkers(IMarker.PROBLEM, true, 0);
+			IMarker[] markers = file.findMarkers(markerBaseType, true, 0);
 			for (IMarker marker : markers)
 				if (!listContainsMarker(list, marker))
-					marker.delete();
+					{marker.delete(); markersRemoved++;}
 		}
+		
+		// debug
+		if (markersAdded==0 && markersRemoved==0)
+			System.out.println("markerSychronizer: no marker change");
+		else
+			System.out.println("markerSychronizer: added "+markersAdded+", removed "+markersRemoved+" markers");
 	}
 
 	protected boolean fileContainsMarker(IFile file, MarkerData markerData) throws CoreException {
@@ -124,6 +142,7 @@ public class ProblemMarkerSynchronizer {
 	protected void createMarker(IFile file, MarkerData markerData) throws CoreException {
 		IMarker marker = file.createMarker(markerData.type);
 		marker.setAttributes(markerData.attrs);
+		markersAdded++;
 	}
 
 	@SuppressWarnings("unchecked")
