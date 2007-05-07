@@ -138,9 +138,11 @@ public class InifileAnalyzer {
 			long startTime = System.currentTimeMillis();
 			INEDTypeResolver ned = NEDResourcesPlugin.getNEDResources();
 
-			// collected errors/warnings in a ProblemMarkerSynchronizer
+			// collect errors/warnings in a ProblemMarkerSynchronizer
 			markerSynchronizer = new ProblemMarkerSynchronizer(INIFILEANALYZERPROBLEM_MARKER_ID);
-			//XXX register all include files in the synchronizer!!!!
+			markerSynchronizer.registerFile(doc.getDocumentFile());
+			for (IFile file : doc.getIncludedFiles())
+				markerSynchronizer.registerFile(file);
 
 			//XXX catch all exceptions during analyzing, and set changed=false in finally{} ?
 
@@ -200,9 +202,9 @@ public class InifileAnalyzer {
 	@SuppressWarnings("unchecked")
 	private void addMarker(final IFile file, final String type, int severity, String message, int line) {
 		HashMap map = new HashMap();
-		map.put(IMarker.MESSAGE, message);
-		map.put(IMarker.LINE_NUMBER, line);
 		map.put(IMarker.SEVERITY, severity);
+		map.put(IMarker.LINE_NUMBER, line);
+		map.put(IMarker.MESSAGE, message);
 		markerSynchronizer.addMarker(file, type, map);
 	}
 

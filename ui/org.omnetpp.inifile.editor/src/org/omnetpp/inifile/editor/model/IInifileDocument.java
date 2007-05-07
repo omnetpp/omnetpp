@@ -268,5 +268,10 @@ public interface IInifileDocument {
 	 * Returns the main (edited) inifile.
 	 */
 	IFile getDocumentFile();
+
+	/**
+	 * Returns all included files, including indirectly referenced ones
+	 */
+	IFile[] getIncludedFiles();
 	
 }

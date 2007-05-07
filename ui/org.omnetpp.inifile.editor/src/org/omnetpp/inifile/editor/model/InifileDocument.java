@@ -23,7 +23,7 @@ import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.texteditor.MarkerUtilities;
+import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
@@ -83,12 +83,17 @@ public class InifileDocument implements IInifileDocument {
 	// include directives
 	private ArrayList<IncludeLine> topIncludes = new ArrayList<IncludeLine>();
 	private ArrayList<IncludeLine> bottomIncludes = new ArrayList<IncludeLine>();
+	
+	// included files, including indirectly referenced ones
+	private ArrayList<IFile> includedFiles = new ArrayList<IFile>();
 
 	// listeners
 	private IDocumentListener documentListener; // we listen on IDocument
 	private IResourceChangeListener resourceChangeListener; // we listen on the workspace
 	private INEDChangeListener nedChangeListener; // we listen on NED changes
 	private InifileChangeListenerList listeners = new InifileChangeListenerList(); // clients that listen on us
+	
+	private ProblemMarkerSynchronizer markerSynchronizer; // only used during parse()
 
 
 	public InifileDocument(IDocument document, IFile documentFile) {
@@ -178,20 +183,25 @@ public class InifileDocument implements IInifileDocument {
 	}
 
 	synchronized public void parse() {
+		long startTime = System.currentTimeMillis();
+
+		Reader streamReader = new StringReader(document.get());
+
+		// collect errors/warnings in a ProblemMarkerSynchronizer
+		markerSynchronizer = new ProblemMarkerSynchronizer(INIFILEPROBLEM_MARKER_ID);
+		markerSynchronizer.registerFile(documentFile);
+		
+		// remove markers from include files: needed because an "include" directive 
+		// might have gotten deleted from the file since last parsed
+		for (IFile file : includedFiles)
+			markerSynchronizer.registerFile(file);
+
 		sections.clear();
 		mainFileKeyValueLines.clear();
 		mainFileSectionHeadingLines.clear();
 		topIncludes.clear();
 		bottomIncludes.clear();
-		long startTime = System.currentTimeMillis();
-		Reader streamReader = new StringReader(document.get());
-
-		try {
-			documentFile.deleteMarkers(INIFILEPROBLEM_MARKER_ID, true, IResource.DEPTH_ZERO);
-			//XXX remove from included files too?
-		} catch (CoreException e1) {
-			InifileEditorPlugin.logError(e1);
-		}
+		includedFiles.clear();
 
 		class Callback implements InifileParser.ParserCallback {
 			Section currentSection = null;
@@ -266,6 +276,8 @@ public class InifileDocument implements IInifileDocument {
 					// recursively parse the included file
 					try {
 						IFile file = currentFile.getParent().getFile(new Path(line.includedFile));
+						includedFiles.add(file);
+						markerSynchronizer.registerFile(file);
 						new InifileParser().parse(file, new Callback(file));
 					} 
 					catch (ParseException e) {
@@ -294,10 +306,14 @@ public class InifileDocument implements IInifileDocument {
 		}
 		System.out.println("Inifile parsing: "+(System.currentTimeMillis()-startTime)+"ms");
 
-		// mark data structure as up to date (even if there was an error, because 
+			// mark data structure as up to date (even if there was an error, because 
 		// we don't want to keep re-parsing again and again)
 		changed = false;
 
+		// synchronize detected problems with the file's existing markers
+		markerSynchronizer.run();
+		markerSynchronizer = null;
+		
 		// NOTE: notify listeners (fireModelChanged()) is NOT done here! It is done 
 		// when the underlying text document (IDocument) changes, just after we set
 		// changed=true.
@@ -312,16 +328,12 @@ public class InifileDocument implements IInifileDocument {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void addMarker(final IFile file, final String type, int severity, String message, int line) {
-		try {
-			HashMap map = new HashMap();
-			MarkerUtilities.setMessage(map, message);
-			MarkerUtilities.setLineNumber(map, line);
-			map.put(IMarker.SEVERITY, severity);
-			MarkerUtilities.createMarker(file, map, type);
-		} catch (CoreException e) {
-			InifileEditorPlugin.logError(e);
-		}
+	private void addMarker(final IFile file, final String type, int severity, String message, int line) {
+		HashMap map = new HashMap();
+		map.put(IMarker.SEVERITY, severity);
+		map.put(IMarker.LINE_NUMBER, line);
+		map.put(IMarker.MESSAGE, message);
+		markerSynchronizer.addMarker(file, type, map);
 	}
 
 	public void dump() {
@@ -766,5 +778,9 @@ public class InifileDocument implements IInifileDocument {
 
 	public IFile getDocumentFile() {
 		return documentFile;
+	}
+
+	public IFile[] getIncludedFiles() {
+		return includedFiles.toArray(new IFile[]{});
 	}
 }
