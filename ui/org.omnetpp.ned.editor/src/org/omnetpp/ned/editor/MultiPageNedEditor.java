@@ -13,9 +13,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.swt.SWT;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
@@ -36,6 +35,7 @@ import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
+import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
@@ -136,6 +136,15 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 	}
 
 	@Override
+	protected void setActivePage(int pageIndex) {
+	    // check if there was a change at all (this prevents possible recursive calling)
+	    if (pageIndex == getActivePage())
+	        return;
+
+	    super.setActivePage(pageIndex);
+	}
+	
+	@Override
 	protected void pageChange(int newPageIndex) {
 	    //	prevent recursive call from setActivePage() below
 	    if (insidePageChange)
@@ -154,7 +163,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         // outline page, so the outline view will re-request the multipageeditor for a ContentOutlinePage (via getAdapter)
         // the current implementation of MultipageEditorPart.getAdapter delegates this request to the active
         // embedded editor.
-        ContentOutline coutline = (ContentOutline)getEditorSite().getPage().findView("org.eclipse.ui.views.ContentOutline");
+        ContentOutline coutline = (ContentOutline)getEditorSite().getPage().findView(IPageLayout.ID_OUTLINE);
         if (coutline != null) {
             // notify from the old closed editor
             coutline.partClosed(this);
@@ -170,15 +179,27 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 
 
 		// switch from graphics to text:
-        if (newPageIndex == textPageIndex && graphEditor.hasContentChanged()) {
-            // TODO refresh the editor annotations to show the error marks
-            res.setNEDFileModel(file, graphEditor.getModel());
-            // XXX this is a hack so the NED elements will have a correct source position/location info
-            // after the parser/generator reformats it (maybe we would need a
-            res.formatNEDFileText(file);
-            // generate text representation from the model
+        if (newPageIndex == textPageIndex) {
+            if (graphEditor.hasContentChanged()) {
+                // TODO refresh the editor annotations to show the error marks
+                res.setNEDFileModel(file, graphEditor.getModel());
+                // XXX this is a hack so the NED elements will have a correct source position/location info
+                // after the parser/generator reformats it (maybe we would need a
+                res.formatNEDFileText(file);
+                // generate text representation from the model
+            }
             textEditor.setText(res.getNEDFileText(file));
             textEditor.markContent();
+            //
+            // keep the current selection between the two editors
+            INEDElement currentNEDElementSelection = null;
+            Object object = (((IStructuredSelection)graphEditor.getSite()
+                    .getSelectionProvider().getSelection()).getFirstElement());
+            if (object != null)
+                currentNEDElementSelection = ((IModelProvider)object).getNEDModel();
+
+            if (currentNEDElementSelection != null) 
+                showInEditor(currentNEDElementSelection, Mode.TEXT);
 		}
 		else if (newPageIndex==graphPageIndex) {
 
@@ -189,6 +210,17 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 		    // set the parsed ned model to the graphical editor
 		    graphEditor.setModel((NedFileNodeEx)res.getNEDFileModel(file));
 		    graphEditor.markContent();
+            //
+            // keep the current selection between the two editors
+	        INEDElement currentNEDElementSelection = null;
+	        if (textEditor.getSite().getSelectionProvider().getSelection() instanceof IStructuredSelection) {
+	            Object object = (((IStructuredSelection)textEditor.getSite()
+	                    .getSelectionProvider().getSelection()).getFirstElement());
+	            if (object != null)
+	                currentNEDElementSelection = ((IModelProvider)object).getNEDModel();
+	        }
+            if (currentNEDElementSelection!=null) 
+                showInEditor(currentNEDElementSelection, Mode.GRAPHICAL);
 
             // only start in graphics mode if there's no error in the file
             if (res.containsNEDErrors(file)) {
