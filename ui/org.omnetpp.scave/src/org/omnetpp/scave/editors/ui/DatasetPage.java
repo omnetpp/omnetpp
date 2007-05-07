@@ -61,10 +61,11 @@ public class DatasetPage extends ScaveEditorPage {
 		label.setText("Here you can edit the dataset. " +
 	      "The dataset allows you to create a subset of the input data and work with it. "+
 	      "Datasets may include processing steps, and one dataset can serve as input for another.");
-		label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL));
+		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		
 		// create dataset treeviewer with buttons
 		datasetPanel = new DatasetPanel(getBody(), SWT.NONE);
+		datasetPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		// configure dataset treeviewer
 		TreeViewer treeViewer = getDatasetTreeViewer();
