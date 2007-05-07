@@ -66,8 +66,8 @@ public class InifileFormEditor extends Composite {
 		sashForm.setWeights(new int[] {1,4});
 		
 		buildTree();
-
-		// at this point inifiledocument is not yet set up, so we have to defer showing the form page
+		
+		// at this point InifileDocument is not yet set up, so we have to defer showing the form page
 		Display.getCurrent().asyncExec(new Runnable() {
 			public void run() {
 				showCategoryPage(GenericConfigPage.getCategoryNames()[0]);
@@ -162,7 +162,8 @@ public class InifileFormEditor extends Composite {
 	}
 	
 	/**
-	 * Notification: User switched to this page of the multipage editor.
+	 * Notification: User switched to this page of the multipage editor (i.e. from text
+	 * to form view).
 	 */
 	public void pageSelected() {
 		if (formPage != null) 
@@ -170,7 +171,8 @@ public class InifileFormEditor extends Composite {
 	}
 	
 	/**
-	 * Notification: User switched away from this page of the multipage editor.
+	 * Notification: User switched away from this page of the multipage editor 
+	 * (i.e. from form to text view).
 	 */
 	public void pageDeselected() {
 		if (formPage != null) 
