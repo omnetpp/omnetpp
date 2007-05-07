@@ -200,7 +200,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     /**
-     * NED editors should call this when editor content changes.
+     * NED editors should call this when editor content changes. 
+     * NOTE: if the provided tree would result the same NED code as the
+     * current model the model WILL NOT BE CHANGED, and the old tree will be kept
      */
     public synchronized void setNEDFileModel(IFile file, INEDElement tree) {
         if (tree == null)
@@ -222,6 +224,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     /**
      * NED text editors should call this when editor content changes.
      * Parses the given text and build a new NED model tree.
+     * @param file - which file should be set
+     * @param text - the textual content of the ned file
      */
     public synchronized void setNEDFileText(IFile file, String text) {
         // parse the NED text and put it into the hash table
