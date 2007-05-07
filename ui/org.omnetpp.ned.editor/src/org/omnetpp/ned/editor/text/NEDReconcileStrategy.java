@@ -29,11 +29,11 @@ public class NEDReconcileStrategy implements IReconcilingStrategy {
 
 	public void reconcile(DirtyRegion dirtyRegion, IRegion subRegion) {
 		// XXX this does not seem to get called, at least in our setup...
-		System.out.println("reconcile(DirtyRegion,IRegion) called");
+		// System.out.println("reconcile(DirtyRegion,IRegion) called");
 	}
 
 	public void reconcile(IRegion partition) {
-		System.out.println("reconcile(IRegion) called");
+		// System.out.println("reconcile(IRegion) called");
 		Assert.isTrue(editor.getEditorInput() instanceof IFileEditorInput); // NEDEditor only accepts file input
 		IFile file = ((IFileEditorInput)editor.getEditorInput()).getFile();
 		String nedtext = document.get();

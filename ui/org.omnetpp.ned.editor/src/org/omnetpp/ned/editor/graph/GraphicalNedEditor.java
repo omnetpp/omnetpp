@@ -43,13 +43,10 @@ import org.eclipse.jface.util.TransferDropTargetListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.IKeyBindingService;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
@@ -201,7 +198,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
     private SelectionSynchronizer synchronizer;
     // last state of the command stack (used to detect changes since last page switch)
     private Command lastUndoCommand;
-    private Command lastRedoCommand;
 
     public GraphicalNedEditor() {
         setEditDomain(new DefaultEditDomain(this));
@@ -492,14 +488,13 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
      */
     public void markContent() {
         lastUndoCommand = getCommandStack().getUndoCommand();
-        lastRedoCommand = getCommandStack().getRedoCommand();
     }
 
     /**
      * @return Whether the content of the editor has changed since the last markContent call.
      */
     public boolean hasContentChanged() {
-        return !(lastUndoCommand == getCommandStack().getUndoCommand() && lastRedoCommand == getCommandStack().getRedoCommand());
+        return !(lastUndoCommand == getCommandStack().getUndoCommand());
 
     }
 

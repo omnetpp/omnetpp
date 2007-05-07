@@ -57,21 +57,19 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 
 	public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
 		super.init(site, editorInput);
-//		setPartName(editorInput.getName());
         if (!(editorInput instanceof IFileEditorInput))
             throw new PartInitException("Invalid input type!");
         setInput(editorInput);
 
-//        NEDResourcesPlugin.getNEDResources().connect(((IFileEditorInput)editorInput).getFile());
+        ((IFileEditorInput)getEditorInput()).getFile()
+            .getWorkspace().addResourceChangeListener(resourceListener);
 	}
 
     @Override
     public void dispose() {
         // detach the editor file from the core plugin and do not set a new file 
-        setInput(null);  
-//        ((IFileEditorInput)getEditorInput()).getFile()
-//                .getWorkspace().removeResourceChangeListener(resourceListener);
-//        NEDResourcesPlugin.getNEDResources().disconnect(((IFileEditorInput)getEditorInput()).getFile());
+        ((IFileEditorInput)getEditorInput()).getFile()
+                .getWorkspace().removeResourceChangeListener(resourceListener);
         super.dispose();
     }
     
@@ -87,7 +85,6 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         // remove the listeners from the old file
         if (getEditorInput() != null) {
             IFile file = ((IFileEditorInput) getEditorInput()).getFile();
-            file.getWorkspace().removeResourceChangeListener(resourceListener);
             NEDResourcesPlugin.getNEDResources().disconnect(file);
         }
 
@@ -101,7 +98,6 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         // add listeners to the new file in workspace and in the ned resource manager
         if (getEditorInput() != null) {
             IFile file = ((IFileEditorInput) getEditorInput()).getFile();
-            file.getWorkspace().addResourceChangeListener(resourceListener);
             NEDResourcesPlugin.getNEDResources().connect(file);
             setPartName(file.getName());
         }
@@ -116,11 +112,9 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 
 		try {
             // setup graphical editor
-//            graphEditor.setModel((NedFileNodeEx)NEDResourcesPlugin.getNEDResources().getNEDFileModel(ifile));
             graphPageIndex = addPage(graphEditor, getEditorInput());
             graphEditor.markContent();
             setPageText(graphPageIndex,"Graphical");
-
 
             // setup text editor
             // we don't have to set the content because it's set
@@ -185,13 +179,15 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
             textEditor.setText(res.getNEDFileText(file));
             textEditor.markContent();
 		}
-		else if (newPageIndex==graphPageIndex && textEditor.hasContentChanged()) {
+		else if (newPageIndex==graphPageIndex) {
 
-			// parse the text editor content if it has changed since the last editor switch
-		    res.setNEDFileText(file, textEditor.getText());
-            // set the parsed ned model to the graphical editor
-            graphEditor.setModel((NedFileNodeEx)res.getNEDFileModel(file));
-            graphEditor.markContent();
+		    if (textEditor.hasContentChanged()) {
+    			// parse the text editor content if it has changed since the last editor switch
+    		    res.setNEDFileText(file, textEditor.getText());
+		    }
+		    // set the parsed ned model to the graphical editor
+		    graphEditor.setModel((NedFileNodeEx)res.getNEDFileModel(file));
+		    graphEditor.markContent();
 
             // only start in graphics mode if there's no error in the file
             if (res.containsNEDErrors(file)) {
@@ -199,9 +195,6 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 				// parse error: switch back immediately to text view (we should never have
 				// switched away from it in the first place)
 				setActivePage(textPageIndex);
-
-                // set an empty content so next time we will try to parse the editor text again
-//                textContent = "";
 
 				if (!initPhase) {
 					MessageBox messageBox = new MessageBox(getEditorSite().getShell(), SWT.ICON_WARNING | SWT.OK);

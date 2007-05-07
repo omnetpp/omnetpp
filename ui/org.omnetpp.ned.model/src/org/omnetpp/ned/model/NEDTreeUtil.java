@@ -293,51 +293,66 @@ public class NEDTreeUtil {
 	}
     
     /**
-     * @param s1
-     * @param s2
-     * @return true if both param is null, or s1 equals s2
-     */
-    private static boolean nullsafeIsEqual(Object s1, Object s2) {
-        if (s1 == s2)
-            return true;
-        if (s1 != null)
-            return s1.equals(s2);
-        return false;
-    }
-    
-    /**
-     * @param tree1
-     * @param tree2
-     * @return Whether the two trees are equal
+     * @param tree1 (can be null)
+     * @param tree2 (can be null)
+     * @return Whether the two trees are considered equal (if both generates the same source representation) 
      */
     public static boolean isNEDTreeEqual(INEDElement tree1, INEDElement tree2) {
-        if (tree1.getTagCode() != tree2.getTagCode())
+        if (tree1 == tree2)
+            return true;
+        if (tree1==null || tree2==null)
             return false;
-        
-        if (!nullsafeIsEqual(tree1.getSourceRegion(), tree2.getSourceRegion()))
-            return false;
-        
-        for (int i = 0; i < tree1.getNumAttributes(); ++i) {
-            if ( !nullsafeIsEqual(tree1.getAttribute(i), tree2.getAttribute(i)))
-                return false;
-        }
-        
-        INEDElement child1 = tree1.getFirstChild();
-        INEDElement child2 = tree2.getFirstChild();
-        
-        while (child1 != null && child2!=null) {
-            // TODO comments node may be ignored here
-            if (!isNEDTreeEqual(child1, child2))
-                return false;
-            child1 = child1.getNextSibling();
-            child2 = child2.getNextSibling();
-        }
-        // both child list must be the same length
-        if (child1 != null || child2 != null )
-            return false;
-
-        return true;
+        String code1 = generateNedSource(tree1, true);
+        String code2 = generateNedSource(tree2, true);
+        return code1.equals(code2);
     }
+    
+//    /**
+//     * @param s1
+//     * @param s2
+//     * @return true if both param is null, or s1 equals s2
+//     */
+//    private static boolean nullsafeIsEqual(Object s1, Object s2) {
+//        if (s1 == s2)
+//            return true;
+//        if (s1 != null)
+//            return s1.equals(s2);
+//        return false;
+//    }
+    
+//    /**
+//     * @param tree1
+//     * @param tree2
+//     * @return Whether the two trees are equal
+//     */
+//    public static boolean isNEDTreeEqual(INEDElement tree1, INEDElement tree2) {
+//        if (tree1.getTagCode() != tree2.getTagCode())
+//            return false;
+//        
+//        if (!nullsafeIsEqual(tree1.getSourceRegion(), tree2.getSourceRegion()))
+//            return false;
+//        
+//        for (int i = 0; i < tree1.getNumAttributes(); ++i) {
+//            if ( !nullsafeIsEqual(tree1.getAttribute(i), tree2.getAttribute(i)))
+//                return false;
+//        }
+//        
+//        INEDElement child1 = tree1.getFirstChild();
+//        INEDElement child2 = tree2.getFirstChild();
+//        
+//        while (child1 != null && child2!=null) {
+//            // TODO comments node may be ignored here
+//            if (!isNEDTreeEqual(child1, child2))
+//                return false;
+//            child1 = child1.getNextSibling();
+//            child2 = child2.getNextSibling();
+//        }
+//        // both child list must be the same length
+//        if (child1 != null || child2 != null )
+//            return false;
+//
+//        return true;
+//    }
     
     /**
      * @return The default content provider for ned model trees
