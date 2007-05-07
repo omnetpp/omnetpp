@@ -8,10 +8,9 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -158,10 +157,8 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 
         // check if file is null. it is a built in type in this case
         if (file == null) {
-            MessageBox messageBox = new MessageBox(Display.getDefault().getActiveShell(), SWT.ICON_WARNING | SWT.OK);
-            messageBox.setText("Warning");
-            messageBox.setMessage("Built in types cannot be opened for editing!");
-            messageBox.open();
+            MessageDialog.openWarning(Display.getDefault().getActiveShell(), 
+                    "Warning", "Built in types cannot be opened for editing!");
             return;
         }
 
