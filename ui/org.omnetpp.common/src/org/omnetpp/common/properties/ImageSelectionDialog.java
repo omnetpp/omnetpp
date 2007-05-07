@@ -47,7 +47,8 @@ public class ImageSelectionDialog extends Dialog {
 
 	// widgets
 	private Combo filterCombo;
-	private Label statusLabel;
+	private Label filterStatusLabel;
+	private Label selectionStatusLabel;
 	private ScrolledComposite scrolledComposite; 
 	private Composite imageCanvas; 
 	private Button okButton;
@@ -56,13 +57,14 @@ public class ImageSelectionDialog extends Dialog {
 	private String[] imageNames;
 
 	// result
+	private String initialSelection = null;
 	private String selection = null;
 
 
 	public ImageSelectionDialog(Shell parentShell, String initialValue) {
 		super(parentShell);
 		setShellStyle(getShellStyle() | SWT.MAX | SWT.RESIZE);
-		selection = initialValue;
+		initialSelection = "".equals(initialValue) ? null : initialValue; // store "" as null
 		imageNames = ImageFactory.getImageNameList().toArray(new String[]{});
 	}
 
@@ -88,9 +90,13 @@ public class ImageSelectionDialog extends Dialog {
 		filterCombo = new Combo(composite, SWT.BORDER);
 		filterCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-		statusLabel = new Label(composite, SWT.NONE);
-		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		label.setFont(parent.getFont());
+		filterStatusLabel = new Label(composite, SWT.NONE);
+		filterStatusLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		filterStatusLabel.setFont(parent.getFont());
+
+		selectionStatusLabel = new Label(composite, SWT.NONE);
+		selectionStatusLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		selectionStatusLabel.setFont(parent.getFont());
 
 		// scrolled composite for the images
 		scrolledComposite = new ScrolledComposite(composite, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
@@ -114,12 +120,13 @@ public class ImageSelectionDialog extends Dialog {
 
 		filterCombo.setItems(getImageFilters());
 		filterCombo.setVisibleItemCount(Math.min(20, filterCombo.getItemCount()));
-		if (selection != null)
-			filterCombo.setText(selection);
+		if (initialSelection != null)
+			filterCombo.setText(initialSelection.replaceFirst("/.*", "/"));
 
-		// add the images
+		// add the images, and make initial icon one selected
 		populate();
-
+		imageSelected(initialSelection);
+		
 		// set up validation on content changes
 		filterCombo.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
@@ -184,7 +191,7 @@ public class ImageSelectionDialog extends Dialog {
 			pattern = Pattern.compile(filter);
 		} 
 		catch (PatternSyntaxException e) {
-			statusLabel.setText("Invalid filter string");
+			filterStatusLabel.setText("Invalid filter string");
 			CommonPlugin.logError(e);
 			layoutForm();
 			return;
@@ -233,7 +240,7 @@ public class ImageSelectionDialog extends Dialog {
 		layoutForm();
 
 		// update status line
-		statusLabel.setText("Filter matches "+count+" image"+(count==1?"":"s")+" out of "+imageNames.length+".");
+		filterStatusLabel.setText("Filter matches "+count+" image"+(count==1?"":"s")+" out of "+imageNames.length+".");
 
 		// if selection got narrowed down to one image: make that the user's choice;
 		// otherwise invalidate user's previous selection
@@ -242,6 +249,7 @@ public class ImageSelectionDialog extends Dialog {
 
 	protected void imageSelected(String imageName) {
 		selection = imageName;
+		selectionStatusLabel.setText("Current selection: "+(selection==null ? "--" : selection));
 		if (okButton != null)  // it is null initially
 			okButton.setEnabled(selection != null);
 	}
