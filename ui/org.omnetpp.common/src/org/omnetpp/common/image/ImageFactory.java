@@ -114,6 +114,7 @@ public class ImageFactory {
 
     private static ImageRegistry imageRegistry = new ImageRegistry(Display.getDefault());
     private static String[] imageDirs;
+    private static List<String> imageNameList = null;
     // image size constants
     public static final int SIZE_VS = 40; 
     public static final int SIZE_S = 60; 
@@ -351,6 +352,9 @@ public class ImageFactory {
      * @return All image ID-s in the bitmap path (files with .gif .png .svg extension)
      */
     public static List<String> getImageNameList() {
+        if (imageNameList != null)
+            return imageNameList;
+        
     	Set<String> result = new HashSet<String>();
     	for(String basedir : imageDirs) {
 			try {
@@ -376,9 +380,19 @@ public class ImageFactory {
 
     	List<String> orderedNames = new ArrayList<String>(result);
     	Collections.sort(orderedNames);
+    	// store/cache for later use
+    	imageNameList = orderedNames;
     	return orderedNames;
     }
 
+    /**
+     * Re-reads the cached image names.
+     */
+    public static void rereadImageNameList() {
+        imageNameList = null;
+        getImageNameList();
+    }
+    
     /**
      * Get the image ID for a file or image IDs if it is a directory (recursively(
      * @param fileStore A file or directory
