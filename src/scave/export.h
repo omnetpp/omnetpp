@@ -17,6 +17,7 @@
 
 #include <string>
 #include <vector>
+#include <set>
 #include <fstream>
 #include "scavedefs.h"
 #include "bigdecimal.h"
@@ -128,8 +129,11 @@ class SCAVE_API ScaveExport
  */
 class MatlabStructExport : public ScaveExport
 {
+    private:
+        std::set<std::string> identifiers;
     protected:
         void writeDouble(double value);
+        std::string makeUniqueIdentifier(const std::string &name);
         static std::string makeIdentifier(const std::string &name);
         static std::string quoteString(const std::string &str);
 };
@@ -154,8 +158,8 @@ class SCAVE_API MatlabScriptExport : public MatlabStructExport
     protected:
         virtual void saveTable(const DataTable &table, int startRow, int endRow);
     private:
-        void writeDescriptionField(const DataTable &rows);
-        void writeColumnFields(const DataTable &rows, int startRow, int endRow);
+        void writeDescriptionField(const DataTable &rows, const std::string tableName);
+        void writeColumnFields(const DataTable &rows, int startRow, int endRow, const std::string tableName);
         void writeDoubleColumn(const DataTable &table, int col, int startRow, int endRow);
         void writeBigDecimalColumn(const DataTable &table, int col, int startRow, int endRow);
         void writeStringColumn(const DataTable &table, int col, int startRow, int endRow);
@@ -217,6 +221,12 @@ class SCAVE_API CsvExport : public ScaveExport
         void writeDouble(double value);
         void writeBigDecimal(BigDecimal value);
         void writeString(const std::string &value);
+};
+
+class SCAVE_API ExporterFactory
+{
+    public:
+        static ScaveExport *createExporter(const std::string format);
 };
 
 #endif

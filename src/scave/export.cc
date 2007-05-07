@@ -220,12 +220,42 @@ string MatlabStructExport::makeIdentifier(const string &name)
     for (string::iterator it=result.begin(); it!=result.end(); ++it)
         if (!isalnum(*it))
             *it = '_';
+    if (result[0] != '_' && !isalpha(result[0]))
+        result.insert(0, "_");
+    return result;
+}
+
+string MatlabStructExport::makeUniqueIdentifier(const string &name)
+{
+    string result = makeIdentifier(name);
+
+    if (identifiers.find(result) != identifiers.end())
+    {
+        string base = result;
+        for (int i=0; ; ++i)
+        {
+            char suffix[32];
+            result = base + "_" + itoa(i, suffix, 10);
+            if (identifiers.find(result) == identifiers.end())
+                break;
+        }
+    }
+
+    identifiers.insert(result);
     return result;
 }
 
 string MatlabStructExport::quoteString(const string &str)
 {
-    return string(str); // TODO
+    string result;
+    for (string::const_iterator it = str.begin(); it != str.end(); ++it)
+    {
+        if (*it == '\\' || *it == '\"')
+            result.append(1, '\\');
+        result.append(1, *it);
+    }
+
+    return result;
 }
 
 void MatlabStructExport::writeDouble(double value)
@@ -253,22 +283,23 @@ string MatlabScriptExport::makeFileName(const string name)
 
 void MatlabScriptExport::saveTable(const DataTable &table, int startRow, int endRow)
 {
-    writeDescriptionField(table);
-    writeColumnFields(table, startRow, endRow);
+    string tableName = makeUniqueIdentifier(table.name);
+    writeDescriptionField(table, tableName);
+    writeColumnFields(table, startRow, endRow, tableName);
 }
 
-void MatlabScriptExport::writeDescriptionField(const DataTable &table)
+void MatlabScriptExport::writeDescriptionField(const DataTable &table, const string tableName)
 {
-    out << makeIdentifier(table.name) << ".description=" << '"' << quoteString(table.description) << '"' << '\n';
+    out << tableName << ".description=" << '"' << quoteString(table.description) << '"' << '\n';
 }
 
-void MatlabScriptExport::writeColumnFields(const DataTable &table, int startRow, int endRow)
+void MatlabScriptExport::writeColumnFields(const DataTable &table, int startRow, int endRow, const string tableName)
 {
     for (int col = 0; col < table.numOfColumns(); ++col)
     {
         DataTable::Column column = table.column(col);
 
-        out << makeIdentifier(table.name) + "." + makeIdentifier(column.name) << "=[" << '\n';
+        out << tableName + "." + makeIdentifier(column.name) << "=[" << '\n';
         switch (column.type)
         {
         case DataTable::DOUBLE:
@@ -436,8 +467,8 @@ void OctaveTextExport::writeStringColumn(const DataTable &table, int col, int st
 // XXX separate file for each table?
 string CsvExport::makeFileName(const string name)
 {
-    string filename = name;
-    if (filename.empty())
+    string fileName = name;
+    if (fileName.empty())
         return "table.csv";
     else if (fileName.find('.') == string::npos)
         return fileName + ".csv";
@@ -515,3 +546,16 @@ void CsvExport::writeString(const string &value)
         out << value;
     }
 }
+
+ScaveExport *ExporterFactory::createExporter(const string format)
+{
+    if (format == "octave")
+        return new OctaveTextExport;
+    else if (format == "matlab")
+        return new MatlabScriptExport;
+    else if (format == "csv")
+        return new CsvExport;
+    else
+        return NULL;
+}
+

@@ -26,7 +26,6 @@
 #include "filternodes.h"
 #include "filewriter.h"
 #include "arraybuilder.h"
-//#include "octaveexport.h"
 #include "export.h"
 #include "stringutil.h"
 
@@ -83,19 +82,6 @@ void printUsage()
        "Examples:\n"
        " scavetool -n 'queueing time' -a winavg(10) -O out.vec\n\n" //TODO more
     );
-}
-
-// TODO create registry
-ScaveExport *createExporter(const std::string &name)
-{
-    if (name == "octave")
-        return new OctaveTextExport;
-    else if (name == "matlab")
-        return new MatlabScriptExport;
-    else if (name == "csv")
-        return new CsvExport;
-    else
-        return NULL;
 }
 
 int filterCommand(int argc, char **argv)
@@ -257,7 +243,7 @@ int filterCommand(int argc, char **argv)
         }
 
         // eventually, connect ports to writer node
-        std::vector<ArrayBuilderNode*> arrayBuilders; // for Octave output
+        std::vector<ArrayBuilderNode*> arrayBuilders; // for exporting
         if (opt_writeVectorFile)
         {
             // everything goes to a common vector file
@@ -315,7 +301,7 @@ int filterCommand(int argc, char **argv)
 
         if (opt_writeExportFile)
         {
-            ScaveExport *exporter = createExporter(opt_outputFormat);
+            ScaveExport *exporter = ExporterFactory::createExporter(opt_outputFormat);
             if (exporter)
             {
                 try
