@@ -49,6 +49,27 @@ sub test
    }
 }
 
+sub testExport
+{
+  my($fileName, $format) = @_;
+
+  print("Testing $fileName...\n");
+  $resultFileName = $fileName;
+  $resultFileName =~ s/^(.*)\.(.*)/\1\.$format/;
+  $expectedResultFileName = $resultFileName;
+  $resultFileName =~ s/^(.*)\//result\//;
+  $expectedResultFileName =~ s/^(.*)\//expected\//;
+
+  if (system("../../bin/scavetool.exe filter -O $resultFileName -F $format $fileName") == 0 && matchFiles($resultFileName, $expectedResultFileName))
+  {
+    print("PASS: Exporting $fileName in $format\n");
+  }
+  else
+  {
+    print("FAIL: Exporting $fileName in $format\n");
+  }
+}
+
 
 mkdir("result");
 
@@ -58,3 +79,9 @@ test("reader-builder", "testfiles/simtime_test.vec");
 test("reader-writer", "testfiles/omnetpp1.vec");
 test("reader-writer", "testfiles/simtime_test.vec");
 
+testExport("testfiles/scalars.sca", "matlab");
+testExport("testfiles/scalars.sca", "octave");
+testExport("testfiles/scalars.sca", "csv");
+testExport("testfiles/vectors.vec", "matlab");
+testExport("testfiles/vectors.vec", "octave");
+testExport("testfiles/vectors.vec", "csv");

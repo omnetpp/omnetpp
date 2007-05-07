@@ -1,0 +1,88 @@
+#
+# Sample file for creating scatter plots.
+#
+# For the X axis, choose "Net.subnet[0] - throughput"
+#
+run 35
+scalar "Net.subnet[0]"  "offered load"	30
+scalar "Net.subnet[0]"  "throughput"	0.3511
+scalar "Net.subnet[0]"  "frames dropped"	0
+run 34
+scalar "Net.subnet[0]"  "offered load"	40
+scalar "Net.subnet[0]"  "throughput"	0.4506
+#scalar "Net.subnet[0]"  "frames dropped"	0
+run 1
+scalar "Net.subnet[0]"  "offered load"	10
+scalar "Net.subnet[0]"  "throughput"	0.0812
+#scalar "Net.subnet[0]"  "frames dropped"	0
+run 2
+scalar "Net.subnet[0]"  "offered load"	20
+scalar "Net.subnet[0]"  "throughput"	0.2296
+scalar "Net.subnet[0]"  "frames dropped"	0
+run 43
+scalar "Net.subnet[0]"  "offered load"	50
+scalar "Net.subnet[0]"  "throughput"	0.5321
+scalar "Net.subnet[0]"  "frames dropped"	0
+run 6
+#scalar "Net.subnet[0]"  "offered load"	60
+scalar "Net.subnet[0]"  "throughput"	0.5988
+scalar "Net.subnet[0]"  "frames dropped"	0.002
+run 7
+scalar "Net.subnet[0]"  "offered load"	70
+#scalar "Net.subnet[0]"  "throughput"	0.6534
+scalar "Net.subnet[0]"  "frames dropped"	0
+run 8
+scalar "Net.subnet[0]"  "offered load"	80
+scalar "Net.subnet[0]"  "throughput"	0.6981
+scalar "Net.subnet[0]"  "frames dropped"	0
+run 9
+scalar "Net.subnet[0]"  "offered load"	90
+scalar "Net.subnet[0]"  "throughput"	0.7347
+scalar "Net.subnet[0]"  "frames dropped"	0.012
+run 10
+scalar "Net.subnet[0]"  "offered load"	100
+scalar "Net.subnet[0]"  "throughput"	0.7646
+scalar "Net.subnet[0]"  "frames dropped"	0
+run 11
+scalar "Net.subnet[0]"  "offered load"	110
+scalar "Net.subnet[0]"  "throughput"	0.7891
+scalar "Net.subnet[0]"  "frames dropped"	0.009
+run 21
+scalar "Net.subnet[0]"  "offered load"	120
+scalar "Net.subnet[0]"  "throughput"	0.8092
+scalar "Net.subnet[0]"  "frames dropped"	0.014
+run 22
+scalar "Net.subnet[0]"  "offered load"	130
+scalar "Net.subnet[0]"  "throughput"	0.8257
+scalar "Net.subnet[0]"  "frames dropped"	0.021
+run 203
+scalar "Net.subnet[0]"  "offered load"	140
+scalar "Net.subnet[0]"  "throughput"	0.8391
+scalar "Net.subnet[0]"  "frames dropped"	0.022
+run 204
+scalar "Net.subnet[0]"  "offered load"	150
+scalar "Net.subnet[0]"  "throughput"	0.8450
+scalar "Net.subnet[0]"  "frames dropped"	0.026
+run 25
+scalar "Net.subnet[0]"  "offered load"	160
+scalar "Net.subnet[0]"  "throughput"	0.8392
+scalar "Net.subnet[0]"  "frames dropped"	0.051
+run 106
+scalar "Net.subnet[0]"  "offered load"	170
+scalar "Net.subnet[0]"  "throughput"	0.8086
+scalar "Net.subnet[0]"  "frames dropped"	0.092
+run 107
+scalar "Net.subnet[0]"  "offered load"	180
+scalar "Net.subnet[0]"  "throughput"	0.7487
+scalar "Net.subnet[0]"  "frames dropped"	0.144
+run 28
+scalar "Net.subnet[0]"  "offered load"	190
+scalar "Net.subnet[0]"  "throughput"	0.6877
+scalar "Net.subnet[0]"  "frames dropped"	0.254
+run 29
+scalar "Net.subnet[0]"  "offered load"	200
+scalar "Net.subnet[0]"  "throughput"	0.5716
+scalar "Net.subnet[0]"  "frames dropped"	0.434
+
+
+

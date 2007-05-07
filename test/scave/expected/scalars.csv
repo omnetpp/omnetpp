@@ -1,0 +1,21 @@
+File,Run,Module,frames dropped,offered load,throughput
+testfiles/scalars.sca,,Net.subnet[0],0,30,0.3511
+testfiles/scalars.sca,,Net.subnet[0],NaN,40,0.4506
+testfiles/scalars.sca,,Net.subnet[0],NaN,10,0.0812
+testfiles/scalars.sca,,Net.subnet[0],0,20,0.2296
+testfiles/scalars.sca,,Net.subnet[0],0,50,0.5321
+testfiles/scalars.sca,,Net.subnet[0],0.002,NaN,0.5988
+testfiles/scalars.sca,,Net.subnet[0],0,70,NaN
+testfiles/scalars.sca,,Net.subnet[0],0,80,0.6981
+testfiles/scalars.sca,,Net.subnet[0],0.012,90,0.7347
+testfiles/scalars.sca,,Net.subnet[0],0,100,0.7646
+testfiles/scalars.sca,,Net.subnet[0],0.009,110,0.7891
+testfiles/scalars.sca,,Net.subnet[0],0.014,120,0.8092
+testfiles/scalars.sca,,Net.subnet[0],0.021,130,0.8257
+testfiles/scalars.sca,,Net.subnet[0],0.022,140,0.8391
+testfiles/scalars.sca,,Net.subnet[0],0.026,150,0.845
+testfiles/scalars.sca,,Net.subnet[0],0.051,160,0.8392
+testfiles/scalars.sca,,Net.subnet[0],0.092,170,0.8086
+testfiles/scalars.sca,,Net.subnet[0],0.144,180,0.7487
+testfiles/scalars.sca,,Net.subnet[0],0.254,190,0.6877
+testfiles/scalars.sca,,Net.subnet[0],0.434,200,0.5716

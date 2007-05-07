@@ -1,0 +1,237 @@
+# name: scalars
+# type: struct
+# length: 7
+# name: description
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: string
+# elements: 1
+# length: 11
+scalar desc
+# name: File
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: string
+# elements: 20
+# length: 21
+testfiles/scalars.sca
+# length: 21
+testfiles/scalars.sca
+# length: 21
+testfiles/scalars.sca
+# length: 21
+testfiles/scalars.sca
+# length: 21
+testfiles/scalars.sca
+# length: 21
+testfiles/scalars.sca
+# length: 21
+testfiles/scalars.sca
+# length: 21
+testfiles/scalars.sca
+# length: 21
+testfiles/scalars.sca
+# length: 21
+testfiles/scalars.sca
+# length: 21
+testfiles/scalars.sca
+# length: 21
+testfiles/scalars.sca
+# length: 21
+testfiles/scalars.sca
+# length: 21
+testfiles/scalars.sca
+# length: 21
+testfiles/scalars.sca
+# length: 21
+testfiles/scalars.sca
+# length: 21
+testfiles/scalars.sca
+# length: 21
+testfiles/scalars.sca
+# length: 21
+testfiles/scalars.sca
+# length: 21
+testfiles/scalars.sca
+# name: Run
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: string
+# elements: 20
+# length: 0
+
+# length: 0
+
+# length: 0
+
+# length: 0
+
+# length: 0
+
+# length: 0
+
+# length: 0
+
+# length: 0
+
+# length: 0
+
+# length: 0
+
+# length: 0
+
+# length: 0
+
+# length: 0
+
+# length: 0
+
+# length: 0
+
+# length: 0
+
+# length: 0
+
+# length: 0
+
+# length: 0
+
+# length: 0
+
+# name: Module
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: string
+# elements: 20
+# length: 13
+Net.subnet[0]
+# length: 13
+Net.subnet[0]
+# length: 13
+Net.subnet[0]
+# length: 13
+Net.subnet[0]
+# length: 13
+Net.subnet[0]
+# length: 13
+Net.subnet[0]
+# length: 13
+Net.subnet[0]
+# length: 13
+Net.subnet[0]
+# length: 13
+Net.subnet[0]
+# length: 13
+Net.subnet[0]
+# length: 13
+Net.subnet[0]
+# length: 13
+Net.subnet[0]
+# length: 13
+Net.subnet[0]
+# length: 13
+Net.subnet[0]
+# length: 13
+Net.subnet[0]
+# length: 13
+Net.subnet[0]
+# length: 13
+Net.subnet[0]
+# length: 13
+Net.subnet[0]
+# length: 13
+Net.subnet[0]
+# length: 13
+Net.subnet[0]
+# name: frames_dropped
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 20
+# columns: 1
+0
+NaN
+NaN
+0
+0
+0.002
+0
+0
+0.012
+0
+0.009
+0.014
+0.021
+0.022
+0.026
+0.051
+0.092
+0.144
+0.254
+0.434
+# name: offered_load
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 20
+# columns: 1
+30
+40
+10
+20
+50
+NaN
+70
+80
+90
+100
+110
+120
+130
+140
+150
+160
+170
+180
+190
+200
+# name: throughput
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 20
+# columns: 1
+0.3511
+0.4506
+0.0812
+0.2296
+0.5321
+0.5988
+NaN
+0.6981
+0.7347
+0.7646
+0.7891
+0.8092
+0.8257
+0.8391
+0.845
+0.8392
+0.8086
+0.7487
+0.6877
+0.5716
