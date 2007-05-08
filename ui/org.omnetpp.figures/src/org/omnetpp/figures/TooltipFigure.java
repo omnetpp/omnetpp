@@ -2,6 +2,7 @@ package org.omnetpp.figures;
 
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.MarginBorder;
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.text.FlowPage;
 import org.eclipse.draw2d.text.ParagraphTextLayout;
 import org.eclipse.draw2d.text.TextFlow;
@@ -19,7 +20,7 @@ public class TooltipFigure extends FlowPage {
         // FIXME hack because otherwise it throws exception in BiDi implementation
         textFlow.setText(" ");
         textFlow.setLayoutManager(new ParagraphTextLayout(textFlow, ParagraphTextLayout.WORD_WRAP_SOFT));
-
+        setMaximumSize(new Dimension(120,60));
         add(textFlow);
     }
 
@@ -42,4 +43,10 @@ public class TooltipFigure extends FlowPage {
         textFlow.setText(newText);
     }
 
+    public Dimension getPreferredSize(int w, int h) {
+        Dimension d = super.getPreferredSize(-1, -1);
+        if (d.width > 400)
+            d = super.getPreferredSize(400, -1);
+        return d;
+    }
 }

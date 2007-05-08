@@ -168,7 +168,7 @@ public class SubmoduleFigure extends ModuleFigure
         invalidate();
     }
     
-    protected void setTooltipText(String tttext) {
+    public void setTooltipText(String tttext) {
         if(tttext == null || "".equals(tttext)) {
             setToolTip(null);
             tooltipFigure = null;

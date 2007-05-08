@@ -17,6 +17,7 @@ import org.omnetpp.figures.misc.LabelCellEditorLocator;
 public class TopLevelFigure extends Label implements IDirectEditSupport {
 
     private String tmpName;
+    private TooltipFigure tooltipFigure;
 
     protected void setShape(Image img,
             String shape, int shapeWidth, int shapeHeight,
@@ -53,6 +54,18 @@ public class TopLevelFigure extends Label implements IDirectEditSupport {
 
         invalidate();
 	}
+
+    public void setTooltipText(String tttext) {
+        if(tttext == null || "".equals(tttext)) {
+            setToolTip(null);
+            tooltipFigure = null;
+        } else {
+            tooltipFigure = new TooltipFigure(); 
+            setToolTip(tooltipFigure);
+            tooltipFigure.setText(tttext);
+            invalidate();
+        }
+    }
 
     public CellEditorLocator getDirectEditCellEditorLocator() {
         return new LabelCellEditorLocator(this);
