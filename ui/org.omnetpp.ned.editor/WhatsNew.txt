@@ -1,3 +1,4 @@
+  + ned docs/comments for modules in the graphical editor as a tooltip
   + new icon chooser dialog
   + added icon chooser dialog in context menu
   x global undo/redo is working if the Property View is the acive view

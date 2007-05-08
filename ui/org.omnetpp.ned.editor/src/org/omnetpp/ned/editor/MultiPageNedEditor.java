@@ -355,14 +355,15 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         } else {
             setActivePage(textPageIndex);
             IDocument document = textEditor.getDocumentProvider().getDocument(getEditorInput());
-            try {
-                int startLine = model.getSourceRegion().startLine;
-                int endLine = model.getSourceRegion().endLine;
-                textEditor.setHighlightRange(document.getLineOffset(startLine-1),
-                                             document.getLineOffset(endLine-1)+document.getLineLength(endLine-1),
-                                             true);
-            } catch (Exception e) {
-            }
+            if (model.getSourceRegion() != null)
+                try {
+                    int startLine = model.getSourceRegion().startLine;
+                    int endLine = model.getSourceRegion().endLine;
+                    textEditor.setHighlightRange(document.getLineOffset(startLine-1),
+                                                 document.getLineOffset(endLine-1)+document.getLineLength(endLine-1),
+                                                 true);
+                } catch (Exception e) {
+                }
         }
     }
 
