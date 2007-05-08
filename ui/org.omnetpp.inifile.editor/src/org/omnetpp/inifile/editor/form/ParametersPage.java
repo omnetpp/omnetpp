@@ -3,6 +3,7 @@ package org.omnetpp.inifile.editor.form;
 import java.util.ArrayList;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -17,6 +18,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -121,6 +123,7 @@ public class ParametersPage extends FormPage {
 		final TableViewer tableViewer = new TableViewer(table);
 		tableViewer.setContentProvider(new ArrayContentProvider());
 		tableViewer.setLabelProvider(new TableLabelProvider() {
+			@Override
 			public String getColumnText(Object element, int columnIndex) {
 				SectionKey item = (SectionKey) element;
 				switch (columnIndex) {
@@ -130,6 +133,15 @@ public class ParametersPage extends FormPage {
 				case 3: return getInifileDocument().getComment(item.section, item.key);
 				default: throw new IllegalArgumentException();
 				}
+			}
+			@Override
+			public Image getColumnImage(Object element, int columnIndex) {
+				if (columnIndex == 2) {
+					SectionKey item = (SectionKey) element;
+					IMarker[] markers = InifileUtils.getProblemMarkersFor(item.section, item.key, getInifileDocument());
+					return FieldEditor.getProblemImage(markers, true);
+				}
+				return null;
 			}
 		});
 
