@@ -11,7 +11,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
@@ -362,7 +361,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
                 textEditor.setHighlightRange(document.getLineOffset(startLine-1),
                                              document.getLineOffset(endLine-1)+document.getLineLength(endLine-1),
                                              true);
-            } catch (BadLocationException e) {
+            } catch (Exception e) {
             }
         }
     }

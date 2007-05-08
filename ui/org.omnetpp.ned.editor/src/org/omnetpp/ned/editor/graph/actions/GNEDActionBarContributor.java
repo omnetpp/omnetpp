@@ -150,8 +150,13 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
         addRetargetAction(new UndoRetargetAction());
         addRetargetAction(new RedoRetargetAction());
 
-        addRetargetAction(new UnpinRetargetAction());
-        addRetargetAction(new ReLayoutRetargetAction());
+        RetargetAction retAction; 
+        addRetargetAction(retAction = new RetargetAction(UnpinAction.ID, UnpinAction.MENUNAME));
+        retAction.setToolTipText(UnpinAction.TOOLTIP);
+        retAction.setImageDescriptor(UnpinAction.IMAGE);
+        addRetargetAction(retAction = new RetargetAction(ReLayoutAction.ID, ReLayoutAction.MENUNAME));
+        retAction.setToolTipText(ReLayoutAction.TOOLTIP);
+        retAction.setImageDescriptor(ReLayoutAction.IMAGE);
 
         addRetargetAction(new AlignmentRetargetAction(PositionConstants.LEFT));
         addRetargetAction(new AlignmentRetargetAction(PositionConstants.CENTER));

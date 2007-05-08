@@ -54,15 +54,7 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
         action = getActionRegistry().getAction(ActionFactory.REDO.getId());
         manager.appendToGroup(GEFActionConstants.GROUP_UNDO, action);
 
-        MenuManager showInSubMenu= new MenuManager(getShowInMenuLabel());
-        showInSubMenu.add(ContributionItemFactory.VIEWS_SHOW_IN.create(wwin));
-        manager.appendToGroup(GEFActionConstants.GROUP_VIEW, showInSubMenu);
-        
-        action = getActionRegistry().getAction(ActionFactory.DELETE.getId());
-        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
-
-        action = getActionRegistry().getAction(GEFActionConstants.DIRECT_EDIT);
-        action.setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_RENAME));
+        action = getActionRegistry().getAction(ChooseIconAction.ID);
         if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
 
         action = getActionRegistry().getAction(UnpinAction.ID);
@@ -71,8 +63,18 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
         action = getActionRegistry().getAction(ReLayoutAction.ID);
         if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
 
+        action = getActionRegistry().getAction(GEFActionConstants.DIRECT_EDIT);
+        action.setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_RENAME));
+        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
+
+        action = getActionRegistry().getAction(ActionFactory.DELETE.getId());
+        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
+
+        MenuManager showInSubMenu= new MenuManager(getShowInMenuLabel());
+        showInSubMenu.add(ContributionItemFactory.VIEWS_SHOW_IN.create(wwin));
+        manager.appendToGroup(GEFActionConstants.GROUP_VIEW, showInSubMenu);
+        
         action = getActionRegistry().getAction(IPageLayout.ID_PROP_SHEET);
-        action.setEnabled(true);
         if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_VIEW, action);
 
         // Alignment Actions

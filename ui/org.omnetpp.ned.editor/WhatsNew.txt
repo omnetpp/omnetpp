@@ -1,5 +1,7 @@
-  + global undo/redo is working if the Property View is the acive view
-  + property sheets do not scroll randomly when a group opened/closed
+  + new icon chooser dialog
+  + added icon chooser dialog in context menu
+  x global undo/redo is working if the Property View is the acive view
+  x property sheets do not scroll randomly when a group opened/closed
 - 070422 ====== A1 version =====
 - 061201
   + double clicking on a top level element opens its base component

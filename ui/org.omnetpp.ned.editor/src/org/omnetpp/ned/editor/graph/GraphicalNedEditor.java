@@ -60,6 +60,7 @@ import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditorPlugin;
+import org.omnetpp.ned.editor.graph.actions.ChooseIconAction;
 import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
 import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
@@ -355,6 +356,10 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         getSelectionActions().add(action.getId());
 
         action = new ConvertToNewFormatAction(this);
+        registry.registerAction(action);
+        getSelectionActions().add(action.getId());
+
+        action = new ChooseIconAction(this);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
 
