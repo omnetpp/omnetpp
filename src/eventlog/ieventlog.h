@@ -33,6 +33,11 @@ class EVENTLOG_API IEventLog
         virtual ~IEventLog() {}
 
         /**
+         * Returns the file reader used to read in events.
+         */
+        virtual FileReader *getFileReader() = 0;
+
+        /**
          * Returns the number of events parsed so far.
          */
         virtual long getNumParsedEvents() = 0;

@@ -15,6 +15,7 @@
 #ifndef __SEQUENCECHARTFACADE_H_
 #define __SEQUENCECHARTFACADE_H_
 
+#include <float.h>
 #include <vector>
 #include <map>
 #include "ievent.h"
@@ -47,7 +48,13 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
 
         IEvent *getTimelineCoordinateSystemOriginEvent() { return eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber); }
         double getNonLinearTimelineCoordinateDelta(double simulationTimeDelta);
-        double getTimelineCoordinate(IEvent *event);
+        /**
+         * Calculates the timeline coordinate for the given event. Returns value from the cache if already there or calculates it
+         * while taking care about the calculation limits.
+         */
+        double getTimelineCoordinate(int64 ptr, double lowerTimelineCoordinateCalculationLimit = -DBL_MAX, double upperTimelineCoordinateCalculationLimit = DBL_MAX);
+        double getTimelineCoordinate(IEvent *event, double lowerTimelineCoordinateCalculationLimit = -DBL_MAX, double upperTimelineCoordinateCalculationLimit = DBL_MAX);
+        double getCachedTimelineCoordinate(IEvent *event);
         double Event_getTimelineCoordinate(int64 ptr);
         void relocateTimelineCoordinateSystem(IEvent *event);
 
@@ -59,15 +66,15 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
          * Timeline coordinate can be given in the range (-infinity, +infinity).
          * Simulation time will be in the range [0, lastEventSimulationTime].
          */
-        double getSimulationTimeForTimelineCoordinate(double timelineCoordinate, bool upperBound = false);
+        double getSimulationTimeForTimelineCoordinate(double timelineCoordinate, bool upperLimit = false);
         /**
          * Simulation time must be in the range [0, lastEventSimulationTime].
          * Timeline coordinate will be in the range [0, lastEventTimelineCoordinate] if the
          * timeline origin is at the first event.
          */
-        double getTimelineCoordinateForSimulationTime(double simulationTime, bool upperBound = false);
+        double getTimelineCoordinateForSimulationTime(double simulationTime, bool upperLimit = false);
 
-        std::vector<int64> *getIntersectingMessageDependencies(int64 startEventPtr, int64 endEventPtr, int lookAroundCount);
+        std::vector<int64> *getIntersectingMessageDependencies(int64 startEventPtr, int64 endEventPtr);
         std::vector<int> getApproximateMessageDependencyCountAdjacencyMatrix(std::map<int, int> *moduleIdToAxisIdMap, int numberOfSamples);
 
     protected:

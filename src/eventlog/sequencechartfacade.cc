@@ -22,6 +22,10 @@
 #include "messagedependency.h"
 #include "sequencechartfacade.h"
 
+static double zero = 0;
+
+static double NaN = zero / zero;
+
 SequenceChartFacade::SequenceChartFacade(IEventLog *eventLog) : EventLogFacade(eventLog)
 {
     timelineCoordinateSystemVersion = 0;
@@ -61,7 +65,13 @@ double SequenceChartFacade::getNonLinearTimelineCoordinateDelta(double simulatio
     return 0.1 + 0.9 * atan(abs(simulationTimeDelta) / nonLinearFocus) / PI * 2;
 }
 
-double SequenceChartFacade::getTimelineCoordinate(IEvent *event)
+double SequenceChartFacade::getTimelineCoordinate(int64 ptr, double lowerTimelineCoordinateCalculationLimit, double upperTimelineCoordinateCalculationLimit)
+{
+    PTR(ptr);
+    return getTimelineCoordinate((IEvent *)ptr, lowerTimelineCoordinateCalculationLimit, upperTimelineCoordinateCalculationLimit);
+}
+
+double SequenceChartFacade::getTimelineCoordinate(IEvent *event, double lowerTimelineCoordinateCalculationLimit, double upperTimelineCoordinateCalculationLimit)
 {
     Assert(event);
     Assert(timelineCoordinateOriginEventNumber != -1);
@@ -96,10 +106,18 @@ double SequenceChartFacade::getTimelineCoordinate(IEvent *event)
                         double simulationTime = currentEvent->getSimulationTime().dbl();
                         double timelineCoordinateDelta = getNonLinearTimelineCoordinateDelta(simulationTime - previousSimulationTime);
 
-                        if (forward)
+                        if (forward) {
                             timelineCoordinate = previousTimelineCoordinate + timelineCoordinateDelta;
-                        else
+
+                            if (timelineCoordinate > upperTimelineCoordinateCalculationLimit)
+                                return NaN;
+                        }
+                        else {
                             timelineCoordinate = previousTimelineCoordinate - timelineCoordinateDelta;
+
+                            if (timelineCoordinate < lowerTimelineCoordinateCalculationLimit)
+                                return NaN;
+                        }
 
                         currentEvent->cachedTimelineCoordinate = timelineCoordinate;
                         currentEvent->cachedTimelineCoordinateSystemVersion = timelineCoordinateSystemVersion;
@@ -121,6 +139,17 @@ double SequenceChartFacade::getTimelineCoordinate(IEvent *event)
     }
 
     return event->cachedTimelineCoordinate;
+}
+
+double SequenceChartFacade::getCachedTimelineCoordinate(IEvent *event)
+{
+    Assert(event);
+    Assert(timelineCoordinateOriginEventNumber != -1);
+
+    if (this->timelineCoordinateSystemVersion > event->cachedTimelineCoordinateSystemVersion)
+        return -1;
+    else
+        return event->cachedTimelineCoordinate;
 }
 
 IEvent *SequenceChartFacade::getEventForNonLinearTimelineCoordinate(double timelineCoordinate, bool &forward)
@@ -240,7 +269,7 @@ void SequenceChartFacade::extractSimulationTimesAndTimelineCoordinates(
     }
 }
 
-double SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double timelineCoordinate, bool upperBound)
+double SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double timelineCoordinate, bool upperLimit)
 {
     double simulationTime;
 
@@ -268,7 +297,7 @@ double SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double timeli
  
                 if (nextEvent) {
                     if (timelineCoordinateDelta == 0) {
-                        if (upperBound)
+                        if (upperLimit)
                             simulationTime = nextEventSimulationTime;
                         else
                             simulationTime = eventSimulationTime;
@@ -292,7 +321,7 @@ double SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double timeli
     return simulationTime;
 }
 
-double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simulationTime, bool upperBound)
+double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simulationTime, bool upperLimit)
 {
     Assert(simulationTime >= 0);
     Assert(simulationTime <= eventLog->getLastEvent()->getSimulationTime().dbl());
@@ -320,7 +349,7 @@ double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simula
 
                 if (nextEvent) {
                     if (simulationTimeDelta == 0) {
-                        if (upperBound)
+                        if (upperLimit)
                             timelineCoordinate = nextEventTimelineCoordinate;
                         else
                             timelineCoordinate = eventTimelineCoordinate;
@@ -341,7 +370,7 @@ double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simula
     return timelineCoordinate;
 }
 
-std::vector<int64> *SequenceChartFacade::getIntersectingMessageDependencies(int64 startEventPtr, int64 endEventPtr, int lookAroundCount)
+std::vector<int64> *SequenceChartFacade::getIntersectingMessageDependencies(int64 startEventPtr, int64 endEventPtr)
 {
     int i;
     IEvent *event;
@@ -349,56 +378,24 @@ std::vector<int64> *SequenceChartFacade::getIntersectingMessageDependencies(int6
     IEvent *startEvent = (IEvent *)startEventPtr;
     IEvent *endEvent = (IEvent *)endEventPtr;
     long startEventNumber = startEvent->getEventNumber();
-    long endEventNumber = endEvent->getEventNumber();
-    long endLookAroundEventNumber = endEventNumber;
 
-    // look after requrested range
-    for (event = endEvent, i = 0; i < lookAroundCount && event; event = event->getNextEvent(), i++) {
+    for (IEvent *event = startEvent;; event = event->getNextEvent()) {
         IMessageDependencyList *causes = event->getCauses();
 
         for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++) {
             IMessageDependency *messageDependency = *it;
-            long eventNumber = messageDependency->getCauseEventNumber();
 
-            // store only if refers inside or before the requested range
-            if (eventNumber <= endEventNumber)
+            if (messageDependency->getCauseEventNumber() < startEventNumber)
                 messageDependencies.insert((int64)messageDependency);
         }
 
-        endLookAroundEventNumber = event->getEventNumber();
-    }
-
-    // look before requrested range
-    for (event = startEvent, i = 0; i < lookAroundCount && event; event = event->getPreviousEvent(), i++) {
         IMessageDependencyList *consequences = event->getConsequences();
 
-        for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++) {
-            IMessageDependency *messageDependency = *it;
-            long eventNumber = messageDependency->getConsequenceEventNumber();
-
-            // store only if refers outside the requested plus look around range
-            if (endLookAroundEventNumber < eventNumber)
-                messageDependencies.insert((int64)messageDependency);
-        }
-    }
-
-    // look at requested range
-    for (IEvent *event = startEvent; event != endEvent; event = event->getNextEvent()) {
-        IMessageDependencyList *causes = event->getCauses();
-
-        for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
+        for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
             messageDependencies.insert((int64)*it);
 
-        IMessageDependencyList *consequences = event->getConsequences();
-
-        for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++) {
-            IMessageDependency *messageDependency = *it;
-            long eventNumber = messageDependency->getConsequenceEventNumber();
-
-            // store only if refers outside the requested plus look around range
-            if (endLookAroundEventNumber < eventNumber)
-                messageDependencies.insert((int64)messageDependency);
-        }
+        if (event == endEvent)
+            break;
     }
 
     std::vector<int64> *result = new std::vector<int64>;
