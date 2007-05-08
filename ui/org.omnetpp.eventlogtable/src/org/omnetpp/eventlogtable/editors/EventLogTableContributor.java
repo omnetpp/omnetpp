@@ -123,14 +123,14 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		separatorAction = new Separator();
 		searchTextAction = createSearchTextAction();
 		gotoEventAction = createGotoEventAction();
-		gotoSimulationTimeAction= createGotoSimulationTimeAction();
-		gotoEventCauseAction= createGotoEventCauseAction();
-		gotoMessageArrivalAction= createGotoMessageArrivalAction();
-		gotoMessageOriginAction= createGotoMessageOriginAction();
-		gotoMessageReuseAction= createGotoMessageReuseAction();
-		bookmarkAction= createBookmarkAction();
+		gotoSimulationTimeAction = createGotoSimulationTimeAction();
+		gotoEventCauseAction = createGotoEventCauseAction();
+		gotoMessageArrivalAction = createGotoMessageArrivalAction();
+		gotoMessageOriginAction = createGotoMessageOriginAction();
+		gotoMessageReuseAction = createGotoMessageReuseAction();
+		bookmarkAction = createBookmarkAction();
 		filterModeAction = createFilterModeAction();
-		displayModeAction= createDisplayModeAction();
+		displayModeAction = createDisplayModeAction();
 	}
 
 	private void update() {

@@ -101,6 +101,7 @@ public class HierarchicalAxisOrderByMinimizingCost extends AbstractAxisOrderByMi
 	/**
 	 * Just a convenient helper function to return an empty collection if there's no value for the given key.
 	 */
+	@SuppressWarnings("unchecked")
 	private Collection getAxisModuleIndicesForSubmodule(MultiValueMap submoduleToAxisIndexes, ModuleTreeItem submodule) {
 		Collection collection = submoduleToAxisIndexes.getCollection(submodule);
 		

@@ -2,7 +2,9 @@ package org.omnetpp.sequencechart.editors;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuCreator;
@@ -35,8 +37,8 @@ import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.IEvent;
+import org.omnetpp.eventlog.engine.IMessageDependency;
 import org.omnetpp.eventlog.engine.IntVector;
-import org.omnetpp.eventlog.engine.MessageDependency;
 import org.omnetpp.scave.engine.EnumType;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -81,6 +83,8 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 
 	protected SequenceChartAction balancedAxesAction;
 
+	protected SequenceChartAction bookmarkAction;
+
 	protected StatusLineContributionItem timelineModeStatus;
 
 	public SequenceChartContributor() {
@@ -98,6 +102,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		this.zoomOutAction = createZoomOutAction();
 		this.denseAxesAction = createDenseAxesAction();
 		this.balancedAxesAction = createBalancedAxesAction();
+		this.bookmarkAction = createBookmarkAction();
 		
 		this.timelineModeStatus = createTimelineModeStatus();
 
@@ -120,7 +125,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			public void menuAboutToShow(IMenuManager menuManager) {
 				// dynamic menu
 				ArrayList<IEvent> events = new ArrayList<IEvent>();
-				ArrayList<MessageDependency> msgs = new ArrayList<MessageDependency>();
+				ArrayList<IMessageDependency> msgs = new ArrayList<IMessageDependency>();
 				Point p = sequenceChart.toControl(sequenceChart.getDisplay().getCursorLocation());
 				sequenceChart.collectStuffUnderMouse(p.x, p.y, events, msgs);
 
@@ -138,7 +143,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 					menuManager.add(separatorAction);
 
 				// messages submenu
-				for (final MessageDependency msg : msgs) {
+				for (final IMessageDependency msg : msgs) {
 					IMenuManager subMenuManager = new MenuManager(sequenceChart.getMessageText(msg));
 					menuManager.add(subMenuManager);
 
@@ -181,6 +186,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 				menuManager.add(denseAxesAction);
 				menuManager.add(balancedAxesAction);
 				menuManager.add(separatorAction);
+				menuManager.add(bookmarkAction);
 			}
 		});
 	}
@@ -486,29 +492,29 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		};
 	}
 
-	private SequenceChartAction createZoomToMessageAction(final MessageDependency msg) {
+	private SequenceChartAction createZoomToMessageAction(final IMessageDependency messageDependency) {
 		return new SequenceChartAction("Zoom to message", SWT.PUSH) {
 			@Override
 			public void run() {
-				sequenceChart.zoomToSimulationTimeRange(msg.getCauseEvent().getSimulationTime().doubleValue(), msg.getConsequenceEvent().getSimulationTime().doubleValue(), (int)(sequenceChart.getViewportWidth() * 0.1));
+				sequenceChart.zoomToMessageDependency(messageDependency);
 			}
 		};
 	}
 
-	private SequenceChartAction createGotoCauseAction(final MessageDependency msg) {
+	private SequenceChartAction createGotoCauseAction(final IMessageDependency messageDependency) {
 		return new SequenceChartAction("Goto cause event", SWT.PUSH) {
 			@Override
 			public void run() {
-				sequenceChart.gotoElement(msg.getCauseEvent());
+				sequenceChart.gotoElement(messageDependency.getCauseEvent());
 			}
 		};
 	}
 
-	private SequenceChartAction createGotoConsequenceAction(final MessageDependency msg) {
+	private SequenceChartAction createGotoConsequenceAction(final IMessageDependency messageDependency) {
 		return new SequenceChartAction("Goto consequence event", SWT.PUSH) {
 			@Override
 			public void run() {
-				sequenceChart.gotoElement(msg.getConsequenceEvent());
+				sequenceChart.gotoElement(messageDependency.getConsequenceEvent());
 			}
 		};
 	}
@@ -595,6 +601,31 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 						sequenceChart.setAxisRenderer(axisModule, new AxisVectorBarRenderer(sequenceChart, names, data));
 					}
 				}
+			}
+		};
+	}
+
+	private SequenceChartAction createBookmarkAction() {
+		return new SequenceChartAction("Bookmark", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_BOOKMARK)) {
+			@Override
+			public void run() {
+				try {
+					EventLogInput eventLogInput = (EventLogInput)sequenceChart.getInput();
+					IMarker marker = eventLogInput.getFile().createMarker(IMarker.BOOKMARK);
+					IEvent event = sequenceChart.getSelectionEvent();
+					marker.setAttribute(IMarker.LOCATION, "# " + event.getEventNumber());
+					marker.setAttribute("EventNumber", event.getEventNumber());
+					update();
+					sequenceChart.redraw();
+				}
+				catch (CoreException e) {
+					throw new RuntimeException(e);
+				}
+			}
+
+			@Override
+			public void update() {
+				setEnabled(sequenceChart.getSelectionEvent() != null);
 			}
 		};
 	}

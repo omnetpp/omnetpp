@@ -8,7 +8,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
@@ -56,7 +59,6 @@ import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.IMessageDependency;
 import org.omnetpp.eventlog.engine.Int64Vector;
-import org.omnetpp.eventlog.engine.MessageDependency;
 import org.omnetpp.eventlog.engine.MessageDependencyKind;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
@@ -89,7 +91,7 @@ public class SequenceChart
 	extends CachingCanvas
 	implements IVirtualContentWidget<IEvent>, ISelectionProvider
 {
-	private static final boolean debug = false;
+	private static final boolean debug = true;
 
 	/*************************************************************************************
 	 * DRAWING PARAMETERS
@@ -113,8 +115,10 @@ public class SequenceChart
 	private static final Color EVENT_NUMBER_BACKGROUND_COLOR = ColorFactory.asColor("white");
 
 	private static final Color EVENT_SELECTION_COLOR = ColorFactory.asColor("red");
+	private static final Color EVENT_BOOKMARK_COLOR = ColorFactory.asColor("cyan");
 
-	private static final Color ARROWHEAD_COLOR = null; // defaults to line color
+	private static final Color ARROW_HEAD_COLOR = null; // defaults to line color
+	private static final Color LONG_ARROW_HEAD_COLOR = ColorFactory.asColor("white"); // defaults to line color	
 	private static final Color MESSAGE_LABEL_COLOR = null; // defaults to line color
 	
 	private static final Color MESSAGE_SEND_COLOR = ColorFactory.asColor("blue");
@@ -129,15 +133,17 @@ public class SequenceChart
 	private static final int MAX_TOOLTIP_LINES = 30;
 	private static final int ANTIALIAS_TURN_ON_AT_MSEC = 100;
 	private static final int ANTIALIAS_TURN_OFF_AT_MSEC = 300;
-	private static final int MOUSE_TOLERANCE = 2;
+	private static final int MOUSE_TOLERANCE = 3;
 
 	private static final int MINIMUM_SELF_MESSAGE_ARROW_HEIGHT = 20; // vertical radius of ellipse for self message arrows
 	private static final int MINIMUM_REUSE_MESSAGE_ARROW_HEIGHT = 10; // same for reusing messages
+	private static final int LONG_MESSAGE_ARROW_WIDTH = 40; // width for too long message lines and half ellipses
 	private static final int ARROWHEAD_LENGTH = 10; // length of message arrow head
 	private static final int ARROWHEAD_WIDTH = 7; // width of message arrow head
-	private static final int AXISLABEL_DISTANCE = 15; // distance of timeline label above axis
+	private static final int MINIMUM_AXIS_SPACING_TO_DISPLAY_LABELS = 16; // minimum spacing of timeline label above axis
 	private static final int EVENT_SELECTION_RADIUS = 10; // radius of event selection mark circle
 	private static final int TICK_SPACING = 100; // space between ticks in pixels
+	private static final int AXIS_OFFSET = 20;  // extra y distance before and after first and last axes
 	private static final int GUTTER_HEIGHT = 17; // height of top and bottom gutter
 
 	private static Font font = JFaceResources.getDefaultFont();
@@ -154,7 +160,6 @@ public class SequenceChart
 	
 	private double pixelPerTimelineCoordinate = -1;
 	private boolean antiAlias = true;  // antialiasing -- this gets turned on/off automatically
-	private int axisOffset = 20;  // extra y distance before and after first and last axes
 	private int axisSpacing = -1; // y distance between two axes
 	private AxisSpacingMode axisSpacingMode = AxisSpacingMode.AUTO;
 
@@ -167,7 +172,8 @@ public class SequenceChart
 	private DefaultInformationControl tooltipWidget; // the current tooltip (Note: SWT's Tooltip cannot be used as it wraps lines)
 
 	private boolean isDragging;
-	private int dragStartX = -1, dragStartY = -1; // temporary variables for drag handling
+	private int dragStartX = -1, dragStartY = -1, dragDeltaX, dragDeltaY; // temporary variables for drag handling
+	private long dragStartTime;
 
 	private ArrayList<BigDecimal> ticks; // a list of simulation times drawn on the axis as tick marks
 	private BigDecimal tickPrefix;
@@ -178,8 +184,6 @@ public class SequenceChart
 	private int[] axisModuleYs; // top y coordinates of axis bounding boxes
 	private HashMap<Integer, Integer> moduleIdToAxisModuleIndexMap = new HashMap<Integer, Integer>();
 	private boolean invalidVirtualSize = true;
-
-	private static Rectangle TEMPORARY_RECTANGLE = new Rectangle();  // tmp var for local calculations (a second Rectangle.SINGLETON)
 
 	/*************************************************************************************
 	 * SELECTION STATE
@@ -267,7 +271,7 @@ public class SequenceChart
 					gotoBegin();
 				else if (e.keyCode == SWT.END)
 					gotoEnd();
-				else if (e.keyCode == SWT.KEYPAD_ADD || e.character == '+')
+				else if (e.keyCode == SWT.KEYPAD_ADD || e.character == '+' || e.character == '=')
 					zoomIn();
 				else if (e.keyCode == SWT.KEYPAD_SUBTRACT || e.character == '-')
 					zoomOut();
@@ -506,7 +510,7 @@ public class SequenceChart
 		ScrollBar horizontalBar = getHorizontalBar();
 		horizontalBar.setMinimum(0);
 
-		long[] eventPtrRange = getFirstLastEventInPixelRange(0, getViewportWidth());
+		long[] eventPtrRange = getFirstLastEventForPixelRange(0, getViewportWidth());
 
 		if (eventLog != null && eventPtrRange[0] != 0 && eventPtrRange[1] != 0 &&
 			(sequenceChartFacade.Event_getPreviousEvent(eventPtrRange[0]) != 0 || sequenceChartFacade.Event_getNextEvent(eventPtrRange[1]) != 0))
@@ -531,7 +535,7 @@ public class SequenceChart
 
 	@Override
 	protected void adjustHorizontalScrollBar() {
-		long[] eventPtrRange = getFirstLastEventInPixelRange(0, getViewportWidth());
+		long[] eventPtrRange = getFirstLastEventForPixelRange(0, getViewportWidth());
 		long startEventPtr = eventPtrRange[0];
 		long endEventPtr = eventPtrRange[1];
 		double topPercentage = startEventPtr == 0 ? 0 : eventLog.getApproximatePercentageForEventNumber(sequenceChartFacade.Event_getEventNumber(startEventPtr));
@@ -592,7 +596,7 @@ public class SequenceChart
 	}			
 
 	public void scroll(int numberOfEvents) {
-		long[] eventPtrRange = getFirstLastEventInPixelRange(0, getViewportWidth());
+		long[] eventPtrRange = getFirstLastEventForPixelRange(0, getViewportWidth());
 		long startEventPtr = eventPtrRange[0];
 		long endEventPtr = eventPtrRange[1];
 		long eventPtr;
@@ -619,7 +623,7 @@ public class SequenceChart
 	public void scrollToElement(IEvent event, int viewportX) {
 		int d = EVENT_SELECTION_RADIUS * 2;
 
-		long[] eventPtrRange = getFirstLastEventInPixelRange(0, getViewportWidth());
+		long[] eventPtrRange = getFirstLastEventForPixelRange(0, getViewportWidth());
 		long startEventPtr = eventPtrRange[0];
 		long endEventPtr = eventPtrRange[1];
 		boolean found = false;
@@ -682,10 +686,14 @@ public class SequenceChart
 	}
 
 	public void moveSelection(int numberOfEvents) {
-		IEvent neighbourEvent = eventLog.getNeighbourEvent(getSelectionEvent(), numberOfEvents);
-
-		if (neighbourEvent != null)
-			gotoElement(neighbourEvent);
+		IEvent selectionEvent = getSelectionEvent();
+		
+		if (selectionEvent != null) {
+			IEvent neighbourEvent = eventLog.getNeighbourEvent(selectionEvent, numberOfEvents);
+	
+			if (neighbourEvent != null)
+				gotoElement(neighbourEvent);
+		}
 	}
 
 	public void gotoBegin() {
@@ -712,7 +720,7 @@ public class SequenceChart
 	}
 
 	public void gotoClosestElement(IEvent event) {
-		// TODO:
+		// TODO: find the closest that matches the filter if any
 		gotoElement(event);
 	}
 
@@ -790,6 +798,10 @@ public class SequenceChart
 		}
 		else
 			zoomToSimulationTimeRange(startSimulationTime, endSimulationTime);
+	}
+
+	public void zoomToMessageDependency(IMessageDependency messageDependency) {
+		zoomToSimulationTimeRange(messageDependency.getCauseEvent().getSimulationTime().doubleValue(), messageDependency.getConsequenceEvent().getSimulationTime().doubleValue(), (int)(getViewportWidth() * 0.1));
 	}
 
 	/**
@@ -967,7 +979,7 @@ public class SequenceChart
 				if (axisModulePositions[j] < axisModulePositions[i])
 					y += axisSpacing + axisRenderers[j].getHeight();
 
-			axisModuleYs[i] = axisOffset + axisSpacing + y;
+			axisModuleYs[i] = AXIS_OFFSET + axisSpacing + y;
 		}
 	}
 	
@@ -975,15 +987,12 @@ public class SequenceChart
 	 * Distributes window space among axes evenly.
 	 */
 	private void balanceAxisSpacing() {
-		int dy = 0;
+		int height = getSumAxesHeight();
 		
-		for (IAxisRenderer axisRenderer : axisRenderers)
-			dy += axisRenderer.getHeight();
-
 		if (axisModules.size() == 0)
 			setAxisSpacing(0);
 		else
-			setAxisSpacing(Math.max(AXISLABEL_DISTANCE + 1, (getViewportHeight() - axisOffset * 2 - dy) / axisModules.size()));
+			setAxisSpacing(Math.max(MINIMUM_AXIS_SPACING_TO_DISPLAY_LABELS, (getViewportHeight() - AXIS_OFFSET * 2 - height + MINIMUM_AXIS_SPACING_TO_DISPLAY_LABELS) / axisModules.size()));
 	}
 
 	/**
@@ -1016,11 +1025,18 @@ public class SequenceChart
 	 * Calculates virtual size of canvas based on the last event's timeline coordinate.
 	 */
 	private void calculateVirtualSize() {
-		long height = axisModules.size() * axisSpacing + axisOffset * 2;
-		for (int i = 0; i < axisRenderers.length; i++)
-			height += axisRenderers[i].getHeight();
+		int height = getSumAxesHeight() + axisModules.size() * axisSpacing + AXIS_OFFSET * 2 - MINIMUM_AXIS_SPACING_TO_DISPLAY_LABELS;
 		setVirtualSize(getViewportWidth() * eventLog.getApproximateNumberOfEvents(), height);
 		invalidVirtualSize = false;
+	}
+
+	private int getSumAxesHeight() {
+		int height = 0;
+
+		for (IAxisRenderer axisRenderer : axisRenderers)
+			height += axisRenderer.getHeight();
+		
+		return height;
 	}
 
 	public void clearCanvasCacheAndRedraw() {
@@ -1047,11 +1063,16 @@ public class SequenceChart
 	 */
 
 	@Override
-	protected void beforePaint(GC gc) {
+	protected void paint(GC gc) {
 		if (eventLogInput != null) {
 			calculateStuff();
 			calculateTicks();
 		}
+
+		super.paint(gc);
+
+		if (debug)
+			System.out.println("Read " + eventLog.getFileReader().getNumReadBytes() + " bytes, " + eventLog.getFileReader().getNumReadLines() + " lines, " + eventLog.getNumParsedEvents() + " events from " + eventLogInput.getFile().getName());
 	}
 
 	@Override
@@ -1074,12 +1095,16 @@ public class SequenceChart
 			gc.setAntialias(antiAlias ? SWT.ON : SWT.OFF);
 			graphics.translate(0, GUTTER_HEIGHT);
 			drawAxisLabels(graphics);
+	        drawEventBookmarks(graphics);
 	        drawEventSelectionMarks(graphics);
 	        graphics.translate(0, -GUTTER_HEIGHT);
 
 	        drawGutters(gc);
-	        drawMouseTick(gc);
+	        drawTickUnderMouse(gc);
 	        drawInfo(gc);
+
+	        graphics.translate(0, GUTTER_HEIGHT);
+	        drawStuffUnderMouse(graphics);
 
 	        graphics.dispose();
 		}
@@ -1140,7 +1165,7 @@ public class SequenceChart
 			double startSimulationTime = getSimulationTimeForViewportCoordinate(Rectangle.SINGLETON.x);
 			double endSimulationTime = getSimulationTimeForViewportCoordinate(Rectangle.SINGLETON.right());
 			int extraClipping = (showMessageNames || showEventNumbers) ? 300 : 100;
-			long[] eventPtrRange = getFirstLastEventInPixelRange(Rectangle.SINGLETON.x - extraClipping, Rectangle.SINGLETON.right() + extraClipping);
+			long[] eventPtrRange = getFirstLastEventForPixelRange(Rectangle.SINGLETON.x - extraClipping, Rectangle.SINGLETON.right() + extraClipping);
 			long startEventPtr = eventPtrRange[0];
 			long endEventPtr = eventPtrRange[1];
 			
@@ -1149,7 +1174,7 @@ public class SequenceChart
 
 			drawZeroSimulationTimeRegions(graphics, startEventPtr, endEventPtr);
 			drawAxes(graphics, startSimulationTime, endSimulationTime);
-	        drawMessageArrows(graphics, startEventPtr, endEventPtr);
+	        drawMessageArrows(graphics);
 	        drawEvents(graphics, startEventPtr, endEventPtr);
 	
 	        long redrawMillis = System.currentTimeMillis() - startMillis;
@@ -1224,12 +1249,18 @@ public class SequenceChart
 	/**
 	 * Draws all message arrows which have visual representation in the given event range.
 	 */
-	private void drawMessageArrows(Graphics graphics, long startEventPtr, long endEventPtr) {
-		VLineBuffer vlineBuffer = new VLineBuffer();
-		Int64Vector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr, 100);
+	private void drawMessageArrows(Graphics graphics) {
+		long[] eventPtrRange = getFirstLastEventPtrForMessageDependencies();
+		long startEventPtr = eventPtrRange[0];
+		long endEventPtr = eventPtrRange[1];
+		Int64Vector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
+		
+		if (debug)
+			System.out.println("Drawing " + messageDependencies.size() + " message dependencies");
 
+		VLineBuffer vlineBuffer = new VLineBuffer();
 		for (int i = 0; i < messageDependencies.size(); i++)
-			drawMessageArrow(graphics, messageDependencies.get(i), vlineBuffer);
+			drawOrFitMessageArrow(messageDependencies.get(i), -1, -1, -1, graphics, vlineBuffer, startEventPtr, endEventPtr);
 	}
 
 	/**
@@ -1305,12 +1336,48 @@ public class SequenceChart
 	/**
 	 * Draws a tick under the mouse.
 	 */
-	private void drawMouseTick(GC gc) {
+	private void drawTickUnderMouse(GC gc) {
 		Point p = toControl(Display.getDefault().getCursorLocation());
 		
 		if (0 <= p.x && p.x < getViewportWidth() && 0 <= p.y && p.y < getViewportHeight() + GUTTER_HEIGHT * 2) {
 			BigDecimal tick = calculateTick(p.x, 1);
 			drawTick(gc, MOUSE_TICK_LINE_COLOR, INFO_BACKGROUND_COLOR, tick, p.x, true);
+		}
+	}
+
+	/**
+	 * Draws the message arrows under the mouse with a tick line.
+	 */
+	private void drawStuffUnderMouse(Graphics graphics) {
+		Point p = toControl(Display.getDefault().getCursorLocation());
+		
+		ArrayList<IEvent> events = new ArrayList<IEvent>();
+		ArrayList<IMessageDependency> messageDependencies = new ArrayList<IMessageDependency>();
+		collectStuffUnderMouse(p.x, p.y, events, messageDependencies);
+
+		// 1) if there are events under them mouse do nothing
+		if (events.size() > 0) {
+			// TODO: or maybe not?
+		}
+		// 2) no events: highlight message dependencies
+		else if (messageDependencies.size() >= 1) {
+			long[] eventPtrRange = getFirstLastEventPtrForMessageDependencies();
+			long startEventPtr = eventPtrRange[0];
+			long endEventPtr = eventPtrRange[1];
+	
+			VLineBuffer vlineBuffer = new VLineBuffer();
+			graphics.setLineWidth(2);
+			for (IMessageDependency messageDependency : messageDependencies)
+				drawOrFitMessageArrow(messageDependency.getCPtr(), -1, -1, -1, graphics, vlineBuffer, startEventPtr, endEventPtr);
+		}
+		else {
+			// 3) no events or message arrows: highlight axis label
+			ModuleTreeItem axisModule = findAxisAt(p.y);
+			if (axisModule != null) {
+				graphics.setLineWidth(2);
+				int i = moduleIdToAxisModuleIndexMap.get(axisModule.getModuleId());
+				drawAxisLabel(graphics, i, axisModule);
+			}
 		}
 	}
 
@@ -1359,7 +1426,7 @@ public class SequenceChart
 	 * Draws the visual representation of selections around events.
 	 */
 	private void drawEventSelectionMarks(Graphics graphics) {
-		long[] eventPtrRange = getFirstLastEventInPixelRange(0 - EVENT_SELECTION_RADIUS, getViewportWidth() + EVENT_SELECTION_RADIUS);
+		long[] eventPtrRange = getFirstLastEventForPixelRange(0 - EVENT_SELECTION_RADIUS, getViewportWidth() + EVENT_SELECTION_RADIUS);
 		long startEventPtr = eventPtrRange[0];
 		long endEventPtr = eventPtrRange[1];
 		int startEventNumber = sequenceChartFacade.Event_getEventNumber(startEventPtr);
@@ -1371,7 +1438,8 @@ public class SequenceChart
 		if (selectedEvents != null) {
 			graphics.setLineStyle(SWT.LINE_SOLID);
 		    graphics.setForegroundColor(EVENT_SELECTION_COLOR);
-			for (IEvent selectedEvent : selectedEvents) {
+
+		    for (IEvent selectedEvent : selectedEvents) {
 		    	if (startEventNumber <= selectedEvent.getEventNumber() && selectedEvent.getEventNumber() <= endEventNumber)
 		    	{
 		    		int x = getEventXViewportCoordinate(selectedEvent.getCPtr());
@@ -1383,103 +1451,208 @@ public class SequenceChart
 	}
 
 	/**
-	 * Draws axis labels if there's enough space between axes.
+	 * Draw bookmarks associated with the input file.
 	 */
-	private void drawAxisLabels(Graphics graphics) {
-		if (AXISLABEL_DISTANCE < axisSpacing) {
-			graphics.setForegroundColor(LABEL_COLOR);
+	private void drawEventBookmarks(Graphics graphics) {
+		try {
+			if (eventLogInput.getFile() != null) {
+				IMarker[] markers = eventLogInput.getFile().findMarkers(IMarker.BOOKMARK, true, IResource.DEPTH_ZERO);
+				
+				long[] eventPtrRange = getFirstLastEventForPixelRange(0 - EVENT_SELECTION_RADIUS, getViewportWidth() + EVENT_SELECTION_RADIUS);
+				long startEventPtr = eventPtrRange[0];
+				long endEventPtr = eventPtrRange[1];
+				int startEventNumber = sequenceChartFacade.Event_getEventNumber(startEventPtr);
+				int endEventNumber = sequenceChartFacade.Event_getEventNumber(endEventPtr);
 
-			for (int i = 0; i < axisModules.size(); i++) {
-				ModuleTreeItem treeItem = axisModules.get(i);
-				int y = axisModuleYs[i] - (int)getViewportTop();
-				String label = treeItem.getModuleFullPath();
-				graphics.drawText(label, 5, y - AXISLABEL_DISTANCE);
+				graphics.setLineStyle(SWT.LINE_SOLID);
+			    graphics.setForegroundColor(EVENT_BOOKMARK_COLOR);
+				
+				for (int i = 0; i < markers.length; i++) {
+					int eventNumber = markers[i].getAttribute("EventNumber", -1);
+	
+					if (startEventNumber <= eventNumber && eventNumber <= endEventNumber) {
+						IEvent bookmarkedEvent = eventLog.getEventForEventNumber(eventNumber);
+			    		int x = getEventXViewportCoordinate(bookmarkedEvent.getCPtr());
+			    		int y = getEventYViewportCoordinate(bookmarkedEvent.getCPtr());
+			    		graphics.drawOval(x - EVENT_SELECTION_RADIUS, y - EVENT_SELECTION_RADIUS, EVENT_SELECTION_RADIUS * 2 + 1, EVENT_SELECTION_RADIUS * 2 + 1);
+					}
+				}
 			}
+		}
+		catch (CoreException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
 	/**
-	 * Draws a single message arrow represented by the given message dependency.
-	 * The line buffer is used to skip drawing message arrows where there is one already drawn. (dense arrows)
+	 * Draws axis labels if there's enough space between axes.
 	 */
-	private void drawMessageArrow(Graphics graphics, long messageDependencyPtr, VLineBuffer vlineBuffer) {
+	private void drawAxisLabels(Graphics graphics) {
+		if (MINIMUM_AXIS_SPACING_TO_DISPLAY_LABELS <= axisSpacing) {
+			for (int i = 0; i < axisModules.size(); i++) {
+				ModuleTreeItem treeItem = axisModules.get(i);
+				drawAxisLabel(graphics, i, treeItem);
+			}
+		}
+	}
+
+	private void drawAxisLabel(Graphics graphics, int i, ModuleTreeItem treeItem) {
+		int y = axisModuleYs[i] - (int)getViewportTop();
+		String label = treeItem.getModuleFullPath();
+		graphics.setForegroundColor(LABEL_COLOR);
+		graphics.drawText(label, 5, y - MINIMUM_AXIS_SPACING_TO_DISPLAY_LABELS + 1);
+	}
+	
+	/**
+	 * Either draws to the graphics or matches to a point a single message arrow represented by the given message dependency.
+	 * It is either drawn as a straight line from the cause event to the consequence event or as a half ellipse if it is a self message.
+	 * A message dependency pointing too far away in the figure is drawn by a broken dotted straight line or a dotted half ellipse.
+	 * Since it is meaningless and expensive to calculate the exact shapes these are drawn differently.
+	 * 
+	 * The line buffer is used to skip drawing message arrows where there is one already drawn. (very dense arrows)
+	 */
+	private boolean drawOrFitMessageArrow(long messageDependencyPtr, int fitX, int fitY, int tolerance, Graphics graphics, VLineBuffer vlineBuffer, long startEventPtr, long endEventPtr) {
+		Assert.isTrue((graphics != null && vlineBuffer != null) || tolerance != -1);
+		
 		long causeEventPtr = sequenceChartFacade.MessageDependency_getCauseEvent(messageDependencyPtr);
 		long consequenceEventPtr = sequenceChartFacade.MessageDependency_getConsequenceEvent(messageDependencyPtr);
 		int messageDependencyKind = sequenceChartFacade.MessageDependency_getKind(messageDependencyPtr);
-		boolean isMessageSend = messageDependencyKind == MessageDependencyKind.SEND;
 
 		if (messageDependencyKind == MessageDependencyKind.REUSE && !showReuseMessages)
-			return;
+			return false;
 
-		// TODO: we probably do not need this, it's checked in C++ anyway
+		// events may be omitted from the log
 		if (causeEventPtr == 0 || consequenceEventPtr == 0)
-			return;
-		
-        int x1 = getEventXViewportCoordinate(causeEventPtr);
-        int y1 = getEventYViewportCoordinate(causeEventPtr);
-        int x2 = getEventXViewportCoordinate(consequenceEventPtr);
-        int y2 = getEventYViewportCoordinate(consequenceEventPtr);
+			return false;
 
-        // check whether we'll need to draw an arrowhead
-        boolean needArrowHead = showArrowHeads;
-		if (needArrowHead) {
-			// optimization: check if arrowhead is in the clipping rect (don't draw it if not)
-			TEMPORARY_RECTANGLE.setLocation(x2,y2); 
-			TEMPORARY_RECTANGLE.expand(2*ARROWHEAD_LENGTH, 2*ARROWHEAD_LENGTH);
-			graphics.getClip(Rectangle.SINGLETON);
-			needArrowHead = Rectangle.SINGLETON.intersects(TEMPORARY_RECTANGLE);
-		}
-		
-		// message name (as label on the arrow)
-		String arrowLabel = null;
-		if (showMessageNames) {
-			switch (messageDependencyKind ) {
-				case MessageDependencyKind.SEND:
-					arrowLabel = sequenceChartFacade.MessageDependency_getMessageName(messageDependencyPtr);
-					break;
-				case MessageDependencyKind.REUSE:
-					arrowLabel = "Reuse";
-					break;
-				case MessageDependencyKind.FILTERED:
-					arrowLabel = sequenceChartFacade.FilteredMessageDependency_getBeginMessageName(messageDependencyPtr) +
-								 " -> " +
-								 sequenceChartFacade.FilteredMessageDependency_getEndMessageName(messageDependencyPtr);
-					break;
-			}
-		}
+		// calculate pixel coordinates for message arrow endings
+		int startEventNumber = sequenceChartFacade.Event_getEventNumber(startEventPtr);
+		int endEventNumber = sequenceChartFacade.Event_getEventNumber(endEventPtr);
+		int causeEventNumber = sequenceChartFacade.Event_getEventNumber(causeEventPtr);
+		int consequenceEventNumber = sequenceChartFacade.Event_getEventNumber(consequenceEventPtr);
+        int x1, y1 = getEventYViewportCoordinate(causeEventPtr);
+        int x2, y2 = getEventYViewportCoordinate(consequenceEventPtr);
+        int invalid = -Integer.MAX_VALUE;
 
-		// line color and style depends on message type
-		if (isMessageSend) {
-			graphics.setForegroundColor(MESSAGE_SEND_COLOR);
-			graphics.setLineStyle(SWT.LINE_SOLID);
-		}
-		else {
-			graphics.setForegroundColor(MESSAGE_REUSE_COLOR);
-			graphics.setLineDash(DOTTED_LINE_PATTERN); // SWT.LINE_DOT style is not what we want
-		}
+        // calculate horizontal coordinates based on the maximum width
+        double timelineCoordinateLimit = getMaximumMessageDependencyDisplayWidth() / pixelPerTimelineCoordinate;
+        if (startEventNumber <= causeEventNumber && causeEventNumber <= endEventNumber) {
+        	x1 = getEventXViewportCoordinate(causeEventPtr);
+        	double causeTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(causeEventPtr);
+        	double consequenceTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(consequenceEventPtr, -Double.MAX_VALUE, causeTimelineCoordinate + timelineCoordinateLimit);
 
-		// test if self-message (y1==y2) or not
-		if (y1==y2) {
-			int halfEllipseHeight = getArrowHalfEllipseHeight(isMessageSend ? MINIMUM_SELF_MESSAGE_ARROW_HEIGHT : MINIMUM_REUSE_MESSAGE_ARROW_HEIGHT);
-			
-			if (x1==x2) {
-				// draw vertical line (as zero-width half ellipse) 
-				if (vlineBuffer.vlineContainsNewPixel(x1, y1-halfEllipseHeight, y1))
-					graphics.drawLine(x1, y1, x1, y1 - halfEllipseHeight);
+        	if (Double.isNaN(consequenceTimelineCoordinate) || consequenceTimelineCoordinate > causeTimelineCoordinate + timelineCoordinateLimit)
+  		  		x2 = invalid;
+  		  	else
+  	        	x2 = getEventXViewportCoordinate(consequenceEventPtr);
+        }
+        else {
+        	Assert.isTrue(startEventNumber <= consequenceEventNumber && consequenceEventNumber <= endEventNumber);
+        	x2 = getEventXViewportCoordinate(consequenceEventPtr);
+        	double consequenceTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(consequenceEventPtr);
+        	double causeTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(causeEventPtr, consequenceTimelineCoordinate - timelineCoordinateLimit, Double.MAX_VALUE);
 
-				if (needArrowHead)
-					drawArrowHead(graphics, x1, y1, 0, 1);
+        	if (Double.isNaN(causeTimelineCoordinate) || causeTimelineCoordinate < consequenceTimelineCoordinate - timelineCoordinateLimit)
+  		  		x1 = invalid;
+  		  	else
+  	        	x1 = getEventXViewportCoordinate(causeEventPtr);
+        }
 
-				if (showMessageNames)
-					drawMessageArrowLabel(graphics, arrowLabel, x1, y1, 2, -15);
+        // at least one of the events must be in range
+        Assert.isTrue(x1 != invalid || x2 != invalid);
+
+		// line color and style depends on message kind
+		if (graphics != null) {
+			if (messageDependencyKind == MessageDependencyKind.SEND) {
+				graphics.setForegroundColor(MESSAGE_SEND_COLOR);
+				graphics.setLineStyle(SWT.LINE_SOLID);
 			}
 			else {
-				// draw half ellipse
-				Rectangle.SINGLETON.setLocation(x1, y1 - halfEllipseHeight);
-				Rectangle.SINGLETON.setSize(x2-x1, halfEllipseHeight * 2);
-				graphics.drawArc(Rectangle.SINGLETON, 0, 180);
+				graphics.setForegroundColor(MESSAGE_REUSE_COLOR);
+				graphics.setLineDash(DOTTED_LINE_PATTERN); // SWT.LINE_DOT style is not what we want
+			}
+		}
+
+		// test if self-message
+		if (y1 == y2) {
+			int halfEllipseHeight = getArrowHalfEllipseHeight(messageDependencyKind == MessageDependencyKind.SEND ? MINIMUM_SELF_MESSAGE_ARROW_HEIGHT : MINIMUM_REUSE_MESSAGE_ARROW_HEIGHT);
+
+			// test if it is a vertical line (as zero-width half ellipse)
+			if (x1 == x2) {
+				y2 = y1 - halfEllipseHeight;
+
+				if (graphics != null) {
+					if (vlineBuffer.vlineContainsNewPixel(x1, y2, y1))
+						graphics.drawLine(x1, y1, x2, y2);
+
+					if (showArrowHeads)
+						drawArrowHead(graphics, null, x1, y1, 0, 1);
+	
+					if (showMessageNames)
+						drawMessageArrowLabel(graphics, messageDependencyPtr, x1, y1, 2, -15);
+				}
+				else
+					return lineContainsPoint(x1, y1, x2, y2, fitX, fitY, tolerance);
+			}
+			else {
+				int quarterEllipseWidth = LONG_MESSAGE_ARROW_WIDTH;
+				boolean showArrowHeads = this.showArrowHeads;
+				int xm, ym = y1 - halfEllipseHeight;
+
+				// cause is too far away
+				if (x1 == invalid) {
+					x1 = x2 - quarterEllipseWidth * 2;
+					xm = x1 + quarterEllipseWidth;
+
+					// draw quarter ellipse starting with a horizontal straight line from the left
+					Rectangle.SINGLETON.setLocation(x2 - quarterEllipseWidth * 2, y1 - halfEllipseHeight);
+					Rectangle.SINGLETON.setSize(quarterEllipseWidth * 2, halfEllipseHeight * 2);
+
+					if (graphics != null) {
+						graphics.drawArc(Rectangle.SINGLETON, 0, 90);
+						graphics.setLineStyle(SWT.LINE_DOT);
+						graphics.drawLine(x1, ym, xm, ym);
+					}
+					else
+						return lineContainsPoint(x1, ym, xm, ym, fitX, fitY, tolerance) ||
+						   halfEllipseContainsPoint(1, x1, x2, y1, halfEllipseHeight, fitX, fitY, tolerance);
+				}
+				// consequence is too far away
+				else if (x2 == invalid) {
+					x2 = x1 + quarterEllipseWidth * 2;
+					xm = x1 + quarterEllipseWidth;
+
+					// draw quarter ellipse ending in a horizontal straight line to the right
+					Rectangle.SINGLETON.setLocation(x1, y1 - halfEllipseHeight);
+					Rectangle.SINGLETON.setSize(quarterEllipseWidth * 2, halfEllipseHeight * 2);
+
+					if (graphics != null) {
+						graphics.drawArc(Rectangle.SINGLETON, 90, 90);
+						graphics.setLineStyle(SWT.LINE_DOT);
+						graphics.drawLine(xm, ym, x2, ym);
+	
+						if (showArrowHeads)
+							drawArrowHead(graphics, LONG_ARROW_HEAD_COLOR, x2, ym, 1, 0);
+						
+						showArrowHeads = false;
+					}
+					else
+						return lineContainsPoint(xm, ym, x2, ym, fitX, fitY, tolerance) ||
+						   halfEllipseContainsPoint(0, x1, x2, y1, halfEllipseHeight, fitX, fitY, tolerance);
+				}
+				// both events are close enough
+				else {
+					// draw half ellipse
+					Rectangle.SINGLETON.setLocation(x1, y1 - halfEllipseHeight);
+					Rectangle.SINGLETON.setSize(x2 - x1, halfEllipseHeight * 2);
+					
+					if (graphics != null)
+						graphics.drawArc(Rectangle.SINGLETON, 0, 180);
+					else
+						return halfEllipseContainsPoint(-1, x1, x2, y1, halfEllipseHeight, fitX, fitY, tolerance);
+				}
 				
-				if (needArrowHead) {
+				if (showArrowHeads) {
 					// intersection of the ellipse and a circle with the arrow length centered at the end point
 					// origin is in the center of the ellipse
 					// mupad: solve([x^2/a^2+(r^2-(x-a)^2)/b^2=1],x,IgnoreSpecialCases)
@@ -1494,40 +1667,96 @@ public class SequenceChart
 					
 					// if the solution falls outside of the top right quarter of the ellipse
 					if (x < 0)
-						drawArrowHead(graphics, x2, y2, 0, 1);
+						drawArrowHead(graphics, null, x2, y2, 0, 1);
 					else {
 						// shift solution to the coordinate system of the canvas
 						x = (x1 + x2) / 2 + x;
 						y = y1 + y;
-						drawArrowHead(graphics, x2, y2, x2 - x, y2 - y);
+						drawArrowHead(graphics, null, x2, y2, x2 - x, y2 - y);
 					}
 				}
 
 				if (showMessageNames)
-					drawMessageArrowLabel(graphics, arrowLabel, (x1 + x2) / 2, y1, 0, -halfEllipseHeight - 15);
+					drawMessageArrowLabel(graphics, messageDependencyPtr, (x1 + x2) / 2, y1, 0, -halfEllipseHeight - 15);
 			}
 		}
 		else {
-			// draw straight line
-			if (x1!=x2 || vlineBuffer.vlineContainsNewPixel(x1, y1, y2))
-				graphics.drawLine(x1, y1, x2, y2);
+			int tooLongLineWidth = LONG_MESSAGE_ARROW_WIDTH;
+			int y = (y2 + y1) / 2;
+			Color arrowHeadFillColor = null;
 			
-			if (needArrowHead)
-				drawArrowHead(graphics, x2, y2, x2 - x1, y2 - y1);
+			// cause is too far away
+			if (x1 == invalid) {
+				x1 = x2 - tooLongLineWidth * 2;
+				
+				if (graphics != null) {
+					int xm = x2 - tooLongLineWidth;
+					graphics.drawLine(xm, y, x2, y2);
+					graphics.setLineStyle(SWT.LINE_DOT);
+					graphics.drawLine(x1, y1, xm, y);
+				}
+			}
+			// consequence is too far away
+			else if (x2 == invalid) {
+				x2 = x1 + tooLongLineWidth * 2;
+
+				if (graphics != null) {
+					int xm = x1 + tooLongLineWidth;
+					graphics.drawLine(x1, y1, xm, y);
+					graphics.setLineStyle(SWT.LINE_DOT);
+					graphics.drawLine(xm, y, x2, y2);
+					arrowHeadFillColor = LONG_ARROW_HEAD_COLOR;
+				}
+			}
+			// both events are in range
+			else {
+				if (graphics != null) {
+					if (x1 != x2 || vlineBuffer.vlineContainsNewPixel(x1, y1, y2))
+						graphics.drawLine(x1, y1, x2, y2);
+				}
+			}
+			
+			if (graphics == null)
+				return lineContainsPoint(x1, y1, x2, y2, fitX, fitY, tolerance);
+
+			if (showArrowHeads)
+				drawArrowHead(graphics, arrowHeadFillColor, x2, y2, x2 - x1, y2 - y1);
 			
 			if (showMessageNames)
-				drawMessageArrowLabel(graphics, arrowLabel, (x1 + x2) / 2, (y1 + y2) / 2, 2, y1 < y2 ? -15 : 0);
+				drawMessageArrowLabel(graphics, messageDependencyPtr, (x1 + x2) / 2, (y1 + y2) / 2, 2, y1 < y2 ? -15 : 0);
 		}
+		
+		// when fitting we should have already returned
+		Assert.isTrue(graphics != null);
+		
+		return false;
 	}
 
 	/**
 	 * Draws a message arrow label with the corresponding message line color.
 	 */
-	private void drawMessageArrowLabel(Graphics graphics, String label, int x, int y, int dx, int dy) {
+	private void drawMessageArrowLabel(Graphics graphics, long messageDependencyPtr, int x, int y, int dx, int dy) {
+		String arrowLabel = "<no label>";
+		int messageDependencyKind = sequenceChartFacade.MessageDependency_getKind(messageDependencyPtr);
+
+		switch (messageDependencyKind ) {
+			case MessageDependencyKind.SEND:
+				arrowLabel = sequenceChartFacade.MessageDependency_getMessageName(messageDependencyPtr);
+				break;
+			case MessageDependencyKind.REUSE:
+				arrowLabel = "Reuse";
+				break;
+			case MessageDependencyKind.FILTERED:
+				arrowLabel = sequenceChartFacade.FilteredMessageDependency_getBeginMessageName(messageDependencyPtr) +
+							 " -> " +
+							 sequenceChartFacade.FilteredMessageDependency_getEndMessageName(messageDependencyPtr);
+				break;
+		}
+
 		if (MESSAGE_LABEL_COLOR != null)
 			graphics.setForegroundColor(MESSAGE_LABEL_COLOR);
 
-		graphics.drawText(label, x + dx, y + dy);
+		graphics.drawText(arrowLabel, x + dx, y + dy);
 	}
 	
 	/**
@@ -1539,7 +1768,7 @@ public class SequenceChart
 	 * @param dx the x coordinate of the direction vector 
 	 * @param dy the y coordinate of the direction vector
 	 */
-	private void drawArrowHead(Graphics graphics, int x, int y, double dx, double dy) {
+	private void drawArrowHead(Graphics graphics, Color fillColor, int x, int y, double dx, double dy) {
 		double n = Math.sqrt(dx * dx + dy * dy);
 		double dwx = -dy / n * ARROWHEAD_WIDTH / 2;
 		double dwy = dx / n * ARROWHEAD_WIDTH / 2;
@@ -1550,15 +1779,19 @@ public class SequenceChart
 		int x2 = (int)Math.round(xt + dwx);
 		int y2 = (int)Math.round(yt + dwy);
 
-		graphics.setBackgroundColor(ARROWHEAD_COLOR != null ? ARROWHEAD_COLOR : graphics.getForegroundColor());
+		Color arrowHeadColor = ARROW_HEAD_COLOR == null ? graphics.getForegroundColor() : ARROW_HEAD_COLOR;
+		graphics.setLineStyle(SWT.LINE_SOLID);
+		graphics.setBackgroundColor(fillColor == null ? arrowHeadColor : fillColor);
 		graphics.fillPolygon(new int[] {x, y, x1, y1, x2, y2});
+		graphics.setForegroundColor(arrowHeadColor);
+		graphics.drawPolygon(new int[] {x, y, x1, y1, x2, y2});
 	}
 
 	/**
 	 * Utility function to determine event range we need to draw. 
 	 * Returns an array of size 2 with the two event pointers.
 	 */
-	protected long[] getFirstLastEventInPixelRange(int x1, int x2) {
+	protected long[] getFirstLastEventForPixelRange(int x1, int x2) {
 		if (eventLog == null || eventLog.getApproximateNumberOfEvents() == 0)
 			return new long[] {0, 0};
 		
@@ -1574,6 +1807,17 @@ public class SequenceChart
 			endEvent = eventLog.getLastEvent();
 
 		return new long[] {startEvent.getCPtr(), endEvent.getCPtr()};
+	}
+	
+	private int getMaximumMessageDependencyDisplayWidth() {
+		return 3 * getViewportWidth();
+	}
+
+	private long[] getFirstLastEventPtrForMessageDependencies() {
+		int width = getViewportWidth();
+		int maximumWidth = getMaximumMessageDependencyDisplayWidth();
+		int extraWidth = (maximumWidth - width) / 2;
+		return getFirstLastEventForPixelRange(-extraWidth, extraWidth * 2);
 	}
 
 	private int getEventXViewportCoordinate(long eventPtr) {
@@ -1664,7 +1908,7 @@ public class SequenceChart
 		Assert.isTrue(tMin.compareTo(tMax) <= 0);
 
 		if (minSimulationTimeAsDouble == maxSimulationTimeAsDouble) {
-			long[] eventPtrRange = getFirstLastEventInPixelRange(x, x);
+			long[] eventPtrRange = getFirstLastEventForPixelRange(x, x);
 			long startEventPtr = eventPtrRange[0];
 			long endEventPtr = eventPtrRange[1];
 			int count = 0;
@@ -1890,10 +2134,10 @@ public class SequenceChart
 				isDragging = true;
 
 				// scroll by the amount moved since last drag call
-				int dx = e.x - dragStartX;
-				int dy = e.y - dragStartY;
-				scrollHorizontal(-dx);
-				scrollVertical(-dy);
+				dragDeltaX = e.x - dragStartX;
+				dragDeltaY = e.y - dragStartY;
+				scrollHorizontal(-dragDeltaX);
+				scrollVertical(-dragDeltaY);
 				dragStartX = e.x;
 				dragStartY = e.y;
 			}
@@ -1902,14 +2146,17 @@ public class SequenceChart
 		// selection handling
 		addMouseListener(new MouseAdapter() {
 			public void mouseDoubleClick(MouseEvent me) {
-				ArrayList<IEvent> tmp = new ArrayList<IEvent>();
-				collectStuffUnderMouse(me.x, me.y, tmp, null);
+				ArrayList<IEvent> events = new ArrayList<IEvent>();
+				ArrayList<IMessageDependency> messageDependencies = new ArrayList<IMessageDependency>();
+				collectStuffUnderMouse(me.x, me.y, events, messageDependencies);
 
-				if (eventListEquals(selectedEvents, tmp)) {
+				if (messageDependencies.size() == 1)
+					zoomToMessageDependency(messageDependencies.get(0));
+				if (eventListEquals(selectedEvents, events)) {
 					fireSelection(true);
 				}
 				else {
-					selectedEvents = tmp;
+					selectedEvents = events;
 					fireSelection(true);
 					fireSelectionChanged();
 					redraw();
@@ -1922,34 +2169,47 @@ public class SequenceChart
 				if (e.button == 1) {
 					dragStartX = e.x;
 					dragStartY = e.y;
+					dragStartTime = System.currentTimeMillis();
 				}
 
 				removeTooltip();
 			}
 
 			public void mouseUp(MouseEvent me) {
-				if (me.button == 1 && !isDragging) {
-					ArrayList<IEvent> tmp = new ArrayList<IEvent>();
-
-					if ((me.stateMask & SWT.CTRL)!=0) // CTRL key extends selection
-						for (IEvent e : selectedEvents) 
-							tmp.add(e);
-
-					collectStuffUnderMouse(me.x, me.y, tmp, null);
-					
-					if (eventListEquals(selectedEvents, tmp)) {
-						fireSelection(false);
+				if (me.button == 1) {
+					if (!isDragging) {
+						ArrayList<IEvent> events = new ArrayList<IEvent>();
+	
+						if ((me.stateMask & SWT.CTRL)!=0) // CTRL key extends selection
+							for (IEvent e : selectedEvents) 
+								events.add(e);
+	
+						collectStuffUnderMouse(me.x, me.y, events, null);
+						
+						if (eventListEquals(selectedEvents, events)) {
+							fireSelection(false);
+						}
+						else {
+							selectedEvents = events;
+							fireSelection(false);
+							fireSelectionChanged();
+							redraw();
+						}
 					}
-					else {
-						selectedEvents = tmp;
-						fireSelection(false);
-						fireSelectionChanged();
-						redraw();
+					else if (System.currentTimeMillis() - dragStartTime < 500){
+						ArrayList<IMessageDependency> messageDependencies = new ArrayList<IMessageDependency>();
+						collectStuffUnderMouse(me.x, me.y, null, messageDependencies);
+						
+						if (messageDependencies.size() == 1) {
+							IMessageDependency messageDependency = messageDependencies.get(0);
+							gotoElement(dragDeltaX > 0 ? messageDependency.getConsequenceEvent() : messageDependency.getCauseEvent());
+						}
 					}
 				}
 
 				setCursor(null); // restore cursor at end of drag
 				dragStartX = dragStartY = -1;
+				dragStartTime = -1;
 				isDragging = false;
 			}
 		});
@@ -1959,13 +2219,16 @@ public class SequenceChart
 	 * Utility function, used in selection change handling
 	 */
 	private static boolean eventListEquals(List<IEvent> a, List<IEvent> b) {
-		if (a==null || b==null)
-			return a==b;
+		if (a == null || b == null)
+			return a == b;
+		
 		if (a.size() != b.size())
 			return false;
-		for (int i=0; i<a.size(); i++)
+
+		for (int i = 0; i < a.size(); i++)
 			if (a.get(i).getEventNumber() != b.get(i).getEventNumber()) // cannot use a.get(i)==b.get(i) because SWIG return new instances every time
 				return false;
+		
 		return true;
 	}
 	
@@ -1999,8 +2262,8 @@ public class SequenceChart
 	 */
 	protected String getTooltipText(int x, int y) {
 		ArrayList<IEvent> events = new ArrayList<IEvent>();
-		ArrayList<MessageDependency> msgs = new ArrayList<MessageDependency>();
-		collectStuffUnderMouse(x, y, events, msgs);
+		ArrayList<IMessageDependency> messageDependencies = new ArrayList<IMessageDependency>();
+		collectStuffUnderMouse(x, y, events, messageDependencies);
 
 		// 1) if there are events under them mouse, show them in the tooltip
 		if (events.size() > 0) {
@@ -2018,17 +2281,17 @@ public class SequenceChart
 		}
 			
 		// 2) no events: show message arrows info
-		if (msgs.size() >= 1) {
+		if (messageDependencies.size() >= 1) {
 			String res = "";
 			int count = 0;
-			for (MessageDependency msg : msgs) {
+			for (IMessageDependency messageDependency : messageDependencies) {
 				// truncate tooltip
 				if (count++ > MAX_TOOLTIP_LINES) {
-					res += "...and "+(msgs.size()-count)+" more";
+					res += "...and "+(messageDependencies.size()-count)+" more";
 					break;
 				}
 				// add message
-				res += getMessageText(msg) + "\n"; 
+				res += getMessageText(messageDependency) + "\n"; 
 			}
 			res = res.trim();
 			return res;
@@ -2057,9 +2320,9 @@ public class SequenceChart
 	}
 
 	/**
-	 * Returns a descriptive message for the MessageDependency to be presented to the user.
+	 * Returns a descriptive message for the IMessageDependency to be presented to the user.
 	 */
-	public String getMessageText(MessageDependency msg) {
+	public String getMessageText(IMessageDependency msg) {
 		String result = null;
 		BeginSendEntry beginSendEntry = null;
 		long messageDependencyPtr = msg.getCPtr();
@@ -2068,11 +2331,11 @@ public class SequenceChart
 		int kind = sequenceChartFacade.MessageDependency_getKind(messageDependencyPtr);
 		switch (kind) {
 			case MessageDependencyKind.SEND:
-				beginSendEntry = msg.getCauseBeginSendEntry();
+				beginSendEntry = msg.getBeginSendEntry();
 				result = "sending";
 				break;
 			case MessageDependencyKind.REUSE:
-				beginSendEntry = msg.getConsequenceBeginSendEntry();
+				beginSendEntry = msg.getBeginSendEntry();
 				result = "reusing";
 				break;
 			case MessageDependencyKind.FILTERED:
@@ -2141,13 +2404,14 @@ public class SequenceChart
 	 * If you're interested only in messages or only in events, pass null in the
 	 * events or msgs argument. This method does NOT clear the lists before filling them.
 	 */
-	public void collectStuffUnderMouse(int mouseX, int mouseY, List<IEvent> events, List<MessageDependency> msgs) {
+	public void collectStuffUnderMouse(int mouseX, int mouseY, List<IEvent> events, List<IMessageDependency> msgs) {
 		if (eventLog != null) {
 			mouseY -= GUTTER_HEIGHT;
 			long startMillis = System.currentTimeMillis();
 		
 			// determine start/end event numbers
-			long[] eventPtrRange = getFirstLastEventInPixelRange(0, getViewportWidth());
+			int width = getViewportWidth();
+			long[] eventPtrRange = getFirstLastEventForPixelRange(0, width);
 			long startEventPtr = eventPtrRange[0];
 			long endEventPtr = eventPtrRange[1];
 
@@ -2164,13 +2428,15 @@ public class SequenceChart
 
             // check message arrows
             if (msgs != null) {
-            	Int64Vector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr, 100);
+        		eventPtrRange = getFirstLastEventPtrForMessageDependencies();
+    			startEventPtr = eventPtrRange[0];
+    			endEventPtr = eventPtrRange[1];
+            	Int64Vector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
 
         		for (int i = 0; i < messageDependencies.size(); i++) {
         			long messageDependencyPtr = messageDependencies.get(i);
 
-        			// TODO: what about not shown messages
-            		if (messageArrowContainsPoint(messageDependencyPtr, mouseX, mouseY, MOUSE_TOLERANCE))
+        			if (drawOrFitMessageArrow(messageDependencyPtr, mouseX, mouseY, MOUSE_TOLERANCE, null, null, startEventPtr, endEventPtr))
             			msgs.add(sequenceChartFacade.MessageDependency_getMessageDependency(messageDependencyPtr));
         		}
             }
@@ -2188,47 +2454,41 @@ public class SequenceChart
 		return Math.abs(x - px) <= 2 + tolerance && Math.abs(y - py) <= 5 + tolerance;
 	}
 
-	/**
-	 * Utility function, to detect whether user clicked (hovered) a message arrow in the chart
-	 */
-	private boolean messageArrowContainsPoint(long messageDependencyPtr, int px, int py, int tolerance) {
-		long causeEventPtr = sequenceChartFacade.MessageDependency_getCauseEvent(messageDependencyPtr);
-		long consequenceEventPtr = sequenceChartFacade.MessageDependency_getConsequenceEvent(messageDependencyPtr);
-
-		// TODO: we probably do not need this, it's checked in C++ anyway
-		if (causeEventPtr == 0 || consequenceEventPtr == 0)
-			return false;
-		
-        int x1 = getEventXViewportCoordinate(causeEventPtr);
-        int y1 = getEventYViewportCoordinate(causeEventPtr);
-        int x2 = getEventXViewportCoordinate(consequenceEventPtr);
-        int y2 = getEventYViewportCoordinate(consequenceEventPtr);
-
-		//System.out.printf("checking %d %d %d %d\n", x1, x2, y1, y2);
-		if (y1 == y2) {
-			int height = getArrowHalfEllipseHeight(sequenceChartFacade.MessageDependency_isMessageSend(messageDependencyPtr) ? MINIMUM_SELF_MESSAGE_ARROW_HEIGHT : MINIMUM_REUSE_MESSAGE_ARROW_HEIGHT);
-			return halfEllipseContainsPoint(x1, x2, y1, height, px, py, tolerance);
-		}
-		else
-			return lineContainsPoint(x1, y1, x2, y2, px, py, tolerance);
-	}
-	
 	private int getArrowHalfEllipseHeight(int minimumHeight) {
 		return Math.max(axisSpacing / 2, minimumHeight);
 	}
 
-	private boolean halfEllipseContainsPoint(int x1, int x2, int y, int height, int px, int py, int tolerance) {
+	private boolean halfEllipseContainsPoint(int quarter, int x1, int x2, int y, int height, int px, int py, int tolerance) {
 		tolerance++;
 
-		Rectangle.SINGLETON.setSize(0, 0);
-		Rectangle.SINGLETON.setLocation(x1, y);
-		Rectangle.SINGLETON.union(x2, y-height);
-		Rectangle.SINGLETON.expand(tolerance, tolerance);
+		int x;
+		int xm = (x1 + x2) / 2;
+		int width;
+		
+		switch (quarter) {
+			case 0:
+				x = x1;
+				width = (x2 - x1) / 2;
+				break;
+			case 1:
+				x = (x1 + x2) / 2;
+				width = (x2 - x1) / 2;
+				break;
+			default:
+				x = x1;
+				width = x2 - x1;
+				break;
+		}
+
+		Rectangle.SINGLETON.setLocation(x, y - height);
+		Rectangle.SINGLETON.setSize(width, height);
+		Rectangle.SINGLETON.expand(tolerance, tolerance);		
+
 		if (!Rectangle.SINGLETON.contains(px, py))
 			return false;
 
-		int x = (x1+x2) / 2;
-		int rx = Math.abs(x1-x2) / 2;
+		x = xm;
+		int rx = Math.abs(x1 - x2) / 2;
 		int ry = height;
 
         if (rx == 0)
@@ -2236,8 +2496,9 @@ public class SequenceChart
 		
 		int dxnorm = (x - px) * ry / rx;
 		int dy = y - py;
-		int distSquare = dxnorm*dxnorm + dy*dy;
-		return distSquare < (ry+tolerance)*(ry+tolerance) && distSquare > (ry-tolerance)*(ry-tolerance); 
+		int distSquare = dxnorm * dxnorm + dy * dy;
+
+		return distSquare < (ry + tolerance) * (ry + tolerance) && distSquare > (ry - tolerance) * (ry - tolerance); 
 	}
 
 	/**
@@ -2356,7 +2617,7 @@ public class SequenceChart
 	 */
 	public void setSelection(ISelection newSelection) {
 		if (debug)
-			System.out.println("SeqChartFigure got selection: " + newSelection);
+			System.out.println("SequencreChart got selection: " + newSelection);
 
 		if (newSelection instanceof IEventLogSelection) {
 			IEventLogSelection newEventLogSelection = (IEventLogSelection)newSelection;

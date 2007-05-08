@@ -57,9 +57,6 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	 * Paints the canvas, making use of the cache.
 	 */
 	protected void paint(GC gc) {
-		// call any code subclass wants to run before painting
-		beforePaint(gc);
-		
 		if (!doCaching) {
 			// paint directly on the GC
 			gc.setClipping(gc.getClipping().intersection(getViewportRectangle()));
@@ -130,13 +127,6 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 					(int)rect.width-1, (int)rect.height-1, 30, 30);
 		}
 	}
-
-	/**
-	 * Called in every repaint request, before any call to paintCachables() and
-	 * paintNoncachables(). This is a good place for pre-paint calculations
-	 * whose result is needed by both paintCachables() and paintNoncachables().
-	 */
-	protected void beforePaint(GC gc) {}
 
 	/**
 	 * Paint everything in this method that can be cached. This may be called several
