@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.omnetpp.common.ui.ITooltipProvider;
+import org.omnetpp.common.ui.ITooltipTextProvider;
 import org.omnetpp.common.ui.TooltipSupport;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
@@ -50,7 +50,7 @@ public abstract class FieldEditor extends Composite {
 		this.formPage = formPage;
 		setBackground(BGCOLOR);
 
-		tooltipSupport = new TooltipSupport(new ITooltipProvider() {
+		tooltipSupport = new TooltipSupport(new ITooltipTextProvider() {
 			public String getTooltipFor(Control control, int x, int y) {
 				return getTooltipText();
 			}

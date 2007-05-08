@@ -1,12 +1,20 @@
 package org.omnetpp.inifile.editor.text.util;
 
 
+import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
 import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.DefaultInformationControl;
+import org.eclipse.jface.text.IInformationControl;
+import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextHover;
+import org.eclipse.jface.text.ITextHoverExtension;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.editors.text.EditorsUI;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
@@ -15,7 +23,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 /**
  * Presents hover information for ini files.
  */
-public class InifileTextHover implements ITextHover {
+public class InifileTextHover implements ITextHover, ITextHoverExtension {
 	private InifileEditorData editorData;
 
 	public InifileTextHover(InifileEditorData editorData) {
@@ -57,5 +65,16 @@ public class InifileTextHover implements ITextHover {
 		if (selection.x <= offset && offset < selection.x + selection.y)
 			return new Region(selection.x, selection.y);
 		return new Region(offset, 0);
+	}
+
+	/*
+	 * @see org.eclipse.jface.text.ITextHoverExtension#getHoverControlCreator()
+	 */
+	public IInformationControlCreator getHoverControlCreator() {
+		return new IInformationControlCreator() {
+			public IInformationControl createInformationControl(Shell parent) {
+				return new DefaultInformationControl(parent, SWT.NONE, new HTMLTextPresenter(true), EditorsUI.getTooltipAffordanceString());
+			}
+		};
 	}
 }

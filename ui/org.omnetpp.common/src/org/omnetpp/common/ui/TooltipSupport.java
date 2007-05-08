@@ -1,6 +1,7 @@
 package org.omnetpp.common.ui;
 
 import org.eclipse.jface.text.DefaultInformationControl;
+import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -12,6 +13,7 @@ import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * Provides tooltip for a widget. SWT's Control.setTooltipText() has several
@@ -32,9 +34,9 @@ import org.eclipse.swt.widgets.Control;
 //XXX problem: if mouse is near the right-bottom corner of the screen, tooltip comes
 // up right under the mouse cursor, and won't go away on mouse movement. solution: better placement?
 public class TooltipSupport {
-	protected DefaultInformationControl tooltipWidget;
+	protected IInformationControl tooltipControl;
 	protected AllInOneListener eventListener = new AllInOneListener();
-	protected ITooltipProvider tooltipProvider;
+	protected ITooltipTextProvider tooltipProvider;
 
 	private class AllInOneListener implements MouseListener, MouseTrackListener, MouseMoveListener, KeyListener {
 		public void mouseDoubleClick(MouseEvent e) {}
@@ -73,14 +75,14 @@ public class TooltipSupport {
 	/**
 	 * Create a tooltip support object.
 	 */
-	public TooltipSupport(ITooltipProvider tooltipProvider) {
+	public TooltipSupport(ITooltipTextProvider tooltipProvider) {
 		this.tooltipProvider = tooltipProvider;
 	}
 
 	/**
 	 * Create a tooltip support object, and adapt the given control.
 	 */
-	public TooltipSupport(final Control c, ITooltipProvider tooltipProvider) {
+	public TooltipSupport(final Control c, ITooltipTextProvider tooltipProvider) {
 		this(tooltipProvider);
 		adapt(c);
 	}
@@ -88,7 +90,7 @@ public class TooltipSupport {
 	/**
 	 * Add tooltip to a control.  
 	 */
-	public static TooltipSupport adapt(Control c, ITooltipProvider tooltipProvider) {
+	public static TooltipSupport adapt(Control c, ITooltipTextProvider tooltipProvider) {
 		return new TooltipSupport(c, tooltipProvider);
 	}
 	
@@ -122,20 +124,26 @@ public class TooltipSupport {
 	protected void displayTooltip(Control control, int x, int y) {
 		String tooltipText = tooltipProvider.getTooltipFor(control, x, y);
 		if (tooltipText!=null) {
-			tooltipWidget = new DefaultInformationControl(control.getShell());
-			tooltipWidget.setInformation(" "+tooltipText.replaceAll("\n", "\n ")); // prefix each line with a space, for left margin
-			tooltipWidget.setLocation(control.toDisplay(x+5,y+20));
-			Point size = tooltipWidget.computeSizeHint();
-			tooltipWidget.setSize(size.x+3, size.y+3); // add some right/bottom margin 
-			tooltipWidget.setVisible(true);
+			tooltipControl = createInformationControl(control.getShell());
+			tooltipControl.setInformation(" "+tooltipText.replaceAll("\n", "\n ")); // prefix each line with a space, for left margin
+			tooltipControl.setLocation(control.toDisplay(x+5,y+20));
+			Point size = tooltipControl.computeSizeHint();
+			tooltipControl.setSize(size.x+3, size.y+3); // add some right/bottom margin 
+			tooltipControl.setVisible(true);
 		}
 	}
 
+	protected IInformationControl createInformationControl(Shell parent) {
+		DefaultInformationControl defaultInformationControl = new DefaultInformationControl(parent);
+		//XXX return new DefaultInformationControl(parent, SWT.NONE, new HTMLTextPresenter(true), "F2 to focus\n" /*EditorsUI.getTooltipAffordanceString()*/);
+		return defaultInformationControl;
+	}
+
 	protected void removeTooltip() {
-		if (tooltipWidget!=null) {
-			tooltipWidget.setVisible(false);
-			tooltipWidget.dispose();
-			tooltipWidget = null;
+		if (tooltipControl!=null) {
+			tooltipControl.setVisible(false);
+			tooltipControl.dispose();
+			tooltipControl = null;
 		}
 	}
 }

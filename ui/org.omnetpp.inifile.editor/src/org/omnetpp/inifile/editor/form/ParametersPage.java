@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.contentassist.ContentAssistUtils;
-import org.omnetpp.common.ui.ITooltipProvider;
+import org.omnetpp.common.ui.ITooltipTextProvider;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.ui.TooltipSupport;
@@ -242,7 +242,7 @@ public class ParametersPage extends FormPage {
 		});
 
 		// add tooltip support
-		TooltipSupport.adapt(tableViewer.getTable(), new ITooltipProvider() {
+		TooltipSupport.adapt(tableViewer.getTable(), new ITooltipTextProvider() {
 			public String getTooltipFor(Control control, int x, int y) {
 				Item item = tableViewer.getTable().getItem(new Point(x,y));
 				SectionKey entry = (SectionKey) (item==null ? null : item.getData());

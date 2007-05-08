@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.common.ui.ITooltipProvider;
+import org.omnetpp.common.ui.ITooltipTextProvider;
 import org.omnetpp.common.ui.TooltipSupport;
 import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
@@ -86,7 +86,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 		getTreeViewer().setInput(inifileDocument);
 		
  		// add tooltip support
- 		TooltipSupport.adapt(getTreeViewer().getTree(), new ITooltipProvider() {
+ 		TooltipSupport.adapt(getTreeViewer().getTree(), new ITooltipTextProvider() {
 			public String getTooltipFor(Control control, int x, int y) {
 				Item item = getTreeViewer().getTree().getItem(new Point(x,y));
 				String section = (String) (item==null ? null : item.getData());

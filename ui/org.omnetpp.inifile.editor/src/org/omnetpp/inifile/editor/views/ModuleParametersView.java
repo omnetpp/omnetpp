@@ -35,7 +35,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
-import org.omnetpp.common.ui.ITooltipProvider;
+import org.omnetpp.common.ui.ITooltipTextProvider;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TooltipSupport;
 import org.omnetpp.inifile.editor.IGotoInifile;
@@ -132,7 +132,7 @@ public class ModuleParametersView extends AbstractModuleView {
 		tableViewer.setContentProvider(new ArrayContentProvider());
 
  		// add tooltip support to the table
- 		TooltipSupport.adapt(tableViewer.getTable(), new ITooltipProvider() {
+ 		TooltipSupport.adapt(tableViewer.getTable(), new ITooltipTextProvider() {
 			public String getTooltipFor(Control control, int x, int y) {
 				Item item = tableViewer.getTable().getItem(new Point(x,y));
 				Object element = item==null ? null : item.getData();

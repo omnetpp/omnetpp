@@ -40,7 +40,7 @@ import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeLabelProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.GenericTreeUtils;
-import org.omnetpp.common.ui.ITooltipProvider;
+import org.omnetpp.common.ui.ITooltipTextProvider;
 import org.omnetpp.common.ui.TooltipSupport;
 import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
@@ -162,7 +162,7 @@ public class SectionsPage extends FormPage {
  		});
 
  		// add tooltip support
- 		TooltipSupport.adapt(treeViewer.getTree(), new ITooltipProvider() {
+ 		TooltipSupport.adapt(treeViewer.getTree(), new ITooltipTextProvider() {
 			public String getTooltipFor(Control control, int x, int y) {
 				Item item = treeViewer.getTree().getItem(new Point(x,y));
 				String section = getSectionNameFromTreeNode(item==null ? null : item.getData());
