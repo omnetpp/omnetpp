@@ -2,6 +2,8 @@ package org.omnetpp.inifile.editor.form;
 
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.jface.fieldassist.TextControlCreator;
@@ -16,9 +18,11 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.fieldassist.ContentAssistField;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry.DataType;
 
 /**
@@ -33,11 +37,13 @@ import org.omnetpp.inifile.editor.model.ConfigurationEntry.DataType;
  */
 public class TextFieldEditor extends FieldEditor {
 	private static final char[] AUTOACTIVATION_CHARS = null; // "( ".toCharArray();
+	private ContentAssistField contentAssistField;
 	private Text textField;
 	private Label label;
 	private Button resetButton;
 	private boolean isEdited;
 	private String section = GENERAL;
+	private FieldDecoration problemDecoration = new FieldDecoration(ICON_ERROR_SMALL, null);
 
 	public TextFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, FormPage formPage, String labelText) {
 		super(parent, SWT.NONE, entry, inifile, formPage);
@@ -50,7 +56,8 @@ public class TextFieldEditor extends FieldEditor {
 
 		// child widgets
 		label = createLabel(entry, labelText+":");
-		ContentAssistField contentAssistField = createContentAssistField();
+		contentAssistField = createContentAssistField();
+		contentAssistField.addFieldDecoration(problemDecoration, SWT.LEFT | SWT.BOTTOM, false);
 		textField = (Text) contentAssistField.getControl();
 		tooltipSupport.adapt(textField);
 		resetButton = createResetButton();
@@ -95,6 +102,7 @@ public class TextFieldEditor extends FieldEditor {
 
 	@Override
 	public void reread() {
+		// update text and reset button
 		String value = getValueFromFile(section);
 		if (value==null) {
 			String defaultValue = entry.getDefaultValue()==null ? "" : entry.getDefaultValue().toString(); 
@@ -106,6 +114,13 @@ public class TextFieldEditor extends FieldEditor {
 			resetButton.setEnabled(true);
 		}
 		isEdited = false;
+		
+		// update problem decoration
+		IMarker[] markers = InifileUtils.getProblemMarkersFor(section, entry.getKey(), inifile);
+		problemDecoration.setImage(getProblemImage(markers, true));
+		problemDecoration.setDescription(getProblemsText(markers));
+		contentAssistField.updateDecoration(problemDecoration);
+		
 	}
 
 	@Override

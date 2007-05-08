@@ -2,11 +2,13 @@ package org.omnetpp.inifile.editor.form;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
@@ -36,12 +38,22 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
 		tooltipSupport.adapt(table);
 
 		tableViewer.setLabelProvider(new TableLabelProvider() {
+			@Override
 			public String getColumnText(Object element, int columnIndex) {
 				String section = (String) element;
 				switch (columnIndex) {
 					case 0: return "in section ["+section+"]";
 					default: throw new IllegalArgumentException(); 
 				}
+			}
+			@Override
+			public Image getColumnImage(Object element, int columnIndex) {
+				if (columnIndex == 0) {
+					String section = (String) element;
+					IMarker[] markers = InifileUtils.getProblemMarkersFor(section, entry.getKey(), inifile);
+					return getProblemImage(markers, false);
+				}
+				return null;
 			}
 		});
 		

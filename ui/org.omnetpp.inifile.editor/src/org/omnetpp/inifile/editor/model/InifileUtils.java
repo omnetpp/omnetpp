@@ -430,7 +430,6 @@ public class InifileUtils {
 	/**
 	 * Returns the problem markers for a given inifile entry.
 	 */
-	//XXX use this in field editors etc.
 	public static IMarker[] getProblemMarkersFor(String section, String key, IInifileDocument doc) {
 		try {
 			LineInfo line = doc.getEntryLineDetails(section, key);
@@ -450,5 +449,17 @@ public class InifileUtils {
 			InifileEditorPlugin.logError(e);
 			return new IMarker[0];
 		}
+	}
+
+	/**
+	 * Returns the maximum severity of the given markers, or -1.
+	 * Complements getProblemMarkersFor().
+	 */
+	public static int getMaximumSeverity(IMarker[] markers) {
+		int severity = -1;
+		for (IMarker marker : markers)
+			if (severity < marker.getAttribute(IMarker.SEVERITY, -1))
+				severity = marker.getAttribute(IMarker.SEVERITY, -1);
+		return severity;
 	}
 }
