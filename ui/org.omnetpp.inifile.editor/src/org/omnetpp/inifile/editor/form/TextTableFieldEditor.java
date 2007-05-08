@@ -63,7 +63,7 @@ public class TextTableFieldEditor extends TableFieldEditor {
 				if (columnIndex == 1) {
 					String section = (String) element;
 					IMarker[] markers = InifileUtils.getProblemMarkersFor(section, entry.getKey(), inifile);
-					return getProblemImage(markers, false);
+					return getProblemImage(markers, true);
 				}
 				return null;
 			}

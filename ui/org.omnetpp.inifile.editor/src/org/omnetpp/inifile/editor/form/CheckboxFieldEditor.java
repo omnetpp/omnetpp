@@ -48,8 +48,8 @@ public class CheckboxFieldEditor extends FieldEditor {
 		checkbox = new Button(this, SWT.CHECK);
 		checkbox.setBackground(BGCOLOR);
 		tooltipSupport.adapt(checkbox);
-		label = createLabel(entry, labelText);
 		problemDecorationLabel = new Label(this, SWT.NONE);
+		label = createLabel(entry, labelText);
 		resetButton = createResetButton();
 
 		checkbox.setLayoutData(new GridData());
@@ -94,8 +94,18 @@ public class CheckboxFieldEditor extends FieldEditor {
 
 		// update problem decoration
 		IMarker[] markers = InifileUtils.getProblemMarkersFor(section, entry.getKey(), inifile);
-		problemDecorationLabel.setImage(getProblemImage(markers, true));
+//		problemDecorationLabel.setImage(getProblemImage(markers, true));
+		problemDecorationLabel.setImage(checkbox.getSelection() ? ICON_ERROR_SMALL : null); //XXX
+		
 		problemDecorationLabel.setToolTipText(getProblemsText(markers));
+		problemDecorationLabel.setVisible(problemDecorationLabel.getImage()!=null);
+		
+		// hide problemDecorationLabel when not visible
+		GridData gridData = (GridData) problemDecorationLabel.getLayoutData();
+		boolean oldExclude = gridData.exclude;
+		gridData.exclude = !problemDecorationLabel.isVisible();
+		if (gridData.exclude != oldExclude) 
+			layout();
 	}
 
 	@Override

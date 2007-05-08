@@ -148,6 +148,8 @@ public abstract class FieldEditor extends Composite {
 		}
 	}
 	protected static String getProblemsText(IMarker[] markers) {
+		if (markers.length==0) 
+			return null;
 		String text = "";
 		for (IMarker marker : markers)
 			text += marker.getAttribute(IMarker.MESSAGE, "") + "\n";

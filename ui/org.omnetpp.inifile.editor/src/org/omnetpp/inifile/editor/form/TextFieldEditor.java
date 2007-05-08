@@ -117,7 +117,7 @@ public class TextFieldEditor extends FieldEditor {
 		
 		// update problem decoration
 		IMarker[] markers = InifileUtils.getProblemMarkersFor(section, entry.getKey(), inifile);
-		problemDecoration.setImage(getProblemImage(markers, true));
+		problemDecoration.setImage(getProblemImage(markers, false));
 		problemDecoration.setDescription(getProblemsText(markers));
 		contentAssistField.updateDecoration(problemDecoration);
 		
