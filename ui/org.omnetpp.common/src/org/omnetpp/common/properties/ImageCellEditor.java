@@ -1,5 +1,6 @@
 package org.omnetpp.common.properties;
 
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.DialogCellEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -23,9 +24,11 @@ public class ImageCellEditor extends DialogCellEditor {
 		ImageSelectionDialog cellDialog = 
 			new ImageSelectionDialog(cellEditorWindow.getShell(), (String)getValue());
 
-		cellDialog.open(); 
+		if (cellDialog.open() == Dialog.OK) 
+		    return cellDialog.getImageId();
 
-        return cellDialog.getFirstResult();
+		// dialog cancelled
+		return null;
 	}
 
 }

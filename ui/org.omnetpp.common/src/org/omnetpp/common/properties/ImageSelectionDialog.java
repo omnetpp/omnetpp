@@ -3,6 +3,7 @@ package org.omnetpp.common.properties;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -19,11 +20,11 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
@@ -54,7 +55,7 @@ public class ImageSelectionDialog extends Dialog {
 	private Button okButton;
 
 	// state
-	private String[] imageNames;
+	private List<String> imageNames;
 
 	// result
 	private String initialSelection = null;
@@ -65,7 +66,9 @@ public class ImageSelectionDialog extends Dialog {
 		super(parentShell);
 		setShellStyle(getShellStyle() | SWT.MAX | SWT.RESIZE);
 		initialSelection = "".equals(initialValue) ? null : initialValue; // store "" as null
-		imageNames = ImageFactory.getImageNameList().toArray(new String[]{});
+		imageNames = new ArrayList<String>(ImageFactory.getImageNameList());
+		// "" represents NO IMAGE
+		imageNames.add(0, "");
 	}
 
 	@Override
@@ -155,7 +158,6 @@ public class ImageSelectionDialog extends Dialog {
 
 	protected String[] getImageFilters() {
 		ArrayList<String> result = new ArrayList<String>();
-		result.add("");
 
 		// collect toplevel folders
 		Set<String> uniqueFolders = new HashSet<String>();
@@ -167,8 +169,7 @@ public class ImageSelectionDialog extends Dialog {
 		result.addAll(Arrays.asList(folders));
 
 		// add all concrete images as well
-		result.add("--------");
-		result.addAll(Arrays.asList(imageNames));
+		result.addAll(imageNames);
 
 		return result.toArray(new String[]{});
 	}
@@ -205,23 +206,30 @@ public class ImageSelectionDialog extends Dialog {
 		int count = 0;
 		String theImage = null;
 		for (final String imageName : imageNames) {
-			if (pattern.matcher(imageName).matches()) {
-				count++;
-				theImage = imageName;
+			if (pattern.matcher(imageName).matches() || imageName.equals("")) {
+  			    Button button = new Button(imageCanvas, SWT.PUSH);
+				
+				if (imageName.equals("")) {
+				    button.setText("NONE");
+				    button.setLayoutData(new RowData(50,50));
+				    button.setToolTipText("Clear existing image");
+				} 
+				else {
+	                count++;
+	                theImage = imageName;
+				    // produce image and tooltip
+				    Image image = ImageFactory.getImage(imageName);
+				    Rectangle bounds = image.getBounds();
+				    String tooltip = imageName + " (" + bounds.width + "x" + bounds.height + ")";
+				    if (bounds.width > 64 || bounds.height > 64) {
+				        image = ImageConverter.getResampledImage(image, 64, 64);  //XXX will have to be disposed!!!!
+				        tooltip += " [scaled back for display]";
+				    }
 
-				// produce image and tooltip
-				Image image = ImageFactory.getImage(imageName);
-				Rectangle bounds = image.getBounds();
-				String tooltip = imageName + " (" + bounds.width + "x" + bounds.height + ")";
-				if (bounds.width > 64 || bounds.height > 64) {
-					image = ImageConverter.getResampledImage(image, 64, 64);  //XXX will have to be disposed!!!!
-					tooltip += " [scaled back for display]";
-				}
-
-				// create button
-				Button button = new Button(imageCanvas, SWT.PUSH);
-				button.setImage(image);
-				button.setToolTipText(tooltip);
+				    button.setImage(image);
+				    button.setToolTipText(tooltip);
+                }
+                
 				button.addSelectionListener(new SelectionAdapter() {
 					public void widgetSelected(SelectionEvent e) {
 						imageSelected(imageName);
@@ -240,7 +248,7 @@ public class ImageSelectionDialog extends Dialog {
 		layoutForm();
 
 		// update status line
-		filterStatusLabel.setText("Filter matches "+count+" image"+(count==1?"":"s")+" out of "+imageNames.length+".");
+		filterStatusLabel.setText("Filter matches "+count+" image"+(count==1?"":"s")+" out of "+imageNames.size()+".");
 
 		// if selection got narrowed down to one image: make that the user's choice;
 		// otherwise invalidate user's previous selection
@@ -254,11 +262,7 @@ public class ImageSelectionDialog extends Dialog {
 			okButton.setEnabled(selection != null);
 	}
 
-	protected void okPressed() {
-		super.okPressed();  // nothing to do here
-	}
-
-	public String getFirstResult() {
+	public String getImageId() {
 		return selection;
 	}
 }
