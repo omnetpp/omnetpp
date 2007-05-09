@@ -63,3 +63,26 @@ bool parseSimtime(const char *s, simultime_t &dest)
 
     return false;
 }
+
+std::string unquoteString(const char *str)
+{
+    std::string result;
+    if (str[0] == '"')
+    {
+        const char *p = str+1;
+        for (; *p; ++p)
+        {
+            if (*p == '\\' && *(p+1) == '\\' || *(p+1) == '"')
+                result.push_back(*(++p));
+            else if (*p == '"' && *(p+1) == '\0')
+                break;
+            else
+                result.push_back(*p);
+        }
+        if (*p != '"')
+            throw opp_runtime_error("Missing closing quote\n");
+    }
+    else
+        result = str;
+    return result;
+}

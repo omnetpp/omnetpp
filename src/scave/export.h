@@ -89,7 +89,7 @@ class ScalarDataTable : public DataTable
         ResultFileManager &manager;
     public:
         ScalarDataTable(const std::string name, const std::string description,
-            IDList idlist, ScalarFields groupBy, ResultFileManager &manager);
+            const IDList &idlist, ScalarFields groupBy, ResultFileManager &manager);
 
         virtual int numOfRows() const;
         virtual double getDoubleValue(int row, int col) const;
@@ -119,7 +119,7 @@ class SCAVE_API ScaveExport
         void close();
         
         void saveVector(const std::string name, const std::string description, const XYArray *vec, int startIndex=0, int endIndex=-1);
-        void saveScalars(const std::string name, const std::string description, IDList scalars, ScalarFields groupBy, ResultFileManager &manager);
+        void saveScalars(const std::string name, const std::string description, const IDList &scalars, ScalarFields groupBy, ResultFileManager &manager);
     protected:
         virtual void saveTable(const DataTable &rows, int startIndex, int endIndex) = 0;
 };

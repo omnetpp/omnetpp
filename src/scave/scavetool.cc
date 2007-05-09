@@ -28,6 +28,7 @@
 #include "arraybuilder.h"
 #include "export.h"
 #include "stringutil.h"
+#include "scaveutils.h"
 
 
 void printUsage()
@@ -48,11 +49,7 @@ void printUsage()
        "   x, index:   generates index files for input files (rearranges records in input files)\n"
        "Options:\n"
        "`filter' command:\n"
-       "    -n <pattern>    filter for statistics name (see pattern syntax below)\n"
-       "    -m <pattern>    filter for module name\n"
-       "    -r <pattern>    filter for run Id\n"
-       "    -c <pattern>    filter for configuration Id (aka run number)\n"
-       "    -f <pattern>    filter for input file name (.vec or .sca)\n"
+       "    -p <pattern>    the filter expression (see syntax below)\n"
        "    -a <function>   apply the given processing to the vector (see syntax below)\n"
        "                    This option may occur multiple times.\n"
        "    -O <filename>   output file name\n"   //FIXME separate file for vectors and scalars I guess
@@ -77,10 +74,20 @@ void printUsage()
        "\n"
        "Function syntax: name(parameterlist). Examples: winavg(10), mean()\n"
        "\n"
-       "Pattern syntax: Glob-type patterns are accepted.\n"
+       "Pattern syntax: list of 'field_name=pattern' pairs combined with AND, OR, NOT operators.\n"
+       "  Pattern is a Glob-like pattern and field_name is one of:\n"
+       "    file:        match with full path of the result file\n"
+       "    run:         match with the name of the run\n"
+       "    experiment:  match with the experiment attribute of the run\n"
+       "    measurement: match with the measurement attribute of the run\n"
+       "    replication: match with the replication attribute of the run\n"
+       "    module:      match with module name\n"
+       "    name:        match with the statistics name\n"
+       "  Example:\n"
+       "    module=\"**.sink\" AND (name=\"queueing time\" OR name=\"transmission time\")\n"
        //TODO
        "Examples:\n"
-       " scavetool -n 'queueing time' -a winavg(10) -O out.vec\n\n" //TODO more
+       " scavetool -p \"queueing time\" -a winavg(10) -O out.vec\n\n" //TODO more
     );
 }
 
@@ -88,12 +95,8 @@ int filterCommand(int argc, char **argv)
 {
     // options
     bool opt_verbose = false;
-    std::string opt_statisticNamePattern;
-    std::string opt_moduleNamePattern;
-    std::string opt_runIdPattern;
-    std::string opt_configurationIdPattern;
-    std::string opt_filenamePattern = "*";  //XXX why is "" not equivalent??
-    std::string opt_outputFileName;
+    std::string opt_filterExpression;
+    std::string opt_outputFileName = "_out_";
     std::string opt_outputFormat;  //TBD vec, splitvec, octave, split octave (and for octave: x, y, both),...
     std::vector<std::string> opt_filterList;
     std::vector<std::string> opt_fileNames;
@@ -108,16 +111,8 @@ int filterCommand(int argc, char **argv)
             opt_fileNames.push_back(argv[i]);
         else if (!strcmp(opt, "--"))
             endOpts = true;
-        else if (!strcmp(opt, "-n") && i!=argc-1)
-            opt_statisticNamePattern = argv[++i];
-        else if (!strcmp(opt, "-m") && i!=argc-1)
-            opt_moduleNamePattern = argv[++i];
-        else if (!strcmp(opt, "-r") && i!=argc-1)
-            opt_runIdPattern = argv[++i];
-        else if (!strcmp(opt, "-c") && i!=argc-1)
-            opt_configurationIdPattern = argv[++i];
-        else if (!strcmp(opt, "-f") && i!=argc-1)
-            opt_filenamePattern = argv[++i];
+        else if (!strcmp(opt, "-p") && i!=argc-1)
+            opt_filterExpression = unquoteString(argv[++i]);
         else if (!strcmp(opt, "-a") && i!=argc-1)
             opt_filterList.push_back(argv[++i]);
         else if (!strcmp(opt, "-O") && i!=argc-1)
@@ -168,32 +163,10 @@ int filterCommand(int argc, char **argv)
             }
         }
 
-        // get matching fileRuns
-        RunList runList = resultFileManager.filterRunList(
-                            resultFileManager.getRuns(),
-                            opt_runIdPattern.c_str(),
-                            opt_runAttrPatterns);
-        if (opt_verbose) printf("run filter matches %d runs\n", runList.size());
+        // filter statistics
+        IDList vectorIDList = resultFileManager.filterIDList(resultFileManager.getAllVectors(), opt_filterExpression.c_str());
+        IDList scalarIDList = resultFileManager.filterIDList(resultFileManager.getAllScalars(), opt_filterExpression.c_str());
 
-        ResultFileList fileList = resultFileManager.filterFileList(
-                            resultFileManager.getFiles(),
-                            opt_filenamePattern.c_str());
-        if (opt_verbose) printf("filename filter matches %d files\n", fileList.size());
-
-        FileRunList fileRunList = resultFileManager.getFileRuns(&fileList, &runList);
-        if (opt_verbose) printf("total %d matching file-runs\n", fileRunList.size());
-
-        // filter statistics by module and name
-        IDList vectorIDList = resultFileManager.filterIDList(
-                            resultFileManager.getAllVectors(),
-                            &fileRunList,
-                            opt_moduleNamePattern.c_str(),
-                            opt_statisticNamePattern.c_str());
-        IDList scalarIDList = resultFileManager.filterIDList(
-                            resultFileManager.getAllScalars(),
-                            &fileRunList,
-                            opt_moduleNamePattern.c_str(),
-                            opt_statisticNamePattern.c_str());
         if (opt_verbose) printf("module and name filter matches %d vectors and %d scalars\n",
                             vectorIDList.size(), scalarIDList.size());
 
@@ -248,7 +221,8 @@ int filterCommand(int argc, char **argv)
         {
             // everything goes to a common vector file
             if (opt_verbose) printf("adding vector file writer\n");
-            VectorFileWriterNode *writerNode = new VectorFileWriterNode("_out_.vec", "# generated by scavetool"); //FIXME for now
+            std::string fileName = opt_outputFileName + ".vec";
+            VectorFileWriterNode *writerNode = new VectorFileWriterNode(fileName.c_str(), "# generated by scavetool");
             dataflowManager.addNode(writerNode);
             for (int i=0; i<vectorIDList.size(); i++)
             {
@@ -264,7 +238,7 @@ int filterCommand(int argc, char **argv)
             for (int i=0; i<vectorIDList.size(); i++)
             {
                 char buf[16];
-                std::string fname = std::string("_out_")+itoa(i,buf,10)+".out";
+                std::string fname = opt_outputFileName+itoa(i,buf,10)+".vec";
                 const VectorResult& vector = resultFileManager.getVector(vectorIDList.get(i));
 
                 std::stringstream header;
@@ -312,13 +286,13 @@ int filterCommand(int argc, char **argv)
                     for (int i=0; i<vectorIDList.size(); i++)
                     {
                         const VectorResult& vector = resultFileManager.getVector(vectorIDList.get(i));
-                        std::string uniqueName = *vector.nameRef; // TODO
+                        std::string name = *vector.nameRef;
                         std::string descr = *vector.nameRef + "; "
                                           + *vector.moduleNameRef + "; "
                                           + vector.fileRunRef->fileRef->fileSystemFilePath + "; "
                                           + vector.fileRunRef->runRef->runName;
                         XYArray *xyArray = arrayBuilders[i]->getArray();
-                        exporter->saveVector(uniqueName, descr, xyArray);
+                        exporter->saveVector(name, descr, xyArray);
                         delete xyArray;
                     }
                     // write scalars

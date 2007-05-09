@@ -80,7 +80,7 @@ double XYDataTable::getDoubleValue(int row, int col) const
  *          Scalars
  *================================*/
 ScalarDataTable::ScalarDataTable(const std::string name, const std::string description,
-            IDList idlist, ScalarFields groupBy, ResultFileManager &manager)
+            const IDList &idlist, ScalarFields groupBy, ResultFileManager &manager)
             : DataTable(name, description), manager(manager)
 {
     ScalarDataSorter sorter(&manager);
@@ -93,7 +93,7 @@ ScalarDataTable::ScalarDataTable(const std::string name, const std::string descr
     if (groupBy.hasField(ScalarFields::NAME))   header.push_back(Column("Name", STRING));
 
     // add a column for each column in scalars headed by the non-grouping fields
-    const IDVector firstRow = scalars[0];
+    const IDVector firstRow = scalars[0]; // XXX empty idlist?
     for (int col = 0; col < firstRow.size(); ++col)
     {
         ID id = -1;
@@ -205,7 +205,7 @@ void ScaveExport::saveVector(const string name, const string description, const 
     saveTable(table, startIndex, endIndex);
 }
 
-void ScaveExport::saveScalars(const string name, const string description, IDList scalars, ScalarFields groupBy, ResultFileManager &manager)
+void ScaveExport::saveScalars(const string name, const string description, const IDList &scalars, ScalarFields groupBy, ResultFileManager &manager)
 {
     const ScalarDataTable table(name, description, scalars, groupBy, manager);
     saveTable(table, 0, table.numOfRows());
@@ -248,12 +248,14 @@ string MatlabStructExport::makeUniqueIdentifier(const string &name)
 string MatlabStructExport::quoteString(const string &str)
 {
     string result;
+    result.push_back('"');
     for (string::const_iterator it = str.begin(); it != str.end(); ++it)
     {
         if (*it == '\\' || *it == '\"')
-            result.append(1, '\\');
-        result.append(1, *it);
+            result.push_back('\\');
+        result.push_back(*it);
     }
+    result.push_back('"');
 
     return result;
 }
@@ -290,7 +292,7 @@ void MatlabScriptExport::saveTable(const DataTable &table, int startRow, int end
 
 void MatlabScriptExport::writeDescriptionField(const DataTable &table, const string tableName)
 {
-    out << tableName << ".description=" << '"' << quoteString(table.description) << '"' << '\n';
+    out << tableName << ".description=" << quoteString(table.description) << '\n';
 }
 
 void MatlabScriptExport::writeColumnFields(const DataTable &table, int startRow, int endRow, const string tableName)
@@ -531,13 +533,13 @@ void CsvExport::writeBigDecimal(BigDecimal value)
 
 void CsvExport::writeString(const string &value)
 {
-    if (value.find(',') != string::npos || value.find('"') != string::npos || value.find("\r\n") != string::npos)
+    if (value.find_first_of(",\"\r\n") != string::npos)
     {
         out << '"';
         for (string::const_iterator it = value.begin(); it != value.end(); ++it)
         {
             out << *it;
-            if (*it == '"') out << '"';
+            if (*it == '"') out << '"'; // " -> ""
         }
         out << '"';
     }
