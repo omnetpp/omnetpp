@@ -17,7 +17,8 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 
 /**
- * Checkbox-based editor for boolean inifile entries.
+ * Checkbox-based editor for boolean inifile entries. This editor commits changes
+ * immediately, not only on losing the focus.
  * 
  * NOTE: This class edits the [General] section ONLY. All other sections
  * are ignored. For example, the Reset button only removes the setting
@@ -26,13 +27,11 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
  * 
  * @author Andras
  */
-//XXX currently it only commits on losing the focus. Change it to commit automatically?
 public class CheckboxFieldEditor extends FieldEditor {
 	private Button checkbox;
 	private Label label;
 	private Label problemDecorationLabel;
 	private Button resetButton;
-	private boolean isEdited;
 	private String section = GENERAL;
 
 	public CheckboxFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, FormPage formPage, String labelText) {
@@ -63,10 +62,8 @@ public class CheckboxFieldEditor extends FieldEditor {
 		// enable Reset button on editing
 		checkbox.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				if (!isEdited) {
-					isEdited = true;
-					resetButton.setEnabled(true);
-				}
+				commit();
+				resetButton.setEnabled(true);
 			}
 		});
 		
@@ -90,12 +87,10 @@ public class CheckboxFieldEditor extends FieldEditor {
 			resetButton.setEnabled(true);
 		}
 
-		isEdited = false;
-
 		// update problem decoration
 		IMarker[] markers = InifileUtils.getProblemMarkersFor(section, entry.getKey(), inifile);
-//		problemDecorationLabel.setImage(getProblemImage(markers, true));
-		problemDecorationLabel.setImage(checkbox.getSelection() ? ICON_ERROR_SMALL : null); //XXX
+		//problemDecorationLabel.setImage(checkbox.getSelection() ? ICON_ERROR_SMALL : null); //XXX for testing
+		problemDecorationLabel.setImage(getProblemImage(markers, true));
 		
 		problemDecorationLabel.setToolTipText(getProblemsText(markers));
 		problemDecorationLabel.setVisible(problemDecorationLabel.getImage()!=null);
@@ -110,10 +105,7 @@ public class CheckboxFieldEditor extends FieldEditor {
 
 	@Override
 	public void commit() {
-		if (isEdited) {
-			boolean value = checkbox.getSelection();
-			setValueInFile(section, value ? "true" : "false");
-			isEdited = false;
-		}
+		boolean value = checkbox.getSelection();
+		setValueInFile(section, value ? "true" : "false");
 	}
 }
