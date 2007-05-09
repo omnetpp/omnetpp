@@ -33,14 +33,14 @@ public abstract class FieldEditor extends Composite {
 	public static final Color BGCOLOR = InifileFormEditor.BGCOLOR;
 	public static final Image ICON_ERROR_SMALL = InifileEditorPlugin.getImage("icons/full/ovr16/error2.gif");
 	public static final Image ICON_WARNING_SMALL = InifileEditorPlugin.getImage("icons/full/ovr16/warning.gif");
-	public static final Image ICON_INFO_SMALL = InifileEditorPlugin.getImage("icons/full/ovr16/warning.gif"); //XXX
+	public static final Image ICON_INFO_SMALL = InifileEditorPlugin.getImage("icons/full/ovr16/info.gif");
 	public static final Image ICON_ERROR = InifileEditorPlugin.getImage("icons/full/obj16/Error.png");
 	public static final Image ICON_WARNING = InifileEditorPlugin.getImage("icons/full/obj16/Warning.png");
-	public static final Image ICON_INFO = InifileEditorPlugin.getImage("icons/full/obj16/Warning.png"); //XXX
+	public static final Image ICON_INFO = InifileEditorPlugin.getImage("icons/full/obj16/Info.gif");
 	
 	protected ConfigurationEntry entry;
 	protected IInifileDocument inifile;
-	protected FormPage formPage; //XXX unfortunately we need it, to be able to call setEditorSelection()
+	protected FormPage formPage; // to be able to call setEditorSelection()
 	
 	protected TooltipSupport tooltipSupport;
 

@@ -57,7 +57,7 @@ public class TextFieldEditor extends FieldEditor {
 		// child widgets
 		label = createLabel(entry, labelText+":");
 		contentAssistField = createContentAssistField();
-		contentAssistField.addFieldDecoration(problemDecoration, SWT.LEFT | SWT.BOTTOM, false);
+		contentAssistField.addFieldDecoration(problemDecoration, SWT.LEFT | SWT.TOP, false);
 		textField = (Text) contentAssistField.getControl();
 		tooltipSupport.adapt(textField);
 		resetButton = createResetButton();
@@ -117,7 +117,7 @@ public class TextFieldEditor extends FieldEditor {
 		
 		// update problem decoration
 		IMarker[] markers = InifileUtils.getProblemMarkersFor(section, entry.getKey(), inifile);
-		problemDecoration.setImage(getProblemImage(markers, false));
+		problemDecoration.setImage(getProblemImage(markers, true));
 		problemDecoration.setDescription(getProblemsText(markers));
 		contentAssistField.updateDecoration(problemDecoration);
 		

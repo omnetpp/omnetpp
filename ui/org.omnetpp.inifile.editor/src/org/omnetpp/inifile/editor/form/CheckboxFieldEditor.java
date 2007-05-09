@@ -54,7 +54,7 @@ public class CheckboxFieldEditor extends FieldEditor {
 
 		checkbox.setLayoutData(new GridData());
 		label.setLayoutData(new GridData());
-		problemDecorationLabel.setLayoutData(new GridData());
+		problemDecorationLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false)); // align top
 		((GridData)problemDecorationLabel.getLayoutData()).widthHint = 8; 
 		resetButton.setLayoutData(new GridData());
 

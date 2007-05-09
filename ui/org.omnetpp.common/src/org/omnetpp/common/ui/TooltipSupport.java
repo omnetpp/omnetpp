@@ -24,7 +24,7 @@ import org.eclipse.ui.editors.text.EditorsUI;
  * limitations which makes it unsuitable for presenting large multi-line
  * tooltips:
  *   - tends to wrap long lines (SWT's Tooltip class does that too)
- *   - tooltip disappears after about 5s (Windows), which is not enough to
+ *   - tooltip disappears after about 5s (Windows), which is not enough time to
  *     read long texts
  *   - lazy generation of tooltip text is not possible (there's no such thing 
  *     as TooltipAboutToShowListener)
@@ -155,8 +155,8 @@ public class TooltipSupport {
 			@SuppressWarnings("restriction")
 			public IInformationControl createInformationControl(Shell parent) {
 				// for more info, see JavadocHover class in JDT
-				int shellStyle= SWT.TOOL;
-				int style= SWT.NONE;
+				int shellStyle = SWT.TOOL;
+				int style = SWT.NONE;
 				if (BrowserInformationControl.isAvailable(parent))
 					return new BrowserInformationControl(parent, shellStyle, style, EditorsUI.getTooltipAffordanceString());
 				else
@@ -173,8 +173,8 @@ public class TooltipSupport {
 			@SuppressWarnings("restriction")
 			public IInformationControl createInformationControl(Shell parent) {
 				// for more info, see JavadocHover class in JDT
-				int shellStyle= SWT.RESIZE | SWT.TOOL;
-				int style= SWT.V_SCROLL | SWT.H_SCROLL;
+				int shellStyle = SWT.RESIZE | SWT.TOOL;
+				int style = SWT.V_SCROLL | SWT.H_SCROLL;
 				if (BrowserInformationControl.isAvailable(parent))
 					return new BrowserInformationControl(parent, shellStyle, style);
 				else
