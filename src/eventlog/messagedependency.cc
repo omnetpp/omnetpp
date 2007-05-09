@@ -43,7 +43,9 @@ MessageDependency::MessageDependency(IEventLog *eventLog,
 BeginSendEntry *MessageDependency::getCauseBeginSendEntry()
 {
     Assert(causeBeginSendEntryNumber != -1);
-    return (BeginSendEntry *)getCauseEvent()->getEventLogEntry(causeBeginSendEntryNumber);
+    IEvent *event = getCauseEvent();
+    Assert(event);
+    return (BeginSendEntry *)event->getEventLogEntry(causeBeginSendEntryNumber);
 }
 
 long MessageDependency::getCauseEventNumber()
@@ -78,7 +80,9 @@ simtime_t MessageDependency::getCauseTime()
 BeginSendEntry *MessageDependency::getConsequenceBeginSendEntry()
 {
     Assert(consequenceBeginSendEntryNumber != -1);
-    return (BeginSendEntry *)getConsequenceEvent()->getEventLogEntry(consequenceBeginSendEntryNumber);
+    IEvent *event = getConsequenceEvent();
+    Assert(event);
+    return (BeginSendEntry *)event->getEventLogEntry(consequenceBeginSendEntryNumber);
 }
 
 long MessageDependency::getConsequenceEventNumber()
@@ -243,6 +247,26 @@ FilteredMessageDependency::~FilteredMessageDependency()
 FilteredMessageDependency *FilteredMessageDependency::duplicate(IEventLog *eventLog)
 {
     return new FilteredMessageDependency(eventLog, beginMessageDependency->duplicate(eventLog), endMessageDependency->duplicate(eventLog));
+}
+
+IEvent *FilteredMessageDependency::getCauseEvent()
+{
+    long causeEventNumber = beginMessageDependency->getCauseEventNumber();
+
+    if (causeEventNumber < 0)
+        return NULL;
+    else
+        return eventLog->getEventForEventNumber(causeEventNumber);
+}
+
+IEvent *FilteredMessageDependency::getConsequenceEvent()
+{
+    long consequenceEventNumber = endMessageDependency->getConsequenceEventNumber();
+
+    if (consequenceEventNumber < 0)
+        return NULL;
+    else
+        return eventLog->getEventForEventNumber(consequenceEventNumber);
 }
 
 void FilteredMessageDependency::print(FILE *file)

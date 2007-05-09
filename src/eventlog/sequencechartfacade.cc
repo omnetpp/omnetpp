@@ -35,14 +35,13 @@ SequenceChartFacade::SequenceChartFacade(IEventLog *eventLog) : EventLogFacade(e
 
 void SequenceChartFacade::relocateTimelineCoordinateSystem(IEvent *event)
 {
+    Assert(event);
+
     timelineCoordinateSystemVersion++;
     timelineCoordinateOriginEventNumber = timelineCoordinateRangeStartEventNumber = timelineCoordinateRangeEndEventNumber = event->getEventNumber();
     timelineCoordinateOriginSimulationTime = event->getSimulationTime().dbl();
-
-    if (event) {
-        event->cachedTimelineCoordinate = 0;
-        event->cachedTimelineCoordinateSystemVersion = timelineCoordinateSystemVersion;
-    }
+    event->cachedTimelineCoordinate = 0;
+    event->cachedTimelineCoordinateSystemVersion = timelineCoordinateSystemVersion;
 }
 
 void SequenceChartFacade::setTimelineMode(TimelineMode timelineMode)

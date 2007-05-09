@@ -18,6 +18,8 @@
 
 char EventLogEntry::buffer[128];
 LineTokenizer EventLogEntry::tokenizer(32768);
+static const char *lastLine;
+static int lastLineLength;
 
 EventLogEntry::EventLogEntry()
 {
@@ -26,6 +28,9 @@ EventLogEntry::EventLogEntry()
 
 EventLogEntry *EventLogEntry::parseEntry(Event *event, char *line, int length)
 {
+    lastLine = line;
+    lastLineLength = length;
+
     if (*line == '-')
     {
         EventLogMessageEntry *eventLogMessage = new EventLogMessageEntry(event);
@@ -61,7 +66,7 @@ char *EventLogTokenBasedEntry::getToken(char **tokens, int numTokens, const char
             return tokens[i + 1];
 
     if (mandatory)
-        throw opp_runtime_error("Missing mandatory token %s", sign);
+        throw opp_runtime_error("Missing mandatory token %s in line %.*s", sign, lastLineLength, lastLine);
 
     return NULL;
 }

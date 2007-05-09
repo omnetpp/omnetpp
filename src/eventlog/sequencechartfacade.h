@@ -43,10 +43,13 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
         SequenceChartFacade(IEventLog *eventLog);
         virtual ~SequenceChartFacade() {}
 
+        void setEventLog(IEventLog *eventLog) { this->eventLog = eventLog; }
+
         TimelineMode getTimelineMode() { return timelineMode; }
         void setTimelineMode(TimelineMode timelineMode);
 
         IEvent *getTimelineCoordinateSystemOriginEvent() { return eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber); }
+        long getTimelineCoordinateSystemOriginEventNumber() { return timelineCoordinateOriginEventNumber; }
         double getNonLinearTimelineCoordinateDelta(double simulationTimeDelta);
         /**
          * Calculates the timeline coordinate for the given event. Returns value from the cache if already there or calculates it

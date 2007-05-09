@@ -89,16 +89,16 @@ bool EventLogFacade::Event_isSelfEvent(int64 ptr)
     return ((IEvent*)ptr)->isSelfEvent();
 }
 
-MessageDependency* EventLogFacade::MessageDependency_getMessageDependency(int64 ptr)
+IMessageDependency *EventLogFacade::MessageDependency_getMessageDependency(int64 ptr)
 {
     PTR(ptr);
-    return (MessageDependency*)ptr;
+    return (IMessageDependency*)ptr;
 }
 
 const char *EventLogFacade::MessageDependency_getMessageName(int64 ptr)
 {
     PTR(ptr);
-    return ((MessageDependency*)ptr)->getBeginSendEntry()->messageFullName;
+    return ((IMessageDependency*)ptr)->getBeginSendEntry()->messageFullName;
 }
 
 const char *EventLogFacade::FilteredMessageDependency_getBeginMessageName(int64 ptr)
@@ -126,29 +126,29 @@ MessageDependencyKind EventLogFacade::MessageDependency_getKind(int64 ptr)
 bool EventLogFacade::MessageDependency_isMessageSend(int64 ptr)
 {
     PTR(ptr);
-    return dynamic_cast<MessageSend*>((MessageDependency*)ptr);
+    return dynamic_cast<MessageSend*>((IMessageDependency*)ptr);
 }
 
 bool EventLogFacade::MessageDependency_isMessageReuse(int64 ptr)
 {
     PTR(ptr);
-    return dynamic_cast<MessageReuse*>((MessageDependency*)ptr);
+    return dynamic_cast<MessageReuse*>((IMessageDependency*)ptr);
 }
 
 bool EventLogFacade::MessageDependency_isFilteredMessageDependency(int64 ptr)
 {
     PTR(ptr);
-    return dynamic_cast<FilteredMessageDependency*>((MessageDependency*)ptr);
+    return dynamic_cast<FilteredMessageDependency*>((IMessageDependency*)ptr);
 }
 
 int64 EventLogFacade::MessageDependency_getCauseEvent(int64 ptr)
 {
     PTR(ptr);
-    return (int64)((MessageDependency*)ptr)->getCauseEvent();
+    return (int64)((IMessageDependency*)ptr)->getCauseEvent();
 }
 
 int64 EventLogFacade::MessageDependency_getConsequenceEvent(int64 ptr)
 {
     PTR(ptr);
-    return (int64)((MessageDependency*)ptr)->getConsequenceEvent();
+    return (int64)((IMessageDependency*)ptr)->getConsequenceEvent();
 }

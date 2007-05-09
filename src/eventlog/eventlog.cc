@@ -226,10 +226,6 @@ Event *EventLog::getEventForBeginOffset(file_offset_t beginOffset)
     Assert(beginOffset >= 0);
     OffsetToEventMap::iterator it = offsetToEventMap.find(beginOffset);
 
-    long eventNumber;
-    file_offset_t lineStartOffset, lineEndOffset;
-    simtime_t simulationTime;
-
     if (it != offsetToEventMap.end())
         return it->second;
     else if (reader->getFileSize() != beginOffset)

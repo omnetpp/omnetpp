@@ -145,10 +145,10 @@ class EVENTLOG_API FilteredMessageDependency : public IMessageDependency
         IMessageDependency *getEndMessageDependency() { return endMessageDependency; }
 
         virtual long getCauseEventNumber() { return beginMessageDependency->getCauseEventNumber(); }
-        virtual IEvent *getCauseEvent() { return beginMessageDependency->getCauseEvent(); }
+        virtual IEvent *getCauseEvent();
 
         virtual long getConsequenceEventNumber() { return endMessageDependency->getConsequenceEventNumber(); }
-        virtual IEvent *getConsequenceEvent() { return endMessageDependency->getConsequenceEvent(); }
+        virtual IEvent *getConsequenceEvent();
 
         virtual simtime_t getCauseTime() { return beginMessageDependency->getCauseTime(); };
         virtual simtime_t getConsequenceTime() { return endMessageDependency->getConsequenceTime(); };

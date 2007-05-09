@@ -127,7 +127,9 @@ IMessageDependency *FilteredEvent::getCause()
                     if (messageDependency == causeMessageDependency)
                         cause = messageDependency->duplicate(filteredEventLog);
                     else
-                        cause = new FilteredMessageDependency(filteredEventLog, messageDependency, causeMessageDependency);
+                        cause = new FilteredMessageDependency(filteredEventLog,
+                                                              messageDependency->duplicate(filteredEventLog->getEventLog()),
+                                                              causeMessageDependency->duplicate(filteredEventLog->getEventLog()));
                 }
 
                 causeEvent = causeEvent->getCauseEvent();
@@ -167,8 +169,9 @@ IMessageDependencyList *FilteredEvent::getCauses(IEvent *event, IMessageDependen
             if (level == 0)
                 causes->push_back(messageDependency->duplicate(filteredEventLog));
             else
-                // TODO: this makes the middle numbers -1 sometimes 
-                causes->push_back(new FilteredMessageDependency(filteredEventLog, messageDependency, endMessageDependency));
+                causes->push_back(new FilteredMessageDependency(filteredEventLog,
+                                                                messageDependency->duplicate(filteredEventLog->getEventLog()),
+                                                                endMessageDependency->duplicate(filteredEventLog->getEventLog())));
         }
         else if (level < filteredEventLog->getMaxCauseDepth())
             getCauses(causeEvent,
@@ -209,8 +212,9 @@ IMessageDependencyList *FilteredEvent::getConsequences(IEvent *event, IMessageDe
             if (level == 0)
                 consequences->push_back(messageDependency->duplicate(filteredEventLog));
             else
-                // TODO: this makes the middle numbers -1 sometimes 
-                consequences->push_back(new FilteredMessageDependency(filteredEventLog, beginMessageDependency, messageDependency));
+                consequences->push_back(new FilteredMessageDependency(filteredEventLog,
+                                        beginMessageDependency->duplicate(filteredEventLog->getEventLog()),
+                                        messageDependency->duplicate(filteredEventLog->getEventLog())));
         }
         else if (level < filteredEventLog->getMaxConsequenceDepth())
             getConsequences(consequenceEvent,

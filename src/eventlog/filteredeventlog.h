@@ -53,9 +53,6 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         int maxCauseDepth; // maximum number of message dependencies considered when collecting causes
         int maxConsequenceDepth; // maximum number of message dependencies considered when collecting consequences
 
-        // state
-        long numEventsApproximation;
-
         typedef std::map<long, FilteredEvent *> EventNumberToFilteredEventMap;
         EventNumberToFilteredEventMap eventNumberToFilteredEventMap;
 
@@ -115,11 +112,19 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         virtual void printInitializationLogEntries(FILE *file = stdout) {  eventLog->printInitializationLogEntries(file); }
 
     protected:
+        /**
+         * Caches the given filtered event in the event cache if not present yet.
+         * The event must be known to match this filter.
+         */
         FilteredEvent *cacheFilteredEvent(long eventNumber);
-        FilteredEvent *cacheFilteredEvent(FilteredEvent *filteredEvent);
+
+        /**
+         * Checks whether the given event matches this filter.
+         */
         bool matchesEvent(IEvent *event);
         bool matchesDependency(IEvent *event);
         bool matchesPatterns(std::vector<PatternMatcher> &patterns, const char *str);
+
         template <typename T> bool matchesList(std::vector<T> &elements, T element);
         bool isCauseOfTracedEvent(IEvent *cause);
         bool isConsequenceOfTracedEvent(IEvent *consequence);

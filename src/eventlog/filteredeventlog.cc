@@ -29,7 +29,7 @@ FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
     approximateMatchingEventRatio = -1;
     firstMatchingEvent = NULL;
     lastMatchingEvent = NULL;
-    maxCauseDepth = maxConsequenceDepth = 100;
+    maxCauseDepth = maxConsequenceDepth = 10;
 }
 
 FilteredEventLog::~FilteredEventLog()
@@ -268,23 +268,34 @@ FilteredEvent *FilteredEventLog::getEventForEventNumber(long eventNumber, MatchK
 {
     Assert(eventNumber >= 0);
 
-    if (matchKind == EXACT) {
-        EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.find(eventNumber);
+    EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.find(eventNumber);
 
-        if (it != eventNumberToFilteredEventMap.end())
-            return it->second;
-    }
+    if (it != eventNumberToFilteredEventMap.end())
+        return it->second;
 
     IEvent *event = eventLog->getEventForEventNumber(eventNumber, matchKind);
 
-    // TODO: make it similar to getEventForSimulationTime!
     if (event) {
-        if (matchKind == EXACT) {
-            if (matchesFilter(event))
-                return cacheFilteredEvent(eventNumber);
+        switch (matchKind) {
+            case EXACT:
+                if (matchesFilter(event))
+                    return cacheFilteredEvent(event->getEventNumber());
+                break;
+            case FIRST_OR_PREVIOUS:
+                if (event->getEventNumber() == eventNumber && matchesFilter(event))
+                    return cacheFilteredEvent(event->getEventNumber());
+                else
+                    return getMatchingEventInDirection(event->getEventNumber(), false);
+            case FIRST_OR_NEXT:
+                return getMatchingEventInDirection(event->getEventNumber(), true);
+            case LAST_OR_PREVIOUS:
+                return getMatchingEventInDirection(event->getEventNumber(), false);
+            case LAST_OR_NEXT:
+                if (event->getEventNumber() == eventNumber && matchesFilter(event))
+                    return cacheFilteredEvent(event->getEventNumber());
+                else
+                    return getMatchingEventInDirection(event->getEventNumber(), true);
         }
-        else
-            return getMatchingEventInDirection(event->getEventNumber(), matchKind == LAST_OR_NEXT);
     }
 
     return NULL;
@@ -303,10 +314,10 @@ FilteredEvent *FilteredEventLog::getEventForSimulationTime(simtime_t simulationT
             case FIRST_OR_PREVIOUS:
                 if (event->getSimulationTime() == simulationTime) {
                     IEvent *lastEvent = eventLog->getEventForSimulationTime(simulationTime, LAST_OR_NEXT);
-                    IEvent *matchingEvent = getMatchingEventInDirection(event->getEventNumber(), lastEvent->getEventNumber(), true);
+                    FilteredEvent *matchingEvent = getMatchingEventInDirection(event->getEventNumber(), lastEvent->getEventNumber(), true);
 
                     if (matchingEvent)
-                        return cacheFilteredEvent(matchingEvent->getEventNumber());
+                        return matchingEvent;
                 }
 
                 return getMatchingEventInDirection(event->getEventNumber(), false);
@@ -317,10 +328,10 @@ FilteredEvent *FilteredEventLog::getEventForSimulationTime(simtime_t simulationT
             case LAST_OR_NEXT:
                 if (event->getSimulationTime() == simulationTime) {
                     IEvent *firstEvent = eventLog->getEventForSimulationTime(simulationTime, FIRST_OR_PREVIOUS);
-                    IEvent *matchingEvent = getMatchingEventInDirection(event->getEventNumber(), firstEvent->getEventNumber(), false);
+                    FilteredEvent *matchingEvent = getMatchingEventInDirection(event->getEventNumber(), firstEvent->getEventNumber(), false);
 
                     if (matchingEvent)
-                        return cacheFilteredEvent(matchingEvent->getEventNumber());
+                        return matchingEvent;
                 }
 
                 return getMatchingEventInDirection(event->getEventNumber(), true);
@@ -332,8 +343,14 @@ FilteredEvent *FilteredEventLog::getEventForSimulationTime(simtime_t simulationT
 
 EventLogEntry *FilteredEventLog::findEventLogEntry(EventLogEntry *start, const char *search, bool forward)
 {
-    // TODO:
-    throw opp_runtime_error("Not yet implemented: findEventLogEntry");
+    EventLogEntry *eventLogEntry = start;
+
+    do {
+        eventLogEntry = eventLog->findEventLogEntry(eventLogEntry, search, forward);
+    }
+    while (!matchesFilter(eventLogEntry->getEvent()));
+
+    return eventLogEntry;
 }
 
 FilteredEvent* FilteredEventLog::getMatchingEventInDirection(long eventNumber, bool forward)
@@ -348,14 +365,8 @@ FilteredEvent* FilteredEventLog::getMatchingEventInDirection(long eventNumber, l
 
     while (event)
     {
-        if (matchesFilter(event)) {
-            EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.find(eventNumber);
-
-            if (it != eventNumberToFilteredEventMap.end())
-                return it->second;
-            else
-                return cacheFilteredEvent(eventNumber);
-        }
+        if (matchesFilter(event))
+            return cacheFilteredEvent(eventNumber);
 
         if (forward)
         {
@@ -460,13 +471,13 @@ bool FilteredEventLog::isConsequenceOfTracedEvent(IEvent *consequence)
 
 FilteredEvent* FilteredEventLog::cacheFilteredEvent(long eventNumber)
 {
-    FilteredEvent *filteredEvent = new FilteredEvent(this, eventNumber);
-    cacheFilteredEvent(filteredEvent);
-    return filteredEvent;
-}
+    EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.find(eventNumber);
 
-FilteredEvent* FilteredEventLog::cacheFilteredEvent(FilteredEvent *filteredEvent)
-{
-    eventNumberToFilteredEventMap[filteredEvent->getEventNumber()] = filteredEvent;
-    return filteredEvent;
+    if (it != eventNumberToFilteredEventMap.end())
+        return it->second;
+    else {
+        FilteredEvent *filteredEvent = new FilteredEvent(this, eventNumber);
+        eventNumberToFilteredEventMap[eventNumber] = filteredEvent;
+        return filteredEvent;
+    }
 }
