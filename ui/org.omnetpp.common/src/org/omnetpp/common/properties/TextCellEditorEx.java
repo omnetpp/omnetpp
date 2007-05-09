@@ -130,5 +130,12 @@ public abstract class TextCellEditorEx extends TextCellEditor {
         }
     }
     
+    @Override
+    protected void doSetValue(Object value) {
+        if (value == null )
+            value = "";
+        super.doSetValue(value);
+    }
+    
     protected abstract Object openDialogBox(Control cellEditorWindow);
 }
