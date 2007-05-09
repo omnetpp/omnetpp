@@ -30,7 +30,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 public class CheckboxFieldEditor extends FieldEditor {
 	private Button checkbox;
 	private Label label;
-	private Label problemDecorationLabel;
+	private Label problemDecorationLabel; //XXX use ControlDecoration like in TextFieldEditor
 	private Button resetButton;
 	private String section = GENERAL;
 

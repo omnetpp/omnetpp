@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.omnetpp.common.ui;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.contentassist.SubjectControlContentAssistant;
-import org.eclipse.jface.util.Assert;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
