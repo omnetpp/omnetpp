@@ -1,4 +1,4 @@
-package org.omnetpp.common.properties;
+package org.omnetpp.common.image;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,8 +33,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.CommonPlugin;
-import org.omnetpp.common.image.ImageConverter;
-import org.omnetpp.common.image.ImageFactory;
 
 /**
  * Dialog for selecting an icon.

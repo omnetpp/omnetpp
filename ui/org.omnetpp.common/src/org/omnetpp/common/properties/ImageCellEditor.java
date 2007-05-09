@@ -2,12 +2,16 @@ package org.omnetpp.common.properties;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.DialogCellEditor;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
+import org.omnetpp.common.image.ImageSelectionDialog;
 
-public class ImageCellEditor extends DialogCellEditor {
+public class ImageCellEditor extends TextCellEditorEx {
 
-	public ImageCellEditor() {
+    public ImageCellEditor() {
 		super();
 	}
 
@@ -30,5 +34,5 @@ public class ImageCellEditor extends DialogCellEditor {
 		// dialog cancelled
 		return null;
 	}
-
+	
 }
