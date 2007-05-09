@@ -43,6 +43,7 @@ import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvi
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
+import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.SectionKey;
 
@@ -246,7 +247,7 @@ public class ParametersPage extends FormPage {
 			public String getTooltipFor(Control control, int x, int y) {
 				Item item = tableViewer.getTable().getItem(new Point(x,y));
 				SectionKey entry = (SectionKey) (item==null ? null : item.getData());
-				return entry==null ? null : InifileUtils.getEntryTooltip(entry.section, entry.key, getInifileDocument(), getInifileAnalyzer());
+				return entry==null ? null : InifileHoverUtils.getEntryTooltip(entry.section, entry.key, getInifileDocument(), getInifileAnalyzer());
 			}
 		});
 

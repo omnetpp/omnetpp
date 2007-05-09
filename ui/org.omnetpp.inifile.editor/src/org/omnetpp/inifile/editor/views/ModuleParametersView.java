@@ -43,7 +43,7 @@ import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.actions.ActionExt;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
-import org.omnetpp.inifile.editor.model.InifileUtils;
+import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.SectionKey;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
@@ -140,7 +140,7 @@ public class ModuleParametersView extends AbstractModuleView {
 					ParamResolution res = (ParamResolution) element;
 					if (res.section!=null && res.key!=null) {
 						//XXX make sure "res" and inifile editor refer to the same IFile!!!
-						return InifileUtils.getEntryTooltip(res.section, res.key, inifileDocument, inifileAnalyzer);
+						return InifileHoverUtils.getEntryTooltip(res.section, res.key, inifileDocument, inifileAnalyzer);
 					}
 					else if (res.paramValueNode!=null) {
 						return null; //XXX todo

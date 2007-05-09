@@ -12,7 +12,7 @@ import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
-import org.omnetpp.inifile.editor.model.InifileUtils;
+import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 
 /**
  * Generate completion proposals for inifile config keys.
@@ -51,7 +51,7 @@ public class InifileConfigKeyContentProposalProvider extends ContentProposalProv
 			for (ConfigurationEntry e : ConfigurationRegistry.getEntries()) {
 				if (!section.equals(GENERAL) || e!=CFGID_EXTENDS) {// don't propose "extends" in [General]
 					String content = e.getKey()+(addEqualSign ? " = " : "");
-					result.add(new ContentProposal(content, content, InifileUtils.getConfigTooltip(e, doc)));
+					result.add(new ContentProposal(content, content, InifileHoverUtils.getConfigTooltip(e, doc)));
 				}
 			}
 		}

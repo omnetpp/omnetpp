@@ -22,7 +22,7 @@ import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileChangeListener;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
-import org.omnetpp.inifile.editor.model.InifileUtils;
+import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 
 /**
  * Content outline page for the inifile editor.
@@ -90,7 +90,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 			public String getTooltipFor(Control control, int x, int y) {
 				Item item = getTreeViewer().getTree().getItem(new Point(x,y));
 				String section = (String) (item==null ? null : item.getData());
-				return section==null ? null : InifileUtils.getSectionTooltip(section, inifileDocument, null);
+				return section==null ? null : InifileHoverUtils.getSectionTooltip(section, inifileDocument, null);
 			}
  		});
 		

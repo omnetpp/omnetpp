@@ -1,30 +1,35 @@
 package org.omnetpp.inifile.editor.text.util;
 
 
-import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
 import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.DefaultInformationControl;
-import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.ITextHoverExtension;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
-import org.eclipse.swt.SWT;
+import org.eclipse.jface.text.information.IInformationProviderExtension2;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.editors.text.EditorsUI;
+import org.omnetpp.common.ui.TooltipSupport;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
-import org.omnetpp.inifile.editor.model.InifileUtils;
+import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 
 /**
  * Presents hover information for ini files.
  */
-public class InifileTextHover implements ITextHover, ITextHoverExtension {
+/**
+ * @author Andras
+ *
+ */
+/**
+ * @author Andras
+ *
+ */
+public class InifileTextHover implements ITextHover, ITextHoverExtension, IInformationProviderExtension2 {
 	private InifileEditorData editorData;
+	
 
 	public InifileTextHover(InifileEditorData editorData) {
 		this.editorData = editorData;
@@ -52,9 +57,9 @@ public class InifileTextHover implements ITextHover, ITextHoverExtension {
 		// generate tooltip
 		InifileAnalyzer analyzer = editorData.getInifileAnalyzer();
 		if (key == null)
-			return InifileUtils.getSectionTooltip(section, doc, analyzer);
+			return InifileHoverUtils.getSectionTooltip(section, doc, analyzer);
 		else 
-			return InifileUtils.getEntryTooltip(section, key, doc, analyzer);
+			return InifileHoverUtils.getEntryTooltip(section, key, doc, analyzer);
 	}    
 
 	/* (non-Javadoc)
@@ -71,10 +76,13 @@ public class InifileTextHover implements ITextHover, ITextHoverExtension {
 	 * @see org.eclipse.jface.text.ITextHoverExtension#getHoverControlCreator()
 	 */
 	public IInformationControlCreator getHoverControlCreator() {
-		return new IInformationControlCreator() {
-			public IInformationControl createInformationControl(Shell parent) {
-				return new DefaultInformationControl(parent, SWT.NONE, new HTMLTextPresenter(true), EditorsUI.getTooltipAffordanceString());
-			}
-		};
+		return TooltipSupport.getHoverControlCreator();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.text.information.IInformationProviderExtension2#getInformationPresenterControlCreator()
+	 */
+	public IInformationControlCreator getInformationPresenterControlCreator() {
+		return TooltipSupport.getInformationPresenterControlCreator();
 	}
 }

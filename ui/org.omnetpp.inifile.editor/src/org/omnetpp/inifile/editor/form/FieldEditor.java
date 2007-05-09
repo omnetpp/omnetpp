@@ -21,6 +21,7 @@ import org.omnetpp.common.ui.TooltipSupport;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 
 /**
@@ -84,7 +85,7 @@ public abstract class FieldEditor extends Composite {
 	}
 
 	protected String getTooltipText() {
-		return InifileUtils.getConfigTooltip(entry, inifile);
+		return InifileHoverUtils.getConfigTooltip(entry, inifile);
 //		String tooltip = entry.getDescription();
 //		tooltip += "\n\nConfigures: [General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / "+entry.getKey()+"=...";
 //		IInifileDocument.LineInfo line = inifile.getEntryLineDetails(GENERAL, entry.getKey()); 

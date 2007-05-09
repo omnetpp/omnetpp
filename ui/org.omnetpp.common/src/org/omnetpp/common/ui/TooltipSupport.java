@@ -1,7 +1,10 @@
 package org.omnetpp.common.ui;
 
+import org.eclipse.jface.internal.text.html.BrowserInformationControl;
+import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IInformationControl;
+import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -14,6 +17,7 @@ import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.editors.text.EditorsUI;
 
 /**
  * Provides tooltip for a widget. SWT's Control.setTooltipText() has several
@@ -31,6 +35,7 @@ import org.eclipse.swt.widgets.Shell;
  *   
  * @author Andras
  */
+//XXX rename: HoverSupport!
 //XXX problem: if mouse is near the right-bottom corner of the screen, tooltip comes
 // up right under the mouse cursor, and won't go away on mouse movement. solution: better placement?
 public class TooltipSupport {
@@ -124,19 +129,14 @@ public class TooltipSupport {
 	protected void displayTooltip(Control control, int x, int y) {
 		String tooltipText = tooltipProvider.getTooltipFor(control, x, y);
 		if (tooltipText!=null) {
-			tooltipControl = createInformationControl(control.getShell());
-			tooltipControl.setInformation(" "+tooltipText.replaceAll("\n", "\n ")); // prefix each line with a space, for left margin
+			tooltipControl = getHoverControlCreator().createInformationControl(control.getShell());
+			tooltipControl.setSizeConstraints(320, 200);
+			tooltipControl.setInformation(tooltipText);
 			tooltipControl.setLocation(control.toDisplay(x+5,y+20));
 			Point size = tooltipControl.computeSizeHint();
 			tooltipControl.setSize(size.x+3, size.y+3); // add some right/bottom margin 
 			tooltipControl.setVisible(true);
 		}
-	}
-
-	protected IInformationControl createInformationControl(Shell parent) {
-		DefaultInformationControl defaultInformationControl = new DefaultInformationControl(parent);
-		//XXX return new DefaultInformationControl(parent, SWT.NONE, new HTMLTextPresenter(true), "F2 to focus\n" /*EditorsUI.getTooltipAffordanceString()*/);
-		return defaultInformationControl;
 	}
 
 	protected void removeTooltip() {
@@ -146,6 +146,43 @@ public class TooltipSupport {
 			tooltipControl = null;
 		}
 	}
+
+	/**
+	 * Utility method for ITextHoverExtension.
+	 */
+	public static IInformationControlCreator getHoverControlCreator() {
+		return new IInformationControlCreator() {
+			@SuppressWarnings("restriction")
+			public IInformationControl createInformationControl(Shell parent) {
+				// for more info, see JavadocHover class in JDT
+				int shellStyle= SWT.TOOL;
+				int style= SWT.NONE;
+				if (BrowserInformationControl.isAvailable(parent))
+					return new BrowserInformationControl(parent, shellStyle, style, EditorsUI.getTooltipAffordanceString());
+				else
+					return new DefaultInformationControl(parent, shellStyle, style, new HTMLTextPresenter(false), EditorsUI.getTooltipAffordanceString());
+			}
+		};
+	}
+
+	/**
+	 * Utility method for IInformationProviderExtension2.
+	 */
+	public static IInformationControlCreator getInformationPresenterControlCreator() {
+		return new IInformationControlCreator() {
+			@SuppressWarnings("restriction")
+			public IInformationControl createInformationControl(Shell parent) {
+				// for more info, see JavadocHover class in JDT
+				int shellStyle= SWT.RESIZE | SWT.TOOL;
+				int style= SWT.V_SCROLL | SWT.H_SCROLL;
+				if (BrowserInformationControl.isAvailable(parent))
+					return new BrowserInformationControl(parent, shellStyle, style);
+				else
+					return new DefaultInformationControl(parent, shellStyle, style, new HTMLTextPresenter(false));
+			}
+		};
+	}
+
 }
 
 
