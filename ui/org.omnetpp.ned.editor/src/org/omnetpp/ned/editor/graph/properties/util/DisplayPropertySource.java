@@ -2,14 +2,12 @@ package org.omnetpp.ned.editor.graph.properties.util;
 
 import java.util.EnumSet;
 
-import org.eclipse.swt.graphics.RGB;
-import org.eclipse.ui.views.properties.ColorPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
-import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
+import org.omnetpp.common.properties.ColorPropertyDescriptor;
 import org.omnetpp.common.properties.ImagePropertyDescriptor;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
@@ -123,9 +121,6 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
         if (tagVal == null)
             tagVal = DisplayString.TagInstance.EMPTY_VALUE;
 
-        if(prop.getType() == DisplayString.PropType.COLOR)
-            return ColorFactory.asRGB(tagVal);
-
         return tagVal;
     }
 
@@ -142,9 +137,6 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
 
         // otherwise set a single attribute
         DisplayString.Prop prop = (DisplayString.Prop)propObj;
-        // if it is a color, convert it to string
-        if(value instanceof RGB)
-            value = ColorFactory.asString((RGB)value);
 
         if (value != null)
             displayString.set(prop, value.toString());
