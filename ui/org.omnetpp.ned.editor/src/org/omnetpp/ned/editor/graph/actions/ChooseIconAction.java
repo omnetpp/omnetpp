@@ -9,7 +9,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.common.properties.ImageSelectionDialog;
+import org.omnetpp.common.image.ImageSelectionDialog;
 import org.omnetpp.ned.editor.graph.commands.ChangeDisplayPropertyCommand;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
