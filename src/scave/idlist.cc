@@ -167,6 +167,15 @@ void IDList::checkIntegrityAllVectors(ResultFileManager *mgr) const
         throw opp_runtime_error("These items are not all vectors");
 }
 
+void IDList::checkIntegrityAllHistograms(ResultFileManager *mgr) const
+{
+    checkV();
+    for (V::const_iterator i=v->begin(); i!=v->end(); ++i)
+        mgr->getItem(*i); // this will thow exception if id is not valid
+    if (!areAllHistograms())
+        throw opp_runtime_error("These items are not all histograms");
+}
+
 class CmpBase {
     protected:
        ResultFileManager *mgr;
@@ -468,6 +477,11 @@ bool IDList::areAllScalars() const
 bool IDList::areAllVectors() const
 {
     return itemTypes()==ResultFileManager::VECTOR;
+}
+
+bool IDList::areAllHistograms() const
+{
+    return itemTypes()==ResultFileManager::HISTOGRAM;
 }
 
 void IDList::toByteArray(char *array, int n) const

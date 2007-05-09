@@ -48,6 +48,7 @@ class SCAVE_API IDList
         void checkIntegrity(ResultFileManager *mgr) const;
         void checkIntegrityAllScalars(ResultFileManager *mgr) const;
         void checkIntegrityAllVectors(ResultFileManager *mgr) const;
+        void checkIntegrityAllHistograms(ResultFileManager *mgr) const;
 
     public:
         IDList()  {v = new V;}
@@ -73,6 +74,7 @@ class SCAVE_API IDList
         int itemTypes() const;  // SCALAR, VECTOR or their binary OR
         bool areAllScalars() const;
         bool areAllVectors() const;
+        bool areAllHistograms() const;
         // sorting
         void sortByDirectory(ResultFileManager *mgr, bool ascending);
         void sortByFileName(ResultFileManager *mgr, bool ascending);
