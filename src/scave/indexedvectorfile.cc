@@ -59,7 +59,12 @@ IndexedVectorFileReader::~IndexedVectorFileReader()
 void IndexedVectorFileReader::loadBlock(const Block &block)
 {
     if (reader==NULL)
-        reader=new FileReader(fname.c_str(), vector->blockSize);
+    {
+        size_t bufferSize = vector->blockSize;
+        if (bufferSize < MIN_BUFFER_SIZE)
+            bufferSize = MIN_BUFFER_SIZE;
+        reader=new FileReader(fname.c_str(), bufferSize);
+    }
 
     if (currentBlock == &block)
         return;
