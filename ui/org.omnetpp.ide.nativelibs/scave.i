@@ -14,6 +14,7 @@
 #include "vectorfileindexer.h"
 #include "vectorfilereader.h"
 #include "scaveexception.h"
+#include "export.h"
 %}
 
 %include "commondefs.i"
@@ -162,6 +163,8 @@ namespace std {
 
 
 %typemap(javacode) IDList %{
+    public static final IDList EMPTY = new IDList();
+
     public void swigDisown() {
         swigCMemOwn = false;
     }
@@ -390,3 +393,14 @@ namespace std {
 
 /* ------------------ datasorter.h --------------------- */
 %include "datasorter.h"
+
+/* ------------------ export.h ----------------------- */
+%ignore DataTable;
+%ignore XYDataTable;
+%ignore ScalarDataTable;
+%ignore MatlabStructExport;
+%ignore MatlabScriptExport;
+%ignore OctaveTextExport;
+%ignore CsvExport;
+
+%include "export.h"

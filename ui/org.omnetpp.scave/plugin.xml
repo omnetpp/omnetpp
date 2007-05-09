@@ -120,5 +120,30 @@
            pattern="*.vci"
            selected="false"/>
   </extension>
+  <extension
+        point="org.eclipse.ui.exportWizards">
+     <category
+           id="org.omnetpp.exportWizards"
+           name="OMNEST/OMNeT++">
+     </category>
+     <wizard
+           category="org.omnetpp.exportWizards"
+           class="org.omnetpp.scave.wizard.CsvExportWizard"
+           id="org.omnetpp.scave.wizard.CsvExportWizard"
+           name="Data to CSV file">
+     </wizard>
+     <wizard
+           category="org.omnetpp.exportWizards"
+           class="org.omnetpp.scave.wizard.MatlabExportWizard"
+           id="org.omnetpp.scave.wizard.MatlabExportWizard"
+           name="Data to Matlab script">
+     </wizard>
+     <wizard
+           category="org.omnetpp.exportWizards"
+           class="org.omnetpp.scave.wizard.OctaveExportWizard"
+           id="org.omnetpp.scave.wizard.OctaveExportWizard"
+           name="Data to Octave text file">
+     </wizard>
+  </extension>
 
 </plugin>

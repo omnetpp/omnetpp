@@ -355,6 +355,14 @@ public class ScaveModelUtil {
 	}
 
 	public static IDList getAllIDs(ResultFileManager manager, ResultType type) {
+		if (type == null) {
+			IDList idlist = new IDList();
+			idlist.merge(manager.getAllScalars());
+			idlist.merge(manager.getAllVectors());
+			idlist.merge(manager.getAllHistograms());
+			return idlist;
+		}
+		
 		switch (type.getValue()) {
 		case ResultType.SCALAR: return manager.getAllScalars();
 		case ResultType.VECTOR:	return manager.getAllVectors();

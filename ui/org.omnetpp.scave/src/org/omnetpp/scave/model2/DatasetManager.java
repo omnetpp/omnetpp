@@ -102,13 +102,13 @@ public class DatasetManager {
 		}
 
 		public Object caseAdd(Add add) {
-			if (add.getType() == type)
+			if (type == null || add.getType() == type)
 				idlist.merge(select(null, add));
 			return this;
 		}
 
 		public Object caseDiscard(Discard discard) {
-			if (discard.getType() == type)
+			if (type == null || discard.getType() == type)
 				idlist.substract(select(idlist, discard));
 			return this;
 		}
@@ -306,7 +306,7 @@ public class DatasetManager {
 	public static IDList select(IDList source, List<SelectDeselectOp> filters, ResultFileManager manager, ResultType type) {
 		IDList result = new IDList();
 		for (SelectDeselectOp filter : filters) {
-			if (filter.getType()==type) {
+			if (type == null || filter.getType()==type) {
 				if (filter instanceof Select) {
 					result.merge(select(source, (Select)filter, manager));
 				}

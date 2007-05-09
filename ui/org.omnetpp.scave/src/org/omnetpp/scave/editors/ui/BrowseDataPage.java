@@ -1,7 +1,5 @@
 package org.omnetpp.scave.editors.ui;
 
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -17,13 +15,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.omnetpp.scave.actions.AddFilterToDatasetAction;
-import org.omnetpp.scave.actions.AddSelectedToDatasetAction;
-import org.omnetpp.scave.actions.CopyToClipboardAction;
-import org.omnetpp.scave.actions.CreateTempChartAction;
-import org.omnetpp.scave.actions.IScaveAction;
-import org.omnetpp.scave.actions.ShowVectorBrowserViewAction;
+import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorContributor;
 import org.omnetpp.scave.editors.datatable.ChooseTableColumnsAction;
@@ -202,11 +194,11 @@ public class BrowseDataPage extends ScaveEditorPage {
 			selectionChangeListener = new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					TableItem item = (TableItem)e.item;
-					Object data = item.getData(DataTable.ITEM_KEY);
-					if (data instanceof VectorResult) {
-						scaveEditor.setSelection(new StructuredSelection(data));
+					if (e.getSource() instanceof DataTable) {
+						DataTable table = (DataTable)e.getSource();
+						scaveEditor.setSelection(new IDListSelection(table.getSelectedIDs(), table.getResultFileManager()));
 					}
+					
 				}
 
 				@Override
@@ -216,6 +208,8 @@ public class BrowseDataPage extends ScaveEditorPage {
 				}
 			};
 			vectorsPanel.getTable().addSelectionListener(selectionChangeListener);
+			scalarsPanel.getTable().addSelectionListener(selectionChangeListener);
+			histogramsPanel.getTable().addSelectionListener(selectionChangeListener);
 		}
 	}
 
@@ -227,6 +221,8 @@ public class BrowseDataPage extends ScaveEditorPage {
 		}
 		if (selectionChangeListener != null) {
 			vectorsPanel.getTable().removeSelectionListener(selectionChangeListener);
+			scalarsPanel.getTable().removeSelectionListener(selectionChangeListener);
+			histogramsPanel.getTable().removeSelectionListener(selectionChangeListener);
 			selectionChangeListener = null;
 		}
 	}

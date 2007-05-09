@@ -18,10 +18,13 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.common.virtualtable.VirtualTable;
+import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.datatable.VectorResultContentProvider;
 import org.omnetpp.scave.editors.datatable.VectorResultRowRenderer;
 import org.omnetpp.scave.engine.IndexFile;
 import org.omnetpp.scave.engine.OutputVectorEntry;
+import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.VectorResult;
 
 /**
@@ -128,17 +131,10 @@ public class VectorBrowserView extends ViewWithMessagePart {
 	public void setViewerInput(ISelection selection) {
 		VectorResult selectedVector = null;
 		
-		if (selection instanceof IStructuredSelection) {
-			IStructuredSelection structuredSelection = (IStructuredSelection)selection;
-			if (structuredSelection.size() == 1) {
-				Object selectedObject = structuredSelection.getFirstElement();
-				if (selectedObject instanceof VectorResult) {
-					selectedVector = (VectorResult)selectedObject;
-				}
-				else if (selectedObject instanceof IAdaptable) {
-					selectedVector = (VectorResult)((IAdaptable)selectedObject).getAdapter(VectorResult.class);
-				}
-			}
+		if (selection instanceof IDListSelection) {
+			// show the first selected vector (XXX merge vectors?)
+			IDListSelection idlistSelection = (IDListSelection)selection;
+			selectedVector = idlistSelection.getFirstAsVector();
 		}
 		
 		if (selectedVector != viewer.getInput()) {
