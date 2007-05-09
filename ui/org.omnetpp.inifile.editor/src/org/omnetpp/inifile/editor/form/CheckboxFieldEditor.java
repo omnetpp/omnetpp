@@ -4,6 +4,7 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -30,7 +31,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 public class CheckboxFieldEditor extends FieldEditor {
 	private Button checkbox;
 	private Label label;
-	private Label problemDecorationLabel; //XXX use ControlDecoration like in TextFieldEditor
+	private ControlDecoration problemDecoration;
 	private Button resetButton;
 	private String section = GENERAL;
 
@@ -40,21 +41,20 @@ public class CheckboxFieldEditor extends FieldEditor {
 		Assert.isTrue(entry.getDataType()==ConfigurationEntry.DataType.CFG_BOOL);
 
 		GridLayout gridLayout = new GridLayout(4, false); 
-		gridLayout.marginTop = gridLayout.marginBottom = gridLayout.marginHeight = gridLayout.verticalSpacing = 0;
 		gridLayout.marginHeight = 0;
 		setLayout(gridLayout);
 		
 		checkbox = new Button(this, SWT.CHECK);
 		checkbox.setBackground(BGCOLOR);
 		tooltipSupport.adapt(checkbox);
-		problemDecorationLabel = new Label(this, SWT.NONE);
+		problemDecoration = new ControlDecoration(checkbox, SWT.RIGHT | SWT.TOP);
+		problemDecoration.setShowOnlyOnFocus(false);
 		label = createLabel(entry, labelText);
 		resetButton = createResetButton();
 
 		checkbox.setLayoutData(new GridData());
 		label.setLayoutData(new GridData());
-		problemDecorationLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false)); // align top
-		((GridData)problemDecorationLabel.getLayoutData()).widthHint = 8; 
+		((GridData)label.getLayoutData()).horizontalIndent = 5; // room for the problem decoration
 		resetButton.setLayoutData(new GridData());
 
 		reread();
@@ -89,18 +89,11 @@ public class CheckboxFieldEditor extends FieldEditor {
 
 		// update problem decoration
 		IMarker[] markers = InifileUtils.getProblemMarkersFor(section, entry.getKey(), inifile);
-		//problemDecorationLabel.setImage(checkbox.getSelection() ? ICON_ERROR_SMALL : null); //XXX for testing
-		problemDecorationLabel.setImage(getProblemImage(markers, true));
-		
-		problemDecorationLabel.setToolTipText(getProblemsText(markers));
-		problemDecorationLabel.setVisible(problemDecorationLabel.getImage()!=null);
-		
-		// hide problemDecorationLabel when not visible
-		GridData gridData = (GridData) problemDecorationLabel.getLayoutData();
-		boolean oldExclude = gridData.exclude;
-		gridData.exclude = !problemDecorationLabel.isVisible();
-		if (gridData.exclude != oldExclude) 
-			layout();
+		//problemDecoration.setImage(checkbox.getSelection() ? ICON_ERROR_SMALL : null); //XXX for testing
+		//problemDecoration.setDescriptionText(checkbox.getSelection() ? "Some error" : null); // ditto
+		problemDecoration.setImage(getProblemImage(markers, true));
+		problemDecoration.setDescriptionText(getProblemsText(markers));
+		redraw();
 	}
 
 	@Override

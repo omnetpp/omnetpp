@@ -63,7 +63,7 @@ public class TextFieldEditor extends FieldEditor {
 		label.setLayoutData(new GridData());
 		int width = (entry.getDataType()==DataType.CFG_STRING || entry.getDataType()==DataType.CFG_FILENAME || entry.getDataType()==DataType.CFG_FILENAMES) ? 250 : 80;
 		textField.setLayoutData(new GridData(width, SWT.DEFAULT));
-		((GridData)textField.getLayoutData()).horizontalIndent = 3; // room for decoration
+		((GridData)textField.getLayoutData()).horizontalIndent = 3; // room for the decoration
 		resetButton.setLayoutData(new GridData());
 
 		reread();
