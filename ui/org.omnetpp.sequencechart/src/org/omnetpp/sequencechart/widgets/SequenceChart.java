@@ -112,7 +112,6 @@ public class SequenceChart
 	private static final Color EVENT_BACKGROUND_COLOR = ColorFactory.asColor("red");
 	private static final Color SELF_EVENT_BORDER_COLOR = ColorFactory.asColor("green4");
 	private static final Color SELF_EVENT_BACKGROUND_COLOR = ColorFactory.asColor("green2");
-	private static final Color EVENT_NUMBER_BACKGROUND_COLOR = ColorFactory.asColor("white");
 
 	private static final Color EVENT_SELECTION_COLOR = ColorFactory.asColor("red");
 	private static final Color EVENT_BOOKMARK_COLOR = ColorFactory.asColor("cyan");
@@ -305,7 +304,7 @@ public class SequenceChart
 	 * For LINEAR mode it is <i>second</i> (simulation time), for STEP mode it is <i>event</i>,
 	 * and for NON_LINEAR mode it is calculated as a nonlinear function of simulation time deltas.
 	 */
-	public double getpixelPerTimelineCoordinate() {
+	public double getPixelPerTimelineCoordinate() {
 		return pixelPerTimelineCoordinate;	
 	}
 	
@@ -747,7 +746,7 @@ public class SequenceChart
 	 */
 	public void zoomBy(double zoomFactor) {
 		double time = getViewportCenterSimulationTime();
-		setPixelPerTimelineCoordinate(getpixelPerTimelineCoordinate() * zoomFactor);	
+		setPixelPerTimelineCoordinate(getPixelPerTimelineCoordinate() * zoomFactor);	
 		calculateVirtualSize();
 		clearCanvasCacheAndRedraw();
 		scrollToSimulationTimeWithCenter(time);
@@ -915,6 +914,9 @@ public class SequenceChart
 		for (ModuleTreeItem axisModule : axisModules)
 			setAxisRenderer(axisModule, new AxisLineRenderer(this));
 		calculateAxisModuleIndices();
+
+		if (axisSpacingMode == AxisSpacingMode.AUTO)
+			balanceAxisSpacing();
 
 		axisModuleYs = null;
 		invalidVirtualSize = true;
@@ -1291,10 +1293,8 @@ public class SequenceChart
 				graphics.setLineStyle(SWT.LINE_SOLID);
 				graphics.drawOval(x - 2, y - 3, 5, 7);
 
-				if (showEventNumbers) {
-					graphics.setBackgroundColor(EVENT_NUMBER_BACKGROUND_COLOR);
-					graphics.fillText("#" + sequenceChartFacade.Event_getEventNumber(eventPtr), x + 3, y + 3 + axisRenderers[getEventAxisModuleIndex(eventPtr)].getHeight() / 2);
-				}
+				if (showEventNumbers)
+					graphics.drawText("#" + sequenceChartFacade.Event_getEventNumber(eventPtr), x + 3, y + 3 + axisRenderers[getEventAxisModuleIndex(eventPtr)].getHeight() / 2);
 			}
 			
 			if (eventPtr == endEventPtr)
@@ -1472,9 +1472,12 @@ public class SequenceChart
 	
 					if (startEventNumber <= eventNumber && eventNumber <= endEventNumber) {
 						IEvent bookmarkedEvent = eventLog.getEventForEventNumber(eventNumber);
-			    		int x = getEventXViewportCoordinate(bookmarkedEvent.getCPtr());
-			    		int y = getEventYViewportCoordinate(bookmarkedEvent.getCPtr());
-			    		graphics.drawOval(x - EVENT_SELECTION_RADIUS, y - EVENT_SELECTION_RADIUS, EVENT_SELECTION_RADIUS * 2 + 1, EVENT_SELECTION_RADIUS * 2 + 1);
+						
+						if (bookmarkedEvent != null) {
+				    		int x = getEventXViewportCoordinate(bookmarkedEvent.getCPtr());
+				    		int y = getEventYViewportCoordinate(bookmarkedEvent.getCPtr());
+				    		graphics.drawOval(x - EVENT_SELECTION_RADIUS, y - EVENT_SELECTION_RADIUS, EVENT_SELECTION_RADIUS * 2 + 1, EVENT_SELECTION_RADIUS * 2 + 1);
+						}
 					}
 				}
 			}

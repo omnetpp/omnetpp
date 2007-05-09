@@ -37,8 +37,10 @@ import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.IEvent;
+import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.IMessageDependency;
 import org.omnetpp.eventlog.engine.IntVector;
+import org.omnetpp.eventlog.engine.SequenceChartFacade;
 import org.omnetpp.scave.engine.EnumType;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -329,11 +331,20 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 					}
 
 					EventLogInput eventLogInput = sequenceChart.getInput();
-					FilteredEventLog filteredEventLog = new FilteredEventLog(eventLogInput.getEventLog());
+					IEventLog eventLog = eventLogInput.getEventLog();
+					if (eventLog instanceof FilteredEventLog)
+						eventLog = ((FilteredEventLog)eventLog).getEventLog();
+					
+					FilteredEventLog filteredEventLog = new FilteredEventLog(eventLog);
 					filteredEventLog.setModuleIds(moduleIds);
-					EventLogInput filteredEventLogInput = new EventLogInput(eventLogInput.getFile(), filteredEventLog);
+					eventLogInput.setEventLog(filteredEventLog);
+					
+					SequenceChartFacade sequenceChartFacade = eventLogInput.getSequenceChartFacade();
+					sequenceChartFacade.setEventLog(filteredEventLog);
+					IEvent closestEvent = filteredEventLog.getMatchingEventInDirection(sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber(), true);
+					sequenceChartFacade.relocateTimelineCoordinateSystem(closestEvent);
 
-					sequenceChart.setInput(filteredEventLogInput);
+					sequenceChart.setInput(eventLogInput);
 					sequenceChart.setAxisModules(selectedAxisModules);
 				}
 			}
