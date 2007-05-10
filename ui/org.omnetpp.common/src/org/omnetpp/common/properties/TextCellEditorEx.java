@@ -17,6 +17,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Text;
 
 /**
  * Adds dialog support for normal text cell editor. Derived classes should implement
@@ -26,6 +27,7 @@ import org.eclipse.swt.widgets.Control;
 public abstract class TextCellEditorEx extends TextCellEditor {
     protected Button button;
     private boolean enableApplyOnFocusLost = true;
+    protected Text text;
     
     protected FocusListener textFocusListener = new FocusListener() {
         public void focusGained(FocusEvent e) {
@@ -60,7 +62,7 @@ public abstract class TextCellEditorEx extends TextCellEditor {
         
         cell.setLayout(gridLayout);
 
-        final Control text = super.createControl(cell);
+        text = (Text)super.createControl(cell);
         text.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
         
         button = new Button(cell, SWT.DOWN);

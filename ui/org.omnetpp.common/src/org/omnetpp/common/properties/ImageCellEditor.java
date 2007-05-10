@@ -1,16 +1,34 @@
 package org.omnetpp.common.properties;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.viewers.DialogCellEditor;
-import org.eclipse.swt.SWT;
+import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
+import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
+import org.omnetpp.common.contentassist.ContentProposalProvider;
+import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.image.ImageSelectionDialog;
 
 public class ImageCellEditor extends TextCellEditorEx {
 
+    public class ImageContentProposalProvider extends ContentProposalProvider {
+        public ImageContentProposalProvider() {
+            super(true);
+        }
+
+        @Override
+        protected IContentProposal[] getProposalCandidates(String prefix) {
+            if (prefix.contains("/")) 
+                return toProposals(ImageFactory.getImageNameList().toArray(new String[] {}));
+            else 
+                return toProposals(ImageFactory.getCategories().toArray(new String[] {}));
+        }
+        
+    }
+    
     public ImageCellEditor() {
 		super();
 	}
@@ -23,6 +41,16 @@ public class ImageCellEditor extends TextCellEditorEx {
 		super(parent);
 	}
 
+	@Override
+	protected Control createControl(Composite parent) {
+	    Control result = super.createControl(parent);
+        IContentProposalProvider proposalProvider = new ImageContentProposalProvider();
+        new ContentAssistCommandAdapter(text, new TextContentAdapter(), proposalProvider, 
+                ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, "/".toCharArray(), true);
+
+        return result;
+	}
+	
 	@Override
 	protected Object openDialogBox(Control cellEditorWindow) {
 		ImageSelectionDialog cellDialog = 

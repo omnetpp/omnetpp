@@ -663,10 +663,12 @@ public class ColorFactory {
         RGB tempRgb = asRGB(value);
         // if converison is unsuccessful, return null
         if(tempRgb == null) return null;
-        // put it in the registry for later use
-        str2rgbRegistry.put(value.toLowerCase(), tempRgb);
-        // return it as a Color object
-        return str2rgbRegistry.get(value.toLowerCase());
+        // this might be a problem if we are running on a 256 color display
+        return new Color(null,tempRgb);
+//        // put it in the registry for later use
+//        str2rgbRegistry.put(value.toLowerCase(), tempRgb);
+//        // return it as a Color object
+//        return str2rgbRegistry.get(value.toLowerCase());
     }
 
 	/**
@@ -682,4 +684,11 @@ public class ColorFactory {
     public static Color getGoodLightColor(int i) {
 		return goodLightColors[i % goodLightColors.length];
 	}
+    
+    /**
+     * @return All registered color names
+     */
+    public static String[] getColorNames() {
+        return (String[])str2rgbRegistry.getKeySet().toArray(new String [] {});
+    }
 }

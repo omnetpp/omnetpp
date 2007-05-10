@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -440,5 +441,19 @@ public class ImageFactory {
 
     	return result;
     }
+
+    /**
+     * @return The folder categories found in image name list
+     */
+    public static List<String> getCategories() {
+        Set<String> uniqueFolders = new HashSet<String>();
+        for (String name : imageNameList)
+            if (name.contains("/"))
+                uniqueFolders.add(name.replaceFirst("/.*", "/"));
+        String[] folders = uniqueFolders.toArray(new String[]{});
+        Arrays.sort(folders);
+        return Arrays.asList(folders);
+    }
+
 
 }

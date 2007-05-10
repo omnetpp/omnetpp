@@ -1,10 +1,7 @@
 package org.omnetpp.common.image;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -158,13 +155,7 @@ public class ImageSelectionDialog extends Dialog {
 		ArrayList<String> result = new ArrayList<String>();
 
 		// collect toplevel folders
-		Set<String> uniqueFolders = new HashSet<String>();
-		for (String name : imageNames)
-			if (name.contains("/"))
-				uniqueFolders.add(name.replaceFirst("/.*", "/"));
-		String[] folders = uniqueFolders.toArray(new String[]{});
-		Arrays.sort(folders);
-		result.addAll(Arrays.asList(folders));
+		result.addAll(ImageFactory.getCategories());
 
 		// add all concrete images as well
 		result.addAll(imageNames);

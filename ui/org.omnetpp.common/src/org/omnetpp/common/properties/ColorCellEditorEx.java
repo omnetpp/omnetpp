@@ -1,28 +1,22 @@
 package org.omnetpp.common.properties;
 
+import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.TableTree;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.FontMetrics;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.PaletteData;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.ColorDialog;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Layout;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.Tree;
+import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
+import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.contentassist.ContentProposalProvider;
 
 /**
- * A cell editor that manages a color field.
- * The cell editor's value is the color (an SWT <code>RBG</code>).
+ * A cell editor that manages a color field. using the ColorFactory
+ * Supports content assist function, and direct text editing of the color name
  * <p>
  * This is the copied/modifed version of the platform ColorCellEditor
  * </p>
@@ -30,67 +24,21 @@ import org.omnetpp.common.color.ColorFactory;
 public class ColorCellEditorEx extends TextCellEditorEx {
 
     /**
-     * The default extent in pixels.
-     */
-    private static final int DEFAULT_EXTENT = 16;
-
-    /**
-     * Gap between between image and text in pixels.
-     */
-    private static final int GAP = 6;
-
-    /**
-     * The composite widget containing the color and RGB label widgets
-     */
-    private Composite composite;
-
-    /**
-     * The label widget showing the current color.
-     */
-    private Label colorLabel;
-
-    /**
-     * The label widget showing the RGB values.
-     */
-    private Label rgbLabel;
-
-    /**
      * The image.
      */
     private Image image;
 
-    /**
-     * Internal class for laying out this cell editor.
-     */
-//    private class ColorCellLayout extends Layout {
-//        public Point computeSize(Composite editor, int wHint, int hHint,
-//                boolean force) {
-//            if (wHint != SWT.DEFAULT && hHint != SWT.DEFAULT) {
-//                return new Point(wHint, hHint);
-//            }
-//            Point colorSize = colorLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT,
-//                    force);
-//            Point rgbSize = rgbLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT,
-//                    force);
-//            return new Point(colorSize.x + GAP + rgbSize.x, Math.max(
-//                    colorSize.y, rgbSize.y));
-//        }
-//
-//        public void layout(Composite editor, boolean force) {
-//            Rectangle bounds = editor.getClientArea();
-//            Point colorSize = colorLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT,
-//                    force);
-//            Point rgbSize = rgbLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT,
-//                    force);
-//            int ty = (bounds.height - rgbSize.y) / 2;
-//            if (ty < 0) {
-//                ty = 0;
-//            }
-//            colorLabel.setBounds(-1, 0, colorSize.x, colorSize.y);
-//            rgbLabel.setBounds(colorSize.x + GAP - 1, ty, bounds.width
-//                    - colorSize.x - GAP, bounds.height);
-//        }
-//    }
+    public class ColorContentProposalProvider extends ContentProposalProvider {
+        public ColorContentProposalProvider() {
+            super(true);
+        }
+
+        @Override
+        protected IContentProposal[] getProposalCandidates(String prefix) {
+            return toProposals(ColorFactory.getColorNames());
+        }
+        
+    }
 
     /**
      * Creates a new color cell editor parented under the given control.
@@ -172,21 +120,15 @@ public class ColorCellEditorEx extends TextCellEditorEx {
 //        return data;
 //    }
 
-    /* (non-Javadoc)
-     * Method declared on DialogCellEditor.
-     */
-//    protected Control createContents(Composite cell) {
-//        Color bg = cell.getBackground();
-//        composite = new Composite(cell, getStyle());
-//        composite.setBackground(bg);
-//        composite.setLayout(new ColorCellLayout());
-//        colorLabel = new Label(composite, SWT.LEFT);
-//        colorLabel.setBackground(bg);
-//        rgbLabel = new Label(composite, SWT.LEFT);
-//        rgbLabel.setBackground(bg);
-//        rgbLabel.setFont(cell.getFont());
-//        return composite;
-//    }
+    @Override
+    protected Control createControl(Composite parent) {
+        Control result = super.createControl(parent);
+        IContentProposalProvider proposalProvider = new ColorContentProposalProvider();
+        new ContentAssistCommandAdapter(text, new TextContentAdapter(), proposalProvider, 
+                ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, null, true);
+
+        return result;
+    }
 
     /* (non-Javadoc)
      * Method declared on CellEditor.
@@ -212,26 +154,4 @@ public class ColorCellEditorEx extends TextCellEditorEx {
         return (value == null) ? null : ColorFactory.asString(value);
     }
 
-    /* (non-Javadoc)
-     * Method declared on DialogCellEditor.
-     */
-//    protected void updateContents(Object value) {
-//        RGB rgb = (RGB) value;
-//        // XXX: We don't have a value the first time this method is called".
-//        if (rgb == null) {
-//            rgb = new RGB(0, 0, 0);
-//        }
-//        // XXX: Workaround for 1FMQ0P3: SWT:ALL - TableItem.setImage doesn't work if using the identical image."
-//        if (image != null) {
-//            image.dispose();
-//        }
-//
-//        ImageData id = createColorImage(colorLabel.getParent().getParent(), rgb);
-//        ImageData mask = id.getTransparencyMask();
-//        image = new Image(colorLabel.getDisplay(), id, mask);
-//        colorLabel.setImage(image);
-//
-//        rgbLabel
-//                .setText("xx(" + rgb.red + "," + rgb.green + "," + rgb.blue + ")");//$NON-NLS-4$//$NON-NLS-3$//$NON-NLS-2$//$NON-NLS-1$
-//    }
 }
