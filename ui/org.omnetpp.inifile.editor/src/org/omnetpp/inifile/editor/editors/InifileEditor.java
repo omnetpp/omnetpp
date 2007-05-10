@@ -1,5 +1,6 @@
 package org.omnetpp.inifile.editor.editors;
 
+import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -8,6 +9,9 @@ import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.commands.ActionHandler;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.BadLocationException;
@@ -21,11 +25,14 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IKeyBindingService;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPropertyListener;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
@@ -33,6 +40,7 @@ import org.eclipse.ui.part.IShowInSource;
 import org.eclipse.ui.part.IShowInTargetList;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.ShowInContext;
+import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.ui.SelectionProvider;
@@ -127,6 +135,25 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 				firePropertyChange(propertyId);
 			}
 		});
+		
+//		//XXX experimental
+//		// see registration of InformationDispatchAction in AbstractTextEditor
+//		IAction action = new Action("F2!!!") {
+//			public void run() {
+//				System.out.println("F2 pressed!");
+//			}
+//		};
+//		action.setActionDefinitionId(ITextEditorActionDefinitionIds.SHOW_INFORMATION);
+////		IKeyBindingService keyBindingService = getEditorSite().getKeyBindingService();
+////		keyBindingService.registerAction(action);
+//		
+//		//IWorkbench workbench = PlatformUI.getWorkbench();
+//		//IHandlerService handlerService = (IHandlerService)workbench.getAdapter(IHandlerService.class);
+//		//IHandlerService handlerService = (IHandlerService)getEditorSite().getService(IHandlerService.class);
+//		IHandlerService handlerService = (IHandlerService)textEditor.getEditorSite().getService(IHandlerService.class);
+//		IHandler actionHandler = new ActionHandler(action);
+//		handlerService.activateHandler(ITextEditorActionDefinitionIds.SHOW_INFORMATION, actionHandler);
+//		//handlerService.activateHandler("org.eclipse.ui.edit.text.showInformation", actionHandler);
 		
 		// this DelayedJob will, after a delay, publish a new editor selection towards the workbench
 		postSelectionChangedJob = new DelayedJob(600) {
