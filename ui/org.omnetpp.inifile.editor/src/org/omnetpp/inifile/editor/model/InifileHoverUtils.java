@@ -9,14 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.jface.internal.text.html.BrowserInformationControl;
-import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
-import org.eclipse.jface.text.DefaultInformationControl;
-import org.eclipse.jface.text.IInformationControl;
-import org.eclipse.jface.text.IInformationControlCreator;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.editors.text.EditorsUI;
+import org.omnetpp.common.ui.TooltipSupport;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 import org.omnetpp.ned.model.ex.ParamNodeEx;
@@ -28,42 +21,6 @@ import org.omnetpp.ned.model.pojo.ParamNode;
  * @author Andras
  */
 public class InifileHoverUtils {
-	// Note: this is a copy of the stylesheet used by JDT (we want to avoid depending on the JDT plugins)
-	private static final String HTML_PROLOG = 
-		"<html><head><style CHARSET=\"ISO-8859-1\" TYPE=\"text/css\">\n" +
-		"/* Font definitions*/\n" +
-		"html   { font-family: 'Tahoma',sans-serif; font-size: 8pt; font-style: normal; font-weight: normal; }\n" +
-		"body, h1, h2, h3, h4, h5, h6, p, table, td, caption, th, ul, ol, dl, li, dd, dt { font-size:1em; }\n" +
-		"pre    { font-family: monospace; }\n" +
-		"/* Margins */\n" +
-		"body   { overflow: auto; margin-top: 0px; margin-bottom: 0.5em; margin-left: 0.3em; margin-right: 0px; }\n" +
-		"h1     { margin-top: 0.3em; margin-bottom: 0.04em; }\n" +
-		"h2     { margin-top: 2em; margin-bottom: 0.25em; }\n" +
-		"h3     { margin-top: 1.7em; margin-bottom: 0.25em; }\n" +
-		"h4     { margin-top: 2em; margin-bottom: 0.3em; }\n" +
-		"h5     { margin-top: 0px; margin-bottom: 0px; }\n" +
-		"p      { margin-top: 1em; margin-bottom: 1em; }\n" +
-		"pre    { margin-left: 0.6em; }\n" +
-		"ul     { margin-top: 0px; margin-bottom: 1em; }\n" +
-		"li     { margin-top: 0px; margin-bottom: 0px; }\n" +
-		"li p   { margin-top: 0px; margin-bottom: 0px; }\n" +
-		"ol     { margin-top: 0px; margin-bottom: 1em; }\n" +
-		"dl     { margin-top: 0px; margin-bottom: 1em; }\n" +
-		"dt     { margin-top: 0px; margin-bottom: 0px; font-weight: bold; }\n" +
-		"dd     { margin-top: 0px; margin-bottom: 0px; }\n" +
-		"/* Styles and colors */\n" +
-		"a:link    { color: #0000FF; }\n" +
-		"a:hover   { color: #000080; }\n" +
-		"a:visited { text-decoration: underline; }\n" +
-		"h4        { font-style: italic; }\n" +
-		"strong    { font-weight: bold; }\n" +
-		"em        { font-style: italic; }\n" +
-		"var       { font-style: italic; }\n" +
-		"th        { font-weight: bold; }\n" +
-		"</style></head>\n" + 
-		"<body text=\"#000000\" bgcolor=\"#ffffe1\">\n";
-	private static final String HTML_EPILOG = 
-		"</body></html>\n";
 
 	/**
 	 * Generates tooltip for an inifile section.
@@ -108,7 +65,7 @@ public class InifileHoverUtils {
 				text += "</ul>";
 			}
 		}
-		return addHTMLStyleSheet(text);
+		return TooltipSupport.addHTMLStyleSheet(text);
 	}
 
 	/**
@@ -165,7 +122,7 @@ public class InifileHoverUtils {
 				text += "<br>\nSet in the following sections: <ul><li>"+StringUtils.join(sectionList.toArray(), "</li><li>")+"</li></ul><br>\n";
 		}
 
-		return addHTMLStyleSheet(text);
+		return TooltipSupport.addHTMLStyleSheet(text);
 	}
 
 	/**
@@ -177,7 +134,7 @@ public class InifileHoverUtils {
 		ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
 		if (resList.length==0) {
 			text += "Does not match any module parameters.";
-			return addHTMLStyleSheet(text);
+			return TooltipSupport.addHTMLStyleSheet(text);
 		}
 
 		// merge similar entries
@@ -207,7 +164,7 @@ public class InifileHoverUtils {
 			}
 			text += "</ul>";
 		}
-		return addHTMLStyleSheet(text);
+		return TooltipSupport.addHTMLStyleSheet(text);
 
 //		int n = Math.min(resList.length, 8);
 //		for (int i=0; i<n; i++) {
@@ -226,9 +183,4 @@ public class InifileHoverUtils {
 //		return text;
 	}
 
-	@SuppressWarnings("restriction")
-	private static String addHTMLStyleSheet(String htmlText) {
-		return HTML_PROLOG + htmlText + HTML_EPILOG;
-	}
-	
 }
