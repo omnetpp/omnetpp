@@ -3,10 +3,20 @@ package org.omnetpp.common.color;
 import java.util.HashMap;
 
 import org.eclipse.jface.resource.ColorRegistry;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 
-// TODO HSL support should be added (@HHSSLL format)
+/**
+ * A factory that creates and manages colors using symbolic names or
+ * #RRGGBB or @HHSSBB format
+ * @author rhornig
+ */
 public class ColorFactory {
     public final static Color highlight = new Color(null, 255, 0, 0);
     public final static Color lowlight = new Color(null, 128, 0, 0);
@@ -15,6 +25,7 @@ public class ColorFactory {
 
     private static ColorRegistry str2rgbRegistry = new ColorRegistry();
     private static HashMap<RGB, String> rgb2strMap = new HashMap<RGB, String>();
+    private static ImageRegistry str2img = new ImageRegistry();
     private static Color[] goodDarkColors; 
     private static Color[] goodLightColors; 
     
@@ -593,16 +604,16 @@ public class ColorFactory {
         };
 	};
 
-    // helper function to fill the color table
-    private static void addMapping(String name, RGB rgb) {
-        str2rgbRegistry.put(name.toLowerCase(), rgb);
-        // check if the given RGB is already in the map
-        String colName = rgb2strMap.get(rgb);
-        // if the new colorname is shorter use that for the reverse mapping and remove the previous one
-        if (colName == null || colName.length() > name.length()) {
-            rgb2strMap.remove(rgb);
-            rgb2strMap.put(rgb, name);
+    /**
+     * label provider to display color rectangles
+     * @author rhornig
+     */
+    public static class ColorLabelProvider extends LabelProvider {
+        @Override
+        public Image getImage(Object element) {
+            return ColorFactory.asImage((String)element); 
         }
+
     }
     
     /**
@@ -629,7 +640,6 @@ public class ColorFactory {
      */
     public static RGB asRGB(String value) {
         RGB result = null;
-        int rgbVal = 0;
         try {
             if (value == null)
                 return null;
@@ -641,9 +651,18 @@ public class ColorFactory {
 
             // if no constat name found, try to parse as hex string 
             if(value.startsWith("#")) {
-                rgbVal = Integer.parseInt(value.substring(1), 16);
-                result = new RGB((rgbVal >> 16) & 255, (rgbVal >> 8) & 255, rgbVal & 255);
+                int rgbVal = Integer.parseInt(value.substring(1), 16);
+                result = new RGB((rgbVal >> 16) & 0xFF, (rgbVal >> 8) & 0xFF, rgbVal & 0xFF);
             }
+            // check for HSB syntax and convert 
+            if(value.startsWith("@")) {
+                int hsbVal = Integer.parseInt(value.substring(1), 16);
+                float hue = ((hsbVal >> 16) & 0xFF) / 256.0f * 360.0f;  // 0..360
+                float saturation = ((hsbVal >> 8) & 0xFF) / 256.0f ;    // 0..1
+                float brightness = (hsbVal & 0xFF) / 256.0f;            // 0..1
+                result = new RGB(hue, saturation, brightness);
+            }
+
         } catch (NumberFormatException e) { }
         return result;
     }
@@ -671,6 +690,23 @@ public class ColorFactory {
 //        return str2rgbRegistry.get(value.toLowerCase());
     }
 
+    /**
+     * @param value The colors id
+     * @return a 16x16 rectangle image filled with the given color (or null, if color id is not valid)
+     */
+    public static Image asImage(String value) {
+        Image img = str2img.get(value);
+        if (img != null)
+            return img;
+        
+        ImageData idata = createColorImageData(value);
+        if (idata == null)
+            return null;
+        // store it for later use
+        str2img.put(value, ImageDescriptor.createFromImageData(idata).createImage());
+        return str2img.get(value);
+    }
+    
 	/**
 	 * Returns a "good" dark color.
 	 */
@@ -690,5 +726,60 @@ public class ColorFactory {
      */
     public static String[] getColorNames() {
         return (String[])str2rgbRegistry.getKeySet().toArray(new String [] {});
+    }
+
+    // helper function to fill the color table
+    private static void addMapping(String name, RGB rgb) {
+        str2rgbRegistry.put(name.toLowerCase(), rgb);
+        // check if the given RGB is already in the map
+        String colName = rgb2strMap.get(rgb);
+        // if the new colorname is shorter use that for the reverse mapping and remove the previous one
+        if (colName == null || colName.length() > name.length()) {
+            rgb2strMap.remove(rgb);
+            rgb2strMap.put(rgb, name);
+        }
+    }
+    
+    /**
+     * Creates and returns the color image data for the 
+     * RGB value. which is a 16 pixel square.
+     *
+     * @param colorId the colorId
+     */
+    private static ImageData createColorImageData(String colorId) {
+
+        int size = 11;
+        int indent = 0;
+        int rightpadding = 4;
+        int extent = 15;
+
+        int width = indent + size + rightpadding;
+        int height = extent;
+
+        int xoffset = indent;
+        int yoffset = (height - size) / 2;
+
+        RGB black = new RGB(0, 0, 0);
+        RGB color = ColorFactory.asRGB(colorId);
+        if (color == null)
+            return null;
+        
+        PaletteData dataPalette 
+            = new PaletteData(new RGB[] { black, black, color });
+        ImageData data = new ImageData(width, height, 4, dataPalette);
+        data.transparentPixel = 0;
+
+        int end = size - 1;
+        for (int y = 0; y < size; y++) {
+            for (int x = 0; x < size; x++) {
+                if (x == 0 || y == 0 || x == end || y == end) {
+                    data.setPixel(x + xoffset, y + yoffset, 1);
+                } else {
+                    data.setPixel(x + xoffset, y + yoffset, 2);
+                }
+            }
+        }
+
+        return data;
     }
 }

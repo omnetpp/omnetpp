@@ -3,6 +3,7 @@ package org.omnetpp.common.properties;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
+import org.omnetpp.common.color.ColorFactory;
 
 /**
  * Descriptor for a property that has a color value which should be edited
@@ -18,6 +19,7 @@ public class ColorPropertyDescriptor extends PropertyDescriptor {
      */
     public ColorPropertyDescriptor(Object id, String displayName) {
         super(id, displayName);
+        setLabelProvider(new ColorFactory.ColorLabelProvider());
     }
 
     /**
