@@ -44,7 +44,6 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
      * @return The property descriptor used for the property
      */
     public static IPropertyDescriptor getPropertyDescriptor(DisplayString.Prop prop) {
-        // TODO we need separate property descriptors for integers and texts
         PropertyDescriptor pdesc;
         if(prop.getType() == DisplayString.PropType.STRING)
             pdesc = new TextPropertyDescriptor(prop, prop.getVisibleName());
