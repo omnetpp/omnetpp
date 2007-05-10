@@ -45,7 +45,44 @@ import org.eclipse.ui.editors.text.EditorsUI;
 //XXX problem: if mouse is near the right-bottom corner of the screen, tooltip comes
 //up right under the mouse cursor, and won't go away on mouse movement. solution: better placement?
 public class TooltipSupport {
-	protected AllInOneListener eventListener = new AllInOneListener();
+    // Note: this is a copy of the stylesheet used by JDT (we want to avoid depending on the JDT plugins)
+    private static final String HTML_PROLOG = 
+        "<html><head><style CHARSET=\"ISO-8859-1\" TYPE=\"text/css\">\n" +
+        "/* Font definitions*/\n" +
+        "html   { font-family: 'Tahoma',sans-serif; font-size: 8pt; font-style: normal; font-weight: normal; }\n" +
+        "body, h1, h2, h3, h4, h5, h6, p, table, td, caption, th, ul, ol, dl, li, dd, dt { font-size:1em; }\n" +
+        "pre    { font-family: monospace; }\n" +
+        "/* Margins */\n" +
+        "body   { overflow: auto; margin-top: 0px; margin-bottom: 0.5em; margin-left: 0.3em; margin-right: 0px; }\n" +
+        "h1     { margin-top: 0.3em; margin-bottom: 0.04em; }\n" +
+        "h2     { margin-top: 2em; margin-bottom: 0.25em; }\n" +
+        "h3     { margin-top: 1.7em; margin-bottom: 0.25em; }\n" +
+        "h4     { margin-top: 2em; margin-bottom: 0.3em; }\n" +
+        "h5     { margin-top: 0px; margin-bottom: 0px; }\n" +
+        "p      { margin-top: 1em; margin-bottom: 1em; }\n" +
+        "pre    { margin-left: 0.6em; }\n" +
+        "ul     { margin-top: 0px; margin-bottom: 1em; }\n" +
+        "li     { margin-top: 0px; margin-bottom: 0px; }\n" +
+        "li p   { margin-top: 0px; margin-bottom: 0px; }\n" +
+        "ol     { margin-top: 0px; margin-bottom: 1em; }\n" +
+        "dl     { margin-top: 0px; margin-bottom: 1em; }\n" +
+        "dt     { margin-top: 0px; margin-bottom: 0px; font-weight: bold; }\n" +
+        "dd     { margin-top: 0px; margin-bottom: 0px; }\n" +
+        "/* Styles and colors */\n" +
+        "a:link    { color: #0000FF; }\n" +
+        "a:hover   { color: #000080; }\n" +
+        "a:visited { text-decoration: underline; }\n" +
+        "h4        { font-style: italic; }\n" +
+        "strong    { font-weight: bold; }\n" +
+        "em        { font-style: italic; }\n" +
+        "var       { font-style: italic; }\n" +
+        "th        { font-weight: bold; }\n" +
+        "</style></head>\n" + 
+        "<body text=\"#000000\" bgcolor=\"#ffffe1\">\n";
+    private static final String HTML_EPILOG = 
+        "</body></html>\n";
+
+    protected AllInOneListener eventListener = new AllInOneListener();
 	protected ITooltipTextProvider defaultTooltipProvider = null;
 	protected HashMap<Control,ITooltipTextProvider> tooltipProviders = new HashMap<Control, ITooltipTextProvider>(); 
 
@@ -201,7 +238,7 @@ public class TooltipSupport {
 		informationControl.setInformation(tooltipText);
 		informationControl.setLocation(new Point(mouseLocation.x + 5, mouseLocation.y + 20));
 		Point size = informationControl.computeSizeHint();
-		informationControl.setSize(size.x+3, size.y+3); // add some right/bottom margin 
+		informationControl.setSize((int)(size.x), size.y); // add some right/bottom margin 
 		informationControl.setVisible(true);
 	}
 
@@ -240,6 +277,16 @@ public class TooltipSupport {
 			}
 		};
 	}
+
+	/**
+	 * Wraps an HTML formatted string with a stylsheet for tooltip display
+	 * @param htmlText
+	 * @return
+	 */
+	public static String addHTMLStyleSheet(String htmlText) {
+	    return htmlText != null ? HTML_PROLOG + htmlText + HTML_EPILOG : null;
+	}
+	    
 
 }
 

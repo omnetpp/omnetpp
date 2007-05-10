@@ -121,4 +121,17 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
             comment = comment.substring(0, maxlen)+"...";
         return comment;
     }
+
+    /**
+     * Convert it to HTML format 
+     * @param comment
+     * @return
+     */
+    public static String makeHtmlDocu(String comment) {
+        if (comment==null)
+            return null;
+        comment = comment.replaceAll("(?m)^\\s*//", "").trim(); // remove "//"'s
+        comment = comment.replace("\n", "<br/>");
+        return comment;
+    }
 }
