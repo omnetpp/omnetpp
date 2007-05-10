@@ -8,6 +8,7 @@ import java.util.Vector;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
+import org.omnetpp.common.util.StringUtils;
 
 /**
  * This class is responsible for parsing and creating display strings in the correct format.
@@ -16,7 +17,6 @@ import org.eclipse.draw2d.geometry.Point;
  *
  * @author rhornig
  */
-// FIXME default handling is still not ok. Block size etc is not defaults to -1 if left empty
 public class DisplayString implements IDisplayString {
 
     // contains the default fallback values for the different tags if a variable is used in that position
@@ -466,8 +466,8 @@ public class DisplayString implements IDisplayString {
             set(Prop.X, null);
             set(Prop.Y, null);
         } else {
-            set(Prop.X, String.valueOf(pixel2unit(location.x, scale)));
-            set(Prop.Y, String.valueOf(pixel2unit(location.y, scale)));
+            set(Prop.X, floatToString(pixel2unit(location.x, scale)));
+            set(Prop.Y, floatToString(pixel2unit(location.y, scale)));
         }
         // restore original notify state
     	notifyEnabled = tempNotifyState;
@@ -502,13 +502,13 @@ public class DisplayString implements IDisplayString {
         if (size == null || size.width < 0 )
             set(Prop.WIDTH, null);
         else
-            set(Prop.WIDTH, String.valueOf(pixel2unit(size.width, scale)));
+            set(Prop.WIDTH, floatToString(pixel2unit(size.width, scale)));
 
         // if the size is unspecified, remove the size constraint from the model
         if (size == null || size.height < 0)
             set(Prop.HEIGHT, null);
         else
-            set(Prop.HEIGHT, String.valueOf(pixel2unit(size.height, scale)));
+            set(Prop.HEIGHT, floatToString(pixel2unit(size.height, scale)));
 
         // restore original notify state
     	notifyEnabled = tempNotifyState;
@@ -543,13 +543,13 @@ public class DisplayString implements IDisplayString {
         if (size == null || size.width < 0 )
             set(Prop.MODULE_WIDTH, null);
         else
-            set(Prop.MODULE_WIDTH, String.valueOf(pixel2unit(size.width, scale)));
+            set(Prop.MODULE_WIDTH, floatToString(pixel2unit(size.width, scale)));
 
         // if the size is unspecified, remove the size constraint from the model
         if (size == null || size.height < 0)
             set(Prop.MODULE_HEIGHT, null);
         else
-            set(Prop.MODULE_HEIGHT, String.valueOf(pixel2unit(size.height, scale)));
+            set(Prop.MODULE_HEIGHT, floatToString(pixel2unit(size.height, scale)));
 
         // restore original notify state
     	notifyEnabled = tempNotifyState;
@@ -596,4 +596,11 @@ public class DisplayString implements IDisplayString {
     		owner.propertyChanged(this, changedProperty, newValue, oldValue);
     }
 
+    /**
+     * @param value
+     * @return The converted floating pint number (with removed .0 at the end)
+     */
+    private String floatToString(float value) {
+        return StringUtils.chomp(String.valueOf(value), ".0");
+    }
 }
