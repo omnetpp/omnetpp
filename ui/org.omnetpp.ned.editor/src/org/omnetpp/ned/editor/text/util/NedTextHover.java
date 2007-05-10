@@ -3,14 +3,19 @@ package org.omnetpp.ned.editor.text.util;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextHover;
+import org.eclipse.jface.text.ITextHoverExtension;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
+import org.eclipse.jface.text.information.IInformationProviderExtension2;
 import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
+import org.omnetpp.common.ui.TooltipSupport;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
@@ -19,7 +24,7 @@ import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
  * Example implementation for an <code>ITextHover</code> which hovers over NED code.
  */
 // TODO for the "F2 to focus" stuff, see ITextHoverExtension & IInformationControlCreator
-public class NedTextHover implements ITextHover {
+public class NedTextHover implements ITextHover, ITextHoverExtension, IInformationProviderExtension2 {
 
 	private IEditorPart editor = null; // because NEDReconcileStrategy will need IFile from editorInput
 	
@@ -35,7 +40,8 @@ public class NedTextHover implements ITextHover {
 		INEDTypeInfo component = res.getComponent(word);
 		
 		if (component!=null)
-		    return component.getNEDElement().getComment();
+		    return TooltipSupport.addHTMLStyleSheet(
+		                    StringUtils.makeHtmlDocu(component.getNEDElement().getComment()));
 
 		// otherwise, give up (TODO we might try harder though, ie using context info)
 		return "";
@@ -83,4 +89,17 @@ public class NedTextHover implements ITextHover {
 			return new Region(selection.x, selection.y);
 		return new Region(offset, 0);
 	}
+    /*
+     * @see org.eclipse.jface.text.ITextHoverExtension#getHoverControlCreator()
+     */
+    public IInformationControlCreator getHoverControlCreator() {
+        return TooltipSupport.getHoverControlCreator();
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.text.information.IInformationProviderExtension2#getInformationPresenterControlCreator()
+     */
+    public IInformationControlCreator getInformationPresenterControlCreator() {
+        return TooltipSupport.getInformationPresenterControlCreator();
+    }
 }

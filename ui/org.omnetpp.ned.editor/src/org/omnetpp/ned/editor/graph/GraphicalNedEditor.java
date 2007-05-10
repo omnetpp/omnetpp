@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.PositionConstants;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.gef.EditPart;
@@ -43,6 +44,7 @@ import org.eclipse.jface.util.TransferDropTargetListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -58,6 +60,9 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.omnetpp.common.editor.ShowViewAction;
+import org.omnetpp.common.ui.ITooltipTextProvider;
+import org.omnetpp.common.ui.TooltipSupport;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.graph.actions.ChooseIconAction;
@@ -73,6 +78,7 @@ import org.omnetpp.ned.editor.graph.properties.NedEditPartPropertySourceProvider
 import org.omnetpp.ned.editor.graph.properties.view.BasePreferrerPropertySheetSorter;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
+import org.omnetpp.ned.model.interfaces.IModelProvider;
 
 
 /**
@@ -262,6 +268,19 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         // if we ever need external contribution, uncomment the following line
         // getSite().registerContextMenu(provider, viewer);
         viewer.setKeyHandler(new GraphicalViewerKeyHandler(viewer).setParent(getCommonKeyHandler()));
+        
+        // add tootlip support
+        new TooltipSupport().adapt(getEditor(), new ITooltipTextProvider() {
+            public String getTooltipFor(Control control, int x, int y) {
+                EditPart ep = getGraphicalViewer().findObjectAt(new Point(x,y));
+                if (ep instanceof IModelProvider) {
+                    INEDElement element = ((IModelProvider)ep).getNEDModel();
+                    return TooltipSupport.addHTMLStyleSheet(StringUtils.makeHtmlDocu(element.getComment()));
+                }
+                return null;
+            }
+        });
+        
 
         loadProperties();
 
