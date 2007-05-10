@@ -48,6 +48,9 @@ class SIM_API SimTime
     static double fscale;    // 10^-scaleexp, that is 1 or 1000 or 1000000...
     static double invfscale; // 1/fscale; we store it because floating-point multiplication is faster than division
 
+    template<typename T> void check(T d) {if (scaleexp==SCALEEXP_UNINITIALIZED) initError(d);}
+    void initError(double d);
+
   public:
     static const int SCALEEXP_S  =  0;
     static const int SCALEEXP_MS = -3;
@@ -55,6 +58,7 @@ class SIM_API SimTime
     static const int SCALEEXP_NS = -9;
     static const int SCALEEXP_PS = -12;
     static const int SCALEEXP_FS = -15;
+    static const int SCALEEXP_UNINITIALIZED = 0xffff;
 
     /**
      * Constructor initializes to zero.
@@ -64,10 +68,10 @@ class SIM_API SimTime
 
     /** @name Arithmetic operations */
     //@{
-    const SimTime& operator=(double d) {t = (int64)(fscale*d); return *this;}
+    const SimTime& operator=(double d) {check(d); t=(int64)(fscale*d); return *this;}
     const SimTime& operator=(const cPar& d);
     const SimTime& operator=(const SimTime& x) {t=x.t; return *this;}
-    template<typename T> const SimTime& operator=(T d) {t = (int64)(dscale*d); return *this;}
+    template<typename T> const SimTime& operator=(T d) {check(d); t=(int64)(dscale*d); return *this;}
 
     const SimTime& operator+=(const SimTime& x) {t+=x.t; return *this;}
     const SimTime& operator-=(const SimTime& x) {t-=x.t; return *this;}
@@ -161,8 +165,11 @@ class SIM_API SimTime
      * resolution. Normally, the scale exponent is set from the configuration
      * file (omnetpp.ini) on simulation startup.
      *
-     * IMPORTANT: This function has a global effect, and therefore
-     * should NEVER be called during simulation.
+     * The scale exponent can only be set ONCE, and cannot be changed
+     * afterwards. Any attempt to change it after it got initialized
+     * will result in a runtime error. Reason: the simtime exponent is
+     * a global variable, and changing it would silently change the
+     * value of existing SimTime variables.
      */
     static void setScaleExp(int e);
 

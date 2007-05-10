@@ -19,7 +19,7 @@
 #include "cpar.h"
 
 
-int SimTime::scaleexp;
+int SimTime::scaleexp = SimTime::SCALEEXP_UNINITIALIZED;
 int64 SimTime::dscale;
 double SimTime::fscale;
 double SimTime::invfscale;
@@ -27,6 +27,11 @@ double SimTime::invfscale;
 
 void SimTime::setScaleExp(int e)
 {
+    if (e == scaleexp)
+        return;
+    if (scaleexp != SCALEEXP_UNINITIALIZED)
+        throw cRuntimeError("SimTime::setScaleExp(): Attempt to change the scale exponent after initialization");
+
     if (e < -18 || e > 0)
         throw cRuntimeError("simtime_t scale exponent %d is out of accepted range -18..0; "
                             "recommended value is -12 (picosecond resolution with range +-106 days)", e);
@@ -42,6 +47,14 @@ void SimTime::setScaleExp(int e)
     fscale = (double) scale;
     invfscale = 1.0 / fscale;
 }
+
+void SimTime::initError(double d)
+{
+    throw cRuntimeError("Global simtime_t variable found, with value %g. Global simtime_t variables are "
+                        "forbidden, because simtime exponent is not known yet at the time they get initialized. "
+                        "Please use double or const_simtime_t instead", d);
+}
+
 
 //XXX inline, at the end of simtime.h, just after #include "cpar.h" ?
 const SimTime& SimTime::operator=(const cPar& p)

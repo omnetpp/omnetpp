@@ -103,6 +103,7 @@
 
 // "Legacy" module: double simtime_t
 typedef double   simtime_t;
+typedef double   const_simtime_t;
 #define MAXTIME  HUGE_VAL
 #define SIMTIME_STR(t) simtimeToStr(t)
 #define SIMTIME_DBL(t) (t)
@@ -116,6 +117,7 @@ typedef double   simtime_t;
 class SimTime;
 #include "simtime.h"
 typedef SimTime  simtime_t;
+typedef double   const_simtime_t;
 #define MAXTIME  SimTime::maxTime()
 #define SIMTIME_STR(t) ((t).str().c_str())
 #define SIMTIME_DBL(t) ((t).dbl())
