@@ -33,7 +33,7 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
         supportedProperties.add(DisplayString.Prop.DISPLAY);
     }
 
-//    @Override
+    @Override
     public void modelChanged(NEDModelEvent event) {
         if(model != null)
             setDisplayString(model.getDisplayString());
