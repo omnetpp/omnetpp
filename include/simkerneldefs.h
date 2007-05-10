@@ -116,8 +116,8 @@ typedef double   const_simtime_t;
 // OMNeT++ 4.x native mode: int64-based fixed-point simtime_t (class SimTime)
 class SimTime;
 #include "simtime.h"
-typedef SimTime  simtime_t;
-typedef double   const_simtime_t;
+typedef SimTime       simtime_t;
+typedef const double  const_simtime_t;
 #define MAXTIME  SimTime::maxTime()
 #define SIMTIME_STR(t) ((t).str().c_str())
 #define SIMTIME_DBL(t) ((t).dbl())
