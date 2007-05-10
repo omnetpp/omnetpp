@@ -86,7 +86,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 		getTreeViewer().setInput(inifileDocument);
 		
  		// add tooltip support
- 		TooltipSupport.adapt(getTreeViewer().getTree(), new ITooltipTextProvider() {
+ 		new TooltipSupport().adapt(getTreeViewer().getTree(), new ITooltipTextProvider() {
 			public String getTooltipFor(Control control, int x, int y) {
 				Item item = getTreeViewer().getTree().getItem(new Point(x,y));
 				String section = (String) (item==null ? null : item.getData());

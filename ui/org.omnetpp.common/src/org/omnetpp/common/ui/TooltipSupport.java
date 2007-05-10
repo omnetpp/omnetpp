@@ -1,5 +1,8 @@
 package org.omnetpp.common.ui;
 
+import java.util.HashMap;
+
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.internal.text.html.BrowserInformationControl;
 import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
 import org.eclipse.jface.text.DefaultInformationControl;
@@ -8,6 +11,8 @@ import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
@@ -16,6 +21,7 @@ import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.editors.text.EditorsUI;
 
@@ -37,11 +43,14 @@ import org.eclipse.ui.editors.text.EditorsUI;
  */
 //XXX rename: HoverSupport!
 //XXX problem: if mouse is near the right-bottom corner of the screen, tooltip comes
-// up right under the mouse cursor, and won't go away on mouse movement. solution: better placement?
+//up right under the mouse cursor, and won't go away on mouse movement. solution: better placement?
 public class TooltipSupport {
-	protected IInformationControl tooltipControl;
 	protected AllInOneListener eventListener = new AllInOneListener();
-	protected ITooltipTextProvider tooltipProvider;
+	protected ITooltipTextProvider defaultTooltipProvider = null;
+	protected HashMap<Control,ITooltipTextProvider> tooltipProviders = new HashMap<Control, ITooltipTextProvider>(); 
+
+	protected IInformationControl tooltipControl;
+	private IInformationControl informationControl;
 
 	private class AllInOneListener implements MouseListener, MouseTrackListener, MouseMoveListener, KeyListener {
 		public void mouseDoubleClick(MouseEvent e) {}
@@ -59,9 +68,12 @@ public class TooltipSupport {
 		public void mouseDown(MouseEvent e) {
 			removeTooltip();
 		}
-		
+
 		public void keyPressed(KeyEvent e) {
-			removeTooltip();
+			if (e.keyCode == SWT.F2 && tooltipControl != null)  //XXX query real key binding and use that, etc
+				makeTooltipSticky();
+			else
+				removeTooltip();
 		}
 
 		public void mouseUp(MouseEvent e) {
@@ -76,33 +88,36 @@ public class TooltipSupport {
 			removeTooltip();
 		}
 	}
-	
+
 	/**
 	 * Create a tooltip support object.
 	 */
-	public TooltipSupport(ITooltipTextProvider tooltipProvider) {
-		this.tooltipProvider = tooltipProvider;
+	public TooltipSupport() {
 	}
 
 	/**
-	 * Create a tooltip support object, and adapt the given control.
+	 * Create a tooltip support object.
 	 */
-	public TooltipSupport(final Control c, ITooltipTextProvider tooltipProvider) {
-		this(tooltipProvider);
-		adapt(c);
+	public TooltipSupport(ITooltipTextProvider defaultTooltipProvider) {
+		this.defaultTooltipProvider = defaultTooltipProvider;
 	}
 
 	/**
-	 * Add tooltip to a control.  
+	 * Adds tooltip support for the given control, with the default
+	 * tooltip text provider that was given in the constructor call.
 	 */
-	public static TooltipSupport adapt(Control c, ITooltipTextProvider tooltipProvider) {
-		return new TooltipSupport(c, tooltipProvider);
+	public void adapt(Control c) {
+		adapt(c, defaultTooltipProvider);
 	}
-	
+
 	/**
 	 * Adds tooltip support for the given control.
 	 */
-	public void adapt(final Control c) {
+	public void adapt(final Control c, ITooltipTextProvider tooltipProvider) {
+		Assert.isTrue(tooltipProvider != null);
+		Assert.isTrue(!tooltipProviders.containsKey(c), "control already registered");
+		tooltipProviders.put(c, tooltipProvider);
+
 		c.addMouseListener(eventListener);
 		c.addMouseMoveListener(eventListener);
 		c.addMouseTrackListener(eventListener);
@@ -120,31 +135,74 @@ public class TooltipSupport {
 	 * widgetDisposed() automatically.
 	 */
 	public void forget(Control c) {
+		tooltipProviders.remove(c);
+
 		c.removeMouseListener(eventListener);
 		c.removeMouseMoveListener(eventListener);
 		c.removeMouseTrackListener(eventListener);
 		c.removeKeyListener(eventListener);
 	}
-	
+
 	protected void displayTooltip(Control control, int x, int y) {
+		if (informationControl != null)
+			return; // we are already showing a (sticky) information control
+
+		ITooltipTextProvider tooltipProvider = tooltipProviders.get(control);
 		String tooltipText = tooltipProvider.getTooltipFor(control, x, y);
-		if (tooltipText!=null) {
+		if (tooltipText != null) {
 			tooltipControl = getHoverControlCreator().createInformationControl(control.getShell());
-			tooltipControl.setSizeConstraints(320, 200);
-			tooltipControl.setInformation(tooltipText);
-			tooltipControl.setLocation(control.toDisplay(x+5,y+20));
-			Point size = tooltipControl.computeSizeHint();
-			tooltipControl.setSize(size.x+3, size.y+3); // add some right/bottom margin 
-			tooltipControl.setVisible(true);
+			configureControl(tooltipControl, tooltipText, control.toDisplay(x, y));
+			tooltipControl.addDisposeListener(new DisposeListener() {
+				public void widgetDisposed(DisposeEvent e) {
+					tooltipControl = null;
+				}
+			});
 		}
 	}
 
 	protected void removeTooltip() {
-		if (tooltipControl!=null) {
-			tooltipControl.setVisible(false);
+		if (tooltipControl != null)
 			tooltipControl.dispose();
-			tooltipControl = null;
+	}
+
+	protected void makeTooltipSticky() {
+		removeTooltip();
+		
+		Display.getDefault().getCursorLocation();
+		Control control = Display.getDefault().getCursorControl();
+		Point p = Display.getDefault().getCursorLocation();
+
+		ITooltipTextProvider tooltipProvider = tooltipProviders.get(control);
+		String tooltipText = tooltipProvider.getTooltipFor(control, control.toControl(p).x, control.toControl(p).y);
+		if (tooltipText != null) {
+			// create the control
+			informationControl = getInformationPresenterControlCreator().createInformationControl(control.getShell());
+			configureControl(informationControl, tooltipText, p);
+			informationControl.setFocus();
+			
+			// it should close on losing the focus 
+			informationControl.addDisposeListener(new DisposeListener() {
+				public void widgetDisposed(DisposeEvent e) {
+					informationControl = null;
+				}
+			});
+			informationControl.addFocusListener(new FocusListener() {
+				public void focusGained(FocusEvent e) {
+				}
+				public void focusLost(FocusEvent e) {
+					informationControl.dispose();
+				}
+			});
 		}
+	}
+
+	protected void configureControl(IInformationControl informationControl, String tooltipText, Point mouseLocation) {
+		informationControl.setSizeConstraints(320, 200);
+		informationControl.setInformation(tooltipText);
+		informationControl.setLocation(new Point(mouseLocation.x + 5, mouseLocation.y + 20));
+		Point size = informationControl.computeSizeHint();
+		informationControl.setSize(size.x+3, size.y+3); // add some right/bottom margin 
+		informationControl.setVisible(true);
 	}
 
 	/**

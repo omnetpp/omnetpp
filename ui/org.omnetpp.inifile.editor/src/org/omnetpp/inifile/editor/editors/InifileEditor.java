@@ -153,7 +153,6 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 //		IHandlerService handlerService = (IHandlerService)textEditor.getEditorSite().getService(IHandlerService.class);
 //		IHandler actionHandler = new ActionHandler(action);
 //		handlerService.activateHandler(ITextEditorActionDefinitionIds.SHOW_INFORMATION, actionHandler);
-//		//handlerService.activateHandler("org.eclipse.ui.edit.text.showInformation", actionHandler);
 		
 		// this DelayedJob will, after a delay, publish a new editor selection towards the workbench
 		postSelectionChangedJob = new DelayedJob(600) {

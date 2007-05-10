@@ -162,7 +162,7 @@ public class SectionsPage extends FormPage {
  		});
 
  		// add tooltip support
- 		TooltipSupport.adapt(treeViewer.getTree(), new ITooltipTextProvider() {
+ 		new TooltipSupport().adapt(treeViewer.getTree(), new ITooltipTextProvider() {
 			public String getTooltipFor(Control control, int x, int y) {
 				Item item = treeViewer.getTree().getItem(new Point(x,y));
 				String section = getSectionNameFromTreeNode(item==null ? null : item.getData());

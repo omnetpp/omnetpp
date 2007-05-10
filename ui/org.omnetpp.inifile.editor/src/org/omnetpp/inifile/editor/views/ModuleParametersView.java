@@ -132,7 +132,7 @@ public class ModuleParametersView extends AbstractModuleView {
 		tableViewer.setContentProvider(new ArrayContentProvider());
 
  		// add tooltip support to the table
- 		TooltipSupport.adapt(tableViewer.getTable(), new ITooltipTextProvider() {
+ 		new TooltipSupport().adapt(tableViewer.getTable(), new ITooltipTextProvider() {
 			public String getTooltipFor(Control control, int x, int y) {
 				Item item = tableViewer.getTable().getItem(new Point(x,y));
 				Object element = item==null ? null : item.getData();

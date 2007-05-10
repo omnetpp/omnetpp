@@ -243,7 +243,7 @@ public class ParametersPage extends FormPage {
 		});
 
 		// add tooltip support
-		TooltipSupport.adapt(tableViewer.getTable(), new ITooltipTextProvider() {
+		new TooltipSupport().adapt(tableViewer.getTable(), new ITooltipTextProvider() {
 			public String getTooltipFor(Control control, int x, int y) {
 				Item item = tableViewer.getTable().getItem(new Point(x,y));
 				SectionKey entry = (SectionKey) (item==null ? null : item.getData());
