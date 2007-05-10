@@ -43,7 +43,7 @@ public class TextTableFieldEditor extends TableFieldEditor {
 		table.setHeaderVisible(true);
 		addTableColumn(table, "Section", 100);
 		addTableColumn(table, "Value", 200);
-		tooltipSupport.adapt(table);
+		addTooltipSupport(table);
 
 		// set up tableViewer, label provider
 		final TableViewer tableViewer = new TableViewer(table);

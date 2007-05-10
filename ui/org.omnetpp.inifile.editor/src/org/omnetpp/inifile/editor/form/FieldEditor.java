@@ -42,7 +42,11 @@ public abstract class FieldEditor extends Composite {
 	protected IInifileDocument inifile;
 	protected FormPage formPage; // to be able to call setEditorSelection()
 	
-	protected TooltipSupport tooltipSupport;
+	protected ITooltipTextProvider tooltipTextProvider = new ITooltipTextProvider() {
+		public String getTooltipFor(Control control, int x, int y) {
+			return getTooltipText();
+		}
+	};
 
 	public FieldEditor(Composite parent, int style, ConfigurationEntry entry, IInifileDocument inifile, FormPage formPage) {
 		super(parent, style);
@@ -51,11 +55,6 @@ public abstract class FieldEditor extends Composite {
 		this.formPage = formPage;
 		setBackground(BGCOLOR);
 
-		tooltipSupport = new TooltipSupport(new ITooltipTextProvider() {
-			public String getTooltipFor(Control control, int x, int y) {
-				return getTooltipText();
-			}
-		});
 	}
 
 	protected String getValueFromFile(String section) {
@@ -80,10 +79,14 @@ public abstract class FieldEditor extends Composite {
 		Label label = new Label(this, SWT.NONE);
 		label.setBackground(BGCOLOR);
 		label.setText(labelText);
-		tooltipSupport.adapt(label);
+		addTooltipSupport(label);
 		return label;
 	}
 
+	protected void addTooltipSupport(Control control) {
+		formPage.addTooltipSupport(control, tooltipTextProvider);
+	}
+	
 	protected String getTooltipText() {
 		return InifileHoverUtils.getConfigTooltip(entry, inifile);
 //		String tooltip = entry.getDescription();

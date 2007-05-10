@@ -53,7 +53,7 @@ public class TextFieldEditor extends FieldEditor {
 		// child widgets
 		label = createLabel(entry, labelText+":");
 		textField = createContentAssistField();
-		tooltipSupport.adapt(textField);
+		addTooltipSupport(textField);
 		resetButton = createResetButton();
 
 		problemDecoration = new ControlDecoration(textField, SWT.LEFT | SWT.TOP);
