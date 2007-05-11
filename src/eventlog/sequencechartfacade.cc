@@ -52,7 +52,7 @@ void SequenceChartFacade::setTimelineMode(TimelineMode timelineMode)
 
 double SequenceChartFacade::Event_getTimelineCoordinate(int64 ptr)
 {
-    PTR(ptr);
+    EVENT_PTR(ptr);
     return getTimelineCoordinate((IEvent*)ptr);
 }
 
@@ -66,7 +66,7 @@ double SequenceChartFacade::getNonLinearTimelineCoordinateDelta(double simulatio
 
 double SequenceChartFacade::getTimelineCoordinate(int64 ptr, double lowerTimelineCoordinateCalculationLimit, double upperTimelineCoordinateCalculationLimit)
 {
-    PTR(ptr);
+    EVENT_PTR(ptr);
     return getTimelineCoordinate((IEvent *)ptr, lowerTimelineCoordinateCalculationLimit, upperTimelineCoordinateCalculationLimit);
 }
 

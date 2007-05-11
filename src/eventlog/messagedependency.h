@@ -41,11 +41,13 @@ class EVENTLOG_API IMessageDependency
         virtual long getConsequenceEventNumber() = 0;
         virtual IEvent *getConsequenceEvent() = 0;
 
-        virtual simtime_t getCauseTime() = 0;
-        virtual simtime_t getConsequenceTime() = 0;
+        virtual simtime_t getCauseSimulationTime() = 0;
+        virtual simtime_t getConsequenceSimulationTime() = 0;
         virtual BeginSendEntry *getBeginSendEntry() = 0;
 
         virtual void print(FILE *file = stdout) = 0;
+        virtual const char *getClassName() = 0;
+        virtual int getClassIndex() = 0;
 };
 
 typedef std::vector<IMessageDependency *> IMessageDependencyList;
@@ -88,8 +90,8 @@ class EVENTLOG_API MessageDependency : public IMessageDependency
         long getConsequenceBeginSendEntryNumber() { return consequenceBeginSendEntryNumber; }
         BeginSendEntry *getConsequenceBeginSendEntry();
 
-        virtual simtime_t getCauseTime();
-        virtual simtime_t getConsequenceTime();
+        virtual simtime_t getCauseSimulationTime();
+        virtual simtime_t getConsequenceSimulationTime();
         virtual BeginSendEntry *getBeginSendEntry() = 0;
 
         long getCauseMessageId() { return getCauseBeginSendEntry()->messageId; }
@@ -107,6 +109,8 @@ class EVENTLOG_API MessageReuse : public MessageDependency
         virtual MessageReuse *duplicate(IEventLog *eventLog);
 
         virtual BeginSendEntry *getBeginSendEntry() { return getConsequenceBeginSendEntry(); }
+        virtual const char *getClassName() { return "MessageReuse"; }
+        virtual int getClassIndex() { return 0; }
 };
 
 /**
@@ -126,8 +130,11 @@ class EVENTLOG_API MessageSend : public MessageDependency
         long getArrivalEventNumber() { return getConsequenceEventNumber(); }
         IEvent *getArrivalEvent() { return getConsequenceEvent(); }
 
-        simtime_t getSenderTime() { return getCauseTime(); }
-        simtime_t getArrivalTime() { return getConsequenceTime(); }
+        simtime_t getSenderTime() { return getCauseSimulationTime(); }
+        simtime_t getArrivalTime() { return getConsequenceSimulationTime(); }
+
+        virtual const char *getClassName() { return "MessageSend"; }
+        virtual int getClassIndex() { return 1; }
 };
 
 class EVENTLOG_API FilteredMessageDependency : public IMessageDependency
@@ -150,10 +157,12 @@ class EVENTLOG_API FilteredMessageDependency : public IMessageDependency
         virtual long getConsequenceEventNumber() { return endMessageDependency->getConsequenceEventNumber(); }
         virtual IEvent *getConsequenceEvent();
 
-        virtual simtime_t getCauseTime() { return beginMessageDependency->getCauseTime(); };
-        virtual simtime_t getConsequenceTime() { return endMessageDependency->getConsequenceTime(); };
+        virtual simtime_t getCauseSimulationTime() { return beginMessageDependency->getCauseSimulationTime(); };
+        virtual simtime_t getConsequenceSimulationTime() { return endMessageDependency->getConsequenceSimulationTime(); };
         virtual BeginSendEntry *getBeginSendEntry() { return NULL; }
         virtual void print(FILE *file);
+        virtual const char *getClassName() { return "FilteredMessageDependency"; }
+        virtual int getClassIndex() { return 2; }
 };
 
 #endif

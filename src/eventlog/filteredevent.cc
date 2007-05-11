@@ -154,7 +154,7 @@ IMessageDependencyList *FilteredEvent::getCauses()
 IMessageDependencyList *FilteredEvent::getCauses(IEvent *event, IMessageDependency *endMessageDependency, int level)
 {
     // returns a list of dependencies, where the consequence is this event,
-    // and the other end is no further away than getMaxCauseDepth() and
+    // and the other end is no further away than getMaximumCauseDepth() and
     // no events in between match the filter
     IMessageDependencyList *eventCauses = event->getCauses();
 
@@ -165,6 +165,7 @@ IMessageDependencyList *FilteredEvent::getCauses(IEvent *event, IMessageDependen
 
         //printf("*** Checking at level %d for cause event number %ld\n", level, causeEvent->getEventNumber());
 
+        // TODO: take care about maximum number of dependencies
         if (filteredEventLog->matchesFilter(causeEvent)) {
             if (level == 0)
                 causes->push_back(messageDependency->duplicate(filteredEventLog));
@@ -173,7 +174,7 @@ IMessageDependencyList *FilteredEvent::getCauses(IEvent *event, IMessageDependen
                                                                 messageDependency->duplicate(filteredEventLog->getEventLog()),
                                                                 endMessageDependency->duplicate(filteredEventLog->getEventLog())));
         }
-        else if (level < filteredEventLog->getMaxCauseDepth())
+        else if (level < filteredEventLog->getMaximumCauseDepth())
             getCauses(causeEvent,
                 level == 0 ? messageDependency : endMessageDependency,
                 level + 1);
@@ -208,6 +209,7 @@ IMessageDependencyList *FilteredEvent::getConsequences(IEvent *event, IMessageDe
 
         //printf("*** Checking at level %d for consequence event number %ld\n", level, consequenceEvent->getEventNumber());
 
+        // TODO: take care about maximum number of dependencies
         if (filteredEventLog->matchesFilter(consequenceEvent)) {
             if (level == 0)
                 consequences->push_back(messageDependency->duplicate(filteredEventLog));
@@ -216,7 +218,7 @@ IMessageDependencyList *FilteredEvent::getConsequences(IEvent *event, IMessageDe
                                         beginMessageDependency->duplicate(filteredEventLog->getEventLog()),
                                         messageDependency->duplicate(filteredEventLog->getEventLog())));
         }
-        else if (level < filteredEventLog->getMaxConsequenceDepth())
+        else if (level < filteredEventLog->getMaximumConsequenceDepth())
             getConsequences(consequenceEvent,
                 level == 0 ? messageDependency : beginMessageDependency,
                 level + 1);

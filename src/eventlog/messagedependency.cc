@@ -72,7 +72,7 @@ IEvent *MessageDependency::getCauseEvent()
         return eventLog->getEventForEventNumber(causeEventNumber);
 }
 
-simtime_t MessageDependency::getCauseTime()
+simtime_t MessageDependency::getCauseSimulationTime()
 {
     return getCauseEvent()->getSimulationTime();
 }
@@ -95,7 +95,7 @@ long MessageDependency::getConsequenceEventNumber()
         // yet, only the simulation time is recorded in the event log file.
         // So here we have to look through all events at the arrival time,
         // and find the one "caused by" our message.
-        simtime_t consequenceTime = getConsequenceTime();
+        simtime_t consequenceTime = getConsequenceSimulationTime();
 
         if (consequenceTime == -1)
             consequenceEventNumber = NO_SUCH_EVENT;
@@ -145,7 +145,7 @@ IEvent *MessageDependency::getConsequenceEvent()
         return eventLog->getEventForEventNumber(consequenceEventNumber);
 }
 
-simtime_t MessageDependency::getConsequenceTime()
+simtime_t MessageDependency::getConsequenceSimulationTime()
 {
     if (consequenceEventNumber >= 0)
         return getConsequenceEvent()->getSimulationTime();

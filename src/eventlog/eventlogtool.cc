@@ -60,7 +60,8 @@ class Options
     public:
         Options();
 
-        IEventLog *getEventLog(FileReader *fileReader);
+        IEventLog *createEventLog(FileReader *fileReader);
+        void deleteEventLog(IEventLog *eventLog);
         long getFirstEventNumber();
         long getLastEventNumber();
 };
@@ -88,7 +89,7 @@ Options::Options()
     verbose = false;
 }
 
-IEventLog *Options::getEventLog(FileReader *fileReader)
+IEventLog *Options::createEventLog(FileReader *fileReader)
 {
     if (eventNumbers.empty() &&
         moduleNames.empty() && moduleTypes.empty() && moduleIds.empty() &&
@@ -120,8 +121,18 @@ IEventLog *Options::getEventLog(FileReader *fileReader)
         filteredEventLog->setFirstEventNumber(getFirstEventNumber());
         filteredEventLog->setLastEventNumber(getLastEventNumber());
 
-        return filteredEventLog ;
+        return filteredEventLog;
     }
+}
+
+void Options::deleteEventLog(IEventLog *eventLog)
+{
+    FilteredEventLog *filteredEventLog = dynamic_cast<FilteredEventLog *>(eventLog);
+
+    if (filteredEventLog)
+        delete filteredEventLog->getEventLog();
+
+    delete eventLog;
 }
 
 long Options::getFirstEventNumber()
@@ -265,7 +276,7 @@ void echo(Options options)
         fprintf(stdout, "# Echoing events from log file %s from event number %ld to event number %ld\n", options.inputFileName, options.getFirstEventNumber(), options.getLastEventNumber());
 
     FileReader *fileReader = new FileReader(options.inputFileName);
-    IEventLog *eventLog = options.getEventLog(fileReader);
+    IEventLog *eventLog = options.createEventLog(fileReader);
 
     long begin = clock();
     eventLog->print(options.outputFile, options.getFirstEventNumber(), options.getLastEventNumber(), options.outputInitialization, options.outputLogLines);
@@ -274,7 +285,7 @@ void echo(Options options)
     if (options.verbose)
         fprintf(stdout, "# Echoing of %ld events, %lld lines and %lld bytes form log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 
-    delete eventLog;
+    options.deleteEventLog(eventLog);
 }
 
 void filter(Options options)
@@ -286,7 +297,7 @@ void filter(Options options)
             options.inputFileName, tracedEventNumber, options.getFirstEventNumber(), options.getLastEventNumber());
 
     FileReader *fileReader = new FileReader(options.inputFileName);
-    IEventLog *eventLog = options.getEventLog(fileReader);
+    IEventLog *eventLog = options.createEventLog(fileReader);
 
     long begin = clock();
     eventLog->print(options.outputFile, -1, -1, options.outputInitialization, options.outputLogLines);
@@ -295,7 +306,7 @@ void filter(Options options)
     if (options.verbose)
         fprintf(stdout, "# Filtering of %ld events, %lld lines and %lld bytes form log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 
-    delete eventLog;
+    options.deleteEventLog(eventLog);
 }
 
 void usage(char *message)

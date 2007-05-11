@@ -19,6 +19,8 @@
 #include "ieventlog.h"
 
 #define PTR(ptr) if (ptr == 0) throw opp_runtime_error("NULL ptr exception");
+#define EVENT_PTR(ptr) PTR(ptr) Assert(dynamic_cast<IEvent *>((IEvent *)ptr));
+#define MESSAGE_DEPENDENCY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<IMessageDependency *>((IMessageDependency *)ptr));
 
 /**
  * A class that makes it possible to extract info about events, without
@@ -58,6 +60,8 @@ class EVENTLOG_API EventLogFacade
         bool MessageDependency_isFilteredMessageDependency(int64 ptr);
         int64 MessageDependency_getCauseEvent(int64 ptr);
         int64 MessageDependency_getConsequenceEvent(int64 ptr);
+        simtime_t MessageDependency_getCauseSimulationTime(int64 ptr);
+        simtime_t MessageDependency_getConsequenceSimulationTime(int64 ptr);
 };
 
 #endif

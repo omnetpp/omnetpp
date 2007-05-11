@@ -31,7 +31,7 @@
 class EVENTLOG_API FilteredEventLog : public IEventLog
 {
     protected:
-        IEventLog *eventLog;
+        IEventLog *eventLog; // this will not be destructed because might be shared among multiple filtered event logs
         long approximateNumberOfEvents;
         double approximateMatchingEventRatio;
 
@@ -50,8 +50,10 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         std::vector<long> messageEncapsulationTreeIds;
         bool traceCauses; // only when tracedEventNumber is given, includes events which cause the traced event even if through a chain of filtered events
         bool traceConsequences; // only when tracedEventNumber is given
-        int maxCauseDepth; // maximum number of message dependencies considered when collecting causes
-        int maxConsequenceDepth; // maximum number of message dependencies considered when collecting consequences
+        int maximumCauseDepth; // maximum depth of message dependencies considered when collecting causes
+        int maximumNumberOfCauses; // maximum number of message dependencies collected
+        int maximumConsequenceDepth; // maximum depth of message dependencies considered when collecting consequences
+        int maximumNumberOfConsequences; // maximum number of message dependencies collected
 
         typedef std::map<long, FilteredEvent *> EventNumberToFilteredEventMap;
         EventNumberToFilteredEventMap eventNumberToFilteredEventMap;
@@ -84,8 +86,8 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         void setLastEventNumber(long lastEventNumber) { this->lastEventNumber = lastEventNumber; }
 
         IEventLog *getEventLog() { return eventLog; }
-        int getMaxCauseDepth() { return maxCauseDepth; }
-        int getMaxConsequenceDepth() { return maxConsequenceDepth; }
+        int getMaximumCauseDepth() { return maximumCauseDepth; }
+        int getMaximumConsequenceDepth() { return maximumConsequenceDepth; }
 
         bool matchesFilter(IEvent *event);
         FilteredEvent *getMatchingEventInDirection(long startEventNumber, bool forward);
