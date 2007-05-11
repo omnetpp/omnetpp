@@ -20,6 +20,7 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -234,12 +235,22 @@ public class TooltipSupport {
 	}
 
 	protected void configureControl(IInformationControl informationControl, String tooltipText, Point mouseLocation) {
-		informationControl.setSizeConstraints(320, 200);
+		informationControl.setSizeConstraints(600, 200);
 		informationControl.setInformation(tooltipText);
-		informationControl.setLocation(new Point(mouseLocation.x + 5, mouseLocation.y + 20));
-		Point size = informationControl.computeSizeHint();
-		informationControl.setSize((int)(size.x), size.y); // add some right/bottom margin 
+		Point size = informationControl.computeSizeHint(); //XXX issue: BrowserInformationControl is always at least 80 pixels high -- this is hardcoded :(
+		informationControl.setSize(size.x, size.y);
+		informationControl.setLocation(calculateHoverPosition(mouseLocation, size));
 		informationControl.setVisible(true);
+	}
+
+	protected Point calculateHoverPosition(Point mouse, Point size) {
+		Rectangle screen = Display.getCurrent().getBounds();
+		Point p = new Point(mouse.x + 5, mouse.y + 10);
+		if (p.x + 5 + size.x > screen.x + screen.width)
+			p.x = mouse.x - size.x - 5;
+		if (p.y + 10 + size.y > screen.y + screen.height)
+			p.y = mouse.y - size.y - 10;
+		return p;
 	}
 
 	/**
