@@ -9,7 +9,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -23,7 +22,6 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IGotoMarker;
-import org.omnetpp.common.canvas.RubberbandSupport;
 import org.omnetpp.common.eventlog.EventLogEditor;
 import org.omnetpp.sequencechart.SequenceChartPlugin;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
@@ -76,22 +74,13 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
 		sequenceChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		sequenceChart.setSequenceChartContributor(SequenceChartContributor.getDefault());
 
-		// set up zoom tool
-		new RubberbandSupport(sequenceChart, SWT.CTRL) {
-			@Override
-			public void rubberBandSelectionMade(Rectangle r) {
-				sequenceChart.zoomToRectangle(new org.eclipse.draw2d.geometry.Rectangle(r));
-				markLocation();
-			}
-		};
-
 		addLocationProviderPaintListener(sequenceChart);
 		getSite().setSelectionProvider(sequenceChart);
 
 		// follow selection
 		getSite().getPage().addSelectionListener(new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				if (part!=sequenceChart) {
+				if (part != sequenceChart) {
 					sequenceChart.setSelection(selection);
 					markLocation();
 				}

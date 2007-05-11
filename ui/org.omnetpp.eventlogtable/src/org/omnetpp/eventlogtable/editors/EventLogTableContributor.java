@@ -230,7 +230,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					for (int i = 0; i < consequences.size(); i++) {
 						IMessageDependency consequence = consequences.get(i);
 
-						if (eventLogTable.getEventLogTableFacade().MessageDependency_isMessageSend(consequence.getCPtr()) &&
+						if (!eventLogTable.getEventLogTableFacade().MessageDependency_getIsReuse(consequence.getCPtr()) &&
 							consequence.getBeginSendEntry().equals(eventLogEntry))
 						{
 							IEvent consequenceEvent = consequence.getConsequenceEvent();
@@ -268,7 +268,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					for (int i = 0; i < causes.size(); i++) {
 						IMessageDependency cause = causes.get(i);
 
-						if (eventLogTable.getEventLogTableFacade().MessageDependency_isMessageReuse(cause.getCPtr()) &&
+						if (eventLogTable.getEventLogTableFacade().MessageDependency_getIsReuse(cause.getCPtr()) &&
 							cause.getBeginSendEntry().equals(eventLogEntry)) {
 							IEvent causeEvent = cause.getCauseEvent();
 							
@@ -305,7 +305,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					for (int i = 0; i < consequences.size(); i++) {
 						IMessageDependency consequence = consequences.get(i);
 
-						if (eventLogTable.getEventLogTableFacade().MessageDependency_isMessageReuse(consequence.getCPtr())) {
+						if (eventLogTable.getEventLogTableFacade().MessageDependency_getIsReuse(consequence.getCPtr())) {
 							BeginSendEntry beginSendEntry = consequence.getBeginSendEntry();
 							
 							if (beginSendEntry != null)

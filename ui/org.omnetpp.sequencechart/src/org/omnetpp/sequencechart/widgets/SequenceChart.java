@@ -18,7 +18,6 @@ import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -32,7 +31,7 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.events.MouseTrackListener;
+import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
@@ -41,17 +40,22 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.omnetpp.common.canvas.CachingCanvas;
+import org.omnetpp.common.canvas.RubberbandSupport;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogSelection;
 import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
+import org.omnetpp.common.ui.ITooltipTextProvider;
+import org.omnetpp.common.ui.TooltipSupport;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.virtualtable.IVirtualContentWidget;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
@@ -60,7 +64,6 @@ import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.IMessageDependency;
 import org.omnetpp.eventlog.engine.Int64Vector;
-import org.omnetpp.eventlog.engine.MessageDependencyKind;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
 import org.omnetpp.scave.engine.XYArray;
@@ -77,7 +80,7 @@ import org.omnetpp.sequencechart.widgets.axisrenderer.IAxisRenderer;
 /**
  * The sequence chart figure shows the events and the messages passed along between several modules.
  * The chart consists of a series of horizontal lines each representing a simple or compound module.
- * Messages are represented by elliptic arrows pointing from the cause event to the consequence event.
+ * Message dependencies are represented by elliptic arrows pointing from the cause event to the consequence event.
  * 
  * Zooming, scrolling, tooltips and event selections are also provided.
  *
@@ -87,7 +90,6 @@ import org.omnetpp.sequencechart.widgets.axisrenderer.IAxisRenderer;
 //TODO proper "hand" cursor - current one is not very intuitive
 //TODO hierarchic sort should be able to reverse order of sorted axes of its submodules
 //TODO rubberband vs. haircross, show them at once
-//TODO use common.ui.TooltipSupport for tooltips
 public class SequenceChart
 	extends CachingCanvas
 	implements IVirtualContentWidget<IEvent>, ISelectionProvider
@@ -130,13 +132,11 @@ public class SequenceChart
 
 	private static final int[] DOTTED_LINE_PATTERN = new int[] {2,2}; // 2px black, 2px gap
 	
-	private static final int MAX_TOOLTIP_LINES = 30;
 	private static final int ANTIALIAS_TURN_ON_AT_MSEC = 100;
 	private static final int ANTIALIAS_TURN_OFF_AT_MSEC = 300;
 	private static final int MOUSE_TOLERANCE = 3;
 
-	private static final int MINIMUM_SELF_MESSAGE_ARROW_HEIGHT = 20; // vertical radius of ellipse for self message arrows
-	private static final int MINIMUM_REUSE_MESSAGE_ARROW_HEIGHT = 10; // same for reusing messages
+	private static final int MINIMUM_HALF_ELLIPSE_HEIGHT = 20; // vertical radius of ellipse for message arrows on one axis
 	private static final int LONG_MESSAGE_ARROW_WIDTH = 40; // width for too long message lines and half ellipses
 	private static final int ARROWHEAD_LENGTH = 10; // length of message arrow head
 	private static final int ARROWHEAD_WIDTH = 7; // width of message arrow head
@@ -169,7 +169,7 @@ public class SequenceChart
 	private boolean showEventNumbers;
 	private AxisOrderingMode axisOrderingMode = AxisOrderingMode.MODULE_ID; // specifies the ordering mode of timelines
 
-	private DefaultInformationControl tooltipWidget; // the current tooltip (Note: SWT's Tooltip cannot be used as it wraps lines)
+	private TooltipSupport tooltipSupport = new TooltipSupport();
 
 	private boolean isDragging;
 	private int dragStartX = -1, dragStartY = -1, dragDeltaX, dragDeltaY; // temporary variables for drag handling
@@ -240,6 +240,19 @@ public class SequenceChart
 		super(parent, style);
 		setBackground(CHART_BACKGROUND_COLOR);
     	setUpMouseHandling();
+
+    	tooltipSupport.adapt(this, new ITooltipTextProvider() {
+			public String getTooltipFor(Control control, int x, int y) {
+				return TooltipSupport.addHTMLStyleSheet(getTooltipText(x, y));
+			}
+    	});
+
+		new RubberbandSupport(this, SWT.CTRL) {
+			@Override
+			public void rubberBandSelectionMade(org.eclipse.swt.graphics.Rectangle r) {
+				zoomToRectangle(new org.eclipse.draw2d.geometry.Rectangle(r));
+			}
+		};
 
 		addControlListener(new ControlAdapter() {
 			public void controlResized(ControlEvent e) {
@@ -1177,7 +1190,7 @@ public class SequenceChart
 
 			drawZeroSimulationTimeRegions(graphics, startEventPtr, endEventPtr);
 			drawAxes(graphics, startSimulationTime, endSimulationTime);
-	        drawMessageArrows(graphics);
+	        drawMessageDependencies(graphics);
 	        drawEvents(graphics, startEventPtr, endEventPtr);
 	
 	        long redrawMillis = System.currentTimeMillis() - startMillis;
@@ -1252,7 +1265,7 @@ public class SequenceChart
 	/**
 	 * Draws all message arrows which have visual representation in the given event range.
 	 */
-	private void drawMessageArrows(Graphics graphics) {
+	private void drawMessageDependencies(Graphics graphics) {
 		long[] eventPtrRange = getFirstLastEventPtrForMessageDependencies();
 		long startEventPtr = eventPtrRange[0];
 		long endEventPtr = eventPtrRange[1];
@@ -1263,7 +1276,7 @@ public class SequenceChart
 
 		VLineBuffer vlineBuffer = new VLineBuffer();
 		for (int i = 0; i < messageDependencies.size(); i++)
-			drawOrFitMessageArrow(messageDependencies.get(i), -1, -1, -1, graphics, vlineBuffer, startEventPtr, endEventPtr);
+			drawOrFitMessageDependency(messageDependencies.get(i), -1, -1, -1, graphics, vlineBuffer, startEventPtr, endEventPtr);
 	}
 
 	/**
@@ -1369,7 +1382,7 @@ public class SequenceChart
 			VLineBuffer vlineBuffer = new VLineBuffer();
 			graphics.setLineWidth(2);
 			for (IMessageDependency messageDependency : messageDependencies)
-				drawOrFitMessageArrow(messageDependency.getCPtr(), -1, -1, -1, graphics, vlineBuffer, startEventPtr, endEventPtr);
+				drawOrFitMessageDependency(messageDependency.getCPtr(), -1, -1, -1, graphics, vlineBuffer, startEventPtr, endEventPtr);
 		}
 		else {
 			// 3) no events or message arrows: highlight axis label
@@ -1515,14 +1528,13 @@ public class SequenceChart
 	 * 
 	 * The line buffer is used to skip drawing message arrows where there is one already drawn. (very dense arrows)
 	 */
-	private boolean drawOrFitMessageArrow(long messageDependencyPtr, int fitX, int fitY, int tolerance, Graphics graphics, VLineBuffer vlineBuffer, long startEventPtr, long endEventPtr) {
+	private boolean drawOrFitMessageDependency(long messageDependencyPtr, int fitX, int fitY, int tolerance, Graphics graphics, VLineBuffer vlineBuffer, long startEventPtr, long endEventPtr) {
 		Assert.isTrue((graphics != null && vlineBuffer != null) || tolerance != -1);
 		
 		long causeEventPtr = sequenceChartFacade.MessageDependency_getCauseEvent(messageDependencyPtr);
 		long consequenceEventPtr = sequenceChartFacade.MessageDependency_getConsequenceEvent(messageDependencyPtr);
-		int messageDependencyKind = sequenceChartFacade.MessageDependency_getKind(messageDependencyPtr);
 
-		if (messageDependencyKind == MessageDependencyKind.REUSE && !showReuseMessages)
+		if (sequenceChartFacade.MessageDependency_getIsReuse(messageDependencyPtr) && !showReuseMessages)
 			return false;
 
 		// events may be omitted from the log
@@ -1567,19 +1579,20 @@ public class SequenceChart
 
 		// line color and style depends on message kind
 		if (graphics != null) {
-			if (messageDependencyKind == MessageDependencyKind.SEND) {
-				graphics.setForegroundColor(MESSAGE_SEND_COLOR);
-				graphics.setLineStyle(SWT.LINE_SOLID);
-			}
-			else {
+			if (sequenceChartFacade.MessageDependency_getIsReuse(messageDependencyPtr)) {
 				graphics.setForegroundColor(MESSAGE_REUSE_COLOR);
 				graphics.setLineDash(DOTTED_LINE_PATTERN); // SWT.LINE_DOT style is not what we want
+			}
+			else {
+				graphics.setForegroundColor(MESSAGE_SEND_COLOR);
+				graphics.setLineStyle(SWT.LINE_SOLID);
 			}
 		}
 
 		// test if self-message
 		if (y1 == y2) {
-			int halfEllipseHeight = getArrowHalfEllipseHeight(messageDependencyKind == MessageDependencyKind.SEND ? MINIMUM_SELF_MESSAGE_ARROW_HEIGHT : MINIMUM_REUSE_MESSAGE_ARROW_HEIGHT);
+			// TODO: make it different for send/reuse, normal/filtered, short/long
+			int halfEllipseHeight = Math.max(axisSpacing / 2, MINIMUM_HALF_ELLIPSE_HEIGHT);
 
 			// test if it is a vertical line (as zero-width half ellipse)
 			if (x1 == x2) {
@@ -1593,7 +1606,7 @@ public class SequenceChart
 						drawArrowHead(graphics, null, x1, y1, 0, 1);
 	
 					if (showMessageNames)
-						drawMessageArrowLabel(graphics, messageDependencyPtr, x1, y1, 2, -15);
+						drawMessageDependencyLabel(graphics, messageDependencyPtr, x1, y1, 2, -15);
 				}
 				else
 					return lineContainsPoint(x1, y1, x2, y2, fitX, fitY, tolerance);
@@ -1681,7 +1694,7 @@ public class SequenceChart
 				}
 
 				if (showMessageNames)
-					drawMessageArrowLabel(graphics, messageDependencyPtr, (x1 + x2) / 2, y1, 0, -halfEllipseHeight - 15);
+					drawMessageDependencyLabel(graphics, messageDependencyPtr, (x1 + x2) / 2, y1, 0, -halfEllipseHeight - 15);
 			}
 		}
 		else {
@@ -1723,11 +1736,14 @@ public class SequenceChart
 			if (graphics == null)
 				return lineContainsPoint(x1, y1, x2, y2, fitX, fitY, tolerance);
 
+			if (graphics != null && sequenceChartFacade.MessageDependency_isFilteredMessageDependency(messageDependencyPtr))
+				drawFilteredMessageDependencySign(graphics, x1, y1, x2, y2);
+
 			if (showArrowHeads)
 				drawArrowHead(graphics, arrowHeadFillColor, x2, y2, x2 - x1, y2 - y1);
 			
 			if (showMessageNames)
-				drawMessageArrowLabel(graphics, messageDependencyPtr, (x1 + x2) / 2, (y1 + y2) / 2, 2, y1 < y2 ? -15 : 0);
+				drawMessageDependencyLabel(graphics, messageDependencyPtr, (x1 + x2) / 2, (y1 + y2) / 2, 2, y1 < y2 ? -15 : 0);
 		}
 		
 		// when fitting we should have already returned
@@ -1739,28 +1755,61 @@ public class SequenceChart
 	/**
 	 * Draws a message arrow label with the corresponding message line color.
 	 */
-	private void drawMessageArrowLabel(Graphics graphics, long messageDependencyPtr, int x, int y, int dx, int dy) {
+	private void drawMessageDependencyLabel(Graphics graphics, long messageDependencyPtr, int x, int y, int dx, int dy) {
 		String arrowLabel = "<no label>";
-		int messageDependencyKind = sequenceChartFacade.MessageDependency_getKind(messageDependencyPtr);
 
-		switch (messageDependencyKind ) {
-			case MessageDependencyKind.SEND:
-				arrowLabel = sequenceChartFacade.MessageDependency_getMessageName(messageDependencyPtr);
-				break;
-			case MessageDependencyKind.REUSE:
-				arrowLabel = "Reuse";
-				break;
-			case MessageDependencyKind.FILTERED:
-				arrowLabel = sequenceChartFacade.FilteredMessageDependency_getBeginMessageName(messageDependencyPtr) +
-							 " -> " +
-							 sequenceChartFacade.FilteredMessageDependency_getEndMessageName(messageDependencyPtr);
-				break;
-		}
+		if (sequenceChartFacade.MessageDependency_isFilteredMessageDependency(messageDependencyPtr))
+			arrowLabel = sequenceChartFacade.FilteredMessageDependency_getBeginMessageName(messageDependencyPtr) +
+			 " -> " +
+			 sequenceChartFacade.FilteredMessageDependency_getEndMessageName(messageDependencyPtr);
+		else
+			arrowLabel = sequenceChartFacade.MessageDependency_getMessageName(messageDependencyPtr);
 
 		if (MESSAGE_LABEL_COLOR != null)
 			graphics.setForegroundColor(MESSAGE_LABEL_COLOR);
 
 		graphics.drawText(arrowLabel, x + dx, y + dy);
+	}
+
+	// TODO: put this on ellipses too
+	private void drawFilteredMessageDependencySign(Graphics graphics, int x1, int y1, int x2, int y2) {
+		int size = 5;
+		int spacing = 4;
+		int count = 2;
+		int halfSize = size / 2;
+		int halfSpacing = spacing / 2;
+		int x = (x1 + x2) / 2;
+		int y = (y1 + y2) / 2;
+		int yy1 = - size - halfSize;
+		int yy2 = yy1 + size;
+		int yy3 = yy2 + size;
+		int yy4 = yy3 + size;
+
+		// transform coordinates so that zig zag will be orthogonal to x1, y1, x2, y2
+		double dx = x2 - x1;
+		double dy = y2 - y1;
+		double length = Math.sqrt(dx * dx + dy * dy);
+		dy /= length;
+		dx /= length;
+		float angle = (float)(180 * Math.atan2(dy, dx) / Math.PI);
+
+		Transform transform = new Transform(null);
+		transform.translate(x, y);
+		transform.rotate(angle);
+		
+		// draw some zig zags
+		for (int i = 0; i < count; i++) {
+			int xx1 = - halfSize - halfSpacing + i * spacing;
+			int xx2 = xx1 + size;
+
+			float[] points = new float[] {xx1, yy1, xx2, yy2, xx1, yy3, xx2, yy4};
+			transform.transform(points);
+
+			int[] ps = new int[8];
+			for (int j = 0; j < 8; j++)
+				ps[j] = (int)Math.round(points[j]);
+			graphics.drawPolyline(ps);
+		}
 	}
 	
 	/**
@@ -2101,8 +2150,7 @@ public class SequenceChart
 			}
 		});
 
-		// hide tool tip on move
-		addMouseTrackListener(new MouseTrackListener() {
+		addMouseTrackListener(new MouseTrackAdapter() {
 			public void mouseEnter(MouseEvent e) {
 				redraw();
 			}
@@ -2110,18 +2158,11 @@ public class SequenceChart
 			public void mouseExit(MouseEvent e) {
 				redraw();
 			}
-
-			public void mouseHover(MouseEvent e) {
-				if ((e.stateMask & SWT.BUTTON_MASK) == 0)
-					displayTooltip(e.x, e.y);
-			}
 		});
 
 		// dragging
 		addMouseMoveListener(new MouseMoveListener() {
 			public void mouseMove(MouseEvent e) {
-				removeTooltip();
-
 				if (dragStartX != -1 && dragStartY != -1 && (e.stateMask & SWT.BUTTON_MASK) != 0 && (e.stateMask & SWT.MODIFIER_MASK) == 0)
 					mouseDragged(e);
 				else {
@@ -2175,8 +2216,6 @@ public class SequenceChart
 					dragStartY = e.y;
 					dragStartTime = System.currentTimeMillis();
 				}
-
-				removeTooltip();
 			}
 
 			public void mouseUp(MouseEvent me) {
@@ -2239,26 +2278,6 @@ public class SequenceChart
 	/*************************************************************************************
 	 * TOOLTIP
 	 */
-
-	protected void displayTooltip(int x, int y) {
-		String tooltipText = getTooltipText(x,y);
-		if (tooltipText!=null) {
-			tooltipWidget = new DefaultInformationControl(getShell());
-			tooltipWidget.setInformation(tooltipText);
-			tooltipWidget.setLocation(toDisplay(x,y+20));
-			Point size = tooltipWidget.computeSizeHint();
-			tooltipWidget.setSize(size.x, size.y);
-			tooltipWidget.setVisible(true);
-		}
-	}
-
-	protected void removeTooltip() {
-		if (tooltipWidget!=null) {
-			tooltipWidget.setVisible(false);
-			tooltipWidget.dispose();
-			tooltipWidget = null;
-		}
-	}
 	
 	/**
 	 * Calls collectStuffUnderMouse(), and assembles a possibly multi-line
@@ -2272,39 +2291,33 @@ public class SequenceChart
 		// 1) if there are events under them mouse, show them in the tooltip
 		if (events.size() > 0) {
 			String res = "";
-			int count = 0;
 			for (IEvent event : events) {
-				if (count++ > MAX_TOOLTIP_LINES) {
-					res += "...and "+(events.size()-count)+" more";
-					break;
-				}
-				res += getEventText(event) + "\n";
+				if (res.length() != 0)
+					res += "<br/>";
+
+				res += getEventText(event);
 			}
-			res = res.trim();
+
 			return res;
 		}
 			
 		// 2) no events: show message arrows info
 		if (messageDependencies.size() >= 1) {
 			String res = "";
-			int count = 0;
 			for (IMessageDependency messageDependency : messageDependencies) {
-				// truncate tooltip
-				if (count++ > MAX_TOOLTIP_LINES) {
-					res += "...and "+(messageDependencies.size()-count)+" more";
-					break;
-				}
-				// add message
-				res += getMessageDependencyText(messageDependency) + "\n"; 
+				if (res.length() != 0)
+					res += "<br/>";
+
+				res += getMessageDependencyText(messageDependency); 
 			}
-			res = res.trim();
+
 			return res;
 		}
 
 		// 3) no events or message arrows: show axis info
 		ModuleTreeItem axisModule = findAxisAt(y);
 		if (axisModule != null) {
-			String res = getAxisText(axisModule)+"\n";
+			String res = getAxisText(axisModule) + "<br/>";
 			res += "t = " + calculateTick(x, 1).toPlainString();
 			IEvent event = sequenceChartFacade.getLastEventNotAfterTimelineCoordinate(getTimelineCoordinateForViewportCoordinate(x));
 			if (event != null)
@@ -2327,9 +2340,7 @@ public class SequenceChart
 	 * Returns a descriptive message for the IMessageDependency to be presented to the user.
 	 */
 	public String getMessageDependencyText(IMessageDependency messageDependency) {
-		int kind = sequenceChartFacade.MessageDependency_getKind(messageDependency.getCPtr());
-
-		if (kind == MessageDependencyKind.FILTERED) {
+		if (sequenceChartFacade.MessageDependency_isFilteredMessageDependency(messageDependency.getCPtr())) {
 			FilteredMessageDependency filteredMessageDependency = (FilteredMessageDependency)messageDependency;
 			BeginSendEntry beginBeginSendEntry = filteredMessageDependency.getBeginMessageDependency().getBeginSendEntry();
 			BeginSendEntry endBeginSendEntry = filteredMessageDependency.getEndMessageDependency().getBeginSendEntry();
@@ -2345,20 +2356,20 @@ public class SequenceChart
 		}
 		else {
 			BeginSendEntry beginSendEntry = messageDependency.getBeginSendEntry();
-			String result = kind == MessageDependencyKind.SEND ? "sending " : "reusing " + "message ";
+			String result = (messageDependency.getIsReuse() ? "reusing " : "sending ") + "message ";
 
 			String detail = beginSendEntry.getDetail();
 			if (detail == null)
 				result += "(" + beginSendEntry.getMessageClassName() + ") ";
 
-			result += beginSendEntry.getMessageFullName() + " (#" + messageDependency.getCauseEventNumber() + " -> #" + messageDependency.getConsequenceEventNumber() + ")";
+			result += "<b>" + beginSendEntry.getMessageFullName() + "</b> (#" + messageDependency.getCauseEventNumber() + " -> #" + messageDependency.getConsequenceEventNumber() + ")";
 			
 			BigDecimal causeSimulationTime = messageDependency.getCauseSimulationTime().toBigDecimal();
 			BigDecimal consequenceSimulationTime = messageDependency.getConsequenceSimulationTime().toBigDecimal();
 			result += " dt = " + TimeUtils.secondsToTimeString(consequenceSimulationTime.subtract(causeSimulationTime));
 
 			if (detail != null)
-				result += "\n" + detail;
+				result += "<br/>" + detail;
 
 			return result;
 		}
@@ -2440,7 +2451,7 @@ public class SequenceChart
         		for (int i = 0; i < messageDependencies.size(); i++) {
         			long messageDependencyPtr = messageDependencies.get(i);
 
-        			if (drawOrFitMessageArrow(messageDependencyPtr, mouseX, mouseY, MOUSE_TOLERANCE, null, null, startEventPtr, endEventPtr))
+        			if (drawOrFitMessageDependency(messageDependencyPtr, mouseX, mouseY, MOUSE_TOLERANCE, null, null, startEventPtr, endEventPtr))
             			msgs.add(sequenceChartFacade.MessageDependency_getMessageDependency(messageDependencyPtr));
         		}
             }
@@ -2456,10 +2467,6 @@ public class SequenceChart
 	 */
 	private boolean eventSymbolContainsPoint(int x, int y, int px, int py, int tolerance) {
 		return Math.abs(x - px) <= 2 + tolerance && Math.abs(y - py) <= 5 + tolerance;
-	}
-
-	private int getArrowHalfEllipseHeight(int minimumHeight) {
-		return Math.max(axisSpacing / 2, minimumHeight);
 	}
 
 	private boolean halfEllipseContainsPoint(int quarter, int x1, int x2, int y, int height, int px, int py, int tolerance) {
