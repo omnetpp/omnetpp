@@ -11,6 +11,7 @@ import java.util.HashMap;
 
 import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
 import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -41,7 +42,6 @@ import org.omnetpp.common.ui.GenericTreeLabelProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.GenericTreeUtils;
 import org.omnetpp.common.ui.ITooltipTextProvider;
-import org.omnetpp.common.ui.TooltipSupport;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
@@ -53,7 +53,6 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
  * 
  * @author Andras
  */
-//XXX let the user edit description= as well
 //XXX enable/disable buttons as tree selection changes
 //XXX editing stuff inside included files causes exception without user feedback -- pop up error dialog?
 public class SectionsPage extends FormPage {
@@ -63,22 +62,22 @@ public class SectionsPage extends FormPage {
 
 	private Label label;
 	private TreeViewer treeViewer;
-	
+
 	static class SectionData {
 		String sectionName;
 		boolean hasError;
-		
+
 		public SectionData(String sectionName, boolean isUndefined) {
 			this.sectionName = sectionName;
 			this.hasError = isUndefined;
 		}
-		
+
 		/* label provider maps to this */
 		@Override
 		public String toString() {
 			return sectionName + (hasError ? " (the section it extends does not exist)" : "");
 		}
-		
+
 		/* needed for treeViewer.setSelection() to work */
 		@Override
 		public boolean equals(Object obj) {
@@ -87,10 +86,10 @@ public class SectionsPage extends FormPage {
 			return sectionName.equals(((SectionData)obj).sectionName);
 		}
 	}
-	
+
 	public SectionsPage(Composite parent, InifileEditor inifileEditor) {
 		super(parent, inifileEditor);
-		
+
 		// layout: 2x2 grid: (label, dummy) / (tree, buttonGroup)
 		setLayout(new GridLayout(2,false));
 		((GridLayout)getLayout()).marginRight = RIGHT_MARGIN/2;
@@ -104,14 +103,14 @@ public class SectionsPage extends FormPage {
 		label.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		((GridData)label.getLayoutData()).horizontalSpan = 2;
 		label.setText(HINT_TEXT);
-		
+
 		// create treeviewer and buttons
 		treeViewer = createAndConfigureTreeViewer();
 		treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		Composite buttonGroup = createButtons();
 		buttonGroup.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, true));
-		
+
 		reread();
 	}
 
@@ -136,12 +135,12 @@ public class SectionsPage extends FormPage {
 			}
 		}));
 		treeViewer.setContentProvider(new GenericTreeContentProvider());
-		
+
 		// drag and drop support
- 		setupDragAndDropSupport(treeViewer);
-		
+		setupDragAndDropSupport(treeViewer);
+
 		// on double-click, show section in the parameters page
- 		treeViewer.getTree().addSelectionListener(new SelectionAdapter() {
+		treeViewer.getTree().addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent event) {
 				String section = getSectionNameFromTreeNode(event.item==null ? null : event.item.getData());
@@ -151,26 +150,26 @@ public class SectionsPage extends FormPage {
 			}
 		});
 
- 		// export the tree's selection as editor selection
- 		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+		// export the tree's selection as editor selection
+		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
 				String section = getSectionNameFromTreeNode(sel.getFirstElement());
 				if (section != null)
 					setEditorSelection(section, null);
 			}
- 		});
+		});
 
- 		// add tooltip support
- 		addTooltipSupport(treeViewer.getTree(), new ITooltipTextProvider() {
+		// add tooltip support
+		addTooltipSupport(treeViewer.getTree(), new ITooltipTextProvider() {
 			public String getTooltipFor(Control control, int x, int y) {
 				Item item = treeViewer.getTree().getItem(new Point(x,y));
 				String section = getSectionNameFromTreeNode(item==null ? null : item.getData());
 				return section==null ? null : InifileHoverUtils.getSectionTooltip(section, getInifileDocument(), getInifileAnalyzer());
 			}
- 		});
- 		
- 		return treeViewer;
+		});
+
+		return treeViewer;
 	}
 
 	private void setupDragAndDropSupport(TreeViewer viewer) {
@@ -184,16 +183,10 @@ public class SectionsPage extends FormPage {
 				// so we have to be careful when looking at the dragged data 
 				String[] draggedSections = getSectionNamesFromTreeSelection((IStructuredSelection) event.data);
 				String targetSectionName = getSectionNameFromTreeNode(event.item==null ? null : event.item.getData());
-				
+
 				if (draggedSections.length != 0 && targetSectionName != null) {
-			    	//System.out.println(draggedSections.length + " items dropped to: "+targetSectionName);
-					IInifileDocument doc = getInifileDocument();
-			    	for (String draggedSectionName : draggedSections)
-			    		if (getInifileDocument().containsSection(draggedSectionName)) // might occur if it was dragged from a different editor's treeviewer...
-			    			if (!InifileUtils.sectionChainContains(doc, targetSectionName, draggedSectionName)) // avoid circles
-			    				setSectionExtendsKey(draggedSectionName, targetSectionName);
-			    	reread();
-			    }
+					sectionsDragged(draggedSections, targetSectionName);
+				}
 			}
 		});
 	}
@@ -215,10 +208,10 @@ public class SectionsPage extends FormPage {
 		if (data instanceof GenericTreeNode)
 			data = ((GenericTreeNode)data).getPayload();
 		if (data instanceof SectionData)
-				return ((SectionData) data).sectionName;
+			return ((SectionData) data).sectionName;
 		return null;
 	}
-	
+
 	protected void setSectionExtendsKey(String sectionName, String extendsSectionName) {
 		IInifileDocument doc = getInifileDocument();
 		if (extendsSectionName.equals(GENERAL))
@@ -232,14 +225,14 @@ public class SectionsPage extends FormPage {
 		}
 	}
 
-	private Composite createButtons() {
+	protected Composite createButtons() {
 		Composite buttonGroup = new Composite(this, SWT.NONE);
 		buttonGroup.setLayout(new GridLayout(1,false));
-		
+
 		Button addButton = createButton(buttonGroup, "Add...");
 		Button editButton = createButton(buttonGroup, "Edit...");
 		Button removeButton = createButton(buttonGroup, "Remove"); //XXX bind to DEL key too
-		
+
 		// configure "add section" button
 		addButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -270,7 +263,7 @@ public class SectionsPage extends FormPage {
 		button.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
 		return button;
 	}
-	
+
 	/**
 	 * Invoked by clicking on the "New Section" button
 	 */
@@ -282,23 +275,28 @@ public class SectionsPage extends FormPage {
 		String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
 		if (selection.length != 0)
 			dialog.setExtendsSection(selection[0]);
-		
+
 		// open the dialog
 		if (dialog.open()==Window.OK) {
-			String sectionName = dialog.getSectionName();
-			InifileUtils.addSection(doc, sectionName);
+			try {
+				String sectionName = dialog.getSectionName();
+				InifileUtils.addSection(doc, sectionName);
 
-			String description = dialog.getDescription();
-			InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getKey(), description.equals("") ? null : description);			
+				String description = dialog.getDescription();
+				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getKey(), description.equals("") ? null : description);			
 
-			String extendsSection = dialog.getExtendsSection();
-			String extendsName = extendsSection.equals(GENERAL) ? null : extendsSection.replaceFirst(CONFIG_, "");
-			InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, extendsName);			
+				String extendsSection = dialog.getExtendsSection();
+				String extendsName = extendsSection.equals(GENERAL) ? null : extendsSection.replaceFirst(CONFIG_, "");
+				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, extendsName);			
 
-			String networkName = dialog.getNetworkName();
-			InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_NETWORK.getKey(), networkName.equals("") ? null : networkName);			
+				String networkName = dialog.getNetworkName();
+				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_NETWORK.getKey(), networkName.equals("") ? null : networkName);			
 
-			reread();
+				reread();
+			}
+			catch (RuntimeException e) {
+				showErrorDialog(e);
+			}
 		}
 	}
 
@@ -316,21 +314,26 @@ public class SectionsPage extends FormPage {
 
 		// open the dialog
 		if (dialog.open()==Window.OK) {
-			String sectionName = dialog.getSectionName();
-			if (!sectionName.equals(oldSectionName))
-				InifileUtils.renameSection(doc, oldSectionName, sectionName);
+			try {
+				String sectionName = dialog.getSectionName();
+				if (!sectionName.equals(oldSectionName))
+					InifileUtils.renameSection(doc, oldSectionName, sectionName);
 
-			String description = dialog.getDescription();
-			InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getKey(), description.equals("") ? null : description);			
+				String description = dialog.getDescription();
+				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getKey(), description.equals("") ? null : description);			
 
-			String extendsSection = dialog.getExtendsSection();
-			String extendsName = extendsSection.equals(GENERAL) ? null : extendsSection.replaceFirst(CONFIG_, "");
-			InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, extendsName);			
+				String extendsSection = dialog.getExtendsSection();
+				String extendsName = extendsSection.equals(GENERAL) ? null : extendsSection.replaceFirst(CONFIG_, "");
+				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, extendsName);			
 
-			String networkName = dialog.getNetworkName();
-			InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_NETWORK.getKey(), networkName.equals("") ? null : networkName);			
+				String networkName = dialog.getNetworkName();
+				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_NETWORK.getKey(), networkName.equals("") ? null : networkName);			
 
-			reread();
+				reread();
+			}
+			catch (RuntimeException e) {
+				showErrorDialog(e);
+			}
 		}
 	}
 
@@ -338,13 +341,41 @@ public class SectionsPage extends FormPage {
 	 * Invoked by clicking on the "Remove Section" button
 	 */
 	protected void removeSelectedSection() {
-		String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
-		if (selection.length != 0) {
-			for (String sectionName : selection) {
-				getInifileDocument().removeSection(sectionName);
+		try {
+			String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
+			if (selection.length != 0) {
+				for (String sectionName : selection) {
+					getInifileDocument().removeSection(sectionName);
+				}
+				reread();
 			}
+		}
+		catch (RuntimeException e) {
+			showErrorDialog(e);
+		}
+	}
+
+	/**
+	 * Invoked when the user selects a few sections, and drags them to another section.
+	 */
+	protected void sectionsDragged(String[] draggedSections, String targetSectionName) {
+		try {
+			//System.out.println(draggedSections.length + " items dropped to: "+targetSectionName);
+			IInifileDocument doc = getInifileDocument();
+			for (String draggedSectionName : draggedSections)
+				if (getInifileDocument().containsSection(draggedSectionName)) // might occur if it was dragged from a different editor's treeviewer...
+					if (!InifileUtils.sectionChainContains(doc, targetSectionName, draggedSectionName)) // avoid circles
+						setSectionExtendsKey(draggedSectionName, targetSectionName);
 			reread();
 		}
+		catch (RuntimeException e) {
+			showErrorDialog(e);
+		}
+	}
+
+	protected void showErrorDialog(RuntimeException e) {
+		reread(); // restore "legal" widget contents; must be done first, or error dialog will pop up twice
+		MessageDialog.openError(getShell(), "Error", e.getMessage()+".");
 	}
 
 	@Override
@@ -370,7 +401,7 @@ public class SectionsPage extends FormPage {
 		// building algorithm), and we warn the user (in the label text, see below)
 		label.setText(!getInifileAnalyzer().containsSectionCircles() ? HINT_TEXT : HINT_TEXT + "\n" + CIRCLE_WARNING_TEXT);
 		layout(true);  // number of lines in label may have changed
-		
+
 		// build tree
 		HashMap<String,GenericTreeNode> nodes = new HashMap<String, GenericTreeNode>();
 		for (String sectionName : doc.getSectionNames()) {
@@ -402,7 +433,7 @@ public class SectionsPage extends FormPage {
 			treeViewer.setInput(rootNode);
 			treeViewer.expandAll();
 		}
-		
+
 		treeViewer.refresh();  // refresh labels anyway
 	}
 

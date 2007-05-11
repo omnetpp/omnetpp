@@ -626,7 +626,7 @@ public class InifileDocument implements IInifileDocument {
 		Section section = lookupSection(sectionName);
 		for (SectionHeadingLine line : section.headingLines)
 			if (!isEditable(line))
-				throw new IllegalArgumentException("Cannot rename section ["+sectionName+"], because it (or part of it) is in an included file");
+				throw new IllegalArgumentException("Cannot rename section ["+sectionName+"], because it is (or part of it is) in an included file ("+line.file.getName()+")");
 		for (SectionHeadingLine line : section.headingLines) {
 			//XXX big problem if line numbers change as the result of replacing!!!!! ie original section name was on two lines using backslash...
 			replaceLine(line, "[" + newName + "]" + (line.comment == null ? "" : " "+line.comment));
