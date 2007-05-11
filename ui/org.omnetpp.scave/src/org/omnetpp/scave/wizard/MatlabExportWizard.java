@@ -11,7 +11,7 @@ import org.omnetpp.scave.engine.ScaveExport;
  *
  * @author tomi
  */
-public class MatlabExportWizard extends ExportWizard {
+public class MatlabExportWizard extends AbstractExportWizard {
 
 	public static final String ID = "org.omnetpp.scave.wizard.MatlabExportWizard";
 	public static final String SECTION_NAME = "MatlabExportWizard";

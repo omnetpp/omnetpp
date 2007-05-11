@@ -27,7 +27,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  *
  * @author tomi
  */
-public abstract class ExportWizard extends Wizard implements IExportWizard {
+public abstract class AbstractExportWizard extends Wizard implements IExportWizard {
 
 	protected IDList selectedScalars = IDList.EMPTY;
 	protected IDList selectedVectors = IDList.EMPTY;
@@ -39,6 +39,8 @@ public abstract class ExportWizard extends Wizard implements IExportWizard {
 	 * Sets the IDs of data to be exported and the ResultFileManager that owns them.
 	 */
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
+		// XXX use the selection of the active Scave editor instead passed parameter
+		
 		// selection is IDListSelection
 		if (selection instanceof IDListSelection) {
 			IDListSelection idlistSelection = (IDListSelection)selection;

@@ -6,7 +6,7 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.ExporterFactory;
 import org.omnetpp.scave.engine.ScaveExport;
 
-public class OctaveExportWizard extends ExportWizard {
+public class OctaveExportWizard extends AbstractExportWizard {
 
 	public static final String ID = "org.omnetpp.scave.wizard.OctaveExportWizard";
 	public static final String SECTION_NAME = "OctaveExportWizard";

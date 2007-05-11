@@ -1,8 +1,11 @@
 package org.omnetpp.scave.editors.ui;
 
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.action.SubMenuManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -14,7 +17,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.swt.widgets.TableItem;
+import org.omnetpp.scave.actions.ExportDataAction;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorContributor;
@@ -23,7 +26,6 @@ import org.omnetpp.scave.editors.datatable.DataTable;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.ResultType;
@@ -166,6 +168,13 @@ public class BrowseDataPage extends ScaveEditorPage {
 		contextMenuManager.add(editorContributor.getAddFilterToDatasetAction());
 		contextMenuManager.add(editorContributor.getAddSelectedToDatasetAction());
 		contextMenuManager.add(new Separator());
+		MenuManager exportMenu = new MenuManager("Export to file...");
+		for (String format : ExportDataAction.FORMATS) {
+			IAction exportDataAction = editorContributor.getExportDataAction(format); 
+			if (exportDataAction != null)
+				exportMenu.add(exportDataAction);
+		}
+		contextMenuManager.add(exportMenu);
 		contextMenuManager.add(editorContributor.getCopyToClipboardAction());
 		contextMenuManager.add(new Separator());
 		contextMenuManager.add(new ChooseTableColumnsAction(panel.getTable()));

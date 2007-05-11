@@ -151,8 +151,8 @@ public abstract class ExportWizardPage extends WizardPage {
 	
 	protected void updateDescription() {
 		IWizard wizard = getWizard();
-		if (wizard instanceof ExportWizard) {
-			ExportWizard exportWizard = (ExportWizard)wizard;
+		if (wizard instanceof AbstractExportWizard) {
+			AbstractExportWizard exportWizard = (AbstractExportWizard)wizard;
 			int scalars = (int)exportWizard.selectedScalars.size();
 			int vectors = (int)exportWizard.selectedVectors.size();
 			int histograms = (int)exportWizard.selectedHistograms.size();

@@ -21,7 +21,7 @@ import org.omnetpp.scave.engine.CsvExport.QuoteMethod;
  *
  * @author tomi
  */
-public class CsvExportWizard extends ExportWizard {
+public class CsvExportWizard extends AbstractExportWizard {
 
 	public static final String ID = "org.omnetpp.scave.wizard.CsvExportWizard";
 	public static final String SECTION_NAME = "CsvExportWizard";

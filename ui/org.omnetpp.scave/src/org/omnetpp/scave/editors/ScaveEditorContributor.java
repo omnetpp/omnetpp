@@ -1,5 +1,8 @@
 package org.omnetpp.scave.editors;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IStatusLineManager;
@@ -18,11 +21,14 @@ import org.omnetpp.scave.actions.CopyToClipboardAction;
 import org.omnetpp.scave.actions.CreateChartTemplateAction;
 import org.omnetpp.scave.actions.CreateTempChartAction;
 import org.omnetpp.scave.actions.EditAction;
+import org.omnetpp.scave.actions.ExportDataAction;
 import org.omnetpp.scave.actions.IScaveAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
 import org.omnetpp.scave.actions.ShowVectorBrowserViewAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.model.presentation.ScaveModelActionBarContributor;
+
+import static org.omnetpp.scave.actions.ExportDataAction.*;
 
 /**
  * Manages the installation/deinstallation of global actions for multi-page editors.
@@ -61,6 +67,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	// BrowseDataPage actions
 	private IAction addFilterToDatasetAction;
 	private IAction addSelectedToDatasetAction;
+	private Map<String,IAction> exportDataActions = new HashMap<String,IAction>();
 	private IAction copyToClipboardAction;
 	private IAction createTempChartAction;
 	private IAction showVectorBrowserViewAction;
@@ -94,6 +101,8 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
     	// BrowseDataPage actions
         addFilterToDatasetAction = registerAction(page, new AddFilterToDatasetAction());
     	addSelectedToDatasetAction = registerAction(page, new AddSelectedToDatasetAction());
+    	for (String format : ExportDataAction.FORMATS)
+    		exportDataActions.put(format, registerAction(page, new ExportDataAction(format)));
     	copyToClipboardAction = registerAction(page, new CopyToClipboardAction());
     	createTempChartAction = registerAction(page, new CreateTempChartAction());
         showVectorBrowserViewAction = registerAction(page, new ShowVectorBrowserViewAction());
@@ -199,6 +208,9 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	}
 	public IAction getAddSelectedToDatasetAction() {
 		return addSelectedToDatasetAction;
+	}
+	public IAction getExportDataAction(String format) {
+		return exportDataActions.get(format);
 	}
 	public IAction getCopyToClipboardAction() {
 		return copyToClipboardAction;
