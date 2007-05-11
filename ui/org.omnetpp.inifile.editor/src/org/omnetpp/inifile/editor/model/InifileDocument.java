@@ -429,12 +429,12 @@ public class InifileDocument implements IInifileDocument {
 	}
 
 	/**
-	 * Returns the given entry; throws exception if entry does not exist, or it is in an included file.
+	 * Returns the given entry; throws exception if entry does not exist, or it comes from an included file.
 	 */
 	protected KeyValueLine getEditableEntry(String sectionName, String key) {
 		KeyValueLine line = getEntry(sectionName, key);
 		if (!isEditable(line))
-			throw new IllegalArgumentException("Entry ["+sectionName+"]/"+key+" is in an included file ("+line.file.getName()+"), and cannot be edited");
+			throw new IllegalArgumentException("Entry ["+sectionName+"]/"+key+" comes from an included file ("+line.file.getName()+"), and cannot be edited");
 		return line;
 	}
 
@@ -584,7 +584,7 @@ public class InifileDocument implements IInifileDocument {
 	protected SectionHeadingLine getFirstEditableSectionHeading(String sectionName) {
 		SectionHeadingLine line = lookupPreferredSectionHeading(sectionName);
 		if (!isEditable(line))
-			throw new IllegalArgumentException("Section is in an included file: ["+sectionName+"]");
+			throw new IllegalArgumentException("Section comes from an included file: ["+sectionName+"]");
 		return line;
 	}
 
