@@ -77,11 +77,15 @@ public abstract class ExportWizardPage extends WizardPage {
 	public void createControl(Composite parent) {
 		Composite panel = new Composite(parent, SWT.NONE);
 		panel.setLayout(new GridLayout(1, false));
-		createColumnSelectionPanel(panel);
-		createPrecisionPanel(panel);
-		createFileSelectionPanel(panel);
+		createPanels(panel);
 		updateDescription();
 		restoreDialogSettings();
+	}
+	
+	protected void createPanels(Composite parent) {
+		createFileSelectionPanel(parent);
+		createColumnSelectionPanel(parent);
+		createPrecisionPanel(parent);
 	}
 	
 	protected void createColumnSelectionPanel(Composite parent) {
@@ -105,12 +109,13 @@ public abstract class ExportWizardPage extends WizardPage {
 	}
 	
 	protected void createPrecisionPanel(Composite parent) {
-		Composite panel = new Composite(parent, SWT.NONE);
-		panel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		panel.setLayout(new GridLayout(2, false));
-		Label label = new Label(panel, SWT.NONE);
+		Group group = new Group(parent, SWT.NONE);
+		group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		group.setLayout(new GridLayout(2, false));
+		group.setText("Number format");
+		Label label = new Label(group, SWT.NONE);
 		label.setText("Precision:");
-		precisionCombo = new Combo(panel, SWT.READ_ONLY);
+		precisionCombo = new Combo(group, SWT.READ_ONLY);
 		for (int prec = 5; prec <= 18; ++prec)
 			precisionCombo.add(String.valueOf(prec));
 		precisionCombo.select(precisionCombo.getItemCount()-1);

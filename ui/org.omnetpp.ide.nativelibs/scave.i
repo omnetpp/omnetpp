@@ -401,6 +401,6 @@ namespace std {
 %ignore MatlabStructExport;
 %ignore MatlabScriptExport;
 %ignore OctaveTextExport;
-%ignore CsvExport;
+%rename(EOL)	CsvExport::eol;
 
 %include "export.h"

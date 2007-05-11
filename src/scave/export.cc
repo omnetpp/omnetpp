@@ -205,6 +205,11 @@ void ScaveExport::saveVector(const string name, const string description, const 
     saveTable(table, startIndex, endIndex);
 }
 
+void ScaveExport::saveVectors(const string name, const string description, const IDList &vectors, ResultFileManager &manager)
+{
+    // TODO
+}
+
 void ScaveExport::saveScalars(const string name, const string description, const IDList &scalars, ScalarFields groupBy, ResultFileManager &manager)
 {
     const ScalarDataTable table(name, description, scalars, groupBy, manager);
@@ -487,14 +492,17 @@ void CsvExport::saveTable(const DataTable &table, int startRow, int endRow)
 
 void CsvExport::writeHeader(const DataTable &table)
 {
-    for (int col = 0; col < table.numOfColumns(); ++col)
+    if (columnNames)
     {
-        if (col > 0)
-            out << ",";
-        DataTable::Column column = table.column(col);
-        writeString(column.name);
+        for (int col = 0; col < table.numOfColumns(); ++col)
+        {
+            if (col > 0)
+                out << separator;
+            DataTable::Column column = table.column(col);
+            writeString(column.name);
+        }
+        out << eol;
     }
-    out << "\r\n";
 }
 
 void CsvExport::writeRow(const DataTable &table, int row)
@@ -503,7 +511,7 @@ void CsvExport::writeRow(const DataTable &table, int row)
     {
         DataTable::Column column = table.column(col);
         if (col > 0)
-            out << ",";
+            out << separator;
         switch (column.type)
         {
         case DataTable::DOUBLE: writeDouble(table.getDoubleValue(row, col)); break;
@@ -511,7 +519,7 @@ void CsvExport::writeRow(const DataTable &table, int row)
         case DataTable::STRING: writeString(table.getStringValue(row, col)); break;
         }
     }
-    out << "\r\n";
+    out << eol;
 }
 
 void CsvExport::writeDouble(double value)
@@ -533,19 +541,58 @@ void CsvExport::writeBigDecimal(BigDecimal value)
 
 void CsvExport::writeString(const string &value)
 {
-    if (value.find_first_of(",\"\r\n") != string::npos)
+    if (needsQuote(value))
     {
-        out << '"';
+        out << quoteChar;
         for (string::const_iterator it = value.begin(); it != value.end(); ++it)
         {
-            out << *it;
-            if (*it == '"') out << '"'; // " -> ""
+            writeChar(*it);
         }
-        out << '"';
+        out << quoteChar;
     }
     else
     {
         out << value;
+    }
+}
+
+bool CsvExport::needsQuote(const string &value)
+{
+    switch (quoteMethod)
+    {
+    case ESCAPE:
+        for (string::const_iterator it = value.begin(); it != value.end(); ++it)
+        {
+            if (*it == separator || *it == quoteChar || *it == '\\' || strchr(eol, *it))
+                return true;
+        }
+        return false;
+    case DOUBLE:
+        for (string::const_iterator it = value.begin(); it != value.end(); ++it)
+        {
+            if (*it == separator || *it == quoteChar || strchr(eol, *it))
+                return true;
+        }
+        return false;
+    default:
+        throw opp_runtime_error("Unknown quote method.");
+    }
+}
+
+void CsvExport::writeChar(char ch)
+{
+    switch (quoteMethod)
+    {
+    case ESCAPE:
+        if (ch == '\\' || ch == separator)
+            out << '\\';
+        out << ch;
+        break;
+    case DOUBLE:
+        if (ch == separator)
+            out << ch;
+        out << ch;
+        break;
     }
 }
 

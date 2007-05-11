@@ -118,7 +118,9 @@ class SCAVE_API ScaveExport
         void open(const std::string filename);
         void close();
         
+        // TODO: save vector attributes too (file,run,module,etc)
         void saveVector(const std::string name, const std::string description, const XYArray *vec, int startIndex=0, int endIndex=-1);
+        void saveVectors(const std::string name, const std::string description, const IDList &vectors, ResultFileManager &manager);
         void saveScalars(const std::string name, const std::string description, const IDList &scalars, ScalarFields groupBy, ResultFileManager &manager);
     protected:
         virtual void saveTable(const DataTable &rows, int startIndex, int endIndex) = 0;
@@ -207,11 +209,20 @@ class SCAVE_API OctaveTextExport : public MatlabStructExport
 };
 
 /**
- * Export data in CSV format as described in RFC 4180.
+ * Export data in CSV format.
+ * With default parameters the format is the same as described in RFC 4180.
  */
 class SCAVE_API CsvExport : public ScaveExport
 {
+    public: // options
+        typedef enum {DOUBLE, ESCAPE} QuoteMethod;
+        char separator;
+        char quoteChar;
+        const char *eol;
+        QuoteMethod quoteMethod;
+        bool columnNames;
     public:
+        CsvExport() : separator(','), quoteChar('"'), eol("\r\n"), quoteMethod(DOUBLE), columnNames(true) {}
         virtual std::string makeFileName(const std::string name);
     protected:
         virtual void saveTable(const DataTable &table, int startRow, int endRow);
@@ -221,6 +232,8 @@ class SCAVE_API CsvExport : public ScaveExport
         void writeDouble(double value);
         void writeBigDecimal(BigDecimal value);
         void writeString(const std::string &value);
+        bool needsQuote(const std::string &value);
+        void writeChar(char ch);
 };
 
 class SCAVE_API ExporterFactory

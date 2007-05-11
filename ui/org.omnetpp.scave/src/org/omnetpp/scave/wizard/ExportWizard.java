@@ -86,7 +86,7 @@ public abstract class ExportWizard extends Wizard implements IExportWizard {
 				ScaveExport exporter = createExporter();
 				exporter.setPrecision(page.getPrecision());
 				fileName = exporter.makeFileName(fileName);
-				exporter.open(fileName);
+				exporter.open(fileName); // TODO: file exists: overwite/append
 				exportVectors(exporter);
 				exportScalars(exporter);
 				exporter.close();
