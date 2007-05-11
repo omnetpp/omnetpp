@@ -63,7 +63,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 
 	protected SequenceChartMenuAction axisOrderingModeAction;
 
-	protected SequenceChartAction FilterModulesAction;
+	protected SequenceChartAction filterAction;
 	
 	protected SequenceChartAction showEventNumbersAction;
 
@@ -89,11 +89,13 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 
 	protected StatusLineContributionItem timelineModeStatus;
 
+	protected StatusLineContributionItem filterStatus;
+
 	public SequenceChartContributor() {
 		this.separatorAction = new Separator();
 		this.timelineModeAction = createTimelineModeAction();
 		this.axisOrderingModeAction = createAxisOrderingModeAction();
-		this.FilterModulesAction = createFilterModulesAction();
+		this.filterAction = createFilterAction();
 		this.showEventNumbersAction = createShowEventNumbersAction();
 		this.showMessageNamesAction = createShowMessageNamesAction();
 		this.showReuseMessagesAction = createShowReuseMessagesAction();
@@ -107,6 +109,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		this.bookmarkAction = createBookmarkAction();
 		
 		this.timelineModeStatus = createTimelineModeStatus();
+		this.filterStatus = createFilterStatus();
 
 		if (singleton == null)
 			singleton = this;
@@ -146,7 +149,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 
 				// messages submenu
 				for (final IMessageDependency msg : msgs) {
-					IMenuManager subMenuManager = new MenuManager(sequenceChart.getMessageText(msg));
+					IMenuManager subMenuManager = new MenuManager(sequenceChart.getMessageDependencyText(msg));
 					menuManager.add(subMenuManager);
 
 					subMenuManager.add(createZoomToMessageAction(msg));
@@ -172,7 +175,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 				// static menu
 				menuManager.add(timelineModeAction);
 				menuManager.add(axisOrderingModeAction);
-				menuManager.add(FilterModulesAction);
+				menuManager.add(filterAction);
 				menuManager.add(separatorAction);
 				menuManager.add(showEventNumbersAction);
 				menuManager.add(showMessageNamesAction);
@@ -197,7 +200,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
 		toolBarManager.add(timelineModeAction);
 		toolBarManager.add(axisOrderingModeAction);
-		toolBarManager.add(FilterModulesAction);
+		toolBarManager.add(filterAction);
 		toolBarManager.add(separatorAction);
 		toolBarManager.add(showEventNumbersAction);
 		toolBarManager.add(showMessageNamesAction);
@@ -211,18 +214,21 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 
     public void contributeToStatusLine(IStatusLineManager statusLineManager) {
     	statusLineManager.add(timelineModeStatus);
+    	statusLineManager.add(filterStatus);
     }
 	
 	@Override
 	public void setActiveEditor(IEditorPart targetEditor) {
 		sequenceChart = ((SequenceChartEditor)targetEditor).getSequenceChart();
 		timelineModeAction.update();
+		filterAction.update();
 		axisOrderingModeAction.update();
 		showEventNumbersAction.update();
 		showMessageNamesAction.update();
 		showReuseMessagesAction.update();
 		showArrowHeadsAction.update();
 		timelineModeStatus.update();
+		filterStatus.update();
 	}
 
 	private SequenceChartMenuAction createTimelineModeAction() {
@@ -313,10 +319,82 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		};
 	}
 	
-	private SequenceChartAction createFilterModulesAction() {
-		return new SequenceChartAction("Filter modules...", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_SHOW_EVENT_NUMBERS)) {
+	private SequenceChartAction createFilterAction() {
+		return new SequenceChartMenuAction("Filter", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_TIMELINE_MODE)) {
 			@Override
 			public void run() {
+				if (isFilteredEventLog())
+					removeFilter();
+				else
+					filterModules();
+				filterStatus.update();
+				update();
+			}
+
+			@Override
+			protected int getMenuIndex() {
+				if (isFilteredEventLog())
+					return 1;
+				else
+					return 0;
+			}
+
+			private boolean isFilteredEventLog() {
+				return sequenceChart.getInput().getEventLog() instanceof FilteredEventLog;
+			}
+			
+			@Override
+			public IMenuCreator getMenuCreator() {
+				return new AbstractMenuCreator() {
+					@Override
+					protected void createMenu(Menu menu) {
+						addSubMenuItem(menu, "Remove filter", new Runnable() {
+							public void run() {
+								removeFilter();
+							}
+						});
+						addSubMenuItem(menu, "Filter modules...", new Runnable() {
+							public void run() {
+								filterModules();
+							}
+						});
+					}
+
+					private void addSubMenuItem(Menu menu, String text, final Runnable runnable) {
+						MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
+						subMenuItem.setText(text);
+						subMenuItem.addSelectionListener( new SelectionAdapter() {
+							public void widgetSelected(SelectionEvent e) {
+								MenuItem menuItem = (MenuItem)e.widget;
+								
+								if (menuItem.getSelection()) {
+									runnable.run();
+									update();
+								}
+							}
+						});
+					}
+
+				};
+			}
+
+			private void removeFilter() {
+				EventLogInput eventLogInput = sequenceChart.getInput();
+				IEventLog eventLog = eventLogInput.getEventLog();
+				if (eventLog instanceof FilteredEventLog)
+					eventLog = ((FilteredEventLog)eventLog).getEventLog();
+
+				eventLog.own();
+				eventLogInput.setEventLog(eventLog);
+
+				SequenceChartFacade sequenceChartFacade = eventLogInput.getSequenceChartFacade();
+				sequenceChartFacade.setEventLog(eventLog);
+				sequenceChartFacade.relocateTimelineCoordinateSystem(sequenceChartFacade.getTimelineCoordinateSystemOriginEvent());
+				
+				sequenceChart.setInput(eventLogInput);
+			}
+
+			private void filterModules() {
 				ModuleTreeDialog dialog = new ModuleTreeDialog(null, sequenceChart.getInput().getModuleTreeRoot(), sequenceChart.getAxisModules());
 				dialog.open();
 
@@ -334,7 +412,8 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 					IEventLog eventLog = eventLogInput.getEventLog();
 					if (eventLog instanceof FilteredEventLog)
 						eventLog = ((FilteredEventLog)eventLog).getEventLog();
-					
+
+					eventLog.disown();
 					FilteredEventLog filteredEventLog = new FilteredEventLog(eventLog);
 					filteredEventLog.setModuleIds(moduleIds);
 					eventLogInput.setEventLog(filteredEventLog);
@@ -350,7 +429,20 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			}
 		};
 	}
-	
+
+	private StatusLineContributionItem createFilterStatus() {
+		return new StatusLineContributionItem("Filter") {
+			@Override
+		    public void update() {
+				setText(isFilteredEventLog() ? "Filtered" : "Unfiltered");
+		    }
+
+			private boolean isFilteredEventLog() {
+				return sequenceChart.getInput().getEventLog() instanceof FilteredEventLog;
+			}
+		};
+	}
+
 	private SequenceChartAction createShowEventNumbersAction() {
 		return new SequenceChartAction(null, Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_SHOW_EVENT_NUMBERS)) {
 			@Override
@@ -477,7 +569,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 
 	private SequenceChartAction createCenterEventAction(final IEvent event) {
-		return new SequenceChartAction("Center", SWT.PUSH) {
+		return new SequenceChartAction("Center", Action.AS_PUSH_BUTTON) {
 			@Override
 			public void run() {
 				sequenceChart.gotoElement(event);
@@ -486,7 +578,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 
 	private SequenceChartAction createSelectEventAction(final IEvent event) {
-		return new SequenceChartAction("Select", SWT.PUSH) {
+		return new SequenceChartAction("Select", Action.AS_PUSH_BUTTON) {
 			@Override
 			public void run() {
 				sequenceChart.setSelectionEvent(event);
@@ -495,7 +587,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 
 	private SequenceChartAction createFilterEventCausesConsequencesAction(final IEvent event) {
-		return new SequenceChartAction("Filter causes/consequences", SWT.PUSH) {
+		return new SequenceChartAction("Filter causes/consequences", Action.AS_PUSH_BUTTON) {
 			@Override
 			public void run() {
 				// TODO:
@@ -504,7 +596,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 
 	private SequenceChartAction createZoomToMessageAction(final IMessageDependency messageDependency) {
-		return new SequenceChartAction("Zoom to message", SWT.PUSH) {
+		return new SequenceChartAction("Zoom to message", Action.AS_PUSH_BUTTON) {
 			@Override
 			public void run() {
 				sequenceChart.zoomToMessageDependency(messageDependency);
@@ -513,7 +605,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 
 	private SequenceChartAction createGotoCauseAction(final IMessageDependency messageDependency) {
-		return new SequenceChartAction("Goto cause event", SWT.PUSH) {
+		return new SequenceChartAction("Goto cause event", Action.AS_PUSH_BUTTON) {
 			@Override
 			public void run() {
 				sequenceChart.gotoElement(messageDependency.getCauseEvent());
@@ -522,7 +614,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 
 	private SequenceChartAction createGotoConsequenceAction(final IMessageDependency messageDependency) {
-		return new SequenceChartAction("Goto consequence event", SWT.PUSH) {
+		return new SequenceChartAction("Goto consequence event", Action.AS_PUSH_BUTTON) {
 			@Override
 			public void run() {
 				sequenceChart.gotoElement(messageDependency.getConsequenceEvent());
@@ -531,7 +623,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 
 	private SequenceChartAction createCenterAxisAction(final ModuleTreeItem axisModule) {
-		return new SequenceChartAction("Center", SWT.PUSH) {
+		return new SequenceChartAction("Center", Action.AS_PUSH_BUTTON) {
 			@Override
 			public void run() {
 				sequenceChart.scrollToAxisModule(axisModule);
@@ -540,7 +632,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 
 	private SequenceChartAction createZoomToAxisValueAction(final ModuleTreeItem axisModule, final int x) {
-		return new SequenceChartAction("Zoom to value", SWT.PUSH) {
+		return new SequenceChartAction("Zoom to value", Action.AS_PUSH_BUTTON) {
 			@Override
 			public void run() {
 				sequenceChart.zoomToAxisValue(axisModule, sequenceChart.getSimulationTimeForViewportCoordinate(x));

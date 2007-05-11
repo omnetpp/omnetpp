@@ -195,7 +195,7 @@ import java.lang.reflect.Constructor;
 %}
 
 %typemap(javacode) EventLogEntry %{
-   private static Constructor[] eventLogConstructors = new Constructor[100];
+   private static Constructor[] eventLogEntryConstructors = new Constructor[100];
 
    public boolean equals(Object obj) {
       return (obj instanceof EventLogEntry) && getCPtr(this)==getCPtr((EventLogEntry)obj);
@@ -211,14 +211,14 @@ import java.lang.reflect.Constructor;
             return null;
 
          int index = EventLogEngineJNI.EventLogEntry_getClassIndex(cPtr);
-         Constructor constructor = eventLogConstructors[index];
+         Constructor constructor = eventLogEntryConstructors[index];
 
          if (constructor == null)
          {
             String name = "org.omnetpp.eventlog.engine." + EventLogEngineJNI.EventLogEntry_getClassName(cPtr);
             Class clazz = Class.forName(name);
             constructor = clazz.getDeclaredConstructor(long.class, boolean.class);
-            eventLogConstructors[index] = constructor;
+            eventLogEntryConstructors[index] = constructor;
          }
 
          return (EventLogEntry)constructor.newInstance(cPtr, isOwner);
@@ -229,6 +229,65 @@ import java.lang.reflect.Constructor;
    }
 %}
 
+%typemap(javaout) IMessageDependency * {
+   return IMessageDependency.newIMessageDependency($jnicall, $owner);
+}
+
+%typemap(javaimports) IMessageDependency %{
+import java.lang.reflect.Constructor;
+%}
+
+%typemap(javacode) IMessageDependency %{
+   private static Constructor[] messageDependencyConstructors = new Constructor[100];
+
+   public long getCPtr() {
+       return swigCPtr;
+   }
+
+   public boolean equals(Object obj) {
+      return (obj instanceof IMessageDependency) && getCPtr(this)==getCPtr((IMessageDependency)obj);
+   }
+
+   public int hashCode() {
+      return (int)getCPtr(this);
+   }
+
+   public static IMessageDependency newIMessageDependency(long cPtr, boolean isOwner) {
+      try {
+         if (cPtr == 0)
+            return null;
+
+         int index = EventLogEngineJNI.IMessageDependency_getClassIndex(cPtr);
+         Constructor constructor = messageDependencyConstructors[index];
+
+         if (constructor == null)
+         {
+            String name = "org.omnetpp.eventlog.engine." + EventLogEngineJNI.IMessageDependency_getClassName(cPtr);
+            Class clazz = Class.forName(name);
+            constructor = clazz.getDeclaredConstructor(long.class, boolean.class);
+            messageDependencyConstructors[index] = constructor;
+         }
+
+         return (IMessageDependency)constructor.newInstance(cPtr, isOwner);
+      }
+      catch (Exception e) {
+         throw new RuntimeException(e);
+      }
+   }
+%}
+
+%typemap(javacode) IEventLog %{
+    public IEventLog own() {
+        swigCMemOwn = true;
+        return this;
+    }
+
+    public IEventLog disown() {
+        swigCMemOwn = false;
+        return this;
+    }
+%}
+
 %typemap(javacode) FileReader %{
     public FileReader(String fileName, boolean cMemoryOwn) {
         this(fileName);
@@ -237,12 +296,6 @@ import java.lang.reflect.Constructor;
 %}
 
 %typemap(javacode) IEvent %{
-    public long getCPtr() {
-        return swigCPtr;
-    }
-%}
-
-%typemap(javacode) IMessageDependency %{
     public long getCPtr() {
         return swigCPtr;
     }

@@ -55,6 +55,7 @@ import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.virtualtable.IVirtualContentWidget;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
+import org.omnetpp.eventlog.engine.FilteredMessageDependency;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.IMessageDependency;
@@ -2294,7 +2295,7 @@ public class SequenceChart
 					break;
 				}
 				// add message
-				res += getMessageText(messageDependency) + "\n"; 
+				res += getMessageDependencyText(messageDependency) + "\n"; 
 			}
 			res = res.trim();
 			return res;
@@ -2325,42 +2326,42 @@ public class SequenceChart
 	/**
 	 * Returns a descriptive message for the IMessageDependency to be presented to the user.
 	 */
-	public String getMessageText(IMessageDependency msg) {
-		String result = null;
-		BeginSendEntry beginSendEntry = null;
-		long messageDependencyPtr = msg.getCPtr();
-		
-		// TODO: text result could be more informative here
-		int kind = sequenceChartFacade.MessageDependency_getKind(messageDependencyPtr);
-		switch (kind) {
-			case MessageDependencyKind.SEND:
-				beginSendEntry = msg.getBeginSendEntry();
-				result = "sending";
-				break;
-			case MessageDependencyKind.REUSE:
-				beginSendEntry = msg.getBeginSendEntry();
-				result = "reusing";
-				break;
-			case MessageDependencyKind.FILTERED:
-				result = "filtered";
-				break;
+	public String getMessageDependencyText(IMessageDependency messageDependency) {
+		int kind = sequenceChartFacade.MessageDependency_getKind(messageDependency.getCPtr());
+
+		if (kind == MessageDependencyKind.FILTERED) {
+			FilteredMessageDependency filteredMessageDependency = (FilteredMessageDependency)messageDependency;
+			BeginSendEntry beginBeginSendEntry = filteredMessageDependency.getBeginMessageDependency().getBeginSendEntry();
+			BeginSendEntry endBeginSendEntry = filteredMessageDependency.getEndMessageDependency().getBeginSendEntry();
+
+			String result = beginBeginSendEntry.getMessageFullName() + " -> " + endBeginSendEntry.getMessageFullName();
+			result += " (#" + messageDependency.getCauseEventNumber() + " -> #" + messageDependency.getConsequenceEventNumber() + ")";
+
+			BigDecimal causeSimulationTime = messageDependency.getCauseSimulationTime().toBigDecimal();
+			BigDecimal consequenceSimulationTime = messageDependency.getConsequenceSimulationTime().toBigDecimal();
+			result += " dt = " + TimeUtils.secondsToTimeString(consequenceSimulationTime.subtract(causeSimulationTime));
+			
+			return result;
 		}
-		
-		if (kind != MessageDependencyKind.FILTERED) {
+		else {
+			BeginSendEntry beginSendEntry = messageDependency.getBeginSendEntry();
+			String result = kind == MessageDependencyKind.SEND ? "sending " : "reusing " + "message ";
+
 			String detail = beginSendEntry.getDetail();
-			
-			result += " message ";
-			
 			if (detail == null)
 				result += "(" + beginSendEntry.getMessageClassName() + ") ";
 
-			result += beginSendEntry.getMessageFullName() + " (#" + msg.getCauseEventNumber() + " -> #" + msg.getConsequenceEventNumber() + ")";
+			result += beginSendEntry.getMessageFullName() + " (#" + messageDependency.getCauseEventNumber() + " -> #" + messageDependency.getConsequenceEventNumber() + ")";
+			
+			BigDecimal causeSimulationTime = messageDependency.getCauseSimulationTime().toBigDecimal();
+			BigDecimal consequenceSimulationTime = messageDependency.getConsequenceSimulationTime().toBigDecimal();
+			result += " dt = " + TimeUtils.secondsToTimeString(consequenceSimulationTime.subtract(causeSimulationTime));
 
 			if (detail != null)
 				result += "\n" + detail;
+
+			return result;
 		}
-			
-		return result;
 	}
 
 	/**
