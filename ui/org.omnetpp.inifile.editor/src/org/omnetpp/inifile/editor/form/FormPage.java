@@ -1,5 +1,6 @@
 package org.omnetpp.inifile.editor.form;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
@@ -152,6 +153,11 @@ public abstract class FormPage extends Composite {
 	 */
 	public void gotoEntry(String section, String key) {
 		// do nothing by default (subclasses are advised to override)
+	}
+
+	protected void showErrorDialog(RuntimeException e) {
+		reread(); // restore "legal" form contents
+		MessageDialog.openError(getShell(), "Error", e.getMessage()+".");
 	}
 
 }

@@ -467,7 +467,7 @@ public class InifileDocument implements IInifileDocument {
 		// validate keys
 		for (String key : keys)
 			if (lookupEntry(section, key) != null)
-				throw new IllegalArgumentException("Key "+key+" already exists in section ["+section+"]");
+				throw new IllegalArgumentException("Cannot add key "+key+" to section ["+section+"]: already exists");
 		
 		// assemble text to insert
 		String text = "";
@@ -508,7 +508,7 @@ public class InifileDocument implements IInifileDocument {
 		KeyValueLine line = getEditableEntry(section, oldKey);
 		if (!nullSafeEquals(line.key, newKey)) {
 			if (lookupEntry(section, newKey) != null)
-				throw new IllegalArgumentException("Key "+newKey+" already exists in section ["+section+"]");
+				throw new IllegalArgumentException("Cannot rename key "+oldKey+": key "+newKey+" already exists in section ["+section+"]");
 			line.key = newKey; 
 			String text = line.key + " = " + line.value + (line.comment == null ? "" : " "+line.comment);
 			replaceLine(line, text);
@@ -636,7 +636,7 @@ public class InifileDocument implements IInifileDocument {
 	public void addSection(String sectionName, String beforeSectionName) {
 		parseIfChanged();
 		if (sections.get(sectionName) != null)
-			throw new IllegalArgumentException("Section already exists: ["+sectionName+"]");
+			throw new IllegalArgumentException("Cannot add section ["+sectionName+"]: it already exists");
 
 		// find insertion point
 		int lineNumber;

@@ -373,11 +373,6 @@ public class SectionsPage extends FormPage {
 		}
 	}
 
-	protected void showErrorDialog(RuntimeException e) {
-		reread(); // restore "legal" widget contents; must be done first, or error dialog will pop up twice
-		MessageDialog.openError(getShell(), "Error", e.getMessage()+".");
-	}
-
 	@Override
 	public boolean setFocus() {
 		return treeViewer.getTree().setFocus();

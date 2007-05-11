@@ -34,7 +34,6 @@ import org.omnetpp.common.contentassist.ContentAssistUtils;
 import org.omnetpp.common.ui.ITooltipTextProvider;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
-import org.omnetpp.common.ui.TooltipSupport;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.actions.AddInifileKeysDialog;
@@ -54,7 +53,6 @@ import org.omnetpp.inifile.editor.model.SectionKey;
  */
 //XXX validation of keys and values! e.g. shouldn't allow empty key
 //XXX comment handling (stripping/adding of "#")
-//XXX editing stuff inside included files causes exception without user feedback -- pop up error dialog?
 //XXX add status label below the table: "34 unassigned parameters"
 public class ParametersPage extends FormPage {
 	private TableViewer tableViewer;
@@ -176,27 +174,37 @@ public class ParametersPage extends FormPage {
 					element = ((Item) element).getData(); // workaround, see super's comment
 				SectionKey item = (SectionKey) element;
 				IInifileDocument doc = getInifileDocument();
-				if (property.equals("key")) {
-					String newKey = (String) value;
-					if (!newKey.equals(item.key)) {
-						String errorText = InifileUtils.validateParameterKey(doc, item.section, newKey);
-						if (errorText==null) {
-							doc.changeKey(item.section, item.key, (String)value);
-							reread(); // tableViewer.refresh() not enough, because input consists of keys
+				try {
+					if (property.equals("key")) {
+						String newKey = (String) value;
+						if (!newKey.equals(item.key)) {
+							String errorText = InifileUtils.validateParameterKey(doc, item.section, newKey);
+							if (errorText==null) { //XXX can't we validate in doc.changeKey()? 
+								doc.changeKey(item.section, item.key, (String)value);
+								reread(); // tableViewer.refresh() not enough, because input consists of keys
+							}
+							else {
+								MessageDialog.openError(null, "Cannot Rename", "Cannot rename key: "+errorText);
+							}
 						}
-						else {
-							MessageDialog.openError(null, "Cannot Rename", "Cannot rename key: "+errorText);
+					}
+					else if (property.equals("value")) {
+						if (!value.equals(doc.getValue(item.section, item.key))) {
+							doc.setValue(item.section, item.key, (String)value);
+							tableViewer.refresh(); // if performance gets critical: refresh only if changed
+						}
+					}
+					else if (property.equals("comment")) {
+						if (value.equals("")) 
+							value = null; // no comment == null
+						if (!nullSafeEquals((String)value, doc.getComment(item.section, item.key))) {
+							doc.setComment(item.section, item.key, (String)value);
+							tableViewer.refresh(); // if performance gets critical: refresh only if changed
 						}
 					}
 				}
-				else if (property.equals("value")) {
-					doc.setValue(item.section, item.key, (String)value);
-					tableViewer.refresh(); // if performance gets critical: refresh only if changed
-				}
-				else if (property.equals("comment")) {
-					if (value.equals("")) value = null; // no comment == null
-					doc.setComment(item.section, item.key, (String)value);
-					tableViewer.refresh();// if performance gets critical: refresh only if changed
+				catch (RuntimeException e) {
+					showErrorDialog(e);
 				}
 			}
 		});
@@ -258,6 +266,10 @@ public class ParametersPage extends FormPage {
 		return text == null ? "" : text;
 	}
 
+	protected static boolean nullSafeEquals(String first, String second) {
+		return first==null ? second == null : first.equals(second);
+	}
+	
 	private TableColumn addTableColumn(Table table, String label, int width) {
 		TableColumn column = new TableColumn(table, SWT.NONE);
 		column.setText(label);
@@ -294,22 +306,33 @@ public class ParametersPage extends FormPage {
 					newKey = newKey+i;
 				}
 
-				// insert key and refresh table
-				doc.addEntry(section, newKey, "", null, beforeKey); //XXX what if no such section
-				reread();
-				tableViewer.editElement(newKey, 1);
+				try {
+					// insert key and refresh table
+					//XXX all keys are from a readonly base section, one cannot add new keys!!!!
+					doc.addEntry(section, newKey, "", null, beforeKey);
+					reread();
+					tableViewer.editElement(newKey, 1);
+				}
+				catch (RuntimeException ex) {
+					showErrorDialog(ex);
+				}
 			}
 		});
 
 		removeButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
-				for (Object o : sel.toArray()) {
-					SectionKey item = (SectionKey) o;
-					getInifileDocument().removeKey(item.section, item.key);
+				try {
+					for (Object o : sel.toArray()) {
+						SectionKey item = (SectionKey) o;
+						getInifileDocument().removeKey(item.section, item.key);
+					}
+					tableViewer.getTable().deselectAll();
+					reread();
 				}
-				tableViewer.getTable().deselectAll();
-				reread();
+				catch (RuntimeException ex) {
+					showErrorDialog(ex);
+				}
 			}
 		});
 
@@ -317,17 +340,22 @@ public class ParametersPage extends FormPage {
 			public void widgetSelected(SelectionEvent e) {
 				IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
 				SectionKey[] items = (SectionKey[]) tableViewer.getInput();
-				//XXX does not work properly
-				for (Object o : sel.toArray()) {
-					SectionKey item = (SectionKey) o;
-					int pos = ArrayUtils.indexOf(items, item);
-					Assert.isTrue(pos != -1);
-					if (pos == 0) 
-						break; // hit the top
-					getInifileDocument().moveKey(item.section, item.key, items[pos-1].key);
-					SectionKey tmp = items[pos-1]; items[pos-1] = items[pos]; items[pos] = tmp;
+				try {
+					//XXX does not work properly
+					for (Object o : sel.toArray()) {
+						SectionKey item = (SectionKey) o;
+						int pos = ArrayUtils.indexOf(items, item);
+						Assert.isTrue(pos != -1);
+						if (pos == 0) 
+							break; // hit the top
+						getInifileDocument().moveKey(item.section, item.key, items[pos-1].key);
+						SectionKey tmp = items[pos-1]; items[pos-1] = items[pos]; items[pos] = tmp;
+					}
+					reread();
 				}
-				reread();
+				catch (RuntimeException ex) {
+					showErrorDialog(ex);
+				}
 				tableViewer.setSelection(sel);
 			}
 		});
@@ -337,18 +365,23 @@ public class ParametersPage extends FormPage {
 				IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
 				Object[] array = sel.toArray();
 				SectionKey[] items = (SectionKey[]) tableViewer.getInput();
-				ArrayUtils.reverse(array);  // we must iterate in reverse order
-				//XXX does not work properly
-				for (Object o : array) {
-					SectionKey item = (SectionKey) o;
-					int pos = ArrayUtils.indexOf(items, item);
-					Assert.isTrue(pos != -1);
-					if (pos == items.length-1) 
-						break; // hit the bottom
-					getInifileDocument().moveKey(item.section, item.key, pos==items.length-2 ? null : items[pos+2].key);
-					SectionKey tmp = items[pos+1]; items[pos+1] = items[pos]; items[pos] = tmp;
+				try {
+					ArrayUtils.reverse(array);  // we must iterate in reverse order
+					//XXX does not work properly
+					for (Object o : array) {
+						SectionKey item = (SectionKey) o;
+						int pos = ArrayUtils.indexOf(items, item);
+						Assert.isTrue(pos != -1);
+						if (pos == items.length-1) 
+							break; // hit the bottom
+						getInifileDocument().moveKey(item.section, item.key, pos==items.length-2 ? null : items[pos+2].key);
+						SectionKey tmp = items[pos+1]; items[pos+1] = items[pos]; items[pos] = tmp;
+					}
+					reread();
 				}
-				reread();
+				catch (RuntimeException ex) {
+					showErrorDialog(ex);
+				}
 				tableViewer.setSelection(sel);
 			}
 		});
@@ -368,12 +401,17 @@ public class ParametersPage extends FormPage {
 					// add user-selected keys to the document, and also **.apply-default if chosen by the user
 					String[] keys = dialog.getKeys();
 					String section = dialog.getSection();
-					doc.addEntries(section, keys, null, null, null);
-					if (dialog.getAddApplyDefault())
-						InifileUtils.addEntry(doc, section, "**.apply-default", "true", null);
+					try {
+						doc.addEntries(section, keys, null, null, null);
+						if (dialog.getAddApplyDefault())
+							InifileUtils.addEntry(doc, section, "**.apply-default", "true", null);
 
-					// refresh table and restore selection
-					reread();
+						// refresh table and restore selection
+						reread();
+					}
+					catch (RuntimeException ex) {
+						showErrorDialog(ex);
+					}
 					tableViewer.setSelection(sel);
 				}
 			}
