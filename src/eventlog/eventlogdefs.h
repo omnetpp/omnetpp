@@ -77,10 +77,4 @@ enum TimelineMode {
 	NON_LINEAR
 };
 
-enum MessageDependencyKind {
-    SEND,
-    REUSE,
-    FILTERED
-};
-
 #endif

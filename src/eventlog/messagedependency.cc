@@ -20,24 +20,38 @@
 
 /**************************************************/
 
-IMessageDependency::IMessageDependency(IEventLog *eventLog)
+IMessageDependency::IMessageDependency(IEventLog *eventLog, bool isReuse)
 {
     this->eventLog = eventLog;
+    this->isReuse = isReuse;
 }
 
 /**************************************************/
 
-MessageDependency::MessageDependency(IEventLog *eventLog,
-                                     long causeEventNumber, int causeBeginSendEntryNumber,
-                                     long consequenceEventNumber, int consequenceBeginSendEntryNumber)
-    : IMessageDependency(eventLog)
+MessageDependency::MessageDependency(IEventLog *eventLog, bool isReuse, long eventNumber, int beginSendEntryNumber)
+    : IMessageDependency(eventLog, isReuse)
 {
-    this->causeEventNumber = causeEventNumber;
-    this->consequenceEventNumber = consequenceEventNumber;
-    this->causeBeginSendEntryNumber = causeBeginSendEntryNumber;
-    this->consequenceBeginSendEntryNumber = consequenceBeginSendEntryNumber;
+    Assert(eventNumber >= 0 && beginSendEntryNumber >= 0);
 
-    Assert(causeEventNumber >= 0 || consequenceEventNumber >= 0);
+    if (isReuse) {
+        this->causeEventNumber = EVENT_NOT_YET_CALCULATED;
+        this->causeBeginSendEntryNumber = -1;
+        this->consequenceEventNumber = eventNumber;
+        this->consequenceBeginSendEntryNumber = beginSendEntryNumber;
+    }
+    else {
+        this->causeEventNumber = eventNumber;
+        this->causeBeginSendEntryNumber = beginSendEntryNumber;
+        this->consequenceEventNumber = EVENT_NOT_YET_CALCULATED;
+        this->consequenceBeginSendEntryNumber = -1;
+    }
+}
+
+MessageDependency *MessageDependency::duplicate(IEventLog *eventLog)
+{
+    MessageDependency *messageDependency = new MessageDependency(*this);
+    messageDependency->eventLog = eventLog;
+    return messageDependency;
 }
 
 BeginSendEntry *MessageDependency::getCauseBeginSendEntry()
@@ -203,36 +217,8 @@ void MessageDependency::printConsequence(FILE *file)
 
 /**************************************************/
 
-MessageReuse::MessageReuse(IEventLog *eventLog, long senderEventNumber, int beginSendEnrtyNumber)
-    : MessageDependency(eventLog, EVENT_NOT_YET_CALCULATED, -1, senderEventNumber, beginSendEnrtyNumber)
-{
-}
-
-MessageReuse *MessageReuse::duplicate(IEventLog *eventLog)
-{
-    MessageReuse *messageReuse = new MessageReuse(*this);
-    messageReuse->eventLog = eventLog;
-    return messageReuse;
-}
-
-/**************************************************/
-
-MessageSend::MessageSend(IEventLog *eventLog, long senderEventNumber, int beginSendEntryNumber)
-    : MessageDependency(eventLog, senderEventNumber, beginSendEntryNumber, EVENT_NOT_YET_CALCULATED, -1)
-{
-}
-
-MessageSend *MessageSend::duplicate(IEventLog *eventLog)
-{
-    MessageSend *messageSend = new MessageSend(*this);
-    messageSend->eventLog = eventLog;
-    return messageSend;
-}
-
-/**************************************************/
-
-FilteredMessageDependency::FilteredMessageDependency(IEventLog *eventLog, IMessageDependency *beginMessageDependency, IMessageDependency *endMessageDependency)
-    : IMessageDependency(eventLog)
+FilteredMessageDependency::FilteredMessageDependency(IEventLog *eventLog, bool isReuse, IMessageDependency *beginMessageDependency, IMessageDependency *endMessageDependency)
+    : IMessageDependency(eventLog, isReuse)
 {
     this->beginMessageDependency = beginMessageDependency;
     this->endMessageDependency = endMessageDependency;
@@ -246,7 +232,7 @@ FilteredMessageDependency::~FilteredMessageDependency()
 
 FilteredMessageDependency *FilteredMessageDependency::duplicate(IEventLog *eventLog)
 {
-    return new FilteredMessageDependency(eventLog, beginMessageDependency->duplicate(eventLog), endMessageDependency->duplicate(eventLog));
+    return new FilteredMessageDependency(eventLog, isReuse, beginMessageDependency->duplicate(eventLog), endMessageDependency->duplicate(eventLog));
 }
 
 IEvent *FilteredMessageDependency::getCauseEvent()

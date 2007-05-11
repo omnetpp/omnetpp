@@ -30,7 +30,7 @@ FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
     firstMatchingEvent = NULL;
     lastMatchingEvent = NULL;
     maximumNumberOfCauses = maximumNumberOfConsequences = 10;
-    maximumCauseDepth = maximumConsequenceDepth = 10;
+    maximumCauseDepth = maximumConsequenceDepth = 30;
 }
 
 FilteredEventLog::~FilteredEventLog()

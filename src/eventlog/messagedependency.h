@@ -28,10 +28,13 @@ class EVENTLOG_API IMessageDependency
 {
     protected:
         IEventLog *eventLog;
+        bool isReuse;
 
     public:
-        IMessageDependency(IEventLog *eventLog);
+        IMessageDependency(IEventLog *eventLog, bool isReuse);
         virtual ~IMessageDependency() {}
+
+        bool getIsReuse() { return isReuse; }
 
         virtual IMessageDependency *duplicate(IEventLog *eventLog) = 0;
 
@@ -73,10 +76,10 @@ class EVENTLOG_API MessageDependency : public IMessageDependency
         int consequenceBeginSendEntryNumber; // optional (-1) and refers to an entry of consequenceEvent
 
     public:
-        MessageDependency(IEventLog *eventLog,
-                          long causeEventNumber, int causeBeginSendEntryNumber,
-                          long consequenceEventNumber, int consequenceBeginSendEntryNumber);
+        MessageDependency(IEventLog *eventLog, bool isReuse, long eventNumber, int beginSendEntryNumber);
         virtual ~MessageDependency() {}
+
+        virtual MessageDependency *duplicate(IEventLog *eventLog);
 
         virtual long getCauseEventNumber();
         virtual IEvent *getCauseEvent();
@@ -90,9 +93,10 @@ class EVENTLOG_API MessageDependency : public IMessageDependency
         long getConsequenceBeginSendEntryNumber() { return consequenceBeginSendEntryNumber; }
         BeginSendEntry *getConsequenceBeginSendEntry();
 
+        virtual BeginSendEntry *getBeginSendEntry() { return isReuse ? getConsequenceBeginSendEntry() : getCauseBeginSendEntry(); }
+
         virtual simtime_t getCauseSimulationTime();
         virtual simtime_t getConsequenceSimulationTime();
-        virtual BeginSendEntry *getBeginSendEntry() = 0;
 
         long getCauseMessageId() { return getCauseBeginSendEntry()->messageId; }
         long getConsequenceMessageId() { return getConsequenceBeginSendEntry()->messageId; }
@@ -100,41 +104,8 @@ class EVENTLOG_API MessageDependency : public IMessageDependency
         void printCause(FILE *file = stdout);
         void printConsequence(FILE *file = stdout);
         virtual void print(FILE *file = stdout);
-};
-
-class EVENTLOG_API MessageReuse : public MessageDependency
-{
-    public:
-        MessageReuse(IEventLog *eventLog, long senderEventNumber, int BeginSendEntryNumber);
-        virtual MessageReuse *duplicate(IEventLog *eventLog);
-
-        virtual BeginSendEntry *getBeginSendEntry() { return getConsequenceBeginSendEntry(); }
-        virtual const char *getClassName() { return "MessageReuse"; }
+        virtual const char *getClassName() { return "MessageDependency"; }
         virtual int getClassIndex() { return 0; }
-};
-
-/**
- * Represents a single message send (or schedule).
- */
-class EVENTLOG_API MessageSend : public MessageDependency
-{
-    public:
-        MessageSend(IEventLog *eventLog, long senderEventNumber, int BeginSendEntryNumber);
-        virtual MessageSend *duplicate(IEventLog *eventLog);
-
-        virtual BeginSendEntry *getBeginSendEntry() { return getCauseBeginSendEntry(); }
-
-        long getSenderEventNumber() { return getCauseEventNumber(); }
-        IEvent *getSenderEvent() { return getCauseEvent(); }
-
-        long getArrivalEventNumber() { return getConsequenceEventNumber(); }
-        IEvent *getArrivalEvent() { return getConsequenceEvent(); }
-
-        simtime_t getSenderTime() { return getCauseSimulationTime(); }
-        simtime_t getArrivalTime() { return getConsequenceSimulationTime(); }
-
-        virtual const char *getClassName() { return "MessageSend"; }
-        virtual int getClassIndex() { return 1; }
 };
 
 class EVENTLOG_API FilteredMessageDependency : public IMessageDependency
@@ -144,7 +115,7 @@ class EVENTLOG_API FilteredMessageDependency : public IMessageDependency
         IMessageDependency *endMessageDependency;
 
     public:
-        FilteredMessageDependency(IEventLog *eventLog, IMessageDependency *beginMessageDependency, IMessageDependency *endMessageDependency);
+        FilteredMessageDependency(IEventLog *eventLog, bool isReuse, IMessageDependency *beginMessageDependency, IMessageDependency *endMessageDependency);
         ~FilteredMessageDependency();
         virtual FilteredMessageDependency *duplicate(IEventLog *eventLog);
 
@@ -159,10 +130,10 @@ class EVENTLOG_API FilteredMessageDependency : public IMessageDependency
 
         virtual simtime_t getCauseSimulationTime() { return beginMessageDependency->getCauseSimulationTime(); };
         virtual simtime_t getConsequenceSimulationTime() { return endMessageDependency->getConsequenceSimulationTime(); };
-        virtual BeginSendEntry *getBeginSendEntry() { return NULL; }
+        virtual BeginSendEntry *getBeginSendEntry() { throw opp_runtime_error("getBeginSendEntry is not supported on a FilteredMessageDependency"); }
         virtual void print(FILE *file);
         virtual const char *getClassName() { return "FilteredMessageDependency"; }
-        virtual int getClassIndex() { return 2; }
+        virtual int getClassIndex() { return 1; }
 };
 
 #endif

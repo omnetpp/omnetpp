@@ -217,7 +217,7 @@ BeginSendEntry *Event::getCauseBeginSendEntry()
         return NULL;
 }
 
-MessageSend *Event::getCause()
+MessageDependency *Event::getCause()
 {
     if (!cause)
     {
@@ -228,7 +228,7 @@ MessageSend *Event::getCause()
             int beginSendEntryNumber = event->findBeginSendEntryIndex(getMessageId());
 
             if (beginSendEntryNumber != -1)
-                cause = new MessageSend(eventLog, getCauseEventNumber(), beginSendEntryNumber);
+                cause = new MessageDependency(eventLog, false, getCauseEventNumber(), beginSendEntryNumber);
         }
     }
 
@@ -255,7 +255,7 @@ IMessageDependencyList *Event::getCauses()
                 beginSendEntry->previousEventNumber != getEventNumber())
             {
                 // store "pe" key from "BS" or "SA" lines
-                causes->push_back(new MessageReuse(eventLog, getEventNumber(), beginSendEntryNumber));
+                causes->push_back(new MessageDependency(eventLog, true, getEventNumber(), beginSendEntryNumber));
                 break;
             }
         }
@@ -276,14 +276,14 @@ IMessageDependencyList *Event::getConsequences()
 
             if (eventLogEntry->isMessageSend())
                 // using "t" from "ES" lines
-                consequences->push_back(new MessageSend(eventLog, getEventNumber(), beginSendEntryNumber));
+                consequences->push_back(new MessageDependency(eventLog, false, getEventNumber(), beginSendEntryNumber));
         }
 
         int beginSendEntryNumber;
         Event *reuserEvent = getReuserEvent(beginSendEntryNumber);
 
         if (reuserEvent != NULL && reuserEvent != this)
-            consequences->push_back(new MessageReuse(eventLog, reuserEvent->getEventNumber(), beginSendEntryNumber));
+            consequences->push_back(new MessageDependency(eventLog, true, reuserEvent->getEventNumber(), beginSendEntryNumber));
     }
 
     return consequences;

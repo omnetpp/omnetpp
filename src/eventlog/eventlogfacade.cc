@@ -113,26 +113,10 @@ const char *EventLogFacade::FilteredMessageDependency_getEndMessageName(int64 pt
     return ((FilteredMessageDependency*)ptr)->getEndMessageDependency()->getBeginSendEntry()->messageFullName;
 }
 
-MessageDependencyKind EventLogFacade::MessageDependency_getKind(int64 ptr)
+bool EventLogFacade::MessageDependency_getIsReuse(int64 ptr)
 {
     MESSAGE_DEPENDENCY_PTR(ptr);
-    if (MessageDependency_isMessageSend(ptr))
-        return SEND;
-    else if (MessageDependency_isMessageReuse(ptr))
-        return REUSE;
-    else return FILTERED;
-}
-
-bool EventLogFacade::MessageDependency_isMessageSend(int64 ptr)
-{
-    MESSAGE_DEPENDENCY_PTR(ptr);
-    return dynamic_cast<MessageSend*>((IMessageDependency*)ptr);
-}
-
-bool EventLogFacade::MessageDependency_isMessageReuse(int64 ptr)
-{
-    MESSAGE_DEPENDENCY_PTR(ptr);
-    return dynamic_cast<MessageReuse*>((IMessageDependency*)ptr);
+    return ((IMessageDependency*)ptr)->getIsReuse();
 }
 
 bool EventLogFacade::MessageDependency_isFilteredMessageDependency(int64 ptr)

@@ -54,9 +54,7 @@ class EVENTLOG_API EventLogFacade
         const char *MessageDependency_getMessageName(int64 ptr);
         const char *FilteredMessageDependency_getBeginMessageName(int64 ptr);
         const char *FilteredMessageDependency_getEndMessageName(int64 ptr);
-        MessageDependencyKind MessageDependency_getKind(int64 ptr);
-        bool MessageDependency_isMessageSend(int64 ptr);
-        bool MessageDependency_isMessageReuse(int64 ptr);
+        bool MessageDependency_getIsReuse(int64 ptr);
         bool MessageDependency_isFilteredMessageDependency(int64 ptr);
         int64 MessageDependency_getCauseEvent(int64 ptr);
         int64 MessageDependency_getConsequenceEvent(int64 ptr);
