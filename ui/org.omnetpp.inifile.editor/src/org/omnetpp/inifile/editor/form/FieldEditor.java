@@ -3,6 +3,7 @@ package org.omnetpp.inifile.editor.form;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -17,7 +18,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.ui.ITooltipTextProvider;
-import org.omnetpp.common.ui.TooltipSupport;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
@@ -63,18 +63,33 @@ public abstract class FieldEditor extends Composite {
 	}
 
 	protected void setValueInFile(String section, String value) {
-		String key = entry.getKey();
-		if (!inifile.containsKey(section, key))
-			InifileUtils.addEntry(inifile, section, key, value, null);
-		else
-			inifile.setValue(section, key, value);
+		try {
+			String key = entry.getKey();
+			if (!inifile.containsKey(section, key))
+				InifileUtils.addEntry(inifile, section, key, value, null);
+			else
+				inifile.setValue(section, key, value);
+		} 
+		catch (RuntimeException e) {
+			showErrorDialog(e);
+		}
 	}
 
 	protected void removeFromFile(String section) {
-		String key = entry.getKey();
-		inifile.removeKey(section, key);
+		try {
+			String key = entry.getKey();
+			inifile.removeKey(section, key);
+		}
+		catch (RuntimeException e) {
+			showErrorDialog(e);
+		}
 	}
 	
+	protected void showErrorDialog(RuntimeException e) {
+		reread(); // restore "legal" widget contents; must be done first, or error dialog will pop up twice
+		MessageDialog.openError(getShell(), "Error", e.getMessage()+".");
+	}
+
 	protected Label createLabel(ConfigurationEntry entry, String labelText) {
 		Label label = new Label(this, SWT.NONE);
 		label.setBackground(BGCOLOR);
@@ -88,13 +103,10 @@ public abstract class FieldEditor extends Composite {
 	}
 	
 	protected String getTooltipText() {
+		//XXX add:
+		// IInifileDocument.LineInfo line = inifile.getEntryLineDetails(GENERAL, entry.getKey()); 
+		// tooltip += "\n\n"+(line==null ? "Currently set to default." : "Defined at: "+line.getFile().getFullPath().toString()+" line "+line.getLineNumber());
 		return InifileHoverUtils.getConfigTooltip(entry, inifile);
-//		String tooltip = entry.getDescription();
-//		tooltip += "\n\nConfigures: [General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / "+entry.getKey()+"=...";
-//		IInifileDocument.LineInfo line = inifile.getEntryLineDetails(GENERAL, entry.getKey()); 
-//		tooltip += "\n\n"+(line==null ? "Currently set to default." : "Defined at: "+line.getFile().getFullPath().toString()+" line "+line.getLineNumber());
-//		tooltip = StringUtils.breakLines(tooltip, 80);
-//		return tooltip;
 	}
 
 	protected Button createResetButton() {
@@ -126,7 +138,7 @@ public abstract class FieldEditor extends Composite {
 	public abstract void commit();
 	
 	public void resetToDefault() {
-		removeFromFile(GENERAL);  //XXX into subclass?
+		removeFromFile(GENERAL);
 		reread();
 	}
 

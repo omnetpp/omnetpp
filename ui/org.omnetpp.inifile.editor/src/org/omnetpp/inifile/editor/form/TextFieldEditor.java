@@ -9,6 +9,9 @@ import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -33,6 +36,7 @@ import org.omnetpp.inifile.editor.model.ConfigurationEntry.DataType;
  * 
  * @author Andras
  */
+//XXX disable Text when value is not editable (comes from included file)?
 public class TextFieldEditor extends FieldEditor {
 	private static final char[] AUTOACTIVATION_CHARS = null; // "( ".toCharArray();
 	private Text textField;
@@ -75,6 +79,12 @@ public class TextFieldEditor extends FieldEditor {
 					isEdited = true;
 					resetButton.setEnabled(true);
 				}
+			}
+		});
+		// commit the editfield on Enter
+		textField.addSelectionListener(new SelectionAdapter() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				commit();
 			}
 		});
 

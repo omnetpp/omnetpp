@@ -28,6 +28,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
  * 
  * @author Andras
  */
+//XXX disable checkbox when value is not editable (comes from included file)?
 public class CheckboxFieldEditor extends FieldEditor {
 	private Button checkbox;
 	private Label label;
@@ -89,7 +90,7 @@ public class CheckboxFieldEditor extends FieldEditor {
 
 		// update problem decoration
 		IMarker[] markers = InifileUtils.getProblemMarkersFor(section, entry.getKey(), inifile);
-		//problemDecoration.setImage(checkbox.getSelection() ? ICON_ERROR_SMALL : null); //XXX for testing
+		//problemDecoration.setImage(checkbox.getSelection() ? ICON_ERROR_SMALL : null); // for testing
 		//problemDecoration.setDescriptionText(checkbox.getSelection() ? "Some error" : null); // ditto
 		problemDecoration.setImage(getProblemImage(markers, true));
 		problemDecoration.setDescriptionText(getProblemsText(markers));

@@ -424,7 +424,7 @@ public class InifileDocument implements IInifileDocument {
 	protected KeyValueLine getEntry(String sectionName, String key) {
 		KeyValueLine line = lookupEntry(sectionName, key);
 		if (line == null)
-			throw new IllegalArgumentException("No such entry: ["+sectionName+"] "+key);
+			throw new IllegalArgumentException("No such entry: ["+sectionName+"]/"+key);
 		return line;
 	}
 
@@ -434,7 +434,7 @@ public class InifileDocument implements IInifileDocument {
 	protected KeyValueLine getEditableEntry(String sectionName, String key) {
 		KeyValueLine line = getEntry(sectionName, key);
 		if (!isEditable(line))
-			throw new IllegalArgumentException("Entry is in an included file which cannot be edited: ["+sectionName+"] "+key);
+			throw new IllegalArgumentException("Entry ["+sectionName+"]/"+key+" is in an included file ("+line.file.getName()+"), and cannot be edited");
 		return line;
 	}
 
@@ -749,14 +749,14 @@ public class InifileDocument implements IInifileDocument {
 	public Object getKeyData(String section, String key) {
 		KeyValueLine line = lookupEntry(section, key);
 		if (line == null)
-			throw new IllegalArgumentException("No such entry: ["+section+"] "+key);
+			throw new IllegalArgumentException("No such entry: ["+section+"]/"+key);
 		return line.data;
 	}
 
 	public void setKeyData(String section, String key, Object data) {
 		KeyValueLine line = lookupEntry(section, key);
 		if (line == null)
-			throw new IllegalArgumentException("No such entry: ["+section+"] "+key);
+			throw new IllegalArgumentException("No such entry: ["+section+"]/"+key);
 		line.data = data;
 	}
 
