@@ -51,6 +51,8 @@ cMessage::cMessage(const cMessage& msg) : cOwnedObject(msg)
     parlistp = NULL;
     encapmsg = NULL;
     ctrlp = NULL;
+    heapindex = -1;
+    prev_event_num = -1;
     operator=(msg);
 
     msg_tree_id = msg.msg_tree_id;
