@@ -52,6 +52,7 @@ cMessage::cMessage(const cMessage& msg) : cObject()
     parlistp = NULL;
     encapmsg = NULL;
     ctrlp = NULL;
+    heapindex = -1; // op= does not copy it
     setName( msg.name() );
     operator=( msg );
 

@@ -1,3 +1,6 @@
+2007-05-13  Andras Varga
+
+	* cmessage.cc: copy ctor didn't initialize the heapindex field.
 2006-12-04  Andras Varga
 
 	* added hasher.cc, implementation of cHasher
