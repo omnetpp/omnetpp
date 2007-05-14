@@ -1,8 +1,11 @@
 package org.omnetpp.common.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import org.eclipse.core.runtime.Assert;
 
 public class StringUtils extends org.apache.commons.lang.StringUtils {
 	
@@ -133,5 +136,57 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
         comment = comment.replaceAll("(?m)^\\s*//", "").trim(); // remove "//"'s
         comment = comment.replace("\n", "<br/>");
         return comment;
+    }
+    
+    /**
+     * Returns the <numeral> <noun> clause.
+     * Examples:
+     *   formatCounted(0, "foo") = "no foo"
+     *   formatCounted(1, "foo") = "1 foo"
+     *   formatCounted(2, "foo") = "2 foos"
+     */
+    public static String formatCounted(int count, String noun) {
+    	Assert.isLegal(count >= 0);
+    	if (count == 0)
+    		return "no " + noun;
+    	else if (count == 1)
+    		return "1 " + noun;
+    	else
+    		return String.valueOf(count) + " " + plural(noun); 
+    }
+
+    /**
+     * Returns the plural of an english <code>noun</code> (approximately). 
+     */
+    public static String plural(String noun) {
+    	if (isEmpty(noun))
+    		return noun;
+    	int len = noun.length();
+    	char lastChar = noun.charAt(len - 1);
+    	if (lastChar == 'y')
+    		return noun.substring(0, len-1) + "ies";
+    	if (lastChar == 's')
+    		return noun + "es";
+    	else
+    		return noun + "s";
+    }
+    
+    /**
+     * Joins the elements of a {@code collection} separated by {@code separator} and
+     * {@code lastSeparator}.
+     * Example:
+     *   join(["foo","bar","baz"], ", ", " and ") = "foo, bar and baz" 
+     */
+    public static String join(Collection<String> collection, String separator, String lastSeparator) {
+    	int size = collection.size();
+    	StringBuffer sb = new StringBuffer();
+    	int i = 0;
+    	for (String item : collection) {
+    		if (i > 0)
+    			sb.append(i == size-1 ? lastSeparator : separator);
+    		sb.append(item);
+    		++i;
+    	}
+    	return sb.toString();
     }
 }
