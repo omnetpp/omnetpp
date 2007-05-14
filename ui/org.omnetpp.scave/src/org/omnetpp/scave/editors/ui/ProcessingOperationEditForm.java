@@ -210,7 +210,7 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 			int index = operationCombo.getSelectionIndex();
 			return index >= 0 ? operationNames[index] : null;
 		case ScaveModelPackage.PROCESSING_OP__PARAMS:
-			EList params = new BasicEList();
+			EList<Param> params = new BasicEList<Param>();
 			for (int i = 0; i < paramsTable.getItemCount(); ++i) {
 				TableItem item = paramsTable.getItem(i);
 				Param param = ScaveModelFactory.eINSTANCE.createParam();
@@ -223,6 +223,7 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setValue(EStructuralFeature feature, Object value) {
 		switch (feature.getFeatureID()) {
 		case ScaveModelPackage.PROCESSING_OP__OPERATION:
@@ -230,9 +231,8 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 			handleOperationTypeChanged();
 			break;
 		case ScaveModelPackage.PROCESSING_OP__PARAMS:
-			EList params = (EList)value;
-			for (int i = 0; i < params.size(); ++i) {
-				Param param = (Param)params.get(i);
+			EList<Param> params = (EList<Param>)value;
+			for (Param param : params) {
 				setParamValue(param.getName(), param.getValue());
 			}
 			break;

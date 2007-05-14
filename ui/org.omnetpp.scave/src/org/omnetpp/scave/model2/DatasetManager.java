@@ -61,7 +61,7 @@ public class DatasetManager {
 	 * Visitor-like thingy, where doSwitch() traverses the dataset (or whatever model item was 
 	 * passed into it), and calculates an IDList of the given type. It stops at the "target" item. 
 	 */
-	static class ProcessDatasetSwitch extends ScaveModelSwitch {
+	static class ProcessDatasetSwitch extends ScaveModelSwitch<Object> {
 
 		private ResultFileManager manager;
 		private ResultType type;

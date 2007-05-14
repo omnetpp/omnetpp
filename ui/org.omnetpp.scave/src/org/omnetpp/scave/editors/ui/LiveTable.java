@@ -280,7 +280,7 @@ public class LiveTable extends Composite  implements ISelectionProvider {
 	public void setSelection(ISelection selection) {
 		List<Control> controls = new ArrayList<Control>();
 		if (selection instanceof IStructuredSelection) {
-			for (Iterator iterator = ((IStructuredSelection)selection).iterator(); iterator.hasNext();) {
+			for (Iterator<?> iterator = ((IStructuredSelection)selection).iterator(); iterator.hasNext();) {
 				Object element = iterator.next();
 				if (element instanceof Control)
 					controls.add((Control)element);

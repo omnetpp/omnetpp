@@ -1,7 +1,5 @@
 package org.omnetpp.scave.editors;
 
-import static org.omnetpp.scave.engine.IndexFile.getVectorFileName;
-import static org.omnetpp.scave.engineext.IndexFile.isIndexFile;
 import static org.omnetpp.scave.engineext.IndexFile.isIndexFileUpToDate;
 import static org.omnetpp.scave.engineext.IndexFile.isVectorFile;
 

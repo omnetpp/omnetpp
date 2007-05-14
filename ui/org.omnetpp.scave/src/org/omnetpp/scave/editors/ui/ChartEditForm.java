@@ -376,6 +376,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	/**
 	 * Returns the selected radio button as the enum value it represents.
 	 */
+	@SuppressWarnings("unchecked")
 	protected <T extends Enum<T>> T getSelection(Button[] radios, Class<T> type) {
 		for (int i = 0; i < radios.length; ++i)
 			if (radios[i].getSelection())

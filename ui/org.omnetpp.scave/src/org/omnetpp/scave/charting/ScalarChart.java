@@ -58,7 +58,6 @@ public class ScalarChart extends ChartCanvas {
 	private LinearAxis valueAxis = new LinearAxis(this, true);
 	private DomainAxis domainAxis = new DomainAxis();
 	private BarPlot plot = new BarPlot();
-	private Tooltip tooltip = new Tooltip();
 
 	private Double yMin;
 	private Double yMax;
@@ -67,6 +66,7 @@ public class ScalarChart extends ChartCanvas {
 	
 	public ScalarChart(Composite parent, int style) {
 		super(parent, style);
+		new Tooltip();
 	}
 
 	@Override

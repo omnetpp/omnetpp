@@ -26,7 +26,7 @@ public class DatasetItemProvider extends org.omnetpp.scave.model.provider.Datase
 	 * The default chart sheet is created if it did not exist.
 	 */
 	@Override
-	protected Command createAddCommand(EditingDomain domain, EObject owner, EStructuralFeature feature, Collection collection, int index) {
+	protected Command createAddCommand(EditingDomain domain, EObject owner, EStructuralFeature feature, Collection<?> collection, int index) {
 		Command addCommand = super.createAddCommand(domain, owner, feature, collection, index); 
 		
 		Collection<Chart> charts = ScaveModelUtil.collectUnreferencedCharts(collection);

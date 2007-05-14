@@ -52,7 +52,7 @@ public class RemoveAction extends AbstractScaveAction {
 		CompoundCommand command = new CompoundCommand("Remove");
 		Collection<Object> references = new ArrayList<Object>();
 		Collection<Object> containments = new ArrayList<Object>();
-		for (Iterator i = selection.iterator(); i.hasNext();) {
+		for (Iterator<?> i = selection.iterator(); i.hasNext();) {
 			Object object = i.next();
 			if (object instanceof IWrapperItemProvider)
 				references.add(object);

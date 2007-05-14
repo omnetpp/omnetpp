@@ -12,6 +12,8 @@ import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.common.util.Enumerator;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.EStructuralFeature.Setting;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.command.AddCommand;
@@ -233,6 +235,7 @@ public class ScaveModelUtil {
 	 * Finds an enclosing object having type {@code type}.
 	 * If the {@code object} itself has the type, it is returned.
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T extends EObject> T findEnclosingOrSelf(EObject object, Class<T> type) {
 		while (object != null && !type.isInstance(object))
 			object = object.eContainer();
@@ -242,10 +245,11 @@ public class ScaveModelUtil {
 	/**
 	 * Returns all object in the container having the specified type.
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T extends EObject> List<T> findObjects(EObject container, Class<T> type) {
 		ArrayList<T> objects = new ArrayList<T>();
-		for (TreeIterator iterator = container.eAllContents(); iterator.hasNext(); ) {
-			Object object = iterator.next();
+		for (TreeIterator<EObject> iterator = container.eAllContents(); iterator.hasNext(); ) {
+			EObject object = iterator.next();
 			if (type.isInstance(object))
 				objects.add((T)object);
 		}
@@ -255,10 +259,11 @@ public class ScaveModelUtil {
 	/**
 	 * Returns all objects in the resource having the specified type.
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T extends EObject> List<T> findObjects(Resource resource, Class<T> type) {
 		ArrayList<T> objects = new ArrayList<T>();
-		for (TreeIterator iterator = resource.getAllContents(); iterator.hasNext(); ) {
-			Object object = iterator.next();
+		for (TreeIterator<EObject> iterator = resource.getAllContents(); iterator.hasNext(); ) {
+			EObject object = iterator.next();
 			if (type.isInstance(object))
 				objects.add((T)object);
 		}
@@ -268,14 +273,14 @@ public class ScaveModelUtil {
 	/**
 	 * Collect charts from the given collection.
 	 */
-	public static List<Chart> collectCharts(Collection items) {
+	public static List<Chart> collectCharts(Collection<?> items) {
 		List<Chart> charts = new ArrayList<Chart>();
 		for (Object item : items)
 			if (item instanceof Chart) {
 				charts.add((Chart)item);
 			}
 			else if (item instanceof Dataset || item instanceof Group) {
-				for (TreeIterator iter = ((EObject)item).eAllContents(); iter.hasNext(); ) {
+				for (TreeIterator<EObject> iter = ((EObject)item).eAllContents(); iter.hasNext(); ) {
 					Object object = iter.next();
 					if (object instanceof Chart)
 						charts.add((Chart)object);
@@ -289,10 +294,10 @@ public class ScaveModelUtil {
 	/**
 	 * Collect unreferenced charts from the given collection.
 	 */
-	public static Collection<Chart> collectUnreferencedCharts(Collection items) {
+	public static Collection<Chart> collectUnreferencedCharts(Collection<?> items) {
 		List<Chart> charts = collectCharts(items);
 		if (charts.size() > 0) {
-			Map references = ScaveCrossReferencer.find(charts.get(0).eResource());
+			Map<EObject,Collection<Setting>> references = ScaveCrossReferencer.find(charts.get(0).eResource());
 			charts.removeAll(references.keySet());
 		}
 		return charts;
@@ -305,11 +310,13 @@ public class ScaveModelUtil {
 	 */
 	static class ScaveCrossReferencer extends EcoreUtil.CrossReferencer {
 
-		protected ScaveCrossReferencer(Collection eobjects) {
+		private static final long serialVersionUID = 2380168634189516829L;
+
+		protected ScaveCrossReferencer(Collection<?> eobjects) {
 			super(eobjects);
 		}
 
-		public static Map find(Resource resource) {
+		public static Map<EObject, Collection<EStructuralFeature.Setting>> find(Resource resource) {
 			return EcoreUtil.CrossReferencer.find(Collections.singleton(resource));
 		}
 

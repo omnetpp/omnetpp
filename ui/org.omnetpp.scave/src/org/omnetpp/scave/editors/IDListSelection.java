@@ -115,7 +115,7 @@ public class IDListSelection implements IStructuredSelection {
 		return elements.length > 0 ? elements[0] : null;
 	}
 
-	public Iterator iterator() {
+	public Iterator<Long> iterator() {
 		return toList().iterator();
 	}
 
@@ -127,7 +127,7 @@ public class IDListSelection implements IStructuredSelection {
 		return elements;
 	}
 
-	public List toList() {
+	public List<Long> toList() {
 		return Arrays.asList(elements);
 	}
 	

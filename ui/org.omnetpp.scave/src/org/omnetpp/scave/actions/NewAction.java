@@ -60,7 +60,7 @@ public class NewAction extends AbstractScaveAction {
 		EObject parent = getParent(selection);
 		if (parent != null) {
 			EditingDomain domain = editor.getEditingDomain();
-			Collection childDescriptors = domain.getNewChildDescriptors(parent, null);
+			Collection<?> childDescriptors = domain.getNewChildDescriptors(parent, null);
 			return childDescriptors.size() > 0;
 		}
 		return false;

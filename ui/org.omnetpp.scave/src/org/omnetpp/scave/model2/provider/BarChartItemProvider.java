@@ -25,7 +25,7 @@ public class BarChartItemProvider extends
 	 * Set the default type of new Select/Deselect children to 'Scalar'.
 	 */
 	@Override
-	protected void collectNewChildDescriptors(Collection newChildDescriptors, Object object) {
+	protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
 		super.collectNewChildDescriptors(newChildDescriptors, object);
 		
 		if (object instanceof BarChart) {

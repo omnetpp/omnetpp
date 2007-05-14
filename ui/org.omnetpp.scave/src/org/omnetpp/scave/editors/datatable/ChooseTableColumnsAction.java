@@ -8,7 +8,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.dialogs.ListSelectionDialog;
 
 
@@ -31,22 +30,6 @@ public class ChooseTableColumnsAction extends Action {
 	}
 
 	protected void chooseTableColumns(DataTable table) {
-//XXX original code, may be deleted		
-//		String[] columns = table.getColumnNames();
-//		boolean[] initialSelection = new boolean[columns.length];
-//		for (int i = 0; i < columns.length; ++i)
-//			initialSelection[i] = table.isColumnVisible(i);
-//		CheckboxSelectionDialog dialog = new CheckboxSelectionDialog(
-//				table.getShell(), 
-//				"Select Columns", 
-//				"Select which columns should be visible in the table:", 
-//				columns, initialSelection);
-//		if (dialog.open() == Window.OK) {
-//			boolean[] selection = dialog.getSelection();
-//			for (int i = 0; i < selection.length; ++i)
-//				table.setColumnVisible(i, selection[i]);
-//		}
-
 		// create dialog with the column names
 		ListSelectionDialog dialog = new ListSelectionDialog(
 			 table.getShell(),
@@ -66,7 +49,7 @@ public class ChooseTableColumnsAction extends Action {
 
 		// execute dialog and store result
 		if (dialog.open() == Dialog.OK) {
-			List result = Arrays.asList(dialog.getResult());
+			List<?> result = Arrays.asList(dialog.getResult());
 		    for (int i = 0; i < columns.length; ++i)
 		    	table.setColumnVisible(i, result.contains(columns[i]));
 		}

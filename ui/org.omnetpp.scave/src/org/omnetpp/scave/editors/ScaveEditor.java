@@ -176,7 +176,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	protected Resource createTempResource() {
 		IFileEditorInput modelFile = (IFileEditorInput)getEditorInput();
 		IPath tempResourcePath = modelFile.getFile().getFullPath().addFileExtension("temp");
-		URI resourceURI = URI.createPlatformResourceURI(tempResourcePath.toString());;
+		URI resourceURI = URI.createPlatformResourceURI(tempResourcePath.toString(), true);;
 		Resource resource = editingDomain.getResourceSet().createResource(resourceURI);
 		Analysis analysis = factory.createAnalysis();
 		analysis.setInputs(factory.createInputs());
@@ -394,7 +394,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		// remove it from the map
 		Iterator<Map.Entry<EObject,ScaveEditorPage>> entries = closablePages.entrySet().iterator();
 		while (entries.hasNext()) {
-			Map.Entry entry = entries.next();
+			Map.Entry<EObject, ScaveEditorPage> entry = entries.next();
 			if (control.equals(entry.getValue()))
 				entries.remove();
 		}
@@ -485,28 +485,29 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	 * Updates the pages.
 	 * Registered as a listener on model changes.
 	 */
- 	private void updatePages(Notification notification) {
+ 	@SuppressWarnings("unchecked")
+	private void updatePages(Notification notification) {
 		if (notification.isTouch())
 			return;
 		
 		// close pages whose content was deleted, except temporary datasets/charts
 		// (temporary objects are not deleted, but they can be moved into the persistent analysis)
 		if (notification.getNotifier() instanceof EObject && !isTemporaryObject((EObject)notification.getNotifier())) {
-			List deletedObjects = null;
+			List<Object> deletedObjects = null;
 			switch (notification.getEventType()) {
 			case Notification.REMOVE: 
-				deletedObjects = new ArrayList();
+				deletedObjects = new ArrayList<Object>();
 				deletedObjects.add(notification.getOldValue());
 				break;
 			case Notification.REMOVE_MANY:
-				deletedObjects = (List)notification.getOldValue();
+				deletedObjects = (List<Object>)notification.getOldValue();
 				break;
 			}
 		
 			if (deletedObjects != null) {
 				for (Object object : deletedObjects) {
 					if (object instanceof EObject) {
-						TreeIterator contents = ((EObject)object).eAllContents();
+						TreeIterator<EObject> contents = ((EObject)object).eAllContents();
 						// iterate on contents including object
 						for (Object next = object; next != null; next = contents.hasNext() ? contents.next() : null) {
 							if (next instanceof Dataset) {

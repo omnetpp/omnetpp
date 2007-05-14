@@ -67,7 +67,7 @@ public class DataflowNetworkBuilder {
 
 	public void build(Dataset dataset, final DatasetItem target) {
 
-		ScaveModelSwitch modelSwitch = new ScaveModelSwitch() {
+		ScaveModelSwitch<Object> modelSwitch = new ScaveModelSwitch<Object>() {
 			private boolean finished;
 
 			/**

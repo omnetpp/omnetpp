@@ -31,9 +31,9 @@ public class DatasetSelectionDialog extends ElementListSelectOrCreateDialog {
 		// set initial contents
 		Analysis analysis = editor.getAnalysis();
 		Assert.isTrue(analysis.getDatasets()!=null); //XXX user must not be able to delete the "Datasets" element!
-		List datasets = analysis.getDatasets().getDatasets();
+		List<Dataset> datasets = analysis.getDatasets().getDatasets();
 		if (datasets == null)
-			datasets = new ArrayList();
+			datasets = new ArrayList<Dataset>();
 		setElements(datasets.toArray());
 
 

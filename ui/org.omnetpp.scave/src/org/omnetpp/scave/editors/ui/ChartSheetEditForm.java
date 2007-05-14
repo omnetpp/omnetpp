@@ -39,7 +39,7 @@ public class ChartSheetEditForm implements IScaveObjectEditForm {
 	/**
 	 * The edited chart sheet.
 	 */
-	private ChartSheet chartSheet;
+	//private ChartSheet chartSheet;
 	
 	// edit controls
 	private Text nameText;
@@ -58,7 +58,7 @@ public class ChartSheetEditForm implements IScaveObjectEditForm {
 	};
 	
 	public ChartSheetEditForm(ChartSheet chartSheet, EObject parent) {
-		this.chartSheet = chartSheet;
+		//this.chartSheet = chartSheet;
 		allCharts = ScaveModelUtil.findObjects(parent.eResource(), Chart.class);
 		Collections.sort(allCharts, comparator);
 	}
@@ -145,7 +145,7 @@ public class ChartSheetEditForm implements IScaveObjectEditForm {
 		case ScaveModelPackage.CHART_SHEET__NAME:
 			return nameText.getText();
 		case ScaveModelPackage.CHART_SHEET__CHARTS:
-			return new BasicEList(getCharts(chartsPanel.getSelectedItems()));
+			return new BasicEList<Chart>(getCharts(chartsPanel.getSelectedItems()));
 		}
 		return null;
 	}
@@ -157,7 +157,7 @@ public class ChartSheetEditForm implements IScaveObjectEditForm {
 			nameText.setText(value != null ? (String)value : "");
 			break;
 		case ScaveModelPackage.CHART_SHEET__CHARTS:
-			List<Chart> charts = (EList)value;
+			List<Chart> charts = (EList<Chart>)value;
 			chartsPanel.setSelectedItems(getChartNames(charts));
 			break;
 		}

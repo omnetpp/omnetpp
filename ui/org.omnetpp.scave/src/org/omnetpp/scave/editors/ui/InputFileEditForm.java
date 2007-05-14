@@ -28,13 +28,13 @@ public class InputFileEditForm implements IScaveObjectEditForm {
 	/**
 	 * The edited input file.
 	 */
-	private InputFile inputFile;
+	//private InputFile inputFile;
 	
 	// edit controls of the features
 	private Text nameText;
 
 	public InputFileEditForm(InputFile inputFile, EObject parent) {
-		this.inputFile = inputFile;
+		//this.inputFile = inputFile;
 	}
 	
 	/**

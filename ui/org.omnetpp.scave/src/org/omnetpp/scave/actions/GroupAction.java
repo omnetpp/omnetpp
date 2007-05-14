@@ -29,7 +29,7 @@ public class GroupAction extends AbstractScaveAction {
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
 		RangeSelection range = asRangeSelection(selection);
 		if (range != null) {
-			Collection elements = selection.toList();
+			Collection<?> elements = selection.toList();
 			Group group = ScaveModelFactory.eINSTANCE.createGroup();
 			CompoundCommand command = new CompoundCommand("Group");
 			command.append(RemoveCommand.create(
@@ -62,19 +62,20 @@ public class GroupAction extends AbstractScaveAction {
 		public int toIndex;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private static RangeSelection asRangeSelection(IStructuredSelection selection) {
 		if (selection == null || selection.size() == 0 || !containsEObjectsOnly(selection))
 			return null;
 		
 		RangeSelection range = new RangeSelection();
-		Iterator elements = selection.iterator();
+		Iterator<? extends EObject> elements = selection.iterator();
 		while (elements.hasNext()) {
-			EObject element = (EObject)elements.next();
+			EObject element = elements.next();
 			EObject owner = element.eContainer();
 			EStructuralFeature feature = element.eContainingFeature();
 			if (feature == null || !feature.isMany())
 				return null;
-			int index = ((EList)owner.eGet(feature)).indexOf(element);
+			int index = ((EList<?>)owner.eGet(feature)).indexOf(element);
 			
 			if (range.owner == null) { // first iteration
 				range.owner = owner;

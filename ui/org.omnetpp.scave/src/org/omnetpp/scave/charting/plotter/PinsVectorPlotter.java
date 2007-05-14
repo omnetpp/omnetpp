@@ -31,8 +31,8 @@ public class PinsVectorPlotter extends VectorPlotter {
 		double lo = valueRange[0], hi = valueRange[1];
 
 		// chart y range in canvas coordinates 
-		int[] yrange = canvasYRange(gc, symbol);
-		int top = yrange[0], bottom = yrange[1];  // top < bottom
+		//int[] yrange = canvasYRange(gc, symbol);
+		//int top = yrange[0], bottom = yrange[1];  // top < bottom
 
 		//
 		// Performance optimization: avoid painting the same pixels over and over,

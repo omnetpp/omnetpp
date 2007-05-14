@@ -210,22 +210,22 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 	/**
 	 * Resources that have been removed since last activation.
 	 */
-	protected Collection removedResources = new ArrayList();
+	protected Collection<Resource> removedResources = new ArrayList<Resource>();
 
 	/**
 	 * Resources that have been changed since last activation.
 	 */
-	protected Collection changedResources = new ArrayList();
+	protected Collection<Resource> changedResources = new ArrayList<Resource>();
 
 	/**
 	 * Resources that have been saved.
 	 */
-	protected Collection savedResources = new ArrayList();
+	protected Collection<Resource> savedResources = new ArrayList<Resource>();
 
 	/**
 	 * Map to store the diagnostic associated with a resource.
 	 */
-	protected Map resourceToDiagnosticMap = new LinkedHashMap();
+	protected Map<Resource, Diagnostic> resourceToDiagnosticMap = new LinkedHashMap<Resource, Diagnostic>();
 
 	/**
 	 * Controls whether the problem indication should be updated.
@@ -290,8 +290,8 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 					try {
 						class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 							protected ResourceSet resourceSet = editingDomain.getResourceSet();
-							protected Collection changedResources = new ArrayList();
-							protected Collection removedResources = new ArrayList();
+							protected Collection<Resource> changedResources = new ArrayList<Resource>();
+							protected Collection<Resource> removedResources = new ArrayList<Resource>();
 
 							public boolean visit(IResourceDelta delta) {
 								if (delta.getFlags() != IResourceDelta.MARKERS &&
@@ -312,11 +312,11 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 								return true;
 							}
 
-							public Collection getChangedResources() {
+							public Collection<Resource> getChangedResources() {
 								return changedResources;
 							}
 
-							public Collection getRemovedResources() {
+							public Collection<Resource> getRemovedResources() {
 								return removedResources;
 							}
 						}
@@ -397,8 +397,8 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 			editingDomain.getCommandStack().flush();
 
 			updateProblemIndication = false;
-			for (Iterator i = changedResources.iterator(); i.hasNext(); ) {
-				Resource resource = (Resource)i.next();
+			for (Iterator<Resource> i = changedResources.iterator(); i.hasNext(); ) {
+				Resource resource = i.next();
 				if (resource.isLoaded()) {
 					resource.unload();
 					try {
@@ -428,8 +428,8 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 					 0,
 					 null,
 					 new Object [] { editingDomain.getResourceSet() });
-			for (Iterator i = resourceToDiagnosticMap.values().iterator(); i.hasNext(); ) {
-				Diagnostic childDiagnostic = (Diagnostic)i.next();
+			for (Iterator<Diagnostic> i = resourceToDiagnosticMap.values().iterator(); i.hasNext(); ) {
+				Diagnostic childDiagnostic = i.next();
 				if (childDiagnostic.getSeverity() != Diagnostic.OK) {
 					diagnostic.add(childDiagnostic);
 				}
@@ -490,7 +490,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 
 		// Create an adapter factory that yields item providers.
 		//
-		List factories = new ArrayList();
+		List<AdapterFactory> factories = new ArrayList<AdapterFactory>();
 		factories.add(new ResourceItemProviderAdapterFactory());
 		factories.add(new ScaveModelItemProviderAdapterFactory());
 		factories.add(new ReflectiveItemProviderAdapterFactory());
@@ -527,7 +527,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 
 		// Create the editing domain with a special command stack.
 		//
-		editingDomain = new AdapterFactoryEditingDomain(adapterFactory, commandStack, new HashMap());
+		editingDomain = new AdapterFactoryEditingDomain(adapterFactory, commandStack, new HashMap<Resource,Boolean>());
 	}
 
 	/**
@@ -540,7 +540,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 	/**
 	 * This sets the selection into whichever viewer is active.
 	 */
-	public void setSelectionToViewer(Collection collection) {
+	public void setSelectionToViewer(Collection<?> collection) {
 		handleSelectionChange(new StructuredSelection(collection.toArray()));
 	}
 
@@ -630,7 +630,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 		// Assumes that the input is a file object.
 		//
 		IFileEditorInput modelFile = (IFileEditorInput)getEditorInput();
-		URI resourceURI = URI.createPlatformResourceURI(modelFile.getFile().getFullPath().toString());;
+		URI resourceURI = URI.createPlatformResourceURI(modelFile.getFile().getFullPath().toString(), true);;
 		Exception exception = null;
 		Resource resource = null;
 		try {
@@ -722,6 +722,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 	/**
 	 * This is how the framework determines which interfaces we implement.
 	 */
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class key) {
 		if (key.equals(IContentOutlinePage.class)) {
 			return showOutlineView() ? getContentOutlinePage() : null;
@@ -765,7 +766,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 					if (!editingDomain.getResourceSet().getResources().isEmpty()) {
 					  // Select the root object in the view.
 					  //
-					  ArrayList selection = new ArrayList();
+					  ArrayList<Object> selection = new ArrayList<Object>();
 					  selection.add(editingDomain.getResourceSet().getResources().get(0));
 					  contentOutlineViewer.setSelection(new StructuredSelection(selection), true);
 					}
@@ -804,7 +805,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 		if (propertySheetPage == null) {
 			propertySheetPage =
 				new ExtendedPropertySheetPage(editingDomain) {
-					public void setSelectionToViewer(List selection) {
+					public void setSelectionToViewer(List<?> selection) {
 						AbstractEMFModelEditor.this.setSelectionToViewer(selection);
 						AbstractEMFModelEditor.this.setFocus();
 					}
@@ -840,8 +841,8 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 					// Save the resources to the file system.
 					//
 					boolean first = true;
-					for (Iterator i = editingDomain.getResourceSet().getResources().iterator(); i.hasNext(); ) {
-						Resource resource = (Resource)i.next();
+					for (Iterator<Resource> i = editingDomain.getResourceSet().getResources().iterator(); i.hasNext(); ) {
+						Resource resource = i.next();
 						if (!isSaveable(resource))
 							continue;
 						if ((first || !resource.getContents().isEmpty() || isPersisted(resource)) && !editingDomain.isReadOnly(resource)) {
@@ -920,7 +921,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 		if (path != null) {
 			IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
 			if (file != null) {
-				doSaveAs(URI.createPlatformResourceURI(file.getFullPath().toString()), new FileEditorInput(file));
+				doSaveAs(URI.createPlatformResourceURI(file.getFullPath().toString(), true), new FileEditorInput(file));
 			}
 		}
 	}
@@ -1028,7 +1029,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 				}
 			}
 			else if (selection instanceof IStructuredSelection) {
-				Collection collection = ((IStructuredSelection)selection).toList();
+				Collection<?> collection = ((IStructuredSelection)selection).toList();
 				if (collection.size()==0) {
 						statusLineManager.setMessage(getString("_UI_NoObjectSelected"));
 				}

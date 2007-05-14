@@ -50,7 +50,7 @@ public class NewScaveObjectWizard extends Wizard {
 		setWindowTitle("Create new item");
 		setHelpAvailable(false);
 		setNeedsProgressMonitor(false);
-		Collection descriptors = domain.getNewChildDescriptors(parent, null);
+		Collection<?> descriptors = domain.getNewChildDescriptors(parent, null);
 		childDescriptors = (CommandParameter[])descriptors.toArray(new CommandParameter[descriptors.size()]);
 		Assert.isTrue(childDescriptors.length > 0);
 	}
@@ -128,7 +128,6 @@ public class NewScaveObjectWizard extends Wizard {
 			setPageComplete(false);
 
 			// set descriptors of new children
-			Collection descriptors = domain.getNewChildDescriptors(parent, null);
 			this.childrenDescriptors = childrenDescriptors;
 		}
 
