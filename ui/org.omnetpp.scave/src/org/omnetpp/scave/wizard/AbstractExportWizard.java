@@ -35,6 +35,10 @@ public abstract class AbstractExportWizard extends Wizard implements IExportWiza
 	protected ResultFileManager manager;
 	protected ExportWizardPage page;
 	
+	protected AbstractExportWizard() {
+		setWindowTitle("Export");
+	}
+	
 	/**
 	 * Sets the IDs of data to be exported and the ResultFileManager that owns them.
 	 */

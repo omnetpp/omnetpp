@@ -7,6 +7,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISelectionListener;
@@ -27,8 +28,6 @@ import org.omnetpp.scave.actions.RefreshChartAction;
 import org.omnetpp.scave.actions.ShowVectorBrowserViewAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.model.presentation.ScaveModelActionBarContributor;
-
-import static org.omnetpp.scave.actions.ExportDataAction.*;
 
 /**
  * Manages the installation/deinstallation of global actions for multi-page editors.
@@ -67,12 +66,11 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	// BrowseDataPage actions
 	private IAction addFilterToDatasetAction;
 	private IAction addSelectedToDatasetAction;
-	private Map<String,IAction> exportDataActions = new HashMap<String,IAction>();
 	private IAction copyToClipboardAction;
 	private IAction createTempChartAction;
 	private IAction showVectorBrowserViewAction;
+	private Map<String,IAction> exportActions;
 	
-
 	/**
 	 * Creates a multi-page contributor.
 	 */
@@ -101,8 +99,11 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
     	// BrowseDataPage actions
         addFilterToDatasetAction = registerAction(page, new AddFilterToDatasetAction());
     	addSelectedToDatasetAction = registerAction(page, new AddSelectedToDatasetAction());
-    	for (String format : ExportDataAction.FORMATS)
-    		exportDataActions.put(format, registerAction(page, new ExportDataAction(format)));
+    	exportActions = new HashMap<String,IAction>();
+		for (String format : ExportDataAction.FORMATS) {
+			IAction action = registerAction(page, new ExportDataAction(format));
+			exportActions.put(format, action);
+		}
     	copyToClipboardAction = registerAction(page, new CopyToClipboardAction());
     	createTempChartAction = registerAction(page, new CreateTempChartAction());
         showVectorBrowserViewAction = registerAction(page, new ShowVectorBrowserViewAction());
@@ -164,6 +165,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	public void menuAboutToShow(IMenuManager menuManager) {
 		super.menuAboutToShow(menuManager);
 		menuManager.insertBefore("additions", editAction);
+		menuManager.insertAfter("additions", createExportMenu());
 	}
 
 	public IAction getEditAction() {
@@ -209,9 +211,6 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	public IAction getAddSelectedToDatasetAction() {
 		return addSelectedToDatasetAction;
 	}
-	public IAction getExportDataAction(String format) {
-		return exportDataActions.get(format);
-	}
 	public IAction getCopyToClipboardAction() {
 		return copyToClipboardAction;
 	}
@@ -220,5 +219,16 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	}
 	public IAction getShowVectorBrowserViewAction() {
 		return showVectorBrowserViewAction;
+	}
+	public IMenuManager createExportMenu() {
+		IMenuManager exportMenu = new MenuManager("Export to file...");
+		if (exportActions != null) {
+			for (String format : ExportDataAction.FORMATS) {
+				IAction action = exportActions.get(format);
+				if (action != null)
+					exportMenu.add(action);
+			}
+		}
+		return exportMenu;
 	}
 }

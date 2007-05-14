@@ -1,6 +1,5 @@
 package org.omnetpp.scave.actions;
 
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IWorkbenchWizard;
@@ -48,7 +47,6 @@ public class ExportDataAction extends AbstractScaveAction {
 
 	@Override
 	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
-		selection = getEditorSelection(scaveEditor);
 		if (selection != null) {
 			IWorkbenchWizard wizard = createWizard();
 			if (wizard != null) {
@@ -62,16 +60,10 @@ public class ExportDataAction extends AbstractScaveAction {
 	@Override
 	protected boolean isApplicable(ScaveEditor editor,
 			IStructuredSelection selection) {
-		selection = getEditorSelection(editor);
 		return selection instanceof IDListSelection ||
 				(selection instanceof IStructuredSelection &&
 				 (selection.getFirstElement() instanceof Dataset ||
 				  selection.getFirstElement() instanceof DatasetItem));
-	}
-	
-	private IStructuredSelection getEditorSelection(ScaveEditor editor) {
-		ISelection selection = editor.getSelection();
-		return (selection instanceof IStructuredSelection ? (IStructuredSelection)selection : null);
 	}
 	
 	private AbstractExportWizard createWizard() {

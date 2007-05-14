@@ -566,8 +566,11 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 			try {
 				selectionChangeInProgress = true; // "finally" ensures this gets reset in any case
 				editorSelection = selection;
-				setViewerSelectionNoNotify(contentOutlineViewer, selection);
-				updateStatusLineManager(contentOutlineStatusLineManager, selection);
+				 // FIXME notifying the view about IDListSelections would remove the selection from the editor!
+				if (!(selection instanceof IDListSelection)) {
+					setViewerSelectionNoNotify(contentOutlineViewer, selection);
+					updateStatusLineManager(contentOutlineStatusLineManager, selection);
+				}
 				updateStatusLineManager(getActionBars().getStatusLineManager(), selection);
 				fireSelectionChangedEvent(selection);
 			} finally {

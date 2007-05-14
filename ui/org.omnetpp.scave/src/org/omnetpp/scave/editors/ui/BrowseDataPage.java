@@ -168,13 +168,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 		contextMenuManager.add(editorContributor.getAddFilterToDatasetAction());
 		contextMenuManager.add(editorContributor.getAddSelectedToDatasetAction());
 		contextMenuManager.add(new Separator());
-		MenuManager exportMenu = new MenuManager("Export to file...");
-		for (String format : ExportDataAction.FORMATS) {
-			IAction exportDataAction = editorContributor.getExportDataAction(format); 
-			if (exportDataAction != null)
-				exportMenu.add(exportDataAction);
-		}
-		contextMenuManager.add(exportMenu);
+		contextMenuManager.add(editorContributor.createExportMenu());
 		contextMenuManager.add(editorContributor.getCopyToClipboardAction());
 		contextMenuManager.add(new Separator());
 		contextMenuManager.add(new ChooseTableColumnsAction(panel.getTable()));
