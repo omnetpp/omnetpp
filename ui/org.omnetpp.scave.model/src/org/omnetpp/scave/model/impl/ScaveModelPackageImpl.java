@@ -913,27 +913,30 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		addEClass = createEClass(ADD);
 		createEReference(addEClass, ADD__EXCEPTS);
 
-		applyEClass = createEClass(APPLY);
+		discardEClass = createEClass(DISCARD);
+		createEReference(discardEClass, DISCARD__EXCEPTS);
+
+		processingOpEClass = createEClass(PROCESSING_OP);
+		createEAttribute(processingOpEClass, PROCESSING_OP__OPERATION);
+		createEReference(processingOpEClass, PROCESSING_OP__FILTERS);
+		createEReference(processingOpEClass, PROCESSING_OP__PARAMS);
 
 		exceptEClass = createEClass(EXCEPT);
-
-		propertyEClass = createEClass(PROPERTY);
-		createEAttribute(propertyEClass, PROPERTY__NAME);
-		createEAttribute(propertyEClass, PROPERTY__VALUE);
 
 		setOperationEClass = createEClass(SET_OPERATION);
 		createEReference(setOperationEClass, SET_OPERATION__SOURCE_DATASET);
 		createEAttribute(setOperationEClass, SET_OPERATION__FILTER_PATTERN);
 		createEAttribute(setOperationEClass, SET_OPERATION__TYPE);
 
+		datasetItemEClass = createEClass(DATASET_ITEM);
+
 		groupEClass = createEClass(GROUP);
 		createEReference(groupEClass, GROUP__ITEMS);
 		createEAttribute(groupEClass, GROUP__NAME);
 
-		discardEClass = createEClass(DISCARD);
-		createEReference(discardEClass, DISCARD__EXCEPTS);
-
-		datasetItemEClass = createEClass(DATASET_ITEM);
+		propertyEClass = createEClass(PROPERTY);
+		createEAttribute(propertyEClass, PROPERTY__NAME);
+		createEAttribute(propertyEClass, PROPERTY__VALUE);
 
 		paramEClass = createEClass(PARAM);
 		createEAttribute(paramEClass, PARAM__NAME);
@@ -961,19 +964,16 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		inputsEClass = createEClass(INPUTS);
 		createEReference(inputsEClass, INPUTS__INPUTS);
 
+		inputFileEClass = createEClass(INPUT_FILE);
+		createEAttribute(inputFileEClass, INPUT_FILE__NAME);
+
 		chartSheetsEClass = createEClass(CHART_SHEETS);
 		createEReference(chartSheetsEClass, CHART_SHEETS__CHART_SHEETS);
 
 		datasetsEClass = createEClass(DATASETS);
 		createEReference(datasetsEClass, DATASETS__DATASETS);
 
-		inputFileEClass = createEClass(INPUT_FILE);
-		createEAttribute(inputFileEClass, INPUT_FILE__NAME);
-
-		processingOpEClass = createEClass(PROCESSING_OP);
-		createEAttribute(processingOpEClass, PROCESSING_OP__OPERATION);
-		createEReference(processingOpEClass, PROCESSING_OP__FILTERS);
-		createEReference(processingOpEClass, PROCESSING_OP__PARAMS);
+		applyEClass = createEClass(APPLY);
 
 		computeEClass = createEClass(COMPUTE);
 
@@ -1015,19 +1015,23 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		setNsPrefix(eNS_PREFIX);
 		setNsURI(eNS_URI);
 
+		// Create type parameters
+
+		// Set bounds for type parameters
+
 		// Add supertypes to classes
 		chartEClass.getESuperTypes().add(this.getDatasetItem());
 		addEClass.getESuperTypes().add(this.getAddDiscardOp());
-		applyEClass.getESuperTypes().add(this.getProcessingOp());
+		discardEClass.getESuperTypes().add(this.getAddDiscardOp());
+		processingOpEClass.getESuperTypes().add(this.getDatasetItem());
 		exceptEClass.getESuperTypes().add(this.getSetOperation());
 		groupEClass.getESuperTypes().add(this.getDatasetItem());
-		discardEClass.getESuperTypes().add(this.getAddDiscardOp());
 		selectEClass.getESuperTypes().add(this.getSelectDeselectOp());
 		deselectEClass.getESuperTypes().add(this.getSelectDeselectOp());
 		addDiscardOpEClass.getESuperTypes().add(this.getSetOperation());
 		addDiscardOpEClass.getESuperTypes().add(this.getDatasetItem());
 		selectDeselectOpEClass.getESuperTypes().add(this.getSetOperation());
-		processingOpEClass.getESuperTypes().add(this.getDatasetItem());
+		applyEClass.getESuperTypes().add(this.getProcessingOp());
 		computeEClass.getESuperTypes().add(this.getProcessingOp());
 		barChartEClass.getESuperTypes().add(this.getChart());
 		lineChartEClass.getESuperTypes().add(this.getChart());
@@ -1048,27 +1052,30 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		initEClass(addEClass, Add.class, "Add", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getAdd_Excepts(), this.getExcept(), null, "excepts", null, 0, -1, Add.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(applyEClass, Apply.class, "Apply", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEClass(discardEClass, Discard.class, "Discard", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getDiscard_Excepts(), this.getExcept(), null, "excepts", null, 0, -1, Discard.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(processingOpEClass, ProcessingOp.class, "ProcessingOp", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getProcessingOp_Operation(), ecorePackage.getEString(), "operation", null, 0, 1, ProcessingOp.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getProcessingOp_Filters(), this.getSelectDeselectOp(), null, "filters", null, 0, -1, ProcessingOp.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getProcessingOp_Params(), this.getParam(), null, "params", null, 0, -1, ProcessingOp.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(exceptEClass, Except.class, "Except", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-
-		initEClass(propertyEClass, Property.class, "Property", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getProperty_Name(), ecorePackage.getEString(), "name", null, 0, 1, Property.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getProperty_Value(), ecorePackage.getEString(), "value", null, 0, 1, Property.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(setOperationEClass, SetOperation.class, "SetOperation", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getSetOperation_SourceDataset(), this.getDataset(), null, "sourceDataset", null, 0, 1, SetOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getSetOperation_FilterPattern(), ecorePackage.getEString(), "filterPattern", null, 0, 1, SetOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getSetOperation_Type(), this.getResultType(), "type", null, 0, 1, SetOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
+		initEClass(datasetItemEClass, DatasetItem.class, "DatasetItem", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
 		initEClass(groupEClass, Group.class, "Group", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getGroup_Items(), this.getDatasetItem(), null, "items", null, 0, -1, Group.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getGroup_Name(), ecorePackage.getEString(), "name", null, 0, 1, Group.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(discardEClass, Discard.class, "Discard", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getDiscard_Excepts(), this.getExcept(), null, "excepts", null, 0, -1, Discard.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-
-		initEClass(datasetItemEClass, DatasetItem.class, "DatasetItem", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEClass(propertyEClass, Property.class, "Property", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getProperty_Name(), ecorePackage.getEString(), "name", null, 0, 1, Property.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getProperty_Value(), ecorePackage.getEString(), "value", null, 0, 1, Property.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(paramEClass, Param.class, "Param", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getParam_Name(), ecorePackage.getEString(), "name", null, 0, 1, Param.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -1096,19 +1103,16 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		initEClass(inputsEClass, Inputs.class, "Inputs", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getInputs_Inputs(), this.getInputFile(), null, "inputs", null, 0, -1, Inputs.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
+		initEClass(inputFileEClass, InputFile.class, "InputFile", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getInputFile_Name(), ecorePackage.getEString(), "name", null, 0, 1, InputFile.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
 		initEClass(chartSheetsEClass, ChartSheets.class, "ChartSheets", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getChartSheets_ChartSheets(), this.getChartSheet(), null, "chartSheets", null, 0, -1, ChartSheets.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(datasetsEClass, Datasets.class, "Datasets", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getDatasets_Datasets(), this.getDataset(), null, "datasets", null, 0, -1, Datasets.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(inputFileEClass, InputFile.class, "InputFile", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getInputFile_Name(), ecorePackage.getEString(), "name", null, 0, 1, InputFile.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-
-		initEClass(processingOpEClass, ProcessingOp.class, "ProcessingOp", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getProcessingOp_Operation(), ecorePackage.getEString(), "operation", null, 0, 1, ProcessingOp.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getProcessingOp_Filters(), this.getSelectDeselectOp(), null, "filters", null, 0, -1, ProcessingOp.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getProcessingOp_Params(), this.getParam(), null, "params", null, 0, -1, ProcessingOp.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(applyEClass, Apply.class, "Apply", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(computeEClass, Compute.class, "Compute", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 

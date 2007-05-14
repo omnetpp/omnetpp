@@ -114,7 +114,7 @@ public interface ScaveModelPackage extends EPackage {
 	 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getDatasetItem()
 	 * @generated
 	 */
-	int DATASET_ITEM = 9;
+	int DATASET_ITEM = 7;
 
 	/**
 	 * The number of structural features of the '<em>Dataset Item</em>' class.
@@ -326,43 +326,7 @@ public interface ScaveModelPackage extends EPackage {
 	 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getProcessingOp()
 	 * @generated
 	 */
-	int PROCESSING_OP = 21;
-
-	/**
-	 * The feature id for the '<em><b>Operation</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int PROCESSING_OP__OPERATION = DATASET_ITEM_FEATURE_COUNT + 0;
-
-	/**
-	 * The feature id for the '<em><b>Filters</b></em>' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int PROCESSING_OP__FILTERS = DATASET_ITEM_FEATURE_COUNT + 1;
-
-	/**
-	 * The feature id for the '<em><b>Params</b></em>' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int PROCESSING_OP__PARAMS = DATASET_ITEM_FEATURE_COUNT + 2;
-
-	/**
-	 * The number of structural features of the '<em>Processing Op</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int PROCESSING_OP_FEATURE_COUNT = DATASET_ITEM_FEATURE_COUNT + 3;
+	int PROCESSING_OP = 4;
 
 	/**
 	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.ApplyImpl <em>Apply</em>}' class.
@@ -372,43 +336,7 @@ public interface ScaveModelPackage extends EPackage {
 	 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getApply()
 	 * @generated
 	 */
-	int APPLY = 3;
-
-	/**
-	 * The feature id for the '<em><b>Operation</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int APPLY__OPERATION = PROCESSING_OP__OPERATION;
-
-	/**
-	 * The feature id for the '<em><b>Filters</b></em>' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int APPLY__FILTERS = PROCESSING_OP__FILTERS;
-
-	/**
-	 * The feature id for the '<em><b>Params</b></em>' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int APPLY__PARAMS = PROCESSING_OP__PARAMS;
-
-	/**
-	 * The number of structural features of the '<em>Apply</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int APPLY_FEATURE_COUNT = PROCESSING_OP_FEATURE_COUNT + 0;
+	int APPLY = 21;
 
 	/**
 	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.ExceptImpl <em>Except</em>}' class.
@@ -418,43 +346,7 @@ public interface ScaveModelPackage extends EPackage {
 	 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getExcept()
 	 * @generated
 	 */
-	int EXCEPT = 4;
-
-	/**
-	 * The feature id for the '<em><b>Source Dataset</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int EXCEPT__SOURCE_DATASET = SET_OPERATION__SOURCE_DATASET;
-
-	/**
-	 * The feature id for the '<em><b>Filter Pattern</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int EXCEPT__FILTER_PATTERN = SET_OPERATION__FILTER_PATTERN;
-
-	/**
-	 * The feature id for the '<em><b>Type</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int EXCEPT__TYPE = SET_OPERATION__TYPE;
-
-	/**
-	 * The number of structural features of the '<em>Except</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int EXCEPT_FEATURE_COUNT = SET_OPERATION_FEATURE_COUNT + 0;
+	int EXCEPT = 5;
 
 	/**
 	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.PropertyImpl <em>Property</em>}' class.
@@ -464,34 +356,7 @@ public interface ScaveModelPackage extends EPackage {
 	 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getProperty()
 	 * @generated
 	 */
-	int PROPERTY = 5;
-
-	/**
-	 * The feature id for the '<em><b>Name</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int PROPERTY__NAME = 0;
-
-	/**
-	 * The feature id for the '<em><b>Value</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int PROPERTY__VALUE = 1;
-
-	/**
-	 * The number of structural features of the '<em>Property</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int PROPERTY_FEATURE_COUNT = 2;
+	int PROPERTY = 9;
 
 	/**
 	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.GroupImpl <em>Group</em>}' class.
@@ -501,34 +366,7 @@ public interface ScaveModelPackage extends EPackage {
 	 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getGroup()
 	 * @generated
 	 */
-	int GROUP = 7;
-
-	/**
-	 * The feature id for the '<em><b>Items</b></em>' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int GROUP__ITEMS = DATASET_ITEM_FEATURE_COUNT + 0;
-
-	/**
-	 * The feature id for the '<em><b>Name</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int GROUP__NAME = DATASET_ITEM_FEATURE_COUNT + 1;
-
-	/**
-	 * The number of structural features of the '<em>Group</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int GROUP_FEATURE_COUNT = DATASET_ITEM_FEATURE_COUNT + 2;
+	int GROUP = 8;
 
 	/**
 	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.DiscardImpl <em>Discard</em>}' class.
@@ -538,7 +376,7 @@ public interface ScaveModelPackage extends EPackage {
 	 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getDiscard()
 	 * @generated
 	 */
-	int DISCARD = 8;
+	int DISCARD = 3;
 
 	/**
 	 * The feature id for the '<em><b>Source Dataset</b></em>' reference.
@@ -584,6 +422,132 @@ public interface ScaveModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int DISCARD_FEATURE_COUNT = ADD_DISCARD_OP_FEATURE_COUNT + 1;
+
+	/**
+	 * The feature id for the '<em><b>Operation</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PROCESSING_OP__OPERATION = DATASET_ITEM_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Filters</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PROCESSING_OP__FILTERS = DATASET_ITEM_FEATURE_COUNT + 1;
+
+	/**
+	 * The feature id for the '<em><b>Params</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PROCESSING_OP__PARAMS = DATASET_ITEM_FEATURE_COUNT + 2;
+
+	/**
+	 * The number of structural features of the '<em>Processing Op</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PROCESSING_OP_FEATURE_COUNT = DATASET_ITEM_FEATURE_COUNT + 3;
+
+	/**
+	 * The feature id for the '<em><b>Source Dataset</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EXCEPT__SOURCE_DATASET = SET_OPERATION__SOURCE_DATASET;
+
+	/**
+	 * The feature id for the '<em><b>Filter Pattern</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EXCEPT__FILTER_PATTERN = SET_OPERATION__FILTER_PATTERN;
+
+	/**
+	 * The feature id for the '<em><b>Type</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EXCEPT__TYPE = SET_OPERATION__TYPE;
+
+	/**
+	 * The number of structural features of the '<em>Except</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EXCEPT_FEATURE_COUNT = SET_OPERATION_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Items</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GROUP__ITEMS = DATASET_ITEM_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GROUP__NAME = DATASET_ITEM_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of structural features of the '<em>Group</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GROUP_FEATURE_COUNT = DATASET_ITEM_FEATURE_COUNT + 2;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PROPERTY__NAME = 0;
+
+	/**
+	 * The feature id for the '<em><b>Value</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PROPERTY__VALUE = 1;
+
+	/**
+	 * The number of structural features of the '<em>Property</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PROPERTY_FEATURE_COUNT = 2;
 
 	/**
 	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.ParamImpl <em>Param</em>}' class.
@@ -897,7 +861,45 @@ public interface ScaveModelPackage extends EPackage {
 	 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getChartSheets()
 	 * @generated
 	 */
-	int CHART_SHEETS = 18;
+	int CHART_SHEETS = 19;
+
+	/**
+	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.DatasetsImpl <em>Datasets</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.omnetpp.scave.model.impl.DatasetsImpl
+	 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getDatasets()
+	 * @generated
+	 */
+	int DATASETS = 20;
+
+	/**
+	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.InputFileImpl <em>Input File</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.omnetpp.scave.model.impl.InputFileImpl
+	 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getInputFile()
+	 * @generated
+	 */
+	int INPUT_FILE = 18;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INPUT_FILE__NAME = 0;
+
+	/**
+	 * The number of structural features of the '<em>Input File</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INPUT_FILE_FEATURE_COUNT = 1;
 
 	/**
 	 * The feature id for the '<em><b>Chart Sheets</b></em>' containment reference list.
@@ -918,16 +920,6 @@ public interface ScaveModelPackage extends EPackage {
 	int CHART_SHEETS_FEATURE_COUNT = 1;
 
 	/**
-	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.DatasetsImpl <em>Datasets</em>}' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see org.omnetpp.scave.model.impl.DatasetsImpl
-	 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getDatasets()
-	 * @generated
-	 */
-	int DATASETS = 19;
-
-	/**
 	 * The feature id for the '<em><b>Datasets</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -946,32 +938,40 @@ public interface ScaveModelPackage extends EPackage {
 	int DATASETS_FEATURE_COUNT = 1;
 
 	/**
-	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.InputFileImpl <em>Input File</em>}' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see org.omnetpp.scave.model.impl.InputFileImpl
-	 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getInputFile()
-	 * @generated
-	 */
-	int INPUT_FILE = 20;
-
-	/**
-	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * The feature id for the '<em><b>Operation</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int INPUT_FILE__NAME = 0;
+	int APPLY__OPERATION = PROCESSING_OP__OPERATION;
 
 	/**
-	 * The number of structural features of the '<em>Input File</em>' class.
+	 * The feature id for the '<em><b>Filters</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int INPUT_FILE_FEATURE_COUNT = 1;
+	int APPLY__FILTERS = PROCESSING_OP__FILTERS;
+
+	/**
+	 * The feature id for the '<em><b>Params</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int APPLY__PARAMS = PROCESSING_OP__PARAMS;
+
+	/**
+	 * The number of structural features of the '<em>Apply</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int APPLY_FEATURE_COUNT = PROCESSING_OP_FEATURE_COUNT + 0;
 
 
 	/**

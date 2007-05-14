@@ -44,7 +44,7 @@ public class DeselectImpl extends SelectDeselectOpImpl implements Deselect {
 	 * @generated
 	 * @ordered
 	 */
-	protected EList excepts = null;
+	protected EList<Except> excepts;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -60,6 +60,7 @@ public class DeselectImpl extends SelectDeselectOpImpl implements Deselect {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	protected EClass eStaticClass() {
 		return ScaveModelPackage.Literals.DESELECT;
 	}
@@ -69,9 +70,9 @@ public class DeselectImpl extends SelectDeselectOpImpl implements Deselect {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList getExcepts() {
+	public EList<Except> getExcepts() {
 		if (excepts == null) {
-			excepts = new EObjectContainmentEList(Except.class, this, ScaveModelPackage.DESELECT__EXCEPTS);
+			excepts = new EObjectContainmentEList<Except>(Except.class, this, ScaveModelPackage.DESELECT__EXCEPTS);
 		}
 		return excepts;
 	}
@@ -81,10 +82,11 @@ public class DeselectImpl extends SelectDeselectOpImpl implements Deselect {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 			case ScaveModelPackage.DESELECT__EXCEPTS:
-				return ((InternalEList)getExcepts()).basicRemove(otherEnd, msgs);
+				return ((InternalEList<?>)getExcepts()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -94,6 +96,7 @@ public class DeselectImpl extends SelectDeselectOpImpl implements Deselect {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
 			case ScaveModelPackage.DESELECT__EXCEPTS:
@@ -107,11 +110,13 @@ public class DeselectImpl extends SelectDeselectOpImpl implements Deselect {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
+		@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
 			case ScaveModelPackage.DESELECT__EXCEPTS:
 				getExcepts().clear();
-				getExcepts().addAll((Collection)newValue);
+				getExcepts().addAll((Collection<? extends Except>)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -122,6 +127,7 @@ public class DeselectImpl extends SelectDeselectOpImpl implements Deselect {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
 			case ScaveModelPackage.DESELECT__EXCEPTS:
@@ -136,6 +142,7 @@ public class DeselectImpl extends SelectDeselectOpImpl implements Deselect {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case ScaveModelPackage.DESELECT__EXCEPTS:

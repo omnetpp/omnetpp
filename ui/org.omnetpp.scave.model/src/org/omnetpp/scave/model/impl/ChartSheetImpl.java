@@ -66,7 +66,7 @@ public class ChartSheetImpl extends EObjectImpl implements ChartSheet {
 	 * @generated
 	 * @ordered
 	 */
-	protected EList charts = null;
+	protected EList<Chart> charts;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -82,6 +82,7 @@ public class ChartSheetImpl extends EObjectImpl implements ChartSheet {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	protected EClass eStaticClass() {
 		return ScaveModelPackage.Literals.CHART_SHEET;
 	}
@@ -112,9 +113,9 @@ public class ChartSheetImpl extends EObjectImpl implements ChartSheet {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList getCharts() {
+	public EList<Chart> getCharts() {
 		if (charts == null) {
-			charts = new EObjectResolvingEList(Chart.class, this, ScaveModelPackage.CHART_SHEET__CHARTS);
+			charts = new EObjectResolvingEList<Chart>(Chart.class, this, ScaveModelPackage.CHART_SHEET__CHARTS);
 		}
 		return charts;
 	}
@@ -124,6 +125,7 @@ public class ChartSheetImpl extends EObjectImpl implements ChartSheet {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
 			case ScaveModelPackage.CHART_SHEET__NAME:
@@ -139,6 +141,8 @@ public class ChartSheetImpl extends EObjectImpl implements ChartSheet {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
+		@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
 			case ScaveModelPackage.CHART_SHEET__NAME:
@@ -146,7 +150,7 @@ public class ChartSheetImpl extends EObjectImpl implements ChartSheet {
 				return;
 			case ScaveModelPackage.CHART_SHEET__CHARTS:
 				getCharts().clear();
-				getCharts().addAll((Collection)newValue);
+				getCharts().addAll((Collection<? extends Chart>)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -157,6 +161,7 @@ public class ChartSheetImpl extends EObjectImpl implements ChartSheet {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
 			case ScaveModelPackage.CHART_SHEET__NAME:
@@ -174,6 +179,7 @@ public class ChartSheetImpl extends EObjectImpl implements ChartSheet {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case ScaveModelPackage.CHART_SHEET__NAME:
@@ -189,6 +195,7 @@ public class ChartSheetImpl extends EObjectImpl implements ChartSheet {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String toString() {
 		if (eIsProxy()) return super.toString();
 

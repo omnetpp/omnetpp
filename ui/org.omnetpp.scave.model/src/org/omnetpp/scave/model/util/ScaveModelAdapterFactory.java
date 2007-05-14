@@ -52,6 +52,7 @@ public class ScaveModelAdapterFactory extends AdapterFactoryImpl {
 	 * @return whether this factory is applicable for the type of the object.
 	 * @generated
 	 */
+	@Override
 	public boolean isFactoryForType(Object object) {
 		if (object == modelPackage) {
 			return true;
@@ -68,90 +69,118 @@ public class ScaveModelAdapterFactory extends AdapterFactoryImpl {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected ScaveModelSwitch modelSwitch =
-		new ScaveModelSwitch() {
-			public Object caseDataset(Dataset object) {
+	protected ScaveModelSwitch<Adapter> modelSwitch =
+		new ScaveModelSwitch<Adapter>() {
+			@Override
+			public Adapter caseDataset(Dataset object) {
 				return createDatasetAdapter();
 			}
-			public Object caseChart(Chart object) {
+			@Override
+			public Adapter caseChart(Chart object) {
 				return createChartAdapter();
 			}
-			public Object caseAdd(Add object) {
+			@Override
+			public Adapter caseAdd(Add object) {
 				return createAddAdapter();
 			}
-			public Object caseApply(Apply object) {
-				return createApplyAdapter();
-			}
-			public Object caseExcept(Except object) {
-				return createExceptAdapter();
-			}
-			public Object caseProperty(Property object) {
-				return createPropertyAdapter();
-			}
-			public Object caseSetOperation(SetOperation object) {
-				return createSetOperationAdapter();
-			}
-			public Object caseGroup(Group object) {
-				return createGroupAdapter();
-			}
-			public Object caseDiscard(Discard object) {
+			@Override
+			public Adapter caseDiscard(Discard object) {
 				return createDiscardAdapter();
 			}
-			public Object caseDatasetItem(DatasetItem object) {
-				return createDatasetItemAdapter();
-			}
-			public Object caseParam(Param object) {
-				return createParamAdapter();
-			}
-			public Object caseChartSheet(ChartSheet object) {
-				return createChartSheetAdapter();
-			}
-			public Object caseAnalysis(Analysis object) {
-				return createAnalysisAdapter();
-			}
-			public Object caseSelect(Select object) {
-				return createSelectAdapter();
-			}
-			public Object caseDeselect(Deselect object) {
-				return createDeselectAdapter();
-			}
-			public Object caseAddDiscardOp(AddDiscardOp object) {
-				return createAddDiscardOpAdapter();
-			}
-			public Object caseSelectDeselectOp(SelectDeselectOp object) {
-				return createSelectDeselectOpAdapter();
-			}
-			public Object caseInputs(Inputs object) {
-				return createInputsAdapter();
-			}
-			public Object caseChartSheets(ChartSheets object) {
-				return createChartSheetsAdapter();
-			}
-			public Object caseDatasets(Datasets object) {
-				return createDatasetsAdapter();
-			}
-			public Object caseInputFile(InputFile object) {
-				return createInputFileAdapter();
-			}
-			public Object caseProcessingOp(ProcessingOp object) {
+			@Override
+			public Adapter caseProcessingOp(ProcessingOp object) {
 				return createProcessingOpAdapter();
 			}
-			public Object caseCompute(Compute object) {
+			@Override
+			public Adapter caseExcept(Except object) {
+				return createExceptAdapter();
+			}
+			@Override
+			public Adapter caseSetOperation(SetOperation object) {
+				return createSetOperationAdapter();
+			}
+			@Override
+			public Adapter caseDatasetItem(DatasetItem object) {
+				return createDatasetItemAdapter();
+			}
+			@Override
+			public Adapter caseGroup(Group object) {
+				return createGroupAdapter();
+			}
+			@Override
+			public Adapter caseProperty(Property object) {
+				return createPropertyAdapter();
+			}
+			@Override
+			public Adapter caseParam(Param object) {
+				return createParamAdapter();
+			}
+			@Override
+			public Adapter caseChartSheet(ChartSheet object) {
+				return createChartSheetAdapter();
+			}
+			@Override
+			public Adapter caseAnalysis(Analysis object) {
+				return createAnalysisAdapter();
+			}
+			@Override
+			public Adapter caseSelect(Select object) {
+				return createSelectAdapter();
+			}
+			@Override
+			public Adapter caseDeselect(Deselect object) {
+				return createDeselectAdapter();
+			}
+			@Override
+			public Adapter caseAddDiscardOp(AddDiscardOp object) {
+				return createAddDiscardOpAdapter();
+			}
+			@Override
+			public Adapter caseSelectDeselectOp(SelectDeselectOp object) {
+				return createSelectDeselectOpAdapter();
+			}
+			@Override
+			public Adapter caseInputs(Inputs object) {
+				return createInputsAdapter();
+			}
+			@Override
+			public Adapter caseInputFile(InputFile object) {
+				return createInputFileAdapter();
+			}
+			@Override
+			public Adapter caseChartSheets(ChartSheets object) {
+				return createChartSheetsAdapter();
+			}
+			@Override
+			public Adapter caseDatasets(Datasets object) {
+				return createDatasetsAdapter();
+			}
+			@Override
+			public Adapter caseApply(Apply object) {
+				return createApplyAdapter();
+			}
+			@Override
+			public Adapter caseCompute(Compute object) {
 				return createComputeAdapter();
 			}
-			public Object caseBarChart(BarChart object) {
+			@Override
+			public Adapter caseBarChart(BarChart object) {
 				return createBarChartAdapter();
 			}
-			public Object caseLineChart(LineChart object) {
+			@Override
+			public Adapter caseLineChart(LineChart object) {
 				return createLineChartAdapter();
 			}
-			public Object caseHistogramChart(HistogramChart object) {
+			@Override
+			public Adapter caseHistogramChart(HistogramChart object) {
 				return createHistogramChartAdapter();
 			}
-			public Object caseScatterChart(ScatterChart object) {
+			@Override
+			public Adapter caseScatterChart(ScatterChart object) {
 				return createScatterChartAdapter();
 			}
-			public Object defaultCase(EObject object) {
+			@Override
+			public Adapter defaultCase(EObject object) {
 				return createEObjectAdapter();
 			}
 		};
@@ -164,8 +193,9 @@ public class ScaveModelAdapterFactory extends AdapterFactoryImpl {
 	 * @return the adapter for the <code>target</code>.
 	 * @generated
 	 */
+	@Override
 	public Adapter createAdapter(Notifier target) {
-		return (Adapter)modelSwitch.doSwitch((EObject)target);
+		return modelSwitch.doSwitch((EObject)target);
 	}
 
 

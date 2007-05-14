@@ -35,7 +35,8 @@ public class HistogramChartImpl extends ChartImpl implements HistogramChart {
      * <!-- end-user-doc -->
 	 * @generated
 	 */
-    protected EClass eStaticClass() {
+    @Override
+				protected EClass eStaticClass() {
 		return ScaveModelPackage.Literals.HISTOGRAM_CHART;
 	}
 

@@ -40,6 +40,6 @@ public interface BarChart extends Chart {
 	 * @model type="java.lang.String" ordered="false"
 	 * @generated
 	 */
-	EList getGroupBy();
+	EList<String> getGroupBy();
 
 } // BarChart

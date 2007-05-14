@@ -35,6 +35,7 @@ public class ComputeImpl extends ProcessingOpImpl implements Compute {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	protected EClass eStaticClass() {
 		return ScaveModelPackage.Literals.COMPUTE;
 	}

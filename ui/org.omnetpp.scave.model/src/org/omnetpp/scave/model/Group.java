@@ -40,7 +40,7 @@ public interface Group extends DatasetItem {
 	 * @model type="org.omnetpp.scave.model.DatasetItem" containment="true"
 	 * @generated
 	 */
-	EList getItems();
+	EList<DatasetItem> getItems();
 
 	/**
 	 * Returns the value of the '<em><b>Name</b></em>' attribute.

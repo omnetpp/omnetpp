@@ -69,7 +69,7 @@ public interface Dataset extends EObject {
 	 * @model type="org.omnetpp.scave.model.DatasetItem" containment="true"
 	 * @generated
 	 */
-	EList getItems();
+	EList<DatasetItem> getItems();
 
 	/**
 	 * Returns the value of the '<em><b>Based On</b></em>' reference.

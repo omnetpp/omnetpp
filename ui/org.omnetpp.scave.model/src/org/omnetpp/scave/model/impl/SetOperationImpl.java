@@ -43,7 +43,7 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
 	 * @generated
 	 * @ordered
 	 */
-	protected Dataset sourceDataset = null;
+	protected Dataset sourceDataset;
 
 	/**
 	 * The default value of the '{@link #getFilterPattern() <em>Filter Pattern</em>}' attribute.
@@ -99,6 +99,7 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	protected EClass eStaticClass() {
 		return ScaveModelPackage.Literals.SET_OPERATION;
 	}
@@ -188,6 +189,7 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
 			case ScaveModelPackage.SET_OPERATION__SOURCE_DATASET:
@@ -206,6 +208,7 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
 			case ScaveModelPackage.SET_OPERATION__SOURCE_DATASET:
@@ -226,6 +229,7 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
 			case ScaveModelPackage.SET_OPERATION__SOURCE_DATASET:
@@ -246,6 +250,7 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case ScaveModelPackage.SET_OPERATION__SOURCE_DATASET:
@@ -263,6 +268,7 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String toString() {
 		if (eIsProxy()) return super.toString();
 

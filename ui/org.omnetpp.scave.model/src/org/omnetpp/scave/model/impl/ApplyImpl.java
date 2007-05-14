@@ -50,6 +50,7 @@ public class ApplyImpl extends ProcessingOpImpl implements Apply {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	protected EClass eStaticClass() {
 		return ScaveModelPackage.Literals.APPLY;
 	}

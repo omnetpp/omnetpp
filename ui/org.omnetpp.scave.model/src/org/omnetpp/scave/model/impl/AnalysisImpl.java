@@ -45,7 +45,7 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
 	 * @generated
 	 * @ordered
 	 */
-	protected Inputs inputs = null;
+	protected Inputs inputs;
 
 	/**
 	 * The cached value of the '{@link #getDatasets() <em>Datasets</em>}' containment reference.
@@ -55,7 +55,7 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
 	 * @generated
 	 * @ordered
 	 */
-	protected Datasets datasets = null;
+	protected Datasets datasets;
 
 	/**
 	 * The cached value of the '{@link #getChartSheets() <em>Chart Sheets</em>}' containment reference.
@@ -65,7 +65,7 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
 	 * @generated
 	 * @ordered
 	 */
-	protected ChartSheets chartSheets = null;
+	protected ChartSheets chartSheets;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -81,6 +81,7 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	protected EClass eStaticClass() {
 		return ScaveModelPackage.Literals.ANALYSIS;
 	}
@@ -219,6 +220,7 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 			case ScaveModelPackage.ANALYSIS__INPUTS:
@@ -236,6 +238,7 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
 			case ScaveModelPackage.ANALYSIS__INPUTS:
@@ -253,6 +256,7 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
 			case ScaveModelPackage.ANALYSIS__INPUTS:
@@ -273,6 +277,7 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
 			case ScaveModelPackage.ANALYSIS__INPUTS:
@@ -293,6 +298,7 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case ScaveModelPackage.ANALYSIS__INPUTS:

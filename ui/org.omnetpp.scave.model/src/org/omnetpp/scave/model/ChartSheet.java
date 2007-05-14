@@ -68,6 +68,6 @@ public interface ChartSheet extends EObject {
 	 * @model type="org.omnetpp.scave.model.Chart"
 	 * @generated
 	 */
-	EList getCharts();
+	EList<Chart> getCharts();
 
 } // ChartSheet

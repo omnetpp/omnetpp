@@ -18,6 +18,7 @@ import org.eclipse.emf.common.util.ResourceLocator;
 import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
 import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
 import org.eclipse.emf.edit.provider.IItemLabelProvider;
+import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.IItemPropertySource;
 import org.eclipse.emf.edit.provider.IStructuredItemContentProvider;
 import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
@@ -59,7 +60,8 @@ public class BarChartItemProvider
      * <!-- end-user-doc -->
 	 * @generated
 	 */
-    public List getPropertyDescriptors(Object object) {
+    @Override
+				public List<IItemPropertyDescriptor> getPropertyDescriptors(Object object) {
 		if (itemPropertyDescriptors == null) {
 			super.getPropertyDescriptors(object);
 
@@ -83,6 +85,8 @@ public class BarChartItemProvider
 				 getString("_UI_PropertyDescriptor_description", "_UI_BarChart_groupBy_feature", "_UI_BarChart_type"),
 				 ScaveModelPackage.Literals.BAR_CHART__GROUP_BY,
 				 true,
+				 false,
+				 false,
 				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
 				 null,
 				 null));
@@ -94,7 +98,8 @@ public class BarChartItemProvider
      * <!-- end-user-doc -->
 	 * @generated
 	 */
-    public Object getImage(Object object) {
+    @Override
+				public Object getImage(Object object) {
 		return overlayImage(object, getResourceLocator().getImage("full/obj16/BarChart"));
 	}
 
@@ -104,7 +109,8 @@ public class BarChartItemProvider
      * <!-- end-user-doc -->
 	 * @generated
 	 */
-    public String getText(Object object) {
+    @Override
+				public String getText(Object object) {
 		String label = ((BarChart)object).getName();
 		return label == null || label.length() == 0 ?
 			getString("_UI_BarChart_type") :
@@ -118,7 +124,8 @@ public class BarChartItemProvider
      * <!-- end-user-doc -->
 	 * @generated
 	 */
-    public void notifyChanged(Notification notification) {
+    @Override
+				public void notifyChanged(Notification notification) {
 		updateChildren(notification);
 
 		switch (notification.getFeatureID(BarChart.class)) {
@@ -130,13 +137,14 @@ public class BarChartItemProvider
 	}
 
 	/**
-	 * This adds to the collection of {@link org.eclipse.emf.edit.command.CommandParameter}s
-	 * describing all of the children that can be created under this object.
+	 * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing the children
+	 * that can be created under this object.
 	 * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
 	 * @generated
 	 */
-    protected void collectNewChildDescriptors(Collection newChildDescriptors, Object object) {
+    @Override
+				protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
 		super.collectNewChildDescriptors(newChildDescriptors, object);
 	}
 
@@ -146,7 +154,8 @@ public class BarChartItemProvider
      * <!-- end-user-doc -->
 	 * @generated
 	 */
-    public ResourceLocator getResourceLocator() {
+    @Override
+				public ResourceLocator getResourceLocator() {
 		return ScaveEditPlugin.INSTANCE;
 	}
 

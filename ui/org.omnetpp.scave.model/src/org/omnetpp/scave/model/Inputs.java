@@ -41,6 +41,6 @@ public interface Inputs extends EObject {
 	 * @model type="org.omnetpp.scave.model.InputFile" containment="true"
 	 * @generated
 	 */
-	EList getInputs();
+	EList<InputFile> getInputs();
 
 } // Inputs

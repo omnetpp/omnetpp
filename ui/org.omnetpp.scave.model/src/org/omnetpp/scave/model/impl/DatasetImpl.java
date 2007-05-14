@@ -65,7 +65,7 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
 	 * @generated
 	 * @ordered
 	 */
-	protected EList items = null;
+	protected EList<DatasetItem> items;
 
 	/**
 	 * The cached value of the '{@link #getBasedOn() <em>Based On</em>}' reference.
@@ -75,7 +75,7 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
 	 * @generated
 	 * @ordered
 	 */
-	protected Dataset basedOn = null;
+	protected Dataset basedOn;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -91,6 +91,7 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	protected EClass eStaticClass() {
 		return ScaveModelPackage.Literals.DATASET;
 	}
@@ -121,9 +122,9 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList getItems() {
+	public EList<DatasetItem> getItems() {
 		if (items == null) {
-			items = new EObjectContainmentEList(DatasetItem.class, this, ScaveModelPackage.DATASET__ITEMS);
+			items = new EObjectContainmentEList<DatasetItem>(DatasetItem.class, this, ScaveModelPackage.DATASET__ITEMS);
 		}
 		return items;
 	}
@@ -171,10 +172,11 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 			case ScaveModelPackage.DATASET__ITEMS:
-				return ((InternalEList)getItems()).basicRemove(otherEnd, msgs);
+				return ((InternalEList<?>)getItems()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -184,6 +186,7 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
 			case ScaveModelPackage.DATASET__NAME:
@@ -202,6 +205,8 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
+		@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
 			case ScaveModelPackage.DATASET__NAME:
@@ -209,7 +214,7 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
 				return;
 			case ScaveModelPackage.DATASET__ITEMS:
 				getItems().clear();
-				getItems().addAll((Collection)newValue);
+				getItems().addAll((Collection<? extends DatasetItem>)newValue);
 				return;
 			case ScaveModelPackage.DATASET__BASED_ON:
 				setBasedOn((Dataset)newValue);
@@ -223,6 +228,7 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
 			case ScaveModelPackage.DATASET__NAME:
@@ -243,6 +249,7 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case ScaveModelPackage.DATASET__NAME:
@@ -260,6 +267,7 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String toString() {
 		if (eIsProxy()) return super.toString();
 

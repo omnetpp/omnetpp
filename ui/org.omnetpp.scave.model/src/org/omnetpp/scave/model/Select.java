@@ -39,6 +39,6 @@ public interface Select extends SelectDeselectOp {
 	 * @model type="org.omnetpp.scave.model.Except" containment="true"
 	 * @generated
 	 */
-	EList getExcepts();
+	EList<Except> getExcepts();
 
 } // Select

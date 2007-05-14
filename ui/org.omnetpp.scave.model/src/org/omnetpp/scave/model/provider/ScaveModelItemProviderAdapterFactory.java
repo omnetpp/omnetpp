@@ -59,7 +59,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected Collection supportedTypes = new ArrayList();
+	protected Collection<Object> supportedTypes = new ArrayList<Object>();
 
 	/**
 	 * This constructs an instance.
@@ -72,7 +72,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 		supportedTypes.add(IStructuredItemContentProvider.class);
 		supportedTypes.add(ITreeItemContentProvider.class);
 		supportedTypes.add(IItemLabelProvider.class);
-		supportedTypes.add(IItemPropertySource.class);		
+		supportedTypes.add(IItemPropertySource.class);
 	}
 
 	/**
@@ -89,6 +89,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Adapter createDatasetAdapter() {
 		if (datasetItemProvider == null) {
 			datasetItemProvider = new DatasetItemProvider(this);
@@ -111,6 +112,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Adapter createAddAdapter() {
 		if (addItemProvider == null) {
 			addItemProvider = new AddItemProvider(this);
@@ -133,6 +135,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Adapter createApplyAdapter() {
 		if (applyItemProvider == null) {
 			applyItemProvider = new ApplyItemProvider(this);
@@ -155,6 +158,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Adapter createExceptAdapter() {
 		if (exceptItemProvider == null) {
 			exceptItemProvider = new ExceptItemProvider(this);
@@ -177,6 +181,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Adapter createPropertyAdapter() {
 		if (propertyItemProvider == null) {
 			propertyItemProvider = new PropertyItemProvider(this);
@@ -199,6 +204,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Adapter createGroupAdapter() {
 		if (groupItemProvider == null) {
 			groupItemProvider = new GroupItemProvider(this);
@@ -221,6 +227,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Adapter createDiscardAdapter() {
 		if (discardItemProvider == null) {
 			discardItemProvider = new DiscardItemProvider(this);
@@ -243,6 +250,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Adapter createParamAdapter() {
 		if (paramItemProvider == null) {
 			paramItemProvider = new ParamItemProvider(this);
@@ -265,6 +273,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Adapter createChartSheetAdapter() {
 		if (chartSheetItemProvider == null) {
 			chartSheetItemProvider = new ChartSheetItemProvider(this);
@@ -287,6 +296,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Adapter createAnalysisAdapter() {
 		if (analysisItemProvider == null) {
 			analysisItemProvider = new AnalysisItemProvider(this);
@@ -309,6 +319,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Adapter createSelectAdapter() {
 		if (selectItemProvider == null) {
 			selectItemProvider = new SelectItemProvider(this);
@@ -331,6 +342,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Adapter createDeselectAdapter() {
 		if (deselectItemProvider == null) {
 			deselectItemProvider = new DeselectItemProvider(this);
@@ -353,6 +365,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Adapter createInputsAdapter() {
 		if (inputsItemProvider == null) {
 			inputsItemProvider = new InputsItemProvider(this);
@@ -375,6 +388,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Adapter createChartSheetsAdapter() {
 		if (chartSheetsItemProvider == null) {
 			chartSheetsItemProvider = new ChartSheetsItemProvider(this);
@@ -397,6 +411,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Adapter createDatasetsAdapter() {
 		if (datasetsItemProvider == null) {
 			datasetsItemProvider = new DatasetsItemProvider(this);
@@ -419,6 +434,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Adapter createInputFileAdapter() {
 		if (inputFileItemProvider == null) {
 			inputFileItemProvider = new InputFileItemProvider(this);
@@ -441,6 +457,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Adapter createComputeAdapter() {
 		if (computeItemProvider == null) {
 			computeItemProvider = new ComputeItemProvider(this);
@@ -463,6 +480,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Adapter createBarChartAdapter() {
 		if (barChartItemProvider == null) {
 			barChartItemProvider = new BarChartItemProvider(this);
@@ -485,6 +503,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Adapter createLineChartAdapter() {
 		if (lineChartItemProvider == null) {
 			lineChartItemProvider = new LineChartItemProvider(this);
@@ -507,6 +526,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Adapter createHistogramChartAdapter() {
 		if (histogramChartItemProvider == null) {
 			histogramChartItemProvider = new HistogramChartItemProvider(this);
@@ -529,6 +549,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Adapter createScatterChartAdapter() {
 		if (scatterChartItemProvider == null) {
 			scatterChartItemProvider = new ScatterChartItemProvider(this);
@@ -562,6 +583,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public boolean isFactoryForType(Object type) {
 		return supportedTypes.contains(type) || super.isFactoryForType(type);
 	}
@@ -572,6 +594,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Adapter adapt(Notifier notifier, Object type) {
 		return super.adapt(notifier, this);
 	}
@@ -581,10 +604,11 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Object adapt(Object object, Object type) {
 		if (isFactoryForType(type)) {
 			Object adapter = super.adapt(object, type);
-			if (!(type instanceof Class) || (((Class)type).isInstance(adapter))) {
+			if (!(type instanceof Class) || (((Class<?>)type).isInstance(adapter))) {
 				return adapter;
 			}
 		}
@@ -635,20 +659,20 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	public void dispose() {
 		if (datasetItemProvider != null) datasetItemProvider.dispose();
 		if (addItemProvider != null) addItemProvider.dispose();
-		if (applyItemProvider != null) applyItemProvider.dispose();
-		if (exceptItemProvider != null) exceptItemProvider.dispose();
-		if (propertyItemProvider != null) propertyItemProvider.dispose();
-		if (groupItemProvider != null) groupItemProvider.dispose();
 		if (discardItemProvider != null) discardItemProvider.dispose();
+		if (exceptItemProvider != null) exceptItemProvider.dispose();
+		if (groupItemProvider != null) groupItemProvider.dispose();
+		if (propertyItemProvider != null) propertyItemProvider.dispose();
 		if (paramItemProvider != null) paramItemProvider.dispose();
 		if (chartSheetItemProvider != null) chartSheetItemProvider.dispose();
 		if (analysisItemProvider != null) analysisItemProvider.dispose();
 		if (selectItemProvider != null) selectItemProvider.dispose();
 		if (deselectItemProvider != null) deselectItemProvider.dispose();
 		if (inputsItemProvider != null) inputsItemProvider.dispose();
+		if (inputFileItemProvider != null) inputFileItemProvider.dispose();
 		if (chartSheetsItemProvider != null) chartSheetsItemProvider.dispose();
 		if (datasetsItemProvider != null) datasetsItemProvider.dispose();
-		if (inputFileItemProvider != null) inputFileItemProvider.dispose();
+		if (applyItemProvider != null) applyItemProvider.dispose();
 		if (computeItemProvider != null) computeItemProvider.dispose();
 		if (barChartItemProvider != null) barChartItemProvider.dispose();
 		if (lineChartItemProvider != null) lineChartItemProvider.dispose();

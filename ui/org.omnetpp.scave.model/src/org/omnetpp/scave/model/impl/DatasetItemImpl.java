@@ -37,6 +37,7 @@ public abstract class DatasetItemImpl extends EObjectImpl implements DatasetItem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	protected EClass eStaticClass() {
 		return ScaveModelPackage.Literals.DATASET_ITEM;
 	}

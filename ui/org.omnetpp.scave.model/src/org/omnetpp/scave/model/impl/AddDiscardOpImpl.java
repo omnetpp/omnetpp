@@ -35,6 +35,7 @@ public abstract class AddDiscardOpImpl extends SetOperationImpl implements AddDi
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	protected EClass eStaticClass() {
 		return ScaveModelPackage.Literals.ADD_DISCARD_OP;
 	}

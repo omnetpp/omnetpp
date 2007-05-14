@@ -48,7 +48,7 @@ public class GroupImpl extends DatasetItemImpl implements Group {
 	 * @generated
 	 * @ordered
 	 */
-	protected EList items = null;
+	protected EList<DatasetItem> items;
 
 	/**
 	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
@@ -84,6 +84,7 @@ public class GroupImpl extends DatasetItemImpl implements Group {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	protected EClass eStaticClass() {
 		return ScaveModelPackage.Literals.GROUP;
 	}
@@ -93,9 +94,9 @@ public class GroupImpl extends DatasetItemImpl implements Group {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList getItems() {
+	public EList<DatasetItem> getItems() {
 		if (items == null) {
-			items = new EObjectContainmentEList(DatasetItem.class, this, ScaveModelPackage.GROUP__ITEMS);
+			items = new EObjectContainmentEList<DatasetItem>(DatasetItem.class, this, ScaveModelPackage.GROUP__ITEMS);
 		}
 		return items;
 	}
@@ -126,10 +127,11 @@ public class GroupImpl extends DatasetItemImpl implements Group {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 			case ScaveModelPackage.GROUP__ITEMS:
-				return ((InternalEList)getItems()).basicRemove(otherEnd, msgs);
+				return ((InternalEList<?>)getItems()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -139,6 +141,7 @@ public class GroupImpl extends DatasetItemImpl implements Group {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
 			case ScaveModelPackage.GROUP__ITEMS:
@@ -154,11 +157,13 @@ public class GroupImpl extends DatasetItemImpl implements Group {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
+		@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
 			case ScaveModelPackage.GROUP__ITEMS:
 				getItems().clear();
-				getItems().addAll((Collection)newValue);
+				getItems().addAll((Collection<? extends DatasetItem>)newValue);
 				return;
 			case ScaveModelPackage.GROUP__NAME:
 				setName((String)newValue);
@@ -172,6 +177,7 @@ public class GroupImpl extends DatasetItemImpl implements Group {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
 			case ScaveModelPackage.GROUP__ITEMS:
@@ -189,6 +195,7 @@ public class GroupImpl extends DatasetItemImpl implements Group {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case ScaveModelPackage.GROUP__ITEMS:
@@ -204,6 +211,7 @@ public class GroupImpl extends DatasetItemImpl implements Group {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String toString() {
 		if (eIsProxy()) return super.toString();
 

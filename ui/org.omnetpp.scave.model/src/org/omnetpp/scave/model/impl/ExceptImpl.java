@@ -35,6 +35,7 @@ public class ExceptImpl extends SetOperationImpl implements Except {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	protected EClass eStaticClass() {
 		return ScaveModelPackage.Literals.EXCEPT;
 	}

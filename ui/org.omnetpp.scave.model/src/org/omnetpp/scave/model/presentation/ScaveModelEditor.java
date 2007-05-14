@@ -152,6 +152,7 @@ import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
 
+import org.eclipse.emf.edit.ui.provider.UnwrappingSelectionProvider;
 import org.eclipse.emf.edit.ui.util.EditUIMarkerHelper;
 
 import org.eclipse.emf.edit.ui.view.ExtendedPropertySheetPage;
@@ -301,7 +302,7 @@ public class ScaveModelEditor
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected Collection selectionChangedListeners = new ArrayList();
+	protected Collection<ISelectionChangedListener> selectionChangedListeners = new ArrayList<ISelectionChangedListener>();
 
 	/**
 	 * This keeps track of the selection of the editor as a whole.
@@ -347,12 +348,16 @@ public class ScaveModelEditor
 				}
 			}
 			public void partBroughtToTop(IWorkbenchPart p) {
+				// Ignore.
 			}
 			public void partClosed(IWorkbenchPart p) {
+				// Ignore.
 			}
 			public void partDeactivated(IWorkbenchPart p) {
+				// Ignore.
 			}
 			public void partOpened(IWorkbenchPart p) {
+				// Ignore.
 			}
 		};
 
@@ -362,7 +367,7 @@ public class ScaveModelEditor
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected Collection removedResources = new ArrayList();
+	protected Collection<Resource> removedResources = new ArrayList<Resource>();
 
 	/**
 	 * Resources that have been changed since last activation.
@@ -370,7 +375,7 @@ public class ScaveModelEditor
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected Collection changedResources = new ArrayList();
+	protected Collection<Resource> changedResources = new ArrayList<Resource>();
 
 	/**
 	 * Resources that have been saved.
@@ -378,7 +383,7 @@ public class ScaveModelEditor
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected Collection savedResources = new ArrayList();
+	protected Collection<Resource> savedResources = new ArrayList<Resource>();
 
 	/**
 	 * Map to store the diagnostic associated with a resource.
@@ -386,7 +391,7 @@ public class ScaveModelEditor
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected Map resourceToDiagnosticMap = new LinkedHashMap();
+	protected Map<Resource, Diagnostic> resourceToDiagnosticMap = new LinkedHashMap<Resource, Diagnostic>();
 
 	/**
 	 * Controls whether the problem indication should be updated.
@@ -404,6 +409,7 @@ public class ScaveModelEditor
 	 */
 	protected EContentAdapter problemIndicationAdapter = 
 		new EContentAdapter() {
+			@Override
 			public void notifyChanged(Notification notification) {
 				if (notification.getNotifier() instanceof Resource) {
 					switch (notification.getFeatureID(Resource.class)) {
@@ -411,7 +417,7 @@ public class ScaveModelEditor
 						case Resource.RESOURCE__ERRORS:
 						case Resource.RESOURCE__WARNINGS: {
 							Resource resource = (Resource)notification.getNotifier();
-							Diagnostic diagnostic = analyzeResourceProblems((Resource)notification.getNotifier(), null);
+							Diagnostic diagnostic = analyzeResourceProblems(resource, null);
 							if (diagnostic.getSeverity() != Diagnostic.OK) {
 								resourceToDiagnosticMap.put(resource, diagnostic);
 							}
@@ -427,6 +433,7 @@ public class ScaveModelEditor
 										 }
 									 });
 							}
+							break;
 						}
 					}
 				}
@@ -435,10 +442,12 @@ public class ScaveModelEditor
 				}
 			}
 
+			@Override
 			protected void setTarget(Resource target) {
 				basicSetTarget(target);
 			}
 
+			@Override
 			protected void unsetTarget(Resource target) {
 				basicUnsetTarget(target);
 			}
@@ -460,8 +469,8 @@ public class ScaveModelEditor
 					try {
 						class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 							protected ResourceSet resourceSet = editingDomain.getResourceSet();
-							protected Collection changedResources = new ArrayList();
-							protected Collection removedResources = new ArrayList();
+							protected Collection<Resource> changedResources = new ArrayList<Resource>();
+							protected Collection<Resource> removedResources = new ArrayList<Resource>();
 
 							public boolean visit(IResourceDelta delta) {
 								if (delta.getFlags() != IResourceDelta.MARKERS &&
@@ -482,11 +491,11 @@ public class ScaveModelEditor
 								return true;
 							}
 
-							public Collection getChangedResources() {
+							public Collection<Resource> getChangedResources() {
 								return changedResources;
 							}
 
-							public Collection getRemovedResources() {
+							public Collection<Resource> getRemovedResources() {
 								return removedResources;
 							}
 						}
@@ -573,8 +582,7 @@ public class ScaveModelEditor
 			editingDomain.getCommandStack().flush();
 
 			updateProblemIndication = false;
-			for (Iterator i = changedResources.iterator(); i.hasNext(); ) {
-				Resource resource = (Resource)i.next();
+			for (Resource resource : changedResources) {
 				if (resource.isLoaded()) {
 					resource.unload();
 					try {
@@ -607,8 +615,7 @@ public class ScaveModelEditor
 					 0,
 					 null,
 					 new Object [] { editingDomain.getResourceSet() });
-			for (Iterator i = resourceToDiagnosticMap.values().iterator(); i.hasNext(); ) {
-				Diagnostic childDiagnostic = (Diagnostic)i.next();
+			for (Diagnostic childDiagnostic : resourceToDiagnosticMap.values()) {
 				if (childDiagnostic.getSeverity() != Diagnostic.OK) {
 					diagnostic.add(childDiagnostic);
 				}
@@ -626,11 +633,10 @@ public class ScaveModelEditor
 				problemEditorPart.setDiagnostic(diagnostic);
 				problemEditorPart.setMarkerHelper(markerHelper);
 				try {
-					showTabs();
-					addPage(getPageCount(), problemEditorPart, getEditorInput());
-					lastEditorPage++;
+					addPage(++lastEditorPage, problemEditorPart, getEditorInput());
 					setPageText(lastEditorPage, problemEditorPart.getPartName());
 					setActivePage(lastEditorPage);
+					showTabs();
 				}
 				catch (PartInitException exception) {
 					ScaveEditPlugin.INSTANCE.log(exception);
@@ -673,15 +679,23 @@ public class ScaveModelEditor
 	 */
 	public ScaveModelEditor() {
 		super();
+		initializeEditingDomain();
+	}
 
+	/**
+	 * This sets up the editing domain for the model editor.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void initializeEditingDomain() {
 		// Create an adapter factory that yields item providers.
 		//
-		List factories = new ArrayList();
-		factories.add(new ResourceItemProviderAdapterFactory());
-		factories.add(new ScaveModelItemProviderAdapterFactory());
-		factories.add(new ReflectiveItemProviderAdapterFactory());
+		adapterFactory = new ComposedAdapterFactory(ComposedAdapterFactory.Descriptor.Registry.INSTANCE);
 
-		adapterFactory = new ComposedAdapterFactory(factories);
+		adapterFactory.addAdapterFactory(new ResourceItemProviderAdapterFactory());
+		adapterFactory.addAdapterFactory(new ScaveModelItemProviderAdapterFactory());
+		adapterFactory.addAdapterFactory(new ReflectiveItemProviderAdapterFactory());
 
 		// Create the command stack that will notify this editor as commands are executed.
 		//
@@ -713,7 +727,7 @@ public class ScaveModelEditor
 
 		// Create the editing domain with a special command stack.
 		//
-		editingDomain = new AdapterFactoryEditingDomain(adapterFactory, commandStack, new HashMap());
+		editingDomain = new AdapterFactoryEditingDomain(adapterFactory, commandStack, new HashMap<Resource, Boolean>());
 	}
 
 	/**
@@ -722,6 +736,7 @@ public class ScaveModelEditor
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	protected void firePropertyChange(int action) {
 		super.firePropertyChange(action);
 	}
@@ -732,8 +747,8 @@ public class ScaveModelEditor
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setSelectionToViewer(Collection collection) {
-		final Collection theSelection = collection;
+	public void setSelectionToViewer(Collection<?> collection) {
+		final Collection<?> theSelection = collection;
 		// Make sure it's okay.
 		//
 		if (theSelection != null && !theSelection.isEmpty()) {
@@ -882,7 +897,7 @@ public class ScaveModelEditor
 		contextMenu.addMenuListener(this);
 		Menu menu= contextMenu.createContextMenu(viewer.getControl());
 		viewer.getControl().setMenu(menu);
-		getSite().registerContextMenu(contextMenu, viewer);
+		getSite().registerContextMenu(contextMenu, new UnwrappingSelectionProvider(viewer));
 
 		int dndOperations = DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK;
 		Transfer[] transfers = new Transfer[] { LocalTransfer.getInstance() };
@@ -900,7 +915,7 @@ public class ScaveModelEditor
 		// Assumes that the input is a file object.
 		//
 		IFileEditorInput modelFile = (IFileEditorInput)getEditorInput();
-		URI resourceURI = URI.createPlatformResourceURI(modelFile.getFile().getFullPath().toString());;
+		URI resourceURI = URI.createPlatformResourceURI(modelFile.getFile().getFullPath().toString(), true);
 		Exception exception = null;
 		Resource resource = null;
 		try {
@@ -959,6 +974,7 @@ public class ScaveModelEditor
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void createPages() {
 		// Creates the model from the editor input
 		//
@@ -967,17 +983,19 @@ public class ScaveModelEditor
 		// Only creates the other pages if there is something that can be edited
 		//
 		if (!getEditingDomain().getResourceSet().getResources().isEmpty() &&
-		    !((Resource)getEditingDomain().getResourceSet().getResources().get(0)).getContents().isEmpty()) {
+		    !(getEditingDomain().getResourceSet().getResources().get(0)).getContents().isEmpty()) {
 			// Create a page for the selection tree view.
 			//
 			{
 				ViewerPane viewerPane =
 					new ViewerPane(getSite().getPage(), ScaveModelEditor.this) {
+						@Override
 						public Viewer createViewer(Composite composite) {
 							Tree tree = new Tree(composite, SWT.MULTI);
 							TreeViewer newTreeViewer = new TreeViewer(tree);
 							return newTreeViewer;
 						}
+						@Override
 						public void requestActivation() {
 							super.requestActivation();
 							setCurrentViewerPane(this);
@@ -990,6 +1008,7 @@ public class ScaveModelEditor
 
 				selectionViewer.setLabelProvider(new AdapterFactoryLabelProvider(adapterFactory));
 				selectionViewer.setInput(editingDomain.getResourceSet());
+				selectionViewer.setSelection(new StructuredSelection(editingDomain.getResourceSet().getResources().get(0)), true);
 				viewerPane.setTitle(editingDomain.getResourceSet());
 
 				new AdapterFactoryTreeEditor(selectionViewer.getTree(), adapterFactory);
@@ -1004,11 +1023,13 @@ public class ScaveModelEditor
 			{
 				ViewerPane viewerPane =
 					new ViewerPane(getSite().getPage(), ScaveModelEditor.this) {
+						@Override
 						public Viewer createViewer(Composite composite) {
 							Tree tree = new Tree(composite, SWT.MULTI);
 							TreeViewer newTreeViewer = new TreeViewer(tree);
 							return newTreeViewer;
 						}
+						@Override
 						public void requestActivation() {
 							super.requestActivation();
 							setCurrentViewerPane(this);
@@ -1031,9 +1052,11 @@ public class ScaveModelEditor
 			{
 				ViewerPane viewerPane =
 					new ViewerPane(getSite().getPage(), ScaveModelEditor.this) {
+						@Override
 						public Viewer createViewer(Composite composite) {
 							return new ListViewer(composite);
 						}
+						@Override
 						public void requestActivation() {
 							super.requestActivation();
 							setCurrentViewerPane(this);
@@ -1054,9 +1077,11 @@ public class ScaveModelEditor
 			{
 				ViewerPane viewerPane =
 					new ViewerPane(getSite().getPage(), ScaveModelEditor.this) {
+						@Override
 						public Viewer createViewer(Composite composite) {
 							return new TreeViewer(composite);
 						}
+						@Override
 						public void requestActivation() {
 							super.requestActivation();
 							setCurrentViewerPane(this);
@@ -1079,9 +1104,11 @@ public class ScaveModelEditor
 			{
 				ViewerPane viewerPane =
 					new ViewerPane(getSite().getPage(), ScaveModelEditor.this) {
+						@Override
 						public Viewer createViewer(Composite composite) {
 							return new TableViewer(composite);
 						}
+						@Override
 						public void requestActivation() {
 							super.requestActivation();
 							setCurrentViewerPane(this);
@@ -1120,9 +1147,11 @@ public class ScaveModelEditor
 			{
 				ViewerPane viewerPane =
 					new ViewerPane(getSite().getPage(), ScaveModelEditor.this) {
+						@Override
 						public Viewer createViewer(Composite composite) {
 							return new TreeViewer(composite);
 						}
+						@Override
 						public void requestActivation() {
 							super.requestActivation();
 							setCurrentViewerPane(this);
@@ -1165,6 +1194,7 @@ public class ScaveModelEditor
 		getContainer().addControlListener
 			(new ControlAdapter() {
 				boolean guard = false;
+				@Override
 				public void controlResized(ControlEvent event) {
 					if (!guard) {
 						guard = true;
@@ -1178,8 +1208,8 @@ public class ScaveModelEditor
 	}
 
 	/**
-	 * If there is just one page in the multi-page editor part, this hides
-	 * the single tab at the bottom.
+	 * If there is just one page in the multi-page editor part,
+	 * this hides the single tab at the bottom.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -1196,14 +1226,14 @@ public class ScaveModelEditor
 	}
 
 	/**
-	 * If there is just one page in the multi-page editor part, this shows
-	 * the single tab at the bottom.
+	 * If there is more than one page in the multi-page editor part,
+	 * this shows the tabs at the bottom.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	protected void showTabs() {
-		if (getPageCount() == 1) {
+		if (getPageCount() > 1) {
 			setPageText(0, getString("_UI_SelectionPage_label"));
 			if (getContainer() instanceof CTabFolder) {
 				((CTabFolder)getContainer()).setTabHeight(SWT.DEFAULT);
@@ -1219,6 +1249,7 @@ public class ScaveModelEditor
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	protected void pageChange(int pageIndex) {
 		super.pageChange(pageIndex);
 
@@ -1233,6 +1264,8 @@ public class ScaveModelEditor
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
+		@Override
 	public Object getAdapter(Class key) {
 		if (key.equals(IContentOutlinePage.class)) {
 			return showOutlineView() ? getContentOutlinePage() : null;
@@ -1259,6 +1292,7 @@ public class ScaveModelEditor
 			// The content outline is just a tree.
 			//
 			class MyContentOutlinePage extends ContentOutlinePage {
+				@Override
 				public void createControl(Composite parent) {
 					super.createControl(parent);
 					contentOutlineViewer = getTreeViewer();
@@ -1277,17 +1311,17 @@ public class ScaveModelEditor
 					if (!editingDomain.getResourceSet().getResources().isEmpty()) {
 					  // Select the root object in the view.
 					  //
-					  ArrayList selection = new ArrayList();
-					  selection.add(editingDomain.getResourceSet().getResources().get(0));
-					  contentOutlineViewer.setSelection(new StructuredSelection(selection), true);
+					  contentOutlineViewer.setSelection(new StructuredSelection(editingDomain.getResourceSet().getResources().get(0)), true);
 					}
 				}
 
+				@Override
 				public void makeContributions(IMenuManager menuManager, IToolBarManager toolBarManager, IStatusLineManager statusLineManager) {
 					super.makeContributions(menuManager, toolBarManager, statusLineManager);
 					contentOutlineStatusLineManager = statusLineManager;
 				}
 
+				@Override
 				public void setActionBars(IActionBars actionBars) {
 					super.setActionBars(actionBars);
 					getActionBarContributor().shareGlobalActions(this, actionBars);
@@ -1321,11 +1355,13 @@ public class ScaveModelEditor
 		if (propertySheetPage == null) {
 			propertySheetPage =
 				new ExtendedPropertySheetPage(editingDomain) {
-					public void setSelectionToViewer(List selection) {
+					@Override
+					public void setSelectionToViewer(List<?> selection) {
 						ScaveModelEditor.this.setSelectionToViewer(selection);
 						ScaveModelEditor.this.setFocus();
 					}
 
+					@Override
 					public void setActionBars(IActionBars actionBars) {
 						super.setActionBars(actionBars);
 						getActionBarContributor().shareGlobalActions(this, actionBars);
@@ -1345,7 +1381,7 @@ public class ScaveModelEditor
 	 */
 	public void handleContentOutlineSelection(ISelection selection) {
 		if (currentViewerPane != null && !selection.isEmpty() && selection instanceof IStructuredSelection) {
-			Iterator selectedElements = ((IStructuredSelection)selection).iterator();
+			Iterator<?> selectedElements = ((IStructuredSelection)selection).iterator();
 			if (selectedElements.hasNext()) {
 				// Get the first selected element.
 				//
@@ -1354,7 +1390,7 @@ public class ScaveModelEditor
 				// If it's the selection viewer, then we want it to select the same selection as this selection.
 				//
 				if (currentViewerPane.getViewer() == selectionViewer) {
-					ArrayList selectionList = new ArrayList();
+					ArrayList<Object> selectionList = new ArrayList<Object>();
 					selectionList.add(selectedElement);
 					while (selectedElements.hasNext()) {
 						selectionList.add(selectedElements.next());
@@ -1382,6 +1418,7 @@ public class ScaveModelEditor
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public boolean isDirty() {
 		return ((BasicCommandStack)editingDomain.getCommandStack()).isSaveNeeded();
 	}
@@ -1392,23 +1429,29 @@ public class ScaveModelEditor
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void doSave(IProgressMonitor progressMonitor) {
+		// Save only resources that have actually changed.
+		//
+		final Map<Object, Object> saveOptions = new HashMap<Object, Object>();
+		saveOptions.put(Resource.OPTION_SAVE_ONLY_IF_CHANGED, Resource.OPTION_SAVE_ONLY_IF_CHANGED_MEMORY_BUFFER);
+
 		// Do the work within an operation because this is a long running activity that modifies the workbench.
 		//
 		WorkspaceModifyOperation operation =
 			new WorkspaceModifyOperation() {
 				// This is the method that gets invoked when the operation runs.
 				//
+				@Override
 				public void execute(IProgressMonitor monitor) {
 					// Save the resources to the file system.
 					//
 					boolean first = true;
-					for (Iterator i = editingDomain.getResourceSet().getResources().iterator(); i.hasNext(); ) {
-						Resource resource = (Resource)i.next();
+					for (Resource resource : editingDomain.getResourceSet().getResources()) {
 						if ((first || !resource.getContents().isEmpty() || isPersisted(resource)) && !editingDomain.isReadOnly(resource)) {
 							try {
 								savedResources.add(resource);
-								resource.save(Collections.EMPTY_MAP);
+								resource.save(saveOptions);
 							}
 							catch (Exception exception) {
 								resourceToDiagnosticMap.put(resource, analyzeResourceProblems(resource, exception));
@@ -1456,6 +1499,7 @@ public class ScaveModelEditor
 			}
 		}
 		catch (IOException e) {
+			// Ignore
 		}
 		return result;
 	}
@@ -1466,6 +1510,7 @@ public class ScaveModelEditor
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public boolean isSaveAsAllowed() {
 		return true;
 	}
@@ -1476,14 +1521,15 @@ public class ScaveModelEditor
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void doSaveAs() {
-		SaveAsDialog saveAsDialog= new SaveAsDialog(getSite().getShell());
+		SaveAsDialog saveAsDialog = new SaveAsDialog(getSite().getShell());
 		saveAsDialog.open();
-		IPath path= saveAsDialog.getResult();
+		IPath path = saveAsDialog.getResult();
 		if (path != null) {
 			IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
 			if (file != null) {
-				doSaveAs(URI.createPlatformResourceURI(file.getFullPath().toString()), new FileEditorInput(file));
+				doSaveAs(URI.createPlatformResourceURI(file.getFullPath().toString(), true), new FileEditorInput(file));
 			}
 		}
 	}
@@ -1494,7 +1540,7 @@ public class ScaveModelEditor
 	 * @generated
 	 */
 	protected void doSaveAs(URI uri, IEditorInput editorInput) {
-		((Resource)editingDomain.getResourceSet().getResources().get(0)).setURI(uri);
+		(editingDomain.getResourceSet().getResources().get(0)).setURI(uri);
 		setInputWithNotify(editorInput);
 		setPartName(editorInput.getName());
 		IProgressMonitor progressMonitor =
@@ -1533,6 +1579,7 @@ public class ScaveModelEditor
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void init(IEditorSite site, IEditorInput editorInput) {
 		setSite(site);
 		setInputWithNotify(editorInput);
@@ -1547,6 +1594,7 @@ public class ScaveModelEditor
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setFocus() {
 		if (currentViewerPane != null) {
 			currentViewerPane.setFocus();
@@ -1596,8 +1644,7 @@ public class ScaveModelEditor
 	public void setSelection(ISelection selection) {
 		editorSelection = selection;
 
-		for (Iterator listeners = selectionChangedListeners.iterator(); listeners.hasNext(); ) {
-			ISelectionChangedListener listener = (ISelectionChangedListener)listeners.next();
+		for (ISelectionChangedListener listener : selectionChangedListeners) {
 			listener.selectionChanged(new SelectionChangedEvent(this, selection));
 		}
 		setStatusLineManager(selection);
@@ -1614,7 +1661,7 @@ public class ScaveModelEditor
 
 		if (statusLineManager != null) {
 			if (selection instanceof IStructuredSelection) {
-				Collection collection = ((IStructuredSelection)selection).toList();
+				Collection<?> collection = ((IStructuredSelection)selection).toList();
 				switch (collection.size()) {
 					case 0: {
 						statusLineManager.setMessage(getString("_UI_NoObjectSelected"));
@@ -1699,7 +1746,10 @@ public class ScaveModelEditor
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void dispose() {
+		updateProblemIndication = false;
+
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
 
 		getSite().getPage().removePartListener(partListener);

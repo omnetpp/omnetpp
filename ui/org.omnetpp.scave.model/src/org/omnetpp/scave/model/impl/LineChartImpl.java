@@ -35,7 +35,8 @@ public class LineChartImpl extends ChartImpl implements LineChart {
      * <!-- end-user-doc -->
 	 * @generated
 	 */
-    protected EClass eStaticClass() {
+    @Override
+				protected EClass eStaticClass() {
 		return ScaveModelPackage.Literals.LINE_CHART;
 	}
 

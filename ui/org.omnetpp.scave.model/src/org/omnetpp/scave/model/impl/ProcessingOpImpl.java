@@ -70,7 +70,7 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 	 * @generated
 	 * @ordered
 	 */
-	protected EList filters = null;
+	protected EList<SelectDeselectOp> filters;
 
 	/**
 	 * The cached value of the '{@link #getParams() <em>Params</em>}' containment reference list.
@@ -80,7 +80,7 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 	 * @generated
 	 * @ordered
 	 */
-	protected EList params = null;
+	protected EList<Param> params;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -96,6 +96,7 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	protected EClass eStaticClass() {
 		return ScaveModelPackage.Literals.PROCESSING_OP;
 	}
@@ -126,9 +127,9 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList getFilters() {
+	public EList<SelectDeselectOp> getFilters() {
 		if (filters == null) {
-			filters = new EObjectContainmentEList(SelectDeselectOp.class, this, ScaveModelPackage.PROCESSING_OP__FILTERS);
+			filters = new EObjectContainmentEList<SelectDeselectOp>(SelectDeselectOp.class, this, ScaveModelPackage.PROCESSING_OP__FILTERS);
 		}
 		return filters;
 	}
@@ -138,9 +139,9 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList getParams() {
+	public EList<Param> getParams() {
 		if (params == null) {
-			params = new EObjectContainmentEList(Param.class, this, ScaveModelPackage.PROCESSING_OP__PARAMS);
+			params = new EObjectContainmentEList<Param>(Param.class, this, ScaveModelPackage.PROCESSING_OP__PARAMS);
 		}
 		return params;
 	}
@@ -150,12 +151,13 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 			case ScaveModelPackage.PROCESSING_OP__FILTERS:
-				return ((InternalEList)getFilters()).basicRemove(otherEnd, msgs);
+				return ((InternalEList<?>)getFilters()).basicRemove(otherEnd, msgs);
 			case ScaveModelPackage.PROCESSING_OP__PARAMS:
-				return ((InternalEList)getParams()).basicRemove(otherEnd, msgs);
+				return ((InternalEList<?>)getParams()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -165,6 +167,7 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
 			case ScaveModelPackage.PROCESSING_OP__OPERATION:
@@ -182,6 +185,8 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
+		@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
 			case ScaveModelPackage.PROCESSING_OP__OPERATION:
@@ -189,11 +194,11 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 				return;
 			case ScaveModelPackage.PROCESSING_OP__FILTERS:
 				getFilters().clear();
-				getFilters().addAll((Collection)newValue);
+				getFilters().addAll((Collection<? extends SelectDeselectOp>)newValue);
 				return;
 			case ScaveModelPackage.PROCESSING_OP__PARAMS:
 				getParams().clear();
-				getParams().addAll((Collection)newValue);
+				getParams().addAll((Collection<? extends Param>)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -204,6 +209,7 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
 			case ScaveModelPackage.PROCESSING_OP__OPERATION:
@@ -224,6 +230,7 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case ScaveModelPackage.PROCESSING_OP__OPERATION:
@@ -241,6 +248,7 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String toString() {
 		if (eIsProxy()) return super.toString();
 

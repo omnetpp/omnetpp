@@ -46,7 +46,7 @@ public class InputsImpl extends EObjectImpl implements Inputs {
 	 * @generated
 	 * @ordered
 	 */
-	protected EList inputs = null;
+	protected EList<InputFile> inputs;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -62,6 +62,7 @@ public class InputsImpl extends EObjectImpl implements Inputs {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	protected EClass eStaticClass() {
 		return ScaveModelPackage.Literals.INPUTS;
 	}
@@ -71,9 +72,9 @@ public class InputsImpl extends EObjectImpl implements Inputs {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList getInputs() {
+	public EList<InputFile> getInputs() {
 		if (inputs == null) {
-			inputs = new EObjectContainmentEList(InputFile.class, this, ScaveModelPackage.INPUTS__INPUTS);
+			inputs = new EObjectContainmentEList<InputFile>(InputFile.class, this, ScaveModelPackage.INPUTS__INPUTS);
 		}
 		return inputs;
 	}
@@ -83,10 +84,11 @@ public class InputsImpl extends EObjectImpl implements Inputs {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 			case ScaveModelPackage.INPUTS__INPUTS:
-				return ((InternalEList)getInputs()).basicRemove(otherEnd, msgs);
+				return ((InternalEList<?>)getInputs()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -96,6 +98,7 @@ public class InputsImpl extends EObjectImpl implements Inputs {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
 			case ScaveModelPackage.INPUTS__INPUTS:
@@ -109,11 +112,13 @@ public class InputsImpl extends EObjectImpl implements Inputs {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
+		@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
 			case ScaveModelPackage.INPUTS__INPUTS:
 				getInputs().clear();
-				getInputs().addAll((Collection)newValue);
+				getInputs().addAll((Collection<? extends InputFile>)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -124,6 +129,7 @@ public class InputsImpl extends EObjectImpl implements Inputs {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
 			case ScaveModelPackage.INPUTS__INPUTS:
@@ -138,6 +144,7 @@ public class InputsImpl extends EObjectImpl implements Inputs {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case ScaveModelPackage.INPUTS__INPUTS:

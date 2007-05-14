@@ -41,6 +41,6 @@ public interface Datasets extends EObject {
 	 * @model type="org.omnetpp.scave.model.Dataset" containment="true"
 	 * @generated
 	 */
-	EList getDatasets();
+	EList<Dataset> getDatasets();
 
 } // Datasets

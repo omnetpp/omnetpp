@@ -26,7 +26,7 @@ import org.omnetpp.scave.model.*;
  * @see org.omnetpp.scave.model.ScaveModelPackage
  * @generated
  */
-public class ScaveModelSwitch {
+public class ScaveModelSwitch<T> {
 	/**
 	 * The cached model package
 	 * <!-- begin-user-doc -->
@@ -54,7 +54,7 @@ public class ScaveModelSwitch {
 	 * @return the first non-null result returned by a <code>caseXXX</code> call.
 	 * @generated
 	 */
-	public Object doSwitch(EObject theEObject) {
+	public T doSwitch(EObject theEObject) {
 		return doSwitch(theEObject.eClass(), theEObject);
 	}
 
@@ -65,16 +65,16 @@ public class ScaveModelSwitch {
 	 * @return the first non-null result returned by a <code>caseXXX</code> call.
 	 * @generated
 	 */
-	protected Object doSwitch(EClass theEClass, EObject theEObject) {
+	protected T doSwitch(EClass theEClass, EObject theEObject) {
 		if (theEClass.eContainer() == modelPackage) {
 			return doSwitch(theEClass.getClassifierID(), theEObject);
 		}
 		else {
-			List eSuperTypes = theEClass.getESuperTypes();
+			List<EClass> eSuperTypes = theEClass.getESuperTypes();
 			return
 				eSuperTypes.isEmpty() ?
 					defaultCase(theEObject) :
-					doSwitch((EClass)eSuperTypes.get(0), theEObject);
+					doSwitch(eSuperTypes.get(0), theEObject);
 		}
 	}
 
@@ -85,100 +85,99 @@ public class ScaveModelSwitch {
 	 * @return the first non-null result returned by a <code>caseXXX</code> call.
 	 * @generated
 	 */
-	protected Object doSwitch(int classifierID, EObject theEObject) {
+	protected T doSwitch(int classifierID, EObject theEObject) {
 		switch (classifierID) {
 			case ScaveModelPackage.DATASET: {
 				Dataset dataset = (Dataset)theEObject;
-				Object result = caseDataset(dataset);
+				T result = caseDataset(dataset);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
 			case ScaveModelPackage.CHART: {
 				Chart chart = (Chart)theEObject;
-				Object result = caseChart(chart);
+				T result = caseChart(chart);
 				if (result == null) result = caseDatasetItem(chart);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
 			case ScaveModelPackage.ADD: {
 				Add add = (Add)theEObject;
-				Object result = caseAdd(add);
+				T result = caseAdd(add);
 				if (result == null) result = caseAddDiscardOp(add);
 				if (result == null) result = caseSetOperation(add);
 				if (result == null) result = caseDatasetItem(add);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case ScaveModelPackage.APPLY: {
-				Apply apply = (Apply)theEObject;
-				Object result = caseApply(apply);
-				if (result == null) result = caseProcessingOp(apply);
-				if (result == null) result = caseDatasetItem(apply);
-				if (result == null) result = defaultCase(theEObject);
-				return result;
-			}
-			case ScaveModelPackage.EXCEPT: {
-				Except except = (Except)theEObject;
-				Object result = caseExcept(except);
-				if (result == null) result = caseSetOperation(except);
-				if (result == null) result = defaultCase(theEObject);
-				return result;
-			}
-			case ScaveModelPackage.PROPERTY: {
-				Property property = (Property)theEObject;
-				Object result = caseProperty(property);
-				if (result == null) result = defaultCase(theEObject);
-				return result;
-			}
-			case ScaveModelPackage.SET_OPERATION: {
-				SetOperation setOperation = (SetOperation)theEObject;
-				Object result = caseSetOperation(setOperation);
-				if (result == null) result = defaultCase(theEObject);
-				return result;
-			}
-			case ScaveModelPackage.GROUP: {
-				Group group = (Group)theEObject;
-				Object result = caseGroup(group);
-				if (result == null) result = caseDatasetItem(group);
-				if (result == null) result = defaultCase(theEObject);
-				return result;
-			}
 			case ScaveModelPackage.DISCARD: {
 				Discard discard = (Discard)theEObject;
-				Object result = caseDiscard(discard);
+				T result = caseDiscard(discard);
 				if (result == null) result = caseAddDiscardOp(discard);
 				if (result == null) result = caseSetOperation(discard);
 				if (result == null) result = caseDatasetItem(discard);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case ScaveModelPackage.PROCESSING_OP: {
+				ProcessingOp processingOp = (ProcessingOp)theEObject;
+				T result = caseProcessingOp(processingOp);
+				if (result == null) result = caseDatasetItem(processingOp);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case ScaveModelPackage.EXCEPT: {
+				Except except = (Except)theEObject;
+				T result = caseExcept(except);
+				if (result == null) result = caseSetOperation(except);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case ScaveModelPackage.SET_OPERATION: {
+				SetOperation setOperation = (SetOperation)theEObject;
+				T result = caseSetOperation(setOperation);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			case ScaveModelPackage.DATASET_ITEM: {
 				DatasetItem datasetItem = (DatasetItem)theEObject;
-				Object result = caseDatasetItem(datasetItem);
+				T result = caseDatasetItem(datasetItem);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case ScaveModelPackage.GROUP: {
+				Group group = (Group)theEObject;
+				T result = caseGroup(group);
+				if (result == null) result = caseDatasetItem(group);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case ScaveModelPackage.PROPERTY: {
+				Property property = (Property)theEObject;
+				T result = caseProperty(property);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
 			case ScaveModelPackage.PARAM: {
 				Param param = (Param)theEObject;
-				Object result = caseParam(param);
+				T result = caseParam(param);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
 			case ScaveModelPackage.CHART_SHEET: {
 				ChartSheet chartSheet = (ChartSheet)theEObject;
-				Object result = caseChartSheet(chartSheet);
+				T result = caseChartSheet(chartSheet);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
 			case ScaveModelPackage.ANALYSIS: {
 				Analysis analysis = (Analysis)theEObject;
-				Object result = caseAnalysis(analysis);
+				T result = caseAnalysis(analysis);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
 			case ScaveModelPackage.SELECT: {
 				Select select = (Select)theEObject;
-				Object result = caseSelect(select);
+				T result = caseSelect(select);
 				if (result == null) result = caseSelectDeselectOp(select);
 				if (result == null) result = caseSetOperation(select);
 				if (result == null) result = defaultCase(theEObject);
@@ -186,7 +185,7 @@ public class ScaveModelSwitch {
 			}
 			case ScaveModelPackage.DESELECT: {
 				Deselect deselect = (Deselect)theEObject;
-				Object result = caseDeselect(deselect);
+				T result = caseDeselect(deselect);
 				if (result == null) result = caseSelectDeselectOp(deselect);
 				if (result == null) result = caseSetOperation(deselect);
 				if (result == null) result = defaultCase(theEObject);
@@ -194,7 +193,7 @@ public class ScaveModelSwitch {
 			}
 			case ScaveModelPackage.ADD_DISCARD_OP: {
 				AddDiscardOp addDiscardOp = (AddDiscardOp)theEObject;
-				Object result = caseAddDiscardOp(addDiscardOp);
+				T result = caseAddDiscardOp(addDiscardOp);
 				if (result == null) result = caseSetOperation(addDiscardOp);
 				if (result == null) result = caseDatasetItem(addDiscardOp);
 				if (result == null) result = defaultCase(theEObject);
@@ -202,45 +201,46 @@ public class ScaveModelSwitch {
 			}
 			case ScaveModelPackage.SELECT_DESELECT_OP: {
 				SelectDeselectOp selectDeselectOp = (SelectDeselectOp)theEObject;
-				Object result = caseSelectDeselectOp(selectDeselectOp);
+				T result = caseSelectDeselectOp(selectDeselectOp);
 				if (result == null) result = caseSetOperation(selectDeselectOp);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
 			case ScaveModelPackage.INPUTS: {
 				Inputs inputs = (Inputs)theEObject;
-				Object result = caseInputs(inputs);
-				if (result == null) result = defaultCase(theEObject);
-				return result;
-			}
-			case ScaveModelPackage.CHART_SHEETS: {
-				ChartSheets chartSheets = (ChartSheets)theEObject;
-				Object result = caseChartSheets(chartSheets);
-				if (result == null) result = defaultCase(theEObject);
-				return result;
-			}
-			case ScaveModelPackage.DATASETS: {
-				Datasets datasets = (Datasets)theEObject;
-				Object result = caseDatasets(datasets);
+				T result = caseInputs(inputs);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
 			case ScaveModelPackage.INPUT_FILE: {
 				InputFile inputFile = (InputFile)theEObject;
-				Object result = caseInputFile(inputFile);
+				T result = caseInputFile(inputFile);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case ScaveModelPackage.PROCESSING_OP: {
-				ProcessingOp processingOp = (ProcessingOp)theEObject;
-				Object result = caseProcessingOp(processingOp);
-				if (result == null) result = caseDatasetItem(processingOp);
+			case ScaveModelPackage.CHART_SHEETS: {
+				ChartSheets chartSheets = (ChartSheets)theEObject;
+				T result = caseChartSheets(chartSheets);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case ScaveModelPackage.DATASETS: {
+				Datasets datasets = (Datasets)theEObject;
+				T result = caseDatasets(datasets);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case ScaveModelPackage.APPLY: {
+				Apply apply = (Apply)theEObject;
+				T result = caseApply(apply);
+				if (result == null) result = caseProcessingOp(apply);
+				if (result == null) result = caseDatasetItem(apply);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
 			case ScaveModelPackage.COMPUTE: {
 				Compute compute = (Compute)theEObject;
-				Object result = caseCompute(compute);
+				T result = caseCompute(compute);
 				if (result == null) result = caseProcessingOp(compute);
 				if (result == null) result = caseDatasetItem(compute);
 				if (result == null) result = defaultCase(theEObject);
@@ -248,7 +248,7 @@ public class ScaveModelSwitch {
 			}
 			case ScaveModelPackage.BAR_CHART: {
 				BarChart barChart = (BarChart)theEObject;
-				Object result = caseBarChart(barChart);
+				T result = caseBarChart(barChart);
 				if (result == null) result = caseChart(barChart);
 				if (result == null) result = caseDatasetItem(barChart);
 				if (result == null) result = defaultCase(theEObject);
@@ -256,7 +256,7 @@ public class ScaveModelSwitch {
 			}
 			case ScaveModelPackage.LINE_CHART: {
 				LineChart lineChart = (LineChart)theEObject;
-				Object result = caseLineChart(lineChart);
+				T result = caseLineChart(lineChart);
 				if (result == null) result = caseChart(lineChart);
 				if (result == null) result = caseDatasetItem(lineChart);
 				if (result == null) result = defaultCase(theEObject);
@@ -264,7 +264,7 @@ public class ScaveModelSwitch {
 			}
 			case ScaveModelPackage.HISTOGRAM_CHART: {
 				HistogramChart histogramChart = (HistogramChart)theEObject;
-				Object result = caseHistogramChart(histogramChart);
+				T result = caseHistogramChart(histogramChart);
 				if (result == null) result = caseChart(histogramChart);
 				if (result == null) result = caseDatasetItem(histogramChart);
 				if (result == null) result = defaultCase(theEObject);
@@ -272,7 +272,7 @@ public class ScaveModelSwitch {
 			}
 			case ScaveModelPackage.SCATTER_CHART: {
 				ScatterChart scatterChart = (ScatterChart)theEObject;
-				Object result = caseScatterChart(scatterChart);
+				T result = caseScatterChart(scatterChart);
 				if (result == null) result = caseChart(scatterChart);
 				if (result == null) result = caseDatasetItem(scatterChart);
 				if (result == null) result = defaultCase(theEObject);
@@ -293,7 +293,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseDataset(Dataset object) {
+	public T caseDataset(Dataset object) {
 		return null;
 	}
 
@@ -308,7 +308,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseChart(Chart object) {
+	public T caseChart(Chart object) {
 		return null;
 	}
 
@@ -323,7 +323,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseAdd(Add object) {
+	public T caseAdd(Add object) {
 		return null;
 	}
 
@@ -338,7 +338,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseApply(Apply object) {
+	public T caseApply(Apply object) {
 		return null;
 	}
 
@@ -353,7 +353,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseExcept(Except object) {
+	public T caseExcept(Except object) {
 		return null;
 	}
 
@@ -368,7 +368,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseProperty(Property object) {
+	public T caseProperty(Property object) {
 		return null;
 	}
 
@@ -383,7 +383,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseSetOperation(SetOperation object) {
+	public T caseSetOperation(SetOperation object) {
 		return null;
 	}
 
@@ -398,7 +398,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseGroup(Group object) {
+	public T caseGroup(Group object) {
 		return null;
 	}
 
@@ -413,7 +413,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseDiscard(Discard object) {
+	public T caseDiscard(Discard object) {
 		return null;
 	}
 
@@ -428,7 +428,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseDatasetItem(DatasetItem object) {
+	public T caseDatasetItem(DatasetItem object) {
 		return null;
 	}
 
@@ -443,7 +443,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseParam(Param object) {
+	public T caseParam(Param object) {
 		return null;
 	}
 
@@ -458,7 +458,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseChartSheet(ChartSheet object) {
+	public T caseChartSheet(ChartSheet object) {
 		return null;
 	}
 
@@ -473,7 +473,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseAnalysis(Analysis object) {
+	public T caseAnalysis(Analysis object) {
 		return null;
 	}
 
@@ -488,7 +488,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseSelect(Select object) {
+	public T caseSelect(Select object) {
 		return null;
 	}
 
@@ -503,7 +503,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseDeselect(Deselect object) {
+	public T caseDeselect(Deselect object) {
 		return null;
 	}
 
@@ -518,7 +518,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseAddDiscardOp(AddDiscardOp object) {
+	public T caseAddDiscardOp(AddDiscardOp object) {
 		return null;
 	}
 
@@ -533,7 +533,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseSelectDeselectOp(SelectDeselectOp object) {
+	public T caseSelectDeselectOp(SelectDeselectOp object) {
 		return null;
 	}
 
@@ -548,7 +548,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseInputs(Inputs object) {
+	public T caseInputs(Inputs object) {
 		return null;
 	}
 
@@ -563,7 +563,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseChartSheets(ChartSheets object) {
+	public T caseChartSheets(ChartSheets object) {
 		return null;
 	}
 
@@ -578,7 +578,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseDatasets(Datasets object) {
+	public T caseDatasets(Datasets object) {
 		return null;
 	}
 
@@ -593,7 +593,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseInputFile(InputFile object) {
+	public T caseInputFile(InputFile object) {
 		return null;
 	}
 
@@ -608,7 +608,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseProcessingOp(ProcessingOp object) {
+	public T caseProcessingOp(ProcessingOp object) {
 		return null;
 	}
 
@@ -623,7 +623,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseCompute(Compute object) {
+	public T caseCompute(Compute object) {
 		return null;
 	}
 
@@ -638,7 +638,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseBarChart(BarChart object) {
+	public T caseBarChart(BarChart object) {
 		return null;
 	}
 
@@ -653,7 +653,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseLineChart(LineChart object) {
+	public T caseLineChart(LineChart object) {
 		return null;
 	}
 
@@ -668,7 +668,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseHistogramChart(HistogramChart object) {
+	public T caseHistogramChart(HistogramChart object) {
 		return null;
 	}
 
@@ -683,7 +683,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseScatterChart(ScatterChart object) {
+	public T caseScatterChart(ScatterChart object) {
 		return null;
 	}
 
@@ -698,7 +698,7 @@ public class ScaveModelSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject)
 	 * @generated
 	 */
-	public Object defaultCase(EObject object) {
+	public T defaultCase(EObject object) {
 		return null;
 	}
 

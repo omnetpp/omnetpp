@@ -43,7 +43,7 @@ public class BarChartImpl extends ChartImpl implements BarChart {
 	 * @generated
 	 * @ordered
 	 */
-	protected EList groupBy = null;
+	protected EList<String> groupBy;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -59,7 +59,8 @@ public class BarChartImpl extends ChartImpl implements BarChart {
      * <!-- end-user-doc -->
 	 * @generated
 	 */
-    protected EClass eStaticClass() {
+    @Override
+				protected EClass eStaticClass() {
 		return ScaveModelPackage.Literals.BAR_CHART;
 	}
 
@@ -68,9 +69,9 @@ public class BarChartImpl extends ChartImpl implements BarChart {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList getGroupBy() {
+	public EList<String> getGroupBy() {
 		if (groupBy == null) {
-			groupBy = new EDataTypeUniqueEList(String.class, this, ScaveModelPackage.BAR_CHART__GROUP_BY);
+			groupBy = new EDataTypeUniqueEList<String>(String.class, this, ScaveModelPackage.BAR_CHART__GROUP_BY);
 		}
 		return groupBy;
 	}
@@ -80,6 +81,7 @@ public class BarChartImpl extends ChartImpl implements BarChart {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
 			case ScaveModelPackage.BAR_CHART__GROUP_BY:
@@ -93,11 +95,13 @@ public class BarChartImpl extends ChartImpl implements BarChart {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
+		@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
 			case ScaveModelPackage.BAR_CHART__GROUP_BY:
 				getGroupBy().clear();
-				getGroupBy().addAll((Collection)newValue);
+				getGroupBy().addAll((Collection<? extends String>)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -108,6 +112,7 @@ public class BarChartImpl extends ChartImpl implements BarChart {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
 			case ScaveModelPackage.BAR_CHART__GROUP_BY:
@@ -122,6 +127,7 @@ public class BarChartImpl extends ChartImpl implements BarChart {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case ScaveModelPackage.BAR_CHART__GROUP_BY:
@@ -135,6 +141,7 @@ public class BarChartImpl extends ChartImpl implements BarChart {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String toString() {
 		if (eIsProxy()) return super.toString();
 

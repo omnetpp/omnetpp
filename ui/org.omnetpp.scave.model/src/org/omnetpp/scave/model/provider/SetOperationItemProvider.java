@@ -25,6 +25,7 @@ import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
 import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
 import org.eclipse.emf.edit.provider.IItemLabelProvider;
+import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.IItemPropertySource;
 import org.eclipse.emf.edit.provider.IStructuredItemContentProvider;
 import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
@@ -65,7 +66,8 @@ public class SetOperationItemProvider
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public List getPropertyDescriptors(Object object) {
+	@Override
+	public List<IItemPropertyDescriptor> getPropertyDescriptors(Object object) {
 		if (itemPropertyDescriptors == null) {
 			super.getPropertyDescriptors(object);
 
@@ -91,6 +93,8 @@ public class SetOperationItemProvider
 				 getString("_UI_PropertyDescriptor_description", "_UI_SetOperation_sourceDataset_feature", "_UI_SetOperation_type"),
 				 ScaveModelPackage.Literals.SET_OPERATION__SOURCE_DATASET,
 				 true,
+				 false,
+				 false,
 				 null,
 				 null,
 				 null));
@@ -111,6 +115,8 @@ public class SetOperationItemProvider
 				 getString("_UI_PropertyDescriptor_description", "_UI_SetOperation_filterPattern_feature", "_UI_SetOperation_type"),
 				 ScaveModelPackage.Literals.SET_OPERATION__FILTER_PATTERN,
 				 true,
+				 false,
+				 false,
 				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
 				 null,
 				 null));
@@ -131,6 +137,8 @@ public class SetOperationItemProvider
 				 getString("_UI_PropertyDescriptor_description", "_UI_SetOperation_type_feature", "_UI_SetOperation_type"),
 				 ScaveModelPackage.Literals.SET_OPERATION__TYPE,
 				 true,
+				 false,
+				 false,
 				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
 				 null,
 				 null));
@@ -142,6 +150,7 @@ public class SetOperationItemProvider
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Object getImage(Object object) {
 		return overlayImage(object, getResourceLocator().getImage("full/obj16/SetOperation"));
 	}
@@ -152,6 +161,7 @@ public class SetOperationItemProvider
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getText(Object object) {
 		String label = ((SetOperation)object).getFilterPattern();
 		return label == null || label.length() == 0 ?
@@ -166,6 +176,7 @@ public class SetOperationItemProvider
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void notifyChanged(Notification notification) {
 		updateChildren(notification);
 
@@ -180,13 +191,14 @@ public class SetOperationItemProvider
 	}
 
 	/**
-	 * This adds to the collection of {@link org.eclipse.emf.edit.command.CommandParameter}s
-	 * describing all of the children that can be created under this object.
+	 * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing the children
+	 * that can be created under this object.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected void collectNewChildDescriptors(Collection newChildDescriptors, Object object) {
+	@Override
+	protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
 		super.collectNewChildDescriptors(newChildDescriptors, object);
 	}
 
@@ -196,7 +208,8 @@ public class SetOperationItemProvider
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Object getCreateChildImage(Object owner, Object feature, Object child, Collection selection) {
+	@Override
+	public Object getCreateChildImage(Object owner, Object feature, Object child, Collection<?> selection) {
 		if (feature instanceof EStructuralFeature && FeatureMapUtil.isFeatureMap((EStructuralFeature)feature)) {
 			FeatureMap.Entry entry = (FeatureMap.Entry)child;
 			feature = entry.getEStructuralFeature();
@@ -223,6 +236,7 @@ public class SetOperationItemProvider
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ResourceLocator getResourceLocator() {
 		return ScaveEditPlugin.INSTANCE;
 	}

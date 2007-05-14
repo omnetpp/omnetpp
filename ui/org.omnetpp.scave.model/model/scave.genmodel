@@ -6,7 +6,7 @@
     modelPluginID="org.omnetpp.scave.model" modelName="Scave" editPluginClass="org.omnetpp.scave.model.provider.ScaveEditPlugin"
     editorPluginClass="org.omnetpp.scave.model.presentation.ScaveEditorPlugin" rootImplementsInterface=""
     testsDirectory="/org.omnetpp.scave.model/src" testSuiteClass="org.omnetpp.scave.model.tests.ScaveAllTests"
-    importerID="org.eclipse.emf.importer.ecore" bundleManifest="false">
+    importerID="org.eclipse.emf.importer.ecore" bundleManifest="false" complianceLevel="5.0">
   <foreignModel>scave.ecore</foreignModel>
   <genPackages prefix="ScaveModel" basePackage="org.omnetpp.scave" disposableProviderFactory="true"
       ecorePackage="scave.ecore#/">
@@ -28,25 +28,29 @@
     <genClasses ecoreClass="scave.ecore#//Add">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Add/excepts"/>
     </genClasses>
-    <genClasses ecoreClass="scave.ecore#//Apply"/>
-    <genClasses ecoreClass="scave.ecore#//Except"/>
-    <genClasses ecoreClass="scave.ecore#//Property">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Property/name"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Property/value"/>
+    <genClasses ecoreClass="scave.ecore#//Discard">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Discard/excepts"/>
     </genClasses>
+    <genClasses image="false" ecoreClass="scave.ecore#//ProcessingOp">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ProcessingOp/operation"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//ProcessingOp/filters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//ProcessingOp/params"/>
+    </genClasses>
+    <genClasses ecoreClass="scave.ecore#//Except"/>
     <genClasses ecoreClass="scave.ecore#//SetOperation">
       <genFeatures createChild="false" ecoreFeature="ecore:EReference scave.ecore#//SetOperation/sourceDataset"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//SetOperation/filterPattern"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//SetOperation/type"/>
     </genClasses>
+    <genClasses image="false" ecoreClass="scave.ecore#//DatasetItem"/>
     <genClasses ecoreClass="scave.ecore#//Group">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Group/items"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Group/name"/>
     </genClasses>
-    <genClasses ecoreClass="scave.ecore#//Discard">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Discard/excepts"/>
+    <genClasses ecoreClass="scave.ecore#//Property">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Property/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Property/value"/>
     </genClasses>
-    <genClasses image="false" ecoreClass="scave.ecore#//DatasetItem"/>
     <genClasses ecoreClass="scave.ecore#//Param">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Param/name"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Param/value"/>
@@ -71,22 +75,20 @@
     <genClasses ecoreClass="scave.ecore#//Inputs">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Inputs/inputs"/>
     </genClasses>
+    <genClasses ecoreClass="scave.ecore#//InputFile">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//InputFile/name"/>
+    </genClasses>
     <genClasses ecoreClass="scave.ecore#//ChartSheets">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//ChartSheets/chartSheets"/>
     </genClasses>
     <genClasses ecoreClass="scave.ecore#//Datasets">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Datasets/datasets"/>
     </genClasses>
-    <genClasses ecoreClass="scave.ecore#//InputFile">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//InputFile/name"/>
-    </genClasses>
-    <genClasses image="false" ecoreClass="scave.ecore#//ProcessingOp">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ProcessingOp/operation"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//ProcessingOp/filters"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//ProcessingOp/params"/>
-    </genClasses>
+    <genClasses ecoreClass="scave.ecore#//Apply"/>
     <genClasses ecoreClass="scave.ecore#//Compute"/>
-    <genClasses ecoreClass="scave.ecore#//BarChart"/>
+    <genClasses ecoreClass="scave.ecore#//BarChart">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//BarChart/groupBy"/>
+    </genClasses>
     <genClasses ecoreClass="scave.ecore#//LineChart"/>
     <genClasses ecoreClass="scave.ecore#//HistogramChart"/>
     <genClasses ecoreClass="scave.ecore#//ScatterChart">

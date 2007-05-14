@@ -58,24 +58,25 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
 			case ScaveModelPackage.DATASET: return createDataset();
 			case ScaveModelPackage.ADD: return createAdd();
-			case ScaveModelPackage.APPLY: return createApply();
-			case ScaveModelPackage.EXCEPT: return createExcept();
-			case ScaveModelPackage.PROPERTY: return createProperty();
-			case ScaveModelPackage.GROUP: return createGroup();
 			case ScaveModelPackage.DISCARD: return createDiscard();
+			case ScaveModelPackage.EXCEPT: return createExcept();
+			case ScaveModelPackage.GROUP: return createGroup();
+			case ScaveModelPackage.PROPERTY: return createProperty();
 			case ScaveModelPackage.PARAM: return createParam();
 			case ScaveModelPackage.CHART_SHEET: return createChartSheet();
 			case ScaveModelPackage.ANALYSIS: return createAnalysis();
 			case ScaveModelPackage.SELECT: return createSelect();
 			case ScaveModelPackage.DESELECT: return createDeselect();
 			case ScaveModelPackage.INPUTS: return createInputs();
+			case ScaveModelPackage.INPUT_FILE: return createInputFile();
 			case ScaveModelPackage.CHART_SHEETS: return createChartSheets();
 			case ScaveModelPackage.DATASETS: return createDatasets();
-			case ScaveModelPackage.INPUT_FILE: return createInputFile();
+			case ScaveModelPackage.APPLY: return createApply();
 			case ScaveModelPackage.COMPUTE: return createCompute();
 			case ScaveModelPackage.BAR_CHART: return createBarChart();
 			case ScaveModelPackage.LINE_CHART: return createLineChart();
@@ -91,6 +92,7 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Object createFromString(EDataType eDataType, String initialValue) {
 		switch (eDataType.getClassifierID()) {
 			case ScaveModelPackage.RESULT_TYPE:
@@ -105,6 +107,7 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String convertToString(EDataType eDataType, Object instanceValue) {
 		switch (eDataType.getClassifierID()) {
 			case ScaveModelPackage.RESULT_TYPE:
@@ -359,6 +362,7 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
 	 * @deprecated
 	 * @generated
 	 */
+	@Deprecated
 	public static ScaveModelPackage getPackage() {
 		return ScaveModelPackage.eINSTANCE;
 	}

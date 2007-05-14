@@ -48,7 +48,7 @@ public class ChartSheetsImpl extends EObjectImpl implements ChartSheets {
 	 * @generated
 	 * @ordered
 	 */
-	protected EList chartSheets = null;
+	protected EList<ChartSheet> chartSheets;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -64,6 +64,7 @@ public class ChartSheetsImpl extends EObjectImpl implements ChartSheets {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	protected EClass eStaticClass() {
 		return ScaveModelPackage.Literals.CHART_SHEETS;
 	}
@@ -73,9 +74,9 @@ public class ChartSheetsImpl extends EObjectImpl implements ChartSheets {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList getChartSheets() {
+	public EList<ChartSheet> getChartSheets() {
 		if (chartSheets == null) {
-			chartSheets = new EObjectContainmentEList(ChartSheet.class, this, ScaveModelPackage.CHART_SHEETS__CHART_SHEETS);
+			chartSheets = new EObjectContainmentEList<ChartSheet>(ChartSheet.class, this, ScaveModelPackage.CHART_SHEETS__CHART_SHEETS);
 		}
 		return chartSheets;
 	}
@@ -85,10 +86,11 @@ public class ChartSheetsImpl extends EObjectImpl implements ChartSheets {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 			case ScaveModelPackage.CHART_SHEETS__CHART_SHEETS:
-				return ((InternalEList)getChartSheets()).basicRemove(otherEnd, msgs);
+				return ((InternalEList<?>)getChartSheets()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -98,6 +100,7 @@ public class ChartSheetsImpl extends EObjectImpl implements ChartSheets {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
 			case ScaveModelPackage.CHART_SHEETS__CHART_SHEETS:
@@ -111,11 +114,13 @@ public class ChartSheetsImpl extends EObjectImpl implements ChartSheets {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
+		@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
 			case ScaveModelPackage.CHART_SHEETS__CHART_SHEETS:
 				getChartSheets().clear();
-				getChartSheets().addAll((Collection)newValue);
+				getChartSheets().addAll((Collection<? extends ChartSheet>)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -126,6 +131,7 @@ public class ChartSheetsImpl extends EObjectImpl implements ChartSheets {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
 			case ScaveModelPackage.CHART_SHEETS__CHART_SHEETS:
@@ -140,6 +146,7 @@ public class ChartSheetsImpl extends EObjectImpl implements ChartSheets {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case ScaveModelPackage.CHART_SHEETS__CHART_SHEETS:

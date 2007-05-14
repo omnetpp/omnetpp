@@ -35,6 +35,7 @@ public abstract class SelectDeselectOpImpl extends SetOperationImpl implements S
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	protected EClass eStaticClass() {
 		return ScaveModelPackage.Literals.SELECT_DESELECT_OP;
 	}
