@@ -309,11 +309,11 @@ public abstract class PropertySource implements IPropertySource2 {
 			if (info.descriptorFactory != null) {
 				PropertyDescriptor newDescriptor = (PropertyDescriptor)info.descriptorFactory.invoke(this, descriptor.getId(), descriptor.getDisplayName());
 				if (StringUtils.isEmpty(newDescriptor.getCategory()))
-					newDescriptor.setCategory(descriptor.getCategory());
-				if (ArrayUtils.isEmpty(newDescriptor.getFilterFlags()));
-					newDescriptor.setFilterFlags(descriptor.getFilterFlags());
+				    newDescriptor.setCategory(descriptor.getCategory());
+				if (ArrayUtils.isEmpty(newDescriptor.getFilterFlags()))
+				    newDescriptor.setFilterFlags(descriptor.getFilterFlags());
 				if (StringUtils.isEmpty(newDescriptor.getDescription()))
-					newDescriptor.setDescription(descriptor.getDescription());
+				    newDescriptor.setDescription(descriptor.getDescription());
 				return newDescriptor;
 			}
 		}
