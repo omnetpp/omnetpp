@@ -22,7 +22,7 @@
       startupProgressRect="10,10,300,10"
       startupMessageRect="10,20,500,25"
       startupForegroundColor="000000" />
-   <launcher name="omnetide">
+   <launcher name="omnetpp">
       <macosx icon="/org.omnetpp.main/icons/omnest.icns"/>
       <solaris/>
       <win useIco="true">
@@ -30,6 +30,7 @@
          <bmp/>
       </win>
    </launcher>
+
 
    <vm>
    </vm>
@@ -138,11 +139,17 @@
    </plugins>
 
    <features>
-      <feature id="org.eclipse.cdt" version="4.0.0.200703302000"/>
-      <feature id="org.eclipse.emf" version="2.3.0.v200703291501"/>
-      <feature id="org.eclipse.gef" version="3.3.0.v20070330"/>
-      <feature id="org.eclipse.platform" version="3.3.0.v20070316b-_-9MEhFxiXZ2gosKM6M-3_Hu9MqL"/>
+      <feature id="org.eclipse.cdt" version="4.0.0.200705021527"/>
+      <feature id="org.eclipse.gef" version="3.3.0.v20070508"/>
+      <feature id="org.eclipse.platform" version="3.3.0.v20070426-_19QEikF-XqdF5NwSTqN"/>
       <feature id="org.omnetpp.ide" version="4.0.0"/>
+      <feature id="org.eclipse.emf.ecore" version="2.3.0.v200705110650"/>
+      <feature id="org.eclipse.emf.edit" version="2.3.0.v200705110650"/>
+      <feature id="org.eclipse.emf.edit.ui" version="2.3.0.v200705110650"/>
+      <feature id="org.eclipse.emf.common" version="2.3.0.v200705110650"/>
+      <feature id="org.eclipse.emf.common.ui" version="2.3.0.v200705110650"/>
+      <feature id="org.polarion.team.svn" version="1.1.2"/>
+      <feature id="org.eclipse.cvs" version="1.0.0.v20070202-7C79_79EI99g_ODS"/>
    </features>
 
 </product>

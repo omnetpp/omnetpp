@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
+   <extension-point id="splashExtension" name="Splash Extensions" schema="schema/splashExtension.exsd"/>
 
      <extension id="product"
          name="OMNeT++ Integrated Development Environment"
@@ -27,15 +28,6 @@
 				name="introDescription-samples"
 				value="%introDescription-samples"/>
     <property
-          name="startupForegroundColor"
-          value="000000"/>
-    <property
-          name="startupMessageRect"
-          value="10,20,500,25"/>
-    <property
-          name="startupProgressRect"
-          value="10,10,300,10"/>
-    <property
           name="aboutText"
           value="OMNEST/OMNeT++ Integrated Development Environment, based on Eclipse platform."/>
     <property
@@ -44,6 +36,18 @@
     <property
           name="windowImages"
           value="icons/omnest16.gif,icons/omnest32.gif,icons/omnest48.gif,icons/omnest64.gif,icons/omnest128.gif"/>
+    <property
+          name="startupForegroundColor"
+          value="000000">
+    </property>
+    <property
+          name="startupMessageRect"
+          value="10,20,500,25">
+    </property>
+    <property
+          name="startupProgressRect"
+          value="10,10,300,10">
+    </property>
       </product>
    </extension>
    <extension
@@ -117,6 +121,49 @@
             icon="icons/o_ovr.gif"
             id="omnetppNatureImage"
             natureId="org.omnetpp.ide.omnetppnature"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.splashHandlers">
+      <splashHandler
+            class="org.omnetpp.main.splashHandlers.ExtensibleSplashHandler"
+            id="org.omnetpp.main.splashHandlers.extensible">
+      </splashHandler>
+      <splashHandler
+            class="org.omnetpp.main.splashHandlers.BrowserSplashHandler"
+            id="org.omnetpp.main.splashHandlers.browser">
+      </splashHandler>
+      <splashHandler
+            class="org.omnetpp.main.splashHandlers.InteractiveSplashHandler"
+            id="org.omnetpp.main.splashHandlers.interactive">
+      </splashHandler>
+   </extension>
+   <extension
+         point="org.omnetpp.main.splashExtension">
+      <splashExtension
+            icon="icons/af.png"
+            id="af"
+            tooltip="Application Framework">
+      </splashExtension>
+      <splashExtension
+            icon="icons/embedded.png"
+            id="embedded"
+            tooltip="Embedded">
+      </splashExtension>
+      <splashExtension
+            icon="icons/enterprise.png"
+            id="enterprise"
+            tooltip="Enterprise">
+      </splashExtension>
+      <splashExtension
+            icon="icons/languages.png"
+            id="languages"
+            tooltip="Languages">
+      </splashExtension>
+      <splashExtension
+            icon="icons/rcp.png"
+            id="rcp"
+            tooltip="RCP">
+      </splashExtension>
    </extension>
 
 </plugin>
