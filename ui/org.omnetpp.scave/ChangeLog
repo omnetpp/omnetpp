@@ -1,3 +1,22 @@
+2007-05-14
+----------
+
+Additions:
+
+   + Added wizard for exporing the selected dataset/data items and vectors/scalars.
+     The wizard available from the File/Export menu and from the context menu of
+     datasets/dataset items and tables of the "Browse data" page.
+
+   + Some new options for CSV export: separator char, line feed, etc.
+
+Fixes:
+
+   + Editor selection was sometimes lost when the "Outline" view was opened.
+
+   + "Selected ..." message in the status bar for ID lists and Run/File.
+
+   + Killed most of java compiler warnings.
+
 2007-04-27
 ----------
 
