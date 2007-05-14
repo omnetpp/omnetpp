@@ -7,7 +7,6 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.figures.misc.GateAnchor;
@@ -74,6 +73,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
      *
      * @return List of connections.
      */
+    @SuppressWarnings("unchecked")
     @Override
     protected List getModelSourceConnections() {
         // get the connections from out controller parent's model
@@ -85,6 +85,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
      *
      * @return List of connections.
      */
+    @SuppressWarnings("unchecked")
     @Override
     protected List getModelTargetConnections() {
         // get the connections from out controller parent's model
@@ -124,14 +125,9 @@ public class SubmoduleEditPart extends ModuleEditPart {
         constr.setVectorIndex(3);
         getSubmoduleFigure().setConstraint(constr);
 
-        // set the rest of the dispay properties
+        // set the rest of the display properties
         getSubmoduleFigure().setDisplayString(dps);
         
-        // set the documentation comment as a tooltip if any
-        String comment = StringUtils.makeBriefDocu(getNEDModel().getComment(), 500);
-        if (!StringUtils.isEmpty(comment))
-            getSubmoduleFigure().setTooltipText(comment);
-
         // TODO implement a separate PIN decoration decorator figure in submodule figure
         if (dps.getLocation(scale) != null)
         	getSubmoduleFigure().setImageDecoration(ImageFactory.getImage(ImageFactory.DEFAULT_PIN));

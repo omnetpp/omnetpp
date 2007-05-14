@@ -1,3 +1,4 @@
+  + revised propery cell editors, added content assist to color/icon ediotrs
   + ned docs/comments for modules in the graphical editor as a tooltip
   + new icon chooser dialog
   + added icon chooser dialog in context menu

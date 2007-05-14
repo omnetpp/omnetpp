@@ -5,7 +5,6 @@ import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.TopLevelFigure;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasAncestors;
@@ -71,10 +70,6 @@ public class TopLevelEditPart extends BaseEditPart {
             if (image != null)
                 ((TopLevelFigure)getFigure()).setIcon(image);
     	}
-        // set the documentation comment as a tooltip if any
-        String comment = StringUtils.makeBriefDocu(getNEDModel().getComment(), 500);
-        if (!StringUtils.isEmpty(comment))
-            ((TopLevelFigure)getFigure()).setTooltipText(comment);
 	}
 
     /* (non-Javadoc)
