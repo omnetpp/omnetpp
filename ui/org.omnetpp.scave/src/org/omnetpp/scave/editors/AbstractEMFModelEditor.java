@@ -104,6 +104,8 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheet;
 import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.omnetpp.common.ui.MultiPageEditorPartExt;
+import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.editors.treeproviders.InputsViewLabelProvider;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
 import org.omnetpp.scave.model.provider.ScaveEditPlugin;
 import org.omnetpp.scave.model2.provider.ScaveModelItemProviderAdapterFactory;
@@ -1009,14 +1011,34 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 	 */
 	protected void updateStatusLineManager(IStatusLineManager statusLineManager, ISelection selection) {
 		if (statusLineManager != null) {
-			if (selection instanceof IStructuredSelection) {
+			if (selection instanceof IDListSelection) {
+				IDListSelection idlistSelection = (IDListSelection)selection;
+				int scalars = idlistSelection.getScalarsCount();
+				int vectors = idlistSelection.getVectorsCount();
+				int histograms = idlistSelection.getHistogramsCount();
+				if (scalars + vectors + histograms == 0)
+					statusLineManager.setMessage(getString("_UI_NoObjectSelected"));
+				else {
+					List<String> strings = new ArrayList<String>(3);
+					if (scalars > 0) strings.add(StringUtils.formatCounted(scalars, "scalar"));
+					if (vectors > 0) strings.add(StringUtils.formatCounted(vectors, "vector"));
+					if (histograms > 0) strings.add(StringUtils.formatCounted(histograms, "histogram"));
+					String message = "Selected " + StringUtils.join(strings, ", ", " and ");
+					statusLineManager.setMessage(message);
+				}
+			}
+			else if (selection instanceof IStructuredSelection) {
 				Collection collection = ((IStructuredSelection)selection).toList();
 				if (collection.size()==0) {
 						statusLineManager.setMessage(getString("_UI_NoObjectSelected"));
 				}
-				else if (collection.size()==1) { //XXX use labelProvider; make sure it works for logical/physical view as well
-						String text = new AdapterFactoryItemDelegator(adapterFactory).getText(collection.iterator().next());
-						statusLineManager.setMessage(getString("_UI_SingleObjectSelected", text));
+				else if (collection.size()==1) {
+					Object object = collection.iterator().next();
+					 // XXX unify label providers
+					String text = new InputsViewLabelProvider().getText(object);
+					if (text == null)
+						text = new AdapterFactoryItemDelegator(adapterFactory).getText(object);
+					statusLineManager.setMessage(getString("_UI_SingleObjectSelected", text));
 				}
 				else {
 						statusLineManager.setMessage(getString("_UI_MultiObjectSelected", Integer.toString(collection.size())));

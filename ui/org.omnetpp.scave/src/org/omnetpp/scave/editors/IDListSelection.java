@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -50,26 +51,62 @@ public class IDListSelection implements IStructuredSelection {
 	}
 
 	public Long[] getScalarIDs() {
-		return getIDs(ResultType.SCALAR_LITERAL, ResultFileManager.SCALAR);
+		return getIDs(ResultType.SCALAR_LITERAL);
 	}
 	
 	public Long[] getVectorIDs() {
-		return getIDs(ResultType.VECTOR_LITERAL, ResultFileManager.VECTOR);
+		return getIDs(ResultType.VECTOR_LITERAL);
 	}
 	
 	public Long[] getHistogramIDs() {
-		return getIDs(ResultType.HISTOGRAM_LITERAL, ResultFileManager.HISTOGRAM);
+		return getIDs(ResultType.HISTOGRAM_LITERAL);
 	}
 	
-	private Long[] getIDs(ResultType type, int type2) { // XXX why are two enums for the same purpose?
+	private Long[] getIDs(ResultType type) {
 		if (this.type == type)
 			return elements;
 		else {
+			int type2 = getInternalType(type);
 			List<Long> ids = new ArrayList<Long>();
 			for (Long id : elements)
 				if (manager.getTypeOf(id) == type2)
 					ids.add(id);
 			return ids.toArray(new Long[ids.size()]);
+		}
+	}
+	
+	public int getScalarsCount() {
+		return getCount(ResultType.SCALAR_LITERAL);
+	}
+	
+	public int getVectorsCount() {
+		return getCount(ResultType.VECTOR_LITERAL);
+	}
+
+	public int getHistogramsCount() {
+		return getCount(ResultType.HISTOGRAM_LITERAL);
+	}
+
+	private int getCount(ResultType type) {
+		if (this.type == type)
+			return elements.length;
+		else {
+			int type2 = getInternalType(type);
+			int c = 0;
+			for (Long id : elements)
+				if (manager.getTypeOf(id) == type2)
+					c++;
+			return c;
+		}
+	}
+	
+	// XXX eliminate duplication
+	private int getInternalType(ResultType type) {
+		switch (type.getValue()) {
+		case ResultType.SCALAR: return ResultFileManager.SCALAR;
+		case ResultType.VECTOR: return ResultFileManager.VECTOR;
+		case ResultType.HISTOGRAM: return ResultFileManager.HISTOGRAM;
+		default: Assert.isTrue(false, "Unknown ResultType:"+type); return 0;
 		}
 	}
 	
