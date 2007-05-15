@@ -103,9 +103,6 @@ public abstract class FieldEditor extends Composite {
 	}
 	
 	protected String getTooltipText() {
-		//XXX add:
-		// IInifileDocument.LineInfo line = inifile.getEntryLineDetails(GENERAL, entry.getKey()); 
-		// tooltip += "\n\n"+(line==null ? "Currently set to default." : "Defined at: "+line.getFile().getFullPath().toString()+" line "+line.getLineNumber());
 		return InifileHoverUtils.getConfigTooltip(entry, inifile);
 	}
 

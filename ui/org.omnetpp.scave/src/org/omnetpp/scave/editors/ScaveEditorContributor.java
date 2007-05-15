@@ -221,7 +221,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 		return showVectorBrowserViewAction;
 	}
 	public IMenuManager createExportMenu() {
-		IMenuManager exportMenu = new MenuManager("Export to file...");
+		IMenuManager exportMenu = new MenuManager("Export to file");
 		if (exportActions != null) {
 			for (String format : ExportDataAction.FORMATS) {
 				IAction action = exportActions.get(format);

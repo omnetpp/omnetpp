@@ -32,15 +32,15 @@ public class ExportDataAction extends AbstractScaveAction {
 	public ExportDataAction(String format) {
 		this.format = format;
 		if (CSV.equals(format)) {
-			setText("CSV");
-			setToolTipText("Exports selected data in CVS format.");
+			setText("CSV...");
+			setToolTipText("Exports selected data in CSV format.");
 		}
 		else if (MATLAB.equals(format)) {
-			setText("Matlab");
+			setText("Matlab...");
 			setToolTipText("Exports selected data as a Matlab script.");
 		}
 		else if (OCTAVE.equals(format)) {
-			setText("Octave");
+			setText("Octave...");
 			setToolTipText("Exports selected data in Octave text format.");
 		}
 	}
