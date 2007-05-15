@@ -24,7 +24,6 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
  * Add keys for unassigned parameters in the ini file. Brings up a dialog.
  * @author Andras
  */
-//XXX add to text editor context menu
 public class AddInifileKeysAction extends Action {
 	public AddInifileKeysAction() {
 		setText("Add Missing Keys");

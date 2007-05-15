@@ -11,8 +11,10 @@ import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.editors.text.TextEditor;
+import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.TextOperationAction;
+import org.omnetpp.inifile.editor.actions.AddInifileKeysAction;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.text.actions.DefineFoldingRegionAction;
 
@@ -45,17 +47,20 @@ public class InifileTextEditor extends TextEditor {
 	protected void createActions() {
 		super.createActions();
 		
-		IAction a= new TextOperationAction(InifileEditorMessages.getResourceBundle(), "ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS); //$NON-NLS-1$
+		IAction a= new TextOperationAction(InifileEditorMessages.getResourceBundle(), "ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS);
 		a.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
 		setAction("ContentAssistProposal", a); 
 		
-		a = new TextOperationAction(InifileEditorMessages.getResourceBundle(), "ContentAssistTip.", this, ISourceViewer.CONTENTASSIST_CONTEXT_INFORMATION);  //$NON-NLS-1$
+		a = new TextOperationAction(InifileEditorMessages.getResourceBundle(), "ContentAssistTip.", this, ISourceViewer.CONTENTASSIST_CONTEXT_INFORMATION);
 		a.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_CONTEXT_INFORMATION);
 		setAction("ContentAssistTip", a);
 		
-		a = new DefineFoldingRegionAction(InifileEditorMessages.getResourceBundle(), "DefineFoldingRegion.", this); //$NON-NLS-1$
+		a = new DefineFoldingRegionAction(InifileEditorMessages.getResourceBundle(), "DefineFoldingRegion.", this);
 		setAction("DefineFoldingRegion", a);
-	}
+
+		a = new AddInifileKeysAction();
+		setAction("AddMissingKeys", a);
+}
 	
 	/**
 	 * Sets the content of the text editor with the given string
@@ -77,9 +82,10 @@ public class InifileTextEditor extends TextEditor {
 	 */
 	protected void editorContextMenuAboutToShow(IMenuManager menu) {
 		super.editorContextMenuAboutToShow(menu);
-		addAction(menu, "ContentAssistProposal"); 
-		addAction(menu, "ContentAssistTip"); 
-		addAction(menu, "DefineFoldingRegion");
+		addAction(menu, ITextEditorActionConstants.GROUP_EDIT, "ConvertToNewFormat"); 
+		addAction(menu, ITextEditorActionConstants.GROUP_EDIT, "ContentAssistProposal");
+		addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, "DefineFoldingRegion");
+		addAction(menu,  ITextEditorActionConstants.GROUP_EDIT, "AddMissingKeys");
 	}
 	
 	/** 
