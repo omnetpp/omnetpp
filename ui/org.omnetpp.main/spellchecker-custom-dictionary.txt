@@ -20,3 +20,7 @@ scrollbar
 hashmap
 scave
 
+deinstallation
+println
+workspace
+redo

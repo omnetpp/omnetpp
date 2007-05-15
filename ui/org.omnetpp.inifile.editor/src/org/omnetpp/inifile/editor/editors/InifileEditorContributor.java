@@ -46,8 +46,11 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
 		activeEditorPart = part;
 
 		IActionBars actionBars = getActionBars();
+		if (actionBars==null)
+			return; 
+		
 		ITextEditor textEditor = (part instanceof ITextEditor) ? (ITextEditor) part : null;
-		if (actionBars != null && textEditor != null) {
+		if (textEditor != null) {
 			actionBars.setGlobalActionHandler(
 				ActionFactory.DELETE.getId(),
 				textEditor.getAction(ITextEditorActionConstants.DELETE));
@@ -76,6 +79,16 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
 				IDEActionFactory.BOOKMARK.getId(),
 				textEditor.getAction(IDEActionFactory.BOOKMARK.getId()));
 			actionBars.updateActionBars();
+		}
+		else {
+			// form page selected: activate text editor's undo/redo support here as well
+			InifileEditor multipageEditor = (InifileEditor) getPage().getActiveEditor();
+			actionBars.setGlobalActionHandler(
+					ActionFactory.UNDO.getId(),
+					multipageEditor.getTextEditor().getAction(ITextEditorActionConstants.UNDO));
+			actionBars.setGlobalActionHandler(
+					ActionFactory.REDO.getId(),
+					multipageEditor.getTextEditor().getAction(ITextEditorActionConstants.REDO));
 		}
 	}
 

@@ -37,7 +37,7 @@ import org.eclipse.ui.editors.text.EditorsUI;
  *     as TooltipAboutToShowListener)
  * This class overcomes these limitations.
  * 
- * One instance can adapt several controls (ie. controls may share the same 
+ * One instance can adapt several controls (i.e. controls may share the same 
  * hover).
  *   
  * @author Andras
@@ -83,9 +83,11 @@ public class HoverSupport {
     protected AllInOneListener eventListener = new AllInOneListener();
 	protected IHoverTextProvider defaultHoverTextProvider = null;
 	protected HashMap<Control,IHoverTextProvider> hoverTextProviders = new HashMap<Control, IHoverTextProvider>(); 
-
+	protected Point hoverSizeConstaints = new Point(320, 200);
+	
 	protected IInformationControl hoverControl;
-	private IInformationControl informationControl;
+	protected IInformationControl informationControl;
+	
 
 	private class AllInOneListener implements MouseListener, MouseTrackListener, MouseMoveListener, KeyListener {
 		public void mouseDoubleClick(MouseEvent e) {}
@@ -200,7 +202,11 @@ public class HoverSupport {
 			hoverControl.dispose();
 	}
 
-	protected void makeHoverSticky() {
+	/**
+	 * Makes the currently displayed hover "sticky". This is the method to be called
+	 * from the hander of the SHOW_INFORMATION command (bound to "F2" by default). 
+	 */
+	public void makeHoverSticky() {
 		removeHover();
 		
 		Display.getDefault().getCursorLocation();
@@ -232,7 +238,7 @@ public class HoverSupport {
 	}
 
 	protected void configureControl(IInformationControl informationControl, String hoverText, Point mouseLocation) {
-		informationControl.setSizeConstraints(600, 200);
+		informationControl.setSizeConstraints(hoverSizeConstaints.x, hoverSizeConstaints.y);
 		informationControl.setInformation(hoverText);
 		Point size = informationControl.computeSizeHint(); //XXX issue: BrowserInformationControl is always at least 80 pixels high -- this is hardcoded :(
 		informationControl.setSize(size.x, size.y);
@@ -248,6 +254,49 @@ public class HoverSupport {
 		if (p.y + 10 + size.y > screen.y + screen.height)
 			p.y = mouse.y - size.y - 10;
 		return p;
+	}
+
+	/**
+	 * Returns the default over text provider.
+	 */
+	public IHoverTextProvider getDefaultHoverTextProvider() {
+		return defaultHoverTextProvider;
+	}
+
+	/**
+	 * Sets the default over text provider. This will be used for control adapted
+	 * after this call without a hover provider.
+	 */
+	public void setDefaultHoverTextProvider(IHoverTextProvider defaultHoverTextProvider) {
+		this.defaultHoverTextProvider = defaultHoverTextProvider;
+	}
+
+	/**
+	 * Returns the maximum size for the hover widget.
+	 */
+	public Point getHoverSizeConstaints() {
+		return hoverSizeConstaints;
+	}
+
+	/**
+	 * Sets the maximum size for the hover widget.
+	 */
+	public void setHoverSizeConstaints(Point hoverSizeConstaints) {
+		this.hoverSizeConstaints = hoverSizeConstaints;
+	}
+
+	/**
+	 * Returns the hover control if currently displayed, otherwise null.
+	 */
+	public IInformationControl getHoverControl() {
+		return hoverControl;
+	}
+
+	/**
+	 * Returns the (sticky) information control if currently displayed, otherwise null.
+	 */
+	public IInformationControl getInformationControl() {
+		return informationControl;
 	}
 
 	/**
@@ -294,7 +343,6 @@ public class HoverSupport {
 	public static String addHTMLStyleSheet(String htmlText) {
 	    return htmlText != null ? HTML_PROLOG + htmlText + HTML_EPILOG : null;
 	}
-	    
 
 }
 

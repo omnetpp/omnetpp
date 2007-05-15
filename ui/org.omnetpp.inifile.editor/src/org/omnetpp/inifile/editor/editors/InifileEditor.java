@@ -113,7 +113,7 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		formEditor = new InifileFormEditor(getContainer(), this);
 		addEditorPage(formEditor, "Form");
 
-		// create texteditor
+		// create text editor
 		createTextEditorPage();
 
 		// assert page constants are OK
