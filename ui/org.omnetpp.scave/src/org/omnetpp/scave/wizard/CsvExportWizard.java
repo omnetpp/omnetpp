@@ -106,9 +106,8 @@ public class CsvExportWizard extends AbstractExportWizard {
 			quoteCharCombo.setItems(new String[] {"\"", "'"});
 			quoteCharCombo.setText("\"");
 			headerCheckbox = new Button(group, SWT.CHECK);
-			headerCheckbox.setText("add header to columns");
+			headerCheckbox.setText("Add header to columns");
 			headerCheckbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
-			headerCheckbox.setSelection(true);
 		}
 
 		@Override
@@ -176,7 +175,7 @@ public class CsvExportWizard extends AbstractExportWizard {
 				String quoteChar = settings.get(QUOTECHAR_KEY);
 				if (!StringUtils.isEmpty(quoteChar))
 					quoteCharCombo.setText(quoteChar);
-				headerCheckbox.setSelection(settings.getBoolean(HEADER_KEY));
+				headerCheckbox.setSelection(settings.get(HEADER_KEY)==null ? true : settings.getBoolean(HEADER_KEY));
 			}
 		}
 	}
