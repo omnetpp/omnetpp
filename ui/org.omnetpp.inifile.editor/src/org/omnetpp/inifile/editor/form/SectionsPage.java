@@ -56,7 +56,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 //XXX enable/disable buttons as tree selection changes
 //XXX editing stuff inside included files causes exception without user feedback -- pop up error dialog?
 public class SectionsPage extends FormPage {
-	private static final Image ICON_ERROR = InifileEditorPlugin.getImage("icons/full/obj16/Error.png");
+	private static final Image ICON_ERROR = InifileEditorPlugin.getCachedImage("icons/full/obj16/Error.png");
 	private static final String CIRCLE_WARNING_TEXT = "NOTE: Sections that form circles (which is illegal) are not displayed here -- switch to text mode to fix them!";
 	private static final String HINT_TEXT = "\nDrag and drop sections to edit the fallback chains of parameter and configuration lookups.";
 

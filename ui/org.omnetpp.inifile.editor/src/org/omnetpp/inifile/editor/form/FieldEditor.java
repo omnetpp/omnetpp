@@ -31,12 +31,12 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 public abstract class FieldEditor extends Composite {
 	// colors and icons for subclasses
 	public static final Color BGCOLOR = InifileFormEditor.BGCOLOR;
-	public static final Image ICON_ERROR_SMALL = InifileEditorPlugin.getImage("icons/full/ovr16/error2.gif");
-	public static final Image ICON_WARNING_SMALL = InifileEditorPlugin.getImage("icons/full/ovr16/warning.gif");
-	public static final Image ICON_INFO_SMALL = InifileEditorPlugin.getImage("icons/full/ovr16/info.gif");
-	public static final Image ICON_ERROR = InifileEditorPlugin.getImage("icons/full/obj16/Error.png");
-	public static final Image ICON_WARNING = InifileEditorPlugin.getImage("icons/full/obj16/Warning.png");
-	public static final Image ICON_INFO = InifileEditorPlugin.getImage("icons/full/obj16/Info.gif");
+	public static final Image ICON_ERROR_SMALL = InifileEditorPlugin.getCachedImage("icons/full/ovr16/error2.gif");
+	public static final Image ICON_WARNING_SMALL = InifileEditorPlugin.getCachedImage("icons/full/ovr16/warning.gif");
+	public static final Image ICON_INFO_SMALL = InifileEditorPlugin.getCachedImage("icons/full/ovr16/info.gif");
+	public static final Image ICON_ERROR = InifileEditorPlugin.getCachedImage("icons/full/obj16/Error.png");
+	public static final Image ICON_WARNING = InifileEditorPlugin.getCachedImage("icons/full/obj16/Warning.png");
+	public static final Image ICON_INFO = InifileEditorPlugin.getCachedImage("icons/full/obj16/Info.gif");
 	
 	protected ConfigurationEntry entry;
 	protected IInifileDocument inifile;

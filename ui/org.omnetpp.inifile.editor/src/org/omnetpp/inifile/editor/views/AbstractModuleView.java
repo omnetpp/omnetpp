@@ -172,7 +172,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 
 	protected IAction getOrCreatePinAction() {
 		if (pinAction == null) {
-			pinAction = new ActionExt("Pin", IAction.AS_CHECK_BOX, InifileEditorPlugin.getImageDescriptor("icons/pin.gif")) {
+			pinAction = new ActionExt("Pin", IAction.AS_CHECK_BOX, InifileEditorPlugin.getImageDescriptor("icons/full/elcl16/pin.gif")) {
 				@Override
 				public void run() {
 					if (isChecked())
@@ -328,12 +328,12 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 
 
 	/* stuff for subclasses: icons */
-	public static final Image ICON_ERROR = InifileEditorPlugin.getImage("icons/full/obj16/Error.png");
-	public static final Image ICON_UNASSIGNEDPAR = InifileEditorPlugin.getImage("icons/full/obj16/UnassignedPar.png");
-	public static final Image ICON_NEDPAR = InifileEditorPlugin.getImage("icons/full/obj16/NedPar.png");
-	public static final Image ICON_NEDDEFAULTPAR = InifileEditorPlugin.getImage("icons/full/obj16/IniPar.png"); //XXX
-	public static final Image ICON_INIPAR = InifileEditorPlugin.getImage("icons/full/obj16/IniPar.png");
-	public static final Image ICON_INIPARREDUNDANT = InifileEditorPlugin.getImage("icons/full/obj16/IniParRedundant.png");
+	public static final Image ICON_ERROR = InifileEditorPlugin.getCachedImage("icons/full/obj16/Error.png");
+	public static final Image ICON_UNASSIGNEDPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/UnassignedPar.png");
+	public static final Image ICON_NEDPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/NedPar.png");
+	public static final Image ICON_NEDDEFAULTPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/IniPar.png"); //XXX
+	public static final Image ICON_INIPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/IniPar.png");
+	public static final Image ICON_INIPARREDUNDANT = InifileEditorPlugin.getCachedImage("icons/full/obj16/IniParRedundant.png");
 
 	/**
 	 * Helper function: suggests an icon for a table or tree entry.

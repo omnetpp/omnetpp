@@ -59,7 +59,7 @@
      <view
            category="org.omnetpp.views"
            class="org.omnetpp.inifile.editor.views.ModuleHierarchyView"
-           icon="icons/moduletreeview.png"
+           icon="icons/full/eview16/modulehierarchy.png"
            id="org.omnetpp.inifile.ModuleHierarchy"
            name="Module Hierarchy"/>
   </extension>
@@ -69,8 +69,8 @@
      <view
            category="org.omnetpp.views"
            class="org.omnetpp.inifile.editor.views.ModuleParametersView"
-           icon="icons/unsetparameters.png"
-           id="org.omnetpp.inifile.ParameterAssignments"
+           icon="icons/full/eview16/moduleparameters.png"
+           id="org.omnetpp.inifile.ModuleParameters"
            name="NED Parameters"/>
   </extension>
 

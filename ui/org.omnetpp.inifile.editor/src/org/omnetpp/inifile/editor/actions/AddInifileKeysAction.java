@@ -29,7 +29,7 @@ public class AddInifileKeysAction extends Action {
 	public AddInifileKeysAction() {
 		setText("Add Missing Keys");
 		setToolTipText("Add Missing Keys");
-		setImageDescriptor(InifileEditorPlugin.getImageDescriptor("icons/genkeys.png"));
+		setImageDescriptor(InifileEditorPlugin.getImageDescriptor("icons/full/etool16/genkeys.png"));
 	}
 
 	public void run() {
