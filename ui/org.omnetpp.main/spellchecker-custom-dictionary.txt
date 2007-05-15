@@ -11,4 +11,12 @@ monospace
 multi
 plugin
 plugins
+inifile
+uncomment
+todo
+javadoc
+keybinding
+scrollbar
+hashmap
+scave
 

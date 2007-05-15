@@ -9,8 +9,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.ui.ITooltipTextProvider;
-import org.omnetpp.common.ui.TooltipSupport;
+import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
@@ -28,7 +28,7 @@ public abstract class FormPage extends Composite {
 	public static final int RIGHT_MARGIN = 30; // >= scrollbar width  
 	private static Font titleFont = new Font(null, "Arial", 10, SWT.BOLD);
 	private InifileEditor inifileEditor;
-	private TooltipSupport tooltipSupport = new TooltipSupport();
+	private HoverSupport hoverSupport = new HoverSupport();
 	
 	// IMPLEMENTATION NOTE: HOW TO KEEP FORM PAGES UP-TO-DATE.
 	//
@@ -134,11 +134,11 @@ public abstract class FormPage extends Composite {
 
 	/**
 	 * Add tooltip (hover) support to the given control. Call this instead of instantiating
-	 * TooltipSupport for each control or field editor, otherwise "F2 to focus" will only
+	 * HoverSupport for each control or field editor, otherwise "F2 to focus" will only
 	 * work when hovering the control that owns the focus.
 	 */
-	protected void addTooltipSupport(Control control, ITooltipTextProvider tooltipTextProvider) {
-		tooltipSupport.adapt(control, tooltipTextProvider);
+	protected void addTooltipSupport(Control control, IHoverTextProvider hoverTextProvider) {
+		hoverSupport.adapt(control, hoverTextProvider);
 	}
 	
 	/**

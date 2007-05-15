@@ -54,8 +54,8 @@ import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogSelection;
 import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
-import org.omnetpp.common.ui.ITooltipTextProvider;
-import org.omnetpp.common.ui.TooltipSupport;
+import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.virtualtable.IVirtualContentWidget;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
@@ -169,7 +169,7 @@ public class SequenceChart
 	private boolean showEventNumbers;
 	private AxisOrderingMode axisOrderingMode = AxisOrderingMode.MODULE_ID; // specifies the ordering mode of timelines
 
-	private TooltipSupport tooltipSupport = new TooltipSupport();
+	private HoverSupport hoverSupport = new HoverSupport();
 
 	private boolean isDragging;
 	private int dragStartX = -1, dragStartY = -1, dragDeltaX, dragDeltaY; // temporary variables for drag handling
@@ -241,9 +241,9 @@ public class SequenceChart
 		setBackground(CHART_BACKGROUND_COLOR);
     	setUpMouseHandling();
 
-    	tooltipSupport.adapt(this, new ITooltipTextProvider() {
-			public String getTooltipFor(Control control, int x, int y) {
-				return TooltipSupport.addHTMLStyleSheet(getTooltipText(x, y));
+    	hoverSupport.adapt(this, new IHoverTextProvider() {
+			public String getHoverTextFor(Control control, int x, int y) {
+				return HoverSupport.addHTMLStyleSheet(getTooltipText(x, y));
 			}
     	});
 

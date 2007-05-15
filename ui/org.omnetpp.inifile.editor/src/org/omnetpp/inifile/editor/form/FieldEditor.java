@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.omnetpp.common.ui.ITooltipTextProvider;
+import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
@@ -42,8 +42,8 @@ public abstract class FieldEditor extends Composite {
 	protected IInifileDocument inifile;
 	protected FormPage formPage; // to be able to call setEditorSelection()
 	
-	protected ITooltipTextProvider tooltipTextProvider = new ITooltipTextProvider() {
-		public String getTooltipFor(Control control, int x, int y) {
+	protected IHoverTextProvider hoverTextProvider = new IHoverTextProvider() {
+		public String getHoverTextFor(Control control, int x, int y) {
 			return getTooltipText();
 		}
 	};
@@ -99,7 +99,7 @@ public abstract class FieldEditor extends Composite {
 	}
 
 	protected void addTooltipSupport(Control control) {
-		formPage.addTooltipSupport(control, tooltipTextProvider);
+		formPage.addTooltipSupport(control, hoverTextProvider);
 	}
 	
 	protected String getTooltipText() {

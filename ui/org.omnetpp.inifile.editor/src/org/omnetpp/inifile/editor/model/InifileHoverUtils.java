@@ -9,7 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.omnetpp.common.ui.TooltipSupport;
+import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 import org.omnetpp.ned.model.ex.ParamNodeEx;
@@ -65,7 +65,7 @@ public class InifileHoverUtils {
 				text += "</ul>";
 			}
 		}
-		return TooltipSupport.addHTMLStyleSheet(text);
+		return HoverSupport.addHTMLStyleSheet(text);
 	}
 
 	/**
@@ -122,7 +122,7 @@ public class InifileHoverUtils {
 				text += "<br>\nSet in the following sections: <ul><li>"+StringUtils.join(sectionList.toArray(), "</li><li>")+"</li></ul><br>\n";
 		}
 
-		return TooltipSupport.addHTMLStyleSheet(text);
+		return HoverSupport.addHTMLStyleSheet(text);
 	}
 
 	/**
@@ -134,7 +134,7 @@ public class InifileHoverUtils {
 		ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
 		if (resList.length==0) {
 			text += "Does not match any module parameters.";
-			return TooltipSupport.addHTMLStyleSheet(text);
+			return HoverSupport.addHTMLStyleSheet(text);
 		}
 
 		// merge similar entries
@@ -164,7 +164,7 @@ public class InifileHoverUtils {
 			}
 			text += "</ul>";
 		}
-		return TooltipSupport.addHTMLStyleSheet(text);
+		return HoverSupport.addHTMLStyleSheet(text);
 
 //		int n = Math.min(resList.length, 8);
 //		for (int i=0; i<n; i++) {

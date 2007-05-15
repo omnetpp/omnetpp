@@ -36,14 +36,6 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
 		super();
 	}
 	
-	/**
-	 * Returns the action registed with the given text editor.
-	 * @return IAction or null if editor is null.
-	 */
-	protected IAction getAction(ITextEditor editor, String actionID) {
-		return (editor == null ? null : editor.getAction(actionID));
-	}
-	
 	/* (non-JavaDoc)
 	 * Method declared in AbstractMultiPageEditorActionBarContributor.
 	 */
@@ -54,37 +46,35 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
 		activeEditorPart = part;
 
 		IActionBars actionBars = getActionBars();
-		if (actionBars != null) {
-
-			ITextEditor editor = (part instanceof ITextEditor) ? (ITextEditor) part : null;
-
+		ITextEditor textEditor = (part instanceof ITextEditor) ? (ITextEditor) part : null;
+		if (actionBars != null && textEditor != null) {
 			actionBars.setGlobalActionHandler(
 				ActionFactory.DELETE.getId(),
-				getAction(editor, ITextEditorActionConstants.DELETE));
+				textEditor.getAction(ITextEditorActionConstants.DELETE));
 			actionBars.setGlobalActionHandler(
 				ActionFactory.UNDO.getId(),
-				getAction(editor, ITextEditorActionConstants.UNDO));
+				textEditor.getAction(ITextEditorActionConstants.UNDO));
 			actionBars.setGlobalActionHandler(
 				ActionFactory.REDO.getId(),
-				getAction(editor, ITextEditorActionConstants.REDO));
+				textEditor.getAction(ITextEditorActionConstants.REDO));
 			actionBars.setGlobalActionHandler(
 				ActionFactory.CUT.getId(),
-				getAction(editor, ITextEditorActionConstants.CUT));
+				textEditor.getAction(ITextEditorActionConstants.CUT));
 			actionBars.setGlobalActionHandler(
 				ActionFactory.COPY.getId(),
-				getAction(editor, ITextEditorActionConstants.COPY));
+				textEditor.getAction(ITextEditorActionConstants.COPY));
 			actionBars.setGlobalActionHandler(
 				ActionFactory.PASTE.getId(),
-				getAction(editor, ITextEditorActionConstants.PASTE));
+				textEditor.getAction(ITextEditorActionConstants.PASTE));
 			actionBars.setGlobalActionHandler(
 				ActionFactory.SELECT_ALL.getId(),
-				getAction(editor, ITextEditorActionConstants.SELECT_ALL));
+				textEditor.getAction(ITextEditorActionConstants.SELECT_ALL));
 			actionBars.setGlobalActionHandler(
 				ActionFactory.FIND.getId(),
-				getAction(editor, ITextEditorActionConstants.FIND));
+				textEditor.getAction(ITextEditorActionConstants.FIND));
 			actionBars.setGlobalActionHandler(
 				IDEActionFactory.BOOKMARK.getId(),
-				getAction(editor, IDEActionFactory.BOOKMARK.getId()));
+				textEditor.getAction(IDEActionFactory.BOOKMARK.getId()));
 			actionBars.updateActionBars();
 		}
 	}

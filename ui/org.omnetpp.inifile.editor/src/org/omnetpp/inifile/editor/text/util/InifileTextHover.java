@@ -10,7 +10,7 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.information.IInformationProviderExtension2;
 import org.eclipse.swt.graphics.Point;
-import org.omnetpp.common.ui.TooltipSupport;
+import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
@@ -76,13 +76,13 @@ public class InifileTextHover implements ITextHover, ITextHoverExtension, IInfor
 	 * @see org.eclipse.jface.text.ITextHoverExtension#getHoverControlCreator()
 	 */
 	public IInformationControlCreator getHoverControlCreator() {
-		return TooltipSupport.getHoverControlCreator();
+		return HoverSupport.getHoverControlCreator();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.jface.text.information.IInformationProviderExtension2#getInformationPresenterControlCreator()
 	 */
 	public IInformationControlCreator getInformationPresenterControlCreator() {
-		return TooltipSupport.getInformationPresenterControlCreator();
+		return HoverSupport.getInformationPresenterControlCreator();
 	}
 }

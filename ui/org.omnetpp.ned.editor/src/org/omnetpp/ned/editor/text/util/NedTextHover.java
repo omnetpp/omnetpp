@@ -14,7 +14,7 @@ import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
-import org.omnetpp.common.ui.TooltipSupport;
+import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
@@ -40,7 +40,7 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 		INEDTypeInfo component = res.getComponent(word);
 		
 		if (component!=null)
-		    return TooltipSupport.addHTMLStyleSheet(
+		    return HoverSupport.addHTMLStyleSheet(
 		                    StringUtils.makeHtmlDocu(component.getNEDElement().getComment()));
 
 		// otherwise, give up (TODO we might try harder though, ie using context info)
@@ -93,13 +93,13 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
      * @see org.eclipse.jface.text.ITextHoverExtension#getHoverControlCreator()
      */
     public IInformationControlCreator getHoverControlCreator() {
-        return TooltipSupport.getHoverControlCreator();
+        return HoverSupport.getHoverControlCreator();
     }
 
     /* (non-Javadoc)
      * @see org.eclipse.jface.text.information.IInformationProviderExtension2#getInformationPresenterControlCreator()
      */
     public IInformationControlCreator getInformationPresenterControlCreator() {
-        return TooltipSupport.getInformationPresenterControlCreator();
+        return HoverSupport.getInformationPresenterControlCreator();
     }
 }

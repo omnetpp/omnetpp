@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.contentassist.ContentAssistUtils;
-import org.omnetpp.common.ui.ITooltipTextProvider;
+import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.util.StringUtils;
@@ -251,8 +251,8 @@ public class ParametersPage extends FormPage {
 		});
 
 		// add tooltip support
-		addTooltipSupport(tableViewer.getTable(), new ITooltipTextProvider() {
-			public String getTooltipFor(Control control, int x, int y) {
+		addTooltipSupport(tableViewer.getTable(), new IHoverTextProvider() {
+			public String getHoverTextFor(Control control, int x, int y) {
 				Item item = tableViewer.getTable().getItem(new Point(x,y));
 				SectionKey entry = (SectionKey) (item==null ? null : item.getData());
 				return entry==null ? null : InifileHoverUtils.getEntryTooltip(entry.section, entry.key, getInifileDocument(), getInifileAnalyzer());
