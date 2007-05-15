@@ -60,8 +60,8 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.omnetpp.common.editor.ShowViewAction;
-import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditorPlugin;
@@ -88,7 +88,7 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
 public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
 
     /**
-     * Outling viewer for graphical ned editor
+     * Outline viewer for graphical ned editor
      * @author rhornig
      */
     class NedOutlinePage extends ContentOutlinePage {
@@ -288,7 +288,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         IAction action = new ToggleSnapToGeometryAction(viewer);
         getActionRegistry().registerAction(action);
 
-        
         // register global actions to the keybinding service otherwise the CTRL-Z CTRL-Y and DEL
         // will be captured by the text editor after switching there
         ActionRegistry registry = getActionRegistry();
