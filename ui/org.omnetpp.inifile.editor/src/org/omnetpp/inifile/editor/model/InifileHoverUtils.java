@@ -129,7 +129,7 @@ public class InifileHoverUtils {
 	 * Generate config for a param key entry
 	 */
 	public static String getParamKeyTooltip(String section, String key, InifileAnalyzer analyzer) {
-		//XXX somehow merge similar entries? (ie where pathModules[] and paramValueNode/paramDeclNode are the same)
+		//XXX somehow merge similar entries? (i.e. where pathModules[] and paramValueNode/paramDeclNode are the same)
 		String text = "<b>[" + section + "] / " + key + "</b><br>\n";
 		ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
 		if (resList.length==0) {

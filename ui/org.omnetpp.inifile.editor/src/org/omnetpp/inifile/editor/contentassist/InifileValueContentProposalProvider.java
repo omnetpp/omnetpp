@@ -53,23 +53,41 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
 		this.section = section;
 		this.key = key;
 	}
+	
+	/**
+	 * Returns whether content proposals are available for a given key. This can be
+	 * used to decide whether to install content assist support on a given edit field.
+	 */
+	public boolean isContentAssistAvailable() {
+		KeyType keyType = (key == null) ? KeyType.CONFIG : InifileAnalyzer.getKeyType(key);
+		if (keyType == KeyType.CONFIG) {
+			// we call this for each edit field during form editor creation, so it should be reasonably fast
+			ConfigurationEntry entry = ConfigurationRegistry.getEntry(key);
+			if (entry==CFGID_EXTENDS || entry==CFGID_NETWORK || entry==CFGID_PRELOAD_NED_FILES || entry==CFGID_USER_INTERFACE)
+				return true;
+			if (entry == null && entry.getDataType()==ConfigurationEntry.DataType.CFG_BOOL)
+				return true;
+			return false;
+		}
+		else {
+			// for parameters etc, we have time to just check if there are actually any proposals   
+			IContentProposal[] proposals = getProposalCandidates("");
+			return proposals != null || proposals.length > 0;
+		}
+	}
 
 	/**
 	 * Generate a list of proposal candidates. They will be sorted and filtered by prefix
-	 * before presenting them to the user.
+s	 * before getting presented to the user.
 	 */
 	protected IContentProposal[] getProposalCandidates(String prefix) {
 		KeyType keyType = (key == null) ? KeyType.CONFIG : InifileAnalyzer.getKeyType(key);
-		if (keyType==KeyType.CONFIG) {
-			return getCandidatesForConfig();
+		switch (keyType) {
+			case CONFIG: return getCandidatesForConfig();
+			case PARAM:  return getCandidatesForParam();
+			case PER_OBJECT_CONFIG: return getCandidatesForPerObjectConfig();
+			default: return null; // should not happen (invalid key type)
 		}
-		else if (keyType == KeyType.PARAM) {
-			return getCandidatesForParam();
-		}
-		else if (keyType == KeyType.PER_OBJECT_CONFIG) {
-			return getCandidatesForPerObjectConfig();
-		}
-		return null; // should not happen (invalid key type)
 	}
 
 	/**
@@ -80,6 +98,7 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
 		if (entry == null)
 			return null;
 
+		// IMPORTANT: Remember to update supportsKey() when this method gets extended!
 		if (entry==CFGID_EXTENDS) {
 			ArrayList<String> names = new ArrayList<String>();
 			for (String section : doc.getSectionNames())
@@ -138,7 +157,7 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
 			break;
 		case NEDElementUtil.NED_PARTYPE_INT: 
 		case NEDElementUtil.NED_PARTYPE_DOUBLE:
-			//XXX shoulds use it as template...
+			//XXX should use it as template...
 			p = templatesToProposals(NedCompletionHelper.proposedNedDistributionsTempl); 
 			break;
 		case NEDElementUtil.NED_PARTYPE_STRING: 

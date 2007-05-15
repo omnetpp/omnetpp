@@ -4,14 +4,12 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.fieldassist.ControlDecoration;
-import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -98,9 +96,12 @@ public class TextFieldEditor extends FieldEditor {
 
 	protected Text createContentAssistField() {
 		Text text = new Text(this, SWT.SINGLE | SWT.BORDER);
-		IContentProposalProvider proposalProvider = new InifileValueContentProposalProvider(GENERAL, entry.getKey(), inifile, null);
-		new ContentAssistCommandAdapter(text, new TextContentAdapter(), proposalProvider, 
-				ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, AUTOACTIVATION_CHARS, true);
+		InifileValueContentProposalProvider proposalProvider = new InifileValueContentProposalProvider(GENERAL, entry.getKey(), inifile, null);
+		if (proposalProvider.isContentAssistAvailable()) {
+			// only make it a content assist field if proposals are really available
+			new ContentAssistCommandAdapter(text, new TextContentAdapter(), proposalProvider, 
+					ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, AUTOACTIVATION_CHARS, true);
+		}
 		return text;
 	}
 
