@@ -40,3 +40,4 @@ editable
 omnetpp
 org
 matlab
+registry
