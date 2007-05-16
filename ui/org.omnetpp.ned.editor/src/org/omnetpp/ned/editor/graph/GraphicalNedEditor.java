@@ -177,7 +177,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         /**
          * in eclipse no accessor for the private field so it is not possible to override 
          * the setActionBars method. Once it is fixed remove this method.
-         * @return The private cell editor handler, so it is possible to override set ection bars.
+         * @return The private cell editor handler, so it is possible to override set action bars.
          */
         public CellEditorActionHandler getCellEditorActionHandler() {
             CellEditorActionHandler result = null;

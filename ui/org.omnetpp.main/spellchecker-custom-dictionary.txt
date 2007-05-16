@@ -44,3 +44,15 @@ registry
 toplevel
 unpin
 toolbar
+listbox
+combobox
+radiobutton
+radiobuttons
+checkboxes
+deselect
+deselection
+combo
+initially
+accessor
+palette
+checkbox

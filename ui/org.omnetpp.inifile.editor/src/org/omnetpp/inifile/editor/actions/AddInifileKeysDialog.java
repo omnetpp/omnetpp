@@ -2,6 +2,9 @@ package org.omnetpp.inifile.editor.actions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jface.dialogs.Dialog;
@@ -34,8 +37,8 @@ import org.omnetpp.inifile.editor.model.ParamResolution;
  * Dialog for choosing parameter keys to be inserted into the ini file.
  * @author Andras
  */
-//XXX filter for duplicates in the listbox
 //XXX doesn't work if there's no [General] section
+//XXX print "network=" setting for that section
 //XXX in the dialog: warn if inifile doesn't have "network=" setting for that section !!!!
 public class AddInifileKeysDialog extends TitleAreaDialog {
 	private String title;
@@ -254,21 +257,35 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 			addApplyCheckbox.setEnabled(skipCheckbox.getSelection());
 		}
 		
-		ParamResolution[] currentInput = (ParamResolution[]) listViewer.getInput();
-		ParamResolution[] unassignedParams = analyzer.getUnassignedParams(selectedSection);
+		// get list of unassigned parameters
+		List<ParamResolution> unassignedParams = Arrays.asList(analyzer.getUnassignedParams(selectedSection));
 		if (skipCheckbox.getSelection()) {
 			// only choose those that don't have a default value
-			ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
+			List<ParamResolution> list = new ArrayList<ParamResolution>();
 			for (ParamResolution res : unassignedParams)
 				if (res.paramValueNode == null || StringUtils.isEmpty(res.paramValueNode.getValue()))
 					list.add(res);
-			unassignedParams = list.toArray(new ParamResolution[]{});
+			unassignedParams = list;
 		}
 
-		if (!Arrays.equals(unassignedParams, currentInput)) {
-			listViewer.setInput(unassignedParams);
+		// keep only those that generate unique keys
+		Set<String> uniqueKeys = new HashSet<String>();
+		List<ParamResolution> list = new ArrayList<ParamResolution>();
+		for (ParamResolution res : unassignedParams) {
+			if (!uniqueKeys.contains(getKeyFor(res))) {
+				uniqueKeys.add(getKeyFor(res));
+				list.add(res);
+			}
+		}
+		unassignedParams = list;
+
+		// fill the table
+		Object[] currentInput = (Object[]) listViewer.getInput();
+		if (!Arrays.equals(unassignedParams.toArray(), currentInput)) {
+			listViewer.setInput(unassignedParams.toArray());
 			listViewer.setAllChecked(true);
 		}
+	
 		listViewer.refresh();
 	}
     
