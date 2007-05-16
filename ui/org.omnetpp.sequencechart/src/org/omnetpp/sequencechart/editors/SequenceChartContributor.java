@@ -47,12 +47,28 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.scave.model2.DatasetManager;
+import org.omnetpp.sequencechart.SequenceChartPlugin;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
 import org.omnetpp.sequencechart.widgets.SequenceChart.AxisSpacingMode;
 import org.omnetpp.sequencechart.widgets.axisrenderer.AxisVectorBarRenderer;
 
 
 public class SequenceChartContributor extends EditorActionBarContributor {
+    public final static String TOOLIMAGE_DIR = "icons/full/etool16/";
+    public final static String IMAGE_TIMELINE_MODE = TOOLIMAGE_DIR + "timelinemode.png";
+    public final static String IMAGE_AXIS_ORDERING_MODE = TOOLIMAGE_DIR + "axisordering.png";
+    public final static String IMAGE_SHOW_EVENT_NUMBERS = TOOLIMAGE_DIR + "eventnumbers.png";
+    public final static String IMAGE_SHOW_MESSAGE_NAMES = TOOLIMAGE_DIR + "messagenames.png";
+    public final static String IMAGE_SHOW_REUSE_MESSAGES = TOOLIMAGE_DIR + "displaymode.png"; //XXX
+    public final static String IMAGE_SHOW_ARROW_HEADS = TOOLIMAGE_DIR + "displaymode.png"; //XXX
+    public final static String IMAGE_INCREASE_SPACING = TOOLIMAGE_DIR + "incr_spacing.png";
+    public final static String IMAGE_DECREASE_SPACING = TOOLIMAGE_DIR + "decr_spacing.png";
+    public final static String IMAGE_DENSE_AXES = TOOLIMAGE_DIR + "displaymode.png"; //XXX
+    public final static String IMAGE_BALANCED_AXES = TOOLIMAGE_DIR + "displaymode.png"; //XXX
+	public static final String IMAGE_ATTACH_VECTOR_TO_AXIS = TOOLIMAGE_DIR + "displaymode.png"; //XXX
+	public static final String IMAGE_BOOKMARK = TOOLIMAGE_DIR + "displaymode.png"; //XXX
+	public static final String IMAGE_FILTER_BY_MODULES = TOOLIMAGE_DIR + "filterbymod.png";
+	
 	private static SequenceChartContributor singleton;
 
 	protected SequenceChart sequenceChart;
@@ -232,7 +248,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 
 	private SequenceChartMenuAction createTimelineModeAction() {
-		return new SequenceChartMenuAction("Timeline mode", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_TIMELINE_MODE)) {
+		return new SequenceChartMenuAction("Timeline mode", Action.AS_DROP_DOWN_MENU, SequenceChartPlugin.getImageDescriptor(IMAGE_TIMELINE_MODE)) {
 			@Override
 			public void run() {
 				sequenceChart.setTimelineMode(SequenceChart.TimelineMode.values()[(sequenceChart.getTimelineMode().ordinal() + 1) % SequenceChart.TimelineMode.values().length]);
@@ -276,7 +292,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 
 	private SequenceChartMenuAction createAxisOrderingModeAction() {
-		return new SequenceChartMenuAction("Axis ordering mode", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_AXIS_ORDERING_MODE)) {
+		return new SequenceChartMenuAction("Axis ordering mode", Action.AS_DROP_DOWN_MENU, SequenceChartPlugin.getImageDescriptor(IMAGE_AXIS_ORDERING_MODE)) {
 			@Override
 			public void run() {
 				sequenceChart.setAxisOrderingMode(SequenceChart.AxisOrderingMode.values()[(sequenceChart.getAxisOrderingMode().ordinal() + 1) % SequenceChart.AxisOrderingMode.values().length]);
@@ -320,7 +336,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 	
 	private SequenceChartAction createFilterAction() {
-		return new SequenceChartMenuAction("Filter", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_TIMELINE_MODE)) {
+		return new SequenceChartMenuAction("Filter", Action.AS_DROP_DOWN_MENU, SequenceChartPlugin.getImageDescriptor(IMAGE_FILTER_BY_MODULES)) {
 			@Override
 			public void run() {
 				if (isFilteredEventLog())
@@ -444,7 +460,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 
 	private SequenceChartAction createShowEventNumbersAction() {
-		return new SequenceChartAction(null, Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_SHOW_EVENT_NUMBERS)) {
+		return new SequenceChartAction(null, Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_EVENT_NUMBERS)) {
 			@Override
 			public void run() {
 				sequenceChart.setShowEventNumbers(!sequenceChart.getShowEventNumbers());
@@ -461,7 +477,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 
 	private SequenceChartAction createShowMessageNamesAction() {
-		return new SequenceChartAction(null, Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_SHOW_MESSAGE_NAMES)) {
+		return new SequenceChartAction(null, Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_MESSAGE_NAMES)) {
 			@Override
 			public void run() {
 				sequenceChart.setShowMessageNames(!sequenceChart.getShowMessageNames());
@@ -478,7 +494,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 	
 	private SequenceChartAction createShowReuseMessagesAction() {
-		return new SequenceChartAction(null, Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_SHOW_REUSE_MESSAGES)) {
+		return new SequenceChartAction(null, Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_REUSE_MESSAGES)) {
 			@Override
 			public void run() {
 				sequenceChart.setShowReuseMessages(!sequenceChart.getShowReuseMessages());
@@ -495,7 +511,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 	
 	private SequenceChartAction createShowArrowHeadsAction() {
-		return new SequenceChartAction(null, Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_SHOW_ARROW_HEADS)) {
+		return new SequenceChartAction(null, Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_ARROW_HEADS)) {
 			@Override
 			public void run() {
 				sequenceChart.setShowArrowHeads(!sequenceChart.getShowArrowHeads());
@@ -512,7 +528,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 	
 	private SequenceChartAction createIncreaseSpacingAction() {
-		return new SequenceChartAction("Increase spacing", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_INCREASE_SPACING)) {
+		return new SequenceChartAction("Increase spacing", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_INCREASE_SPACING)) {
 			@Override
 			public void run() {
 				sequenceChart.setAxisSpacingMode(AxisSpacingMode.MANUAL);
@@ -522,7 +538,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 	
 	private SequenceChartAction createDecreaseSpacingAction() {
-		return new SequenceChartAction("Decrease spacing", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_DECREASE_SPACING)) {
+		return new SequenceChartAction("Decrease spacing", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_DECREASE_SPACING)) {
 			@Override
 			public void run() {
 				sequenceChart.setAxisSpacingMode(AxisSpacingMode.MANUAL);
@@ -550,7 +566,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 
 	private SequenceChartAction createDenseAxesAction() {
-		return new SequenceChartAction("Dense axes", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_DENSE_AXES)) {
+		return new SequenceChartAction("Dense axes", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_DENSE_AXES)) {
 			@Override
 			public void run() {
 				sequenceChart.setAxisSpacingMode(AxisSpacingMode.MANUAL);
@@ -560,7 +576,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 
 	private SequenceChartAction createBalancedAxesAction() {
-		return new SequenceChartAction("Balanced axes", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_BALANCED_AXES)) {
+		return new SequenceChartAction("Balanced axes", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_BALANCED_AXES)) {
 			@Override
 			public void run() {
 				sequenceChart.setAxisSpacingMode(AxisSpacingMode.AUTO);
@@ -641,7 +657,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}	
 
 	private SequenceChartAction createAttachVectorToAxisAction(final ModuleTreeItem axisModule) {
-		return new SequenceChartAction("Attach vector to axis", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_ATTACH_VECTOR_TO_AXIS)) {
+		return new SequenceChartAction("Attach vector to axis", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_ATTACH_VECTOR_TO_AXIS)) {
 			@Override
 			public void run() {
 				// open a vector file with the same name as the sequence chart's input file name with .vec extension
@@ -709,7 +725,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 
 	private SequenceChartAction createBookmarkAction() {
-		return new SequenceChartAction("Bookmark", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.SEQUENCE_CHART_IMAGE_BOOKMARK)) {
+		return new SequenceChartAction("Bookmark", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_BOOKMARK)) {
 			@Override
 			public void run() {
 				try {
