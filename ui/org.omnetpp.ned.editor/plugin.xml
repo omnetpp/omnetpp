@@ -51,4 +51,13 @@
             id="org.omnetpp.ned.editor.text.default"
             name="NED File global context"/>
    </extension>
+   <extension
+         point="de.unikassel.imageexport.figureProviders">
+      <figureProvider
+            class="org.omnetpp.ned.editor.graph.misc.NedFigureProvider"
+            extensions="ned"
+            id="org.omnetpp.ned.editor.nedFigureProvider"
+            name="NED Figure Provider">
+      </figureProvider>
+   </extension>
 </plugin>

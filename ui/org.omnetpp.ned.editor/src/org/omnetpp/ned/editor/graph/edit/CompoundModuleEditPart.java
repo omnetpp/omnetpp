@@ -81,7 +81,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         if (key == AutoexposeHelper.class) return new ViewportAutoexposeHelper(this);
         if (key == ExposeHelper.class) return new ViewportExposeHelper(this);
         if (key == MouseWheelHelper.class) return new ViewportMouseWheelHelper(this);
-        // snap to grig/guide adaptor
+        // snap to grid/guide adaptor
         if (key == SnapToHelper.class) {
             List<SnapToGeometry> snapStrategies = new ArrayList<SnapToGeometry>();
             Boolean val = (Boolean) getViewer().getProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED);
@@ -99,6 +99,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         return super.getAdapter(key);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected List getModelChildren() {
         // return all submodule including inherited ones
@@ -110,6 +111,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      *
      * @return List of connections.
      */
+    @SuppressWarnings("unchecked")
     @Override
     protected List getModelSourceConnections() {
         return getCompoundModuleModel().getSrcConnections();
@@ -120,6 +122,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      *
      * @return List of connections.
      */
+    @SuppressWarnings("unchecked")
     @Override
     protected List getModelTargetConnections() {
         return getCompoundModuleModel().getDestConnections();
@@ -130,14 +133,14 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      */
     @Override
     protected void refreshVisuals() {
-        // define the properties that determine the visual appearence
+        // define the properties that determine the visual appearance
         getCompoundModuleFigure().setName(getCompoundModuleModel().getName());
     	getCompoundModuleFigure().setDisplayString(getCompoundModuleModel().getEffectiveDisplayString());
     }
 
 	/**
 	 * Returns whether the compound module is selectable (mouse is over the bordering area)
-	 * for the slection tool based on the current mouse target coordinates.
+	 * for the selection tool based on the current mouse target coordinates.
 	 * @param x
 	 * @param y
 	 * @return
@@ -158,7 +161,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 	}
 
 	/**
-	 * Returns a conn anchor registered for the given gate
+	 * Returns a connection anchor registered for the given gate
 	 * @param gate
 	 * @return
 	 */

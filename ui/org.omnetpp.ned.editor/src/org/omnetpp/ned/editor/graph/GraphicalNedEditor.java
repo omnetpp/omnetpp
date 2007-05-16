@@ -99,7 +99,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         @Override
         public void init(IPageSite pageSite) {
             super.init(pageSite);
-            // register actions for the ediotr
+            // register actions for the editor
             ActionRegistry registry = getActionRegistry();
             IActionBars bars = pageSite.getActionBars();
             String id = ActionFactory.UNDO.getId();
@@ -239,7 +239,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
     	super.commandStackChanged(event);
     }
 
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({ "unchecked", "deprecation" })
 	@Override
     protected void configureGraphicalViewer() {
         super.configureGraphicalViewer();
@@ -356,7 +356,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
 
     /* (non-Javadoc)
      * @see org.eclipse.gef.ui.parts.GraphicalEditor#createActions()
-     * Register the used acions
+     * Register the used actions
      */
     @SuppressWarnings("unchecked")
 	@Override

@@ -67,13 +67,13 @@ abstract public class BaseEditPart
     }
 
     /**
-     * Refreshes everything in this controller. Visual appearence, children and connection list
-     * and children and connection appearence too.
+     * Refreshes everything in this controller. Visual appearance, children and connection list
+     * and children and connection appearance too.
      */
-    protected void totalRefresh() {
+    public void totalRefresh() {
         // refresh ourselves
         refresh();
-        // delegate to all children and refresh all their appearence
+        // delegate to all children and refresh all their appearance
         for(Object child : getChildren())
             if (child instanceof BaseEditPart)
                 ((BaseEditPart)child).totalRefresh();
@@ -107,7 +107,7 @@ abstract public class BaseEditPart
         super.performRequest(req);
         if (RequestConstants.REQ_DIRECT_EDIT.equals(req.getType()))
             performDirectEdit();
-        // let's open or activate a new editor if somone has double clicked the component
+        // let's open or activate a new editor if someone has double clicked the component
         if (RequestConstants.REQ_OPEN.equals(req.getType())) {
             INEDElement elementToOpen= getNEDElementToOpen();
             if (elementToOpen != null)
