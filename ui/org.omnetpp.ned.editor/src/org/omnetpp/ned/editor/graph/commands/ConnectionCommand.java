@@ -91,10 +91,7 @@ public class ConnectionCommand extends Command {
         if (connModel != null && isDeleting())
             return "Delete connection";
         
-        if (connModel != null && isCreating())
-            return "Create connection";
-
-        return "Reconnect";
+        return "Connect";
     }
 
     /**

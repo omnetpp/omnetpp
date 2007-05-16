@@ -193,18 +193,18 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
         tbm.add(getAction(ActionFactory.UNDO.getId()));
         tbm.add(getAction(ActionFactory.REDO.getId()));
 
-    	tbm.add(new Separator());
-        tbm.add(getAction(GEFActionConstants.ALIGN_LEFT));
-        tbm.add(getAction(GEFActionConstants.ALIGN_CENTER));
-        tbm.add(getAction(GEFActionConstants.ALIGN_RIGHT));
-        tbm.add(new Separator());
-        tbm.add(getAction(GEFActionConstants.ALIGN_TOP));
-        tbm.add(getAction(GEFActionConstants.ALIGN_MIDDLE));
-        tbm.add(getAction(GEFActionConstants.ALIGN_BOTTOM));
+//    	tbm.add(new Separator());
+//        tbm.add(getAction(GEFActionConstants.ALIGN_LEFT));
+//        tbm.add(getAction(GEFActionConstants.ALIGN_CENTER));
+//        tbm.add(getAction(GEFActionConstants.ALIGN_RIGHT));
+//        tbm.add(new Separator());
+//        tbm.add(getAction(GEFActionConstants.ALIGN_TOP));
+//        tbm.add(getAction(GEFActionConstants.ALIGN_MIDDLE));
+//        tbm.add(getAction(GEFActionConstants.ALIGN_BOTTOM));
 
-        tbm.add(new Separator());
-        tbm.add(getAction(GEFActionConstants.MATCH_WIDTH));
-        tbm.add(getAction(GEFActionConstants.MATCH_HEIGHT));
+//        tbm.add(new Separator());
+//        tbm.add(getAction(GEFActionConstants.MATCH_WIDTH));
+//        tbm.add(getAction(GEFActionConstants.MATCH_HEIGHT));
 
         tbm.add(new Separator());
     	tbm.add(getAction(UnpinAction.ID));

@@ -63,6 +63,9 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
         action = getActionRegistry().getAction(ReLayoutAction.ID);
         if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
 
+        action = getActionRegistry().getAction(ExportImageAction.ID);
+        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_SAVE, action);
+
         action = getActionRegistry().getAction(GEFActionConstants.DIRECT_EDIT);
         action.setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_RENAME));
         if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
@@ -98,6 +101,14 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
         if (action.isEnabled()) submenu.add(action);
 
         action = getActionRegistry().getAction(GEFActionConstants.ALIGN_BOTTOM);
+        if (action.isEnabled()) submenu.add(action);
+
+        submenu.add(new Separator());
+
+        action = getActionRegistry().getAction(GEFActionConstants.MATCH_WIDTH);
+        if (action.isEnabled()) submenu.add(action);
+
+        action = getActionRegistry().getAction(GEFActionConstants.MATCH_HEIGHT);
         if (action.isEnabled()) submenu.add(action);
 
         if (!submenu.isEmpty()) manager.appendToGroup(GEFActionConstants.GROUP_REST, submenu);
