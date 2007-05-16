@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
-   <extension-point id="splashExtension" name="Splash Extensions" schema="schema/splashExtension.exsd"/>
 
      <extension id="product"
-         name="OMNeT++ Integrated Development Environment"
+         name="OMNEST/OMNeT++ Integrated Development Environment"
 	 point="org.eclipse.core.runtime.products">
       <product name="OMNeT++ IDE" application="org.eclipse.ui.ide.workbench" description="%productBlurb">
           <property name="appName" value="OMNeT++ IDE"/>
@@ -115,55 +114,12 @@
    </extension>
    <extension
          id="omnetppNatureImagea"
-         name="OMNeT++ Nature Overlay Imagea"
+         name="OMNeT++ Nature Overlay Image"
          point="org.eclipse.ui.ide.projectNatureImages">
       <image
             icon="icons/o_ovr.gif"
             id="omnetppNatureImage"
             natureId="org.omnetpp.ide.omnetppnature"/>
-   </extension>
-   <extension
-         point="org.eclipse.ui.splashHandlers">
-      <splashHandler
-            class="org.omnetpp.main.splashHandlers.ExtensibleSplashHandler"
-            id="org.omnetpp.main.splashHandlers.extensible">
-      </splashHandler>
-      <splashHandler
-            class="org.omnetpp.main.splashHandlers.BrowserSplashHandler"
-            id="org.omnetpp.main.splashHandlers.browser">
-      </splashHandler>
-      <splashHandler
-            class="org.omnetpp.main.splashHandlers.InteractiveSplashHandler"
-            id="org.omnetpp.main.splashHandlers.interactive">
-      </splashHandler>
-   </extension>
-   <extension
-         point="org.omnetpp.main.splashExtension">
-      <splashExtension
-            icon="icons/af.png"
-            id="af"
-            tooltip="Application Framework">
-      </splashExtension>
-      <splashExtension
-            icon="icons/embedded.png"
-            id="embedded"
-            tooltip="Embedded">
-      </splashExtension>
-      <splashExtension
-            icon="icons/enterprise.png"
-            id="enterprise"
-            tooltip="Enterprise">
-      </splashExtension>
-      <splashExtension
-            icon="icons/languages.png"
-            id="languages"
-            tooltip="Languages">
-      </splashExtension>
-      <splashExtension
-            icon="icons/rcp.png"
-            id="rcp"
-            tooltip="RCP">
-      </splashExtension>
    </extension>
 
 </plugin>
