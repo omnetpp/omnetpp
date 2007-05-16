@@ -309,10 +309,11 @@ public class HoverSupport {
 				// for more info, see JavadocHover class in JDT
 				int shellStyle = SWT.TOOL;
 				int style = SWT.NONE;
+				String tooltipAffordanceString = "Press 'F2' for focus."; //TODO use EditorsUI.getTooltipAffordanceString();
 				if (BrowserInformationControl.isAvailable(parent))
-					return new BrowserInformationControl(parent, shellStyle, style, EditorsUI.getTooltipAffordanceString());
+					return new BrowserInformationControl(parent, shellStyle, style, tooltipAffordanceString);
 				else
-					return new DefaultInformationControl(parent, shellStyle, style, new HTMLTextPresenter(false), EditorsUI.getTooltipAffordanceString());
+					return new DefaultInformationControl(parent, shellStyle, style, new HTMLTextPresenter(false), tooltipAffordanceString);
 			}
 		};
 	}

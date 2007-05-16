@@ -1,5 +1,7 @@
 package org.omnetpp.inifile.editor.actions;
 
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_NETWORK;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -46,6 +48,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 	
 	// widgets
     private Combo sectionsCombo;
+    private Label networkNameLabel;
 	private Label sectionChainLabel;
 	private Button skipCheckbox;
 	private Button addApplyCheckbox;
@@ -108,9 +111,8 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 		comboLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		sectionsCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-		sectionChainLabel = new Label(composite, SWT.NONE);
-		sectionChainLabel.setLayoutData(new GridData(SWT.END, SWT.BEGINNING, true, false));
-		sectionChainLabel.setText("Section fallback chain: n/a  ");
+		networkNameLabel = createLabel(composite, "Network: n/a");
+		sectionChainLabel = createLabel(composite, "Section fallback chain: n/a  ");
 
 		sectionsCombo.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -178,6 +180,13 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
         return composite;
     }
 
+	protected Label createLabel(Composite composite, String text) {
+		Label label = new Label(composite, SWT.NONE);
+		label.setLayoutData(new GridData(SWT.END, SWT.BEGINNING, true, false));
+		label.setText(text);
+		return label;
+	}
+
     protected Button createRadioButton(Group group, String label, final KeyType value) {
 		Button rb = new Button(group, SWT.RADIO);
 		rb.setText(label);
@@ -240,9 +249,11 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 
 		// compute fallback chain for selected section, and fill table with their contents
 		String[] sectionChain = InifileUtils.resolveSectionChain(doc, selectedSection);
+		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getKey(), doc);
 
-		// update "Section fallback chain" label
-		sectionChainLabel.setText("Section fallback chain: "+(sectionChain.length==0 ? "<no sections>  " : StringUtils.join(sectionChain, " > ")+"  "));
+		// update labels: "Network" and "Section fallback chain"
+		networkNameLabel.setText("Network: "+(networkName==null ? "<not configured>" : networkName)+"  ");
+		sectionChainLabel.setText("Section fallback chain: "+(sectionChain.length==0 ? "<no sections>" : StringUtils.join(sectionChain, " > "))+"  ");
 		sectionChainLabel.getParent().layout();
 		
 		String apply = doc.getValue(selectedSection, "**.apply-default");
