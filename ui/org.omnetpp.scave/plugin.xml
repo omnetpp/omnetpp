@@ -122,10 +122,6 @@
   </extension>
   <extension
         point="org.eclipse.ui.exportWizards">
-     <category
-           id="org.omnetpp.exportWizards"
-           name="OMNEST/OMNeT++">
-     </category>
      <wizard
            category="org.omnetpp.exportWizards"
            class="org.omnetpp.scave.wizard.CsvExportWizard"

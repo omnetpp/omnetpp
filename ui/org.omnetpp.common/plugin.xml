@@ -8,6 +8,13 @@
             id="org.omnetpp.wizards">
       </category>
    </extension>
+   <extension
+         point="org.eclipse.ui.exportWizards">
+     <category
+           id="org.omnetpp.exportWizards"
+           name="OMNEST/OMNeT++">
+     </category>
+   </extension>
 
    <extension
          point="org.eclipse.ui.views">
