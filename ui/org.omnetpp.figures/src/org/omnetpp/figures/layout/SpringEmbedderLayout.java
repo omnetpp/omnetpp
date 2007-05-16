@@ -35,7 +35,7 @@ public class SpringEmbedderLayout extends XYLayout {
  	}
 
 	/**
-	 * Calls the autoLayout algorithm using all curreny specified constraints.
+	 * Calls the autoLayout algorithm using all currently specified constraints.
 	 * @param nodeParent The Parent figure of the nodes
 	 * @param edgeParent The parent figure of the connections (usually the ConnectionLayer)
 	 */
@@ -114,7 +114,7 @@ public class SpringEmbedderLayout extends XYLayout {
 	/**
      * Implements the algorithm to layout the components of the given container figure.
      * Each component is laid out using its own layout constraint specifying its size
-     * and position. Copied from XYLayout BUT places the middlepoint if the children to the
+     * and position. Copied from XYLayout BUT places the middle point if the children to the
      * specified constraint location.
      *
      * @see LayoutManager#layout(IFigure)
@@ -125,7 +125,7 @@ public class SpringEmbedderLayout extends XYLayout {
     	if (alg == null)
     		initLayout();
 
-    	// lay out the children according to the autolayouter
+    	// lay out the children according to the auto-layouter
         Iterator children = parent.getChildren().iterator();
         Point offset = getOrigin(parent);
         IFigure f;

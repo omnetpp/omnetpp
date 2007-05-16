@@ -1,6 +1,7 @@
 package org.omnetpp.figures;
 
 import org.eclipse.draw2d.Figure;
+import org.eclipse.draw2d.IFigure;
 import org.omnetpp.common.displaymodel.IDisplayString;
 
 /**
@@ -30,10 +31,10 @@ abstract public class ModuleFigure extends Figure {
      * @param f
      * @param indent
      */
-    static public void debugPrintFigureHierarchy(Figure f, String indent) {
-    	System.out.println(indent+f.getClass().getSimpleName()+"@"+f.hashCode()+"  "+f.getBounds()+" opaque="+f.isOpaque());
+    static public void debugPrintFigureHierarchy(IFigure f, String indent) {
+    	System.out.println(indent+f+"@"+f.hashCode()+"  "+f.getBounds()+" parent="+f.getParent());
     	for (Object child : f.getChildren()) {
-    		debugPrintFigureHierarchy((Figure)child, indent+"    ");
+    		debugPrintFigureHierarchy((IFigure)child, indent+"    ");
     	}
     }
 

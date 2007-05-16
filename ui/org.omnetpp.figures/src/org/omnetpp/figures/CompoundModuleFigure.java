@@ -140,7 +140,7 @@ public class CompoundModuleFigure extends ModuleFigure
         setLayoutManager(new StackLayout());
         // create scroller and viewport to manage the scrollbars and scrolling
 		scrollpane = new ScrollPane();
-        // add the maint layer to the scroller pane
+        // add the main layer to the scroller pane
         // create the main and the decoration layers that will be added into the viewportPane
         pane = new FreeformLayer();
         messageLayer = new NonExtendableFreeformLayer();
@@ -163,13 +163,13 @@ public class CompoundModuleFigure extends ModuleFigure
         
         pane.setLayoutManager(layouter = new SpringEmbedderLayout(pane, connectionLayer));
 
-        // this effectively creates the following hierechy:
+        // this effectively creates the following hierarchy:
         // -- ScrollPane (+FreeformViewport)
         // -- viewportPane
         // ---- FreeformLayeredPane (viewportContent)
-        // ------ backgroundLayer (compound module backgound. images, colors, grid etc)
-        // ------ backgroundDecorationLayer (submodule bnackground decoration (range indicator etc). non extendable
-        // ------ pane (pain layer used to display submodules - size is automatically calaculated from child size and positions)
+        // ------ backgroundLayer (compound module background. images, colors, grid etc)
+        // ------ backgroundDecorationLayer (submodule background decoration (range indicator etc). non extendable
+        // ------ pane (pain layer used to display submodules - size is automatically calculated from child size and positions)
         // ------ foregroundDecorationLayer (text messages, decorator icons etc)
         // ------ connection (connections inside a compound module)
         // ------ message layer (used to display message animation effects)
@@ -183,9 +183,9 @@ public class CompoundModuleFigure extends ModuleFigure
         fr.setNextRouter(spcr);
 // use this for fan router
 //        setConnectionRouter(fr);
-// use this for shortest path ruter        
+// use this for shortest path router        
 //        setConnectionRouter(spcr);
-// simple straight connectin router         
+// simple straight connection router         
         setConnectionRouter(new CompoundModuleConnectionRouter());
     }
 
@@ -223,7 +223,7 @@ public class CompoundModuleFigure extends ModuleFigure
 
     @Override
     public Dimension getPreferredSize(int w, int h) {
-    	// we are not sensitve to the external size hints 
+    	// we are not sensitive to the external size hints 
         Dimension prefSize = super.getPreferredSize(-1, -1);
         prefSize.union(DEFAULT_SIZE);
         return prefSize;
@@ -242,7 +242,7 @@ public class CompoundModuleFigure extends ModuleFigure
     }
 
 	/**
-	 * Adjusts compound module background parameteres
+	 * Adjusts compound module background parameters
 	 * @param img Background image
 	 * @param arrange 
 	 * @param backgroundColor
@@ -308,13 +308,13 @@ public class CompoundModuleFigure extends ModuleFigure
 
 		// setup the figure's properties
         // set the location and size using the models helper methods
-        // if the size is specified in the displaystring we should set it as preferred size
+        // if the size is specified in the display string we should set it as preferred size
         // otherwise getPreferredSize should return the size calculated from the children
     	Dimension newSize = dps.getCompoundSize(null);
     	Dimension oldSize = getSize();
     	
     	long seed = dps.getAsIntDef(IDisplayString.Prop.MODULE_LAYOUT_SEED, 1);
-    	// if the seed changed we explicitly have to force a relayout
+    	// if the seed changed we explicitly have to force a re-layout
     	if (seed != layouter.getSeed()) {
     		layouter.setSeed(seed);
     		layouter.initLayout();
@@ -429,7 +429,7 @@ public class CompoundModuleFigure extends ModuleFigure
 		messageLayer.remove(messageFigure);
 	}
 
-    // delegate the direct edit siupport to the TitleBorder
+    // delegate the direct edit support to the TitleBorder
     public CellEditorLocator getDirectEditCellEditorLocator() {
         return getCompoundModuleBorder().getTitleBorder().getDirectEditCellEditorLocator();
     }

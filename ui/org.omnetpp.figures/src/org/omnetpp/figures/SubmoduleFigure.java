@@ -54,7 +54,7 @@ public class SubmoduleFigure extends ModuleFigure
 
     public SubmoduleFigure() {
         setLayoutManager(new StackLayout());
-        // set line antialaiasing on for all drawing n submodules
+        // set line antialiasing on for all drawing n submodules
         rectShapeFigure.setVisible(false);
         rrectShapeFigure.setVisible(false);
         rrectShapeFigure.setCornerDimensions(new Dimension(30, 30));
@@ -67,7 +67,7 @@ public class SubmoduleFigure extends ModuleFigure
     @Override
     public void paint(Graphics graphics) {
         graphics.pushState();
-        // set antialiasing on contenet and child/derived figures
+        // set antialiasing on content and child/derived figures
         if(NedFileFigure.antialias != SWT.DEFAULT)
             graphics.setAntialias(NedFileFigure.antialias);
         super.paint(graphics);
@@ -78,7 +78,7 @@ public class SubmoduleFigure extends ModuleFigure
      * Returns the requested layer from the first ancestor that supports multiple layers for decorations
      * and contains the a layer with the given id
      * @param id Layer id
-     * @return The layer with teh given id from the first ancestor that implements the ILayerSupport IF
+     * @return The layer with the given id from the first ancestor that implements the ILayerSupport IF
      */
     protected Layer getAncestorLayer(LayerID id) {
         IFigure figureIter = getParent();
@@ -111,7 +111,7 @@ public class SubmoduleFigure extends ModuleFigure
         add(polygonShapeFigure);
         add(imageFigure);
         
-        // setup decorations belongig to the background decoration layer
+        // setup decorations belonging to the background decoration layer
         if(backgroundLayer != null) {
             backgroundLayer.add(rangeAttachLayer = new AttachedLayer(this, PositionConstants.CENTER, 
                                                      rangeFigure, PositionConstants.CENTER)); 
