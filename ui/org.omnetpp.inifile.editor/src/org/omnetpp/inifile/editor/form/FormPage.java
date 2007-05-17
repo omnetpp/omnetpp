@@ -21,6 +21,9 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 
 /**
  * Base class for inifile form editor pages.
+ * 
+ * Note: no commit() method: all fields or controls on the page 
+ *should auto-commit, latest when they lose the focus. 
  *
  * @author Andras
  */
@@ -96,11 +99,6 @@ public abstract class FormPage extends Composite {
 	 * Reads data from the document into the current page.
 	 */
 	public abstract void reread();
-
-	/**
-	 * Writes the edits on this page back into the document.
-	 */
-	public abstract void commit();
 
 	/**
 	 * Set the focus to an appropriate control in the form page. 

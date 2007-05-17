@@ -108,7 +108,7 @@ public abstract class FieldEditor extends Composite {
 
 	protected Button createResetButton() {
 		Button resetButton = new Button(this, SWT.PUSH);
-		resetButton.setText("Reset");
+		resetButton.setText("Remove");
 		resetButton.setToolTipText("Remove corresponding entry from ini file");
 		resetButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {

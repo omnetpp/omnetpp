@@ -399,10 +399,4 @@ public class GenericConfigPage extends ScrolledFormPage {
 		for (FieldEditor e : fieldEditors)
 			e.reread();
 	}
-
-	@Override
-	public void commit() {
-		for (FieldEditor e : fieldEditors)
-			e.commit();
-	}
 }

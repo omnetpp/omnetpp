@@ -51,11 +51,4 @@ public class RawConfigPage extends FormPage {
 			if (c instanceof FieldEditor)
 				((FieldEditor) c).reread();
 	}
-
-	@Override
-	public void commit() {
-		for (Control c : getChildren())
-			if (c instanceof FieldEditor)
-				((FieldEditor) c).commit();
-	}
 }

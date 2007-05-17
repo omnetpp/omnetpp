@@ -68,9 +68,6 @@ public class CheckboxFieldEditor extends FieldEditor {
 			}
 		});
 		
-		// commit on losing focus, etc.
-		addFocusListenerTo(checkbox);
-		
 		addFocusTransfer(label, checkbox);
 		addFocusTransfer(this, checkbox);
 	}
@@ -90,8 +87,6 @@ public class CheckboxFieldEditor extends FieldEditor {
 
 		// update problem decoration
 		IMarker[] markers = InifileUtils.getProblemMarkersFor(section, entry.getKey(), inifile);
-		//problemDecoration.setImage(checkbox.getSelection() ? ICON_ERROR_SMALL : null); // for testing
-		//problemDecoration.setDescriptionText(checkbox.getSelection() ? "Some error" : null); // ditto
 		problemDecoration.setImage(getProblemImage(markers, true));
 		problemDecoration.setDescriptionText(getProblemsText(markers));
 		redraw();

@@ -138,10 +138,8 @@ public class InifileFormEditor extends Composite {
 			return formPage; // already showing
 		
 		// dispose old page
-		if (formPage != null) {
-			formPage.commit();
+		if (formPage != null)
 			formPage.dispose();
-		}
 
 		// create new page
 		if (category.equals(PARAMETERS_PAGE))
@@ -175,8 +173,7 @@ public class InifileFormEditor extends Composite {
 	 * (i.e. from form to text view).
 	 */
 	public void pageDeselected() {
-		if (formPage != null) 
-			formPage.commit();
+		// nothing to do
 	}
 
 	public void gotoSection(String section) {

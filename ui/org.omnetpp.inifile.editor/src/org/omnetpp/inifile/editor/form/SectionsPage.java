@@ -11,7 +11,6 @@ import java.util.HashMap;
 
 import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
 import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -439,11 +438,6 @@ public class SectionsPage extends FormPage {
 			nodes.put(sectionName, node);
 		}
 		return node;
-	}
-
-	@Override
-	public void commit() {
-		// nothing to do
 	}
 
 	@Override
