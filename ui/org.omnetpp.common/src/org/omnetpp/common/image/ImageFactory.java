@@ -16,7 +16,6 @@ import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
@@ -116,7 +115,10 @@ public class ImageFactory {
     public final static String DEFAULT_PIN = DECORATORS_IMAGE_DIR + "pin";
     public final static String DEFAULT_KEY = "__default__";
 
+    // for non rescaled icons
     private static ImageRegistry imageRegistry = new ImageRegistry(Display.getDefault());
+    // for 16x16 rescaled icons
+    private static ImageRegistry iconImageRegistry = new ImageRegistry(Display.getDefault());
     private static String[] imageDirs;
     private static List<String> imageNameList = null;
     // image size constants
@@ -131,7 +133,7 @@ public class ImageFactory {
         String omnetppBitmapPath = System.getenv("OMNETPP_IMAGE_PATH");
         if (omnetppBitmapPath != null)
             imageDirs = omnetppBitmapPath.split(";");
-        // create and register a default / notfound image
+        // create and register a default / not found image
         imageRegistry.put(DEFAULT_KEY,
                 new NedImageDescriptor(ImageFactory.class, DEFAULT_NAME));
 
@@ -142,26 +144,37 @@ public class ImageFactory {
      * @return a 16x16 image or null if there is no icon for that id
      */
     public static Image getIconImage(String imageId) {
-        Image image = getImage(imageId);
-        return image==null ? null : ImageConverter.getResampledImage(image, 16, 16, 1, 1, 1, 1); 
+        // first try to get it from the icon cache
+        Image img = iconImageRegistry.get(imageId);
+        if (img != null)
+            return img;
+        // if not in the cache get it from the general icon cache and resize it to fit our needs
+        NedImageDescriptor descr = getDescriptor(imageId);
+        if (descr == null) return null;
+        // re-sample the image to 16x16 with 1 pixel padding
+        descr.setPadding(1);
+        descr.setPreferredScale(-16);
+        // store the descriptor for later re-use
+        iconImageRegistry.put(imageId, descr);
+        return descr.createImage();
     }
 
     /**
-     * Returns the requested image seraching on the bitmap path and in the resources
-     * @param imageId the rquested image's id
+     * Returns the requested image searching on the bitmap path and in the resources
+     * @param imageId the requested image's id
      * @return Image with a given ID
      */
     public static Image getImage(String imageId) {
         return getImage(imageId, null, null, -1);
     }
 
-    public static ImageDescriptor getDescriptor(String imageId) {
+    public static NedImageDescriptor getDescriptor(String imageId) {
         return getDescriptor(imageId, null, null, -1);
     }
 
     public static Image getImage(String imageId, String imageSize, RGB shade, int weight) {
         if (imageId == null || "".equals(imageId)) return null;
-        // look for the image on filesystem/jar and return the full key to retrieve
+        // look for the image on file system/jar and return the full key to retrieve
         String key = getKeyFor(imageId, imageSize, shade, weight);
         // if image was found, get it from the registry
         if (key != null) return imageRegistry.get(key);
@@ -169,30 +182,30 @@ public class ImageFactory {
         key = getKeyFor(LEGACY_DIR+imageId, imageSize, shade, weight);
         // if image was found, get it from the registry
         if (key != null) return imageRegistry.get(key);
-        // if image was not found, display the unknow icon
+        // if image was not found, display the unknown icon
         key = getKeyFor(UNKNOWN, imageSize, shade, weight);
         // if image was found, get it from the registry
         if (key != null) return imageRegistry.get(key);
-        // if key was null (ie not found) return the default image
+        // if key was null (ie. not found) return the default image
         return imageRegistry.get(DEFAULT_KEY);
     }
 
-    public static ImageDescriptor getDescriptor(String imageId, String imageSize, RGB shade, int weight) {
+    public static NedImageDescriptor getDescriptor(String imageId, String imageSize, RGB shade, int weight) {
         if (imageId == null || "".equals(imageId)) return null;
-        // look for the image on filesystem/jar and return the full key to retrieve
+        // look for the image on file system/jar and return the full key to retrieve
         String key = getKeyFor(imageId, imageSize, shade, weight);
         // if image was found, get it from the registry
-        if (key != null) return imageRegistry.getDescriptor(key);
+        if (key != null) return (NedImageDescriptor)imageRegistry.getDescriptor(key);
         // if image was not found, look it up among the legacy icons
         key = getKeyFor(LEGACY_DIR+imageId, imageSize, shade, weight);
         // if image was found, get it from the registry
-        if (key != null) return imageRegistry.getDescriptor(key);
-        // if image was not found, display the unknow icon
+        if (key != null) return (NedImageDescriptor)imageRegistry.getDescriptor(key);
+        // if image was not found, display the unknown icon
         key = getKeyFor(UNKNOWN, imageSize, shade, weight);
         // if image was found, get it from the registry
-        if (key != null) return imageRegistry.getDescriptor(key);
-        // if key was null (ie not found) return the default image descriptor
-        return imageRegistry.getDescriptor(DEFAULT_KEY);
+        if (key != null) return (NedImageDescriptor)imageRegistry.getDescriptor(key);
+        // if key was null (ie. not found) return the default image descriptor
+        return (NedImageDescriptor)imageRegistry.getDescriptor(DEFAULT_KEY);
     }
 
     /**
@@ -246,7 +259,7 @@ public class ImageFactory {
      * @param baseId The requested image name
      * @param imageSize preferred size if possible
      * @param shade icon shading color
-     * @param weight weitght (0-100) of the colorization effect
+     * @param weight weight (0-100) of the colorization effect
      * @return the requested image key or <code>null</code> if baseId was also <code>null</code>
      */
     private static String getKeyFor(String baseId, int imageSize, RGB shade, int weight) {
@@ -263,7 +276,7 @@ public class ImageFactory {
             decoratedImageId += ":" + shade + ":" + weight;
 
         // try to get it from the registry (maybe we've already created it)
-        ImageDescriptor result = imageRegistry.getDescriptor(decoratedImageId);
+        NedImageDescriptor result = (NedImageDescriptor)imageRegistry.getDescriptor(decoratedImageId);
         if (result != null)
             return decoratedImageId;
 
@@ -273,7 +286,7 @@ public class ImageFactory {
         if (result == null )
             return null;
 
-        // adjust the colorization and size parameteres for the descriptor
+        // adjust the colorization and size parameters for the descriptor
         if(result instanceof NedImageDescriptor) {
             ((NedImageDescriptor)result).setColorization(shade);
             ((NedImageDescriptor)result).setColorizationWeight(weight);
@@ -322,7 +335,7 @@ public class ImageFactory {
      *        (_l,_vl,_s,_vs)
      * @return The ImageDescriptor or <code>null</code> if does exist.
      */
-    private static NedImageDescriptor createDescriptor(Class refClass, String dir, String fileName, String ext, int preferredSize) {
+    private static NedImageDescriptor createDescriptor(Class<?> refClass, String dir, String fileName, String ext, int preferredSize) {
         // add a size suffix to the filename if we need some of the predefined scaling factors
         String sizeSuffix = "";
         if (preferredSize == SIZE_VS) 
@@ -430,14 +443,14 @@ public class ImageFactory {
     		result.add(toAdd);
     	}
 
-    	// if this is a directory (but not the internal dir)iterate through all contained files
+    	// if this is a directory (but not the internal directory)iterate through all contained files
     	if (fileStore.fetchInfo().isDirectory()
     			&& !fileStore.fetchInfo().getName().startsWith("_internal"))
 			try {
 				for(IFileStore childToAdd : fileStore.childStores(EFS.NONE, null)) {
 					result.addAll(getNameList(childToAdd, stripBeginning));
 				}
-			} catch (CoreException e) { // do nothing if error occured
+			} catch (CoreException e) { // do nothing if error occurred
 			}
 
     	return result;

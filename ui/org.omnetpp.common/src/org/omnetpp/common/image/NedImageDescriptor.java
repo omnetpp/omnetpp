@@ -13,6 +13,7 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
 
 
 /**
@@ -26,7 +27,7 @@ public class NedImageDescriptor extends ImageDescriptor {
      * The class whose resource directory contain the file, 
      * or <code>null</code> if none.
      */
-    private Class location;
+    private Class<?> location;
 
     /**
      * The name of the file.
@@ -34,10 +35,10 @@ public class NedImageDescriptor extends ImageDescriptor {
     private String name;
 
     private int preferredScale = 100;
-    
     private RGB colorization = null;
-    
     private int colorizationWeight = 0;
+    private static Rectangle NULLPADDING = new Rectangle(0,0,0,0);
+    private Rectangle padding = NULLPADDING;
     
     /**
      * Creates a new file image descriptor.
@@ -57,12 +58,12 @@ public class NedImageDescriptor extends ImageDescriptor {
      *   <code>null</code>
      * @param filename the name of the file
      */
-    NedImageDescriptor(Class clazz, String filename) {
+    NedImageDescriptor(Class<?> clazz, String filename) {
         this.location = clazz;
         this.name = filename;
     }
 
-    NedImageDescriptor(Class clazz, String filename, int preferredScale) {
+    NedImageDescriptor(Class<?> clazz, String filename, int preferredScale) {
         this(clazz, filename);
         this.preferredScale = preferredScale;
     }
@@ -80,9 +81,25 @@ public class NedImageDescriptor extends ImageDescriptor {
      * as an absolute width parameter
      * @param preferredScale
      */
-//    public void setPreferredScale(int preferredScale) {
-//        this.preferredScale = preferredScale;
-//    }
+    public void setPreferredScale(int preferredScale) {
+        this.preferredScale = preferredScale;
+    }
+
+    /**
+     * Sets the padding value around the image if it is rescaled
+     * @param padding
+     */
+    public void setPadding(Rectangle padding) {
+        this.padding = padding;
+    }
+    
+    /**
+     * Sets the padding value around the image if it is rescaled
+     * @param padding
+     */
+    public void setPadding(int padValue) {
+        this.padding = new Rectangle(padValue, padValue, padValue, padValue);
+    }
 
     /* (non-Javadoc)
      * Method declared on Object.
@@ -110,8 +127,17 @@ public class NedImageDescriptor extends ImageDescriptor {
                 return false;
             }
         }
+        if (padding != null) {
+            if (!padding.equals(other.padding)) {
+                return false;
+            }
+        } else {
+            if (other.padding != null) {
+                return false;
+            }
+        }
         return name.equals(other.name) 
-                &&preferredScale == other.preferredScale 
+                && preferredScale == other.preferredScale 
                 && colorizationWeight == other.colorizationWeight;
     }
 
@@ -144,7 +170,7 @@ public class NedImageDescriptor extends ImageDescriptor {
 
     /**
      * Checks whether the specified resource or file behind the descriptor exists
-     * @return <code>ture</code> if respurce is present <code>false</code> otherwise
+     * @return <code>true</code> if resource is present <code>false</code> otherwise
      */
     public boolean canCreate() {
         if(location != null && location.getResourceAsStream(name) == null)
@@ -280,7 +306,9 @@ public class NedImageDescriptor extends ImageDescriptor {
      * @return 
      */
     private ImageData rescaleImageData(ImageData imgData) {
-        if (preferredScale==100 || imgData.width==0 || imgData.width==-preferredScale)
+        // do not change anything if no re-scale is needed and no padding requested
+        if ((preferredScale==100 || imgData.width==0 || imgData.width==-preferredScale) &&
+                padding.equals(NULLPADDING))
             return imgData;
         
         double scaleRatio;
@@ -288,10 +316,11 @@ public class NedImageDescriptor extends ImageDescriptor {
             // treat as absolute size
             scaleRatio = -(double)preferredScale / imgData.width;
         else
-            // treat as relatve size in percent
+            // treat as relative size in percent
             scaleRatio = (double)preferredScale / 100;
         
-        return ImageConverter.getResampledImageData(imgData, (int)(imgData.width*scaleRatio), (int)(imgData.height*scaleRatio), 0, 0, 0, 0);
+        return ImageConverter.getResampledImageData(imgData, (int)(imgData.width*scaleRatio), (int)(imgData.height*scaleRatio), 
+                                    padding.x, padding.y, padding.width, padding.height);
     }
 
 }

@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * Convert between AWT and SWT image, and suports rescaling
+ * Convert between AWT and SWT image, and supports rescaling
  * @author rhornig
  */
 public class ImageConverter {
@@ -109,7 +109,7 @@ public class ImageConverter {
 			return data;
 		}
 		else if (bufferedImage.getColorModel() instanceof ComponentColorModel) {
-			Assert.isTrue(false, "converting from this colormodel not implemented");
+			Assert.isTrue(false, "converting from this color model not implemented");
 			//XXX does not work, to be debugged
 			ComponentColorModel colorModel = (ComponentColorModel)bufferedImage.getColorModel();
 			int depth = colorModel.getPixelSize();
