@@ -249,10 +249,9 @@ public class HoverSupport {
 	protected Point calculateHoverPosition(Point mouse, Point size) {
 		Rectangle screen = Display.getCurrent().getBounds();
 		Point p = new Point(mouse.x + 5, mouse.y + 10);
-		if (p.x + 5 + size.x > screen.x + screen.width)
-			p.x = mouse.x - size.x - 5;
+		p.x = Math.min(p.x, screen.width - size.x - 5);
 		if (p.y + 10 + size.y > screen.y + screen.height)
-			p.y = mouse.y - size.y - 10;
+			p.y = mouse.y - size.y - 10; // if no room below mouse, show it above
 		return p;
 	}
 
