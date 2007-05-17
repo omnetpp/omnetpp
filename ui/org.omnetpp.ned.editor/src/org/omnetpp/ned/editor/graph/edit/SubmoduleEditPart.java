@@ -55,16 +55,18 @@ public class SubmoduleEditPart extends ModuleEditPart {
 	 * @param p current mouse coordinates
 	 * @return The selected connection anchor
 	 */
-	public ConnectionAnchor getConnectionAnchorAt(Point p) {
+	@Override
+    public ConnectionAnchor getConnectionAnchorAt(Point p) {
         return gateAnchor;
 	}
 
 	/**
-	 * Returns a conn anchor registered for the given gate
+	 * Returns a connection anchor registered for the given gate
 	 * @param gate
 	 * @return
 	 */
-	public GateAnchor getConnectionAnchor(String gate) {
+	@Override
+    public GateAnchor getConnectionAnchor(String gate) {
         return gateAnchor;
 	}
 
@@ -98,7 +100,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
     @Override
     protected void refreshVisuals() {
 
-        // define the properties that determine the visual appearence
+        // define the properties that determine the visual appearance
     	SubmoduleNodeEx submNode = (SubmoduleNodeEx)getModel();
 
     	// set module name and vector size
@@ -108,11 +110,11 @@ public class SubmoduleEditPart extends ModuleEditPart {
     		nameToDisplay += "["+submNode.getVectorSize()+"]";
     	getSubmoduleFigure().setName(nameToDisplay);
 
-    	// parse a dispaly string, so it's easier to get values from it.
-    	// for other visula properties
+    	// parse a display string, so it's easier to get values from it.
+    	// for other visual properties
         DisplayString dps = submNode.getEffectiveDisplayString();
 
-        // get the scale factor for this submodule (coming from the containing compound module's displaystring)
+        // get the scale factor for this submodule (coming from the containing compound module's display string)
         float scale = getScale();
         // set it in the figure, so size and range indicator can use it
         getSubmoduleFigure().setScale(scale);
@@ -127,23 +129,25 @@ public class SubmoduleEditPart extends ModuleEditPart {
 
         // set the rest of the display properties
         getSubmoduleFigure().setDisplayString(dps);
-        
+
         // TODO implement a separate PIN decoration decorator figure in submodule figure
         if (dps.getLocation(scale) != null)
         	getSubmoduleFigure().setImageDecoration(ImageFactory.getImage(ImageFactory.DEFAULT_PIN));
 
     }
 
+    @Override
     public float getScale() {
         // get the container compound module's scaling factor
         return ((CompoundModuleEditPart)getParent()).getScale();
     }
 
+    @Override
     public boolean isEditable() {
         // editable only if the parent controllers model is the same as the model's parent
         // ie the submodule is defined in this compound module (not inherited)
         return super.isEditable() &&
-                (getParent().getModel() == ((SubmoduleNodeEx)getModel()).getCompoundModule());
+                getParent().getModel() == ((SubmoduleNodeEx)getModel()).getCompoundModule();
     }
 
     @Override

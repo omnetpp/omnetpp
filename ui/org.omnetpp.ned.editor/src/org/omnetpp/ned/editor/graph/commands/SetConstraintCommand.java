@@ -17,8 +17,9 @@ public class SetConstraintCommand extends Command {
     private Dimension newSize;
     private Point oldPos;
     private Dimension oldSize;
-    private INamedGraphNode module;
+    private final INamedGraphNode module;
     private float scale = 1.0f;
+    private boolean pinOperation = false;
 
     public SetConstraintCommand(INamedGraphNode newModule, float scale) {
     	super();
@@ -30,9 +31,12 @@ public class SetConstraintCommand extends Command {
 
     @Override
     public String getLabel() {
-    	if (newPos == null )
-    		return "Unpin " + module.getName();
-        if (newSize != null && !newSize.equals(oldSize))
+        if (pinOperation) {
+            if (newPos == null )
+                return "Unpin " + module.getName();
+            else
+                return "Pin " + module.getName();
+        } else if (newSize != null && !newSize.equals(oldSize))
             return "Resize " + module.getName();
         return "Move " + module.getName();
     }
@@ -55,15 +59,43 @@ public class SetConstraintCommand extends Command {
     }
 
     public void setConstraint(Rectangle r) {
-        setLocation(r.getLocation());
-        setSize(r.getSize());
+        setNewLocation(r.getLocation());
+        setNewSize(r.getSize());
     }
 
-    public void setLocation(Point p) {
+    /**
+     * Sets the new location (should be used for move operation)
+     * @param p
+     */
+    public void setNewLocation(Point p) {
+        pinOperation = false;
         newPos = p;
     }
 
-    public void setSize(Dimension p) {
+    /**
+     * Sets the new size of the module (for resize operation only)
+     * @param p
+     */
+    public void setNewSize(Dimension p) {
+        pinOperation = false;
         newSize = p;
+    }
+
+    /**
+     * Sets the pinned location of module (or null if unpin is requested)
+     * Should be used ONLY for pin/unpin operation
+     * @param p
+     */
+    public void setPinLocation(Point p) {
+        pinOperation = true;
+        newPos = p;
+    }
+
+    public boolean isPinCommand() {
+        return pinOperation && newPos != null;
+    }
+
+    public boolean isUnpinCommand() {
+        return pinOperation && newPos == null;
     }
 }

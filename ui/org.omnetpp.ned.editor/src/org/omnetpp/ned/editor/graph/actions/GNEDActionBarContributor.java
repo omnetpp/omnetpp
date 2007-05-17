@@ -153,7 +153,7 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
         addRetargetAction(new RedoRetargetAction());
 
         RetargetAction retAction;
-        addRetargetAction(retAction = new RetargetAction(UnpinAction.ID, UnpinAction.MENUNAME));
+        addRetargetAction(retAction = new RetargetAction(UnpinAction.ID, UnpinAction.MENUNAME, IAction.AS_CHECK_BOX));
         retAction.setToolTipText(UnpinAction.TOOLTIP);
         retAction.setImageDescriptor(UnpinAction.IMAGE);
         addRetargetAction(retAction = new RetargetAction(ReLayoutAction.ID, ReLayoutAction.MENUNAME));
@@ -194,19 +194,6 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
     public void contributeToToolBar(IToolBarManager tbm) {
         tbm.add(getAction(ActionFactory.UNDO.getId()));
         tbm.add(getAction(ActionFactory.REDO.getId()));
-
-//    	tbm.add(new Separator());
-//        tbm.add(getAction(GEFActionConstants.ALIGN_LEFT));
-//        tbm.add(getAction(GEFActionConstants.ALIGN_CENTER));
-//        tbm.add(getAction(GEFActionConstants.ALIGN_RIGHT));
-//        tbm.add(new Separator());
-//        tbm.add(getAction(GEFActionConstants.ALIGN_TOP));
-//        tbm.add(getAction(GEFActionConstants.ALIGN_MIDDLE));
-//        tbm.add(getAction(GEFActionConstants.ALIGN_BOTTOM));
-
-//        tbm.add(new Separator());
-//        tbm.add(getAction(GEFActionConstants.MATCH_WIDTH));
-//        tbm.add(getAction(GEFActionConstants.MATCH_HEIGHT));
 
         tbm.add(new Separator());
     	tbm.add(getAction(UnpinAction.ID));

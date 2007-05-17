@@ -161,10 +161,10 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
             // we should not call this in the init method, because it causes NPE
             // BUG see: https://bugs.eclipse.org/bugs/show_bug.cgi?id=159747
             setPropertySourceProvider(new NedEditPartPropertySourceProvider());
-            
+
             // set up a context menu with undo/redo items
         }
-        
+
         @Override
         public void setActionBars(IActionBars actionBars) {
             super.setActionBars(actionBars);
@@ -172,11 +172,11 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
             getCellEditorActionHandler().setUndoAction(getActionRegistry().getAction(ActionFactory.UNDO.getId()));
             getCellEditorActionHandler().setRedoAction(getActionRegistry().getAction(ActionFactory.REDO.getId()));
         }
-        
-        
+
+
         // BUG https://bugs.eclipse.org/bugs/show_bug.cgi?id=185081
         /**
-         * in eclipse no accessor for the private field so it is not possible to override 
+         * in eclipse no accessor for the private field so it is not possible to override
          * the setActionBars method. Once it is fixed remove this method.
          * @return The private cell editor handler, so it is possible to override set action bars.
          */
@@ -190,7 +190,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
                 declaredField.setAccessible(false);
             } catch (Exception e) {
                 NedEditorPlugin.logError(e);
-            } 
+            }
             return result;
         }
 
@@ -224,6 +224,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         return synchronizer;
     }
 
+    @Override
     protected PaletteRoot getPaletteRoot() {
         if (paletteManager == null) {
             paletteManager = new PaletteManager(this);
@@ -269,7 +270,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         // if we ever need external contribution, uncomment the following line
         // getSite().registerContextMenu(provider, viewer);
         viewer.setKeyHandler(new GraphicalViewerKeyHandler(viewer).setParent(getCommonKeyHandler()));
-        
+
         // add tooltip support
         new HoverSupport().adapt(getEditor(), new IHoverTextProvider() {
             public String getHoverTextFor(Control control, int x, int y) {
@@ -281,7 +282,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
                 return null;
             }
         });
-        
+
 
         loadProperties();
 
@@ -421,6 +422,8 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         action = new UnpinAction(this);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
+        // depends on stack state change too. We should reflect the pinned state of a module on the status bar too
+        getStackActions().add(action.getId());
 
         action = new ReLayoutAction(this);
         registry.registerAction(action);
@@ -445,14 +448,14 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
             setModel(null);
             return;
         }
-        
+
         Assert.isTrue(input instanceof IFileEditorInput, "Input of Graphical NED editor must be an IFileEditorInput");
         NedFileNodeEx newModel = (NedFileNodeEx)NEDResourcesPlugin.getNEDResources()
                                     .getNEDFileModel(((FileEditorInput)getEditorInput()).getFile());
-        
+
         setModel(newModel);
     }
-    
+
     public NedFileNodeEx getModel() {
         return nedFileModel;
     }
@@ -486,8 +489,8 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         // update actions ONLY if we are the active editor or the parent editor which is a multipage editor
         IEditorPart activeEditor = getSite().getPage().getActiveEditor();
         if (this == activeEditor ||
-              (getSite() instanceof MultiPageEditorSite &&
-              ((MultiPageEditorSite)getSite()).getMultiPageEditor() == activeEditor))
+              getSite() instanceof MultiPageEditorSite &&
+              ((MultiPageEditorSite)getSite()).getMultiPageEditor() == activeEditor)
             updateActions(getSelectionActions());
     }
 
@@ -498,7 +501,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
      */
     public void reveal(INEDElement model) {
         EditPart editPart = null;
-         while( (model != null) &&
+         while( model != null &&
                 (editPart = (EditPart)getGraphicalViewer().getEditPartRegistry().get(model)) == null)
              model = model.getParent();
 

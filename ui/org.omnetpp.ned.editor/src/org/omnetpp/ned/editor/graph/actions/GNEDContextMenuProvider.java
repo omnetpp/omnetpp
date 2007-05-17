@@ -19,7 +19,7 @@ import org.omnetpp.common.image.ImageFactory;
 
 /**
  * Adds actions to the context menu in the graphical editor area
- * 
+ *
  * @author rhornig
  */
 public class GNEDContextMenuProvider extends ContextMenuProvider {
@@ -33,7 +33,7 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.ContextMenuProvider#menuAboutToShow(org.eclipse.jface.action.IMenuManager)
      */
     @Override
@@ -59,7 +59,7 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
 
         action = getActionRegistry().getAction(UnpinAction.ID);
         if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
-        
+
         action = getActionRegistry().getAction(ReLayoutAction.ID);
         if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
 
@@ -72,13 +72,6 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
 
         action = getActionRegistry().getAction(ActionFactory.DELETE.getId());
         if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
-
-        MenuManager showInSubMenu= new MenuManager(getShowInMenuLabel());
-        showInSubMenu.add(ContributionItemFactory.VIEWS_SHOW_IN.create(wwin));
-        manager.appendToGroup(GEFActionConstants.GROUP_VIEW, showInSubMenu);
-        
-        action = getActionRegistry().getAction(IPageLayout.ID_PROP_SHEET);
-        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_VIEW, action);
 
         // Alignment Actions
         MenuManager submenu = new MenuManager("&Align");
@@ -111,20 +104,27 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
         action = getActionRegistry().getAction(GEFActionConstants.MATCH_HEIGHT);
         if (action.isEnabled()) submenu.add(action);
 
-        if (!submenu.isEmpty()) manager.appendToGroup(GEFActionConstants.GROUP_REST, submenu);
+        if (!submenu.isEmpty()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, submenu);
+
+        MenuManager showInSubMenu= new MenuManager(getShowInMenuLabel());
+        showInSubMenu.add(ContributionItemFactory.VIEWS_SHOW_IN.create(wwin));
+        manager.appendToGroup(GEFActionConstants.GROUP_VIEW, showInSubMenu);
+
+        action = getActionRegistry().getAction(IPageLayout.ID_PROP_SHEET);
+        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_VIEW, action);
 
     }
 
     private String getShowInMenuLabel() {
         String keyBinding= null;
-        
+
         IBindingService bindingService= (IBindingService)PlatformUI.getWorkbench().getAdapter(IBindingService.class);
         if (bindingService != null)
             keyBinding= bindingService.getBestActiveBindingFormattedFor("org.eclipse.ui.navigate.showInQuickMenu"); //$NON-NLS-1$
-        
+
         if (keyBinding == null)
             keyBinding= ""; //$NON-NLS-1$
-        
+
         return NLS.bind("Show In \t{0}",keyBinding);
     }
 

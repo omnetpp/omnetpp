@@ -11,16 +11,13 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.LayerConstants;
-import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
-import org.eclipse.gef.requests.GroupRequest;
+
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.ned.editor.graph.actions.UnpinAction;
 import org.omnetpp.ned.editor.graph.commands.CloneSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.commands.CreateSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.commands.SetConstraintCommand;
@@ -44,18 +41,18 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
      * @see org.eclipse.gef.editpolicies.ConstrainedLayoutEditPolicy#getCommand(org.eclipse.gef.Request)
      * Factors out the Unpin request
      */
-    @Override
-    public Command getCommand(Request request) {
-        if (UnpinAction.REQ_UNPIN.equals(request.getType()))
-    		return getUnpinChildrenCommand((GroupRequest)request);
-    	return super.getCommand(request);
-    }
-    
+//    @Override
+//    public Command getCommand(Request request) {
+//        if (UnpinAction.REQ_UNPIN.equals(request.getType()))
+//    		return getTogglePinChildrenCommand((GroupRequest)request);
+//    	return super.getCommand(request);
+//    }
+
     /**
      * Override to return the <code>Command</code> to perform an {@link
      * RequestConstants#REQ_CLONE CLONE}. By default, <code>null</code> is
      * returned.
-     * 
+     *
      * @param request
      *            the Clone Request
      * @return A command to perform the Clone.
@@ -63,12 +60,12 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
     @SuppressWarnings("unchecked")
 	@Override
     protected Command getCloneCommand(ChangeBoundsRequest request) {
-        CloneSubmoduleCommand cloneCmd 
-            = new CloneSubmoduleCommand((CompoundModuleNodeEx) getHost().getModel(), 
+        CloneSubmoduleCommand cloneCmd
+            = new CloneSubmoduleCommand((CompoundModuleNodeEx) getHost().getModel(),
                                         ((ModuleEditPart)getHost()).getScale());
 
         for (GraphicalEditPart currPart : (List<GraphicalEditPart>)request.getEditParts()) {
-            cloneCmd.addModule((SubmoduleNodeEx)currPart.getModel(), 
+            cloneCmd.addModule((SubmoduleNodeEx)currPart.getModel(),
             					(Rectangle) getConstraintForClone(currPart, request));
         }
         return cloneCmd;
@@ -79,8 +76,8 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
     	// only create a command if we want to create a submodule
     	if (!(request.getNewObject() instanceof SubmoduleNodeEx))
     		return null;
-    	
-        CreateSubmoduleCommand create 
+
+        CreateSubmoduleCommand create
         		= new CreateSubmoduleCommand((CompoundModuleNodeEx) getHost().getModel(),
         									 (SubmoduleNodeEx) request.getNewObject());
         create.setLocation((Rectangle)getConstraintFor(request));
@@ -89,7 +86,8 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
         return create;
     }
 
-    
+
+    @Override
     protected Command createChangeConstraintCommand(EditPart child, Object constraint) {
         // do not allow delete if we are read only components
         if (!PolicyUtil.isEditable(child))
@@ -97,7 +95,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
         // HACK for fixing issue when the model returns unspecified size (-1,-1)
         // we have to calculate the center point in that direction manually using the size info
         // from the figure directly (which knows it's size) This is the inverse transformation of
-        // CenteredXYLayout's traf.
+        // CenteredXYLayout's transformation.
         Rectangle figureBounds = ((GraphicalEditPart)child).getFigure().getBounds();
         Rectangle modelConstraint = (Rectangle)constraint;
         if (modelConstraint.width < 0) modelConstraint.x += figureBounds.width / 2;
@@ -105,71 +103,24 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
         // get the compound module scaling factor
         float scale = ((ModuleEditPart)child).getScale();
-        
-        // create the constraint change command 
+
+        // create the constraint change command
         INamedGraphNode module = (INamedGraphNode) child.getModel();
         SetConstraintCommand cmd = new SetConstraintCommand(module, scale);
         cmd.setConstraint(modelConstraint);
 
-        // if size constrant is not specified, then remove it from the model too
+        // if size constraint is not specified, then remove it from the model too
         // TODO is this needed?
         if ((modelConstraint.width < 0 || modelConstraint.height < 0) && module.getDisplayString().getSize(null) == null)
-            cmd.setSize(null);
-        
-        return cmd;
-    }
-    
-    /**
-     * Returns the <code>Command</code> to unpin a group of children.
-     * @param request the ChangeBoundsRequest
-     * @return the Command
-     */
-    protected Command getUnpinChildrenCommand(GroupRequest request) {
-    	CompoundCommand resize = new CompoundCommand();
-    	Command c;
-    	GraphicalEditPart child;
-    	List children = request.getEditParts();
-
-    	for (int i = 0; i < children.size(); i++) {
-    		child = (GraphicalEditPart)children.get(i);
-    		c = createUnpinCommand(request, child);
-    		if (c != null) 
-    			resize.add(c);
-    	}
-    	// do not provide a command if there were no submodules with location info (ie. all was unpinned)
-    	if (resize.size() < 1) return null;
-    	
-    	return resize.unwrap();
-    }
-    /**
-     * Generate a constraint change command in response to an unpin request
-     * @param child
-     * @return
-     */
-    protected Command createUnpinCommand(Request request, EditPart child) {
-        if (!PolicyUtil.isEditable(child))
-            return null;
-        // create the constraint change command 
-        INamedGraphNode module = (INamedGraphNode) child.getModel();
-        // do not create a command for submodules that do not have a location
-        if (module.getDisplayString().getLocation(null) == null)
-        	return null;
-
-        // get the compound module scaling factor
-        float scale = ((ModuleEditPart)child).getScale();
-        // otherwise create a command that deletes the location from the displayestring
-        SetConstraintCommand cmd = new SetConstraintCommand(module, scale);
-        // delete the location info, so the node can be moved freely by the layouting algorythm
-        // we leave the size unchanged
-        cmd.setLocation(null);
+            cmd.setNewSize(null);
 
         return cmd;
     }
 
     /**
-     * We create a generic resize policy that allows resizing in any direction. 
+     * We create a generic resize policy that allows resizing in any direction.
      * @see org.eclipse.gef.editpolicies.ConstrainedLayoutEditPolicy#createChildEditPolicy(org.eclipse.gef.EditPart)
-     * 
+     *
      */
     @Override
     protected EditPolicy createChildEditPolicy(EditPart child) {
@@ -185,7 +136,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editpolicies.LayoutEditPolicy#createSizeOnDropFeedback(org.eclipse.gef.requests.CreateRequest)
      */
     // this command is created when the user adds a new child by drag/resizing with a creation
@@ -204,12 +155,12 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
     /**
      * Returns the layer used for displaying feedback. We must return the scaled feedback layer
-     * 
+     *
      * @return the feedback layer
      */
     @Override
     protected IFigure getFeedbackLayer() {
         return getLayer(LayerConstants.SCALED_FEEDBACK_LAYER);
     }
-    
+
 }
