@@ -1,17 +1,7 @@
 package org.omnetpp.figures;
 
 
-import org.eclipse.draw2d.Ellipse;
-import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.ImageFigure;
-import org.eclipse.draw2d.Label;
-import org.eclipse.draw2d.Layer;
-import org.eclipse.draw2d.PositionConstants;
-import org.eclipse.draw2d.RectangleFigure;
-import org.eclipse.draw2d.RoundedRectangle;
-import org.eclipse.draw2d.Shape;
-import org.eclipse.draw2d.StackLayout;
+import org.eclipse.draw2d.*;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -20,6 +10,7 @@ import org.eclipse.gef.tools.CellEditorLocator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
@@ -28,18 +19,18 @@ import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.figures.misc.IDirectEditSupport;
 import org.omnetpp.figures.misc.LabelCellEditorLocator;
 
-public class SubmoduleFigure extends ModuleFigure 
+public class SubmoduleFigure extends ModuleFigure
                 implements HandleBounds, IDirectEditSupport {
 
     protected Layer foregroundLayer;
     protected Layer backgroundLayer;
-    
+
     protected Shape currShape;
     protected RectangleFigure rectShapeFigure = new RectangleFigure();
     protected Ellipse ovalShapeFigure = new Ellipse();
     protected RoundedRectangle rrectShapeFigure = new RoundedRectangle();
     protected RegularPolygon polygonShapeFigure = new RegularPolygon(6,0);
-    
+
     protected ImageFigure imageFigure = new ImageFigure();
     protected ImageFigure decoratorImageFigure = new ImageFigure();
     protected Label nameFigure = new Label();
@@ -61,7 +52,7 @@ public class SubmoduleFigure extends ModuleFigure
         ovalShapeFigure.setVisible(false);
         polygonShapeFigure.setVisible(false);
         rangeFigure.setOpaque(false);
-        
+
     }
 
     @Override
@@ -73,7 +64,7 @@ public class SubmoduleFigure extends ModuleFigure
         super.paint(graphics);
         graphics.popState();
     }
-    
+
     /**
      * Returns the requested layer from the first ancestor that supports multiple layers for decorations
      * and contains the a layer with the given id
@@ -93,7 +84,7 @@ public class SubmoduleFigure extends ModuleFigure
         }
         return null;
     }
-    
+
     @Override
     public void addNotify() {
         // functions here need to access the parent or ancestor figures, so these setup
@@ -102,7 +93,7 @@ public class SubmoduleFigure extends ModuleFigure
         // look for decorator layers among the ancestor (compound module figure)
         foregroundLayer = getAncestorLayer(ILayerSupport.LayerID.FRONT_DECORATION);
         backgroundLayer = getAncestorLayer(ILayerSupport.LayerID.BACKGROUND_DECORATION);
-        
+
         // add main figures
         // TODO figures should be added and created only ON DEMAND!!!
         add(rectShapeFigure);
@@ -110,29 +101,29 @@ public class SubmoduleFigure extends ModuleFigure
         add(ovalShapeFigure);
         add(polygonShapeFigure);
         add(imageFigure);
-        
+
         // setup decorations belonging to the background decoration layer
         if(backgroundLayer != null) {
-            backgroundLayer.add(rangeAttachLayer = new AttachedLayer(this, PositionConstants.CENTER, 
-                                                     rangeFigure, PositionConstants.CENTER)); 
+            backgroundLayer.add(rangeAttachLayer = new AttachedLayer(this, PositionConstants.CENTER,
+                                                     rangeFigure, PositionConstants.CENTER));
         }
 
         if(foregroundLayer != null) {
             // image decoration
-            foregroundLayer.add(new AttachedLayer(this, new PrecisionPoint(1.0, 0.0), 
+            foregroundLayer.add(new AttachedLayer(this, new PrecisionPoint(1.0, 0.0),
                     decoratorImageFigure, new PrecisionPoint(0.75, 0.25), null));
             //name decoration
-            foregroundLayer.add(new AttachedLayer(this, PositionConstants.SOUTH, 
-                                        nameFigure, PositionConstants.NORTH)); 
+            foregroundLayer.add(new AttachedLayer(this, PositionConstants.SOUTH,
+                                        nameFigure, PositionConstants.NORTH));
             // text comment decoration
             foregroundLayer.add(
-                    textAttachLayer = new AttachedLayer(this, PositionConstants.NORTH, 
-                                            textFigure, PositionConstants.SOUTH, 0, -1)); 
+                    textAttachLayer = new AttachedLayer(this, PositionConstants.NORTH,
+                                            textFigure, PositionConstants.SOUTH, 0, -1));
             // queue description
-            foregroundLayer.add(new AttachedLayer(this, PositionConstants.SOUTH_EAST, 
+            foregroundLayer.add(new AttachedLayer(this, PositionConstants.SOUTH_EAST,
                     queueFigure, PositionConstants.SOUTH_WEST, 2, 0));
         }
-        
+
         super.addNotify();
     }
 
@@ -143,7 +134,7 @@ public class SubmoduleFigure extends ModuleFigure
         figureName = name;
         invalidate();
     }
-    
+
     protected void setRange(int radius, Color fillColor, Color borderColor, int borderWidth) {
         if (rangeFigure == null) return;
         if(radius > 0) {
@@ -151,7 +142,7 @@ public class SubmoduleFigure extends ModuleFigure
             rangeFigure.setVisible(true);
             rangeFigure.setSize(rad*2, rad*2);
         }
-        else { 
+        else {
         	rangeFigure.setVisible(false);
             rangeFigure.setSize(0, 0);
         }
@@ -160,33 +151,33 @@ public class SubmoduleFigure extends ModuleFigure
         rangeFigure.setOutline(borderColor != null &&  borderWidth > 0);
         rangeFigure.setForegroundColor(borderColor);
         rangeFigure.setLineWidth(borderWidth);
-        
+
         // TODO: revision by Rudi (this was null when creating with default constructor and setting display string)
         if (rangeAttachLayer != null)
         	rangeAttachLayer.revalidate();
 
         invalidate();
     }
-    
+
     public void setTooltipText(String tttext) {
         if(tttext == null || "".equals(tttext)) {
             setToolTip(null);
             tooltipFigure = null;
         } else {
-            tooltipFigure = new TooltipFigure(); 
+            tooltipFigure = new TooltipFigure();
             setToolTip(tooltipFigure);
             tooltipFigure.setText(tttext);
             invalidate();
         }
     }
-    
+
     protected void setQueueText(String qtext) {
         if (queueFigure == null) return;
         queueFigure.setVisible(qtext != null && !"".equals(qtext));
         queueFigure.setText(qtext);
         invalidate();
     }
-    
+
     protected void setInfoText(String text, String alignment, Color color) {
         if (textFigure == null || textAttachLayer == null) return;
         textFigure.setVisible(text != null && !"".equals(text));
@@ -210,9 +201,9 @@ public class SubmoduleFigure extends ModuleFigure
       if(textFigure.getParent() != null) textFigure.getParent().revalidate();
       invalidate();
     }
-    
-    protected void setShape(Image img, 
-            String shape, int shapeWidth, int shapeHeight, 
+
+    protected void setShape(Image img,
+            String shape, int shapeWidth, int shapeHeight,
             Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
         // handle defaults. if no size is given and no icon is present use a default icon
         if(shapeWidth <= 0 && shapeHeight <= 0 && img == null)
@@ -221,13 +212,13 @@ public class SubmoduleFigure extends ModuleFigure
         if (img != imageFigure.getImage()) {
             imageFigure.setImage(img);
             imageFigure.setVisible(img != null);
-            Dimension imgSize = (img == null) ? 
+            Dimension imgSize = img == null ?
                     new Dimension(0,0) : new Dimension(img.getImageData().width, img.getImageData().height);
-            // we set the image minimum size, so it will never be clipped        
+            // we set the image minimum size, so it will never be clipped
             imageFigure.setPreferredSize(imgSize);
         }
         setPreferredSize(imageFigure.getPreferredSize());
-        
+
         // creating the shape
         currShape = null;
         rectShapeFigure.setVisible(false);
@@ -267,7 +258,7 @@ public class SubmoduleFigure extends ModuleFigure
         currShape.setOutline(shapeBorderColor != null && shapeBorderWidth > 0);
         currShape.setForegroundColor(shapeBorderColor);
         currShape.setLineWidth(shapeBorderWidth);
-        
+
         // if both coordinates < 0 then the icon should be used as a size reference
         Dimension shapeSize = new Dimension(shapeWidth, shapeHeight);
         if (shapeSize.width < 0 && shapeSize.height < 0) {
@@ -281,16 +272,16 @@ public class SubmoduleFigure extends ModuleFigure
         // if only one of them is less than 0 then take the other dimension as reference (rectangular bounding)
         if (actualSize.width < 0) actualSize.width = actualSize.height;
         if (actualSize.height < 0) actualSize.height = actualSize.width;
-        // set the preferred size of the parent, so the child's 
+        // set the preferred size of the parent, so the child's
         currShape.setPreferredSize(actualSize);
-        
+
         // ensure  that the size is not smaller than the visible image's preferred size
         if(imageFigure.isVisible())
             actualSize.union(imageFigure.getPreferredSize());
         setPreferredSize(actualSize);
         invalidate();
     }
-    
+
     /**
      * Sets the external image decoration (for pins)
      * @param img
@@ -298,7 +289,7 @@ public class SubmoduleFigure extends ModuleFigure
     public void setImageDecoration(Image img) {
         if(img != decoratorImageFigure.getImage())
             decoratorImageFigure.setImage(img);
-        
+
         decoratorImageFigure.setVisible(img != null);
         invalidate();
     }
@@ -308,18 +299,26 @@ public class SubmoduleFigure extends ModuleFigure
     }
 
     /**
-     * Sets the layout constraint for this submodule figure 
+     * Sets the layout constraint for this submodule figure
      * @param constr
      */
     public void setConstraint(SubmoduleConstraint constr) {
         getParent().setConstraint(this, constr);
     }
-    
+
+    /**
+     * @return The constraint object belonging to this figure
+     */
+    public SubmoduleConstraint getConstraint() {
+        return (SubmoduleConstraint)getParent().getLayoutManager().getConstraint(this);
+    }
+
 	/**
 	 * Adjusts the image properties using a displayString object (except the location and size)
 	 * @param dps
 	 */
-	public void setDisplayString(IDisplayString dps) {
+	@Override
+    public void setDisplayString(IDisplayString dps) {
 		lastDisplayString = dps;
         // range support
         setRange(
@@ -329,27 +328,27 @@ public class SubmoduleFigure extends ModuleFigure
         		dps.getAsIntDef(IDisplayString.Prop.RANGEBORDERWIDTH, -1));
         // tooltip support
         setTooltipText(dps.getAsStringDef(IDisplayString.Prop.TOOLTIP));
-        
+
         // queue length support
         setQueueText(dps.getAsStringDef(IDisplayString.Prop.QUEUE));
 
         // additional text support
-        setInfoText(dps.getAsStringDef(IDisplayString.Prop.TEXT), 
+        setInfoText(dps.getAsStringDef(IDisplayString.Prop.TEXT),
         		dps.getAsStringDef(IDisplayString.Prop.TEXTPOS),
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.TEXTCOLOR)));
 
         // shape support
         String imgSize = dps.getAsStringDef(IDisplayString.Prop.IMAGESIZE);
         Image img = ImageFactory.getImage(
-        		dps.getAsStringDef(IDisplayString.Prop.IMAGE), 
+        		dps.getAsStringDef(IDisplayString.Prop.IMAGE),
         		imgSize,
         		ColorFactory.asRGB(dps.getAsStringDef(IDisplayString.Prop.IMAGECOLOR)),
         		dps.getAsIntDef(IDisplayString.Prop.IMAGECOLORPCT,0));
 
         // set the figure properties
-        setShape(img, 
-        		dps.getAsStringDef(IDisplayString.Prop.SHAPE), 
-        		dps.getSize(getScale()).width, 
+        setShape(img,
+        		dps.getAsStringDef(IDisplayString.Prop.SHAPE),
+        		dps.getSize(getScale()).width,
         		dps.getSize(getScale()).height,
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.FILLCOL)),
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.BORDERCOL)),
@@ -366,7 +365,7 @@ public class SubmoduleFigure extends ModuleFigure
         invalidate();
 	}
 
-    
+
     /**
      * @return The current scaling factor for the submodule
      */
@@ -391,11 +390,11 @@ public class SubmoduleFigure extends ModuleFigure
     public String getDirectEditText() {
         return nameFigure.getText();
     }
-    
+
     public void setDirectEditTextVisible(boolean visible) {
         nameFigure.setVisible(visible);
     }
-    
+
     /* (non-Javadoc)
      * @see org.eclipse.draw2d.Figure#containsPoint(int, int)
      * override it to include also the nameFigure, so clicking on submodule name would
