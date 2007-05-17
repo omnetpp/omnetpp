@@ -13,6 +13,7 @@ import org.omnetpp.eventlogtable.widgets.EventLogTable;
 /**
  * View for displaying and navigating simulation events and associated log messages.
  */
+//FIXME after project close, it keeps throwing ResourceException: Resource '/xxx/omnetpp.log' does not exist.
 public class EventLogTableView extends ViewWithMessagePart {
 	protected EventLogTable eventLogTable;
 
