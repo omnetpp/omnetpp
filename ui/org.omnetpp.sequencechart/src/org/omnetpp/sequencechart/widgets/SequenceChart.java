@@ -169,7 +169,7 @@ public class SequenceChart
 	private boolean showEventNumbers;
 	private AxisOrderingMode axisOrderingMode = AxisOrderingMode.MODULE_ID; // specifies the ordering mode of timelines
 
-	private HoverSupport hoverSupport = new HoverSupport();
+	private HoverSupport hoverSupport;
 
 	private boolean isDragging;
 	private int dragStartX = -1, dragStartY = -1, dragDeltaX, dragDeltaY; // temporary variables for drag handling
@@ -241,6 +241,8 @@ public class SequenceChart
 		setBackground(CHART_BACKGROUND_COLOR);
     	setUpMouseHandling();
 
+    	hoverSupport = new HoverSupport();
+    	hoverSupport.setHoverSizeConstaints(new Point(700, 200));
     	hoverSupport.adapt(this, new IHoverTextProvider() {
 			public String getHoverTextFor(Control control, int x, int y) {
 				return HoverSupport.addHTMLStyleSheet(getTooltipText(x, y));
