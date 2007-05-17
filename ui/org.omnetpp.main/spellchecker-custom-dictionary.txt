@@ -60,6 +60,7 @@ toolbar
 rescaling
 colorized
 colorization
+unpinned
 placeholder
 placeholders
 actionset
