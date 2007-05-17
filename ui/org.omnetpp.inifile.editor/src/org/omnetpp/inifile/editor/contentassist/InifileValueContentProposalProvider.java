@@ -16,6 +16,8 @@ import org.eclipse.jface.text.templates.Template;
 import org.omnetpp.common.contentassist.ContentProposal;
 import org.omnetpp.common.contentassist.ContentProposalProvider;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
+import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
@@ -109,7 +111,7 @@ s	 * before getting presented to the user.
 		if (entry==CFGID_NETWORK) {
 			ArrayList<IContentProposal> result = new ArrayList<IContentProposal>();
 			for (INEDTypeInfo ned : NEDResourcesPlugin.getNEDResources().getNetworks())
-				result.add(new ContentProposal(ned.getName(), ned.getName(), ned.getNEDElement().getComment()));
+				result.add(new ContentProposal(ned.getName(), ned.getName(), StringUtils.makeTextDocu(ned.getNEDElement().getComment())));
 			return result.toArray(new IContentProposal[] {});
 		}
 		if (entry==CFGID_PRELOAD_NED_FILES) {

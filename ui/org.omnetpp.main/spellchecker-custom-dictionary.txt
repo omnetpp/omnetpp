@@ -72,3 +72,8 @@ gif
 png
 timeline
 unfiltered
+hyperlink
+hyperlinks
+regexp
+multiline
+perl

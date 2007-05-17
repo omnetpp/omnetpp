@@ -118,27 +118,51 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     public static String makeBriefDocu(String comment, int maxlen) {
         if (comment==null)
             return null;
-        comment = comment.replaceAll("(?m)^\\s*//", "");                // remove "//"'s
-        comment = comment.replaceFirst("(?s)\n[ \t]*\n.*", "");         // keep only first paragraph, or:
-        comment = comment.replaceFirst("(?s)\\..*", "");                // extract the first sentence only
-        comment = comment.replaceAll("<.*?>","");                       // throw out tags
-        comment = comment.replaceAll("</.*?>","");                      // and end tags
-        comment = comment.replaceAll("(?s)\\s+", " ");                  // make it one line, and normalize whitespace
+
+        // BEWARE: Java's multiline regexp mode "(?m)" seems to be broken:
+        // negative sets "[^...]", "\s" etc may consume newlines, so substitutions
+        // may change the number of lines in the string! This corresponds to the
+        // documentation, but inconsistent with Perl!
+
+        comment = comment.replaceAll("(?m)^\\s*//#.*$", "");      // remove '//#' lines
+        comment = comment.replaceAll("(?m)^\\s*//", "");          // remove "//"'s
+        comment = comment.replaceFirst("(?s)\n[ \t]*\n.*", "");   // keep only first paragraph, or:
+        comment = comment.replaceFirst("(?s)\\..*", "");          // extract the first sentence only (up to the first period)
+        comment = comment.replaceAll("<.*?>","");                 // throw out tags (including end tags)
+        comment = comment.replaceAll("(?s)\\s+", " ");            // make it one line, and normalize whitespace
         if (comment.length() > maxlen)
             comment = comment.substring(0, maxlen)+"...";
         return comment.trim();
     }
 
     /**
-     * Convert documentation string to HTML format 
-     * @param comment
-     * @return The documentation in html format
+     * Formats a NED comment as plain text. Basically, strips "//" from the lines,
+     * any removes explicit HTML formatting from the string.
      */
-    // TODO <pre> amd <nohtml> is not supported
+    public static String makeTextDocu(String comment) {
+        if (comment==null)
+            return null;
+        
+        // BEWARE: Java's multiline mode "(?m)" seems to be broken, see above!
+
+        comment = comment.replaceAll("(?m)^[ \t]*//#.*$", "");  // remove '//#' lines
+        comment = comment.replaceAll("(?m)^[ \t]*//+ ?", "");   // remove "//"'s
+        comment = comment.replaceAll("<.*?>","");             // throw out tags (including end tags)
+        comment = comment.replaceAll("(?s)[ \t]+\n","\n");    // remove whitespace from end of lines
+        comment = comment.replaceAll("(?s)\n\n\n+","\n\n");   // remove multiple blank lines
+        return comment.trim();
+    }
+    
+    /**
+     * Converts documentation string to HTML format, and returns it. 
+     */
+    // TODO <pre> and <nohtml> is not supported
     public static String makeHtmlDocu(String comment) {
         if (comment==null)
             return null;
 
+        // BEWARE: Java's multiline mode "(?m)" seems to be broken, see above!
+        
         // add sentries to facilitate processing
         comment = "\n\n"+comment+"\n\n";
 
@@ -246,7 +270,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     }
 
     /**
-     * Returns the plural of an english <code>noun</code> (approximately). 
+     * Returns the plural of an English <code>noun</code> (approximately). 
      */
     public static String plural(String noun) {
     	if (isEmpty(noun))

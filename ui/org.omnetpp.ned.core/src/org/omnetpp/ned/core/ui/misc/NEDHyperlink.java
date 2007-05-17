@@ -13,7 +13,7 @@ import org.omnetpp.ned.model.INEDElement;
 public class NEDHyperlink implements IHyperlink {
 
     IRegion region;         // the region covered by the hyperlink
-    INEDElement target;      // the ned elemnt which should be opened
+    INEDElement target;      // the ned element which should be opened
     /**
      * @param reg The region covered by the link
      * @param element The target NED element that should be opened
