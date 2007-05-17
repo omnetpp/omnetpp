@@ -10,6 +10,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
 
+//FIXME if view gets displayed while no file is open --> NPE
 public class SequenceChartView extends ViewWithMessagePart {
 	protected SequenceChart sequenceChart;
 
@@ -21,7 +22,7 @@ public class SequenceChartView extends ViewWithMessagePart {
 		IViewSite viewSite = (IViewSite)getSite();
 		viewSite.setSelectionProvider(sequenceChart);
 
-		// contribue to toolbar
+		// contribute to toolbar
 		SequenceChartContributor sequenceChartContributor = new SequenceChartContributor(sequenceChart);
 		sequenceChart.setSequenceChartContributor(sequenceChartContributor);
 		sequenceChartContributor.contributeToToolBar(viewSite.getActionBars().getToolBarManager());
