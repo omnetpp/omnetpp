@@ -59,14 +59,14 @@ public class SequenceChartContributor extends EditorActionBarContributor {
     public final static String IMAGE_AXIS_ORDERING_MODE = TOOLIMAGE_DIR + "axisordering.png";
     public final static String IMAGE_SHOW_EVENT_NUMBERS = TOOLIMAGE_DIR + "eventnumbers.png";
     public final static String IMAGE_SHOW_MESSAGE_NAMES = TOOLIMAGE_DIR + "messagenames.png";
-    public final static String IMAGE_SHOW_REUSE_MESSAGES = TOOLIMAGE_DIR + "displaymode.png"; //XXX
-    public final static String IMAGE_SHOW_ARROW_HEADS = TOOLIMAGE_DIR + "displaymode.png"; //XXX
+    public final static String IMAGE_SHOW_REUSE_MESSAGES = TOOLIMAGE_DIR + "reusearrows.png";
+    public final static String IMAGE_SHOW_ARROW_HEADS = TOOLIMAGE_DIR + "arrowhead.png";
     public final static String IMAGE_INCREASE_SPACING = TOOLIMAGE_DIR + "incr_spacing.png";
     public final static String IMAGE_DECREASE_SPACING = TOOLIMAGE_DIR + "decr_spacing.png";
-    public final static String IMAGE_DENSE_AXES = TOOLIMAGE_DIR + "displaymode.png"; //XXX
-    public final static String IMAGE_BALANCED_AXES = TOOLIMAGE_DIR + "displaymode.png"; //XXX
-	public static final String IMAGE_ATTACH_VECTOR_TO_AXIS = TOOLIMAGE_DIR + "displaymode.png"; //XXX
-	public static final String IMAGE_BOOKMARK = TOOLIMAGE_DIR + "displaymode.png"; //XXX
+    public final static String IMAGE_DENSE_AXES = TOOLIMAGE_DIR + "denseaxes.png";
+    public final static String IMAGE_BALANCED_AXES = ""; // TOOLIMAGE_DIR + "displaymode.png";
+	public static final String IMAGE_ATTACH_VECTOR_TO_AXIS = TOOLIMAGE_DIR + "attachvector.png";
+	public static final String IMAGE_BOOKMARK = TOOLIMAGE_DIR + "bkmark_nav.gif";
 	public static final String IMAGE_FILTER_BY_MODULES = TOOLIMAGE_DIR + "filterbymod.png";
 	
 	private static SequenceChartContributor singleton;
