@@ -7,7 +7,7 @@
       <editor
             name="OMNeT++/OMNEST Sequence Chart"
             extensions="log"
-            icon="icons/sample.gif"
+            icon="icons/full/eobj16/sequencechart.png"
             contributorClass="org.omnetpp.sequencechart.editors.SequenceChartContributor"
             class="org.omnetpp.sequencechart.editors.SequenceChartEditor"
             id="org.omnetpp.sequencechart.editors.SequenceChartEditor"
@@ -19,7 +19,7 @@
          point="org.eclipse.ui.views">
       <view
             name="Sequence Chart"
-            icon="icons/sample.gif"
+            icon="icons/full/eview16/sequencechart.png"
             category="org.omnetpp.views"
             class="org.omnetpp.sequencechart.editors.SequenceChartView"
             id="org.omnetpp.sequencechart.editors.SequenceChartView">
