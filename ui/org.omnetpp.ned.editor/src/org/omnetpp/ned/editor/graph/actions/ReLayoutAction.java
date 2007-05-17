@@ -33,7 +33,8 @@ public class ReLayoutAction extends org.eclipse.gef.ui.actions.SelectionAction {
 	 * This command can be executed ONLY on submodules who has fixed location
 	 * @return
 	 */
-	protected boolean calculateEnabled() {
+	@Override
+    protected boolean calculateEnabled() {
 		// only support a single selected object
 		if (getSelectedObjects().size() != 1)
 			return false;
@@ -47,19 +48,20 @@ public class ReLayoutAction extends org.eclipse.gef.ui.actions.SelectionAction {
 	 * @return
 	 */
 	private Command getCommand() {
-		List selEditParts = getSelectedObjects();
-		
+		List<Object> selEditParts = getSelectedObjects();
+
 		if (selEditParts.size() != 1 || !(selEditParts.get(0) instanceof CompoundModuleEditPart))
 			return null;
-		
-		// get the parent of the currently selected 
-		CompoundModuleNodeEx compoundModuleNodeEx 
+
+		// get the parent of the currently selected
+		CompoundModuleNodeEx compoundModuleNodeEx
 			= (CompoundModuleNodeEx)((CompoundModuleEditPart)selEditParts.get(0)).getModel();
 		// create command that changes the compound modules layout seed
-		return new ChangeLayoutSeedCommand(compoundModuleNodeEx); 
+		return new ChangeLayoutSeedCommand(compoundModuleNodeEx);
 	}
 
-	public void run() {
+	@Override
+    public void run() {
 		execute(getCommand());
 	}
 

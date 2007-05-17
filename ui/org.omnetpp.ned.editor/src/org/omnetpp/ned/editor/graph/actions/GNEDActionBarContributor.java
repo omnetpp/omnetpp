@@ -26,11 +26,11 @@ import org.eclipse.ui.actions.RetargetAction;
 import org.eclipse.ui.part.EditorActionBarContributor;
 
 /**
- * Adds Graphical ned editor actions to the acion bar. 
+ * Adds Graphical ned editor actions to the action bar.
  * @author rhornig
  */
-// is its a copy of the original GEF ActionBarContributor becuase of the NPE issue if a non GEF editor
-// gets activated. once it is fixed in GEF theic calss can be derived from ActionBarContributor 
+// is its a copy of the original GEF ActionBarContributor because of the NPE issue if a non GEF editor
+// gets activated. once it is fixed in GEF their class can be derived from ActionBarContributor
 public class GNEDActionBarContributor extends EditorActionBarContributor {
 
     private ActionRegistry registry = new ActionRegistry();
@@ -39,8 +39,8 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
      * Contains the {@link RetargetAction}s that are registered as global action handlers.  We
      * need to hold on to these so that we can remove them as PartListeners in dispose().
      */
-    private List retargetActions = new ArrayList();
-    private List globalActionKeys = new ArrayList();
+    private List<RetargetAction> retargetActions = new ArrayList<RetargetAction>();
+    private final List<String> globalActionKeys = new ArrayList<String>();
 
     /**
      * Adds the given action to the action registry.
@@ -82,15 +82,15 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
 
     /**
      * Disposes the contributor. Removes all {@link RetargetAction}s that were {@link
-     * org.eclipse.ui.IPartListener}s on the {@link org.eclipse.ui.IWorkbenchPage} and 
+     * org.eclipse.ui.IPartListener}s on the {@link org.eclipse.ui.IWorkbenchPage} and
      * disposes them. Also disposes the action registry.
      * <P>
      * Subclasses may extend this method to perform additional cleanup.
      * @see org.eclipse.ui.part.EditorActionBarContributor#dispose()
      */
+    @Override
     public void dispose() {
-        for (int i = 0; i < retargetActions.size(); i++) {
-            RetargetAction action = (RetargetAction)retargetActions.get(i);
+        for (RetargetAction action : retargetActions ) {
             getPage().removePartListener(action);
             action.dispose();
         }
@@ -119,6 +119,7 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
     /**
      * @see EditorActionBarContributor#init(IActionBars)
      */
+    @Override
     public void init(IActionBars bars) {
         buildActions();
         declareGlobalActionKeys();
@@ -128,19 +129,20 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
     /**
      * @see org.eclipse.ui.IEditorActionBarContributor#setActiveEditor(IEditorPart)
      */
+    @Override
     public void setActiveEditor(IEditorPart editor) {
         ActionRegistry registry = (ActionRegistry)editor.getAdapter(ActionRegistry.class);
         IActionBars bars = getActionBars();
         for (int i = 0; i < globalActionKeys.size(); i++) {
-            String id = (String)globalActionKeys.get(i);
-            // XXX fix for the NPE if non GEF editor is activated (in that case the global 
+            String id = globalActionKeys.get(i);
+            // XXX fix for the NPE if non GEF editor is activated (in that case the global
             // actions should be removed)
-            IAction action = (registry == null) ? null : registry.getAction(id);
+            IAction action = registry == null ? null : registry.getAction(id);
             // end fix
             bars.setGlobalActionHandler(id, action);
         }
     }
-    
+
 // ********** customize the graphical NED editor ***********************
 
     /**
@@ -150,7 +152,7 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
         addRetargetAction(new UndoRetargetAction());
         addRetargetAction(new RedoRetargetAction());
 
-        RetargetAction retAction; 
+        RetargetAction retAction;
         addRetargetAction(retAction = new RetargetAction(UnpinAction.ID, UnpinAction.MENUNAME));
         retAction.setToolTipText(UnpinAction.TOOLTIP);
         retAction.setImageDescriptor(UnpinAction.IMAGE);

@@ -24,7 +24,7 @@ public class RenameDirectEditManager extends DirectEditManager {
 
     /**
      * Creates a new RenameDirectEditManager with the given attributes.
-     * 
+     *
      * @param source
      *            the source EditPart
      * @param editorType
@@ -32,13 +32,14 @@ public class RenameDirectEditManager extends DirectEditManager {
      * @param locator
      *            the CellEditorLocator
      */
-    public RenameDirectEditManager(GraphicalEditPart source, Class editorType, 
+    public RenameDirectEditManager(GraphicalEditPart source, Class<?> editorType,
             IDirectEditSupport directEditable) {
         super(source, editorType, directEditable.getDirectEditCellEditorLocator());
         this.directEditable = directEditable;
         sourcePart = source;
     }
 
+    @Override
     protected void bringDown() {
         // This method might be re-entered when super.bringDown() is called.
         Font disposeFont = scaledFont;
@@ -48,7 +49,8 @@ public class RenameDirectEditManager extends DirectEditManager {
             disposeFont.dispose();
         directEditable.setDirectEditTextVisible(true);
     }
-    
+
+    @Override
     protected void initCellEditor() {
         Text text = (Text) getCellEditor().getControl();
         verifyListener = new VerifyListener() {
@@ -68,13 +70,14 @@ public class RenameDirectEditManager extends DirectEditManager {
         text.addVerifyListener(verifyListener);
 
         // set the initial content from themodel
-        if (sourcePart.getModel() instanceof IHasName) 
+        if (sourcePart.getModel() instanceof IHasName)
             getCellEditor().setValue(((IHasName)sourcePart.getModel()).getName());
-        
+
         // hide the underlying label text
         directEditable.setDirectEditTextVisible(false);
     }
 
+    @Override
     protected void unhookListeners() {
         super.unhookListeners();
         Text text = (Text) getCellEditor().getControl();

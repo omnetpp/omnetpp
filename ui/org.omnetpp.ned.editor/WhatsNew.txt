@@ -1,3 +1,6 @@
+  + Added image export to compound module content assist and also some 
+    wizzards in OMNSET category. It is possible to generate images to
+    all/selected nedfiles in the workspace.
   + revised propery cell editors, added content assist to color/icon ediotrs
   + ned docs/comments for modules in the graphical editor as a tooltip
   + new icon chooser dialog

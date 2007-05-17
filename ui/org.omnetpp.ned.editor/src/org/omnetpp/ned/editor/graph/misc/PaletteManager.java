@@ -5,19 +5,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 
-import org.eclipse.gef.palette.CombinedTemplateCreationEntry;
-import org.eclipse.gef.palette.ConnectionCreationToolEntry;
-import org.eclipse.gef.palette.MarqueeToolEntry;
-import org.eclipse.gef.palette.PaletteContainer;
-import org.eclipse.gef.palette.PaletteDrawer;
-import org.eclipse.gef.palette.PaletteGroup;
-import org.eclipse.gef.palette.PaletteRoot;
-import org.eclipse.gef.palette.PaletteStack;
-import org.eclipse.gef.palette.PanningSelectionToolEntry;
-import org.eclipse.gef.palette.ToolEntry;
+import org.eclipse.gef.palette.*;
 import org.eclipse.gef.tools.MarqueeSelectionTool;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.widgets.Display;
+
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.common.image.ImageFactory;
@@ -47,7 +38,7 @@ import org.omnetpp.ned.model.pojo.PropertyNode;
  * @author rhornig
  */
 // TODO currently the whole palette is rebuilt on each model change
-// this is not necessay. Detect the changes in the palette and add/remove/modify only
+// this is not necessary. Detect the changes in the palette and add/remove/modify only
 // entries which really need refresh
 public class PaletteManager implements INEDChangeListener {
     GraphicalNedEditor hostingEditor;
@@ -69,8 +60,8 @@ public class PaletteManager implements INEDChangeListener {
 
     /* (non-Javadoc)
      * @see org.omnetpp.ned.model.notification.INEDChangeListener#modelChanged(org.omnetpp.ned.model.notification.NEDModelEvent)
-     * Called when a change occured in the module which forces palette redraw
-     * NOTE: this notification can arrive in any thread (even in a backgrund thread)
+     * Called when a change occurred in the module which forces palette redraw
+     * NOTE: this notification can arrive in any thread (even in a background thread)
      */
     public void modelChanged(NEDModelEvent event) {
         paletteUpdaterJob.restartTimer();
@@ -89,7 +80,7 @@ public class PaletteManager implements INEDChangeListener {
         nedPalette.add(componentsDrwawer);
         nedPalette.addAll(createSubmodulesDrawer());
     }
-    
+
     /**
      * creates several submodule drawers using currently parsed types
      * and using the GROUP property as the drawer name
@@ -133,7 +124,7 @@ public class PaletteManager implements INEDChangeListener {
 
             // determine which palette group it belongs to or put it to the default
             PropertyNode property = (PropertyNode)comp.getProperties().get("group");
-            String group = (property == null) ? defaultGroupName
+            String group = property == null ? defaultGroupName
                             : NEDElementUtilEx.getPropertyValue(property);
 
             if (group == null || "".equals(group))
