@@ -122,11 +122,11 @@ public class ImageFactory {
     private static String[] imageDirs;
     private static List<String> imageNameList = null;
     // image size constants
-    public static final int SIZE_VS = 40; 
-    public static final int SIZE_S = 60; 
-    public static final int SIZE_NORMAL = 100; 
-    public static final int SIZE_L = 150; 
-    public static final int SIZE_VL = 250;
+    public static final int SIZE_VS = -40; 
+    public static final int SIZE_S = -60; 
+    public static final int SIZE_NORMAL = -100; 
+    public static final int SIZE_L = -150; 
+    public static final int SIZE_VL = -250;
 
     static {
         imageDirs = new String[0];
@@ -229,7 +229,7 @@ public class ImageFactory {
             imageId = imageId.substring(0, imageId.length()-3);
         }
 
-        // imageSIze takes precendence over the suffix in the imageId
+        // imageSIze takes precedence over the suffix in the imageId
         if (imageSize == null || "".equals(imageSize)) 
             imageSize = sizeSuffix;
 

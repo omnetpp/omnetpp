@@ -34,7 +34,7 @@ public class NedImageDescriptor extends ImageDescriptor {
      */
     private String name;
 
-    private int preferredScale = 100;
+    private int preferredScale = -100;
     private RGB colorization = null;
     private int colorizationWeight = 0;
     private static Rectangle NULLPADDING = new Rectangle(0,0,0,0);
@@ -77,8 +77,8 @@ public class NedImageDescriptor extends ImageDescriptor {
     }
 
     /**
-     * Sets the preferred scaling factor. If preferredScale < 0 it is treated 
-     * as an absolute width parameter
+     * Sets the preferred scaling factor. If preferredScale > 0 it is treated 
+     * as an absolute width parameter, otherwise it is assumed to be a percent value
      * @param preferredScale
      */
     public void setPreferredScale(int preferredScale) {
@@ -230,7 +230,7 @@ public class NedImageDescriptor extends ImageDescriptor {
     }
 
     /**
-     * Utility method to shade image data with a wighted color
+     * Utility method to shade image data with a weighted color
      * @param data The in-place converted image data
      * @param shade Shading color
      * @param weight The amount of shading 0 - 100
@@ -307,17 +307,17 @@ public class NedImageDescriptor extends ImageDescriptor {
      */
     private ImageData rescaleImageData(ImageData imgData) {
         // do not change anything if no re-scale is needed and no padding requested
-        if ((preferredScale==100 || imgData.width==0 || imgData.width==-preferredScale) &&
+        if ((preferredScale == -100 || imgData.width==0 || imgData.width==preferredScale) &&
                 padding.equals(NULLPADDING))
             return imgData;
         
         double scaleRatio;
-        if (preferredScale < 0)
+        if (preferredScale > 0)
             // treat as absolute size
-            scaleRatio = -(double)preferredScale / imgData.width;
+            scaleRatio = (double)preferredScale / imgData.width;
         else
             // treat as relative size in percent
-            scaleRatio = (double)preferredScale / 100;
+            scaleRatio = -(double)preferredScale / 100;
         
         return ImageConverter.getResampledImageData(imgData, (int)(imgData.width*scaleRatio), (int)(imgData.height*scaleRatio), 
                                     padding.x, padding.y, padding.width, padding.height);
