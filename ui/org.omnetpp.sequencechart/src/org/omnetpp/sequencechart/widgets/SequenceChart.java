@@ -2335,7 +2335,7 @@ public class SequenceChart
 	 * Returns a descriptive message for the ModuleTreeItem to be presented to the user.
 	 */
 	public String getAxisText(ModuleTreeItem axisModule) {
-		return "axis "+axisModule.getModuleFullPath();
+		return "Axis "+axisModule.getModuleFullPath();
 	}
 
 	/**
@@ -2358,7 +2358,7 @@ public class SequenceChart
 		}
 		else {
 			BeginSendEntry beginSendEntry = messageDependency.getBeginSendEntry();
-			String result = (messageDependency.getIsReuse() ? "reusing " : "sending ") + "message ";
+			String result = (messageDependency.getIsReuse() ? "Reusing " : "Sending "); // + "Message ";
 
 			String detail = beginSendEntry.getDetail();
 			if (detail == null)
@@ -2382,7 +2382,7 @@ public class SequenceChart
 	 */
 	public String getEventText(IEvent event) {
 		ModuleCreatedEntry moduleCreatedEntry = eventLog.getModuleCreatedEntry(event.getModuleId());
-		String result = "event #" + event.getEventNumber() + " at t = " + event.getSimulationTime()
+		String result = "Event #" + event.getEventNumber() + " at t = " + event.getSimulationTime()
 			+ " at (" + moduleCreatedEntry.getModuleClassName() + ") "
 			+ moduleCreatedEntry.getFullName()
 			+ " (id = " + event.getModuleId() + ")";
