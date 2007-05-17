@@ -74,12 +74,13 @@
      <view
            category="org.omnetpp.views"
            class="org.omnetpp.scave.views.VectorBrowserView"
-           icon="icons/vecfile.png"
+           icon="icons/full/eview16/outvector.gif"
            id="org.omnetpp.scave.VectorBrowserView"
            name="Output Vector"/>
      <view
            category="org.omnetpp.views"
            class="org.omnetpp.scave.views.DatasetView"
+           icon="icons/full/eview16/dataset.gif"
            id="org.omnetpp.scave.DatasetView"
            name="Dataset"/>
   </extension>
