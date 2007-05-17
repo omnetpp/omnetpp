@@ -14,37 +14,38 @@ public class EnumPropertyDescriptor extends PropertyDescriptor {
 
 	private final static Object[] EmptyObjectArray = new Object[0];
 	private final static String[] EmptyStringArray = new String[0];
-	
+
 	private String[] names;
 	private Object[] values;
-	
+
 	public EnumPropertyDescriptor(Object id, String displayName) {
 		super(id, displayName);
 		names = EmptyStringArray;
 		values = EmptyObjectArray;
-		
+
 		setLabelProvider(new LabelProvider() {
-			public String getText(Object value) {
+			@Override
+            public String getText(Object value) {
 				String name = getName(value);
 				return name != null ? name : "";
 			}
 		});
 	}
-	
-	public void setEnumType(Class enumType) {
+
+	public void setEnumType(Class<?> enumType) {
 		setEnumType(enumType, false);
 	}
-	
-	public void setEnumType(Class enumType, boolean optional)
+
+	public void setEnumType(Class<?> enumType, boolean optional)
 	{
 		List<Object> values = new ArrayList<Object>();
 		List<String> names = new ArrayList<String>();
-		
+
 		if (optional) {
 			values.add(null);
 			names.add("");
 		}
-		
+
 		if (enumType.isEnum()) { // Java 1.5 enum class
 			Object[] enumValues = enumType.getEnumConstants();
 			for (Object value : enumValues) {
@@ -71,7 +72,7 @@ public class EnumPropertyDescriptor extends PropertyDescriptor {
 		this.values = values.toArray();
 		this.names = names.toArray(new String[names.size()]);
 	}
-	
+
 	public String getName(Object value) {
 		for (int i = 0; i < values.length; ++i)
 			if (value == null && values[i] == null ||
@@ -79,7 +80,7 @@ public class EnumPropertyDescriptor extends PropertyDescriptor {
 				return names[i];
 		return null;
 	}
-	
+
 	public Object getValue(String name) {
 		if (name != null)
 			for (int i = 0; i < names.length; ++i)
@@ -87,8 +88,9 @@ public class EnumPropertyDescriptor extends PropertyDescriptor {
 					return values[i];
 		return null;
 	}
-	
-	public CellEditor createPropertyEditor(Composite parent) {
+
+	@Override
+    public CellEditor createPropertyEditor(Composite parent) {
         CellEditor editor = new EnumCellEditor(parent, names, values);
         if (getValidator() != null)
             editor.setValidator(getValidator());

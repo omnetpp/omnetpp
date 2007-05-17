@@ -22,7 +22,7 @@ import org.omnetpp.common.util.StringUtils;
 /**
  * Abstract base class for PropertySource wrappers.
  *
- * <p> This is a facility to add property source behaviour to
+ * <p> This is a facility to add property source behavior to
  * an existing hierarchy of classes. You can write a subclass of PropertySource
  * for the objects having properties displayed on the property sheet.
  * The subclass has getter/setter/default methods, the getter annotated with Property.
@@ -36,7 +36,7 @@ import org.omnetpp.common.util.StringUtils;
  */
 public abstract class PropertySource implements IPropertySource2 {
 
-	static Map<Class,Entry> map;
+	static Map<Class<?>,Entry> map;
 
 	// Meta-data for property sources (per class).
 	static class Entry
@@ -77,7 +77,7 @@ public abstract class PropertySource implements IPropertySource2 {
 	public PropertySource()
 	{
 		if (map == null)
-			map = new HashMap<Class,Entry>();
+			map = new HashMap<Class<?>,Entry>();
 		if (!map.containsKey(getClass()))
 			buildPropInfo();
 	}
@@ -104,7 +104,7 @@ public abstract class PropertySource implements IPropertySource2 {
 				try {
 					Property propAnnotation = getter.getAnnotation(Property.class);
 					String propName = propNameFromGetterName(getter.getName());
-					Class propType = getter.getReturnType();
+					Class<?> propType = getter.getReturnType();
 					IPropertyDescriptor descriptor;
 					Method setter = getPropertySetter(propClass, propName, propType);
 					Method defaultGetter = getPropertyDefaultGetter(propClass, propName, propType);
@@ -160,7 +160,7 @@ public abstract class PropertySource implements IPropertySource2 {
 		if (startIndex < len)
 			syllables.add(str.substring(startIndex));
 
-		return (String[])syllables.toArray(new String[syllables.size()]);
+		return syllables.toArray(new String[syllables.size()]);
 	}
 
 	private static String unsplit(String[] strings, String separator) {
@@ -174,7 +174,7 @@ public abstract class PropertySource implements IPropertySource2 {
 		return sb.toString();
 	}
 
-	private static Method getPropertySetter(Class<? extends PropertySource> propClass, String propName, Class propType) {
+	private static Method getPropertySetter(Class<? extends PropertySource> propClass, String propName, Class<?> propType) {
 		try {
 			Method method = propClass.getMethod("set" + propName, propType);
 			if (method != null) {
