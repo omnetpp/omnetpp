@@ -55,3 +55,6 @@ registry
 toplevel
 unpin
 toolbar
+rescaling
+colorized
+colorization
