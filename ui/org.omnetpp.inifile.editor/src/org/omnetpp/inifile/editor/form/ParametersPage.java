@@ -14,6 +14,7 @@ import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -58,6 +59,11 @@ public class ParametersPage extends FormPage {
 	private TableViewer tableViewer;
 	private Combo sectionsCombo;
 	private Label sectionChainLabel;
+	private Button addButton;
+	private Button removeButton;
+	private Button upButton;
+	private Button downButton;
+	private Button addMissingButton;
 
 	public ParametersPage(Composite parent, InifileEditor inifileEditor) {
 		super(parent, inifileEditor);
@@ -281,152 +287,173 @@ public class ParametersPage extends FormPage {
 		Composite buttonGroup = new Composite(this, SWT.NONE);
 		buttonGroup.setLayout(new GridLayout(1,false));
 
-		Button addButton = createButton(buttonGroup, "Add");
-		Button removeButton = createButton(buttonGroup, "Remove");
-		//new Label(buttonGroup, SWT.NONE);
-		Button upButton = createButton(buttonGroup, "Up");
-		Button downButton = createButton(buttonGroup, "Down");
+		addButton = createButton(buttonGroup, "Add");
+		removeButton = createButton(buttonGroup, "Remove");
+		upButton = createButton(buttonGroup, "Up");
+		downButton = createButton(buttonGroup, "Down");
 		new Label(buttonGroup, SWT.NONE);
-		Button addMissingButton = createButton(buttonGroup, "Add missing...");
-
+		addMissingButton = createButton(buttonGroup, "Add missing...");
+		
 		addButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				// determine where to insert new element
-				IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
-				SectionKey beforeSectionKey = sel.isEmpty() ? null : (SectionKey) sel.getFirstElement();
-				String section = beforeSectionKey == null ? sectionsCombo.getText() : beforeSectionKey.section;
-				String beforeKey = beforeSectionKey == null ? null : beforeSectionKey.key;
-
-				// generate unique key
-				IInifileDocument doc = getInifileDocument();
-				String newKey = "**.newKey";
-				if (doc.containsKey(section, newKey)) {
-					int i = 1;
-					while (doc.containsKey(section, newKey+i)) i++;
-					newKey = newKey+i;
-				}
-
-				try {
-					// insert key and refresh table
-					//XXX all keys are from a readonly base section, one cannot add new keys!!!!
-					doc.addEntry(section, newKey, "", null, beforeKey);
-					reread();
-					tableViewer.editElement(newKey, 1);
-				}
-				catch (RuntimeException ex) {
-					showErrorDialog(ex);
-				}
+				addEntry();
 			}
 		});
 
 		removeButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
-				try {
-					for (Object o : sel.toArray()) {
-						SectionKey item = (SectionKey) o;
-						getInifileDocument().removeKey(item.section, item.key);
-					}
-					tableViewer.getTable().deselectAll();
-					reread();
-				}
-				catch (RuntimeException ex) {
-					showErrorDialog(ex);
-				}
+				removeEntries();
 			}
 		});
 
 		upButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
-				SectionKey[] items = (SectionKey[]) tableViewer.getInput();
-				try {
-					//XXX does not work properly
-					for (Object o : sel.toArray()) {
-						SectionKey item = (SectionKey) o;
-						int pos = ArrayUtils.indexOf(items, item);
-						Assert.isTrue(pos != -1);
-						if (pos == 0) 
-							break; // hit the top
-						getInifileDocument().moveKey(item.section, item.key, items[pos-1].key);
-						SectionKey tmp = items[pos-1]; items[pos-1] = items[pos]; items[pos] = tmp;
-					}
-					reread();
-				}
-				catch (RuntimeException ex) {
-					showErrorDialog(ex);
-				}
-				tableViewer.setSelection(sel);
+				moveEntriesUp();
 			}
 		});
 
 		downButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
-				Object[] array = sel.toArray();
-				SectionKey[] items = (SectionKey[]) tableViewer.getInput();
-				try {
-					ArrayUtils.reverse(array);  // we must iterate in reverse order
-					//XXX does not work properly
-					for (Object o : array) {
-						SectionKey item = (SectionKey) o;
-						int pos = ArrayUtils.indexOf(items, item);
-						Assert.isTrue(pos != -1);
-						if (pos == items.length-1) 
-							break; // hit the bottom
-						getInifileDocument().moveKey(item.section, item.key, pos==items.length-2 ? null : items[pos+2].key);
-						SectionKey tmp = items[pos+1]; items[pos+1] = items[pos]; items[pos] = tmp;
-					}
-					reread();
-				}
-				catch (RuntimeException ex) {
-					showErrorDialog(ex);
-				}
-				tableViewer.setSelection(sel);
+				moveEntriesDown();
 			}
 		});
 
 		addMissingButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				String selectedSection = sectionsCombo.getText();
-				InifileAnalyzer analyzer = getInifileAnalyzer();
-				IInifileDocument doc = analyzer.getDocument();
-
-				// open the dialog
-				AddInifileKeysDialog dialog = new AddInifileKeysDialog(getShell(), analyzer, selectedSection);
-				if (dialog.open()==Dialog.OK) {
-					// save selection
-					IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
-
-					// add user-selected keys to the document, and also **.apply-default if chosen by the user
-					String[] keys = dialog.getKeys();
-					String section = dialog.getSection();
-					try {
-						doc.addEntries(section, keys, null, null, null);
-						if (dialog.getAddApplyDefault())
-							InifileUtils.addEntry(doc, section, "**.apply-default", "true", null);
-
-						// refresh table and restore selection
-						reread();
-					}
-					catch (RuntimeException ex) {
-						showErrorDialog(ex);
-					}
-					tableViewer.setSelection(sel);
-				}
+				addMissingKeys();
 			}
 		});
 
 		return buttonGroup;
 	}
 
-	private Button createButton(Composite buttonGroup, String label) {
+	protected Button createButton(Composite buttonGroup, String label) {
 		Button button = new Button(buttonGroup, SWT.PUSH);
 		button.setText(label);
 		button.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
 		return button;
 	}
 
+	protected void addEntry() {
+		// determine where to insert new element
+		IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
+		SectionKey beforeSectionKey = sel.isEmpty() ? null : (SectionKey) sel.getFirstElement();
+		String section = beforeSectionKey == null ? sectionsCombo.getText() : beforeSectionKey.section;
+		String beforeKey = beforeSectionKey == null ? null : beforeSectionKey.key;
+
+		// generate unique key
+		IInifileDocument doc = getInifileDocument();
+		String newKey = "**.newKey";
+		if (doc.containsKey(section, newKey)) {
+			int i = 1;
+			while (doc.containsKey(section, newKey+i)) i++;
+			newKey = newKey+i;
+		}
+
+		try {
+			// insert key and refresh table
+			//XXX if all keys are from a readonly base section, one cannot add new keys AT ALL !!!!
+			doc.addEntry(section, newKey, "", null, beforeKey);
+			reread();
+			tableViewer.getTable().setFocus();
+			tableViewer.setSelection(new StructuredSelection(new SectionKey(section, newKey)), true);
+			tableViewer.editElement(newKey, 1); //XXX does not seem to work
+		}
+		catch (RuntimeException ex) {
+			showErrorDialog(ex);
+		}
+	}
+
+	protected void removeEntries() {
+		IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
+		try {
+			for (Object o : sel.toArray()) {
+				SectionKey item = (SectionKey) o;
+				getInifileDocument().removeKey(item.section, item.key);
+			}
+			tableViewer.getTable().deselectAll();
+			reread();
+		}
+		catch (RuntimeException ex) {
+			showErrorDialog(ex);
+		}
+	}
+
+	protected void moveEntriesUp() {
+		IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
+		SectionKey[] items = (SectionKey[]) tableViewer.getInput();
+		try {
+			//XXX does not work properly
+			for (Object o : sel.toArray()) {
+				SectionKey item = (SectionKey) o;
+				int pos = ArrayUtils.indexOf(items, item);
+				Assert.isTrue(pos != -1);
+				if (pos == 0) 
+					break; // hit the top
+				getInifileDocument().moveKey(item.section, item.key, items[pos-1].key);
+				SectionKey tmp = items[pos-1]; items[pos-1] = items[pos]; items[pos] = tmp;
+			}
+			reread();
+		}
+		catch (RuntimeException ex) {
+			showErrorDialog(ex);
+		}
+		tableViewer.setSelection(sel);
+	}
+
+	protected void moveEntriesDown() {
+		IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
+		Object[] array = sel.toArray();
+		SectionKey[] items = (SectionKey[]) tableViewer.getInput();
+		try {
+			ArrayUtils.reverse(array);  // we must iterate in reverse order
+			//XXX does not work properly
+			for (Object o : array) {
+				SectionKey item = (SectionKey) o;
+				int pos = ArrayUtils.indexOf(items, item);
+				Assert.isTrue(pos != -1);
+				if (pos == items.length-1) 
+					break; // hit the bottom
+				getInifileDocument().moveKey(item.section, item.key, pos==items.length-2 ? null : items[pos+2].key);
+				SectionKey tmp = items[pos+1]; items[pos+1] = items[pos]; items[pos] = tmp;
+			}
+			reread();
+		}
+		catch (RuntimeException ex) {
+			showErrorDialog(ex);
+		}
+		tableViewer.setSelection(sel);
+	}
+
+	protected void addMissingKeys() {
+		String selectedSection = sectionsCombo.getText();
+		InifileAnalyzer analyzer = getInifileAnalyzer();
+		IInifileDocument doc = analyzer.getDocument();
+
+		// open the dialog
+		AddInifileKeysDialog dialog = new AddInifileKeysDialog(getShell(), analyzer, selectedSection);
+		if (dialog.open()==Dialog.OK) {
+			// save selection
+			IStructuredSelection sel = (IStructuredSelection) tableViewer.getSelection();
+
+			// add user-selected keys to the document, and also **.apply-default if chosen by the user
+			String[] keys = dialog.getKeys();
+			String section = dialog.getSection();
+			try {
+				doc.addEntries(section, keys, null, null, null);
+				if (dialog.getAddApplyDefault())
+					InifileUtils.addEntry(doc, section, "**.apply-default", "true", null);
+
+				// refresh table and restore selection
+				reread();
+			}
+			catch (RuntimeException ex) {
+				showErrorDialog(ex);
+			}
+			tableViewer.setSelection(sel);
+		}
+	}
+	
 	@Override
 	public void gotoSection(String section) {
 		sectionsCombo.setText(section);
@@ -479,4 +506,5 @@ public class ParametersPage extends FormPage {
 	public String getPageCategory() {
 		return InifileFormEditor.PARAMETERS_PAGE;
 	}
+
 }
