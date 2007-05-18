@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -39,6 +40,7 @@ public class NedImageDescriptor extends ImageDescriptor {
     private int colorizationWeight = 0;
     private static Rectangle NULLPADDING = new Rectangle(0,0,0,0);
     private Rectangle padding = NULLPADDING;
+    private Dimension paddedSize = null;
 
     /**
      * Creates a new file image descriptor.
@@ -68,6 +70,18 @@ public class NedImageDescriptor extends ImageDescriptor {
         this.preferredScale = preferredScale;
     }
 
+    /**
+     * @return A copy of the current ImageDescriptor.
+     */
+    public NedImageDescriptor getCopy() {
+        NedImageDescriptor copy = new NedImageDescriptor(this.location, this.name, this.preferredScale);
+        copy.colorization = this.colorization;
+        copy.colorizationWeight = this.colorizationWeight;
+        copy.paddedSize = this.paddedSize;
+        copy.padding = this.padding;
+        return copy;
+    }
+
     public void setColorization(RGB colorization) {
         this.colorization = colorization;
     }
@@ -78,7 +92,8 @@ public class NedImageDescriptor extends ImageDescriptor {
 
     /**
      * Sets the preferred scaling factor. If preferredScale > 0 it is treated
-     * as an absolute width parameter, otherwise it is assumed to be a percent value
+     * as an absolute WIDTH parameter, otherwise it is assumed to be a percent value
+     * The aspect ratio of the image is kept
      * @param preferredScale
      */
     public void setPreferredScale(int preferredScale) {
@@ -99,6 +114,16 @@ public class NedImageDescriptor extends ImageDescriptor {
      */
     public void setPadding(int padValue) {
         this.padding = new Rectangle(padValue, padValue, padValue, padValue);
+    }
+
+    /**
+     * Sets the size of the image. The image is fitted into this size, and aspect ration is always kept.
+     * If needed addition transparent pixels are added. The Padding value is also considered also here.
+     * If both this and the preferredSize is set, padded size takes precedence
+     * @param paddedSize
+     */
+    public void setPaddedSize(Dimension paddedSize) {
+        this.paddedSize = paddedSize;
     }
 
     /* (non-Javadoc)
@@ -158,7 +183,7 @@ public class NedImageDescriptor extends ImageDescriptor {
             }
         }
         // add colorization effect to the image data
-        shadeImageData(result, colorization, colorizationWeight);
+        result = shadeImageData(result, colorization, colorizationWeight);
         result = rescaleImageData(result);
         return result;
     }
@@ -227,15 +252,16 @@ public class NedImageDescriptor extends ImageDescriptor {
     }
 
     /**
-     * Utility method to shade image data with a weighted color
+     * Utility method to shade image data with a weighted color. Modifies the provided image data
+     * and returns it for convenience
      * @param data The in-place converted image data
      * @param shade Shading color
      * @param weight The amount of shading 0 - 100
      */
-    private static void shadeImageData(ImageData data, RGB shade, int weight) {
+    private static ImageData shadeImageData(ImageData data, RGB shade, int weight) {
 
         if(data == null || shade == null || weight <= 0)
-            return;
+            return data;
 
         int width = data.width;
         int height = data.height;
@@ -289,6 +315,7 @@ public class NedImageDescriptor extends ImageDescriptor {
                 data.setPixels(0, y, width, scanline, 0);
             }
         }
+        return data;
     }
 
     // calculate the colorization of a single point
@@ -305,24 +332,27 @@ public class NedImageDescriptor extends ImageDescriptor {
     private ImageData rescaleImageData(ImageData imgData) {
         // do not change anything if no re-scale is needed and no padding requested
         if ((preferredScale == -100 || imgData.width==0 || imgData.width==preferredScale) &&
-                padding.equals(NULLPADDING))
+                padding.equals(NULLPADDING) && paddedSize == null)
             return imgData;
 
-        double scaleRatio;
-        if (preferredScale > 0)
-            // treat as absolute size
-            scaleRatio = (double)preferredScale / imgData.width;
-        else
-            // treat as relative size in percent
-            scaleRatio = -(double)preferredScale / 100;
+        int newWidth, newHeight;
 
+        if (paddedSize != null) {
+            newWidth = paddedSize.width;
+            newHeight = paddedSize.height;
+        } else {
+            double scaleRatio;
+            if (preferredScale > 0)
+                // treat as absolute size
+                scaleRatio = (double)preferredScale / imgData.width;
+            else
+                // treat as relative size in percent
+                scaleRatio = -(double)preferredScale / 100;
 
-        // image should not be smaller than the padding itself
-        int newWidth = Math.max((int)(imgData.width*scaleRatio), padding.x+padding.width);
-        int newHeight = Math.max((int)(imgData.height*scaleRatio), padding.y+padding.height);
-
-        if (newWidth < 0 || newHeight < 0)
-            throw new IllegalArgumentException("Image size cannot be negative");
+            // image should not be smaller than the padding itself
+            newWidth = Math.max((int)(imgData.width*scaleRatio), padding.x+padding.width);
+            newHeight = Math.max((int)(imgData.height*scaleRatio), padding.y+padding.height);
+        }
 
         return ImageConverter.getResampledImageData(imgData, newWidth, newHeight,
                                     padding.x, padding.y, padding.width, padding.height);

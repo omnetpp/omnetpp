@@ -16,6 +16,7 @@ import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
@@ -130,6 +131,8 @@ public class ImageFactory {
      * @return a 16x16 image or null if there is no icon for that id
      */
     public static Image getIconImage(String imageId) {
+        if (imageId == null)
+            return null;
         // first try to get it from the icon cache
         Image img = iconImageRegistry.get(imageId);
         if (img != null)
@@ -137,16 +140,18 @@ public class ImageFactory {
         // if not in the cache get it from the general icon cache and resize it to fit our needs
         NedImageDescriptor descr = getDescriptor(imageId);
         if (descr == null) return null;
-        // re-sample the image to 16x16 with 1 pixel padding
+        // Get a copy and re-sample the image to 16x16 with 1 pixel padding
+        descr = descr.getCopy();
         descr.setPadding(1);
-        descr.setPreferredScale(16);
+        descr.setPaddedSize(new Dimension(16,16));
         // store the descriptor for later re-use
         iconImageRegistry.put(imageId, descr);
         return descr.createImage();
     }
 
     /**
-     * Returns the requested image searching on the bitmap path and in the resources
+     * Returns the requested image searching on the bitmap path and in the resources.
+     * You should NEVER modify the returned instance.
      * @param imageId the requested image's id
      * @return Image with a given ID
      */
@@ -154,6 +159,11 @@ public class ImageFactory {
         return getImage(imageId, null, null, -1);
     }
 
+    /**
+     * Returns an image descriptor for a given ID. You should NEVER modify the returned instance.
+     * @param imageId
+     * @return
+     */
     public static NedImageDescriptor getDescriptor(String imageId) {
         return getDescriptor(imageId, null, null, -1);
     }
@@ -200,7 +210,7 @@ public class ImageFactory {
      * @param imageId The requested image name
      * @param imageSize preferred size if possible either vs,s,l,vl or a number as size in pixel or percent (as a negative number)
      * @param shade icon shading color
-     * @param weight weigth (0-100) of the colorization effect
+     * @param weight weight (0-100) of the colorization effect
      * @return the requested image or <code>null</code> if imageId was also <code>null</code>
      */
     private static String getKeyFor(String imageId, String imageSize, RGB shade, int weight) {
@@ -274,8 +284,8 @@ public class ImageFactory {
 
         // adjust the colorization and size parameters for the descriptor
         if(result instanceof NedImageDescriptor) {
-            (result).setColorization(shade);
-            (result).setColorizationWeight(weight);
+            result.setColorization(shade);
+            result.setColorizationWeight(weight);
         }
 
         // add it to the image registry, so later we can reuse it. The key provides the
