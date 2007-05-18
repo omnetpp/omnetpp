@@ -77,3 +77,4 @@ hyperlinks
 regexp
 multiline
 perl
+rescale
