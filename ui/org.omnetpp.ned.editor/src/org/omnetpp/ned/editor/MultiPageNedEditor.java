@@ -48,14 +48,15 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 
     private GraphicalNedEditor graphEditor;
 	private TextualNedEditor textEditor;
-    private ResourceTracker resourceListener = new ResourceTracker();
+    private final ResourceTracker resourceListener = new ResourceTracker();
 
 	private int graphPageIndex;
 	private int textPageIndex;
 	private boolean insidePageChange = false;
     private boolean initPhase = true;
 
-	public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
+	@Override
+    public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
 		super.init(site, editorInput);
         if (!(editorInput instanceof IFileEditorInput))
             throw new PartInitException("Invalid input type!");
@@ -67,12 +68,12 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 
     @Override
     public void dispose() {
-        // detach the editor file from the core plugin and do not set a new file 
+        // detach the editor file from the core plugin and do not set a new file
         ((IFileEditorInput)getEditorInput()).getFile()
                 .getWorkspace().removeResourceChangeListener(resourceListener);
         super.dispose();
     }
-    
+
     /* (non-Javadoc)
      * @see org.eclipse.ui.part.EditorPart#setInput(org.eclipse.ui.IEditorInput)
      * Add remove listeners on input change
@@ -94,7 +95,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
             graphEditor.setInput(input);
         if (textEditor != null)
             textEditor.setInput(input);
-        
+
         // add listeners to the new file in workspace and in the ned resource manager
         if (getEditorInput() != null) {
             IFile file = ((IFileEditorInput) getEditorInput()).getFile();
@@ -142,7 +143,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 
 	    super.setActivePage(pageIndex);
 	}
-	
+
 	@Override
 	protected void pageChange(int newPageIndex) {
 	    //	prevent recursive call from setActivePage() below
@@ -186,18 +187,18 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
                 // after the parser/generator reformats it (maybe we would need a
                 res.formatNEDFileText(file);
                 // generate text representation from the model
+                textEditor.setText(res.getNEDFileText(file));
+                textEditor.markContent();
             }
-            textEditor.setText(res.getNEDFileText(file));
-            textEditor.markContent();
             //
             // keep the current selection between the two editors
             INEDElement currentNEDElementSelection = null;
-            Object object = (((IStructuredSelection)graphEditor.getSite()
-                    .getSelectionProvider().getSelection()).getFirstElement());
+            Object object = ((IStructuredSelection)graphEditor.getSite()
+                    .getSelectionProvider().getSelection()).getFirstElement();
             if (object != null)
                 currentNEDElementSelection = ((IModelProvider)object).getNEDModel();
 
-            if (currentNEDElementSelection != null) 
+            if (currentNEDElementSelection != null)
                 showInEditor(currentNEDElementSelection, Mode.TEXT);
 		}
 		else if (newPageIndex==graphPageIndex) {
@@ -213,12 +214,12 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
             // keep the current selection between the two editors
 	        INEDElement currentNEDElementSelection = null;
 	        if (textEditor.getSite().getSelectionProvider().getSelection() instanceof IStructuredSelection) {
-	            Object object = (((IStructuredSelection)textEditor.getSite()
-	                    .getSelectionProvider().getSelection()).getFirstElement());
+	            Object object = ((IStructuredSelection)textEditor.getSite()
+	                    .getSelectionProvider().getSelection()).getFirstElement();
 	            if (object != null)
 	                currentNEDElementSelection = ((IModelProvider)object).getNEDModel();
 	        }
-            if (currentNEDElementSelection!=null) 
+            if (currentNEDElementSelection!=null)
                 showInEditor(currentNEDElementSelection, Mode.GRAPHICAL);
 
             // only start in graphics mode if there's no error in the file
@@ -229,7 +230,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 				setActivePage(textPageIndex);
 
 				if (!initPhase) {
-		            MessageDialog.openError(Display.getDefault().getActiveShell(), "Error", 
+		            MessageDialog.openError(Display.getDefault().getActiveShell(), "Error",
 		                    "The editor contents has errors, switching is not possible. Please fix the errors first.");
 	            }
 			}
@@ -263,7 +264,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         // delegate the save task to the TextEditor's save method
         textEditor.doSave(monitor);
     }
-    
+
     @Override
     public void doSaveAs() {
         prepareForSave();
@@ -346,7 +347,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 
     public void showInEditor(INEDElement model, Mode mode) {
         if (mode == Mode.AUTOMATIC) {
-            mode = (model instanceof ITopLevelElement || model instanceof SubmoduleNode) ? Mode.GRAPHICAL : Mode.TEXT;
+            mode = model instanceof ITopLevelElement || model instanceof SubmoduleNode ? Mode.GRAPHICAL : Mode.TEXT;
         }
 
         if (mode == Mode.GRAPHICAL) {
