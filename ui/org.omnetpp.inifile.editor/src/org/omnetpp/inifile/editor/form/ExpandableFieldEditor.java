@@ -26,11 +26,11 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
  * 
  * @author Andras
  */
-public class ExpandableTextFieldEditor extends FieldEditor  {
+public abstract class ExpandableFieldEditor extends FieldEditor  {
 	private static Image IMAGE_EXPAND = InifileEditorPlugin.getCachedImage("icons/full/elcl16/expand.png");
 	private static Image IMAGE_COLLAPSE = InifileEditorPlugin.getCachedImage("icons/full/elcl16/collapse.png");
 	
-	private String labelText;
+	protected String labelText;
 	private FieldEditor fieldEditor;
 	private boolean isExpanded;
 	private ToolItem toggleButton;
@@ -41,7 +41,7 @@ public class ExpandableTextFieldEditor extends FieldEditor  {
 		}
 	};
 
-	public ExpandableTextFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, FormPage formPage, String labelText) {
+	public ExpandableFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, FormPage formPage, String labelText) {
 		super(parent, SWT.NONE, entry, inifile, formPage);
 		this.labelText = labelText;
 		GridLayout gridLayout = new GridLayout(2, false);
@@ -55,7 +55,7 @@ public class ExpandableTextFieldEditor extends FieldEditor  {
 		inifile.addInifileChangeListener(inifileChangeListener);
 		addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
-				ExpandableTextFieldEditor.this.inifile.removeInifileChangeListener(inifileChangeListener);
+				ExpandableFieldEditor.this.inifile.removeInifileChangeListener(inifileChangeListener);
 			}
 		});
 	}
@@ -68,9 +68,7 @@ public class ExpandableTextFieldEditor extends FieldEditor  {
 	}
 
 	protected void createControl() {
-		fieldEditor = isExpanded ? 
-				new TextTableFieldEditor(this, entry, inifile, formPage, labelText) :
-				new TextFieldEditor(this, entry, inifile, formPage, labelText);
+		fieldEditor = createFieldEditor(isExpanded);
 		fieldEditor.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 				
 		//XXX toggleButton = new Button(this, SWT.FLAT);
@@ -87,6 +85,8 @@ public class ExpandableTextFieldEditor extends FieldEditor  {
 		});
 		updateToggleButton();
 	}
+
+	abstract protected FieldEditor createFieldEditor(boolean isExpanded);
 
 	protected static ToolItem createFlatImageButton(Composite parent) {
         // code from TrayDialog.createHelpImageButton()

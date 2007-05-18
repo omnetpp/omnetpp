@@ -83,12 +83,9 @@ import java.util.ArrayList;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
@@ -138,8 +135,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 		gridLayout.verticalSpacing = 0;
 		form.setLayout(gridLayout);
 		
-		Composite titleArea = createTitleArea(form, category);
-		createAdvancedButton(titleArea);
+		createTitleArea(form, category);
 		addSpacer(form);
 
 		createFieldEditors(form, category);
@@ -223,7 +219,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addSpacer(form);
 			addTextFieldEditor(form, CFGID_CMDENV_EXTRA_STACK_KB, "Cmdenv extra stack (Kb)");
 			addTextFieldEditor(form, CFGID_CMDENV_OUTPUT_FILE, "Log file");
-			addCheckboxFieldEditor(form, CFGID_CMDENV_AUTOFLUSH, "Autoflush output files");
+			addCheckboxFieldEditor(form, CFGID_CMDENV_AUTOFLUSH, "Auto-flush output files");
 		}
 		else if (category.equals(CAT_TKENV)) {
 			addTextFieldEditor(form, CFGID_TKENV_DEFAULT_RUN, "Default run");
@@ -325,10 +321,6 @@ public class GenericConfigPage extends ScrolledFormPage {
 	}
 
 	protected void addTextFieldEditor(Composite parent, ConfigurationEntry e, String label) {
-//		FieldEditor editor = (!e.isGlobal() && (getAdvancedMode() || occursOutsideGeneral(e.getKey()))) ? 
-//				new TextTableFieldEditor(parent, e, getInifileDocument(), this, label) :
-//				new TextFieldEditor(parent, e, getInifileDocument(), this, label);
-				
 		FieldEditor editor = e.isGlobal() ? 
 				new TextFieldEditor(parent, e, getInifileDocument(), this, label) :
 				new ExpandableTextFieldEditor(parent, e, getInifileDocument(), this, label);
@@ -336,9 +328,9 @@ public class GenericConfigPage extends ScrolledFormPage {
 	}
 
 	protected void addCheckboxFieldEditor(Composite parent, ConfigurationEntry e, String label) {
-		FieldEditor editor = (!e.isGlobal() && (getAdvancedMode() || occursOutsideGeneral(e.getKey()))) ? 
-				new CheckboxTableFieldEditor(parent, e, getInifileDocument(), this, label) :
-				new CheckboxFieldEditor(parent, e, getInifileDocument(), this, label);
+		FieldEditor editor = e.isGlobal() ? 
+				new CheckboxFieldEditor(parent, e, getInifileDocument(), this, label) :
+				new ExpandableCheckboxFieldEditor(parent, e, getInifileDocument(), this, label);
 		addFieldEditor(editor);		
 	}
 
@@ -355,39 +347,6 @@ public class GenericConfigPage extends ScrolledFormPage {
 		return false;
 	}
 	
-	protected Button createAdvancedButton(Composite parent) {
-		final Button expandButton = new Button(parent, SWT.PUSH);
-		expandButton.setText(getAdvancedMode() ? "« Global" : "Per-Config »");
-		expandButton.setToolTipText("Toggle per-section editing");
-		expandButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				toggleAdvancedMode();
-			}
-		});
-		return expandButton;
-	}
-
-	protected boolean getAdvancedMode() {
-		Boolean b = getEditorData().formPageCategoryDetailedFlags.get(category);
-		return b==null ? false : b;
-	}
-	
-	protected void toggleAdvancedMode() {
-		getEditorData().formPageCategoryDetailedFlags.put(category, !getAdvancedMode());
-
-		// remove ALL existing controls (title, field editors, etc...)
-		for (Control c : form.getChildren())
-			c.dispose();
-		fieldEditors.clear();
-		
-		// and recreate them in the current (advanced/normal) mode
-		Composite titleArea = createTitleArea(form, category);
-		createAdvancedButton(titleArea);
-		addSpacer(form);
-		createFieldEditors(form, category);
-		layoutForm();
-	}
-
 	@Override
 	public String getPageCategory() {
 		return category;

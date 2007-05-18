@@ -1,7 +1,5 @@
 package org.omnetpp.inifile.editor.editors;
 
-import java.util.HashMap;
-
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
@@ -17,11 +15,6 @@ public class InifileEditorData {
 	private IInifileDocument document;
 	private InifileAnalyzer analyzer;
 
-	/**
-	 * Whether the form page with the given category is in the "Detailed" or "Normal" view 
-	 */
-	public HashMap<String,Boolean> formPageCategoryDetailedFlags = new HashMap<String, Boolean>(); 
-	
 	/**
 	 * Initialize the object
 	 */
