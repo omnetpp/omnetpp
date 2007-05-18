@@ -32,18 +32,18 @@ public class ImageFactory {
 
     public final static String EVENLOG_IMAGE_BUBBLE = EVENTLOG_IMAGE_DIR + "Bubble";
     public final static String EVENLOG_IMAGE_EVENT_LOG_MESSAGE = EVENTLOG_IMAGE_DIR + "EventLogMessage";
-    
+
     public final static String EVENLOG_IMAGE_MODULE_METHOD_BEGIN = EVENTLOG_IMAGE_DIR + "ModuleMethodBegin";
     public final static String EVENLOG_IMAGE_MODULE_METHOD_END = EVENTLOG_IMAGE_DIR + "ModuleMethodEnd";
     public final static String EVENLOG_IMAGE_MODULE_CREATED = EVENTLOG_IMAGE_DIR + "ModuleCreated";
     public final static String EVENLOG_IMAGE_MODULE_DELETED = EVENTLOG_IMAGE_DIR + "ModuleDeleted";
     public final static String EVENLOG_IMAGE_MODULE_REPARENTED = EVENTLOG_IMAGE_DIR + "ModuleReparented";
     public final static String EVENLOG_IMAGE_MODULE_DISPLAY_STRING_CHANGED = EVENTLOG_IMAGE_DIR + "ModuleDisplayStringChanged";
-    
+
     public final static String EVENLOG_IMAGE_CONNECTION_CREATED = EVENTLOG_IMAGE_DIR + "ConnectionCreated";
     public final static String EVENLOG_IMAGE_CONNECTION_DELETED = EVENTLOG_IMAGE_DIR + "ConnectionDeleted";
     public final static String EVENLOG_IMAGE_CONNECTION_DISPLAY_STRING_CHANGED = EVENTLOG_IMAGE_DIR + "ConnectionDisplayStringChanged";
-    
+
     public final static String EVENLOG_IMAGE_EVENT = EVENTLOG_IMAGE_DIR + "Event";
     public final static String EVENLOG_IMAGE_SELF_EVENT = EVENTLOG_IMAGE_DIR + "SelfEvent";
     public final static String EVENLOG_IMAGE_CANCEL_EVENT = EVENTLOG_IMAGE_DIR + "CancelEvent";
@@ -96,7 +96,7 @@ public class ImageFactory {
 
     public final static String UNKNOWN = INTERNAL_DIR + "unknown";
     public final static String DEFAULT = INTERNAL_DIR + "default";
-    
+
     public final static String DEFAULT_NAME = IMAGE_DIR + INTERNAL_DIR + "default.png";
     public final static String DEFAULT_PIN = DECORATORS_IMAGE_DIR + "pin";
     public final static String DEFAULT_KEY = "__default__";
@@ -108,10 +108,10 @@ public class ImageFactory {
     private static String[] imageDirs;
     private static List<String> imageNameList = null;
     // image size constants
-    public static final int SIZE_VS = -40; 
-    public static final int SIZE_S = -60; 
-    public static final int SIZE_NORMAL = -100; 
-    public static final int SIZE_L = -150; 
+    public static final int SIZE_VS = -40;
+    public static final int SIZE_S = -60;
+    public static final int SIZE_NORMAL = -100;
+    public static final int SIZE_L = -150;
     public static final int SIZE_VL = -250;
 
     static {
@@ -139,7 +139,7 @@ public class ImageFactory {
         if (descr == null) return null;
         // re-sample the image to 16x16 with 1 pixel padding
         descr.setPadding(1);
-        descr.setPreferredScale(-16);
+        descr.setPreferredScale(16);
         // store the descriptor for later re-use
         iconImageRegistry.put(imageId, descr);
         return descr.createImage();
@@ -206,7 +206,7 @@ public class ImageFactory {
     private static String getKeyFor(String imageId, String imageSize, RGB shade, int weight) {
         String sizeSuffix = "";
         // strip the size suffix from the imageId
-        if(imageId.endsWith("_s") || imageId.endsWith("_l")) { 
+        if(imageId.endsWith("_s") || imageId.endsWith("_l")) {
             sizeSuffix = imageId.substring(imageId.length()-1);
             imageId = imageId.substring(0, imageId.length()-2);
         }
@@ -216,7 +216,7 @@ public class ImageFactory {
         }
 
         // imageSIze takes precedence over the suffix in the imageId
-        if (imageSize == null || "".equals(imageSize)) 
+        if (imageSize == null || "".equals(imageSize))
             imageSize = sizeSuffix;
 
         int imageScaling = SIZE_NORMAL;
@@ -237,7 +237,7 @@ public class ImageFactory {
 
          return getKeyFor(imageId, imageScaling, shade, weight);
     }
-    
+
     /**
      * Returns an image key with a given id, with preferred size and color. The method also
      * caches the image for future reuse, so a get() with the returned key is guaranteed
@@ -274,8 +274,8 @@ public class ImageFactory {
 
         // adjust the colorization and size parameters for the descriptor
         if(result instanceof NedImageDescriptor) {
-            ((NedImageDescriptor)result).setColorization(shade);
-            ((NedImageDescriptor)result).setColorizationWeight(weight);
+            (result).setColorization(shade);
+            (result).setColorizationWeight(weight);
         }
 
         // add it to the image registry, so later we can reuse it. The key provides the
@@ -324,7 +324,7 @@ public class ImageFactory {
     private static NedImageDescriptor createDescriptor(Class<?> refClass, String dir, String fileName, String ext, int preferredSize) {
         // add a size suffix to the filename if we need some of the predefined scaling factors
         String sizeSuffix = "";
-        if (preferredSize == SIZE_VS) 
+        if (preferredSize == SIZE_VS)
             sizeSuffix = "_vs";
         else if (preferredSize == SIZE_S)
             sizeSuffix = "_s";
@@ -332,7 +332,7 @@ public class ImageFactory {
             sizeSuffix = "_l";
         else if (preferredSize == SIZE_VL)
             sizeSuffix = "_vl";
-            
+
         if (!"".equals(sizeSuffix)) {
             // try to load the resized image
             String name = (new Path(dir)).append(fileName+sizeSuffix).addFileExtension(ext).toString();
@@ -357,7 +357,7 @@ public class ImageFactory {
     public static List<String> getImageNameList() {
         if (imageNameList != null)
             return imageNameList;
-        
+
     	Set<String> result = new HashSet<String>();
     	for(String basedir : imageDirs) {
 			try {
@@ -395,7 +395,7 @@ public class ImageFactory {
         imageNameList = null;
         getImageNameList();
     }
-    
+
     /**
      * Get the image ID for a file or image IDs if it is a directory (recursively(
      * @param fileStore A file or directory

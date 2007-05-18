@@ -17,29 +17,29 @@ import org.eclipse.swt.graphics.Rectangle;
 
 
 /**
- * An ImageDescriptor used in NED editor. Supports coloring and preferred size. 
+ * An ImageDescriptor used in NED editor. Supports coloring and preferred size.
  *
  * @author rhornig
  */
 public class NedImageDescriptor extends ImageDescriptor {
 
     /**
-     * The class whose resource directory contain the file, 
+     * The class whose resource directory contain the file,
      * or <code>null</code> if none.
      */
-    private Class<?> location;
+    private final Class<?> location;
 
     /**
      * The name of the file.
      */
-    private String name;
+    private final String name;
 
     private int preferredScale = -100;
     private RGB colorization = null;
     private int colorizationWeight = 0;
     private static Rectangle NULLPADDING = new Rectangle(0,0,0,0);
     private Rectangle padding = NULLPADDING;
-    
+
     /**
      * Creates a new file image descriptor.
      * The file has the given file name and is located
@@ -48,11 +48,11 @@ public class NedImageDescriptor extends ImageDescriptor {
      * <p>
      * Note that the file is not accessed until its
      * <code>getImageData</code> method is called.
-     * Specific colorization effects can be added before calling 
+     * Specific colorization effects can be added before calling
      * <code>getImageData</code> calling <code>setColorization</code> and
-     * <code>setColorizationWeight</code>. If the image is vector based a 
+     * <code>setColorizationWeight</code>. If the image is vector based a
      * preferred width can be set too with <code>setPreferredWidth</code>
-     *</p> 
+     *</p>
      *
      * @param clazz class for resource directory, or
      *   <code>null</code>
@@ -77,7 +77,7 @@ public class NedImageDescriptor extends ImageDescriptor {
     }
 
     /**
-     * Sets the preferred scaling factor. If preferredScale > 0 it is treated 
+     * Sets the preferred scaling factor. If preferredScale > 0 it is treated
      * as an absolute width parameter, otherwise it is assumed to be a percent value
      * @param preferredScale
      */
@@ -92,7 +92,7 @@ public class NedImageDescriptor extends ImageDescriptor {
     public void setPadding(Rectangle padding) {
         this.padding = padding;
     }
-    
+
     /**
      * Sets the padding value around the image if it is rescaled
      * @param padding
@@ -104,40 +104,34 @@ public class NedImageDescriptor extends ImageDescriptor {
     /* (non-Javadoc)
      * Method declared on Object.
      */
+    @Override
     public boolean equals(Object o) {
-        if (!(o instanceof NedImageDescriptor)) {
+        if (!(o instanceof NedImageDescriptor))
             return false;
-        }
         NedImageDescriptor other = (NedImageDescriptor) o;
         if (location != null) {
-            if (!location.equals(other.location)) {
+            if (!location.equals(other.location))
                 return false;
-            }
         } else {
-            if (other.location != null) {
+            if (other.location != null)
                 return false;
-            }
         }
         if (colorization != null) {
-            if (!colorization.equals(other.colorization)) {
+            if (!colorization.equals(other.colorization))
                 return false;
-            }
         } else {
-            if (other.colorization != null) {
+            if (other.colorization != null)
                 return false;
-            }
         }
         if (padding != null) {
-            if (!padding.equals(other.padding)) {
+            if (!padding.equals(other.padding))
                 return false;
-            }
         } else {
-            if (other.padding != null) {
+            if (other.padding != null)
                 return false;
-            }
         }
-        return name.equals(other.name) 
-                && preferredScale == other.preferredScale 
+        return name.equals(other.name)
+                && preferredScale == other.preferredScale
                 && colorizationWeight == other.colorizationWeight;
     }
 
@@ -145,6 +139,7 @@ public class NedImageDescriptor extends ImageDescriptor {
      * Method declared on ImageDesciptor.
      * Returns null if the image data cannot be read.
      */
+    @Override
     public ImageData getImageData() {
         InputStream in = getStream();
         ImageData result = null;
@@ -180,11 +175,11 @@ public class NedImageDescriptor extends ImageDescriptor {
             return false;
         return true;
     }
-    
+
     /**
      * Returns a stream on the image contents.  Returns
      * null if a stream could not be opened.
-     * 
+     *
      * @return the buffered stream on the file or <code>null</code>
      * if the file cannot be found
      */
@@ -208,6 +203,7 @@ public class NedImageDescriptor extends ImageDescriptor {
     }
 
 
+    @Override
     public int hashCode() {
         int code = name.hashCode();
         if (location != null) {
@@ -221,11 +217,12 @@ public class NedImageDescriptor extends ImageDescriptor {
     }
 
     /**
-     * The <code>NedImageDescriptor</code> implementation of this <code>Object</code> method 
+     * The <code>NedImageDescriptor</code> implementation of this <code>Object</code> method
      * returns a string representation of this object which is suitable only for debugging.
      */
+    @Override
     public String toString() {
-        return "NedImageDescriptor(location=" + location + ", name=" + name + 
+        return "NedImageDescriptor(location=" + location + ", name=" + name +
             ", prefScale=" + preferredScale + ", colorize="+colorization+", colorWight="+colorizationWeight+")";
     }
 
@@ -236,7 +233,7 @@ public class NedImageDescriptor extends ImageDescriptor {
      * @param weight The amount of shading 0 - 100
      */
     private static void shadeImageData(ImageData data, RGB shade, int weight) {
-        
+
         if(data == null || shade == null || weight <= 0)
             return;
 
@@ -270,22 +267,22 @@ public class NedImageDescriptor extends ImageDescriptor {
                 for (int x = 0; x < width; x++) {
                     int pixel = scanline[x];
                     int red = pixel & redMask;
-                    red = (redShift < 0) ? red >>> -redShift : red << redShift;
+                    red = redShift < 0 ? red >>> -redShift : red << redShift;
                     int green = pixel & greenMask;
-                    green = (greenShift < 0) ? green >>> -greenShift : green << greenShift;
+                    green = greenShift < 0 ? green >>> -greenShift : green << greenShift;
                     int blue = pixel & blueMask;
-                    blue = (blueShift < 0) ? blue >>> -blueShift : blue << blueShift;
-                    
+                    blue = blueShift < 0 ? blue >>> -blueShift : blue << blueShift;
+
                     int lum = (2126*red + 7152*green + 722*blue)/10000;
                     red = determineShading(red, shade.red, weight, lum);
                     green = determineShading(green, shade.green, weight, lum);
                     blue = determineShading(blue, shade.blue, weight, lum);
-                    
-                    red = (redShift < 0) ? red << -redShift : red >> redShift;
+
+                    red = redShift < 0 ? red << -redShift : red >> redShift;
                     red &= redMask;
-                    green = (greenShift < 0) ? green << -greenShift : green >> greenShift;
+                    green = greenShift < 0 ? green << -greenShift : green >> greenShift;
                     green &= greenMask;
-                    blue = (blueShift < 0) ? blue << -blueShift : blue >> blueShift;
+                    blue = blueShift < 0 ? blue << -blueShift : blue >> blueShift;
                     blue &= blueMask;
                     scanline[x] = red | blue | green;
                 }
@@ -297,20 +294,20 @@ public class NedImageDescriptor extends ImageDescriptor {
     // calculate the colorization of a single point
     private static int determineShading(int origColor, int shadeColor, int weight, int lum) {
         int col = (int)((100-weight)*origColor + weight*lum*shadeColor/128.0)/100;
-        return col<0 ? 0 : (col>255 ? 255 : col);
+        return col<0 ? 0 : col>255 ? 255 : col;
     }
-    
+
     /**
      * @param result
      * @param scale
-     * @return 
+     * @return
      */
     private ImageData rescaleImageData(ImageData imgData) {
         // do not change anything if no re-scale is needed and no padding requested
         if ((preferredScale == -100 || imgData.width==0 || imgData.width==preferredScale) &&
                 padding.equals(NULLPADDING))
             return imgData;
-        
+
         double scaleRatio;
         if (preferredScale > 0)
             // treat as absolute size
@@ -318,8 +315,16 @@ public class NedImageDescriptor extends ImageDescriptor {
         else
             // treat as relative size in percent
             scaleRatio = -(double)preferredScale / 100;
-        
-        return ImageConverter.getResampledImageData(imgData, (int)(imgData.width*scaleRatio), (int)(imgData.height*scaleRatio), 
+
+
+        // image should not be smaller than the padding itself
+        int newWidth = Math.max((int)(imgData.width*scaleRatio), padding.x+padding.width);
+        int newHeight = Math.max((int)(imgData.height*scaleRatio), padding.y+padding.height);
+
+        if (newWidth < 0 || newHeight < 0)
+            throw new IllegalArgumentException("Image size cannot be negative");
+
+        return ImageConverter.getResampledImageData(imgData, newWidth, newHeight,
                                     padding.x, padding.y, padding.width, padding.height);
     }
 
