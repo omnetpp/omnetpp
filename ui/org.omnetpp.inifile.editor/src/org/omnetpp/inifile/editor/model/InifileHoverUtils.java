@@ -9,6 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.resources.IMarker;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
@@ -21,17 +22,17 @@ import org.omnetpp.ned.model.pojo.ParamNode;
  * @author Andras
  */
 public class InifileHoverUtils {
-
 	/**
 	 * Generates tooltip for an inifile section.
 	 * @param section  null is accepted
 	 */
-	public static String getSectionTooltip(String section, IInifileDocument doc, InifileAnalyzer analyzer) {
+	public static String getSectionHoverText(String section, IInifileDocument doc, InifileAnalyzer analyzer) {
 		if (section == null || !doc.containsSection(section))
 			return null;
 
 		// name and description
-		String text = "<b>"+section+"</b>";
+		String text = getProblemsHoverText(section, null, doc);
+		text += "<b>"+section+"</b>";
 		String description = doc.getValue(section, "description");
 		if (description != null)
 			text += " -- " + description;
@@ -55,13 +56,8 @@ public class InifileHoverUtils {
 			}
 			else {
 				text += "<br>\nThis section does not seem to assign the following NED parameters:\n<ul>";
-				int n = Math.min(resList.length, 8);
-				for (int i=0; i<n; i++) {
-					ParamResolution res = resList[i];
+				for (ParamResolution res : resList)
 					text += " <li>" + res.moduleFullPath + "." +res.paramDeclNode.getName() + "</li>\n";
-				}
-				if (resList.length > n)
-					text += " <li>...</li>\n";
 				text += "</ul>";
 			}
 		}
@@ -74,21 +70,18 @@ public class InifileHoverUtils {
 	 * @param key      null is accepted
 	 */
 	//XXX should tolerate analyzer==null
-	public static String getEntryTooltip(String section, String key, IInifileDocument doc, InifileAnalyzer analyzer) {
+	public static String getEntryHoverText(String section, String key, IInifileDocument doc, InifileAnalyzer analyzer) {
 		if (section == null || key == null || !doc.containsKey(section, key))
 			return null;
 
 		KeyType keyType = (key == null) ? KeyType.CONFIG : InifileAnalyzer.getKeyType(key);
 		if (keyType==KeyType.CONFIG) {
 			// config key: display description
-			ConfigurationEntry entry = ConfigurationRegistry.getEntry(key);
-			if (entry == null)
-				return null;
-			return getConfigTooltip(entry, doc);
+			return getConfigHoverText(section, key, doc);
 		}
 		else if (keyType == KeyType.PARAM || key.endsWith(".apply-default")) { //XXX hardcoded key name
 			// parameter assignment: display which parameters it matches
-			return getParamKeyTooltip(section, key, analyzer);
+			return getParamKeyHoverText(section, key, analyzer);
 		}
 		else if (keyType == KeyType.PER_OBJECT_CONFIG) {
 			return null; // TODO display which modules it applies to, plus comment maybe?
@@ -101,8 +94,13 @@ public class InifileHoverUtils {
 	/**
 	 * Generates tooltip for a config entry.
 	 */
-	public static String getConfigTooltip(ConfigurationEntry entry, IInifileDocument doc) {
-		String text = "<b>[General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / "+entry.getKey();
+	public static String getConfigHoverText(String section, String key, IInifileDocument doc) {
+		String text = getProblemsHoverText(section, key, doc);
+		ConfigurationEntry entry = ConfigurationRegistry.getEntry(key);
+		if (entry == null)
+			return text;
+
+		text += "<b>[General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / "+entry.getKey();
 		text += " = &lt;" + entry.getDataType().name().replaceFirst("CFG_", "");
 		if (entry.getDefaultValue()!=null && !entry.getDefaultValue().equals(""))
 			text += ", default: " + entry.getDefaultValue();
@@ -128,9 +126,10 @@ public class InifileHoverUtils {
 	/**
 	 * Generate config for a param key entry
 	 */
-	public static String getParamKeyTooltip(String section, String key, InifileAnalyzer analyzer) {
+	public static String getParamKeyHoverText(String section, String key, InifileAnalyzer analyzer) {
 		//XXX somehow merge similar entries? (i.e. where pathModules[] and paramValueNode/paramDeclNode are the same)
-		String text = "<b>[" + section + "] / " + key + "</b><br>\n";
+		String text = getProblemsHoverText(section, key, analyzer.getDocument());
+		text += "<b>[" + section + "] / " + key + "</b><br>\n";
 		ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
 		if (resList.length==0) {
 			text += "Does not match any module parameters.";
@@ -152,35 +151,29 @@ public class InifileHoverUtils {
 
 			text += "<br>"+paramDeclaredOn + "." + paramName + " : "+ paramType + optComment + "\n<ul>\n";
 
-//			int count = 0;
-			for (ParamResolution res : resList) {
-				if (res.paramDeclNode == paramDeclNode) {
-//					if (++count > 4) {
-//						text += "   ...<br>\n";
-//						break;
-//					}
+			for (ParamResolution res : resList)
+				if (res.paramDeclNode == paramDeclNode)
 					text +=	" <li>" + res.moduleFullPath + (section.equals(res.activeSection) ? "" : ", for sub-config ["+res.activeSection+"]") + "</li>\n";
-				}
-			}
 			text += "</ul>";
 		}
 		return HoverSupport.addHTMLStyleSheet(text);
-
-//		int n = Math.min(resList.length, 8);
-//		for (int i=0; i<n; i++) {
-//			ParamResolution res = resList[i];
-//			String paramName = res.paramValueNode.getName();
-//			String paramDeclaredOn = ((ParamNodeEx)res.paramDeclNode).getContainerNEDTypeInfo().getName();
-//			String paramType = res.paramDeclNode.getAttribute(ParamNode.ATT_TYPE);
-//			String comment = makeBriefDocu(res.paramDeclNode.getComment(), 40);
-//			String optComment = comment==null ? "" : (" -- \"" + comment + "\"");
-//			text += "  - " + res.moduleFullPath + "." +paramName;
-//			text += " (" + paramDeclaredOn + "." + paramName + " : "+ paramType + optComment + ")";
-//			text +=	(section.equals(res.activeSection) ? "" : ", for sub-config ["+res.activeSection+"]") + "<br>\n"; //XXX do we have module type, maybe param doc etc?
-//		}
-//		if (resList.length > n)
-//			text += "    ...<br>\n";
-//		return text;
 	}
 
+	public static String getProblemsHoverText(String section, String key, IInifileDocument doc) {
+		IMarker[] markers = InifileUtils.getProblemMarkersFor(section, key, doc);
+		if (markers.length==0) 
+			return "";
+		
+		String text = "";
+		for (IMarker marker : markers) {
+			String severity = "";
+			switch (marker.getAttribute(IMarker.SEVERITY, -1)) {
+				case IMarker.SEVERITY_ERROR: severity = "Error"; break;
+				case IMarker.SEVERITY_WARNING: severity = "Warning"; break;
+				case IMarker.SEVERITY_INFO: severity = "Info"; break;
+			}
+			text += "<i>"+severity+": " + marker.getAttribute(IMarker.MESSAGE, "") + "</i><br/>\n";
+		}
+		return text+"<br/>";
+	}
 }

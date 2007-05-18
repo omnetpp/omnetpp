@@ -40,7 +40,7 @@ public abstract class FieldEditor extends Composite {
 	
 	protected ConfigurationEntry entry;
 	protected IInifileDocument inifile;
-	protected FormPage formPage; // to be able to call setEditorSelection()
+	protected FormPage formPage; // to access hoverSupport, and to be able to call setEditorSelection()
 	
 	protected IHoverTextProvider hoverTextProvider = new IHoverTextProvider() {
 		public String getHoverTextFor(Control control, int x, int y) {
@@ -103,13 +103,13 @@ public abstract class FieldEditor extends Composite {
 	}
 	
 	protected String getTooltipText() {
-		return InifileHoverUtils.getConfigTooltip(entry, inifile);
+		return InifileHoverUtils.getConfigHoverText(GENERAL, entry.getKey(), inifile);
 	}
 
 	protected Button createResetButton() {
 		Button resetButton = new Button(this, SWT.PUSH);
-		resetButton.setText("Remove");
-		resetButton.setToolTipText("Remove corresponding entry from ini file");
+		resetButton.setText("Reset");
+		resetButton.setToolTipText("Reset to default, by removing corresponding entry from the document");
 		resetButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				resetToDefault();

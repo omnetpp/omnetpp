@@ -6,6 +6,8 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -18,6 +20,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
@@ -75,6 +78,7 @@ public class TextFieldEditor extends FieldEditor {
 			public void modifyText(ModifyEvent e) {
 				if (!isEdited) {
 					isEdited = true;
+					textField.setForeground(null);
 					resetButton.setEnabled(true);
 				}
 			}
@@ -86,9 +90,15 @@ public class TextFieldEditor extends FieldEditor {
 			}
 		});
 
-		// commit on losing focus, etc.
+		// commit on losing focus, select all on gaining focus, etc.
 		addFocusListenerTo(textField);
-
+		textField.addFocusListener(new FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				textField.selectAll();
+			}
+		});
+		
+		// when the background gets clicked, transfer focus to the text widget
 		addFocusTransfer(label, textField);
 		addFocusTransfer(this, textField);
 
@@ -112,10 +122,14 @@ public class TextFieldEditor extends FieldEditor {
 		if (value==null) {
 			String defaultValue = entry.getDefaultValue()==null ? "" : entry.getDefaultValue().toString(); 
 			textField.setText(defaultValue);
+			//textField.setForeground(null);
+			textField.setForeground(ColorFactory.asColor("darkGreen")); //XXX
 			resetButton.setEnabled(false);
 		}
 		else {
 			textField.setText(value);
+			textField.setForeground(null);
+			//textField.setForeground(ColorFactory.asColor("blue")); //XXX
 			resetButton.setEnabled(true);
 		}
 		isEdited = false;

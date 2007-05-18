@@ -140,7 +140,7 @@ public class ModuleParametersView extends AbstractModuleView {
 					ParamResolution res = (ParamResolution) element;
 					if (res.section!=null && res.key!=null) {
 						//XXX make sure "res" and inifile editor refer to the same IFile!!!
-						return InifileHoverUtils.getEntryTooltip(res.section, res.key, inifileDocument, inifileAnalyzer);
+						return InifileHoverUtils.getEntryHoverText(res.section, res.key, inifileDocument, inifileAnalyzer);
 					}
 					else if (res.paramValueNode!=null) {
 						return null; //XXX todo

@@ -34,7 +34,7 @@ public abstract class ScrolledFormPage extends FormPage {
 	/**
 	 * Must be called when form layout is to be updated (children get added/removed, etc)
 	 */
-	protected void layoutForm() {
+	public void layoutForm() {
 		if (getSize().x!=0) {
 			// reset size of content so children can be seen (method 1)
 			form.setSize(form.computeSize(getSize().x-RIGHT_MARGIN, SWT.DEFAULT));

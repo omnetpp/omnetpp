@@ -90,7 +90,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 			public String getHoverTextFor(Control control, int x, int y) {
 				Item item = getTreeViewer().getTree().getItem(new Point(x,y));
 				String section = (String) (item==null ? null : item.getData());
-				return section==null ? null : InifileHoverUtils.getSectionTooltip(section, inifileDocument, null);
+				return section==null ? null : InifileHoverUtils.getSectionHoverText(section, inifileDocument, null);
 			}
  		});
 		

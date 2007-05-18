@@ -40,7 +40,7 @@ public class InifileFormEditor extends Composite {
 	private TreeViewer treeViewer;
 	private Composite form;
 	private FormPage formPage;
-	
+
 	public InifileFormEditor(Composite parent, InifileEditor inifileEditor) {
 		super(parent, SWT.None);
 		this.inifileEditor = inifileEditor;
@@ -50,7 +50,7 @@ public class InifileFormEditor extends Composite {
 	public FormPage getFormPage() {
 		return formPage;
 	}
-	
+
 	protected void createControl() {
 		// create and layout a banner and a content area
 		setBackground(BGCOLOR);
@@ -58,21 +58,14 @@ public class InifileFormEditor extends Composite {
 		SashForm sashForm = new SashForm(this, SWT.HORIZONTAL | SWT.SMOOTH);
 		sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		sashForm.setBackground(BGCOLOR);
-		
+
 		treeViewer = createTreeViewer(sashForm);
 		form = new Composite(sashForm, SWT.BORDER);
 		form.setBackground(BGCOLOR);
 		form.setLayout(new FillLayout());
 		sashForm.setWeights(new int[] {1,4});
-		
+
 		buildTree();
-		
-		// at this point InifileDocument is not yet set up, so we have to defer showing the form page
-		Display.getCurrent().asyncExec(new Runnable() {
-			public void run() {
-				showCategoryPage(GenericConfigPage.getCategoryNames()[0]);
-			}
-		});
 	}
 
 	protected TreeViewer createTreeViewer(Composite parent) {
@@ -86,21 +79,28 @@ public class InifileFormEditor extends Composite {
 	protected void buildTree() {
 		GenericTreeNode root = new GenericTreeNode("root");
 
+		root.addChild(new GenericTreeNode(SECTIONS_PAGE));
+
+		root.addChild(new GenericTreeNode(PARAMETERS_PAGE));
+
 		GenericTreeNode configNode = new GenericTreeNode(CONFIGURATION_PAGE); 
 		root.addChild(configNode);
 		String[] categories = GenericConfigPage.getCategoryNames();
 		for (String c : categories)
 			configNode.addChild(new GenericTreeNode(c));
 
-		root.addChild(new GenericTreeNode(SECTIONS_PAGE));
-
-		root.addChild(new GenericTreeNode(PARAMETERS_PAGE));
-		
 		treeViewer.setInput(root);
 		treeViewer.expandAll();
-		treeViewer.setSelection(new StructuredSelection(new GenericTreeNode(categories[0])));
+
+		// at this point InifileDocument is not yet set up, so we have to defer showing the form page
+		Display.getCurrent().asyncExec(new Runnable() {
+			public void run() {
+				showCategoryPage(SECTIONS_PAGE);
+			}
+		});
+
 	}
-	
+
 	protected void addListener(final TreeViewer treeViewer) {
 		((Tree) treeViewer.getControl()).addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -125,18 +125,20 @@ public class InifileFormEditor extends Composite {
 	 * after committing changes on the current page.
 	 */
 	public FormPage showCategoryPage(String category) {
-		// adjust tree selection (needed if we are invoked programmatically)
-		Object sel = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
-		if (!category.equals(((GenericTreeNode)sel).getPayload()))
-			treeViewer.setSelection(new StructuredSelection(new GenericTreeNode(category)));
-		
 		// root tree node is a shortcut to "General" 
 		if (category.equals(CONFIGURATION_PAGE))
 			category = GenericConfigPage.getCategoryNames()[0];
 
+		// adjust tree selection (needed if we are invoked programmatically)
+		Object sel = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
+		String selectedCategory = sel==null ? null : (String) ((GenericTreeNode)sel).getPayload();
+		if (!category.equals(selectedCategory))
+			treeViewer.setSelection(new StructuredSelection(new GenericTreeNode(category)));
+
+		// nothing to do if already showing
 		if (formPage != null && formPage.getPageCategory().equals(category))
-			return formPage; // already showing
-		
+			return formPage; 
+
 		// dispose old page
 		if (formPage != null)
 			formPage.dispose();
@@ -158,7 +160,7 @@ public class InifileFormEditor extends Composite {
 		if (window instanceof ApplicationWindow)
 			((ApplicationWindow)window).setStatus(message);
 	}
-	
+
 	/**
 	 * Notification: User switched to this page of the multipage editor (i.e. from text
 	 * to form view).
@@ -167,7 +169,7 @@ public class InifileFormEditor extends Composite {
 		if (formPage != null) 
 			formPage.reread();
 	}
-	
+
 	/**
 	 * Notification: User switched away from this page of the multipage editor 
 	 * (i.e. from form to text view).

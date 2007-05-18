@@ -164,7 +164,7 @@ public class SectionsPage extends FormPage {
 			public String getHoverTextFor(Control control, int x, int y) {
 				Item item = treeViewer.getTree().getItem(new Point(x,y));
 				String section = getSectionNameFromTreeNode(item==null ? null : item.getData());
-				return section==null ? null : InifileHoverUtils.getSectionTooltip(section, getInifileDocument(), getInifileAnalyzer());
+				return section==null ? null : InifileHoverUtils.getSectionHoverText(section, getInifileDocument(), getInifileAnalyzer());
 			}
 		});
 

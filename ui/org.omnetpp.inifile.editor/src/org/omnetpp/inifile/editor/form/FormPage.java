@@ -131,6 +131,14 @@ public abstract class FormPage extends Composite {
 	}
 
 	/**
+	 * Should be called whenever for content changes. layout(true,true) is not enough
+	 * because ScrolledFormPage has extra things to do here.  
+	 */
+	public void layoutForm() {
+		layout(true);
+	}
+	
+	/**
 	 * Add tooltip (hover) support to the given control. Call this instead of instantiating
 	 * HoverSupport for each control or field editor, otherwise "F2 to focus" will only
 	 * work when hovering the control that owns the focus.

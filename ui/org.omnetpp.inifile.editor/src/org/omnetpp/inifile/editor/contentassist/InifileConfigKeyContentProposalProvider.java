@@ -49,9 +49,9 @@ public class InifileConfigKeyContentProposalProvider extends ContentProposalProv
 		// idea considered and discarded: don't propose those already there (would confuse user)
 		if (section != null) {
 			for (ConfigurationEntry e : ConfigurationRegistry.getEntries()) {
-				if (!section.equals(GENERAL) || e!=CFGID_EXTENDS) {// don't propose "extends" in [General]
+				if (!section.equals(GENERAL) || e!=CFGID_EXTENDS) { // don't propose "extends" in [General]
 					String content = e.getKey()+(addEqualSign ? " = " : "");
-					result.add(new ContentProposal(content, content, InifileHoverUtils.getConfigTooltip(e, doc)));
+					result.add(new ContentProposal(content, content, InifileHoverUtils.getConfigHoverText(section, e.getKey(), doc)));
 				}
 			}
 		}

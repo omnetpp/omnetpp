@@ -325,9 +325,13 @@ public class GenericConfigPage extends ScrolledFormPage {
 	}
 
 	protected void addTextFieldEditor(Composite parent, ConfigurationEntry e, String label) {
-		FieldEditor editor = (!e.isGlobal() && (getAdvancedMode() || occursOutsideGeneral(e.getKey()))) ? 
-				new TextTableFieldEditor(parent, e, getInifileDocument(), this, label) :
-				new TextFieldEditor(parent, e, getInifileDocument(), this, label);
+//		FieldEditor editor = (!e.isGlobal() && (getAdvancedMode() || occursOutsideGeneral(e.getKey()))) ? 
+//				new TextTableFieldEditor(parent, e, getInifileDocument(), this, label) :
+//				new TextFieldEditor(parent, e, getInifileDocument(), this, label);
+				
+		FieldEditor editor = e.isGlobal() ? 
+				new TextFieldEditor(parent, e, getInifileDocument(), this, label) :
+				new ExpandableTextFieldEditor(parent, e, getInifileDocument(), this, label);
 		addFieldEditor(editor);		
 	}
 
@@ -391,7 +395,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 	
 	@Override
 	public boolean setFocus() {
-		return fieldEditors.get(0).setFocus();
+		return fieldEditors.isEmpty() ? false : fieldEditors.get(0).setFocus();
 	}
 
 	@Override

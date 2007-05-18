@@ -255,7 +255,7 @@ public class ParametersPage extends FormPage {
 			public String getHoverTextFor(Control control, int x, int y) {
 				Item item = tableViewer.getTable().getItem(new Point(x,y));
 				SectionKey entry = (SectionKey) (item==null ? null : item.getData());
-				return entry==null ? null : InifileHoverUtils.getEntryTooltip(entry.section, entry.key, getInifileDocument(), getInifileAnalyzer());
+				return entry==null ? null : InifileHoverUtils.getEntryHoverText(entry.section, entry.key, getInifileDocument(), getInifileAnalyzer());
 			}
 		});
 
