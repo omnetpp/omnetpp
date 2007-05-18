@@ -29,8 +29,6 @@ public class ProblemMarkerJob extends WorkspaceJob {
 
     /**
      * Set the parsing error store for a file 
-     * @param file
-     * @param errorStore
      */
     public void setParseErrorStore(IFile file, NEDErrorStore errorStore) {
         nedParseErrors.put(file, errorStore);
@@ -150,6 +148,7 @@ public class ProblemMarkerJob extends WorkspaceJob {
         // Converts all error store info to markers and attaches them to the files
         for (IFile file : nedParseErrors.keySet()) {
         	//FIXME the following error happened on startup several times:
+        	//(maybe someone modifies the parseErrors hashmap during this processing??
 			// !ENTRY org.eclipse.core.jobs 4 2 2007-05-18 21:22:51.747
 			// !MESSAGE An internal error occurred during: "Updating problem markers".
 			// !STACK 0
@@ -165,6 +164,7 @@ public class ProblemMarkerJob extends WorkspaceJob {
                 continue;
             // TODO optimize the marker update. if no change occurred to the marker state
             // do not touch the markers
+            // XXX see ProblemMarkerSynchronizer in Common!!! it solves exactly that problem  --Andras
             file.deleteMarkers(NEDPROBLEM_MARKERID, true, IResource.DEPTH_ZERO);
             file.deleteMarkers(NEDCONSISTENCYPROBLEM_MARKERID, true, IResource.DEPTH_ZERO);
             addMarkersToFile(file, nedParseErrors.get(file));
