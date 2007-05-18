@@ -338,7 +338,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
     }
 
     public void gotoMarker(IMarker marker) {
-        // switch to text page and delagte to it
+        // switch to text page and delegate to it
         setActivePage(textPageIndex);
         IGotoMarker gm = (IGotoMarker)textEditor.getAdapter(IGotoMarker.class);
         if (gm != null)
@@ -360,9 +360,11 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
                 try {
                     int startLine = model.getSourceRegion().startLine;
                     int endLine = model.getSourceRegion().endLine;
-                    textEditor.setHighlightRange(document.getLineOffset(startLine-1),
-                                                 document.getLineOffset(endLine-1)+document.getLineLength(endLine-1),
+                    int startOffset = document.getLineOffset(startLine-1)+model.getSourceRegion().startColumn;
+                    int endOffset = document.getLineOffset(endLine-1)+model.getSourceRegion().endColumn;
+                    textEditor.setHighlightRange(startOffset, endOffset - startOffset,
                                                  true);
+
                 } catch (Exception e) {
                 }
         }
