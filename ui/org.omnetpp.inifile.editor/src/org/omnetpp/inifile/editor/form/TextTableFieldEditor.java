@@ -43,7 +43,7 @@ public class TextTableFieldEditor extends TableFieldEditor {
 		table.setHeaderVisible(true);
 		addTableColumn(table, "Section", 100);
 		addTableColumn(table, "Value", 200);
-		addTooltipSupport(table);
+		addTooltipSupport(table); //FIXME we need per-section hover text! in checkboxtable too!
 
 		// set up tableViewer, label provider
 		final TableViewer tableViewer = new TableViewer(table);

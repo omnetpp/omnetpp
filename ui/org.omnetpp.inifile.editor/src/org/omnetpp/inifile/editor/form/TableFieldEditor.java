@@ -168,7 +168,7 @@ public abstract class TableFieldEditor extends FieldEditor {
 	 */
 	@Override
 	public void commit() {
-		// table cell editors will autocommit when losing the focus
+		// table cell editors will auto-commit when losing the focus
 	}
 
 	/**

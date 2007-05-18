@@ -119,8 +119,14 @@ public class SectionsPage extends FormPage {
 			@Override
 			public String getText(Object element) {
 				String section = getSectionNameFromTreeNode(element);
+				String networkName = getInifileDocument().getValue(section, CFGID_NETWORK.getKey());
 				String description = getInifileDocument().getValue(section, CFGID_DESCRIPTION.getKey());
-				return description==null ? section : (section+" -- "+description);
+				String text = section;
+				if (networkName != null)
+					text += " (network: " + networkName+")";
+				if (description != null)
+					text += " -- " + description;
+				return text;
 			}
 			@Override
 			public Image getImage(Object element) {
