@@ -1,3 +1,4 @@
+  + Reworked Pin/Unpin functionality
   + Added image export to compound module content assist and also some 
     wizzards in OMNSET category. It is possible to generate images to
     all/selected nedfiles in the workspace.

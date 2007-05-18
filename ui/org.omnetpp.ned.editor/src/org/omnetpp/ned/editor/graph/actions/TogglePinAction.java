@@ -1,7 +1,5 @@
 package org.omnetpp.ned.editor.graph.actions;
 
-import java.util.List;
-
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.commands.Command;
@@ -18,14 +16,14 @@ import org.omnetpp.ned.editor.graph.edit.policies.PolicyUtil;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned.model.interfaces.INamedGraphNode;
 
-public class UnpinAction extends org.eclipse.gef.ui.actions.SelectionAction {
+public class TogglePinAction extends org.eclipse.gef.ui.actions.SelectionAction {
 
 	public static final String ID = "Pinned";
 	public static final String MENUNAME = "Pinned";
 	public static final String TOOLTIP = "Pins the module to a location";
 	public static final ImageDescriptor IMAGE = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_UNPIN);
 
-	public UnpinAction(IWorkbenchPart part) {
+	public TogglePinAction(IWorkbenchPart part) {
 		super(part, IAction.AS_CHECK_BOX);
 		setText(MENUNAME);
 		setId(ID);
@@ -52,8 +50,13 @@ public class UnpinAction extends org.eclipse.gef.ui.actions.SelectionAction {
 	protected void refresh() {
 	    int size = getSelectedObjects().size();
         if (size > 0) {
-	        Point loc = ((INamedGraphNode)((GraphicalEditPart)
-	                            getSelectedObjects().get(size-1)).getModel()).getDisplayString().getLocation(null);
+            Object primarySelection = getSelectedObjects().get(size-1);
+            Point loc = null;
+            if (primarySelection instanceof GraphicalEditPart) {
+                Object model = ((GraphicalEditPart)primarySelection).getModel();
+                if (model instanceof INamedGraphNode)
+                    loc = ((INamedGraphNode)model).getDisplayString().getLocation(null);
+            }
 	        setChecked(loc != null);
 	    }
 	    super.refresh();
@@ -74,10 +77,12 @@ public class UnpinAction extends org.eclipse.gef.ui.actions.SelectionAction {
     protected Command getCommand() {
         CompoundCommand resize = new CompoundCommand();
 
-        for (GraphicalEditPart child : (List<GraphicalEditPart>)getSelectedObjects()) {
-            SetConstraintCommand c = createTogglePinCommand(child);
-            if (c != null)
-                resize.add(c);
+        for (Object child : getSelectedObjects()) {
+            if (child instanceof GraphicalEditPart) {
+                SetConstraintCommand c = createTogglePinCommand((GraphicalEditPart)child);
+                if (c != null)
+                    resize.add(c);
+            }
         }
         // do not provide a command if there were no submodules that can be pinned unpinned
         if (resize.size() < 1) return UnexecutableCommand.INSTANCE;

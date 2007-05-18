@@ -153,9 +153,9 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
         addRetargetAction(new RedoRetargetAction());
 
         RetargetAction retAction;
-        addRetargetAction(retAction = new RetargetAction(UnpinAction.ID, UnpinAction.MENUNAME, IAction.AS_CHECK_BOX));
-        retAction.setToolTipText(UnpinAction.TOOLTIP);
-        retAction.setImageDescriptor(UnpinAction.IMAGE);
+        addRetargetAction(retAction = new RetargetAction(TogglePinAction.ID, TogglePinAction.MENUNAME, IAction.AS_CHECK_BOX));
+        retAction.setToolTipText(TogglePinAction.TOOLTIP);
+        retAction.setImageDescriptor(TogglePinAction.IMAGE);
         addRetargetAction(retAction = new RetargetAction(ReLayoutAction.ID, ReLayoutAction.MENUNAME));
         retAction.setToolTipText(ReLayoutAction.TOOLTIP);
         retAction.setImageDescriptor(ReLayoutAction.IMAGE);
@@ -196,7 +196,7 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
         tbm.add(getAction(ActionFactory.REDO.getId()));
 
         tbm.add(new Separator());
-    	tbm.add(getAction(UnpinAction.ID));
+    	tbm.add(getAction(TogglePinAction.ID));
     	tbm.add(getAction(ReLayoutAction.ID));
 
     }
