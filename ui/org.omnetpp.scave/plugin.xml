@@ -74,7 +74,7 @@
      <view
            category="org.omnetpp.views"
            class="org.omnetpp.scave.views.VectorBrowserView"
-           icon="icons/full/eview16/outvector.gif"
+           icon="icons/full/eview16/outvector.png"
            id="org.omnetpp.scave.VectorBrowserView"
            name="Output Vector"/>
      <view

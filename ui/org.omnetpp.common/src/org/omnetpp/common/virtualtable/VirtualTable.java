@@ -84,7 +84,7 @@ public class VirtualTable<T>
 	protected boolean followSelection = true;
 
 	/**
-	 * A list of selected elemenents;
+	 * A list of selected elements;
 	 */
 	protected List<T> selectionElements;
 
@@ -114,7 +114,7 @@ public class VirtualTable<T>
 	protected boolean drawLines;
 	
 	/**
-	 * Container to support horizontal scrollin.
+	 * Container to support horizontal scrolling.
 	 */
 	protected ScrolledComposite scrolledComposite;
 	

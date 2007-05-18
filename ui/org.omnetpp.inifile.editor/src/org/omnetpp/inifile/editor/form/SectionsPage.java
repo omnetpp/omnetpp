@@ -11,6 +11,9 @@ import java.util.HashMap;
 
 import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
 import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -41,6 +44,7 @@ import org.omnetpp.common.ui.GenericTreeLabelProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.GenericTreeUtils;
 import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
@@ -52,8 +56,6 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
  * 
  * @author Andras
  */
-//XXX enable/disable buttons as tree selection changes
-//XXX editing stuff inside included files causes exception without user feedback -- pop up error dialog?
 public class SectionsPage extends FormPage {
 	private static final Image ICON_ERROR = InifileEditorPlugin.getCachedImage("icons/full/obj16/Error.png");
 	private static final String CIRCLE_WARNING_TEXT = "NOTE: Sections that form circles (which is illegal) are not displayed here -- switch to text mode to fix them!";
@@ -61,6 +63,9 @@ public class SectionsPage extends FormPage {
 
 	private Label label;
 	private TreeViewer treeViewer;
+	private Button addButton;
+	private Button editButton;
+	private Button removeButton;
 
 	static class SectionData {
 		String sectionName;
@@ -158,6 +163,7 @@ public class SectionsPage extends FormPage {
 		// export the tree's selection as editor selection
 		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
+				updateButtons();
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
 				String section = getSectionNameFromTreeNode(sel.getFirstElement());
 				if (section != null)
@@ -175,6 +181,12 @@ public class SectionsPage extends FormPage {
 		});
 
 		return treeViewer;
+	}
+
+	protected void updateButtons() {
+		ISelection selection = treeViewer.getSelection();
+		editButton.setEnabled(!selection.isEmpty());
+		removeButton.setEnabled(!selection.isEmpty());
 	}
 
 	private void setupDragAndDropSupport(TreeViewer viewer) {
@@ -234,9 +246,9 @@ public class SectionsPage extends FormPage {
 		Composite buttonGroup = new Composite(this, SWT.NONE);
 		buttonGroup.setLayout(new GridLayout(1,false));
 
-		Button addButton = createButton(buttonGroup, "Add...");
-		Button editButton = createButton(buttonGroup, "Edit...");
-		Button removeButton = createButton(buttonGroup, "Remove"); //XXX bind to DEL key too
+		addButton = createButton(buttonGroup, "Add...");
+		editButton = createButton(buttonGroup, "Edit...");
+		removeButton = createButton(buttonGroup, "Remove");
 
 		// configure "add section" button
 		addButton.addSelectionListener(new SelectionAdapter() {
@@ -349,10 +361,12 @@ public class SectionsPage extends FormPage {
 		try {
 			String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
 			if (selection.length != 0) {
-				for (String sectionName : selection) {
-					getInifileDocument().removeSection(sectionName);
+				boolean ok = MessageDialog.openQuestion(getShell(), "Delete Sections", "Do you want to delete the selected "+(selection.length==1 ? "section" : selection.length+" sections")+"?");
+				if (ok) {
+					for (String sectionName : selection)
+						getInifileDocument().removeSection(sectionName);
+					reread();
 				}
-				reread();
 			}
 		}
 		catch (RuntimeException e) {
@@ -435,6 +449,7 @@ public class SectionsPage extends FormPage {
 		}
 
 		treeViewer.refresh();  // refresh labels anyway
+		updateButtons();
 	}
 
 	private GenericTreeNode getOrCreate(HashMap<String, GenericTreeNode> nodes, String sectionName, boolean isUndefined) {
