@@ -7,8 +7,11 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
+import org.eclipse.ui.actions.RetargetAction;
 import org.eclipse.ui.ide.IDEActionFactory;
 import org.eclipse.ui.part.MultiPageEditorActionBarContributor;
 import org.eclipse.ui.texteditor.ITextEditor;
@@ -24,9 +27,11 @@ import org.omnetpp.inifile.editor.actions.AddInifileKeysAction;
  */
 public class InifileEditorContributor extends MultiPageEditorActionBarContributor {
 	private IEditorPart activeEditorPart;
-	private IAction addInifileKeysAction = new AddInifileKeysAction();  
-	private IAction showModuleParametersView = new ShowViewAction(IConstants.MODULEPARAMETERS_VIEW_ID); 
-	private IAction showModuleHierarchyView = new ShowViewAction(IConstants.MODULEHIERARCHY_VIEW_ID); 
+	private IAction addInifileKeysAction = new AddInifileKeysAction();
+	private RetargetAction undoAction;
+	//private IAction showModuleParametersView = new ShowViewAction(IConstants.MODULEPARAMETERS_VIEW_ID); 
+	//private IAction showModuleHierarchyView = new ShowViewAction(IConstants.MODULEHIERARCHY_VIEW_ID);
+	private RetargetAction redoAction;
 
 	
 	/**
@@ -48,7 +53,7 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
 		IActionBars actionBars = getActionBars();
 		if (actionBars==null)
 			return; 
-		
+
 		ITextEditor textEditor = (part instanceof ITextEditor) ? (ITextEditor) part : null;
 		if (textEditor != null) {
 			actionBars.setGlobalActionHandler(
@@ -92,18 +97,39 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
 		}
 	}
 
-	public void contributeToMenu(IMenuManager manager) { //XXX refine...
-		IMenuManager menu = new MenuManager("Editor &Menu");
-		manager.prependToGroup(IWorkbenchActionConstants.MB_ADDITIONS, menu);
-		menu.add(addInifileKeysAction);
-		menu.add(showModuleParametersView);
-		menu.add(showModuleHierarchyView);
+	public void contributeToMenu(IMenuManager manager) {
+		IMenuManager editMenu = manager.findMenuUsingPath(IWorkbenchActionConstants.M_EDIT);
+		editMenu.appendToGroup(IWorkbenchActionConstants.MB_ADDITIONS, addInifileKeysAction);
 	}
 
 	public void contributeToToolBar(IToolBarManager manager) {
 		manager.add(new Separator());
+
+		undoAction = new RetargetAction(ActionFactory.UNDO.getId(), "Undo");
+		redoAction = new RetargetAction(ActionFactory.REDO.getId(), "Redo");
+
+		ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
+    	undoAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_UNDO));
+    	undoAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_UNDO_DISABLED));
+    	redoAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
+    	redoAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_REDO_DISABLED));
+    	
+    	manager.add(undoAction);
+    	manager.add(redoAction);
+
+    	getPage().addPartListener(undoAction);
+    	getPage().addPartListener(redoAction);
+
 		manager.add(addInifileKeysAction);
-		manager.add(showModuleParametersView);
-		manager.add(showModuleHierarchyView);
+    	
 	}
+	
+    @Override
+    public void dispose() {
+        getPage().removePartListener(undoAction);
+        getPage().removePartListener(redoAction);
+        undoAction.dispose();
+        redoAction.dispose();
+    }
+	
 }
