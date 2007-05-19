@@ -145,7 +145,7 @@ public class InifileUtils {
 			String currentSection = section;
 		    while (true) {
 		    	if (!doc.containsSection(currentSection))
-		            break; // error: nonexisting section
+		            break; // error: nonexistent section
 		        if (sectionChain.contains(currentSection))
 		            break; // error: circle in the fallback chain
 		        sectionChain.add(currentSection);
@@ -191,7 +191,7 @@ public class InifileUtils {
 	    else if (value.equals("no") || value.equals("false") || value.equals("off") || value.equals("0"))
 	    	return false;
 	    else
-	    	return false; // unrecongnized
+	    	return false; // unrecognized
 	}
 
 	/**

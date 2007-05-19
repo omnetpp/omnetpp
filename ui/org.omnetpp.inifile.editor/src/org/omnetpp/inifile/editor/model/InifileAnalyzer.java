@@ -227,7 +227,7 @@ public class InifileAnalyzer {
 				String currentSection = section;
 				while (true) {
 					if (!doc.containsSection(currentSection))
-						break; // error: nonexisting section
+						break; // error: nonexistent section
 					if (sectionChain.contains(currentSection)) {
 						bogusSections.add(currentSection);
 						break; // error: circle in the fallback chain
@@ -262,6 +262,13 @@ public class InifileAnalyzer {
 		}
 		else if (e.isGlobal() && !section.equals(GENERAL)) {
 			addError(section, key, "Key \""+key+"\" can only be specified globally, in the [General] section");
+		}
+		else if (key.equals(CFGID_NETWORK.getKey()) && !section.equals(GENERAL)) {
+			// it does not make sense to override "network=" in another section, warn for it
+			String[] sectionChain = InifileUtils.resolveSectionChain(doc, section);
+			for (String sec : sectionChain)
+				if (!sec.equals(section) && doc.containsKey(sec, key))
+					addWarning(section, key, "Network is already specified in section ["+sec+"], as \""+doc.getValue(sec, key)+"\"");
 		}
 
 		// check value: if it is the right type
@@ -405,7 +412,7 @@ public class InifileAnalyzer {
 			// calculate param resolutions
 			List<ParamResolution> resList = collectParameters(activeSection);
 
-			// store with the section the list of all parameter resolutions (incl unassigned params)
+			// store with the section the list of all parameter resolutions (including unassigned params)
 			// store with every key the list of parameters it resolves
 			for (ParamResolution res : resList) {
 				SectionData sectionData = ((SectionData)doc.getSectionData(activeSection));
