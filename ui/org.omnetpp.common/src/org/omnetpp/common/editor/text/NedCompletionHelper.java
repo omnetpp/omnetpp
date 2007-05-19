@@ -69,7 +69,7 @@ public final class NedCompletionHelper {
     }
 
     /**
-     * Detects kewords that athere to the @whatewer syntax, staring with @ and continuing with letters only.
+     * Detects keywords that are starting with @ and continuing with letters only.
      */
     public static class NedAtWordDetector implements IWordDetector {
 
@@ -83,7 +83,7 @@ public final class NedCompletionHelper {
     }
 
     /**
-     * Detects kewords that look like an XML tag.
+     * Detects keywords that look like an XML tag.
      */
     public static class NedDocTagDetector implements IWordDetector {
 

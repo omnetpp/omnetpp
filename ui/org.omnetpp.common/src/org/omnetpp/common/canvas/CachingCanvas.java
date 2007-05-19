@@ -17,6 +17,8 @@ import org.omnetpp.common.canvas.ITileCache.Tile;
 /**
  * A scrollable canvas that supports caching of (part of) the drawing 
  * in off-screen image buffers for performance improvement.
+ * 
+ * @author andras
  */
 public abstract class CachingCanvas extends LargeScrollableCanvas {
 

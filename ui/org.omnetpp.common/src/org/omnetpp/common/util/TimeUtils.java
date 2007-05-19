@@ -3,6 +3,10 @@ package org.omnetpp.common.util;
 import java.math.BigDecimal;
 
 
+/**
+ * 
+ * @author levy
+ */
 public class TimeUtils {
 	private static BigDecimal appendToTimeString(StringBuffer timeString, BigDecimal time, String name) {
 		long value = time.longValue();

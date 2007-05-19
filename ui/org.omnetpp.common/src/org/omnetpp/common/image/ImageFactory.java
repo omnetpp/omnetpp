@@ -122,7 +122,7 @@ public class ImageFactory {
             imageDirs = omnetppBitmapPath.split(";");
         // create and register a default / not found image
         imageRegistry.put(DEFAULT_KEY,
-                new NedImageDescriptor(ImageFactory.class, DEFAULT_NAME));
+                new NedImageDescriptor(ImageFactory.class, DEFAULT_NAME)); 
 
     }
 

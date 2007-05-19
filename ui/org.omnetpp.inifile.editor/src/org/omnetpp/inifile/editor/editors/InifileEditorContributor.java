@@ -3,7 +3,6 @@ package org.omnetpp.inifile.editor.editors;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
@@ -16,8 +15,6 @@ import org.eclipse.ui.ide.IDEActionFactory;
 import org.eclipse.ui.part.MultiPageEditorActionBarContributor;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
-import org.omnetpp.common.IConstants;
-import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.inifile.editor.actions.AddInifileKeysAction;
 
 /**
@@ -29,9 +26,9 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
 	private IEditorPart activeEditorPart;
 	private IAction addInifileKeysAction = new AddInifileKeysAction();
 	private RetargetAction undoAction;
+	private RetargetAction redoAction;
 	//private IAction showModuleParametersView = new ShowViewAction(IConstants.MODULEPARAMETERS_VIEW_ID); 
 	//private IAction showModuleHierarchyView = new ShowViewAction(IConstants.MODULEHIERARCHY_VIEW_ID);
-	private RetargetAction redoAction;
 
 	
 	/**

@@ -17,8 +17,9 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 /**
  * Action to open a NED type selection dialog.
  * 
- * @author rhornig
+ * @author andras, rhornig
  */
+//XXX label provider should return null (not a default image) for types that don't have an icon
 public class OpenNedTypeAction implements IWorkbenchWindowActionDelegate {
     public void init(IWorkbenchWindow window) {
     }

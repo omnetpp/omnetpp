@@ -29,6 +29,7 @@ import org.omnetpp.common.util.StringUtils;
 
 /**
  * Generic incremental type completion processor.
+ * @author rhornig
  */
 public abstract class IncrementalCompletionProcessor extends TemplateCompletionProcessor {
     private static final String DEFAULT_IMAGE = "icons/obj16/template.png"; 
@@ -41,7 +42,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
     }
     
     /**
-     * Helper comparator calss to compare CompletionProposals using relevance and the the display name 
+     * Helper comparator class to compare CompletionProposals using relevance and the the display name 
      */
     protected static class CompletionProposalComparator implements Comparator {
         private static CompletionProposalComparator instance = null;
@@ -100,7 +101,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
     /**
      * Detects the boundary of a single word under the current position (defined by the wordDetector)  
      * @param viewer The document viewer where the word must be detected
-     * @param documentOffset urrent cursor offset
+     * @param documentOffset current cursor offset
      * @param wordDetector A specific word detector to detect in-word characters
      * @return The region that should be replaced
      */
@@ -120,7 +121,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
             if(offset + length < viewer.getDocument().getLength() 
                     && wordDetector.isWordStart(viewer.getDocument().getChar(offset + length)))
                 length++;
-            // now iterate throug the rest of chars until a character cannot be recognized as an in/word char
+            // now iterate through the rest of chars until a character cannot be recognized as an in/word char
             while(offset + length < viewer.getDocument().getLength() 
                     && wordDetector.isWordPart(viewer.getDocument().getChar(offset + length)))
                 length++;
@@ -137,7 +138,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
 	/**
 	 * This method is necessary because TemplateCompletionProcessor.computeCompletionProposals()
 	 * doesn't let us specify what templates we want to add, but insists on calling
-	 * getTemplates() instread. This is a copy of that computeCompletionProposals(), with
+	 * getTemplates() instead. This is a copy of that computeCompletionProposals(), with
 	 * Template[] added to the arg list. 
 	 *
 	 * @author andras

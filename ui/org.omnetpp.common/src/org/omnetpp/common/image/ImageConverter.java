@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Shell;
 
 /**
  * Convert between AWT and SWT image, and supports rescaling
- * @author rhornig
+ * @author andras
  */
 public class ImageConverter {
 
@@ -289,7 +289,12 @@ public class ImageConverter {
             return scaledImage.getImageData();
         }
     }
-	//	static { testImageResizing(); }
+
+    
+    // For debugging, uncomment:
+    // static { 
+    //     testImageResizing(); 
+    // }
 
 	protected static void testImageResizing() {
 		Shell shell = new Shell((Shell)null, SWT.SHELL_TRIM);

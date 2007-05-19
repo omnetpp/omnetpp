@@ -9,6 +9,11 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+/**
+ * A composite with a border drawn around it.
+ * 
+ * @author Andras
+ */
 public class BorderedComposite extends Composite {
 	protected static final Color BORDER_BACKGROUND_COLOR = new Color(null, 228, 228, 228);
 	protected static final Color BORDER_FOREGROUND_COLOR = new Color(null, 128, 128, 128);

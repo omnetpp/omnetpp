@@ -8,6 +8,8 @@ import org.eclipse.jface.viewers.Viewer;
  * has to be provided by the user. The resulting tree is cached, so
  * buildTree() is only called once. Refresh (discarding and rebuilding
  * the tree) can be triggered by calling setInput() on the viewer.
+ * 
+ * @author Andras
  */
 public abstract class CachedTreeContentProvider extends GenericTreeContentProvider {
 	private GenericTreeNode root;

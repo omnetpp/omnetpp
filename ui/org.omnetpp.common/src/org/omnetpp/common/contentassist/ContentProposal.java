@@ -4,6 +4,7 @@ import org.eclipse.jface.fieldassist.IContentProposal;
 
 /**
  * A "standard" implementation of IContentProposal as an immutable value class.
+ * @author Andras
  */
 public class ContentProposal implements IContentProposal, Comparable {
 	private String content;
