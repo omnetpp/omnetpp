@@ -83,7 +83,6 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
 			actionBars.setGlobalActionHandler(
 				IDEActionFactory.BOOKMARK.getId(),
 				textEditor.getAction(IDEActionFactory.BOOKMARK.getId()));
-			actionBars.updateActionBars();
 		}
 		else {
 			// form page selected: activate text editor's undo/redo support here as well
@@ -94,7 +93,17 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
 			actionBars.setGlobalActionHandler(
 					ActionFactory.REDO.getId(),
 					multipageEditor.getTextEditor().getAction(ITextEditorActionConstants.REDO));
+
+			// deactivate the others
+			actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(), null);
+			actionBars.setGlobalActionHandler(ActionFactory.CUT.getId(), null);
+			actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(), null);
+			actionBars.setGlobalActionHandler(ActionFactory.PASTE.getId(), null);
+			actionBars.setGlobalActionHandler(ActionFactory.SELECT_ALL.getId(), null);
+			actionBars.setGlobalActionHandler(ActionFactory.FIND.getId(), null);
+			actionBars.setGlobalActionHandler(IDEActionFactory.BOOKMARK.getId(), null);
 		}
+		actionBars.updateActionBars();
 	}
 
 	public void contributeToMenu(IMenuManager manager) {
