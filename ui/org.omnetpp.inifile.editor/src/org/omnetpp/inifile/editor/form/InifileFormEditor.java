@@ -21,12 +21,13 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
+import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 
 
 /**
- * Common functionality for form-based pages of the inifile multi-page editor.
+ * Represents the form page of the inifile multi-page editor.
  * @author andras
  */
 public class InifileFormEditor extends Composite {
@@ -95,7 +96,9 @@ public class InifileFormEditor extends Composite {
 		// at this point InifileDocument is not yet set up, so we have to defer showing the form page
 		Display.getCurrent().asyncExec(new Runnable() {
 			public void run() {
-				showCategoryPage(SECTIONS_PAGE);
+				IInifileDocument doc = inifileEditor.getEditorData().getInifileDocument();
+				String initialPage = doc.getSectionNames().length >= 2 ? SECTIONS_PAGE : PARAMETERS_PAGE; 
+				showCategoryPage(initialPage);
 			}
 		});
 

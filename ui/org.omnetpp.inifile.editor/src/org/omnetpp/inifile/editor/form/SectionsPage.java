@@ -68,7 +68,7 @@ public class SectionsPage extends FormPage {
 	private Label label;
 	private TreeViewer treeViewer;
 	
-	private IAction addAction = new Action("Add...") {
+	private IAction addAction = new Action("New...") {
 		public void run() {
 			createNewSection();
 		}	
@@ -202,6 +202,7 @@ public class SectionsPage extends FormPage {
 
 		// add context menu
 		MenuManager menuManager = new MenuManager();
+		menuManager.add(addAction);
 		menuManager.add(editAction);
 		menuManager.add(removeAction);
 		menuManager.add(new Separator());
@@ -215,7 +216,7 @@ public class SectionsPage extends FormPage {
 	protected void updateActions() {
 		ISelection selection = treeViewer.getSelection();
 		editAction.setEnabled(!selection.isEmpty());
-		editAction.setEnabled(!selection.isEmpty());
+		removeAction.setEnabled(!selection.isEmpty());
 		gotoParametersAction.setEnabled(!selection.isEmpty());
 		addKeysAction.setEnabled(!selection.isEmpty());
 	}

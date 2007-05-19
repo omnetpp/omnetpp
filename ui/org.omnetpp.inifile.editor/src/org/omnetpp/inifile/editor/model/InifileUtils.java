@@ -7,24 +7,17 @@ import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jface.internal.text.html.HTMLPrinter;
 import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
-import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
-import org.omnetpp.ned.model.ex.ParamNodeEx;
-import org.omnetpp.ned.model.pojo.ParamNode;
 import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
 /**
