@@ -71,12 +71,9 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
 		fieldEditor = createFieldEditor(isExpanded);
 		fieldEditor.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 				
-		//XXX toggleButton = new Button(this, SWT.FLAT);
-		//toggleButton.setLayoutData(new GridData(SWT.CENTER, SWT.BEGINNING, false, false));
 		toggleButton = createFlatImageButton(this);
 		toggleButton.setImage(isExpanded ? IMAGE_COLLAPSE : IMAGE_EXPAND);
-		toggleButton.setToolTipText(isExpanded ? "Collapse": "Expand");
-		//toggleButton.setToolTipText(isExpanded ? "": "Specify per-configuration values");
+		toggleButton.setToolTipText(isExpanded ? "Specify value globally, in the [General] section": "Specify values individually for different sections");
 		toggleButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				isExpanded = !isExpanded;

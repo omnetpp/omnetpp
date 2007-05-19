@@ -86,9 +86,9 @@ import org.omnetpp.sequencechart.widgets.axisrenderer.IAxisRenderer;
  *
  * @author andras, levy
  */
-//TODO cf with ns2 trace file and cEnvir callbacks, and modify file format...
+//TODO cf with ns2 trace file and cEnvir callback, and modify file format...
 //TODO proper "hand" cursor - current one is not very intuitive
-//TODO hierarchic sort should be able to reverse order of sorted axes of its submodules
+//TODO hierarchical sort should be able to reverse order of sorted axes of its submodules
 //TODO rubberband vs. haircross, show them at once
 public class SequenceChart
 	extends CachingCanvas
@@ -893,7 +893,7 @@ public class SequenceChart
 	}
 
 	/**
-	 * Sets the contributor used to build the popup menu in the chart.
+	 * Sets the contributor used to build the pop-up menu in the chart.
 	 */
 	public void setSequenceChartContributor(SequenceChartContributor sequenceChartContributor) {
 		menuManager = new MenuManager();
@@ -1213,7 +1213,7 @@ public class SequenceChart
 		graphics.getClip(Rectangle.SINGLETON);
 		graphics.setBackgroundColor(ZERO_SIMULATION_TIME_REGION_COLOR);
 		
-		// draw rectange before the very beginning of the simulation
+		// draw rectangle before the very beginning of the simulation
 		int x = Rectangle.SINGLETON.x;
 		if (getSimulationTimeForViewportCoordinate(x) == 0) {
 			int startX = getViewportCoordinateForSimulationTime(0);
@@ -1787,7 +1787,7 @@ public class SequenceChart
 		int yy3 = yy2 + size;
 		int yy4 = yy3 + size;
 
-		// transform coordinates so that zig zag will be orthogonal to x1, y1, x2, y2
+		// transform coordinates so that zigzag will be orthogonal to x1, y1, x2, y2
 		double dx = x2 - x1;
 		double dy = y2 - y1;
 		double length = Math.sqrt(dx * dx + dy * dy);
@@ -2001,7 +2001,7 @@ public class SequenceChart
 			int tMaxPrecision = tMax.stripTrailingZeros().precision();
 			int tDeltaPrecision = tMax.subtract(tMin).stripTrailingZeros().precision();
 			int precision = Math.max(1, 1 + Math.max(tMinPrecision - tDeltaPrecision, tMaxPrecision - tDeltaPrecision));
-			// estabilish initial rounding contextes
+			// establish initial rounding contexts
 			MathContext mcMin = new MathContext(precision, RoundingMode.FLOOR);
 			MathContext mcMax = new MathContext(precision, RoundingMode.CEILING);
 			BigDecimal tRoundedMin = simulationTime;

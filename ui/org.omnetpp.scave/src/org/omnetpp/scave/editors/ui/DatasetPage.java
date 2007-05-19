@@ -24,7 +24,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
 //FIXME close this page when dataset gets deleted
 public class DatasetPage extends ScaveEditorPage {
 
-	private Dataset dataset; //backref to the model object we operate on
+	private Dataset dataset; // backreference to the model object we operate on
 	private DatasetPanel datasetPanel;
 
 	private IResultFilesChangeListener resultFilesChangeListener; // we'll need to unhook on dispose()

@@ -11,6 +11,7 @@ import java.util.HashMap;
 
 import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
 import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -46,7 +47,9 @@ import org.omnetpp.common.ui.GenericTreeUtils;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
+import org.omnetpp.inifile.editor.actions.AddInifileKeysAction;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
+import org.omnetpp.inifile.editor.editors.InifileEditorContributor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 import org.omnetpp.inifile.editor.model.InifileUtils;
@@ -180,6 +183,13 @@ public class SectionsPage extends FormPage {
 			}
 		});
 
+		// add context menu
+		MenuManager menuManager = new MenuManager();
+		menuManager.add(new AddInifileKeysAction());
+		//XXX more actions...
+		treeViewer.getTree().setMenu(menuManager.createContextMenu(treeViewer.getTree()));
+		
+		
 		return treeViewer;
 	}
 

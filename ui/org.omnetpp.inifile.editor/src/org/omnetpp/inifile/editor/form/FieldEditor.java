@@ -109,7 +109,7 @@ public abstract class FieldEditor extends Composite {
 	protected Button createResetButton() {
 		Button resetButton = new Button(this, SWT.PUSH);
 		resetButton.setText("Reset");
-		resetButton.setToolTipText("Reset to default, by removing corresponding entry from the document");
+		resetButton.setToolTipText("Reset value to default, by removing corresponding entry from the document");
 		resetButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				resetToDefault();
