@@ -1,5 +1,7 @@
 package org.omnetpp.inifile.editor.form;
 
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_NETWORK;
+
 import java.util.ArrayList;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -58,6 +60,7 @@ import org.omnetpp.inifile.editor.model.SectionKey;
 public class ParametersPage extends FormPage {
 	private TableViewer tableViewer;
 	private Combo sectionsCombo;
+	private Label networkNameLabel;
 	private Label sectionChainLabel;
 	private Button addButton;
 	private Button removeButton;
@@ -87,7 +90,12 @@ public class ParametersPage extends FormPage {
 		comboLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		sectionsCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-		// create section chain label
+		// create network name and section chain labels
+		networkNameLabel = new Label(this, SWT.NONE);
+		networkNameLabel.setLayoutData(new GridData(SWT.END, SWT.BEGINNING, true, false));
+		networkNameLabel.setText("Network name: n/a");
+		new Label(this, SWT.NONE); // dummy, to fill 2nd column
+
 		sectionChainLabel = new Label(this, SWT.NONE);
 		sectionChainLabel.setLayoutData(new GridData(SWT.END, SWT.BEGINNING, true, false));
 		sectionChainLabel.setText("Section fallback chain: n/a");
@@ -499,7 +507,9 @@ public class ParametersPage extends FormPage {
 		tableViewer.setInput(list.toArray(new SectionKey[list.size()]));
 		tableViewer.refresh();
 
-		// update "Section fallback chain" label
+		// update labels: "Network" and "Section fallback chain"
+		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getKey(), doc);
+		networkNameLabel.setText("Network: "+(networkName==null ? "<not configured>" : networkName)+"  ");
 		sectionChainLabel.setText("Section fallback chain: "+(sectionChain.length==0 ? "<no sections>" : StringUtils.join(sectionChain, " > ")));
 		sectionChainLabel.getParent().layout();
 	}
