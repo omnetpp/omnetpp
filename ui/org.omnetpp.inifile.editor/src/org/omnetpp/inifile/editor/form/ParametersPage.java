@@ -474,6 +474,8 @@ public class ParametersPage extends FormPage {
 
 	@Override
 	public void reread() {
+		super.reread();
+		
 		// refresh combo with the current section names, trying to preserve existing selection
 		IInifileDocument doc = getInifileDocument();
 		String selectedSection = sectionsCombo.getText(); 

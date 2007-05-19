@@ -47,6 +47,7 @@ public class RawConfigPage extends FormPage {
 	
 	@Override
 	public void reread() {
+		super.reread();
 		for (Control c : getChildren())
 			if (c instanceof FieldEditor)
 				((FieldEditor) c).reread();

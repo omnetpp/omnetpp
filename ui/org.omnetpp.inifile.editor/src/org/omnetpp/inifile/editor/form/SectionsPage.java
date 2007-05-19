@@ -404,6 +404,7 @@ public class SectionsPage extends FormPage {
 
 	@Override
 	public void reread() {
+		super.reread();
 		IInifileDocument doc = getInifileDocument();
 
 		// create root node

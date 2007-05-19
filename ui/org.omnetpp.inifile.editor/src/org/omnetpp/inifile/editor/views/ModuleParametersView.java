@@ -61,6 +61,7 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
 //XXX some tooltip for unassigned parameters too
 //XXX table sorting doesn't work
 //XXX scrolling using the scrollbar doesn't work properly (cannot scroll selection off the screen)
+//XXX hover does not work
 public class ModuleParametersView extends AbstractModuleView {
 	private TableViewer tableViewer;
 	private boolean unassignedOnly = true;

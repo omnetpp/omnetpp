@@ -97,8 +97,12 @@ public abstract class FormPage extends Composite {
 	
 	/**
 	 * Reads data from the document into the current page.
+	 * FormPage's implementation does nothing except canceling the delayed-reread timer --
+	 * subclasses must override and actually implement the rereading! 
 	 */
-	public abstract void reread();
+	public void reread() {
+		delayedRereadJob.cancel();
+	}
 
 	/**
 	 * Set the focus to an appropriate control in the form page. 
