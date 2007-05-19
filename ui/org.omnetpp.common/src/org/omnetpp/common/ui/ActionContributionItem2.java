@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Widget;
 import org.omnetpp.common.CommonPlugin;
 
@@ -39,10 +40,18 @@ public class ActionContributionItem2 extends ActionContributionItem {
 	}
 
 	/**
+	 * Minor improvement on fill(Composite): return the created button
+	 */
+	public Button fill2(Composite parent) {
+		fill(parent);
+		return (Button) getWidget();
+	}
+	
+	/**
 	 * Base class doesn't have getWidget(), and the field is private, so we need to 
 	 * get it with reflection here.
 	 */
-	protected Widget getWidget() {
+	public Widget getWidget() {
 		try {
 			Field declaredField = ActionContributionItem.class.getDeclaredField("widget");
 			declaredField.setAccessible(true);

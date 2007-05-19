@@ -152,8 +152,8 @@ public class ScaveEditorPage extends ScrolledForm {
 	 * 
 	 * Note: ActionContributionItem is not good here because:
 	 *  (1) it wants to create the button itself, and thus not compatible with FormToolkit
-	 *  (2) the button it creates has wrong background color, and there's no way to access the button to fix it
-	 *  (3) it will make the button listen to global selection changes, and cannot be tied to a viewer 
+	 *  (2) the button it creates has wrong background color, and there's no way to access
+	 *      the button to fix it (this is solved by ActionContributionItem2, it adds a getter)
 	 */
 	private static void doConfigureButton(final Button button, final IScaveAction action) {
 		button.setText(action.getText());
@@ -207,6 +207,8 @@ public class ScaveEditorPage extends ScrolledForm {
 	 * the action becomes enabled/disabled. 
 	 * 
 	 * The action will be enabled/disabled based on a viewer's selection.
+	 * 
+	 * See also: ActionContributionItem, ActionContributionItem2
 	 */
 	public static void configureViewerButton(final Button button, final Viewer viewer, final IScaveAction action) {
 		doConfigureButton(button, action);

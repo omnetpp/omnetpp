@@ -368,7 +368,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	
 	/**
 	 * Creates a closable page. These pages are closed automatically when the
-	 * displayed object (chart/dataset/chartsheet) is removed from the model.
+	 * displayed object (chart/dataset/chart sheet) is removed from the model.
 	 * Their tabs contain a small (x), so the user can also close them. 
 	 */
 	private int createClosablePage(EObject object) {

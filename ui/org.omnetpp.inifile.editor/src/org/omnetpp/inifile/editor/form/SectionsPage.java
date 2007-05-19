@@ -11,10 +11,12 @@ import java.util.HashMap;
 
 import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
 import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -40,16 +42,15 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.common.ui.ActionContributionItem2;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeLabelProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.GenericTreeUtils;
 import org.omnetpp.common.ui.IHoverTextProvider;
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.actions.AddInifileKeysAction;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
-import org.omnetpp.inifile.editor.editors.InifileEditorContributor;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 import org.omnetpp.inifile.editor.model.InifileUtils;
@@ -66,9 +67,28 @@ public class SectionsPage extends FormPage {
 
 	private Label label;
 	private TreeViewer treeViewer;
-	private Button addButton;
-	private Button editButton;
-	private Button removeButton;
+	
+	private IAction addAction = new Action("Add...") {
+		public void run() {
+			createNewSection();
+		}	
+	};
+	private IAction editAction = new Action("Edit...") {
+		public void run() {
+			editSelectedSection();
+		}	
+	};
+	private IAction removeAction = new Action("Remove") {
+		public void run() {
+			removeSelectedSection();
+		}	
+	};
+	private IAction gotoParametersAction = new Action("Go To Parameters") {
+		public void run() {
+			gotoSectionParameters();
+		}	
+	};
+	private IAction addKeysAction = new AddInifileKeysAction();
 
 	static class SectionData {
 		String sectionName;
@@ -156,17 +176,14 @@ public class SectionsPage extends FormPage {
 		treeViewer.getTree().addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent event) {
-				String section = getSectionNameFromTreeNode(event.item==null ? null : event.item.getData());
-				InifileFormEditor formEditor = getEditorData().getInifileEditor().getFormEditor();
-				formEditor.showCategoryPage(InifileFormEditor.PARAMETERS_PAGE);
-				formEditor.getFormPage().gotoSection(section);
+				gotoParametersAction.run();
 			}
 		});
 
 		// export the tree's selection as editor selection
 		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
-				updateButtons();
+				updateActions();
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
 				String section = getSectionNameFromTreeNode(sel.getFirstElement());
 				if (section != null)
@@ -185,18 +202,22 @@ public class SectionsPage extends FormPage {
 
 		// add context menu
 		MenuManager menuManager = new MenuManager();
-		menuManager.add(new AddInifileKeysAction());
-		//XXX more actions...
+		menuManager.add(editAction);
+		menuManager.add(removeAction);
+		menuManager.add(new Separator());
+		menuManager.add(gotoParametersAction);
+		menuManager.add(addKeysAction);
 		treeViewer.getTree().setMenu(menuManager.createContextMenu(treeViewer.getTree()));
-		
 		
 		return treeViewer;
 	}
 
-	protected void updateButtons() {
+	protected void updateActions() {
 		ISelection selection = treeViewer.getSelection();
-		editButton.setEnabled(!selection.isEmpty());
-		removeButton.setEnabled(!selection.isEmpty());
+		editAction.setEnabled(!selection.isEmpty());
+		editAction.setEnabled(!selection.isEmpty());
+		gotoParametersAction.setEnabled(!selection.isEmpty());
+		addKeysAction.setEnabled(!selection.isEmpty());
 	}
 
 	private void setupDragAndDropSupport(TreeViewer viewer) {
@@ -255,40 +276,15 @@ public class SectionsPage extends FormPage {
 	protected Composite createButtons() {
 		Composite buttonGroup = new Composite(this, SWT.NONE);
 		buttonGroup.setLayout(new GridLayout(1,false));
-
-		addButton = createButton(buttonGroup, "Add...");
-		editButton = createButton(buttonGroup, "Edit...");
-		removeButton = createButton(buttonGroup, "Remove");
-
-		// configure "add section" button
-		addButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				createNewSection();
-			}
-		});
-
-		// configure "edit/rename section" button
-		editButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				editSelectedSection();
-			}
-		});
-
-		// configure "remove section" button
-		removeButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				removeSelectedSection();
-			}
-		});
-
+		addActionButton(buttonGroup, addAction);
+		addActionButton(buttonGroup, editAction);
+		addActionButton(buttonGroup, removeAction);
 		return buttonGroup;
 	}
 
-	protected static Button createButton(Composite buttonGroup, String label) {
-		Button button = new Button(buttonGroup, SWT.PUSH);
-		button.setText(label);
-		button.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
-		return button;
+	protected static void addActionButton(Composite buttonGroup, IAction action) {
+		Button button = new ActionContributionItem2(action, ActionContributionItem.MODE_FORCE_TEXT).fill2(buttonGroup);
+		button.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 	}
 
 	/**
@@ -385,6 +381,20 @@ public class SectionsPage extends FormPage {
 	}
 
 	/**
+	 * Goes to the Parameters page of the inifile editor and chooses the selection section.
+	 * Invoked by double-clicking the tree viewer.
+	 */
+	protected void gotoSectionParameters() {
+		String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
+		if (selection.length != 0) {
+			String section = selection[0];
+			InifileFormEditor formEditor = getEditorData().getInifileEditor().getFormEditor();
+			formEditor.showCategoryPage(InifileFormEditor.PARAMETERS_PAGE);
+			formEditor.getFormPage().gotoSection(section);
+		}
+	}
+	
+	/**
 	 * Invoked when the user selects a few sections, and drags them to another section.
 	 */
 	protected void sectionsDragged(String[] draggedSections, String targetSectionName) {
@@ -460,7 +470,7 @@ public class SectionsPage extends FormPage {
 		}
 
 		treeViewer.refresh();  // refresh labels anyway
-		updateButtons();
+		updateActions();
 	}
 
 	private GenericTreeNode getOrCreate(HashMap<String, GenericTreeNode> nodes, String sectionName, boolean isUndefined) {

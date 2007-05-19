@@ -26,7 +26,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
  */
 public class AddInifileKeysAction extends Action {
 	public AddInifileKeysAction() {
-		setText("Add Missing Keys");
+		setText("Add Missing Keys...");
 		setToolTipText("Add Missing Keys");
 		setImageDescriptor(InifileEditorPlugin.getImageDescriptor("icons/full/etool16/genkeys.png"));
 	}
