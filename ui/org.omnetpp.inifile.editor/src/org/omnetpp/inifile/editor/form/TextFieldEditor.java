@@ -122,14 +122,13 @@ public class TextFieldEditor extends FieldEditor {
 		if (value==null) {
 			String defaultValue = entry.getDefaultValue()==null ? "" : entry.getDefaultValue().toString(); 
 			textField.setText(defaultValue);
-			//textField.setForeground(null);
-			textField.setForeground(ColorFactory.asColor("darkGreen")); //XXX
+			//textField.setForeground(ColorFactory.asColor("darkGreen"));
+			textField.setForeground(ColorFactory.GREY50);
 			resetButton.setEnabled(false);
 		}
 		else {
 			textField.setText(value);
 			textField.setForeground(null);
-			//textField.setForeground(ColorFactory.asColor("blue")); //XXX
 			resetButton.setEnabled(true);
 		}
 		isEdited = false;
