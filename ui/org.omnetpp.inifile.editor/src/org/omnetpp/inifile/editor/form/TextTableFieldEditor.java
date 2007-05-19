@@ -28,7 +28,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
  * 
  * @author Andras
  */
-//XXX add content assist!!!
+//XXX fix up content assist!!!
 public class TextTableFieldEditor extends TableFieldEditor {
 
 	public TextTableFieldEditor(Composite parent, ConfigurationEntry entry, IInifileDocument inifile, FormPage formPage, String labelText) {
@@ -43,8 +43,7 @@ public class TextTableFieldEditor extends TableFieldEditor {
 		table.setHeaderVisible(true);
 		addTableColumn(table, "Section", 100);
 		addTableColumn(table, "Value", 200);
-		addTooltipSupport(table); //FIXME we need per-section hover text! in checkboxtable too!
-
+		
 		// set up tableViewer, label provider
 		final TableViewer tableViewer = new TableViewer(table);
 		tableViewer.setLabelProvider(new TableLabelProvider() {

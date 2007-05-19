@@ -11,16 +11,21 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.dialogs.ListDialog;
+import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 
 /**
  * Base class for field editors that allow the user edit a setting
@@ -96,6 +101,15 @@ public abstract class TableFieldEditor extends FieldEditor {
 					removeFromFile(section);
 				}
 				reread();
+			}
+		});
+		
+		// add hover support
+		formPage.addTooltipSupport(tableViewer.getTable(), new IHoverTextProvider() {
+			public String getHoverTextFor(Control control, int x, int y) {
+				Item item = tableViewer.getTable().getItem(new Point(x,y));
+				String section = (String) (item==null ? null : item.getData());
+				return section==null ? null : InifileHoverUtils.getConfigHoverText(section, entry.getKey(), inifile);
 			}
 		});
 		

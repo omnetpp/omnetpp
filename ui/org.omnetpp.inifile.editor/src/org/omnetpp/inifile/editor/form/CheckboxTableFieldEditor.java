@@ -35,7 +35,6 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
 		Table table = new Table(parent, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION | SWT.CHECK);
 		table.setLayoutData(new GridData(200, 2*table.getItemHeight())); // for some reason, 2* results in 3-line table...
 		CheckboxTableViewer tableViewer = new CheckboxTableViewer(table);
-		addTooltipSupport(table);
 
 		tableViewer.setLabelProvider(new TableLabelProvider() {
 			@Override
@@ -72,7 +71,7 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
 	public void reread() {
 		super.reread();
 
-		// (Checkbox)TableViewer cannot read the checked state via a labelprovider-like 
+		// (Checkbox)TableViewer cannot read the checked state via a label provider-like 
 		// interface, so we have to set it explicitly here...
 		ArrayList<String> list = new ArrayList<String>();
 		for (String section : (String[]) tableViewer.getInput())
