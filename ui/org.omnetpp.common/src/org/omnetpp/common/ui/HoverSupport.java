@@ -13,16 +13,14 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
 /**
@@ -79,7 +77,6 @@ public class HoverSupport {
     private static final String HTML_EPILOG = 
         "</body></html>\n";
 
-    protected AllInOneListener eventListener = new AllInOneListener();
 	protected IHoverTextProvider defaultHoverTextProvider = null;
 	protected HashMap<Control,IHoverTextProvider> hoverTextProviders = new HashMap<Control, IHoverTextProvider>(); 
 	protected Point hoverSizeConstaints = new Point(320, 200);
@@ -87,43 +84,37 @@ public class HoverSupport {
 	protected IInformationControl hoverControl;
 	protected IInformationControl informationControl;
 	
-
-	private class AllInOneListener implements MouseListener, MouseTrackListener, MouseMoveListener, KeyListener {
-		public void mouseDoubleClick(MouseEvent e) {}
-		public void keyReleased(KeyEvent e) {}
+	/**
+	 * Listener added to each adapted widget: mouse hovering should show the tooltip
+	 */
+	protected MouseTrackListener mouseTrackListener = new MouseTrackListener() {
+		public void mouseEnter(MouseEvent e) {}
+		public void mouseExit(MouseEvent e) {}
 
 		public void mouseHover(MouseEvent e) {
 			if (e.widget instanceof Control && (e.stateMask & SWT.BUTTON_MASK) == 0)
 				displayHover((Control)e.widget, e.x, e.y);
 		}
+	};
 
-		public void mouseMove(MouseEvent e) {
-			removeHover();
+	/**
+	 * A global (workbench-wide) event filter, responsible for removing the tooltip,
+	 * or making it persistent (F2 key). This listener is hooked on Display when the first 
+	 * widget gets adapted, and unhooked when the last widget gets forgotten (or disposed).
+	 * 
+	 * Global event filters are not without dangers; we chose to use it because this way
+	 * we can catch keyboard events wherever the focus is.
+	 */
+	protected Listener eventFilter = new Listener() {
+		public void handleEvent(Event e) {
+			if (hoverControl != null) {
+				if (e.type == SWT.KeyDown && e.keyCode == SWT.F2)
+					makeHoverSticky();
+				else
+					removeHover();
+			}
 		}
-
-		public void mouseDown(MouseEvent e) {
-			removeHover();
-		}
-
-		public void keyPressed(KeyEvent e) {
-			if (e.keyCode == SWT.F2 && hoverControl != null)  //XXX query real key binding and use that, etc
-				makeHoverSticky();
-			else
-				removeHover();
-		}
-
-		public void mouseUp(MouseEvent e) {
-			removeHover();
-		}
-
-		public void mouseEnter(MouseEvent e) {
-			removeHover();
-		}
-
-		public void mouseExit(MouseEvent e) {
-			removeHover();
-		}
-	}
+	}; 
 
 	/**
 	 * Create a hover support object.
@@ -138,6 +129,20 @@ public class HoverSupport {
 		this.defaultHoverTextProvider = defaultHoverTextProvider;
 	}
 
+	protected void hookGlobalEventFilter() {
+		System.out.println("HoverSupport: hooking global listener");
+		Display.getDefault().addFilter(SWT.MouseExit, eventFilter);
+		Display.getDefault().addFilter(SWT.MouseMove, eventFilter);
+		Display.getDefault().addFilter(SWT.KeyDown, eventFilter);
+	}
+
+	protected void unhookGlobalEventFilter() {
+		System.out.println("HoverSupport: unhooking global listener");
+		Display.getDefault().removeFilter(SWT.MouseExit, eventFilter);
+		Display.getDefault().removeFilter(SWT.MouseMove, eventFilter);
+		Display.getDefault().removeFilter(SWT.KeyDown, eventFilter);
+	}
+
 	/**
 	 * Adds hover support for the given control, with the default
 	 * hover text provider that was given in the constructor call.
@@ -150,14 +155,14 @@ public class HoverSupport {
 	 * Adds hover support for the given control.
 	 */
 	public void adapt(final Control c, IHoverTextProvider hoverTextProvider) {
+		if (hoverTextProviders.isEmpty())
+			hookGlobalEventFilter();
+
 		Assert.isTrue(hoverTextProvider != null);
 		Assert.isTrue(!hoverTextProviders.containsKey(c), "control already registered");
 		hoverTextProviders.put(c, hoverTextProvider);
 
-		c.addMouseListener(eventListener);
-		c.addMouseMoveListener(eventListener);
-		c.addMouseTrackListener(eventListener);
-		c.addKeyListener(eventListener);
+		c.addMouseTrackListener(mouseTrackListener);
 		c.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
 				forget(c);
@@ -171,17 +176,16 @@ public class HoverSupport {
 	 * widgetDisposed() automatically.
 	 */
 	public void forget(Control c) {
+		c.removeMouseTrackListener(mouseTrackListener);
 		hoverTextProviders.remove(c);
-
-		c.removeMouseListener(eventListener);
-		c.removeMouseMoveListener(eventListener);
-		c.removeMouseTrackListener(eventListener);
-		c.removeKeyListener(eventListener);
+		
+		if (hoverTextProviders.isEmpty())
+			unhookGlobalEventFilter();
 	}
 
 	protected void displayHover(Control control, int x, int y) {
-		if (informationControl != null)
-			return; // we are already showing a (sticky) information control
+		if (hoverControl != null || informationControl != null)
+			return; // we are already showing a hover or a (sticky) information control
 
 		IHoverTextProvider hoverTextProvider = hoverTextProviders.get(control);
 		String hoverText = hoverTextProvider.getHoverTextFor(control, x, y);
