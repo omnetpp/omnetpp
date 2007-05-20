@@ -22,7 +22,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -36,9 +35,9 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.TableLabelProvider;
-import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.actions.ActionExt;
@@ -47,7 +46,6 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.SectionKey;
-import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.ITopLevelElement;
@@ -58,11 +56,8 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
  * Displays module parameters recursively for a module type.
  * @author Andras
  */
-//XXX disable "pin" action while view shows message (i.e. no contents) ?
-//XXX some tooltip for unassigned parameters too
 //XXX table sorting doesn't work
 //XXX scrolling using the scrollbar doesn't work properly (cannot scroll selection off the screen)
-//XXX hover does not work
 public class ModuleParametersView extends AbstractModuleView {
 	private TableViewer tableViewer;
 	private boolean unassignedOnly = true;
@@ -140,41 +135,29 @@ public class ModuleParametersView extends AbstractModuleView {
 				Object element = item==null ? null : item.getData();
 				if (element instanceof ParamResolution) {
 					ParamResolution res = (ParamResolution) element;
-					if (res.section!=null && res.key!=null) {
+					if (res.section != null && res.key != null)
 						//XXX make sure "res" and inifile editor refer to the same IFile!!!
 						return InifileHoverUtils.getEntryHoverText(res.section, res.key, inifileDocument, inifileAnalyzer);
-					}
-					else if (res.paramValueNode!=null) {
-						return null; //XXX todo
-					}
-					else {
-						//XXX todo: use paramDeclNode, it is never null
-					}
+					else 
+						return InifileHoverUtils.getParamHoverText(res.pathModules, res.paramDeclNode, res.paramValueNode);
 				}
 				return null;
 			}
  		});
 
-		tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+		// things to do when table selection changes
+ 		tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				IEditorPart editor = getAssociatedEditor();
 				if (!event.getSelection().isEmpty() && editor!=null) {
 					// remember selection (we'll try to restore it after table rebuild)
 					selectedElements.put(getAssociatedEditor().getEditorInput(), event.getSelection());
 
-					// try to go to the given element in the inifile editor
-					//XXX into base class as utility function? 
-					if (editor instanceof IGotoInifile) {
-						IGotoInifile inifileEditor = (IGotoInifile) editor;
-						Object element = ((IStructuredSelection) event.getSelection()).getFirstElement();
-						if (element instanceof ParamResolution) {
-							ParamResolution res = (ParamResolution) element;
-							if (res.section!=null && res.key!=null) {
-								//XXX make sure "res" and inifile editor refer to the same IFile!!!
-								inifileEditor.gotoEntry(res.section, res.key, IGotoInifile.Mode.AUTO);
-							}
-						}
-					}
+					// try to highlight the given element in the inifile editor
+					SectionKey sel = getSectionKeyFromSelection();
+					//XXX make sure "res" and inifile editor refer to the same IFile!!!
+					if (sel != null && editor instanceof IGotoInifile)
+						((IGotoInifile)editor).gotoEntry(sel.section, sel.key, IGotoInifile.Mode.AUTO);
 				}
 			}
 		});
@@ -226,15 +209,6 @@ public class ModuleParametersView extends AbstractModuleView {
 			public void selectionChanged(SelectionChangedEvent event) {
 				SectionKey sel = getSectionKeyFromSelection();
 				setEnabled(sel!=null);
-			}
-			private SectionKey getSectionKeyFromSelection() {
-				Object element = ((IStructuredSelection)tableViewer.getSelection()).getFirstElement();
-				if (element instanceof ParamResolution) {
-					ParamResolution res = (ParamResolution) element;
-					if (res.section!=null && res.key!=null && res.type!=ParamResolutionType.NED_DEFAULT)
-						return new SectionKey(res.section, res.key);
-				}
-				return null;
 			}
 		};
 		
@@ -334,6 +308,16 @@ public class ModuleParametersView extends AbstractModuleView {
 		}
 	}
 
+	protected SectionKey getSectionKeyFromSelection() {
+		Object element = ((IStructuredSelection)tableViewer.getSelection()).getFirstElement();
+		if (element instanceof ParamResolution) {
+			ParamResolution res = (ParamResolution) element;
+			if (res.section!=null && res.key!=null)
+				return new SectionKey(res.section, res.key);
+		}
+		return null;
+	}
+	
 	@Override
 	protected void showMessage(String text) {
 		inifileAnalyzer = null;
@@ -353,6 +337,7 @@ public class ModuleParametersView extends AbstractModuleView {
 	@Override
 	public void buildContent(INEDElement module, InifileAnalyzer analyzer, String section, String key) {
 		//XXX factor out common part of the two "if" branches
+		//XXX why not unconditionally store analyzer and doc references???
 		if (analyzer==null) {
 			ParamResolution[] pars = null;
 			if (module instanceof SubmoduleNode)

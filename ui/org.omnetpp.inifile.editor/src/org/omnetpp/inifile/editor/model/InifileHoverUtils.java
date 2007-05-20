@@ -15,6 +15,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 import org.omnetpp.ned.model.ex.ParamNodeEx;
 import org.omnetpp.ned.model.pojo.ParamNode;
+import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
 /**
  * Produces hover information for various Inifile parts.
@@ -124,7 +125,7 @@ public class InifileHoverUtils {
 	}
 
 	/**
-	 * Generate config for a param key entry
+	 * Generate tooltip for a param key entry
 	 */
 	public static String getParamKeyHoverText(String section, String key, InifileAnalyzer analyzer) {
 		//XXX somehow merge similar entries? (i.e. where pathModules[] and paramValueNode/paramDeclNode are the same)
@@ -176,4 +177,13 @@ public class InifileHoverUtils {
 		}
 		return text+"<br/>";
 	}
+	
+	/**
+	 * Generate tooltip for a NED parameter
+	 */
+	public static String getParamHoverText(SubmoduleNode[] pathModules, ParamNode paramDeclNode, ParamNode paramValueNode) {
+		String text = "hello!"; //XXX todo
+		return HoverSupport.addHTMLStyleSheet(text);
+	}
+	
 }

@@ -18,8 +18,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.omnetpp.common.displaymodel.DisplayString;
@@ -28,17 +30,19 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.GenericTreeUtils;
+import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.actions.ActionExt;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.IModuleTreeVisitor;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
+import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.NEDTreeTraversal;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.SectionKey;
-import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
@@ -60,10 +64,11 @@ import org.omnetpp.ned.model.pojo.SubmoduleNode;
  * @author Andras
  */
 //XXX "like" submodule with unresolved type does not appear as such!!!
-//XXX add tooltip support!
 public class ModuleHierarchyView extends AbstractModuleView {
 	private TreeViewer treeViewer;
 	private IInifileDocument inifileDocument; // corresponds to the current selection; needed by the label provider
+	private InifileAnalyzer inifileAnalyzer; // corresponds to the current selection; unfortunately needed by the hover
+	
 	private MenuManager contextMenuManager = new MenuManager("#PopupMenu");
 
 	// hashmap to save/restore view's state when switching across editors 
@@ -197,17 +202,48 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		});
 		treeViewer.setContentProvider(new GenericTreeContentProvider());
 		
-		// remember selection (we'll try to restore it after tree rebuild)
 		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
-				if (!event.getSelection().isEmpty() && getAssociatedEditor()!=null)
-					selectedElements.put(getAssociatedEditor().getEditorInput(), event.getSelection());
+				IEditorPart editor = getAssociatedEditor();
+				if (!event.getSelection().isEmpty() && editor != null) {
+					// remember selection (we'll try to restore it after tree rebuild)
+					selectedElements.put(editor.getEditorInput(), event.getSelection());
+
+					// try to highlight the given element in the inifile editor
+					SectionKey sel = getSectionKeyFromSelection();
+					//XXX make sure "res" and inifile editor refer to the same IFile!!!
+					if (sel != null && editor instanceof IGotoInifile)
+						((IGotoInifile)editor).gotoEntry(sel.section, sel.key, IGotoInifile.Mode.AUTO);
+				}
 			}
 		});
 
 		// create context menu
  		getViewSite().registerContextMenu(contextMenuManager, treeViewer);
  		treeViewer.getTree().setMenu(contextMenuManager.createContextMenu(treeViewer.getTree()));
+ 		
+ 		// add tooltip support to the tree
+ 		new HoverSupport().adapt(treeViewer.getTree(), new IHoverTextProvider() {
+			public String getHoverTextFor(Control control, int x, int y) {
+				Item item = treeViewer.getTree().getItem(new Point(x,y));
+				Object element = item==null ? null : item.getData();
+				if (element instanceof GenericTreeNode)
+					element = ((GenericTreeNode)element).getPayload();
+				if (element instanceof ParamResolution) {
+					ParamResolution res = (ParamResolution) element;
+					if (res.section != null && res.key != null)
+						//XXX make sure "res" and inifile editor refer to the same IFile!!!
+						return InifileHoverUtils.getEntryHoverText(res.section, res.key, inifileDocument, inifileAnalyzer);
+					else 
+						return InifileHoverUtils.getParamHoverText(res.pathModules, res.paramDeclNode, res.paramValueNode);
+				}
+				else {
+					//TODO produce some text
+				}
+				return null;
+			}
+ 		});
+ 		
 	}
 
 	private void createActions() {
@@ -227,17 +263,6 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			public void selectionChanged(SelectionChangedEvent event) {
 				SectionKey sel = getSectionKeyFromSelection();
 				setEnabled(sel!=null);
-			}
-			private SectionKey getSectionKeyFromSelection() {
-				Object element = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
-				if (element instanceof GenericTreeNode)
-					element = ((GenericTreeNode)element).getPayload();
-				if (element instanceof ParamResolution) {
-					ParamResolution res = (ParamResolution) element;
-					if (res.section!=null && res.key!=null && res.type!=ParamResolutionType.NED_DEFAULT)
-						return new SectionKey(res.section, res.key);
-				}
-				return null;
 			}
 		};
 		
@@ -319,12 +344,25 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	
 		IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
 		menuManager.add(pinAction);
-}
+	}
+	
+	protected SectionKey getSectionKeyFromSelection() {
+		Object element = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
+		if (element instanceof GenericTreeNode)
+			element = ((GenericTreeNode)element).getPayload();
+		if (element instanceof ParamResolution) {
+			ParamResolution res = (ParamResolution) element;
+			if (res.section != null && res.key != null) 
+				return new SectionKey(res.section, res.key);
+		}
+		return null;
+	}
 	
 	@Override
 	protected void showMessage(String text) {
 		super.showMessage(text);
 		inifileDocument = null;
+		inifileAnalyzer = null;
 		treeViewer.setInput(null);
 	}
 
@@ -337,7 +375,8 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	}
 
 	public void buildContent(INEDElement module, final InifileAnalyzer analyzer, final String section, String key) {
-		final IInifileDocument doc = analyzer==null ? null : analyzer.getDocument();
+		this.inifileAnalyzer = analyzer;
+		this.inifileDocument = analyzer==null ? null : analyzer.getDocument();
 
 		// build tree
         final GenericTreeNode root = new GenericTreeNode("root");
@@ -367,7 +406,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
     			if (analyzer == null)
     				return null;
 				String moduleFullPath = StringUtils.join(fullPathStack.toArray(), ".");
-				return InifileUtils.resolveLikeParam(moduleFullPath, submodule, section, analyzer, doc);
+				return InifileUtils.resolveLikeParam(moduleFullPath, submodule, section, analyzer, inifileDocument);
     		}
     	}
 
@@ -392,7 +431,6 @@ public class ModuleHierarchyView extends AbstractModuleView {
 
 		// prevent collapsing all treeviewer nodes: only set it on viewer if it's different from old input
 		if (!GenericTreeUtils.treeEquals(root, (GenericTreeNode)treeViewer.getInput())) {
-			this.inifileDocument = analyzer==null ? null : analyzer.getDocument();
 			treeViewer.setInput(root);
 			
 			// open root node (useful in case preserving the selection fails)
