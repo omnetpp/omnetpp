@@ -11,6 +11,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -33,7 +34,8 @@ import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.omnetpp.common.contentassist.ContentAssistUtils;
+import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
+import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
@@ -232,7 +234,9 @@ public class ParametersPage extends FormPage {
 				return super.getProposals(contents, position);
 			}
 		};
-		ContentAssistUtils.addContentAssist(editors[1], proposalProvider);
+		new ContentAssistCommandAdapter(editors[1].getText(), new TextContentAdapter(), proposalProvider, 
+				ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, null, true);
+		//XXX out: ContentAssistUtils.addContentAssist(editors[1], proposalProvider);
 
 		// content assist for the Value column
 		IContentProposalProvider valueProposalProvider = new InifileValueContentProposalProvider(null, null, getInifileDocument(), getInifileAnalyzer()) {
@@ -243,7 +247,9 @@ public class ParametersPage extends FormPage {
 				return super.getProposals(contents, position);
 			}
 		};
-		ContentAssistUtils.addContentAssist(editors[2], valueProposalProvider);
+		new ContentAssistCommandAdapter(editors[2].getText(), new TextContentAdapter(), valueProposalProvider, 
+				ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, null, true);
+		//XXX out: ContentAssistUtils.addContentAssist(editors[2], valueProposalProvider);
 
 		// on double-click, show entry in the text editor
 		tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
