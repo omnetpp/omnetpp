@@ -370,11 +370,16 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	}
 	
 	private void gotoSectionOrEntry(String section, String key, Mode mode) {
-		if (mode==IGotoInifile.Mode.AUTO)
-			mode = getActivePage()==FORMEDITOR_PAGEINDEX ? IGotoInifile.Mode.FORM : IGotoInifile.Mode.TEXT;
-
-		if (mode==IGotoInifile.Mode.FORM) {
-			setActivePage(FORMEDITOR_PAGEINDEX);
+		// switch to the requested page. If mode==AUTO, stay where we are.
+		// Note: setActivePage() gives focus to the editor, so don't call it with AUTO mode.
+		if (mode==IGotoInifile.Mode.FORM)
+			setActivePage(FORMEDITOR_PAGEINDEX); 
+		else if (mode==IGotoInifile.Mode.FORM)
+			setActivePage(TEXTEDITOR_PAGEINDEX);
+		
+		// perform "go to" on whichever page is displayed
+		if (getActivePage()==FORMEDITOR_PAGEINDEX) {
+			// form editor
 			if (section != null) {
 				if (key==null)
 					formEditor.gotoSection(section);
@@ -382,8 +387,8 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 					formEditor.gotoEntry(section, key);
 			}
 		}
-		else if (mode==IGotoInifile.Mode.TEXT) {
-			setActivePage(TEXTEDITOR_PAGEINDEX);
+		else {
+			// text editor
 			LineInfo line = section==null ? null : key==null ? 
 					editorData.getInifileDocument().getSectionLineDetails(section) :
 					editorData.getInifileDocument().getEntryLineDetails(section, key);

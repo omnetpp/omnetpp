@@ -22,6 +22,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -154,11 +155,27 @@ public class ModuleParametersView extends AbstractModuleView {
 			}
  		});
 
-		// remember selection (we'll try to restore it after table rebuild)
 		tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
-				if (!event.getSelection().isEmpty() && getAssociatedEditor()!=null)
+				IEditorPart editor = getAssociatedEditor();
+				if (!event.getSelection().isEmpty() && editor!=null) {
+					// remember selection (we'll try to restore it after table rebuild)
 					selectedElements.put(getAssociatedEditor().getEditorInput(), event.getSelection());
+
+					// try to go to the given element in the inifile editor
+					//XXX into base class as utility function? 
+					if (editor instanceof IGotoInifile) {
+						IGotoInifile inifileEditor = (IGotoInifile) editor;
+						Object element = ((IStructuredSelection) event.getSelection()).getFirstElement();
+						if (element instanceof ParamResolution) {
+							ParamResolution res = (ParamResolution) element;
+							if (res.section!=null && res.key!=null) {
+								//XXX make sure "res" and inifile editor refer to the same IFile!!!
+								inifileEditor.gotoEntry(res.section, res.key, IGotoInifile.Mode.AUTO);
+							}
+						}
+					}
+				}
 			}
 		});
 

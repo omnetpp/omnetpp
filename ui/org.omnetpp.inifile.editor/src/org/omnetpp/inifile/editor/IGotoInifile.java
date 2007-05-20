@@ -10,13 +10,17 @@ public interface IGotoInifile {
         enum Mode {AUTO, FORM, TEXT};
     
         /**
-         * Opens the editor and shows the specified section. 
+         * Shows the specified section in the editor. The editor will be activated
+         * (focused) if mode is FORM or TEXT, but not if it is AUTO.
+         * 
          * @param section  may be null (to mean deselect) 
          */
         public void gotoSection(String section, Mode mode);
 
         /**
-         * Opens the editor and shows the specified inifile key. 
+         * Shows the specified entry in the editor. The editor will be activated
+         * (focused) if mode is FORM or TEXT, but not if it is AUTO.
+         * 
          * @param section  may be null (to mean deselect)
          * @param key  may be null (to mean deselect)
          */
