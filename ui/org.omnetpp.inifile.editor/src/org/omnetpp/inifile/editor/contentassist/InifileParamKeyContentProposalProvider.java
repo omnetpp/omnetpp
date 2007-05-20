@@ -1,6 +1,7 @@
 package org.omnetpp.inifile.editor.contentassist;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,15 +48,18 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 	 */
 	protected IContentProposal[] getProposalCandidates(String prefix) {
 		if (section != null) {
-			ParamResolution[] resList = analyzer.getUnassignedParams(section);
+			//ParamResolution[] resList = analyzer.getUnassignedParams(section);
+			ParamResolution[] resList = analyzer.getParamResolutions(section);
 
 			// collect unique full paths
 			Set<String> fullPaths = new HashSet<String>(); 
 			for (ParamResolution res : resList)
-				fullPaths.add(res.moduleFullPath + "." +res.paramDeclNode.getName());
+				if (res.type != ParamResolution.ParamResolutionType.NED)
+					fullPaths.add(res.moduleFullPath + "." +res.paramDeclNode.getName());
 
 			Set<String> moduleProposals = new HashSet<String>();
 			Set<String> paramProposals = new HashSet<String>();
+			Set<String> applyDefaultProposals = new HashSet<String>();
 			Set<String> otherProposals = new HashSet<String>();
 
 			// find last "**" or "." ==> (part1,rest)
@@ -103,15 +107,22 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 				otherProposals.add(prefixPart1dot+"*.");
 				otherProposals.add(prefixPart1dot+"**.");
 			}
-			
+
+			// add "apply-default" proposals
 			if (!doc.containsKey(section, "**.apply-default"))
-				otherProposals.add("**.apply-default");
+				applyDefaultProposals.add("**.apply-default");
+			for (String param : paramProposals) {
+				String applyDefault = param + ".apply-default";
+				if (!doc.containsKey(section, applyDefault))
+					applyDefaultProposals.add(applyDefault);
+			}
 			
-			// convert strings to actual proposals, and return them
+			// convert strings to actual proposals, and return them. Each group will be sorted separately
 			List<IContentProposal> proposals = new ArrayList<IContentProposal>();
+			addProposals(proposals, otherProposals, "");
 			addProposals(proposals, moduleProposals, "");
 			addProposals(proposals, paramProposals, ""); 
-			addProposals(proposals, otherProposals, "");
+			addProposals(proposals, applyDefaultProposals, ""); 
 
 			return proposals.toArray(new IContentProposal[]{});
 		}
@@ -122,7 +133,9 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 	private void addProposals(List<IContentProposal> proposals, Set<String> texts, String label) {
 		if (!label.equals(""))
 			label = " -- " + label;
-		for (String text : texts) {
+		String[] array = texts.toArray(new String[]{});
+		Arrays.sort(array);
+		for (String text : array) {
 			if (!text.endsWith(".") && addEqualSign) 
 				text += " = "; 
 			proposals.add(new ContentProposal(text, text+label, null));

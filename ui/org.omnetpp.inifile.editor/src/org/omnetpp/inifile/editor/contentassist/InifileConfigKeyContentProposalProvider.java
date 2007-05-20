@@ -57,7 +57,7 @@ public class InifileConfigKeyContentProposalProvider extends ContentProposalProv
 				}
 			}
 		}
-		return result.toArray(new IContentProposal[]{});
+		return sort(result.toArray(new IContentProposal[]{}));
 	}
 	
 	/**

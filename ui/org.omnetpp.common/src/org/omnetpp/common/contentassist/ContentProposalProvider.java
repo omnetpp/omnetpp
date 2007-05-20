@@ -2,15 +2,16 @@ package org.omnetpp.common.contentassist;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.omnetpp.common.util.StringUtils;
 
 /**
- * A basic content proposal provider. Provides a basic IContentProposal implementation,
- * and sorts and filters by prefix the set of proposal candidates provided by the
- * abstract getProposalCandidates() method.
+ * A basic content proposal provider. Performs filtering by prefix the proposal candidates 
+ * returned by the abstract getProposalCandidates() method. Sorting the proposals should
+ * be done within getProposalCandidates() too. 
  * 
  * Note: although IContentProposalProvider is for field editors, we use this class
  * in the text editor content assist too; we just re-wrap IContentProposals to 
@@ -21,7 +22,7 @@ import org.omnetpp.common.util.StringUtils;
 public abstract class ContentProposalProvider implements IContentProposalProvider {
 	private boolean useWholePrefix = false;
 	private boolean dropPrefix = false;
-	
+
 	public ContentProposalProvider(boolean useWholePrefix) {
 		this(useWholePrefix, true);
 	}
@@ -47,16 +48,14 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
 		ArrayList<IContentProposal> result = new ArrayList<IContentProposal>();
 
 		String prefix = contents.substring(0, position);
-		
+
 		// calculate the last word that the user started to type. This is the basis of
 		// proposal filtering: they have to start with this prefix.
-		String prefixToMatch = useWholePrefix ? prefix : getSuffixToComplete(prefix);
+		String prefixToMatch = useWholePrefix ? prefix : getCompletionPrefix(prefix);
 
 		IContentProposal[] candidates = getProposalCandidates(prefix);
 
-		if (candidates!=null) {
-			Arrays.sort(candidates);
-
+		if (candidates != null) {
 			// check if any of the proposals has description. If they do, we set "(no description)" 
 			// on the others as well. Reason: if left at null, previous tooltip will be shown, 
 			// which is very confusing.
@@ -93,7 +92,7 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
 	 *  Default version detects words (A-Z, a-z, 0-9, underscore); this can be overridden
 	 *  in subclasses.
 	 */
-	protected String getSuffixToComplete(String text) {
+	protected String getCompletionPrefix(String text) {
 		// calculate the last word that the user started to type. This is the basis of
 		// proposal filtering: they have to start with this prefix.
 		return text.replaceFirst("^.*?([A-Za-z0-9_]*)$", "$1");
@@ -106,13 +105,42 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
 	abstract protected IContentProposal[] getProposalCandidates(String prefix);
 
 	/**
-	 * Turn strings into proposals.
+	 * Utility function.
 	 */
-	protected static IContentProposal[] toProposals(String[] strings) {
-		IContentProposal[] p = new IContentProposal[strings.length];
-		for (int i=0; i<p.length; i++)
-			p[i] = new ContentProposal(strings[i], strings[i].trim(), null);
-		return p;
+	protected static IContentProposal[] sort(IContentProposal[] proposals) {
+		Arrays.sort(proposals);
+		return proposals;
 	}
 	
+	/**
+	 * Utility function: Turn strings into proposals.
+	 */
+	protected static IContentProposal[] toProposals(String[] strings) {
+		return toProposals(strings, null);
+	}
+	
+	/**
+	 * Utility function: Turn strings into proposals.
+	 */
+	protected static IContentProposal[] toProposals(String[] strings, String labelSuffix) {
+		IContentProposal[] p = new IContentProposal[strings.length];
+		if (labelSuffix==null)
+			for (int i=0; i<p.length; i++)
+				p[i] = new ContentProposal(strings[i], strings[i].trim(), null);
+		else
+			for (int i=0; i<p.length; i++)
+				p[i] = new ContentProposal(strings[i], strings[i].trim()+" -- "+labelSuffix, null);
+		return p;
+	}
+
+	/**
+	 * Utility function: Turn strings into proposals.
+	 */
+	protected static void addProposals(List<IContentProposal> list, String[] strings, String labelSuffix, boolean sort) {
+		IContentProposal[] proposals = toProposals(strings, labelSuffix);
+		if (sort)
+			sort(proposals);
+		list.addAll(Arrays.asList(proposals));
+	}
+
 }

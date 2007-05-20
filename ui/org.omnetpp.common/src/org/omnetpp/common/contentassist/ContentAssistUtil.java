@@ -57,7 +57,7 @@ public class ContentAssistUtil {
 				t.setSelection(oldCaretPosition);
 				
 				String property = (String) tableViewer.getColumnProperties()[columnIndex];
-				tableViewer.getCellModifier().modify(element, property, oldText);
+				tableViewer.getCellModifier().modify(element, property, oldText); // BTW, this may throw exceptions
 			}
 		});
 		return commandAdapter;

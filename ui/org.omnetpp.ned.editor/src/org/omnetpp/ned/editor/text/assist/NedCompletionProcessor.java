@@ -221,7 +221,10 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 
 			addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedOtherExpressionKeywords, "keyword");
 		    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedOperatorsTempl);
-		    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedDistributionsTempl);
+		    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedContinuousDistributionsTempl);
+		    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedDiscreteDistributionsTempl);
+		    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedContinuousDistributionsTemplExt);
+		    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedDiscreteDistributionsTemplExt);
 		    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedFunctionsTempl);
 		}
 

@@ -18,7 +18,7 @@ import org.omnetpp.common.contentassist.ContentProposalProvider;
  * A cell editor that manages a color field. using the ColorFactory
  * Supports content assist function, and direct text editing of the color name
  * <p>
- * This is the copied/modifed version of the platform ColorCellEditor
+ * This is a copied/modified version of the platform ColorCellEditor
  * </p>
  */
 public class ColorCellEditorEx extends TextCellEditorEx {
@@ -35,7 +35,7 @@ public class ColorCellEditorEx extends TextCellEditorEx {
 
         @Override
         protected IContentProposal[] getProposalCandidates(String prefix) {
-            return toProposals(ColorFactory.getColorNames());
+            return sort(toProposals(ColorFactory.getColorNames()));
         }
         
     }

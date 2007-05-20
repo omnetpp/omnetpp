@@ -22,9 +22,9 @@ public class ImageCellEditor extends TextCellEditorEx {
         @Override
         protected IContentProposal[] getProposalCandidates(String prefix) {
             if (prefix.contains("/")) 
-                return toProposals(ImageFactory.getImageNameList().toArray(new String[] {}));
+                return sort(toProposals(ImageFactory.getImageNameList().toArray(new String[] {})));
             else 
-                return toProposals(ImageFactory.getCategories().toArray(new String[] {}));
+                return sort(toProposals(ImageFactory.getCategories().toArray(new String[] {})));
         }
         
     }

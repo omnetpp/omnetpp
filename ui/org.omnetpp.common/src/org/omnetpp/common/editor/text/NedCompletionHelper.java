@@ -1,5 +1,6 @@
 package org.omnetpp.common.editor.text;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.IWhitespaceDetector;
@@ -17,84 +18,8 @@ import org.eclipse.swt.widgets.Display;
  * @author rhornig
  */
 public final class NedCompletionHelper {
-
     /** This context's id */
     public static final String DEFAULT_NED_CONTEXT_TYPE= "org.omnetpp.ned.editor.text.default"; //$NON-NLS-1$
-
-    /**
-     * Convenience method, to return a system default color. Color constants come from SWT class e.g. SWT.COLOR_RED
-     * @param color
-     * @return
-     */
-    public static Color getColor(int color) {
-        return Display.getDefault().getSystemColor(color);
-    }
-
-    /**
-     * A generic white space detector
-     */
-    public static class NedWhitespaceDetector implements IWhitespaceDetector {
-
-        public boolean isWhitespace(char character) {
-            return Character.isWhitespace(character);
-        }
-    }
-
-    /**
-     * Detector for normal NED keywords (may start with letter, @ or _ and contain letter number or _)
-     */
-    public static class NedWordDetector implements IWordDetector {
-
-        public boolean isWordStart(char character) {
-            return Character.isLetter(character) || character == '_' || character == '@';
-        }
-
-        public boolean isWordPart(char character) {
-            return Character.isLetterOrDigit(character) || character == '_';
-        }
-    }
-
-    /**
-     * Detector for extreme NED keywords (in: out: --> <-- .. ...) where the keyword may contain special chars
-     */
-    public static class NedSpecialWordDetector implements IWordDetector {
-
-        public boolean isWordStart(char c) {
-            return Character.isLetter(c) || c == '-' || c == '<' || c == '>' || c == '.';
-        }
-
-        public boolean isWordPart(char c) {
-            return isWordStart(c) || c == ':';
-        }
-    }
-
-    /**
-     * Detects keywords that are starting with @ and continuing with letters only.
-     */
-    public static class NedAtWordDetector implements IWordDetector {
-
-        public boolean isWordStart(char c) {
-            return (c == '@');
-        }
-
-        public boolean isWordPart(char c) {
-            return Character.isLetter(c);
-        }
-    }
-
-    /**
-     * Detects keywords that look like an XML tag.
-     */
-    public static class NedDocTagDetector implements IWordDetector {
-
-        public boolean isWordStart(char c) {
-            return (c == '<');
-        }
-
-        public boolean isWordPart(char c) {
-            return Character.isLetter(c) || c == '/' || c == '>';
-        }
-    }
 
     // word lists for syntax highlighting
     // TODO these are both for NED and MSG files. Once a separate MSG editor is done keywords should be split
@@ -119,28 +44,19 @@ public final class NedCompletionHelper {
     public final static String[] proposedNedConnsKeywords = {"allowunconnected"};
     public final static String[] proposedNedOtherExpressionKeywords = {"index", "this"};
     public final static String[] proposedConstants = { "false", "true" };
+
     
-
-    private static Template makeShortTemplate(String pattern, String description) {
-        String name = pattern.replaceAll("\\$\\{(.*?)\\}", "$1");  // remove ${} from parameters
-        pattern = pattern.replace("\n", "\n${indent}");
-        return new Template(name, description, DEFAULT_NED_CONTEXT_TYPE, pattern, false);
-    }
-
-    private static Template makeTemplate(String name, String description, String pattern) {
-        pattern = pattern.replace("\n", "\n${indent}");
-        return new Template(name, description, DEFAULT_NED_CONTEXT_TYPE, pattern, false);
-    }
-            
     public final static Template[] proposedNedComponentPropertyTempl = {
         makeShortTemplate("@display(\"i=${icon}\");", "property") 
-    }; // XXX check what gets actually supported! also: "recordstats", "kernel", ...  
+    }; // XXX check what gets actually supported! also: "recordstats", "kernel", ...
+    
     public final static Template[] proposedNedParamPropertyTempl = {
         makeShortTemplate("@prompt(\"${message}\")", "property"), 
         makeShortTemplate("@enum(${value1}, ${value2})", "property"), 
         makeShortTemplate("@classname(${className})", "property"), 
         makeShortTemplate("@unit(${unitName})", "property"), 
-    }; //XXX check this list before release  
+    }; //XXX check this list before release
+    
     public final static Template[] proposedNedGatePropertyTempl = {
         makeShortTemplate("@labels(${label1})", "property"), 
         makeShortTemplate("@inlabels(${inLabel1})", "property"), 
@@ -157,6 +73,7 @@ public final class NedCompletionHelper {
     	makeShortTemplate("sizeof(${gateOrSubmod})", "operator"),
     	makeShortTemplate("xmldoc(${filename}, ${opt_xpath})", "operator"),
     };
+
     public final static Template[] proposedNedFunctionsTempl = new Template[] {
     	makeShortTemplate("acos(${x})", "function"),
     	makeShortTemplate("asin(${x})", "function"),
@@ -178,32 +95,37 @@ public final class NedCompletionHelper {
     	makeShortTemplate("log(${x})", "function"),
     	makeShortTemplate("log10(${x})", "function"),
     };
-    public final static Template[] proposedNedDistributionsTempl = new Template[] {
-    	// continuous
-    	makeShortTemplate("beta(${alpha1}, ${alpha2}, ${opt_rngnum})", "distribution"),
-    	makeShortTemplate("cauchy(${a}, ${b}, ${opt_rngnum})", "distribution"),
-    	makeShortTemplate("chi_square(${k}, ${opt_rngnum})", "distribution"),
-    	makeShortTemplate("erlang_k(${k}, ${mean}, ${opt_rngnum})", "distribution"),
-    	makeShortTemplate("exponential(${mean}, ${opt_rngnum})", "distribution"),
-    	makeShortTemplate("gamma_d(${alpha}, ${beta}, ${opt_rngnum})", "distribution"),
-    	makeShortTemplate("lognormal(${m}, ${w}, ${opt_rngnum})", "distribution"),
-    	makeShortTemplate("normal(${mean}, ${stddev}, ${opt_rngnum})", "distribution"),
-    	makeShortTemplate("pareto_shifted(${a}, ${b}, ${c}, ${opt_rngnum})", "distribution"),
-    	makeShortTemplate("student_t(${i}, ${opt_rngnum})", "distribution"),
-    	makeShortTemplate("triang(${a}, ${b}, ${c}, ${opt_rngnum})", "distribution"),
-    	makeShortTemplate("truncnormal(${mean}, ${stddev}, ${opt_rngnum})", "distribution"),
-    	makeShortTemplate("uniform(${a}, ${b}, ${opt_rngnum})", "distribution"),
-    	makeShortTemplate("weibull(${a}, ${b}, ${opt_rngnum})", "distribution"),
+    
+    public final static Template[] proposedNedContinuousDistributionsTempl = new Template[] {
+    	makeShortTemplate("beta(${alpha1}, ${alpha2})", "continuous distribution"),
+    	makeShortTemplate("cauchy(${a}, ${b})", "continuous distribution"),
+    	makeShortTemplate("chi_square(${k})", "continuous distribution"),
+    	makeShortTemplate("erlang_k(${k}, ${mean})", "continuous distribution"),
+    	makeShortTemplate("exponential(${mean})", "continuous distribution"),
+    	makeShortTemplate("gamma_d(${alpha}, ${beta})", "continuous distribution"),
+    	makeShortTemplate("lognormal(${m}, ${w})", "continuous distribution"),
+    	makeShortTemplate("normal(${mean}, ${stddev})", "continuous distribution"),
+    	makeShortTemplate("pareto_shifted(${a}, ${b}, ${c})", "continuous distribution"),
+    	makeShortTemplate("student_t(${i})", "continuous distribution"),
+    	makeShortTemplate("triang(${a}, ${b}, ${c})", "continuous distribution"),
+    	makeShortTemplate("truncnormal(${mean}, ${stddev})", "continuous distribution"),
+    	makeShortTemplate("uniform(${a}, ${b})", "continuous distribution"),
+    	makeShortTemplate("weibull(${a}, ${b})", "continuous distribution"),
+    };
+    
+    public final static Template[] proposedNedContinuousDistributionsTemplExt = addRngNumArgument(proposedNedContinuousDistributionsTempl);
 
-    	// discrete
-    	makeShortTemplate("bernoulli(${p}, ${opt_rngnum})", "distribution"),
-    	makeShortTemplate("binomial(${n}, ${p}, ${opt_rngnum})", "distribution"),
-    	makeShortTemplate("geometric(${p}, ${opt_rngnum})", "distribution"),
-    	makeShortTemplate("intuniform(${a}, ${b}, ${opt_rngnum})", "distribution"),
-    	makeShortTemplate("negbinomial(${n}, ${p}, ${opt_rngnum})", "distribution"),
-    	makeShortTemplate("poisson(${lambda}, ${opt_rngnum})", "distribution"),
+    public final static Template[] proposedNedDiscreteDistributionsTempl = new Template[] {
+    	makeShortTemplate("bernoulli(${p})", "discrete distribution"),
+    	makeShortTemplate("binomial(${n}, ${p})", "discrete distribution"),
+    	makeShortTemplate("geometric(${p})", "discrete distribution"),
+    	makeShortTemplate("intuniform(${a}, ${b})", "discrete distribution"),
+    	makeShortTemplate("negbinomial(${n}, ${p})", "discrete distribution"),
+    	makeShortTemplate("poisson(${lambda})", "discrete distribution"),
     };
 
+    public final static Template[] proposedNedDiscreteDistributionsTemplExt = addRngNumArgument(proposedNedDiscreteDistributionsTempl);
+    
     public final static Template[] proposedNedGlobalTempl = new Template[] {
     	makeTemplate("import", "import NED file", 
     			"import \"${FileName}\";\n"),
@@ -387,6 +309,7 @@ public final class NedCompletionHelper {
                 "        }\n" +
                 "}"),
     };
+    
     public final static Template[] proposedNedSubmoduleTempl = new Template[] {
         makeTemplate("submodule1", "submodule",
         		"${someSubmodule} : ${SomeModule};"),
@@ -403,6 +326,7 @@ public final class NedCompletionHelper {
         		"    gates:${cursor}\n"+
         		"}"),
     };
+    
     public final static Template[] proposedNedConnectionTempl = new Template[] {
         makeTemplate("connection1", "two one-way connections",
         		"${mod1}.${outgate1} --> ${mod2}.${ingate2};\n"+
@@ -479,4 +403,106 @@ public final class NedCompletionHelper {
     public final static IToken codeStringToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
     public final static IToken codeNumberToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
 
+
+    /**
+     * Utility function for creating a one-line template
+     */
+    public static Template makeShortTemplate(String pattern, String description) {
+        String name = pattern.replaceAll("\\$\\{(.*?)\\}", "$1");  // remove ${} from parameters
+        pattern = pattern.replace("\n", "\n${indent}");
+        return new Template(name, description, DEFAULT_NED_CONTEXT_TYPE, pattern, false);
+    }
+
+    private static Template[] addRngNumArgument(Template[] templates) {
+    	Template[] result = new Template[templates.length];
+    	for (int i=0; i<templates.length; i++) {
+    		String pattern = templates[i].getPattern();
+    		Assert.isTrue(pattern.endsWith(")"));
+    		pattern = pattern.substring(0, pattern.length()-1) + ", ${rngNum})";
+   			result[i] = makeShortTemplate(pattern, templates[i].getDescription());
+    	}
+		return result;
+	}
+
+	/**
+     * Utility function for creating a multi-line template
+     */
+    public static Template makeTemplate(String name, String description, String pattern) {
+        pattern = pattern.replace("\n", "\n${indent}");
+        return new Template(name, description, DEFAULT_NED_CONTEXT_TYPE, pattern, false);
+    }
+    
+    /**
+     * Convenience method, to return a system default color. Color constants come from SWT class e.g. SWT.COLOR_RED
+     */
+    public static Color getColor(int color) {
+        return Display.getDefault().getSystemColor(color);
+    }
+
+    /**
+     * A generic white space detector
+     */
+    public static class NedWhitespaceDetector implements IWhitespaceDetector {
+
+        public boolean isWhitespace(char character) {
+            return Character.isWhitespace(character);
+        }
+    }
+
+    /**
+     * Detector for normal NED keywords (may start with letter, @ or _ and contain letter number or _)
+     */
+    public static class NedWordDetector implements IWordDetector {
+
+        public boolean isWordStart(char character) {
+            return Character.isLetter(character) || character == '_' || character == '@';
+        }
+
+        public boolean isWordPart(char character) {
+            return Character.isLetterOrDigit(character) || character == '_';
+        }
+    }
+
+    /**
+     * Detector for extreme NED keywords (in: out: --> <-- .. ...) where the keyword may contain special chars
+     */
+    public static class NedSpecialWordDetector implements IWordDetector {
+
+        public boolean isWordStart(char c) {
+            return Character.isLetter(c) || c == '-' || c == '<' || c == '>' || c == '.';
+        }
+
+        public boolean isWordPart(char c) {
+            return isWordStart(c) || c == ':';
+        }
+    }
+
+    /**
+     * Detects keywords that are starting with @ and continuing with letters only.
+     */
+    public static class NedAtWordDetector implements IWordDetector {
+
+        public boolean isWordStart(char c) {
+            return (c == '@');
+        }
+
+        public boolean isWordPart(char c) {
+            return Character.isLetter(c);
+        }
+    }
+
+    /**
+     * Detects keywords that look like an XML tag.
+     */
+    public static class NedDocTagDetector implements IWordDetector {
+
+        public boolean isWordStart(char c) {
+            return (c == '<');
+        }
+
+        public boolean isWordPart(char c) {
+            return Character.isLetter(c) || c == '/' || c == '>';
+        }
+    }
+   
 }

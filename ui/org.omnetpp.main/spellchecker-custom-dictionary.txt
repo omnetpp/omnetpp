@@ -125,3 +125,6 @@ deselection
 radiobutton
 radiobuttons
 checkboxes
+unhooked
+templated
+fullpath

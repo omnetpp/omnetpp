@@ -34,7 +34,7 @@ import org.omnetpp.ned.model.notification.NEDModelEvent;
  * Standard implementation of IInifileDocument. Setters change the 
  * underlying text document (IDocument). Parsing is lazy: changes on the 
  * text document cause a "changed" flag to be set here, and getters 
- * automatically reparse the text document if it's out of date.
+ * automatically re-parse the text document if it's out of date.
  * 
  * @author Andras
  */

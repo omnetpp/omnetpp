@@ -16,7 +16,6 @@ import org.eclipse.jface.text.templates.Template;
 import org.omnetpp.common.contentassist.ContentProposal;
 import org.omnetpp.common.contentassist.ContentProposalProvider;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
-import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.ConfigurationEntry;
 import org.omnetpp.inifile.editor.model.ConfigurationRegistry;
@@ -106,13 +105,13 @@ s	 * before getting presented to the user.
 			for (String section : doc.getSectionNames())
 				if (!section.equals(GENERAL) && !InifileUtils.sectionChainContains(doc, section, this.section)) // prevent circles
 					names.add(section.replaceFirst("^Config +", ""));
-			return toProposals(names.toArray(new String[]{}));
+			return sort(toProposals(names.toArray(new String[]{})));
 		}
 		if (entry==CFGID_NETWORK) {
 			ArrayList<IContentProposal> result = new ArrayList<IContentProposal>();
 			for (INEDTypeInfo ned : NEDResourcesPlugin.getNEDResources().getNetworks())
 				result.add(new ContentProposal(ned.getName(), ned.getName(), StringUtils.makeTextDocu(ned.getNEDElement().getComment())));
-			return result.toArray(new IContentProposal[] {});
+			return sort(result.toArray(new IContentProposal[]{}));
 		}
 		if (entry==CFGID_PRELOAD_NED_FILES) {
 			return toProposals(new String[] {"*.ned"});
@@ -150,29 +149,39 @@ s	 * before getting presented to the user.
 		}
 
 		// generate proposals
-		//XXX offer default value?
-		//XXX make use of parameter's @choice etc properties?
-		String[] p = null;
+		//TODO make use of parameter properties (like @choice)
+		//TODO detect parameters which are used as "like" params, and offer suitable module types for them
+		List<IContentProposal> p = new ArrayList<IContentProposal>();
 		switch (dataType) {
 		case NEDElementUtil.NED_PARTYPE_BOOL: 
-			p = new String[] {"true", "false"}; 
+			addProposals(p, new String[] {"true", "false"}, null, true); 
 			break;
 		case NEDElementUtil.NED_PARTYPE_INT: 
+			addProposals(p, new String[] {"0"}, "or any integer value", true);
+			addProposals(p, templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTempl), "discrete distr.", true); 
+			addProposals(p, templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTemplExt), "using a given RNG", true); 
+			addProposals(p, templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTempl), "continuous distr.", true); 
+			addProposals(p, templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTemplExt), "using a given RNG", true); 
+			break;
 		case NEDElementUtil.NED_PARTYPE_DOUBLE:
-			//XXX should use it as template...
-			p = templatesToProposals(NedCompletionHelper.proposedNedDistributionsTempl); 
+			addProposals(p, new String[] {"0.0"}, "or any double value", true); 
+			addProposals(p, templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTempl), "continuous distr.", true); 
+			addProposals(p, templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTemplExt), "using a given RNG", true); 
+			addProposals(p, templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTempl), "discrete distr.", true); 
+			addProposals(p, templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTemplExt), "using a given RNG", true); 
 			break;
 		case NEDElementUtil.NED_PARTYPE_STRING: 
-			p = new String[] {"\"\""}; 
+			addProposals(p, new String[] {"\"\""}, "or any string value", true); 
 			break;
 		case NEDElementUtil.NED_PARTYPE_XML: 
-			p = new String[] {"xmldoc(\"filename\")", "xmldoc(\"filename\", \"xpath\")"}; 
-			break; //XXX should be template?
+			addProposals(p, new String[] {"xmldoc(\"filename\")", "xmldoc(\"filename\", \"xpath\")"}, null, true); 
+			break;
 		}
-		return p==null ? null : toProposals(p);
+		return p.toArray(new IContentProposal[]{});
 	}
 
 	protected static String[] templatesToProposals(Template[] templates) {
+		//XXX find a way to return these things as TemplateProposals to the text editor!
 		String[] s = new String[templates.length];
 		for (int i=0; i<templates.length; i++) {
 			Template template = templates[i];
