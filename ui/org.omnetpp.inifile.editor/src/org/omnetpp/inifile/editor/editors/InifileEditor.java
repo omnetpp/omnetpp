@@ -375,14 +375,16 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 
 		if (mode==IGotoInifile.Mode.FORM) {
 			setActivePage(FORMEDITOR_PAGEINDEX);
-			if (key==null)
-				formEditor.gotoSection(section);
-			else
-				formEditor.gotoEntry(section, key);
+			if (section != null) {
+				if (key==null)
+					formEditor.gotoSection(section);
+				else
+					formEditor.gotoEntry(section, key);
+			}
 		}
 		else if (mode==IGotoInifile.Mode.TEXT) {
 			setActivePage(TEXTEDITOR_PAGEINDEX);
-			LineInfo line = key==null ? 
+			LineInfo line = section==null ? null : key==null ? 
 					editorData.getInifileDocument().getSectionLineDetails(section) :
 					editorData.getInifileDocument().getEntryLineDetails(section, key);
 			highlightLineInTextEditor(line); //XXX highlight the whole section
