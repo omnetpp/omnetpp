@@ -190,10 +190,9 @@ public class ParametersPage extends FormPage {
 				if (element instanceof Item)
 					element = ((Item) element).getData(); // workaround, see super's comment
 				SectionKey item = (SectionKey) element;
-				if (item == null)
-					return; // shit happens when user selects from content assist window... 
 				IInifileDocument doc = getInifileDocument();
 				try {
+					System.out.println("CellEditor committing the "+property+" column, value="+value);
 					if (property.equals("key")) {
 						String newKey = (String) value;
 						if (!newKey.equals(item.key)) {
@@ -203,7 +202,7 @@ public class ParametersPage extends FormPage {
 								reread(); // tableViewer.refresh() not enough, because input consists of keys
 							}
 							else {
-								MessageDialog.openError(null, "Cannot Rename", "Cannot rename key: "+errorText);
+								MessageDialog.openError(getShell(), "Cannot Rename", "Cannot rename key: "+errorText);
 							}
 						}
 					}
@@ -238,9 +237,6 @@ public class ParametersPage extends FormPage {
 			}
 		};
 		ContentAssistUtil.configureTableColumnContentAssist(tableViewer, 1, proposalProvider, false);
-		
-		//new ContentAssistCommandAdapter(editors[1].getText(), new TextContentAdapter(), proposalProvider, 
-		//	ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, null, true);
 
 		// content assist for the Value column
 		IContentProposalProvider valueProposalProvider = new InifileValueContentProposalProvider(null, null, getInifileDocument(), getInifileAnalyzer(), false) {
@@ -252,18 +248,15 @@ public class ParametersPage extends FormPage {
 			}
 		};
 		ContentAssistUtil.configureTableColumnContentAssist(tableViewer, 2, valueProposalProvider, true);
-		
-		//new ContentAssistCommandAdapter(editors[2].getText(), new TextContentAdapter(), valueProposalProvider, 
-		//	ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, null, true);
 
-		// on double-click, show entry in the text editor
-		tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetDefaultSelected(SelectionEvent event) {
-				SectionKey entry = (SectionKey) (event.item==null ? null : event.item.getData());
-				getEditorData().getInifileEditor().gotoEntry(entry.section, entry.key, IGotoInifile.Mode.TEXT);
-			}
-		});
+		// on double-click, show entry in the text editor (not a good idea, commented out)
+		//tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
+		//	@Override
+		//	public void widgetDefaultSelected(SelectionEvent event) {
+		//		SectionKey entry = (SectionKey) (event.item==null ? null : event.item.getData());
+		//		getEditorData().getInifileEditor().gotoEntry(entry.section, entry.key, IGotoInifile.Mode.TEXT);
+		//	}
+		//});
 
 		// export the table's selection as editor selection
 		tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {

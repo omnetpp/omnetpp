@@ -119,7 +119,7 @@ public class SectionsPage extends FormPage {
 
 		// layout: 2x2 grid: (label, dummy) / (tree, buttonGroup)
 		setLayout(new GridLayout(2,false));
-		((GridLayout)getLayout()).marginRight = RIGHT_MARGIN/2;
+		((GridLayout)getLayout()).marginRight = RIGHT_MARGIN;
 
 		// create title
 		Composite titleArea = createTitleArea(this, "Sections");

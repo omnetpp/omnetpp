@@ -36,8 +36,21 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * <i>Note: This class is a copy of <code>org.eclipse.jdt.internal.ui.dialogs.TableTextCellEditor</code>,
- * with one change: it does not apply the value on every keystroke. (See comment marked with [Andras] 
- * in the code.) Original class comment follows.</i>
+ * with two changes:<br/> 
+ *     (1) it does not apply the value on every keystroke, and <br/>
+ *     (2) does NOTHING on focus lost event.<br/> 
+ * The original TextCellEditor commits on focus lost, which means a content proposal
+ * selected with mouse double click just gets IGNORED. Moreover, such commit causes
+ * disaster in InifileEditor ParametersPage "Key" column editing. JDT code used
+ * fContentAssistant.hasProposalPopupFocus() to determine whether to commit or not;
+ * this is not good because we use the new ContentAssistCommandAdapter not the 
+ * deprecated SubjectControlContentAssistant. Not committing on focusLost at all
+ * is by far the best of all workarounds tried out.    
+ * <p>
+ * See comment marked with [Andras] in the code. 
+ * 
+ * <p>
+ * Original class comment follows.</i>
  * 
  * <p>
  * <code>TableTextCellEditor</code> is a copy of TextCellEditor, with the
@@ -105,7 +118,7 @@ public class TableTextCellEditor extends CellEditor {
 		if (fContentAssistant != null && fContentAssistant.hasProposalPopupFocus()) {
 			// skip focus lost if it went to the content assist popup
 		} else {
-			super.focusLost();
+			//[Andras] super.focusLost();
 		}
 	}
 	
