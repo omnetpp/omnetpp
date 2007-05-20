@@ -3,6 +3,7 @@ package org.omnetpp.inifile.editor.form;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.SWT;
@@ -106,11 +107,13 @@ public class TextFieldEditor extends FieldEditor {
 
 	protected Text createContentAssistField() {
 		Text text = new Text(this, SWT.SINGLE | SWT.BORDER);
-		InifileValueContentProposalProvider proposalProvider = new InifileValueContentProposalProvider(GENERAL, entry.getKey(), inifile, null);
+		InifileValueContentProposalProvider proposalProvider = new InifileValueContentProposalProvider(GENERAL, entry.getKey(), inifile, null, false);
 		if (proposalProvider.isContentAssistAvailable()) {
 			// only make it a content assist field if proposals are really available
-			new ContentAssistCommandAdapter(text, new TextContentAdapter(), proposalProvider, 
+			ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(text, 
+					new TextContentAdapter(), proposalProvider, 
 					ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, AUTOACTIVATION_CHARS, true);
+			commandAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
 		}
 		return text;
 	}

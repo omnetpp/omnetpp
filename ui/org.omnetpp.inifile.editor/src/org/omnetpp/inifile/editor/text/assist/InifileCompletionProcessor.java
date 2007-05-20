@@ -155,7 +155,7 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 					// offer value completions
 					String key = linePrefix.replaceFirst("=.*", "").trim();
 					String value = linePrefix.replaceFirst(".*?=", "").trim();
-					IContentProposalProvider proposalProvider = new InifileValueContentProposalProvider(section, key, doc, editorData.getInifileAnalyzer());
+					IContentProposalProvider proposalProvider = new InifileValueContentProposalProvider(section, key, doc, editorData.getInifileAnalyzer(), true);
 					IContentProposal[] valueProposals = proposalProvider.getProposals(value, value.length());
 					
 					// re-wrap IContentProposals as ICompletionProposal

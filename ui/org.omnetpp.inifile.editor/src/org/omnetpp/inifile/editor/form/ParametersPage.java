@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
+import org.omnetpp.common.contentassist.ContentAssistUtil;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
@@ -189,6 +190,8 @@ public class ParametersPage extends FormPage {
 				if (element instanceof Item)
 					element = ((Item) element).getData(); // workaround, see super's comment
 				SectionKey item = (SectionKey) element;
+				if (item == null)
+					return; // shit happens when user selects from content assist window... 
 				IInifileDocument doc = getInifileDocument();
 				try {
 					if (property.equals("key")) {
@@ -234,12 +237,13 @@ public class ParametersPage extends FormPage {
 				return super.getProposals(contents, position);
 			}
 		};
-		new ContentAssistCommandAdapter(editors[1].getText(), new TextContentAdapter(), proposalProvider, 
-				ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, null, true);
-		//XXX out: ContentAssistUtils.addContentAssist(editors[1], proposalProvider);
+		ContentAssistUtil.configureTableColumnContentAssist(tableViewer, 1, proposalProvider, false);
+		
+		//new ContentAssistCommandAdapter(editors[1].getText(), new TextContentAdapter(), proposalProvider, 
+		//	ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, null, true);
 
 		// content assist for the Value column
-		IContentProposalProvider valueProposalProvider = new InifileValueContentProposalProvider(null, null, getInifileDocument(), getInifileAnalyzer()) {
+		IContentProposalProvider valueProposalProvider = new InifileValueContentProposalProvider(null, null, getInifileDocument(), getInifileAnalyzer(), false) {
 			@Override
 			public IContentProposal[] getProposals(String contents, int position) {
 				SectionKey e = (SectionKey)( (IStructuredSelection)tableViewer.getSelection()).getFirstElement();
@@ -247,9 +251,10 @@ public class ParametersPage extends FormPage {
 				return super.getProposals(contents, position);
 			}
 		};
-		new ContentAssistCommandAdapter(editors[2].getText(), new TextContentAdapter(), valueProposalProvider, 
-				ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, null, true);
-		//XXX out: ContentAssistUtils.addContentAssist(editors[2], valueProposalProvider);
+		ContentAssistUtil.configureTableColumnContentAssist(tableViewer, 2, valueProposalProvider, true);
+		
+		//new ContentAssistCommandAdapter(editors[2].getText(), new TextContentAdapter(), valueProposalProvider, 
+		//	ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, null, true);
 
 		// on double-click, show entry in the text editor
 		tableViewer.getTable().addSelectionListener(new SelectionAdapter() {
