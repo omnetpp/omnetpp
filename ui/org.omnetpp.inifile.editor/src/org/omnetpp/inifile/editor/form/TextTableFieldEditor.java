@@ -2,8 +2,11 @@ package org.omnetpp.inifile.editor.form;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.fieldassist.IContentProposalListener;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -11,9 +14,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Table;
-import org.omnetpp.common.contentassist.ContentAssistUtils;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
+import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
@@ -70,7 +76,7 @@ public class TextTableFieldEditor extends TableFieldEditor {
 		
 		// set up cell editor for value column
 		tableViewer.setColumnProperties(new String[] {"section", "value"});
-		TableTextCellEditor[] cellEditors = new TableTextCellEditor[] {null, new TableTextCellEditor(tableViewer,1)};
+		final TableTextCellEditor[] cellEditors = new TableTextCellEditor[] {null, new TableTextCellEditor(tableViewer,1)};
 		tableViewer.setCellEditors(cellEditors);
 		tableViewer.setCellModifier(new ICellModifier() {
 			public boolean canModify(Object element, String property) {
@@ -97,12 +103,40 @@ public class TextTableFieldEditor extends TableFieldEditor {
 		IContentProposalProvider valueProposalProvider = new InifileValueContentProposalProvider(null, null, inifile, null) {
 			@Override
 			public IContentProposal[] getProposals(String contents, int position) {
+				// we need to reconfigure the proposal provider on the fly to know about the current section
 				String section = (String)( (IStructuredSelection)tableViewer.getSelection()).getFirstElement();
 				setInifileEntry(section, entry.getKey()); // set context for proposal calculation
 				return super.getProposals(contents, position);
 			}
 		};
-		ContentAssistUtils.addContentAssist(cellEditors[1], valueProposalProvider);
+		
+		final ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(cellEditors[1].getText(), 
+				new TextContentAdapter(), valueProposalProvider, 
+				ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, null, true);
+
+		//FIXME: our proposal provider drops the prefix! After "Fl"<Ctrl+Space>,<Enter>, result is "atnet"! 
+		// The proposal provider should know whether it wants to "replace" or "insert" (?)
+		// vagy tenyleg Tominak a TextContentAdapter2-jet kellene hasznalni..? (ha lehet, mert igy tunik a proposalAccepted() se mindig hivodik meg, pl Enter-re nem...)
+		//commandAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
+
+		// Note: after selecting a proposal with the mouse, the cell editor loses focus and closes,
+		// before the proposal could be inserted. Luckily, the cell editor itself still contains
+		// the updated value. So, as a workaround, we re-activate the cell editor, and restore
+		// its previous contents. This does no harm even when the proposal was accepted with
+		// the Enter key.
+		//XXX do the same in the Parameters table
+		commandAdapter.addContentProposalListener(new IContentProposalListener() {
+			public void proposalAccepted(IContentProposal proposal) {
+				Text t = cellEditors[1].getText();
+				String oldText = t.getText();
+				int oldCaretPosition = t.getCaretPosition();
+
+				Object element = ((IStructuredSelection)tableViewer.getSelection()).getFirstElement();
+				tableViewer.editElement(element, 1);
+				t.setText(oldText);
+				t.setSelection(oldCaretPosition);
+			}
+		});
 
 		return tableViewer; 
 	}
