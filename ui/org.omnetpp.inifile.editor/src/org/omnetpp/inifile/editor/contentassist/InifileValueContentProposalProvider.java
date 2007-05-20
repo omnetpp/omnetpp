@@ -99,7 +99,7 @@ s	 * before getting presented to the user.
 		if (entry == null)
 			return null;
 
-		// IMPORTANT: Remember to update supportsKey() when this method gets extended!
+		// IMPORTANT: Remember to update isContentAssistAvailable() when this method gets extended!
 		if (entry==CFGID_EXTENDS) {
 			ArrayList<String> names = new ArrayList<String>();
 			for (String section : doc.getSectionNames())

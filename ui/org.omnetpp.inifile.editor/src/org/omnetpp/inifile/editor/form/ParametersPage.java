@@ -374,8 +374,8 @@ public class ParametersPage extends FormPage {
 			//XXX if all keys are from a readonly base section, one cannot add new keys AT ALL !!!!
 			doc.addEntry(section, newKey, "", null, beforeKey);
 			reread();
-			tableViewer.getTable().setFocus();
 			tableViewer.setSelection(new StructuredSelection(new SectionKey(section, newKey)), true);
+			tableViewer.getTable().setFocus();
 			tableViewer.editElement(newKey, 1); //XXX does not seem to work
 		}
 		catch (RuntimeException ex) {

@@ -13,6 +13,12 @@ public class SectionKey {
 	}
 
 	@Override
+	public int hashCode() {
+		final int prime = 31;
+		return key.hashCode() + prime * section.hashCode();
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		return getClass()==obj.getClass() && section.equals(((SectionKey)obj).section) && key.equals(((SectionKey)obj).key);
 	}

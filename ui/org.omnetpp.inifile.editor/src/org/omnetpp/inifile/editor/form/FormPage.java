@@ -56,7 +56,8 @@ public abstract class FormPage extends Composite {
 
 	private DelayedJob delayedRereadJob = new DelayedJob(1000) {
 		public void run() {
-			reread();  //XXX TODO: reread() should cancel the timer!!!
+			System.out.println("delayedJob: rereading form page");
+			reread();
 		}
 	};
 	
