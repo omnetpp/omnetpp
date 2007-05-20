@@ -20,16 +20,26 @@ import org.omnetpp.common.util.StringUtils;
  */
 public abstract class ContentProposalProvider implements IContentProposalProvider {
 	private boolean useWholePrefix = false;
+	private boolean dropPrefix = false;
 	
+	public ContentProposalProvider(boolean useWholePrefix) {
+		this(useWholePrefix, true);
+	}
+
 	/**
 	 * Constructor.
 	 * @param useWholePrefix whether the whole substring before the cursor needs to be 
 	 *                       be matched by completions (false: only the last "word").
+	 * @param dropPrefix     whether the prefix should be omitted from the proposal content
+	 *                       (i.e. when "Ne" is already typed, return only "twork"
+	 *                       and not "Network" as the string to be inserted 
 	 */
-	public ContentProposalProvider(boolean useWholePrefix) {
+	public ContentProposalProvider(boolean useWholePrefix, boolean dropPrefix) {
 		this.useWholePrefix = useWholePrefix;
+		this.dropPrefix = dropPrefix;
 	}
-	
+
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.jface.fieldassist.IContentProposalProvider#getProposals(java.lang.String, int)
 	 */
@@ -60,7 +70,7 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
 				String content = candidate.getContent();
 				if (content.startsWith(prefixToMatch) && content.length()!= prefixToMatch.length()) {
 					// from the content, drop the prefix that has already been typed by the user
-					String modifiedContent = content.substring(prefixToMatch.length(), content.length());
+					String modifiedContent = dropPrefix ? content.substring(prefixToMatch.length(), content.length()) : content; 
 					int modifiedCursorPosition = candidate.getCursorPosition() + modifiedContent.length() - content.length();
 					String description = (StringUtils.isEmpty(candidate.getDescription()) && descriptionSeen) ? "(no description)" : candidate.getDescription();
 					result.add(new ContentProposal(modifiedContent, candidate.getLabel(), description, modifiedCursorPosition));
