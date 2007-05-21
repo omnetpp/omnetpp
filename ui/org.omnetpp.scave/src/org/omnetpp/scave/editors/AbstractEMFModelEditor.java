@@ -969,7 +969,8 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void init(IEditorSite site, IEditorInput editorInput) {
+	public void init(IEditorSite site, IEditorInput editorInput)
+		throws PartInitException {
 		setSite(site);
 		setInputWithNotify(editorInput);
 		setPartName(editorInput.getName());
@@ -1078,7 +1079,10 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 	 * @generated
 	 */
 	public EditingDomainActionBarContributor getActionBarContributor() {
-		return (EditingDomainActionBarContributor)getEditorSite().getActionBarContributor();
+		if (getEditorSite() != null)
+			return (EditingDomainActionBarContributor)getEditorSite().getActionBarContributor();
+		else
+			return null;
 	}
 
 	/**
@@ -1105,11 +1109,12 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 	public void dispose() {
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
 
-		getSite().getPage().removePartListener(partListener);
+		if (getSite() != null && getSite().getPage() != null)
+			getSite().getPage().removePartListener(partListener);
 
 		adapterFactory.dispose();
 
-		if (getActionBarContributor().getActiveEditor() == this) {
+		if (getActionBarContributor() != null && getActionBarContributor().getActiveEditor() == this) {
 			getActionBarContributor().setActiveEditor(null);
 		}
 

@@ -1,5 +1,6 @@
 package org.omnetpp.scave.editors;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,6 +30,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.editors.ui.ChartPage;
@@ -121,7 +123,18 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	}
 
 	@Override
-	public void init(IEditorSite site, IEditorInput editorInput) {
+	public void init(IEditorSite site, IEditorInput editorInput) 
+		throws PartInitException {
+		
+		if (!(editorInput instanceof IFileEditorInput))
+			throw new PartInitException("Invalid Input: Must be IFileEditorInput");
+		IFile fileInput = ((IFileEditorInput)editorInput).getFile();
+		if (!editorInput.exists())
+			throw new PartInitException("Missing Input: Resource '" + fileInput.getFullPath().toString() + "' does not exists");
+		File javaFile = fileInput.getLocation().toFile();
+		if (!javaFile.exists())
+			throw new PartInitException("Missing Input: Scave file '" + javaFile.toString() + "' does not exists");
+		
 		// init super. Note that this does not load the model yet -- it's done in createModel() called from createPages().
 		super.init(site, editorInput);
 	}
