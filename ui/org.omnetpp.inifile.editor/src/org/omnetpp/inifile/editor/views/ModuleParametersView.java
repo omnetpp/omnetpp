@@ -336,6 +336,7 @@ public class ModuleParametersView extends AbstractModuleView {
 
 	@Override
 	public void buildContent(INEDElement module, InifileAnalyzer analyzer, String section, String key) {
+		System.out.println("view: buildContent()");
 		//XXX factor out common part of the two "if" branches
 		//XXX why not unconditionally store analyzer and doc references???
 		if (analyzer==null) {
