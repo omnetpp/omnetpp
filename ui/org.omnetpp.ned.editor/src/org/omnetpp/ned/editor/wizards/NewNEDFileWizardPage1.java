@@ -42,17 +42,19 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
 
 	public NewNEDFileWizardPage1(IWorkbench aWorkbench,
 			IStructuredSelection selection) {
-		super("page1", selection); //$NON-NLS-1$
+		super("page1", selection);
 		setTitle("Create a NED file");
 		setDescription("This wizard allows you to create a new network description file");
 		setImageDescriptor(ImageDescriptor.createFromFile(getClass(),"/icons/newnedfile_wiz.png"));
+
+		setFileExtension("ned");
+		setFileName("new" + exampleCount + ".ned"); 
 		workbench = aWorkbench;
 	}
 
 	@Override
     public void createControl(Composite parent) {
 		super.createControl(parent);
-		this.setFileName("new" + exampleCount + ".ned"); //$NON-NLS-2$//$NON-NLS-1$
 
 		Composite composite = (Composite) getControl();
 
@@ -113,14 +115,15 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
 	}
     
 	public boolean finish() {
-        // add an extension if missing
-        String name = getFileName();
-        if (name.lastIndexOf('.') < 0) 
-            setFileName(name+".ned");
-
+// not needed: setFileExtension("ned") does the job:
+//        // add an extension if missing
+//        String name = getFileName();
+//        if (name.lastIndexOf('.') < 0) 
+//            setFileName(name+".ned");
+//
         IFile newFile = createNewFile();
 		if (newFile == null)
-			return false; // ie.- creation was unsuccessful
+			return false; // creation was unsuccessful
 
 		// Since the file resource was created fine, open it for editing
 		// if requested by the user
