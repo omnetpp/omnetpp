@@ -125,12 +125,16 @@ public class SectionDialog extends TitleAreaDialog {
 		networkCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		// fill "sections" combo
-		String[] sectionNames = getNonCycleSectionNames(originalSectionName);
-		if (sectionNames.length==0) 
-			sectionNames = new String[] {"General"};  //XXX we lie that [General] exists
-		extendsCombo.setItems(sectionNames);
-		extendsCombo.setVisibleItemCount(Math.min(20, extendsCombo.getItemCount()));
-		extendsCombo.select(0);
+		if (GENERAL.equals(originalSectionName))
+			extendsCombo.setEnabled(false);
+		else {
+			String[] sectionNames = getNonCycleSectionNames(originalSectionName);
+			if (sectionNames.length==0) 
+				sectionNames = new String[] {"General"};  //XXX we lie that [General] exists
+			extendsCombo.setItems(sectionNames);
+			extendsCombo.setVisibleItemCount(Math.min(20, extendsCombo.getItemCount()));
+			extendsCombo.select(0);
+		}
 
 		// fill network combo
 		Set<String> networkNameSet = NEDResourcesPlugin.getNEDResources().getNetworkNames();
@@ -258,6 +262,8 @@ public class SectionDialog extends TitleAreaDialog {
 			newSectionName = CONFIG_+newSectionName;
         description = descriptionText.getText().trim();
         extendsSection = extendsCombo.getText().trim();
+        if (extendsSection.equals(""))
+        	extendsSection = GENERAL;
         networkName = networkCombo.isEnabled() ? networkCombo.getText().trim() : "";
         super.okPressed();
     }
@@ -280,6 +286,9 @@ public class SectionDialog extends TitleAreaDialog {
 		this.description = description;
 	}
 
+	/**
+	 * Returns the section name the edited section extends, or "General". Never returns "" or null.
+	 */
 	public String getExtendsSection() {
 		return extendsSection;
 	}
