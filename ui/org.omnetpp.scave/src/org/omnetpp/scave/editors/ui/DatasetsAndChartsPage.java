@@ -52,6 +52,7 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 		createSashForm();
 		createDatasetsSection();
 		createChartSheetsSection();
+		sashform.setWeights(new int[] {3,2});
 		
 		// configure viewers
 		scaveEditor.configureTreeViewer(getDatasetsTreeViewer());
@@ -89,7 +90,6 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 	private void createDatasetsSection() {
 		datasetsSection = getFormToolkit().createSection(sashform,
 				Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
-		datasetsSection.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 		datasetsSection.setText("Datasets");
 		datasetsSection.setDescription("Here you can browse the datasets you have created from the input.");
 		//datasetsSection.setExpanded(true); XXX SWT bug: must be after setText() if present, otherwise text won't appear!
@@ -123,9 +123,7 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 	 */
 	private void createChartSheetsSection() {
 		// set up UI
-		chartSheetsSection = getFormToolkit().createSection(sashform,
-				Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
-		chartSheetsSection.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
+		chartSheetsSection = getFormToolkit().createSection(sashform, Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
 		chartSheetsSection.setText("Chart sheets and charts");
 		chartSheetsSection.setDescription("Here you can browse the charts you have created for the datasets.");
 		//chartSheetsSection.setExpanded(true); XXX SWT bug: must be after setText() if present, otherwise text won't appear!
