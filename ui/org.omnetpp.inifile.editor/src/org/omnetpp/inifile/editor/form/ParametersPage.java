@@ -60,7 +60,6 @@ import org.omnetpp.inifile.editor.model.SectionKey;
  */
 //XXX validation of keys and values! e.g. shouldn't allow empty key
 //XXX comment handling (stripping/adding of "#")
-//XXX add status label below the table: "34 unassigned parameters"
 public class ParametersPage extends FormPage {
 	private TableViewer tableViewer;
 	private Combo sectionsCombo;

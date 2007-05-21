@@ -182,7 +182,15 @@ public class InifileHoverUtils {
 	 * Generate tooltip for a NED parameter
 	 */
 	public static String getParamHoverText(SubmoduleNode[] pathModules, ParamNode paramDeclNode, ParamNode paramValueNode) {
-		String text = "hello!"; //XXX todo
+		String paramName = paramDeclNode.getName();
+		String paramType = paramDeclNode.getAttribute(ParamNode.ATT_TYPE);
+		String paramDeclaredOn = ((ParamNodeEx)paramDeclNode).getContainerNEDTypeInfo().getName();
+		String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 60);
+		String optComment = comment==null ? "" : (" -- \"" + comment + "\"");
+
+		String text = ""; //TODO
+		text += paramDeclaredOn + "." + paramName + " : "+ paramType + optComment + "\n";
+
 		return HoverSupport.addHTMLStyleSheet(text);
 	}
 	
