@@ -84,13 +84,14 @@ public class ParametersPage extends FormPage {
 
 		// create combobox
 		Composite comboWithLabel = new Composite(this, SWT.NONE);
+		comboWithLabel.setLayout(new GridLayout(2, false));
+		//((GridLayout)comboWithLabel.getLayout()).marginWidth = 0;
 		comboWithLabel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		new Label(this, SWT.NONE);  // dummy, to fill 2nd column
 
 		Label comboLabel = new Label(comboWithLabel, SWT.NONE);
 		comboLabel.setText("Configuration:");
 		sectionsCombo = new Combo(comboWithLabel, SWT.BORDER | SWT.READ_ONLY);
-		comboWithLabel.setLayout(new GridLayout(2, false));
 		comboLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		sectionsCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
@@ -522,7 +523,7 @@ public class ParametersPage extends FormPage {
 		// update labels: "Network" and "Section fallback chain"
 		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getKey(), doc);
 		int numUnassigned = getInifileAnalyzer().getUnassignedParams(selectedSection).length;
-		networkNameLabel.setText("Network: "+(networkName==null ? "<not configured>" : networkName)+"  ");
+		networkNameLabel.setText("Network: "+(networkName==null ? "<not configured>" : networkName));
 		sectionChainLabel.setText("Section fallback chain: "+(sectionChain.length==0 ? "<no sections>" : StringUtils.join(sectionChain, " > ")));
 		numUnassignedParamsLabel.setText(numUnassigned+" unassigned parameters");
 		sectionChainLabel.getParent().layout();

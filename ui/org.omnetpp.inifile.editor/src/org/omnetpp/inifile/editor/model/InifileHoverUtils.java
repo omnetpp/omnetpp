@@ -183,6 +183,7 @@ public class InifileHoverUtils {
 	 */
 	public static String getParamHoverText(SubmoduleNode[] pathModules, ParamNode paramDeclNode, ParamNode paramValueNode) {
 		String paramName = paramDeclNode.getName();
+		
 		String paramType = paramDeclNode.getAttribute(ParamNode.ATT_TYPE);
 		String paramDeclaredOn = ((ParamNodeEx)paramDeclNode).getContainerNEDTypeInfo().getName();
 		String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 60);

@@ -62,8 +62,7 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
 		Group group = new Group(composite, SWT.NONE);
 		group.setLayout(new GridLayout());
 		group.setText("Content");
-		group.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
-				| GridData.HORIZONTAL_ALIGN_FILL));
+		group.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));
 
 		SelectionListener listener = new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -97,7 +96,7 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
         networkButton.setText("A new toplevel Network");
         networkButton.addSelectionListener(listener);
 
-        new Label(composite, SWT.NONE);
+        //new Label(composite, SWT.NONE);
 
 		setPageComplete(validatePage());
 	}
@@ -115,12 +114,6 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
 	}
     
 	public boolean finish() {
-// not needed: setFileExtension("ned") does the job:
-//        // add an extension if missing
-//        String name = getFileName();
-//        if (name.lastIndexOf('.') < 0) 
-//            setFileName(name+".ned");
-//
         IFile newFile = createNewFile();
 		if (newFile == null)
 			return false; // creation was unsuccessful

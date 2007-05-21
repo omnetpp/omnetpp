@@ -27,6 +27,7 @@ public class NewInifileWizard extends Wizard implements INewWizard {
     public void init(IWorkbench aWorkbench, IStructuredSelection currentSelection) {
         workbench = aWorkbench;
         selection = currentSelection;
+        setWindowTitle("New Ini File");
     }
 
     @Override

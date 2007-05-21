@@ -21,6 +21,7 @@ public class NewNEDFileWizard extends Wizard implements INewWizard {
     public void init(IWorkbench aWorkbench, IStructuredSelection currentSelection) {
         workbench = aWorkbench;
         selection = currentSelection;
+        setWindowTitle("New NED File");
     }
 
     @Override

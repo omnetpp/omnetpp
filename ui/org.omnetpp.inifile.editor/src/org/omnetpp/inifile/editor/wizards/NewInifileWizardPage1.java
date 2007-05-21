@@ -116,7 +116,8 @@ public class NewInifileWizardPage1 extends WizardNewFileCreationPage {
 //			}
 //		});
 
-		new Label(composite, SWT.NONE);
+		//new Label(composite, SWT.NONE);
+		
 		setPageComplete(validatePage());
 	}
 
