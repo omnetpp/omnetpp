@@ -79,7 +79,7 @@ public class ParametersPage extends FormPage {
 		setLayout(new GridLayout(2,false));
 		((GridLayout)getLayout()).marginRight = RIGHT_MARGIN;
 
-		Composite titleArea = createTitleArea(this, "Parameter Assignments");
+		Control titleArea = createTitleArea(this, "Parameter Assignments");
 		((GridData)titleArea.getLayoutData()).horizontalSpan = 2;
 
 		// create combobox

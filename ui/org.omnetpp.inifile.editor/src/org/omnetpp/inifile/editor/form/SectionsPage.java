@@ -122,7 +122,7 @@ public class SectionsPage extends FormPage {
 		((GridLayout)getLayout()).marginRight = RIGHT_MARGIN;
 
 		// create title
-		Composite titleArea = createTitleArea(this, "Sections");
+		Control titleArea = createTitleArea(this, "Sections");
 		((GridData)titleArea.getLayoutData()).horizontalSpan = 2;
 
 		// create section chain label
