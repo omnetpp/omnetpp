@@ -47,7 +47,7 @@ public class NewScaveObjectWizard extends Wizard {
 		this.editor = editor;
 		this.domain = editor.getEditingDomain();
 		this.parent = parent;
-		setWindowTitle("Create new item");
+		setWindowTitle("New Object");
 		setHelpAvailable(false);
 		setNeedsProgressMonitor(false);
 		Collection<?> descriptors = domain.getNewChildDescriptors(parent, null);
@@ -79,7 +79,7 @@ public class NewScaveObjectWizard extends Wizard {
 			newChildDescriptor = childDescriptors[0];
 		}
 
-		editFieldsPage = new EditFieldsWizardPage("Set attributes");
+		editFieldsPage = new EditFieldsWizardPage("Set Attributes");
 		addPage(editFieldsPage);
 	}
 
@@ -123,8 +123,8 @@ public class NewScaveObjectWizard extends Wizard {
 
 		protected TypeSelectionWizardPage(String pageName, CommandParameter[] childrenDescriptors) {
 			super(pageName);
-			setTitle("Select type");
-			setDescription("Select the type of the object to be created");
+			setTitle("Select Type");
+			setDescription("Select type of object to be created");
 			setPageComplete(false);
 
 			// set descriptors of new children
@@ -164,6 +164,7 @@ public class NewScaveObjectWizard extends Wizard {
 				setNewChildDescriptor(childrenDescriptors[index]);
 			setPageComplete(radio.getSelection());
 		}
+		
 	}
 
 	/**
@@ -178,20 +179,24 @@ public class NewScaveObjectWizard extends Wizard {
 
 		protected EditFieldsWizardPage(String pageName) {
 			super(pageName);
-			setTitle("Edit fields");
-			setDescription("");
+			setPageComplete(false);
 		}
 
 		/**
 		 * Creates the controls of this page.
 		 */
 		public void createControl(Composite parentComposite) {
+			EClass eclass = ((EObject)newChildDescriptor.value).eClass();
+			setTitle("Create '" + eclass.getName()+"' Object");
+			setDescription("Fill out fields of the "+eclass.getName()+" to be created.");
+
 			Composite panel = new Composite(parentComposite, SWT.NONE);
 			panel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 			ScaveObjectEditFormFactory factory = ScaveObjectEditFormFactory.instance();
 			form = factory.createForm((EObject)newChildDescriptor.value, parent, editor.getResultFileManager());
 			form.populatePanel(panel);
 			setControl(panel);
+			setPageComplete(true);
 		}
 
 		/**
@@ -202,6 +207,7 @@ public class NewScaveObjectWizard extends Wizard {
 		 */
 		void clearControl() {
 			setControl(null);
+			setPageComplete(false);
 		}
 
 		/**
