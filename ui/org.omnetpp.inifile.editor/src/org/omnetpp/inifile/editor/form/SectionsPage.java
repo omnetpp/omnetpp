@@ -263,8 +263,10 @@ public class SectionsPage extends FormPage {
 
 	protected void setSectionExtendsKey(String sectionName, String extendsSectionName) {
 		IInifileDocument doc = getInifileDocument();
-		if (extendsSectionName.equals(GENERAL))
-			doc.removeKey(sectionName, EXTENDS);
+		if (extendsSectionName.equals(GENERAL)) {
+			if (doc.containsKey(sectionName, EXTENDS))
+				doc.removeKey(sectionName, EXTENDS);
+		}
 		else {
 			String value = extendsSectionName.replaceAll("^Config +", "");
 			if (doc.containsKey(sectionName, EXTENDS))

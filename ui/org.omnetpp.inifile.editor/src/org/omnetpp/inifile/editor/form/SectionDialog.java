@@ -3,7 +3,9 @@ package org.omnetpp.inifile.editor.form;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -123,8 +125,7 @@ public class SectionDialog extends TitleAreaDialog {
 		networkCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		// fill "sections" combo
-		//XXX don't offer sections which would create a circle!!!!!!!!
-		String[] sectionNames = doc.getSectionNames();
+		String[] sectionNames = getNonCycleSectionNames(originalSectionName);
 		if (sectionNames.length==0) 
 			sectionNames = new String[] {"General"};  //XXX we lie that [General] exists
 		extendsCombo.setItems(sectionNames);
@@ -163,6 +164,23 @@ public class SectionDialog extends TitleAreaDialog {
 		sectionNameText.setFocus();
 
 		return composite;
+	}
+
+	/**
+	 * Return list of sections that would not create a cycle if the given 
+	 * section extended them.
+	 */
+	protected String[] getNonCycleSectionNames(String section) {
+		String[] sectionNames = doc.getSectionNames();
+		if (!doc.containsSection(section))
+			return sectionNames;  // a new section can extend anything
+
+		// choose sections whose fallback chain doesn't contain the given section
+		List<String> result = new ArrayList<String>();
+		for (String candidate : sectionNames)
+			if (!InifileUtils.sectionChainContains(doc, candidate, section))
+				result.add(candidate);
+		return result.toArray(new String[]{});
 	}
 
 	protected static Label createLabel(Composite parent, String text, Font font) {

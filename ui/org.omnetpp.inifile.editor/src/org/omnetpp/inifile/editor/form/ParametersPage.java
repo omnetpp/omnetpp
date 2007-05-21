@@ -525,7 +525,7 @@ public class ParametersPage extends FormPage {
 		int numUnassigned = getInifileAnalyzer().getUnassignedParams(selectedSection).length;
 		networkNameLabel.setText("Network: "+(networkName==null ? "<not configured>" : networkName));
 		sectionChainLabel.setText("Section fallback chain: "+(sectionChain.length==0 ? "<no sections>" : StringUtils.join(sectionChain, " > ")));
-		numUnassignedParamsLabel.setText(numUnassigned+" unassigned parameters");
+		numUnassignedParamsLabel.setText(numUnassigned+" unassigned parameter"+(numUnassigned>1 ? "s" : ""));
 		sectionChainLabel.getParent().layout();
 	}
 

@@ -191,7 +191,7 @@ public class InifileHoverUtils {
 
 		String text = ""; //TODO
 		text += paramDeclaredOn + "." + paramName + " : "+ paramType + optComment + "\n";
-
+		//XXX more info.....
 		return HoverSupport.addHTMLStyleSheet(text);
 	}
 	
