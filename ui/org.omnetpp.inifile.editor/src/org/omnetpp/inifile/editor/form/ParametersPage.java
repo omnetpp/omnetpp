@@ -42,6 +42,7 @@ import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.IGotoInifile;
+import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.actions.AddInifileKeysDialog;
 import org.omnetpp.inifile.editor.contentassist.InifileParamKeyContentProposalProvider;
 import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
@@ -65,7 +66,8 @@ public class ParametersPage extends FormPage {
 	private Combo sectionsCombo;
 	private Label networkNameLabel;
 	private Label sectionChainLabel;
-	private Button addButton;
+	private Label numUnassignedParamsLabel;
+	private Button newButton;
 	private Button removeButton;
 	private Button upButton;
 	private Button downButton;
@@ -94,15 +96,8 @@ public class ParametersPage extends FormPage {
 		sectionsCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
 		// create network name and section chain labels
-		networkNameLabel = new Label(this, SWT.NONE);
-		networkNameLabel.setLayoutData(new GridData(SWT.END, SWT.BEGINNING, true, false));
-		networkNameLabel.setText("Network name: n/a");
-		new Label(this, SWT.NONE); // dummy, to fill 2nd column
-
-		sectionChainLabel = new Label(this, SWT.NONE);
-		sectionChainLabel.setLayoutData(new GridData(SWT.END, SWT.BEGINNING, true, false));
-		sectionChainLabel.setText("Section fallback chain: n/a");
-		new Label(this, SWT.NONE); // dummy, to fill 2nd column
+		networkNameLabel = createLabel(this, SWT.END, "Network name: n/a");
+		sectionChainLabel = createLabel(this, SWT.END, "Section fallback chain: n/a");
 
 		// create table and buttons
 		tableViewer = createAndConfigureTable();
@@ -111,6 +106,8 @@ public class ParametersPage extends FormPage {
 		Composite buttonGroup = createButtons();
 		buttonGroup.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, true));
 
+		numUnassignedParamsLabel = createLabel(this, SWT.END, "0 unassigned parameters");
+		
 		sectionsCombo.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				// publish section as editor selection
@@ -126,6 +123,14 @@ public class ParametersPage extends FormPage {
 		reread();
 	}
 
+	private Label createLabel(Composite parent, int horizontalAlign, String text) {
+		Label label = new Label(parent, SWT.NONE);
+		label.setLayoutData(new GridData(horizontalAlign, SWT.BEGINNING, true, false));
+		label.setText(text);
+		new Label(this, SWT.NONE); // dummy, to fill 2nd column of GridLayout
+		return label;
+	}
+
 	private TableViewer createAndConfigureTable() {
 		Table table = new Table(this, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION | SWT.VIRTUAL);
 		table.setLinesVisible(true);
@@ -133,7 +138,7 @@ public class ParametersPage extends FormPage {
 		addTableColumn(table, "Section", 80);
 		addTableColumn(table, "Key", 180);
 		addTableColumn(table, "Value", 120);
-		addTableColumn(table, "Comment", 80);
+		addTableColumn(table, "Comment", 60);
 
 		// set up tableViewer, content and label providers
 		final TableViewer tableViewer = new TableViewer(table);
@@ -190,6 +195,8 @@ public class ParametersPage extends FormPage {
 				if (element instanceof Item)
 					element = ((Item) element).getData(); // workaround, see super's comment
 				SectionKey item = (SectionKey) element;
+				if (item==null)
+					return; //FIXME must be debugged how this can possibly happen
 				IInifileDocument doc = getInifileDocument();
 				try {
 					System.out.println("CellEditor committing the "+property+" column, value="+value);
@@ -299,14 +306,16 @@ public class ParametersPage extends FormPage {
 		Composite buttonGroup = new Composite(this, SWT.NONE);
 		buttonGroup.setLayout(new GridLayout(1,false));
 
-		addButton = createButton(buttonGroup, "Add");
+		newButton = createButton(buttonGroup, "New");
 		removeButton = createButton(buttonGroup, "Remove");
 		upButton = createButton(buttonGroup, "Up");
 		downButton = createButton(buttonGroup, "Down");
 		new Label(buttonGroup, SWT.NONE);
-		addMissingButton = createButton(buttonGroup, "Add missing...");
+		addMissingButton = createButton(buttonGroup, "Add...");
+		addMissingButton.setImage(InifileEditorPlugin.getCachedImage("icons/full/etool16/genkeys.png"));
+		addMissingButton.setToolTipText("Add entries for unassigned parameters");
 		
-		addButton.addSelectionListener(new SelectionAdapter() {
+		newButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				addEntry();
 			}
@@ -513,8 +522,10 @@ public class ParametersPage extends FormPage {
 
 		// update labels: "Network" and "Section fallback chain"
 		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getKey(), doc);
+		int numUnassigned = getInifileAnalyzer().getUnassignedParams(selectedSection).length;
 		networkNameLabel.setText("Network: "+(networkName==null ? "<not configured>" : networkName)+"  ");
 		sectionChainLabel.setText("Section fallback chain: "+(sectionChain.length==0 ? "<no sections>" : StringUtils.join(sectionChain, " > ")));
+		numUnassignedParamsLabel.setText(numUnassigned+" unassigned parameters");
 		sectionChainLabel.getParent().layout();
 	}
 
