@@ -47,10 +47,6 @@ import org.omnetpp.scave.model2.RunAttribute;
  */
 public class DataTable extends Table {
 
-	public static final int TYPE_SCALAR = 0;  //FIXME could we use ResultType instead of this now?
-	public static final int TYPE_VECTOR = 1;
-	public static final int TYPE_HISTOGRAM = 2;
-
 	/**
 	 * Keys used in getData(),setData()
 	 */
@@ -97,7 +93,7 @@ public class DataTable extends Table {
 	private static final Column COL_MEASUREMENT = new Column("Measurement", 60, false);
 	private static final Column COL_REPLICATION = new Column("Replication", 60, false);
 
-	private int type;
+	private ResultType type;
 	private ResultFileManager manager;
 	private IDList idlist;
 	private ListenerList listeners;
@@ -110,9 +106,9 @@ public class DataTable extends Table {
 	private static final ResultItem[] NULL_SELECTION = new ResultItem[0];
 
 
-	public DataTable(Composite parent, int style, int type) {
+	public DataTable(Composite parent, int style, ResultType type) {
 		super(parent, style | SWT.VIRTUAL | SWT.FULL_SELECTION);
-		Assert.isTrue(type==TYPE_SCALAR || type==TYPE_VECTOR || type==TYPE_HISTOGRAM);
+		Assert.isTrue(type==ResultType.SCALAR_LITERAL || type==ResultType.VECTOR_LITERAL || type==ResultType.HISTOGRAM_LITERAL);
 		this.type = type;
 		setHeaderVisible(true);
 		setLinesVisible(true);
@@ -140,19 +136,9 @@ public class DataTable extends Table {
 	protected void checkSubclass() {
 	}
 
-	public int getType() {
+	public ResultType getType() {
 		return type;
 	}
-
-	public ResultType getDataType() {
-		switch (type) {
-		case DataTable.TYPE_SCALAR: return ResultType.SCALAR_LITERAL;
-		case DataTable.TYPE_VECTOR: return ResultType.VECTOR_LITERAL;
-		case DataTable.TYPE_HISTOGRAM: return ResultType.HISTOGRAM_LITERAL;
-		}
-		return null; // XXX
-	}
-
 
 	public void setResultFileManager(ResultFileManager manager) {
 		this.manager = manager;
@@ -236,18 +222,18 @@ public class DataTable extends Table {
 		addColumn(COL_MODULE);
 		addColumn(COL_DATA);
 
-		switch (type) {
-		case TYPE_SCALAR:
+		switch (type.getValue()) {
+		case ResultType.SCALAR:
 			addColumn(COL_VALUE);
 			break;
-		case TYPE_VECTOR:
+		case ResultType.VECTOR:
 			addColumn(COL_COUNT);
 			addColumn(COL_MEAN);
 			addColumn(COL_STDDEV);
 			addColumn(COL_MIN);
 			addColumn(COL_MAX);
 			break;
-		case TYPE_HISTOGRAM:
+		case ResultType.HISTOGRAM:
 			// TODO
 			break;
 		default:
@@ -336,8 +322,8 @@ public class DataTable extends Table {
 			return;
 		
 		long id = idlist.get(lineNumber);
-		ResultItem result = type == TYPE_SCALAR ? manager.getScalar(id) :
-							type == TYPE_VECTOR ? manager.getVector(id) :
+		ResultItem result = type == ResultType.SCALAR_LITERAL ? manager.getScalar(id) :
+							type == ResultType.VECTOR_LITERAL ? manager.getVector(id) :
 								manager.getItem(id);
 		item.setData(ITEM_KEY, result);
 
@@ -368,12 +354,12 @@ public class DataTable extends Table {
 				String replication = result.getFileRun().getRun().getAttribute(RunAttribute.REPLICATION);
 				item.setText(i, replication != null ? replication : "n.a.");
 			}
-			else if (type == TYPE_SCALAR) {
+			else if (type == ResultType.SCALAR_LITERAL) {
 				ScalarResult scalar = (ScalarResult)result;
 				if (COL_VALUE.equals(column))
 					item.setText(i, String.valueOf(scalar.getValue()));
 			}
-			else if (type == TYPE_VECTOR) {
+			else if (type == ResultType.VECTOR_LITERAL) {
 				VectorResult vector = (VectorResult)result;
 				if (COL_COUNT.equals(column)) {
 					int count = vector.getCount();
@@ -396,7 +382,7 @@ public class DataTable extends Table {
 					item.setText(i, Double.isNaN(max) ? "n.a." : String.valueOf(max));
 				}
 			}
-			else if (type == TYPE_HISTOGRAM) {
+			else if (type == ResultType.HISTOGRAM_LITERAL) {
 				// TODO
 			}
 		}
@@ -437,12 +423,12 @@ public class DataTable extends Table {
 				String replication = result.getFileRun().getRun().getAttribute(RunAttribute.REPLICATION);
 				writer.addField(replication != null ? replication : "n.a.");
 			}
-			else if (type == TYPE_SCALAR) {
+			else if (type == ResultType.SCALAR_LITERAL) {
 				ScalarResult scalar = manager.getScalar(idlist.get(lineNumber));
 				if (COL_VALUE.equals(column))
 					writer.addField(String.valueOf(scalar.getValue()));
 			}
-			else if (type == TYPE_VECTOR) {
+			else if (type == ResultType.VECTOR_LITERAL) {
 				VectorResult vector = manager.getVector(idlist.get(lineNumber));
 				if (COL_COUNT.equals(column))
 					writer.addField(String.valueOf(vector.getCount()));
@@ -455,7 +441,7 @@ public class DataTable extends Table {
 				else if (COL_MAX.equals(column))
 					writer.addField(String.valueOf(vector.getMax()));
 			}
-			else if (type == TYPE_HISTOGRAM) {
+			else if (type == ResultType.HISTOGRAM_LITERAL) {
 				// TODO
 			}
 		}

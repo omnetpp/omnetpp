@@ -132,11 +132,11 @@ public class BrowseDataPage extends ScaveEditorPage {
 											  GridData.FILL_BOTH));
 
 		// create pages
-		vectorsPanel = new FilteredDataPanel(tabfolder, SWT.NONE, DataTable.TYPE_VECTOR);
+		vectorsPanel = new FilteredDataPanel(tabfolder, SWT.NONE, ResultType.VECTOR_LITERAL);
 		configureFilteredDataPanel(vectorsPanel);
-		scalarsPanel = new FilteredDataPanel(tabfolder, SWT.NONE, DataTable.TYPE_SCALAR);
+		scalarsPanel = new FilteredDataPanel(tabfolder, SWT.NONE, ResultType.SCALAR_LITERAL);
 		configureFilteredDataPanel(scalarsPanel);
-		histogramsPanel = new FilteredDataPanel(tabfolder, SWT.NONE, DataTable.TYPE_HISTOGRAM);
+		histogramsPanel = new FilteredDataPanel(tabfolder, SWT.NONE, ResultType.HISTOGRAM_LITERAL);
 		configureFilteredDataPanel(histogramsPanel);
 
 		// create tabs (note: tab labels will be refreshed from initialize())

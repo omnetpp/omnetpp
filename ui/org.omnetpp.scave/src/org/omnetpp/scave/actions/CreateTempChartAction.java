@@ -37,7 +37,7 @@ public class CreateTempChartAction extends AbstractScaveAction {
 						activePanel.getTable().getSelectedItems(),
 						null);
 			String chartName = "chart"; //FIXME generate proper name
-			ResultType type = activePanel.getTable().getDataType();
+			ResultType type = activePanel.getTable().getType();
 			Chart chart = ScaveModelUtil.createChart(chartName, type);
 			dataset.getItems().add(chart);
 

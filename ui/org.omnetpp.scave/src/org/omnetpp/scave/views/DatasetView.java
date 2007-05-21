@@ -88,9 +88,9 @@ public class DatasetView extends ViewWithMessagePart {
 		panel.setLayout(layout);
 
 		// create pages
-		vectorsPanel = new FilteredDataPanel(panel, SWT.NONE, DataTable.TYPE_VECTOR);
-		scalarsPanel = new FilteredDataPanel(panel, SWT.NONE, DataTable.TYPE_SCALAR);
-		histogramsPanel = new FilteredDataPanel(panel, SWT.NONE, DataTable.TYPE_HISTOGRAM);
+		vectorsPanel = new FilteredDataPanel(panel, SWT.NONE, ResultType.VECTOR_LITERAL);
+		scalarsPanel = new FilteredDataPanel(panel, SWT.NONE, ResultType.SCALAR_LITERAL);
+		histogramsPanel = new FilteredDataPanel(panel, SWT.NONE, ResultType.HISTOGRAM_LITERAL);
 		
 		setVisibleTable(vectorsPanel);
 		
