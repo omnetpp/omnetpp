@@ -11,8 +11,8 @@ import org.omnetpp.scave.editors.ui.ChartPage;
  */
 public class CopyChartToClipboardAction extends AbstractScaveAction {
 	public CopyChartToClipboardAction() {
-		setText("Copy to clipboard");
-		setToolTipText("Copy chart to clipboard");
+		setText("Copy to Clipboard");
+		setToolTipText("Copy Chart to Clipboard");
 	}
 
 	@Override

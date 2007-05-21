@@ -23,11 +23,11 @@ public class ZoomChartAction extends AbstractScaveAction {
 		this.vertically = vertically;
 		this.zoomFactor = zoomFactor;
 
-		String inout = (zoomFactor > 1.0 ? "in" : "out");
+		String inout = (zoomFactor > 1.0 ? "In" : "Out");
 		String dir = (horizontally && vertically) ? "" : (horizontally ? " X" : " Y");
-		String dir2 = (horizontally && vertically) ? "" : (horizontally ? " horizontally" : " vertically");
+		String dir2 = (horizontally && vertically) ? "" : (horizontally ? " Horizontally" : " Vertically");
 		setText("Zoom " +  inout + dir);
-		setDescription("Zoom " + inout + " chart " + dir2);
+		setDescription("Zoom " + inout.toLowerCase() + " chart " + dir2.toLowerCase());
 		String imageId = zoomFactor > 1.0 ? ImageFactory.TOOLBAR_IMAGE_ZOOMPLUS : ImageFactory.TOOLBAR_IMAGE_ZOOMMINUS;
 		setImageDescriptor(ImageFactory.getDescriptor(imageId));
 	}

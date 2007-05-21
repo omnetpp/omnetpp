@@ -17,6 +17,8 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  * It opens a chart page to display the chart.
  */
 public class CreateTempChartAction extends AbstractScaveAction {
+	static int counter = 0;
+	
 	public CreateTempChartAction() {
 		setText("Plot");
 		setToolTipText("Plot");
@@ -30,28 +32,32 @@ public class CreateTempChartAction extends AbstractScaveAction {
 		if (activePanel == null || activePanel.getTable().getSelectionCount() == 0)
 			return;
 
-			String datasetName = "dataset";
-			Dataset dataset =
-				ScaveModelUtil.createDataset(
-						datasetName,
-						activePanel.getTable().getSelectedItems(),
-						null);
-			String chartName = "chart"; //FIXME generate proper name
-			ResultType type = activePanel.getTable().getType();
-			Chart chart = ScaveModelUtil.createChart(chartName, type);
-			dataset.getItems().add(chart);
+		String datasetName = "dataset";
+		Dataset dataset =
+			ScaveModelUtil.createDataset(
+					datasetName,
+					activePanel.getTable().getSelectedItems(),
+					null);
+		String chartName = "temp" + ++counter; //FIXME generate proper name
+		ResultType type = activePanel.getTable().getType();
+		Chart chart = ScaveModelUtil.createChart(chartName, type);
+		dataset.getItems().add(chart);
 
-			editor.executeCommand(AddCommand.create(
-					editor.getEditingDomain(),
-					editor.getTempAnalysis().getDatasets(),
-					ScaveModelPackage.eINSTANCE.getDatasets_Datasets(),
-					dataset));
-			editor.openChart(chart);
+		editor.executeCommand(AddCommand.create(
+				editor.getEditingDomain(),
+				editor.getTempAnalysis().getDatasets(),
+				ScaveModelPackage.eINSTANCE.getDatasets_Datasets(),
+				dataset));
+		editor.openChart(chart);
 	}
 
 	@Override
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
 		FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
 		return activePanel != null && activePanel.getTable().getSelectionCount() > 0;
+
+		// wherever there is a vector(s) or scalars selected, we want to be able to plot them
+		//XXX BrowseDataPage should update the selection when I switch between the Vectors/Scalars/Histograms pages
+		//return selection instanceof IDListSelection && selection.size() > 0;
 	}
 }

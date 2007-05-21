@@ -23,6 +23,7 @@ import org.omnetpp.scave.actions.CreateChartTemplateAction;
 import org.omnetpp.scave.actions.CreateTempChartAction;
 import org.omnetpp.scave.actions.EditAction;
 import org.omnetpp.scave.actions.ExportDataAction;
+import org.omnetpp.scave.actions.GotoChartDefinitionAction;
 import org.omnetpp.scave.actions.IScaveAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
 import org.omnetpp.scave.actions.ShowVectorBrowserViewAction;
@@ -62,6 +63,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	private IAction copyChartToClipboardAction;
 	private IAction refreshChartAction;
 	private IAction createChartTemplateAction;
+	private IAction gotoChartDefinitionAction;
 
 	// BrowseDataPage actions
 	private IAction addFilterToDatasetAction;
@@ -95,6 +97,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
         copyChartToClipboardAction = registerAction(page, new CopyChartToClipboardAction());
         refreshChartAction = registerAction(page, new RefreshChartAction());
         createChartTemplateAction = registerAction(page, new CreateChartTemplateAction());
+        gotoChartDefinitionAction = registerAction(page, new GotoChartDefinitionAction());
 
     	// BrowseDataPage actions
         addFilterToDatasetAction = registerAction(page, new AddFilterToDatasetAction());
@@ -142,6 +145,8 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 
 	public void contributeToToolBar(IToolBarManager manager) {
 		super.contributeToToolBar(manager);
+		manager.insertBefore("scavemodel-additions", createTempChartAction);
+
 //XXX
 //		manager.insertBefore("scavemodel-additions", zoomInXAction);
 //		manager.insertBefore("scavemodel-additions", zoomOutXAction);
@@ -201,6 +206,9 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	}
     public IAction getCreateChartTemplateAction() {
 		return createChartTemplateAction;
+	}
+    public IAction getGotoChartDefinitionAction() {
+		return gotoChartDefinitionAction;
 	}
 	public IAction getCopyChartToClipboardAction() {
 		return copyChartToClipboardAction;

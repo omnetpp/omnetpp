@@ -30,7 +30,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 public class AddSelectedToDatasetAction extends AbstractScaveAction {
 
 	public AddSelectedToDatasetAction() {
-		setText("Add selected data to dataset...");
+		setText("Add Selected Data to Dataset...");
 		setToolTipText("Add selected data to dataset");
 		setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_ADDSELECTEDTODATASET));
 	}

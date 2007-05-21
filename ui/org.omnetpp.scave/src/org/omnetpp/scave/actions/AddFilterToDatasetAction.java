@@ -31,7 +31,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 public class AddFilterToDatasetAction extends AbstractScaveAction {
 
 	public AddFilterToDatasetAction() {
-		setText("Add filter expression to dataset...");
+		setText("Add Filter Expression to Dataset...");
 		setToolTipText("Add filter expression to dataset");
 		setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_ADDFILTERTODATASET));
 	}

@@ -90,6 +90,7 @@ public class ChartPage extends ScaveEditorPage {
 		contextMenuManager.add(new Separator());
 		contextMenuManager.add(editorContributor.getEditAction());
 		contextMenuManager.add(editorContributor.getCopyChartToClipboardAction());
+		contextMenuManager.add(editorContributor.getGotoChartDefinitionAction());
 		contextMenuManager.add(new Separator());
 		contextMenuManager.add(editorContributor.getCreateChartTemplateAction());
 		contextMenuManager.add(new Separator());

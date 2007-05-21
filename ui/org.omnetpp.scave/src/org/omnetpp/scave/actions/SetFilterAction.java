@@ -24,7 +24,7 @@ import org.omnetpp.scave.model2.RunAttribute;
 public class SetFilterAction extends AbstractScaveAction {
 
 	public SetFilterAction() {
-		setText("Set filter");
+		setText("Set Filter");
 		setToolTipText("Set the filter on the \"Browse data\" page from the current selection.");
 	}
 

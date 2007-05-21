@@ -40,7 +40,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 public class CreateChartTemplateAction extends AbstractScaveAction {
 
 	public CreateChartTemplateAction() {
-		setText("Create template");
+		setText("Create Template");
 		setDescription("Create a chart template from a temporary chart");
 		setImageDescriptor(ImageFactory.getDescriptor(TOOLBAR_IMAGE_TEMPLATE));
 	}
@@ -104,7 +104,7 @@ public class CreateChartTemplateAction extends AbstractScaveAction {
 				isTemporaryChart(((ChartPage)page).getChart(), editor);
 	}
 	
-	private boolean isTemporaryChart(Chart chart, ScaveEditor editor) {
+	private static boolean isTemporaryChart(Chart chart, ScaveEditor editor) {
 		return ScaveModelUtil.findEnclosingOrSelf(chart, Analysis.class) == editor.getTempAnalysis();
 	}
 	

@@ -29,11 +29,11 @@ public class NewAction extends AbstractScaveAction {
 		this.defaultParent = defaultParent;
 		this.createChild = createChild;
 		if (createChild) {
-			setText("New child...");
+			setText("New Child...");
 			setToolTipText("Create new child");
 		}
 		else {
-			setText("New sibling...");
+			setText("New Sibling...");
 			setToolTipText("Create new sibling");
 		}
 	}

@@ -18,7 +18,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  */
 public class AddResultFileAction extends AbstractScaveAction {
 	public AddResultFileAction() {
-        setText("Add file...");
+        setText("Add File...");
         setToolTipText("Add a scalar or vector file to the inputs");
 	}
 
