@@ -25,13 +25,14 @@ public class AddResultFileAction extends AbstractScaveAction {
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
 		ResourceListSelectionDialog dialog = new ResourceListSelectionDialog(editor.getSite().getShell(), ResourcesPlugin.getWorkspace().getRoot(), IResource.FILE);
+		dialog.setTitle("Select Result File");
 		if (dialog.open() == Window.OK) {
 			Object[] result = dialog.getResult();
 			if (result != null && result.length == 1 && result[0] instanceof IFile) {
 				IFile file = (IFile)result[0];
 				InputFile inputFile = ScaveModelFactory.eINSTANCE.createInputFile();
 				inputFile.setName(file.getFullPath().toString());
-				
+
 				editor.executeCommand(
 					AddCommand.create(
 						editor.getEditingDomain(),

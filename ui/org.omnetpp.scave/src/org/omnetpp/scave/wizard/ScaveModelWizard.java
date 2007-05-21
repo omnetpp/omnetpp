@@ -50,13 +50,13 @@ import org.omnetpp.scave.model.provider.ScaveEditPlugin;
 /**
  * This is a simple wizard for creating a new analysis file.
  * Code is based on the EMF-created wizard.
- * 
- * The new analisis file may be empty or may contain
+ *
+ * The new analysis file may be empty or may contain
  * a specified input file.
  */
 //XXX uses property file from the model package
 public class ScaveModelWizard extends Wizard implements INewWizard {
-	
+
 	private static final String ENCODING = "UTF-8";
 	private static final String FILENAME_EXTENSION = "scave";
 
@@ -86,24 +86,26 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		this.workbench = workbench;
 		this.selection = selection;
-		setWindowTitle(ScaveEditPlugin.INSTANCE.getString("_UI_Wizard_label"));
+		setWindowTitle("New Analysis File");
 		setDefaultPageImageDescriptor(ExtendedImageRegistry.INSTANCE.getImageDescriptor(ScaveEditPlugin.INSTANCE.getImage("full/wizban/NewScaveModel")));
 	}
-	
+
 	public void setInitialInputFile(IFile file) {
 		initialInputFile = file;
 	}
-	
+
 	/**
 	 * The framework calls this to create the contents of the wizard.
 	 */
-	public void addPages() {
+	@Override
+    public void addPages() {
 		// Create a page, set the title, and the initial model file name.
 		//
 		newFileCreationPage = new NewFileCreationPage("Whatever", selection);
-		newFileCreationPage.setTitle(ScaveEditPlugin.INSTANCE.getString("_UI_ScaveModelModelWizard_label"));
-		newFileCreationPage.setDescription(ScaveEditPlugin.INSTANCE.getString("_UI_ScaveModelModelWizard_description"));
+		newFileCreationPage.setTitle("New Analysis File");
+		newFileCreationPage.setDescription("Create New Analysis File");
 		newFileCreationPage.setFileName(getDefaultAnalysisFileName());
+		newFileCreationPage.setFileExtension("scave");
 		addPage(newFileCreationPage);
 
 		// Try and get the resource selection to determine a current directory for the file dialog.
@@ -140,12 +142,12 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
 			}
 		}
 	}
-	
+
 	public String getDefaultAnalysisFileName() {
 		String baseFileName = initialInputFile != null ? initialInputFile.getName() : "new";
 		return baseFileName + ".scave";
 	}
-	
+
 	/**
 	 * Get the file from the page.
 	 */
@@ -163,20 +165,21 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
 		analysis.setInputs(inputs);
 		analysis.setDatasets(factory.createDatasets());
 		analysis.setChartSheets(factory.createChartSheets());
-		
+
 		if (initialInputFile != null) {
 			InputFile inputFile = factory.createInputFile();
 			inputFile.setName(initialInputFile.getFullPath().toString());
 			inputs.getInputs().add(inputFile);
 		}
-		
+
 		return analysis;
 	}
 
 	/**
 	 * Do the work after everything is specified.
 	 */
-	public boolean performFinish() {
+	@Override
+    public boolean performFinish() {
 		try {
 			// Remember the file.
 			//
@@ -186,7 +189,8 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
 			//
 			WorkspaceModifyOperation operation =
 				new WorkspaceModifyOperation() {
-					protected void execute(IProgressMonitor progressMonitor) {
+					@Override
+                    protected void execute(IProgressMonitor progressMonitor) {
 						try {
 							// Create a resource set
 							//
@@ -273,7 +277,8 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
 		/**
 		 * The framework calls this to see if the file is correct.
 		 */
-		protected boolean validatePage() {
+		@Override
+        protected boolean validatePage() {
 			if (super.validatePage()) {
 				// Make sure the file ends in ".scavemodel".
 				//
@@ -282,18 +287,14 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
 				if (enteredExt == null || !enteredExt.equals(requiredExt)) {
 					setErrorMessage(ScaveEditPlugin.INSTANCE.getString("_WARN_FilenameExtension", new Object [] { requiredExt }));
 					return false;
-				}
-				else {
-					return true;
-				}
-			}
-			else {
-				return false;
-			}
+				} else
+                    return true;
+			} else
+                return false;
 		}
 
 		/**
-		 * 
+		 *
 		 */
 		public IFile getAnalysisFile() {
 			return ResourcesPlugin.getWorkspace().getRoot().getFile(getContainerFullPath().append(getFileName()));
