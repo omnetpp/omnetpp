@@ -54,10 +54,10 @@ public class CreateTempChartAction extends AbstractScaveAction {
 	@Override
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
 		FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
-		return activePanel != null && activePanel.getTable().getSelectionCount() > 0;
+		return editor.getActiveEditorPage()==editor.getBrowseDataPage() && activePanel != null && activePanel.getTable().getSelectionCount() > 0;
 
-		// wherever there is a vector(s) or scalars selected, we want to be able to plot them
-		//XXX BrowseDataPage should update the selection when I switch between the Vectors/Scalars/Histograms pages
+		//TODO: wherever there is a vector(s) or scalars selected, we want to be able to plot them
+		//XXX for this to work, BrowseDataPage should update the selection when I switch between the Vectors/Scalars/Histograms pages
 		//return selection instanceof IDListSelection && selection.size() > 0;
 	}
 }
