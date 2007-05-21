@@ -953,7 +953,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
         vecdata.sumSqr = NaN;
 
         fileRef->vectorResults.push_back(vecdata);
-        resultItemRef = &fileRef->scalarResults.back();
+        resultItemRef = &fileRef->vectorResults.back();
     }
     else if (isdigit(vec[0][0]) && numTokens>=3)
     {
