@@ -124,7 +124,7 @@ public abstract class FormPage extends Composite {
 		((GridLayout)titleArea.getLayout()).marginWidth = 10;
 		
 		Label imageLabel = new Label(titleArea, SWT.NONE);
-		imageLabel.setImage(InifileEditorPlugin.getCachedImage("icons/full/misc/formpage_banner.png")); //XXX better image needed!!!
+		imageLabel.setImage(InifileEditorPlugin.getCachedImage("icons/full/misc/formpage_banner2.png")); //XXX better image needed!!!
 		imageLabel.setBackground(ColorFactory.asColor("white"));
 		
 		Label title = new Label(titleArea, SWT.NONE);
