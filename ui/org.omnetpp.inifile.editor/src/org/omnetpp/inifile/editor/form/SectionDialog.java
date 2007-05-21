@@ -3,6 +3,7 @@ package org.omnetpp.inifile.editor.form;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
 
+import java.util.Arrays;
 import java.util.Set;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -131,8 +132,10 @@ public class SectionDialog extends TitleAreaDialog {
 		extendsCombo.select(0);
 
 		// fill network combo
-		Set<String> networkNames = NEDResourcesPlugin.getNEDResources().getNetworkNames();
-		networkCombo.setItems(networkNames.toArray(new String[] {}));
+		Set<String> networkNameSet = NEDResourcesPlugin.getNEDResources().getNetworkNames();
+		String[] networkNames = networkNameSet.toArray(new String[]{});
+		Arrays.sort(networkNames);
+		networkCombo.setItems(networkNames);
 		networkCombo.setVisibleItemCount(Math.min(20, networkCombo.getItemCount()));
 		
 		// fill dialog fields with initial contents
@@ -183,7 +186,7 @@ public class SectionDialog extends TitleAreaDialog {
         okButton = createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
         
-        // do this here because setting the text will set enablement on the ok button
+        // do this here because setting the text will set enablement on the OK button
         validateDialogContents();
     }
 
