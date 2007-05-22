@@ -15,6 +15,7 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.ned.engine.NEDErrorCategory;
 import org.omnetpp.ned.engine.NEDErrorStore;
@@ -33,18 +34,7 @@ import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NEDChangeListenerList;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
-import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
-import org.omnetpp.ned.model.pojo.ChannelNode;
-import org.omnetpp.ned.model.pojo.CompoundModuleNode;
-import org.omnetpp.ned.model.pojo.ExtendsNode;
-import org.omnetpp.ned.model.pojo.GateNode;
-import org.omnetpp.ned.model.pojo.GatesNode;
-import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
-import org.omnetpp.ned.model.pojo.NEDElementTags;
-import org.omnetpp.ned.model.pojo.NedFileNode;
-import org.omnetpp.ned.model.pojo.ParamNode;
-import org.omnetpp.ned.model.pojo.ParametersNode;
-import org.omnetpp.ned.model.pojo.SimpleModuleNode;
+import org.omnetpp.ned.model.pojo.*;
 
 /**
  * Parses all NED files in the workspace and makes them available for other
@@ -85,31 +75,31 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     // listener list that listenens on all NED changes
     private transient NEDChangeListenerList nedComponentChangeListenerList = null;
     private transient NEDChangeListenerList nedModelChangeListenerList = null;
-    private INEDChangeListener nedModelChangeListener =
+    private final INEDChangeListener nedModelChangeListener =
                         new INEDChangeListener() {
                             public void modelChanged(NEDModelEvent event) {
                                 nedModelChanged(event);
                             }
                         };
     // stores parsed contents of NED files
-    private HashMap<IFile, INEDElement> nedFiles = new HashMap<IFile, INEDElement>();
-    private ProblemMarkerJob markerJob = new ProblemMarkerJob("Updating problem markers");
+    private final HashMap<IFile, INEDElement> nedFiles = new HashMap<IFile, INEDElement>();
+    private final ProblemMarkerJob markerJob = new ProblemMarkerJob("Updating problem markers");
 
-    private HashMap<IFile, Integer> connectCount = new HashMap<IFile, Integer>();
+    private final HashMap<IFile, Integer> connectCount = new HashMap<IFile, Integer>();
 
     // table of toplevel components (points into nedFiles trees)
-    private HashMap<String, INEDTypeInfo> components = new HashMap<String, INEDTypeInfo>();
+    private final HashMap<String, INEDTypeInfo> components = new HashMap<String, INEDTypeInfo>();
 
     // reserved (used) names (contains all names including dupliates)
-    private Set<String> reservedNames = new HashSet<String>();
+    private final Set<String> reservedNames = new HashSet<String>();
 
     // tables of toplevel components, classified (points into nedFiles trees)
     private boolean needsRehash = false; // if tables below need to be rebuilt
 
-    private HashMap<String, INEDTypeInfo> modules = new HashMap<String, INEDTypeInfo>();
-    private HashMap<String, INEDTypeInfo> channels = new HashMap<String, INEDTypeInfo>();
-    private HashMap<String, INEDTypeInfo> moduleInterfaces = new HashMap<String, INEDTypeInfo>();
-    private HashMap<String, INEDTypeInfo> channelInterfaces = new HashMap<String, INEDTypeInfo>();
+    private final HashMap<String, INEDTypeInfo> modules = new HashMap<String, INEDTypeInfo>();
+    private final HashMap<String, INEDTypeInfo> channels = new HashMap<String, INEDTypeInfo>();
+    private final HashMap<String, INEDTypeInfo> moduleInterfaces = new HashMap<String, INEDTypeInfo>();
+    private final HashMap<String, INEDTypeInfo> channelInterfaces = new HashMap<String, INEDTypeInfo>();
 
     private INEDTypeInfo basicChannelType = null;
     private INEDTypeInfo nullChannelType = null;
@@ -200,7 +190,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     /**
-     * NED editors should call this when editor content changes. 
+     * NED editors should call this when editor content changes.
      * NOTE: if the provided tree would result the same NED code as the
      * current model the model WILL NOT BE CHANGED, and the old tree will be kept
      */
@@ -215,7 +205,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     /**
      * @param file The NED file content we are interested in
-     * @return The textual (reformatted) content of the nedfile (generated from the model)
+     * @return The textual (reformatted) content of the ned file (generated from the model)
      */
     public synchronized String getNEDFileText(IFile file) {
         return NEDTreeUtil.generateNedSource(getNEDFileModel(file), true);
@@ -261,9 +251,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         INEDTypeInfo c = getComponentAt(file, line);
         if (c!=null) {
             INEDElement[] nodes = c.getNEDElementsAt(line, column);
-            if (nodes!=null && nodes.length>0) {
+            if (nodes!=null && nodes.length>0)
                 return nodes[nodes.length-1];
-            }
         }
         return null;
     }

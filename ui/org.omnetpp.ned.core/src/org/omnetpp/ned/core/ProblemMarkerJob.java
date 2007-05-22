@@ -14,6 +14,11 @@ import org.eclipse.core.runtime.Status;
 import org.omnetpp.ned.engine.NEDErrorCategory;
 import org.omnetpp.ned.engine.NEDErrorStore;
 
+/**
+ * This class updates the error markers in a single job (in background thread) its methods should
+ * be synchronized, because it is possible that new files are added while the update process is running
+ * @author rhornig
+ */
 public class ProblemMarkerJob extends WorkspaceJob {
 
     public static final String NEDPROBLEM_MARKERID = "org.omnetpp.ned.core.nedproblem";
@@ -28,62 +33,62 @@ public class ProblemMarkerJob extends WorkspaceJob {
     }
 
     /**
-     * Set the parsing error store for a file 
+     * Set the parsing error store for a file
      */
-    public void setParseErrorStore(IFile file, NEDErrorStore errorStore) {
+    public synchronized void setParseErrorStore(IFile file, NEDErrorStore errorStore) {
         nedParseErrors.put(file, errorStore);
     }
-    
+
     /**
      * @param file
      * @return The parse error store associated with the given file
      */
-    public NEDErrorStore getParseErrorStore(IFile file) {
+    public synchronized NEDErrorStore getParseErrorStore(IFile file) {
         return nedParseErrors.get(file);
     }
-    
+
     /**
-     * Set the consistency error store for a file 
+     * Set the consistency error store for a file
      * @param file
      * @param errorStore
      */
-    public void setConsistencyErrorStore(IFile file, NEDErrorStore errorStore) {
+    public synchronized void setConsistencyErrorStore(IFile file, NEDErrorStore errorStore) {
         nedConsistencyErrors.put(file, errorStore);
     }
-    
+
     /**
      * @param file
      * @return The parse error store associated with the given file
      */
-    public NEDErrorStore getConsistencyErrorStore(IFile file) {
+    public synchronized NEDErrorStore getConsistencyErrorStore(IFile file) {
         return nedConsistencyErrors.get(file);
     }
     /**
      * Removes all error stores associated with the file
      * @param file
      */
-    public void removeStores(IFile file) {
+    public synchronized void removeStores(IFile file) {
         nedParseErrors.remove(file);
         nedConsistencyErrors.remove(file);
     }
-    
+
     /**
      * @param file
-     * @return Whether the given file has errors in any of it's store 
+     * @return Whether the given file has errors in any of it's store
      */
     public boolean hasErrors(IFile file) {
         NEDErrorStore es = nedParseErrors.get(file);
-        if (es != null && (es.containsError() || es.containsFatal())) 
+        if (es != null && (es.containsError() || es.containsFatal()))
             return true;
-        
+
         es = nedConsistencyErrors.get(file);
-        if (es != null && (es.containsError() || es.containsFatal())) 
+        if (es != null && (es.containsError() || es.containsFatal()))
             return true;
-        
+
         // otherwise we do not have any error
         return false;
     }
-    
+
     private void addMarkersToFile(IFile file, NEDErrorStore errors)
             throws CoreException {
         if (errors == null)
@@ -138,13 +143,13 @@ public class ProblemMarkerJob extends WorkspaceJob {
         marker.setAttribute(IMarker.LINE_NUMBER, line);
     }
 
-    
+
     /**
-     * Runs the marker update job. Converts all messages in the ErrorStores to 
+     * Runs the marker update job. Converts all messages in the ErrorStores to
      * Markers and synchronizes them with fileMarkers already present on the file.
      */
     @Override
-    public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
+    public synchronized IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
         // Converts all error store info to markers and attaches them to the files
         for (IFile file : nedParseErrors.keySet()) {
         	//FIXME the following error happened on startup several times:
@@ -159,7 +164,7 @@ public class ProblemMarkerJob extends WorkspaceJob {
 			//     at org.eclipse.core.internal.resources.InternalWorkspaceJob.run(InternalWorkspaceJob.java:38)
 			//     at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
         	// --Andras
-        	
+
             if (!file.exists())
                 continue;
             // TODO optimize the marker update. if no change occurred to the marker state
