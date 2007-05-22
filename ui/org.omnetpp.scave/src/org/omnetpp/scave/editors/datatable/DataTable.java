@@ -57,16 +57,16 @@ public class DataTable extends Table {
 
 		private String text;
 		private int weight;
-		private boolean visible;
+		private boolean defaultVisible;
 
 		public Column(String text, int weight, boolean visible) {
 			this.text = text;
 			this.weight = weight;
-			this.visible = visible;
+			this.defaultVisible = visible;
 		}
 
 		public Column clone() {
-			return new Column(this.text, this.weight, this.visible);
+			return new Column(this.text, this.weight, this.defaultVisible);
 		}
 
 		public boolean equals(Object other) {
@@ -86,18 +86,36 @@ public class DataTable extends Table {
 	private static final Column COL_VALUE = new Column("Value", 80, true);
 	private static final Column COL_COUNT = new Column("Count", 50, true);
 	private static final Column COL_MEAN = new Column("Mean", 60, true);
-	private static final Column COL_STDDEV = new Column("Stddev", 60, true);
+	private static final Column COL_STDDEV = new Column("StdDev", 60, true);
 	private static final Column COL_MIN = new Column("Min", 60, false);
 	private static final Column COL_MAX = new Column("Max", 60, false);
 	private static final Column COL_EXPERIMENT = new Column("Experiment", 60, false);
 	private static final Column COL_MEASUREMENT = new Column("Measurement", 60, false);
 	private static final Column COL_REPLICATION = new Column("Replication", 60, false);
+	
+	private static final Column[] allScalarColumns = new Column[] {
+		COL_DIRECTORY, COL_FILE_RUN, COL_RUN_ID, COL_MODULE, COL_DATA,
+		COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
+		COL_VALUE
+	};
+
+	private static final Column[] allVectorColumns = new Column[] {
+		COL_DIRECTORY, COL_FILE_RUN, COL_RUN_ID, COL_MODULE, COL_DATA,
+		COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
+		COL_COUNT, COL_MEAN, COL_STDDEV, COL_MIN, COL_MAX
+	};
+
+	private static final Column[] allHistogramColumns = new Column[] {
+		COL_DIRECTORY, COL_FILE_RUN, COL_RUN_ID, COL_MODULE, COL_DATA,
+		COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
+		COL_COUNT, COL_MEAN, COL_STDDEV, COL_MIN, COL_MAX
+	};
 
 	private ResultType type;
 	private ResultFileManager manager;
 	private IDList idlist;
 	private ListenerList listeners;
-	private List<Column> columns;
+	private List<Column> visibleColumns; // list of visible columns, this list will be saved and restored
 	private IPreferenceStore preferences = ScavePlugin.getDefault().getPreferenceStore(); // XXX
 
 	// holds actions for the context menu for this data table
@@ -112,6 +130,7 @@ public class DataTable extends Table {
 		this.type = type;
 		setHeaderVisible(true);
 		setLinesVisible(true);
+		initDefaultState();
 		initColumns();
 
 		addListener(SWT.SetData, new Listener() {
@@ -161,25 +180,46 @@ public class DataTable extends Table {
 	public IMenuManager getContextMenuManager() {
 		return contextMenuManager;
 	}
+	
+	protected Column[] getAllColumns() {
+		switch (type.getValue()) {
+		case ResultType.SCALAR:		return allScalarColumns;
+		case ResultType.VECTOR:		return allVectorColumns;
+		case ResultType.HISTOGRAM:	return allHistogramColumns;
+		default: return null;
+		}
+	}
 
-	public String[] getColumnNames() {
-		String[] columnNames = new String[columns.size()];
-		for (int i = 0; i < columns.size(); ++i)
-			columnNames[i] = columns.get(i).text;
+	public String[] getAllColumnNames() {
+		Column[] columns = getAllColumns();
+		String[] columnNames = new String[columns.length];
+		for (int i = 0; i < columns.length; ++i)
+			columnNames[i] = columns[i].text;
 		return columnNames;
 	}
-
-	public boolean isColumnVisible(int index) {
-		return columns.get(index).visible;
+	
+	public String[] getVisibleColumnNames() {
+		String[] columnNames = new String[visibleColumns.size()];
+		for (int i = 0; i < visibleColumns.size(); ++i)
+			columnNames[i] = visibleColumns.get(i).text;
+		return columnNames;
 	}
+	
+	public void setVisibleColumns(String[] columnTexts) {
+		List<String> visibleColumnTexts = Arrays.asList(columnTexts);
 
-	public void setColumnVisible(int index, boolean visible) {
-		if (visible != columns.get(index).visible) {
-			Column column = columns.get(index);
-			column.visible = visible;
-			saveColumnState(column);
-			layoutColumns();
+		visibleColumns.clear();
+		for (TableColumn column : getColumns())
+			column.dispose();
+		
+		for (Column column : getAllColumns()) {
+			boolean visible = visibleColumnTexts.indexOf(column.text) >= 0;
+			if (visible)
+				addColumn(column);
 		}
+		saveState();
+		layoutColumns();
+		refresh();
 	}
 
 	public IDList getSelectedIDs() {
@@ -210,60 +250,41 @@ public class DataTable extends Table {
 		setItemCount((int)idlist.size());
 		clearAll();
 	}
-
+	
 	protected void initColumns() {
-		columns = new ArrayList<Column>();
-		addColumn(COL_DIRECTORY);
-		addColumn(COL_FILE_RUN);
-		addColumn(COL_RUN_ID);
-		addColumn(COL_EXPERIMENT);
-		addColumn(COL_MEASUREMENT);
-		addColumn(COL_REPLICATION);
-		addColumn(COL_MODULE);
-		addColumn(COL_DATA);
-
-		switch (type.getValue()) {
-		case ResultType.SCALAR:
-			addColumn(COL_VALUE);
-			break;
-		case ResultType.VECTOR:
-			addColumn(COL_COUNT);
-			addColumn(COL_MEAN);
-			addColumn(COL_STDDEV);
-			addColumn(COL_MIN);
-			addColumn(COL_MAX);
-			break;
-		case ResultType.HISTOGRAM:
-			// TODO
-			break;
-		default:
-			Assert.isTrue(false, "Unknown data type: " + type);
-			break;
-		}
+		visibleColumns = new ArrayList<Column>();
+		loadState();
 	}
 
-	protected void addColumn(Column column) {
-		Column newColumn = column.clone();
-		initDefaultColumnState(column);
-		loadColumnState(newColumn);
-		columns.add(newColumn);
-
+	protected TableColumn getTableColumn(Column column) {
+		for (TableColumn tableColumn : getColumns()) {
+			if (tableColumn.getData(COLUMN_KEY).equals(column)) {
+				return tableColumn;
+			}
+		}
+		return null;
+	}
+	
+	protected void addColumn(Column newColumn) {
+		visibleColumns.add(newColumn);
 		TableColumn tableColumn = new TableColumn(this, SWT.NONE);
 		tableColumn.setText(newColumn.text);
-		tableColumn.setWidth(newColumn.visible ? newColumn.weight : 0);
+		tableColumn.setWidth(newColumn.weight);
 		tableColumn.setData(COLUMN_KEY, newColumn);
 		tableColumn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				TableColumn tableColumn = (TableColumn)e.widget;
-				Column column = (Column)tableColumn.getData(COLUMN_KEY);
-				int sortDirection = (getSortColumn() == tableColumn && getSortDirection() == SWT.UP ? SWT.DOWN : SWT.UP);
-				setSortColumn(tableColumn);
-				setSortDirection(sortDirection);
-				sortBy(column, sortDirection);
+				if (!tableColumn.isDisposed()) {
+					Column column = (Column)tableColumn.getData(COLUMN_KEY);
+					int sortDirection = (getSortColumn() == tableColumn && getSortDirection() == SWT.UP ? SWT.DOWN : SWT.UP);
+					setSortColumn(tableColumn);
+					setSortDirection(sortDirection);
+					sortBy(column, sortDirection);
+				}
 			}
 		});
 	}
-
+	
 	public void sortBy(Column column, int direction) {
 		if (manager == null)
 			return;
@@ -303,16 +324,18 @@ public class DataTable extends Table {
 
 	protected void layoutColumns() {
 		double unit = getWidthUnit();
-		for (int i = 0; i < columns.size(); ++i) {
-			Column column = columns.get(i);
-			getColumn(i).setWidth(column.visible ? (int)(column.weight * unit) : 0);
+		for (int i = 0; i < visibleColumns.size(); ++i) {
+			Column column = visibleColumns.get(i);
+			TableColumn tableColumn = getTableColumn(column);
+			if (tableColumn != null)
+				tableColumn.setWidth((int)(column.weight * unit));
 		}
 	}
 
 	private double getWidthUnit() {
 		int sumOfWeights = 0;
-		for (Column column : columns)
-			sumOfWeights += (column.visible ? column.weight : 0);
+		for (Column column : visibleColumns)
+			sumOfWeights += (column.weight);
 
 		return (double)getSize().x / sumOfWeights;
 	}
@@ -322,13 +345,11 @@ public class DataTable extends Table {
 			return;
 		
 		long id = idlist.get(lineNumber);
-		ResultItem result = type == ResultType.SCALAR_LITERAL ? manager.getScalar(id) :
-							type == ResultType.VECTOR_LITERAL ? manager.getVector(id) :
-								manager.getItem(id);
+		ResultItem result = manager.getItem(id);
 		item.setData(ITEM_KEY, result);
 
-		for (int i = 0; i < columns.size(); ++i) {
-			Column column = columns.get(i);
+		for (int i = 0; i < visibleColumns.size(); ++i) {
+			Column column = visibleColumns.get(i);
 			if (COL_DIRECTORY.equals(column))
 				item.setText(i, result.getFileRun().getFile().getDirectory());
 			else if (COL_FILE_RUN.equals(column)) {
@@ -394,10 +415,8 @@ public class DataTable extends Table {
 		
 		ResultItem result = manager.getItem(idlist.get(lineNumber));
 
-		for (int i = 0; i < columns.size(); ++i) {
-			Column column = columns.get(i);
-			if (!column.visible)
-				continue;
+		for (int i = 0; i < visibleColumns.size(); ++i) {
+			Column column = visibleColumns.get(i);
 			if (COL_DIRECTORY.equals(column))
 				writer.addField(result.getFileRun().getFile().getDirectory());
 			else if (COL_FILE_RUN.equals(column)) {
@@ -452,9 +471,8 @@ public class DataTable extends Table {
 	public void copySelectionToClipboard() {
 		CsvWriter writer = new CsvWriter();
 		// add header
-		for (Column column : columns)
-			if (column.visible)
-				writer.addField(column.text);
+		for (Column column : visibleColumns)
+			writer.addField(column.text);
 		writer.endRecord();
 		// add selected lines
 		int[] selection = getSelectionIndices();
@@ -483,24 +501,40 @@ public class DataTable extends Table {
 				((IDataTableListener)listener).contentChanged(this);
 		}
 	}
+	
+	/*
+	 * Save/load state
+	 */
 
 	protected String getPreferenceStoreKey(Column column, String field) {
 		return "DataTable." + type + "." + column.text + "." + field;
 	}
 
-	protected void initDefaultColumnState(Column column) {
-		if (preferences != null)
-			preferences.setDefault(getPreferenceStoreKey(column, "visible"), column.visible);
+	protected void initDefaultState() {
+		if (preferences != null) {
+			for (Column column : getAllColumns()) {
+				preferences.setDefault(getPreferenceStoreKey(column, "visible"), column.defaultVisible);
+			}
+		}
 	}
-
-	protected void saveColumnState(Column column) {
-		if (preferences != null)
-			preferences.setValue(getPreferenceStoreKey(column, "visible"), column.visible);
+	
+	protected void loadState() {
+		if (preferences != null) {
+			visibleColumns.clear();
+			for (Column column : getAllColumns()) {
+				boolean visible = preferences.getBoolean(getPreferenceStoreKey(column, "visible"));
+				if (visible)
+					addColumn(column.clone());
+			}
+		}
 	}
-
-	protected void loadColumnState(Column column) {
-		if (preferences != null)
-			column.visible = preferences.getBoolean(getPreferenceStoreKey(column, "visible"));
+	
+	protected void saveState() {
+		if (preferences != null) {
+			for (Column column : getAllColumns()) {
+				boolean visible = visibleColumns.indexOf(column) >= 0;
+				preferences.setValue(getPreferenceStoreKey(column, "visible"), visible);
+			}
+		}
 	}
-
 }

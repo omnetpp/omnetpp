@@ -33,25 +33,20 @@ public class ChooseTableColumnsAction extends Action {
 		// create dialog with the column names
 		ListSelectionDialog dialog = new ListSelectionDialog(
 			 table.getShell(),
-			 table.getColumnNames(),
+			 table.getAllColumnNames(),
 			 new ArrayContentProvider(),
 			 new LabelProvider(), // plain toString()
 			 "Select which columns should be visible in the table:");
 		dialog.setTitle("Select Columns");
 
 		// calculate initial selection
-		String[] columns = table.getColumnNames();
-		ArrayList<String> initialSelection = new ArrayList<String>();
-		for (int i = 0; i < columns.length; ++i)
-			if (table.isColumnVisible(i))
-				initialSelection.add(columns[i]);
-		dialog.setInitialSelections(initialSelection.toArray());
+		dialog.setInitialSelections(table.getVisibleColumnNames());
 
 		// execute dialog and store result
 		if (dialog.open() == Dialog.OK) {
-			List<?> result = Arrays.asList(dialog.getResult());
-		    for (int i = 0; i < columns.length; ++i)
-		    	table.setColumnVisible(i, result.contains(columns[i]));
+			List<Object> selectedObjects = Arrays.asList(dialog.getResult());
+			String [] selectedColumnNames = selectedObjects.toArray(new String[selectedObjects.size()]); 
+			table.setVisibleColumns(selectedColumnNames);
 		}
 	}
 }
