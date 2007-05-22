@@ -76,9 +76,14 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
 	protected IWorkbench workbench;
 
 	/**
-	 * Result file that the new analysis file should contain.
+	 * The analysis file name offered by default.
 	 */
-	protected IFile initialInputFile;
+	protected String defaultAnalysisFileName;
+
+	/**
+	 * Result files that the new analysis file should contain.
+	 */
+	protected String[] initialInputFiles;
 
 	/**
 	 * This just records the information.
@@ -90,8 +95,8 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
 		setDefaultPageImageDescriptor(ExtendedImageRegistry.INSTANCE.getImageDescriptor(ScaveEditPlugin.INSTANCE.getImage("full/wizban/NewScaveModel")));
 	}
 
-	public void setInitialInputFile(IFile file) {
-		initialInputFile = file;
+	public void setInitialInputFiles(String[] initialInputFiles) {
+		this.initialInputFiles = initialInputFiles;
 	}
 
 	/**
@@ -104,34 +109,27 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
 		newFileCreationPage = new NewFileCreationPage("Whatever", selection);
 		newFileCreationPage.setTitle("New Analysis File");
 		newFileCreationPage.setDescription("Create New Analysis File");
-		newFileCreationPage.setFileName(getDefaultAnalysisFileName());
-		newFileCreationPage.setFileExtension("scave");
+		newFileCreationPage.setFileName(defaultAnalysisFileName==null ? "new."+FILENAME_EXTENSION : defaultAnalysisFileName);
+		newFileCreationPage.setFileExtension(FILENAME_EXTENSION);
 		addPage(newFileCreationPage);
 
 		// Try and get the resource selection to determine a current directory for the file dialog.
-		//
 		if (selection != null && !selection.isEmpty()) {
 			// Get the resource...
-			//
 			Object selectedElement = selection.iterator().next();
 			if (selectedElement instanceof IResource) {
-				// Get the resource parent, if its a file.
-				//
+				// Get the resource parent, if it's a file.
 				IResource selectedResource = (IResource)selectedElement;
-				if (selectedResource.getType() == IResource.FILE) {
+				if (selectedResource.getType() == IResource.FILE)
 					selectedResource = selectedResource.getParent();
-				}
 
 				// This gives us a directory...
-				//
 				if (selectedResource instanceof IFolder || selectedResource instanceof IProject) {
 					// Set this for the container.
-					//
 					newFileCreationPage.setContainerFullPath(selectedResource.getFullPath());
 
 					// Make up a unique new name here.
-					//
-					String defaultModelBaseFilename = initialInputFile != null ? initialInputFile.getName() : "new";
+					String defaultModelBaseFilename = defaultAnalysisFileName!=null ? defaultAnalysisFileName.replaceFirst("\\."+FILENAME_EXTENSION+"$", "") : "new";
 					String defaultModelFilenameExtension = FILENAME_EXTENSION;
 					String modelFilename = defaultModelBaseFilename + "." + defaultModelFilenameExtension;
 					for (int i = 1; ((IContainer)selectedResource).findMember(modelFilename) != null; ++i) {
@@ -143,11 +141,10 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
 		}
 	}
 
-	public String getDefaultAnalysisFileName() {
-		String baseFileName = initialInputFile != null ? initialInputFile.getName() : "new";
-		return baseFileName + ".scave";
+	public void setDefaultAnalysisFileName(String defaultAnalysisFileName) {
+		this.defaultAnalysisFileName = defaultAnalysisFileName;
 	}
-
+	
 	/**
 	 * Get the file from the page.
 	 */
@@ -166,10 +163,12 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
 		analysis.setDatasets(factory.createDatasets());
 		analysis.setChartSheets(factory.createChartSheets());
 
-		if (initialInputFile != null) {
-			InputFile inputFile = factory.createInputFile();
-			inputFile.setName(initialInputFile.getFullPath().toString());
-			inputs.getInputs().add(inputFile);
+		if (initialInputFiles != null) {
+			for (String fileName : initialInputFiles) {
+				InputFile inputFile = factory.createInputFile();
+				inputFile.setName(fileName);
+				inputs.getInputs().add(inputFile);
+			}
 		}
 
 		return analysis;

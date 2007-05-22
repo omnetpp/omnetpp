@@ -46,9 +46,11 @@ public class ResultFileEditorLauncher implements IEditorLauncher {
 						"and cannot be opened by itself. Please open the corresponding .vec file.");
 				return;
 			}
-			IFile file = getAnalysisFileForResultFile(resultFile);
-			if (file != null)
-				IDE.openEditor(page, file);
+			else {
+				IFile file = getAnalysisFileForResultFile(resultFile);
+				if (file != null)
+					IDE.openEditor(page, file);
+			}
 		} catch (CoreException e) {
 			ScavePlugin.logError(e);
 		}
@@ -61,18 +63,24 @@ public class ResultFileEditorLauncher implements IEditorLauncher {
 	 * the dialog. 
 	 */
 	private IFile getAnalysisFileForResultFile(IPath path) throws CoreException {
+		// ignore files which are not "vec" or "sca"
+		if (!"vec".equals(path.getFileExtension()) && !"sca".equals(path.getFileExtension()))
+			return null; 
+		
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IFile[] resultFiles = root.findFilesForLocation(path);
 
 		if (resultFiles.length > 0)
 		{
 			IFile resultFile = resultFiles[0];
-			IFile analysisFile = root.getFile(resultFile.getFullPath().addFileExtension("scave"));
+			IPath analysisFilePath = resultFile.getFullPath().removeFileExtension().addFileExtension("scave");
+			IFile analysisFile = root.getFile(analysisFilePath);
 			if (analysisFile.getLocation().toFile().exists()) {
 				return analysisFile; // return existing
 			}
 			else {
-				openNewAnalysisWizard(resultFile); 
+				String baseName  = analysisFile.getFullPath().removeFileExtension().toString();
+				openNewAnalysisWizard(analysisFile, new String[] {baseName+".vec", baseName+".sca"}); 
 				return null; // wizard opens the editor, too, so we don't need to
 			}
 		}
@@ -87,13 +95,14 @@ public class ResultFileEditorLauncher implements IEditorLauncher {
 	 * @param resultFile the initial content of the analysis file
 	 * @return true iff the file is created
 	 */
-	private boolean openNewAnalysisWizard(IFile resultFile) {
+	private boolean openNewAnalysisWizard(IFile analysisFile, String[] initialInputFiles) {
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		IWorkbenchWindow workbenchWindow = workbench.getActiveWorkbenchWindow();
-		IStructuredSelection selection = new StructuredSelection(resultFile); 
+		IStructuredSelection selection = new StructuredSelection(analysisFile); 
 		ScaveModelWizard wizard = new ScaveModelWizard();
 		wizard.init(workbench, selection);
-		wizard.setInitialInputFile(resultFile);
+		wizard.setDefaultAnalysisFileName(analysisFile.getName());
+		wizard.setInitialInputFiles(initialInputFiles);
 		
 		WizardDialog dialog = new WizardDialog(workbenchWindow.getShell(), wizard);
 		return dialog.open() == Window.OK;
