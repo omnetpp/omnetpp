@@ -19,28 +19,24 @@ import org.omnetpp.scave.actions.RemoveAction;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Analysis;
 
+/**
+ * Scave page which displays datasets and chart sheets.
+ * @author Andras
+ */
 public class DatasetsAndChartsPage extends ScaveEditorPage {
-
-	private FormToolkit formToolkit = null;   //  @jve:decl-index=0:visual-constraint=""
+	private FormToolkit formToolkit = null;  
 	private Section datasetsSection = null;
 	private Section chartSheetsSection = null;
 	private SashForm sashform = null;
 
+	/**
+	 * Constructor
+	 */
 	public DatasetsAndChartsPage(Composite parent, ScaveEditor scaveEditor) {
 		super(parent, SWT.V_SCROLL, scaveEditor);
 		initialize();
 	}
 	
-	public TreeViewer getDatasetsTreeViewer() {
-		DatasetsPanel panel = (DatasetsPanel)datasetsSection.getClient();
-		return panel.getTreeViewer();
-	}
-	
-	public TreeViewer getChartSheetsTreeViewer() {
-		ChartSheetsPanel panel = (ChartSheetsPanel)chartSheetsSection.getClient();
-		return panel.getTreeViewer();
-	}
-
 	private void initialize() {
 		// set up UI
 		setPageTitle("Datasets");
@@ -66,22 +62,27 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 
 	/**
 	 * This method initializes formToolkit	
-	 * 	
-	 * @return org.eclipse.ui.forms.widgets.FormToolkit	
 	 */
 	private FormToolkit getFormToolkit() {
-		if (formToolkit == null) {
+		if (formToolkit == null)
 			formToolkit = new FormToolkit(Display.getCurrent());
-		}
 		return formToolkit;
 	}
 
+	public TreeViewer getDatasetsTreeViewer() {
+		DatasetsPanel panel = (DatasetsPanel)datasetsSection.getClient();
+		return panel.getTreeViewer();
+	}
+	
+	public TreeViewer getChartSheetsTreeViewer() {
+		ChartSheetsPanel panel = (ChartSheetsPanel)chartSheetsSection.getClient();
+		return panel.getTreeViewer();
+	}
+	
 	private void createSashForm() {
 		sashform = new CustomSashForm(getBody(), SWT.VERTICAL | SWT.SMOOTH);
 		sashform.setBackground(this.getBackground());
-		sashform.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL |
-											GridData.GRAB_VERTICAL |
-											GridData.FILL_BOTH));
+		sashform.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 	}
 	
 	/**
