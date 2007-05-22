@@ -395,7 +395,7 @@ public class ScaveModelUtil {
 	/**
 	 * Returns the default chart sheet.
 	 * When the resource did not contain default chart sheet a new one is created,
-	 * and a AddCommand is appended to the <code>command</command>, that adds
+	 * and a AddCommand is appended to the <code>command</code>, that adds
 	 * the new chart sheet to the resource.
 	 */
 	public static ChartSheet getOrCreateDefaultChartSheet(EditingDomain ed, CompoundCommand command, Resource resource) {

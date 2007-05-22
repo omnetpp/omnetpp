@@ -3,10 +3,12 @@ package org.omnetpp.scave.editors.ui;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
@@ -43,8 +45,16 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 		setFormTitle("Datasets and Charts");
 		setExpandHorizontal(true);
 		setExpandVertical(true);
-		setBackground(ColorFactory.asColor("white"));
+		setBackground(ColorFactory.WHITE);
 		getBody().setLayout(new GridLayout());
+		
+		//XXX experimental: toolbar for easy creation of Scave objects
+		ToolBar toolbar = new ToolBar(getBody(), SWT.HORIZONTAL);
+		toolbar.setLayoutData(new GridData(SWT.END, SWT.BEGINNING, true, false));
+		toolbar.setBackground(ColorFactory.WHITE);
+		toolbar.setFont(new Font(null, "Arial", 7, SWT.NORMAL));
+		new ModelObjectPalette(toolbar, scaveEditor, true);
+		
 		createSashForm();
 		createDatasetsSection();
 		createChartSheetsSection();
