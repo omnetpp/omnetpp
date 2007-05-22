@@ -23,6 +23,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.model.ChartSheet;
+import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ScaveModelFactory;
 
 /**
@@ -98,9 +100,16 @@ public class ModelObjectPalette2 {
 
 	protected void addAsChildOrSibling(EObject elementProtoType) {
 		ISelection sel = editor.getSelection();
-		if (sel instanceof IStructuredSelection && ((IStructuredSelection)sel).getFirstElement() instanceof EObject) {
+		EObject target = null;
+		if (elementProtoType instanceof Dataset)
+			target = editor.getAnalysis().getDatasets();
+		else if (elementProtoType instanceof ChartSheet)
+			target = editor.getAnalysis().getChartSheets();
+		else if (sel instanceof IStructuredSelection && ((IStructuredSelection)sel).getFirstElement() instanceof EObject)
+			target = (EObject) ((IStructuredSelection) sel).getFirstElement();
+		
+		if (target != null)	{
 			// add "element" to "target" as child or as sibling.
-			EObject target = (EObject) ((IStructuredSelection) sel).getFirstElement();
 			EObject element = EcoreUtil.copy(elementProtoType);
 
 			Command command = AddCommand.create(editor.getEditingDomain(), target, null, element);
@@ -114,6 +123,8 @@ public class ModelObjectPalette2 {
 				command = AddCommand.create(editor.getEditingDomain(), target.eContainer(), null, element, index + 1);
 				command.execute();
 			} 
+			if (element.eContainer() != null) // i.e. it got inserted
+				editor.setSelection(new StructuredSelection(element)); //FIXME does not work!!!
 		}
 	}
 }
