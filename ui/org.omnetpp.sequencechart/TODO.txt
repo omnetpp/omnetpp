@@ -57,19 +57,16 @@ Features:
  + single click goes in the corresponding event log table to the selected event
  + double click traces the selected event and switches to filered view
  + bookmark selected event
- - switch back to unfiltered view
+ + switch back to unfiltered view
  + support specifying a vector from a vector file to be displayed on the axis
- - display a separator where the timeline is filtered (timeline is not linear to pixel coordinates)
+ - display a separator where the timeline is filtered (timeline is not linear to pixel coordinates not even on the small scale)
  + make sequence chart horizontal scrollbar virtual (can't tell the exact size of the canvas)
  + scrolling with the horizontal scroll bar arrows and click near the thumb
- - write key frames during simulation to avoid linear search for reusing messages and to be able to precisely
-   display message dependencies which go far away
- - toolbar icons
+ - write key frames during simulation to avoid linear search for reusing messages
+ + toolbar icons
  - setup mouse gestures for easy navigation
 
 Known bugs:
  - hierarchical sorting sequence chart axes based on crossing arrows is broken
  - tracing events sometimes kills eclipse
  - filtering does not work
- 
- 

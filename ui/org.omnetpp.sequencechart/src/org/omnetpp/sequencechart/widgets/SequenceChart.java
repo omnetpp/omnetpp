@@ -54,8 +54,8 @@ import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogSelection;
 import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
-import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.virtualtable.IVirtualContentWidget;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
@@ -258,11 +258,13 @@ public class SequenceChart
 
 		addControlListener(new ControlAdapter() {
 			public void controlResized(ControlEvent e) {
-				org.eclipse.swt.graphics.Rectangle r = getClientArea();
-				setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(r.x, r.y + GUTTER_HEIGHT, r.width, r.height - GUTTER_HEIGHT * 2));
-
-				if (axisSpacingMode == AxisSpacingMode.AUTO)
-					balanceAxisSpacing();
+				if (eventLogInput != null) {
+					org.eclipse.swt.graphics.Rectangle r = getClientArea();
+					setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(r.x, r.y + GUTTER_HEIGHT, r.width, r.height - GUTTER_HEIGHT * 2));
+	
+					if (axisSpacingMode == AxisSpacingMode.AUTO)
+						balanceAxisSpacing();
+				}
 			}
 		});
 		
@@ -451,9 +453,10 @@ public class SequenceChart
 	 */
 	public void setAxisOrderingMode(AxisOrderingMode axisOrderingMode) {
 		this.axisOrderingMode = axisOrderingMode;
-		axisModuleYs = null;
 		calculateAxisModulePositions();
 		calculateAxisModuleIndices();
+		// manual reordering calls paint so this must be later than setting the positions
+		axisModuleYs = null;
 		clearCanvasCacheAndRedraw();
 	}
 	
@@ -1089,7 +1092,7 @@ public class SequenceChart
 
 		super.paint(gc);
 
-		if (debug)
+		if (eventLogInput != null && debug)
 			System.out.println("Read " + eventLog.getFileReader().getNumReadBytes() + " bytes, " + eventLog.getFileReader().getNumReadLines() + " lines, " + eventLog.getNumParsedEvents() + " events from " + eventLogInput.getFile().getName());
 	}
 
@@ -1097,8 +1100,10 @@ public class SequenceChart
 	protected void paintCachableLayer(GC gc) {
 		if (eventLogInput != null) {
 			Graphics graphics = new SWTGraphics(gc);
-	
+			graphics.setAntialias(antiAlias ? SWT.ON : SWT.OFF);
+			graphics.setTextAntialias(SWT.ON);
 			graphics.translate(0, GUTTER_HEIGHT);
+
 			drawSequenceChart(graphics);
 	
 			graphics.dispose();
@@ -1109,9 +1114,10 @@ public class SequenceChart
 	protected void paintNoncachableLayer(GC gc) {
 		if (eventLogInput != null) {
 			Graphics graphics = new SWTGraphics(gc);
-	
-			gc.setAntialias(antiAlias ? SWT.ON : SWT.OFF);
+			graphics.setAntialias(antiAlias ? SWT.ON : SWT.OFF);
+			graphics.setTextAntialias(SWT.ON);
 			graphics.translate(0, GUTTER_HEIGHT);
+
 			drawAxisLabels(graphics);
 	        drawEventBookmarks(graphics);
 	        drawEventSelectionMarks(graphics);
@@ -1122,6 +1128,7 @@ public class SequenceChart
 	        drawInfo(gc);
 
 	        graphics.translate(0, GUTTER_HEIGHT);
+
 	        drawStuffUnderMouse(graphics);
 
 	        graphics.dispose();
@@ -1176,8 +1183,6 @@ public class SequenceChart
 		if (eventLog != null && eventLog.getApproximateNumberOfEvents() > 0) {
 			long startMillis = System.currentTimeMillis();
 
-			graphics.setAntialias(antiAlias ? SWT.ON : SWT.OFF);
-			graphics.setTextAntialias(SWT.ON);
 			graphics.getClip(Rectangle.SINGLETON);
 
 			double startSimulationTime = getSimulationTimeForViewportCoordinate(Rectangle.SINGLETON.x);
@@ -1295,27 +1300,34 @@ public class SequenceChart
 			// performance optimization: don't draw event if there's one already drawn exactly there
 			if (lastX == null || lastX.intValue() != x) {
 				axisYtoLastX.put(y, x);
-				
-				if (sequenceChartFacade.Event_isSelfEvent(eventPtr)) {
-					graphics.setForegroundColor(SELF_EVENT_BORDER_COLOR);
-					graphics.setBackgroundColor(SELF_EVENT_BACKGROUND_COLOR);
-				}
-				else {
-					graphics.setForegroundColor(EVENT_BORDER_COLOR);
-					graphics.setBackgroundColor(EVENT_BACKGROUND_COLOR);
-				}
-
-				graphics.fillOval(x - 2, y - 3, 5, 7);
-				graphics.setLineStyle(SWT.LINE_SOLID);
-				graphics.drawOval(x - 2, y - 3, 5, 7);
-
-				if (showEventNumbers)
-					graphics.drawText("#" + sequenceChartFacade.Event_getEventNumber(eventPtr), x + 3, y + 3 + axisRenderers[getEventAxisModuleIndex(eventPtr)].getHeight() / 2);
+				drawEvent(graphics, eventPtr, x, y);
 			}
 			
 			if (eventPtr == endEventPtr)
 				break;
 		}
+	}
+
+	private void drawEvent(Graphics graphics, long eventPtr) {
+		drawEvent(graphics, eventPtr, getEventXViewportCoordinate(eventPtr), getEventYViewportCoordinate(eventPtr));
+	}
+
+	private void drawEvent(Graphics graphics, long eventPtr, int x, int y) {
+		if (sequenceChartFacade.Event_isSelfEvent(eventPtr)) {
+			graphics.setForegroundColor(SELF_EVENT_BORDER_COLOR);
+			graphics.setBackgroundColor(SELF_EVENT_BACKGROUND_COLOR);
+		}
+		else {
+			graphics.setForegroundColor(EVENT_BORDER_COLOR);
+			graphics.setBackgroundColor(EVENT_BACKGROUND_COLOR);
+		}
+
+		graphics.fillOval(x - 2, y - 3, 5, 7);
+		graphics.setLineStyle(SWT.LINE_SOLID);
+		graphics.drawOval(x - 2, y - 3, 5, 7);
+
+		if (showEventNumbers)
+			graphics.drawText("#" + sequenceChartFacade.Event_getEventNumber(eventPtr), x + 3, y + 3 + axisRenderers[getEventAxisModuleIndex(eventPtr)].getHeight() / 2);
 	}
 
 	/**
@@ -1329,7 +1341,7 @@ public class SequenceChart
 
 		drawTicks(gc);
 
-		// draw border aroung gutters
+		// draw border around gutters
 		gc.setForeground(GUTTER_BORDER_COLOR);
 		gc.setLineStyle(SWT.LINE_SOLID);
 		gc.drawRectangle(0, 0, getViewportWidth() - 1, GUTTER_HEIGHT);
@@ -1371,9 +1383,12 @@ public class SequenceChart
 		ArrayList<IMessageDependency> messageDependencies = new ArrayList<IMessageDependency>();
 		collectStuffUnderMouse(p.x, p.y, events, messageDependencies);
 
-		// 1) if there are events under them mouse do nothing
+		graphics.setLineWidth(2);
+
+		// 1) if there are events under them mouse highlight them
 		if (events.size() > 0) {
-			// TODO: or maybe not?
+			for (IEvent event : events)
+				drawEvent(graphics, event.getCPtr());
 		}
 		// 2) no events: highlight message dependencies
 		else if (messageDependencies.size() >= 1) {
@@ -1382,7 +1397,7 @@ public class SequenceChart
 			long endEventPtr = eventPtrRange[1];
 	
 			VLineBuffer vlineBuffer = new VLineBuffer();
-			graphics.setLineWidth(2);
+
 			for (IMessageDependency messageDependency : messageDependencies)
 				drawOrFitMessageDependency(messageDependency.getCPtr(), -1, -1, -1, graphics, vlineBuffer, startEventPtr, endEventPtr);
 		}
@@ -1593,7 +1608,6 @@ public class SequenceChart
 
 		// test if self-message
 		if (y1 == y2) {
-			// TODO: make it different for send/reuse, normal/filtered, short/long
 			int halfEllipseHeight = Math.max(axisSpacing / 2, MINIMUM_HALF_ELLIPSE_HEIGHT);
 
 			// test if it is a vertical line (as zero-width half ellipse)
@@ -1624,13 +1638,16 @@ public class SequenceChart
 					xm = x1 + quarterEllipseWidth;
 
 					// draw quarter ellipse starting with a horizontal straight line from the left
-					Rectangle.SINGLETON.setLocation(x2 - quarterEllipseWidth * 2, y1 - halfEllipseHeight);
+					Rectangle.SINGLETON.setLocation(x2 - quarterEllipseWidth * 2, ym);
 					Rectangle.SINGLETON.setSize(quarterEllipseWidth * 2, halfEllipseHeight * 2);
 
 					if (graphics != null) {
 						graphics.drawArc(Rectangle.SINGLETON, 0, 90);
 						graphics.setLineStyle(SWT.LINE_DOT);
 						graphics.drawLine(x1, ym, xm, ym);
+
+						if (sequenceChartFacade.MessageDependency_isFilteredMessageDependency(messageDependencyPtr))
+							drawFilteredMessageDependencySign(graphics, x1, ym, x2, ym);
 					}
 					else
 						return lineContainsPoint(x1, ym, xm, ym, fitX, fitY, tolerance) ||
@@ -1642,13 +1659,16 @@ public class SequenceChart
 					xm = x1 + quarterEllipseWidth;
 
 					// draw quarter ellipse ending in a horizontal straight line to the right
-					Rectangle.SINGLETON.setLocation(x1, y1 - halfEllipseHeight);
+					Rectangle.SINGLETON.setLocation(x1, ym);
 					Rectangle.SINGLETON.setSize(quarterEllipseWidth * 2, halfEllipseHeight * 2);
 
 					if (graphics != null) {
 						graphics.drawArc(Rectangle.SINGLETON, 90, 90);
 						graphics.setLineStyle(SWT.LINE_DOT);
 						graphics.drawLine(xm, ym, x2, ym);
+
+						if (sequenceChartFacade.MessageDependency_isFilteredMessageDependency(messageDependencyPtr))
+							drawFilteredMessageDependencySign(graphics, x1, ym, x2, ym);
 	
 						if (showArrowHeads)
 							drawArrowHead(graphics, LONG_ARROW_HEAD_COLOR, x2, ym, 1, 0);
@@ -1662,11 +1682,15 @@ public class SequenceChart
 				// both events are close enough
 				else {
 					// draw half ellipse
-					Rectangle.SINGLETON.setLocation(x1, y1 - halfEllipseHeight);
+					Rectangle.SINGLETON.setLocation(x1, ym);
 					Rectangle.SINGLETON.setSize(x2 - x1, halfEllipseHeight * 2);
 					
-					if (graphics != null)
+					if (graphics != null) {
 						graphics.drawArc(Rectangle.SINGLETON, 0, 180);
+
+						if (sequenceChartFacade.MessageDependency_isFilteredMessageDependency(messageDependencyPtr))
+							drawFilteredMessageDependencySign(graphics, x1, ym, x2, ym);
+					}
 					else
 						return halfEllipseContainsPoint(-1, x1, x2, y1, halfEllipseHeight, fitX, fitY, tolerance);
 				}
@@ -1773,7 +1797,6 @@ public class SequenceChart
 		graphics.drawText(arrowLabel, x + dx, y + dy);
 	}
 
-	// TODO: put this on ellipses too
 	private void drawFilteredMessageDependencySign(Graphics graphics, int x1, int y1, int x2, int y2) {
 		int size = 5;
 		int spacing = 4;
@@ -1800,6 +1823,7 @@ public class SequenceChart
 		transform.rotate(angle);
 		
 		// draw some zig zags
+		graphics.setLineStyle(SWT.LINE_SOLID);
 		for (int i = 0; i < count; i++) {
 			int xx1 = - halfSize - halfSpacing + i * spacing;
 			int xx2 = xx1 + size;
@@ -2347,7 +2371,7 @@ public class SequenceChart
 			BeginSendEntry beginBeginSendEntry = filteredMessageDependency.getBeginMessageDependency().getBeginSendEntry();
 			BeginSendEntry endBeginSendEntry = filteredMessageDependency.getEndMessageDependency().getBeginSendEntry();
 
-			String result = beginBeginSendEntry.getMessageFullName() + " -> " + endBeginSendEntry.getMessageFullName();
+			String result = "<b>" + beginBeginSendEntry.getMessageFullName() + "</b> -> <b>" + endBeginSendEntry.getMessageFullName() + "</b>";
 			result += " (#" + messageDependency.getCauseEventNumber() + " -> #" + messageDependency.getConsequenceEventNumber() + ")";
 
 			BigDecimal causeSimulationTime = messageDependency.getCauseSimulationTime().toBigDecimal();
@@ -2382,13 +2406,18 @@ public class SequenceChart
 	 */
 	public String getEventText(IEvent event) {
 		ModuleCreatedEntry moduleCreatedEntry = eventLog.getModuleCreatedEntry(event.getModuleId());
-		String result = "Event #" + event.getEventNumber() + " at t = " + event.getSimulationTime()
-			+ " at (" + moduleCreatedEntry.getModuleClassName() + ") "
-			+ moduleCreatedEntry.getFullName()
-			+ " (id = " + event.getModuleId() + ")";
+		String result = "Event #" + event.getEventNumber() + " at t = " + event.getSimulationTime() +
+			" in module (" + moduleCreatedEntry.getModuleClassName() + ") <b>" + moduleCreatedEntry.getFullName() + "</b>" +
+			" (id = " + event.getModuleId() + ")";
 		
 		IMessageDependency messageDependency = event.getCause();
-		BeginSendEntry beginSendEntry = messageDependency == null ? null : messageDependency.getBeginSendEntry();
+		BeginSendEntry beginSendEntry = null;
+		
+		if (messageDependency instanceof FilteredMessageDependency)
+			messageDependency = ((FilteredMessageDependency)messageDependency).getEndMessageDependency();
+
+		if (messageDependency != null)
+			messageDependency.getBeginSendEntry();
 
 		if (beginSendEntry != null)
 			result += "  message (" + beginSendEntry.getMessageClassName() + ") " + beginSendEntry.getMessageFullName();
@@ -2402,7 +2431,7 @@ public class SequenceChart
 	public ModuleTreeItem findAxisAt(int y) {
 		y += getViewportTop() - GUTTER_HEIGHT;
 
-		for (int i=0; i<axisModuleYs.length; i++) {
+		for (int i = 0; i < axisModuleYs.length; i++) {
 			int height = axisRenderers[i].getHeight();
 			if (axisModuleYs[i] - MOUSE_TOLERANCE <= y && y <= axisModuleYs[i] + height + MOUSE_TOLERANCE)
 				return axisModules.get(i);

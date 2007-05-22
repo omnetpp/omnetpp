@@ -28,9 +28,9 @@ public class SequenceChartView extends ViewWithMessagePart {
 		sequenceChartContributor.contributeToToolBar(viewSite.getActionBars().getToolBarManager());
 
 		// follow selection
-		viewSite.getPage().addSelectionListener(new ISelectionListener() {
+		ISelectionListener listener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				if (part != sequenceChart)
+				if (part != SequenceChartView.this)
 					sequenceChart.setSelection(selection);
 
 				if (sequenceChart.getInput() == null)
@@ -38,10 +38,11 @@ public class SequenceChartView extends ViewWithMessagePart {
 				else
 					hideMessage();
 			}
-		});
-		
+		};
+		viewSite.getPage().addSelectionListener(listener);
+
 		// bootstrap with current selection
-		sequenceChart.setSelection(getActiveEditorSelection());
+		listener.selectionChanged(null, getActiveEditorSelection());
 	}
 
 	@Override
