@@ -321,6 +321,8 @@ void TOmnetTkApp::doOneStep()
         simstate = SIM_READY;
         outvectmgr->flush();
         outscalarmgr->flush();
+        if (feventlog)
+            fflush(feventlog);
     }
     catch (cTerminationException& e)
     {
@@ -383,6 +385,8 @@ void TOmnetTkApp::runSimulation(int mode, simtime_t until_time, long until_event
         simstate = SIM_READY;
         outvectmgr->flush();
         outscalarmgr->flush();
+        if (feventlog)
+            fflush(feventlog);
     }
     catch (cTerminationException& e)
     {
