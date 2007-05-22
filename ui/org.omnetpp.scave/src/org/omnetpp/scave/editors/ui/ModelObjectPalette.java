@@ -1,12 +1,18 @@
 package org.omnetpp.scave.editors.ui;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
-import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -20,13 +26,17 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.ScaveModelFactory;
 
 public class ModelObjectPalette {
 	private HashMap<ToolItem, EObject> toolItems = new HashMap<ToolItem, EObject>();
-	private Object objectToDrag;
+	private ScaveEditor editor;
+	private Object objectToDrag = null;
 
-	public ModelObjectPalette(ToolBar toolbar, AdapterFactory adapterFactory) {
+	public ModelObjectPalette(ToolBar toolbar, ScaveEditor editor) {
+		this.editor = editor;
+		
 		// the following lines do something like this line from AbstractEMFModelEditor:
 		// viewer.addDragSupport(dndOperations, transfers, new ViewerDragAdapter(viewer));
 		int dndOperations = DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK;
@@ -49,7 +59,7 @@ public class ModelObjectPalette {
 			}
 		});
 		
-		ILabelProvider labelProvider = new AdapterFactoryLabelProvider(adapterFactory);
+		ILabelProvider labelProvider = new AdapterFactoryLabelProvider(editor.getAdapterFactory());
 		ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
 
 		addToolItem(toolbar, factory.createDataset(), labelProvider);
@@ -79,9 +89,10 @@ public class ModelObjectPalette {
 
 	}
 
-	private void addToolItem(ToolBar tb, final EObject element, ILabelProvider labelProvider) {
+	protected void addToolItem(ToolBar tb, final EObject element, ILabelProvider labelProvider) {
 		ToolItem toolItem = new ToolItem(tb, SWT.PUSH);
 		toolItem.setImage(labelProvider.getImage(element));
+		toolItem.setText(labelProvider.getText(element));
 		toolItem.setToolTipText("Click or drag to create "+labelProvider.getText(element));
 
 		toolItems.put(toolItem, element);
@@ -89,7 +100,42 @@ public class ModelObjectPalette {
 		toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				System.out.println("SELECTED");
+				addToSelected(element);
 			}
 		});
+	}
+
+	protected void addToSelected(EObject element) {
+		ISelection sel = editor.getSelection();
+		if (sel instanceof IStructuredSelection) {
+			Object target0 = ((IStructuredSelection) sel).getFirstElement();
+			if (target0 instanceof EObject) {
+				
+				// add "element" to "target" as child or as sibling.
+				EObject target = (EObject)target0;
+				
+//				Collection<?> newChildDescriptors = editor.getEditingDomain().getNewChildDescriptors(target, null);
+//				for (Object i : newChildDescriptors) {
+//					CommandParameter
+//				}
+//				IEditingDomainItemProvider adapt = (IEditingDomainItemProvider) editor.getAdapterFactory().adapt(target, IEditingDomainItemProvider.class);
+
+				boolean addAsChild = false;
+				if (addAsChild) {
+					Collection<EObject> collection = new ArrayList<EObject>();
+					collection.add(EcoreUtil.copy(element));
+					Command command = AddCommand.create(editor.getEditingDomain(), target, null, collection);
+					command.execute();
+				} 
+				else {
+					// add as sibling
+					Collection<EObject> collection = new ArrayList<EObject>();
+					collection.add(EcoreUtil.copy(element));
+					Command command = AddCommand.create(editor.getEditingDomain(), target.eContainer(), null, collection);
+					command.execute();
+				}
+				
+			}
+		}
 	}
 }
