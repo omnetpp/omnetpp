@@ -29,6 +29,7 @@ import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.ScaveModelFactory;
 
 /**
+ * Toolbar as a palette for creating Scave objects.
  * 
  * @author Andras
  */
@@ -43,7 +44,7 @@ public class ModelObjectPalette {
 	/**
 	 * Adds palette buttons to the given toolbar, and configures them.
 	 */
-	public ModelObjectPalette(ToolBar toolbar, ScaveEditor editor) {
+	public ModelObjectPalette(ToolBar toolbar, ScaveEditor editor, boolean showText) {
 		this.editor = editor;
 
 		// Set up drag source; code is based on the following line from AbstractEMFModelEditor:
@@ -57,12 +58,10 @@ public class ModelObjectPalette {
 		dragSource.addDragListener(new DragSourceListener() {
 			public void dragStart(DragSourceEvent event) {}
 			public void dragFinished(DragSourceEvent event) {
-				System.out.println("dragFinished()");
 				LocalTransfer.getInstance().javaToNative(null, null);
 			}
 
 			public void dragSetData(DragSourceEvent event) {
-				System.out.println("dragSetData()");
 				if (LocalTransfer.getInstance().isSupportedType(event.dataType))
 					event.data = new StructuredSelection(objectToDrag);
 			}
@@ -77,29 +76,28 @@ public class ModelObjectPalette {
 			public void mouseDown(MouseEvent e) {
 				ToolItem toolItem = findToolItemUnderMouse(e);
 				objectToDrag = toolItem==null ? null : toolItems.get(toolItem);
-				System.out.println("object to drag: "+objectToDrag);
 			}
 		});
 		
 		ILabelProvider labelProvider = new AdapterFactoryLabelProvider(editor.getAdapterFactory());
 		ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
 
-		addToolItem(toolbar, factory.createDataset(), labelProvider);
-		addToolItem(toolbar, factory.createAdd(), labelProvider);
-		addToolItem(toolbar, factory.createDiscard(), labelProvider);
-		addToolItem(toolbar, factory.createSelect(), labelProvider);
-		addToolItem(toolbar, factory.createDeselect(), labelProvider);
-		addToolItem(toolbar, factory.createExcept(), labelProvider);
+		addToolItem(toolbar, factory.createDataset(), labelProvider, showText);
+		addToolItem(toolbar, factory.createAdd(), labelProvider, showText);
+		addToolItem(toolbar, factory.createDiscard(), labelProvider, showText);
+		addToolItem(toolbar, factory.createSelect(), labelProvider, showText);
+		addToolItem(toolbar, factory.createDeselect(), labelProvider, showText);
+		addToolItem(toolbar, factory.createExcept(), labelProvider, showText);
 		new ToolItem(toolbar, SWT.SEPARATOR);
-		addToolItem(toolbar, factory.createApply(), labelProvider);
-		addToolItem(toolbar, factory.createCompute(), labelProvider);
-		addToolItem(toolbar, factory.createGroup(), labelProvider);
+		addToolItem(toolbar, factory.createApply(), labelProvider, showText);
+		addToolItem(toolbar, factory.createCompute(), labelProvider, showText);
+		addToolItem(toolbar, factory.createGroup(), labelProvider, showText);
 		new ToolItem(toolbar, SWT.SEPARATOR);
-		addToolItem(toolbar, factory.createChartSheet(), labelProvider);
-		addToolItem(toolbar, factory.createBarChart(), labelProvider);
-		addToolItem(toolbar, factory.createLineChart(), labelProvider);
-		addToolItem(toolbar, factory.createHistogramChart(), labelProvider);
-		addToolItem(toolbar, factory.createScatterChart(), labelProvider);
+		addToolItem(toolbar, factory.createChartSheet(), labelProvider, showText);
+		addToolItem(toolbar, factory.createBarChart(), labelProvider, showText);
+		addToolItem(toolbar, factory.createLineChart(), labelProvider, showText);
+		addToolItem(toolbar, factory.createHistogramChart(), labelProvider, showText);
+		addToolItem(toolbar, factory.createScatterChart(), labelProvider, showText);
 	}
 
 	protected ToolItem findToolItemUnderMouse(MouseEvent e) {
@@ -109,10 +107,11 @@ public class ModelObjectPalette {
 		return null;
 	}
 
-	protected void addToolItem(ToolBar tb, final EObject elementPrototype, ILabelProvider labelProvider) {
+	protected void addToolItem(ToolBar tb, final EObject elementPrototype, ILabelProvider labelProvider, boolean showText) {
 		ToolItem toolItem = new ToolItem(tb, SWT.PUSH);
 		toolItem.setImage(labelProvider.getImage(elementPrototype));
-		toolItem.setText(labelProvider.getText(elementPrototype));
+		if (showText)
+			toolItem.setText(labelProvider.getText(elementPrototype));
 		toolItem.setToolTipText("Click or drag to create "+labelProvider.getText(elementPrototype));
 
 		toolItems.put(toolItem, elementPrototype);
