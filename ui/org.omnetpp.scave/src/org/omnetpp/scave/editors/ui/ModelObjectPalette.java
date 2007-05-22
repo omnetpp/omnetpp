@@ -90,9 +90,11 @@ public class ModelObjectPalette {
 		addToolItem(toolbar, factory.createSelect(), labelProvider);
 		addToolItem(toolbar, factory.createDeselect(), labelProvider);
 		addToolItem(toolbar, factory.createExcept(), labelProvider);
+		new ToolItem(toolbar, SWT.SEPARATOR);
 		addToolItem(toolbar, factory.createApply(), labelProvider);
 		addToolItem(toolbar, factory.createCompute(), labelProvider);
 		addToolItem(toolbar, factory.createGroup(), labelProvider);
+		new ToolItem(toolbar, SWT.SEPARATOR);
 		addToolItem(toolbar, factory.createChartSheet(), labelProvider);
 		addToolItem(toolbar, factory.createBarChart(), labelProvider);
 		addToolItem(toolbar, factory.createLineChart(), labelProvider);
