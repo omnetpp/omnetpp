@@ -1,10 +1,9 @@
 package org.omnetpp.scave.editors.ui;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.command.AddCommand;
@@ -36,7 +35,7 @@ public class ModelObjectPalette {
 
 	public ModelObjectPalette(ToolBar toolbar, ScaveEditor editor) {
 		this.editor = editor;
-		
+
 		// the following lines do something like this line from AbstractEMFModelEditor:
 		// viewer.addDragSupport(dndOperations, transfers, new ViewerDragAdapter(viewer));
 		int dndOperations = DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK;
@@ -58,7 +57,7 @@ public class ModelObjectPalette {
 					event.data = new StructuredSelection(objectToDrag);
 			}
 		});
-		
+
 		ILabelProvider labelProvider = new AdapterFactoryLabelProvider(editor.getAdapterFactory());
 		ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
 
@@ -70,7 +69,7 @@ public class ModelObjectPalette {
 		addToolItem(toolbar, factory.createLineChart(), labelProvider);
 		addToolItem(toolbar, factory.createExcept(), labelProvider);
 		//XXX and more...
-		
+
 		toolbar.addMouseListener(new MouseListener() {
 			public void mouseDoubleClick(MouseEvent e) {}
 			public void mouseUp(MouseEvent e) {}
@@ -96,7 +95,7 @@ public class ModelObjectPalette {
 		toolItem.setToolTipText("Click or drag to create "+labelProvider.getText(element));
 
 		toolItems.put(toolItem, element);
-	
+
 		toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				System.out.println("SELECTED");
@@ -105,37 +104,24 @@ public class ModelObjectPalette {
 		});
 	}
 
-	protected void addToSelected(EObject element) {
+	protected void addToSelected(EObject elementProtoType) {
 		ISelection sel = editor.getSelection();
-		if (sel instanceof IStructuredSelection) {
-			Object target0 = ((IStructuredSelection) sel).getFirstElement();
-			if (target0 instanceof EObject) {
-				
-				// add "element" to "target" as child or as sibling.
-				EObject target = (EObject)target0;
-				
-//				Collection<?> newChildDescriptors = editor.getEditingDomain().getNewChildDescriptors(target, null);
-//				for (Object i : newChildDescriptors) {
-//					CommandParameter
-//				}
-//				IEditingDomainItemProvider adapt = (IEditingDomainItemProvider) editor.getAdapterFactory().adapt(target, IEditingDomainItemProvider.class);
+		if (sel instanceof IStructuredSelection && ((IStructuredSelection)sel).getFirstElement() instanceof EObject) {
+			// add "element" to "target" as child or as sibling.
+			EObject target = (EObject) ((IStructuredSelection) sel).getFirstElement();
+			EObject element = EcoreUtil.copy(elementProtoType);
 
-				boolean addAsChild = false;
-				if (addAsChild) {
-					Collection<EObject> collection = new ArrayList<EObject>();
-					collection.add(EcoreUtil.copy(element));
-					Command command = AddCommand.create(editor.getEditingDomain(), target, null, collection);
-					command.execute();
-				} 
-				else {
-					// add as sibling
-					Collection<EObject> collection = new ArrayList<EObject>();
-					collection.add(EcoreUtil.copy(element));
-					Command command = AddCommand.create(editor.getEditingDomain(), target.eContainer(), null, collection);
-					command.execute();
-				}
-				
+			Command command = AddCommand.create(editor.getEditingDomain(), target, null, element);
+			if (command.canExecute()) {
+				// try to add as child
+				command.execute();
 			}
+			else {
+				// add as sibling
+				int index = ECollections.indexOf(target.eContainer().eContents(), target, 0);
+				command = AddCommand.create(editor.getEditingDomain(), target.eContainer(), null, element, index + 1);
+				command.execute();
+			} 
 		}
 	}
 }
