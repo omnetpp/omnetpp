@@ -6,6 +6,7 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
@@ -50,6 +51,8 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 		
 		//XXX experimental: toolbar for easy creation of Scave objects
 		ToolBar toolbar = new ToolBar(getBody(), SWT.HORIZONTAL);
+		//Composite toolbar = new Composite(getBody(), SWT.NONE);
+		//toolbar.setLayout(new RowLayout(SWT.HORIZONTAL));
 		toolbar.setLayoutData(new GridData(SWT.END, SWT.BEGINNING, true, false));
 		toolbar.setBackground(ColorFactory.WHITE);
 		toolbar.setFont(new Font(null, "Arial", 7, SWT.NORMAL));
