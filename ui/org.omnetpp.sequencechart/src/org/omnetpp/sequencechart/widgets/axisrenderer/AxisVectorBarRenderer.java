@@ -15,13 +15,13 @@ import org.omnetpp.sequencechart.widgets.SequenceChart;
  * with the names representing the individual values of a data vector.
  */
 public class AxisVectorBarRenderer implements IAxisRenderer {
-	protected static final Color AXIS_COLOR = ColorFactory.asColor("black");
+	protected static final Color AXIS_COLOR = ColorFactory.BLACK;
 
 	protected static final Font VALUE_NAME_FONT = new Font(null, "Courier New", 8, 0);
 
-	protected static final Color VALUE_NAME_COLOR = ColorFactory.asColor("black");
+	protected static final Color VALUE_NAME_COLOR = ColorFactory.BLACK;
 	
-	protected static final Color NO_VALUE_COLOR = ColorFactory.asColor("white");
+	protected static final Color NO_VALUE_COLOR = ColorFactory.WHITE;
 	
 	protected SequenceChart sequenceChart;
 

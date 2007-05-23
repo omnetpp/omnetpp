@@ -48,21 +48,22 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 		setExpandHorizontal(true);
 		setExpandVertical(true);
 		setBackground(ColorFactory.WHITE);
-		getBody().setLayout(new GridLayout());
+		getBody().setLayout(new GridLayout(2, false));
 
-		//XXX experimental: toolbar for easy creation of Scave objects
-		ToolBar toolbar = new ToolBar(getBody(), SWT.HORIZONTAL);
-//		Composite toolbar = new Composite(getBody(), SWT.NONE);
-//		toolbar.setLayout(new RowLayout(SWT.HORIZONTAL));
-		toolbar.setLayoutData(new GridData(SWT.END, SWT.BEGINNING, true, false));
-		toolbar.setBackground(ColorFactory.WHITE);
-		toolbar.setFont(new Font(null, "Arial", 7, SWT.NORMAL));
-		new ModelObjectPalette(toolbar, scaveEditor, true);
-		
+	
 		createSashForm();
 		createDatasetsSection();
 		createChartSheetsSection();
 		sashform.setWeights(new int[] {3,2});
+
+		//XXX experimental: toolbar for easy creation of Scave objects
+//		ToolBar toolbar = new ToolBar(getBody(), SWT.HORIZONTAL);
+		Composite toolbar = new Composite(getBody(), SWT.BORDER);
+		toolbar.setLayout(new RowLayout(SWT.VERTICAL));
+		toolbar.setLayoutData(new GridData(SWT.END, SWT.FILL, false, true));
+		toolbar.setBackground(ColorFactory.GREY98);
+		toolbar.setFont(new Font(null, "Arial", 7, SWT.NORMAL));
+		new ModelObjectPalette2(toolbar, scaveEditor, true);
 		
 		// configure viewers
 		scaveEditor.configureTreeViewer(getDatasetsTreeViewer());
@@ -111,26 +112,26 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 		final DatasetsPanel datasetsPanel = new DatasetsPanel(datasetsSection, SWT.NONE);
 		datasetsSection.setClient(datasetsPanel);
 
-		configureViewerButton(
-				datasetsPanel.getEditNodeButton(), 
-				datasetsPanel.getTreeViewer(), 
-				new EditAction());
-		configureViewerButton(
-				datasetsPanel.getNewChildButton(),
-				datasetsPanel.getTreeViewer(),
-				new NewAction(scaveEditor.getAnalysis().getDatasets(), true));
-		configureViewerButton(
-				datasetsPanel.getNewSiblingButton(),
-				datasetsPanel.getTreeViewer(),
-				new NewAction(null, false));
-		configureViewerButton(
-				datasetsPanel.getRemoveNodeButton(), 
-				datasetsPanel.getTreeViewer(),
-				new RemoveAction());
-		configureViewerDefaultButton(
-				datasetsPanel.getOpenDatasetButton(), 
-				datasetsPanel.getTreeViewer(),
-				new OpenAction());
+//		configureViewerButton(
+//				datasetsPanel.getEditNodeButton(), 
+//				datasetsPanel.getTreeViewer(), 
+//				new EditAction());
+//		configureViewerButton(
+//				datasetsPanel.getNewChildButton(),
+//				datasetsPanel.getTreeViewer(),
+//				new NewAction(scaveEditor.getAnalysis().getDatasets(), true));
+//		configureViewerButton(
+//				datasetsPanel.getNewSiblingButton(),
+//				datasetsPanel.getTreeViewer(),
+//				new NewAction(null, false));
+//		configureViewerButton(
+//				datasetsPanel.getRemoveNodeButton(), 
+//				datasetsPanel.getTreeViewer(),
+//				new RemoveAction());
+//		configureViewerDefaultButton(
+//				datasetsPanel.getOpenDatasetButton(), 
+//				datasetsPanel.getTreeViewer(),
+//				new OpenAction());
 	}
 
 	/**
@@ -145,26 +146,26 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 		ChartSheetsPanel chartSheetsPanel = new ChartSheetsPanel(chartSheetsSection, SWT.NONE); 
 		chartSheetsSection.setClient(chartSheetsPanel);
 
-		// configure actions
-		configureViewerButton(
-				chartSheetsPanel.getEditChartSheetButton(),
-				chartSheetsPanel.getTreeViewer(), 
-				new EditAction());
-		configureViewerButton(
-				chartSheetsPanel.getNewChildButton(),
-				chartSheetsPanel.getTreeViewer(),
-				new NewAction(scaveEditor.getAnalysis().getChartSheets(), true)); //XXX "New chart sheet"?
-		configureViewerButton(
-				chartSheetsPanel.getNewSiblingButton(),
-				chartSheetsPanel.getTreeViewer(),
-				new NewAction(null, false));
-		configureViewerButton(
-				chartSheetsPanel.getRemoveChartSheetButton(), 
-				chartSheetsPanel.getTreeViewer(),
-				new RemoveAction());
-		configureViewerDefaultButton(
-				chartSheetsPanel.getOpenChartSheetButton(), 
-				chartSheetsPanel.getTreeViewer(),
-				new OpenAction());
+//		// configure actions
+//		configureViewerButton(
+//				chartSheetsPanel.getEditChartSheetButton(),
+//				chartSheetsPanel.getTreeViewer(), 
+//				new EditAction());
+//		configureViewerButton(
+//				chartSheetsPanel.getNewChildButton(),
+//				chartSheetsPanel.getTreeViewer(),
+//				new NewAction(scaveEditor.getAnalysis().getChartSheets(), true)); //XXX "New chart sheet"?
+//		configureViewerButton(
+//				chartSheetsPanel.getNewSiblingButton(),
+//				chartSheetsPanel.getTreeViewer(),
+//				new NewAction(null, false));
+//		configureViewerButton(
+//				chartSheetsPanel.getRemoveChartSheetButton(), 
+//				chartSheetsPanel.getTreeViewer(),
+//				new RemoveAction());
+//		configureViewerDefaultButton(
+//				chartSheetsPanel.getOpenChartSheetButton(), 
+//				chartSheetsPanel.getTreeViewer(),
+//				new OpenAction());
 	}
 }

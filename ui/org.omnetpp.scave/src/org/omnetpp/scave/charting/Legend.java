@@ -45,7 +45,7 @@ public class Legend {
 			gc.setBackground(color);
 			gc.fillOval(x + 2 , y + (height - 5) / 2, 5, 5);
 			// draw text
-			gc.setForeground(ColorFactory.asColor("black"));
+			gc.setForeground(ColorFactory.BLACK);
 			gc.drawText(text, x + 9, y, true);
 		}
 	}
@@ -233,10 +233,10 @@ public class Legend {
 		graphics.pushState();
 		
 		// draw background and border
-		graphics.setBackgroundColor(ColorFactory.asColor("white"));
+		graphics.setBackgroundColor(ColorFactory.WHITE);
 		graphics.fillRectangle(bounds);
 		if (drawBorder) {
-			graphics.setForegroundColor(ColorFactory.asColor("black"));
+			graphics.setForegroundColor(ColorFactory.BLACK);
 			graphics.drawRectangle(bounds);
 		}
 		// draw items

@@ -11,7 +11,7 @@ import org.omnetpp.sequencechart.widgets.SequenceChart;
  * Default axis representation for sequence charts is a solid 1 pixel thick line.
  */
 public class AxisLineRenderer implements IAxisRenderer {
-	protected static final Color AXIS_COLOR = ColorFactory.asColor("black");
+	protected static final Color AXIS_COLOR = ColorFactory.BLACK;
 	
 	protected SequenceChart sequenceChart;
 	

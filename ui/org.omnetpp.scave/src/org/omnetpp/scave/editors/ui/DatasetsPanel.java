@@ -19,13 +19,13 @@ public class DatasetsPanel extends TreeWithButtonsPanel {
 	}
 	
 	private void initialize() {
-		Composite buttonPanel = getButtonPanel();
-		FormToolkit toolkit = getFormToolkit();
-		openDatasetButton = toolkit.createButton(buttonPanel, "Open Dataset", SWT.NONE);
-		newChildButton = toolkit.createButton(buttonPanel, "New child...", SWT.NONE);
-		newSiblingButton = toolkit.createButton(buttonPanel, "New sibling...", SWT.NONE);
-		editNodeButton = toolkit.createButton(buttonPanel, "Edit...", SWT.NONE);
-		removeNodeButton = toolkit.createButton(buttonPanel, "Remove", SWT.NONE);
+//		Composite buttonPanel = getButtonPanel();
+//		FormToolkit toolkit = getFormToolkit();
+//		openDatasetButton = toolkit.createButton(buttonPanel, "Open Dataset", SWT.NONE);
+//		newChildButton = toolkit.createButton(buttonPanel, "New child...", SWT.NONE);
+//		newSiblingButton = toolkit.createButton(buttonPanel, "New sibling...", SWT.NONE);
+//		editNodeButton = toolkit.createButton(buttonPanel, "Edit...", SWT.NONE);
+//		removeNodeButton = toolkit.createButton(buttonPanel, "Remove", SWT.NONE);
 	}
 
 	public Button getEditNodeButton() {

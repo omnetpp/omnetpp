@@ -55,7 +55,7 @@ public class VirtualTable<T>
 	extends Composite
 	implements IVirtualContentWidget<T>, ISelectionProvider
 {
-	private static final Color LINE_COLOR = ColorFactory.asColor("grey95");
+	private static final Color LINE_COLOR = ColorFactory.GREY95;
 
 	private final static boolean debug = false;
 

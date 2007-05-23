@@ -568,7 +568,7 @@ public class ScalarChart extends ChartCanvas {
 			
 			graphics.setLineStyle(SWT.LINE_SOLID);
 			graphics.setLineWidth(1);
-			graphics.setForegroundColor(ColorFactory.asColor("black"));
+			graphics.setForegroundColor(ColorFactory.BLACK);
 
 			Rectangle plotRect = getPlotRectangle();
 

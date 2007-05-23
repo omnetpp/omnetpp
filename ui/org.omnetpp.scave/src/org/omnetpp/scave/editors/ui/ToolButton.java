@@ -104,7 +104,7 @@ public class ToolButton extends Canvas {
 	}
 
 	//XXX experimental
-	protected void _repaint3(GC gc) {
+	protected void _repaintY(GC gc) {
 		final int SIZE = 24;
 		final int R = 13;
 		if (isEnabled()) {
@@ -155,7 +155,7 @@ public class ToolButton extends Canvas {
 	}
 
 	//XXX experimental
-	protected void _repaint2(GC gc) {
+	protected void _repaintZ(GC gc) {
 		final int SIZE = 26;
 		if (isEnabled()) {
 			Rectangle r = getBounds();

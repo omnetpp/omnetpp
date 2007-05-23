@@ -64,7 +64,7 @@ public class ChartSheetPage extends ScaveEditorPage {
 		// set up UI
 		setPageTitle("Charts: " + getChartSheetName(chartsheet));
 		setFormTitle("Charts: " + getChartSheetName(chartsheet));
-		setBackground(ColorFactory.asColor("white"));
+		setBackground(ColorFactory.WHITE);
 		//setExpandHorizontal(true);
 		//setExpandVertical(true);
 		GridLayout layout = new GridLayout();
@@ -82,7 +82,7 @@ public class ChartSheetPage extends ScaveEditorPage {
 		
 		chartsArea = new LiveTable(getBody(), SWT.DOUBLE_BUFFERED);
 		chartsArea.setLayoutData(new GridData(SWT.FILL,SWT.FILL, true, true));
-		chartsArea.setBackground(ColorFactory.asColor("white"));
+		chartsArea.setBackground(ColorFactory.WHITE);
 
 		GridLayout gridLayout = new GridLayout(2, true); //2 columns
 		gridLayout.horizontalSpacing = 7;

@@ -54,7 +54,7 @@ public class DatasetPage extends ScaveEditorPage {
 		setExpandHorizontal(true);
 		setExpandVertical(true);
 		//setDelayedReflow(false);
-		setBackground(ColorFactory.asColor("white"));
+		setBackground(ColorFactory.WHITE);
 		getBody().setLayout(new GridLayout());
 		Label label = new Label(getBody(), SWT.WRAP);
 		label.setBackground(getBackground());

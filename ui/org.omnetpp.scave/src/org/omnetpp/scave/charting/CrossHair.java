@@ -176,7 +176,7 @@ class CrossHair {
 			// draw crosshair
 			gc.setLineDash(new int[] {3, 3});
 			gc.setLineWidth(1);
-			gc.setForeground(ColorFactory.asColor("red"));
+			gc.setForeground(ColorFactory.RED);
 			gc.drawLine(plotArea.x, y, plotArea.x + plotArea.width, y);
 			gc.drawLine(x, plotArea.y, x, plotArea.y + plotArea.height);
 
@@ -196,7 +196,7 @@ class CrossHair {
 	}
 
 	private void drawTooltip(GC gc, ArrayList<DataPoint> dataPoints, int totalFound) {
-		gc.setForeground(ColorFactory.asColor("black"));
+		gc.setForeground(ColorFactory.BLACK);
 		gc.setBackground(TOOLTIP_COLOR);
 		gc.setLineStyle(SWT.LINE_SOLID);
 		gc.setFont(CROSSHAIR_NORMAL_FONT);
@@ -251,7 +251,7 @@ class CrossHair {
 				gc.drawText(text, left + symbolWidth + 6, currentY, true);
 				currentY += lineHeight; 
 			}
-			gc.setForeground(ColorFactory.asColor("black"));
+			gc.setForeground(ColorFactory.BLACK);
 			if (totalFound > dataPoints.size())
 				gc.drawText("... and "+(totalFound-dataPoints.size())+" more", left + 2, currentY, true);
 		}

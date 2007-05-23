@@ -118,19 +118,19 @@ public abstract class FormPage extends Composite {
 		GridData gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
 		gridData.heightHint = 44;
 		titleArea.setLayoutData(gridData);
-		titleArea.setBackground(ColorFactory.asColor("white"));
+		titleArea.setBackground(ColorFactory.WHITE);
 		titleArea.setLayout(new GridLayout(3, false));
 		((GridLayout)titleArea.getLayout()).horizontalSpacing = 12;
 		((GridLayout)titleArea.getLayout()).marginWidth = 10;
 		
 		Label imageLabel = new Label(titleArea, SWT.NONE);
 		imageLabel.setImage(InifileEditorPlugin.getCachedImage("icons/full/misc/formpage_banner2.png")); //XXX better image needed!!!
-		imageLabel.setBackground(ColorFactory.asColor("white"));
+		imageLabel.setBackground(ColorFactory.WHITE);
 		
 		Label title = new Label(titleArea, SWT.NONE);
 		title.setText(category);
 		title.setFont(titleFont);
-		title.setBackground(ColorFactory.asColor("white"));
+		title.setBackground(ColorFactory.WHITE);
 		title.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, true, true));
 		return titleArea;
 	}

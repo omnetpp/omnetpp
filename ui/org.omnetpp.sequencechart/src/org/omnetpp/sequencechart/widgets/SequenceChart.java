@@ -100,33 +100,33 @@ public class SequenceChart
 	 * DRAWING PARAMETERS
 	 */
 
-	private static final Color CHART_BACKGROUND_COLOR = ColorFactory.asColor("white");
-	private static final Color LABEL_COLOR = ColorFactory.asColor("black");
+	private static final Color CHART_BACKGROUND_COLOR = ColorFactory.WHITE;
+	private static final Color LABEL_COLOR = ColorFactory.BLACK;
 	
-	private static final Color TICK_LINE_COLOR = ColorFactory.asColor("darkGrey");
-	private static final Color MOUSE_TICK_LINE_COLOR = ColorFactory.asColor("black");
-	private static final Color TICK_LABEL_COLOR = ColorFactory.asColor("black");
-	private static final Color INFO_BACKGROUND_COLOR = ColorFactory.asColor("lightCyan");
+	private static final Color TICK_LINE_COLOR = ColorFactory.DARK_GREY;
+	private static final Color MOUSE_TICK_LINE_COLOR = ColorFactory.BLACK;
+	private static final Color TICK_LABEL_COLOR = ColorFactory.BLACK;
+	private static final Color INFO_BACKGROUND_COLOR = ColorFactory.LIGHT_CYAN;
 
 	private static final Color GUTTER_BACKGROUND_COLOR = new Color(null, 255, 255, 160);
-	private static final Color GUTTER_BORDER_COLOR = ColorFactory.asColor("black");
+	private static final Color GUTTER_BORDER_COLOR = ColorFactory.BLACK;
 
-	private static final Color EVENT_BORDER_COLOR = ColorFactory.asColor("red4");
-	private static final Color EVENT_BACKGROUND_COLOR = ColorFactory.asColor("red");
-	private static final Color SELF_EVENT_BORDER_COLOR = ColorFactory.asColor("green4");
-	private static final Color SELF_EVENT_BACKGROUND_COLOR = ColorFactory.asColor("green2");
+	private static final Color EVENT_BORDER_COLOR = ColorFactory.RED4;
+	private static final Color EVENT_BACKGROUND_COLOR = ColorFactory.RED;
+	private static final Color SELF_EVENT_BORDER_COLOR = ColorFactory.GREEN4;
+	private static final Color SELF_EVENT_BACKGROUND_COLOR = ColorFactory.GREEN2;
 
-	private static final Color EVENT_SELECTION_COLOR = ColorFactory.asColor("red");
-	private static final Color EVENT_BOOKMARK_COLOR = ColorFactory.asColor("cyan");
+	private static final Color EVENT_SELECTION_COLOR = ColorFactory.RED;
+	private static final Color EVENT_BOOKMARK_COLOR = ColorFactory.CYAN;
 
 	private static final Color ARROW_HEAD_COLOR = null; // defaults to line color
-	private static final Color LONG_ARROW_HEAD_COLOR = ColorFactory.asColor("white"); // defaults to line color	
+	private static final Color LONG_ARROW_HEAD_COLOR = ColorFactory.WHITE; // defaults to line color	
 	private static final Color MESSAGE_LABEL_COLOR = null; // defaults to line color
 	
-	private static final Color MESSAGE_SEND_COLOR = ColorFactory.asColor("blue");
-	private static final Color MESSAGE_REUSE_COLOR = ColorFactory.asColor("green4");
+	private static final Color MESSAGE_SEND_COLOR = ColorFactory.BLUE;
+	private static final Color MESSAGE_REUSE_COLOR = ColorFactory.GREEN4;
 
-	private static final Color ZERO_SIMULATION_TIME_REGION_COLOR = ColorFactory.asColor("grey90");
+	private static final Color ZERO_SIMULATION_TIME_REGION_COLOR = ColorFactory.GREY90;
 	
 	private static final Cursor DRAG_CURSOR = new Cursor(null, SWT.CURSOR_SIZEALL);
 

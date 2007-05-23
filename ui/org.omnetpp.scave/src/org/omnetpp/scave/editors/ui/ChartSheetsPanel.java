@@ -19,13 +19,13 @@ public class ChartSheetsPanel extends TreeWithButtonsPanel {
 	}
 	
 	private void initialize() {
-		Composite buttonPanel = getButtonPanel();
-		FormToolkit toolkit = getFormToolkit();
-		openChartSheetButton = toolkit.createButton(buttonPanel, "Open Chart Sheet", SWT.NONE);
-		newChildButton = toolkit.createButton(buttonPanel, "New child...", SWT.NONE);
-		newSiblingButton = toolkit.createButton(buttonPanel, "New sibling...", SWT.NONE);
-		editChartSheetButton = toolkit.createButton(buttonPanel, "Edit...", SWT.NONE);
-		removeChartSheetButton = toolkit.createButton(buttonPanel, "Remove", SWT.NONE);
+//		Composite buttonPanel = getButtonPanel();
+//		FormToolkit toolkit = getFormToolkit();
+//		openChartSheetButton = toolkit.createButton(buttonPanel, "Open Chart Sheet", SWT.NONE);
+//		newChildButton = toolkit.createButton(buttonPanel, "New child...", SWT.NONE);
+//		newSiblingButton = toolkit.createButton(buttonPanel, "New sibling...", SWT.NONE);
+//		editChartSheetButton = toolkit.createButton(buttonPanel, "Edit...", SWT.NONE);
+//		removeChartSheetButton = toolkit.createButton(buttonPanel, "Remove", SWT.NONE);
 	}
 
 	public Button getEditChartSheetButton() {

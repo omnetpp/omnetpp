@@ -24,7 +24,7 @@ public class VectorResultRowRenderer extends LabelProvider implements IVirtualTa
 
 	private static final int HORIZONTAL_SPACING = 4;
 
-	private static final Color DATA_COLOR = ColorFactory.asColor("black");
+	private static final Color DATA_COLOR = ColorFactory.BLACK;
 
 	protected Font font = JFaceResources.getDefaultFont();
 

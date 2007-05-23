@@ -47,7 +47,7 @@ public class ChartDefaults {
 	public static final Font DEFAULT_TITLE_FONT = new Font(null, "Arial", 10, SWT.NORMAL);
 
 	// background colors
-	public static final Color DEFAULT_BACKGROUND_COLOR = ColorFactory.asColor("white");
+	public static final Color DEFAULT_BACKGROUND_COLOR = ColorFactory.WHITE;
 	public static final Color DEFAULT_INSETS_BACKGROUND_COLOR = new Color(null, 236, 233, 216);
 	public static final Color DEFAULT_INSETS_LINE_COLOR = new Color(null, 0, 0, 0);
 
@@ -63,7 +63,7 @@ public class ChartDefaults {
 	public static final String DEFAULT_Y_AXIS_TITLE = "";
 	public static final Font DEFAULT_AXIS_TITLE_FONT = new Font(null, "Arial", 10, SWT.NORMAL);
 	public static final Font DEFAULT_TICK_FONT = new Font(null, "Arial", 8, SWT.NORMAL);
-	public static final Color DEFAULT_AXIS_COLOR = ColorFactory.asColor("black");
+	public static final Color DEFAULT_AXIS_COLOR = ColorFactory.BLACK;
 	public static final Font DEFAULT_LABELS_FONT = new Font(null, "Arial", 8, SWT.NORMAL);
 	public static final double DEFAULT_X_LABELS_ROTATED_BY = 0.0;
 	public static final boolean DEFAULT_INVERT_XY = false;
@@ -71,12 +71,12 @@ public class ChartDefaults {
 
 	// grid
 	public static final boolean DEFAULT_SHOW_GRID = true;
-	public static final Color DEFAULT_GRID_COLOR = ColorFactory.asColor("grey80");
+	public static final Color DEFAULT_GRID_COLOR = ColorFactory.GREY80;
 	
 	// bar chart
 	public static final double DEFAULT_BAR_BASELINE = 0.0;
 	public static final BarPlacement DEFAULT_BAR_PLACEMENT = BarPlacement.Aligned;
-	public static final Color DEFAULT_BAR_OUTLINE_COLOR = ColorFactory.asColor("grey80");
+	public static final Color DEFAULT_BAR_OUTLINE_COLOR = ColorFactory.GREY80;
 
 	// lines
 	public static final LineStyle DEFAULT_LINE_STYLE = LineStyle.Linear;

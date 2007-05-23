@@ -77,7 +77,7 @@ public class GenericScaveObjectEditForm implements IScaveObjectEditForm {
 			final Control control = editor.getControl();
 			gridData = new GridData(SWT.FILL, SWT.TOP, true, false);
 			control.setLayoutData(gridData);
-			control.setBackground(ColorFactory.asColor("white"));
+			control.setBackground(ColorFactory.WHITE);
 			// control would get invisible when it loses the focus 
 			control.addFocusListener(new FocusAdapter() {
 				public void focusLost(FocusEvent e) {

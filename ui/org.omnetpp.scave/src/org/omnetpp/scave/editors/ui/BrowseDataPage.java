@@ -102,7 +102,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 		// set up UI
 		setPageTitle("Browse data");
 		setFormTitle("Browse data");
-		//setBackground(ColorFactory.asColor("white"));
+		//setBackground(ColorFactory.WHITE);
 		setExpandHorizontal(true);
 		setExpandVertical(true);
 		getBody().setLayout(new GridLayout());

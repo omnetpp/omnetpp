@@ -65,7 +65,7 @@ public class InputsPage extends ScaveEditorPage {
 		setFormTitle("Inputs");
 		setExpandHorizontal(true);
 		setExpandVertical(true);
-		setBackground(ColorFactory.asColor("white"));
+		setBackground(ColorFactory.WHITE);
 		getBody().setLayout(new GridLayout());
 		createSashForm();
 		createInputFilesSection();

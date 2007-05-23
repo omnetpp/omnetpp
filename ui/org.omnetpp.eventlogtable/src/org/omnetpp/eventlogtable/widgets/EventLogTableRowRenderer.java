@@ -48,7 +48,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 	private static final Color BLACK = new Color(null, 0, 0, 0);
 	private static final Color LIGHTGREY = new Color(null, 211, 211, 211);
 	
-	private static final Color BOOKMARK_COLOR = ColorFactory.asColor("lightCyan");
+	private static final Color BOOKMARK_COLOR = ColorFactory.LIGHT_CYAN;
 
 	private static final Color EVENT_ENTRY_EVENT_NUMBER_COLOR = BLACK;
 
