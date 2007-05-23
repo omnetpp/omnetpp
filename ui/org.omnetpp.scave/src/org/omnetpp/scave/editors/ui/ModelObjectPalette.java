@@ -79,7 +79,7 @@ public class ModelObjectPalette {
 		toolButton.setImage(labelProvider.getImage(elementPrototype));
 		if (showText)
 			toolButton.setText(labelProvider.getText(elementPrototype));
-		toolButton.setToolTipText("Click or drag&&&drop to create "+labelProvider.getText(elementPrototype));
+		toolButton.setToolTipText("Click or drag &&& drop to create an object");
 
 		toolButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
