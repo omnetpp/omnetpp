@@ -27,8 +27,12 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.draw2d.ColorConstants;
+import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
@@ -39,14 +43,21 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.image.ImageConverter;
+import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.util.Converter;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.ChartProperties.LegendPosition;
 import org.omnetpp.scave.charting.dataset.IDataset;
+import org.omnetpp.scave.charting.plotter.IChartSymbol;
 
 /**
  * Base class for all chart widgets.
@@ -58,6 +69,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	protected boolean antialias = DEFAULT_ANTIALIAS;
 	protected Title title = new Title(DEFAULT_TITLE, DEFAULT_TITLE_FONT);
 	protected Legend legend = new Legend(DEFAULT_DISPLAY_LEGEND, DEFAULT_LEGEND_BORDER, DEFAULT_LEGEND_FONT, DEFAULT_LEGEND_POSITION, DEFAULT_LEGEND_ANCHOR);
+	protected LegendTooltip legendTooltip = new LegendTooltip();
 	
 	private String statusText = "No data available."; // displayed when there's no dataset 
 
@@ -89,7 +101,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	 * Calculate positions of chart elements such as title, legend, axis labels, plot area. 
 	 */
 	abstract protected void layoutChart();
-
+	
 	/**
 	 * Switches between zoom and pan mode. 
 	 * @param mouseMode should be ZoomableCanvasMouseSupport.PAN_MODE or ZoomableCanvasMouseSupport.ZOOM_MODE
@@ -312,5 +324,120 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		}
 		
 	}
+	
+	/**
+	 * Legend tooltip.
+	 */
+	class LegendTooltip
+	{
+		Image icon = ImageFactory.getImage(ImageFactory.TOOLBAR_IMAGE_LEGEND);
+		Rectangle rect; // rectangle of the area
+		List<Item> items = new ArrayList<Item>();
+		
+		class Item
+		{
+			Color color;
+			String label;
+			IChartSymbol symbol;
+			String imageFile;
 
+			public Item(Color color, String label, IChartSymbol symbol) {
+				this.color = color;
+				this.label = label;
+				this.symbol = symbol;
+				this.imageFile = createImageFile();
+			}
+			
+			private String createImageFile() {
+				Image image = null;
+				try {
+					image = createSymbolImage(symbol, color);
+					String symbolName = StringUtils.removeStart(symbol.getClass().getName(), symbol.getClass().getPackage().getName()+".");
+					String imageName = String.format("%s_%02X%02X%02X", symbolName, color.getRed(), color.getGreen(), color.getBlue());
+					return ImageFactory.createTemporaryImageFile(imageName+".png", image, SWT.IMAGE_PNG);
+				} catch (Exception e) {
+					return null;
+				}
+				finally {
+					if (image != null)
+						image.dispose();
+				}
+			}
+			
+			private Image createSymbolImage(IChartSymbol symbol, Color color) {
+				int size = symbol.getSizeHint();
+				Image image = null;
+				GC gc = null;
+				try {
+					symbol.setSizeHint(6);
+					image = new Image(null, 9, 9);
+					gc = new GC(image);
+					gc.setAntialias(SWT.ON);
+					gc.setForeground(color);
+					symbol.drawSymbol(gc, 4, 4);
+				}
+				finally {
+					symbol.setSizeHint(size);
+					if (gc != null)
+						gc.dispose();
+				}
+				return image;
+			}
+		}
+		
+		public LegendTooltip() {
+			new HoverSupport().adapt(ChartCanvas.this, new IHoverTextProvider() {
+				public String getHoverTextFor(Control control, int x, int y) {
+					return getTooltipText(x, y);
+				}
+			});
+		}
+		
+		public void clearItems() {
+			items.clear();
+		}
+		
+		public void addItem(Color color, String label, IChartSymbol symbol) {
+			items.add(new Item(color, label, symbol));
+		}
+		
+		public Rectangle layout(GC gc, Rectangle rect) {
+			int width = icon.getBounds().width;
+			int height = icon.getBounds().height;
+			this.rect = new Rectangle(rect.right() - width - 2, rect.y + 2,  width, height);
+			return rect;
+		}
+		
+		public void draw(GC gc) {
+			Graphics graphics = new SWTGraphics(gc);
+			graphics.pushState();
+			graphics.drawImage(icon, rect.x, rect.y);
+			graphics.popState();
+		}
+		
+		public String getTooltipText(int x, int y) {
+			if (rect.contains(x, y) && items.size() > 0) {
+				StringBuffer sb = new StringBuffer();
+				sb.append("<b>Legend:</b>");
+				sb.append("<table style='margin-left: 1em'>");
+				for (Item item : items) {
+					sb.append("<tr>");
+					if (item.imageFile != null)
+						sb.append("<td style='vertical-align: middle'>").
+							append("<img src='file://").append(item.imageFile).append("'></td>"); // XXX URLEncoded filename does not work in IE
+					sb.append("<td style='vectical-align: middle; color: ").append(htmlColor(item.color)).append("'>").
+						append(item.label).append("</td>"); // XXX quote
+					sb.append("</tr>");
+				}
+				sb.append("</table>");
+				return HoverSupport.addHTMLStyleSheet(sb.toString());
+			}
+			else
+				return null;
+		}
+		
+		public String htmlColor(Color color) {
+			return String.format("#%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue());
+		}
+	}
 }

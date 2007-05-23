@@ -1,5 +1,6 @@
 package org.omnetpp.common.image;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -18,7 +19,10 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
@@ -77,6 +81,7 @@ public class ImageFactory {
     public final static String TOOLBAR_IMAGE_SHOWVECTORS = TOOL_IMAGE_DIR + "ShowVectors";
     public final static String TOOLBAR_IMAGE_SHOWHISTOGRAMS = TOOL_IMAGE_DIR + "ShowHistograms";
     public final static String TOOLBAR_IMAGE_EXPORTIMAGE = TOOL_IMAGE_DIR + "ExportImage";
+    public final static String TOOLBAR_IMAGE_LEGEND = TOOL_IMAGE_DIR + "legend";
 
     public final static String MODEL_IMAGE_CHANNEL = MODEL_IMAGE_DIR + "Channel";
     public final static String MODEL_IMAGE_CHANNELINTERFACE = MODEL_IMAGE_DIR + "ChannelInterface";
@@ -464,6 +469,26 @@ public class ImageFactory {
         Arrays.sort(folders);
         return Arrays.asList(folders);
     }
-
-
+    
+    /**
+     * Creates an image file containing {@code image} in
+     * the given {@code format} in the tmp directory.
+     *
+     * @param imageName the name of image file (without directory)
+     * @param image the image to be saved
+     * @param format see {@link ImageLoader} for supported values
+     * @return the absolute path of the created image file
+     * @throws IOException if the temp directory cannot be read or the file cannot be written
+     */
+    // XXX clean up
+    public static String createTemporaryImageFile(String imageName, Image image, int format)
+    	throws IOException {
+    	
+    	String tempDir = System.getProperty("java.io.tmpdir");
+    	File tempFile = new File(tempDir, imageName);
+    	ImageLoader loader = new ImageLoader();
+    	loader.data = new ImageData[] { image.getImageData() };
+    	loader.save(tempFile.getCanonicalPath(), format);
+    	return tempFile.getCanonicalPath();
+    }
 }

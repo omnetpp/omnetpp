@@ -23,6 +23,11 @@ import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_MAX;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_MIN;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_TITLE;
 
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Dimension;
@@ -34,18 +39,25 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GeomUtils;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.ScalarDataset;
+import org.omnetpp.scave.charting.plotter.IChartSymbol;
+import org.omnetpp.scave.charting.plotter.SquareSymbol;
 
 /**
  * Bar chart.
@@ -86,9 +98,11 @@ public class ScalarChart extends ChartCanvas {
 
 	private void updateLegend() {
 		legend.clearLegendItems();
+		legendTooltip.clearItems();
 		if (dataset != null) {
 			for (int i = 0; i < dataset.getColumnCount(); ++i) {
 				legend.addLegendItem(plot.getBarColor(i), dataset.getColumnKey(i).toString());
+				legendTooltip.addItem(plot.getBarColor(i), dataset.getColumnKey(i).toString(), new SquareSymbol());
 			}
 		}
 	}
@@ -280,7 +294,8 @@ public class ScalarChart extends ChartCanvas {
 
 			// Calculate space occupied by title and legend and set insets accordingly
 			Rectangle area = new Rectangle(getClientArea());
-			Rectangle remaining = title.layout(gc, area);
+			Rectangle remaining = legendTooltip.layout(gc, area);
+			remaining = title.layout(gc, area);
 			remaining = legend.layout(gc, remaining);
 
 			Rectangle mainArea = remaining.getCopy();
@@ -326,7 +341,6 @@ public class ScalarChart extends ChartCanvas {
 		}
 	}
 	
-	
 	@Override
 	protected void paintCachableLayer(GC gc) {
 		valueAxis.drawGrid(gc);
@@ -344,6 +358,7 @@ public class ScalarChart extends ChartCanvas {
 		legend.draw(gc);
 		valueAxis.drawAxis(gc);
 		domainAxis.draw(gc);
+		legendTooltip.draw(gc);
 		drawStatusText(gc);
 	}
 

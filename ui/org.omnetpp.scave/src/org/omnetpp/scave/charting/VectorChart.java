@@ -37,8 +37,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.charting.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.ChartProperties.LineStyle;
 import org.omnetpp.scave.charting.ChartProperties.SymbolType;
 import org.omnetpp.scave.charting.dataset.IDataset;
@@ -106,9 +108,14 @@ public class VectorChart extends ChartCanvas {
 	
 	private void updateLegend() {
 		legend.clearLegendItems();
+		legendTooltip.clearItems();
 		if (dataset != null) {
 			for (int i = 0; i < dataset.getSeriesCount(); ++i) {
-				legend.addLegendItem(getLineColor(i), dataset.getSeriesKey(i).toString());
+				Color color = getLineColor(i);
+				String key = dataset.getSeriesKey(i);
+				IChartSymbol symbol = getSymbol(key);
+				legend.addLegendItem(color, key);
+				legendTooltip.addItem(color, key, symbol);
 			}
 		}
 	}
@@ -243,6 +250,7 @@ public class VectorChart extends ChartCanvas {
 	public void setSymbolType(String key, SymbolType symbolType) {
 		LineProperties props = getOrCreateLineProperties(key);
 		props.symbolType = symbolType;
+		updateLegend();
 		chartChanged();
 	}
 	
@@ -332,7 +340,7 @@ public class VectorChart extends ChartCanvas {
         setArea((minX>=0 ? 0 : minX-width/80), (minY>=0 ? 0 : minY-height/3), 
         		(maxX<=0 ? 0 : maxX+width/80), (maxY<=0 ? 0 : maxY+height/3));
 	}
-
+	
 	@Override
 	protected void layoutChart() {
 		// prevent nasty infinite layout recursions
@@ -350,7 +358,8 @@ public class VectorChart extends ChartCanvas {
 
 			// Calculate space occupied by title and legend and set insets accordingly
 			Rectangle area = new Rectangle(getClientArea());
-			Rectangle remaining = title.layout(gc, area);
+			Rectangle remaining = legendTooltip.layout(gc, area);
+			remaining = title.layout(gc, area);
 			remaining = legend.layout(gc, remaining);
 
 			Rectangle mainArea = remaining.getCopy();
@@ -484,6 +493,7 @@ public class VectorChart extends ChartCanvas {
 		legend.draw(gc);
 		xAxis.drawAxis(gc);
 		yAxis.drawAxis(gc);
+		legendTooltip.draw(gc);
 		drawStatusText(gc);
 		crosshair.draw(gc);
 	}
