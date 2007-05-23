@@ -7,6 +7,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Region;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -61,6 +62,7 @@ public class Legend {
 	private int verticalMargin = 5;
 	private List<Item> items = new ArrayList<Item>();
 	private Rectangle bounds; // rectangle of the legend in canvas coordinates
+	int visibleItemCount;
 	
 	public Legend() {
 	}
@@ -146,9 +148,17 @@ public class Legend {
 		
 		// position items and calculate size
 		bounds = new Rectangle(0, 0, 0, 0);
+		visibleItemCount = 0;
 		int x = 0;
 		int y = 0;
+		int lineHeight = 0;
 		boolean vertical = position == LegendPosition.Left || position == LegendPosition.Right;
+		Point maxSize = new Point(parent.width, parent.height);
+		if (vertical)
+			maxSize.x = parent.width / 2;
+		else
+			maxSize.y = parent.height / 2;
+		
 		for (int i = 0; i < items.size(); ++i) {
 			Item item = items.get(i);
 			if (i > 0) {
@@ -157,20 +167,40 @@ public class Legend {
 				else
 					x += horizontalSpacing;
 			}
-			item.x = x;
-			item.y = y;
 			
 			if (vertical) {
+				item.x = x;
+				item.y = y;
+				
 				y += item.height;
 				bounds.width = Math.max(bounds.width, item.width);
 				bounds.height = y;
 			}
 			else {
+				
+				if (x + item.width > maxSize.x) {
+					x = 0;
+					y += lineHeight;
+					lineHeight = 0;
+				}
+
+				item.x = x;
+				item.y = y;
 				x += item.width;
-				bounds.width  = x;
-				bounds.height = Math.max(bounds.height, item.height);
+				lineHeight = Math.max(lineHeight, item.height);
+
+				bounds.width  = Math.max(bounds.width, x);
+				bounds.height = Math.max(bounds.height, y + item.height);
 			}
+			
+			if (bounds.height > maxSize.y)
+				break;
+
+			++visibleItemCount;
 		}
+		
+		bounds.width = Math.min(bounds.width, maxSize.x);
+		bounds.height = Math.min(bounds.height, maxSize.y);
 		
 		// calculate legend position
 		int dx, dy;
@@ -222,7 +252,36 @@ public class Legend {
 		
 		return new Rectangle(left, top, right - left, bottom - top);
 	}
+/*	
+	public Point positionItems(Point maxSize, boolean horizontal) {
+		// measure how many items can be placed into the first row/column
+		if (horizontal) {
+			int x = 0;
+			int columns = 0;
+			for (Item item : items) {
+				if (x + item.width > maxSize.x)
+					break;
+				x += item.width;
+				++columns;
+			}
+			if (columns == 0)
+				columns = 1;
+			
+			Point size = positionItems(maxSize, horizontal, columns);
+			while (columns > 1) {
+				if (size.x <= maxSize.x)
+					break;
+				--columns;
+				size = positionItems(maxSize, horizontal, columns);
+			}
+		}
+		return null;
+	}
 	
+	public Point positionItems(Point maxSize, boolean horizontal, int rowcols) {
+		return null;
+	}
+*/	
 	/**
 	 * Draws the legend to the canvas.
 	 */
@@ -231,23 +290,38 @@ public class Legend {
 			return;
 		Graphics graphics = new SWTGraphics(gc);
 		graphics.pushState();
-		
-		// draw background and border
-		graphics.setBackgroundColor(ColorFactory.WHITE);
-		graphics.fillRectangle(bounds);
-		if (drawBorder) {
-			graphics.setForegroundColor(ColorFactory.BLACK);
-			graphics.drawRectangle(bounds);
+		try {
+			// draw background and border
+			graphics.setBackgroundColor(ColorFactory.WHITE);
+			graphics.setClip(new Rectangle(bounds.x, bounds.y, bounds.width + 1, bounds.height + 1));
+			graphics.fillRectangle(bounds);
+			if (drawBorder) {
+				graphics.setForegroundColor(ColorFactory.BLACK);
+				graphics.drawRectangle(bounds);
+			}
+			// draw items
+			int left = bounds.x;
+			int top = bounds.y;
+			int count = visibleItemCount == items.size() ? visibleItemCount : visibleItemCount - 1;
+			for (int i = 0; i < count; i++) {
+				Item item = items.get(i);
+				item.draw(gc, left+item.x, top + item.y);
+			}
+			// draw "... and X more" text in place of the last visible item
+			if (visibleItemCount < items.size()) {
+				int x=left, y = top;
+				if (visibleItemCount > 0) {
+					Item item = items.get(visibleItemCount-1);
+					x += item.x;
+					y += item.y;
+				}
+				graphics.drawText(String.format("... and %d more", items.size() - visibleItemCount + 1), x, y);
+			}
 		}
-		// draw items
-		int left = bounds.x;
-		int top = bounds.y;
-		for (int i = 0; i < items.size(); i++) {
-			Item item = items.get(i);
-			item.draw(gc, left+item.x, top + item.y);
+		finally {
+			gc.setClipping((Region)null); // popState() does not restore clipping
+			graphics.popState();
+			graphics.dispose();
 		}
-
-		graphics.popState();
-		graphics.dispose();
 	}
 }
