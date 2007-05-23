@@ -83,6 +83,8 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
@@ -719,6 +721,18 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 
 		createContextMenuFor(modelViewer);
 		setupDragAndDropSupportFor(modelViewer);
+		
+		// on double-click, open (the dataset or chart), or bring up the Properties dialog
+		modelViewer.getTree().addSelectionListener(new SelectionAdapter() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
+				if (contributor.getOpenAction().isEnabled())
+					contributor.getOpenAction().run();
+				else if (contributor.getEditAction().isEnabled())
+					contributor.getEditAction().run();
+			}
+		});
+		
 	}	
 
 	/**
