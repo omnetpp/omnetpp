@@ -72,6 +72,7 @@ public class ImageFactory {
     public final static String TOOLBAR_IMAGE_RENAME = TOOL_IMAGE_DIR + "rename";
     public final static String TOOLBAR_IMAGE_CHOOSEICON = TOOL_IMAGE_DIR + "chooseicon";
     public final static String TOOLBAR_IMAGE_TEMPLATE = TOOL_IMAGE_DIR + "template";
+    public final static String TOOLBAR_IMAGE_OPEN = TOOL_IMAGE_DIR + "open";
     public final static String TOOLBAR_IMAGE_PLOT = TOOL_IMAGE_DIR + "plot";
     public final static String TOOLBAR_IMAGE_FILTER = TOOL_IMAGE_DIR + "filter";
     public final static String TOOLBAR_IMAGE_DISPLAY_MODE = TOOL_IMAGE_DIR + "displaymode";
