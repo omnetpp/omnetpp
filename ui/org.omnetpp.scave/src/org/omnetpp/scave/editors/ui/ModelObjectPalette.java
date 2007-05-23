@@ -23,6 +23,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.omnetpp.scave.editors.ScaveEditor;
@@ -114,7 +115,7 @@ public class ModelObjectPalette {
 		toolItem.setImage(labelProvider.getImage(elementPrototype));
 		if (showText)
 			toolItem.setText(labelProvider.getText(elementPrototype));
-		toolItem.setToolTipText("Click or drag to create "+labelProvider.getText(elementPrototype));
+		toolItem.setToolTipText("Click or drag&drop to create "+labelProvider.getText(elementPrototype));
 
 		toolItems.put(toolItem, elementPrototype);
 
@@ -137,7 +138,7 @@ public class ModelObjectPalette {
 		
 		if (target != null)	{
 			// add "element" to "target" as child or as sibling.
-			EObject element = EcoreUtil.copy(elementProtoType);
+			final EObject element = EcoreUtil.copy(elementProtoType);
 
 			Command command = AddCommand.create(editor.getEditingDomain(), target, null, element);
 			if (command.canExecute()) {
@@ -150,8 +151,16 @@ public class ModelObjectPalette {
 				command = AddCommand.create(editor.getEditingDomain(), target.eContainer(), null, element, index + 1);
 				command.execute();
 			} 
-			if (element.eContainer() != null) // i.e. it got inserted
-				editor.setSelection(new StructuredSelection(element)); //FIXME does not work!!!
+			
+			// if it got inserted (has parent now), select it in the viewer.
+			// Note: must be in asyncExec(), otherwise setSelection() has no effect on the TreeViewers! (JFace bug?)
+			if (element.eContainer() != null) {
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						editor.setSelection(new StructuredSelection(element));
+					}
+				});
+			}
 		}
 	}
 }
