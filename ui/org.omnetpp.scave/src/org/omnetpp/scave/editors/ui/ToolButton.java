@@ -76,7 +76,7 @@ public class ToolButton extends Canvas {
 			}
 
 			public void mouseDown(MouseEvent e) {
-				if (isEnabled()) {
+				if (isEnabled() && e.button==1) {
 					// Note: when DragSource is installed on the button, the mouseDown event
 					// apparently gets intercepted and delayed ~1s by DragSource
 					state = DOWN_STATE;
@@ -85,11 +85,13 @@ public class ToolButton extends Canvas {
 			}
 
 			public void mouseUp(MouseEvent e) {
-				if (isEnabled()) {
+				if (isEnabled() && e.button==1) {
 					state = ACTIVE_STATE;
 					redraw();
 				
 					Event tmp = new Event();
+					tmp.display = e.display;
+					tmp.widget = e.widget;
 					tmp.x = e.x;
 					tmp.y = e.y;
 					tmp.stateMask = e.stateMask;
@@ -101,6 +103,112 @@ public class ToolButton extends Canvas {
 		});
 	}
 
+	//XXX experimental
+	protected void _repaint3(GC gc) {
+		final int SIZE = 24;
+		final int R = 13;
+		if (isEnabled()) {
+			Rectangle r = getBounds();
+			if (state==ACTIVE_STATE) {
+				gc.setBackground(ColorFactory.GREY96);
+				gc.fillRoundRectangle(0, 0, SIZE-1, SIZE-1, R, R);
+			}
+			else if (state==DOWN_STATE) {
+				gc.setBackground(ColorFactory.GREY90);
+				gc.fillRoundRectangle(0, 0, SIZE-1, SIZE-1, R, R);
+			}
+
+			if (image != null)
+				gc.drawImage(image, SIZE/2 - image.getBounds().width/2, SIZE/2 - image.getBounds().height/2);
+			if (text != null) {
+				if (font != null)
+					gc.setFont(font);
+				gc.setBackground(getBackground());
+				gc.drawText(text, SIZE + BORDER, BORDER); //XXX y alignment!
+			}
+			if (state==ACTIVE_STATE) {
+				gc.setForeground(ColorFactory.GREY40);
+				gc.setAntialias(SWT.ON);
+				gc.drawRoundRectangle(0, 0, SIZE-1, SIZE-1, R, R);
+				//gc.setForeground(ColorFactory.ORANGE);
+				gc.setForeground(ColorFactory.GREY75);
+				gc.drawRoundRectangle(1, 1, SIZE-3, SIZE-3, R-2, R-2);
+			}
+			else if (state==DOWN_STATE) {
+				gc.setForeground(ColorFactory.GREY40);
+				gc.setAntialias(SWT.ON);
+				gc.drawRoundRectangle(0, 0, SIZE-1, SIZE-1, R, R);
+				gc.setForeground(ColorFactory.GREY95);
+				gc.drawRoundRectangle(1, 1, SIZE-3, SIZE-3, R-2, R-2);
+			}
+		}
+		else {
+			if (image != null)
+				gc.drawImage(image, BORDER, BORDER); //TODO paint disabled image
+			if (text != null) {
+				if (font != null)
+					gc.setFont(font);
+				gc.setForeground(ColorFactory.GREY50);
+				gc.drawText(text, BORDER+image.getBounds().width+BORDER, BORDER); //XXX y alignment!
+			}
+		}
+	}
+
+	//XXX experimental
+	protected void _repaint2(GC gc) {
+		final int SIZE = 26;
+		if (isEnabled()) {
+			Rectangle r = getBounds();
+			if (state==ACTIVE_STATE) {
+				gc.setBackground(ColorFactory.GREY96);
+				//gc.fillRoundRectangle(0, 0, r.width-1, r.height-1, 5, 5);
+				gc.fillOval(0, 0, SIZE-1, SIZE-1);
+			}
+			else if (state==DOWN_STATE) {
+				gc.setBackground(ColorFactory.GREY90);
+				//gc.fillRoundRectangle(0, 0, r.width-1, r.height-1, 5, 5);
+				gc.fillOval(0, 0, SIZE-1, SIZE-1);
+			}
+
+			if (image != null)
+				gc.drawImage(image, SIZE/2 - image.getBounds().width/2, SIZE/2 - image.getBounds().height/2);
+			if (text != null) {
+				if (font != null)
+					gc.setFont(font);
+				gc.drawText(text, SIZE + BORDER, BORDER); //XXX y alignment!
+			}
+			if (state==ACTIVE_STATE) {
+				gc.setForeground(ColorFactory.GREY40);
+				gc.setAntialias(SWT.ON);
+				//gc.drawRoundRectangle(0, 0, r.width-1, r.height-1, 5, 5);
+				gc.drawOval(0, 0, SIZE-1, SIZE-1);
+				gc.setForeground(ColorFactory.ORANGE);
+				//gc.drawRoundRectangle(1, 1, r.width-3, r.height-3, 3, 3);
+				gc.drawOval(1, 1, SIZE-3, SIZE-3);
+			}
+			else if (state==DOWN_STATE) {
+				gc.setForeground(ColorFactory.GREY40);
+				gc.setAntialias(SWT.ON);
+				//gc.drawRoundRectangle(0, 0, r.width-1, r.height-1, 5, 5);
+				gc.drawOval(0, 0, SIZE-1, SIZE-1);
+				gc.setForeground(ColorFactory.GREY95);
+				//gc.drawRoundRectangle(1, 1, r.width-3, r.height-3, 3, 3);
+				gc.drawOval(1, 1, SIZE-3, SIZE-3);
+			}
+		}
+		else {
+			if (image != null)
+				gc.drawImage(image, BORDER, BORDER); //TODO paint disabled image
+			if (text != null) {
+				if (font != null)
+					gc.setFont(font);
+				gc.setForeground(ColorFactory.GREY50);
+				gc.drawText(text, BORDER+image.getBounds().width+BORDER, BORDER); //XXX y alignment!
+			}
+		}
+	}
+
+	//XXX experimental
 	protected void _repaint(GC gc) {
 		if (isEnabled()) {
 			Rectangle r = getBounds();
@@ -147,10 +255,6 @@ public class ToolButton extends Canvas {
 		}
 	}
 
-	private void error(int code) {
-		SWT.error(code);
-	}
-	
 	public Point computeSize(int wHint, int hHint, boolean changed) {
 		checkWidget();
 		int border = getBorderWidth();
@@ -162,6 +266,7 @@ public class ToolButton extends Canvas {
 
 		width += border * 2 + BORDER * 2; 
 		height += border * 2 + BORDER * 2;
+		//height = 27; //XXX
 		return new Point(width, height);
 	}
 
@@ -177,26 +282,26 @@ public class ToolButton extends Canvas {
 
 	public void setImage(Image image) {
 		checkWidget();
-		if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		if (image != null && image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		this.image = image;
 	}
 
 	public void setText(String string) {
 		checkWidget();
-		if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
+		if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		text = string;
 	}
 
 	public void addSelectionListener(SelectionListener listener) {
 		checkWidget();
-		if (listener == null) error(SWT.ERROR_NULL_ARGUMENT);
+		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		if (!selectionListeners.contains(listener))
 			selectionListeners.add(listener);
 	}
 
 	public void removeSelectionListener(SelectionListener listener) {
 		checkWidget();
-		if (listener == null) error(SWT.ERROR_NULL_ARGUMENT);
+		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		selectionListeners.remove(listener);
 	}
 
