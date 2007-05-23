@@ -18,6 +18,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.omnetpp.common.color.ColorFactory;
 
 /**
@@ -76,6 +77,8 @@ public class ToolButton extends Canvas {
 
 			public void mouseDown(MouseEvent e) {
 				if (isEnabled()) {
+					// Note: when DragSource is installed on the button, the mouseDown event
+					// apparently gets intercepted and delayed ~1s by DragSource
 					state = DOWN_STATE;
 					redraw();
 				}
@@ -85,11 +88,15 @@ public class ToolButton extends Canvas {
 				if (isEnabled()) {
 					state = ACTIVE_STATE;
 					redraw();
-				}
 				
-				SelectionEvent se = null; //XXX finish: new SelectionEvent(...);
-				for (SelectionListener l : selectionListeners)
-					l.widgetSelected(se);
+					Event tmp = new Event();
+					tmp.x = e.x;
+					tmp.y = e.y;
+					tmp.stateMask = e.stateMask;
+					SelectionEvent selectionEvent = new SelectionEvent(tmp);
+					for (SelectionListener listener : selectionListeners)
+						listener.widgetSelected(selectionEvent);
+				}
 			}
 		});
 	}
