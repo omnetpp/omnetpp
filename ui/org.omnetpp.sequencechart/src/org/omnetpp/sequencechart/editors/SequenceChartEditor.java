@@ -178,7 +178,10 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
 	}
 
 	public INavigationLocation createNavigationLocation() {
-		return new SequenceChartLocation(sequenceChart.getViewportLeftSimulationTime(), sequenceChart.getViewportRightSimulationTime());
+		if (eventLogInput.getEventLog().isEmpty())
+			return null;
+		else
+			return new SequenceChartLocation(sequenceChart.getViewportLeftSimulationTime(), sequenceChart.getViewportRightSimulationTime());
 	}
 
     public void gotoMarker(IMarker marker)

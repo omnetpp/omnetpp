@@ -65,6 +65,7 @@ Features:
  - write key frames during simulation to avoid linear search for reusing messages
  + toolbar icons
  - setup mouse gestures for easy navigation
+ - follow log file changes
 
 Known bugs:
  - hierarchical sorting sequence chart axes based on crossing arrows is broken

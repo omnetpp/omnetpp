@@ -67,6 +67,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
     public final static String IMAGE_BALANCED_AXES = TOOLIMAGE_DIR + "balancedaxes.png";
 	public static final String IMAGE_ATTACH_VECTOR_TO_AXIS = TOOLIMAGE_DIR + "attachvector.png";
 	public static final String IMAGE_BOOKMARK = TOOLIMAGE_DIR + "bkmrk_nav.gif";
+	public static final String IMAGE_REFRESH = TOOLIMAGE_DIR + "refresh.gif";
 	public static final String IMAGE_FILTER_BY_MODULES = TOOLIMAGE_DIR + "filterbymod.png";
 	
 	private static SequenceChartContributor singleton;
@@ -103,6 +104,8 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 
 	protected SequenceChartAction bookmarkAction;
 
+	protected SequenceChartAction refreshAction;
+
 	protected StatusLineContributionItem timelineModeStatus;
 
 	protected StatusLineContributionItem filterStatus;
@@ -123,6 +126,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		this.denseAxesAction = createDenseAxesAction();
 		this.balancedAxesAction = createBalancedAxesAction();
 		this.bookmarkAction = createBookmarkAction();
+		this.refreshAction = createRefreshAction();
 		
 		this.timelineModeStatus = createTimelineModeStatus();
 		this.filterStatus = createFilterStatus();
@@ -152,7 +156,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 
 				// events submenu
 				for (final IEvent event : events) {
-					IMenuManager subMenuManager = new MenuManager(sequenceChart.getEventText(event));
+					IMenuManager subMenuManager = new MenuManager(sequenceChart.getEventText(event, false));
 					menuManager.add(subMenuManager);
 
 					subMenuManager.add(createCenterEventAction(event));
@@ -165,7 +169,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 
 				// messages submenu
 				for (final IMessageDependency msg : msgs) {
-					IMenuManager subMenuManager = new MenuManager(sequenceChart.getMessageDependencyText(msg));
+					IMenuManager subMenuManager = new MenuManager(sequenceChart.getMessageDependencyText(msg, false));
 					menuManager.add(subMenuManager);
 
 					subMenuManager.add(createZoomToMessageAction(msg));
@@ -208,6 +212,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 				menuManager.add(balancedAxesAction);
 				menuManager.add(separatorAction);
 				menuManager.add(bookmarkAction);
+				menuManager.add(refreshAction);
 			}
 		});
 	}
@@ -226,6 +231,8 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		toolBarManager.add(separatorAction);
 		toolBarManager.add(zoomInAction);
 		toolBarManager.add(zoomOutAction);
+		toolBarManager.add(separatorAction);
+		toolBarManager.add(refreshAction);
 	}
 
     public void contributeToStatusLine(IStatusLineManager statusLineManager) {
@@ -364,7 +371,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 				return new AbstractMenuCreator() {
 					@Override
 					protected void createMenu(Menu menu) {
-						addSubMenuItem(menu, "Show All Axes", new Runnable() {
+						addSubMenuItem(menu, "Show All", new Runnable() {
 							public void run() {
 								removeFilter();
 							}
@@ -395,6 +402,8 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			}
 
 			private void removeFilter() {
+				double[] leftRightSimulationTimes = sequenceChart.getViewportSimulationTimeRange();
+
 				EventLogInput eventLogInput = sequenceChart.getInput();
 				IEventLog eventLog = eventLogInput.getEventLog();
 				if (eventLog instanceof FilteredEventLog)
@@ -406,8 +415,9 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 				SequenceChartFacade sequenceChartFacade = eventLogInput.getSequenceChartFacade();
 				sequenceChartFacade.setEventLog(eventLog);
 				sequenceChartFacade.relocateTimelineCoordinateSystem(sequenceChartFacade.getTimelineCoordinateSystemOriginEvent());
-				
+
 				sequenceChart.setInput(eventLogInput);
+				sequenceChart.setViewportSimulationTimeRange(leftRightSimulationTimes);
 			}
 
 			private void filterModules() {
@@ -424,6 +434,8 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 						moduleIds.add(selectedModule.getModuleId());
 					}
 
+					// TODO: factor out filtering code
+					double[] leftRightSimulationTimes = sequenceChart.getViewportSimulationTimeRange();
 					EventLogInput eventLogInput = sequenceChart.getInput();
 					IEventLog eventLog = eventLogInput.getEventLog();
 					if (eventLog instanceof FilteredEventLog)
@@ -441,6 +453,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 
 					sequenceChart.setInput(eventLogInput);
 					sequenceChart.setAxisModules(selectedAxisModules);
+					sequenceChart.setViewportSimulationTimeRange(leftRightSimulationTimes);
 				}
 			}
 		};
@@ -592,7 +605,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		return new SequenceChartAction("Center", Action.AS_PUSH_BUTTON) {
 			@Override
 			public void run() {
-				sequenceChart.gotoElement(event);
+				sequenceChart.scrollToSimulationTimeWithCenter(event.getSimulationTime().doubleValue());
 			}
 		};
 	}
@@ -610,7 +623,25 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		return new SequenceChartAction("Filter Causes/Consequences", Action.AS_PUSH_BUTTON) {
 			@Override
 			public void run() {
-				// TODO:
+				// TODO: factor out filtering code
+				double[] leftRightSimulationTimes = sequenceChart.getViewportSimulationTimeRange();
+				EventLogInput eventLogInput = sequenceChart.getInput();
+				IEventLog eventLog = eventLogInput.getEventLog();
+				if (eventLog instanceof FilteredEventLog)
+					eventLog = ((FilteredEventLog)eventLog).getEventLog();
+
+				eventLog.disown();
+				FilteredEventLog filteredEventLog = new FilteredEventLog(eventLog);
+				filteredEventLog.setTracedEventNumber(event.getEventNumber());
+				eventLogInput.setEventLog(filteredEventLog);
+				
+				SequenceChartFacade sequenceChartFacade = eventLogInput.getSequenceChartFacade();
+				sequenceChartFacade.setEventLog(filteredEventLog);
+				IEvent closestEvent = filteredEventLog.getMatchingEventInDirection(sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber(), true);
+				sequenceChartFacade.relocateTimelineCoordinateSystem(closestEvent);
+
+				sequenceChart.setInput(eventLogInput);
+				sequenceChart.setViewportSimulationTimeRange(leftRightSimulationTimes);
 			}
 		};
 	}
@@ -749,6 +780,15 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			@Override
 			public void update() {
 				setEnabled(sequenceChart.getSelectionEvent() != null);
+			}
+		};
+	}
+
+	private SequenceChartAction createRefreshAction() {
+		return new SequenceChartAction("Refresh", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_REFRESH)) {
+			@Override
+			public void run() {
+				sequenceChart.clearCanvasCacheAndRedraw();
 			}
 		};
 	}

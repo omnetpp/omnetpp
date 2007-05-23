@@ -57,6 +57,7 @@ Features:
  - export current in memory filter as a log file
  - hot keys for popup menu actions
  - expand/collapse events (isExpandedInEventLogTable)
+ - follow log file changes
 
 Known bugs:
  - filtering does not work

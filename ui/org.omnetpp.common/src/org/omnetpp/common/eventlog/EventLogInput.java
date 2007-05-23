@@ -42,7 +42,7 @@ public class EventLogInput {
 		this.file = file;
 		this.eventLog = eventLog;
 	}
-
+	
 	public IFile getFile() {
 		return file;
 	}

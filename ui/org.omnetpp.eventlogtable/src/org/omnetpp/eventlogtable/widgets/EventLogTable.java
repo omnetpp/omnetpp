@@ -7,7 +7,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogSelection;
@@ -37,6 +40,32 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 		tableColumn = createColumn();
 		tableColumn.setWidth(2000);
 		tableColumn.setText("Details");
+		
+		canvas.addPaintListener(new PaintListener() {
+			public void paintControl(PaintEvent e) {
+				final EventLogInput eventLogInput = getEventLogInput();
+				
+				if (eventLogInput != null) {
+					EventLogEntry eventLogEntry = getBottomVisibleElement();
+
+					if ((eventLogEntry == null || getContentProvider().getDistanceToLastElement(eventLogEntry, 1) == 0) &&
+						eventLogInput.getEventLogTableFacade().synchronize())
+					{
+						Display.getCurrent().asyncExec(new Runnable() {
+							public void run() {
+								Display.getCurrent().asyncExec(new Runnable() {
+									public void run() {
+										configureVerticalScrollBar();
+										updateVerticalBarPosition();
+										scrollToEnd();
+									}
+								});
+							}
+						});
+					}
+				}
+			}
+		});
 	}
 
 	public void setEventLogTableContributor(EventLogTableContributor eventLogTableContributor) {
