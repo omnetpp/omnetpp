@@ -147,57 +147,13 @@ public class Legend {
 			items.get(i).calculateSize(gc);
 		
 		// position items and calculate size
-		bounds = new Rectangle(0, 0, 0, 0);
-		visibleItemCount = 0;
-		int x = 0;
-		int y = 0;
-		int lineHeight = 0;
-		boolean vertical = position == LegendPosition.Left || position == LegendPosition.Right;
+		boolean horizontal = position != LegendPosition.Left && position != LegendPosition.Right;
 		Point maxSize = new Point(parent.width, parent.height);
-		if (vertical)
-			maxSize.x = parent.width / 2;
-		else
+		if (horizontal)
 			maxSize.y = parent.height / 2;
-		
-		for (int i = 0; i < items.size(); ++i) {
-			Item item = items.get(i);
-			if (i > 0) {
-				if (vertical)
-					y += verticalSpacing;
-				else
-					x += horizontalSpacing;
-			}
-			
-			if (vertical) {
-				item.x = x;
-				item.y = y;
-				
-				y += item.height;
-				bounds.width = Math.max(bounds.width, item.width);
-				bounds.height = y;
-			}
-			else {
-				
-				if (x + item.width > maxSize.x) {
-					x = 0;
-					y += lineHeight;
-					lineHeight = 0;
-				}
-
-				item.x = x;
-				item.y = y;
-				x += item.width;
-				lineHeight = Math.max(lineHeight, item.height);
-
-				bounds.width  = Math.max(bounds.width, x);
-				bounds.height = Math.max(bounds.height, y + item.height);
-			}
-			
-			if (bounds.height > maxSize.y)
-				break;
-
-			++visibleItemCount;
-		}
+		else
+			maxSize.x = parent.width / 2;
+		positionItems(maxSize, horizontal);
 		
 		bounds.width = Math.min(bounds.width, maxSize.x);
 		bounds.height = Math.min(bounds.height, maxSize.y);
@@ -252,12 +208,11 @@ public class Legend {
 		
 		return new Rectangle(left, top, right - left, bottom - top);
 	}
-/*	
-	public Point positionItems(Point maxSize, boolean horizontal) {
-		// measure how many items can be placed into the first row/column
+
+	private void positionItems(Point maxSize, boolean horizontal) {
 		if (horizontal) {
-			int x = 0;
-			int columns = 0;
+			// calculate initial number of columns
+			int x = 0, columns = 0;
 			for (Item item : items) {
 				if (x + item.width > maxSize.x)
 					break;
@@ -266,22 +221,82 @@ public class Legend {
 			}
 			if (columns == 0)
 				columns = 1;
-			
-			Point size = positionItems(maxSize, horizontal, columns);
-			while (columns > 1) {
-				if (size.x <= maxSize.x)
-					break;
-				--columns;
-				size = positionItems(maxSize, horizontal, columns);
+			// layout items in a table in with the given columns,
+			// decrease the number of columns until the table width is smaller than the max width
+			for (; columns >= 1; --columns) {
+				// calculate cell sizes
+				int rows = (items.size() - 1)/ columns + 1;
+				int[] columnWidths = new int[columns];
+				int[] rowHeights = new int[rows];
+				for (int i = 0; i < items.size(); ++i) {
+					Item item = items.get(i);
+					int col = i % columns;
+					int row = i / columns;
+					columnWidths[col] = Math.max(columnWidths[col], item.width);
+					rowHeights[row] = Math.max(rowHeights[row], item.height);
+				}
+				// calculate table size
+				bounds = new Rectangle(0, 0, 0, 0);
+				bounds.width = (columns - 1) * horizontalSpacing + 2 * horizontalMargin;
+				bounds.height = (rows - 1) * verticalSpacing + 2 * verticalMargin;
+				for (int i = 0; i < columns; ++i)
+					bounds.width += columnWidths[i];
+				for (int i = 0; i < rows; ++i)
+					bounds.height += rowHeights[i];
+				
+
+				// retry with fewer columns if too wide
+				if (columns > 1 && bounds.width > maxSize.x)
+					continue;
+
+				// position children
+				visibleItemCount = 0;
+				x = horizontalMargin;
+				int y = verticalMargin;
+				for (int i = 0; i < items.size(); ++i) {
+					Item item = items.get(i);
+					int row = i / columns;
+					int col = i % columns;
+					
+					item.x = x;
+					item.y = y;
+
+					if (col == columns - 1) {
+						x = horizontalMargin;
+						y += rowHeights[row] + verticalSpacing;
+					}
+					else {
+						x += columnWidths[col] + horizontalSpacing;
+					}
+
+					if (y > maxSize.y)
+						break;
+
+					++visibleItemCount;
+				}
+
+				break;
 			}
 		}
-		return null;
+		else { // vertical
+			bounds = new Rectangle(0, 0, 0, 0);
+			visibleItemCount = 0;
+			int x = horizontalMargin;
+			int y = verticalMargin;
+			
+			for (int i = 0; i < items.size() && y < maxSize.y; ++i) {
+				Item item = items.get(i);
+				item.x = x;
+				item.y = y;
+				bounds.width = Math.max(bounds.width, item.width + 2 * horizontalMargin);
+				bounds.height = Math.max(bounds.height, y + item.height + verticalMargin);
+				
+				y += item.height + verticalSpacing;
+				++visibleItemCount;
+			}
+		}
 	}
 	
-	public Point positionItems(Point maxSize, boolean horizontal, int rowcols) {
-		return null;
-	}
-*/	
 	/**
 	 * Draws the legend to the canvas.
 	 */
