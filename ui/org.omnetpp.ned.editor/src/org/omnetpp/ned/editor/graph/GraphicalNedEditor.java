@@ -59,6 +59,7 @@ import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetPage;
+
 import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
@@ -70,6 +71,7 @@ import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.graph.actions.ExportImageAction;
 import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
 import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
+import org.omnetpp.ned.editor.graph.actions.GNEDSelectAllAction;
 import org.omnetpp.ned.editor.graph.actions.TogglePinAction;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
@@ -367,13 +369,8 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         ActionRegistry registry = getActionRegistry();
         IAction action;
 
-        action = new MatchWidthAction(this);
+        action = new GNEDSelectAllAction(this);
         registry.registerAction(action);
-        getSelectionActions().add(action.getId());
-
-        action = new MatchHeightAction(this);
-        registry.registerAction(action);
-        getSelectionActions().add(action.getId());
 
         action = new ConvertToNewFormatAction(this);
         registry.registerAction(action);
@@ -392,6 +389,16 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         getSelectionActions().add(action.getId());
 
         action = new ShowViewAction(IPageLayout.ID_PROP_SHEET);
+        registry.registerAction(action);
+        getSelectionActions().add(action.getId());
+
+        action = new TogglePinAction(this);
+        registry.registerAction(action);
+        getSelectionActions().add(action.getId());
+        // depends on stack state change too. We should reflect the pinned state of a module on the status bar too
+        getStackActions().add(action.getId());
+
+        action = new ReLayoutAction(this);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
 
@@ -419,13 +426,11 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
 
-        action = new TogglePinAction(this);
+        action = new MatchWidthAction(this);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
-        // depends on stack state change too. We should reflect the pinned state of a module on the status bar too
-        getStackActions().add(action.getId());
 
-        action = new ReLayoutAction(this);
+        action = new MatchHeightAction(this);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
 

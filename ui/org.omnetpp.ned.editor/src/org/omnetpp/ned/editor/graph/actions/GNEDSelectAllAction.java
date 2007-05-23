@@ -10,10 +10,10 @@ import org.eclipse.ui.IWorkbenchPart;
 
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 
-public class SelectAllSubmoduleAction extends SelectAllAction {
+public class GNEDSelectAllAction extends SelectAllAction {
 
     IWorkbenchPart wbp;
-    public SelectAllSubmoduleAction(IWorkbenchPart part) {
+    public GNEDSelectAllAction(IWorkbenchPart part) {
         super(part);
         wbp = part;
     }
