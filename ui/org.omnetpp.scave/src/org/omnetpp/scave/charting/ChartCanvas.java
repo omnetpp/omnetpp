@@ -371,11 +371,14 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 				GC gc = null;
 				try {
 					symbol.setSizeHint(6);
-					image = new Image(null, 9, 9);
+					image = new Image(null, 15, 9);
 					gc = new GC(image);
 					gc.setAntialias(SWT.ON);
 					gc.setForeground(color);
-					symbol.drawSymbol(gc, 4, 4);
+					gc.setLineWidth(1);
+					gc.setLineStyle(SWT.LINE_SOLID);
+					gc.drawLine(0, 4, 14, 4);
+					symbol.drawSymbol(gc, 7, 4);
 				}
 				finally {
 					symbol.setSizeHint(size);
@@ -412,6 +415,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		}
 		
 		public void draw(GC gc) {
+			System.out.println("Legend tooltip: " + rect);
 			Graphics graphics = new SWTGraphics(gc);
 			graphics.pushState();
 			graphics.drawImage(icon, rect.x, rect.y);
