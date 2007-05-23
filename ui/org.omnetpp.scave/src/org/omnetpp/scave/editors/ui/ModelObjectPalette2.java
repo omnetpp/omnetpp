@@ -1,5 +1,8 @@
 package org.omnetpp.scave.editors.ui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.ecore.EObject;
@@ -11,6 +14,7 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
@@ -21,6 +25,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.ChartSheet;
@@ -64,11 +69,12 @@ public class ModelObjectPalette2 {
 	}
 		
 	protected void addToolItem(Composite parent, final EObject elementPrototype, ILabelProvider labelProvider, boolean showText) {
-		Button toolButton = new Button(parent, SWT.PUSH);
+		//Button toolButton = new Button(parent, SWT.PUSH);
+		ToolButton toolButton = new ToolButton(parent, SWT.NONE);
 		toolButton.setImage(labelProvider.getImage(elementPrototype));
 		if (showText)
 			toolButton.setText(labelProvider.getText(elementPrototype));
-		toolButton.setToolTipText("Click or drag to create "+labelProvider.getText(elementPrototype));
+		toolButton.setToolTipText("Click or drag&drop to create "+labelProvider.getText(elementPrototype));
 
 		toolButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -110,7 +116,7 @@ public class ModelObjectPalette2 {
 		
 		if (target != null)	{
 			// add "element" to "target" as child or as sibling.
-			EObject element = EcoreUtil.copy(elementProtoType);
+			final EObject element = EcoreUtil.copy(elementProtoType);
 
 			Command command = AddCommand.create(editor.getEditingDomain(), target, null, element);
 			if (command.canExecute()) {
@@ -122,9 +128,17 @@ public class ModelObjectPalette2 {
 				int index = ECollections.indexOf(target.eContainer().eContents(), target, 0);
 				command = AddCommand.create(editor.getEditingDomain(), target.eContainer(), null, element, index + 1);
 				command.execute();
-			} 
-			if (element.eContainer() != null) // i.e. it got inserted
-				editor.setSelection(new StructuredSelection(element)); //FIXME does not work!!!
+			}
+
+			// if it got inserted (has parent now), select it in the viewer.
+			// Note: must be in asyncExec(), otherwise setSelection() has no effect on the TreeViewers! (JFace bug?)
+			if (element.eContainer() != null) {
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						editor.setSelection(new StructuredSelection(element));
+					}
+				});
+			}
 		}
 	}
 }
