@@ -30,7 +30,8 @@ import org.omnetpp.scave.model.ScaveModelFactory;
 
 /**
  * Toolbar as a palette for creating Scave objects, emulated with buttons on a composite.
- * The user is responsible for setting the layout on the composite.
+ * The user is responsible for setting the layout on the composite (e.g. RowLayout with
+ * fill=true).
  * 
  * @author Andras
  */
@@ -51,22 +52,25 @@ public class ModelObjectPalette {
 		ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
 
 		addToolItem(parent, factory.createDataset(), labelProvider);
+		addSeparator(parent);
 		addToolItem(parent, factory.createAdd(), labelProvider);
 		addToolItem(parent, factory.createDiscard(), labelProvider);
-		addToolItem(parent, factory.createSelect(), labelProvider);
-		addToolItem(parent, factory.createDeselect(), labelProvider);
-		addToolItem(parent, factory.createExcept(), labelProvider);
-		new Label(parent, SWT.NONE);
 		addToolItem(parent, factory.createApply(), labelProvider);
 		addToolItem(parent, factory.createCompute(), labelProvider);
 		addToolItem(parent, factory.createGroup(), labelProvider);
-		new Label(parent, SWT.NONE);
-		addToolItem(parent, factory.createChartSheet(), labelProvider);
+		addSeparator(parent);
+		addToolItem(parent, factory.createSelect(), labelProvider);
+		addToolItem(parent, factory.createDeselect(), labelProvider);
+		addToolItem(parent, factory.createExcept(), labelProvider);
+		addSeparator(parent);
 		addToolItem(parent, factory.createBarChart(), labelProvider);
 		addToolItem(parent, factory.createLineChart(), labelProvider);
 		addToolItem(parent, factory.createHistogramChart(), labelProvider);
 		addToolItem(parent, factory.createScatterChart(), labelProvider);
+		addSeparator(parent);
+		addToolItem(parent, factory.createChartSheet(), labelProvider);
 	}
+
 		
 	protected void addToolItem(Composite parent, final EObject elementPrototype, ILabelProvider labelProvider) {
 		//Button toolButton = new Button(parent, SWT.PUSH);
@@ -75,7 +79,7 @@ public class ModelObjectPalette {
 		toolButton.setImage(labelProvider.getImage(elementPrototype));
 		if (showText)
 			toolButton.setText(labelProvider.getText(elementPrototype));
-		toolButton.setToolTipText("Click or drag&&drop to create "+labelProvider.getText(elementPrototype));
+		toolButton.setToolTipText("Click or drag&&&drop to create "+labelProvider.getText(elementPrototype));
 
 		toolButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -103,6 +107,11 @@ public class ModelObjectPalette {
 			}
 		});
 	
+	}
+
+	protected void addSeparator(Composite parent) {
+		Label label = new Label(parent, SWT.NONE);
+		label.setBackground(parent.getBackground());
 	}
 
 	protected void addAsChildOrSibling(EObject elementProtoType) {

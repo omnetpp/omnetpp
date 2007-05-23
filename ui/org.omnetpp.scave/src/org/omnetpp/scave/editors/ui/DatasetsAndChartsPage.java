@@ -54,6 +54,7 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 
 		Composite toolbar = new Composite(getBody(), SWT.BORDER);
 		toolbar.setLayout(new RowLayout(SWT.VERTICAL));
+		((RowLayout)toolbar.getLayout()).fill = true;
 		toolbar.setLayoutData(new GridData(SWT.END, SWT.FILL, false, true));
 		toolbar.setBackground(PALETTE_BG_COLOR);
 		new ModelObjectPalette(toolbar, scaveEditor, BUTTONS_BG_COLOR, true);
