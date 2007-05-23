@@ -347,14 +347,6 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	    return new Point(n.x, n.y);
 	}
 
-	@Override
-    public boolean isNodeMoveable(Object mod) {
-	    Node n = findNode(mod);
-	    if (n == null)
-	        return false;
-	    return !n.fixed;
-	}
-
     // utility
 	protected Node findNode(Object mod)
 	{

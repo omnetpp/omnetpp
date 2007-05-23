@@ -120,8 +120,6 @@ public abstract class AbstractGraphLayoutAlgorithm
      */
     public abstract Point getNodePosition(Object mod);
 
-    public abstract boolean isNodeMoveable(Object mod);
-
     public abstract Point getAnchorPosition(String anchor);
 }
 
