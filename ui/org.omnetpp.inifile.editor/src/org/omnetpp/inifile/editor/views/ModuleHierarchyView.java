@@ -224,7 +224,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
  		
  		// add tooltip support to the tree
  		new HoverSupport().adapt(treeViewer.getTree(), new IHoverTextProvider() {
-			public String getHoverTextFor(Control control, int x, int y) {
+			public String getHoverTextFor(Control control, int x, int y, Point outPreferedSize) {
 				Item item = treeViewer.getTree().getItem(new Point(x,y));
 				Object element = item==null ? null : item.getData();
 				if (element instanceof GenericTreeNode)

@@ -244,7 +244,7 @@ public class SequenceChart
     	hoverSupport = new HoverSupport();
     	hoverSupport.setHoverSizeConstaints(new Point(700, 200));
     	hoverSupport.adapt(this, new IHoverTextProvider() {
-			public String getHoverTextFor(Control control, int x, int y) {
+			public String getHoverTextFor(Control control, int x, int y, Point outPreferedSize) {
 				return HoverSupport.addHTMLStyleSheet(getTooltipText(x, y));
 			}
     	});

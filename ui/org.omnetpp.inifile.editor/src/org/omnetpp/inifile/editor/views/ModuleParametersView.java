@@ -130,7 +130,7 @@ public class ModuleParametersView extends AbstractModuleView {
 
  		// add tooltip support to the table
  		new HoverSupport().adapt(tableViewer.getTable(), new IHoverTextProvider() {
-			public String getHoverTextFor(Control control, int x, int y) {
+			public String getHoverTextFor(Control control, int x, int y, Point outPreferedSize) {
 				Item item = tableViewer.getTable().getItem(new Point(x,y));
 				Object element = item==null ? null : item.getData();
 				if (element instanceof ParamResolution) {

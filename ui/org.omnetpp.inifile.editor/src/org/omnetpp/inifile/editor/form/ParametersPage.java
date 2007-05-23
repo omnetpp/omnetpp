@@ -277,7 +277,7 @@ public class ParametersPage extends FormPage {
 
 		// add tooltip support
 		addTooltipSupport(tableViewer.getTable(), new IHoverTextProvider() {
-			public String getHoverTextFor(Control control, int x, int y) {
+			public String getHoverTextFor(Control control, int x, int y, Point outPreferedSize) {
 				Item item = tableViewer.getTable().getItem(new Point(x,y));
 				SectionKey entry = (SectionKey) (item==null ? null : item.getData());
 				return entry==null ? null : InifileHoverUtils.getEntryHoverText(entry.section, entry.key, getInifileDocument(), getInifileAnalyzer());
