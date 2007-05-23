@@ -1,8 +1,5 @@
 package org.omnetpp.scave.editors.ui;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.ecore.EObject;
@@ -14,7 +11,6 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
@@ -23,7 +19,7 @@ import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
@@ -39,42 +35,47 @@ import org.omnetpp.scave.model.ScaveModelFactory;
  * @author Andras
  */
 public class ModelObjectPalette2 {
+	private Color buttonBgColor;
+	private boolean showText;
 	private ScaveEditor editor;
 
 	/**
 	 * Adds palette buttons to the given toolbar, and configures them.
 	 */
-	public ModelObjectPalette2(Composite parent, ScaveEditor editor, boolean showText) {
+	public ModelObjectPalette2(Composite parent, ScaveEditor editor, Color buttonBgColor, boolean showText) {
 		this.editor = editor;
+		this.buttonBgColor = buttonBgColor;
+		this.showText = showText;
 
 		ILabelProvider labelProvider = new AdapterFactoryLabelProvider(editor.getAdapterFactory());
 		ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
 
-		addToolItem(parent, factory.createDataset(), labelProvider, showText);
-		addToolItem(parent, factory.createAdd(), labelProvider, showText);
-		addToolItem(parent, factory.createDiscard(), labelProvider, showText);
-		addToolItem(parent, factory.createSelect(), labelProvider, showText);
-		addToolItem(parent, factory.createDeselect(), labelProvider, showText);
-		addToolItem(parent, factory.createExcept(), labelProvider, showText);
+		addToolItem(parent, factory.createDataset(), labelProvider);
+		addToolItem(parent, factory.createAdd(), labelProvider);
+		addToolItem(parent, factory.createDiscard(), labelProvider);
+		addToolItem(parent, factory.createSelect(), labelProvider);
+		addToolItem(parent, factory.createDeselect(), labelProvider);
+		addToolItem(parent, factory.createExcept(), labelProvider);
 		new Label(parent, SWT.NONE);
-		addToolItem(parent, factory.createApply(), labelProvider, showText);
-		addToolItem(parent, factory.createCompute(), labelProvider, showText);
-		addToolItem(parent, factory.createGroup(), labelProvider, showText);
+		addToolItem(parent, factory.createApply(), labelProvider);
+		addToolItem(parent, factory.createCompute(), labelProvider);
+		addToolItem(parent, factory.createGroup(), labelProvider);
 		new Label(parent, SWT.NONE);
-		addToolItem(parent, factory.createChartSheet(), labelProvider, showText);
-		addToolItem(parent, factory.createBarChart(), labelProvider, showText);
-		addToolItem(parent, factory.createLineChart(), labelProvider, showText);
-		addToolItem(parent, factory.createHistogramChart(), labelProvider, showText);
-		addToolItem(parent, factory.createScatterChart(), labelProvider, showText);
+		addToolItem(parent, factory.createChartSheet(), labelProvider);
+		addToolItem(parent, factory.createBarChart(), labelProvider);
+		addToolItem(parent, factory.createLineChart(), labelProvider);
+		addToolItem(parent, factory.createHistogramChart(), labelProvider);
+		addToolItem(parent, factory.createScatterChart(), labelProvider);
 	}
 		
-	protected void addToolItem(Composite parent, final EObject elementPrototype, ILabelProvider labelProvider, boolean showText) {
+	protected void addToolItem(Composite parent, final EObject elementPrototype, ILabelProvider labelProvider) {
 		//Button toolButton = new Button(parent, SWT.PUSH);
 		ToolButton toolButton = new ToolButton(parent, SWT.NONE);
+		toolButton.setBackground(buttonBgColor);
 		toolButton.setImage(labelProvider.getImage(elementPrototype));
 		if (showText)
 			toolButton.setText(labelProvider.getText(elementPrototype));
-		toolButton.setToolTipText("Click or drag&drop to create "+labelProvider.getText(elementPrototype));
+		toolButton.setToolTipText("Click or drag&&drop to create "+labelProvider.getText(elementPrototype));
 
 		toolButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {

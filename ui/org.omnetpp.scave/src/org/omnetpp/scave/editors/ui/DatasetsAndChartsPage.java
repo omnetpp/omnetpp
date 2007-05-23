@@ -3,23 +3,17 @@ package org.omnetpp.scave.editors.ui;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.CustomSashForm;
-import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.actions.EditAction;
-import org.omnetpp.scave.actions.NewAction;
-import org.omnetpp.scave.actions.OpenAction;
-import org.omnetpp.scave.actions.RemoveAction;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Analysis;
 
@@ -28,10 +22,13 @@ import org.omnetpp.scave.model.Analysis;
  * @author Andras
  */
 public class DatasetsAndChartsPage extends ScaveEditorPage {
+	private static final Color PALETTE_BG_COLOR = new Color(null, 234, 240, 252); // very light blue
+	private static final Color BUTTONS_BG_COLOR = new Color(null, 239, 244, 253); // very light blue
+	
 	private FormToolkit formToolkit = null;  
-	private Section datasetsSection = null;
-	private Section chartSheetsSection = null;
-	private SashForm sashform = null;
+	private TreeViewer datasetsTreeViewer;
+	private TreeViewer chartSheetsTreeViewer;
+	private SashForm sashform;
 
 	/**
 	 * Constructor
@@ -50,20 +47,16 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 		setBackground(ColorFactory.WHITE);
 		getBody().setLayout(new GridLayout(2, false));
 
-	
 		createSashForm();
 		createDatasetsSection();
 		createChartSheetsSection();
-		sashform.setWeights(new int[] {3,2});
+		sashform.setWeights(new int[] {2,1});
 
-		//XXX experimental: toolbar for easy creation of Scave objects
-//		ToolBar toolbar = new ToolBar(getBody(), SWT.HORIZONTAL);
 		Composite toolbar = new Composite(getBody(), SWT.BORDER);
 		toolbar.setLayout(new RowLayout(SWT.VERTICAL));
 		toolbar.setLayoutData(new GridData(SWT.END, SWT.FILL, false, true));
-		toolbar.setBackground(ColorFactory.GREY98);
-		toolbar.setFont(new Font(null, "Arial", 7, SWT.NORMAL));
-		new ModelObjectPalette2(toolbar, scaveEditor, true);
+		toolbar.setBackground(PALETTE_BG_COLOR);
+		new ModelObjectPalette2(toolbar, scaveEditor, BUTTONS_BG_COLOR, true);
 		
 		// configure viewers
 		scaveEditor.configureTreeViewer(getDatasetsTreeViewer());
@@ -85,13 +78,11 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 	}
 
 	public TreeViewer getDatasetsTreeViewer() {
-		DatasetsPanel panel = (DatasetsPanel)datasetsSection.getClient();
-		return panel.getTreeViewer();
+		return datasetsTreeViewer;
 	}
 	
 	public TreeViewer getChartSheetsTreeViewer() {
-		ChartSheetsPanel panel = (ChartSheetsPanel)chartSheetsSection.getClient();
-		return panel.getTreeViewer();
+		return chartSheetsTreeViewer;
 	}
 	
 	private void createSashForm() {
@@ -104,34 +95,13 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 	 * This method initializes datasetsSection	
 	 */
 	private void createDatasetsSection() {
-		datasetsSection = getFormToolkit().createSection(sashform,
+		Section datasetsSection = getFormToolkit().createSection(sashform,
 				Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
 		datasetsSection.setText("Datasets");
 		datasetsSection.setDescription("Here you can browse the datasets you have created from the input.");
 		//datasetsSection.setExpanded(true); XXX SWT bug: must be after setText() if present, otherwise text won't appear!
-		final DatasetsPanel datasetsPanel = new DatasetsPanel(datasetsSection, SWT.NONE);
-		datasetsSection.setClient(datasetsPanel);
-
-//		configureViewerButton(
-//				datasetsPanel.getEditNodeButton(), 
-//				datasetsPanel.getTreeViewer(), 
-//				new EditAction());
-//		configureViewerButton(
-//				datasetsPanel.getNewChildButton(),
-//				datasetsPanel.getTreeViewer(),
-//				new NewAction(scaveEditor.getAnalysis().getDatasets(), true));
-//		configureViewerButton(
-//				datasetsPanel.getNewSiblingButton(),
-//				datasetsPanel.getTreeViewer(),
-//				new NewAction(null, false));
-//		configureViewerButton(
-//				datasetsPanel.getRemoveNodeButton(), 
-//				datasetsPanel.getTreeViewer(),
-//				new RemoveAction());
-//		configureViewerDefaultButton(
-//				datasetsPanel.getOpenDatasetButton(), 
-//				datasetsPanel.getTreeViewer(),
-//				new OpenAction());
+		datasetsTreeViewer = new TreeViewer(formToolkit.createTree(datasetsSection, SWT.BORDER | SWT.MULTI));
+		datasetsSection.setClient(datasetsTreeViewer.getTree());
 	}
 
 	/**
@@ -139,33 +109,13 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 	 */
 	private void createChartSheetsSection() {
 		// set up UI
-		chartSheetsSection = getFormToolkit().createSection(sashform, Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
+		Section chartSheetsSection = getFormToolkit().createSection(sashform, Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
 		chartSheetsSection.setText("Chart sheets and charts");
 		chartSheetsSection.setDescription("Here you can browse the charts you have created for the datasets.");
 		//chartSheetsSection.setExpanded(true); XXX SWT bug: must be after setText() if present, otherwise text won't appear!
-		ChartSheetsPanel chartSheetsPanel = new ChartSheetsPanel(chartSheetsSection, SWT.NONE); 
-		chartSheetsSection.setClient(chartSheetsPanel);
-
-//		// configure actions
-//		configureViewerButton(
-//				chartSheetsPanel.getEditChartSheetButton(),
-//				chartSheetsPanel.getTreeViewer(), 
-//				new EditAction());
-//		configureViewerButton(
-//				chartSheetsPanel.getNewChildButton(),
-//				chartSheetsPanel.getTreeViewer(),
-//				new NewAction(scaveEditor.getAnalysis().getChartSheets(), true)); //XXX "New chart sheet"?
-//		configureViewerButton(
-//				chartSheetsPanel.getNewSiblingButton(),
-//				chartSheetsPanel.getTreeViewer(),
-//				new NewAction(null, false));
-//		configureViewerButton(
-//				chartSheetsPanel.getRemoveChartSheetButton(), 
-//				chartSheetsPanel.getTreeViewer(),
-//				new RemoveAction());
-//		configureViewerDefaultButton(
-//				chartSheetsPanel.getOpenChartSheetButton(), 
-//				chartSheetsPanel.getTreeViewer(),
-//				new OpenAction());
+		chartSheetsTreeViewer = new TreeViewer(formToolkit.createTree(chartSheetsSection, SWT.BORDER | SWT.MULTI));
+		chartSheetsSection.setClient(chartSheetsTreeViewer.getTree());
 	}
 }
+
+
