@@ -56,7 +56,7 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 		toolbar.setLayout(new RowLayout(SWT.VERTICAL));
 		toolbar.setLayoutData(new GridData(SWT.END, SWT.FILL, false, true));
 		toolbar.setBackground(PALETTE_BG_COLOR);
-		new ModelObjectPalette2(toolbar, scaveEditor, BUTTONS_BG_COLOR, true);
+		new ModelObjectPalette(toolbar, scaveEditor, BUTTONS_BG_COLOR, true);
 		
 		// configure viewers
 		scaveEditor.configureTreeViewer(getDatasetsTreeViewer());
