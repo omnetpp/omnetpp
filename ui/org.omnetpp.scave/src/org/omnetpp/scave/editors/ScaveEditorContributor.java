@@ -11,8 +11,12 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.actions.ActionFactory;
+import org.eclipse.ui.actions.RetargetAction;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.scave.actions.AddFilterToDatasetAction;
 import org.omnetpp.scave.actions.AddSelectedToDatasetAction;
@@ -25,6 +29,7 @@ import org.omnetpp.scave.actions.EditAction;
 import org.omnetpp.scave.actions.ExportDataAction;
 import org.omnetpp.scave.actions.GotoChartDefinitionAction;
 import org.omnetpp.scave.actions.IScaveAction;
+import org.omnetpp.scave.actions.OpenAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
 import org.omnetpp.scave.actions.ShowVectorBrowserViewAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
@@ -40,14 +45,18 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	
 //	public IAction addResultFileAction;
 //	public IAction addWildcardResultFileAction;
-//	public IAction openAction;
-//	public IAction editAction;
 //	public IAction removeAction;
 //	public IAction addToDatasetAction;
 //	public IAction createDatasetAction;
 //	public IAction createChartAction;
+
+	// global retarget actions
+	private RetargetAction undoRetargetAction;
+	private RetargetAction redoRetargetAction;
+	private RetargetAction deleteRetargetAction;
 	
 	// generic actions
+	private IAction openAction;
 	private IAction editAction;
 
 	// ChartPage actions
@@ -82,6 +91,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	}
 
 	public void init(IActionBars bars, IWorkbenchPage page) {
+        openAction = registerAction(page, new OpenAction());
         editAction = registerAction(page, new EditAction());
 
         // ChartPage actions
@@ -137,6 +147,13 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	
 	public void dispose() {
 		super.dispose();
+
+        getPage().removePartListener(undoRetargetAction);
+        getPage().removePartListener(redoRetargetAction);
+        getPage().removePartListener(deleteRetargetAction);
+        undoRetargetAction.dispose();
+        redoRetargetAction.dispose();
+        deleteRetargetAction.dispose();
     }
 
 	public void contributeToMenu(IMenuManager manager) {
@@ -145,6 +162,30 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 
 	public void contributeToToolBar(IToolBarManager manager) {
 		super.contributeToToolBar(manager);
+
+		undoRetargetAction = new RetargetAction(ActionFactory.UNDO.getId(), "Undo");
+		redoRetargetAction = new RetargetAction(ActionFactory.REDO.getId(), "Redo");
+		deleteRetargetAction = new RetargetAction(ActionFactory.DELETE.getId(), "Delete");
+
+		ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
+    	undoRetargetAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_UNDO));
+    	undoRetargetAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_UNDO_DISABLED));
+    	redoRetargetAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
+    	redoRetargetAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_REDO_DISABLED));
+    	deleteRetargetAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
+    	deleteRetargetAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE_DISABLED));
+
+    	getPage().addPartListener(undoRetargetAction);
+    	getPage().addPartListener(redoRetargetAction);
+    	getPage().addPartListener(deleteRetargetAction);
+    	
+    	manager.add(undoRetargetAction);
+    	manager.add(redoRetargetAction);
+    	manager.add(deleteRetargetAction);
+
+    	manager.add(openAction);
+    	manager.add(editAction);
+		
 		manager.insertBefore("scavemodel-additions", createTempChartAction);
 
 //XXX
@@ -169,10 +210,15 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	@Override
 	public void menuAboutToShow(IMenuManager menuManager) {
 		super.menuAboutToShow(menuManager);
+		menuManager.insertBefore("additions", openAction);
 		menuManager.insertBefore("additions", editAction);
 		menuManager.insertAfter("additions", createExportMenu());
 	}
-
+	
+	public IAction getOpenAction() {
+		return openAction;
+	}
+	
 	public IAction getEditAction() {
 		return editAction;
 	}

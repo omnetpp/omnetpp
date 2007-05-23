@@ -20,7 +20,9 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.scave.editors.ScaveEditor;
@@ -110,8 +112,9 @@ public class ModelObjectPalette {
 	}
 
 	protected void addSeparator(Composite parent) {
-		Label label = new Label(parent, SWT.NONE);
-		label.setBackground(parent.getBackground());
+		Control spacer = new Composite(parent, SWT.NONE);
+		spacer.setLayoutData(new RowData(0,5));
+		spacer.setBackground(parent.getBackground());
 	}
 
 	protected void addAsChildOrSibling(EObject elementProtoType) {

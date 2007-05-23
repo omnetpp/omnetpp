@@ -1,8 +1,11 @@
 package org.omnetpp.scave.actions;
 
+import static org.omnetpp.common.image.ImageFactory.TOOLBAR_IMAGE_PROPERTIES;
+
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.EditDialog;
 
@@ -13,6 +16,7 @@ public class EditAction extends AbstractScaveAction {
 	public EditAction() {
         setText("Properties...");
         setToolTipText("Edit the properties of the selected item");
+		setImageDescriptor(ImageFactory.getDescriptor(TOOLBAR_IMAGE_PROPERTIES));
 	}
 
 	@Override

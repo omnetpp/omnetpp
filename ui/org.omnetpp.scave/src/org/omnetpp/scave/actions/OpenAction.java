@@ -1,8 +1,11 @@
 package org.omnetpp.scave.actions;
 
+import static org.omnetpp.common.image.ImageFactory.*;
+
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.provider.IWrapperItemProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
@@ -14,6 +17,7 @@ import org.omnetpp.scave.model.Dataset;
 public class OpenAction extends AbstractScaveAction {
 	public OpenAction() {
 		setText("Open");
+		setImageDescriptor(ImageFactory.getDescriptor(TOOLBAR_IMAGE_OPEN));
 		setToolTipText("Open item in a separate page");
 	}
 	

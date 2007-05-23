@@ -607,9 +607,11 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 		contextMenu.add(new Separator("additions"));
 		contextMenu.setRemoveAllWhenShown(true);
 		contextMenu.addMenuListener(this);
-		Menu menu= contextMenu.createContextMenu(viewer.getControl());
+		Menu menu = contextMenu.createContextMenu(viewer.getControl());
 		viewer.getControl().setMenu(menu);
-		getSite().registerContextMenu(contextMenu, viewer);
+
+		// Note: don't register the context menu, otherwise "Run As", "Debug As", "Team", and other irrelevant menu items appear...
+		//getSite().registerContextMenu(contextMenu, viewer);
 	}
 
 	/**
