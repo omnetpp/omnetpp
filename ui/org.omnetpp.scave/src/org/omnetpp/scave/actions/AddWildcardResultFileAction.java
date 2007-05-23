@@ -18,7 +18,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  */
 public class AddWildcardResultFileAction extends AbstractScaveAction {
 	public AddWildcardResultFileAction() {
-		setText("Add using Wildcard...");
+		setText("Wildcard...");
 		setToolTipText("Use wildcards to specify a set of scalar or vector files");
 	}
 
