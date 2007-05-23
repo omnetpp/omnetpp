@@ -94,11 +94,13 @@ public class LinearAxis {
 			return 0;
 		Ticks ticks = createTicks(bounds);
 		int labelWidth = 0;
-		gc.setFont(tickFont);
-		for (BigDecimal tick : ticks) {
-			if (ticks.isMajorTick(tick)) {
-				labelWidth = Math.max(labelWidth, gc.textExtent(tick.toPlainString()).x);
-			}						
+		if (ticks != null) {
+			gc.setFont(tickFont);
+			for (BigDecimal tick : ticks) {
+				if (ticks.isMajorTick(tick)) {
+					labelWidth = Math.max(labelWidth, gc.textExtent(tick.toPlainString()).x);
+				}						
+			}
 		}
 		return labelWidth;
 	}
@@ -119,19 +121,21 @@ public class LinearAxis {
 		// to the whole clipping region (cached image area) not just the plot area    
 		Rectangle rect = new Rectangle(gc.getClipping());
 		Ticks ticks = createTicks(rect);
-		gc.setLineStyle(Graphics.LINE_DOT);
-		gc.setForeground(DEFAULT_GRID_COLOR);
-		for (BigDecimal tick : ticks) {
-			if (vertical) {
-				int y = mapping.toCanvasY(tick.doubleValue()); 
-				if (y >= rect.y && y <= rect.bottom()) {
-					gc.drawLine(rect.x, y, rect.right(), y);
+		if (ticks != null) {
+			gc.setLineStyle(Graphics.LINE_DOT);
+			gc.setForeground(DEFAULT_GRID_COLOR);
+			for (BigDecimal tick : ticks) {
+				if (vertical) {
+					int y = mapping.toCanvasY(tick.doubleValue()); 
+					if (y >= rect.y && y <= rect.bottom()) {
+						gc.drawLine(rect.x, y, rect.right(), y);
+					}
 				}
-			}
-			else {
-				int x = mapping.toCanvasX(tick.doubleValue()); 
-				if (x >= rect.x && x <= rect.right()) {
-					gc.drawLine(x, rect.y, x, rect.bottom());
+				else {
+					int x = mapping.toCanvasX(tick.doubleValue()); 
+					if (x >= rect.x && x <= rect.right()) {
+						gc.drawLine(x, rect.y, x, rect.bottom());
+					}
 				}
 			}
 		}
@@ -172,30 +176,32 @@ public class LinearAxis {
 
 		// draw ticks and labels
 		Ticks ticks = createTicks(plotArea);
-		gc.setFont(tickFont);
-		for (BigDecimal tick : ticks) {
-			String label = tick.toPlainString();
-			Point size = gc.textExtent(label);
-			int tickLen = ticks.isMajorTick(tick) ? majorTickLength : minorTickLength; 
-			if (vertical) {
-				int y = mapping.toCanvasY(tick.doubleValue()); 
-				if (y >= plotArea.y && y <= plotArea.bottom()) {
-					gc.drawLine(plotArea.x - gap - tickLen, y, plotArea.x - gap, y);
-					gc.drawLine(plotArea.right() + gap + tickLen, y, plotArea.right() + gap, y);
-					if (drawTickLabels && ticks.isMajorTick(tick)) {
-						gc.drawText(label, plotArea.x - gap - tickLen - size.x - 1, y - size.y / 2, true);
-						gc.drawText(label, plotArea.right() + gap + tickLen + 3, y - size.y / 2, true);
+		if (ticks != null) {
+			gc.setFont(tickFont);
+			for (BigDecimal tick : ticks) {
+				String label = tick.toPlainString();
+				Point size = gc.textExtent(label);
+				int tickLen = ticks.isMajorTick(tick) ? majorTickLength : minorTickLength; 
+				if (vertical) {
+					int y = mapping.toCanvasY(tick.doubleValue()); 
+					if (y >= plotArea.y && y <= plotArea.bottom()) {
+						gc.drawLine(plotArea.x - gap - tickLen, y, plotArea.x - gap, y);
+						gc.drawLine(plotArea.right() + gap + tickLen, y, plotArea.right() + gap, y);
+						if (drawTickLabels && ticks.isMajorTick(tick)) {
+							gc.drawText(label, plotArea.x - gap - tickLen - size.x - 1, y - size.y / 2, true);
+							gc.drawText(label, plotArea.right() + gap + tickLen + 3, y - size.y / 2, true);
+						}
 					}
 				}
-			}
-			else {
-				int x = mapping.toCanvasX(tick.doubleValue()); 
-				if (x >= plotArea.x && x <= plotArea.right()) {
-					gc.drawLine(x, plotArea.y - gap - tickLen, x, plotArea.y - gap);
-					gc.drawLine(x, plotArea.bottom() + gap + tickLen, x, plotArea.bottom() + gap);
-					if (drawTickLabels && ticks.isMajorTick(tick)) {
-						gc.drawText(label, x - size.x / 2 + 1, plotArea.y - gap - tickLen - size.y - 1, true);
-						gc.drawText(label, x - size.x / 2 + 1, plotArea.bottom() + gap + tickLen + 1, true);
+				else {
+					int x = mapping.toCanvasX(tick.doubleValue()); 
+					if (x >= plotArea.x && x <= plotArea.right()) {
+						gc.drawLine(x, plotArea.y - gap - tickLen, x, plotArea.y - gap);
+						gc.drawLine(x, plotArea.bottom() + gap + tickLen, x, plotArea.bottom() + gap);
+						if (drawTickLabels && ticks.isMajorTick(tick)) {
+							gc.drawText(label, x - size.x / 2 + 1, plotArea.y - gap - tickLen - size.y - 1, true);
+							gc.drawText(label, x - size.x / 2 + 1, plotArea.bottom() + gap + tickLen + 1, true);
+						}
 					}
 				}
 			}
@@ -210,7 +216,7 @@ public class LinearAxis {
 	}
 
 	protected static Ticks createTicks(double start, double end, int pixels) {
-		return new Ticks(start, end, 50 * (end-start) / pixels );
+		return pixels != 0 ? new Ticks(start, end, 50 * (end-start) / pixels ) : null;
 	}
 
 	public Rectangle getBounds() {

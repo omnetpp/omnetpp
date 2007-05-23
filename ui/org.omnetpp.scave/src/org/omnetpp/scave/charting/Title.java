@@ -55,7 +55,7 @@ public class Title {
 	}
 	
 	public void draw(GC gc) {
-		if (text == null || text.length() == 0)
+		if (text == null || text.length() == 0 || bounds == null)
 			return;
 		
 		gc.setFont(font);
