@@ -188,10 +188,11 @@ public class HoverSupport {
 			return; // we are already showing a hover or a (sticky) information control
 
 		IHoverTextProvider hoverTextProvider = hoverTextProviders.get(control);
-		String hoverText = hoverTextProvider.getHoverTextFor(control, x, y);
+		Point preferedSize = new Point(SWT.DEFAULT, SWT.DEFAULT);
+		String hoverText = hoverTextProvider.getHoverTextFor(control, x, y, preferedSize);
 		if (hoverText != null) {
 			hoverControl = getHoverControlCreator().createInformationControl(control.getShell());
-			configureControl(hoverControl, hoverText, control.toDisplay(x, y));
+			configureControl(hoverControl, hoverText, control.toDisplay(x, y), preferedSize);
 			hoverControl.addDisposeListener(new DisposeListener() {
 				public void widgetDisposed(DisposeEvent e) {
 					hoverControl = null;
@@ -217,11 +218,12 @@ public class HoverSupport {
 		Point p = Display.getDefault().getCursorLocation();
 
 		IHoverTextProvider hoverProvider = hoverTextProviders.get(control);
-		String hoverText = hoverProvider.getHoverTextFor(control, control.toControl(p).x, control.toControl(p).y);
+		Point preferedSize = new Point(SWT.DEFAULT, SWT.DEFAULT);
+		String hoverText = hoverProvider.getHoverTextFor(control, control.toControl(p).x, control.toControl(p).y, preferedSize);
 		if (hoverText != null) {
 			// create the control
 			informationControl = getInformationPresenterControlCreator().createInformationControl(control.getShell());
-			configureControl(informationControl, hoverText, p);
+			configureControl(informationControl, hoverText, p, preferedSize);
 			informationControl.setFocus();
 			
 			// it should close on losing the focus 
@@ -240,10 +242,12 @@ public class HoverSupport {
 		}
 	}
 
-	protected void configureControl(IInformationControl informationControl, String hoverText, Point mouseLocation) {
+	protected void configureControl(IInformationControl informationControl, String hoverText, Point mouseLocation, Point preferedSize) {
 		informationControl.setSizeConstraints(hoverSizeConstaints.x, hoverSizeConstaints.y);
 		informationControl.setInformation(hoverText);
 		Point size = informationControl.computeSizeHint(); //XXX issue: BrowserInformationControl is always at least 80 pixels high -- this is hardcoded :(
+		if (preferedSize.x != SWT.DEFAULT) size.x = preferedSize.x;
+		if (preferedSize.y != SWT.DEFAULT) size.y = preferedSize.y;
 		informationControl.setSize(size.x, size.y);
 		informationControl.setLocation(calculateHoverPosition(mouseLocation, size));
 		informationControl.setVisible(true);

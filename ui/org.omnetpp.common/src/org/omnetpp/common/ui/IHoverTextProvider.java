@@ -1,5 +1,6 @@
 package org.omnetpp.common.ui;
 
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
 
 /**
@@ -12,6 +13,12 @@ public interface IHoverTextProvider {
 	/**
 	 * Return a tooltip text, or null if there is no tooltip to be shown.
 	 * The (x,y) coordinates are relative to the widget.
+	 * 
+	 * @param control 	the control which is hovered over
+	 * @param x 		the x coordinate of the mouse cursor
+	 * @param y			the y coordinate of the mouse cursor
+	 * @param outPreferedSize	a Point object to return the requested size of the tooltip control (out parameter)
 	 */
-	String getHoverTextFor(Control control, int x, int y);
+	String getHoverTextFor(Control control, int x, int y, Point outPreferedSize);
+	
 }

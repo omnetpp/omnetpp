@@ -42,6 +42,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
@@ -386,9 +387,11 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		}
 		
 		public LegendTooltip() {
-			new HoverSupport().adapt(ChartCanvas.this, new IHoverTextProvider() {
-				public String getHoverTextFor(Control control, int x, int y) {
-					return getTooltipText(x, y);
+			HoverSupport hoverSupport = new HoverSupport();
+			hoverSupport.setHoverSizeConstaints(new Point(320,400));
+			hoverSupport.adapt(ChartCanvas.this, new IHoverTextProvider() {
+				public String getHoverTextFor(Control control, int x, int y, Point preferedSize) {
+					return getTooltipText(x, y, preferedSize);
 				}
 			});
 		}
@@ -415,10 +418,11 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			graphics.popState();
 		}
 		
-		public String getTooltipText(int x, int y) {
+		public String getTooltipText(int x, int y, Point preferedSize) {
 			if (rect.contains(x, y) && items.size() > 0) {
 				StringBuffer sb = new StringBuffer();
-				sb.append("<b>Legend:</b>");
+				int height = 25;
+				sb.append("<b>Legend:</b>"); height += 10;
 				sb.append("<table style='margin-left: 1em'>");
 				for (Item item : items) {
 					sb.append("<tr>");
@@ -428,8 +432,10 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 					sb.append("<td style='vectical-align: middle; color: ").append(htmlColor(item.color)).append("'>").
 						append(item.label).append("</td>"); // XXX quote
 					sb.append("</tr>");
+					height += 10;
 				}
 				sb.append("</table>");
+				preferedSize.y = Math.max(height, 80);
 				return HoverSupport.addHTMLStyleSheet(sb.toString());
 			}
 			else
