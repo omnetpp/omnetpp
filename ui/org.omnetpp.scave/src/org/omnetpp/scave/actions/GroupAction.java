@@ -11,9 +11,11 @@ import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * Groups the selected objects. The objects must be siblings and
@@ -52,7 +54,9 @@ public class GroupAction extends AbstractScaveAction {
 
 	@Override
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		return asRangeSelection(selection) != null;
+		// elements must be contiguous siblings, and must be under a Dataset
+		RangeSelection range = asRangeSelection(selection);
+		return range != null && ScaveModelUtil.findEnclosingOrSelf(range.owner, Dataset.class) != null;
 	}
 	
 	static class RangeSelection {
