@@ -71,6 +71,8 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         // detach the editor file from the core plugin and do not set a new file
         ((IFileEditorInput)getEditorInput()).getFile()
                 .getWorkspace().removeResourceChangeListener(resourceListener);
+        // disconnect the editor from the nedresources plugin
+        setInput(null);
         super.dispose();
     }
 
@@ -80,7 +82,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
      */
     @Override
     protected void setInput(IEditorInput input) {
-        // do nothing if no change has occured
+        // do nothing if no change has occurred
         if (ObjectUtils.equals(getEditorInput(), input))
             return;
         // remove the listeners from the old file
@@ -324,11 +326,11 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
                     });
                 }
             } else if (delta.getKind() == IResourceDelta.CHANGED) {
-                // guard that we shoul dnot reload while save is in progress
+                // guard that we should not reload while save is in progress
 //                if (!editorSaving) {
 
                   // the file was overwritten somehow (could have been
-                  // replaced by another version in the respository)
+                  // replaced by another version in the repository)
                   // TODO ask the user and reload the file
 
 //                }

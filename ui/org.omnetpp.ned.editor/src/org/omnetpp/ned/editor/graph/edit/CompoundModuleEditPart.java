@@ -27,11 +27,13 @@ import org.omnetpp.figures.misc.GateAnchor;
 import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
+import org.omnetpp.ned.model.ex.ConnectionNodeEx;
+import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 
 public class CompoundModuleEditPart extends ModuleEditPart {
 
     // stores  the connection model - connection controller mapping for the compound module
-    private Map<Object, ConnectionEditPart> modelToConnectionPartsRegistry = new HashMap<Object, ConnectionEditPart>();
+    private final Map<Object, ConnectionEditPart> modelToConnectionPartsRegistry = new HashMap<Object, ConnectionEditPart>();
 
     protected CompoundModuleGateAnchor gateAnchor;
 
@@ -61,7 +63,6 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     protected CompoundModuleFigure getCompoundModuleFigure() {
         return (CompoundModuleFigure) getFigure();
     }
-
 
     /**
      * @return Helper function to return the model object with correct type
@@ -99,9 +100,8 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         return super.getAdapter(key);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    protected List getModelChildren() {
+    protected List<SubmoduleNodeEx> getModelChildren() {
         // return all submodule including inherited ones
     	return getCompoundModuleModel().getSubmodules();
     }
@@ -111,9 +111,8 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      *
      * @return List of connections.
      */
-    @SuppressWarnings("unchecked")
     @Override
-    protected List getModelSourceConnections() {
+    protected List<ConnectionNodeEx> getModelSourceConnections() {
         return getCompoundModuleModel().getSrcConnections();
     }
 
@@ -122,9 +121,8 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      *
      * @return List of connections.
      */
-    @SuppressWarnings("unchecked")
     @Override
-    protected List getModelTargetConnections() {
+    protected List<ConnectionNodeEx> getModelTargetConnections() {
         return getCompoundModuleModel().getDestConnections();
     }
 
@@ -155,8 +153,8 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 	 * @param p current mouse coordinates
 	 * @return The selected connection anchor
 	 */
-	public ConnectionAnchor getConnectionAnchorAt(Point p) {
-//		return new CompoundModuleGateAnchor(getFigure());
+	@Override
+    public ConnectionAnchor getConnectionAnchorAt(Point p) {
         return gateAnchor;
 	}
 
@@ -165,14 +163,15 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 	 * @param gate
 	 * @return
 	 */
-	public GateAnchor getConnectionAnchor(String gate) {
-//		return new CompoundModuleGateAnchor(getFigure());
+	@Override
+    public GateAnchor getConnectionAnchor(String gate) {
         return gateAnchor;
 	}
 
     /**
      * @return The current scaling factor of the compound module
      */
+    @Override
     public float getScale() {
         return ((CompoundModuleNodeEx)getModel()).getDisplayString().getScale();
     }
