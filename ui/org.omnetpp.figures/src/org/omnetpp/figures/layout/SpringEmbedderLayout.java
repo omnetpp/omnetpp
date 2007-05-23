@@ -3,7 +3,6 @@ package org.omnetpp.figures.layout;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LayoutManager;
@@ -11,6 +10,7 @@ import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+
 import org.omnetpp.figures.CompoundModuleFigure;
 
 
@@ -23,6 +23,7 @@ public class SpringEmbedderLayout extends XYLayout {
 	protected AbstractGraphLayoutAlgorithm alg;
 	protected long algSeed = 1971;
     private boolean layoutingInProgress;
+    private boolean requestAutoLayout = true;
 	/**
 	 *
 	 * @param nodeParent The parent figure of the nodes
@@ -60,8 +61,9 @@ public class SpringEmbedderLayout extends XYLayout {
 			// get the associated constraint (coordinates) if any
             Rectangle constr = (Rectangle)getConstraint(node);
 
-            if (constr == null || (constr.x == Integer.MIN_VALUE && constr.y == Integer.MIN_VALUE))
+            if (constr == null || constr.x == Integer.MIN_VALUE && constr.y == Integer.MIN_VALUE) {
             	autoLayouter.addMovableNode(node, node.getBounds().x, node.getBounds().y, node.getPreferredSize().width, node.getPreferredSize().height);
+            }
             else
             	// add as fixed node
             	autoLayouter.addFixedNode(node,
@@ -95,20 +97,18 @@ public class SpringEmbedderLayout extends XYLayout {
 		return autoLayouter;
 	}
 
-	@Override
-	public void invalidate() {
-        if (layoutingInProgress) {
-            return;
-        }
-		super.invalidate();
-		alg = null;
-	}
+//	@Override
+//	public void invalidate() {
+//        if (layoutingInProgress)
+//            return;
+//		super.invalidate();
+//	}
 
-	public void initLayout() {
+	public void executeAutoLayout() {
     	alg = createAutoLayouter(nodeParent, edgeParent);
 		alg.setSeed(algSeed);
-    	// execute the algorithm
     	alg.execute();
+    	requestAutoLayout = false;
 	}
 
 	/**
@@ -122,8 +122,8 @@ public class SpringEmbedderLayout extends XYLayout {
     @Override
     public void layout(IFigure parent) {
         layoutingInProgress = true;
-    	if (alg == null)
-    		initLayout();
+        if (alg == null || requestAutoLayout)
+            executeAutoLayout();
 
     	// lay out the children according to the auto-layouter
         Iterator children = parent.getChildren().iterator();
@@ -133,9 +133,20 @@ public class SpringEmbedderLayout extends XYLayout {
             f = (IFigure)children.next();
             Rectangle bounds = new Rectangle();
             Point loc = alg.getNodePosition(f);
-            Assert.isNotNull(loc);
-            bounds.setLocation(loc);
-            bounds.setSize(f.getPreferredSize());
+            SubmoduleConstraint sconstr = (SubmoduleConstraint)getConstraint(f);
+            // if the algorithm does not have info about this figure or the figure is fixed
+            // (use the figure's location)
+            if (loc == null || !sconstr.isMoveable() || !alg.isNodeMoveable(f)) {
+                bounds = (Rectangle)getConstraint(f);
+            } else {
+                bounds.setLocation(loc);
+                bounds.setSize(f.getPreferredSize());
+            }
+
+            // if no info is coming from the algorithm or from the layout manager just skip it
+            // do not change the location
+            if (bounds == null || bounds.x == Integer.MIN_VALUE || bounds.y == Integer.MIN_VALUE)
+                continue;
 
             if (bounds.width == -1 || bounds.height == -1) {
                 Dimension preferredSize = f.getPreferredSize(bounds.width, bounds.height);
@@ -176,6 +187,13 @@ public class SpringEmbedderLayout extends XYLayout {
 	 */
 	public long getSeed() {
 		return algSeed;
+	}
+
+	/**
+	 * After calling this, the next layout process will call an auto layout process
+	 */
+	public void requestAutoLayout() {
+	    requestAutoLayout = true;
 	}
 
 }

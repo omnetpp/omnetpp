@@ -26,7 +26,7 @@ public abstract class AbstractGraphLayoutAlgorithm
         // standard LCG32 RNG
         final long GLRAND_MAX = 0x7ffffffeL;
         final long a=16807, q=127773, r=2836;
-        rndseed=a*(rndseed%q) - r*(rndseed/q);
+        rndseed=a*rndseed%q - r*rndseed/q;
         if (rndseed<=0) rndseed+=GLRAND_MAX+1;
         return rndseed/(double)(GLRAND_MAX+1);
     }
@@ -119,7 +119,9 @@ public abstract class AbstractGraphLayoutAlgorithm
      * Extract the results after layouting
      */
     public abstract Point getNodePosition(Object mod);
-    
+
+    public abstract boolean isNodeMoveable(Object mod);
+
     public abstract Point getAnchorPosition(String anchor);
 }
 

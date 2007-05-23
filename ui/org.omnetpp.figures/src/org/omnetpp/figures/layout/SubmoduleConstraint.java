@@ -7,7 +7,7 @@ import org.omnetpp.common.displaymodel.IDisplayString;
 /**
  * Behaves exactly like the rectangle (ie. can be used with XYLayout, however adds
  * additional info what makes possible additional layouting specific to submodule vectors
- * (ring, mesh etc...) 
+ * (ring, mesh etc...)
  * @author rhornig
  */
 public class SubmoduleConstraint extends Rectangle {
@@ -15,16 +15,19 @@ public class SubmoduleConstraint extends Rectangle {
 	protected String vectorName = null;
 	protected int vectorIndex = 0;
 	protected int vectorSize = 0;
+	protected boolean moveable = false;
 
 	public SubmoduleConstraint(IDisplayString dps, Float scale) {
 		super();
-		// copy the location and size from the displaystring
+		// copy the location and size from the display string
 		Point loc = dps.getLocation(scale);
         // special case:
         // Integer.MIN_VALUE signals that the coordinate is unpinned and the
-        // layouter can move it freely (if no location is specified in the displaystring)
-        if (loc == null) 
+        // layouter can move it freely (if no location is specified in the display string)
+        if (loc == null) {
         	loc = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
+        	moveable = true;
+        }
 
         setLocation(loc);
         setSize(dps.getSize(scale));
@@ -52,6 +55,13 @@ public class SubmoduleConstraint extends Rectangle {
 
 	public int getVectorSize() {
 		return vectorSize;
+	}
+
+	/**
+	 * @return whether the node is freely movable
+	 */
+	public boolean isMoveable() {
+	    return moveable;
 	}
 
 }

@@ -9,14 +9,14 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 
 // TODO make it more general and to be able to specify the relative attachment point of each figure
-// create a new contraint object for this purpose
+// create a new constraint object for this purpose
 public class DesktopLayout extends XYLayout {
     /**
      * Implements the algorithm to layout the components of the given container figure.
      * Each component is laid out using its own layout constraint specifying its size
-     * and position. Copied from XYLayout BUT places the middlepoint if the children to the
+     * and position. Copied from XYLayout BUT places the middle point if the children to the
      * specified constraint location.
-     * 
+     *
      * @see LayoutManager#layout(IFigure)
      */
     @Override
@@ -27,7 +27,8 @@ public class DesktopLayout extends XYLayout {
         while (children.hasNext()) {
             f = (IFigure)children.next();
             Rectangle bounds = (Rectangle)getConstraint(f);
-            if (bounds == null) continue;
+            if (bounds == null || bounds.x == Integer.MIN_VALUE && bounds.y == Integer.MIN_VALUE)
+                continue;
 
             if (bounds.width == -1 || bounds.height == -1) {
                 Dimension preferredSize = f.getPreferredSize(bounds.width, bounds.height);

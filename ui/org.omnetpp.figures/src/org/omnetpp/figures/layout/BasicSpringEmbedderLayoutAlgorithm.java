@@ -340,10 +340,19 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 
 	@Override
 	public Point getNodePosition(Object mod) {
-	    Assert.isTrue(findNode(mod)!=null);
-
 	    Node n = findNode(mod);
+	    if (n == null)
+	        return null;
+
 	    return new Point(n.x, n.y);
+	}
+
+	@Override
+    public boolean isNodeMoveable(Object mod) {
+	    Node n = findNode(mod);
+	    if (n == null)
+	        return false;
+	    return !n.fixed;
 	}
 
     // utility
@@ -415,7 +424,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
             double vx = e.to.x - e.from.x;
             double vy = e.to.y - e.from.y;
             double len = Math.sqrt(vx * vx + vy * vy);
-            len = (len == 0) ? 1.0 : len;
+            len = len == 0 ? 1.0 : len;
             double f = attractionForce * (e.len - len) / len;
             double dx = f * vx;
             double dy = f * vy;
