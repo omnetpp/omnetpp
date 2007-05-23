@@ -34,6 +34,32 @@ EventLog::~EventLog()
         delete it->second;
 }
 
+bool EventLog::synchronize()
+{
+    IEvent *lastEvent = getLastEvent();
+
+    if (IEventLog::synchronize() || EventLogIndex::synchronize()) {
+        approximateNumberOfEvents = -1;
+
+        for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
+            it->second->synchronize();
+
+        if (lastEvent) {
+            eventNumberToEventMap.erase(lastEvent->getEventNumber());
+            offsetToEventMap.erase(lastEvent->getBeginOffset());
+
+            if (lastEvent->getPreviousEvent())
+                IEvent::unlinkEvents(lastEvent->getPreviousEvent(), lastEvent);
+
+            delete lastEvent;
+        }
+
+        return true;
+    }
+    else
+        return false;
+}
+
 long EventLog::getApproximateNumberOfEvents()
 {
     if (approximateNumberOfEvents == -1)
@@ -174,6 +200,7 @@ Event *EventLog::getEventForEventNumber(long eventNumber, MatchKind matchKind)
 
 Event *EventLog::getNeighbourEvent(IEvent *event, long distance)
 {
+    Assert(event);
     return (Event *)IEventLog::getNeighbourEvent(event, distance);
 }
 

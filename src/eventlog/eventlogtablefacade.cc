@@ -24,6 +24,17 @@ EventLogTableFacade::EventLogTableFacade(IEventLog *eventLog) : EventLogFacade(e
     setCustomFilter("*");
 }
 
+bool EventLogTableFacade::synchronize()
+{
+    if (EventLogFacade::synchronize()) {
+        setFilterMode(filterMode);
+
+        return true;
+    }
+    else
+        return false;
+}
+
 void EventLogTableFacade::setFilterMode(EventLogTableFilterMode filterMode)
 {
     this->filterMode = filterMode;

@@ -31,28 +31,44 @@ FileReader::FileReader(const char *fileName, size_t bufferSize)
     this->bufferSize = bufferSize;
 
     f = NULL;
-    fileSize = -1;
 
-    bufferFileOffset = 0;
     bufferBegin = new char[bufferSize];
     bufferEnd = bufferBegin + bufferSize;
 
     maxLineSize = bufferSize / 2;
+
+    numReadLines = 0;
+    numReadBytes = 0;
+
+    fileSize = -1;
+    bufferFileOffset = 0;
+
     dataBegin = NULL;
     dataEnd = NULL;
     currentDataPointer = NULL;
 
     lastLineStartOffset = -1;
     lastLineEndOffset = -1;
-
-    numReadLines = 0;
-    numReadBytes = 0;
 }
 
 FileReader::~FileReader()
 {
     delete [] bufferBegin;
     closeFile();
+}
+
+bool FileReader::synchronize()
+{
+    int64 fileSize = getFileSizeInternal();
+
+    if (fileSize != this->fileSize) {
+        this->fileSize = fileSize;
+        fillBuffer(true);
+
+        return true;
+    }
+    else
+        return false;
 }
 
 void FileReader::openFile()
@@ -353,17 +369,23 @@ char *FileReader::findPreviousLineBufferPointer(const char *search)
 
 int64 FileReader::getFileSize()
 {
-    if (fileSize == -1) {
-        if (!f) openFile();
+    if (fileSize == -1)
+        fileSize = getFileSizeInternal();
 
-        file_offset_t tmp = filereader_ftell(f);
-        filereader_fseek(f, 0, SEEK_END);
-        fileSize = filereader_ftell(f);
-        filereader_fseek(f, tmp, SEEK_SET);
+    return fileSize;
+}
 
-        if (ferror(f))
-            throw opp_runtime_error("Cannot seek in file `%s'", fileName.c_str());
-    }
+int64 FileReader::getFileSizeInternal()
+{
+    if (!f) openFile();
+
+    file_offset_t tmp = filereader_ftell(f);
+    filereader_fseek(f, 0, SEEK_END);
+    int64 fileSize = filereader_ftell(f);
+    filereader_fseek(f, tmp, SEEK_SET);
+
+    if (ferror(f))
+        throw opp_runtime_error("Cannot seek in file `%s'", fileName.c_str());
 
     return fileSize;
 }
@@ -386,7 +408,6 @@ void FileReader::seekTo(file_offset_t fileOffset, int ensureBufferSizeAround)
     }
 
     file_offset_t newBufferFileOffset = std::min(std::max((int64)0L, getFileSize() - (int64)bufferSize), std::max((int64)0L, fileOffset - (int64)bufferSize / 2));
-    //file_offset_t fileOffsetDelta = newBufferFileOffset - bufferFileOffset;
     currentDataPointer = bufferBegin + fileOffset - newBufferFileOffset;
     Assert(currentDataPointer);
 

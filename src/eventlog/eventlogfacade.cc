@@ -23,6 +23,11 @@ EventLogFacade::EventLogFacade(IEventLog *eventLog)
     this->eventLog = eventLog;
 }
 
+bool EventLogFacade::synchronize()
+{
+    return eventLog->synchronize();
+}
+
 IEvent* EventLogFacade::Event_getEvent(int64 ptr)
 {
     EVENT_PTR(ptr);

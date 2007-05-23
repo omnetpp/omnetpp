@@ -682,6 +682,8 @@ void TOmnetTkApp::newNetwork(const char *network_name)
         opt_network_name = network->name();
         simulation.setupNetwork(network);
         startRun();
+        if (feventlog)
+            fflush(feventlog);
 
         simstate = SIM_NEW;
     }
@@ -727,6 +729,9 @@ void TOmnetTkApp::newRun(int runnumber)
 
         simulation.setupNetwork(network);
         startRun();
+        if (feventlog)
+            fflush(feventlog);
+
         simstate = SIM_NEW;
     }
     catch (std::exception& e)

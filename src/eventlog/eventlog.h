@@ -68,6 +68,7 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         Event *getEventForEndOffset(file_offset_t offset);
 
         // IEventLog interface
+        virtual bool synchronize();
         virtual FileReader *getFileReader() { return reader; }
         virtual long getNumParsedEvents() { return numParsedEvents; }
         virtual ModuleCreatedEntry *getModuleCreatedEntry(int moduleId) { return initializationModuleIdToModuleCreatedEntryMap[moduleId]; }

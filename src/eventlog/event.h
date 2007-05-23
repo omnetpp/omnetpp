@@ -64,6 +64,7 @@ class EVENTLOG_API Event : public IEvent
         file_offset_t parse(FileReader *reader, file_offset_t offset);
 
         // IEvent interface
+        virtual void synchronize();
         virtual IEventLog *getEventLog();
 
         virtual ModuleCreatedEntry *getModuleCreatedEntry();

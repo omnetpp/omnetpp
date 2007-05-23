@@ -28,9 +28,22 @@ static double NaN = zero / zero;
 
 SequenceChartFacade::SequenceChartFacade(IEventLog *eventLog) : EventLogFacade(eventLog)
 {
-    timelineCoordinateSystemVersion = 0;
     timelineMode = NON_LINEAR;
-    relocateTimelineCoordinateSystem(eventLog->getFirstEvent());
+    timelineCoordinateSystemVersion = -1;
+    timelineCoordinateOriginEventNumber = timelineCoordinateRangeStartEventNumber = timelineCoordinateRangeEndEventNumber = -1;
+    timelineCoordinateOriginSimulationTime = -1;
+}
+
+bool SequenceChartFacade::synchronize()
+{
+    if (EventLogFacade::synchronize()) {
+        if (timelineCoordinateOriginEventNumber != -1)
+            relocateTimelineCoordinateSystem(eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber));
+
+        return true;
+    }
+    else
+        return false;
 }
 
 void SequenceChartFacade::relocateTimelineCoordinateSystem(IEvent *event)
@@ -47,7 +60,9 @@ void SequenceChartFacade::relocateTimelineCoordinateSystem(IEvent *event)
 void SequenceChartFacade::setTimelineMode(TimelineMode timelineMode)
 {
     this->timelineMode = timelineMode;
-    relocateTimelineCoordinateSystem(eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber));
+
+    if (timelineCoordinateOriginEventNumber != -1)
+        relocateTimelineCoordinateSystem(eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber));
 }
 
 double SequenceChartFacade::Event_getTimelineCoordinate(int64 ptr)
@@ -73,10 +88,10 @@ double SequenceChartFacade::getTimelineCoordinate(int64 ptr, double lowerTimelin
 double SequenceChartFacade::getTimelineCoordinate(IEvent *event, double lowerTimelineCoordinateCalculationLimit, double upperTimelineCoordinateCalculationLimit)
 {
     Assert(event);
+    Assert(timelineCoordinateSystemVersion != -1);
     Assert(timelineCoordinateOriginEventNumber != -1);
-    long cachedTimelineCoordinateSystemVersion = event->cachedTimelineCoordinateSystemVersion;
 
-    if (this->timelineCoordinateSystemVersion > cachedTimelineCoordinateSystemVersion) {
+    if (this->timelineCoordinateSystemVersion > event->cachedTimelineCoordinateSystemVersion) {
         double timelineCoordinate;
 
         switch (timelineMode) {
@@ -143,6 +158,7 @@ double SequenceChartFacade::getTimelineCoordinate(IEvent *event, double lowerTim
 double SequenceChartFacade::getCachedTimelineCoordinate(IEvent *event)
 {
     Assert(event);
+    Assert(timelineCoordinateSystemVersion != -1);
     Assert(timelineCoordinateOriginEventNumber != -1);
 
     if (this->timelineCoordinateSystemVersion > event->cachedTimelineCoordinateSystemVersion)
@@ -180,6 +196,9 @@ IEvent *SequenceChartFacade::getEventForNonLinearTimelineCoordinate(double timel
 
 IEvent *SequenceChartFacade::getLastEventNotAfterTimelineCoordinate(double timelineCoordinate)
 {
+    if (eventLog->isEmpty())
+        return NULL;
+
     switch (timelineMode) {
         case LINEAR:
             return eventLog->getLastEventNotAfterSimulationTime(getSimulationTimeForTimelineCoordinate(timelineCoordinate));
@@ -208,6 +227,9 @@ IEvent *SequenceChartFacade::getLastEventNotAfterTimelineCoordinate(double timel
 
 IEvent *SequenceChartFacade::getFirstEventNotBeforeTimelineCoordinate(double timelineCoordinate)
 {
+    if (eventLog->isEmpty())
+        return NULL;
+
     switch (timelineMode) {
         case LINEAR:
             return eventLog->getFirstEventNotBeforeSimulationTime(getSimulationTimeForTimelineCoordinate(timelineCoordinate));
@@ -270,6 +292,9 @@ void SequenceChartFacade::extractSimulationTimesAndTimelineCoordinates(
 
 double SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double timelineCoordinate, bool upperLimit)
 {
+    if (eventLog->isEmpty())
+        return 0;
+
     double simulationTime;
 
     switch (timelineMode)
@@ -322,6 +347,9 @@ double SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double timeli
 
 double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simulationTime, bool upperLimit)
 {
+    if (eventLog->isEmpty())
+        return 0;
+
     Assert(simulationTime >= 0);
     Assert(simulationTime <= eventLog->getLastEvent()->getSimulationTime().dbl());
 
@@ -376,6 +404,8 @@ std::vector<int64> *SequenceChartFacade::getIntersectingMessageDependencies(int6
     std::set<int64> messageDependencies;
     IEvent *startEvent = (IEvent *)startEventPtr;
     IEvent *endEvent = (IEvent *)endEventPtr;
+    Assert(startEvent);
+    Assert(endEvent);
     long startEventNumber = startEvent->getEventNumber();
 
     for (IEvent *event = startEvent;; event = event->getNextEvent()) {

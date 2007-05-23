@@ -46,6 +46,18 @@ FilteredEvent::~FilteredEvent()
     }
 }
 
+void FilteredEvent::synchronize()
+{
+    if (consequences)
+    {
+        for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
+            delete *it;
+        delete consequences;
+
+        consequences = NULL;
+    }
+}
+
 IEventLog *FilteredEvent::getEventLog()
 {
     return filteredEventLog;

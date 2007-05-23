@@ -20,6 +20,14 @@ IEventLog::IEventLog()
     lastNeighbourEvent = NULL;
 }
 
+bool IEventLog::synchronize()
+{
+    lastNeighbourEventNumber = -1;
+    lastNeighbourEvent = NULL;
+
+    return false;
+}
+
 void IEventLog::printEvents(FILE *file, long fromEventNumber, long toEventNumber, bool outputEventLogMessages)
 {
     IEvent *event = fromEventNumber == -1 ? getFirstEvent() : getFirstEventNotBeforeEventNumber(fromEventNumber);
@@ -41,6 +49,7 @@ void IEventLog::print(FILE *file, long fromEventNumber, long toEventNumber, bool
 
 IEvent *IEventLog::getNeighbourEvent(IEvent *event, long distance)
 {
+    Assert(event);
     long neighbourEventNumber = event->getEventNumber() + distance;
 
     if (lastNeighbourEvent && lastNeighbourEventNumber != -1 && abs(neighbourEventNumber - lastNeighbourEventNumber) < abs(distance))

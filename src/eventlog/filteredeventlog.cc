@@ -29,14 +29,33 @@ FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
     approximateMatchingEventRatio = -1;
     firstMatchingEvent = NULL;
     lastMatchingEvent = NULL;
+
     maximumNumberOfCauses = maximumNumberOfConsequences = 10;
     maximumCauseDepth = maximumConsequenceDepth = 30;
+
 }
 
 FilteredEventLog::~FilteredEventLog()
 {
     for (EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); it++)
         delete it->second;
+}
+
+bool FilteredEventLog::synchronize()
+{
+    if (eventLog->synchronize()) {
+        approximateNumberOfEvents = -1;
+        approximateMatchingEventRatio = -1;
+        firstMatchingEvent = NULL;
+        lastMatchingEvent = NULL;
+
+        for (EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); it++)
+            it->second->synchronize();
+
+        return true;
+    }
+    else
+        return false;
 }
 
 void FilteredEventLog::setPatternMatchers(std::vector<PatternMatcher> &patternMatchers, std::vector<const char *> &patterns)

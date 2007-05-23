@@ -33,6 +33,12 @@ class EVENTLOG_API IEventLog
         virtual ~IEventLog() {}
 
         /**
+         * Synchorizes state when the underlying log file changes (new events are appended)
+         * and returns true in such cases.
+         */
+        virtual bool synchronize();
+
+        /**
          * Returns the file reader used to read in events.
          */
         virtual FileReader *getFileReader() = 0;
@@ -50,6 +56,10 @@ class EVENTLOG_API IEventLog
          */
         virtual int getNumModuleCreatedEntries() = 0;
 
+        /**
+         * Returns true if the event log does not contain any events.
+         */
+        virtual bool isEmpty() { return !getFirstEvent(); }
         /**
          * Returns the first event or NULL if the log is empty.
          */

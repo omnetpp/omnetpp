@@ -75,7 +75,7 @@ class COMMON_API FileReader
     char *bufferBegin;
     char *bufferEnd;  // = buffer + bufferSize
     file_offset_t bufferFileOffset;
-    file_offset_t fileSize;
+    int64 fileSize;
 
     // the currently used (filled with data) region in buffer
     size_t maxLineSize;
@@ -119,6 +119,8 @@ class COMMON_API FileReader
     char *findNextLineStart(char *s, bool bufferFilled = false);
     char *findPreviousLineStart(char *s, bool bufferFilled = false);
 
+    int64 getFileSizeInternal();
+
   public:
     /**
      * Creates a tokenizer object for the given file, with the given
@@ -130,6 +132,11 @@ class COMMON_API FileReader
      * Destructor.
      */
     ~FileReader();
+
+    /**
+     * Checks if file has been updated on disc and updates internal state accordingly.
+     */
+    bool synchronize();
 
     /**
      * Reads the next line from the file starting from the current position, and returns a pointer to its first character.

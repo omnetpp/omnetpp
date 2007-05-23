@@ -63,6 +63,7 @@ class EVENTLOG_API EventLogIndex
         EventLogIndex(FileReader *reader);
         ~EventLogIndex();
 
+        virtual bool synchronize();
         long getFirstEventNumber();
         long getLastEventNumber();
         simtime_t getFirstSimulationTime();

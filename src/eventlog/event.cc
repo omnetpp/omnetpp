@@ -55,6 +55,18 @@ Event::~Event()
     }
 }
 
+void Event::synchronize()
+{
+    if (consequences)
+    {
+        for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
+            delete *it;
+        delete consequences;
+
+        consequences = NULL;
+    }
+}
+
 IEventLog *Event::getEventLog()
 {
     return eventLog;
@@ -79,7 +91,6 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
     if (PRINT_DEBUG_MESSAGES) printf("Parsing event at offset: %lld\n", offset);
 
     std::deque<int> contextModuleIds;
-    int emptyLines = 0;
 
     while (true)
     {
@@ -92,8 +103,6 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
         }
 
         EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(this, line, reader->getLastLineLength());
-        if (!eventLogEntry)
-            emptyLines++;
 
         // first line must be an event entry
         EventEntry *readEventEntry = dynamic_cast<EventEntry *>(eventLogEntry);
@@ -102,12 +111,8 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
             eventEntry = readEventEntry;
             contextModuleIds.push_back(eventEntry->moduleId);
         }
-        else if (readEventEntry) {
-            if (emptyLines == 1)
-                break; // stop at the start of the next event
-            else
-                throw opp_runtime_error("Too many empty lines for a single event after offset: %lld", offset);
-        }
+        else if (readEventEntry)
+            break; // stop at the start of the next event
         Assert(eventEntry);
 
         // handle module method end

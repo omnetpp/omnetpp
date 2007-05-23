@@ -46,6 +46,7 @@ class EVENTLOG_API FilteredEvent : public IEvent
         IEvent *getEvent();
 
         // IEvent interface
+        virtual void synchronize();
         virtual IEventLog *getEventLog();
 
         virtual ModuleCreatedEntry *getModuleCreatedEntry() { return getEvent()->getModuleCreatedEntry(); }
