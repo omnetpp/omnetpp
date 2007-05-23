@@ -6,6 +6,7 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -31,9 +32,9 @@ public class FilteringPanel extends Composite {
 
 	// Combo boxes for the "Simple" mode
 	private SashForm simpleFilterPanel;
-	private CCombo runCombo;
-	private CCombo moduleCombo;
-	private CCombo dataCombo;
+	private Combo runCombo;
+	private Combo moduleCombo;
+	private Combo dataCombo;
 
 	// The "Go" button
 	private Button filterButton;
@@ -47,15 +48,15 @@ public class FilteringPanel extends Composite {
 		return advancedFilter.getText();
 	}
 
-	public CCombo getModuleNameCombo() {
+	public Combo getModuleNameCombo() {
 		return moduleCombo;
 	}
 
-	public CCombo getNameCombo() {
+	public Combo getNameCombo() {
 		return dataCombo;
 	}
 
-	public CCombo getRunNameCombo() {
+	public Combo getRunNameCombo() {
 		return runCombo;
 	}
 
@@ -138,7 +139,7 @@ public class FilteringPanel extends Composite {
 		showSimpleFilter();
 	}
 
-	private CCombo createComboWithLabel(Composite parent, String text) {
+	private Combo createComboWithLabel(Composite parent, String text) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new GridLayout(2, false));
 
@@ -146,7 +147,7 @@ public class FilteringPanel extends Composite {
 		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		label.setText(text);
 
-		CCombo combo = new CCombo(composite, SWT.BORDER);
+		Combo combo = new Combo(composite, SWT.BORDER);
 		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		combo.setVisibleItemCount(20);
 

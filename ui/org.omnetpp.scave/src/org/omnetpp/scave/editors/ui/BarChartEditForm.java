@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.TabFolder;
@@ -39,7 +39,7 @@ public class BarChartEditForm extends ChartEditForm {
 	private Button[] groupByCheckboxes;
 	// Bars
 	private Text baselineText;
-	private CCombo barPlacementCombo;
+	private Combo barPlacementCombo;
 
 	public BarChartEditForm(Chart chart, EObject parent, ResultFileManager manager) {
 		super(chart, parent, manager);

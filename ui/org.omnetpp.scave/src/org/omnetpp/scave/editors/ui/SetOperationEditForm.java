@@ -8,6 +8,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -58,8 +59,8 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 	protected ResultFileManager manager;
 	
 	// controls
-	private CCombo sourceDatasetCombo;
-	private CCombo datatypeCombo;
+	private Combo sourceDatasetCombo;
+	private Combo datatypeCombo;
 	private FilterField filterField;
 	private Text filterText;
 	
@@ -102,7 +103,7 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		label = new Label(panel, SWT.NONE);
 		label.setText("Source dataset:");
 		label.setLayoutData(new GridData());
-		sourceDatasetCombo = new CCombo(panel, SWT.BORDER | SWT.READ_ONLY);
+		sourceDatasetCombo = new Combo(panel, SWT.BORDER | SWT.READ_ONLY);
 		sourceDatasetCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		sourceDatasetCombo.setVisibleItemCount(15);
 		String[] datasetNames = new String[sourceDatasets.size()];
@@ -114,7 +115,7 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		label = new Label(panel, SWT.NONE);
 		label.setText("Data type:");
 		label.setLayoutData(new GridData());
-		datatypeCombo = new CCombo(panel, SWT.BORDER | SWT.READ_ONLY);
+		datatypeCombo = new Combo(panel, SWT.BORDER | SWT.READ_ONLY);
 		datatypeCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		datatypeCombo.setItems(ScaveModelUtil.getResultTypeNames());
 		

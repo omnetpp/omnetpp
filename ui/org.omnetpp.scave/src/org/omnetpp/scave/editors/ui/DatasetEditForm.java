@@ -9,6 +9,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -44,7 +45,7 @@ public class DatasetEditForm implements IScaveObjectEditForm {
 
 	// edit controls of the features
 	private Text nameText;
-	private CCombo basedOnCombo;
+	private Combo basedOnCombo;
 	
 	/**
 	 * Number of visible items in combos.
@@ -106,7 +107,7 @@ public class DatasetEditForm implements IScaveObjectEditForm {
 		Label basedOnLabel = new Label(panel, SWT.NONE);
 		basedOnLabel.setText("Based on:");
 		basedOnLabel.setLayoutData(new GridData());
-		basedOnCombo = new CCombo(panel, SWT.BORDER | SWT.READ_ONLY);
+		basedOnCombo = new Combo(panel, SWT.BORDER | SWT.READ_ONLY);
 		basedOnCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		basedOnCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		String[] datasetNames = new String[baseDatasets.size()];

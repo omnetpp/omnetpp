@@ -8,12 +8,12 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.TabFolder;
@@ -41,9 +41,9 @@ public class LineChartEditForm extends ChartEditForm {
 			symbolSizes[i] = String.valueOf(i);
 	}
 	
-	private CCombo applyToLinesCombo;
-	private CCombo symbolTypeCombo;
-	private CCombo symbolSizeCombo;
+	private Combo applyToLinesCombo;
+	private Combo symbolTypeCombo;
+	private Combo symbolSizeCombo;
 	private Button[] lineStyleRadios;
 	
 	public LineChartEditForm(Chart chart, EObject parent, ResultFileManager manager) {

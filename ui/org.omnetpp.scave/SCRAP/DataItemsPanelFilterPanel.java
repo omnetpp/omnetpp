@@ -40,16 +40,16 @@ public class DataItemsPanelFilterPanel extends Composite {
 	private Label experimentLabel = null;
 	private Label measurementLabel = null;
 	private Label replicationLabel = null;
-	private CCombo fileCombo = null;
-	private CCombo runCombo = null;
-	private CCombo experimentCombo = null;
-	private CCombo measurementCombo = null;
+	private Combo fileCombo = null;
+	private Combo runCombo = null;
+	private Combo experimentCombo = null;
+	private Combo measurementCombo = null;
 	private Composite composite3 = null;
 	private Label moduleLabel = null;
 	private Label dataLabel = null;
-	private CCombo replicationCombo = null;
-	private CCombo moduleCombo = null;
-	private CCombo dataCombo = null;
+	private Combo replicationCombo = null;
+	private Combo moduleCombo = null;
+	private Combo dataCombo = null;
 	
 	public DataItemsPanelFilterPanel(Composite parent, int style) {
 		this(parent, style, ALL_ROWS);
@@ -61,31 +61,31 @@ public class DataItemsPanelFilterPanel extends Composite {
 		initialize();
 	}
 	
-	public CCombo getDataCombo() {
+	public Combo getDataCombo() {
 		return dataCombo;
 	}
 
-	public CCombo getExperimentCombo() {
+	public Combo getExperimentCombo() {
 		return experimentCombo;
 	}
 
-	public CCombo getFileCombo() {
+	public Combo getFileCombo() {
 		return fileCombo;
 	}
 
-	public CCombo getMeasurementCombo() {
+	public Combo getMeasurementCombo() {
 		return measurementCombo;
 	}
 
-	public CCombo getModuleCombo() {
+	public Combo getModuleCombo() {
 		return moduleCombo;
 	}
 
-	public CCombo getReplicationCombo() {
+	public Combo getReplicationCombo() {
 		return replicationCombo;
 	}
 
-	public CCombo getRunCombo() {
+	public Combo getRunCombo() {
 		return runCombo;
 	}
 

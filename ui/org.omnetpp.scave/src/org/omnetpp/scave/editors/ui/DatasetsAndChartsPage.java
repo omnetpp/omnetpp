@@ -15,6 +15,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.CustomSashForm;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.EditAction;
 import org.omnetpp.scave.actions.NewAction;
 import org.omnetpp.scave.actions.OpenAction;
@@ -48,11 +49,11 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 		setExpandVertical(true);
 		setBackground(ColorFactory.WHITE);
 		getBody().setLayout(new GridLayout());
-		
+
 		//XXX experimental: toolbar for easy creation of Scave objects
 		ToolBar toolbar = new ToolBar(getBody(), SWT.HORIZONTAL);
-		//Composite toolbar = new Composite(getBody(), SWT.NONE);
-		//toolbar.setLayout(new RowLayout(SWT.HORIZONTAL));
+//		Composite toolbar = new Composite(getBody(), SWT.NONE);
+//		toolbar.setLayout(new RowLayout(SWT.HORIZONTAL));
 		toolbar.setLayoutData(new GridData(SWT.END, SWT.BEGINNING, true, false));
 		toolbar.setBackground(ColorFactory.WHITE);
 		toolbar.setFont(new Font(null, "Arial", 7, SWT.NORMAL));

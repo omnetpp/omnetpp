@@ -18,6 +18,7 @@ import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -69,7 +70,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	private Text yAxisTitleText;
 	private Text axisTitleFontText;
 	private Text labelFontText;
-	private CCombo xLabelsRotateByCombo;
+	private Combo xLabelsRotateByCombo;
 
 	private Text xAxisMinText;
 	private Text xAxisMaxText;
@@ -248,15 +249,15 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		return text;
 	}
 
-	protected CCombo createComboField(String labelText, Composite parent, String[] items) {
+	protected Combo createComboField(String labelText, Composite parent, String[] items) {
 		return createComboField(labelText, parent, items, false);
 	}
 
-	protected CCombo createComboField(String labelText, Composite parent, String[] items, boolean optional) {
+	protected Combo createComboField(String labelText, Composite parent, String[] items, boolean optional) {
 		Label label = new Label(parent, SWT.NONE);
 		label.setText(labelText);
 		int style = SWT.BORDER; //type == null ? SWT.BORDER : SWT.BORDER | SWT.READ_ONLY;
-		CCombo combo = new CCombo(parent, style);
+		Combo combo = new Combo(parent, style);
 		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		combo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		combo.setItems(items);
@@ -264,7 +265,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		return combo;
 	}
 
-	protected CCombo createComboField(String labelText, Composite parent, Class<? extends Enum<?>> type, boolean optional) {
+	protected Combo createComboField(String labelText, Composite parent, Class<? extends Enum<?>> type, boolean optional) {
 		Enum<?>[] values = type.getEnumConstants();
 		String[] items = new String[values.length];
 		for (int i = 0; i < values.length; ++i)
@@ -384,7 +385,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		return null;
 	}
 
-	protected <T extends Enum<T>> T getSelection(CCombo combo, Class<T> type) {
+	protected <T extends Enum<T>> T getSelection(Combo combo, Class<T> type) {
 		T[] values = type.getEnumConstants();
 		String selection = combo.getText();
 		for (int i = 0; i < values.length; ++i)
@@ -393,7 +394,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		return null;
 	}
 
-	protected String getSelection(CCombo combo) {
+	protected String getSelection(Combo combo) {
 		String text = combo.getText();
 		return UNSET.equals(text) ? null : text;
 	}
@@ -436,14 +437,14 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			radios[i].setSelection(radios[i].getData(USER_DATA_KEY) == value);
 	}
 
-	protected void setSelection(CCombo combo, Enum<?> value) {
+	protected void setSelection(Combo combo, Enum<?> value) {
 		if (value != null)
 			combo.setText(value.name());
 		else
 			combo.setText(UNSET);
 	}
 
-	protected void setSelection(CCombo combo, String value) {
+	protected void setSelection(Combo combo, String value) {
 		if (value != null && value.length() > 0)
 			combo.setText(value);
 		else

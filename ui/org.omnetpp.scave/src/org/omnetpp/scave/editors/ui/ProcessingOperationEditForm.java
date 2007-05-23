@@ -17,6 +17,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -56,7 +57,7 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 	private String[] operationNames;
 	
 	// controls
-	private CCombo operationCombo;
+	private Combo operationCombo;
 	private Label description;
 	private Table paramsTable;
 	
@@ -114,7 +115,7 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 		group.setLayout(new GridLayout());
 		group.setText("Operation");
 		
-		operationCombo = new CCombo(group, SWT.BORDER | SWT.READ_ONLY);
+		operationCombo = new Combo(group, SWT.BORDER | SWT.READ_ONLY);
 		operationCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		operationCombo.setItems(operationNames);
 		operationCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
