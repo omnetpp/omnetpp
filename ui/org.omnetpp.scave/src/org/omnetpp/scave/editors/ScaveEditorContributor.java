@@ -286,6 +286,12 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	public IAction getShowVectorBrowserViewAction() {
 		return showVectorBrowserViewAction;
 	}
+	public RetargetAction getUndoRetargetAction() {
+		return undoRetargetAction;
+	}
+	public RetargetAction getRedoRetargetAction() {
+		return redoRetargetAction;
+	}
 	public IMenuManager createExportMenu() {
 		IMenuManager exportMenu = new MenuManager("Export to File");
 		if (exportActions != null) {

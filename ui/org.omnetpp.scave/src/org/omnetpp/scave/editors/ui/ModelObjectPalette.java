@@ -120,19 +120,22 @@ public class ModelObjectPalette {
 		spacer.setBackground(parent.getBackground());
 	}
 
-	protected void addAsChildOrSibling(EObject elementProtoType) {
+	protected void addAsChildOrSibling(EObject elementPrototype) {
 		ISelection sel = editor.getSelection();
+		
+		// choose target: use the selected object, except if element is a Dataset 
+		// or ChartSheet which have fixed places in the model
 		EObject target = null;
-		if (elementProtoType instanceof Dataset)
+		if (elementPrototype instanceof Dataset)
 			target = editor.getAnalysis().getDatasets();
-		else if (elementProtoType instanceof ChartSheet)
+		else if (elementPrototype instanceof ChartSheet)
 			target = editor.getAnalysis().getChartSheets();
 		else if (sel instanceof IStructuredSelection && ((IStructuredSelection)sel).getFirstElement() instanceof EObject)
 			target = (EObject) ((IStructuredSelection) sel).getFirstElement();
 		
 		if (target != null)	{
 			// add "element" to "target" as child or as sibling.
-			final EObject element = EcoreUtil.copy(elementProtoType);
+			final EObject element = EcoreUtil.copy(elementPrototype);
 
 			Command command = AddCommand.create(editor.getEditingDomain(), target, null, element);
 			if (command.canExecute()) {

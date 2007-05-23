@@ -37,6 +37,11 @@ public class NewAction extends AbstractScaveAction {
 			setToolTipText("Create new sibling");
 		}
 	}
+
+	public NewAction(EObject defaultParent, boolean createChild, String text) {
+		this(defaultParent, createChild);
+		setText(text);
+	}
 	
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {

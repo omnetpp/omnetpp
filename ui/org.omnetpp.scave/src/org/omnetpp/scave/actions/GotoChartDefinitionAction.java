@@ -13,14 +13,14 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  */
 public class GotoChartDefinitionAction extends AbstractScaveAction {
 	public GotoChartDefinitionAction() {
-		setText("Go to Definition");
-		setToolTipText("Go to Definition");
+		setText("Go to Chart Definition");
+		setToolTipText("Go to Chart Definition");
 	}
 
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
 		Chart chart = getChart(editor, selection);
-		if (chart == null || isTemporaryChart(chart, editor))
+		if (chart == null || ScaveModelUtil.isTemporaryChart(chart, editor))
 			return;
 
 		
@@ -37,14 +37,9 @@ public class GotoChartDefinitionAction extends AbstractScaveAction {
 			return null;
 	}
 
-	//XXX duplicate of method in CreateChartTemplateAction
-	private static boolean isTemporaryChart(Chart chart, ScaveEditor editor) {
-		return ScaveModelUtil.findEnclosingOrSelf(chart, Analysis.class) == editor.getTempAnalysis();
-	}
-	
 	@Override
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
 		Chart chart = getChart(editor, selection);
-		return chart != null && !isTemporaryChart(chart, editor);
+		return chart != null && !ScaveModelUtil.isTemporaryChart(chart, editor);
 	}
 }

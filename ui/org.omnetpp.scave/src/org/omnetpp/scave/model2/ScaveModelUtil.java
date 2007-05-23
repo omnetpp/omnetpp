@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
+import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -327,6 +328,10 @@ public class ScaveModelUtil {
 				   eObject instanceof ChartSheets ||
 				   eObject instanceof ChartSheet;
 		}
+	}
+
+	public static boolean isTemporaryChart(Chart chart, ScaveEditor editor) {
+		return ScaveModelUtil.findEnclosingOrSelf(chart, Analysis.class) == editor.getTempAnalysis();
 	}
 
 	public static Property getChartProperty(Chart chart, String propertyName) {

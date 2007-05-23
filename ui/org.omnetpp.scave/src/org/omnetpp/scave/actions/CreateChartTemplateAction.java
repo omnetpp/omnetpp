@@ -21,7 +21,6 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.model.Add;
-import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
@@ -50,7 +49,7 @@ public class CreateChartTemplateAction extends AbstractScaveAction {
 		ScaveEditorPage page = scaveEditor.getActiveEditorPage();
 		if (page != null && page instanceof ChartPage) {
 			Chart chart = ((ChartPage)page).getChart();
-			if (isTemporaryChart(chart, scaveEditor)) {
+			if (ScaveModelUtil.isTemporaryChart(chart, scaveEditor)) {
 				Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 				
 				CreateChartTemplateDialog dialog = new CreateChartTemplateDialog(scaveEditor.getSite().getShell());
@@ -101,11 +100,7 @@ public class CreateChartTemplateAction extends AbstractScaveAction {
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
 		ScaveEditorPage page = editor.getActiveEditorPage();
 		return page != null && page instanceof ChartPage &&
-				isTemporaryChart(((ChartPage)page).getChart(), editor);
-	}
-	
-	private static boolean isTemporaryChart(Chart chart, ScaveEditor editor) {
-		return ScaveModelUtil.findEnclosingOrSelf(chart, Analysis.class) == editor.getTempAnalysis();
+				ScaveModelUtil.isTemporaryChart(((ChartPage)page).getChart(), editor);
 	}
 	
 	private Collection<Add> getOriginalAdds(Dataset dataset) {
