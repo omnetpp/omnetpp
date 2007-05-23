@@ -6,9 +6,12 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.GroupRequest;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IWorkbenchPart;
+
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.commands.ChangeLayoutSeedCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
+import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
+import org.omnetpp.ned.editor.graph.edit.SubmoduleEditPart;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 
 public class ReLayoutAction extends org.eclipse.gef.ui.actions.SelectionAction {
@@ -40,6 +43,8 @@ public class ReLayoutAction extends org.eclipse.gef.ui.actions.SelectionAction {
 			return false;
 		if (getSelectedObjects().get(0) instanceof CompoundModuleEditPart)
 			return true;
+        if (getSelectedObjects().get(0) instanceof SubmoduleEditPart)
+            return true;
 		return false;
 	}
 
@@ -50,12 +55,12 @@ public class ReLayoutAction extends org.eclipse.gef.ui.actions.SelectionAction {
 	private Command getCommand() {
 		List<Object> selEditParts = getSelectedObjects();
 
-		if (selEditParts.size() != 1 || !(selEditParts.get(0) instanceof CompoundModuleEditPart))
+		if (!calculateEnabled())
 			return null;
 
 		// get the parent of the currently selected
 		CompoundModuleNodeEx compoundModuleNodeEx
-			= (CompoundModuleNodeEx)((CompoundModuleEditPart)selEditParts.get(0)).getModel();
+			= ((ModuleEditPart)selEditParts.get(0)).getCompoundModulePart().getCompoundModuleModel();
 		// create command that changes the compound modules layout seed
 		return new ChangeLayoutSeedCommand(compoundModuleNodeEx);
 	}
