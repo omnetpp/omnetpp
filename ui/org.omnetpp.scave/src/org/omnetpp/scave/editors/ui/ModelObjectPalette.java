@@ -24,7 +24,6 @@ import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Dataset;
@@ -45,7 +44,7 @@ public class ModelObjectPalette {
 	/**
 	 * Adds palette buttons to the given toolbar, and configures them.
 	 */
-	public ModelObjectPalette(Composite parent, ScaveEditor editor, Color buttonBgColor, boolean showText) {
+	public ModelObjectPalette(Composite parent, Color buttonBgColor, boolean showText, ScaveEditor editor, boolean wantDatasetAndChartsheet) {
 		this.editor = editor;
 		this.buttonBgColor = buttonBgColor;
 		this.showText = showText;
@@ -53,8 +52,10 @@ public class ModelObjectPalette {
 		ILabelProvider labelProvider = new AdapterFactoryLabelProvider(editor.getAdapterFactory());
 		ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
 
-		addToolItem(parent, factory.createDataset(), labelProvider);
-		addSeparator(parent);
+		if (wantDatasetAndChartsheet) {
+			addToolItem(parent, factory.createDataset(), labelProvider);
+			addSeparator(parent);
+		}
 		addToolItem(parent, factory.createAdd(), labelProvider);
 		addToolItem(parent, factory.createDiscard(), labelProvider);
 		addToolItem(parent, factory.createApply(), labelProvider);
@@ -69,8 +70,10 @@ public class ModelObjectPalette {
 		addToolItem(parent, factory.createLineChart(), labelProvider);
 		addToolItem(parent, factory.createHistogramChart(), labelProvider);
 		addToolItem(parent, factory.createScatterChart(), labelProvider);
-		addSeparator(parent);
-		addToolItem(parent, factory.createChartSheet(), labelProvider);
+		if (wantDatasetAndChartsheet) {
+			addSeparator(parent);
+			addToolItem(parent, factory.createChartSheet(), labelProvider);
+		}
 	}
 
 		

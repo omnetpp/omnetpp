@@ -27,6 +27,8 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -47,7 +49,11 @@ import org.omnetpp.scave.model.Chart;
  * @author andras
  */
 public class ScaveEditorPage extends ScrolledForm {
-
+	//private static final Color PALETTE_BG_COLOR = new Color(null, 234, 240, 252); 
+	//private static final Color BUTTONS_BG_COLOR = new Color(null, 239, 244, 253); 
+	private static final Color PALETTE_BG_COLOR = new Color(null, 241, 245, 253);
+	private static final Color BUTTONS_BG_COLOR = new Color(null, 249, 251, 254);
+	
 	protected ScaveEditor scaveEditor = null;  // backreference to the containing editor
 	private String pageTitle = "untitled";
 	
@@ -83,6 +89,19 @@ public class ScaveEditorPage extends ScrolledForm {
 	 */
 	public void updatePage(Notification notification) {
 	}
+	
+	/**
+	 * Creates palette for model object creation
+	 */
+	protected void createPalette(Composite parent, boolean wantDatasetAndChartsheet) {
+		Composite toolbar = new Composite(parent, SWT.BORDER);
+		toolbar.setLayout(new RowLayout(SWT.VERTICAL));
+		((RowLayout)toolbar.getLayout()).fill = true;
+		toolbar.setLayoutData(new GridData(SWT.END, SWT.FILL, false, true));
+		toolbar.setBackground(PALETTE_BG_COLOR);
+		new ModelObjectPalette(toolbar, BUTTONS_BG_COLOR, true, scaveEditor, wantDatasetAndChartsheet);
+	}
+
 	
 	/**
 	 * Sets up the given control so that when a file is drag-dropped into it,

@@ -10,12 +10,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.scave.actions.EditAction;
-import org.omnetpp.scave.actions.GroupAction;
-import org.omnetpp.scave.actions.NewAction;
-import org.omnetpp.scave.actions.OpenAction;
-import org.omnetpp.scave.actions.RemoveAction;
-import org.omnetpp.scave.actions.UngroupAction;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.model.Dataset;
@@ -23,9 +18,8 @@ import org.omnetpp.scave.model.ScaveModelPackage;
 
 //FIXME close this page when dataset gets deleted
 public class DatasetPage extends ScaveEditorPage {
-
+	private TreeViewer datasetTreeViewer;
 	private Dataset dataset; // backreference to the model object we operate on
-	private DatasetPanel datasetPanel;
 
 	private IResultFilesChangeListener resultFilesChangeListener; // we'll need to unhook on dispose()
 	private INotifyChangedListener modelChangeListener; // we'll need to unhook on dispose()
@@ -44,63 +38,38 @@ public class DatasetPage extends ScaveEditorPage {
 	}
 
 	public TreeViewer getDatasetTreeViewer() {
-		return datasetPanel.getTreeViewer();
+		return datasetTreeViewer;
 	}
 
 	private void initialize() {
 		// set up UI
-		setPageTitle("Dataset: " + dataset.getName());
-		setFormTitle("Dataset: " + dataset.getName());
+		String datasetName = StringUtils.isEmpty(dataset.getName()) ? "<unnamed>" : dataset.getName();
+		setPageTitle("Dataset: " + datasetName);
+		setFormTitle("Dataset: " + datasetName);
 		setExpandHorizontal(true);
 		setExpandVertical(true);
 		//setDelayedReflow(false);
 		setBackground(ColorFactory.WHITE);
-		getBody().setLayout(new GridLayout());
+		getBody().setLayout(new GridLayout(2, false));
+		
 		Label label = new Label(getBody(), SWT.WRAP);
 		label.setBackground(getBackground());
 		label.setText("Here you can edit the dataset. " +
 	      "The dataset allows you to create a subset of the input data and work with it. "+
 	      "Datasets may include processing steps, and one dataset can serve as input for another.");
 		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		((GridData)label.getLayoutData()).horizontalSpan = 2;
 		
 		// create dataset treeviewer with buttons
-		datasetPanel = new DatasetPanel(getBody(), SWT.NONE);
-		datasetPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		datasetTreeViewer = new TreeViewer(getBody(), SWT.BORDER | SWT.MULTI);
+		datasetTreeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
+		createPalette(getBody(), false);
+		
 		// configure dataset treeviewer
 		TreeViewer treeViewer = getDatasetTreeViewer();
 		scaveEditor.configureTreeViewer(treeViewer);
 		treeViewer.setInput(dataset);
-
-		// set up actions
-		configureViewerButton(
-				datasetPanel.getNewChildButton(),
-				datasetPanel.getTreeViewer(),
-				new NewAction(dataset, true));
-		configureViewerButton(
-				datasetPanel.getNewSiblingButton(),
-				datasetPanel.getTreeViewer(),
-				new NewAction(dataset, false));
-		configureViewerButton(
-				datasetPanel.getRemoveButton(),
-				datasetPanel.getTreeViewer(),
-				new RemoveAction());
-		configureViewerButton(
-				datasetPanel.getEditButton(),
-				datasetPanel.getTreeViewer(),
-				new EditAction());
-		configureViewerButton(
-				datasetPanel.getGroupButton(),
-				datasetPanel.getTreeViewer(),
-				new GroupAction());
-		configureViewerButton(
-				datasetPanel.getUngroupButton(),
-				datasetPanel.getTreeViewer(),
-				new UngroupAction());
-		configureViewerDefaultButton(
-				datasetPanel.getOpenChartButton(),
-				datasetPanel.getTreeViewer(),
-				new OpenAction());
 	}
 
 	@Override

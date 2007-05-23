@@ -8,6 +8,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISelectionListener;
@@ -28,10 +29,12 @@ import org.omnetpp.scave.actions.CreateTempChartAction;
 import org.omnetpp.scave.actions.EditAction;
 import org.omnetpp.scave.actions.ExportDataAction;
 import org.omnetpp.scave.actions.GotoChartDefinitionAction;
+import org.omnetpp.scave.actions.GroupAction;
 import org.omnetpp.scave.actions.IScaveAction;
 import org.omnetpp.scave.actions.OpenAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
 import org.omnetpp.scave.actions.ShowVectorBrowserViewAction;
+import org.omnetpp.scave.actions.UngroupAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.model.presentation.ScaveModelActionBarContributor;
 
@@ -58,6 +61,8 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	// generic actions
 	private IAction openAction;
 	private IAction editAction;
+	private IAction groupAction;
+	private IAction ungroupAction;
 
 	// ChartPage actions
 //XXX
@@ -93,6 +98,8 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	public void init(IActionBars bars, IWorkbenchPage page) {
         openAction = registerAction(page, new OpenAction());
         editAction = registerAction(page, new EditAction());
+        groupAction = registerAction(page, new GroupAction());
+        ungroupAction = registerAction(page, new UngroupAction());
 
         // ChartPage actions
 //XXX
@@ -209,10 +216,15 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 
 	@Override
 	public void menuAboutToShow(IMenuManager menuManager) {
+		// This is called for context menus of the model tree viewers
 		super.menuAboutToShow(menuManager);
 		menuManager.insertBefore("additions", openAction);
 		menuManager.insertBefore("additions", editAction);
-		menuManager.insertAfter("additions", createExportMenu());
+		
+		menuManager.insertBefore("edit", groupAction);
+		menuManager.insertBefore("edit", ungroupAction);
+		menuManager.insertBefore("edit", new Separator());
+		menuManager.insertBefore("edit", createExportMenu());
 	}
 	
 	public IAction getOpenAction() {
@@ -275,7 +287,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 		return showVectorBrowserViewAction;
 	}
 	public IMenuManager createExportMenu() {
-		IMenuManager exportMenu = new MenuManager("Export to file");
+		IMenuManager exportMenu = new MenuManager("Export to File");
 		if (exportActions != null) {
 			for (String format : ExportDataAction.FORMATS) {
 				IAction action = exportActions.get(format);

@@ -3,10 +3,8 @@ package org.omnetpp.scave.editors.ui;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
@@ -22,13 +20,6 @@ import org.omnetpp.scave.model.Analysis;
  * @author Andras
  */
 public class DatasetsAndChartsPage extends ScaveEditorPage {
-	//private static final Color PALETTE_BG_COLOR = new Color(null, 234, 240, 252); 
-	//private static final Color BUTTONS_BG_COLOR = new Color(null, 239, 244, 253); 
-
-	//private static final Color PALETTE_BG_COLOR = new Color(null, 245, 248, 254);
-	private static final Color PALETTE_BG_COLOR = new Color(null, 241, 245, 253);
-	private static final Color BUTTONS_BG_COLOR = new Color(null, 249, 251, 254);
-
 	private FormToolkit formToolkit = null;  
 	private TreeViewer datasetsTreeViewer;
 	private TreeViewer chartSheetsTreeViewer;
@@ -56,12 +47,7 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 		createChartSheetsSection();
 		sashform.setWeights(new int[] {2,1});
 
-		Composite toolbar = new Composite(getBody(), SWT.BORDER);
-		toolbar.setLayout(new RowLayout(SWT.VERTICAL));
-		((RowLayout)toolbar.getLayout()).fill = true;
-		toolbar.setLayoutData(new GridData(SWT.END, SWT.FILL, false, true));
-		toolbar.setBackground(PALETTE_BG_COLOR);
-		new ModelObjectPalette(toolbar, scaveEditor, BUTTONS_BG_COLOR, true);
+		createPalette(getBody(), true);
 		
 		// configure viewers
 		scaveEditor.configureTreeViewer(getDatasetsTreeViewer());
