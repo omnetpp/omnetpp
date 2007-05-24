@@ -7,6 +7,7 @@ import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LABEL_FONT;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_LINE_COLOR;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LINE_TYPE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_SYMBOL_SIZE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_SYMBOL_TYPE;
@@ -33,14 +34,13 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.charting.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.ChartProperties.LineStyle;
 import org.omnetpp.scave.charting.ChartProperties.SymbolType;
 import org.omnetpp.scave.charting.dataset.IDataset;
@@ -83,7 +83,7 @@ public class VectorChart extends ChartCanvas {
 		SymbolType symbolType;
 		Integer symbolSize;
 		LineStyle lineStyle;
-		Color lineColor;
+		RGB lineColor;
 	}
 	
 	public VectorChart(Composite parent, int style) {
@@ -161,6 +161,8 @@ public class VectorChart extends ChartCanvas {
 			setSymbolSize(getKey(name), Converter.stringToInteger(value));
 		else if (name.startsWith(PROP_LINE_TYPE))
 			setLineStyle(getKey(name), Converter.stringToEnum(value, LineStyle.class));
+		else if (name.startsWith(PROP_LINE_COLOR))
+			setLineColor(getKey(name), ColorFactory.asRGB(value));
 		else
 			super.setProperty(name, value);
 	}
@@ -213,6 +215,20 @@ public class VectorChart extends ChartCanvas {
 	public void setLineStyle(String key, LineStyle type) {
 		LineProperties props = getOrCreateLineProperties(key);
 		props.lineStyle = type;
+		chartChanged();
+	}
+	
+	public RGB getLineColor(String key) {
+		LineProperties props = getLineProperties(key);
+		if (props == null || props.lineColor == null)
+			props = getDefaultLineProperties();
+		return props.lineColor != null ? props.lineColor : null;
+	}
+	
+	public void setLineColor(String key, RGB color) {
+		LineProperties props = getOrCreateLineProperties(key);
+		props.lineColor = color;
+		updateLegend();
 		chartChanged();
 	}
 
@@ -480,7 +496,11 @@ public class VectorChart extends ChartCanvas {
 	}
 	
 	public Color getLineColor(int series) {
-		return ColorFactory.getGoodDarkColor(series);
+		RGB color = getLineColor(dataset.getSeriesKey(series));
+		if (color != null)
+			return new Color(null, color);
+		else
+			return ColorFactory.getGoodDarkColor(series);
 	}
 
 	@Override

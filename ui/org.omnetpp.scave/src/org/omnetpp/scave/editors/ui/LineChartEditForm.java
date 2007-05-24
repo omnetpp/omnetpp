@@ -1,5 +1,6 @@
 package org.omnetpp.scave.editors.ui;
 
+import static org.omnetpp.scave.charting.ChartProperties.PROP_LINE_COLOR;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LINE_TYPE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_SYMBOL_SIZE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_SYMBOL_TYPE;
@@ -19,6 +20,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.ChartProperties;
 import org.omnetpp.scave.charting.ChartProperties.LineProperties;
 import org.omnetpp.scave.charting.ChartProperties.LineStyle;
@@ -43,6 +45,7 @@ public class LineChartEditForm extends ChartEditForm {
 	}
 	
 	private Combo applyToLinesCombo;
+	private ColorEdit colorEdit;
 	private Combo symbolTypeCombo;
 	private Combo symbolSizeCombo;
 	private Button[] lineStyleRadios;
@@ -77,7 +80,9 @@ public class LineChartEditForm extends ChartEditForm {
 			Composite subpanel = new Composite(panel, SWT.NONE);
 			subpanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 			subpanel.setLayout(new GridLayout());
-			Group group = createGroup("Symbols", subpanel);
+			Group group = createGroup("Colors", subpanel);
+			colorEdit = createColorField("Color", group);
+			group = createGroup("Symbols", subpanel);
 			symbolTypeCombo = createComboField("Symbol type", group, SymbolType.class, true);
 			symbolSizeCombo = createComboField("Symbol size", group, symbolSizes, true);
 			symbolSizeCombo.setVisibleItemCount(symbolSizes.length + 1);
@@ -107,6 +112,7 @@ public class LineChartEditForm extends ChartEditForm {
 		SymbolType symbolType = getSelection(symbolTypeCombo, SymbolType.class);
 		String symbolSize = getSelection(symbolSizeCombo);
 		LineStyle lineStyle = getSelection(lineStyleRadios, LineStyle.class);
+		String lineColor = colorEdit.getColor();
 
 		// copy orig line properties
 		boolean all = lineId == null;
@@ -125,6 +131,10 @@ public class LineChartEditForm extends ChartEditForm {
 				if (!all || lineStyle == null)
 					newProps.setProperty(name, value);
 			}
+			else if (name.startsWith(PROP_LINE_COLOR)) {
+				if (!all || StringUtils.isEmpty(lineColor))
+					newProps.setProperty(PROP_LINE_COLOR, value);
+			}
 		}
 		// set new properties
 		LineProperties lineProps = newProps.getLineProperties(lineId);
@@ -134,6 +144,8 @@ public class LineChartEditForm extends ChartEditForm {
 			lineProps.setSymbolSize(symbolSize);
 		if (!all || lineStyle != null)
 			lineProps.setLineType(lineStyle);
+		if (!all || StringUtils.isEmpty(lineColor))
+			lineProps.setLineColor(lineColor);
 	}
 	
 
@@ -143,7 +155,7 @@ public class LineChartEditForm extends ChartEditForm {
 			setSelection(symbolTypeCombo, (SymbolType)null);
 			setSelection(symbolSizeCombo, (String)null);
 			setSelection(lineStyleRadios, (LineStyle)null);
-
+			colorEdit.setColor("");
 		}
 		else if (index > 0) {
 			String lineId = lineNames[index];
@@ -151,6 +163,7 @@ public class LineChartEditForm extends ChartEditForm {
 			setSelection(symbolTypeCombo, lineProps.getSymbolType());
 			setSelection(symbolSizeCombo, lineProps.getSymbolSize());
 			setSelection(lineStyleRadios, lineProps.getLineType());
+			colorEdit.setColor(StringUtils.trimToEmpty(lineProps.getLineColor()));
 		}
 	}
 }

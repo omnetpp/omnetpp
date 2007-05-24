@@ -343,6 +343,9 @@ public class ScalarChart extends ChartCanvas {
 	
 	@Override
 	protected void paintCachableLayer(GC gc) {
+		resetDrawingStylesAndColors(gc);
+		gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
+		
 		valueAxis.drawGrid(gc);
 		plot.draw(gc);
 	}
@@ -353,6 +356,9 @@ public class ScalarChart extends ChartCanvas {
 
 	@Override
 	protected void paintNoncachableLayer(GC gc) {
+		resetDrawingStylesAndColors(gc);
+		gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
+		
 		paintInsets(gc);
 		title.draw(gc);
 		legend.draw(gc);

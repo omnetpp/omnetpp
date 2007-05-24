@@ -14,17 +14,32 @@ import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.ColorDialog;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
+import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
+import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.properties.ColorCellEditorEx.ColorContentProposalProvider;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.ChartProperties;
 import org.omnetpp.scave.charting.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.ChartProperties.LegendPosition;
@@ -329,6 +344,60 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		}
 		return radios;
 	}
+	
+	protected class ColorEdit {
+		Text text;
+		Label label;
+		
+		public ColorEdit(final Text text, final Label label) {
+			this.text = text;
+			this.label = label;
+			text.addModifyListener(new ModifyListener() {
+				public void modifyText(ModifyEvent e) {
+					label.setImage(ColorFactory.asImage(text.getText()));
+				}
+			});
+		}
+		
+		public String getColor() {
+			return StringUtils.trimToEmpty(text.getText());
+		}
+		
+		public void setColor(String color) {
+			text.setText(color);
+			label.setImage(ColorFactory.asImage(color));
+		}
+	}
+	
+	protected ColorEdit createColorField(String labelText, Composite parent) {
+		Label label = new Label(parent, SWT.NONE);
+		label.setText(labelText);
+		Composite panel = new Composite(parent, SWT.NONE);
+		panel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		panel.setLayout(new GridLayout(3, false));
+		Label imageLabel = new Label(panel, SWT.NONE);
+		imageLabel.setLayoutData(new GridData(16,16));
+		Text text = new Text(panel, SWT.BORDER);
+		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        new ContentAssistCommandAdapter(text, new TextContentAdapter(), new ColorContentProposalProvider(), 
+                ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, null, true);
+		Button button = new Button(panel, SWT.NONE);
+		button.setText("...");
+		final ColorEdit colorField = new ColorEdit(text, imageLabel);
+		button.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				if (!colorField.text.isDisposed()) {
+					ColorDialog dialog = new ColorDialog(colorField.text.getShell());
+					dialog.setText(colorField.getColor());
+					RGB rgb = dialog.open();
+					if (rgb != null) {
+						colorField.setColor(ColorFactory.asString(rgb));
+					}
+				}
+			}
+		});
+		return colorField;
+	}
 
 	/**
 	 * Reads the value of the given feature from the corresponding control.
@@ -348,6 +417,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	/**
 	 * Sets the value of the given feature in the corresponding control.
 	 */
+	
 	@SuppressWarnings("unchecked")
 	public void setValue(EStructuralFeature feature, Object value) {
 		switch (feature.getFeatureID()) {

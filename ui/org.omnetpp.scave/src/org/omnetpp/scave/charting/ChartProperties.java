@@ -10,9 +10,11 @@ import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.common.properties.BasePropertySource;
+import org.omnetpp.common.properties.ColorPropertyDescriptor;
 import org.omnetpp.common.properties.PropertySource;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
@@ -63,6 +65,7 @@ public class ChartProperties extends PropertySource {
 		PROP_SYMBOL_TYPE		= "Symbols.Type",
 		PROP_SYMBOL_SIZE		= "Symbols.Size",
 		PROP_LINE_TYPE			= "Line.Type",
+		PROP_LINE_COLOR			= "Line.Color",
 		// Legend
 		PROP_DISPLAY_LEGEND		= "Legend.Display",
 		PROP_LEGEND_BORDER		= "Legend.Border",
@@ -281,6 +284,11 @@ public class ChartProperties extends PropertySource {
 		public LineStyle getLineType() { return getEnumProperty(propertyName(PROP_LINE_TYPE), LineStyle.class); }
 		public void setLineType(LineStyle style) { setProperty(propertyName(PROP_LINE_TYPE), style); }
 		public LineStyle defaultLineType() { return null; }
+
+		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_COLOR,descriptorClass=ColorPropertyDescriptor.class,optional=true)
+		public String getLineColor() { return getStringProperty(propertyName(PROP_LINE_COLOR)); }
+		public void setLineColor(String color) { setProperty(propertyName(PROP_LINE_COLOR), color); }
+		public String defaultLineColor() { return null; }
 	}
 	
 	public class LinesPropertySource extends BasePropertySource {
@@ -437,6 +445,12 @@ public class ChartProperties extends PropertySource {
 		return property != null ? Converter.stringToFontdata(property.getValue()) :
 			                      getDefaultFontProperty(propertyName);
 	}
+	
+	public RGB getColorProperty(String propertyName) {
+		Property property = getProperty(propertyName);
+		return property != null ? Converter.stringToRGB(property.getValue()) :
+								  getDefaultColorProperty(propertyName);
+	}
 
 	/**
 	 * Sets the property value in the property list.
@@ -503,6 +517,13 @@ public class ChartProperties extends PropertySource {
 			propertyValue = null;
 		doSetProperty(propertyName, Converter.fontdataToString(propertyValue));
 	}
+	
+	public void setProperty(String propertyName, RGB propertyValue) {
+		RGB defaultValue = getDefaultColorProperty(propertyName);
+		if (defaultValue != null && defaultValue.equals(propertyValue))
+			propertyValue = null;
+		doSetProperty(propertyName, Converter.rgbToString(propertyValue));
+	}
 
 	public String getDefaultStringProperty(String propertyName) {
 		Object defaultValue = ChartDefaults.getDefaultPropertyValue(propertyName);
@@ -533,6 +554,14 @@ public class ChartProperties extends PropertySource {
 		Object defaultValue = ChartDefaults.getDefaultPropertyValue(propertyName);
 		if (defaultValue instanceof Font)
 			return Converter.swtfontToFontdata((Font)defaultValue);
+		else
+			return null;
+	}
+	
+	public RGB getDefaultColorProperty(String propertyName) {
+		Object defaultValue = ChartDefaults.getDefaultPropertyValue(propertyName);
+		if (defaultValue instanceof RGB)
+			return (RGB)defaultValue;
 		else
 			return null;
 	}

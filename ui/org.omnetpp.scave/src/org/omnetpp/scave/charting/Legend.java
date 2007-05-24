@@ -3,14 +3,14 @@ package org.omnetpp.scave.charting;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.SWTGraphics;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Region;
-import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.SWTGraphics;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.charting.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.ChartProperties.LegendPosition;
