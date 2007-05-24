@@ -38,7 +38,7 @@ import org.omnetpp.ned.model.pojo.*;
 
 /**
  * Parses all NED files in the workspace and makes them available for other
- * plugins for consistence checks among NED files etc.
+ * plugins for consistency checks among NED files etc.
  *
  * It listens to workspace resource changes and modifies it content based on
  * change notifications
@@ -72,7 +72,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     };
 
     private static final String NED_EXTENSION = "ned";
-    // listener list that listenens on all NED changes
+    // listener list that listeners on all NED changes
     private transient NEDChangeListenerList nedComponentChangeListenerList = null;
     private transient NEDChangeListenerList nedModelChangeListenerList = null;
     private final INEDChangeListener nedModelChangeListener =
@@ -90,7 +90,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     // table of toplevel components (points into nedFiles trees)
     private final HashMap<String, INEDTypeInfo> components = new HashMap<String, INEDTypeInfo>();
 
-    // reserved (used) names (contains all names including dupliates)
+    // reserved (used) names (contains all names including duplicates)
     private final Set<String> reservedNames = new HashSet<String>();
 
     // tables of toplevel components, classified (points into nedFiles trees)
@@ -685,7 +685,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     // ************************************************************************************************
-    // syncronize the plugin with the resources in the workspace
+    // Synchronize the plugin with the resources in the workspace
     public synchronized void resourceChanged(IResourceChangeEvent event) {
         try {
             if (event.getDelta() == null)
