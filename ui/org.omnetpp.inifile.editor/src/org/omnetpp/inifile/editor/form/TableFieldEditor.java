@@ -106,7 +106,7 @@ public abstract class TableFieldEditor extends FieldEditor {
 		
 		// add hover support
 		formPage.addTooltipSupport(tableViewer.getTable(), new IHoverTextProvider() {
-			public String getHoverTextFor(Control control, int x, int y, Point outPreferedSize) {
+			public String getHoverTextFor(Control control, int x, int y, Point outPreferredSize) {
 				Item item = tableViewer.getTable().getItem(new Point(x,y));
 				String section = (String) (item==null ? null : item.getData());
 				return section==null ? null : InifileHoverUtils.getConfigHoverText(section, entry.getKey(), inifile);

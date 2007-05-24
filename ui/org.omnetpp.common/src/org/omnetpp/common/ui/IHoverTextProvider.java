@@ -17,8 +17,8 @@ public interface IHoverTextProvider {
 	 * @param control 	the control which is hovered over
 	 * @param x 		the x coordinate of the mouse cursor
 	 * @param y			the y coordinate of the mouse cursor
-	 * @param outPreferedSize	a Point object to return the requested size of the tooltip control (out parameter)
+	 * @param outPreferredSize	a Point object to return the requested size of the tooltip control (out parameter)
 	 */
-	String getHoverTextFor(Control control, int x, int y, Point outPreferedSize);
+	String getHoverTextFor(Control control, int x, int y, Point outPreferredSize);
 	
 }

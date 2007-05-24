@@ -2,6 +2,7 @@ package org.omnetpp.scave.charting;
 
 import java.util.ArrayList;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
@@ -13,12 +14,16 @@ import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.dataset.DatasetUtils;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
+import org.omnetpp.scave.model.Dataset;
 
 /**
  * Displays crosshair mouse cursor for VectorChart.
@@ -29,7 +34,7 @@ class CrossHair {
 	public static final Font CROSSHAIR_BOLD_FONT = new Font(null, "Arial", 8, SWT.BOLD);
 	public static final Color TOOLTIP_COLOR = new Color(null, 255, 255, 225);
 
-	private static final int MAXCOUNT = 10;
+	private static final int MAXCOUNT = 1000;
 	private static final int HALO = 3;
 
 	private final VectorChart chart;
@@ -140,6 +145,14 @@ class CrossHair {
 				finalChart.redraw();
 			}
 		});
+		HoverSupport hoverSupport = new HoverSupport();
+		hoverSupport.setHoverSizeConstaints(new Point(500, 400));
+		hoverSupport.adapt(chart, new IHoverTextProvider() {
+			public String getHoverTextFor(Control control, int x, int y,
+					Point outPreferredSize) {
+				return getHoverText(x, y, outPreferredSize);
+			}
+		});
 	}
 
 	private void invalidatePosition() {
@@ -161,7 +174,7 @@ class CrossHair {
 
 			// collect points close to cursor (x,y)
 			ArrayList<DataPoint> dataPoints = new ArrayList<DataPoint>();
-			int totalFound = dataPointsNear(x, y, HALO, dataPoints, MAXCOUNT); 
+			int totalFound = dataPointsNear(x, y, HALO, dataPoints, 1); 
 
 			// snap to data point
 			DataPoint dataPoint = dataPoints.isEmpty() ? null : dataPoints.get(0);
@@ -214,47 +227,41 @@ class CrossHair {
 			gc.drawRectangle(left, top, size.x + 2, size.y + 2);
 			gc.drawText(coordinates, left + 2, top + 1, false); // XXX set as tooltip, rather than draw it on the canvas!
 		}
-		else {
-			// calculate bounding rect
-			int width = 0;
-			int lineHeight = gc.textExtent("999").y; 
-			for (DataPoint dataPoint : dataPoints) {
-				String coordinates = getText(dataPoint);
-				Point size = gc.textExtent(coordinates);
-				width = Math.max(width, size.x);
+	}
+	
+	private String getHoverText(int x, int y, Point preferredSize) {
+		ArrayList<DataPoint> dataPoints = new ArrayList<DataPoint>();
+		int totalFound = dataPointsNear(x, y, HALO, dataPoints, MAXCOUNT); 
+		
+		if (!dataPoints.isEmpty()) {
+			StringBuilder sb = new StringBuilder();
+			int maxTextLength = 0;
+			sb.append("<table>");
+			for (DataPoint dp : dataPoints) {
+				Color color = chart.getLineColor(dp.series);
+				String text = getText(dp);
+				IChartSymbol symbol = chart.getSymbol(chart.getDataset().getSeriesKey(dp.series));
+				String imageFile = SymbolImageFactory.getImageFile(color, symbol);
+				sb.append("<tr>");
+				sb.append("<td>");
+				if (imageFile != null)
+					sb.append(String.format("<img src='%s'>", imageFile));
+				sb.append("</td>");
+				sb.append("<td>");
+				sb.append(StringEscapeUtils.escapeHtml(text));
+				sb.append("</td>");
+				sb.append("</tr>");
+				maxTextLength = Math.max(maxTextLength, text.length());
 			}
-			int height = dataPoints.size() * lineHeight;
 			if (totalFound > dataPoints.size())
-				height += lineHeight; 
-			int symbolWidth = 10;
-
-			// draw
-			int left = x + symbolWidth + 6;
-			int top = y - height - 4;
-			if (left + width + 3 > plotArea.x + plotArea.width)
-				left = x - width - symbolWidth - 8;
-			if (top < plotArea.y)
-				top = y + 3;
-			gc.fillRectangle(left, top, width + symbolWidth + 4, height + 2);
-			gc.drawRectangle(left, top, width + symbolWidth + 4, height + 2);
-			int currentY = top + 1;
-			IXYDataset dataset = chart.getDataset();
-			for (DataPoint dataPoint : dataPoints) {
-				gc.setForeground(chart.getLineColor(dataPoint.series));
-				String text = getText(dataPoint);
-				IChartSymbol symbol = chart.getSymbol((String)dataset.getSeriesKey(dataPoint.series));
-				if (symbol != null) {
-					symbol.setSizeHint(6);
-					symbol.drawSymbol(gc, left + symbolWidth/2 + 2, currentY + lineHeight/2);
-				}
-				gc.drawLine(left + symbolWidth/2 - 3, currentY + lineHeight/2, left + symbolWidth/2 + 7, currentY + lineHeight/2);
-				gc.drawText(text, left + symbolWidth + 6, currentY, true);
-				currentY += lineHeight; 
-			}
-			gc.setForeground(ColorFactory.BLACK);
-			if (totalFound > dataPoints.size())
-				gc.drawText("... and "+(totalFound-dataPoints.size())+" more", left + 2, currentY, true);
+				sb.append(String.format("<tr><td></td><td>... and %d more</td></tr>", totalFound - dataPoints.size()));
+			sb.append("</table>");
+			preferredSize.x = 20 + maxTextLength * 7;
+			preferredSize.y = 25 + dataPoints.size() * 12;
+			return HoverSupport.addHTMLStyleSheet(sb.toString());
 		}
+		else
+			return null;
 	}
 
 	private String getText(DataPoint dataPoint) {
@@ -265,7 +272,7 @@ class CrossHair {
 		double y = dataset.getY(dataPoint.series, dataPoint.index);
 		String coordinates = (xp != null ? xp.toString() : Double.toString(x))+", "+y;
 		String series = dataset.getSeriesKey(dataPoint.series).toString();
-		series = StringUtils.abbreviate(series, series.length(), 25);
+		//series = StringUtils.abbreviate(series, series.length(), 25);
 		return coordinates + " - " + series;
 	}
 

@@ -87,7 +87,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 		
  		// add tooltip support
  		new HoverSupport().adapt(getTreeViewer().getTree(), new IHoverTextProvider() {
-			public String getHoverTextFor(Control control, int x, int y, Point outPreferedSize) {
+			public String getHoverTextFor(Control control, int x, int y, Point outPreferredSize) {
 				Item item = getTreeViewer().getTree().getItem(new Point(x,y));
 				String section = (String) (item==null ? null : item.getData());
 				return section==null ? null : InifileHoverUtils.getSectionHoverText(section, inifileDocument, null);

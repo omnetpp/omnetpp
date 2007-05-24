@@ -44,7 +44,7 @@ public abstract class FieldEditor extends Composite {
 	protected FormPage formPage; // to access hoverSupport, and to be able to call setEditorSelection()
 	
 	protected IHoverTextProvider hoverTextProvider = new IHoverTextProvider() {
-		public String getHoverTextFor(Control control, int x, int y, Point outPreferedSize) {
+		public String getHoverTextFor(Control control, int x, int y, Point outPreferredSize) {
 			return getTooltipText();
 		}
 	};

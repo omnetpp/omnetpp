@@ -275,7 +275,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
 
         // add tooltip support
         new HoverSupport().adapt(getEditor(), new IHoverTextProvider() {
-            public String getHoverTextFor(Control control, int x, int y, org.eclipse.swt.graphics.Point outPreferedSize) {
+            public String getHoverTextFor(Control control, int x, int y, org.eclipse.swt.graphics.Point outPreferredSize) {
                 EditPart ep = getGraphicalViewer().findObjectAt(new Point(x,y));
                 if (ep instanceof IModelProvider) {
                     INEDElement element = ((IModelProvider)ep).getNEDModel();

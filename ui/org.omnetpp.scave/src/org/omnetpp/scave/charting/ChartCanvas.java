@@ -326,6 +326,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		
 	}
 	
+	
 	/**
 	 * Legend tooltip.
 	 */
@@ -346,46 +347,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 				this.color = color;
 				this.label = label;
 				this.symbol = symbol;
-				this.imageFile = createImageFile();
-			}
-			
-			private String createImageFile() {
-				Image image = null;
-				try {
-					image = createSymbolImage(symbol, color);
-					String symbolName = StringUtils.removeStart(symbol.getClass().getName(), symbol.getClass().getPackage().getName()+".");
-					String imageName = String.format("%s_%02X%02X%02X", symbolName, color.getRed(), color.getGreen(), color.getBlue());
-					return ImageFactory.createTemporaryImageFile(imageName+".png", image, SWT.IMAGE_PNG);
-				} catch (Exception e) {
-					return null;
-				}
-				finally {
-					if (image != null)
-						image.dispose();
-				}
-			}
-			
-			private Image createSymbolImage(IChartSymbol symbol, Color color) {
-				int size = symbol.getSizeHint();
-				Image image = null;
-				GC gc = null;
-				try {
-					symbol.setSizeHint(6);
-					image = new Image(null, 15, 9);
-					gc = new GC(image);
-					gc.setAntialias(SWT.ON);
-					gc.setForeground(color);
-					gc.setLineWidth(1);
-					gc.setLineStyle(SWT.LINE_SOLID);
-					gc.drawLine(0, 4, 14, 4);
-					symbol.drawSymbol(gc, 7, 4);
-				}
-				finally {
-					symbol.setSizeHint(size);
-					if (gc != null)
-						gc.dispose();
-				}
-				return image;
+				this.imageFile = SymbolImageFactory.getImageFile(color, symbol);
 			}
 		}
 		
@@ -393,8 +355,8 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			HoverSupport hoverSupport = new HoverSupport();
 			hoverSupport.setHoverSizeConstaints(new Point(320,400));
 			hoverSupport.adapt(ChartCanvas.this, new IHoverTextProvider() {
-				public String getHoverTextFor(Control control, int x, int y, Point preferedSize) {
-					return getTooltipText(x, y, preferedSize);
+				public String getHoverTextFor(Control control, int x, int y, Point preferredSize) {
+					return getTooltipText(x, y, preferredSize);
 				}
 			});
 		}
@@ -422,7 +384,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			graphics.popState();
 		}
 		
-		public String getTooltipText(int x, int y, Point preferedSize) {
+		public String getTooltipText(int x, int y, Point preferredSize) {
 			if (rect.contains(x, y) && items.size() > 0) {
 				StringBuffer sb = new StringBuffer();
 				int height = 25;
@@ -433,13 +395,13 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 					if (item.imageFile != null)
 						sb.append("<td style='vertical-align: middle'>").
 							append("<img src='file://").append(item.imageFile).append("'></td>"); // XXX URLEncoded filename does not work in IE
-					sb.append("<td style='vectical-align: middle; color: ").append(htmlColor(item.color)).append("'>").
-						append(htmlText(item.label)).append("</td>"); // XXX quote
+					sb.append("<td style='vertical-align: middle; color: ").append(htmlColor(item.color)).append("'>").
+						append(htmlText(item.label)).append("</td>");
 					sb.append("</tr>");
 					height += 10;
 				}
 				sb.append("</table>");
-				preferedSize.y = Math.max(height, 80);
+				preferredSize.y = Math.max(height, 80);
 				return HoverSupport.addHTMLStyleSheet(sb.toString());
 			}
 			else

@@ -193,7 +193,7 @@ public class SectionsPage extends FormPage {
 
 		// add tooltip support
 		addTooltipSupport(treeViewer.getTree(), new IHoverTextProvider() {
-			public String getHoverTextFor(Control control, int x, int y, Point outPreferedSize) {
+			public String getHoverTextFor(Control control, int x, int y, Point outPreferredSize) {
 				Item item = treeViewer.getTree().getItem(new Point(x,y));
 				String section = getSectionNameFromTreeNode(item==null ? null : item.getData());
 				return section==null ? null : InifileHoverUtils.getSectionHoverText(section, getInifileDocument(), getInifileAnalyzer());
