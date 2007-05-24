@@ -109,6 +109,14 @@ int EventLogTableFacade::getNumMatchingEventLogEntries(IEvent *event)
     }
 }
 
+EventLogEntry *EventLogTableFacade::getEventLogEntry(long eventNumber, int eventLogEntryIndex)
+{
+    IEvent *event = eventLog->getEventForEventNumber(eventNumber);
+    Assert(event);
+
+    return event->getEventLogEntry(eventLogEntryIndex);
+}
+
 EventLogEntry *EventLogTableFacade::getFirstEntry()
 {
     IEvent *event = eventLog->getFirstEvent();
@@ -159,7 +167,15 @@ EventLogEntry *EventLogTableFacade::getEntryAndDistance(EventLogEntry *sourceEve
 
 EventLogEntry *EventLogTableFacade::getClosestEntry(EventLogEntry *eventLogEntry)
 {
-    return getEntryInEvent(eventLogEntry->getEvent(), 0);
+    Assert(eventLogEntry);
+    IEvent *event = eventLogEntry->getEvent();
+
+    for (int i = eventLogEntry->getIndex(); i >= 0; i--) {
+        eventLogEntry = event->getEventLogEntry(i);
+
+        if (matchesFilter(eventLogEntry))
+            return eventLogEntry;
+    }
 }
 
 EventLogEntry *EventLogTableFacade::getPreviousEntry(EventLogEntry *eventLogEntry, int& index)

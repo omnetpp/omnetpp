@@ -64,6 +64,7 @@ class EVENTLOG_API EventLogTableFacade : public EventLogFacade
         int getNumMatchingEventLogEntries(IEvent *event);
         void setCustomFilter(const char *pattern) { matchExpression.setPattern((std::string("E or (") + pattern + ")").c_str(), false, true, false); }
 
+        EventLogEntry *getEventLogEntry(long eventNumber, int eventLogEntryIndex);
 		EventLogEntry *getFirstEntry();
 		EventLogEntry *getLastEntry();
         int getEntryIndexInEvent(EventLogEntry *eventLogEntry);

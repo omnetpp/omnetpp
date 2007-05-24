@@ -262,7 +262,7 @@ template <typename T> bool FilteredEventLog::matchesList(std::vector<T> &element
 
 FilteredEvent* FilteredEventLog::getFirstEvent()
 {
-    if (!firstMatchingEvent)
+    if (!firstMatchingEvent && !eventLog->isEmpty())
     {
         long startEventNumber = firstEventNumber == -1 ? eventLog->getFirstEvent()->getEventNumber() : std::max(eventLog->getFirstEvent()->getEventNumber(), firstEventNumber);
         firstMatchingEvent = getMatchingEventInDirection(startEventNumber, true);
@@ -273,7 +273,7 @@ FilteredEvent* FilteredEventLog::getFirstEvent()
 
 FilteredEvent* FilteredEventLog::getLastEvent()
 {
-    if (!lastMatchingEvent)
+    if (!lastMatchingEvent && !eventLog->isEmpty())
     {
         long startEventNumber = lastEventNumber == -1 ? eventLog->getLastEvent()->getEventNumber() : std::min(eventLog->getLastEvent()->getEventNumber(), lastEventNumber);
         lastMatchingEvent = getMatchingEventInDirection(startEventNumber, false);
