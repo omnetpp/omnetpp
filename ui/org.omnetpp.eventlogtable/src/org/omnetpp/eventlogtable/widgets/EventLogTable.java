@@ -12,17 +12,17 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableColumn;
+import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogSelection;
 import org.omnetpp.common.virtualtable.VirtualTable;
 import org.omnetpp.common.virtualtable.VirtualTableSelection;
-import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.EventLogTableFacade;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlogtable.editors.EventLogTableContributor;
 
-public class EventLogTable extends VirtualTable<EventLogEntry> {
+public class EventLogTable extends VirtualTable<EventLogEntryReference> {
 	public EventLogTable(Composite parent, int style) {
 		super(parent, style);
 
@@ -46,9 +46,9 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 				final EventLogInput eventLogInput = getEventLogInput();
 				
 				if (eventLogInput != null) {
-					EventLogEntry eventLogEntry = getBottomVisibleElement();
+					EventLogEntryReference eventLogEntryReference = getBottomVisibleElement();
 
-					if ((eventLogEntry == null || getContentProvider().getDistanceToLastElement(eventLogEntry, 1) == 0) &&
+					if ((eventLogEntryReference == null || getContentProvider().getDistanceToLastElement(eventLogEntryReference, 1) == 0) &&
 						eventLogInput.getEventLogTableFacade().synchronize())
 					{
 						Display.getCurrent().asyncExec(new Runnable() {
@@ -76,15 +76,15 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 
 	@Override
 	public ISelection getSelection() {
-		List<EventLogEntry> selectionElements = getSelectionElements();
+		List<EventLogEntryReference> selectionElements = getSelectionElements();
 		
 		if (selectionElements == null)
 			return null;
 		else {
 			ArrayList<IEvent> selectionEvents = new ArrayList<IEvent>();
 			
-			for (EventLogEntry selectionElement : selectionElements)
-				selectionEvents.add(selectionElement.getEvent());
+			for (EventLogEntryReference selectionElement : selectionElements)
+				selectionEvents.add(selectionElement.getEventLogEntry().getEvent());
 	
 			return new EventLogSelection(getEventLogInput(), selectionEvents);
 		}
@@ -94,12 +94,12 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 	public void setSelection(ISelection selection) {
 		if (selection instanceof EventLogSelection) {
 			EventLogSelection eventLogSelection = (EventLogSelection)selection;
-			List<EventLogEntry> eventLogEntries = new ArrayList<EventLogEntry>();
+			List<EventLogEntryReference> eventLogEntries = new ArrayList<EventLogEntryReference>();
 
 			for (IEvent event : eventLogSelection.getEvents())
-				eventLogEntries.add(event.getEventEntry());
+				eventLogEntries.add(new EventLogEntryReference(event.getEventEntry()));
 			
-			super.setSelection(new VirtualTableSelection<EventLogEntry>(eventLogSelection.getEventLogInput(), eventLogEntries));
+			super.setSelection(new VirtualTableSelection<EventLogEntryReference>(eventLogSelection.getEventLogInput(), eventLogEntries));
 		}
 	}
 	
@@ -109,10 +109,11 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 
 		// store current position
 		if (eventLogInput != null) {
-			EventLogEntry eventLogEntry = getTopVisibleElement();
+			EventLogEntryReference eventLogEntryReference = getTopVisibleElement();
 			
-			if (eventLogEntry != null) {
-				String eventNumber = String.valueOf(eventLogEntry.getEvent().getEventNumber());
+			if (eventLogEntryReference != null) {
+				String eventNumber = String.valueOf(eventLogEntryReference.getEventLogEntry().getEvent().getEventNumber());
+
 				try {
 					eventLogInput.getFile().setPersistentProperty(getEventLogTableEventNumberPropertyName(), eventNumber);
 				}
@@ -135,7 +136,7 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 					IEvent event = getEventLog().getEventForEventNumber(Integer.parseInt(eventNumber));
 					
 					if (event != null)
-						gotoElement(event.getEventEntry());
+						gotoElement(new EventLogEntryReference(event.getEventEntry()));
 				}
 			}
 			catch (CoreException e) {

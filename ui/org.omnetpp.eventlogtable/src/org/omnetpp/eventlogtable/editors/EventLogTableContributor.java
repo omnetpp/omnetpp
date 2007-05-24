@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
@@ -164,10 +165,10 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 				// TODO: add case sensitivity, forward/backward search, etc.
 
 				String searchText = dialog.getValue();
-				EventLogEntry foundEventLogEntry = getEventLog().findEventLogEntry(eventLogTable.getSelectionElement(), searchText, true);
+				EventLogEntry foundEventLogEntry = getEventLog().findEventLogEntry(eventLogTable.getSelectionElement().getEventLogEntry(), searchText, true);
 				
 				if (foundEventLogEntry != null)
-					eventLogTable.gotoClosestElement(foundEventLogEntry);
+					eventLogTable.gotoClosestElement(new EventLogEntryReference(foundEventLogEntry));
 				else
 					MessageDialog.openInformation(null, "Search raw text", "No matches found!");
 			}
@@ -183,7 +184,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		return new EventLogTableAction("Goto event cause") {
 			@Override
 			public void run() {
-				eventLogTable.gotoClosestElement(getCauseEventLogEntry());
+				eventLogTable.gotoClosestElement(new EventLogEntryReference(getCauseEventLogEntry()));
 			}
 
 			@Override
@@ -192,12 +193,12 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			}
 
 			private EventLogEntry getCauseEventLogEntry() {
-				EventLogEntry eventLogEntry = eventLogTable.getSelectionElement();
+				EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
 				
-				if (eventLogEntry == null)
+				if (eventLogEntryReference == null)
 					return null;
 				else {
-					IMessageDependency cause = eventLogEntry.getEvent().getCause();
+					IMessageDependency cause = eventLogEntryReference.getEventLogEntry().getEvent().getCause();
 					
 					if (cause == null)
 						return null;
@@ -212,7 +213,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		return new EventLogTableAction("Goto message arrival") {
 			@Override
 			public void run() {
-				eventLogTable.gotoElement(getConsequenceEventLogEntry());
+				eventLogTable.gotoElement(new EventLogEntryReference(getConsequenceEventLogEntry()));
 			}
 
 			@Override
@@ -221,9 +222,10 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			}
 			
 			private EventLogEntry getConsequenceEventLogEntry() {
-				EventLogEntry eventLogEntry = eventLogTable.getSelectionElement();
+				EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
 
-				if (eventLogEntry != null) {
+				if (eventLogEntryReference != null) {
+					EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry();
 					IEvent event = eventLogEntry.getEvent();
 					IMessageDependencyList consequences = event.getConsequences();
 					
@@ -250,7 +252,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		return new EventLogTableAction("Goto message origin") {
 			@Override
 			public void run() {
-				eventLogTable.gotoElement(getMessageOriginEventLogEntry());
+				eventLogTable.gotoElement(new EventLogEntryReference(getMessageOriginEventLogEntry()));
 			}
 
 			@Override
@@ -259,9 +261,10 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			}
 
 			private EventLogEntry getMessageOriginEventLogEntry() {
-				EventLogEntry eventLogEntry = eventLogTable.getSelectionElement();
+				EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
 
-				if (eventLogEntry != null) {
+				if (eventLogEntryReference != null) {
+					EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry();
 					IEvent event = eventLogEntry.getEvent();
 					IMessageDependencyList causes = event.getCauses();
 					
@@ -287,7 +290,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		return new EventLogTableAction("Goto message reuse") {
 			@Override
 			public void run() {
-				eventLogTable.gotoClosestElement(getMessageReuseEventLogEntry());
+				eventLogTable.gotoClosestElement(new EventLogEntryReference(getMessageReuseEventLogEntry()));
 			}
 
 			@Override
@@ -296,9 +299,10 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			}
 
 			private EventLogEntry getMessageReuseEventLogEntry() {
-				EventLogEntry eventLogEntry = eventLogTable.getSelectionElement();
+				EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
 
-				if (eventLogEntry != null) {
+				if (eventLogEntryReference != null) {
+					EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry();
 					IEvent event = eventLogEntry.getEvent();
 					IMessageDependencyList consequences = event.getConsequences();
 					
@@ -347,7 +351,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					IEvent event = eventLog.getEventForEventNumber(eventNumber);
 
 					if (event != null)
-						eventLogTable.gotoElement(event.getEventEntry());
+						eventLogTable.gotoElement(new EventLogEntryReference(event.getEventEntry()));
 					else
 						MessageDialog.openError(null, "Goto event" , "No such event: " + eventNumber);
 				}
@@ -391,7 +395,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					IEvent event = eventLog.getEventForSimulationTime(simulationTime, MatchKind.FIRST_OR_NEXT);
 
 					if (event != null)
-						eventLogTable.gotoElement(event.getEventEntry());
+						eventLogTable.gotoElement(new EventLogEntryReference(event.getEventEntry()));
 					else
 						MessageDialog.openError(null, "Goto simulation time" , "No such simulation time: " + simulationTime);
 				}
@@ -412,13 +416,17 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			@Override
 			public void run() {
 				try {
-					EventLogInput eventLogInput = (EventLogInput)eventLogTable.getInput();
-					IMarker marker = eventLogInput.getFile().createMarker(IMarker.BOOKMARK);
-					IEvent event = ((EventLogEntry)eventLogTable.getSelectionElement()).getEvent();
-					marker.setAttribute(IMarker.LOCATION, "# " + event.getEventNumber());
-					marker.setAttribute("EventNumber", event.getEventNumber());
-					update();
-					eventLogTable.redraw();
+					EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+
+					if (eventLogEntryReference != null) {
+						IEvent event = eventLogEntryReference.getEventLogEntry().getEvent();
+						EventLogInput eventLogInput = (EventLogInput)eventLogTable.getInput();
+						IMarker marker = eventLogInput.getFile().createMarker(IMarker.BOOKMARK);
+						marker.setAttribute(IMarker.LOCATION, "# " + event.getEventNumber());
+						marker.setAttribute("EventNumber", event.getEventNumber());
+						update();
+						eventLogTable.redraw();
+					}
 				}
 				catch (CoreException e) {
 					throw new RuntimeException(e);

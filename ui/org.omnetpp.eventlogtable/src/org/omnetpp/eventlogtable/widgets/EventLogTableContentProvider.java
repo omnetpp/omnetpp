@@ -1,37 +1,43 @@
 package org.omnetpp.eventlogtable.widgets;
 
 import org.eclipse.jface.viewers.Viewer;
+import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.virtualtable.IVirtualTableContentProvider;
 import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.EventLogTableFacade;
 
-public class EventLogTableContentProvider implements IVirtualTableContentProvider<EventLogEntry> {
+/**
+ * This class provides the content for the EventLogTable. The individual entries are wrapped with a reference
+ * object so that the C library can manage memory (delete events, entries on demand) and we will still be
+ * able to find what we are looking for.
+ */
+public class EventLogTableContentProvider implements IVirtualTableContentProvider<EventLogEntryReference> {
 	protected static boolean debug = false;
 	
 	protected EventLogTableFacade eventLogTableFacade;
 
-	public EventLogEntry getFirstElement() {
+	public EventLogEntryReference getFirstElement() {
 		if (debug)
 			System.out.println("Virtual table content provider getFirstElement");
 
 		if (eventLogTableFacade == null)
 			return null;
 		else
-			return eventLogTableFacade.getFirstEntry();
+			return toEventLogEntryReference(eventLogTableFacade.getFirstEntry());
 	}
 
-	public EventLogEntry getLastElement() {
+	public EventLogEntryReference getLastElement() {
 		if (debug)
 			System.out.println("Virtual table content provider getLastElement");
 
 		if (eventLogTableFacade == null)
 			return null;
 		else
-			return eventLogTableFacade.getLastEntry();
+			return toEventLogEntryReference(eventLogTableFacade.getLastEntry());
 	}
 
-	public long getDistanceToElement(EventLogEntry sourceElement, EventLogEntry targetElement, long limit)
+	public long getDistanceToElement(EventLogEntryReference sourceElement, EventLogEntryReference targetElement, long limit)
 	{
 		if (debug)
 			System.out.println("Virtual table content provider getDistanceToElement sourceElement: " + sourceElement + " targetElement: " + targetElement + " limit: " + limit);
@@ -42,10 +48,10 @@ public class EventLogTableContentProvider implements IVirtualTableContentProvide
 		if (eventLogTableFacade == null)
 			return 0;
 		else
-			return eventLogTableFacade.getDistanceToEntry(sourceElement, targetElement, (int)limit);
+			return eventLogTableFacade.getDistanceToEntry(sourceElement.getEventLogEntry(), targetElement.getEventLogEntry(), (int)limit);
 	}
 
-	public long getDistanceToFirstElement(EventLogEntry element, long limit) {
+	public long getDistanceToFirstElement(EventLogEntryReference element, long limit) {
 		if (debug)
 			System.out.println("Virtual table content provider getDistanceToFirstElement element: " + element + " limit: " + limit);
 
@@ -55,10 +61,10 @@ public class EventLogTableContentProvider implements IVirtualTableContentProvide
 		if (eventLogTableFacade == null)
 			return 0;
 		else
-			return eventLogTableFacade.getDistanceToFirstEntry(element, (int)limit);
+			return eventLogTableFacade.getDistanceToFirstEntry(element.getEventLogEntry(), (int)limit);
 	}
 
-	public long getDistanceToLastElement(EventLogEntry element, long limit) {
+	public long getDistanceToLastElement(EventLogEntryReference element, long limit) {
 		if (debug)
 			System.out.println("Virtual table content provider getDistanceToLastElement element: " + element + " limit: " + limit);
 
@@ -68,10 +74,10 @@ public class EventLogTableContentProvider implements IVirtualTableContentProvide
 		if (eventLogTableFacade == null)
 			return 0;
 		else
-			return eventLogTableFacade.getDistanceToLastEntry(element, (int)limit);
+			return eventLogTableFacade.getDistanceToLastEntry(element.getEventLogEntry(), (int)limit);
 	}
 
-	public EventLogEntry getNeighbourElement(EventLogEntry element, long distance) {
+	public EventLogEntryReference getNeighbourElement(EventLogEntryReference element, long distance) {
 		if (debug)
 			System.out.println("Virtual table content provider getNeighbourElement element: " + element + " distance: " + distance);
 
@@ -81,10 +87,10 @@ public class EventLogTableContentProvider implements IVirtualTableContentProvide
 		if (eventLogTableFacade == null)
 			return null;
 		else
-			return eventLogTableFacade.getNeighbourEntry(element, (int)distance);
+			return toEventLogEntryReference(eventLogTableFacade.getNeighbourEntry(element.getEventLogEntry(), (int)distance));
 	}
 
-	public double getApproximatePercentageForElement(EventLogEntry element) {
+	public double getApproximatePercentageForElement(EventLogEntryReference element) {
 		if (debug)
 			System.out.println("Virtual table content provider getApproximatePercentageForElement element: " + element);
 
@@ -94,10 +100,10 @@ public class EventLogTableContentProvider implements IVirtualTableContentProvide
 		if (eventLogTableFacade == null)
 			return 0;
 		else
-			return eventLogTableFacade.getApproximatePercentageForEntry(element);
+			return eventLogTableFacade.getApproximatePercentageForEntry(element.getEventLogEntry());
 	}
 
-	public EventLogEntry getApproximateElementAt(double percentage) {
+	public EventLogEntryReference getApproximateElementAt(double percentage) {
 		if (debug)
 			System.out.println("Virtual table content provider getApproximateElementAt percentage: " + percentage);
 
@@ -107,7 +113,7 @@ public class EventLogTableContentProvider implements IVirtualTableContentProvide
 		if (eventLogTableFacade == null)
 			return null;
 		else
-			return eventLogTableFacade.getApproximateEventLogEntryTableAt(percentage);
+			return toEventLogEntryReference(eventLogTableFacade.getApproximateEventLogEntryTableAt(percentage));
 	}
 
 	public long getApproximateNumberOfElements() {
@@ -120,8 +126,11 @@ public class EventLogTableContentProvider implements IVirtualTableContentProvide
 			return eventLogTableFacade.getApproximateNumberOfEntries();
 	}
 
-	public EventLogEntry getClosestElement(EventLogEntry fixPointElement) {
-		return eventLogTableFacade.getClosestEntry(fixPointElement);
+	public EventLogEntryReference getClosestElement(EventLogEntryReference element) {
+		if (element == null)
+			throw new IllegalArgumentException();
+		
+		return toEventLogEntryReference(eventLogTableFacade.getClosestEntry(element.getEventLogEntry()));
 	}
 
 	public void dispose() {
@@ -138,5 +147,12 @@ public class EventLogTableContentProvider implements IVirtualTableContentProvide
 
 	public EventLogTableFacade getEventLogTableFacade() {
 		return eventLogTableFacade;
+	}
+
+	private EventLogEntryReference toEventLogEntryReference(EventLogEntry eventLogEntry) {
+		if (eventLogEntry == null)
+			return null;
+		else
+			return new EventLogEntryReference(eventLogEntry);
 	}
 }

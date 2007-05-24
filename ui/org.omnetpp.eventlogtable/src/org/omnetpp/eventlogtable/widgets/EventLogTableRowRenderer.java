@@ -13,6 +13,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.virtualtable.IVirtualTableRowRenderer;
@@ -41,11 +42,15 @@ import org.omnetpp.eventlog.engine.PStringVector;
 import org.omnetpp.eventlog.engine.SendDirectEntry;
 import org.omnetpp.eventlog.engine.SendHopEntry;
 
-public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventLogEntry> {
+public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventLogEntryReference> {
 	private static final Color DARKBLUE = new Color(null, 0, 0, 192);
+
 	private static final Color DARKRED = new Color(null, 127, 0, 85);
+	
 	private static final Color RED = new Color(null, 240, 0, 0);
+	
 	private static final Color BLACK = new Color(null, 0, 0, 0);
+	
 	private static final Color LIGHTGREY = new Color(null, 211, 211, 211);
 	
 	private static final Color BOOKMARK_COLOR = ColorFactory.LIGHT_CYAN;
@@ -109,14 +114,14 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 		return fontHeight + VERTICAL_SPACING;
 	}
 
-	public void drawCell(GC gc, EventLogEntry element, int index) {
-		Assert.isTrue(element != null);
+	public void drawCell(GC gc, EventLogEntryReference eventLogEntryReference, int index) {
+		Assert.isTrue(eventLogEntryReference != null);
 		
 		this.x = HORIZONTAL_SPACING;
 		this.gc = gc;
 		gc.setAntialias(SWT.OFF);
 
-		EventLogEntry eventLogEntry = (EventLogEntry)element;
+		EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry();
 		Event event = eventLogEntry.getEvent();
 		boolean isEventLogEntry = eventLogEntry instanceof EventEntry;
 
@@ -244,7 +249,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 							}
 							else if (eventLogEntry instanceof ConnectionCreatedEntry) {
 								ConnectionCreatedEntry connectionCreatedEntry = (ConnectionCreatedEntry)eventLogEntry;
-								drawText("Createding ", CONSTANT_TEXT_COLOR);
+								drawText("Creating ", CONSTANT_TEXT_COLOR);
 								drawConnectionDescription(connectionCreatedEntry.getSourceModuleId(), connectionCreatedEntry.getSourceGateFullName(),
 									connectionCreatedEntry.getDestModuleId(), connectionCreatedEntry.getDestGateFullName());
 							}

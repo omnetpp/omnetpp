@@ -19,6 +19,7 @@ import org.eclipse.ui.INavigationLocationProvider;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.omnetpp.common.eventlog.EventLogEditor;
+import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlogtable.EventLogTablePlugin;
@@ -108,7 +109,7 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 			EventLogEntry eventLogEntry = event != null ? event.getEventEntry() : null;
 			
 			if (eventLogEntry != null)
-				eventLogTable.scrollToElement(eventLogEntry);
+				eventLogTable.scrollToElement(new EventLogEntryReference(eventLogEntry));
 		}
 
 		public void restoreState(IMemento memento) {
@@ -158,17 +159,20 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 	}
 
 	public INavigationLocation createNavigationLocation() {
-		EventLogEntry topElement = eventLogTable.getTopVisibleElement();
+		EventLogEntryReference eventLogEntryReference = eventLogTable.getTopVisibleElement();
 		
-		if (topElement == null)
+		if (eventLogEntryReference == null)
 			return null;
 		else
-			return new EventLogTableLocation(topElement.getEvent().getEventNumber());
+			return new EventLogTableLocation(eventLogEntryReference.getEventLogEntry().getEvent().getEventNumber());
 	}
 
 	public void gotoMarker(IMarker marker) {
 		int eventNumber = marker.getAttribute("EventNumber", -1);
-		eventLogTable.gotoElement(eventLogInput.getEventLog().getEventForEventNumber(eventNumber).getEventEntry());
+		IEvent event = eventLogInput.getEventLog().getEventForEventNumber(eventNumber);
+		
+		if (event != null)
+			eventLogTable.gotoElement(new EventLogEntryReference(event.getEventEntry()));
 	}
 
 	private class ResourceChangeListener implements IResourceChangeListener, IResourceDeltaVisitor {
@@ -186,15 +190,11 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 		
         public boolean visit(IResourceDelta delta) {
             if (delta != null && delta.getResource() != null && delta.getResource().equals(eventLogInput.getFile())) {
-            	Display display = Display.getCurrent();
-            	
-            	if (display != null) {
-	            	display.asyncExec(new Runnable() {
-						public void run() {
-		    				eventLogTable.redraw();
-						}            		
-	            	});
-            	}
+        		Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+	    				eventLogTable.redraw();
+					}            		
+            	});
             }
 
             return true;
