@@ -140,13 +140,13 @@ public class ModelObjectPalette {
 			Command command = AddCommand.create(editor.getEditingDomain(), target, null, element);
 			if (command.canExecute()) {
 				// try to add as child
-				command.execute();
+				editor.executeCommand(command);
 			}
 			else {
 				// add as sibling
 				int index = ECollections.indexOf(target.eContainer().eContents(), target, 0);
 				command = AddCommand.create(editor.getEditingDomain(), target.eContainer(), null, element, index + 1);
-				command.execute();
+				editor.executeCommand(command);
 			}
 
 			// if it got inserted (has parent now), select it in the viewer.

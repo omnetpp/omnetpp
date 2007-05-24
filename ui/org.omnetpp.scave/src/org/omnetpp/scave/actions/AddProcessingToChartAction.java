@@ -34,7 +34,7 @@ public class AddProcessingToChartAction extends AbstractScaveAction {
 		EObject element = EcoreUtil.copy(elementPrototype);
 		int index = ECollections.indexOf(parent.eContents(), chart, 0);
 		Command command = AddCommand.create(editor.getEditingDomain(), parent, null, element, index);
-		command.execute();  //XXX undo stack gets messed up???? how???
+		editor.executeCommand(command);
 		
 		// recalculate chart if it's the active page.
 		//XXX actually: should be done if it's open, on whichever page; it would be even better 
