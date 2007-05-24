@@ -14,6 +14,7 @@ import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.ILayerSupport.LayerID;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.figures.misc.IDirectEditSupport;
@@ -52,7 +53,6 @@ public class SubmoduleFigure extends ModuleFigure
         ovalShapeFigure.setVisible(false);
         polygonShapeFigure.setVisible(false);
         rangeFigure.setOpaque(false);
-
     }
 
     @Override
@@ -152,7 +152,6 @@ public class SubmoduleFigure extends ModuleFigure
         rangeFigure.setForegroundColor(borderColor);
         rangeFigure.setLineWidth(borderWidth);
 
-        // TODO: revision by Rudi (this was null when creating with default constructor and setting display string)
         if (rangeAttachLayer != null)
         	rangeAttachLayer.revalidate();
 
@@ -202,11 +201,13 @@ public class SubmoduleFigure extends ModuleFigure
       invalidate();
     }
 
-    protected void setShape(Image img,
+    protected void setShape(Image image,
             String shape, int shapeWidth, int shapeHeight,
             Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
+
+        Image img = image;
         // handle defaults. if no size is given and no icon is present use a default icon
-        if(shapeWidth <= 0 && shapeHeight <= 0 && img == null)
+        if(StringUtils.isEmpty(shape) && img == null && shapeWidth == -1 && shapeHeight == -1)
             img = ImageFactory.getImage(ImageFactory.DEFAULT_KEY);
         // if image changed update it
         if (img != imageFigure.getImage()) {
@@ -219,17 +220,24 @@ public class SubmoduleFigure extends ModuleFigure
         }
         setPreferredSize(imageFigure.getPreferredSize());
 
+        if (StringUtils.isEmpty(shape) && (shapeHeight>0 || shapeWidth>0))
+            shape = "rect";
+        if (img == null && shapeWidth == -1 && shapeHeight == -1) {
+            shapeWidth = 40;
+            shapeHeight = 24;
+        }
+
+
         // creating the shape
         currShape = null;
         rectShapeFigure.setVisible(false);
         rrectShapeFigure.setVisible(false);
         ovalShapeFigure.setVisible(false);
         polygonShapeFigure.setVisible(false);
-        if (shape == null) return;
+        if (shape == null || "".equals(shape) || shapeHeight==-1 && shapeWidth==-1)
+            return;
 
-        if ("rect".equals(shape.toLowerCase())) {
-            currShape = rectShapeFigure;
-        } else if ("rrect".equals(shape.toLowerCase())) {
+        if ("rrect".equals(shape.toLowerCase())) {
             currShape = rrectShapeFigure;
         } else if ("oval".equals(shape.toLowerCase())) {
             currShape = ovalShapeFigure;
@@ -249,7 +257,7 @@ public class SubmoduleFigure extends ModuleFigure
             currShape = polygonShapeFigure;
             polygonShapeFigure.setGeometry(6, 0);
         } else
-            return;
+            currShape = rectShapeFigure;
 
         currShape.setVisible(true);
         currShape.setOpaque(false);

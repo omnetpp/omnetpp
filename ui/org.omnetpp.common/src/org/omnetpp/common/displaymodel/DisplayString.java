@@ -24,13 +24,13 @@ public class DisplayString implements IDisplayString {
         = new DisplayString("i=,,30;i2=,,30;b=40,40,rect,#8080ff,black,2;t=,t,blue;r=100,,black,1;bgb=-1,-1,grey75,black,2;bgg=100,1,grey50");
     // contains the default fallback values for the different tags if it is empty
     public static final DisplayString EMPTY_DEFAULTS
-        = new DisplayString("i=,,30;i2=,,30;b=-1,-1,rect,#8080ff,black,2;t=,t,blue;r=,,black,1;bgb=-1,-1,grey75,black,2;bgg=,1,grey50");
+        = new DisplayString("i=,,30;i2=,,30;b=-1,-1,,#8080ff,black,2;t=,t,blue;r=,,black,1;bgb=-1,-1,grey75,black,2;bgg=,1,grey50");
 
-    // hold default values (if specified in derived calsses)
+    // hold default values (if specified in derived classes)
     // first look in 'this' then in 'defaults' then in 'variableDefaults' or 'emptyDefaults'
     protected DisplayString variableDefaults = null;
     protected DisplayString emptyDefaults = null;
-    // use only a week reference so if the referenced fallback displaystring is deleted
+    // use only a week reference so if the referenced fallback display string is deleted
     // along with the containing model element, it will not be held in the memory
     protected WeakReference<DisplayString> defaults = null;
     // whether notification is enabled or not
@@ -40,7 +40,7 @@ public class DisplayString implements IDisplayString {
     protected IHasDisplayString owner = null;
 
     // map that stores the currently available tag instances
-    private Map<String, TagInstance> tagMap = new LinkedHashMap<String, TagInstance>();
+    private final Map<String, TagInstance> tagMap = new LinkedHashMap<String, TagInstance>();
 
     public class TagInstance {
         public final static String EMPTY_VALUE = "";
@@ -122,6 +122,7 @@ public class DisplayString implements IDisplayString {
          * @return the string representation of the tag or <code>EMPTY_VALUE</code>
          * if all the args are default
          */
+        @Override
         public String toString() {
             // return an empty string if all the values are default
             if (isDefault()) return EMPTY_VALUE;
@@ -286,6 +287,7 @@ public class DisplayString implements IDisplayString {
     /**
      * @return the full display string
      */
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer(50);
         boolean firstTag = true;
