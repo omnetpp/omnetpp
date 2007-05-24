@@ -10,7 +10,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.omnetpp.scave.actions.AddProcessingToChartAction;
+import org.omnetpp.scave.actions.NewChartProcessingOpAction;
 import org.omnetpp.scave.actions.NewAction;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.charting.ChartFactory;
@@ -116,19 +116,19 @@ public class ChartPage extends ScaveEditorPage {
 
 	protected IMenuManager createProcessingSubmenu(boolean isApply) {
 		IMenuManager submenuManager = new MenuManager(isApply ? "Apply" : "Compute");
-		submenuManager.add(new AddProcessingToChartAction("Mean", createOp(isApply, "mean")));
-		submenuManager.add(new AddProcessingToChartAction("Window Batch Average", createOp(isApply, "winavg", "windowSize", "10")));
-		submenuManager.add(new AddProcessingToChartAction("Sliding Window Average", createOp(isApply, "slidingwinavg", "windowSize", "10")));
-		submenuManager.add(new AddProcessingToChartAction("Moving Average", createOp(isApply, "movingavg", "alpha", "0.1")));
+		submenuManager.add(new NewChartProcessingOpAction("Mean", createOp(isApply, "mean")));
+		submenuManager.add(new NewChartProcessingOpAction("Window Batch Average", createOp(isApply, "winavg", "windowSize", "10")));
+		submenuManager.add(new NewChartProcessingOpAction("Sliding Window Average", createOp(isApply, "slidingwinavg", "windowSize", "10")));
+		submenuManager.add(new NewChartProcessingOpAction("Moving Average", createOp(isApply, "movingavg", "alpha", "0.1")));
 		submenuManager.add(new Separator());
-		submenuManager.add(new AddProcessingToChartAction("Remove Repeated Values", createOp(isApply, "removerepeats")));
+		submenuManager.add(new NewChartProcessingOpAction("Remove Repeated Values", createOp(isApply, "removerepeats")));
 		submenuManager.add(new Separator());
-		submenuManager.add(new AddProcessingToChartAction("Sum", createOp(isApply, "sum")));
-		submenuManager.add(new AddProcessingToChartAction("Difference", createOp(isApply, "difference")));
-		submenuManager.add(new AddProcessingToChartAction("Time Difference", createOp(isApply, "timediff")));
-		submenuManager.add(new AddProcessingToChartAction("Difference Quotient", createOp(isApply, "diffquot")));
+		submenuManager.add(new NewChartProcessingOpAction("Sum", createOp(isApply, "sum")));
+		submenuManager.add(new NewChartProcessingOpAction("Difference", createOp(isApply, "difference")));
+		submenuManager.add(new NewChartProcessingOpAction("Time Difference", createOp(isApply, "timediff")));
+		submenuManager.add(new NewChartProcessingOpAction("Difference Quotient", createOp(isApply, "diffquot")));
 		submenuManager.add(new Separator());
-		submenuManager.add(new NewAction(chart, false, "Other...")); //XXX tell it to create an "Apply" before the chart!!!
+		submenuManager.add(new NewChartProcessingOpAction("Other...", createOp(isApply, null)));
 		return submenuManager;
 	}
 	

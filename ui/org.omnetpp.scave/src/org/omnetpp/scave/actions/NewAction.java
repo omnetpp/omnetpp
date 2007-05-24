@@ -38,11 +38,6 @@ public class NewAction extends AbstractScaveAction {
 		}
 	}
 
-	public NewAction(EObject defaultParent, boolean createChild, String text) {
-		this(defaultParent, createChild);
-		setText(text);
-	}
-	
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
 		EObject parent = getParent(selection);

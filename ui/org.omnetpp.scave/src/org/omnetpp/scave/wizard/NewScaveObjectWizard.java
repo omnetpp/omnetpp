@@ -55,6 +55,21 @@ public class NewScaveObjectWizard extends Wizard {
 		Assert.isTrue(childDescriptors.length > 0);
 	}
 
+	public NewScaveObjectWizard(ScaveEditor editor, EObject parent, int index, EObject element) {
+		this.editor = editor;
+		this.domain = editor.getEditingDomain();
+		this.parent = parent;
+		setWindowTitle("New Object");
+		setHelpAvailable(false);
+		setNeedsProgressMonitor(false);
+
+		Collection<?> descriptors = domain.getNewChildDescriptors(parent, null);
+		childDescriptors = (CommandParameter[])descriptors.toArray(new CommandParameter[descriptors.size()]);
+		Assert.isTrue(childDescriptors.length > 0);
+
+		newChildDescriptor = new CommandParameter(parent, null, element, index);
+	}
+	
 	/**
 	 * This is result of the wizard.
 	 */
@@ -71,14 +86,16 @@ public class NewScaveObjectWizard extends Wizard {
 	
 	@Override
 	public void addPages() {
-		if (childDescriptors.length > 1) {
-			typeSelectionPage = new TypeSelectionWizardPage("Select type", childDescriptors);
-			addPage(typeSelectionPage);
+		if (newChildDescriptor == null) {
+			if (childDescriptors.length > 1) {
+				typeSelectionPage = new TypeSelectionWizardPage("Select type", childDescriptors);
+				addPage(typeSelectionPage);
+			}
+			else if (childDescriptors.length == 1) {
+				newChildDescriptor = childDescriptors[0];
+			}
 		}
-		else if (childDescriptors.length == 1) {
-			newChildDescriptor = childDescriptors[0];
-		}
-
+		
 		editFieldsPage = new EditFieldsWizardPage("Set Attributes");
 		addPage(editFieldsPage);
 	}
