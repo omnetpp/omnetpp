@@ -1,5 +1,8 @@
 package org.omnetpp.scave.editors.ui;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.action.IMenuManager;
@@ -10,8 +13,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.omnetpp.scave.actions.EditAction;
 import org.omnetpp.scave.actions.NewChartProcessingOpAction;
-import org.omnetpp.scave.actions.NewAction;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.charting.ChartFactory;
 import org.omnetpp.scave.charting.ChartUpdater;
@@ -98,7 +101,13 @@ public class ChartPage extends ScaveEditorPage {
 		contextMenuManager.add(editorContributor.getZoomInAction());
 		contextMenuManager.add(editorContributor.getZoomOutAction());
 		contextMenuManager.add(new Separator());
-		contextMenuManager.add(editorContributor.getEditAction());
+		//contextMenuManager.add(editorContributor.getEditAction());
+		contextMenuManager.add(new EditAction("Chart...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_MAIN)));
+		contextMenuManager.add(new EditAction("Lines...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, "Lines")));  //XXX
+		contextMenuManager.add(new EditAction("Axes...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_AXES)));
+		contextMenuManager.add(new EditAction("Title...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_TITLES)));
+		contextMenuManager.add(new EditAction("Legend...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_LEGEND)));
+		contextMenuManager.add(new Separator());
 		contextMenuManager.add(editorContributor.getCopyChartToClipboardAction());
 		contextMenuManager.add(new Separator());
 		contextMenuManager.add(createProcessingSubmenu(true));  // "Apply" submenu
@@ -146,5 +155,12 @@ public class ChartPage extends ScaveEditorPage {
 		param.setValue(value);
 		applyOrCompute.getParams().add(param);
 		return applyOrCompute;
+	}
+	
+	protected Map<String,Object> createFormProperties(String key1, Object value1) {
+		Map<String,Object> map = new HashMap<String, Object>();
+		map.put(key1, value1);
+		return map;
+		
 	}
 }

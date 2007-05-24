@@ -210,7 +210,7 @@ public class NewScaveObjectWizard extends Wizard {
 			Composite panel = new Composite(parentComposite, SWT.NONE);
 			panel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 			ScaveObjectEditFormFactory factory = ScaveObjectEditFormFactory.instance();
-			form = factory.createForm((EObject)newChildDescriptor.value, parent, editor.getResultFileManager());
+			form = factory.createForm((EObject)newChildDescriptor.value, parent, null, editor.getResultFileManager());
 			form.populatePanel(panel);
 			setControl(panel);
 			setPageComplete(true);

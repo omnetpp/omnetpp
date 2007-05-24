@@ -10,11 +10,11 @@ import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_MIN;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -42,7 +42,13 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @author tomi
  */
 public class ChartEditForm implements IScaveObjectEditForm {
-	
+	public static final String TAB_MAIN = "Main";
+	public static final String TAB_TITLES = "Titles";
+	public static final String TAB_AXES = "Axes";
+	public static final String TAB_LEGEND = "Legend";
+
+	public static final String PROP_DEFAULT_TAB = "default-page";
+
 	protected static final ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
 
 	/**
@@ -58,6 +64,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	 */
 	protected Chart chart;
 	protected EObject parent;
+	protected Map<String, Object> formParameters;
 	protected ResultFileManager manager;
 	protected ChartProperties properties;
 
@@ -87,8 +94,9 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	private Button[] legendPositionRadios;
 	private Button[] legendAnchorRadios;
 
+
 	/**
-	 * Number of visible items in combos.
+	 * Number of visible items in combo boxes.
 	 */
 	protected static final int VISIBLE_ITEM_COUNT = 15;
 
@@ -96,9 +104,10 @@ public class ChartEditForm implements IScaveObjectEditForm {
 
 	protected static final String USER_DATA_KEY = "ChartEditForm";
 
-	public ChartEditForm(Chart chart, EObject parent, ResultFileManager manager) {
+	public ChartEditForm(Chart chart, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
 		this.chart = chart;
 		this.parent = parent;
+		this.formParameters = formParameters;
 		this.manager = manager;
 		this.properties = ChartProperties.createPropertySource(chart, manager);
 	}
@@ -141,16 +150,25 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		populateTabFolder(tabfolder);
 		for (int i=0; i < tabfolder.getItemCount(); ++i)
 			populateTabItem(tabfolder.getItem(i));
+		
+		// switch to the requested page 
+		String defaultPage = (String) formParameters.get(PROP_DEFAULT_TAB);
+		if (defaultPage != null)
+			for (TabItem tabItem : tabfolder.getItems())
+				if (tabItem.getText().equals(defaultPage)) {
+					tabfolder.setSelection(tabItem); 
+					break;
+				}
 	}
 	
 	/**
 	 * Creates the tabs of the dialog.
 	 */
 	protected void populateTabFolder(TabFolder tabfolder) {
-		createTab("Main", tabfolder, 2);
-		createTab("Titles", tabfolder, 1);
-		createTab("Axes", tabfolder, 2);
-		createTab("Legend", tabfolder, 1);
+		createTab(TAB_MAIN, tabfolder, 2);
+		createTab(TAB_TITLES, tabfolder, 1);
+		createTab(TAB_AXES, tabfolder, 2);
+		createTab(TAB_LEGEND, tabfolder, 1);
 	}
 	
 	/**
@@ -161,10 +179,11 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		String name = item.getText();
 		Composite panel = (Composite)item.getControl();
 		
-		if ("Main".equals(name)) {
+		if (TAB_MAIN.equals(name)) {
 			nameText = createTextField("Name", panel);
+			nameText.setFocus();
 		}
-		else if ("Titles".equals(name)) {
+		else if (TAB_TITLES.equals(name)) {
 			group = createGroup("Graph title", panel);
 			graphTitleText = createTextField("Graph title", group);
 			graphTitleFontText = createTextField("Title font", group);
@@ -175,7 +194,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			labelFontText = createTextField("Label font", group);
 			xLabelsRotateByCombo = createComboField("Rotate X labels by", group, new String[] {"0", "30", "45", "60", "90"});
 		}
-		else if ("Axes".equals(name)) {
+		else if (TAB_AXES.equals(name)) {
 			group = createGroup("Axis bounds", panel, 3);
 			group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 			createLabel("", group);
@@ -186,13 +205,13 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			yAxisMinText = createTextField("Y axis", group);
 			yAxisMaxText = createTextField(null, group);
 			group = createGroup("Axis options", panel, 1);
-			xAxisLogCheckbox = createCheckboxField("logarithmic X axis", group);
-			yAxisLogCheckbox = createCheckboxField("logarithmic Y axis", group);
-			invertAxesCheckbox = createCheckboxField("invert X,Y", group);
+			xAxisLogCheckbox = createCheckboxField("Logarithmic X axis", group);
+			yAxisLogCheckbox = createCheckboxField("Logarithmic Y axis", group);
+			invertAxesCheckbox = createCheckboxField("Invert X,Y", group);
 			group = createGroup("Grid", panel, 1);
-			showGridCheckbox = createCheckboxField("show grid", group);
+			showGridCheckbox = createCheckboxField("Show grid", group);
 		}
-		else if ("Legend".equals(name)) {
+		else if (TAB_LEGEND.equals(name)) {
 			displayLegendCheckbox = createCheckboxField("Display legend", panel);
 			group = createGroup("Appearance", panel);
 			displayBorderCheckbox = createCheckboxField("Border", group);

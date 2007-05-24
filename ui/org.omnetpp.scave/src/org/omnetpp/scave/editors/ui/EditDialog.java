@@ -1,5 +1,7 @@
 package org.omnetpp.scave.editors.ui;
 
+import java.util.Map;
+
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -18,7 +20,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
  * 
  * It receives an object and optionally a set of features to be edited
  * (defaults to all editable features).
- * It responses with the changed values.
+ * It replies with the changed values.
  * 
  * @author tomi
  */
@@ -26,39 +28,40 @@ public class EditDialog extends TitleAreaDialog {
 	
 	private ScaveEditor editor;
 	private EObject object;
-	private EStructuralFeature[] features;
+	private EStructuralFeature[] features; //XXX not really used, remove on the long term?
 	private IScaveObjectEditForm form;
 	private Object[] values;
 	
 	
-	public EditDialog(
-			Shell parentShell,
-			EObject object,
-			ScaveEditor editor) {
-		this(parentShell, object, null, editor);
+	/**
+	 * Creates the dialog. The form in the dialog will be chosen based on the object type.
+	 * The form can be customized via the formParameters, like which page of the 
+	 * chart dialog should be displayed by default.
+	 *    
+	 * @param parentShell    the parent shell
+	 * @param object         object to be edited
+	 * @param editor         the editor 
+	 * @param formParameters key-value pairs understood by the form; may be null
+	 */
+	public EditDialog(Shell parentShell, EObject object, ScaveEditor editor, Map<String,Object> formParameters) {
+		this(parentShell, object, null, editor, formParameters);
 	}
 	
-	public EditDialog(
-			Shell parentShell,
-			EObject object,
-			EStructuralFeature[] features,
-			ScaveEditor editor) {
+	public EditDialog(Shell parentShell, EObject object, EStructuralFeature[] features, ScaveEditor editor, Map<String,Object> formParameters) {
 		super(parentShell);
 		setShellStyle(getShellStyle() | SWT.RESIZE);
 		this.editor = editor;
 		this.object = object;
 		this.features = features;
-		this.form = createForm(object, features, editor.getResultFileManager());
+		this.form = createForm(object, features, editor.getResultFileManager(), formParameters);
 	}
-	
-	
 	
 	public EStructuralFeature[] getFeatures() {
 		return form.getFeatures();
 	}
 	
 	public static EStructuralFeature[] getEditableFeatures(EObject object, ScaveEditor editor) {
-		IScaveObjectEditForm form = createForm(object, null, editor.getResultFileManager());
+		IScaveObjectEditForm form = createForm(object, null, editor.getResultFileManager(), null);
 		return form.getFeatures();
 	}
 	
@@ -71,8 +74,6 @@ public class EditDialog extends TitleAreaDialog {
 		super.configureShell(newShell);
 		newShell.setText("Edit " + object.eClass().getName());
 	}
-	
-	
 
 	@Override
 	protected void buttonPressed(int buttonId) {
@@ -140,9 +141,9 @@ public class EditDialog extends TitleAreaDialog {
 		editor.executeCommand(command);
 	}
 	
-	private static IScaveObjectEditForm createForm(EObject object, EStructuralFeature[] features, ResultFileManager manager) {
+	private static IScaveObjectEditForm createForm(EObject object, EStructuralFeature[] features, ResultFileManager manager, Map<String,Object> formParameters) {
 		return features == null ?
-					ScaveObjectEditFormFactory.instance().createForm(object, manager) :
+					ScaveObjectEditFormFactory.instance().createForm(object, formParameters, manager) :
 					ScaveObjectEditFormFactory.instance().createForm(object, features);
 	}
 }

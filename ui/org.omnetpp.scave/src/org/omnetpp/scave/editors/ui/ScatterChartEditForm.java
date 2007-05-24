@@ -1,5 +1,7 @@
 package org.omnetpp.scave.editors.ui;
 
+import java.util.Map;
+
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.widgets.Composite;
@@ -22,8 +24,8 @@ public class ScatterChartEditForm extends LineChartEditForm {
 	private Text moduleNameText;
 	private Text dataNameText;
 	
-	public ScatterChartEditForm(Chart chart, EObject parent, ResultFileManager manager) {
-		super(chart, parent, manager);
+	public ScatterChartEditForm(Chart chart, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
+		super(chart, parent, formParameters, manager);
 	}
 	
 	/**

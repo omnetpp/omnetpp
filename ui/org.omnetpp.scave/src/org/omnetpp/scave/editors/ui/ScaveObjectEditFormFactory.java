@@ -1,5 +1,7 @@
 package org.omnetpp.scave.editors.ui;
 
+import java.util.Map;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -36,9 +38,9 @@ public class ScaveObjectEditFormFactory {
 	 * Creates a form containing all editable features of the object.
 	 * @param object  the edited object
 	 */
-	public IScaveObjectEditForm createForm(EObject object, ResultFileManager manager) {
+	public IScaveObjectEditForm createForm(EObject object, Map<String,Object> formParameters, ResultFileManager manager) {
 		Assert.isTrue(object != null && object.eContainer() != null);
-		return createForm(object, object.eContainer(), manager);
+		return createForm(object, object.eContainer(), formParameters, manager);
 	}
 
 	/**
@@ -46,16 +48,16 @@ public class ScaveObjectEditFormFactory {
 	 * @param object the edited object
 	 * @param parent the parent node of the object where it is placed or will be placed 
 	 */
-	public IScaveObjectEditForm createForm(EObject object, EObject parent, ResultFileManager manager) {
+	public IScaveObjectEditForm createForm(EObject object, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
 		
 		if (object instanceof BarChart)
-			return new BarChartEditForm((Chart)object, parent, manager);
+			return new BarChartEditForm((Chart)object, parent, formParameters, manager);
 		else if (object instanceof ScatterChart)
-			return new ScatterChartEditForm((Chart)object, parent, manager);
+			return new ScatterChartEditForm((Chart)object, parent, formParameters, manager);
 		else if (object instanceof LineChart)
-			return new LineChartEditForm((Chart)object, parent, manager);
+			return new LineChartEditForm((Chart)object, parent, formParameters, manager);
 		else if (object instanceof Chart)
-			return new ChartEditForm((Chart)object, parent, manager);
+			return new ChartEditForm((Chart)object, parent, formParameters, manager);
 		else if (object instanceof ChartSheet)
 			return new ChartSheetEditForm((ChartSheet)object, parent);
 		else if (object instanceof Dataset)
@@ -67,7 +69,7 @@ public class ScaveObjectEditFormFactory {
 		else if (object instanceof SetOperation)
 			return new SetOperationEditForm((SetOperation)object, parent, manager);
 		else
-			return new GenericScaveObjectEditForm(object);
+			return new GenericScaveObjectEditForm(object); //XXX should go on the long term; we'd like custom forms for every object class
 	}
 	
 	/**

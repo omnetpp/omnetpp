@@ -2,6 +2,7 @@ package org.omnetpp.scave.editors.ui;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -41,8 +42,8 @@ public class BarChartEditForm extends ChartEditForm {
 	private Text baselineText;
 	private Combo barPlacementCombo;
 
-	public BarChartEditForm(Chart chart, EObject parent, ResultFileManager manager) {
-		super(chart, parent, manager);
+	public BarChartEditForm(Chart chart, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
+		super(chart, parent, formParameters, manager);
 	}
 	
 	public void populateTabFolder(TabFolder tabfolder) {

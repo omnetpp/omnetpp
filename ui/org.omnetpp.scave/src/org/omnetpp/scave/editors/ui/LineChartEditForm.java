@@ -5,6 +5,7 @@ import static org.omnetpp.scave.charting.ChartProperties.PROP_SYMBOL_SIZE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_SYMBOL_TYPE;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.SWT;
@@ -46,8 +47,8 @@ public class LineChartEditForm extends ChartEditForm {
 	private Combo symbolSizeCombo;
 	private Button[] lineStyleRadios;
 	
-	public LineChartEditForm(Chart chart, EObject parent, ResultFileManager manager) {
-		super(chart, parent, manager);
+	public LineChartEditForm(Chart chart, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
+		super(chart, parent, formParameters, manager);
 		Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
 		String[] names = DatasetManager.getYDataNames(chart, dataset, manager);
 		this.lineNames = new String[names.length + 1];
