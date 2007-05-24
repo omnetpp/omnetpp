@@ -28,7 +28,7 @@ public class ColorCellEditorEx extends TextCellEditorEx {
      */
     private Image image;
 
-    public class ColorContentProposalProvider extends ContentProposalProvider {
+    public static class ColorContentProposalProvider extends ContentProposalProvider {
         public ColorContentProposalProvider() {
             super(true);
         }
