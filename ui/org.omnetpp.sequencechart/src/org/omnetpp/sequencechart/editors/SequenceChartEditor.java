@@ -205,10 +205,10 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
 		
         public boolean visit(IResourceDelta delta) {
             if (delta != null && delta.getResource() != null && delta.getResource().equals(eventLogInput.getFile())) {
-            	Display.getCurrent().asyncExec(new Runnable() { //FIXME this causes NPE on project close
+            	Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
 						// TODO:
-					}            		
+					}
             	});
             }
 

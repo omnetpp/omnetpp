@@ -94,7 +94,7 @@ public class SequenceChart
 	extends CachingCanvas
 	implements IVirtualContentWidget<IEvent>, ISelectionProvider
 {
-	private static final boolean debug = true;
+	private static final boolean debug = false;
 
 	/*************************************************************************************
 	 * DRAWING PARAMETERS
@@ -1043,8 +1043,10 @@ public class SequenceChart
 		if (pixelPerTimelineCoordinate == -1) {
 			int distance = Math.min(50, eventLog.getApproximateNumberOfEvents());
 
-			if (distance > 0)
-				setPixelPerTimelineCoordinate(getViewportWidth() / sequenceChartFacade.getTimelineCoordinate(eventLog.getNeighbourEvent(eventLog.getFirstEvent(), distance - 1)));
+			if (distance > 0) {
+				double value = getViewportWidth() / sequenceChartFacade.getTimelineCoordinate(eventLog.getNeighbourEvent(eventLog.getFirstEvent(), distance - 1));
+				setPixelPerTimelineCoordinate(Double.isInfinite(value) ? 1 : value);
+			}
 		}
 	}
 

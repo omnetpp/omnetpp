@@ -448,8 +448,12 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 					
 					SequenceChartFacade sequenceChartFacade = eventLogInput.getSequenceChartFacade();
 					sequenceChartFacade.setEventLog(filteredEventLog);
-					IEvent closestEvent = filteredEventLog.getMatchingEventInDirection(sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber(), true);
-					sequenceChartFacade.relocateTimelineCoordinateSystem(closestEvent);
+					
+					int timelineCoordinateSystemOriginEventNumber = sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber();
+					if (timelineCoordinateSystemOriginEventNumber != -1) {
+						IEvent closestEvent = filteredEventLog.getMatchingEventInDirection(timelineCoordinateSystemOriginEventNumber, true);
+						sequenceChartFacade.relocateTimelineCoordinateSystem(closestEvent);
+					}
 
 					sequenceChart.setInput(eventLogInput);
 					sequenceChart.setAxisModules(selectedAxisModules);
