@@ -142,8 +142,7 @@ public class EditDialog extends TitleAreaDialog {
 	}
 	
 	private static IScaveObjectEditForm createForm(EObject object, EStructuralFeature[] features, ResultFileManager manager, Map<String,Object> formParameters) {
-		return features == null ?
-					ScaveObjectEditFormFactory.instance().createForm(object, formParameters, manager) :
-					ScaveObjectEditFormFactory.instance().createForm(object, features);
+		//XXX remove features[] parameter! 
+		return ScaveObjectEditFormFactory.instance().createForm(object, formParameters, manager);
 	}
 }

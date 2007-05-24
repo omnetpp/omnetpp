@@ -125,8 +125,10 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		filterField = new FilterField(panel, SWT.SINGLE | SWT.BORDER);
 		filterField.getLayoutControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		filterText = filterField.getText();
+
+		filterText.setFocus();
 		
-		// update the filterhints when the type selection change
+		// update the filter hints when the type selection changes
 		datatypeCombo.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				updateFilterHints();
