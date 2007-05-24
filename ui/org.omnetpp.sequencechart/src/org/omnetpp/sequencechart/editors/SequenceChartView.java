@@ -14,6 +14,8 @@ import org.omnetpp.sequencechart.widgets.SequenceChart;
 public class SequenceChartView extends ViewWithMessagePart {
 	protected SequenceChart sequenceChart;
 
+	protected ISelectionListener listener;
+
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
@@ -28,7 +30,7 @@ public class SequenceChartView extends ViewWithMessagePart {
 		sequenceChartContributor.contributeToToolBar(viewSite.getActionBars().getToolBarManager());
 
 		// follow selection
-		ISelectionListener listener = new ISelectionListener() {
+		listener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 				if (part != SequenceChartView.this)
 					sequenceChart.setSelection(selection);
@@ -43,6 +45,12 @@ public class SequenceChartView extends ViewWithMessagePart {
 
 		// bootstrap with current selection
 		listener.selectionChanged(null, getActiveEditorSelection());
+	}
+	
+	@Override
+	public void dispose() {
+		super.dispose();
+		getViewSite().getPage().removeSelectionListener(listener);
 	}
 
 	@Override

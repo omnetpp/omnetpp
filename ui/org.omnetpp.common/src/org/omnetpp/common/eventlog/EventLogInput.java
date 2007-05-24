@@ -1,6 +1,9 @@
 package org.omnetpp.common.eventlog;
 
+import java.util.ArrayList;
+
 import org.eclipse.core.resources.IFile;
+import org.omnetpp.common.util.RecurringJob;
 import org.omnetpp.eventlog.engine.EventLogTableFacade;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
@@ -10,6 +13,8 @@ import org.omnetpp.eventlog.engine.SequenceChartFacade;
  * Input object for event log file editors and viewers.
  */
 public class EventLogInput {
+	private static final boolean debug = true;
+
 	/**
 	 * The event log file.
 	 */
@@ -34,11 +39,30 @@ public class EventLogInput {
 	 * Root of the module tree present in the event log file.
 	 */
 	protected ModuleTreeItem moduleTree;
+
+	/**
+	 * A list of listeners to be notified when the contents of the event log changes.
+	 * The standard eclipse IResourceChangeListener interface is not sufficient since
+	 * it relies on the last modification date which is not updated when the file is
+	 * being written without actually closing it.
+	 */
+	protected ArrayList<IEventLogChangedListener> eventLogChangedListeners = new ArrayList<IEventLogChangedListener>();
+
+	/**
+	 * Watches the event log file for changes.
+	 */
+	protected RecurringJob eventLogWatcher;
 	
 	public EventLogInput() {
+		eventLogWatcher = new RecurringJob(1000) {
+			public void run() {
+				checkEventLogForChanges();
+			}
+		};
 	}
 
 	public EventLogInput(IFile file, IEventLog eventLog) {
+		this();
 		this.file = file;
 		this.eventLog = eventLog;
 	}
@@ -87,5 +111,48 @@ public class EventLogInput {
 		}
 		
 		return moduleTree;
+	}
+	
+	public void addEventLogChangedListener(IEventLogChangedListener listener) {
+		if (eventLogChangedListeners.size() == 0)
+			eventLogWatcher.start();
+
+		if (!eventLogChangedListeners.contains(listener))
+			eventLogChangedListeners.add(listener);
+	}
+
+	public void removeEventLogChangedListener(IEventLogChangedListener listener) {
+		eventLogChangedListeners.remove(listener);
+		
+		if (eventLogChangedListeners.size() == 0)
+			eventLogWatcher.stop();
+	}
+
+	public void notifyEventLogChangedListeners() {
+		for (IEventLogChangedListener listener : eventLogChangedListeners)
+			listener.eventLogChanged();
+	}
+
+	public void checkEventLogForChanges() {
+		if (eventLog.getFileReader().isChanged()) {
+			if (debug)
+				System.out.println("Notifying listeners about event log change");
+
+			eventLog.synchronize();
+			getEventLogTableFacade().synchronize();
+			getSequenceChartFacade().synchronize();
+
+			notifyEventLogChangedListeners();
+
+			if (debug)
+				System.out.println("Event log change notification done");
+		}
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		super.finalize();
+		eventLogChangedListeners.clear();
+		eventLogWatcher.stop();
 	}
 }

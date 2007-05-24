@@ -26,6 +26,8 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
@@ -52,6 +54,7 @@ import org.omnetpp.common.canvas.RubberbandSupport;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogSelection;
+import org.omnetpp.common.eventlog.IEventLogChangedListener;
 import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.ui.HoverSupport;
@@ -92,9 +95,9 @@ import org.omnetpp.sequencechart.widgets.axisrenderer.IAxisRenderer;
 //TODO rubberband vs. haircross, show them at once
 public class SequenceChart
 	extends CachingCanvas
-	implements IVirtualContentWidget<IEvent>, ISelectionProvider
+	implements IVirtualContentWidget<IEvent>, ISelectionProvider, IEventLogChangedListener
 {
-	private static final boolean debug = false;
+	private static final boolean debug = true;
 
 	/*************************************************************************************
 	 * DRAWING PARAMETERS
@@ -164,9 +167,9 @@ public class SequenceChart
 	private AxisSpacingMode axisSpacingMode = AxisSpacingMode.AUTO;
 
 	private boolean showArrowHeads = true; // whether arrow heads are drawn or not
-	private boolean showMessageNames;
+	private boolean showMessageNames = true;
 	private boolean showReuseMessages; // show or hide reuse message arrows
-	private boolean showEventNumbers;
+	private boolean showEventNumbers = true;
 	private AxisOrderingMode axisOrderingMode = AxisOrderingMode.MODULE_ID; // specifies the ordering mode of timelines
 
 	private HoverSupport hoverSupport;
@@ -184,6 +187,8 @@ public class SequenceChart
 	private int[] axisModuleYs; // top y coordinates of axis bounding boxes
 	private HashMap<Integer, Integer> moduleIdToAxisModuleIndexMap = new HashMap<Integer, Integer>();
 	private boolean invalidVirtualSize = true;
+	
+	private boolean followEnd = false; // when the event log changes should we follow it or not?
 
 	/*************************************************************************************
 	 * SELECTION STATE
@@ -255,6 +260,13 @@ public class SequenceChart
 				zoomToRectangle(new org.eclipse.draw2d.geometry.Rectangle(r));
 			}
 		};
+		
+		addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent e) {
+				if (eventLogInput != null)
+					eventLogInput.removeEventLogChangedListener(SequenceChart.this);
+			}
+		});
 
 		addControlListener(new ControlAdapter() {
 			public void controlResized(ControlEvent e) {
@@ -579,6 +591,8 @@ public class SequenceChart
 		ScrollBar scrollBar = getHorizontalBar();
 		double percentage = (double)scrollBar.getSelection() / (scrollBar.getMaximum() - scrollBar.getThumb());
 
+		followEnd = false;
+
 		if (e.detail == SWT.ARROW_UP)
 			scroll(-1);
 		else if (e.detail == SWT.ARROW_DOWN)
@@ -598,6 +612,8 @@ public class SequenceChart
 	@Override
 	public void scrollHorizontalTo(long x) {
 		fixPointViewportCoordinate -= x - getViewportLeft();
+		followEnd = false;
+
 		super.scrollHorizontalTo(x);
 	}
 
@@ -607,6 +623,7 @@ public class SequenceChart
 
 	public void scrollToEnd() {
 		scrollToElement(eventLog.getLastEvent(), getViewportWidth());
+		followEnd = true;
 	}
 
 	public void scrollAxes(int dy) {
@@ -676,6 +693,9 @@ public class SequenceChart
 		long y = getViewportTop() + getEventYViewportCoordinate(event.getCPtr());
 		scrollVerticalToRange(y - d, y + d);
 		adjustHorizontalScrollBar();
+
+		followEnd = false;
+
 		redraw();
 	}
 
@@ -843,7 +863,7 @@ public class SequenceChart
 	/*************************************************************************************
 	 * MISC
 	 */
-
+	
 	/**
 	 * Returns the currently displayed EventLogInput object.
 	 */
@@ -856,6 +876,9 @@ public class SequenceChart
 	 */
 	public void setInput(EventLogInput eventLogInput) {
 		boolean firstTime = (this.eventLogInput == null);
+		
+		if (!firstTime)
+			this.eventLogInput.removeEventLogChangedListener(this);
 
 		this.eventLogInput = eventLogInput;
 		this.eventLog = eventLogInput.getEventLog();
@@ -884,10 +907,34 @@ public class SequenceChart
 			calculatePixelPerTimelineUnit();
 			setViewportSimulationTimeRange(leftRightSimulationTimes);
 		}
+		
+		eventLogInput.addEventLogChangedListener(this);
 
 		clearCanvasCacheAndRedraw();
 	}
-	
+
+	public void eventLogChanged() {
+		if (debug)
+			System.out.println("SequenceChart got notification about event log change");
+
+		if (!eventLog.isEmpty() && sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() == -1)
+			sequenceChartFacade.relocateTimelineCoordinateSystem(eventLog.getFirstEvent());
+
+		configureScrollBars();
+		adjustHorizontalScrollBar();
+		clearCanvasCache();
+
+		if (followEnd)
+		{
+			if (debug)
+				System.out.println("Scrolling to follow event log change");
+			
+			scrollToEnd();
+		}
+		else
+			redraw();
+	}
+
 	private ArrayList<ModuleTreeItem> getAllAxisModules(final EventLogInput eventLogInput) {
 		final ArrayList<ModuleTreeItem> modules = new ArrayList<ModuleTreeItem>();
 		eventLogInput.getModuleTreeRoot().visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
@@ -1087,32 +1134,6 @@ public class SequenceChart
 			calculateAxisYs();
 	}
 	
-	private void synchronizeWithEventLog() {
-		long[] eventPtrRange = getFirstLastEventForPixelRange(0, getViewportWidth());
-		long startEventPtr = eventPtrRange[0];
-		long endEventPtr = eventPtrRange[1];
-
-		if ((startEventPtr == 0 || sequenceChartFacade.Event_getNextEvent(endEventPtr) == 0) &&
-			eventLogInput.getSequenceChartFacade().synchronize())
-		{
-			Display.getCurrent().asyncExec(new Runnable() {
-				public void run() {
-					Display.getCurrent().asyncExec(new Runnable() {
-						public void run() {
-							if (!eventLog.isEmpty() && sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() == -1)
-								sequenceChartFacade.relocateTimelineCoordinateSystem(eventLog.getFirstEvent());
-
-							configureScrollBars();
-							adjustHorizontalScrollBar();
-							clearCanvasCache();
-							scrollToEnd();
-						}
-					});
-				}
-			});
-		}
-	}
-
 	/*************************************************************************************
 	 * DRAWING
 	 */
@@ -1120,8 +1141,6 @@ public class SequenceChart
 	@Override
 	protected void paint(GC gc) {
 		if (eventLogInput != null) {
-			synchronizeWithEventLog();
-
 			calculateStuff();
 			calculateTicks();
 		}

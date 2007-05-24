@@ -5,20 +5,21 @@ import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 
 public class EventLogEntryReference {
-	private IEventLog eventLog;
-
 	private int eventNumber;
 
 	private int eventEntryIndex;
 
 	public EventLogEntryReference(EventLogEntry eventLogEntry) {
 		IEvent event = eventLogEntry.getEvent();
-		eventLog = event.getEventLog();
 		eventNumber = event.getEventNumber();
 		eventEntryIndex = eventLogEntry.getIndex();
 	}
 	
-	public EventLogEntry getEventLogEntry() {
+	public EventLogEntry getEventLogEntry(EventLogInput eventLogInput) {
+		return getEventLogEntry(eventLogInput.getEventLog());
+	}
+
+	public EventLogEntry getEventLogEntry(IEventLog eventLog) {
 		return eventLog.getEventForEventNumber(eventNumber).getEventLogEntry(eventEntryIndex);
 	}
 

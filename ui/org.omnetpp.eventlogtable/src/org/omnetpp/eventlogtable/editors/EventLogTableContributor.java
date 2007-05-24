@@ -165,8 +165,8 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 				// TODO: add case sensitivity, forward/backward search, etc.
 
 				String searchText = dialog.getValue();
-				EventLogEntry foundEventLogEntry = getEventLog().findEventLogEntry(eventLogTable.getSelectionElement().getEventLogEntry(), searchText, true);
-				
+				EventLogEntry foundEventLogEntry = getEventLog().findEventLogEntry(eventLogTable.getSelectionElement().getEventLogEntry(eventLogTable.getEventLogInput()), searchText, true);
+
 				if (foundEventLogEntry != null)
 					eventLogTable.gotoClosestElement(new EventLogEntryReference(foundEventLogEntry));
 				else
@@ -198,7 +198,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 				if (eventLogEntryReference == null)
 					return null;
 				else {
-					IMessageDependency cause = eventLogEntryReference.getEventLogEntry().getEvent().getCause();
+					IMessageDependency cause = eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput()).getEvent().getCause();
 					
 					if (cause == null)
 						return null;
@@ -225,7 +225,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 				EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
 
 				if (eventLogEntryReference != null) {
-					EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry();
+					EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput());
 					IEvent event = eventLogEntry.getEvent();
 					IMessageDependencyList consequences = event.getConsequences();
 					
@@ -264,7 +264,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 				EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
 
 				if (eventLogEntryReference != null) {
-					EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry();
+					EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput());
 					IEvent event = eventLogEntry.getEvent();
 					IMessageDependencyList causes = event.getCauses();
 					
@@ -302,7 +302,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 				EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
 
 				if (eventLogEntryReference != null) {
-					EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry();
+					EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput());
 					IEvent event = eventLogEntry.getEvent();
 					IMessageDependencyList consequences = event.getConsequences();
 					
@@ -419,7 +419,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
 
 					if (eventLogEntryReference != null) {
-						IEvent event = eventLogEntryReference.getEventLogEntry().getEvent();
+						IEvent event = eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput()).getEvent();
 						EventLogInput eventLogInput = (EventLogInput)eventLogTable.getInput();
 						IMarker marker = eventLogInput.getFile().createMarker(IMarker.BOOKMARK);
 						marker.setAttribute(IMarker.LOCATION, "# " + event.getEventNumber());

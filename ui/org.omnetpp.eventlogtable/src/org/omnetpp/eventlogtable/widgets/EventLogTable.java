@@ -7,14 +7,14 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogSelection;
+import org.omnetpp.common.eventlog.IEventLogChangedListener;
 import org.omnetpp.common.virtualtable.VirtualTable;
 import org.omnetpp.common.virtualtable.VirtualTableSelection;
 import org.omnetpp.eventlog.engine.EventLogTableFacade;
@@ -22,7 +22,14 @@ import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlogtable.editors.EventLogTableContributor;
 
-public class EventLogTable extends VirtualTable<EventLogEntryReference> {
+public class EventLogTable
+	extends VirtualTable<EventLogEntryReference>
+	implements IEventLogChangedListener
+{
+	private static final boolean debug = true;
+
+	private boolean followEnd = false; // when the event log changes should we follow it or not?
+
 	public EventLogTable(Composite parent, int style) {
 		super(parent, style);
 
@@ -41,29 +48,10 @@ public class EventLogTable extends VirtualTable<EventLogEntryReference> {
 		tableColumn.setWidth(2000);
 		tableColumn.setText("Details");
 		
-		canvas.addPaintListener(new PaintListener() {
-			public void paintControl(PaintEvent e) {
-				final EventLogInput eventLogInput = getEventLogInput();
-				
-				if (eventLogInput != null) {
-					EventLogEntryReference eventLogEntryReference = getBottomVisibleElement();
-
-					if ((eventLogEntryReference == null || getContentProvider().getDistanceToLastElement(eventLogEntryReference, 1) == 0) &&
-						eventLogInput.getEventLogTableFacade().synchronize())
-					{
-						Display.getCurrent().asyncExec(new Runnable() {
-							public void run() {
-								Display.getCurrent().asyncExec(new Runnable() {
-									public void run() {
-										configureVerticalScrollBar();
-										updateVerticalBarPosition();
-										scrollToEnd();
-									}
-								});
-							}
-						});
-					}
-				}
+		addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent e) {
+				if (getEventLogInput() != null)
+					getEventLogInput().removeEventLogChangedListener(EventLogTable.this);
 			}
 		});
 	}
@@ -84,7 +72,7 @@ public class EventLogTable extends VirtualTable<EventLogEntryReference> {
 			ArrayList<IEvent> selectionEvents = new ArrayList<IEvent>();
 			
 			for (EventLogEntryReference selectionElement : selectionElements)
-				selectionEvents.add(selectionElement.getEventLogEntry().getEvent());
+				selectionEvents.add(selectionElement.getEventLogEntry(getEventLogInput()).getEvent());
 	
 			return new EventLogSelection(getEventLogInput(), selectionEvents);
 		}
@@ -109,10 +97,11 @@ public class EventLogTable extends VirtualTable<EventLogEntryReference> {
 
 		// store current position
 		if (eventLogInput != null) {
+			eventLogInput.removeEventLogChangedListener(this);
 			EventLogEntryReference eventLogEntryReference = getTopVisibleElement();
-			
+
 			if (eventLogEntryReference != null) {
-				String eventNumber = String.valueOf(eventLogEntryReference.getEventLogEntry().getEvent().getEventNumber());
+				String eventNumber = String.valueOf(eventLogEntryReference.getEventLogEntry(getEventLogInput()).getEvent().getEventNumber());
 
 				try {
 					eventLogInput.getFile().setPersistentProperty(getEventLogTableEventNumberPropertyName(), eventNumber);
@@ -130,6 +119,7 @@ public class EventLogTable extends VirtualTable<EventLogEntryReference> {
 
 		if (eventLogInput != null) {
 			try {
+				eventLogInput.addEventLogChangedListener(this);
 				String eventNumber = eventLogInput.getFile().getPersistentProperty(getEventLogTableEventNumberPropertyName());
 
 				if (eventNumber != null) {
@@ -144,11 +134,25 @@ public class EventLogTable extends VirtualTable<EventLogEntryReference> {
 			}
 		}
 	}
-
-	private QualifiedName getEventLogTableEventNumberPropertyName() {
-		return new QualifiedName("EventLogTable", "EventNumber");
+	
+	@Override
+	public void scroll(int numberOfElements) {
+		super.scroll(numberOfElements);
+		followEnd = false;
 	}
 	
+	@Override
+	public void scrollToElement(EventLogEntryReference element) {
+		super.scrollToElement(element);
+		followEnd = false;
+	}
+	
+	@Override
+	public void scrollToEnd() {
+		super.scrollToEnd();
+		followEnd = true;
+	}
+
 	public EventLogInput getEventLogInput() {
 		return (EventLogInput)getInput();		
 	}
@@ -185,5 +189,27 @@ public class EventLogTable extends VirtualTable<EventLogEntryReference> {
 	public void setFilterMode(int i) {
 		getEventLogTableFacade().setFilterMode(i);
 		stayNear();
+	}
+
+	public void eventLogChanged() {
+		if (debug)
+			System.out.println("EventLogTable got notification about event log change");
+
+		configureVerticalScrollBar();
+		updateVerticalBarPosition();
+
+		if (followEnd)
+		{
+			if (debug)
+				System.out.println("Scrolling to follow event log change");
+			
+			scrollToEnd();
+		}
+		else
+			redraw();
+	}
+
+	protected QualifiedName getEventLogTableEventNumberPropertyName() {
+		return new QualifiedName("EventLogTable", "EventNumber");
 	}
 }

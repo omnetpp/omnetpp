@@ -37,6 +37,8 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
 
 	protected SequenceChart sequenceChart;
 
+	protected ISelectionListener selectionListener;
+
 	public SequenceChartEditor() {
 		super();
 	}
@@ -64,6 +66,7 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
 	@Override
 	public void dispose() {
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
+		getSite().getPage().removeSelectionListener(selectionListener);
 	}
 
 	@Override
@@ -78,14 +81,15 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
 		getSite().setSelectionProvider(sequenceChart);
 
 		// follow selection
-		getSite().getPage().addSelectionListener(new ISelectionListener() {
+		selectionListener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 				if (part != sequenceChart) {
 					sequenceChart.setSelection(selection);
 					markLocation();
 				}
 			}
-		});
+		};
+		getSite().getPage().addSelectionListener(selectionListener);
 	}
 
 	@Override
@@ -94,7 +98,7 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
 	}
 	
 	public class SequenceChartLocation implements INavigationLocation {
-		// TODO: ambigous when restored
+		// TODO: ambiguous when restored
 		private double startSimulationTime;
 
 		private double endSimulationTime;

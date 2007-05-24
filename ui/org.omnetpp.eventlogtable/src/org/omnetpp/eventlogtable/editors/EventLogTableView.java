@@ -17,6 +17,8 @@ import org.omnetpp.eventlogtable.widgets.EventLogTable;
 public class EventLogTableView extends ViewWithMessagePart {
 	protected EventLogTable eventLogTable;
 
+	protected ISelectionListener listener;
+
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
@@ -31,7 +33,7 @@ public class EventLogTableView extends ViewWithMessagePart {
 		eventLogTableContributor.contributeToToolBar(viewSite.getActionBars().getToolBarManager());
 
 		// follow selection
-		ISelectionListener listener = new ISelectionListener() {
+		listener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 				if (part != EventLogTableView.this)
 					eventLogTable.setSelection(selection);
@@ -46,6 +48,12 @@ public class EventLogTableView extends ViewWithMessagePart {
 
 		// bootstrap with current selection
 		listener.selectionChanged(null, getActiveEditorSelection());
+	}
+	
+	@Override
+	public void dispose() {
+		super.dispose();
+		getViewSite().getPage().removeSelectionListener(listener);
 	}
 
 	@Override

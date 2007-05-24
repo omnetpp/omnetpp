@@ -121,7 +121,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 		this.gc = gc;
 		gc.setAntialias(SWT.OFF);
 
-		EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry();
+		EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogInput);
 		Event event = eventLogEntry.getEvent();
 		boolean isEventLogEntry = eventLogEntry instanceof EventEntry;
 

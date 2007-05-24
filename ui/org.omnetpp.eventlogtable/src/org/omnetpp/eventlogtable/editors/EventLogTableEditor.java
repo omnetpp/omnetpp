@@ -164,7 +164,7 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 		if (eventLogEntryReference == null)
 			return null;
 		else
-			return new EventLogTableLocation(eventLogEntryReference.getEventLogEntry().getEvent().getEventNumber());
+			return new EventLogTableLocation(eventLogEntryReference.getEventLogEntry(eventLogInput).getEvent().getEventNumber());
 	}
 
 	public void gotoMarker(IMarker marker) {

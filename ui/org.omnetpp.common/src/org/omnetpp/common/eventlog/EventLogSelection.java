@@ -91,7 +91,7 @@ public class EventLogSelection implements IEventLogSelection, IVirtualTableSelec
 			return events.get(0);
 	}
 
-	public Iterator iterator() {
+	public Iterator<IEvent> iterator() {
 		return events.iterator();
 	}
 
@@ -103,7 +103,7 @@ public class EventLogSelection implements IEventLogSelection, IVirtualTableSelec
 		return events.toArray();
 	}
 
-	public List toList() {
+	public List<IEvent> toList() {
 		return events;
 	}
 }
