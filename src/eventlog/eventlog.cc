@@ -34,30 +34,26 @@ EventLog::~EventLog()
         delete it->second;
 }
 
-bool EventLog::synchronize()
+void EventLog::synchronize()
 {
+    IEventLog::synchronize();
+    EventLogIndex::synchronize();
+
     IEvent *lastEvent = getLastEvent();
+    approximateNumberOfEvents = -1;
 
-    if (IEventLog::synchronize() || EventLogIndex::synchronize()) {
-        approximateNumberOfEvents = -1;
+    for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
+        it->second->synchronize();
 
-        for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
-            it->second->synchronize();
+    if (lastEvent) {
+        eventNumberToEventMap.erase(lastEvent->getEventNumber());
+        offsetToEventMap.erase(lastEvent->getBeginOffset());
 
-        if (lastEvent) {
-            eventNumberToEventMap.erase(lastEvent->getEventNumber());
-            offsetToEventMap.erase(lastEvent->getBeginOffset());
+        if (lastEvent->getPreviousEvent())
+            IEvent::unlinkEvents(lastEvent->getPreviousEvent(), lastEvent);
 
-            if (lastEvent->getPreviousEvent())
-                IEvent::unlinkEvents(lastEvent->getPreviousEvent(), lastEvent);
-
-            delete lastEvent;
-        }
-
-        return true;
+        delete lastEvent;
     }
-    else
-        return false;
 }
 
 long EventLog::getApproximateNumberOfEvents()

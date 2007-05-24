@@ -38,7 +38,7 @@ class EVENTLOG_API EventLogFacade
         EventLogFacade(IEventLog *eventLog);
         virtual ~EventLogFacade() {}
 
-        virtual bool synchronize();
+        virtual void synchronize();
 
         IEvent* Event_getEvent(int64 ptr);
         int64 Event_getPreviousEvent(int64 ptr);

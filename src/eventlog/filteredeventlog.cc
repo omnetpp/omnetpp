@@ -41,21 +41,17 @@ FilteredEventLog::~FilteredEventLog()
         delete it->second;
 }
 
-bool FilteredEventLog::synchronize()
+void FilteredEventLog::synchronize()
 {
-    if (eventLog->synchronize()) {
-        approximateNumberOfEvents = -1;
-        approximateMatchingEventRatio = -1;
-        firstMatchingEvent = NULL;
-        lastMatchingEvent = NULL;
+    eventLog->synchronize();
 
-        for (EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); it++)
-            it->second->synchronize();
+    approximateNumberOfEvents = -1;
+    approximateMatchingEventRatio = -1;
+    firstMatchingEvent = NULL;
+    lastMatchingEvent = NULL;
 
-        return true;
-    }
-    else
-        return false;
+    for (EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); it++)
+        it->second->synchronize();
 }
 
 void FilteredEventLog::setPatternMatchers(std::vector<PatternMatcher> &patternMatchers, std::vector<const char *> &patterns)

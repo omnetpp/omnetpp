@@ -94,7 +94,7 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         FilteredEvent *getMatchingEventInDirection(long startEventNumber, long stopEventNumber, bool forward);
 
         // IEventLog interface
-        virtual bool synchronize();
+        virtual void synchronize();
         virtual FileReader *getFileReader() { return eventLog->getFileReader(); }
         virtual long getNumParsedEvents() { return eventLog->getNumParsedEvents(); }
         virtual ModuleCreatedEntry *getModuleCreatedEntry(int index) { return eventLog->getModuleCreatedEntry(index); }

@@ -24,15 +24,10 @@ EventLogTableFacade::EventLogTableFacade(IEventLog *eventLog) : EventLogFacade(e
     setCustomFilter("*");
 }
 
-bool EventLogTableFacade::synchronize()
+void EventLogTableFacade::synchronize()
 {
-    if (EventLogFacade::synchronize()) {
-        setFilterMode(filterMode);
-
-        return true;
-    }
-    else
-        return false;
+    EventLogFacade::synchronize();
+    setFilterMode(filterMode);
 }
 
 void EventLogTableFacade::setFilterMode(EventLogTableFilterMode filterMode)
@@ -176,6 +171,8 @@ EventLogEntry *EventLogTableFacade::getClosestEntry(EventLogEntry *eventLogEntry
         if (matchesFilter(eventLogEntry))
             return eventLogEntry;
     }
+
+    throw opp_runtime_error("EventEntry should always match the filter");
 }
 
 EventLogEntry *EventLogTableFacade::getPreviousEntry(EventLogEntry *eventLogEntry, int& index)

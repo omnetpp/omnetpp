@@ -57,18 +57,19 @@ FileReader::~FileReader()
     closeFile();
 }
 
-bool FileReader::synchronize()
+bool FileReader::isChanged()
+{
+    return fileSize != getFileSizeInternal();
+}
+
+void FileReader::synchronize()
 {
     int64 fileSize = getFileSizeInternal();
 
     if (fileSize != this->fileSize) {
         this->fileSize = fileSize;
         fillBuffer(true);
-
-        return true;
     }
-    else
-        return false;
 }
 
 void FileReader::openFile()
@@ -117,7 +118,7 @@ void FileReader::fillBuffer(bool forward)
         }
         else {
             dataPointer = dataEnd;
-            dataLength = bufferEnd - dataEnd;
+            dataLength = std::min((int64)(bufferEnd - dataEnd), getFileSize() - pointerToFileOffset(dataEnd));
         }
     }
     else {

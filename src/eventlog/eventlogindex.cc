@@ -33,20 +33,16 @@ EventLogIndex::~EventLogIndex()
     delete reader;
 }
 
-bool EventLogIndex::synchronize()
+void EventLogIndex::synchronize()
 {
-    if (reader->synchronize()) {
-        firstEventNumber = EVENT_NOT_YET_CALCULATED;
-        lastEventNumber = EVENT_NOT_YET_CALCULATED;
-        firstSimulationTime = -1;
-        lastSimulationTime = -1;
-        firstEventOffset = -1;
-        lastEventOffset = -1;
+    reader->synchronize();
 
-        return true;
-    }
-    else
-        return false;
+    firstEventNumber = EVENT_NOT_YET_CALCULATED;
+    lastEventNumber = EVENT_NOT_YET_CALCULATED;
+    firstSimulationTime = -1;
+    lastSimulationTime = -1;
+    firstEventOffset = -1;
+    lastEventOffset = -1;
 }
 
 long EventLogIndex::getFirstEventNumber()

@@ -104,6 +104,10 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
 
         EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(this, line, reader->getLastLineLength());
 
+        // skip empty lines
+        if (!eventLogEntry)
+            continue;
+
         // first line must be an event entry
         EventEntry *readEventEntry = dynamic_cast<EventEntry *>(eventLogEntry);
         if (!eventEntry) {

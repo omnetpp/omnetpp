@@ -134,9 +134,14 @@ class COMMON_API FileReader
     ~FileReader();
 
     /**
-     * Checks if file has been updated on disc and updates internal state accordingly.
+     * Checks if file has been changed on disk.
      */
-    bool synchronize();
+    bool isChanged();
+
+    /**
+     * Updates internal state to reflect file changes on disk.
+     */
+    void synchronize();
 
     /**
      * Reads the next line from the file starting from the current position, and returns a pointer to its first character.

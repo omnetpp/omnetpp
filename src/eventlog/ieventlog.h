@@ -33,10 +33,9 @@ class EVENTLOG_API IEventLog
         virtual ~IEventLog() {}
 
         /**
-         * Synchorizes state when the underlying log file changes (new events are appended)
-         * and returns true in such cases.
+         * Synchorizes state when the underlying log file changes (new events are appended).
          */
-        virtual bool synchronize();
+        virtual void synchronize();
 
         /**
          * Returns the file reader used to read in events.

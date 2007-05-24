@@ -23,7 +23,7 @@ EventLogFacade::EventLogFacade(IEventLog *eventLog)
     this->eventLog = eventLog;
 }
 
-bool EventLogFacade::synchronize()
+void EventLogFacade::synchronize()
 {
     return eventLog->synchronize();
 }

@@ -43,7 +43,7 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
         SequenceChartFacade(IEventLog *eventLog);
         virtual ~SequenceChartFacade() {}
 
-        virtual bool synchronize();
+        virtual void synchronize();
         void setEventLog(IEventLog *eventLog) { this->eventLog = eventLog; }
 
         TimelineMode getTimelineMode() { return timelineMode; }

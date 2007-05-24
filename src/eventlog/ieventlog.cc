@@ -20,12 +20,10 @@ IEventLog::IEventLog()
     lastNeighbourEvent = NULL;
 }
 
-bool IEventLog::synchronize()
+void IEventLog::synchronize()
 {
     lastNeighbourEventNumber = -1;
     lastNeighbourEvent = NULL;
-
-    return false;
 }
 
 void IEventLog::printEvents(FILE *file, long fromEventNumber, long toEventNumber, bool outputEventLogMessages)

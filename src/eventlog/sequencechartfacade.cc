@@ -34,16 +34,12 @@ SequenceChartFacade::SequenceChartFacade(IEventLog *eventLog) : EventLogFacade(e
     timelineCoordinateOriginSimulationTime = -1;
 }
 
-bool SequenceChartFacade::synchronize()
+void SequenceChartFacade::synchronize()
 {
-    if (EventLogFacade::synchronize()) {
-        if (timelineCoordinateOriginEventNumber != -1)
-            relocateTimelineCoordinateSystem(eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber));
+    EventLogFacade::synchronize();
 
-        return true;
-    }
-    else
-        return false;
+    if (timelineCoordinateOriginEventNumber != -1)
+        relocateTimelineCoordinateSystem(eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber));
 }
 
 void SequenceChartFacade::relocateTimelineCoordinateSystem(IEvent *event)

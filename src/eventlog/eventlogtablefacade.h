@@ -54,7 +54,7 @@ class EVENTLOG_API EventLogTableFacade : public EventLogFacade
         EventLogTableFacade(IEventLog *eventLog);
         virtual ~EventLogTableFacade() {}
 
-        virtual bool synchronize();
+        virtual void synchronize();
 
         EventLogTableDisplayMode getDisplayMode() { return displayMode; }
         void setDisplayMode(EventLogTableDisplayMode displayMode) { this->displayMode = displayMode; }
