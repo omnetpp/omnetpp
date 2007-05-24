@@ -434,7 +434,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 						sb.append("<td style='vertical-align: middle'>").
 							append("<img src='file://").append(item.imageFile).append("'></td>"); // XXX URLEncoded filename does not work in IE
 					sb.append("<td style='vectical-align: middle; color: ").append(htmlColor(item.color)).append("'>").
-						append(item.label).append("</td>"); // XXX quote
+						append(htmlText(item.label)).append("</td>"); // XXX quote
 					sb.append("</tr>");
 					height += 10;
 				}
@@ -448,6 +448,13 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		
 		public String htmlColor(Color color) {
 			return String.format("#%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue());
+		}
+		
+		public String htmlText(String text) {
+			text = text.replace("<", "&lt;");
+			text = text.replace("&", "&amp;");
+			text = text.replace(">", "&gt;");
+			return text;
 		}
 	}
 }
