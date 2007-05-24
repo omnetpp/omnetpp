@@ -140,3 +140,5 @@ wildcard
 clipboard
 autoselect
 crosshair
+cancelling
+reparenting
