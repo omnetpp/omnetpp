@@ -13,6 +13,7 @@ import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
@@ -36,17 +37,6 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
         super();
         setXyLayout(layout);
     }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.gef.editpolicies.ConstrainedLayoutEditPolicy#getCommand(org.eclipse.gef.Request)
-     * Factors out the Unpin request
-     */
-//    @Override
-//    public Command getCommand(Request request) {
-//        if (UnpinAction.REQ_UNPIN.equals(request.getType()))
-//    		return getTogglePinChildrenCommand((GroupRequest)request);
-//    	return super.getCommand(request);
-//    }
 
     /**
      * Override to return the <code>Command</code> to perform an {@link
@@ -111,8 +101,13 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
         // if size constraint is not specified, then remove it from the model too
         // TODO is this needed?
-        if ((modelConstraint.width < 0 || modelConstraint.height < 0) && module.getDisplayString().getSize(null) == null)
-            cmd.setNewSize(null);
+//        if ((modelConstraint.width < 0 || modelConstraint.height < 0) && module.getDisplayString().getSize(null) == null)
+//            cmd.setNewSize(null);
+
+        // disable the resize if we reach the minimal size
+        if (modelConstraint.width == getMinimumSizeFor((GraphicalEditPart)child).width ||
+                modelConstraint.height == getMinimumSizeFor((GraphicalEditPart)child).height)
+            return UnexecutableCommand.INSTANCE;
 
         return cmd;
     }
