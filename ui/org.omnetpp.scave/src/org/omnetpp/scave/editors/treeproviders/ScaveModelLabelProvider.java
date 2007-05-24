@@ -120,7 +120,7 @@ public class ScaveModelLabelProvider extends LabelProvider {
 		}
 		else if (element instanceof Group) {
 			Group o = (Group) element;
-			return "group "+fallback(o.getName(),"<unnamed>");
+			return isEmpty(o.getName()) ? "group" : "group "+o.getName();
 		}
 		else if (element instanceof BarChart) {
 			Chart o = (Chart) element;
