@@ -152,7 +152,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			populateTabItem(tabfolder.getItem(i));
 		
 		// switch to the requested page 
-		String defaultPage = (String) formParameters.get(PROP_DEFAULT_TAB);
+		String defaultPage = formParameters==null ? null : (String) formParameters.get(PROP_DEFAULT_TAB);
 		if (defaultPage != null)
 			for (TabItem tabItem : tabfolder.getItems())
 				if (tabItem.getText().equals(defaultPage)) {

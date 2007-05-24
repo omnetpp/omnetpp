@@ -11,6 +11,8 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
@@ -28,6 +30,7 @@ import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ScaveModelFactory;
+import org.omnetpp.scave.wizard.NewScaveObjectWizard;
 
 /**
  * Toolbar as a palette for creating Scave objects, emulated with buttons on a composite.
@@ -133,20 +136,30 @@ public class ModelObjectPalette {
 		else if (sel instanceof IStructuredSelection && ((IStructuredSelection)sel).getFirstElement() instanceof EObject)
 			target = (EObject) ((IStructuredSelection) sel).getFirstElement();
 		
+		//XXX factor out common part
 		if (target != null)	{
 			// add "element" to "target" as child or as sibling.
 			final EObject element = EcoreUtil.copy(elementPrototype);
-
 			Command command = AddCommand.create(editor.getEditingDomain(), target, null, element);
 			if (command.canExecute()) {
 				// try to add as child
-				editor.executeCommand(command);
+				NewScaveObjectWizard wizard = new NewScaveObjectWizard(editor, target, target.eContents().size(), element);
+				WizardDialog dialog = new WizardDialog(editor.getSite().getShell(), wizard);
+				if (dialog.open() == Window.OK)
+					editor.executeCommand(command);
 			}
 			else {
 				// add as sibling
-				int index = ECollections.indexOf(target.eContainer().eContents(), target, 0);
-				command = AddCommand.create(editor.getEditingDomain(), target.eContainer(), null, element, index + 1);
-				editor.executeCommand(command);
+				EObject parent = target.eContainer();
+				int index = ECollections.indexOf(parent.eContents(), target, 0) + 1;  //+1: *after* selected element
+				command = AddCommand.create(editor.getEditingDomain(), parent, null, element, index);  
+
+				if (command.canExecute()) {
+					NewScaveObjectWizard wizard = new NewScaveObjectWizard(editor, parent, index, element);
+					WizardDialog dialog = new WizardDialog(editor.getSite().getShell(), wizard);
+					if (dialog.open() == Window.OK)
+						editor.executeCommand(command);
+				}
 			}
 
 			// if it got inserted (has parent now), select it in the viewer.
