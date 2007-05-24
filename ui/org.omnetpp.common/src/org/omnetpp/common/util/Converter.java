@@ -3,6 +3,7 @@ package org.omnetpp.common.util;
 import org.eclipse.jface.resource.DataFormatException;
 import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
 /**
@@ -114,6 +115,26 @@ public class Converter {
 		try {
 			return StringConverter.asInt(value);
 		} catch (DataFormatException e) {
+			return null;
+		}
+	}
+	
+	public static String rgbToString(RGB value) {
+		if (value == null)
+			return null;
+		return String.format("#%02X%02X%02X", value.red, value.green, value.blue);
+	}
+	
+	public static RGB stringToRGB(String value) {
+		if (value == null || value.length() != 7 || value.charAt(0) != '#')
+			return null;
+		try {
+			int red = Integer.parseInt(value.substring(1,3), 16);
+			int green = Integer.parseInt(value.substring(3,5), 16);
+			int blue = Integer.parseInt(value.substring(5,7), 16);
+			return new RGB(red, green, blue);
+		}
+		catch (NumberFormatException e) {
 			return null;
 		}
 	}
