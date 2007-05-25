@@ -59,9 +59,7 @@ public class ChartPage extends ScaveEditorPage {
 	}
 	
 	public void updatePage(Notification notification) {
-		if (!(notification.getNotifier() instanceof EObject) ||
-			(notification.getNotifier() != chart &&
-					((EObject)notification.getNotifier()).eContainer() != chart))
+		if (notification.isTouch() || !(notification.getNotifier() instanceof EObject))
 			return;
 		
 		ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;

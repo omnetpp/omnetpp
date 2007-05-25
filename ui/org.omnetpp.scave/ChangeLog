@@ -1,3 +1,22 @@
+2007-05-25
+----------
+
+Additions:
+
+   + Colors of lines and bars can be set.
+
+Fixes:
+
+   + In the Data Table disabled columns are disposed (instead of setting their width to 0).
+
+   + Legend is displayed in a tooltip when the mouse is hovered over its icon on charts.
+
+   + Charts are updated when the model changes. Update requests within a 200ms
+     interval are merged.
+
+   + Vector attributes are written out into the index file when the vector is generated.
+
+
 2007-05-14
 ----------
 
