@@ -243,6 +243,10 @@ public class DatasetManager {
 			ScatterChart sc = (ScatterChart)chart;
 			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
 			ScalarDataSorter sorter = new ScalarDataSorter(manager);
+			String moduleName = sc.getModuleName();
+			String dataName = sc.getDataName();
+			if (moduleName == null || dataName == null)
+				return new String[0];
 			IDVectorVector data = sorter.prepareScatterPlot(idlist, sc.getModuleName(), sc.getDataName());
 			return ScatterPlotDataset.computeNames(data, manager);
 		}
