@@ -713,8 +713,6 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 		modelViewer.setAutoExpandLevel(TreeViewer.ALL_LEVELS);
 		new AdapterFactoryTreeEditor(modelViewer.getTree(), adapterFactory); //XXX this appears to be something about in-place editing - do we need it?
 
-		// XXX test which one is better here 
-		//modelViewer.addPostSelectionChangedListener(selectionChangedListener);
 		modelViewer.addSelectionChangedListener(selectionChangedListener);
 
 		createContextMenuFor(modelViewer);
