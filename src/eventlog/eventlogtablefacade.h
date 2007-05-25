@@ -70,7 +70,7 @@ class EVENTLOG_API EventLogTableFacade : public EventLogFacade
         int getEntryIndexInEvent(EventLogEntry *eventLogEntry);
         EventLogEntry *getEntryInEvent(IEvent *event, int index);
 		long getDistanceToEntry(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long limit);
-        EventLogEntry *getClosestEntry(EventLogEntry *eventLogEntry);
+        EventLogEntry *getClosestEntryInEvent(EventLogEntry *eventLogEntry);
 		long getDistanceToFirstEntry(EventLogEntry *eventLogEntry, long limit);
 		long getDistanceToLastEntry(EventLogEntry *eventLogEntry, long limit);
 		EventLogEntry *getNeighbourEntry(EventLogEntry *eventLogEntry, long distance);

@@ -160,7 +160,7 @@ EventLogEntry *EventLogTableFacade::getEntryAndDistance(EventLogEntry *sourceEve
     return eventLogEntry;
 }
 
-EventLogEntry *EventLogTableFacade::getClosestEntry(EventLogEntry *eventLogEntry)
+EventLogEntry *EventLogTableFacade::getClosestEntryInEvent(EventLogEntry *eventLogEntry)
 {
     Assert(eventLogEntry);
     IEvent *event = eventLogEntry->getEvent();
@@ -177,7 +177,7 @@ EventLogEntry *EventLogTableFacade::getClosestEntry(EventLogEntry *eventLogEntry
 
 EventLogEntry *EventLogTableFacade::getPreviousEntry(EventLogEntry *eventLogEntry, int& index)
 {
-    IEvent *event = eventLogEntry->getEvent();
+    IEvent *event = eventLog->getEventForEventNumber(eventLogEntry->getEvent()->getEventNumber());
     index--;
 
     if (index == -1) {
@@ -195,7 +195,7 @@ EventLogEntry *EventLogTableFacade::getPreviousEntry(EventLogEntry *eventLogEntr
 
 EventLogEntry *EventLogTableFacade::getNextEntry(EventLogEntry *eventLogEntry, int& index)
 {
-    IEvent *event = eventLogEntry->getEvent();
+    IEvent *event = eventLog->getEventForEventNumber(eventLogEntry->getEvent()->getEventNumber());
     index++;
 
     if (index == getNumMatchingEventLogEntries(event)) {
