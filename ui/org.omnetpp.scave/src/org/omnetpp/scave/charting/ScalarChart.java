@@ -12,6 +12,7 @@ import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_X_LABELS_ROTATED_
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_BAR_BASELINE;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_BAR_COLOR;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_BAR_PLACEMENT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LABEL_FONT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_XY_GRID;
@@ -23,10 +24,8 @@ import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_MAX;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_MIN;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_TITLE;
 
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
@@ -39,24 +38,19 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GeomUtils;
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.ScalarDataset;
-import org.omnetpp.scave.charting.plotter.IChartSymbol;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
 
 /**
@@ -75,6 +69,12 @@ public class ScalarChart extends ChartCanvas {
 	private Double yMax;
 
 	private int layoutDepth = 0; // how many layoutChart() calls are on the stack
+	private Map<String,BarProperties> barProperties = new HashMap<String,BarProperties>();
+	private static final String KEY_ALL = null;
+	
+	static class BarProperties {
+		RGB color;
+	}
 	
 	public ScalarChart(Composite parent, int style) {
 		super(parent, style);
@@ -132,6 +132,8 @@ public class ScalarChart extends ChartCanvas {
 			setBarBaseline(Converter.stringToDouble(value));
 		else if (PROP_BAR_PLACEMENT.equals(name))
 			setBarPlacement(Converter.stringToEnum(value, BarPlacement.class));
+		else if (name.startsWith(PROP_BAR_COLOR))
+			setBarColor(getKeyFrom(name), ColorFactory.asRGB(value));
 		// Axes
 		else if (PROP_XY_INVERT.equals(name))
 			setInvertXY(Converter.stringToBoolean(value));
@@ -267,6 +269,49 @@ public class ScalarChart extends ChartCanvas {
 
 		valueAxis.setGridVisible(value);
 		chartChanged();
+	}
+	
+	public RGB getBarColor(String key) {
+		BarProperties barProps = getBarProperties(key);
+		if (barProps == null || barProps.color == null)
+			barProps = getDefaultBarProperties();
+		return barProps != null ? barProps.color : null;
+	}
+	
+	public void setBarColor(String key, RGB color) {
+		BarProperties barProps = getOrCreateBarProperties(key);
+		barProps.color = color;
+		updateLegend();
+		chartChanged();
+	}
+	
+	private String getKeyFrom(String propertyKey) {
+		int index = propertyKey.indexOf('/');
+		return index >= 0 ? propertyKey.substring(index + 1) : KEY_ALL;
+	}
+	
+	public String getKeyFor(int columnIndex) {
+		if (columnIndex >= 0 && columnIndex < dataset.getColumnCount())
+			return dataset.getColumnKey(columnIndex);
+		else
+			return null;
+	}
+	
+	public BarProperties getBarProperties(String key) {
+		return (key != null ? barProperties.get(key) : null);
+	}
+	
+	public BarProperties getDefaultBarProperties() {
+		return barProperties.get(KEY_ALL);
+	}
+	
+	private BarProperties getOrCreateBarProperties(String key) {
+		BarProperties barProps = getBarProperties(key);
+		if (barProps == null) {
+			barProps = new BarProperties();
+			barProperties.put(key, barProps);
+		}
+		return barProps;
 	}
 
 	/*=============================================
@@ -459,7 +504,11 @@ public class ScalarChart extends ChartCanvas {
 		}
 		
 		protected Color getBarColor(int column) {
-			return ColorFactory.getGoodDarkColor(column);
+			RGB color = ScalarChart.this.getBarColor(getKeyFor(column));
+			if (color != null)
+				return new Color(null, color);
+			else
+				return ColorFactory.getGoodDarkColor(column);
 		}
 		
 		protected Rectangle getBarRectangle(int row, int column) {

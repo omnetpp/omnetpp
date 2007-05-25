@@ -19,6 +19,7 @@ import org.omnetpp.common.properties.PropertySource;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.charting.dataset.ScalarDataset;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
@@ -61,6 +62,7 @@ public class ChartProperties extends PropertySource {
 		// Bars
 		PROP_BAR_BASELINE		= "Bars.Baseline",
 		PROP_BAR_PLACEMENT		= "Bar.Placement",
+		PROP_BAR_COLOR			= "Bar.Color",
 		// Lines
 		PROP_SYMBOL_TYPE		= "Symbols.Type",
 		PROP_SYMBOL_SIZE		= "Symbols.Size",
@@ -362,7 +364,63 @@ public class ChartProperties extends PropertySource {
 			return descriptors;
 		}
 	}
+	
+	public class BarColorsPropertySource extends BasePropertySource {
+		IPropertyDescriptor[] descriptors;
 
+		public BarColorsPropertySource() {
+			this.descriptors = createBarDescriptors();
+		}
+
+		public IPropertyDescriptor[] getPropertyDescriptors() {
+			return descriptors;
+		}
+
+		@Override
+		public Object getPropertyValue(Object id) {
+			return getStringProperty((String)id);
+		}
+
+		@Override
+		public void setPropertyValue(Object id, Object value) {
+			setProperty((String)id, (String)value);				
+		}
+		
+		@Override
+		public boolean isPropertyResettable(Object id) {
+			return true;
+		}
+
+		@Override
+		public boolean isPropertySet(Object id) {
+			return getPropertyValue(id) != null;
+		}
+
+		@Override
+		public void resetPropertyValue(Object id) {
+			setPropertyValue(id, null);
+		}
+
+		protected IPropertyDescriptor[] createBarDescriptors() {
+			IPropertyDescriptor[] descriptors;
+			
+			ScalarDataset dataset = DatasetManager.createScalarDataset((BarChart)chart, manager, null);
+			String[] names = new String[dataset.getColumnCount()];
+			for (int i = 0; i < names.length; ++i)
+				names[i] = dataset.getColumnKey(i);
+			if (names != null) {
+				descriptors = new IPropertyDescriptor[names.length + 1];
+				descriptors[0] = new ColorPropertyDescriptor(PROP_BAR_COLOR, "default"); //new PropertyDescriptor(DEFAULT_LINE_PROPERTIES_ID, "default");
+				for (int i= 0; i < names.length; ++i)
+					descriptors[i+1] = new ColorPropertyDescriptor(PROP_BAR_COLOR + "/" + names[i], names[i]); // new PropertyDescriptor(names[i], names[i]);
+			}
+			else
+				descriptors = new IPropertyDescriptor[0];
+			
+			return descriptors;
+		}
+	}
+	
 
 	public static class ScalarChartProperties extends ChartProperties
 	{
@@ -392,6 +450,9 @@ public class ChartProperties extends PropertySource {
 		public BarPlacement getBarPlacement() { return getEnumProperty(PROP_BAR_PLACEMENT, BarPlacement.class); }
 		public void setBarPlacement(BarPlacement placement) { setProperty(PROP_BAR_PLACEMENT, placement); }
 		public BarPlacement defaultBarPlacement() { return ChartDefaults.DEFAULT_BAR_PLACEMENT; }
+		
+		@org.omnetpp.common.properties.Property(category="Bars",id="Colors",displayName="Colors")
+		public BarColorsPropertySource getBarProperties() { return new BarColorsPropertySource(); }
 	}
 
 	public static class HistogramChartProperties extends ChartProperties
