@@ -281,10 +281,16 @@ void cIndexedFileOutputVectorManager::writeIndex(sVector *vp)
 
     if (vp->count > 0)
     {
+        // vector
         CHECK(fprintf(fi,"vector %d  %s  %s  %s  %ld  %ld  %.*g  %.*g  %.*g  %.*g\n",
                       vp->id, QUOTE(vp->modulename.c_str()), QUOTE(vp->vectorname.c_str()),
                       vp->getColumns(), vp->maxBlockSize,
                       vp->count, prec, vp->min, prec, vp->max, prec, vp->sum, prec, vp->sumsqr), ifname);
+        // attrs
+        for (opp_string_map::iterator it=vp->attributes.begin(); it!=vp->attributes.end(); it++)
+            CHECK(fprintf(fi,"attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())), ifname);
+
+        // blocks
         int nBlocks = vp->blocks.size();
         if (vp->recordEventNumbers)
         {
