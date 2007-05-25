@@ -1,18 +1,25 @@
 package org.omnetpp.scave.actions;
 
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.command.AddCommand;
+import org.eclipse.emf.edit.command.RemoveCommand;
+import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.ChartPage;
+import org.omnetpp.scave.editors.ui.EditDialog;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.ProcessingOp;
+import org.omnetpp.scave.model.ScaveModelFactory;
+import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.wizard.NewScaveObjectWizard;
 
 /**
@@ -40,28 +47,50 @@ public class NewChartProcessingOpAction extends AbstractScaveAction {
 			return;
 
 		EObject parent = chart.eContainer();
-		int index = ECollections.indexOf(parent.eContents(), chart, 0);
 		EObject element = EcoreUtil.copy(elementPrototype);
+		boolean doit = true;
 		if (elementPrototype.getOperation() == null) {
 			// show dialog
+			int index = ECollections.indexOf(parent.eContents(), chart, 0);
 			NewScaveObjectWizard wizard = new NewScaveObjectWizard(editor, parent, index, element);
 			WizardDialog dialog = new WizardDialog(editor.getSite().getShell(), wizard);
-			if (dialog.open() == Window.OK) {
-				Command command = AddCommand.create(editor.getEditingDomain(), parent, null, element, index);  
-				editor.executeCommand(command);
-			}
+			if (dialog.open() != Window.OK) 
+				doit = false;
 		}
-		else {
+		if (doit) {
 			// just add "element" into "parent", before "chart"
-			Command command = AddCommand.create(editor.getEditingDomain(), parent, null, element, index);
+			insertOperation(chart, element, editor);
+
+			// recalculate chart if it's the active page.
+			//XXX actually: should be done if it's open, on whichever page; it would be even better 
+			// if this updating happened automatically, in response to model changes
+			if (editor.getActiveEditorPage() instanceof ChartPage)
+				((ChartPage)editor.getActiveEditorPage()).getChartUpdater().updateDataset(); 
+		}
+	}
+
+	private void insertOperation(EObject chart, EObject element, ScaveEditor editor) {
+		EObject parent = chart.eContainer();
+		int index = ECollections.indexOf(parent.eContents(), chart, 0);
+		EditingDomain editingDomain = editor.getEditingDomain();
+		
+		// if chart is already grouped (it is the last item in a group), just add operation before the chart 
+		if (parent instanceof Group && index == parent.eContents().size()-1) {
+			Command command = AddCommand.create(editingDomain, parent, null, element, index);
 			editor.executeCommand(command);
 		}
+		else {
+			// otherwise, create a group for it
+			Group group = ScaveModelFactory.eINSTANCE.createGroup();
 
-		// recalculate chart if it's the active page.
-		//XXX actually: should be done if it's open, on whichever page; it would be even better 
-		// if this updating happened automatically, in response to model changes
-		if (editor.getActiveEditorPage() instanceof ChartPage)
-			((ChartPage)editor.getActiveEditorPage()).getChartUpdater().updateDataset(); 
+			CompoundCommand command = new CompoundCommand();
+			command.append(RemoveCommand.create(editingDomain, chart));
+			command.append(AddCommand.create(editingDomain, parent, null, group, index));
+			command.append(AddCommand.create(editingDomain, group, null, element));
+			command.append(AddCommand.create(editingDomain, group, null, chart));
+			command.setLabel(command.getCommandList().get(2).getLabel());
+			editor.executeCommand(command);
+		}
 	}
 
 	protected Chart getChart(ScaveEditor editor, IStructuredSelection selection) {
