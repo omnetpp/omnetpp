@@ -141,14 +141,14 @@ public class ChartPage extends ScaveEditorPage {
 		return submenuManager;
 	}
 	
-	protected ProcessingOp createOp(boolean isApply, String operation) {
+	protected static ProcessingOp createOp(boolean isApply, String operation) {
 		ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
 		ProcessingOp applyOrCompute = isApply ? factory.createApply() : factory.createCompute();
 		applyOrCompute.setOperation(operation);
 		return applyOrCompute;
 	}
 
-	protected ProcessingOp createOp(boolean isApply, String operation, String paramName, String value) {
+	protected static ProcessingOp createOp(boolean isApply, String operation, String paramName, String value) {
 		ProcessingOp applyOrCompute = createOp(isApply, operation);
 		Param param = ScaveModelFactory.eINSTANCE.createParam();
 		param.setName(paramName);
@@ -157,7 +157,7 @@ public class ChartPage extends ScaveEditorPage {
 		return applyOrCompute;
 	}
 	
-	protected Map<String,Object> createFormProperties(String key1, Object value1) {
+	protected static Map<String,Object> createFormProperties(String key1, Object value1) {
 		Map<String,Object> map = new HashMap<String, Object>();
 		map.put(key1, value1);
 		return map;

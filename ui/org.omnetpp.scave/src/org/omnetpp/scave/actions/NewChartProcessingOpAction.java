@@ -1,5 +1,6 @@
 package org.omnetpp.scave.actions;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.common.util.ECollections;
@@ -13,13 +14,11 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.ChartPage;
-import org.omnetpp.scave.editors.ui.EditDialog;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model.ScaveModelFactory;
-import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.wizard.NewScaveObjectWizard;
 
 /**
@@ -27,6 +26,40 @@ import org.omnetpp.scave.wizard.NewScaveObjectWizard;
  */
 public class NewChartProcessingOpAction extends AbstractScaveAction {
 	private ProcessingOp elementPrototype; 
+
+	class NonNotifyingCompoundCommand extends CompoundCommand {
+		EObject parent; // the parent where notifications are to be disabled
+
+		public NonNotifyingCompoundCommand(EObject parent) {
+			Assert.isTrue(parent != null);
+			this.parent = parent;
+		}
+		
+		@Override
+		public void execute() {
+			boolean oldEDeliver = parent.eDeliver();
+			parent.eSetDeliver(false);
+			super.execute();
+			parent.eSetDeliver(oldEDeliver);
+		}
+
+		@Override
+		public void redo() {
+			boolean oldEDeliver = parent.eDeliver();
+			parent.eSetDeliver(false);
+			super.redo();
+			parent.eSetDeliver(oldEDeliver);
+		}
+
+		@Override
+		public void undo() {
+			boolean oldEDeliver = parent.eDeliver();
+			parent.eSetDeliver(false);
+			super.undo();
+			parent.eSetDeliver(oldEDeliver);
+		}
+
+	}
 
 	/**
 	 * Creates the action. 
@@ -73,7 +106,7 @@ public class NewChartProcessingOpAction extends AbstractScaveAction {
 		EObject parent = chart.eContainer();
 		int index = ECollections.indexOf(parent.eContents(), chart, 0);
 		EditingDomain editingDomain = editor.getEditingDomain();
-		
+
 		// if chart is already grouped (it is the last item in a group), just add operation before the chart 
 		if (parent instanceof Group && index == parent.eContents().size()-1) {
 			Command command = AddCommand.create(editingDomain, parent, null, element, index);
@@ -84,11 +117,19 @@ public class NewChartProcessingOpAction extends AbstractScaveAction {
 			Group group = ScaveModelFactory.eINSTANCE.createGroup();
 
 			CompoundCommand command = new CompoundCommand();
-			command.append(RemoveCommand.create(editingDomain, chart));
 			command.append(AddCommand.create(editingDomain, parent, null, group, index));
-			command.append(AddCommand.create(editingDomain, group, null, element));
-			command.append(AddCommand.create(editingDomain, group, null, chart));
+
+			// problem: RemoveCommand(chart) closes the ChartPage as a side effect, so we 
+			// have to wrap it into a NonNotifyingCompoundCommand; at the same time 
+			// Group's insertion has to be notifying, otherwise viewers won't update properly.
+			NonNotifyingCompoundCommand groupCommand = new NonNotifyingCompoundCommand(parent);
+			groupCommand.append(RemoveCommand.create(editingDomain, chart));
+			groupCommand.append(AddCommand.create(editingDomain, group, null, chart));
+			command.append(groupCommand);
+
+			command.append(AddCommand.create(editingDomain, group, null, element, 0));
 			command.setLabel(command.getCommandList().get(2).getLabel());
+
 			editor.executeCommand(command);
 		}
 	}
