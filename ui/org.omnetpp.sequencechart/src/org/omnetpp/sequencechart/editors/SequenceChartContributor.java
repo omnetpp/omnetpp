@@ -376,7 +376,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 								removeFilter();
 							}
 						});
-						addSubMenuItem(menu, "Filter by Modules...", new Runnable() {
+						addSubMenuItem(menu, "Filter...", new Runnable() {
 							public void run() {
 								filterModules();
 							}
@@ -405,16 +405,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 				double[] leftRightSimulationTimes = sequenceChart.getViewportSimulationTimeRange();
 
 				EventLogInput eventLogInput = sequenceChart.getInput();
-				IEventLog eventLog = eventLogInput.getEventLog();
-				if (eventLog instanceof FilteredEventLog)
-					eventLog = ((FilteredEventLog)eventLog).getEventLog();
-
-				eventLog.own();
-				eventLogInput.setEventLog(eventLog);
-
-				SequenceChartFacade sequenceChartFacade = eventLogInput.getSequenceChartFacade();
-				sequenceChartFacade.setEventLog(eventLog);
-				sequenceChartFacade.relocateTimelineCoordinateSystem(sequenceChartFacade.getTimelineCoordinateSystemOriginEvent());
+				eventLogInput.removeFilter();
 
 				sequenceChart.setInput(eventLogInput);
 				sequenceChart.setViewportSimulationTimeRange(leftRightSimulationTimes);
@@ -434,26 +425,10 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 						moduleIds.add(selectedModule.getModuleId());
 					}
 
-					// TODO: factor out filtering code
 					double[] leftRightSimulationTimes = sequenceChart.getViewportSimulationTimeRange();
-					EventLogInput eventLogInput = sequenceChart.getInput();
-					IEventLog eventLog = eventLogInput.getEventLog();
-					if (eventLog instanceof FilteredEventLog)
-						eventLog = ((FilteredEventLog)eventLog).getEventLog();
 
-					eventLog.disown();
-					FilteredEventLog filteredEventLog = new FilteredEventLog(eventLog);
-					filteredEventLog.setModuleIds(moduleIds);
-					eventLogInput.setEventLog(filteredEventLog);
-					
-					SequenceChartFacade sequenceChartFacade = eventLogInput.getSequenceChartFacade();
-					sequenceChartFacade.setEventLog(filteredEventLog);
-					
-					int timelineCoordinateSystemOriginEventNumber = sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber();
-					if (timelineCoordinateSystemOriginEventNumber != -1) {
-						IEvent closestEvent = filteredEventLog.getMatchingEventInDirection(timelineCoordinateSystemOriginEventNumber, true);
-						sequenceChartFacade.relocateTimelineCoordinateSystem(closestEvent);
-					}
+					EventLogInput eventLogInput = sequenceChart.getInput();
+					eventLogInput.addFilter(moduleIds);
 
 					sequenceChart.setInput(eventLogInput);
 					sequenceChart.setAxisModules(selectedAxisModules);

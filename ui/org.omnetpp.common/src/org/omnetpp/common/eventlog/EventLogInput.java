@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import org.eclipse.core.resources.IFile;
 import org.omnetpp.common.util.RecurringJob;
 import org.omnetpp.eventlog.engine.EventLogTableFacade;
+import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlog.engine.IntVector;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
 
@@ -46,7 +48,7 @@ public class EventLogInput {
 	 * it relies on the last modification date which is not updated when the file is
 	 * being written without actually closing it.
 	 */
-	protected ArrayList<IEventLogChangedListener> eventLogChangedListeners = new ArrayList<IEventLogChangedListener>();
+	protected ArrayList<IEventLogChangeListener> eventLogChangeListeners = new ArrayList<IEventLogChangeListener>();
 
 	/**
 	 * Watches the event log file for changes.
@@ -112,47 +114,85 @@ public class EventLogInput {
 		
 		return moduleTree;
 	}
-	
-	public void addEventLogChangedListener(IEventLogChangedListener listener) {
-		if (eventLogChangedListeners.size() == 0)
-			eventLogWatcher.start();
 
-		if (!eventLogChangedListeners.contains(listener))
-			eventLogChangedListeners.add(listener);
+	public void removeFilter() {
+		// remove filter
+		if (eventLog instanceof FilteredEventLog)
+			eventLog = ((FilteredEventLog)eventLog).getEventLog();
+		eventLog.own();
+
+		/// store event log
+		eventLogTableFacade.setEventLog(eventLog);
+		sequenceChartFacade.setEventLog(eventLog);
+
+		// update coordinate system
+		if (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() != -1)
+			sequenceChartFacade.relocateTimelineCoordinateSystem(sequenceChartFacade.getTimelineCoordinateSystemOriginEvent());
+	}
+	
+	public void addFilter(IntVector moduleIds) {
+		// remove old filter
+		if (eventLog instanceof FilteredEventLog)
+			eventLog = ((FilteredEventLog)eventLog).getEventLog();
+		eventLog.disown();
+
+		// create new filter
+		FilteredEventLog filteredEventLog = new FilteredEventLog(eventLog);
+		filteredEventLog.setModuleIds(moduleIds);
+
+		// store event log
+		eventLog = filteredEventLog;
+		eventLogTableFacade.setEventLog(filteredEventLog);
+		sequenceChartFacade.setEventLog(filteredEventLog);
+		
+		eventLogFiltered();
 	}
 
-	public void removeEventLogChangedListener(IEventLogChangedListener listener) {
-		eventLogChangedListeners.remove(listener);
+	public void addEventLogChangedListener(IEventLogChangeListener listener) {
+		if (eventLogChangeListeners.size() == 0)
+			eventLogWatcher.start();
+
+		if (!eventLogChangeListeners.contains(listener))
+			eventLogChangeListeners.add(listener);
+	}
+
+	public void removeEventLogChangedListener(IEventLogChangeListener listener) {
+		eventLogChangeListeners.remove(listener);
 		
-		if (eventLogChangedListeners.size() == 0)
+		if (eventLogChangeListeners.size() == 0)
 			eventLogWatcher.stop();
 	}
 
-	public void notifyEventLogChangedListeners() {
-		for (IEventLogChangedListener listener : eventLogChangedListeners)
-			listener.eventLogChanged();
+	public void eventLogAppended() {
+		for (IEventLogChangeListener listener : eventLogChangeListeners)
+			listener.eventLogAppended();
+	}
+
+	private void eventLogFiltered() {
+		for (IEventLogChangeListener listener : eventLogChangeListeners)
+			listener.eventLogFiltered();
 	}
 
 	public void checkEventLogForChanges() {
 		if (eventLog.getFileReader().isChanged()) {
 			if (debug)
-				System.out.println("Notifying listeners about event log change");
+				System.out.println("Notifying listeners about new content being appended to the event log");
 
 			eventLog.synchronize();
 			getEventLogTableFacade().synchronize();
 			getSequenceChartFacade().synchronize();
 
-			notifyEventLogChangedListeners();
+			eventLogAppended();
 
 			if (debug)
-				System.out.println("Event log change notification done");
+				System.out.println("Event log append notification done");
 		}
 	}
 
 	@Override
 	protected void finalize() throws Throwable {
 		super.finalize();
-		eventLogChangedListeners.clear();
+		eventLogChangeListeners.clear();
 		eventLogWatcher.stop();
 	}
 }

@@ -286,6 +286,10 @@ import java.lang.reflect.Constructor;
         swigCMemOwn = false;
         return this;
     }
+
+    public boolean equals(Object obj) {
+        return (obj instanceof IEventLog) && getCPtr(this)==getCPtr((IEventLog)obj);
+    }
 %}
 
 %typemap(javacode) FileReader %{
@@ -298,6 +302,10 @@ import java.lang.reflect.Constructor;
 %typemap(javacode) IEvent %{
     public long getCPtr() {
         return swigCPtr;
+    }
+
+    public boolean equals(Object obj) {
+        return (obj instanceof IEvent) && getCPtr(this)==getCPtr((IEvent)obj);
     }
 %}
 

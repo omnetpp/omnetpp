@@ -66,6 +66,7 @@ Features:
  + toolbar icons
  - setup mouse gestures for easy navigation
  - follow log file changes
+ - event numbers on the bottom axis are not visible when axes are balanced
 
 Known bugs:
  - hierarchical sorting sequence chart axes based on crossing arrows is broken

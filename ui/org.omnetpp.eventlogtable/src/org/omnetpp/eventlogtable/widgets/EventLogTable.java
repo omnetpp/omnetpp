@@ -3,6 +3,7 @@ package org.omnetpp.eventlogtable.widgets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.jface.action.MenuManager;
@@ -14,17 +15,18 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogSelection;
-import org.omnetpp.common.eventlog.IEventLogChangedListener;
+import org.omnetpp.common.eventlog.IEventLogChangeListener;
 import org.omnetpp.common.virtualtable.VirtualTable;
 import org.omnetpp.common.virtualtable.VirtualTableSelection;
 import org.omnetpp.eventlog.engine.EventLogTableFacade;
+import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlogtable.editors.EventLogTableContributor;
 
 public class EventLogTable
 	extends VirtualTable<EventLogEntryReference>
-	implements IEventLogChangedListener
+	implements IEventLogChangeListener
 {
 	private static final boolean debug = true;
 
@@ -70,9 +72,10 @@ public class EventLogTable
 			return null;
 		else {
 			ArrayList<IEvent> selectionEvents = new ArrayList<IEvent>();
+			IEventLog eventLog = getEventLog();
 			
 			for (EventLogEntryReference selectionElement : selectionElements)
-				selectionEvents.add(selectionElement.getEventLogEntry(getEventLogInput()).getEvent());
+				selectionEvents.add(eventLog.getEventForEventNumber(selectionElement.getEventNumber()));
 	
 			return new EventLogSelection(getEventLogInput(), selectionEvents);
 		}
@@ -136,6 +139,12 @@ public class EventLogTable
 	}
 	
 	@Override
+	protected void relocateFixPoint(EventLogEntryReference element, int distance) {
+		Assert.isTrue(getEventLog().getEventForEventNumber(element.getEventNumber()) != null);
+		super.relocateFixPoint(element, distance);
+	}
+	
+	@Override
 	public void scroll(int numberOfElements) {
 		super.scroll(numberOfElements);
 		followEnd = false;
@@ -191,7 +200,7 @@ public class EventLogTable
 		stayNear();
 	}
 
-	public void eventLogChanged() {
+	public void eventLogAppended() {
 		if (debug)
 			System.out.println("EventLogTable got notification about event log change");
 
@@ -207,6 +216,24 @@ public class EventLogTable
 		}
 		else
 			redraw();
+	}
+	
+	public void eventLogFiltered() {
+		if (fixPointElement != null) {
+			FilteredEventLog filteredEventLog = (FilteredEventLog)getEventLog();
+			IEvent closestEvent = filteredEventLog.getMatchingEventInDirection(fixPointElement.getEventNumber(), false);
+			
+			if (closestEvent != null)
+				relocateFixPoint(new EventLogEntryReference(closestEvent.getEventEntry()), 0);
+			else {
+				closestEvent = filteredEventLog.getMatchingEventInDirection(fixPointElement.getEventNumber(), true);
+	
+				if (closestEvent != null)
+					relocateFixPoint(new EventLogEntryReference(closestEvent.getEventEntry()), 0);
+			}
+		}
+
+		redraw();
 	}
 
 	protected QualifiedName getEventLogTableEventNumberPropertyName() {

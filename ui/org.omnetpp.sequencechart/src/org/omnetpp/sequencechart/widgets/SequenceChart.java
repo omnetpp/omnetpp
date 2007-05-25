@@ -54,7 +54,7 @@ import org.omnetpp.common.canvas.RubberbandSupport;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogSelection;
-import org.omnetpp.common.eventlog.IEventLogChangedListener;
+import org.omnetpp.common.eventlog.IEventLogChangeListener;
 import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.ui.HoverSupport;
@@ -62,6 +62,7 @@ import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.virtualtable.IVirtualContentWidget;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
+import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.FilteredMessageDependency;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
@@ -95,7 +96,7 @@ import org.omnetpp.sequencechart.widgets.axisrenderer.IAxisRenderer;
 //TODO rubberband vs. haircross, show them at once
 public class SequenceChart
 	extends CachingCanvas
-	implements IVirtualContentWidget<IEvent>, ISelectionProvider, IEventLogChangedListener
+	implements IVirtualContentWidget<IEvent>, ISelectionProvider, IEventLogChangeListener
 {
 	private static final boolean debug = true;
 
@@ -163,7 +164,7 @@ public class SequenceChart
 	
 	private double pixelPerTimelineCoordinate = -1;
 	private boolean antiAlias = true;  // antialiasing -- this gets turned on/off automatically
-	private int axisSpacing = 1; // y distance between two axes
+	private double axisSpacing = 1; // y distance between two axes, might be fractional pixels to have precise positioning for several axes
 	private AxisSpacingMode axisSpacingMode = AxisSpacingMode.AUTO;
 
 	private boolean showArrowHeads = true; // whether arrow heads are drawn or not
@@ -289,9 +290,9 @@ public class SequenceChart
 				else if (e.keyCode == SWT.ARROW_RIGHT)
 					moveSelection(1);
 				else if (e.keyCode == SWT.ARROW_UP)
-					scrollAxes(-axisSpacing - 1);
+					scrollAxes((int)Math.floor(-axisSpacing - 1));
 				else if (e.keyCode == SWT.ARROW_DOWN)
-					scrollAxes(axisSpacing + 1);
+					scrollAxes((int)Math.ceil(axisSpacing + 1));
 				else if (e.keyCode == SWT.PAGE_UP)
 					scrollAxes(-getViewportHeight());
 				else if (e.keyCode == SWT.PAGE_DOWN)
@@ -350,14 +351,14 @@ public class SequenceChart
 	/**
 	 * Returns the pixel distance between adjacent axes in the chart.
 	 */
-	public int getAxisSpacing() {
+	public double getAxisSpacing() {
 		return axisSpacing;
 	}
 
 	/**
 	 * Sets the pixel distance between adjacent axes in the chart.
 	 */
-	public void setAxisSpacing(int axisSpacing) {
+	public void setAxisSpacing(double axisSpacing) {
 		this.axisSpacing = Math.max(1, axisSpacing);
 		axisModuleYs = null;
 		invalidVirtualSize = true;
@@ -657,6 +658,8 @@ public class SequenceChart
 
 	public void scrollToElement(IEvent event, int viewportX) {
 		int d = EVENT_SELECTION_RADIUS * 2;
+		
+		Assert.isTrue(event.getEventLog().equals(eventLog));
 
 		long[] eventPtrRange = getFirstLastEventForPixelRange(0, getViewportWidth());
 		long startEventPtr = eventPtrRange[0];
@@ -913,7 +916,7 @@ public class SequenceChart
 		clearCanvasCacheAndRedraw();
 	}
 
-	public void eventLogChanged() {
+	public void eventLogAppended() {
 		if (debug)
 			System.out.println("SequenceChart got notification about event log change");
 
@@ -933,6 +936,26 @@ public class SequenceChart
 		}
 		else
 			redraw();
+	}
+	
+	public void eventLogFiltered() {
+		int timelineCoordinateSystemOriginEventNumber = sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber();
+
+		if (timelineCoordinateSystemOriginEventNumber != -1) {
+			FilteredEventLog filteredEventLog = (FilteredEventLog)eventLogInput.getEventLog();
+			IEvent closestEvent = filteredEventLog.getMatchingEventInDirection(timelineCoordinateSystemOriginEventNumber, false);
+			
+			if (closestEvent != null)
+				sequenceChartFacade.relocateTimelineCoordinateSystem(closestEvent);
+			else {
+				closestEvent = filteredEventLog.getMatchingEventInDirection(timelineCoordinateSystemOriginEventNumber, true);
+
+				if (closestEvent != null)
+					sequenceChartFacade.relocateTimelineCoordinateSystem(closestEvent);
+			}
+		}
+
+		redraw();
 	}
 
 	private ArrayList<ModuleTreeItem> getAllAxisModules(final EventLogInput eventLogInput) {
@@ -1046,13 +1069,13 @@ public class SequenceChart
 		axisModuleYs = new int[axisModules.size()];
 
 		for (int i = 0; i < axisModuleYs.length; i++) {
-			int y = 0;
+			double y = 0;
 
 			for (int j = 0; j < axisModuleYs.length; j++)
 				if (axisModulePositions[j] < axisModulePositions[i])
 					y += axisSpacing + axisRenderers[j].getHeight();
 
-			axisModuleYs[i] = AXIS_OFFSET + axisSpacing + y;
+			axisModuleYs[i] = (int)Math.round((AXIS_OFFSET + axisSpacing + y));
 		}
 	}
 	
@@ -1060,12 +1083,10 @@ public class SequenceChart
 	 * Distributes window space among axes evenly.
 	 */
 	private void balanceAxisSpacing() {
-		int height = getSumAxesHeight();
-		
 		if (axisModules.size() == 0)
 			setAxisSpacing(0);
 		else
-			setAxisSpacing(Math.max(MINIMUM_AXIS_SPACING_TO_DISPLAY_LABELS, (getViewportHeight() - AXIS_OFFSET * 2 - height + MINIMUM_AXIS_SPACING_TO_DISPLAY_LABELS) / axisModules.size()));
+			setAxisSpacing(Math.max(MINIMUM_AXIS_SPACING_TO_DISPLAY_LABELS, (double)(getViewportHeight() - AXIS_OFFSET * 2 - getSumAxesHeight()) / axisModules.size()));
 	}
 
 	/**
@@ -1101,7 +1122,7 @@ public class SequenceChart
 	 * Calculates virtual size of canvas based on the last event's timeline coordinate.
 	 */
 	private void calculateVirtualSize() {
-		int height = getSumAxesHeight() + axisModules.size() * axisSpacing + AXIS_OFFSET * 2 - MINIMUM_AXIS_SPACING_TO_DISPLAY_LABELS;
+		int height = getSumAxesHeight() + (int)Math.round(axisModules.size() * axisSpacing) + AXIS_OFFSET * 2;
 		setVirtualSize(getViewportWidth() * eventLog.getApproximateNumberOfEvents(), height);
 		invalidVirtualSize = false;
 	}
@@ -1682,8 +1703,8 @@ public class SequenceChart
 		if (y1 == y2) {
 			int fontHeight = font.getFontData()[0].getHeight();
 			int eventNumberDelta = sequenceChartFacade.Event_getEventNumber(consequenceEventPtr) - sequenceChartFacade.Event_getEventNumber(causeEventPtr);
-			int numberOfPossibleEllipseHeights = Math.max(1, (axisSpacing - fontHeight) / (fontHeight + 10));
-			int halfEllipseHeight = (int)Math.max((double)axisSpacing * (eventNumberDelta % numberOfPossibleEllipseHeights + 1) / (numberOfPossibleEllipseHeights + 1), MINIMUM_HALF_ELLIPSE_HEIGHT);
+			int numberOfPossibleEllipseHeights = Math.max(1, (int)Math.round((axisSpacing - fontHeight) / (fontHeight + 10)));
+			int halfEllipseHeight = (int)Math.max(axisSpacing * (eventNumberDelta % numberOfPossibleEllipseHeights + 1) / (numberOfPossibleEllipseHeights + 1), MINIMUM_HALF_ELLIPSE_HEIGHT);
 
 			// test if it is a vertical line (as zero-width half ellipse)
 			if (x1 == x2) {

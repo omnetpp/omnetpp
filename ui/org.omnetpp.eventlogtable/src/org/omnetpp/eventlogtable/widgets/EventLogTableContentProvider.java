@@ -1,5 +1,6 @@
 package org.omnetpp.eventlogtable.widgets;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.Viewer;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogInput;
@@ -132,7 +133,7 @@ public class EventLogTableContentProvider implements IVirtualTableContentProvide
 		if (element == null)
 			throw new IllegalArgumentException();
 		
-		return toEventLogEntryReference(eventLogTableFacade.getClosestEntry(element.getEventLogEntry(eventLogInput)));
+		return toEventLogEntryReference(eventLogTableFacade.getClosestEntryInEvent(element.getEventLogEntry(eventLogInput)));
 	}
 
 	public void dispose() {
@@ -154,7 +155,9 @@ public class EventLogTableContentProvider implements IVirtualTableContentProvide
 	private EventLogEntryReference toEventLogEntryReference(EventLogEntry eventLogEntry) {
 		if (eventLogEntry == null)
 			return null;
-		else
+		else {
+			Assert.isTrue(eventLogInput.getEventLog().getEventForEventNumber(eventLogEntry.getEvent().getEventNumber()) != null);
 			return new EventLogEntryReference(eventLogEntry);
+		}
 	}
 }

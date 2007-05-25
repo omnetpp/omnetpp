@@ -142,3 +142,4 @@ autoselect
 crosshair
 cancelling
 reparenting
+cancelled
