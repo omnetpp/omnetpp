@@ -19,7 +19,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * Groups the selected objects. The objects must be siblings and
- * form a continuous range.
+ * form a contiguous range.
  */
 public class GroupAction extends AbstractScaveAction {
 	public GroupAction() {
