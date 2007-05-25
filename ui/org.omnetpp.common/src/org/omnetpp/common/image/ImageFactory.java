@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
@@ -128,7 +127,7 @@ public class ImageFactory {
             imageDirs = omnetppBitmapPath.split(";");
         // create and register a default / not found image
         imageRegistry.put(DEFAULT_KEY,
-                new NedImageDescriptor(ImageFactory.class, DEFAULT_NAME)); 
+                new NedImageDescriptor(ImageFactory.class, DEFAULT_NAME));
 
     }
 
@@ -470,7 +469,7 @@ public class ImageFactory {
         Arrays.sort(folders);
         return Arrays.asList(folders);
     }
-    
+
     /**
      * Creates an image file containing {@code image} in
      * the given {@code format} in the tmp directory.
@@ -484,7 +483,7 @@ public class ImageFactory {
     // XXX clean up
     public static String createTemporaryImageFile(String imageName, Image image, int format)
     	throws IOException {
-    	
+
     	String tempDir = System.getProperty("java.io.tmpdir");
     	File tempFile = new File(tempDir, imageName);
     	ImageLoader loader = new ImageLoader();

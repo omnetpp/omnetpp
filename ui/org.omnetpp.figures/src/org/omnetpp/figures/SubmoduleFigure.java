@@ -40,6 +40,7 @@ public class SubmoduleFigure extends ModuleFigure
     protected Label textFigure = new Label();
     protected Label queueFigure = new Label();
     protected String queueName = "";
+    protected boolean shapeVisible;
     protected TooltipFigure tooltipFigure;
     protected Shape rangeFigure = new RangeFigure();
     protected float scale = 1.0f;
@@ -53,6 +54,7 @@ public class SubmoduleFigure extends ModuleFigure
         ovalShapeFigure.setVisible(false);
         polygonShapeFigure.setVisible(false);
         rangeFigure.setOpaque(false);
+        shapeVisible = false;
     }
 
     @Override
@@ -220,8 +222,10 @@ public class SubmoduleFigure extends ModuleFigure
         }
         setPreferredSize(imageFigure.getPreferredSize());
 
+        // if only size is specified the default shape is rectangle
         if (StringUtils.isEmpty(shape) && (shapeHeight>0 || shapeWidth>0))
             shape = "rect";
+        // if nor image nor size is specified, the default size is 40x24
         if (img == null && shapeWidth == -1 && shapeHeight == -1) {
             shapeWidth = 40;
             shapeHeight = 24;
@@ -234,6 +238,7 @@ public class SubmoduleFigure extends ModuleFigure
         rrectShapeFigure.setVisible(false);
         ovalShapeFigure.setVisible(false);
         polygonShapeFigure.setVisible(false);
+        shapeVisible = false;
         if (shape == null || "".equals(shape) || shapeHeight==-1 && shapeWidth==-1)
             return;
 
@@ -259,6 +264,7 @@ public class SubmoduleFigure extends ModuleFigure
         } else
             currShape = rectShapeFigure;
 
+        shapeVisible = true;
         currShape.setVisible(true);
         currShape.setOpaque(false);
         currShape.setFill(shapeFillColor != null);
@@ -415,6 +421,13 @@ public class SubmoduleFigure extends ModuleFigure
             return true;
         // otherwise use the defult implementation
         return super.containsPoint(x, y);
+    }
+
+    /**
+     * @return Whether the figure displays a shape
+     */
+    public boolean isShapeVisible() {
+        return shapeVisible;
     }
 
 }
