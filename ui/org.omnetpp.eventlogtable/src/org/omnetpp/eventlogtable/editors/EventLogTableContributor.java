@@ -16,6 +16,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -160,17 +161,19 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			@Override
 			public void run() {
 				InputDialog dialog = new InputDialog(null, "Search raw text", "Please enter the search text", null, null);
-				dialog.open();
-				
-				// TODO: add case sensitivity, forward/backward search, etc.
 
-				String searchText = dialog.getValue();
-				EventLogEntry foundEventLogEntry = getEventLog().findEventLogEntry(eventLogTable.getSelectionElement().getEventLogEntry(eventLogTable.getEventLogInput()), searchText, true);
-
-				if (foundEventLogEntry != null)
-					eventLogTable.gotoClosestElement(new EventLogEntryReference(foundEventLogEntry));
-				else
-					MessageDialog.openInformation(null, "Search raw text", "No matches found!");
+				if (dialog.open() == Window.OK) {
+					
+					// TODO: add case sensitivity, forward/backward search, etc.
+	
+					String searchText = dialog.getValue();
+					EventLogEntry foundEventLogEntry = getEventLog().findEventLogEntry(eventLogTable.getSelectionElement().getEventLogEntry(eventLogTable.getEventLogInput()), searchText, true);
+	
+					if (foundEventLogEntry != null)
+						eventLogTable.gotoClosestElement(new EventLogEntryReference(foundEventLogEntry));
+					else
+						MessageDialog.openInformation(null, "Search raw text", "No matches found!");
+				}
 			}
 			
 			@Override
@@ -343,20 +346,20 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					}
 				});
 
-				dialog.open();
-
-				try {
-					int eventNumber = Integer.parseInt(dialog.getValue());
-					IEventLog eventLog = getEventLog();
-					IEvent event = eventLog.getEventForEventNumber(eventNumber);
-
-					if (event != null)
-						eventLogTable.gotoElement(new EventLogEntryReference(event.getEventEntry()));
-					else
-						MessageDialog.openError(null, "Goto event" , "No such event: " + eventNumber);
-				}
-				catch (Exception x) {
-					// void
+				if (dialog.open() == Window.OK) {
+					try {
+						int eventNumber = Integer.parseInt(dialog.getValue());
+						IEventLog eventLog = getEventLog();
+						IEvent event = eventLog.getEventForEventNumber(eventNumber);
+	
+						if (event != null)
+							eventLogTable.gotoElement(new EventLogEntryReference(event.getEventEntry()));
+						else
+							MessageDialog.openError(null, "Goto event" , "No such event: " + eventNumber);
+					}
+					catch (Exception x) {
+						// void
+					}
 				}
 			}
 			
@@ -387,20 +390,20 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					}
 				});
 
-				dialog.open();
-
-				try {
-					BigDecimal simulationTime = BigDecimal.parse(dialog.getValue());
-					IEventLog eventLog = getEventLog();
-					IEvent event = eventLog.getEventForSimulationTime(simulationTime, MatchKind.FIRST_OR_NEXT);
-
-					if (event != null)
-						eventLogTable.gotoElement(new EventLogEntryReference(event.getEventEntry()));
-					else
-						MessageDialog.openError(null, "Goto simulation time" , "No such simulation time: " + simulationTime);
-				}
-				catch (Exception x) {
-					// void
+				if (dialog.open() == Window.OK) {
+					try {
+						BigDecimal simulationTime = BigDecimal.parse(dialog.getValue());
+						IEventLog eventLog = getEventLog();
+						IEvent event = eventLog.getEventForSimulationTime(simulationTime, MatchKind.FIRST_OR_NEXT);
+	
+						if (event != null)
+							eventLogTable.gotoElement(new EventLogEntryReference(event.getEventEntry()));
+						else
+							MessageDialog.openError(null, "Goto simulation time" , "No such simulation time: " + simulationTime);
+					}
+					catch (Exception x) {
+						// void
+					}
 				}
 			}
 			

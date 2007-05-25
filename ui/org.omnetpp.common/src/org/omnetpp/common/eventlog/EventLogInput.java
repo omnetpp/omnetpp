@@ -122,9 +122,10 @@ public class EventLogInput {
 		eventLog.own();
 
 		/// store event log
-		eventLogTableFacade.setEventLog(eventLog);
-		sequenceChartFacade.setEventLog(eventLog);
+		getEventLogTableFacade().setEventLog(eventLog);
+		getSequenceChartFacade().setEventLog(eventLog);
 
+		// TODO: move to SequenceChart
 		// update coordinate system
 		if (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() != -1)
 			sequenceChartFacade.relocateTimelineCoordinateSystem(sequenceChartFacade.getTimelineCoordinateSystemOriginEvent());
@@ -142,8 +143,8 @@ public class EventLogInput {
 
 		// store event log
 		eventLog = filteredEventLog;
-		eventLogTableFacade.setEventLog(filteredEventLog);
-		sequenceChartFacade.setEventLog(filteredEventLog);
+		getEventLogTableFacade().setEventLog(filteredEventLog);
+		getSequenceChartFacade().setEventLog(filteredEventLog);
 		
 		eventLogFiltered();
 	}
