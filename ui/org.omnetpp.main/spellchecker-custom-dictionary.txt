@@ -140,6 +140,9 @@ wildcard
 clipboard
 autoselect
 crosshair
+logarithmic
 cancelling
 reparenting
+validator
+undoable
 cancelled
