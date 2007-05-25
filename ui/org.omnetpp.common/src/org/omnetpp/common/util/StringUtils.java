@@ -285,6 +285,21 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     		return noun + "s";
     }
     
+	/**
+	 * Useful for choosing indefinite article ("a" or "an") for a noun.
+	 */
+    public static boolean startsWithVowel(String word) {
+		final String vowels = "aeiou";
+		return vowels.contains(word.substring(0,1).toLowerCase()); 
+	}
+
+	/**
+	 * Useful for choosing indefinite article ("a" or "an") for a noun.
+	 */
+    public static String indefiniteArticle(String noun) {
+    	return startsWithVowel(noun) ? "an" : "a";
+	}
+
     /**
      * Joins the elements of a {@code collection} separated by {@code separator} and
      * {@code lastSeparator}.
