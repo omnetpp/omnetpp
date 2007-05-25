@@ -5,7 +5,7 @@ import org.eclipse.gef.editpolicies.XYLayoutEditPolicy;
 
 /**
  * Layout policy similar to XYLayout Except we transform the coordinates, so that the children's
- * will be centered on their respctive constraint's. ie. the child location is defined as the center
+ * will be centered on their respective constraint's. ie. the child location is defined as the center
  * point of the child.
  *
  * @author rhornig

@@ -16,9 +16,9 @@ public class ChangeDisplayPropertyCommand extends Command {
     String value;
     String oldValue;
 
-    
+
     /**
-     * @param element The element wheredisplay property must be set
+     * @param element The element where display property must be set
      * @param prop
      */
     public ChangeDisplayPropertyCommand(IHasDisplayString element, IDisplayString.Prop prop) {
@@ -71,5 +71,5 @@ public class ChangeDisplayPropertyCommand extends Command {
     public IHasDisplayString getElement() {
         return element;
     }
-    
-}    
+
+}

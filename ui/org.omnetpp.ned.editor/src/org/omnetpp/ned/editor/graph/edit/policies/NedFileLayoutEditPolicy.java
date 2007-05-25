@@ -25,8 +25,8 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 
 /**
- * Layout policy used in the top levele NedFile element allowing a vertical, toolbar like
- * layout, rearange of components.
+ * Layout policy used in the top level NedFile element allowing a vertical, toolbar like
+ * layout, rearrange of components.
  *
  * @author rhornig
  */
@@ -39,7 +39,7 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 	@Override
 	protected EditPolicy createChildEditPolicy(EditPart child) {
 		ResizableEditPolicy policy = new NedResizeEditPolicy();
-		// we need only resize support for the south east and corner dor compound modules
+		// we need only resize support for the south east and corner for compound modules
 		if (child instanceof CompoundModuleEditPart)
             policy.setResizeDirections(PositionConstants.SOUTH_EAST);
         else  // and no resize for other types
@@ -70,7 +70,7 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 	protected Command getCloneCommand(ChangeBoundsRequest request) {
 
 		EditPart iPoint = getInsertionReference(request);
-		INEDElement insertBeforeNode = (iPoint != null) ? (INEDElement)iPoint.getModel() : null;
+		INEDElement insertBeforeNode = iPoint != null ? (INEDElement)iPoint.getModel() : null;
 		INEDElement parent = (INEDElement)getHost().getModel();
 		CloneCommand cloneCmd = new CloneCommand(parent, insertBeforeNode);
 
@@ -82,7 +82,8 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 	}
 
 	// adding an already existing node is not supported
-	protected Command createAddCommand(EditPart child, EditPart after) {
+	@Override
+    protected Command createAddCommand(EditPart child, EditPart after) {
 		return null;
 	}
 
@@ -90,16 +91,18 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 	 * @see org.eclipse.gef.editpolicies.OrderedLayoutEditPolicy#createMoveChildCommand(org.eclipse.gef.EditPart, org.eclipse.gef.EditPart)
 	 * if wherePart is null we must insert the child at the end
 	 */
-	protected Command createMoveChildCommand(EditPart movedPart, EditPart wherePart) {
-		INEDElement where = (wherePart != null) ? (INEDElement)wherePart.getModel() : null;
+	@Override
+    protected Command createMoveChildCommand(EditPart movedPart, EditPart wherePart) {
+		INEDElement where = wherePart != null ? (INEDElement)wherePart.getModel() : null;
 		INEDElement node = (INEDElement)movedPart.getModel();
 		return new ReorderCommand(where, node);
 	}
 
-	protected Command getCreateCommand(CreateRequest request) {
+	@Override
+    protected Command getCreateCommand(CreateRequest request) {
 		INEDElement newElement = (INEDElement)request.getNewObject();
 		EditPart insertionPoint = getInsertionReference(request);
-		INEDElement where = (insertionPoint != null) ? (INEDElement)insertionPoint.getModel() : null;
+		INEDElement where = insertionPoint != null ? (INEDElement)insertionPoint.getModel() : null;
 		INEDElement parent = (INEDElement)getHost().getModel();
 		return new CreateToplevelComponentCommand(parent, where, newElement);
 	}
@@ -168,7 +171,8 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 	 * Factors out RESIZE  requests, otherwise calls <code>super</code>.
 	 * @see org.eclipse.gef.EditPolicy#getCommand(Request)
 	 */
-	public Command getCommand(Request request) {
+	@Override
+    public Command getCommand(Request request) {
 		if (REQ_RESIZE_CHILDREN.equals(request.getType()))
 			return getResizeChildrenCommand((ChangeBoundsRequest)request);
 

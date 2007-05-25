@@ -13,16 +13,21 @@ import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.figures.SubmoduleFigure;
+import org.omnetpp.ned.editor.graph.commands.ChangeDisplayPropertyCommand;
 import org.omnetpp.ned.editor.graph.commands.CloneSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.commands.CreateSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.commands.SetConstraintCommand;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
+import org.omnetpp.ned.editor.graph.edit.SubmoduleEditPart;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned.model.interfaces.INamedGraphNode;
@@ -76,44 +81,74 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
         return create;
     }
 
-
     @Override
     protected Command createChangeConstraintCommand(EditPart child, Object constraint) {
-        // do not allow delete if we are read only components
+        IFigure childFigure = ((GraphicalEditPart)child).getFigure();
+        Rectangle figureBounds = childFigure.getBounds();
+        Rectangle modelConstraint = (Rectangle)constraint;
+        // do not allow change if we are read only components
         if (!PolicyUtil.isEditable(child))
             return null;
+
         // HACK for fixing issue when the model returns unspecified size (-1,-1)
         // we have to calculate the center point in that direction manually using the size info
         // from the figure directly (which knows it's size) This is the inverse transformation of
         // CenteredXYLayout's transformation.
-        Rectangle figureBounds = ((GraphicalEditPart)child).getFigure().getBounds();
-        Rectangle modelConstraint = (Rectangle)constraint;
         if (modelConstraint.width < 0) modelConstraint.x += figureBounds.width / 2;
         if (modelConstraint.height < 0) modelConstraint.y += figureBounds.height / 2;
-
-        // get the compound module scaling factor
-        float scale = ((ModuleEditPart)child).getScale();
-
-        // create the constraint change command
-        INamedGraphNode module = (INamedGraphNode) child.getModel();
-        SetConstraintCommand cmd = new SetConstraintCommand(module, scale);
-        cmd.setConstraint(modelConstraint);
-
-        // if size constraint is not specified, then remove it from the model too
-        // TODO is this needed?
-//        if ((modelConstraint.width < 0 || modelConstraint.height < 0) && module.getDisplayString().getSize(null) == null)
-//            cmd.setNewSize(null);
 
         // disable the resize if we reach the minimal size
         if (modelConstraint.width == getMinimumSizeFor((GraphicalEditPart)child).width ||
                 modelConstraint.height == getMinimumSizeFor((GraphicalEditPart)child).height)
             return UnexecutableCommand.INSTANCE;
 
-        return cmd;
+        // get the compound module scaling factor
+        float scale = ((ModuleEditPart)child).getScale();
+
+        CompoundCommand compound = new CompoundCommand();
+
+        // create the constraint change command
+        INamedGraphNode module = (INamedGraphNode) child.getModel();
+        SetConstraintCommand constrCmd = new SetConstraintCommand(module, scale);
+        constrCmd.setConstraint(modelConstraint);
+
+        // check if we have a shape in the figure. If not, the resize command should change the icon size
+        // property not the shape size
+        ChangeDisplayPropertyCommand dpchange = null;
+        // icon resize valid only for submodules, where no icon is present and there was a change in the size
+        // of the figure
+        if (child instanceof SubmoduleEditPart && !((SubmoduleFigure)childFigure).isShapeVisible() &&
+                modelConstraint.width > 0) {
+            // delete the move command (we do not change the position if icon resizing is in progress)
+            constrCmd = null;
+            dpchange = new ChangeDisplayPropertyCommand(((SubmoduleEditPart)child).getSubmoduleModel(), IDisplayString.Prop.IMAGESIZE);
+            dpchange.setLabel("Set icon size");
+            // calculate the desired size, if we support arbitrary resizing, we can simply set
+            // the received width value, but for now we have to choose between vs, s, l, vl
+            int ratio = 100*modelConstraint.width / 40;
+            String newImageSize = "";
+            if (ratio < 60)
+                newImageSize = "vs";
+            else if (ratio < 100)
+                newImageSize = "s";
+            else if (ratio < 150)
+                newImageSize = "";
+            else if (ratio < 250)
+                newImageSize = "l";
+            else
+                newImageSize = "vl";
+
+            dpchange.setValue(newImageSize);
+        }
+
+        compound.add(dpchange);
+        compound.add(constrCmd);
+        return compound;
     }
 
     /**
-     * We create a generic resize policy that allows resizing in any direction.
+     * We create a generic resize policy that allows resizing in any direction. But restrict it in some cases
+     * for example on inherited submodules or for submodules which has icons
      * @see org.eclipse.gef.editpolicies.ConstrainedLayoutEditPolicy#createChildEditPolicy(org.eclipse.gef.EditPart)
      *
      */
@@ -125,7 +160,6 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
             policy.setResizeDirections(PositionConstants.NONE);
             policy.setDragAllowed(false);
         }
-
         return policy;
     }
 
