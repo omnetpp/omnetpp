@@ -96,11 +96,18 @@ public class ChartPage extends ScaveEditorPage {
 		configureChartView(chartView, chart); //FIXME bring this method into this class
 		
 		// add context menu to chart, and populate it
-		createContextMenu();
+		// (in fact, only the Remove submenu would need to be dynamic, but looks like
+		// menuAboutToShow() does not get called for submenus)
+		contextMenuManager.setRemoveAllWhenShown(true);
+		contextMenuManager.addMenuListener(new IMenuListener() {
+			public void menuAboutToShow(IMenuManager submenuManager) {
+				updateContextMenu();
+			}
+		});
+		chartView.setMenu(contextMenuManager.createContextMenu(chartView));
 	}
 
-	protected void createContextMenu() {
-		chartView.setMenu(contextMenuManager.createContextMenu(chartView));
+	protected void updateContextMenu() {
 		ScaveEditorContributor editorContributor = ScaveEditorContributor.getDefault();
 		contextMenuManager.add(editorContributor.getZoomInAction());
 		contextMenuManager.add(editorContributor.getZoomOutAction());
@@ -146,24 +153,18 @@ public class ChartPage extends ScaveEditorPage {
 	}
 
 	protected IMenuManager createRemoveProcessingSubmenu() {
-		// create the submenu dynamically
 		IMenuManager submenuManager = new MenuManager("Remove");
-		submenuManager.setRemoveAllWhenShown(true);
-		
-		submenuManager.addMenuListener(new IMenuListener() {
-			public void menuAboutToShow(IMenuManager submenuManager) {
-				ILabelProvider labelProvider = new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(scaveEditor.getAdapterFactory()));
-				// list all chart processing operations in the menu
-				for (EObject child : chart.eContainer().eContents()) {
-					if (child == chart) 
-						break; // only list objects *before* the chart
-					if (child instanceof ProcessingOp) {
-						String text = StringUtils.capitalize(labelProvider.getText(child));
-						submenuManager.add(new RemoveObjectAction(child, text));
-					}
-				}
+		ILabelProvider labelProvider = new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(scaveEditor.getAdapterFactory()));
+
+		// list all chart processing operations in the menu
+		for (EObject child : chart.eContainer().eContents()) {
+			if (child == chart) 
+				break; // only list objects *before* the chart
+			if (child instanceof ProcessingOp) {
+				String text = StringUtils.capitalize(labelProvider.getText(child));
+				submenuManager.add(new RemoveObjectAction(child, text));
 			}
-		});
+		}
 		return submenuManager;
 	}
 
