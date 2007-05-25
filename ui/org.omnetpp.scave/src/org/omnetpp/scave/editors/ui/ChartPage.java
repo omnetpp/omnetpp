@@ -5,21 +5,27 @@ import java.util.Map;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.actions.EditAction;
 import org.omnetpp.scave.actions.NewChartProcessingOpAction;
+import org.omnetpp.scave.actions.RemoveObjectAction;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.charting.ChartFactory;
 import org.omnetpp.scave.charting.ChartUpdater;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorContributor;
+import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Param;
 import org.omnetpp.scave.model.ProcessingOp;
@@ -110,7 +116,7 @@ public class ChartPage extends ScaveEditorPage {
 		contextMenuManager.add(new Separator());
 		contextMenuManager.add(createProcessingSubmenu(true));  // "Apply" submenu
 		contextMenuManager.add(createProcessingSubmenu(false)); // "Compute" submenu
-		//XXX add "Remove" submenu too, with list of apply/compute operations
+		contextMenuManager.add(createRemoveProcessingSubmenu()); // "Remove" submenu
 		contextMenuManager.add(editorContributor.getGotoChartDefinitionAction());
 		contextMenuManager.add(new Separator());
 		contextMenuManager.add(editorContributor.getUndoRetargetAction());
@@ -138,7 +144,29 @@ public class ChartPage extends ScaveEditorPage {
 		submenuManager.add(new NewChartProcessingOpAction("Other...", createOp(isApply, null)));
 		return submenuManager;
 	}
-	
+
+	protected IMenuManager createRemoveProcessingSubmenu() {
+		// create the submenu dynamically
+		IMenuManager submenuManager = new MenuManager("Remove");
+		submenuManager.setRemoveAllWhenShown(true);
+		
+		submenuManager.addMenuListener(new IMenuListener() {
+			public void menuAboutToShow(IMenuManager submenuManager) {
+				ILabelProvider labelProvider = new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(scaveEditor.getAdapterFactory()));
+				// list all chart processing operations in the menu
+				for (EObject child : chart.eContainer().eContents()) {
+					if (child == chart) 
+						break; // only list objects *before* the chart
+					if (child instanceof ProcessingOp) {
+						String text = StringUtils.capitalize(labelProvider.getText(child));
+						submenuManager.add(new RemoveObjectAction(child, text));
+					}
+				}
+			}
+		});
+		return submenuManager;
+	}
+
 	protected static ProcessingOp createOp(boolean isApply, String operation) {
 		ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
 		ProcessingOp applyOrCompute = isApply ? factory.createApply() : factory.createCompute();
@@ -159,6 +187,5 @@ public class ChartPage extends ScaveEditorPage {
 		Map<String,Object> map = new HashMap<String, Object>();
 		map.put(key1, value1);
 		return map;
-		
 	}
 }
