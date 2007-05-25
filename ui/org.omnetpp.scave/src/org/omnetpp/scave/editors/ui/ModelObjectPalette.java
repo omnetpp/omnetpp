@@ -2,6 +2,7 @@ package org.omnetpp.scave.editors.ui;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.util.ECollections;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.command.AddCommand;
@@ -26,10 +27,12 @@ import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ScaveModelFactory;
+import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.wizard.NewScaveObjectWizard;
 
 /**
@@ -79,7 +82,7 @@ public class ModelObjectPalette {
 		}
 	}
 
-		
+
 	protected void addToolItem(Composite parent, final EObject elementPrototype, ILabelProvider labelProvider) {
 		//Button toolButton = new Button(parent, SWT.PUSH);
 		ToolButton toolButton = new ToolButton(parent, SWT.NONE);
@@ -87,7 +90,10 @@ public class ModelObjectPalette {
 		toolButton.setImage(labelProvider.getImage(elementPrototype));
 		if (showText)
 			toolButton.setText(labelProvider.getText(elementPrototype));
-		toolButton.setToolTipText("Click or drag &&& drop to create an object");
+		String className = elementPrototype.eClass().getName();
+		String hint = "Click or drag &&& drop to create " + StringUtils.indefiniteArticle(className) + " '" + className + "' object.";
+		String desc = StringUtils.breakLines(getDescription(elementPrototype.eClass()),60);
+		toolButton.setToolTipText(hint + "\n" + desc);
 
 		toolButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -114,7 +120,7 @@ public class ModelObjectPalette {
 					event.data = new StructuredSelection(elementPrototype);
 			}
 		});
-	
+
 	}
 
 	protected void addSeparator(Composite parent) {
@@ -125,7 +131,7 @@ public class ModelObjectPalette {
 
 	protected void addAsChildOrSibling(EObject elementPrototype) {
 		ISelection sel = editor.getSelection();
-		
+
 		// choose target: use the selected object, except if element is a Dataset 
 		// or ChartSheet which have fixed places in the model
 		EObject target = null;
@@ -135,7 +141,7 @@ public class ModelObjectPalette {
 			target = editor.getAnalysis().getChartSheets();
 		else if (sel instanceof IStructuredSelection && ((IStructuredSelection)sel).getFirstElement() instanceof EObject)
 			target = (EObject) ((IStructuredSelection) sel).getFirstElement();
-		
+
 		//XXX factor out common part
 		if (target != null)	{
 			// add "element" to "target" as child or as sibling.
@@ -173,4 +179,64 @@ public class ModelObjectPalette {
 			}
 		}
 	}
+
+	public static String getDescription(EClass c) {
+		ScaveModelPackage e = ScaveModelPackage.eINSTANCE;
+		if (c == e.getAnalysis()) 
+			return "";
+		
+		if (c == e.getInputs()) 
+			return "Contains the input files of the analysis.";
+		if (c == e.getInputFile()) 
+			return "Specifies a result file (output vector or scalar file), or a sets of files using wildcards, to be used as input for the analysis.";
+
+		if (c == e.getDatasets()) 
+			return "The Datasets object is a container for all datasets.";
+		if (c == e.getDataset()) 
+			return "In a Dataset you can choose a subset of input data, apply various processing steps, and create charts from them. " +
+					"Operations within the dataset are evaluated one after another, like a program.";
+		if (c == e.getAdd()) 
+			return "Add operations add more scalars, vectors or histograms to the dataset.";
+		if (c == e.getDiscard()) 
+			return "Discard operations remove (a subset of) previously added scalars, vectors or histograms from the dataset.";
+		if (c == e.getApply()) 
+			return "An Apply operation replaces (a subset of the) data in the dataset with the result of some transformation. " +
+					"Currently all operations operate on vector data only."; //XXX
+		if (c == e.getCompute()) 
+			return "A Compute operation performs a calculation on (a subset of the) data in the dataset, and adds the result to the dataset. " +
+					"Currently all operations operate on vector data only."; //XXX
+		if (c == e.getGroup()) 
+			return "A Group object creates a local copy of the dataset (conceptually), and lets you apply various processing steps without affecting the dataset's main flow.";
+
+		if (c == e.getLineChart()) 
+			return "A LineChart object creates a line chart from (a subset of the) the vector results in the dataset.";
+		if (c == e.getBarChart()) 
+			return "A BarChart object creates a bar chart from (a subset of the) the scalar results in the dataset.";
+		if (c == e.getHistogramChart()) 
+			return "A HistogramChart object creates a histogram chart from (a subset of the) the histogram results in the dataset.";
+		if (c == e.getScatterChart()) 
+			return "A ScatterChart object interprets scalars generated by different runs " +
+					"as (x,y) coordinates, and plots them on a line chart.";
+
+		if (c == e.getSelect()) 
+			return "A Select object refines the scope of a processing operation (Apply, Compute) or a chart. " + 
+					"It can only occur within those object types.";
+		if (c == e.getDeselect()) 
+			return "A Deselect object refines the scope of a processing operation (Apply, Compute) or a chart. " + 
+					"It may only occur within those object types.";
+		if (c == e.getExcept()) 
+			return "An Except object further refines a Select or Deselect object, and may only occur within those object types.";
+
+		if (c == e.getParam()) 
+			return "";
+		if (c == e.getProperty()) 
+			return "";
+
+		if (c == e.getChartSheets()) 
+			return "";
+		if (c == e.getChartSheet()) 
+			return "ChartSheet objects can be used to organize charts (themselves defined within Datasets) into groups.";
+		return null;
+	}
+
 }
