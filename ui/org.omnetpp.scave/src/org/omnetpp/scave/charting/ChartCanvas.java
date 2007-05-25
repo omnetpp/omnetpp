@@ -47,13 +47,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
-import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.image.ImageConverter;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.util.Converter;
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.ChartProperties.LegendPosition;
@@ -387,18 +385,18 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		public String getTooltipText(int x, int y, Point preferredSize) {
 			if (rect.contains(x, y) && items.size() > 0) {
 				StringBuffer sb = new StringBuffer();
-				int height = 25;
-				sb.append("<b>Legend:</b>"); height += 10;
+				int height = 20;
+				sb.append("<b>Legend:</b>"); height += 17;
 				sb.append("<table style='margin-left: 1em'>");
 				for (Item item : items) {
 					sb.append("<tr>");
 					if (item.imageFile != null)
 						sb.append("<td style='vertical-align: middle'>").
-							append("<img src='file://").append(item.imageFile).append("'></td>"); // XXX URLEncoded filename does not work in IE
+							append("<img src='file://").append(item.imageFile).append("'></td>"); // Note: URLEncoded filename does not work in IE
 					sb.append("<td style='vertical-align: middle; color: ").append(htmlColor(item.color)).append("'>").
 						append(htmlText(item.label)).append("</td>");
 					sb.append("</tr>");
-					height += 10;
+					height += 17;
 				}
 				sb.append("</table>");
 				preferredSize.y = Math.max(height, 80);
