@@ -12,6 +12,7 @@
 
 /*
  * Source: http://www.richclient2.eu/2006_03_03/enhancing-the-combo-widget-with-images
+ * With minor modifications (Andras)
  */
 
 package org.omnetpp.common.ui;
@@ -19,6 +20,7 @@ package org.omnetpp.common.ui;
 
 import java.util.Arrays;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.accessibility.ACC;
@@ -29,6 +31,8 @@ import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.eclipse.swt.accessibility.AccessibleTextAdapter;
 import org.eclipse.swt.accessibility.AccessibleTextEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
@@ -47,6 +51,7 @@ import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TypedListener;
@@ -133,6 +138,12 @@ public ImageCombo (Composite parent, int style) {
     if ((style & SWT.READ_ONLY) != 0) textStyle |= SWT.READ_ONLY;
     if ((style & SWT.FLAT) != 0) textStyle |= SWT.FLAT;
     text = new Text (this, textStyle);
+    //BC Andras
+    // Issue: in readonly mode, text background becomes gray which is not consistent with the native Windows widget
+    // Workaround: manually set the background to SWT.COLOR_LIST_BACKGROUND
+    if ((textStyle & SWT.READ_ONLY) != 0)
+    	text.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+    //EC Andras
     int arrowStyle = SWT.ARROW | SWT.DOWN;
     if ((style & SWT.FLAT) != 0) arrowStyle |= SWT.FLAT;
     arrow = new Button (this, arrowStyle);
@@ -391,12 +402,30 @@ void createPopup(int selectionIndex) {
         // create shell and list
         popup = new Shell (getShell (), SWT.NO_TRIM | SWT.ON_TOP);
         int style = getStyle ();
-        int listStyle = SWT.SINGLE | SWT.V_SCROLL;
+        int listStyle = SWT.SINGLE | SWT.V_SCROLL | SWT.FULL_SELECTION; // SWT.FULL_SELECTION: Andras
         if ((style & SWT.FLAT) != 0) listStyle |= SWT.FLAT;
         if ((style & SWT.RIGHT_TO_LEFT) != 0) listStyle |= SWT.RIGHT_TO_LEFT;
         if ((style & SWT.LEFT_TO_RIGHT) != 0) listStyle |= SWT.LEFT_TO_RIGHT;
         // create a table instead of a list.
         table = new Table (popup, listStyle);
+
+        //BC Andras
+        // Issue: selection bar is not full length. 
+        // Workaround: create table with FULL_SELECTION, and add a table column
+        new TableColumn(table, SWT.LEFT);
+        // Issue: list selection doesn't follow mouse like native Windows combo
+        // Solution: add mouse listener
+        table.addMouseMoveListener(new MouseMoveListener() {
+			public void mouseMove(MouseEvent e) {
+				TableItem item = table.getItem(new Point(e.x, e.y));
+				if (item != null) {
+					int index = ArrayUtils.indexOf(table.getItems(), item);
+					table.setSelection(index);
+				}
+			}
+        });
+        //EC Andras
+
         if (font != null) table.setFont (font);
         if (foreground != null) table.setForeground (foreground);
         if (background != null) table.setBackground (background);
@@ -475,13 +504,21 @@ void dropDown (boolean drop) {
     Rectangle parentRect = display.map (getParent (), null, getBounds ());
     Point comboSize = getSize ();
     Rectangle displayRect = getMonitor ().getClientArea ();
-    int width = Math.max (comboSize.x, listRect.width + 2);
+    //BC Andras
+    // Make list width equal to the combo with; this change is only good for our purposes! 
+    //int width = Math.max (comboSize.x, listRect.width + 2);
+    int width = comboSize.x;
+    //EC Andras
     int height = listRect.height + 2;
     int x = parentRect.x;
     int y = parentRect.y + comboSize.y;
     if (y + height > displayRect.y + displayRect.height) y = parentRect.y - height;
     popup.setBounds (x, y, width, height);
     popup.setVisible (true);
+    //BC Andras
+    if (table.getColumns()[0].getWidth() <= 0)
+    	table.getColumns()[0].setWidth(width - 2*table.getBorderWidth() - 2);
+    //EC Andras
     table.setFocus ();
 }
 /* 
@@ -506,7 +543,7 @@ public Control [] getChildren () {
 /**
  * Gets the editable state.
  *
- * @return whether or not the reciever is editable
+ * @return whether or not the receiver is editable
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
