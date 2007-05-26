@@ -114,6 +114,6 @@ public class BarChartEditForm extends ChartEditForm {
 		super.setProperties(props);
 		ScalarChartProperties scalarProps = (ScalarChartProperties)props;
 		baselineText.setText(scalarProps.getBarBaseline());
-		setSelection(barPlacementCombo, scalarProps.getBarPlacement());
+		barPlacementCombo.setText(scalarProps.getBarPlacement()==null ? NO_CHANGE : scalarProps.getBarPlacement().toString());
 	}
 }

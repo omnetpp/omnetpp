@@ -118,7 +118,7 @@ public class LineChartEditForm_old extends ChartEditForm {
 		SymbolType symbolType = getSelection(symbolTypeCombo, SymbolType.class);
 		String symbolSize = getSelection(symbolSizeCombo);
 		LineStyle lineStyle = getSelection(lineStyleRadios, LineStyle.class);
-		String lineColor = colorEdit.getColor();
+		String lineColor = colorEdit.getText();
 
 		// copy orig line properties
 		boolean all = lineId == null;
@@ -156,20 +156,21 @@ public class LineChartEditForm_old extends ChartEditForm {
 	
 
 	private void updateLinePropertyEditFields(VectorChartProperties props) {
-		int index = applyToLinesCombo.getSelectionIndex();
-		if (index == 0) {
-			setSelection(symbolTypeCombo, (SymbolType)null);
-			setSelection(symbolSizeCombo, (String)null);
-			setSelection(lineStyleRadios, (LineStyle)null);
-			colorEdit.setColor("");
-		}
-		else if (index > 0) {
-			String lineId = lineNames[index];
-			LineProperties lineProps = props.getLineProperties(lineId);
-			setSelection(symbolTypeCombo, lineProps.getSymbolType());
-			setSelection(symbolSizeCombo, lineProps.getSymbolSize());
-			setSelection(lineStyleRadios, lineProps.getLineType());
-			colorEdit.setColor(StringUtils.trimToEmpty(lineProps.getLineColor()));
-		}
+//XXX won't work now... Andras
+//		int index = applyToLinesCombo.getSelectionIndex();
+//		if (index == 0) {
+//			setSelection(symbolTypeCombo, (SymbolType)null);
+//			setSelection(symbolSizeCombo, (String)null);
+//			setSelection(lineStyleRadios, (LineStyle)null);
+//			colorEdit.setColor("");
+//		}
+//		else if (index > 0) {
+//			String lineId = lineNames[index];
+//			LineProperties lineProps = props.getLineProperties(lineId);
+//			setSelection(symbolTypeCombo, lineProps.getSymbolType());
+//			setSelection(symbolSizeCombo, lineProps.getSymbolSize());
+//			setSelection(lineStyleRadios, lineProps.getLineType());
+//			colorEdit.setColor(StringUtils.trimToEmpty(lineProps.getLineColor()));
+//		}
 	}
 }

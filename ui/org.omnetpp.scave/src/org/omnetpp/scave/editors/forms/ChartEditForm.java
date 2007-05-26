@@ -113,7 +113,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	 */
 	protected static final int VISIBLE_ITEM_COUNT = 15;
 
-	protected static final String UNSET = "(no change)";
+	protected static final String NO_CHANGE = "(no change)";
 
 	protected static final String USER_DATA_KEY = "ChartEditForm";
 
@@ -193,19 +193,19 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		Composite panel = (Composite)item.getControl();
 		
 		if (TAB_MAIN.equals(name)) {
-			nameText = createTextField("Name", panel);
+			nameText = createTextField("Name:", panel);
 			nameText.setFocus();
 		}
 		else if (TAB_TITLES.equals(name)) {
 			group = createGroup("Graph title", panel);
-			graphTitleText = createTextField("Graph title", group);
-			graphTitleFontText = createTextField("Title font", group);
+			graphTitleText = createTextField("Graph title:", group);
+			graphTitleFontText = createTextField("Title font:", group);
 			group = createGroup("Axis titles", panel);
-			xAxisTitleText = createTextField("X axis title", group);
-			yAxisTitleText = createTextField("Y axis title", group);
-			axisTitleFontText = createTextField("Axis title font", group);
-			labelFontText = createTextField("Label font", group);
-			xLabelsRotateByCombo = createComboField("Rotate X labels by", group, new String[] {"0", "30", "45", "60", "90"});
+			xAxisTitleText = createTextField("X axis title:", group);
+			yAxisTitleText = createTextField("Y axis title:", group);
+			axisTitleFontText = createTextField("Axis title font:", group);
+			labelFontText = createTextField("Label font:", group);
+			xLabelsRotateByCombo = createComboField("Rotate X labels by:", group, new String[] {"0", "30", "45", "60", "90"});
 		}
 		else if (TAB_AXES.equals(name)) {
 			group = createGroup("Axis bounds", panel, 3);
@@ -229,7 +229,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			group = createGroup("Appearance", panel);
 			displayBorderCheckbox = createCheckboxField("Border", group);
 			displayBorderCheckbox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-			legendFontText = createTextField("Legend font", group);
+			legendFontText = createTextField("Legend font:", group);
 			legendPositionRadios = createRadioGroup("Position", panel, 3, LegendPosition.class, false);
 			legendAnchorRadios = createRadioGroup("Anchoring", panel, 4, LegendAnchor.class, false);
 		}
@@ -293,7 +293,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		combo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		combo.setItems(items);
-		if (optional) combo.add(UNSET, 0);
+		if (optional) combo.add(NO_CHANGE, 0);
 		return combo;
 	}
 
@@ -332,7 +332,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		Button[] radios = new Button[numOfRadios];
 		int i = 0;
 		if (optional) {
-			radios[i++] = createRadioField(UNSET, group, null);
+			radios[i++] = createRadioField(NO_CHANGE, group, null);
 		}
 		for (int j = 0; j < values.length; ++j) {
 			Enum<?> value = values[j];
@@ -357,11 +357,11 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			});
 		}
 		
-		public String getColor() {
+		public String getText() {
 			return StringUtils.trimToEmpty(text.getText());
 		}
 		
-		public void setColor(String color) {
+		public void setText(String color) {
 			text.setText(color);
 			label.setImage(ColorFactory.asImage(color));
 		}
@@ -386,10 +386,10 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			public void widgetSelected(SelectionEvent e) {
 				if (!colorField.text.isDisposed()) {
 					ColorDialog dialog = new ColorDialog(colorField.text.getShell());
-					dialog.setText(colorField.getColor());
+					dialog.setText(colorField.getText());
 					RGB rgb = dialog.open();
 					if (rgb != null) {
-						colorField.setColor(ColorFactory.asString(rgb));
+						colorField.setText(ColorFactory.asString(rgb));
 					}
 				}
 			}
@@ -492,7 +492,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	
 	protected String getSelection(Combo combo) {
 		String text = combo.getText();
-		return UNSET.equals(text) ? null : text;
+		return NO_CHANGE.equals(text) ? null : text;
 	}
 
 	/**
@@ -532,20 +532,4 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		for (int i = 0; i < radios.length; ++i)
 			radios[i].setSelection(radios[i].getData(USER_DATA_KEY) == value);
 	}
-
-	protected void setSelection(Combo combo, Enum<?> value) {
-		combo.setText(value==null ? UNSET : value.toString());
-	}
-
-	protected void setSelection(ImageCombo combo, Enum<?> value) {
-		combo.setText(value==null ? UNSET : value.toString());
-	}
-	
-	protected void setSelection(Combo combo, String value) {
-		if (value != null && value.length() > 0)
-			combo.setText(value);
-		else
-			combo.setText(UNSET);
-	}
-
 }
