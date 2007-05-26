@@ -36,7 +36,6 @@ import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.properties.ColorCellEditorEx.ColorContentProposalProvider;
-import org.omnetpp.common.ui.ImageCombo;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.ChartProperties;
 import org.omnetpp.scave.charting.ChartProperties.LegendAnchor;
@@ -415,7 +414,6 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	/**
 	 * Sets the value of the given feature in the corresponding control.
 	 */
-	
 	@SuppressWarnings("unchecked")
 	public void setValue(EStructuralFeature feature, Object value) {
 		switch (feature.getFeatureID()) {
@@ -465,34 +463,19 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	 * Returns the selected radio button as the enum value it represents.
 	 */
 	@SuppressWarnings("unchecked")
-	protected <T extends Enum<T>> T getSelection(Button[] radios, Class<T> type) {
+	protected static <T extends Enum<T>> T getSelection(Button[] radios, Class<T> type) {
 		for (int i = 0; i < radios.length; ++i)
 			if (radios[i].getSelection())
 				return (T)radios[i].getData(USER_DATA_KEY);
 		return null;
 	}
 
-	protected <T extends Enum<T>> T getSelection(Combo combo, Class<T> type) {
+	protected static <T extends Enum<T>> T resolveEnum(String text, Class<T> type) {
 		T[] values = type.getEnumConstants();
-		String selection = combo.getText();
 		for (int i = 0; i < values.length; ++i)
-			if (values[i].name().equals(selection))
+			if (values[i].toString().equals(text))
 				return values[i];
 		return null;
-	}
-
-	protected <T extends Enum<T>> T getSelection(ImageCombo combo, Class<T> type) {
-		T[] values = type.getEnumConstants();
-		String selection = combo.getText();
-		for (int i = 0; i < values.length; ++i)
-			if (values[i].toString().equals(selection))
-				return values[i];
-		return null;
-	}
-	
-	protected String getSelection(Combo combo) {
-		String text = combo.getText();
-		return NO_CHANGE.equals(text) ? null : text;
 	}
 
 	/**
@@ -528,7 +511,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	/**
 	 * Select the radio button representing the enum value.
 	 */
-	protected void setSelection(Button[] radios, Enum<?> value) {
+	protected static void setSelection(Button[] radios, Enum<?> value) {
 		for (int i = 0; i < radios.length; ++i)
 			radios[i].setSelection(radios[i].getData(USER_DATA_KEY) == value);
 	}

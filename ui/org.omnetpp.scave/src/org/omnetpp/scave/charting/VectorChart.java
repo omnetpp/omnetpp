@@ -41,7 +41,7 @@ import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.charting.ChartProperties.LineStyle;
+import org.omnetpp.scave.charting.ChartProperties.LineType;
 import org.omnetpp.scave.charting.ChartProperties.SymbolType;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
@@ -82,7 +82,7 @@ public class VectorChart extends ChartCanvas {
 	static class LineProperties {
 		SymbolType symbolType;
 		Integer symbolSize;
-		LineStyle lineStyle;
+		LineType lineType;
 		RGB lineColor;
 	}
 	
@@ -160,7 +160,7 @@ public class VectorChart extends ChartCanvas {
 		else if (name.startsWith(PROP_SYMBOL_SIZE))
 			setSymbolSize(getKey(name), Converter.stringToInteger(value));
 		else if (name.startsWith(PROP_LINE_TYPE))
-			setLineStyle(getKey(name), Converter.stringToEnum(value, LineStyle.class));
+			setLineStyle(getKey(name), Converter.stringToEnum(value, LineType.class));
 		else if (name.startsWith(PROP_LINE_COLOR))
 			setLineColor(getKey(name), ColorFactory.asRGB(value));
 		else
@@ -205,16 +205,16 @@ public class VectorChart extends ChartCanvas {
 		}
 	}
 
-	public LineStyle getLineStyle (String key) {
+	public LineType getLineStyle (String key) {
 		LineProperties props = getLineProperties(key);
-		if (props == null || props.lineStyle == null)
+		if (props == null || props.lineType == null)
 			props = getDefaultLineProperties();
-		return props.lineStyle != null ? props.lineStyle : DEFAULT_LINE_STYLE;
+		return props.lineType != null ? props.lineType : DEFAULT_LINE_STYLE;
 	}
 
-	public void setLineStyle(String key, LineStyle type) {
+	public void setLineStyle(String key, LineType type) {
 		LineProperties props = getOrCreateLineProperties(key);
-		props.lineStyle = type;
+		props.lineType = type;
 		chartChanged();
 	}
 	
@@ -469,7 +469,7 @@ public class VectorChart extends ChartCanvas {
 	}
 	
 	public IVectorPlotter getPlotter(String key) {
-		LineStyle style = getLineStyle(key);
+		LineType style = getLineStyle(key);
 		switch (style) {
 		case Dots: return new DotsVectorPlotter();
 		case Linear: return new LinesVectorPlotter();

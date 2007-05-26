@@ -31,7 +31,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartProperties;
 import org.omnetpp.scave.charting.ChartProperties.LineProperties;
-import org.omnetpp.scave.charting.ChartProperties.LineStyle;
+import org.omnetpp.scave.charting.ChartProperties.LineType;
 import org.omnetpp.scave.charting.ChartProperties.SymbolType;
 import org.omnetpp.scave.charting.ChartProperties.VectorChartProperties;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -93,7 +93,7 @@ public class LineChartEditForm extends ChartEditForm {
 			lineTypeCombo = createImageComboField("Line type:", subpanel);
 			lineTypeCombo.add(NO_CHANGE, null);
 			lineTypeCombo.add(AUTO, null);
-			for (LineStyle a : LineStyle.values())
+			for (LineType a : LineType.values())
 				lineTypeCombo.add(a.toString(), ScavePlugin.getCachedImage(a.getImageId()));
 
 			symbolTypeCombo = createImageComboField("Symbol type:", subpanel);
@@ -135,58 +135,57 @@ public class LineChartEditForm extends ChartEditForm {
 		// fill newProps (initially empty) with the updated chart properties from the dialog;
 		// when this returns, newProps will be set on the model (overwriting existing properties).
 		super.collectProperties(newProps);
-		IStructuredSelection selection = (IStructuredSelection) linesTableViewer.getSelection();
-		for (Object sel : selection.toArray()) {
-			String lineId = (String) sel; 
-			applyLinePropertyChanges((VectorChartProperties)newProps, lineId);
-		}
-		//XXX when all items are selected, remove all line-specific settings from properties?!!!
-	}
+		
+		// read dialog contents
+		List<?> selection = ((IStructuredSelection) linesTableViewer.getSelection()).toList();
+		boolean applyToAll = (selection.size() == ((String[])linesTableViewer.getInput()).length);
 
-	@SuppressWarnings("unchecked")
-	private void applyLinePropertyChanges(VectorChartProperties newProps, String lineId) {
-		// obtain original line properties from the model, and modify that with the changes 
-		// requested in the dialog.
-		List<Property> origProps = (List<Property>)chart.getProperties();
-
-		//FIXME handle NO_CHANGE and AUTO properly!!!!
-		SymbolType symbolType = getSelection(symbolTypeCombo, SymbolType.class);
-		String symbolSize = getSelection(symbolSizeCombo);
-		LineStyle lineStyle = getSelection(lineTypeCombo, LineStyle.class);
+		String symbolType = symbolTypeCombo.getText();
+		String symbolSize = symbolSizeCombo.getText();
+		String lineType = lineTypeCombo.getText();
 		String lineColor = colorEdit.getText();
 
-		// copy original line properties
-		boolean all = lineId == null;
+		// copy original line properties from the Chart object
+		// Note: if a setting applies to all lines, remove line specific settings
+		List<Property> origProps = (List<Property>)chart.getProperties();
 		for (Property property : origProps) {
 			String name = property.getName();
 			String value = property.getValue();
-			if (name.startsWith(PROP_SYMBOL_TYPE)) {
-				if (!all || symbolType == null)
-					newProps.setProperty(name, value);
-			}
-			else if (name.startsWith(PROP_SYMBOL_SIZE)) {
-				if (!all || symbolSize == null)
-					newProps.setProperty(name, value);
-			}
-			else if (name.startsWith(PROP_LINE_TYPE)) {
-				if (!all || lineStyle == null)
-					newProps.setProperty(name, value);
-			}
-			else if (name.startsWith(PROP_LINE_COLOR)) {
-				if (!all || StringUtils.isEmpty(lineColor))
-					newProps.setProperty(PROP_LINE_COLOR, value);
+			boolean copyIt = 
+				(name.startsWith(PROP_SYMBOL_TYPE) && (!applyToAll || symbolType.equals(NO_CHANGE))) ||
+				(name.startsWith(PROP_SYMBOL_SIZE) && (!applyToAll || symbolSize.equals(NO_CHANGE))) ||
+				(name.startsWith(PROP_LINE_TYPE)   && (!applyToAll || lineType.equals(NO_CHANGE))) ||
+				(name.startsWith(PROP_LINE_COLOR)  && (!applyToAll || lineColor.equals(NO_CHANGE)));
+			if (copyIt)
+				newProps.setProperty(name, value);
+		}
+		
+		// apply the necessary changes
+		if (applyToAll) {
+			setLineProperties(newProps, null, symbolType, symbolSize, lineType, lineColor);
+		}
+		else {
+			for (Object sel : selection.toArray()) {
+				String lineId = (String) sel; 
+				setLineProperties(newProps, lineId, symbolType, symbolSize, lineType, lineColor);
 			}
 		}
-		// set new properties
-		LineProperties lineProps = newProps.getLineProperties(lineId);
-		if (!all || symbolType != null)
-			lineProps.setSymbolType(symbolType);
-		if (!all || symbolSize != null)
-			lineProps.setSymbolSize(symbolSize);
-		if (!all || lineStyle != null)
-			lineProps.setLineType(lineStyle);
-		if (!all || StringUtils.isEmpty(lineColor))
-			lineProps.setLineColor(lineColor);
+	}
+
+	private void setLineProperties(ChartProperties newProps, String lineId, String symbolType, String symbolSize, String lineType, String lineColor) {
+		String suffix = (lineId == null) ? "" : "/"+lineId;
+		if (!symbolType.equals(NO_CHANGE))
+			newProps.setProperty(PROP_SYMBOL_TYPE+suffix, isAutoOrEmpty(symbolType) ? null : resolveEnum(symbolType, SymbolType.class).name());
+		if (!symbolSize.equals(NO_CHANGE))
+			newProps.setProperty(PROP_SYMBOL_SIZE+suffix, isAutoOrEmpty(symbolSize) ? null : symbolSize);
+		if (!lineType.equals(NO_CHANGE))
+			newProps.setProperty(PROP_LINE_TYPE+suffix, isAutoOrEmpty(lineType) ? null : resolveEnum(lineType, LineType.class).name());
+		if (!lineColor.equals(NO_CHANGE))
+			newProps.setProperty(PROP_LINE_COLOR+suffix, isAutoOrEmpty(lineColor) ? null : lineColor);
+	}
+
+	private static boolean isAutoOrEmpty(String text) {
+		return text.equals("") || text.equals(AUTO);
 	}
 	
 	@Override

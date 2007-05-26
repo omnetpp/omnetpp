@@ -106,7 +106,7 @@ public class BarChartEditForm extends ChartEditForm {
 		super.collectProperties(newProps);
 		ScalarChartProperties props = (ScalarChartProperties)newProps;
 		props.setBarBaseline(baselineText.getText());
-		props.setBarPlacement(getSelection(barPlacementCombo, BarPlacement.class));
+		props.setBarPlacement(resolveEnum(barPlacementCombo.getText(), BarPlacement.class));
 	}
 
 	@Override

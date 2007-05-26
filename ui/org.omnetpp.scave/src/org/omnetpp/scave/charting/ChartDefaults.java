@@ -29,7 +29,7 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
 import org.omnetpp.scave.charting.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.ChartProperties.LegendPosition;
-import org.omnetpp.scave.charting.ChartProperties.LineStyle;
+import org.omnetpp.scave.charting.ChartProperties.LineType;
 
 /**
  * Defines defaults for the chart. Used by both the chart widgets 
@@ -79,7 +79,7 @@ public class ChartDefaults {
 	public static final Color DEFAULT_BAR_OUTLINE_COLOR = ColorFactory.GREY80;
 
 	// lines
-	public static final LineStyle DEFAULT_LINE_STYLE = LineStyle.Linear;
+	public static final LineType DEFAULT_LINE_STYLE = LineType.Linear;
 	public static final Integer DEFAULT_SYMBOL_SIZE = 4;
 	
 	

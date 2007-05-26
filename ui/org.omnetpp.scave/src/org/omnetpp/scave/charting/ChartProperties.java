@@ -105,7 +105,7 @@ public class ChartProperties extends PropertySource {
 		}
 	}
 
-	public enum LineStyle {
+	public enum LineType {
 		Linear("Linear", "linear"),
 		Pins("Pins", "pins"), 
 		Dots("Dots", "dots"),
@@ -116,7 +116,7 @@ public class ChartProperties extends PropertySource {
 		private String name;
 		private String imageId;
 
-		private LineStyle(String name, String img) {
+		private LineType(String name, String img) {
 			this.name = name;
 			this.imageId = "icons/full/obj16/line_"+img+".png";
 		}
@@ -318,9 +318,9 @@ public class ChartProperties extends PropertySource {
 		public String defaultSymbolSize() { return null; }
 
 		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_TYPE,optional=true)
-		public LineStyle getLineType() { return getEnumProperty(propertyName(PROP_LINE_TYPE), LineStyle.class); }
-		public void setLineType(LineStyle style) { setProperty(propertyName(PROP_LINE_TYPE), style); }
-		public LineStyle defaultLineType() { return null; }
+		public LineType getLineType() { return getEnumProperty(propertyName(PROP_LINE_TYPE), LineType.class); }
+		public void setLineType(LineType style) { setProperty(propertyName(PROP_LINE_TYPE), style); }
+		public LineType defaultLineType() { return null; }
 
 		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_COLOR,descriptorClass=ColorPropertyDescriptor.class,optional=true)
 		public String getLineColor() { return getStringProperty(propertyName(PROP_LINE_COLOR)); }
