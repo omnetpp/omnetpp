@@ -79,21 +79,56 @@ public class ChartProperties extends PropertySource {
 		PROP_CACHING			= "Plot.Caching";
 
 	public enum SymbolType {
-		None,
-		Cross,
-		Diamond,
-		Oval,
-		Plus,
-		Square,
-		Triangle,
+		None("None", "none"), //XXX allowed?
+		Cross("Cross", "cross"),
+		Diamond("Diamond", "diamond"),
+		Dot("Dot", "dot"),
+		Plus("Plus", "plus"),
+		Square("Square", "square"),
+		Triangle("Triangle", "triangle");
+
+		private String name;
+		private String imageId;
+
+		private SymbolType(String name, String img) {
+			this.name = name;
+			imageId = "icons/full/obj16/sym_"+img+".png";
+		}
+
+		@Override
+		public String toString() {
+			return name;
+		}
+
+		public String getImageId() {
+			return imageId;
+		}
 	}
 
 	public enum LineStyle {
-		None,
-		Linear,
-		SampleHold,
-		Pins, 
-		Points, 
+		Linear("Linear", "linear"),
+		Pins("Pins", "pins"), 
+		Dots("Dots", "dots"),
+		Points("Points", "points"), 
+		SampleHold("Sample-Hold", "samplehold"),
+		BackwardSampleHold("Backward Sample-Hold", "bksamplehold");  //XXX not yet supported
+
+		private String name;
+		private String imageId;
+
+		private LineStyle(String name, String img) {
+			this.name = name;
+			this.imageId = "icons/full/obj16/line_"+img+".png";
+		}
+
+		@Override
+		public String toString() {
+			return name;
+		}
+
+		public String getImageId() {
+			return imageId;
+		}
 	}
 
 	public enum BarPlacement {

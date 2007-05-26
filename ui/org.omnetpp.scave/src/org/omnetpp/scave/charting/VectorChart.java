@@ -245,7 +245,7 @@ public class VectorChart extends ChartCanvas {
 			Assert.isTrue(series >= 0); // key must be valid
 			switch (series % 6) {
 			case 0: return SymbolType.Square;
-			case 1: return SymbolType.Oval;
+			case 1: return SymbolType.Dot;
 			case 2: return SymbolType.Triangle;
 			case 3: return SymbolType.Diamond;
 			case 4: return SymbolType.Cross;
@@ -471,7 +471,7 @@ public class VectorChart extends ChartCanvas {
 	public IVectorPlotter getPlotter(String key) {
 		LineStyle style = getLineStyle(key);
 		switch (style) {
-		case None: return new DotsVectorPlotter();
+		case Dots: return new DotsVectorPlotter();
 		case Linear: return new LinesVectorPlotter();
 		case SampleHold: return new SampleHoldVectorPlotter();
 		case Pins: return new PinsVectorPlotter();
@@ -487,7 +487,7 @@ public class VectorChart extends ChartCanvas {
 		case None: return null;
 		case Cross: return new CrossSymbol(size);
 		case Diamond: return new DiamondSymbol(size);
-		case Oval: return new OvalSymbol(size);
+		case Dot: return new OvalSymbol(size);
 		case Plus: return new PlusSymbol(size);
 		case Square: return new SquareSymbol(size);
 		case Triangle: return new TriangleSymbol(size);
