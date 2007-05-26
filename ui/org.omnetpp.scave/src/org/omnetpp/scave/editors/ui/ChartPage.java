@@ -25,6 +25,7 @@ import org.omnetpp.scave.charting.ChartFactory;
 import org.omnetpp.scave.charting.ChartUpdater;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorContributor;
+import org.omnetpp.scave.editors.forms.ChartEditForm;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Param;
@@ -157,6 +158,7 @@ public class ChartPage extends ScaveEditorPage {
 		ILabelProvider labelProvider = new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(scaveEditor.getAdapterFactory()));
 
 		// list all chart processing operations in the menu
+		//XXX when Chart would remain the only item in the Group, ungroup it!
 		for (EObject child : chart.eContainer().eContents()) {
 			if (child == chart) 
 				break; // only list objects *before* the chart

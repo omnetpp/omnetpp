@@ -1,4 +1,4 @@
-package org.omnetpp.scave.editors.ui;
+package org.omnetpp.scave.editors.forms;
 
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.widgets.Composite;

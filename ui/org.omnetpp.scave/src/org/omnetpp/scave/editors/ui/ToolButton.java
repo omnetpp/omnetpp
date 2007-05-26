@@ -23,13 +23,13 @@ import org.eclipse.swt.widgets.Event;
 import org.omnetpp.common.color.ColorFactory;
 
 /**
- * A button which looks like ToolItem (flat), but text is rendered to the right 
- * of the image. ToolItem puts text below the image and cannot be talked out of it,
+ * A button which looks like SWT's ToolItem (flat), but text is rendered to the right 
+ * of the image. SWT's ToolItem puts text below the image and cannot be talked out of it,
  * while Button has the right layout but it is never rendered as flat. Oh well.
  * 
- * This is expected to be put on white background. If used on gray or other colors,
- * colors used for painting will have to be refined (probably it's best to dynamically
- * calculate them, using RGB class's HSB conversion.)
+ * This is expected to be put on a light background; otherwise colors used for painting 
+ * will have to be refined (probably it's best to dynamically calculate them, using 
+ * the RGB class's HSB conversion.)
  * 
  * @author Andras
  */

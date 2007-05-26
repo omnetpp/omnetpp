@@ -1,4 +1,4 @@
-package org.omnetpp.scave.editors.ui;
+package org.omnetpp.scave.editors.forms;
 
 import java.util.ArrayList;
 import java.util.List;

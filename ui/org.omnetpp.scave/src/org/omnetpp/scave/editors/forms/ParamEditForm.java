@@ -1,4 +1,4 @@
-package org.omnetpp.scave.editors.ui;
+package org.omnetpp.scave.editors.forms;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -8,49 +8,49 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.omnetpp.scave.model.Property;
+import org.omnetpp.scave.model.Param;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
 /**
- * Edit form of Property objects.
+ * Edit form of Param objects.
  *
  * @author andras
  */
-public class PropertyEditForm implements IScaveObjectEditForm {
+public class ParamEditForm implements IScaveObjectEditForm {
 	
 	/**
 	 * Features edited on this panel.
 	 */
 	private static final EStructuralFeature[] features = new EStructuralFeature[] {
-		ScaveModelPackage.eINSTANCE.getProperty_Name(),
-		ScaveModelPackage.eINSTANCE.getProperty_Value(),
+		ScaveModelPackage.eINSTANCE.getParam_Name(),
+		ScaveModelPackage.eINSTANCE.getParam_Value(),
 	};
 	
 	/**
-	 * The edited Property.
+	 * The edited Param.
 	 */
-	//private Property property;
+	//private Param param;
 	
 	// edit controls of the features
 	private Text nameText;
 	private Text valueText;
 
-	public PropertyEditForm(Property property, EObject parent) {
-		//this.property = property;
+	public ParamEditForm(Param param, EObject parent) {
+		//this.param = param;
 	}
 	
 	/**
 	 * Returns the title displayed on the top of the dialog.
 	 */
 	public String getTitle() {
-		return "Property";
+		return "Param";
 	}
 
 	/**
 	 * Returns the description displayed below the title.
 	 */
 	public String getDescription() {
-		return "Modify Property";
+		return "Modify Param";
 	}
 
 	/**
@@ -90,9 +90,9 @@ public class PropertyEditForm implements IScaveObjectEditForm {
 	 */
 	public Object getValue(EStructuralFeature feature) {
 		switch (feature.getFeatureID()) {
-		case ScaveModelPackage.PROPERTY__NAME:
+		case ScaveModelPackage.PARAM__NAME:
 			return nameText.getText();
-		case ScaveModelPackage.PROPERTY__VALUE:
+		case ScaveModelPackage.PARAM__VALUE:
 			return valueText.getText();
 		}
 		return null;
@@ -104,10 +104,10 @@ public class PropertyEditForm implements IScaveObjectEditForm {
 	 */
 	public void setValue(EStructuralFeature feature, Object value) {
 		switch (feature.getFeatureID()) {
-		case ScaveModelPackage.PROPERTY__NAME:
+		case ScaveModelPackage.PARAM__NAME:
 			nameText.setText((String)value);
 			break;
-		case ScaveModelPackage.PROPERTY__VALUE:
+		case ScaveModelPackage.PARAM__VALUE:
 			valueText.setText((String)value);
 			break;
 		}

@@ -1,4 +1,4 @@
-package org.omnetpp.scave.editors.ui;
+package org.omnetpp.scave.editors.forms;
 
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LINE_COLOR;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LINE_TYPE;

@@ -1,4 +1,4 @@
-package org.omnetpp.scave.editors.ui;
+package org.omnetpp.scave.editors.forms;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -8,49 +8,47 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.omnetpp.scave.model.Param;
+import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
 /**
- * Edit form of Param objects.
+ * Edit form of input files.
  *
  * @author andras
  */
-public class ParamEditForm implements IScaveObjectEditForm {
+public class GroupEditForm implements IScaveObjectEditForm {
 	
 	/**
 	 * Features edited on this panel.
 	 */
 	private static final EStructuralFeature[] features = new EStructuralFeature[] {
-		ScaveModelPackage.eINSTANCE.getParam_Name(),
-		ScaveModelPackage.eINSTANCE.getParam_Value(),
+		ScaveModelPackage.eINSTANCE.getGroup_Name(),
 	};
 	
 	/**
-	 * The edited Param.
+	 * The edited group.
 	 */
-	//private Param param;
+	//private Group group;
 	
 	// edit controls of the features
 	private Text nameText;
-	private Text valueText;
 
-	public ParamEditForm(Param param, EObject parent) {
-		//this.param = param;
+	public GroupEditForm(Group group, EObject parent) {
+		//this.group = group;
 	}
 	
 	/**
 	 * Returns the title displayed on the top of the dialog.
 	 */
 	public String getTitle() {
-		return "Param";
+		return "Group";
 	}
 
 	/**
 	 * Returns the description displayed below the title.
 	 */
 	public String getDescription() {
-		return "Modify Param";
+		return "Modify properties of the Group";
 	}
 
 	/**
@@ -72,17 +70,11 @@ public class ParamEditForm implements IScaveObjectEditForm {
 	 */
 	public void populatePanel(Composite panel) {
 		panel.setLayout(new GridLayout(2, false));
-		
 		Label label = new Label(panel, SWT.NONE);
-		label.setText("Name:");
+		label.setLayoutData(new GridData());
+		label.setText("Group name:");
 		nameText = new Text(panel, SWT.BORDER);
 		nameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-
-		label = new Label(panel, SWT.NONE);
-		label.setText("Value:");
-		valueText = new Text(panel, SWT.BORDER);
-		valueText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		
 	}
 
 	/**
@@ -90,10 +82,8 @@ public class ParamEditForm implements IScaveObjectEditForm {
 	 */
 	public Object getValue(EStructuralFeature feature) {
 		switch (feature.getFeatureID()) {
-		case ScaveModelPackage.PARAM__NAME:
+		case ScaveModelPackage.GROUP__NAME:
 			return nameText.getText();
-		case ScaveModelPackage.PARAM__VALUE:
-			return valueText.getText();
 		}
 		return null;
 	}
@@ -104,11 +94,8 @@ public class ParamEditForm implements IScaveObjectEditForm {
 	 */
 	public void setValue(EStructuralFeature feature, Object value) {
 		switch (feature.getFeatureID()) {
-		case ScaveModelPackage.PARAM__NAME:
+		case ScaveModelPackage.GROUP__NAME:
 			nameText.setText((String)value);
-			break;
-		case ScaveModelPackage.PARAM__VALUE:
-			valueText.setText((String)value);
 			break;
 		}
 	}

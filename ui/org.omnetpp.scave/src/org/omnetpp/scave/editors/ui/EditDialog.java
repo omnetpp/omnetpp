@@ -13,6 +13,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.editors.forms.IScaveObjectEditForm;
+import org.omnetpp.scave.editors.forms.ScaveObjectEditFormFactory;
 import org.omnetpp.scave.engine.ResultFileManager;
 
 /**

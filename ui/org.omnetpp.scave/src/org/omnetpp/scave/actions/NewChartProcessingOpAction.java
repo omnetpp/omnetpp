@@ -58,12 +58,6 @@ public class NewChartProcessingOpAction extends AbstractScaveAction {
 		if (doit) {
 			// just add "element" into "parent", before "chart"
 			insertProcessingOp(chart, element, editor);
-
-			// recalculate chart if it's the active page.
-			//XXX actually: should be done if it's open, on whichever page; it would be even better 
-			// if this updating happened automatically, in response to model changes
-			if (editor.getActiveEditorPage() instanceof ChartPage)
-				((ChartPage)editor.getActiveEditorPage()).getChartUpdater().updateDataset(); 
 		}
 	}
 

@@ -1,4 +1,4 @@
-package org.omnetpp.scave.editors.ui;
+package org.omnetpp.scave.editors.forms;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -8,47 +8,47 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.omnetpp.scave.model.Group;
+import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
 /**
  * Edit form of input files.
  *
- * @author andras
+ * @author tomi
  */
-public class GroupEditForm implements IScaveObjectEditForm {
+public class InputFileEditForm implements IScaveObjectEditForm {
 	
 	/**
 	 * Features edited on this panel.
 	 */
 	private static final EStructuralFeature[] features = new EStructuralFeature[] {
-		ScaveModelPackage.eINSTANCE.getGroup_Name(),
+		ScaveModelPackage.eINSTANCE.getInputFile_Name(),
 	};
 	
 	/**
-	 * The edited group.
+	 * The edited input file.
 	 */
-	//private Group group;
+	//private InputFile inputFile;
 	
 	// edit controls of the features
 	private Text nameText;
 
-	public GroupEditForm(Group group, EObject parent) {
-		//this.group = group;
+	public InputFileEditForm(InputFile inputFile, EObject parent) {
+		//this.inputFile = inputFile;
 	}
 	
 	/**
 	 * Returns the title displayed on the top of the dialog.
 	 */
 	public String getTitle() {
-		return "Group";
+		return "Input file";
 	}
 
 	/**
 	 * Returns the description displayed below the title.
 	 */
 	public String getDescription() {
-		return "Modify properties of the Group";
+		return "Modify input file properties.";
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class GroupEditForm implements IScaveObjectEditForm {
 		panel.setLayout(new GridLayout(2, false));
 		Label label = new Label(panel, SWT.NONE);
 		label.setLayoutData(new GridData());
-		label.setText("Group name:");
+		label.setText("File name:");
 		nameText = new Text(panel, SWT.BORDER);
 		nameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 	}
@@ -82,7 +82,7 @@ public class GroupEditForm implements IScaveObjectEditForm {
 	 */
 	public Object getValue(EStructuralFeature feature) {
 		switch (feature.getFeatureID()) {
-		case ScaveModelPackage.GROUP__NAME:
+		case ScaveModelPackage.INPUT_FILE__NAME:
 			return nameText.getText();
 		}
 		return null;
@@ -94,7 +94,7 @@ public class GroupEditForm implements IScaveObjectEditForm {
 	 */
 	public void setValue(EStructuralFeature feature, Object value) {
 		switch (feature.getFeatureID()) {
-		case ScaveModelPackage.GROUP__NAME:
+		case ScaveModelPackage.INPUT_FILE__NAME:
 			nameText.setText((String)value);
 			break;
 		}

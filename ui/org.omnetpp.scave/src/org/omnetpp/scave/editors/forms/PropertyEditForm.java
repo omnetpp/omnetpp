@@ -1,4 +1,4 @@
-package org.omnetpp.scave.editors.ui;
+package org.omnetpp.scave.editors.forms;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -8,47 +8,49 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.omnetpp.scave.model.InputFile;
+import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
 /**
- * Edit form of input files.
+ * Edit form of Property objects.
  *
- * @author tomi
+ * @author andras
  */
-public class InputFileEditForm implements IScaveObjectEditForm {
+public class PropertyEditForm implements IScaveObjectEditForm {
 	
 	/**
 	 * Features edited on this panel.
 	 */
 	private static final EStructuralFeature[] features = new EStructuralFeature[] {
-		ScaveModelPackage.eINSTANCE.getInputFile_Name(),
+		ScaveModelPackage.eINSTANCE.getProperty_Name(),
+		ScaveModelPackage.eINSTANCE.getProperty_Value(),
 	};
 	
 	/**
-	 * The edited input file.
+	 * The edited Property.
 	 */
-	//private InputFile inputFile;
+	//private Property property;
 	
 	// edit controls of the features
 	private Text nameText;
+	private Text valueText;
 
-	public InputFileEditForm(InputFile inputFile, EObject parent) {
-		//this.inputFile = inputFile;
+	public PropertyEditForm(Property property, EObject parent) {
+		//this.property = property;
 	}
 	
 	/**
 	 * Returns the title displayed on the top of the dialog.
 	 */
 	public String getTitle() {
-		return "Input file";
+		return "Property";
 	}
 
 	/**
 	 * Returns the description displayed below the title.
 	 */
 	public String getDescription() {
-		return "Modify input file properties.";
+		return "Modify Property";
 	}
 
 	/**
@@ -70,11 +72,17 @@ public class InputFileEditForm implements IScaveObjectEditForm {
 	 */
 	public void populatePanel(Composite panel) {
 		panel.setLayout(new GridLayout(2, false));
+		
 		Label label = new Label(panel, SWT.NONE);
-		label.setLayoutData(new GridData());
-		label.setText("File name:");
+		label.setText("Name:");
 		nameText = new Text(panel, SWT.BORDER);
 		nameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+		label = new Label(panel, SWT.NONE);
+		label.setText("Value:");
+		valueText = new Text(panel, SWT.BORDER);
+		valueText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		
 	}
 
 	/**
@@ -82,8 +90,10 @@ public class InputFileEditForm implements IScaveObjectEditForm {
 	 */
 	public Object getValue(EStructuralFeature feature) {
 		switch (feature.getFeatureID()) {
-		case ScaveModelPackage.INPUT_FILE__NAME:
+		case ScaveModelPackage.PROPERTY__NAME:
 			return nameText.getText();
+		case ScaveModelPackage.PROPERTY__VALUE:
+			return valueText.getText();
 		}
 		return null;
 	}
@@ -94,8 +104,11 @@ public class InputFileEditForm implements IScaveObjectEditForm {
 	 */
 	public void setValue(EStructuralFeature feature, Object value) {
 		switch (feature.getFeatureID()) {
-		case ScaveModelPackage.INPUT_FILE__NAME:
+		case ScaveModelPackage.PROPERTY__NAME:
 			nameText.setText((String)value);
+			break;
+		case ScaveModelPackage.PROPERTY__VALUE:
+			valueText.setText((String)value);
 			break;
 		}
 	}

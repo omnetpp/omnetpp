@@ -19,8 +19,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.ui.IScaveObjectEditForm;
-import org.omnetpp.scave.editors.ui.ScaveObjectEditFormFactory;
+import org.omnetpp.scave.editors.forms.IScaveObjectEditForm;
+import org.omnetpp.scave.editors.forms.ScaveObjectEditFormFactory;
 
 /**
  * Two-page wizard for creating new scave objects.
