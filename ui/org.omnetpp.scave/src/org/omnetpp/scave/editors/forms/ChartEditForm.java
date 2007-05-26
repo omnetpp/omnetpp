@@ -36,6 +36,7 @@ import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.properties.ColorCellEditorEx.ColorContentProposalProvider;
+import org.omnetpp.common.ui.ImageCombo;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.ChartProperties;
 import org.omnetpp.scave.charting.ChartProperties.LegendAnchor;
@@ -480,6 +481,15 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		return null;
 	}
 
+	protected <T extends Enum<T>> T getSelection(ImageCombo combo, Class<T> type) {
+		T[] values = type.getEnumConstants();
+		String selection = combo.getText();
+		for (int i = 0; i < values.length; ++i)
+			if (values[i].toString().equals(selection))
+				return values[i];
+		return null;
+	}
+	
 	protected String getSelection(Combo combo) {
 		String text = combo.getText();
 		return UNSET.equals(text) ? null : text;
@@ -524,12 +534,13 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	}
 
 	protected void setSelection(Combo combo, Enum<?> value) {
-		if (value != null)
-			combo.setText(value.name());
-		else
-			combo.setText(UNSET);
+		combo.setText(value==null ? UNSET : value.toString());
 	}
 
+	protected void setSelection(ImageCombo combo, Enum<?> value) {
+		combo.setText(value==null ? UNSET : value.toString());
+	}
+	
 	protected void setSelection(Combo combo, String value) {
 		if (value != null && value.length() > 0)
 			combo.setText(value);
