@@ -29,7 +29,7 @@ public class VectorFileUtil {
 	public static XYArray getDataOfVector(ResultFileManager resultfileManager, long id) {
 		// we'll build a data-flow network consisting of a source and a sink node, and run it. 
 		DataflowManager dataflowManager = new DataflowManager();
-		
+
 		// create a reader node for the given vector id
 		ResultFile file = resultfileManager.getVector(id).getFileRun().getFile();
 		StringMap attrs = new StringMap();
@@ -53,12 +53,10 @@ public class VectorFileUtil {
 
 	private static Node createNode(DataflowManager dataflowManager, String typeName, StringMap attrs) {
 		NodeTypeRegistry factory = NodeTypeRegistry.instance();
-		Node node = null;
-		if (factory.exists(typeName)) {
-			NodeType nodeType = factory.getNodeType(typeName);
-			node = nodeType.create(dataflowManager, attrs);
-		}
-		return node;
+		if (!factory.exists(typeName))
+			throw new IllegalArgumentException("unknown node type: " + typeName);
+		NodeType nodeType = factory.getNodeType(typeName);
+		return nodeType.create(dataflowManager, attrs);
 	}
 
 }
