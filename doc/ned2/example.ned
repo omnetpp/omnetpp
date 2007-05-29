@@ -2,10 +2,7 @@
 // File comment (copyright statement, whatever...)
 //
 
-// NEW!! withcppclass not needed: 
-//    channel X {...}  ==> always find C++ class X for it
-//    channel X extends cBasicChannel {...} ==> no C++ class
-// This is consistent with simple modules.
+// NEW!! withcppclass not needed: to be replaced with @class()
 
 //
 // NAME SCOPES:
