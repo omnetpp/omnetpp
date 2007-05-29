@@ -591,11 +591,11 @@ public class ColorFactory {
         };
 
         goodLightColors = new Color[] {
+        		ColorFactory.asColor("lightCyan"), 
         		ColorFactory.asColor("lightCoral"),
         		ColorFactory.asColor("lightBlue"),
         		ColorFactory.asColor("lightGreen"),
         		ColorFactory.asColor("lightYellow"), 
-        		ColorFactory.asColor("lightCyan"), 
         		ColorFactory.asColor("plum1"), 
         		ColorFactory.asColor("lightSalmon"), 
         		ColorFactory.asColor("lightPink"), 
