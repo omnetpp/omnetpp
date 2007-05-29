@@ -1,15 +1,22 @@
+- 070529 ====== A2 version =====
+  + added two major compnents to the build (event log viewer and sequence chart
+    viewer. It is possible to see and analyse the simulation log files)
+  + resize behavior of submodules has changed. If no shape specified for a submodule
+    (only icon) than resize attempts will change the image size attribute
+    (only 5 size is rendered from the images: verysmall, small, normal, large, verylarge)
   + select all (CTRL-A) now selects all submodules if the selection is in a compound module
     instead off all top level component
-  + no automatic layouting. the layout button should be pressed to re-layout
-    the compound module    
-  + Reworked Pin/Unpin functionality
-  + Added image export to compound module content assist and also some 
-    wizzards in OMNSET category. It is possible to generate images to
+  + no automatic layouting. the layout button should be explicitly pressed to 
+    re-layout the compound module    
+  + Reworked Pin/Unpin functionality. It allows both pinning and unpinning of the
+    selected submodules.
+  + Added image export to compound module contex menu and also some 
+    wizards in OMNEST category. It is possible to generate images for
     all/selected nedfiles in the workspace.
-  + revised propery cell editors, added content assist to color/icon ediotrs
+  + revised propery cell editors, added content assist to color/icon editors
   + ned docs/comments for modules in the graphical editor as a tooltip
   + new icon chooser dialog
-  + added icon chooser dialog in context menu
+  + added icon chooser dialog in the graphical editor context menu
   x global undo/redo is working if the Property View is the acive view
   x property sheets do not scroll randomly when a group opened/closed
 - 070422 ====== A1 version =====
