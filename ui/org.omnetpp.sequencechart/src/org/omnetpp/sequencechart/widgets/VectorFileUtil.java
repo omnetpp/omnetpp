@@ -19,11 +19,12 @@ import org.omnetpp.scave.engine.XYArray;
  * @author Andras
  */
 public class VectorFileUtil {
+	// all functions are static
 	private VectorFileUtil() {
 	}
 
 	/**
-	 * Returns the data from an output vector given with its ID.
+	 * Returns data from an output vector given with its ID.
 	 */
 	public static XYArray getDataOfVector(ResultFileManager resultfileManager, long id) {
 		// we'll build a data-flow network consisting of a source and a sink node, and run it. 
@@ -43,7 +44,7 @@ public class VectorFileUtil {
 		// run the data-flow network
 		long startTime = System.currentTimeMillis();
 		dataflowManager.execute();
-		System.out.println("dataflow network: "+(System.currentTimeMillis()-startTime)+" ms");
+		System.out.println("data-flow network: "+(System.currentTimeMillis()-startTime)+" ms");
 
 		// and return the array
 		XYArray result = arrayBuilderNode.getArray();

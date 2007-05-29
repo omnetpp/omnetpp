@@ -46,9 +46,9 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.XYArray;
-import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.sequencechart.SequenceChartPlugin;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
+import org.omnetpp.sequencechart.widgets.VectorFileUtil;
 import org.omnetpp.sequencechart.widgets.SequenceChart.AxisSpacingMode;
 import org.omnetpp.sequencechart.widgets.axisrenderer.AxisVectorBarRenderer;
 
@@ -729,7 +729,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 					if (enumType == null)
 						MessageDialog.openError(null, "Error", "The selected vector is not of type enum");
 					else {							
-						XYArray data = DatasetManager.getDataOfVector(resultFileManager, id);
+						XYArray data = VectorFileUtil.getDataOfVector(resultFileManager, id);
 						String[] names = enumType.names().toArray();
 						sequenceChart.setAxisRenderer(axisModule, new AxisVectorBarRenderer(sequenceChart, names, data));
 					}
