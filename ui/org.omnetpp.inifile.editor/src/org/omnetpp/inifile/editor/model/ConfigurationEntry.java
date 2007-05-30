@@ -18,8 +18,9 @@ public class ConfigurationEntry {
     };
 
     private String name;         // e.g. "sim-time-limit"
+    private boolean isPerObject; // if true, keys must be in <object-full-path>.config-name format
     private boolean isGlobal;    // if true, it cannot occur in [Config X] sections
-    private DataType dataType;   // entry datatype
+    private DataType dataType;   // entry's data type
     private String unit;         // if numeric, its unit ("s") or empty string
     private Object defaultValue; // the default value
     private String description;  // help text
@@ -27,8 +28,8 @@ public class ConfigurationEntry {
     /**
      * Constructor.
      */
-    ConfigurationEntry(String name, boolean isGlobal, DataType dataType,
-                 String unit, Object defaultValue, String description) {
+    ConfigurationEntry(String name, boolean isPerObject, boolean isGlobal,
+                 DataType dataType, String unit, Object defaultValue, String description) {
         this.name = name;
         this.isGlobal = isGlobal;
         this.dataType = dataType;
@@ -40,6 +41,10 @@ public class ConfigurationEntry {
     public String getKey() {
     	return name;
     }
+
+    public boolean isPerObject() {
+		return isPerObject;
+	}
     
     public boolean isGlobal() {
     	return isGlobal;

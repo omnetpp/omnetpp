@@ -195,6 +195,7 @@ s	 * before getting presented to the user.
 	 */
 	protected IContentProposal[] getCandidatesForPerObjectConfig() {
 		List<String> proposals = new ArrayList<String>();
+		//FIXME use the ConfigurationRegistry!!!
 		if (key.endsWith(".apply-default") || key.endsWith(".ev-output")) {
 			proposals.add("true");
 			proposals.add("false");

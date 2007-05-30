@@ -1,6 +1,7 @@
 package org.omnetpp.inifile.editor.model;
 
 import static org.omnetpp.inifile.editor.model.ConfigurationEntry.DataType.CFG_BOOL;
+import static org.omnetpp.inifile.editor.model.ConfigurationEntry.DataType.CFG_CUSTOM;
 import static org.omnetpp.inifile.editor.model.ConfigurationEntry.DataType.CFG_DOUBLE;
 import static org.omnetpp.inifile.editor.model.ConfigurationEntry.DataType.CFG_FILENAME;
 import static org.omnetpp.inifile.editor.model.ConfigurationEntry.DataType.CFG_FILENAMES;
@@ -25,38 +26,60 @@ public class ConfigurationRegistry {
 	public static final String EXTENDS; // see bottom of file
 	
 	private static HashMap<String, ConfigurationEntry> entries = new HashMap<String, ConfigurationEntry>(); 
+	private static HashMap<String, ConfigurationEntry> perObjectEntries = new HashMap<String, ConfigurationEntry>(); 
 	
 	private static ConfigurationEntry addGlobalEntry(String name, DataType type, Object defaultValue, String description) {
-    	ConfigurationEntry e = new ConfigurationEntry(name, true, type, null, defaultValue, description);
+    	ConfigurationEntry e = new ConfigurationEntry(name, false, true, type, null, defaultValue, description);
     	entries.put(name, e);
     	return e;
     }
 
 	private static ConfigurationEntry addGlobalEntryU(String name, String unit, Object defaultValue, String description) {
-    	ConfigurationEntry e = new ConfigurationEntry(name, false, CFG_DOUBLE, unit, defaultValue, description);
+    	ConfigurationEntry e = new ConfigurationEntry(name, false, true, CFG_DOUBLE, unit, defaultValue, description);
     	entries.put(name, e);
     	return e;
     }
     
 	private static ConfigurationEntry addPerRunEntry(String name, DataType type, Object defaultValue, String description) {
-    	ConfigurationEntry e = new ConfigurationEntry(name, false, type, null, defaultValue, description);
+    	ConfigurationEntry e = new ConfigurationEntry(name, false, false, type, null, defaultValue, description);
     	entries.put(name, e);
     	return e;
     }
 
 	private static ConfigurationEntry addPerRunEntryU(String name, String unit, Object defaultValue, String description) {
-    	ConfigurationEntry e = new ConfigurationEntry(name, false, CFG_DOUBLE, unit, defaultValue, description);
+    	ConfigurationEntry e = new ConfigurationEntry(name, false, false, CFG_DOUBLE, unit, defaultValue, description);
     	entries.put(name, e);
     	return e;
     }
 
+	private static ConfigurationEntry addPerObjectEntry(String name, DataType type, Object defaultValue, String description) {
+    	ConfigurationEntry e = new ConfigurationEntry(name, true, false, type, null, defaultValue, description);
+    	perObjectEntries.put(name, e);
+    	return e;
+    }
+
+	private static ConfigurationEntry addPerObjectEntryU(String name, String unit, Object defaultValue, String description) {
+    	ConfigurationEntry e = new ConfigurationEntry(name, true, false, CFG_DOUBLE, unit, defaultValue, description);
+    	perObjectEntries.put(name, e);
+    	return e;
+    }
+	
+	public static ConfigurationEntry getEntry(String name) {
+		return entries.get(name);
+	}
+
+	public static ConfigurationEntry getPerObjectEntry(String name) {
+		return perObjectEntries.get(name);
+	}
+	
 	public static ConfigurationEntry[] getEntries() {
 		return (ConfigurationEntry[]) entries.values().toArray(new ConfigurationEntry[entries.size()]);
 	}
 
-	public static ConfigurationEntry getEntry(String name) {
-		return entries.get(name);
+	public static ConfigurationEntry[] getPerObjectEntries() {
+		return (ConfigurationEntry[]) perObjectEntries.values().toArray(new ConfigurationEntry[perObjectEntries.size()]);
 	}
+
 	
 	private static final Object CMDENV_EXTRASTACK_KB = null;
     private static final Object DEFAULT_PRECISION = null;
@@ -65,6 +88,7 @@ public class ConfigurationRegistry {
     private static final Object TABLESIZE = null;
     private static final Object DEFAULT_MEMORY_LIMIT = null;
 
+    //FIXME if there's no default, specify null!!!
     public static final ConfigurationEntry CFGID_CMDENV_RUNS_TO_EXECUTE = addGlobalEntry(
     		"cmdenv-runs-to-execute", CFG_STRING, "",
     		"Specifies which simulation runs should be executed. It accepts a comma-separated list " +
@@ -81,7 +105,7 @@ public class ConfigurationRegistry {
     		"This is especially useful with parallel simulation. See `fname-append-host' option as well.");
     public static final ConfigurationEntry CFGID_LOAD_LIBS = addGlobalEntry( 
     		"load-libs", CFG_FILENAMES, "",
-    		"Specifies dyamic libraries to be loaded on startup. The libraries should be given " +
+    		"Specifies dynamic libraries to be loaded on startup. The libraries should be given " +
     		"without the `.dll' or `.so' suffix -- that will be automatically appended.");
     public static final ConfigurationEntry CFGID_CONFIGURATION_CLASS = addGlobalEntry( 
     		"configuration-class", CFG_STRING, "",
@@ -115,7 +139,7 @@ public class ConfigurationRegistry {
     		"Currently ignored. Accepted for backward compatibility.");
     public static final ConfigurationEntry CFGID_PRELOAD_NED_FILES = addGlobalEntry( 
     		"preload-ned-files", CFG_FILENAMES, "", 
-    		"NED files to be loaded dynamically. Wildcards, @ and @@ listfiles accepted.");
+    		"NED files to be loaded dynamically. Wildcards, @ and @@ list files accepted.");
     public static final ConfigurationEntry CFGID_TOTAL_STACK_KB = addGlobalEntry( 
     		"total-stack-kb", CFG_INT, TOTAL_STACK_KB,
     		"Specifies the maximum memory for activity() simple module stacks in kilobytes. " +
@@ -340,7 +364,7 @@ public class ConfigurationRegistry {
     		"Specifies which section parameter and configuration lookups will fall back to. "+
     		"[Config X] is represented as extends=X. If missing, lookups fall back to the [General] section.");
     public static final ConfigurationEntry CFGID_NETWORK = addPerRunEntry(
-    		"network", CFG_STRING, "default",
+    		"network", CFG_STRING, "",
     		"The name of the network to be simulated.");
     public static final ConfigurationEntry CFGID_WARNINGS = addPerRunEntry(
     		"warnings", CFG_BOOL, true,
@@ -357,8 +381,33 @@ public class ConfigurationRegistry {
     		"fingerprint is calculated during simulation, and compared against the expected one.");
     public static final ConfigurationEntry CFGID_EVENTLOG_FILE = addPerRunEntry(
     		"eventlog-file", CFG_FILENAME, "",
-    		"Name of the event log file to generate. If emtpy, no file is generated.");
+    		"Name of the event log file to generate. If empty, no file is generated.");
 
+    public static final ConfigurationEntry CFGID_ENABLE_RECORDING = addPerObjectEntry(
+    		"enable-recording", CFG_BOOL, true, 
+    		"FIXME TODO");
+    public static final ConfigurationEntry CFGID_RECORDING_INTERVAL = addPerObjectEntry(
+    		"recording-interval", CFG_CUSTOM, null, 
+    		"FIXME TODO");
+    public static final ConfigurationEntry CFGID_PARTITION_ID = addPerObjectEntry(
+    		"partition-id", CFG_INT, null, 
+    		"FIXME TODO");
+    public static final ConfigurationEntry CFGID_APPLY_DEFAULT = addPerObjectEntry(
+    		"apply-default", CFG_BOOL, false, 
+    		"FIXME TODO");
+    public static final ConfigurationEntry CFGID_MAX_BUFFERED_SAMPLES = addPerObjectEntry(
+     		"max-buffered-samples", CFG_INT, null, //XXX no default ??? 
+    		"FIXME TODO");
+    public static final ConfigurationEntry CFGID_RECORD_EVENT_NUMBERS = addPerObjectEntry(
+     		"record-event-numbers", CFG_BOOL, true, 
+    		"FIXME TODO");
+    public static final ConfigurationEntry CFGID_AKAROA_CONTROLLED = addPerObjectEntry(
+     		"akaroa-controlled", CFG_BOOL, false, 
+    		"FIXME TODO");
+    public static final ConfigurationEntry CFGID_EV_OUTPUT = addPerObjectEntry(
+     		"ev-output", CFG_BOOL, true, //XXX obsolete? or should apply to the log file? 
+    		"FIXME TODO");
+    
     static {
     	 EXTENDS = CFGID_EXTENDS.getKey();
     }

@@ -202,6 +202,7 @@ public class DataflowNetworkBuilder {
 
 	private Node createNode(String typeName, StringMap attrs) {
 		Node node = null;
+		//FIXME Tomi FIXME FIXME FIXME: if there's no such node type, it should be IllegalArgumentException, not hiding the error under the carpet!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		if (factory.exists(typeName)) {
 			NodeType nodeType = factory.getNodeType(typeName);
 			node = nodeType.create(dataflowManager, attrs);

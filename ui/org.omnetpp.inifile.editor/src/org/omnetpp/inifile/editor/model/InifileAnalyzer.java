@@ -1,6 +1,6 @@
 package org.omnetpp.inifile.editor.model;
 
-import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_EXTENDS;
+import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.*;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigurationRegistry.GENERAL;
@@ -392,7 +392,32 @@ public class InifileAnalyzer {
 	}
 
 	protected void validatePerObjectConfig(String section, String key, INEDTypeResolver ned) {
-		//TODO look up in ConfigurationRegistry, etc.
+		Assert.isTrue(key.lastIndexOf('.') > 0);
+		String configName = key.substring(key.lastIndexOf('.')+1);
+		ConfigurationEntry e = ConfigurationRegistry.getPerObjectEntry(configName);
+		if (e == null) {
+			addError(section, key, "Unknown per-object configuration: "+configName);
+			return;
+		}
+		else if (e.isGlobal() && !section.equals(GENERAL)) {
+			addError(section, key, "Per-object configuration \""+configName+"\" can only be specified globally, in the [General] section");
+		}
+		
+		// check value: if it is the right type
+		String value = doc.getValue(section, key);
+		String errorMessage = validateConfigValueByType(value, e);
+		if (errorMessage != null) {
+			addError(section, key, errorMessage);
+			return;
+		}
+
+		if (e.getDataType()==ConfigurationEntry.DataType.CFG_STRING && value.startsWith("\""))
+			value =	Common.parseQuotedString(value); // cannot throw exception: value got validated above
+
+		// check validity of some settings, like record-interval=, etc
+		if (e==CFGID_RECORDING_INTERVAL) {
+			//XXX validate syntax
+		}
 	}
 
 	/**

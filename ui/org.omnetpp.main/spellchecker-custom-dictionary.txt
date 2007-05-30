@@ -152,3 +152,12 @@ gtk
 deselects
 deselected
 alt
+thingy
+printf
+destructors
+parsim
+dll
+envir
+subclassed
+picosecond
+akaroa
