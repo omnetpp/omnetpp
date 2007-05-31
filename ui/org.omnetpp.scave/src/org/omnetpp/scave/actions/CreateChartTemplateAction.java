@@ -39,7 +39,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 public class CreateChartTemplateAction extends AbstractScaveAction {
 
 	public CreateChartTemplateAction() {
-		setText("Create Template");
+		setText("Create Template...");
 		setDescription("Create a chart template from a temporary chart");
 		setImageDescriptor(ImageFactory.getDescriptor(TOOLBAR_IMAGE_TEMPLATE));
 	}
@@ -51,9 +51,9 @@ public class CreateChartTemplateAction extends AbstractScaveAction {
 			Chart chart = ((ChartPage)page).getChart();
 			if (ScaveModelUtil.isTemporaryChart(chart, scaveEditor)) {
 				Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
-				
+
 				CreateChartTemplateDialog dialog = new CreateChartTemplateDialog(scaveEditor.getSite().getShell());
-				
+
 				if (dialog.open() == Window.OK) {
 					EditingDomain domain = scaveEditor.getEditingDomain();
 					ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
@@ -63,7 +63,7 @@ public class CreateChartTemplateAction extends AbstractScaveAction {
 					ResultItem[] items = ScaveModelUtil.getResultItems(idlist, manager);
 					Collection<Add> origAdds = getOriginalAdds(dataset);
 					Collection<Add> adds = ScaveModelUtil.createAdds(items, dialog.getRunidFields());
-					
+
 					CompoundCommand command = new CompoundCommand();
 					command.append(SetCommand.create( // set dataset name
 										domain,
@@ -89,7 +89,7 @@ public class CreateChartTemplateAction extends AbstractScaveAction {
 										ScaveModelPackage.eINSTANCE.getDatasets_Datasets(),
 										dataset));
 					scaveEditor.executeCommand(command);
-					
+
 					scaveEditor.showDatasetsPage();
 				}
 			}
@@ -102,7 +102,7 @@ public class CreateChartTemplateAction extends AbstractScaveAction {
 		return page != null && page instanceof ChartPage &&
 				ScaveModelUtil.isTemporaryChart(((ChartPage)page).getChart(), editor);
 	}
-	
+
 	private Collection<Add> getOriginalAdds(Dataset dataset) {
 		Collection<Add> adds = new ArrayList<Add>();
 		for (Object obj : dataset.getItems()) {
@@ -117,7 +117,7 @@ public class CreateChartTemplateAction extends AbstractScaveAction {
 		}
 		return adds;
 	}
-	
+
 	private ResultType resultTypeForChart(Chart chart) {
 		if (chart instanceof LineChart)
 			return ResultType.VECTOR_LITERAL;
