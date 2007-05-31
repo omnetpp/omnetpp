@@ -22,6 +22,9 @@ import org.omnetpp.scave.model2.FilterUtil;
  *
  * @author tomi
  */
+//FIXME checkboxes have to be replaced by a CheckboxTable that includes the "Name" and "Module Name" fields too
+// Potential hint text: "Filter fields" / "Choose fields that identify the data; these fields will be used as
+// data filter criteria when the chart is next opened." 
 public class CreateChartTemplateDialog extends TitleAreaDialog {
 	
 	private static String RUNID_FIELD_KEY = "org.omnetpp.scave.editors.ui.CreateChartTemplateDialog.runidfield";
@@ -58,11 +61,12 @@ public class CreateChartTemplateDialog extends TitleAreaDialog {
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		this.setTitle("New chart template");
+		this.setTitle("New Chart Template");
 		this.setMessage("Add a new dataset containing the chart to the analysis file.");
 		Composite panel = new Composite(parent, SWT.NONE);
         panel.setLayoutData(new GridData(GridData.FILL_BOTH));
         panel.setLayout(new GridLayout(2, false));
+        
         Label label = new Label(panel, SWT.NONE);
         label.setText("Dataset name:");
 		datasetnameText = new Text(panel, SWT.BORDER);
@@ -75,11 +79,19 @@ public class CreateChartTemplateDialog extends TitleAreaDialog {
 		Group group = new Group(panel, SWT.NONE);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		group.setLayout(new GridLayout(3, false));
-		group.setText("Runs identified by");
-		
+		group.setText("Filter Runs By");
+
+		Label label2 = new Label(group, SWT.NONE);
+		label2.setText(
+				"In the new dataset, data will be selected from the inputs by name " +
+				"and module name; \nhere you may choose to include additional filter fields " +
+				"to identify the run.");
+		label2.setLayoutData(new GridData());
+		((GridData)label2.getLayoutData()).horizontalSpan = 3;
+
 		int i = 0;
 		runidButtons = new Button[5];
-		Button runnameCb     = runidButtons[i++] = createCheckbox(group, "run name", FilterUtil.FIELD_RUNNAME);
+		Button runnameCb = runidButtons[i++] = createCheckbox(group, "run name", FilterUtil.FIELD_RUNNAME);
 		runidButtons[i++] = createCheckbox(group, "file name", FilterUtil.FIELD_FILENAME);
 		label = new Label(group, SWT.NONE); // placeholder
 		Button experimentCb  = runidButtons[i++] = createCheckbox(group, "experiment", FilterUtil.FIELD_EXPERIMENT);
