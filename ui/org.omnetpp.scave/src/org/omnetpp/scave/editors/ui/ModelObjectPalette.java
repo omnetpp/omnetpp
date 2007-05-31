@@ -117,7 +117,7 @@ public class ModelObjectPalette {
 
 			public void dragSetData(DragSourceEvent event) {
 				if (LocalTransfer.getInstance().isSupportedType(event.dataType))
-					event.data = new StructuredSelection(elementPrototype);
+					event.data = new StructuredSelection(EcoreUtil.copy(elementPrototype));
 			}
 		});
 
