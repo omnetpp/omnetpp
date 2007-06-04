@@ -3,61 +3,12 @@ package org.omnetpp.ned.core;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.Assert;
+
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementUtil;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
-import org.omnetpp.ned.model.pojo.AbstractNEDValidator;
-import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
-import org.omnetpp.ned.model.pojo.ChannelNode;
-import org.omnetpp.ned.model.pojo.ChannelSpecNode;
-import org.omnetpp.ned.model.pojo.ClassDeclNode;
-import org.omnetpp.ned.model.pojo.ClassNode;
-import org.omnetpp.ned.model.pojo.CommentNode;
-import org.omnetpp.ned.model.pojo.CompoundModuleNode;
-import org.omnetpp.ned.model.pojo.ConditionNode;
-import org.omnetpp.ned.model.pojo.ConnectionGroupNode;
-import org.omnetpp.ned.model.pojo.ConnectionNode;
-import org.omnetpp.ned.model.pojo.ConnectionsNode;
-import org.omnetpp.ned.model.pojo.CplusplusNode;
-import org.omnetpp.ned.model.pojo.EnumDeclNode;
-import org.omnetpp.ned.model.pojo.EnumFieldNode;
-import org.omnetpp.ned.model.pojo.EnumFieldsNode;
-import org.omnetpp.ned.model.pojo.EnumNode;
-import org.omnetpp.ned.model.pojo.ExpressionNode;
-import org.omnetpp.ned.model.pojo.ExtendsNode;
-import org.omnetpp.ned.model.pojo.FieldNode;
-import org.omnetpp.ned.model.pojo.FieldsNode;
-import org.omnetpp.ned.model.pojo.FilesNode;
-import org.omnetpp.ned.model.pojo.FunctionNode;
-import org.omnetpp.ned.model.pojo.GateNode;
-import org.omnetpp.ned.model.pojo.GatesNode;
-import org.omnetpp.ned.model.pojo.IdentNode;
-import org.omnetpp.ned.model.pojo.ImportNode;
-import org.omnetpp.ned.model.pojo.InterfaceNameNode;
-import org.omnetpp.ned.model.pojo.LiteralNode;
-import org.omnetpp.ned.model.pojo.LoopNode;
-import org.omnetpp.ned.model.pojo.MessageDeclNode;
-import org.omnetpp.ned.model.pojo.MessageNode;
-import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
-import org.omnetpp.ned.model.pojo.MsgFileNode;
-import org.omnetpp.ned.model.pojo.MsgpropertyNode;
-import org.omnetpp.ned.model.pojo.NedFileNode;
-import org.omnetpp.ned.model.pojo.OperatorNode;
-import org.omnetpp.ned.model.pojo.ParamNode;
-import org.omnetpp.ned.model.pojo.ParametersNode;
-import org.omnetpp.ned.model.pojo.PatternNode;
-import org.omnetpp.ned.model.pojo.PropertiesNode;
-import org.omnetpp.ned.model.pojo.PropertyDeclNode;
-import org.omnetpp.ned.model.pojo.PropertyKeyNode;
-import org.omnetpp.ned.model.pojo.PropertyNode;
-import org.omnetpp.ned.model.pojo.SimpleModuleNode;
-import org.omnetpp.ned.model.pojo.StructDeclNode;
-import org.omnetpp.ned.model.pojo.StructNode;
-import org.omnetpp.ned.model.pojo.SubmoduleNode;
-import org.omnetpp.ned.model.pojo.SubmodulesNode;
-import org.omnetpp.ned.model.pojo.TypesNode;
-import org.omnetpp.ned.model.pojo.UnknownNode;
+import org.omnetpp.ned.model.pojo.*;
 
 /**
  * Validates consistency of NED files.
@@ -105,28 +56,34 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 			validate(child);
 	}
 
-	protected void validateElement(FilesNode node) {
+	@Override
+    protected void validateElement(FilesNode node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(NedFileNode node) {
+	@Override
+    protected void validateElement(NedFileNode node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(CommentNode node) {
+	@Override
+    protected void validateElement(CommentNode node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(ImportNode node) {
+	@Override
+    protected void validateElement(ImportNode node) {
 		//TODO check if file exists?
 		validateChildren(node);
 	}
 
-	protected void validateElement(PropertyDeclNode node) {
+	@Override
+    protected void validateElement(PropertyDeclNode node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(ExtendsNode node) {
+	@Override
+    protected void validateElement(ExtendsNode node) {
 		Assert.isTrue(componentNode!=null);
 
 		// referenced component must exist and must be the same type as this one
@@ -156,29 +113,35 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		validateChildren(node);
 	}
 
-	protected void validateElement(InterfaceNameNode node) {
+	@Override
+    protected void validateElement(InterfaceNameNode node) {
 		// nothing to do here: compliance to "like" interfaces will be checked
 		// after we finished validating the component
 		validateChildren(node);
 	}
 
-	protected void validateElement(SimpleModuleNode node) {
+	@Override
+    protected void validateElement(SimpleModuleNode node) {
 		doValidateComponent(node);
 	}
 
-	protected void validateElement(ModuleInterfaceNode node) {
+	@Override
+    protected void validateElement(ModuleInterfaceNode node) {
 		doValidateComponent(node);
 	}
 
-	protected void validateElement(CompoundModuleNode node) {
+	@Override
+    protected void validateElement(CompoundModuleNode node) {
 		doValidateComponent(node);
 	}
 
-	protected void validateElement(ChannelInterfaceNode node) {
+	@Override
+    protected void validateElement(ChannelInterfaceNode node) {
 		doValidateComponent(node);
 	}
 
-	protected void validateElement(ChannelNode node) {
+	@Override
+    protected void validateElement(ChannelNode node) {
 		//XXX check: exactly one of "extends" and "withcppclass" must be present!!!
 		doValidateComponent(node);
 	}
@@ -200,13 +163,15 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		innerTypes.clear();
 	}
 
-	protected void validateElement(ParametersNode node) {
+	@Override
+    protected void validateElement(ParametersNode node) {
 		validateChildren(node);
 	}
 
     // FIXME inner types should be checked if they are already defined
     // global types are overridden by the local inner type definition
-	protected void validateElement(ParamNode node) {
+	@Override
+    protected void validateElement(ParamNode node) {
 		// structural, not checked by the DTD
 
 		// parameter definitions
@@ -238,6 +203,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 				errors.add(node, "cannot assign parameters of a submodule of unknown type");
 				return;
 			}
+			// FIXME check if it is a param. We should cast only after this check
 			decl = (ParamNode) submoduleType.getMembers().get(parname);
 			if (decl==null || decl.getTagCode()!=NED_PARAM) {
 				errors.add(node, "'"+parname+"': type '"+submoduleType.getName()+"' has no such parameter");
@@ -270,23 +236,28 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		validateChildren(node);
 	}
 
-	protected void validateElement(PatternNode node) {
+	@Override
+    protected void validateElement(PatternNode node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(PropertyNode node) {
+	@Override
+    protected void validateElement(PropertyNode node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(PropertyKeyNode node) {
+	@Override
+    protected void validateElement(PropertyKeyNode node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(GatesNode node) {
+	@Override
+    protected void validateElement(GatesNode node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(GateNode node) {
+	@Override
+    protected void validateElement(GateNode node) {
 		// gate definitions
 		String gatename = node.getName();
 		if (node.getType()!=NED_GATETYPE_NONE) {
@@ -328,7 +299,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		}
 
 		// check vector/non vector stuff
-        if (decl.getIsVector() && (!node.getIsVector())) {
+        if (decl.getIsVector() && !node.getIsVector()) {
 			errors.add(node, "missing []: '"+gatename+"' was declared as a vector gate at "+decl.getSourceLocation());
 			return;
         }
@@ -339,7 +310,8 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		validateChildren(node);
 	}
 
-	protected void validateElement(TypesNode node) {
+	@Override
+    protected void validateElement(TypesNode node) {
 		for (INEDElement child : node) {
 			NEDValidator validator = new NEDValidator(resolver, errors);
 			switch (child.getTagCode()) {
@@ -361,11 +333,13 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		}
 	}
 
-	protected void validateElement(SubmodulesNode node) {
+	@Override
+    protected void validateElement(SubmodulesNode node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(SubmoduleNode node) {
+	@Override
+    protected void validateElement(SubmoduleNode node) {
 		// find submodule type
 		String name = node.getName();
 		String typeName = node.getType();
@@ -419,15 +393,18 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		return resolver.getComponent(typeName);
 	}
 
-	protected void validateElement(ConnectionsNode node) {
+	@Override
+    protected void validateElement(ConnectionsNode node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(ConnectionNode node) {
+	@Override
+    protected void validateElement(ConnectionNode node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(ChannelSpecNode node) {
+	@Override
+    protected void validateElement(ChannelSpecNode node) {
 		// find channel type
 		String typeName = node.getType();
 		String likeTypeName = node.getLikeType();
@@ -473,53 +450,65 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		channelSpecNode = null;
 	}
 
-	protected void validateElement(ConnectionGroupNode node) {
+	@Override
+    protected void validateElement(ConnectionGroupNode node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(LoopNode node) {
+	@Override
+    protected void validateElement(LoopNode node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(ConditionNode node) {
+	@Override
+    protected void validateElement(ConditionNode node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(ExpressionNode node) {
+	@Override
+    protected void validateElement(ExpressionNode node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(OperatorNode node) {
+	@Override
+    protected void validateElement(OperatorNode node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(FunctionNode node) {
+	@Override
+    protected void validateElement(FunctionNode node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(IdentNode node) {
+	@Override
+    protected void validateElement(IdentNode node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(LiteralNode node) {
+	@Override
+    protected void validateElement(LiteralNode node) {
 		validateChildren(node);
 	}
 
 	/*------MSG----------------------------------------------------*/
 
-	protected void validateElement(MsgFileNode node) {
+	@Override
+    protected void validateElement(MsgFileNode node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(CplusplusNode node) {
+	@Override
+    protected void validateElement(CplusplusNode node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(StructDeclNode node) {
+	@Override
+    protected void validateElement(StructDeclNode node) {
 		validateChildren(node);
 	}
 
-	protected void validateElement(ClassDeclNode node) {
+	@Override
+    protected void validateElement(ClassDeclNode node) {
 		validateChildren(node);
 	}
 
