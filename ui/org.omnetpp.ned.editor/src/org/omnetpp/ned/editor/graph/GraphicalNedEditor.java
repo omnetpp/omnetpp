@@ -70,8 +70,9 @@ import org.omnetpp.ned.editor.graph.actions.ChooseIconAction;
 import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.graph.actions.ExportImageAction;
 import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
-import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
 import org.omnetpp.ned.editor.graph.actions.GNEDSelectAllAction;
+import org.omnetpp.ned.editor.graph.actions.ParametersDialogAction;
+import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
 import org.omnetpp.ned.editor.graph.actions.TogglePinAction;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
@@ -381,6 +382,10 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         getSelectionActions().add(action.getId());
 
         action = new ChooseIconAction(this);
+        registry.registerAction(action);
+        getSelectionActions().add(action.getId());
+
+        action = new ParametersDialogAction(this);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
 

@@ -12,7 +12,7 @@ import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.pojo.ConnectionsNode;
 
 /**
- * Deletes an object from the model and as a sepcial case also removes all
+ * Deletes an object from the model and as a special case also removes all
  * associated connections if the object was a SubmoduleNode
  * @author rhornig
  */
@@ -33,8 +33,8 @@ public class DeleteCommand extends Command {
         public INEDElement nextSibling;
     }
 
-    private ElementUndoItem elementUndoItem = new ElementUndoItem();
-    private List<ConnectionUndoItem> connectionUndoItems = new ArrayList<ConnectionUndoItem>();
+    private final ElementUndoItem elementUndoItem = new ElementUndoItem();
+    private final List<ConnectionUndoItem> connectionUndoItems = new ArrayList<ConnectionUndoItem>();
 
     public DeleteCommand(INEDElement toBeDeleted) {
     	super();
@@ -45,7 +45,6 @@ public class DeleteCommand extends Command {
 
     @Override
     public void execute() {
-        // FIXME label is not used by this comand. Maybe a BUG???
     	String label = "Delete";
     	if (elementUndoItem.node instanceof IHasName)
     		label += " "+((IHasName)elementUndoItem.node).getName();

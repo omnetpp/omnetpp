@@ -44,7 +44,7 @@ public class ChooseIconAction extends org.eclipse.gef.ui.actions.SelectionAction
     @Override
     public void run() {
         Command command = getCommand();
-        
+
         if (command instanceof ChangeDisplayPropertyCommand) {
             ChangeDisplayPropertyCommand cdpCommand = (ChangeDisplayPropertyCommand)command;
             String value = openDialogBox(cdpCommand.getOldValue());
@@ -58,13 +58,13 @@ public class ChooseIconAction extends org.eclipse.gef.ui.actions.SelectionAction
     }
 
     /**
-     * @return The id of the slected image
+     * @return The id of the selected image
      */
     protected String openDialogBox(String initialValue) {
-        ImageSelectionDialog dialog = 
+        ImageSelectionDialog dialog =
             new ImageSelectionDialog(Display.getDefault().getActiveShell(), initialValue);
 
-        if (dialog.open() == Dialog.OK) 
+        if (dialog.open() == Dialog.OK)
             return dialog.getImageId();
         // cancelled
         return null;
@@ -78,9 +78,9 @@ public class ChooseIconAction extends org.eclipse.gef.ui.actions.SelectionAction
             Object obj = getSelectedObjects().get(0);
             if (obj instanceof IModelProvider) {
                 INEDElement element = ((IModelProvider)obj).getNEDModel();
-                // return command only for those elements wich support the icon property
-                if (element instanceof IHasDisplayString && 
-                        (element instanceof SubmoduleNodeEx || element instanceof SimpleModuleNodeEx 
+                // return command only for those elements which support the icon property
+                if (element instanceof IHasDisplayString &&
+                        (element instanceof SubmoduleNodeEx || element instanceof SimpleModuleNodeEx
                                 || element instanceof CompoundModuleNodeEx))
                     return new ChangeDisplayPropertyCommand((IHasDisplayString)element,IDisplayString.Prop.IMAGE);
             }
