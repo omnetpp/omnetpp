@@ -16,18 +16,7 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.TraverseEvent;
-import org.eclipse.swt.events.TraverseListener;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -36,36 +25,36 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * <i>Note: This class is a copy of <code>org.eclipse.jdt.internal.ui.dialogs.TableTextCellEditor</code>,
- * with two changes:<br/> 
+ * with two changes:<br/>
  *     (1) it does not apply the value on every keystroke, and <br/>
- *     (2) does NOTHING on focus lost event.<br/> 
+ *     (2) does NOTHING on focus lost event.<br/>
  * The original TextCellEditor commits on focus lost, which means a content proposal
  * selected with mouse double click just gets IGNORED. Moreover, such commit causes
  * disaster in InifileEditor ParametersPage "Key" column editing. JDT code used
  * fContentAssistant.hasProposalPopupFocus() to determine whether to commit or not;
- * this is not good because we use the new ContentAssistCommandAdapter not the 
+ * this is not good because we use the new ContentAssistCommandAdapter not the
  * deprecated SubjectControlContentAssistant. Not committing on focusLost at all
- * is by far the best of all workarounds tried out.    
+ * is by far the best of all workarounds tried out.
  * <p>
- * See comment marked with [Andras] in the code. 
- * 
+ * See comment marked with [Andras] in the code.
+ *
  * <p>
  * Original class comment follows.</i>
- * 
+ *
  * <p>
  * <code>TableTextCellEditor</code> is a copy of TextCellEditor, with the
  * following changes:
- * 
+ *
  * <ul>
  * <li> modify events are sent out as the text is changed, and not only after
  * editing is done <i>(this feature got disabled in this copy --Andras)</i></li>
- * 
+ *
  * <li>a content assistant is supported</li>
- * 
+ *
  * <li>the <code>Control</code> from <code>getControl(Composite)</code>
  * does not notify registered FocusListeners. This is a workaround for bug
  * 58777. </li>
- * 
+ *
  * <li>the user can go to the next/previous row with up and down keys</li>
  * </ul>
  */
@@ -73,9 +62,10 @@ public class TableTextCellEditor extends CellEditor {
 	public interface IActivationListener {
 		public void activate();
 	}
-	
+
 	private final TableViewer fTableViewer;
 	private final int fColumn;
+    private boolean commitOnFocusLost = false;
 	private final String fProperty;
 	/**
 	 * The editor's value on activation. This value is reset to the
@@ -84,7 +74,7 @@ public class TableTextCellEditor extends CellEditor {
 	String fOriginalValue;
 	SubjectControlContentAssistant fContentAssistant;
 	private IActivationListener fActivationListener;
-	
+
     protected Text text;
 
     private boolean isSelection = false;
@@ -93,47 +83,56 @@ public class TableTextCellEditor extends CellEditor {
 
     private static final int defaultStyle = SWT.SINGLE;
 	private ModifyListener fModifyListener;
-	
+
 	public TableTextCellEditor(TableViewer tableViewer, int column) {
 		super(tableViewer.getTable(), defaultStyle);
 		fTableViewer= tableViewer;
 		fColumn= column;
 		fProperty= (String) tableViewer.getColumnProperties()[column];
 	}
-	
-	public void activate() {
+
+	public TableTextCellEditor(TableViewer tableViewer, int column, boolean commitOnFocusLost) {
+	    this(tableViewer, column);
+	    this.commitOnFocusLost = commitOnFocusLost;
+	}
+
+	@Override
+    public void activate() {
 		super.activate();
 		if (fActivationListener != null)
 			fActivationListener.activate();
 		fOriginalValue= text.getText();
 	}
-	
+
 	private void fireModifyEvent(Object newValue) {
 		fTableViewer.getCellModifier().modify(
 				((IStructuredSelection) fTableViewer.getSelection()).getFirstElement(),
 				fProperty, newValue);
 	}
-	
-	protected void focusLost() {
+
+	@Override
+    protected void focusLost() {
 		if (fContentAssistant != null && fContentAssistant.hasProposalPopupFocus()) {
 			// skip focus lost if it went to the content assist popup
 		} else {
-			//[Andras] super.focusLost();
+		    // [Andras]
+		    if (commitOnFocusLost)
+		        super.focusLost();
 		}
 	}
-	
+
 	public void setContentAssistant(SubjectControlContentAssistant assistant) {
 		fContentAssistant= assistant;
 	}
-	
+
 	public void setActivationListener(IActivationListener listener) {
 		fActivationListener= listener;
 	}
-	
+
 	public Text getText() {
 		return text;
 	}
-	
+
     protected void checkDeleteable() {
         boolean oldIsDeleteable = isDeleteable;
         isDeleteable = isDeleteEnabled();
@@ -173,11 +172,13 @@ public class TableTextCellEditor extends CellEditor {
     /* (non-Javadoc)
      * Method declared on CellEditor.
      */
+    @Override
     protected Control createControl(Composite parent) {
 		//workaround for bug 58777: don't accept focus listeners on the text control
 		final Control[] textControl= new Control[1];
 		Composite result= new Composite(parent, SWT.NONE) {
-			public void addListener(int eventType, final Listener listener) {
+			@Override
+            public void addListener(int eventType, final Listener listener) {
 				if (eventType != SWT.FocusIn && eventType != SWT.FocusOut) {
 					textControl[0].addListener(eventType, listener);
 				}
@@ -186,16 +187,18 @@ public class TableTextCellEditor extends CellEditor {
         result.setFont(parent.getFont());
         result.setBackground(parent.getBackground());
 		result.setLayout(new FillLayout());
-		
+
         text = new Text(result, getStyle());
 		textControl[0]= text;
         text.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetDefaultSelected(SelectionEvent e) {
                 handleDefaultSelection(e);
             }
         });
 		text.addKeyListener(new KeyAdapter() {
-			public void keyPressed(KeyEvent e) {
+			@Override
+            public void keyPressed(KeyEvent e) {
 				// support switching rows while editing:
 				if (e.stateMask == SWT.MOD1 || e.stateMask == SWT.MOD2) {
 					if (e.keyCode == SWT.ARROW_UP || e.keyCode == SWT.ARROW_DOWN) {
@@ -205,10 +208,10 @@ public class TableTextCellEditor extends CellEditor {
 						return;
 					}
 				}
-				
+
 				if (e.stateMask != SWT.NONE)
 					return;
-				
+
 				switch (e.keyCode) {
 				case SWT.ARROW_DOWN :
 					e.doit= false;
@@ -217,7 +220,7 @@ public class TableTextCellEditor extends CellEditor {
 						break;
 					editRow(nextRow);
 					break;
-					
+
 				case SWT.ARROW_UP :
 					e.doit= false;
 					int prevRow= fTableViewer.getTable().getSelectionIndex() - 1;
@@ -225,7 +228,7 @@ public class TableTextCellEditor extends CellEditor {
 						break;
 					editRow(prevRow);
 					break;
-					
+
 				case SWT.F2 :
 					e.doit= false;
 					deactivate();
@@ -241,13 +244,14 @@ public class TableTextCellEditor extends CellEditor {
 			}
 		});
         text.addKeyListener(new KeyAdapter() {
-            // hook key pressed - see PR 14201  
+            // hook key pressed - see PR 14201
+            @Override
             public void keyPressed(KeyEvent e) {
                 keyReleaseOccured(e);
 
                 // as a result of processing the above call, clients may have
                 // disposed this cell editor
-                if ((getControl() == null) || getControl().isDisposed())
+                if (getControl() == null || getControl().isDisposed())
                     return;
                 checkSelection(); // see explaination below
                 checkDeleteable();
@@ -266,6 +270,7 @@ public class TableTextCellEditor extends CellEditor {
         // use a key listener and a mouse listener to know when selection changes
         // may have occured
         text.addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseUp(MouseEvent e) {
                 checkSelection();
                 checkDeleteable();
@@ -273,6 +278,7 @@ public class TableTextCellEditor extends CellEditor {
             }
         });
         text.addFocusListener(new FocusAdapter() {
+            @Override
             public void focusLost(FocusEvent e) {
                 TableTextCellEditor.this.focusLost();
             }
@@ -281,16 +287,17 @@ public class TableTextCellEditor extends CellEditor {
         text.setBackground(parent.getBackground());
         text.setText("");//$NON-NLS-1$
         text.addModifyListener(getModifyListener());
-		
+
 		return result;
     }
 
+    @Override
     protected void fireCancelEditor() {
 		/* bug 58540: change signature refactoring interaction: validate as you type [refactoring] */
     	text.setText(fOriginalValue);
 		super.fireApplyEditorValue();
     }
-		
+
     /**
      * The <code>TextCellEditor</code> implementation of
      * this <code>CellEditor</code> framework method returns
@@ -298,10 +305,12 @@ public class TableTextCellEditor extends CellEditor {
      *
      * @return the text string
      */
+    @Override
     protected Object doGetValue() {
         return text.getText();
     }
 
+    @Override
     protected void doSetFocus() {
         if (text != null) {
             text.selectAll();
@@ -319,8 +328,9 @@ public class TableTextCellEditor extends CellEditor {
      *
      * @param value a text string (type <code>String</code>)
      */
+    @Override
     protected void doSetValue(Object value) {
-        Assert.isTrue(text != null && (value instanceof String));
+        Assert.isTrue(text != null && value instanceof String);
         text.removeModifyListener(getModifyListener());
         text.setText((String) value);
         text.addModifyListener(getModifyListener());
@@ -347,6 +357,7 @@ public class TableTextCellEditor extends CellEditor {
 		//[Andras] fireModifyEvent(text.getText()); // update model on-the-fly
     }
 
+    @Override
     public LayoutData getLayoutData() {
         return new LayoutData();
     }
@@ -357,18 +368,21 @@ public class TableTextCellEditor extends CellEditor {
         deactivate();
     }
 
+    @Override
     public boolean isCopyEnabled() {
         if (text == null || text.isDisposed())
             return false;
         return text.getSelectionCount() > 0;
     }
 
+    @Override
     public boolean isCutEnabled() {
         if (text == null || text.isDisposed())
             return false;
         return text.getSelectionCount() > 0;
     }
 
+    @Override
     public boolean isDeleteEnabled() {
         if (text == null || text.isDisposed())
             return false;
@@ -376,28 +390,31 @@ public class TableTextCellEditor extends CellEditor {
                 || text.getCaretPosition() < text.getCharCount();
     }
 
+    @Override
     public boolean isPasteEnabled() {
         if (text == null || text.isDisposed())
             return false;
         return true;
     }
 
+    @Override
     public boolean isSelectAllEnabled() {
         if (text == null || text.isDisposed())
             return false;
         return text.getCharCount() > 0;
     }
 
+    @Override
     protected void keyReleaseOccured(KeyEvent keyEvent) {
         if (keyEvent.character == '\r') { // Return key
             // Enter is handled in handleDefaultSelection.
             // Do not apply the editor value in response to an Enter key event
             // since this can be received from the IME when the intent is -not-
-            // to apply the value.  
+            // to apply the value.
             // See bug 39074 [CellEditors] [DBCS] canna input mode fires bogus event from Text Control
             //
             // An exception is made for Ctrl+Enter for multi-line texts, since
-            // a default selection event is not sent in this case. 
+            // a default selection event is not sent in this case.
             if (text != null && !text.isDisposed()
                     && (text.getStyle() & SWT.MULTI) != 0) {
                 if ((keyEvent.stateMask & SWT.CTRL) != 0) {
@@ -409,10 +426,12 @@ public class TableTextCellEditor extends CellEditor {
         super.keyReleaseOccured(keyEvent);
     }
 
+    @Override
     public void performCopy() {
         text.copy();
     }
 
+    @Override
     public void performCut() {
         text.cut();
         checkSelection();
@@ -420,6 +439,7 @@ public class TableTextCellEditor extends CellEditor {
         checkSelectable();
     }
 
+    @Override
     public void performDelete() {
         if (text.getSelectionCount() > 0)
             // remove the contents of the current selection
@@ -437,6 +457,7 @@ public class TableTextCellEditor extends CellEditor {
         checkSelectable();
     }
 
+    @Override
     public void performPaste() {
         text.paste();
         checkSelection();
@@ -444,6 +465,7 @@ public class TableTextCellEditor extends CellEditor {
         checkSelectable();
     }
 
+    @Override
     public void performSelectAll() {
         text.selectAll();
         checkSelection();
