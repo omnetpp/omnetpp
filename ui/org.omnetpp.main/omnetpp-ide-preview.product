@@ -40,7 +40,17 @@
       <plugin id="de.unikassel.imageexport.pdf"/>
       <plugin id="de.unikassel.imageexport.svg"/>
       <plugin id="javax.servlet"/>
-      <plugin id="org.apache.batik"/>
+      <plugin id="org.apache.batik.bridge"/>
+      <plugin id="org.apache.batik.css"/>
+      <plugin id="org.apache.batik.dom"/>
+      <plugin id="org.apache.batik.dom.svg"/>
+      <plugin id="org.apache.batik.ext.awt"/>
+      <plugin id="org.apache.batik.parser"/>
+      <plugin id="org.apache.batik.svggen"/>
+      <plugin id="org.apache.batik.transcoder"/>
+      <plugin id="org.apache.batik.util"/>
+      <plugin id="org.apache.batik.util.gui"/>
+      <plugin id="org.apache.batik.xml"/>
       <plugin id="org.eclipse.ant.core"/>
       <plugin id="org.eclipse.core.commands"/>
       <plugin id="org.eclipse.core.contenttype"/>
@@ -110,6 +120,9 @@
       <plugin id="org.omnetpp.ned.model"/>
       <plugin id="org.omnetpp.sequencechart"/>
       <plugin id="org.slf4j.nop"/>
+      <plugin id="org.w3c.css.sac"/>
+      <plugin id="org.w3c.dom.smil"/>
+      <plugin id="org.w3c.dom.svg"/>
    </plugins>
 
    <features>

@@ -31,6 +31,7 @@
       </win>
    </launcher>
 
+
    <vm>
    </vm>
 
@@ -138,20 +139,18 @@
    </plugins>
 
    <features>
-      <feature id="org.eclipse.cdt" version="4.0.0.200705021527"/>
-      <feature id="org.eclipse.gef" version="3.3.0.v20070508"/>
-      <feature id="org.eclipse.platform" version="3.3.0.v20070426-_19QEikF-XqdF5NwSTqN"/>
-      <feature id="org.omnetpp.ide" version="4.0.0"/>
-      <feature id="org.eclipse.emf.ecore" version="2.3.0.v200705110650"/>
-      <feature id="org.eclipse.emf.edit" version="2.3.0.v200705110650"/>
-      <feature id="org.eclipse.emf.edit.ui" version="2.3.0.v200705110650"/>
-      <feature id="org.eclipse.emf.common" version="2.3.0.v200705110650"/>
-      <feature id="org.eclipse.emf.common.ui" version="2.3.0.v200705110650"/>
-      <feature id="org.polarion.team.svn" version="1.1.2"/>
-      <feature id="org.eclipse.cvs" version="1.0.0.v20070202-7C79_79EI99g_ODS"/>
+      <feature id="org.eclipse.platform" version="3.3.0.v20070530a-_19REnTF-XsdF8OaOj3B"/>
+      <feature id="org.eclipse.cdt" version="4.0.0.200705251830"/>
+      <feature id="org.eclipse.emf.common" version="2.3.0.v200705300200"/>
+      <feature id="org.eclipse.emf.common.ui" version="2.3.0.v200705300200"/>
+      <feature id="org.eclipse.emf.ecore" version="2.3.0.v200705300200"/>
+      <feature id="org.eclipse.emf.edit" version="2.3.0.v200705300200"/>
+      <feature id="org.eclipse.emf.edit.ui" version="2.3.0.v200705300200"/>
+      <feature id="org.eclipse.gef" version="3.3.0.v20070529"/>
       <feature id="de.unikassel.imageexport" version="0.9.0"/>
-      <feature id="org.apache.batik" version="1.6.0.v20061222-1222-0842283444-3444"/>
-      <feature id="org.apache.xerces.feature" version="2.8.0.v200605151647--08422828353873"/>
+      <feature id="org.eclipse.gmf" version="1.0.100.v20070518-1300-7d-ETeEYjjMZTVxKW_PRmb0Gq72B"/>
+      <feature id="org.eclipse.gmf.runtime.thirdparty" version="1.0.0.v20070504-1000-7H8G2EDx2WYLXN-Fp61A"/>
+      <feature id="org.omnetpp.ide" version="4.0.0"/>
    </features>
 
 </product>
