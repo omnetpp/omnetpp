@@ -3,6 +3,7 @@ package org.omnetpp.eventlogtable.editors;
 import java.util.ArrayList;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
@@ -61,7 +62,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 	protected EventLogTableAction gotoMessageReuseAction;
 
-	protected EventLogTableAction bookmarkAction;
+	protected EventLogTableAction toggleBookmarkAction;
 
 	protected EventLogTableMenuAction filterModeAction;
 
@@ -95,7 +96,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		menuManager.add(gotoMessageOriginAction);
 		menuManager.add(gotoMessageReuseAction);
 		menuManager.add(separatorAction);
-		menuManager.add(bookmarkAction);
+		menuManager.add(toggleBookmarkAction);
 		menuManager.add(separatorAction);
 		menuManager.add(filterModeAction);
 		menuManager.add(displayModeAction);
@@ -130,7 +131,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		gotoMessageArrivalAction = createGotoMessageArrivalAction();
 		gotoMessageOriginAction = createGotoMessageOriginAction();
 		gotoMessageReuseAction = createGotoMessageReuseAction();
-		bookmarkAction = createBookmarkAction();
+		toggleBookmarkAction = createToggleBookmarkAction();
 		filterModeAction = createFilterModeAction();
 		displayModeAction = createDisplayModeAction();
 	}
@@ -146,7 +147,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		gotoMessageOriginAction.update();
 		gotoMessageReuseAction.update();
 		separatorAction.update();
-		bookmarkAction.update();
+		toggleBookmarkAction.update();
 		separatorAction.update();
 		filterModeAction.update();
 		displayModeAction.update();
@@ -414,8 +415,8 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		};
 	}
 
-	private EventLogTableAction createBookmarkAction() {
-		return new EventLogTableAction("Bookmark") {
+	private EventLogTableAction createToggleBookmarkAction() {
+		return new EventLogTableAction("Toggle bookmark") {
 			@Override
 			public void run() {
 				try {
@@ -424,9 +425,22 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					if (eventLogEntryReference != null) {
 						IEvent event = eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput()).getEvent();
 						EventLogInput eventLogInput = (EventLogInput)eventLogTable.getInput();
-						IMarker marker = eventLogInput.getFile().createMarker(IMarker.BOOKMARK);
-						marker.setAttribute(IMarker.LOCATION, "# " + event.getEventNumber());
-						marker.setAttribute("EventNumber", event.getEventNumber());
+						
+						boolean found = false;
+						IMarker[] markers = eventLogInput.getFile().findMarkers(IMarker.BOOKMARK, true, IResource.DEPTH_ZERO);
+
+						for (IMarker marker : markers)
+							if (marker.getAttribute("EventNumber", -1) == event.getEventNumber()) {
+								marker.delete();
+								found = true;
+							}
+
+						if (!found) {
+							IMarker marker = eventLogInput.getFile().createMarker(IMarker.BOOKMARK);
+							marker.setAttribute(IMarker.LOCATION, "# " + event.getEventNumber());
+							marker.setAttribute("EventNumber", event.getEventNumber());
+						}
+
 						update();
 						eventLogTable.redraw();
 					}

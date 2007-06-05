@@ -39,7 +39,7 @@ Features:
    + events
    + events and messages
    + all lines
- + bookmark/unmark selected line
+ + toggle bookmark on selected event
  - configuration
    - events are collapsed by default
    - goto line puts line to a predefined position in the visible area (maybe 1/3)

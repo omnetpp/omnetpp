@@ -24,6 +24,12 @@ public class TimeUtils {
 
 	public static String secondsToTimeString(BigDecimal time) {
 		StringBuffer timeString = new StringBuffer();
+		
+		if (time.compareTo(BigDecimal.ZERO) < 0) {
+			timeString.append("-");
+			time = time.negate();
+		}
+
 		time = appendToTimeString(timeString, time, "s ");
 		time = appendToTimeString(timeString, time, "ms ");
 		time = appendToTimeString(timeString, time, "us ");
