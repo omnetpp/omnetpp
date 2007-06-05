@@ -1238,9 +1238,9 @@ public class SequenceChart
 	protected Point getTextExtent(Graphics graphics, String timeString) {
 		if (graphics instanceof GraphicsSVG) {
 			java.awt.Graphics g = ((GraphicsSVG)graphics).getSVGGraphics2D();
-			java.awt.geom.Rectangle2D r = g.getFontMetrics().getStringBounds("Hello", g);
+			java.awt.geom.Rectangle2D r = g.getFontMetrics().getStringBounds(timeString, g);
 			
-			return new Point((int)Math.round(r.getWidth()), (int)Math.round(r.getHeight()));
+			return new Point((int)Math.ceil(r.getWidth()), (int)Math.ceil(r.getHeight()));
 		}
 		else {
 			try {
@@ -1272,6 +1272,7 @@ public class SequenceChart
 		int width = getTextExtent(graphics, timeString).x;
 		int x = viewportWidth - width - 3;
 
+		graphics.setFont(font);
 		graphics.setBackgroundColor(INFO_BACKGROUND_COLOR);
 		graphics.fillRectangle(x - 3, GUTTER_HEIGHT, width + 6, GUTTER_HEIGHT + 1);
 		graphics.setForegroundColor(GUTTER_BORDER_COLOR);
@@ -1287,9 +1288,8 @@ public class SequenceChart
 	protected void drawTickPrefix(Graphics graphics) {
 		// draw tick prefix on top gutter
 		String timeString = TimeUtils.secondsToTimeString(tickPrefix);
-		Font oldFont = graphics.getFont();
 		FontData fontData = font.getFontData()[0];
-		Font newFont = new Font(oldFont.getDevice(), fontData.getName(), fontData.getHeight(), SWT.BOLD);
+		Font newFont = new Font(font.getDevice(), fontData.getName(), fontData.getHeight(), SWT.BOLD);
 		graphics.setFont(newFont);
 		int width = getTextExtent(graphics, timeString).x;
 
@@ -1302,7 +1302,6 @@ public class SequenceChart
 		graphics.setBackgroundColor(INFO_BACKGROUND_COLOR);
 		graphics.drawText(timeString, 3, 2);
 		newFont.dispose();
-		graphics.setFont(oldFont);
 	}
 
 	/**
@@ -1464,8 +1463,10 @@ public class SequenceChart
 		graphics.setLineStyle(SWT.LINE_SOLID);
 		graphics.drawOval(x - 2, y - 3, 5, 7);
 
-		if (showEventNumbers)
+		if (showEventNumbers) {
+			graphics.setFont(font);
 			graphics.drawText("#" + sequenceChartFacade.Event_getEventNumber(eventPtr), x + 3, y + 3 + axisRenderers[getEventAxisModuleIndex(eventPtr)].getHeight() / 2);
+		}
 	}
 
 	/**
@@ -1584,6 +1585,7 @@ public class SequenceChart
 		// draw tick value
 		graphics.setForegroundColor(TICK_LABEL_COLOR);
 		graphics.setBackgroundColor(backgroundColor);
+		graphics.setFont(font);
 		graphics.drawText(string, boxX + 3, 2);
 		graphics.drawText(string, boxX + 3, viewportHeight + GUTTER_HEIGHT + 1);
 
@@ -1683,6 +1685,7 @@ public class SequenceChart
 		int y = axisModuleYs[i] - (int)getViewportTop();
 		String label = treeItem.getModuleFullPath();
 		graphics.setForegroundColor(LABEL_COLOR);
+		graphics.setFont(font);
 		graphics.drawText(label, 5, y - MINIMUM_AXIS_SPACING_TO_DISPLAY_LABELS + 1);
 	}
 	
@@ -1950,6 +1953,7 @@ public class SequenceChart
 		if (MESSAGE_LABEL_COLOR != null)
 			graphics.setForegroundColor(MESSAGE_LABEL_COLOR);
 
+		graphics.setFont(font);
 		graphics.drawText(arrowLabel, x + dx, y + dy);
 	}
 

@@ -36,6 +36,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -925,8 +927,8 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 				setEnabled(sequenceChart.getInput() != null);
 			}
 
-			final class ExportToSVGDialog extends TitleAreaDialog {
-				private int extraSpace = 100;
+			class ExportToSVGDialog extends TitleAreaDialog {
+				private int extraSpace;
 
 				private int selectedRangeType;
 				
@@ -966,13 +968,17 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 					label.setText("Extra space in pixels around both ends: ");
 					label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 					
-					Text text = new Text(container, SWT.BORDER | SWT.SINGLE);
+					final Text text = new Text(container, SWT.BORDER | SWT.SINGLE);
 					text.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 					text.setText(String.valueOf(extraSpace));
-					text.addSelectionListener(new SelectionAdapter() {
-						@Override
-						public void widgetSelected(SelectionEvent e) {
-							extraSpace = Integer.parseInt(getText());
+					text.addModifyListener(new ModifyListener() {
+						public void modifyText(ModifyEvent e) {
+							try {
+								extraSpace = Integer.parseInt(text.getText());
+							}
+							catch (Exception x) {
+								// void
+							}
 						}
 					});
 
