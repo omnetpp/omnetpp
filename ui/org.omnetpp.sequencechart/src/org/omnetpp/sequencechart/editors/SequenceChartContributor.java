@@ -17,6 +17,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -106,7 +107,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	
     public final static String IMAGE_ATTACH_VECTOR_TO_AXIS = TOOLIMAGE_DIR + "attachvector.png";
 	
-    public final static String IMAGE_BOOKMARK = TOOLIMAGE_DIR + "bkmrk_nav.gif";
+    public final static String IMAGE_TOGGLE_BOOKMARK = TOOLIMAGE_DIR + "bkmrk_nav.gif";
 	
     public final static String IMAGE_EXPORT_SVG = TOOLIMAGE_DIR + "export_wiz.gif";
 	
@@ -146,7 +147,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 
 	protected SequenceChartAction balancedAxesAction;
 
-	protected SequenceChartAction bookmarkAction;
+	protected SequenceChartAction toggleBookmarkAction;
 
 	protected SequenceChartAction refreshAction;
 
@@ -171,7 +172,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		this.zoomOutAction = createZoomOutAction();
 		this.denseAxesAction = createDenseAxesAction();
 		this.balancedAxesAction = createBalancedAxesAction();
-		this.bookmarkAction = createBookmarkAction();
+		this.toggleBookmarkAction = createToggleBookmarkAction();
 		this.exportToSVGAction = createExportToSVGAction();
 		this.refreshAction = createRefreshAction();
 		
@@ -258,7 +259,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 				menuManager.add(denseAxesAction);
 				menuManager.add(balancedAxesAction);
 				menuManager.add(separatorAction);
-				menuManager.add(bookmarkAction);
+				menuManager.add(toggleBookmarkAction);
 				menuManager.add(refreshAction);
 				menuManager.add(separatorAction);
 				menuManager.add(exportToSVGAction);
@@ -512,7 +513,6 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			public void update() {
 				boolean showEventNumbers = sequenceChart.getShowEventNumbers();
 				setChecked(showEventNumbers);
-				//setText(showEventNumbers ? "Hide Event Numbers" : "Show Event Numbers");
 				setText("Show Event Numbers");
 			}
 		};
@@ -530,7 +530,6 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			public void update() {
 				boolean showMessageNames = sequenceChart.getShowMessageNames();
 				setChecked(showMessageNames);
-				//setText(showMessageNames ? "Hide Message Names" : "Show Message Names");
 				setText("Show Message Names");
 			}
 		};
@@ -548,7 +547,6 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			public void update() {
 				boolean showReuseMessage = sequenceChart.getShowReuseMessages();
 				setChecked(showReuseMessage);
-				//setText(showReuseMessage ? "Hide Reuse Messages" : "Show Reuse Messages");
 				setText("Show Reuse Messages");
 			}
 		};
@@ -566,7 +564,6 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			public void update() {
 				boolean showArrowHeads = sequenceChart.getShowArrowHeads();
 				setChecked(showArrowHeads);
-				//setText(showArrowHeads ? "Hide Arrowheads" : "Show Arrowheads");
 				setText("Show Arrowheads");
 			}
 		};
@@ -787,18 +784,33 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		};
 	}
 
-	private SequenceChartAction createBookmarkAction() {
-		return new SequenceChartAction("Bookmark", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_BOOKMARK)) {
+	private SequenceChartAction createToggleBookmarkAction() {
+		return new SequenceChartAction("Toggle bookmark", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_TOGGLE_BOOKMARK)) {
 			@Override
 			public void run() {
 				try {
 					EventLogInput eventLogInput = (EventLogInput)sequenceChart.getInput();
-					IMarker marker = eventLogInput.getFile().createMarker(IMarker.BOOKMARK);
 					IEvent event = sequenceChart.getSelectionEvent();
-					marker.setAttribute(IMarker.LOCATION, "# " + event.getEventNumber());
-					marker.setAttribute("EventNumber", event.getEventNumber());
-					update();
-					sequenceChart.redraw();
+					
+					if (event != null) {
+						boolean found = false;
+						IMarker[] markers = eventLogInput.getFile().findMarkers(IMarker.BOOKMARK, true, IResource.DEPTH_ZERO);
+
+						for (IMarker marker : markers)
+							if (marker.getAttribute("EventNumber", -1) == event.getEventNumber()) {
+								marker.delete();
+								found = true;
+							}
+
+						if (!found) {
+							IMarker marker = eventLogInput.getFile().createMarker(IMarker.BOOKMARK);
+							marker.setAttribute(IMarker.LOCATION, "# " + event.getEventNumber());
+							marker.setAttribute("EventNumber", event.getEventNumber());
+						}
+
+						update();
+						sequenceChart.redraw();
+					}
 				}
 				catch (CoreException e) {
 					throw new RuntimeException(e);
@@ -832,7 +844,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 						try {
 							sequenceChart.scrollHorizontalTo(exportBeginX + sequenceChart.getViewportLeft());
 							sequenceChart.scrollVerticalTo(0);
-							sequenceChart.paintSelectedArea(graphics);
+							sequenceChart.paintArea(graphics);
 							writeXML(graphics, fileName);
 				        }
 				        catch (Exception e) {

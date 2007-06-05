@@ -64,6 +64,7 @@ import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.virtualtable.IVirtualContentWidget;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
+import org.omnetpp.eventlog.engine.EventLogMessageEntry;
 import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.FilteredMessageDependency;
 import org.omnetpp.eventlog.engine.IEvent;
@@ -1205,8 +1206,8 @@ public class SequenceChart
 
 	        drawGutters(graphics, getViewportHeight());
 	        drawTickUnderMouse(graphics, getViewportHeight());
-	        drawTickPrefix(graphics);
 	        drawSimulationTimeRange(graphics, getViewportWidth());
+	        drawTickPrefix(graphics);
 
 	        graphics.translate(0, GUTTER_HEIGHT);
 
@@ -1217,8 +1218,7 @@ public class SequenceChart
 		}
 	}
 	
-	public void paintSelectedArea(Graphics graphics) {
-		// TODO: add selections to be able to define the selected area (currently the whole chart is painted)
+	public void paintArea(Graphics graphics) {
 		graphics.getClip(Rectangle.SINGLETON);
 		graphics.translate(0, GUTTER_HEIGHT);
 
@@ -1229,8 +1229,8 @@ public class SequenceChart
 		graphics.translate(0, -GUTTER_HEIGHT);
 
         drawGutters(graphics, (int)getVirtualHeight());
-        drawTickPrefix(graphics);
         drawSimulationTimeRange(graphics, Rectangle.SINGLETON.width);
+        drawTickPrefix(graphics);
 
         graphics.translate(0, GUTTER_HEIGHT);
     }
@@ -2486,11 +2486,27 @@ public class SequenceChart
 		// 1) if there are events under them mouse, show them in the tooltip
 		if (events.size() > 0) {
 			String res = "";
+
 			for (IEvent event : events) {
 				if (res.length() != 0)
 					res += "<br/>";
 
 				res += getEventText(event, true);
+
+				if (events.size() == 1) {
+					IEvent selectionEvent = getSelectionEvent();
+					
+					if (selectionEvent != null && !event.equals(selectionEvent)) {
+						BigDecimal distance = event.getSimulationTime().toBigDecimal().subtract(selectionEvent.getSimulationTime().toBigDecimal());
+						res += "<br/>" + "<i>Simulation time difference to selected event (#" + selectionEvent.getEventNumber() + "): " + TimeUtils.secondsToTimeString(distance) + "</i>";
+					}
+
+					for (int i = 0; i < event.getNumEventLogMessages(); i++) {
+						EventLogMessageEntry eventLogMessageEntry = event.getEventLogMessage(i);
+						
+						res += "<br/><span style=\"color:rgb(127, 0, 85)\"> - " + eventLogMessageEntry.getText() + "</span>";
+					}
+				}
 			}
 
 			return res;
@@ -2542,6 +2558,7 @@ public class SequenceChart
 	public String getMessageDependencyText(IMessageDependency messageDependency, boolean formatted) {
 		String boldStart = formatted ? "<b>" : "";
 		String boldEnd = formatted ? "</b>" : "";
+		String newLine = formatted ? "<br/>" : "\n";
 
 		if (sequenceChartFacade.MessageDependency_isFilteredMessageDependency(messageDependency.getCPtr())) {
 			FilteredMessageDependency filteredMessageDependency = (FilteredMessageDependency)messageDependency;
@@ -2573,7 +2590,7 @@ public class SequenceChart
 			result += " dt = " + TimeUtils.secondsToTimeString(consequenceSimulationTime.subtract(causeSimulationTime));
 
 			if (detail != null)
-				result += "<br/>" + detail;
+				result += newLine + detail;
 
 			return result;
 		}
