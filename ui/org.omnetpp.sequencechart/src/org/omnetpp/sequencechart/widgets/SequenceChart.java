@@ -1,5 +1,6 @@
 package org.omnetpp.sequencechart.widgets;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
@@ -16,6 +17,7 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.gmf.runtime.draw2d.ui.render.awt.internal.svg.export.GraphicsSVG;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.util.SafeRunnable;
@@ -148,7 +150,7 @@ public class SequenceChart
 	private static final int EVENT_SELECTION_RADIUS = 10; // radius of event selection mark circle
 	private static final int TICK_SPACING = 100; // space between ticks in pixels
 	private static final int AXIS_OFFSET = 20;  // extra y distance before and after first and last axes
-	private static final int GUTTER_HEIGHT = 17; // height of top and bottom gutter
+	public static final int GUTTER_HEIGHT = 17; // height of top and bottom gutter
 
 	private static Font font = JFaceResources.getDefaultFont();
 	
@@ -1153,6 +1155,8 @@ public class SequenceChart
 
 		if (axisModuleYs == null)
 			calculateAxisYs();
+
+		calculateTicks(getViewportWidth());
 	}
 	
 	/*************************************************************************************
@@ -1161,10 +1165,8 @@ public class SequenceChart
 
 	@Override
 	protected void paint(GC gc) {
-		if (eventLogInput != null) {
+		if (eventLogInput != null)
 			calculateStuff();
-			calculateTicks();
-		}
 
 		super.paint(gc);
 
@@ -1181,11 +1183,12 @@ public class SequenceChart
 			graphics.translate(0, GUTTER_HEIGHT);
 
 			drawSequenceChart(graphics);
-	
+
+			graphics.translate(0, -GUTTER_HEIGHT);
 			graphics.dispose();
 		}
 	}
-
+	
 	@Override
 	protected void paintNoncachableLayer(GC gc) {
 		if (eventLogInput != null) {
@@ -1197,59 +1200,109 @@ public class SequenceChart
 			drawAxisLabels(graphics);
 	        drawEventBookmarks(graphics);
 	        drawEventSelectionMarks(graphics);
+
 	        graphics.translate(0, -GUTTER_HEIGHT);
 
-	        drawGutters(gc);
-	        drawTickUnderMouse(gc);
-	        drawInfo(gc);
+	        drawGutters(graphics, getViewportHeight());
+	        drawTickUnderMouse(graphics, getViewportHeight());
+	        drawTickPrefix(graphics);
+	        drawSimulationTimeRange(graphics, getViewportWidth());
 
 	        graphics.translate(0, GUTTER_HEIGHT);
 
 	        drawStuffUnderMouse(graphics);
 
+	        graphics.translate(0, -GUTTER_HEIGHT);
 	        graphics.dispose();
+		}
+	}
+	
+	public void paintSelectedArea(Graphics graphics) {
+		// TODO: add selections to be able to define the selected area (currently the whole chart is painted)
+		graphics.getClip(Rectangle.SINGLETON);
+		graphics.translate(0, GUTTER_HEIGHT);
+
+		calculateTicks(Rectangle.SINGLETON.width);
+		drawSequenceChart(graphics);
+		drawAxisLabels(graphics);
+
+		graphics.translate(0, -GUTTER_HEIGHT);
+
+        drawGutters(graphics, (int)getVirtualHeight());
+        drawTickPrefix(graphics);
+        drawSimulationTimeRange(graphics, Rectangle.SINGLETON.width);
+
+        graphics.translate(0, GUTTER_HEIGHT);
+    }
+
+	protected Point getTextExtent(Graphics graphics, String timeString) {
+		if (graphics instanceof GraphicsSVG) {
+			java.awt.Graphics g = ((GraphicsSVG)graphics).getSVGGraphics2D();
+			java.awt.geom.Rectangle2D r = g.getFontMetrics().getStringBounds("Hello", g);
+			
+			return new Point((int)Math.round(r.getWidth()), (int)Math.round(r.getHeight()));
+		}
+		else {
+			try {
+				SWTGraphics g = (SWTGraphics) graphics;
+				Class<SWTGraphics> cls = SWTGraphics.class;
+				Field field = cls.getDeclaredField("gc");
+				field.setAccessible(true);
+				GC gc = (GC)field.get(g);
+				// TODO: what a hack to send the font down to GC?!
+				g.drawText("", 0, 0);
+				return gc.textExtent(timeString);
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 
 	/**
-	 * Draw info panel on top right.
+	 * Draw range on top right.
 	 */
-	private void drawInfo(GC gc) {
+	protected void drawSimulationTimeRange(Graphics graphics, int viewportWidth) {
 		// draw simulation time range
 		BigDecimal leftTick = calculateTick(0, 1);
-		BigDecimal rightTick = calculateTick(getViewportWidth(), 1);
+		BigDecimal rightTick = calculateTick(viewportWidth, 1);
 		BigDecimal simulationTimeRange = rightTick.subtract(leftTick);
-		gc.setForeground(TICK_LABEL_COLOR);
+		graphics.setForegroundColor(TICK_LABEL_COLOR);
 		String timeString = "Range: " + TimeUtils.secondsToTimeString(simulationTimeRange);
-		int width = gc.textExtent(timeString).x;
-		int x = getViewportWidth() - width - 3;
+		int width = getTextExtent(graphics, timeString).x;
+		int x = viewportWidth - width - 3;
 
-		gc.setBackground(INFO_BACKGROUND_COLOR);
-		gc.fillRectangle(x - 3, GUTTER_HEIGHT, width + 5, GUTTER_HEIGHT);
-		gc.setForeground(GUTTER_BORDER_COLOR);
-		gc.setLineStyle(SWT.LINE_SOLID);
-		gc.drawRectangle(x - 3, GUTTER_HEIGHT, width + 5, GUTTER_HEIGHT);
-		gc.setBackground(INFO_BACKGROUND_COLOR);
-		gc.drawText(timeString, x, GUTTER_HEIGHT + 2);
+		graphics.setBackgroundColor(INFO_BACKGROUND_COLOR);
+		graphics.fillRectangle(x - 3, GUTTER_HEIGHT, width + 6, GUTTER_HEIGHT + 1);
+		graphics.setForegroundColor(GUTTER_BORDER_COLOR);
+		graphics.setLineStyle(SWT.LINE_SOLID);
+		graphics.drawRectangle(x - 3, GUTTER_HEIGHT, width + 5, GUTTER_HEIGHT);
+		graphics.setBackgroundColor(INFO_BACKGROUND_COLOR);
+		graphics.drawText(timeString, x, GUTTER_HEIGHT + 2);
+	}
 
+	/**
+	 * Draw tick prefix on the left side of the top gutter.
+	 */
+	protected void drawTickPrefix(Graphics graphics) {
 		// draw tick prefix on top gutter
-		timeString = TimeUtils.secondsToTimeString(tickPrefix);
-		Font oldFont = gc.getFont();
+		String timeString = TimeUtils.secondsToTimeString(tickPrefix);
+		Font oldFont = graphics.getFont();
 		FontData fontData = font.getFontData()[0];
 		Font newFont = new Font(oldFont.getDevice(), fontData.getName(), fontData.getHeight(), SWT.BOLD);
-		gc.setFont(newFont);
-		width = gc.textExtent(timeString).x;
+		graphics.setFont(newFont);
+		int width = getTextExtent(graphics, timeString).x;
 
-		gc.setBackground(INFO_BACKGROUND_COLOR);
-		gc.fillRectangle(0, 0, width + 6, GUTTER_HEIGHT);
-		gc.setForeground(GUTTER_BORDER_COLOR);
-		gc.setLineStyle(SWT.LINE_SOLID);
-		gc.drawRectangle(0, 0, width + 6, GUTTER_HEIGHT);
+		graphics.setBackgroundColor(INFO_BACKGROUND_COLOR);
+		graphics.fillRectangle(0, 0, width + 7, GUTTER_HEIGHT + 1);
+		graphics.setForegroundColor(GUTTER_BORDER_COLOR);
+		graphics.setLineStyle(SWT.LINE_SOLID);
+		graphics.drawRectangle(0, 0, width + 6, GUTTER_HEIGHT);
 		
-		gc.setBackground(INFO_BACKGROUND_COLOR);
-		gc.drawText(timeString, 3, 2);
+		graphics.setBackgroundColor(INFO_BACKGROUND_COLOR);
+		graphics.drawText(timeString, 3, 2);
 		newFont.dispose();
-		gc.setFont(oldFont);
+		graphics.setFont(oldFont);
 	}
 
 	/**
@@ -1407,7 +1460,7 @@ public class SequenceChart
 			graphics.setBackgroundColor(EVENT_BACKGROUND_COLOR);
 		}
 
-		graphics.fillOval(x - 2, y - 3, 5, 7);
+		graphics.fillOval(x - 2, y - 3, 6, 8);
 		graphics.setLineStyle(SWT.LINE_SOLID);
 		graphics.drawOval(x - 2, y - 3, 5, 7);
 
@@ -1418,25 +1471,28 @@ public class SequenceChart
 	/**
 	 * Draws the top and bottom gutters which will display ticks.
 	 */
-	private void drawGutters(GC gc) {
-		// fill gutter backgrounds
-		gc.setBackground(GUTTER_BACKGROUND_COLOR);
-		gc.fillRectangle(0, 0, getViewportWidth(), GUTTER_HEIGHT);
-		gc.fillRectangle(0, getViewportHeight() + GUTTER_HEIGHT - 1, getViewportWidth(), GUTTER_HEIGHT);
+	private void drawGutters(Graphics graphics, int viewportHeigth) {
+		graphics.getClip(Rectangle.SINGLETON);
+		Rectangle r = Rectangle.SINGLETON;
 
-		drawTicks(gc);
+		// fill gutter backgrounds
+		graphics.setBackgroundColor(GUTTER_BACKGROUND_COLOR);
+		graphics.fillRectangle(r.x, 0, r.right(), GUTTER_HEIGHT + 1);
+		graphics.fillRectangle(r.x, viewportHeigth + GUTTER_HEIGHT - 1, r.right(), GUTTER_HEIGHT + 1);
+
+		drawTicks(graphics, viewportHeigth);
 
 		// draw border around gutters
-		gc.setForeground(GUTTER_BORDER_COLOR);
-		gc.setLineStyle(SWT.LINE_SOLID);
-		gc.drawRectangle(0, 0, getViewportWidth() - 1, GUTTER_HEIGHT);
-		gc.drawRectangle(0, getViewportHeight() + GUTTER_HEIGHT - 1, getViewportWidth() - 1, GUTTER_HEIGHT);
+		graphics.setForegroundColor(GUTTER_BORDER_COLOR);
+		graphics.setLineStyle(SWT.LINE_SOLID);
+		graphics.drawRectangle(r.x, 0, r.right() - 1, GUTTER_HEIGHT);
+		graphics.drawRectangle(r.x, viewportHeigth + GUTTER_HEIGHT - 1, r.right() - 1, GUTTER_HEIGHT);
 	}
 
 	/**
 	 * Draws ticks on the gutter.
 	 */
-	private void drawTicks(GC gc) {
+	private void drawTicks(Graphics graphics, int viewportHeigth) {
 		IEvent lastEvent = eventLog.getLastEvent();
 		double endSimulationTime = lastEvent == null ? 0 : lastEvent.getSimulationTime().doubleValue();
 
@@ -1444,19 +1500,19 @@ public class SequenceChart
 			// BigDecimal to double conversions loose precision both in Java and C++ but we must stick to the one in C++
 			// so that strange problems do not occur (think of comparing the tick's time to the last known simulation time)
 			double simulationTime = Math.min(tick.doubleValue(), endSimulationTime);
-			drawTick(gc, TICK_LINE_COLOR, GUTTER_BACKGROUND_COLOR, tick, getViewportCoordinateForSimulationTime(simulationTime), false);
+			drawTick(graphics, viewportHeigth, TICK_LINE_COLOR, GUTTER_BACKGROUND_COLOR, tick, getViewportCoordinateForSimulationTime(simulationTime), false);
 		}
 	}
 
 	/**
 	 * Draws a tick under the mouse.
 	 */
-	private void drawTickUnderMouse(GC gc) {
+	private void drawTickUnderMouse(Graphics graphics, int viewportHeigth) {
 		Point p = toControl(Display.getDefault().getCursorLocation());
 		
 		if (0 <= p.x && p.x < getViewportWidth() && 0 <= p.y && p.y < getViewportHeight() + GUTTER_HEIGHT * 2) {
 			BigDecimal tick = calculateTick(p.x, 1);
-			drawTick(gc, MOUSE_TICK_LINE_COLOR, INFO_BACKGROUND_COLOR, tick, p.x, true);
+			drawTick(graphics, viewportHeigth, MOUSE_TICK_LINE_COLOR, INFO_BACKGROUND_COLOR, tick, p.x, true);
 		}
 	}
 
@@ -1503,41 +1559,41 @@ public class SequenceChart
 	 * Draws a single tick on the gutters and the chart.
 	 * The tick value will be drawn on both gutters with a hair line connecting them.
 	 */
-	private void drawTick(GC gc, Color tickColor, Color backgroundColor, BigDecimal tick, int x, boolean mouseTick) {
+	private void drawTick(Graphics graphics, int viewportHeight, Color tickColor, Color backgroundColor, BigDecimal tick, int x, boolean mouseTick) {
 		String string = TimeUtils.secondsToTimeString(tick.subtract(tickPrefix));
 		if (tickPrefix.doubleValue() != 0.0)
 			string = "+" + string;
 
-		int stringWidth = gc.textExtent(string).x;
+		int stringWidth = getTextExtent(graphics, string).x;
 		int boxWidth = stringWidth + 6;
 		int boxX = mouseTick ? Math.min(getViewportWidth() - boxWidth, x) : x;
 
 		// draw background
-		gc.setBackground(backgroundColor);
-		gc.fillRectangle(boxX, 0, boxWidth, GUTTER_HEIGHT);
-		gc.fillRectangle(boxX, getViewportHeight() + GUTTER_HEIGHT - 1, boxWidth, GUTTER_HEIGHT);
+		graphics.setBackgroundColor(backgroundColor);
+		graphics.fillRectangle(boxX, 0, boxWidth, GUTTER_HEIGHT + 1);
+		graphics.fillRectangle(boxX, viewportHeight + GUTTER_HEIGHT - 1, boxWidth, GUTTER_HEIGHT);
 
 		// draw border only for mouse tick
 		if (mouseTick) {
-			gc.setForeground(GUTTER_BORDER_COLOR);
-			gc.setLineStyle(SWT.LINE_SOLID);
-			gc.drawRectangle(boxX, 0, boxWidth - 1, GUTTER_HEIGHT);
-			gc.drawRectangle(boxX, getViewportHeight() + GUTTER_HEIGHT - 1, boxWidth - 1, GUTTER_HEIGHT);
+			graphics.setForegroundColor(GUTTER_BORDER_COLOR);
+			graphics.setLineStyle(SWT.LINE_SOLID);
+			graphics.drawRectangle(boxX, 0, boxWidth - 1, GUTTER_HEIGHT);
+			graphics.drawRectangle(boxX, viewportHeight + GUTTER_HEIGHT - 1, boxWidth - 1, GUTTER_HEIGHT);
 		}
 
 		// draw tick value
-		gc.setForeground(TICK_LABEL_COLOR);
-		gc.setBackground(backgroundColor);
-		gc.drawText(string, boxX + 3, 2);
-		gc.drawText(string, boxX + 3, getViewportHeight() + GUTTER_HEIGHT + 1);
+		graphics.setForegroundColor(TICK_LABEL_COLOR);
+		graphics.setBackgroundColor(backgroundColor);
+		graphics.drawText(string, boxX + 3, 2);
+		graphics.drawText(string, boxX + 3, viewportHeight + GUTTER_HEIGHT + 1);
 
 		// draw hair line
-		gc.setLineStyle(SWT.LINE_DOT);
-		gc.setForeground(tickColor);
+		graphics.setLineStyle(SWT.LINE_DOT);
+		graphics.setForegroundColor(tickColor);
 		if (mouseTick)
-			gc.drawLine(x, GUTTER_HEIGHT, x, getViewportHeight() + GUTTER_HEIGHT);
+			graphics.drawLine(x, GUTTER_HEIGHT, x, viewportHeight + GUTTER_HEIGHT);
 		else
-			gc.drawLine(x, 0, x, getViewportHeight() + GUTTER_HEIGHT * 2);
+			graphics.drawLine(x, 0, x, viewportHeight + GUTTER_HEIGHT * 2);
 	}
 
 	/**
@@ -1999,11 +2055,11 @@ public class SequenceChart
 		return getFirstLastEventForPixelRange(-extraWidth, extraWidth * 2);
 	}
 
-	private int getEventXViewportCoordinate(long eventPtr) {
+	public int getEventXViewportCoordinate(long eventPtr) {
 		return (int)(sequenceChartFacade.Event_getTimelineCoordinate(eventPtr) * pixelPerTimelineCoordinate + fixPointViewportCoordinate);
 	}
 	
-	private int getEventYViewportCoordinate(long eventPtr) {
+	public int getEventYViewportCoordinate(long eventPtr) {
 		int index = getEventAxisModuleIndex(eventPtr);
 		return axisModuleYs[index] + axisRenderers[index].getHeight() / 2 - (int)getViewportTop();
 	}
@@ -2020,10 +2076,10 @@ public class SequenceChart
 	 * Calculates and stores ticks as simulation times based on tick spacing. Tries to round tick values
 	 * to have as short numbers as possible within a range of pixels.
 	 */
-	private void calculateTicks() {
+	private void calculateTicks(int viewportWidth) {
 		ticks = new ArrayList<BigDecimal>();
 		BigDecimal leftSimulationTime = calculateTick(0, 1);
-		BigDecimal rightSimulationTime = calculateTick(getViewportWidth(), 1);
+		BigDecimal rightSimulationTime = calculateTick(viewportWidth, 1);
 		tickPrefix = TimeUtils.commonPrefix(leftSimulationTime, rightSimulationTime);
 
 		if (getTimelineMode() == TimelineMode.LINEAR) {
@@ -2049,7 +2105,7 @@ public class SequenceChart
 			// tries to put ticks constant distance from each other measured in pixels
 			int modX = fixPointViewportCoordinate % TICK_SPACING;
 			int tleft = modX - TICK_SPACING;
-			int tright = modX + getViewportWidth() + TICK_SPACING;
+			int tright = modX + viewportWidth + TICK_SPACING;
 			
 			IEvent lastEvent = eventLog.getLastEvent();
 			
@@ -2818,6 +2874,10 @@ public class SequenceChart
 			return selectedEvents.get(0);
 		else
 			return null;
+	}
+	
+	public List<IEvent> getSelectionEvents() {
+		return selectedEvents;
 	}
 	
 	public void setSelectionEvent(IEvent event) {

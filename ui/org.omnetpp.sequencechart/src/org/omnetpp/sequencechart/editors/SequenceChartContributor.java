@@ -1,11 +1,27 @@
 package org.omnetpp.sequencechart.editors;
 
+import java.awt.RenderingHints;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.apache.batik.svggen.SVGGraphics2D;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.gmf.runtime.draw2d.ui.render.awt.internal.svg.export.GraphicsSVG;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.action.IMenuListener;
@@ -15,17 +31,27 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.dialogs.ListDialog;
@@ -55,20 +81,36 @@ import org.omnetpp.sequencechart.widgets.axisrenderer.AxisVectorBarRenderer;
 
 public class SequenceChartContributor extends EditorActionBarContributor {
     public final static String TOOLIMAGE_DIR = "icons/full/etool16/";
+
     public final static String IMAGE_TIMELINE_MODE = TOOLIMAGE_DIR + "timelinemode.png";
+    
     public final static String IMAGE_AXIS_ORDERING_MODE = TOOLIMAGE_DIR + "axisordering.gif";
+    
     public final static String IMAGE_SHOW_EVENT_NUMBERS = TOOLIMAGE_DIR + "eventnumbers.png";
+    
     public final static String IMAGE_SHOW_MESSAGE_NAMES = TOOLIMAGE_DIR + "messagenames.png";
+    
     public final static String IMAGE_SHOW_REUSE_MESSAGES = TOOLIMAGE_DIR + "reusearrows.png";
+    
     public final static String IMAGE_SHOW_ARROW_HEADS = TOOLIMAGE_DIR + "arrowhead.png";
+    
     public final static String IMAGE_INCREASE_SPACING = TOOLIMAGE_DIR + "incr_spacing.png";
+    
     public final static String IMAGE_DECREASE_SPACING = TOOLIMAGE_DIR + "decr_spacing.png";
+    
     public final static String IMAGE_DENSE_AXES = TOOLIMAGE_DIR + "denseaxes.png";
+    
     public final static String IMAGE_BALANCED_AXES = TOOLIMAGE_DIR + "balancedaxes.png";
-	public static final String IMAGE_ATTACH_VECTOR_TO_AXIS = TOOLIMAGE_DIR + "attachvector.png";
-	public static final String IMAGE_BOOKMARK = TOOLIMAGE_DIR + "bkmrk_nav.gif";
-	public static final String IMAGE_REFRESH = TOOLIMAGE_DIR + "refresh.gif";
-	public static final String IMAGE_FILTER_BY_MODULES = TOOLIMAGE_DIR + "filterbymod.png";
+	
+    public final static String IMAGE_ATTACH_VECTOR_TO_AXIS = TOOLIMAGE_DIR + "attachvector.png";
+	
+    public final static String IMAGE_BOOKMARK = TOOLIMAGE_DIR + "bkmrk_nav.gif";
+	
+    public final static String IMAGE_EXPORT_SVG = TOOLIMAGE_DIR + "bkmrk_nav.gif";
+	
+    public final static String IMAGE_REFRESH = TOOLIMAGE_DIR + "refresh.gif";
+	
+    public final static String IMAGE_FILTER_BY_MODULES = TOOLIMAGE_DIR + "filterbymod.png";
 	
 	private static SequenceChartContributor singleton;
 
@@ -106,6 +148,8 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 
 	protected SequenceChartAction refreshAction;
 
+	protected SequenceChartAction exportSVGAction;
+
 	protected StatusLineContributionItem timelineModeStatus;
 
 	protected StatusLineContributionItem filterStatus;
@@ -126,6 +170,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		this.denseAxesAction = createDenseAxesAction();
 		this.balancedAxesAction = createBalancedAxesAction();
 		this.bookmarkAction = createBookmarkAction();
+		this.exportSVGAction = createExportSVGAction();
 		this.refreshAction = createRefreshAction();
 		
 		this.timelineModeStatus = createTimelineModeStatus();
@@ -212,6 +257,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 				menuManager.add(balancedAxesAction);
 				menuManager.add(separatorAction);
 				menuManager.add(bookmarkAction);
+				menuManager.add(exportSVGAction);
 				menuManager.add(refreshAction);
 			}
 		});
@@ -762,7 +808,202 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			}
 		};
 	}
+	
+	private SequenceChartAction createExportSVGAction() {
+		return new SequenceChartAction("Export SVG...", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_EXPORT_SVG)) {
+			@Override
+			public void run() {
+				int[] exportRegion = askExportRegion();
+				
+				if (exportRegion != null) {
+					String fileName = askFileName();
 
+					if (fileName != null) {
+						int exportBeginX = exportRegion[0];
+						int exportEndX = exportRegion[1];
+						GraphicsSVG graphics = createGraphics(exportBeginX, exportEndX);
+	
+						long top = sequenceChart.getViewportTop();
+						long left = sequenceChart.getViewportLeft();
+	
+						try {
+							sequenceChart.scrollHorizontalTo(exportBeginX + sequenceChart.getViewportLeft());
+							sequenceChart.scrollVerticalTo(0);
+							sequenceChart.paintSelectedArea(graphics);
+							writeXML(graphics, fileName);
+				        }
+				        catch (Exception e) {
+				        	throw new RuntimeException(e);
+				        }
+				        finally {
+				            graphics.dispose();
+				            sequenceChart.scrollHorizontalTo(left);
+				            sequenceChart.scrollVerticalTo(top);
+				        }
+					}
+				}
+			}
+
+			private String askFileName() {
+				FileDialog fileDialog = new FileDialog(Display.getCurrent().getActiveShell(), SWT.SAVE);
+				IPath location = sequenceChart.getInput().getFile().getLocation().makeAbsolute();
+				fileDialog.setFileName(location.removeFileExtension().addFileExtension("svg").lastSegment());
+				fileDialog.setFilterPath(location.removeLastSegments(1).toPortableString());
+				return fileDialog.open();
+			}
+
+			private int[] askExportRegion() {
+				ExportToSVGDialog dialog = new ExportToSVGDialog(Display.getCurrent().getActiveShell());
+
+				if (dialog.open() == Window.OK) {
+					IEventLog eventLog = sequenceChart.getEventLog();
+					
+					int exportBeginX;
+					int exportEndX;
+					
+					switch (dialog.getSelectedRangeType()) {
+						case 0:
+							List<IEvent> selectionEvents = sequenceChart.getSelectionEvents();
+							
+							IEvent e0 = selectionEvents.get(0);
+							IEvent e1 = selectionEvents.get(1);
+
+							if (e0.getEventNumber() < e1.getEventNumber()) {
+								exportBeginX = sequenceChart.getEventXViewportCoordinate(e0.getCPtr());
+								exportEndX = sequenceChart.getEventXViewportCoordinate(e1.getCPtr());
+							}
+							else {
+								exportBeginX = sequenceChart.getEventXViewportCoordinate(e1.getCPtr());
+								exportEndX = sequenceChart.getEventXViewportCoordinate(e0.getCPtr());
+							}
+							break;
+						case 1:
+							exportBeginX = 0;
+							exportEndX = sequenceChart.getViewportWidth();
+							break;
+						case 2:
+							exportBeginX = sequenceChart.getEventXViewportCoordinate(eventLog.getFirstEvent().getCPtr());
+							exportEndX = sequenceChart.getEventXViewportCoordinate(eventLog.getLastEvent().getCPtr());
+							break;
+						default:
+							return null;
+					}
+					
+					int extraSpace = dialog.getExtraSpace();
+
+					return new int[] {exportBeginX - extraSpace, exportEndX + extraSpace};
+				}
+				else
+					return null;
+			}
+
+			private GraphicsSVG createGraphics(int exportBeginX, int exportEndX) {
+				int width = exportEndX - exportBeginX;
+				int height = (int)sequenceChart.getVirtualHeight() + SequenceChart.GUTTER_HEIGHT * 2 + 2;
+
+				GraphicsSVG graphics = GraphicsSVG.getInstance(new Rectangle(0, -1, width, height));
+				SVGGraphics2D g = graphics.getSVGGraphics2D();
+				g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+				graphics.translate(0, 1);
+				graphics.setAntialias(SWT.ON);
+				
+				return graphics;
+			}
+
+			private void writeXML(GraphicsSVG graphics, String fileName)
+				throws TransformerConfigurationException, TransformerFactoryConfigurationError, TransformerException
+			{
+				Source source = new DOMSource(graphics.getRoot());
+				StreamResult streamResult = new StreamResult(new File(fileName));
+				Transformer transformer = TransformerFactory.newInstance().newTransformer();
+				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+				transformer.transform(source, streamResult);
+			}
+
+			@Override
+			public void update() {
+				setEnabled(sequenceChart.getInput() != null);
+			}
+
+			final class ExportToSVGDialog extends TitleAreaDialog {
+				private int extraSpace = 100;
+
+				private int selectedRangeType;
+				
+				public ExportToSVGDialog(Shell shell) {
+					super(shell);
+				}
+
+				public int getExtraSpace() {
+					return extraSpace;
+				}
+				
+				public int getSelectedRangeType() {
+					return selectedRangeType;
+				}
+
+				@Override
+				protected Control createDialogArea(Composite parent) {
+					setHelpAvailable(false);
+					
+					Composite container = new Composite((Composite)super.createDialogArea(parent), SWT.NONE);
+					container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+					container.setLayout(new GridLayout(2, false));
+
+					Group group = new Group(container, SWT.NONE);
+					GridData gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
+					gridData.horizontalSpan = 2;
+					group.setText("Select range to export");
+					group.setLayoutData(gridData);
+					group.setLayout(new GridLayout(1, false));
+
+			        // radio buttons
+					createButton(group, "Range of two selected events", 0).setEnabled(sequenceChart.getSelectionEvents().size() == 2);
+					createButton(group, "Visible area only", 1);
+					createButton(group, "Whole event log", 2);
+
+					Label label = new Label(container, SWT.NONE);
+					label.setText("Extra space in pixels around both ends: ");
+					label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+					
+					Text text = new Text(container, SWT.BORDER | SWT.SINGLE);
+					text.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+					text.setText(String.valueOf(extraSpace));
+					text.addSelectionListener(new SelectionAdapter() {
+						@Override
+						public void widgetSelected(SelectionEvent e) {
+							extraSpace = Integer.parseInt(getText());
+						}
+					});
+
+					setTitle("Export to SVG");
+					setMessage("Please select which part of the event log should be exported");
+
+					return container;
+				}
+
+				private Button createButton(Group group, String text, final int type) {
+					Button button = new Button(group, SWT.RADIO);
+					button.setText(text);
+					button.addSelectionListener(new SelectionAdapter() {
+						@Override
+						public void widgetSelected(SelectionEvent e) {
+							selectedRangeType = type;
+						}
+					});
+					
+					return button;
+				}
+				
+				@Override
+				protected void configureShell(Shell newShell) {
+					newShell.setText("Export to SVG");
+					super.configureShell(newShell);
+				}
+			};
+		};
+	}
+	
 	private SequenceChartAction createRefreshAction() {
 		return new SequenceChartAction("Refresh", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_REFRESH)) {
 			@Override

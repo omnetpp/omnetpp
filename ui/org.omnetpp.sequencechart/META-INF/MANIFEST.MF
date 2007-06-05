@@ -12,8 +12,10 @@ Require-Bundle: org.eclipse.core.resources,
  org.eclipse.ui.editors,
  org.eclipse.jface.text,
  org.eclipse.draw2d,
+ org.eclipse.ui.workbench.texteditor,
+ org.eclipse.gmf.runtime.draw2d.ui.render.awt,
+ org.apache.batik,
  org.omnetpp.common,
- org.omnetpp.ide.nativelibs,
- org.eclipse.ui.workbench.texteditor
+ org.omnetpp.ide.nativelibs
 Eclipse-LazyStart: true
 Bundle-Vendor: OpenSim Ltd.
