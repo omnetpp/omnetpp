@@ -207,10 +207,20 @@ public class DatasetManager {
 	public static VectorDataset createVectorDataset(Chart chart, ResultFileManager manager, IProgressMonitor progressMonitor) {
 		//TODO update progressMonitor
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
-		XYArray[] dataValues = getDataFromDataset(manager, dataset, chart);
-		IDList idlist = getIDListFromDataset(manager, dataset, chart, ResultType.VECTOR_LITERAL);
+
+		DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
+		builder.build(dataset, chart);
+		IDList idlist = builder.getIDs();
+		builder.close();
+
+		List<Node> arrayBuilders = builder.getOutputs();
+		DataflowManager dataflowManager = builder.getDataflowManager();
+		
+		dataflowManager.dump();
+		XYArray[] dataValues = executeDataflowNetwork(dataflowManager, arrayBuilders);
+
 		String[] dataNames = getResultItemIDs(idlist, manager);
-		return new VectorDataset(dataNames, dataValues);
+		return new VectorDataset(idlist, dataNames, dataValues);
 	}
 	
 	public static ScatterPlotDataset createScatterPlotDataset(ScatterChart chart, ResultFileManager manager, IProgressMonitor monitor) {

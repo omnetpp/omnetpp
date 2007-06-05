@@ -177,6 +177,12 @@ public class DataflowNetworkBuilder {
 		close();
 	}
 
+	
+	public IDList getIDs() {
+		Set<Long> keys = idToPortMap.keySet();
+		return IDList.fromArray(keys.toArray(new Long[keys.size()]));
+	}
+	
 	/**
 	 * Adds an arraybuilder node for each open ports.
 	 */
@@ -243,11 +249,6 @@ public class DataflowNetworkBuilder {
 
 	private Port getPort(Node node, String portName) {
 		return node.nodeType().getPort(node, portName);
-	}
-
-	private IDList getIDs() {
-		Set<Long> keys = idToPortMap.keySet();
-		return IDList.fromArray(keys.toArray(new Long[keys.size()]));
 	}
 
 	private void addSourceNodes(IDList idlist) {

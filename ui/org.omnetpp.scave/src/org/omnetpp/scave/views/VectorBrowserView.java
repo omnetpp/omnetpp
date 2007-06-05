@@ -5,6 +5,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -21,7 +22,9 @@ import org.omnetpp.scave.editors.datatable.VectorResultContentProvider;
 import org.omnetpp.scave.editors.datatable.VectorResultRowRenderer;
 import org.omnetpp.scave.engine.IndexFile;
 import org.omnetpp.scave.engine.OutputVectorEntry;
+import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.VectorResult;
+import org.omnetpp.scave.model2.LineID;
 
 /**
  * View for vector data.
@@ -131,6 +134,15 @@ public class VectorBrowserView extends ViewWithMessagePart {
 			// show the first selected vector (XXX merge vectors?)
 			IDListSelection idlistSelection = (IDListSelection)selection;
 			selectedVector = idlistSelection.getFirstAsVector();
+		}
+		else if (selection instanceof IStructuredSelection) {
+			Object selectedObject = ((IStructuredSelection)selection).getFirstElement();
+			if (selectedObject instanceof LineID) {
+				ResultItem selectedItem = ((LineID)selectedObject).getResultItem();
+				if (selectedItem instanceof VectorResult) {
+					selectedVector = (VectorResult)selectedItem;
+				}
+			}
 		}
 		
 		if (selectedVector != viewer.getInput()) {

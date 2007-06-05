@@ -37,6 +37,17 @@ public class IDListSelection implements IStructuredSelection {
 			type = ResultType.HISTOGRAM_LITERAL;
 	}
 	
+	public IDListSelection(long id, ResultFileManager manager) {
+		this.elements = new Long[] { id };
+		this.manager = manager;
+		if (manager.getTypeOf(id) == ResultFileManager.SCALAR)
+			type = ResultType.SCALAR_LITERAL;
+		else if (manager.getTypeOf(id) == ResultFileManager.VECTOR)
+			type = ResultType.VECTOR_LITERAL;
+		else if (manager.getTypeOf(id) == ResultFileManager.HISTOGRAM)
+			type = ResultType.HISTOGRAM_LITERAL;
+	}
+	
 	public ResultFileManager getResultFileManager() {
 		return manager;
 	}

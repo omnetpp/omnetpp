@@ -23,13 +23,17 @@ import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_MAX;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_MIN;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_TITLE;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
@@ -45,6 +49,7 @@ import org.omnetpp.scave.charting.ChartProperties.LineType;
 import org.omnetpp.scave.charting.ChartProperties.SymbolType;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
+import org.omnetpp.scave.charting.dataset.VectorDataset;
 import org.omnetpp.scave.charting.plotter.CrossSymbol;
 import org.omnetpp.scave.charting.plotter.DiamondSymbol;
 import org.omnetpp.scave.charting.plotter.DotsVectorPlotter;
@@ -79,6 +84,35 @@ public class VectorChart extends ChartCanvas {
 
 	private static final String KEY_ALL = null;
 	
+	private IChartSelection selection;
+	
+	public class LineSelection implements IChartSelection {
+		private long vectorID;
+		private int series;
+		private String seriesKey;
+		private int index;
+		
+		public LineSelection(int series, int index) {
+			this.series = series;
+			this.index=  index;
+			this.vectorID = -1;
+			this.seriesKey = null;
+			if (series >= 0) {
+				if (dataset instanceof VectorDataset)
+					vectorID = ((VectorDataset)dataset).getID(series);
+				seriesKey = dataset.getSeriesKey(series);
+			}
+		}
+		
+		public long getSelectedID() {
+			return vectorID;
+		}
+		
+		public String getSelectedKey() {
+			return seriesKey;
+		}
+	}
+	
 	static class LineProperties {
 		SymbolType symbolType;
 		Integer symbolSize;
@@ -89,6 +123,18 @@ public class VectorChart extends ChartCanvas {
 	public VectorChart(Composite parent, int style) {
 		super(parent, style);
 		lineProperties.put(KEY_ALL, new LineProperties());
+		this.addMouseListener(new MouseAdapter() {
+			public void mouseDown(MouseEvent e) {
+				List<CrossHair.DataPoint> points = new ArrayList<CrossHair.DataPoint>();
+				int count = crosshair.dataPointsNear(e.x, e.y, 3, points, 1);
+				if (count > 0) {
+					CrossHair.DataPoint point = points.get(0);
+					setSelection(new LineSelection(point.series, point.index));
+				}
+				else
+					setSelection(null);
+			}
+		});
 	}
 	
 	public IXYDataset getDataset() {
@@ -118,6 +164,16 @@ public class VectorChart extends ChartCanvas {
 				legendTooltip.addItem(color, key, symbol);
 			}
 		}
+	}
+	
+	public IChartSelection getSelection() {
+		return selection;
+	}
+	
+	public void setSelection(IChartSelection selection) {
+		this.selection = selection;
+		chartChanged();
+		fireChartSelectionChange(selection);
 	}
 	
 	/*==================================
@@ -515,6 +571,21 @@ public class VectorChart extends ChartCanvas {
 		yAxis.drawAxis(gc);
 		legendTooltip.draw(gc);
 		drawStatusText(gc);
+		drawSelection(gc);
 		crosshair.draw(gc);
+	}
+	
+	protected void drawSelection(GC gc) {
+		if (selection instanceof LineSelection) {
+			LineSelection selection = (LineSelection)this.selection;
+			if (selection.series >= 0 && selection.index >= 0) {
+				ICoordsMapping mapper = getOptimizedCoordinateMapper();
+				int x = mapper.toCanvasX(dataset.getX(selection.series, selection.index));
+				int y = mapper.toCanvasY(dataset.getY(selection.series, selection.index));
+				gc.setForeground(ColorFactory.RED);
+				gc.setLineWidth(1);
+				gc.drawOval(x-5, y-5, 10, 10);
+			}
+		}
 	}
 }

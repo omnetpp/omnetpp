@@ -1,12 +1,16 @@
 package org.omnetpp.scave.actions;
 
 import static org.omnetpp.common.image.ImageFactory.TOOLBAR_IMAGE_PROPERTIES;
+import static org.omnetpp.scave.editors.forms.IScaveObjectEditForm.PARAM_SELECTED_OBJECT;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITreeSelection;
+import org.eclipse.jface.viewers.TreePath;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.EditDialog;
@@ -28,12 +32,20 @@ public class EditAction extends AbstractScaveAction {
         setToolTipText("Edit the properties of the selected item");
 		this.formParameters = formParameters;
 	}
+	
+	public void setFormProperty(String propName, Object propValue) {
+		if (formParameters == null)
+			formParameters = new HashMap<String,Object>();
+		formParameters.put(propName, propValue);
+	}
 
 	@Override
 	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
 		if (isApplicable(scaveEditor, selection)) {
-			EObject object = (EObject)selection.getFirstElement(); //TODO edit several objects together?
-			EditDialog dialog = new EditDialog(scaveEditor.getSite().getShell(), object, scaveEditor, formParameters);
+			EObject editedObject = getEditedObject(scaveEditor, selection);
+			Object selectedObject = selection.getFirstElement();
+			formParameters.put(PARAM_SELECTED_OBJECT, selectedObject);
+			EditDialog dialog = new EditDialog(scaveEditor.getSite().getShell(), editedObject, scaveEditor, formParameters);
 			EStructuralFeature[] features = dialog.getFeatures();
 			if (features.length > 0)
 				dialog.open();
@@ -42,8 +54,34 @@ public class EditAction extends AbstractScaveAction {
 
 	@Override
 	public boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		return selection.size() == 1 && selection.getFirstElement() instanceof EObject &&
-				((EObject)selection.getFirstElement()).eResource() != null &&
-				EditDialog.getEditableFeatures((EObject)selection.getFirstElement(), editor).length > 0;
+		return getEditedObject(editor, selection) != null;
+	}
+	
+	 //TODO edit several objects together?
+	private EObject getEditedObject(ScaveEditor editor, IStructuredSelection selection) {
+		if (selection.size() == 1) {
+			EObject editedObject = null;
+			if (selection.getFirstElement() instanceof EObject) {
+				editedObject = (EObject)selection.getFirstElement();
+			}
+			else if (selection instanceof ITreeSelection) {
+				ITreeSelection treeSelection = (ITreeSelection)selection;
+				TreePath[] paths = treeSelection.getPaths();
+				if (paths.length > 0) {
+					TreePath path = paths[0];
+					for (int i = path.getSegmentCount() - 1; i >= 0; --i) {
+						Object segment = path.getSegment(i);
+						if (segment instanceof EObject) {
+							editedObject = (EObject)segment;
+							break;
+						}
+					}
+				}
+			}
+			if (editedObject != null && editedObject.eResource() != null &&
+					EditDialog.getEditableFeatures(editedObject, editor).length > 0)
+				return editedObject;
+		}
+		return null;
 	}
 }

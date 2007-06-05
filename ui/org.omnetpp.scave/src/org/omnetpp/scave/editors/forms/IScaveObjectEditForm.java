@@ -15,6 +15,11 @@ import org.eclipse.swt.widgets.Composite;
 public interface IScaveObjectEditForm {
 	
 	/**
+	 * Key for accessing the selected object as a form parameter.
+	 */
+	final String PARAM_SELECTED_OBJECT = "SelectedObject";
+	
+	/**
 	 * Returns the string displayed in the title are of the dialog.
 	 */
 	String getTitle();

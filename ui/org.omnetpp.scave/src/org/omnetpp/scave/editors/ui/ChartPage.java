@@ -11,6 +11,9 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TreePath;
+import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -23,15 +26,21 @@ import org.omnetpp.scave.actions.RemoveObjectAction;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.charting.ChartFactory;
 import org.omnetpp.scave.charting.ChartUpdater;
+import org.omnetpp.scave.charting.IChartSelection;
+import org.omnetpp.scave.charting.IChartSelectionListener;
+import org.omnetpp.scave.charting.VectorChart;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorContributor;
 import org.omnetpp.scave.editors.forms.ChartEditForm;
+import org.omnetpp.scave.editors.forms.LineChartEditForm;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Param;
 import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
+import org.omnetpp.scave.model2.LineID;
 
 public class ChartPage extends ScaveEditorPage {
 
@@ -40,15 +49,26 @@ public class ChartPage extends ScaveEditorPage {
 	private ChartUpdater updater;
 
 	// holds actions for the context menu of this chart 
-	private MenuManager contextMenuManager = new MenuManager("#PopupMenu"); 
+	private MenuManager contextMenuManager = new MenuManager("#PopupMenu");
+	
+	private IChartSelectionListener chartSelectionListener;
 
 	public ChartPage(Composite parent, ScaveEditor editor, Chart chart) {
 		super(parent, SWT.V_SCROLL, editor);
 		this.chart = chart;
 		initialize();
 		this.updater = new ChartUpdater(chart, chartView, scaveEditor.getResultFileManager());
+		hookListeners();
 	}
 	
+	@Override
+	public void dispose() {
+		unhookListeners();
+		super.dispose();
+	}
+
+
+
 	public Chart getChart() {
 		return chart;
 	}
@@ -94,7 +114,7 @@ public class ChartPage extends ScaveEditorPage {
 		Composite parent = getBody();
 		chartView = (ChartCanvas) ChartFactory.createChart(parent, this.chart, scaveEditor.getResultFileManager());
 		chartView.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-		configureChartView(chartView, chart); //FIXME bring this method into this class
+		// configureChartView(chartView, chart); //FIXME bring this method into this class
 		
 		// add context menu to chart, and populate it
 		// (in fact, only the Remove submenu would need to be dynamic, but looks like
@@ -107,15 +127,42 @@ public class ChartPage extends ScaveEditorPage {
 		});
 		chartView.setMenu(contextMenuManager.createContextMenu(chartView));
 	}
+	
+	private void hookListeners() {
+		if (chartSelectionListener == null) {
+			chartSelectionListener = new IChartSelectionListener() {
+				public void selectionChanged(IChartSelection selection) {
+					if (selection instanceof VectorChart.LineSelection) {
+						VectorChart.LineSelection lineSelection = (VectorChart.LineSelection)selection;
+						ResultFileManager manager = updater.getResultFileManager();
+						long id = lineSelection.getSelectedID(); // XXX store these in the selection too
+						String key = lineSelection.getSelectedKey();
+						LineID lineID = new LineID(key, id, manager);
+						scaveEditor.setSelection(new TreeSelection(new TreePath(new Object[] {chart, lineID})));
+					}
+					else {
+						scaveEditor.setSelection(new StructuredSelection(chart));
+					}
+				}
+			};
+			chartView.addChartSelectionListener(chartSelectionListener);
+		}
+	}
+	
+	private void unhookListeners() {
+		if (chartSelectionListener != null) {
+			chartView.removeChartSelectionListener(chartSelectionListener);
+			chartSelectionListener = null;
+		}
+	}
 
 	protected void updateContextMenu() {
 		ScaveEditorContributor editorContributor = ScaveEditorContributor.getDefault();
 		contextMenuManager.add(editorContributor.getZoomInAction());
 		contextMenuManager.add(editorContributor.getZoomOutAction());
 		contextMenuManager.add(new Separator());
-		//contextMenuManager.add(editorContributor.getEditAction());
 		contextMenuManager.add(new EditAction("Chart...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_MAIN)));
-		contextMenuManager.add(new EditAction("Lines...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, "Lines")));  //XXX
+		contextMenuManager.add(new EditAction("Lines...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, LineChartEditForm.TAB_LINES)));
 		contextMenuManager.add(new EditAction("Axes...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_AXES)));
 		contextMenuManager.add(new EditAction("Title...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_TITLES)));
 		contextMenuManager.add(new EditAction("Legend...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_LEGEND)));

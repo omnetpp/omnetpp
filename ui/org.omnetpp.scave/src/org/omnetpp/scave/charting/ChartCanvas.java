@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
@@ -76,6 +77,8 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	private Color insetsBackgroundColor = DEFAULT_INSETS_BACKGROUND_COLOR;
 	private Color insetsLineColor = DEFAULT_INSETS_LINE_COLOR;
 	
+	private ListenerList listeners = new ListenerList();
+	
 	public ChartCanvas(Composite parent, int style) {
 		super(parent, style);
 		setCaching(DEFAULT_CANVAS_CACHING);
@@ -100,6 +103,19 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	 * Calculate positions of chart elements such as title, legend, axis labels, plot area. 
 	 */
 	abstract protected void layoutChart();
+	
+	public void addChartSelectionListener(IChartSelectionListener listener) {
+		listeners.add(listener);
+	}
+	
+	public void removeChartSelectionListener(IChartSelectionListener listener) {
+		listeners.remove(listener);
+	}
+	
+	protected void fireChartSelectionChange(IChartSelection selection) {
+		for (Object listener : listeners.getListeners())
+			((IChartSelectionListener)listener).selectionChanged(selection);
+	}
 	
 	/**
 	 * Switches between zoom and pan mode. 

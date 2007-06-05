@@ -38,6 +38,10 @@ public class ChartUpdater {
 		this.view = view;
 		this.manager = manager;
 	}
+	
+	public ResultFileManager getResultFileManager() {
+		return manager;
+	}
 
 	/**
 	 * Propagate changes on the "Chart" model object to the chart view. 

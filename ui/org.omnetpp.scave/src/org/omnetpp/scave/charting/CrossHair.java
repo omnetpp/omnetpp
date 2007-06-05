@@ -1,6 +1,7 @@
 package org.omnetpp.scave.charting;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -19,11 +20,9 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.dataset.DatasetUtils;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
-import org.omnetpp.scave.model.Dataset;
 
 /**
  * Displays crosshair mouse cursor for VectorChart.
@@ -276,7 +275,8 @@ class CrossHair {
 		return coordinates + " - " + series;
 	}
 
-	private int dataPointsNear(int x, int y, int d, ArrayList<DataPoint> result, int maxCount) {
+	// XXX move this method into a VectorPlot class
+	protected int dataPointsNear(int x, int y, int d, List<DataPoint> result, int maxCount) {
 		IXYDataset dataset = chart.getDataset();
 		if (dataset==null)
 			return 0;

@@ -39,10 +39,14 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model2.DatasetManager;
+import org.omnetpp.scave.model2.LineID;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 public class LineChartEditForm extends ChartEditForm {
-	private static final String TAB_LINES = "Lines";
+	
+	public static final String PARAM_SELECTED_LINE = "SelectedLine";
+	public static final String TAB_LINES = "Lines";
+
 	private static final String AUTO = "Auto";
 	private static final String[] SYMBOL_SIZES = StringUtils.split("1 2 3 4 5 6 7 8 10 12 16 20");
 
@@ -117,8 +121,28 @@ public class LineChartEditForm extends ChartEditForm {
 			previewCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 			previewCanvas.setBackground(ColorFactory.WHITE);
 			
-			linesTableViewer.getTable().select(0);
+			selectLine(getSelectedLineKey());
 		}
+	}
+	
+	protected String getSelectedLineKey() {
+		Object selection = formParameters.get(PARAM_SELECTED_OBJECT);
+		if (selection != null && selection instanceof LineID)
+			return ((LineID)selection).getKey();
+		else
+			return null;
+	}
+	
+	protected void selectLine(String lineName) {
+		if (lineName != null) {
+			for (int i = 0; i < lineNames.length; ++i)
+				if (lineNames[i].equals(lineName)) {
+					linesTableViewer.getTable().select(i);
+					return;
+				}
+		}
+		
+		linesTableViewer.getTable().select(0);
 	}
 	
 	protected ImageCombo createImageComboField(String labelText, Composite parent) {
