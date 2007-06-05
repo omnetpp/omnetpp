@@ -1,11 +1,13 @@
 package org.omnetpp.scave.charting;
 
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_DISPLAY_LINE;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LINE_STYLE;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_SHOW_GRID;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_SYMBOL_SIZE;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_AXIS_TITLE_FONT;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_DISPLAY_LINE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LABEL_FONT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LINE_COLOR;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LINE_TYPE;
@@ -74,7 +76,8 @@ public class VectorChart extends ChartCanvas {
 
 	private LinearAxis xAxis = new LinearAxis(this, false);
 	private LinearAxis yAxis = new LinearAxis(this, true);
-	private Map<String, LineProperties> lineProperties = new HashMap<String,LineProperties>();
+	private List<LineProperties> lineProperties;
+	private LineProperties defaultProperties;
 	private CrossHair crosshair = new CrossHair(this);
 
 	private boolean smartMode = true; // whether smartModeLimit is enabled
@@ -82,8 +85,6 @@ public class VectorChart extends ChartCanvas {
 	
 	private int layoutDepth = 0; // how many layoutChart() calls are on the stack
 
-	private static final String KEY_ALL = null;
-	
 	private IChartSelection selection;
 	
 	public class LineSelection implements IChartSelection {
@@ -113,16 +114,160 @@ public class VectorChart extends ChartCanvas {
 		}
 	}
 	
-	static class LineProperties {
+	/**
+	 * Class representing the properties of one line of the chart.
+	 * There is one instance for each series of the dataset + one extra for the default properties.
+	 * Property getters fallback to the default if the property is not set for the line.
+	 */
+	class LineProperties {
+		LineProperties fallback;
+		int series;
+		String lineId;
+		Boolean displayLine;
 		SymbolType symbolType;
 		Integer symbolSize;
 		LineType lineType;
 		RGB lineColor;
+		
+		/**
+		 * Constructor for the defaults.
+		 */
+		private LineProperties() {
+			this.displayLine = DEFAULT_DISPLAY_LINE;
+			this.symbolSize = DEFAULT_SYMBOL_SIZE;
+			this.lineType = DEFAULT_LINE_STYLE;
+			this.series = -1;
+			this.lineId = null;
+		}
+		
+		public LineProperties(String lineId, int series) {
+			Assert.isLegal(lineId != null);
+			this.lineId = lineId;
+			this.series = series;
+			fallback = defaultProperties;
+		}
+		
+		public String getLineId() {
+			return lineId;
+		}
+		
+		public boolean getDisplayLine() {
+			if (displayLine == null && fallback != null)
+				return fallback.getDisplayLine();
+			Assert.isTrue(displayLine != null);
+			return displayLine;
+		}
+		
+		public void setDisplayLine(Boolean displayLine) {
+			if (displayLine == null && this == defaultProperties)
+				displayLine = DEFAULT_DISPLAY_LINE;
+			this.displayLine = displayLine;
+		}
+		
+		public SymbolType getSymbolType() {
+			SymbolType symbolType = this.symbolType;
+			
+			if (symbolType == null && fallback != null)
+				symbolType = fallback.getSymbolType();
+			
+			if (symbolType == null) {
+				switch (series % 6) {
+				case 0: symbolType = SymbolType.Square; break;
+				case 1: symbolType = SymbolType.Dot; break;
+				case 2: symbolType = SymbolType.Triangle; break;
+				case 3: symbolType = SymbolType.Diamond; break;
+				case 4: symbolType = SymbolType.Cross; break;
+				case 5: symbolType = SymbolType.Plus; break;
+				default: symbolType = null; break;
+				}
+			}
+			//Assert.isTrue(symbolType != null);
+			return symbolType;
+		}
+		
+		public void setSymbolType(SymbolType symbolType) {
+			this.symbolType = symbolType;
+		}
+		
+		public int getSymbolSize() {
+			if (symbolSize == null && fallback != null)
+				return fallback.getSymbolSize();
+			Assert.isTrue(symbolSize != null);
+			return symbolSize;
+		}
+		
+		public void setSymbolSize(Integer symbolSize) {
+			if (symbolSize == null && this == defaultProperties)
+				symbolSize = DEFAULT_SYMBOL_SIZE;
+			this.symbolSize = symbolSize;
+		}
+		
+		public LineType getLineType() {
+			if (lineType == null && fallback != null)
+				return fallback.getLineType();
+			Assert.isTrue(lineType != null);
+			return lineType;
+		}
+		
+		public void setLineType(LineType lineType) {
+			if (lineType == null && this == defaultProperties)
+				lineType = DEFAULT_LINE_STYLE;
+			this.lineType = lineType;
+		}
+		
+		public RGB getLineColor() {
+			if (lineColor == null && fallback != null)
+				return fallback.getLineColor();
+			return lineColor;
+		}
+		
+		public void setLineColor(RGB lineColor) {
+			this.lineColor = lineColor;
+		}
+		
+		public IVectorPlotter getPlotter() { // XXX cache
+			Assert.isTrue(this != defaultProperties);
+			LineType type = getLineType();
+			switch (type) {
+			case Dots: return new DotsVectorPlotter();
+			case Linear: return new LinesVectorPlotter();
+			case SampleHold: return new SampleHoldVectorPlotter();
+			case Pins: return new PinsVectorPlotter();
+			case Points: return new PointsVectorPlotter();
+			default: throw new IllegalArgumentException("unknown line style: " + type);
+			}
+		}
+		
+		public IChartSymbol getSymbol() { // XXX cache
+			Assert.isTrue(this != defaultProperties);
+			SymbolType type = getSymbolType();
+			int size = getSymbolSize();
+			switch (type) {
+			case None: return null;
+			case Cross: return new CrossSymbol(size);
+			case Diamond: return new DiamondSymbol(size);
+			case Dot: return new OvalSymbol(size);
+			case Plus: return new PlusSymbol(size);
+			case Square: return new SquareSymbol(size);
+			case Triangle: return new TriangleSymbol(size);
+			default: throw new IllegalArgumentException("unknown symbol type: " + type);
+			}
+		}
+		
+		public Color getColor() { // XXX cache
+			Assert.isTrue(this != defaultProperties);
+			RGB color = getLineColor();
+			if (color != null)
+				return new Color(null, color);
+			else
+				return ColorFactory.getGoodDarkColor(series);
+		}
 	}
 	
 	public VectorChart(Composite parent, int style) {
 		super(parent, style);
-		lineProperties.put(KEY_ALL, new LineProperties());
+		lineProperties = new ArrayList<LineProperties>();
+		defaultProperties = new LineProperties();
 		this.addMouseListener(new MouseAdapter() {
 			public void mouseDown(MouseEvent e) {
 				List<CrossHair.DataPoint> points = new ArrayList<CrossHair.DataPoint>();
@@ -137,6 +282,65 @@ public class VectorChart extends ChartCanvas {
 		});
 	}
 	
+	public LineProperties getLineProperties(int series) {
+		Assert.isTrue(series >= 0 && dataset != null && series < dataset.getSeriesCount(),
+				String.format("Received series=%d, series count=%d", series, dataset!=null?dataset.getSeriesCount():0));
+		return lineProperties.get(series); // index 0 is the default
+	}
+	
+	public LineProperties getLineProperties(String lineId) {
+		if (lineId == null)
+			return defaultProperties;
+		for (LineProperties props : lineProperties)
+			if (lineId.equals(props.lineId))
+				return props;
+		return null;
+	}
+	
+	public LineProperties getOrCreateLineProperties(String lineId) {
+		LineProperties props = getLineProperties(lineId);
+		if (props == null) {
+			props = new LineProperties(lineId, -1);
+			lineProperties.add(props);
+		}
+		return props;
+	}
+	
+	public void updateLineProperties() {
+		System.out.println("updateLineProperties()");
+		
+		int seriesCount = dataset != null ? dataset.getSeriesCount() : 0;
+		List<LineProperties> newProps = new ArrayList<LineProperties>(seriesCount);
+		
+		// create an index for the current line properties
+		Map<String,LineProperties> map = new HashMap<String,LineProperties>();
+		for (LineProperties props : lineProperties) {
+			if (props.getLineId() != null)
+				map.put(props.getLineId(), props);
+		}
+		// add properties for series in the current dataset
+		for (int series = 0; series < seriesCount; ++series) {
+			String lineId = dataset.getSeriesKey(series);
+			LineProperties oldProps =  map.get(lineId);
+			if (oldProps != null) {
+				oldProps.series = series;
+				newProps.add(oldProps);
+				map.remove(lineId);
+			}
+			else {
+				newProps.add(new LineProperties(lineId, series));
+			}
+		}
+		// add properties that was set but not present in the current dataset
+		// we need this, because the properties can be set earlier than the dataset
+		for(LineProperties props : map.values()) {
+			props.series = -1;
+			newProps.add(props);
+		}
+		
+		lineProperties = newProps;
+	}
+	
 	public IXYDataset getDataset() {
 		return dataset;
 	}
@@ -145,8 +349,10 @@ public class VectorChart extends ChartCanvas {
 	public void setDataset(IDataset dataset) {
 		if (dataset != null && !(dataset instanceof IXYDataset))
 			throw new IllegalArgumentException("must be an IXYDataset");
-
+		System.out.println("setDataset()");
 		this.dataset = (IXYDataset)dataset;
+		this.selection = null;
+		updateLineProperties();
 		updateLegend();
 		calculateArea();
 		chartChanged();
@@ -157,11 +363,14 @@ public class VectorChart extends ChartCanvas {
 		legendTooltip.clearItems();
 		if (dataset != null) {
 			for (int i = 0; i < dataset.getSeriesCount(); ++i) {
-				Color color = getLineColor(i);
-				String key = dataset.getSeriesKey(i);
-				IChartSymbol symbol = getSymbol(key);
-				legend.addLegendItem(color, key);
-				legendTooltip.addItem(color, key, symbol);
+				LineProperties props = getLineProperties(i);
+				if (props.getDisplayLine()) {
+					Color color = props.getColor();
+					String key = props.getLineId();
+					IChartSymbol symbol = props.getSymbol();
+					legend.addLegendItem(color, key);
+					legendTooltip.addItem(color, key, symbol);
+				}
 			}
 		}
 	}
@@ -211,36 +420,23 @@ public class VectorChart extends ChartCanvas {
 		else if (PROP_XY_GRID.equals(name))
 			setGridVisibility(Converter.stringToBoolean(value));
 		// Lines
+		else if (name.startsWith(PROP_DISPLAY_LINE))
+			setDisplayLine(getLineId(name), Converter.stringToBoolean(value));
 		else if (name.startsWith(PROP_SYMBOL_TYPE))
-			setSymbolType(getKey(name), Converter.stringToEnum(value, SymbolType.class));
+			setSymbolType(getLineId(name), Converter.stringToEnum(value, SymbolType.class));
 		else if (name.startsWith(PROP_SYMBOL_SIZE))
-			setSymbolSize(getKey(name), Converter.stringToInteger(value));
+			setSymbolSize(getLineId(name), Converter.stringToInteger(value));
 		else if (name.startsWith(PROP_LINE_TYPE))
-			setLineStyle(getKey(name), Converter.stringToEnum(value, LineType.class));
+			setLineStyle(getLineId(name), Converter.stringToEnum(value, LineType.class));
 		else if (name.startsWith(PROP_LINE_COLOR))
-			setLineColor(getKey(name), ColorFactory.asRGB(value));
+			setLineColor(getLineId(name), ColorFactory.asRGB(value));
 		else
 			super.setProperty(name, value);
 	}
 	
-	private String getKey(String name) {
-		int index = name.indexOf('/');
-		return index >= 0 ? name.substring(index + 1) : KEY_ALL;
-	}
-
-	protected LineProperties getLineProperties(String key) {
-		return lineProperties.get(key);
-	}
-	
-	protected LineProperties getDefaultLineProperties() {
-		return lineProperties.get(KEY_ALL);
-	}
-	
-	protected LineProperties getOrCreateLineProperties(String key) {
-		LineProperties properties = lineProperties.get(key);
-		if (properties == null)
-			lineProperties.put(key, properties = new LineProperties());
-		return properties;
+	private String getLineId(String propertyName) {
+		int index = propertyName.indexOf('/');
+		return index >= 0 ? propertyName.substring(index + 1) : null;
 	}
 
 	public void setXAxisTitle(String value) {
@@ -261,81 +457,36 @@ public class VectorChart extends ChartCanvas {
 		}
 	}
 
-	public LineType getLineStyle (String key) {
-		LineProperties props = getLineProperties(key);
-		if (props == null || props.lineType == null)
-			props = getDefaultLineProperties();
-		return props.lineType != null ? props.lineType : DEFAULT_LINE_STYLE;
-	}
-
-	public void setLineStyle(String key, LineType type) {
+	public void setDisplayLine(String key, Boolean value) {
 		LineProperties props = getOrCreateLineProperties(key);
-		props.lineType = type;
+		props.setDisplayLine(value);
+		updateLegend();
 		chartChanged();
 	}
 	
-	public RGB getLineColor(String key) {
-		LineProperties props = getLineProperties(key);
-		if (props == null || props.lineColor == null)
-			props = getDefaultLineProperties();
-		return props.lineColor != null ? props.lineColor : null;
+	public void setLineStyle(String key, LineType type) {
+		LineProperties props = getOrCreateLineProperties(key);
+		props.setLineType(type);
+		chartChanged();
 	}
 	
 	public void setLineColor(String key, RGB color) {
 		LineProperties props = getOrCreateLineProperties(key);
-		props.lineColor = color;
+		props.setLineColor(color);
 		updateLegend();
 		chartChanged();
 	}
 
-	public SymbolType getSymbolType(String key) {
-		LineProperties props = getLineProperties(key);
-		if (props == null || props.symbolType == null)
-			props = getDefaultLineProperties();
-		if (props.symbolType != null) {
-			return props.symbolType;
-		}
-		else {
-			// generate one
-			int series = getSeriesIndex(key);
-			Assert.isTrue(series >= 0); // key must be valid
-			switch (series % 6) {
-			case 0: return SymbolType.Square;
-			case 1: return SymbolType.Dot;
-			case 2: return SymbolType.Triangle;
-			case 3: return SymbolType.Diamond;
-			case 4: return SymbolType.Cross;
-			case 5: return SymbolType.Plus;
-			default: return null; // never reached  
-			}
-		}
-	}
-	
-	private int getSeriesIndex(String key) {
-		int c = dataset.getSeriesCount();
-		for (int i = 0; i < c; ++i)
-			if (dataset.getSeriesKey(i).equals(key))
-				return i;
-		return -1;
-	}
-	
 	public void setSymbolType(String key, SymbolType symbolType) {
 		LineProperties props = getOrCreateLineProperties(key);
-		props.symbolType = symbolType;
+		props.setSymbolType(symbolType);
 		updateLegend();
 		chartChanged();
 	}
 	
-	public int getSymbolSize(String key) {
-		LineProperties props = getLineProperties(key);
-		if (props == null || props.symbolSize == null)
-			props = getDefaultLineProperties();
-		return props.symbolSize != null ? props.symbolSize : DEFAULT_SYMBOL_SIZE;
-	}
-	
 	public void setSymbolSize(String key, Integer size) {
 		LineProperties props = getOrCreateLineProperties(key);
-		props.symbolSize = size;
+		props.setSymbolSize(size);
 		chartChanged();
 	}
 	
@@ -479,6 +630,8 @@ public class VectorChart extends ChartCanvas {
 	
 	@Override
 	protected void paintCachableLayer(GC gc) {
+		System.out.println("paintCachableLayer()");
+		
 		resetDrawingStylesAndColors(gc);
 		xAxis.drawGrid(gc);
 		yAxis.drawGrid(gc);
@@ -487,29 +640,32 @@ public class VectorChart extends ChartCanvas {
 			ICoordsMapping mapper = getOptimizedCoordinateMapper();
 			long startTime = System.currentTimeMillis();
 			for (int series=0; series<dataset.getSeriesCount(); series++) {
-				String key = dataset.getSeriesKey(series).toString();
-				IVectorPlotter plotter = getPlotter(key);
-				IChartSymbol symbol = getSymbol(key);
-				Color color = getLineColor(series);
-				resetDrawingStylesAndColors(gc);
-				gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
-				gc.setForeground(color);
-				gc.setBackground(color);
+				LineProperties props = getLineProperties(series);
+				if (props.getDisplayLine()) {
 
-				if (smartMode && plotter.getNumPointsInXRange(dataset, series, gc, mapper) >= smartModeLimit) {
-					//XXX this may have unwanted effects when caching is on,
-					// i.e. parts of a line w/ symbols, other parts the SAME line w/o symbols....
-					System.out.println("\"smart mode\": turning off symbols");
-					symbol = null;
-				}
-				
-				plotter.plot(dataset, series, gc, mapper, symbol);
+					IVectorPlotter plotter = props.getPlotter();
+					IChartSymbol symbol = props.getSymbol();
+					Color color = props.getColor();
+					resetDrawingStylesAndColors(gc);
+					gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
+					gc.setForeground(color);
+					gc.setBackground(color);
 
-				// if drawing is taking too long, display busy cursor
-				if (System.currentTimeMillis() - startTime > 1000) {
-					Cursor cursor = Display.getCurrent().getSystemCursor(SWT.CURSOR_WAIT);
-					getShell().setCursor(cursor);
-					setCursor(null); // crosshair cursor would override shell's busy cursor 
+					if (smartMode && plotter.getNumPointsInXRange(dataset, series, gc, mapper) >= smartModeLimit) {
+						//XXX this may have unwanted effects when caching is on,
+						// i.e. parts of a line w/ symbols, other parts the SAME line w/o symbols....
+						System.out.println("\"smart mode\": turning off symbols");
+						symbol = null;
+					}
+
+					plotter.plot(dataset, series, gc, mapper, symbol);
+
+					// if drawing is taking too long, display busy cursor
+					if (System.currentTimeMillis() - startTime > 1000) {
+						Cursor cursor = Display.getCurrent().getSystemCursor(SWT.CURSOR_WAIT);
+						getShell().setCursor(cursor);
+						setCursor(null); // crosshair cursor would override shell's busy cursor 
+					}
 				}
 			}
 			getShell().setCursor(null);
@@ -522,41 +678,6 @@ public class VectorChart extends ChartCanvas {
 						    getViewportRectangle().x+10, getViewportRectangle().y+10, true);
 			}
 		}
-	}
-	
-	public IVectorPlotter getPlotter(String key) {
-		LineType style = getLineStyle(key);
-		switch (style) {
-		case Dots: return new DotsVectorPlotter();
-		case Linear: return new LinesVectorPlotter();
-		case SampleHold: return new SampleHoldVectorPlotter();
-		case Pins: return new PinsVectorPlotter();
-		case Points: return new PointsVectorPlotter();
-		default: throw new IllegalArgumentException("unknown line style: " + style);
-		}
-	}
-	
-	public IChartSymbol getSymbol(String key) {
-		SymbolType type = getSymbolType(key);
-		int size = getSymbolSize(key);
-		switch (type) {
-		case None: return null;
-		case Cross: return new CrossSymbol(size);
-		case Diamond: return new DiamondSymbol(size);
-		case Dot: return new OvalSymbol(size);
-		case Plus: return new PlusSymbol(size);
-		case Square: return new SquareSymbol(size);
-		case Triangle: return new TriangleSymbol(size);
-		default: throw new IllegalArgumentException("unknown symbol type: " + type);
-		}
-	}
-	
-	public Color getLineColor(int series) {
-		RGB color = getLineColor(dataset.getSeriesKey(series));
-		if (color != null)
-			return new Color(null, color);
-		else
-			return ColorFactory.getGoodDarkColor(series);
 	}
 
 	@Override
@@ -578,13 +699,16 @@ public class VectorChart extends ChartCanvas {
 	protected void drawSelection(GC gc) {
 		if (selection instanceof LineSelection) {
 			LineSelection selection = (LineSelection)this.selection;
-			if (selection.series >= 0 && selection.index >= 0) {
-				ICoordsMapping mapper = getOptimizedCoordinateMapper();
-				int x = mapper.toCanvasX(dataset.getX(selection.series, selection.index));
-				int y = mapper.toCanvasY(dataset.getY(selection.series, selection.index));
-				gc.setForeground(ColorFactory.RED);
-				gc.setLineWidth(1);
-				gc.drawOval(x-5, y-5, 10, 10);
+			if (selection.series >= 0 && selection.index >= 0 && dataset != null && selection.series < dataset.getSeriesCount()) {
+				LineProperties props = getLineProperties(selection.series);
+				if (props != null && props.getDisplayLine()) {
+					ICoordsMapping mapper = getOptimizedCoordinateMapper();
+					int x = mapper.toCanvasX(dataset.getX(selection.series, selection.index));
+					int y = mapper.toCanvasY(dataset.getY(selection.series, selection.index));
+					gc.setForeground(ColorFactory.RED);
+					gc.setLineWidth(1);
+					gc.drawOval(x-5, y-5, 10, 10);
+				}
 			}
 		}
 	}

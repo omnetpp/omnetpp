@@ -20,6 +20,7 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.scave.charting.VectorChart.LineProperties;
 import org.omnetpp.scave.charting.dataset.DatasetUtils;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
@@ -237,9 +238,10 @@ class CrossHair {
 			int maxTextLength = 0;
 			sb.append("<table>");
 			for (DataPoint dp : dataPoints) {
-				Color color = chart.getLineColor(dp.series);
+				LineProperties props = chart.getLineProperties(dp.series);
+				Color color = props.getColor();
 				String text = getText(dp);
-				IChartSymbol symbol = chart.getSymbol(chart.getDataset().getSeriesKey(dp.series));
+				IChartSymbol symbol = props.getSymbol();
 				String imageFile = SymbolImageFactory.getImageFile(color, symbol);
 				sb.append("<tr>");
 				sb.append("<td>");
@@ -284,6 +286,9 @@ class CrossHair {
 		// for each series, collect data points close to (x,y), at most maxCount of them
 		int totalFound = 0;
 		for (int series = 0; series < dataset.getSeriesCount(); ++series) {
+			LineProperties props = chart.getLineProperties(series);
+			if (!props.getDisplayLine())
+				continue;
 			// find data point nearest to cursor x, using binary search
 			int mid = DatasetUtils.findXLowerLimit(dataset, series, chart.fromCanvasX(x));
 

@@ -1,5 +1,7 @@
 package org.omnetpp.scave.editors.forms;
 
+import static org.omnetpp.scave.charting.ChartDefaults.*;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_DISPLAY_LINE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LINE_COLOR;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LINE_TYPE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_SYMBOL_SIZE;
@@ -18,6 +20,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -27,8 +30,10 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.ImageCombo;
+import org.omnetpp.common.ui.TristateButton;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.charting.ChartDefaults;
 import org.omnetpp.scave.charting.ChartProperties;
 import org.omnetpp.scave.charting.ChartProperties.LineProperties;
 import org.omnetpp.scave.charting.ChartProperties.LineType;
@@ -53,6 +58,7 @@ public class LineChartEditForm extends ChartEditForm {
 	private String[] lineNames;
 	
 	private TableViewer linesTableViewer;
+	private TristateButton displayLineCheckbox;
 	private ColorEdit colorEdit;
 	private ImageCombo symbolTypeCombo;
 	private Combo symbolSizeCombo;
@@ -93,6 +99,10 @@ public class LineChartEditForm extends ChartEditForm {
 			Group subpanel = createGroup("Properties", panel);
 			subpanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 			subpanel.setLayout(new GridLayout(2, false));
+			
+			displayLineCheckbox = new TristateButton(subpanel, SWT.CHECK);
+			displayLineCheckbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
+			displayLineCheckbox.setText("Display line");
 
 			lineTypeCombo = createImageComboField("Line type:", subpanel);
 			lineTypeCombo.add(NO_CHANGE, null);
@@ -164,6 +174,7 @@ public class LineChartEditForm extends ChartEditForm {
 		List<?> selection = ((IStructuredSelection) linesTableViewer.getSelection()).toList();
 		boolean applyToAll = (selection.size() == ((String[])linesTableViewer.getInput()).length);
 
+		Boolean displayLine = displayLineCheckbox.getGrayed() ? null : displayLineCheckbox.getSelection();
 		String symbolType = symbolTypeCombo.getText();
 		String symbolSize = symbolSizeCombo.getText();
 		String lineType = lineTypeCombo.getText();
@@ -176,6 +187,7 @@ public class LineChartEditForm extends ChartEditForm {
 			String name = property.getName();
 			String value = property.getValue();
 			boolean copyIt = 
+				(name.startsWith(PROP_DISPLAY_LINE) && (!applyToAll || displayLine == null)) ||
 				(name.startsWith(PROP_SYMBOL_TYPE) && (!applyToAll || symbolType.equals(NO_CHANGE))) ||
 				(name.startsWith(PROP_SYMBOL_SIZE) && (!applyToAll || symbolSize.equals(NO_CHANGE))) ||
 				(name.startsWith(PROP_LINE_TYPE)   && (!applyToAll || lineType.equals(NO_CHANGE))) ||
@@ -192,6 +204,13 @@ public class LineChartEditForm extends ChartEditForm {
 			for (Object sel : selection.toArray()) {
 				String lineId = (String) sel; 
 				setLineProperties(newProps, lineId, symbolType, symbolSize, lineType, lineColor);
+			}
+		}
+		// DisplayLine property always stored per line
+		if (displayLine != null) {
+			for (Object sel : selection.toArray()) {
+				String lineId = (String)sel;
+				newProps.setProperty(PROP_DISPLAY_LINE+"/"+lineId, displayLine);
 			}
 		}
 	}
@@ -225,12 +244,15 @@ public class LineChartEditForm extends ChartEditForm {
 		if (selection.size() == 1) {
 			String lineId = (String) selection.getFirstElement();
 			LineProperties lineProps = props.getLineProperties(lineId);
+			displayLineCheckbox.setSelection(lineProps.getDisplayLine());
+			displayLineCheckbox.setGrayed(false);
 			symbolTypeCombo.setText(lineProps.getSymbolType()==null ? AUTO : lineProps.getSymbolType().toString());
 			symbolSizeCombo.setText(lineProps.getSymbolSize()==null ? AUTO : lineProps.getSymbolSize().toString());
 			lineTypeCombo.setText(lineProps.getLineType()==null ? AUTO : lineProps.getLineType().toString());
 			colorEdit.setText(lineProps.getLineColor()==null ? AUTO : lineProps.getLineColor());
 		}
 		else {
+			displayLineCheckbox.setGrayed(true);
 			symbolTypeCombo.setText(NO_CHANGE);
 			symbolSizeCombo.setText(NO_CHANGE);
 			lineTypeCombo.setText(NO_CHANGE);

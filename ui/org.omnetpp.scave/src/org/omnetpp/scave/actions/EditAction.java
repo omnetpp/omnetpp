@@ -33,10 +33,10 @@ public class EditAction extends AbstractScaveAction {
 		this.formParameters = formParameters;
 	}
 	
-	public void setFormProperty(String propName, Object propValue) {
+	public void setFormParameter(String paramName, Object paramValue) {
 		if (formParameters == null)
 			formParameters = new HashMap<String,Object>();
-		formParameters.put(propName, propValue);
+		formParameters.put(paramName, paramValue);
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class EditAction extends AbstractScaveAction {
 		if (isApplicable(scaveEditor, selection)) {
 			EObject editedObject = getEditedObject(scaveEditor, selection);
 			Object selectedObject = selection.getFirstElement();
-			formParameters.put(PARAM_SELECTED_OBJECT, selectedObject);
+			setFormParameter(PARAM_SELECTED_OBJECT, selectedObject);
 			EditDialog dialog = new EditDialog(scaveEditor.getSite().getShell(), editedObject, scaveEditor, formParameters);
 			EStructuralFeature[] features = dialog.getFeatures();
 			if (features.length > 0)

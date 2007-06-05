@@ -64,6 +64,7 @@ public class ChartProperties extends PropertySource {
 		PROP_BAR_PLACEMENT		= "Bar.Placement",
 		PROP_BAR_COLOR			= "Bar.Color",
 		// Lines
+		PROP_DISPLAY_LINE		= "Line.Display",
 		PROP_SYMBOL_TYPE		= "Symbols.Type",
 		PROP_SYMBOL_SIZE		= "Symbols.Size",
 		PROP_LINE_TYPE			= "Line.Type",
@@ -306,6 +307,11 @@ public class ChartProperties extends PropertySource {
 		private String propertyName(String baseName) {
 			return lineId == null ? baseName : baseName + "/" + lineId;
 		}
+
+		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_DISPLAY_LINE,optional=true)
+		public boolean getDisplayLine() { return getBooleanProperty(propertyName(PROP_DISPLAY_LINE)); }
+		public void setDisplayLine(boolean display) { setProperty(propertyName(PROP_DISPLAY_LINE), display); }
+		public boolean defaultDisplayLine() { return ChartDefaults.DEFAULT_DISPLAY_LINE; }
 
 		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_SYMBOL_TYPE,optional=true)
 		public SymbolType getSymbolType() { return getEnumProperty(propertyName(PROP_SYMBOL_TYPE), SymbolType.class); }

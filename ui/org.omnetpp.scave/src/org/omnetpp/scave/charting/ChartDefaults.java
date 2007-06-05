@@ -6,6 +6,7 @@ import static org.omnetpp.scave.charting.ChartProperties.PROP_BAR_BASELINE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_BAR_PLACEMENT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_CACHING;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_DISPLAY_LEGEND;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_DISPLAY_LINE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_GRAPH_TITLE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_GRAPH_TITLE_FONT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LABEL_FONT;
@@ -79,6 +80,7 @@ public class ChartDefaults {
 	public static final Color DEFAULT_BAR_OUTLINE_COLOR = ColorFactory.GREY80;
 
 	// lines
+	public static final boolean DEFAULT_DISPLAY_LINE = true;
 	public static final LineType DEFAULT_LINE_STYLE = LineType.Linear;
 	public static final Integer DEFAULT_SYMBOL_SIZE = 4;
 	
@@ -120,9 +122,15 @@ public class ChartDefaults {
 		defaults.put(PROP_BAR_PLACEMENT, DEFAULT_BAR_PLACEMENT);
 		// TODO: BAR_OUTLINE_COLOR
 		// TODO: DEFAULT_LINE_STYLE, DEFAULT_SYMBOL_SIZE
+		defaults.put(PROP_DISPLAY_LINE, DEFAULT_DISPLAY_LINE);
 	}
 	
 	public static Object getDefaultPropertyValue(String propertyName) {
-		return defaults.get(propertyName); //XXX Assert if not found?
+		return defaults.get(getBasePropertyName(propertyName)); //XXX Assert if not found?
+	}
+	
+	public static String getBasePropertyName(String propertyName) {
+		int index = propertyName.indexOf('/');
+		return index < 0 ? propertyName : propertyName.substring(0, index);
 	}
 }
