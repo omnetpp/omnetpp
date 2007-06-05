@@ -108,7 +108,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	
     public final static String IMAGE_BOOKMARK = TOOLIMAGE_DIR + "bkmrk_nav.gif";
 	
-    public final static String IMAGE_EXPORT_SVG = TOOLIMAGE_DIR + "bkmrk_nav.gif";
+    public final static String IMAGE_EXPORT_SVG = TOOLIMAGE_DIR + "export_wiz.gif";
 	
     public final static String IMAGE_REFRESH = TOOLIMAGE_DIR + "refresh.gif";
 	
@@ -150,7 +150,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 
 	protected SequenceChartAction refreshAction;
 
-	protected SequenceChartAction exportSVGAction;
+	protected SequenceChartAction exportToSVGAction;
 
 	protected StatusLineContributionItem timelineModeStatus;
 
@@ -172,7 +172,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		this.denseAxesAction = createDenseAxesAction();
 		this.balancedAxesAction = createBalancedAxesAction();
 		this.bookmarkAction = createBookmarkAction();
-		this.exportSVGAction = createExportSVGAction();
+		this.exportToSVGAction = createExportToSVGAction();
 		this.refreshAction = createRefreshAction();
 		
 		this.timelineModeStatus = createTimelineModeStatus();
@@ -259,8 +259,9 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 				menuManager.add(balancedAxesAction);
 				menuManager.add(separatorAction);
 				menuManager.add(bookmarkAction);
-				menuManager.add(exportSVGAction);
 				menuManager.add(refreshAction);
+				menuManager.add(separatorAction);
+				menuManager.add(exportToSVGAction);
 			}
 		});
 	}
@@ -811,8 +812,8 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		};
 	}
 	
-	private SequenceChartAction createExportSVGAction() {
-		return new SequenceChartAction("Export SVG...", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_EXPORT_SVG)) {
+	private SequenceChartAction createExportToSVGAction() {
+		return new SequenceChartAction("Export to SVG...", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_EXPORT_SVG)) {
 			@Override
 			public void run() {
 				int[] exportRegion = askExportRegion();
