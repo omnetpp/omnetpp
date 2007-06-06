@@ -253,11 +253,11 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 				menuManager.add(increaseSpacingAction);
 				menuManager.add(decreaseSpacingAction);
 				menuManager.add(separatorAction);
-				menuManager.add(zoomInAction);
-				menuManager.add(zoomOutAction);
-				menuManager.add(separatorAction);
 				menuManager.add(denseAxesAction);
 				menuManager.add(balancedAxesAction);
+				menuManager.add(separatorAction);
+				menuManager.add(zoomInAction);
+				menuManager.add(zoomOutAction);
 				menuManager.add(separatorAction);
 				menuManager.add(toggleBookmarkAction);
 				menuManager.add(refreshAction);
@@ -447,7 +447,6 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 							}
 						});
 					}
-
 				};
 			}
 

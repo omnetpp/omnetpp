@@ -902,12 +902,14 @@ public class SequenceChart
 			sequenceChartFacade.relocateTimelineCoordinateSystem(eventLog.getFirstEvent());
 			
 		axisModulePositions = null;
-		axisModuleYs = null;
 		invalidVirtualSize = true;
+		axisModuleYs = null;
+
 		selectedEvents.clear();
 		fireSelectionChanged();
 
 		setAxisModules(getAllAxisModules(eventLogInput));
+		calculateAxisYs();
 		
 		if (!firstTime) {
 			calculatePixelPerTimelineUnit();
@@ -1115,7 +1117,11 @@ public class SequenceChart
 			int distance = Math.min(50, eventLog.getApproximateNumberOfEvents());
 
 			if (distance > 0) {
-				double value = getViewportWidth() / sequenceChartFacade.getTimelineCoordinate(eventLog.getNeighbourEvent(eventLog.getFirstEvent(), distance - 1));
+				IEvent firstEvent = eventLog.getFirstEvent();
+				double firstEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(firstEvent);
+				double otherEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(eventLog.getNeighbourEvent(firstEvent, distance - 1));
+				double timelineCoordinateDelta = otherEventTimelineCoordinate - firstEventTimelineCoordinate;
+				double value = getViewportWidth() / timelineCoordinateDelta;
 				setPixelPerTimelineCoordinate(Double.isInfinite(value) ? 1 : value);
 			}
 		}
@@ -1267,12 +1273,12 @@ public class SequenceChart
 		BigDecimal leftTick = calculateTick(0, 1);
 		BigDecimal rightTick = calculateTick(viewportWidth, 1);
 		BigDecimal simulationTimeRange = rightTick.subtract(leftTick);
-		graphics.setForegroundColor(TICK_LABEL_COLOR);
 		String timeString = "Range: " + TimeUtils.secondsToTimeString(simulationTimeRange);
+		graphics.setFont(font);
 		int width = getTextExtent(graphics, timeString).x;
 		int x = viewportWidth - width - 3;
 
-		graphics.setFont(font);
+		graphics.setForegroundColor(TICK_LABEL_COLOR);
 		graphics.setBackgroundColor(INFO_BACKGROUND_COLOR);
 		graphics.fillRectangle(x - 3, GUTTER_HEIGHT, width + 6, GUTTER_HEIGHT + 1);
 		graphics.setForegroundColor(GUTTER_BORDER_COLOR);
@@ -1565,6 +1571,7 @@ public class SequenceChart
 		if (tickPrefix.doubleValue() != 0.0)
 			string = "+" + string;
 
+		graphics.setFont(font);
 		int stringWidth = getTextExtent(graphics, string).x;
 		int boxWidth = stringWidth + 6;
 		int boxX = mouseTick ? Math.min(getViewportWidth() - boxWidth, x) : x;
@@ -1585,7 +1592,6 @@ public class SequenceChart
 		// draw tick value
 		graphics.setForegroundColor(TICK_LABEL_COLOR);
 		graphics.setBackgroundColor(backgroundColor);
-		graphics.setFont(font);
 		graphics.drawText(string, boxX + 3, 2);
 		graphics.drawText(string, boxX + 3, viewportHeight + GUTTER_HEIGHT + 1);
 
@@ -2589,7 +2595,7 @@ public class SequenceChart
 			BigDecimal consequenceSimulationTime = messageDependency.getConsequenceSimulationTime().toBigDecimal();
 			result += " dt = " + TimeUtils.secondsToTimeString(consequenceSimulationTime.subtract(causeSimulationTime));
 
-			if (detail != null)
+			if (formatted && detail != null)
 				result += newLine + detail;
 
 			return result;
