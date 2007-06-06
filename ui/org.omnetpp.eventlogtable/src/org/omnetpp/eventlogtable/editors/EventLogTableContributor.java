@@ -544,7 +544,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 										if (pattern == null || pattern.equals(""))
 											pattern = "*";
 		
-										eventLogTable.getEventLogTableFacade().setCustomFilter(pattern);
+										eventLogTable.setCustomFilter(pattern);
 										eventLogTable.setFilterMode(4);
 										update();
 									}

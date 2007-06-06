@@ -3,6 +3,7 @@ package org.omnetpp.eventlogtable.widgets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.QualifiedName;
@@ -52,8 +53,12 @@ public class EventLogTable
 		
 		addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
-				if (getEventLogInput() != null)
+				EventLogInput eventLogInput = getEventLogInput();
+
+				if (eventLogInput != null) {
+					storeState(eventLogInput.getFile());
 					getEventLogInput().removeEventLogChangedListener(EventLogTable.this);
+				}
 			}
 		});
 	}
@@ -101,40 +106,16 @@ public class EventLogTable
 		// store current position
 		if (eventLogInput != null) {
 			eventLogInput.removeEventLogChangedListener(this);
-			EventLogEntryReference eventLogEntryReference = getTopVisibleElement();
-
-			if (eventLogEntryReference != null) {
-				String eventNumber = String.valueOf(eventLogEntryReference.getEventLogEntry(getEventLogInput()).getEvent().getEventNumber());
-
-				try {
-					eventLogInput.getFile().setPersistentProperty(getEventLogTableEventNumberPropertyName(), eventNumber);
-				}
-				catch (CoreException e) {
-					throw new RuntimeException(e);
-				}
-			}
+			storeState(eventLogInput.getFile());
 		}
 
 		super.setInput(input);
 
 		// restore last known position
-		eventLogInput = (EventLogInput)input;
-
-		if (eventLogInput != null) {
-			try {
-				eventLogInput.addEventLogChangedListener(this);
-				String eventNumber = eventLogInput.getFile().getPersistentProperty(getEventLogTableEventNumberPropertyName());
-
-				if (eventNumber != null) {
-					IEvent event = getEventLog().getEventForEventNumber(Integer.parseInt(eventNumber));
-					
-					if (event != null)
-						gotoElement(new EventLogEntryReference(event.getEventEntry()));
-				}
-			}
-			catch (CoreException e) {
-				throw new RuntimeException(e);
-			}
+		if (input != null) {
+			eventLogInput = (EventLogInput)input;
+			eventLogInput.addEventLogChangedListener(this);
+			restoreState(eventLogInput.getFile());
 		}
 	}
 	
@@ -199,6 +180,14 @@ public class EventLogTable
 		getEventLogTableFacade().setFilterMode(i);
 		stayNear();
 	}
+	
+	public String getCustomFilter() {
+		return getEventLogTableFacade().getCustomFilter();
+	}
+
+	public void setCustomFilter(String pattern) {
+		getEventLogTableFacade().setCustomFilter(pattern);
+	}
 
 	public void eventLogAppended() {
 		if (debug)
@@ -236,7 +225,56 @@ public class EventLogTable
 		redraw();
 	}
 
-	protected QualifiedName getEventLogTableEventNumberPropertyName() {
-		return new QualifiedName("EventLogTable", "EventNumber");
+	protected final QualifiedName EVENT_NUMBER_PROPERTY = new QualifiedName("EventLogTable", "EventNumber");
+	
+	protected final QualifiedName FILTER_MODE_PROPERTY = new QualifiedName("EventLogTable", "FilterMode");
+	
+	protected final QualifiedName CUSTOM_FILTER_PROPERTY = new QualifiedName("EventLogTable", "CustomFilter");
+	
+	protected final QualifiedName DISPLAY_MODE_PROPERTY = new QualifiedName("EventLogTable", "DisplayMode");
+	
+	public void restoreState(IResource resource) {
+		try {
+			String filterMode = resource.getPersistentProperty(FILTER_MODE_PROPERTY);
+			if (filterMode != null)
+				setFilterMode(Integer.parseInt(filterMode));
+
+			String customFilter = resource.getPersistentProperty(CUSTOM_FILTER_PROPERTY);
+			if (customFilter != null)
+				setCustomFilter(customFilter);
+			
+			String displayMode = resource.getPersistentProperty(DISPLAY_MODE_PROPERTY);
+			if (displayMode != null)
+				setDisplayMode(Integer.parseInt(displayMode));
+
+			String eventNumber = resource.getPersistentProperty(EVENT_NUMBER_PROPERTY);
+			if (eventNumber != null) {
+				IEvent event = getEventLog().getEventForEventNumber(Integer.parseInt(eventNumber));
+				
+				if (event != null)
+					gotoElement(new EventLogEntryReference(event.getEventEntry()));
+			}
+		}
+		catch (CoreException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void storeState(IResource resource) {
+		try {
+			EventLogEntryReference eventLogEntryReference = getTopVisibleElement();
+	
+			if (eventLogEntryReference != null) {
+				String eventNumber = String.valueOf(eventLogEntryReference.getEventLogEntry(getEventLogInput()).getEvent().getEventNumber());	
+				resource.setPersistentProperty(EVENT_NUMBER_PROPERTY, eventNumber);
+			}
+			
+			resource.setPersistentProperty(FILTER_MODE_PROPERTY, String.valueOf(getFilterMode()));
+			resource.setPersistentProperty(CUSTOM_FILTER_PROPERTY, getCustomFilter());
+			resource.setPersistentProperty(DISPLAY_MODE_PROPERTY, String.valueOf(getDisplayMode()));
+		}
+		catch (CoreException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
