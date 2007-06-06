@@ -27,7 +27,7 @@ public class SymbolImageFactory {
 	 * in the given color.
 	 */
 	public static String getImageFile(Color color, IChartSymbol symbol) {
-		MultiKey key = new MultiKey(color, symbol.getClass());
+		MultiKey key = new MultiKey(color, symbol == null ? null : symbol.getClass());
 		String fileName = imageFileMap.get(key);
 		if (fileName == null) {
 			fileName = createImageFile(color, symbol);
@@ -40,7 +40,7 @@ public class SymbolImageFactory {
 		Image image = null;
 		try {
 			image = createSymbolImage(symbol, color);
-			String symbolName = StringUtils.removeStart(symbol.getClass().getName(), symbol.getClass().getPackage().getName()+".");
+			String symbolName = symbol == null ? "NoneSymbol" : StringUtils.removeStart(symbol.getClass().getName(), symbol.getClass().getPackage().getName()+".");
 			String imageName = String.format("%s_%02X%02X%02X", symbolName, color.getRed(), color.getGreen(), color.getBlue());
 			return ImageFactory.createTemporaryImageFile(imageName+".png", image, SWT.IMAGE_PNG);
 		} catch (Exception e) {
@@ -53,11 +53,10 @@ public class SymbolImageFactory {
 	}
 	
 	private static Image createSymbolImage(IChartSymbol symbol, Color color) {
-		int size = symbol.getSizeHint();
+		int size = symbol != null ? symbol.getSizeHint() : 0;
 		Image image = null;
 		GC gc = null;
 		try {
-			symbol.setSizeHint(6);
 			image = new Image(null, 15, 9);
 			gc = new GC(image);
 			gc.setAntialias(SWT.ON);
@@ -65,10 +64,14 @@ public class SymbolImageFactory {
 			gc.setLineWidth(1);
 			gc.setLineStyle(SWT.LINE_SOLID);
 			gc.drawLine(0, 4, 14, 4);
-			symbol.drawSymbol(gc, 7, 4);
+			if (symbol != null) {
+				symbol.setSizeHint(6);
+				symbol.drawSymbol(gc, 7, 4);
+			}
 		}
 		finally {
-			symbol.setSizeHint(size);
+			if (symbol != null)
+				symbol.setSizeHint(size);
 			if (gc != null)
 				gc.dispose();
 		}
