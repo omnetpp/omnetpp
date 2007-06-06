@@ -1,6 +1,5 @@
 package org.omnetpp.scave.editors.datatable;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 

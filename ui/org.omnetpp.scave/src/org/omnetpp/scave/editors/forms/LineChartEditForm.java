@@ -1,6 +1,5 @@
 package org.omnetpp.scave.editors.forms;
 
-import static org.omnetpp.scave.charting.ChartDefaults.*;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_DISPLAY_LINE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LINE_COLOR;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LINE_TYPE;
@@ -20,7 +19,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -33,7 +31,6 @@ import org.omnetpp.common.ui.ImageCombo;
 import org.omnetpp.common.ui.TristateButton;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.charting.ChartDefaults;
 import org.omnetpp.scave.charting.ChartProperties;
 import org.omnetpp.scave.charting.ChartProperties.LineProperties;
 import org.omnetpp.scave.charting.ChartProperties.LineType;
