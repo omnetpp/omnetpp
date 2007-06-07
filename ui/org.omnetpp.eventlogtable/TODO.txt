@@ -58,5 +58,6 @@ Features:
  - hot keys for popup menu actions
  - expand/collapse events (isExpandedInEventLogTable)
  + follow log file changes
+ + store and restore last known settings and position per file
 
 Known bugs:

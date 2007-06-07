@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.events.DisposeEvent;
@@ -17,13 +16,14 @@ import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogSelection;
 import org.omnetpp.common.eventlog.IEventLogChangeListener;
-import org.omnetpp.common.util.Base64Serializer;
+import org.omnetpp.common.util.PersistentResourcePropertyManager;
 import org.omnetpp.common.virtualtable.VirtualTable;
 import org.omnetpp.common.virtualtable.VirtualTableSelection;
 import org.omnetpp.eventlog.engine.EventLogTableFacade;
 import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlogtable.EventLogTablePlugin;
 import org.omnetpp.eventlogtable.editors.EventLogTableContributor;
 
 public class EventLogTable
@@ -31,8 +31,6 @@ public class EventLogTable
 	implements IEventLogChangeListener
 {
 	private static final boolean debug = true;
-
-	private final QualifiedName EVENT_LOG_TABLE_STATE_PROPERTY = new QualifiedName("EventLogTable", "State");
 
 	private boolean followEnd = false; // when the event log changes should we follow it or not?
 
@@ -255,10 +253,9 @@ public class EventLogTable
 
 	public boolean restoreState(IResource resource) {
 		try {
-			String propertyValue = resource.getPersistentProperty(EVENT_LOG_TABLE_STATE_PROPERTY);
-			EventLogTableState eventLogTableState = (EventLogTableState)Base64Serializer.deserialize(propertyValue, getClass().getClassLoader());
-
-			if (eventLogTableState != null) {
+			PersistentResourcePropertyManager manager = new PersistentResourcePropertyManager(EventLogTablePlugin.PLUGIN_ID, getClass().getClassLoader());
+			if (manager.hasProperty(resource, getClass().getName())) {
+				EventLogTableState eventLogTableState = (EventLogTableState)manager.getProperty(resource, getClass().getName());
 				IEvent event = eventLog.getEventForEventNumber(eventLogTableState.topVisibleEventNumber);
 
 				if (event != null) {
@@ -281,16 +278,19 @@ public class EventLogTable
 
 	public void storeState(IResource resource) {
 		try {
+			PersistentResourcePropertyManager manager = new PersistentResourcePropertyManager(EventLogTablePlugin.PLUGIN_ID, getClass().getClassLoader());
 			EventLogEntryReference eventLogEntryReference = getTopVisibleElement();
 	
-			if (eventLogEntryReference != null) {
+			if (eventLogEntryReference == null)
+				manager.removeProperty(resource, getClass().getName());
+			else {
 				EventLogTableState eventLogTableState = new EventLogTableState();
 				eventLogTableState.topVisibleEventNumber = eventLogEntryReference.getEventLogEntry(eventLogInput).getEvent().getEventNumber();
 				eventLogTableState.filterMode = getFilterMode();
 				eventLogTableState.customFilter = getCustomFilter();
 				eventLogTableState.displayMode = getDisplayMode();
 				
-				resource.setPersistentProperty(EVENT_LOG_TABLE_STATE_PROPERTY, Base64Serializer.serialize(eventLogTableState));
+				manager.setProperty(resource, getClass().getName(), eventLogTableState);
 			}
 		}
 		catch (Exception e) {

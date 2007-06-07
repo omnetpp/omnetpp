@@ -115,6 +115,20 @@ public class EventLogInput {
 		return moduleTree;
 	}
 
+	public ArrayList<ModuleTreeItem> getAllModules() {
+		final ArrayList<ModuleTreeItem> modules = new ArrayList<ModuleTreeItem>();
+
+		getModuleTreeRoot().visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
+			public void visit(ModuleTreeItem treeItem) {
+				if (treeItem != getModuleTreeRoot() && treeItem.getSubmodules().length == 0)
+					modules.add(treeItem);
+			}
+		});
+
+		return modules;
+	}
+
+
 	public void removeFilter() {
 		// remove filter
 		if (eventLog instanceof FilteredEventLog)
