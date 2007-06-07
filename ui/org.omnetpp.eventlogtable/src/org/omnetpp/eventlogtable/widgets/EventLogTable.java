@@ -32,6 +32,8 @@ public class EventLogTable
 {
 	private static final boolean debug = true;
 
+	private static final String STATE_PROPERTY = "EventLogTableState";
+
 	private boolean followEnd = false; // when the event log changes should we follow it or not?
 
 	private EventLogInput eventLogInput;
@@ -252,10 +254,11 @@ public class EventLogTable
 	 */
 
 	public boolean restoreState(IResource resource) {
+		PersistentResourcePropertyManager manager = new PersistentResourcePropertyManager(EventLogTablePlugin.PLUGIN_ID, getClass().getClassLoader());
+
 		try {
-			PersistentResourcePropertyManager manager = new PersistentResourcePropertyManager(EventLogTablePlugin.PLUGIN_ID, getClass().getClassLoader());
-			if (manager.hasProperty(resource, getClass().getName())) {
-				EventLogTableState eventLogTableState = (EventLogTableState)manager.getProperty(resource, getClass().getName());
+			if (manager.hasProperty(resource, STATE_PROPERTY)) {
+				EventLogTableState eventLogTableState = (EventLogTableState)manager.getProperty(resource, STATE_PROPERTY);
 				IEvent event = eventLog.getEventForEventNumber(eventLogTableState.topVisibleEventNumber);
 
 				if (event != null) {
@@ -272,6 +275,8 @@ public class EventLogTable
 			return false;
 		}
 		catch (Exception e) {
+			manager.removeProperty(resource, STATE_PROPERTY);
+
 			throw new RuntimeException(e);
 		}
 	}
@@ -282,7 +287,7 @@ public class EventLogTable
 			EventLogEntryReference eventLogEntryReference = getTopVisibleElement();
 	
 			if (eventLogEntryReference == null)
-				manager.removeProperty(resource, getClass().getName());
+				manager.removeProperty(resource, STATE_PROPERTY);
 			else {
 				EventLogTableState eventLogTableState = new EventLogTableState();
 				eventLogTableState.topVisibleEventNumber = eventLogEntryReference.getEventLogEntry(eventLogInput).getEvent().getEventNumber();
@@ -290,7 +295,7 @@ public class EventLogTable
 				eventLogTableState.customFilter = getCustomFilter();
 				eventLogTableState.displayMode = getDisplayMode();
 				
-				manager.setProperty(resource, getClass().getName(), eventLogTableState);
+				manager.setProperty(resource, STATE_PROPERTY, eventLogTableState);
 			}
 		}
 		catch (Exception e) {

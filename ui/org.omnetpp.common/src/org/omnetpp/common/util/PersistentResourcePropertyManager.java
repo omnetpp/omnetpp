@@ -56,14 +56,16 @@ public class PersistentResourcePropertyManager {
 	public void removeProperty(IResource resource, String key) {
 		String fileName = getPropertyFileName(resource, key);
 		File file = new File(fileName);
-		file.delete();
+
+		if (file.exists())
+			file.delete();
 	}
 	
 	private String getPropertyFileName(IResource resource, String key) {
 		IProject project = resource.getProject();
 		String fileNameKey = resource.getFullPath().toPortableString() + "?" + key;
 
-		// TODO: this needs some thinking
+		// TODO: this needs some thinking to be less fragile
 		return project.getWorkingLocation(pluginId).append(String.valueOf(fileNameKey.hashCode())).toPortableString();
 	}
 }
