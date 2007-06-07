@@ -46,6 +46,13 @@ public class ZoomChartAction extends AbstractScaveAction {
 
 	@Override
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		return editor.getActiveEditorPage() instanceof ChartPage;
+		if (editor.getActiveEditorPage() instanceof ChartPage) {
+			ChartPage page = (ChartPage)editor.getActiveEditorPage();
+			ChartCanvas canvas = page.getChartView();
+			return zoomFactor > 1.0 ||
+				   horizontally && canvas.getMinZoomX() < canvas.getZoomX() ||
+				   vertically && canvas.getMinZoomY() < canvas.getZoomY();
+		}
+		return false;
 	}
 }

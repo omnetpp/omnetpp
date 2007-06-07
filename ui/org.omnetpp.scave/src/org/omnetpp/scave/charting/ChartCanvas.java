@@ -20,6 +20,8 @@ import static org.omnetpp.scave.charting.ChartProperties.PROP_LEGEND_ANCHORING;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LEGEND_BORDER;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LEGEND_FONT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_LEGEND_POSITION;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_MAX;
+import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_MIN;
 
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
@@ -73,6 +75,9 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	
 	private String statusText = "No data available."; // displayed when there's no dataset 
 
+	protected Double userMinX, userMaxX, userMinY, userMaxY; // bounds given by the user (minX,... property)
+	protected PlotArea chartArea;							   // bounds calculated from the dataset
+	
 	private ZoomableCanvasMouseSupport mouseSupport;
 	private Color insetsBackgroundColor = DEFAULT_INSETS_BACKGROUND_COLOR;
 	private Color insetsLineColor = DEFAULT_INSETS_LINE_COLOR;
@@ -160,6 +165,11 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			setAntialias(Converter.stringToBoolean(value));
 		else if (PROP_CACHING.equals(name))
 			setCaching(Converter.stringToBoolean(value));
+		// Axes
+		else if (PROP_Y_AXIS_MIN.equals(name))
+			setYMin(Converter.stringToDouble(value));
+		else if (PROP_Y_AXIS_MAX.equals(name))
+			setYMax(Converter.stringToDouble(value));
 		else
 			ScavePlugin.logError(new RuntimeException("unrecognized chart property: "+name));
 	}
@@ -225,6 +235,56 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			value = DEFAULT_LEGEND_ANCHOR;
 		legend.setAnchor(value);
 		chartChanged();
+	}
+	
+	public void setYMin(Double value) {
+		userMinY = value;
+		updateArea();
+		chartChanged();
+	}
+
+	public void setYMax(Double value) {
+		userMaxY = value;
+		updateArea();
+		chartChanged();
+	}
+	
+	/**
+	 * 
+	 */
+	protected void updateArea() {
+		if (chartArea == null)
+			return;
+		double minX = userMinX != null ? userMinX : chartArea.minX;
+		double maxX = userMaxX != null ? userMaxX : chartArea.maxX;
+		double minY = userMinY != null ? userMinY : chartArea.minY;
+		double maxY = userMaxY != null ? userMaxY : chartArea.maxY;
+		
+		boolean keepZoomX = minX == getMinX() && maxX == getMaxX();
+		boolean keepZoomY = minY == getMinY() && maxY == getMaxY();
+		
+		if (keepZoomX && keepZoomY)
+			return;
+		
+//		System.out.format("area %f, %f, %f, %f --> %f, %f, %f, %f%n",
+//				getMinX(), getMaxX(), getMinY(), getMaxY(),
+//				left, right, top, bottom);
+
+		double zoomX = getZoomX();
+		double zoomY = getZoomY();
+		double centerX = getViewportCenterCoordX();
+		double centerY = getViewportCenterCoordY();
+		
+		setArea(minX, minY, maxX, maxY);
+		
+		if (keepZoomX) {
+			setZoomX(zoomX);
+			centerXOn(centerX);
+		}
+		if (keepZoomY) {
+			setZoomY(zoomY);
+			centerYOn(centerY);
+		}
 	}
 	
 	/**

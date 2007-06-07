@@ -32,7 +32,6 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Insets;
-import org.eclipse.draw2d.geometry.PrecisionRectangle;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -81,11 +80,6 @@ public class VectorChart extends ChartCanvas {
 	private LineProperties defaultProperties;
 	private CrossHair crosshair = new CrossHair(this);
 	
-	// user defined bounds of the chart, null if not set
-	Double minX, maxX, minY, maxY;
-	// bounds of the chart calculated from the dataset
-	double chartMinX, chartMaxX, chartMinY, chartMaxY;
-
 	private boolean smartMode = true; // whether smartModeLimit is enabled
 	private int smartModeLimit = 10000; // turn off symbols if there're more than this amount of points on the plot
 	
@@ -413,10 +407,6 @@ public class VectorChart extends ChartCanvas {
 			setXMin(Converter.stringToDouble(value));
 		else if (PROP_X_AXIS_MAX.equals(name))
 			setXMax(Converter.stringToDouble(value));
-		else if (PROP_Y_AXIS_MIN.equals(name))
-			setYMin(Converter.stringToDouble(value));
-		else if (PROP_Y_AXIS_MAX.equals(name))
-			setYMax(Converter.stringToDouble(value));
 		else if (PROP_X_AXIS_LOGARITHMIC.equals(name))
 			; //TODO
 		else if (PROP_Y_AXIS_LOGARITHMIC.equals(name))
@@ -497,35 +487,15 @@ public class VectorChart extends ChartCanvas {
 	}
 	
 	public void setXMin(Double value) {
-		minX = value;
+		userMinX = value;
 		updateArea();
 		chartChanged();
 	}
 	
 	public void setXMax(Double value) {
-		maxX = value;
+		userMaxX = value;
 		updateArea();
 		chartChanged();
-	}
-	
-	public void setYMin(Double value) {
-		minY = value;
-		updateArea();
-		chartChanged();
-	}
-	
-	public void setYMax(Double value) {
-		maxY = value;
-		updateArea();
-		chartChanged();
-	}
-	
-	private void updateArea() {
-		double left = minX != null ? minX : chartMinX;
-		double right = maxX != null ? maxX : chartMaxX;
-		double top = minY != null ? minY : chartMinY;
-		double bottom = maxY != null ? maxY : chartMaxY;
-		setArea(left, top, right, bottom);
 	}
 	
 	public void setGridVisibility(Boolean value) {
@@ -573,11 +543,11 @@ public class VectorChart extends ChartCanvas {
 		long duration = System.currentTimeMillis() - startTime;
 		System.out.println("calculateArea(): "+duration+" ms");
         
-        // set the chart area, leaving some room around the data lines
-		this.chartMinX = minX>=0 ? 0 : minX-width/80;
-		this.chartMaxX = maxX<=0 ? 0 : maxX+width/80;
-		this.chartMinY = minY>=0 ? 0 : minY-height/3;
-		this.chartMaxY = maxY<=0 ? 0 : maxY+height/3;
+        minX = (minX>=0 ? 0 : minX-width/80);
+		maxX = (maxX<=0 ? 0 : maxX+width/80);
+		minY = (minY>=0 ? 0 : minY-height/3);
+		maxY = (maxY<=0 ? 0 : maxY+height/3);
+		chartArea = new PlotArea(minX, maxX, minY, maxY);
 		updateArea();
 	}
 	
@@ -649,6 +619,11 @@ public class VectorChart extends ChartCanvas {
 	@Override
 	protected void paintCachableLayer(GC gc) {
 		System.out.println("paintCachableLayer()");
+//		System.out.println(String.format("area=%f, %f, %f, %f, zoom: %f, %f",
+//				getMinX(), getMaxX(), getMinY(), getMaxY(), getZoomX(), getZoomY()));
+//		System.out.println(String.format("view port=%s, vxy=%d, %d",
+//				getViewportRectangle(), getViewportLeft(), getViewportTop()));
+		
 		
 		resetDrawingStylesAndColors(gc);
 		xAxis.drawGrid(gc);

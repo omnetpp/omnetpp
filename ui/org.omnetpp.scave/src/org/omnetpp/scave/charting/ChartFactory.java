@@ -133,7 +133,7 @@ public class ChartFactory {
 		// method. (Andras)
 		//
 		chartCanvas.setStatusText("Please wait...");
-		chartCanvas.setDataset(null);
+		//chartCanvas.setDataset(null);
 		Job job = new Job("Evaluating dataset...") {
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
