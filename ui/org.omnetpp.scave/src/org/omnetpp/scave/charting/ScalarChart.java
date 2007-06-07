@@ -66,8 +66,7 @@ public class ScalarChart extends ChartCanvas {
 	private DomainAxis domainAxis = new DomainAxis();
 	private BarPlot plot = new BarPlot();
 
-	private Double yMin;
-	private Double yMax;
+	private Double yMin, yMax;
 
 	private int layoutDepth = 0; // how many layoutChart() calls are on the stack
 	private Map<String,BarProperties> barProperties = new HashMap<String,BarProperties>();
@@ -111,7 +110,7 @@ public class ScalarChart extends ChartCanvas {
 	
 	private void updateArea() {
 		PlotArea area = plot.getPlotArea();
-		setArea(area.minX, area.minY, area.maxX, area.maxY);
+		setArea(area.minX, (yMin != null ? yMin : area.minY), area.maxX, (yMax != null ? yMax : area.maxY));
 	}
 
 	/*=============================================
@@ -231,38 +230,24 @@ public class ScalarChart extends ChartCanvas {
 		chartChanged();
 	}
 
-	public Double getYMin() {
-		return yMin;
-	}
-
 	public void setYMin(Double value) {
 		yMin = value;
+		updateArea();
 		chartChanged();
-	}
-
-	public Double getYMax() {
-		return yMax;
 	}
 
 	public void setYMax(Double value) {
 		yMax = value;
+		updateArea();
 		chartChanged();
 	}
-
-	public Boolean getInvertXY() {
-		return plot.invertXY;
-	}
-
+	
 	public void setInvertXY(Boolean value) {
 		if (value == null)
 			value = DEFAULT_INVERT_XY;
 
 		plot.invertXY = value;
 		chartChanged();
-	}
-
-	public Boolean getGridVisible() {
-		return valueAxis.isGridVisible();
 	}
 
 	public void setGridVisible(Boolean value) {
