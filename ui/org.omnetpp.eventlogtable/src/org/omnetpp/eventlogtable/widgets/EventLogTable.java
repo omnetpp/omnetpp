@@ -1,11 +1,11 @@
 package org.omnetpp.eventlogtable.widgets;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelection;
@@ -17,6 +17,7 @@ import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogSelection;
 import org.omnetpp.common.eventlog.IEventLogChangeListener;
+import org.omnetpp.common.util.Base64Serializer;
 import org.omnetpp.common.virtualtable.VirtualTable;
 import org.omnetpp.common.virtualtable.VirtualTableSelection;
 import org.omnetpp.eventlog.engine.EventLogTableFacade;
@@ -31,7 +32,19 @@ public class EventLogTable
 {
 	private static final boolean debug = true;
 
+	private final QualifiedName EVENT_LOG_TABLE_STATE_PROPERTY = new QualifiedName("EventLogTable", "State");
+
 	private boolean followEnd = false; // when the event log changes should we follow it or not?
+
+	private EventLogInput eventLogInput;
+	
+	private IEventLog eventLog;
+
+	private EventLogTableFacade eventLogTableFacade;
+
+	/*************************************************************************************
+	 * CONSTRUCTION
+	 */
 
 	public EventLogTable(Composite parent, int style) {
 		super(parent, style);
@@ -53,11 +66,9 @@ public class EventLogTable
 		
 		addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
-				EventLogInput eventLogInput = getEventLogInput();
-
 				if (eventLogInput != null) {
 					storeState(eventLogInput.getFile());
-					getEventLogInput().removeEventLogChangedListener(EventLogTable.this);
+					eventLogInput.removeEventLogChangedListener(EventLogTable.this);
 				}
 			}
 		});
@@ -69,6 +80,10 @@ public class EventLogTable
 		setMenu(menuManager.createContextMenu(this));
 	}
 
+	/*************************************************************************************
+	 * OVERRIDING BEHAVIOR
+	 */
+
 	@Override
 	public ISelection getSelection() {
 		List<EventLogEntryReference> selectionElements = getSelectionElements();
@@ -77,12 +92,11 @@ public class EventLogTable
 			return null;
 		else {
 			ArrayList<IEvent> selectionEvents = new ArrayList<IEvent>();
-			IEventLog eventLog = getEventLog();
 			
 			for (EventLogEntryReference selectionElement : selectionElements)
 				selectionEvents.add(eventLog.getEventForEventNumber(selectionElement.getEventNumber()));
 	
-			return new EventLogSelection(getEventLogInput(), selectionEvents);
+			return new EventLogSelection(eventLogInput, selectionEvents);
 		}
 	}
 
@@ -94,34 +108,41 @@ public class EventLogTable
 
 			for (IEvent event : eventLogSelection.getEvents())
 				eventLogEntries.add(new EventLogEntryReference(event.getEventEntry()));
-			
+
 			super.setSelection(new VirtualTableSelection<EventLogEntryReference>(eventLogSelection.getEventLogInput(), eventLogEntries));
 		}
 	}
 	
 	@Override
 	public void setInput(Object input) {
-		EventLogInput eventLogInput = getEventLogInput();
-
-		// store current position
+		// store current settings
 		if (eventLogInput != null) {
 			eventLogInput.removeEventLogChangedListener(this);
 			storeState(eventLogInput.getFile());
 		}
 
+		// remember input
+		eventLogInput = (EventLogInput)input;
+		eventLog = eventLogInput == null ? null : eventLogInput.getEventLog();
+		eventLogTableFacade = eventLogInput.getEventLogTableFacade();
+		
+		// clear state
+		followEnd = false;
+
 		super.setInput(input);
 
-		// restore last known position
-		if (input != null) {
-			eventLogInput = (EventLogInput)input;
+		// restore last known settings
+		if (eventLogInput != null) {
 			eventLogInput.addEventLogChangedListener(this);
-			restoreState(eventLogInput.getFile());
+
+			if (!restoreState(eventLogInput.getFile()))
+				scrollToBegin();
 		}
 	}
 	
 	@Override
 	protected void relocateFixPoint(EventLogEntryReference element, int distance) {
-		Assert.isTrue(getEventLog().getEventForEventNumber(element.getEventNumber()) != null);
+		Assert.isTrue(element == null || eventLog.getEventForEventNumber(element.getEventNumber()) != null);
 		super.relocateFixPoint(element, distance);
 	}
 	
@@ -143,21 +164,20 @@ public class EventLogTable
 		followEnd = true;
 	}
 
+	/*************************************************************************************
+	 * MISC
+	 */
+
 	public EventLogInput getEventLogInput() {
-		return (EventLogInput)getInput();		
+		return eventLogInput;		
 	}
 
 	public IEventLog getEventLog() {
-		EventLogInput eventLogInput = getEventLogInput();
-		
-		if (eventLogInput == null)
-			return null;
-		else
-			return eventLogInput.getEventLog();
+		return eventLog;
 	}
 
 	public EventLogTableFacade getEventLogTableFacade() {
-		return ((EventLogInput)getInput()).getEventLogTableFacade();
+		return eventLogTableFacade;
 	}
 
 	public EventLogTableContentProvider getEventLogTableContentProvider() {
@@ -165,29 +185,33 @@ public class EventLogTable
 	}
 
 	public int getDisplayMode() {
-		return getEventLogTableFacade().getDisplayMode();
+		return eventLogTableFacade.getDisplayMode();
 	}
 
 	public void setDisplayMode(int i) {
-		getEventLogTableFacade().setDisplayMode(i);
+		eventLogTableFacade.setDisplayMode(i);
 	}
 
 	public int getFilterMode() {
-		return getEventLogTableFacade().getFilterMode();
+		return eventLogTableFacade.getFilterMode();
 	}
 
 	public void setFilterMode(int i) {
-		getEventLogTableFacade().setFilterMode(i);
+		eventLogTableFacade.setFilterMode(i);
 		stayNear();
 	}
 	
 	public String getCustomFilter() {
-		return getEventLogTableFacade().getCustomFilter();
+		return eventLogTableFacade.getCustomFilter();
 	}
 
 	public void setCustomFilter(String pattern) {
-		getEventLogTableFacade().setCustomFilter(pattern);
+		eventLogTableFacade.setCustomFilter(pattern);
 	}
+
+	/*************************************************************************************
+	 * EVENT LOG NOTIFICATIONS
+	 */
 
 	public void eventLogAppended() {
 		if (debug)
@@ -209,7 +233,7 @@ public class EventLogTable
 	
 	public void eventLogFiltered() {
 		if (fixPointElement != null) {
-			FilteredEventLog filteredEventLog = (FilteredEventLog)getEventLog();
+			FilteredEventLog filteredEventLog = (FilteredEventLog)eventLog;
 			IEvent closestEvent = filteredEventLog.getMatchingEventInDirection(fixPointElement.getEventNumber(), false);
 			
 			if (closestEvent != null)
@@ -225,37 +249,32 @@ public class EventLogTable
 		redraw();
 	}
 
-	protected final QualifiedName EVENT_NUMBER_PROPERTY = new QualifiedName("EventLogTable", "EventNumber");
-	
-	protected final QualifiedName FILTER_MODE_PROPERTY = new QualifiedName("EventLogTable", "FilterMode");
-	
-	protected final QualifiedName CUSTOM_FILTER_PROPERTY = new QualifiedName("EventLogTable", "CustomFilter");
-	
-	protected final QualifiedName DISPLAY_MODE_PROPERTY = new QualifiedName("EventLogTable", "DisplayMode");
-	
-	public void restoreState(IResource resource) {
+	/*************************************************************************************
+	 * PERSISTING STATE
+	 */
+
+	public boolean restoreState(IResource resource) {
 		try {
-			String filterMode = resource.getPersistentProperty(FILTER_MODE_PROPERTY);
-			if (filterMode != null)
-				setFilterMode(Integer.parseInt(filterMode));
+			String propertyValue = resource.getPersistentProperty(EVENT_LOG_TABLE_STATE_PROPERTY);
+			EventLogTableState eventLogTableState = (EventLogTableState)Base64Serializer.deserialize(propertyValue, getClass().getClassLoader());
 
-			String customFilter = resource.getPersistentProperty(CUSTOM_FILTER_PROPERTY);
-			if (customFilter != null)
-				setCustomFilter(customFilter);
-			
-			String displayMode = resource.getPersistentProperty(DISPLAY_MODE_PROPERTY);
-			if (displayMode != null)
-				setDisplayMode(Integer.parseInt(displayMode));
+			if (eventLogTableState != null) {
+				IEvent event = eventLog.getEventForEventNumber(eventLogTableState.topVisibleEventNumber);
 
-			String eventNumber = resource.getPersistentProperty(EVENT_NUMBER_PROPERTY);
-			if (eventNumber != null) {
-				IEvent event = getEventLog().getEventForEventNumber(Integer.parseInt(eventNumber));
-				
-				if (event != null)
+				if (event != null) {
+					setFilterMode(eventLogTableState.filterMode);
+					setCustomFilter(eventLogTableState.customFilter);
+					setDisplayMode(eventLogTableState.displayMode);
+
 					gotoElement(new EventLogEntryReference(event.getEventEntry()));
+
+					return true;
+				}
 			}
+
+			return false;
 		}
-		catch (CoreException e) {
+		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -265,16 +284,25 @@ public class EventLogTable
 			EventLogEntryReference eventLogEntryReference = getTopVisibleElement();
 	
 			if (eventLogEntryReference != null) {
-				String eventNumber = String.valueOf(eventLogEntryReference.getEventLogEntry(getEventLogInput()).getEvent().getEventNumber());	
-				resource.setPersistentProperty(EVENT_NUMBER_PROPERTY, eventNumber);
+				EventLogTableState eventLogTableState = new EventLogTableState();
+				eventLogTableState.topVisibleEventNumber = eventLogEntryReference.getEventLogEntry(eventLogInput).getEvent().getEventNumber();
+				eventLogTableState.filterMode = getFilterMode();
+				eventLogTableState.customFilter = getCustomFilter();
+				eventLogTableState.displayMode = getDisplayMode();
+				
+				resource.setPersistentProperty(EVENT_LOG_TABLE_STATE_PROPERTY, Base64Serializer.serialize(eventLogTableState));
 			}
-			
-			resource.setPersistentProperty(FILTER_MODE_PROPERTY, String.valueOf(getFilterMode()));
-			resource.setPersistentProperty(CUSTOM_FILTER_PROPERTY, getCustomFilter());
-			resource.setPersistentProperty(DISPLAY_MODE_PROPERTY, String.valueOf(getDisplayMode()));
 		}
-		catch (CoreException e) {
+		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
+}
+
+class EventLogTableState implements Serializable {
+	private static final long serialVersionUID = 1L;
+	public int topVisibleEventNumber;
+	public int filterMode;
+	public String customFilter;
+	public int displayMode;
 }

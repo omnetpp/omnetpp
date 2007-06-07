@@ -203,6 +203,9 @@ public class VirtualTable<T>
 		});
 		canvas.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
+				if (fixPointElement == null && input != null)
+					scrollToBegin();
+
 				paint(e.gc);
 			}
 		});
@@ -316,11 +319,15 @@ public class VirtualTable<T>
 	}
 
 	public void setInput(Object input) {
+		// remember input
 		this.input = input;
 		getContentProvider().inputChanged(null, null, input);
 		getRowRenderer().setInput(input);
+
+		// clear state
+		clearSelection();
 		configureVerticalScrollBar();
-		gotoBegin();
+		relocateFixPoint(null, 0);
 	}
 
 	public IVirtualTableContentProvider<T> getContentProvider() {
@@ -416,6 +423,17 @@ public class VirtualTable<T>
 					scrollToSelectionElement();
 				}
 			}
+		}
+	}
+
+	/**
+	 * Removes all selection elements.
+	 */
+	public void clearSelection() {
+		if (selectionElements != null && selectionElements.size() != 0) {
+			selectionElements.clear();
+	
+			fireSelectionChanged();
 		}
 	}
 
