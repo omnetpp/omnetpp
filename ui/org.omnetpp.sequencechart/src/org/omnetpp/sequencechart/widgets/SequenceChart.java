@@ -113,6 +113,8 @@ public class SequenceChart
 {
 	private static final boolean debug = true;
 
+	private static final String STATE_PROPERTY = "SequenceChartState";
+
 	/*************************************************************************************
 	 * DRAWING PARAMETERS
 	 */
@@ -941,11 +943,11 @@ public class SequenceChart
 	}
 	
 	public boolean restoreState(IResource resource) {
+		PersistentResourcePropertyManager manager = new PersistentResourcePropertyManager(SequenceChartPlugin.PLUGIN_ID, getClass().getClassLoader());
+
 		try {
-			PersistentResourcePropertyManager manager = new PersistentResourcePropertyManager(SequenceChartPlugin.PLUGIN_ID, getClass().getClassLoader());
-			
-			if (manager.hasProperty(resource, getClass().getName())) {
-				SequenceChartState sequenceChartState = (SequenceChartState)manager.getProperty(resource, getClass().getName());
+			if (manager.hasProperty(resource, STATE_PROPERTY)) {
+				SequenceChartState sequenceChartState = (SequenceChartState)manager.getProperty(resource, STATE_PROPERTY);
 				IEvent fixPointEvent = eventLog.getEventForEventNumber(sequenceChartState.fixPointEventNumber);
 
 				if (fixPointEvent != null) {
@@ -998,6 +1000,8 @@ public class SequenceChart
 			return false;
 		}
 		catch (Exception e) {
+			manager.removeProperty(resource, STATE_PROPERTY);
+
 			throw new RuntimeException(e);
 		}
 	}
@@ -1007,7 +1011,7 @@ public class SequenceChart
 			PersistentResourcePropertyManager manager = new PersistentResourcePropertyManager(SequenceChartPlugin.PLUGIN_ID);
 
 			if (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() == -1)
-				manager.removeProperty(resource, getClass().getName());
+				manager.removeProperty(resource, STATE_PROPERTY);
 			else {
 				SequenceChartState sequenceChartState = new SequenceChartState();
 				sequenceChartState.viewportTop = (int)getViewportTop();
@@ -1033,7 +1037,7 @@ public class SequenceChart
 					sequenceChartState.axisStates = axisStates;
 				}
 	
-				manager.setProperty(resource, getClass().getName(), sequenceChartState);
+				manager.setProperty(resource, STATE_PROPERTY, sequenceChartState);
 			}
 		}
 		catch (Exception e) {
