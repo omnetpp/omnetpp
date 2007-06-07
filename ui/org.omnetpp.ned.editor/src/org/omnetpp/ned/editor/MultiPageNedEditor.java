@@ -156,10 +156,10 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 
         super.pageChange(newPageIndex);
 
-        // XXX this is a MEGA hack because currently the workbench do not send a partActivated,deactivated messge
+        // XXX this is a MEGA hack because currently the workbench do not send a partActivated,deactivated message
         // for the embedded editors in a MultiPageEditorView (this is a missing unimplemented feature, it works with MultiEditor however)
-        // to make the nedded outline page active we should send activate/deactivate directly
-        // we look for the outline view directy and send the notification by hand. once the MultiPageEditors are handled correctly
+        // to make the ned editor outline page active we should send activate/deactivate directly
+        // we look for the outline view directly and send the notification by hand. once the MultiPageEditors are handled correctly
         // this can be removed
         // on each page change we emulate a close/open cycle of the multipage editor, this removed the associated
         // outline page, so the outline view will re-request the multipageeditor for a ContentOutlinePage (via getAdapter)

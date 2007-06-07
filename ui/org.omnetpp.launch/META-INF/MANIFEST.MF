@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OMNEST/OMNeT++ Launch Plug-in
+Bundle-SymbolicName: org.omnetpp.launch;singleton:=true
+Bundle-Version: 4.0.0
+Bundle-Activator: org.omnetpp.launch.LaunchActivator
+Bundle-Vendor: OpenSim Ltd.
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.debug.core,
+ org.eclipse.debug.ui
+Eclipse-LazyStart: true

@@ -5,6 +5,7 @@ package org.omnetpp.ned.model.ui;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
+
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
@@ -14,22 +15,7 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
-import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
-import org.omnetpp.ned.model.pojo.ChannelNode;
-import org.omnetpp.ned.model.pojo.ChannelSpecNode;
-import org.omnetpp.ned.model.pojo.ConnectionGroupNode;
-import org.omnetpp.ned.model.pojo.ConnectionsNode;
-import org.omnetpp.ned.model.pojo.GateNode;
-import org.omnetpp.ned.model.pojo.GatesNode;
-import org.omnetpp.ned.model.pojo.ImportNode;
-import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
-import org.omnetpp.ned.model.pojo.NEDElementTags;
-import org.omnetpp.ned.model.pojo.ParamNode;
-import org.omnetpp.ned.model.pojo.ParametersNode;
-import org.omnetpp.ned.model.pojo.PropertyNode;
-import org.omnetpp.ned.model.pojo.SimpleModuleNode;
-import org.omnetpp.ned.model.pojo.SubmodulesNode;
-import org.omnetpp.ned.model.pojo.TypesNode;
+import org.omnetpp.ned.model.pojo.*;
 
 /**
  * Label provider for INEDElement tree node. Assumes unparsed expressions.
@@ -38,7 +24,8 @@ import org.omnetpp.ned.model.pojo.TypesNode;
  */
 public class NedModelLabelProvider extends LabelProvider {
 
-	public String getText(Object obj) {
+	@Override
+    public String getText(Object obj) {
         INEDElement model = (INEDElement)obj;
         String label = "???";
 
@@ -57,14 +44,14 @@ public class NedModelLabelProvider extends LabelProvider {
             String attType = node.getAttribute(ParamNode.ATT_TYPE);
             label = "".equals(attType) ? "" : attType+" ";
             label += node.getName();
-            
+
             if (StringUtils.isNotEmpty(node.getValue())) {
                 if (node.getIsDefault() )
                     label += " = default("+node.getValue()+")";
                 else
                     label += " = "+ node.getValue();
             }
-            
+
         }
         else if (model instanceof SimpleModuleNode) {
             SimpleModuleNode node = (SimpleModuleNode)model;
@@ -72,7 +59,7 @@ public class NedModelLabelProvider extends LabelProvider {
         }
         else if (model instanceof CompoundModuleNodeEx) {
             CompoundModuleNodeEx node = (CompoundModuleNodeEx)model;
-            label = ((node.getIsNetwork()) ? "network " : "module ")+node.getName();
+            label = (node.getIsNetwork() ? "network " : "module ")+node.getName();
         }
         else if (model instanceof SubmoduleNodeEx) {
             SubmoduleNodeEx node = (SubmoduleNodeEx)model;
@@ -110,7 +97,7 @@ public class NedModelLabelProvider extends LabelProvider {
         else if (model instanceof ConnectionNodeEx) {
             label = StringUtils.strip(getSourceWithoutComments(model), ";");
         }
-        else {
+        else if (model != null){
             label = model.getTagName();
         }
 
@@ -118,9 +105,9 @@ public class NedModelLabelProvider extends LabelProvider {
 	}
 
 	private static String bracketizeIfNotEmpty(String attr) {
-		return (attr==null || attr.equals("")) ? "" : "["+attr+"]";
+		return attr==null || attr.equals("") ? "" : "["+attr+"]";
 	}
-	
+
     private static String getSourceWithoutComments(INEDElement element) {
         INEDElement node = element.deepDup(null);
         // remove all comment nodes
@@ -129,6 +116,7 @@ public class NedModelLabelProvider extends LabelProvider {
         return StringUtils.stripToEmpty(StringUtils.substringBefore(node.getSource(), "\n"));
     }
 
+    @Override
     public Image getImage(Object obj) {
         INEDElement model = (INEDElement)obj;
         Image image = null;
@@ -137,9 +125,9 @@ public class NedModelLabelProvider extends LabelProvider {
             image = ImageFactory.getIconImage(dps.getAsStringDef(IDisplayString.Prop.IMAGE));
         }
 
-        if (image != null) {
+        if (image != null)
             return image;
-        } else if (model instanceof ImportNode) {
+        else if (model instanceof ImportNode) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_IMPORT);
         } else if (model instanceof PropertyNode) {
             image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_PROPERTY);

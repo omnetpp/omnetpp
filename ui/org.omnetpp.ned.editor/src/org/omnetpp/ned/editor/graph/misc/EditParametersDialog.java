@@ -6,13 +6,16 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -26,11 +29,15 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
+import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.properties.CheckboxControlCellEditor;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.ParamNodeEx;
+import org.omnetpp.ned.model.pojo.CommentNode;
+import org.omnetpp.ned.model.pojo.NEDElementTags;
 
 
 /**
@@ -40,6 +47,7 @@ import org.omnetpp.ned.model.ex.ParamNodeEx;
 public class EditParametersDialog extends TitleAreaDialog {
     private static final String COL_TYPE = "type";
     private static final String COL_NAME = "name";
+    private static final String COL_DEFAULT = "def";
     private static final String COL_VALUE = "value";
     private static final String COL_COMMENT = "comment";
     private static final String VOLATILE = "volatile";
@@ -56,11 +64,39 @@ public class EditParametersDialog extends TitleAreaDialog {
     private final static int SIZING_SELECTION_WIDGET_HEIGHT = 114;
     private final static int SIZING_SELECTION_WIDGET_WIDTH = 480;
 
+    private final class ColorTableLabelProvider extends TableLabelProvider implements ITableColorProvider {
+        @Override
+        public String getColumnText(Object element, int columnIndex) {
+            ParamLine paramLine = (ParamLine)element;
+            switch (columnIndex) {
+                case 0: return paramLine.type;
+                case 1: return paramLine.name;
+                case 2: return paramLine.def ? "default" : "";
+                case 3: return paramLine.value;
+                case 4: return paramLine.comment;
+            }
+            return null;
+        }
+
+        @Override
+        public Image getColumnImage(Object element, int columnIndex) {
+            return null;
+        }
+
+        public Color getBackground(Object element, int columnIndex) {
+            return null;
+        }
+
+        public Color getForeground(Object element, int columnIndex) {
+            return columnIndex ==1 ? null : ColorFactory.RED ;
+        }
+    }
+
     public static class ParamLine {
         protected ParamNodeEx param;
         protected boolean inherited;
-        protected boolean changed = false;
         protected boolean volat;
+        protected boolean def;
         protected String type;
         protected String name;
         protected String value;
@@ -75,6 +111,7 @@ public class EditParametersDialog extends TitleAreaDialog {
                 value ="";
                 comment = "";
                 volat = false;
+                def  = false;
                 return;
             }
 
@@ -83,7 +120,8 @@ public class EditParametersDialog extends TitleAreaDialog {
                 type = VOLATILE+" "+type;
             name = paramNode.getName();
             value = paramNode.getValue();
-            comment = StringUtils.strip(StringUtils.removeStart(paramNode.getComment(), "//"));
+            def = paramNode.getIsDefault();
+            comment = StringUtils.strip(StringUtils.removeStart(getComment(paramNode), "//"));
         }
 
         public ParamNodeEx getOriginalParamNode() {
@@ -95,9 +133,6 @@ public class EditParametersDialog extends TitleAreaDialog {
          */
         public ParamNodeEx getChangedParamNode() {
             ParamNodeEx result = null;
-            // if no change has occurred return the original element
-            if (!changed)
-                return param;
 
             if (param != null)
                 result =  (ParamNodeEx)param.deepDup(null);
@@ -108,13 +143,36 @@ public class EditParametersDialog extends TitleAreaDialog {
 
             result.setName(name);
             result.setValue(value);
+            result.setIsDefault(def);
             String baseType = StringUtils.strip(StringUtils.removeStart(StringUtils.strip(type), VOLATILE));
             result.setAttribute(ParamNodeEx.ATT_TYPE, baseType);
             result.setIsVolatile(StringUtils.strip(type).startsWith(VOLATILE));
-            // TODO store the comment too
+            setComment(result, comment);
 
             return result;
         }
+
+        /**
+         * @param paramNode
+         * @return The right comment of the parameter
+         */
+        protected String getComment(ParamNodeEx paramNode) { CommentNode cn = (CommentNode)paramNode.getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentNode.ATT_LOCID, "right");
+            return cn == null ? null : cn.getContent().trim();
+        }
+
+        protected void setComment(ParamNodeEx paramNode, String comment) {
+            // TODO support multi line comments and correct indentation
+            String commentPadding = " // ";
+            CommentNode cn = (CommentNode)paramNode.getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentNode.ATT_LOCID, "right");
+            if (cn == null) {
+                cn = (CommentNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_COMMENT, paramNode);
+                cn.setLocid("right");
+            } else {
+                commentPadding = StringUtils.substringBefore(StringUtils.chomp(cn.getContent()), "//")+"// ";
+            }
+            cn.setContent(commentPadding + comment);
+        }
+
     }
 
     /**
@@ -250,36 +308,22 @@ public class EditParametersDialog extends TitleAreaDialog {
         final TableViewer tableViewer = new TableViewer(table);
         addTableColumn(table, "Type", 80);
         addTableColumn(table, "Name", 100);
-        addTableColumn(table, "Value", 180);
-        addTableColumn(table, "Comment", 120);
+        addTableColumn(table, "Def", 50);
+        addTableColumn(table, "Value", 120);
+        addTableColumn(table, "Comment", 140);
 
         // set up tableViewer, content and label providers
         tableViewer.setContentProvider(new ArrayContentProvider());
-        tableViewer.setLabelProvider(new TableLabelProvider() {
-            @Override
-            public String getColumnText(Object element, int columnIndex) {
-                ParamLine paramLine = (ParamLine)element;
-                switch (columnIndex) {
-                    case 0: return paramLine.type;
-                    case 1: return paramLine.name;
-                    case 2: return paramLine.value;
-                    case 3: return paramLine.comment;
-                }
-                return null;
-            }
-            @Override
-            public Image getColumnImage(Object element, int columnIndex) {
-                return null;
-            }
-        });
+        tableViewer.setLabelProvider(new ColorTableLabelProvider());
 
         // edit support
-        tableViewer.setColumnProperties(new String[] {COL_TYPE, COL_NAME, COL_VALUE, COL_COMMENT});
-        final TableTextCellEditor editors[] = new TableTextCellEditor[4];
+        tableViewer.setColumnProperties(new String[] {COL_TYPE, COL_NAME, COL_DEFAULT, COL_VALUE, COL_COMMENT});
+        final CellEditor editors[] = new CellEditor[5];
         editors[0] = new TableTextCellEditor(tableViewer, 0, true);
         editors[1] = new TableTextCellEditor(tableViewer, 1, true);
-        editors[2] = new TableTextCellEditor(tableViewer, 2, true);
+        editors[2] = new CheckboxControlCellEditor(table);
         editors[3] = new TableTextCellEditor(tableViewer, 3, true);
+        editors[4] = new TableTextCellEditor(tableViewer, 4, true);
         tableViewer.setCellEditors(editors);
 
         tableViewer.setCellModifier(new ICellModifier() {
@@ -299,6 +343,8 @@ public class EditParametersDialog extends TitleAreaDialog {
                     return paramLine.type;
                 else if (COL_NAME.equals(property))
                     return paramLine.name;
+                else if (COL_DEFAULT.equals(property))
+                    return paramLine.def;
                 else if (COL_VALUE.equals(property))
                     return paramLine.value;
                 else if (COL_COMMENT.equals(property))
@@ -311,12 +357,13 @@ public class EditParametersDialog extends TitleAreaDialog {
                     element = ((Item) element).getData(); // workaround, see super's comment
 
                 ParamLine paramLine = (ParamLine)element;
-                paramLine.changed = true;
 
                 if (COL_TYPE.equals(property)) {
                     paramLine.type = (String)value;
                 } else if (COL_NAME.equals(property)) {
                     paramLine.name = (String)value;
+                } else if (COL_DEFAULT.equals(property)) {
+                    paramLine.def = (Boolean)value;
                 } else if (COL_VALUE.equals(property)) {
                     paramLine.value = (String)value;
                 } else if (COL_COMMENT.equals(property)) {

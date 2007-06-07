@@ -3,7 +3,10 @@ package org.omnetpp.ned.editor.graph.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
+import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
@@ -50,12 +53,22 @@ public class ParametersDialogAction extends org.eclipse.gef.ui.actions.Selection
     @Override
     public void run() {
         INEDElement paramsParent = ((IModelProvider)getSelectedObjects().get(0)).getNEDModel();
+        execute(getCommand(paramsParent));
+    }
+
+    /**
+     * @param paramsParent
+     * @return
+     */
+    public static Command getCommand(INEDElement paramsParent) {
+        Assert.isTrue(paramsParent instanceof IHasParameters, "parent should implement IHasParameters");
+
+        INEDElement paramsNode = paramsParent.getFirstChildWithTag(NEDElementTags.NED_PARAMETERS);
         List<EditParametersDialog.ParamLine> paramList = new ArrayList<EditParametersDialog.ParamLine>();
-        INEDElement oldParamsNode = paramsParent.getFirstChildWithTag(NEDElementTags.NED_PARAMETERS);
         // build ParamLine list (value objects) for dialog editing
         // TODO build the list according to the inheritance/non inheritance
-        if (oldParamsNode != null)
-            for(INEDElement param : oldParamsNode)
+        if (paramsNode != null)
+            for(INEDElement param : paramsNode)
                 if (param instanceof ParamNodeEx)
                     paramList.add(new EditParametersDialog.ParamLine((ParamNodeEx)param, false));
 
@@ -63,14 +76,14 @@ public class ParametersDialogAction extends org.eclipse.gef.ui.actions.Selection
         EditParametersDialog dialog =
             new EditParametersDialog(Display.getDefault().getActiveShell(), paramList);
 
+        // if the dialog is cancelled, the command is not executable
         if (dialog.open() == Dialog.CANCEL)
-            return;
+            return UnexecutableCommand.INSTANCE;
 
         // create an OFF MODELL copy of the parameters node
-        ParametersNode newParamsNode = oldParamsNode != null ? (ParametersNode)oldParamsNode.deepDup(null) :
+        ParametersNode newParamsNode = paramsNode != null ? (ParametersNode)paramsNode.deepDup(null) :
                                     (ParametersNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_PARAMETERS);
 
-        // TODO synchronize only the changes
         for(INEDElement paramNode : newParamsNode)
             if (paramNode instanceof ParamNodeEx)
                 paramNode.removeFromParent();
@@ -82,12 +95,11 @@ public class ParametersDialogAction extends org.eclipse.gef.ui.actions.Selection
 
         // create a replace / compound command
         CompoundCommand paramReplaceCommand = new CompoundCommand("Change Parameters");
-        if (oldParamsNode != null)
-            paramReplaceCommand.add(new DeleteCommand(oldParamsNode));
+        if (paramsNode != null)
+            paramReplaceCommand.add(new DeleteCommand(paramsNode));
 
         paramReplaceCommand.add(new AddNEDElementCommand(paramsParent, newParamsNode));
-
-        execute(paramReplaceCommand);
+        return paramReplaceCommand;
     }
 
 }

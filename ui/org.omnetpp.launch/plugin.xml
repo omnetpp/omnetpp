@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="org.omnetpp.launch.StandaloneOmnetppSimulationLaunchConfiguration"
+            delegateName="OMNeT++ Simulation Launcher"
+            id="org.omnetpp.launch.standaloneLaunchConfigurationType"
+            modes="run"
+            name="OMNeT++ Simulation"
+            public="true">
+      </launchConfigurationType>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="org.omnetpp.launch.StandaloneOmnetppLaunchConfigurationTabGroup"
+            id="org.omnetpp.launch.standaloneLaunchConfigurationTabGroup"
+            type="org.omnetpp.launch.standaloneLaunchConfigurationType">
+      </launchConfigurationTabGroup>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            configTypeID="org.omnetpp.launch.standaloneLaunchConfigurationType"
+            icon="icons/full/ctool16/omnetsim.gif"
+            id="org.omnetpp.launch.standaloneLaunchConfigurationTypeImage">
+      </launchConfigurationTypeImage>
+   </extension>
+
+</plugin>
