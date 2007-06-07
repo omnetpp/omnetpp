@@ -15,7 +15,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ListenerList;
-import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -63,7 +62,7 @@ import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
-import org.omnetpp.common.util.Base64Serializer;
+import org.omnetpp.common.util.PersistentResourcePropertyManager;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.virtualtable.IVirtualContentWidget;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
@@ -76,6 +75,15 @@ import org.omnetpp.eventlog.engine.IMessageDependency;
 import org.omnetpp.eventlog.engine.Int64Vector;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
+import org.omnetpp.scave.engine.EnumType;
+import org.omnetpp.scave.engine.FileRunList;
+import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.ResultFile;
+import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.ResultItem;
+import org.omnetpp.scave.engine.Run;
+import org.omnetpp.scave.engine.XYArray;
+import org.omnetpp.sequencechart.SequenceChartPlugin;
 import org.omnetpp.sequencechart.editors.SequenceChartContributor;
 import org.omnetpp.sequencechart.widgets.axisorder.AxisOrderByModuleId;
 import org.omnetpp.sequencechart.widgets.axisorder.AxisOrderByModuleName;
@@ -108,8 +116,6 @@ public class SequenceChart
 	/*************************************************************************************
 	 * DRAWING PARAMETERS
 	 */
-
-	private final QualifiedName SEQUENCE_CHART_STATE_PROPERTY = new QualifiedName("SequenceChart", "State");
 
 	private static final Color CHART_BACKGROUND_COLOR = ColorFactory.WHITE;
 	private static final Color LABEL_COLOR = ColorFactory.BLACK;
@@ -921,9 +927,10 @@ public class SequenceChart
 					sequenceChartFacade.relocateTimelineCoordinateSystem(eventLog.getFirstEvent());
 					fixPointViewportCoordinate = 0;
 				}
+
+				setAxisModules(eventLogInput.getAllModules());
 			}
 
-			setAxisModules(getAllAxisModules(eventLogInput));
 			calculateAxisYs();
 			calculatePixelPerTimelineUnit();
 			configureScrollBars();
@@ -935,16 +942,55 @@ public class SequenceChart
 	
 	public boolean restoreState(IResource resource) {
 		try {
-			String propertyValue = resource.getPersistentProperty(SEQUENCE_CHART_STATE_PROPERTY);
-			SequenceChartState sequenceChartState = (SequenceChartState)Base64Serializer.deserialize(propertyValue, getClass().getClassLoader());
+			PersistentResourcePropertyManager manager = new PersistentResourcePropertyManager(SequenceChartPlugin.PLUGIN_ID, getClass().getClassLoader());
 			
-			if (sequenceChartState != null) {
+			if (manager.hasProperty(resource, getClass().getName())) {
+				SequenceChartState sequenceChartState = (SequenceChartState)manager.getProperty(resource, getClass().getName());
 				IEvent fixPointEvent = eventLog.getEventForEventNumber(sequenceChartState.fixPointEventNumber);
-				
+
 				if (fixPointEvent != null) {
 					setPixelPerTimelineCoordinate(sequenceChartState.pixelPerTimelineCoordinate);
-					relocateFixPoint(fixPointEvent, sequenceChartState.fixPointViewportCoordinate);
+
+					// TODO: filter if necessary
+					setAxisModules(eventLogInput.getAllModules());
+
+					if (sequenceChartState.axisStates != null) {
+						ResultFileManager resultFileManager = new ResultFileManager();
+						
+						for (int i = 0; i < sequenceChartState.axisStates.length; i++) {
+							AxisState axisState = sequenceChartState.axisStates[i];
 	
+							if (axisState.vectorFileName != null) {
+								ResultFile resultFile = resultFileManager.loadFile(axisState.vectorFileName);
+								Run run = resultFileManager.getRunsInFile(resultFile).get(0);
+								// TODO: compare it against log file's run
+								FileRunList fileRunList = new FileRunList();
+								fileRunList.add(resultFileManager.getFileRun(resultFile, run));
+								IDList idList = resultFileManager.filterIDList(resultFileManager.getAllVectors(), null, axisState.vectorModuleFullPath, axisState.vectorName);
+	
+								if (idList.size() == 1) {
+									long id = idList.get(0);
+									ResultItem resultItem = resultFileManager.getItem(id);
+									EnumType enumType = resultItem.getEnum();
+	
+									if (enumType != null) {
+										XYArray data = VectorFileUtil.getDataOfVector(resultFileManager, id);
+										String[] names = enumType.names().toArray();
+			
+										setAxisRenderer(getAxisModule(axisState.vectorModuleFullPath), 
+											new AxisVectorBarRenderer(this, axisState.vectorFileName, axisState.vectorModuleFullPath, axisState.vectorName, names, data));
+									}
+								}
+							}
+						}
+					}
+
+
+					// assume height to be at least this
+					relocateFixPoint(fixPointEvent, sequenceChartState.fixPointViewportCoordinate);
+					calculateVirtualSize();
+					scrollVerticalTo(sequenceChartState.viewportTop);
+
 					return true;
 				}
 			}
@@ -958,12 +1004,37 @@ public class SequenceChart
 
 	public void storeState(IResource resource) {
 		try {
-			SequenceChartState sequenceChartState = new SequenceChartState();
-			sequenceChartState.fixPointEventNumber = sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber();
-			sequenceChartState.fixPointViewportCoordinate = fixPointViewportCoordinate;
-			sequenceChartState.pixelPerTimelineCoordinate = pixelPerTimelineCoordinate;
+			PersistentResourcePropertyManager manager = new PersistentResourcePropertyManager(SequenceChartPlugin.PLUGIN_ID);
 
-			resource.setPersistentProperty(SEQUENCE_CHART_STATE_PROPERTY,  Base64Serializer.serialize(sequenceChartState));
+			if (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() == -1)
+				manager.removeProperty(resource, getClass().getName());
+			else {
+				SequenceChartState sequenceChartState = new SequenceChartState();
+				sequenceChartState.viewportTop = (int)getViewportTop();
+				sequenceChartState.fixPointEventNumber = sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber();
+				sequenceChartState.fixPointViewportCoordinate = fixPointViewportCoordinate;
+				sequenceChartState.pixelPerTimelineCoordinate = pixelPerTimelineCoordinate;
+	
+				if (axisModules != null) {
+					AxisState[] axisStates = new AxisState[axisModules.size()];
+	
+					for (int i = 0; i < axisModules.size(); i++) {
+						AxisState axisState = axisStates[i] = new AxisState();
+						axisState.moduleFullPath = axisModules.get(i).getModuleFullPath();
+		
+						if (axisRenderers[i] instanceof AxisVectorBarRenderer) {
+							AxisVectorBarRenderer renderer = (AxisVectorBarRenderer)axisRenderers[i];
+							axisState.vectorFileName = renderer.getVectorFileName();
+							axisState.vectorModuleFullPath = renderer.getModuleFullPath();
+							axisState.vectorName = renderer.getVectorName();
+						}
+					}
+	
+					sequenceChartState.axisStates = axisStates;
+				}
+	
+				manager.setProperty(resource, getClass().getName(), sequenceChartState);
+			}
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
@@ -1012,16 +1083,12 @@ public class SequenceChart
 		redraw();
 	}
 
-	private ArrayList<ModuleTreeItem> getAllAxisModules(final EventLogInput eventLogInput) {
-		final ArrayList<ModuleTreeItem> modules = new ArrayList<ModuleTreeItem>();
-		eventLogInput.getModuleTreeRoot().visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
-			public void visit(ModuleTreeItem treeItem) {
-				if (treeItem != eventLogInput.getModuleTreeRoot() && treeItem.getSubmodules().length == 0)
-					modules.add(treeItem);
-			}
-		});
+	private ModuleTreeItem getAxisModule(String moduleFullPath) {
+		for (ModuleTreeItem axisModule : axisModules)
+			if (moduleFullPath.equals(axisModule.getModuleFullPath()))
+				return axisModule;
 
-		return modules;
+		return null;
 	}
 
 	/**
@@ -3048,7 +3115,17 @@ public class SequenceChart
 
 class SequenceChartState implements Serializable {
 	private static final long serialVersionUID = 1L;
+	public int viewportTop;
 	public int fixPointEventNumber;
 	public int fixPointViewportCoordinate;
 	public double pixelPerTimelineCoordinate;
+	public AxisState[] axisStates;
+}
+
+class AxisState implements Serializable {
+	private static final long serialVersionUID = 1L;
+	public String vectorFileName;
+	public String moduleFullPath;
+	public String vectorModuleFullPath;
+	public String vectorName;
 }

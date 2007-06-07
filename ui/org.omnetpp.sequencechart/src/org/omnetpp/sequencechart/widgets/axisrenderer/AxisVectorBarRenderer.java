@@ -27,16 +27,37 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 
 	protected XYArray data;
 
-	protected String[] names;
+	protected String[] valueNames;
 
-	public AxisVectorBarRenderer(SequenceChart sequenceChart, String[] names, XYArray data) {
+	protected String vectorFileName;
+
+	protected String moduleFullPath;
+
+	protected String vectorName;
+
+	public AxisVectorBarRenderer(SequenceChart sequenceChart, String vectorFileName, String moduleFullPath, String vectorName, String[] valueNames, XYArray data) {
 		this.sequenceChart = sequenceChart;
+		this.vectorFileName = vectorFileName;
+		this.moduleFullPath = moduleFullPath;
+		this.vectorName = vectorName;
 		this.data = data;
-		this.names = names;
+		this.valueNames = valueNames;
 	}
 
 	public int getHeight() {
 		return 13;
+	}
+
+	public String getVectorFileName() {
+		return vectorFileName;
+	}
+	
+	public String getModuleFullPath() {
+		return moduleFullPath;
+	}
+	
+	public String getVectorName() {
+		return vectorName;
 	}
 
 	/**
@@ -174,6 +195,6 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 
 	private String getValueName(int index)
 	{
-		return names[getValueIndex(index)];
+		return valueNames[getValueIndex(index)];
 	}
 }

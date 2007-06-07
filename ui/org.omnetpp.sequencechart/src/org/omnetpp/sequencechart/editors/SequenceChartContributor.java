@@ -72,6 +72,7 @@ import org.omnetpp.eventlog.engine.IntVector;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
 import org.omnetpp.scave.engine.EnumType;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.XYArray;
@@ -721,11 +722,13 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			public void run() {
 				// open a vector file with the same name as the sequence chart's input file name with .vec extension
 				EventLogInput eventLogInput = (EventLogInput)sequenceChart.getInput();
-				IPath vectorFileName = eventLogInput.getFile().getLocation().removeFileExtension().addFileExtension("vec");
+				IPath vectorFilePath = eventLogInput.getFile().getLocation().removeFileExtension().addFileExtension("vec");
+				String vectorFileName = vectorFilePath.toOSString();
 				final ResultFileManager resultFileManager = new ResultFileManager();
+				ResultFile resultFile = null;
 
 				try {
-					resultFileManager.loadFile(vectorFileName.toOSString());
+					resultFile = resultFileManager.loadFile(vectorFileName);
 				}
 				catch (Throwable t) {
 					// ask for a file if not found a valid one
@@ -734,19 +737,22 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 					fileDialog.setText("Select a vector file");
 					fileDialog.setFilterExtensions(new String[] {"*.vec"});
 					fileDialog.setFilterPath(eventLogInput.getFile().getRawLocation().toString());
-					String resultFileName = fileDialog.open();
+					vectorFileName = fileDialog.open();
 
-					if (resultFileName != null) {
+					if (vectorFileName != null) {
 						try {
-							resultFileManager.loadFile(resultFileName);
+							resultFile = resultFileManager.loadFile(vectorFileName);
 						}
 						catch (Throwable te) {
-							MessageDialog.openError(null, "Error", "Could not open vector file " + resultFileName);						
+							MessageDialog.openError(null, "Error", "Could not open vector file " + vectorFileName);						
 						}
 					}
 					else
 						return;
 				}
+
+				// TODO: compare it against log file's run
+				resultFileManager.getRunsInFile(resultFile).get(0);
 
 				// select a vector from the loaded file
 				IDList idList = resultFileManager.getAllVectors();
@@ -776,7 +782,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 					else {							
 						XYArray data = VectorFileUtil.getDataOfVector(resultFileManager, id);
 						String[] names = enumType.names().toArray();
-						sequenceChart.setAxisRenderer(axisModule, new AxisVectorBarRenderer(sequenceChart, names, data));
+						sequenceChart.setAxisRenderer(axisModule, new AxisVectorBarRenderer(sequenceChart, vectorFileName, resultItem.getModuleName(), resultItem.getName(), names, data));
 					}
 				}
 			}

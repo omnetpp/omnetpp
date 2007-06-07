@@ -68,6 +68,7 @@ Features:
  + follow log file changes
  + event numbers on the bottom axis are not visible when axes are balanced
  + SVG export
+ + store and restore last known settings and position per file
 
 Known bugs:
  - hierarchical sorting sequence chart axes based on crossing arrows is broken
