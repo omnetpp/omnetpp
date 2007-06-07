@@ -64,7 +64,7 @@ public class EditParametersDialog extends TitleAreaDialog {
     private static final int DELETE_ID = 501;
 
 	private final String title;
-	private final List<ParamLine> params = new ArrayList<EditParametersDialog.ParamLine>();
+	private final List<ParamLine> paramLines = new ArrayList<EditParametersDialog.ParamLine>();
 	// widgets
     private TableViewer listViewer;
     private Command resultCommand = UnexecutableCommand.INSTANCE;
@@ -110,8 +110,8 @@ public class EditParametersDialog extends TitleAreaDialog {
     }
 
 
-    public static class ParamLine {
-        public static class Cell {
+    protected static class ParamLine {
+        protected static class Cell {
             String value;
             boolean isGray;
             boolean isEditable;
@@ -132,12 +132,6 @@ public class EditParametersDialog extends TitleAreaDialog {
                 return;
             }
 
-            type.value = paramNode.getAttribute(ParamNodeEx.ATT_TYPE);
-            if (paramNode.getIsVolatile())
-                type.value = VOLATILE+" "+type;
-            name.value = paramNode.getName();
-            value.value = paramNode.getValue();
-            comment.value = StringUtils.strip(StringUtils.removeStart(getComment(paramNode), "//"));
         }
 
         public ParamNodeEx getOriginalParamNode() {
@@ -159,20 +153,13 @@ public class EditParametersDialog extends TitleAreaDialog {
 
             result.setName(name.value);
             result.setValue(value.value);
+            // FIXME set the type only if it was a declaration
             String baseType = StringUtils.strip(StringUtils.removeStart(StringUtils.strip(type.value), VOLATILE));
             result.setAttribute(ParamNodeEx.ATT_TYPE, baseType);
             result.setIsVolatile(StringUtils.strip(type.value).startsWith(VOLATILE));
             setComment(result, comment.value);
 
             return result;
-        }
-
-        /**
-         * @param paramNode
-         * @return The right comment of the parameter
-         */
-        protected String getComment(ParamNodeEx paramNode) { CommentNode cn = (CommentNode)paramNode.getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentNode.ATT_LOCID, "right");
-            return cn == null ? null : cn.getContent().trim();
         }
 
         protected void setComment(ParamNodeEx paramNode, String comment) {
@@ -185,7 +172,10 @@ public class EditParametersDialog extends TitleAreaDialog {
             } else {
                 commentPadding = StringUtils.substringBefore(StringUtils.chomp(cn.getContent()), "//")+"// ";
             }
-            cn.setContent(commentPadding + comment);
+            if (StringUtils.strip(comment).equals(""))
+                cn.setContent("");
+            else
+                cn.setContent(commentPadding + comment);
         }
 
     }
@@ -198,13 +188,45 @@ public class EditParametersDialog extends TitleAreaDialog {
         setShellStyle(getShellStyle() | SWT.MAX | SWT.RESIZE);
         this.title = "Edit Parameters";
         this.module = module;
+        buildTable();
+    }
 
+    protected void buildTable() {
         // build ParamLine list (value objects) for dialog editing
-        // TODO build the list according to the inheritance/non inheritance
-        for(INEDElement param : module.getParams().values()) {
+        for(INEDElement element : module.getParams().values()) {
+            // the param decl of the node
+            ParamNodeEx paramDecl = (ParamNodeEx)element;
+            // get the the value of the parameter
+            ParamNodeEx paramValue = (ParamNodeEx)module.getParamValues().get(paramDecl.getName());
+            ParamLine paramLine = new ParamLine(paramDecl);
+            boolean isDeclLocal = paramDecl.getParent().getParent() == module;
+            boolean isValueLocal = paramValue != null && paramValue.getParent().getParent() == module;
+            paramLine.type.isGray = !isDeclLocal;
+            paramLine.type.isEditable = isDeclLocal;
+            paramLine.name.isGray = !isDeclLocal && ! isValueLocal;
+            paramLine.name.isEditable = isDeclLocal;
+            paramLine.value.isGray = paramLine.comment.isGray = !isValueLocal;
+            paramLine.value.isEditable = paramLine.comment.isEditable = true;
 
-            params.add(new EditParametersDialog.ParamLine((ParamNodeEx)param));
+            // fill the values
+            paramLine.type.value = paramDecl.getAttribute(ParamNodeEx.ATT_TYPE);
+            if (paramDecl.getIsVolatile())
+                paramLine.type.value = VOLATILE+" "+paramLine.type.value;
+            paramLine.name.value = paramDecl.getName();
+            paramLine.value.value = paramValue.getValue();
+            // FIXME remove // from each line
+            paramLine.comment.value = StringUtils.strip(StringUtils.removeStart(getComment(paramValue), "//"));
+
+            paramLines.add(paramLine);
         }
+    }
+
+    /**
+     * @param paramNode
+     * @return The right comment of the parameter
+     */
+    protected static String getComment(ParamNodeEx paramNode) { CommentNode cn = (CommentNode)paramNode.getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentNode.ATT_LOCID, "right");
+        return cn == null ? "" : cn.getContent().trim();
     }
 
 	@Override
@@ -287,20 +309,20 @@ public class EditParametersDialog extends TitleAreaDialog {
     protected void addEntry() {
         Object selObj = ((IStructuredSelection)listViewer.getSelection()).getFirstElement();
         ParamLine newParamLine = new ParamLine(null);
-        params.add(params.indexOf(selObj)+1, newParamLine);
+        paramLines.add(paramLines.indexOf(selObj)+1, newParamLine);
         listViewer.refresh();
         listViewer.setSelection(new StructuredSelection(newParamLine), true);
     }
 
 	protected void removeEntry() {
 	    Object selObj = ((IStructuredSelection)listViewer.getSelection()).getFirstElement();
-	    params.remove(selObj);
+	    paramLines.remove(selObj);
         listViewer.refresh();
         selObj = ((IStructuredSelection)listViewer.getSelection()).getFirstElement();
         // check if we deleted the last parameter. in this case set the selection to the previous one
 
-        if (selObj == null && params.size()>0)
-            listViewer.setSelection(new StructuredSelection(params.get(params.size()-1)), true);
+        if (selObj == null && paramLines.size()>0)
+            listViewer.setSelection(new StructuredSelection(paramLines.get(paramLines.size()-1)), true);
     }
 
     @Override
@@ -332,11 +354,12 @@ public class EditParametersDialog extends TitleAreaDialog {
 
         // edit support
         tableViewer.setColumnProperties(COLUMNS);
-        final CellEditor editors[] = new CellEditor[5];
-        editors[0] = new TableTextCellEditor(tableViewer, 0, true);
-        editors[1] = new TableTextCellEditor(tableViewer, 1, true);
-        editors[3] = new TableTextCellEditor(tableViewer, 2, true);
-        editors[4] = new TableTextCellEditor(tableViewer, 3, true);
+        final CellEditor editors[] = new CellEditor[] {
+            new TableTextCellEditor(tableViewer, 0, true),
+            new TableTextCellEditor(tableViewer, 1, true),
+            new TableTextCellEditor(tableViewer, 2, true),
+            new TableTextCellEditor(tableViewer, 3, true)
+        };
         tableViewer.setCellEditors(editors);
 
         tableViewer.setCellModifier(new ICellModifier() {
@@ -387,7 +410,7 @@ public class EditParametersDialog extends TitleAreaDialog {
             }
         });
 
-        tableViewer.setInput(params);
+        tableViewer.setInput(paramLines);
         return tableViewer;
     }
 
@@ -402,7 +425,7 @@ public class EditParametersDialog extends TitleAreaDialog {
                paramNode.removeFromParent();
 
        // add the new nodes
-       for(EditParametersDialog.ParamLine paramLine : params) {
+       for(EditParametersDialog.ParamLine paramLine : paramLines) {
            newParamsNode.appendChild(paramLine.getChangedParamNode());
        }
 
