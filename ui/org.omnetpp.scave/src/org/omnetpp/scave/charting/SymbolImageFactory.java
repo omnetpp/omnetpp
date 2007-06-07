@@ -26,22 +26,24 @@ public class SymbolImageFactory {
 	 * Returns the file name of the image containing the given symbol
 	 * in the given color.
 	 */
-	public static String getImageFile(Color color, IChartSymbol symbol) {
-		MultiKey key = new MultiKey(color, symbol == null ? null : symbol.getClass());
+	public static String getImageFile(Color color, IChartSymbol symbol, boolean drawLine) {
+		MultiKey key = new MultiKey(color, symbol == null ? null : symbol.getClass(), drawLine);
 		String fileName = imageFileMap.get(key);
 		if (fileName == null) {
-			fileName = createImageFile(color, symbol);
+			fileName = createImageFile(color, symbol, drawLine);
 			imageFileMap.put(key, fileName);
 		}
 		return fileName;
 	}
 	
-	private static String createImageFile(Color color, IChartSymbol symbol) {
+	private static String createImageFile(Color color, IChartSymbol symbol, boolean drawLine) {
 		Image image = null;
 		try {
-			image = createSymbolImage(symbol, color);
+			image = createSymbolImage(symbol, color, drawLine);
 			String symbolName = symbol == null ? "NoneSymbol" : StringUtils.removeStart(symbol.getClass().getName(), symbol.getClass().getPackage().getName()+".");
-			String imageName = String.format("%s_%02X%02X%02X", symbolName, color.getRed(), color.getGreen(), color.getBlue());
+			String imageName = String.format("%s_%02X%02X%02X%s",
+					symbolName, color.getRed(), color.getGreen(), color.getBlue(),
+					drawLine ? "_l" : "");
 			return ImageFactory.createTemporaryImageFile(imageName+".png", image, SWT.IMAGE_PNG);
 		} catch (Exception e) {
 			return null;
@@ -52,7 +54,7 @@ public class SymbolImageFactory {
 		}
 	}
 	
-	private static Image createSymbolImage(IChartSymbol symbol, Color color) {
+	private static Image createSymbolImage(IChartSymbol symbol, Color color, boolean drawLine) {
 		int size = symbol != null ? symbol.getSizeHint() : 0;
 		Image image = null;
 		GC gc = null;
@@ -61,9 +63,11 @@ public class SymbolImageFactory {
 			gc = new GC(image);
 			gc.setAntialias(SWT.ON);
 			gc.setForeground(color);
-			gc.setLineWidth(1);
-			gc.setLineStyle(SWT.LINE_SOLID);
-			gc.drawLine(0, 4, 14, 4);
+			if (drawLine) {
+				gc.setLineWidth(1);
+				gc.setLineStyle(SWT.LINE_SOLID);
+				gc.drawLine(0, 4, 14, 4);
+			}
 			if (symbol != null) {
 				symbol.setSizeHint(6);
 				symbol.drawSymbol(gc, 7, 4);

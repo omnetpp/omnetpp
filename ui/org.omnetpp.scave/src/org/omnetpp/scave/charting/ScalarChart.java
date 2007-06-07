@@ -51,6 +51,7 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.ScalarDataset;
+import org.omnetpp.scave.charting.plotter.IChartSymbol;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
 
 /**
@@ -99,10 +100,11 @@ public class ScalarChart extends ChartCanvas {
 	private void updateLegend() {
 		legend.clearLegendItems();
 		legendTooltip.clearItems();
+		IChartSymbol symbol = new SquareSymbol();
 		if (dataset != null) {
 			for (int i = 0; i < dataset.getColumnCount(); ++i) {
-				legend.addLegendItem(plot.getBarColor(i), dataset.getColumnKey(i).toString());
-				legendTooltip.addItem(plot.getBarColor(i), dataset.getColumnKey(i).toString(), new SquareSymbol());
+				legend.addLegendItem(plot.getBarColor(i), dataset.getColumnKey(i).toString(), symbol, false);
+				legendTooltip.addItem(plot.getBarColor(i), dataset.getColumnKey(i).toString(), symbol, false);
 			}
 		}
 	}
@@ -367,6 +369,7 @@ public class ScalarChart extends ChartCanvas {
 			domainAxis.setLayout(mainArea, insetsToMainArea);
 			valueAxis.setLayout(mainArea, insetsToMainArea);
 			plotArea = mainArea.getCopy().crop(insetsToMainArea);
+			legend.layoutSecondPass(plotArea);
 			//FIXME how to handle it when plotArea.height/width comes out negative??
 			plot.layout(gc, plotArea);
 			setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));

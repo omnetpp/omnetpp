@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
@@ -14,6 +15,7 @@ import org.eclipse.swt.graphics.Region;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.charting.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.ChartProperties.LegendPosition;
+import org.omnetpp.scave.charting.plotter.IChartSymbol;
 
 /**
  * This class layouts and draws the legend on a vector chart.
@@ -25,29 +27,51 @@ public class Legend {
 	class Item {
 		String text;
 		Color color;
+		IChartSymbol symbol;
+		boolean drawLine;
 		int x, y;	// location relative to the legend top-left
 		int width, height;
 		
-		public Item(Color color, String text) {
+		public Item(Color color, String text, IChartSymbol symbol, boolean drawLine) {
 			this.color = color;
 			this.text = text;
+			this.symbol = symbol;
+			this.drawLine = drawLine;
 		}
 		
 		public void calculateSize(GC gc) {
 			Point size = gc.textExtent(text);
-			width = size.x + 9; // place for mark
+			width = size.x + 17; // place for symbol
 			height = size.y;
 		}
 		
 		public void draw(GC gc, int x, int y) {
-			// draw oval
-			if (font != null) gc.setFont(font);
+			gc.setAntialias(SWT.ON);
 			gc.setForeground(color);
 			gc.setBackground(color);
-			gc.fillOval(x + 2 , y + (height - 5) / 2, 5, 5);
+
+			// draw line
+			if (drawLine) {
+				gc.setLineWidth(1);
+				gc.setLineStyle(SWT.LINE_SOLID);
+				gc.drawLine(x+1, y+height/2, x+15, y+height/2);
+			}
+			// draw symbol
+			if (symbol != null) {
+				int size = symbol.getSizeHint();
+				try {
+					symbol.setSizeHint(6);
+					symbol.drawSymbol(gc, x+8, y+height/2);
+				}
+				finally {
+					symbol.setSizeHint(size);
+				}
+			}
+			
 			// draw text
+			if (font != null) gc.setFont(font);
 			gc.setForeground(ColorFactory.BLACK);
-			gc.drawText(text, x + 9, y, true);
+			gc.drawText(text, x + 17, y, true);
 		}
 	}
 	
@@ -56,10 +80,12 @@ public class Legend {
 	private Font font;
 	private LegendPosition position;
 	private LegendAnchor anchor;
-	private int horizontalSpacing = 5;
-	private int verticalSpacing = 5;
-	private int horizontalMargin = 5;
-	private int verticalMargin = 5;
+	private int horizontalSpacing = 5; // horizontal spacing between legend items
+	private int verticalSpacing = 5;   // vertical spacing between legend items
+	private int horizontalPadding = 5; // horizontal space to the left and right of the legend, inside the border
+	private int verticalPadding = 5;   // vertical space above and below the the legend, inside the border
+	private int horizontalMargin = 5;  // horizontal space to the left and right of the legend, outside the border
+	private int verticalMargin = 5;    // vertical space above and below the legend, outside the border
 	private List<Item> items = new ArrayList<Item>();
 	private Rectangle bounds; // rectangle of the legend in canvas coordinates
 	int visibleItemCount;
@@ -79,8 +105,8 @@ public class Legend {
 		items.clear();
 	}
 	
-	public void addLegendItem(Color color, String text) {
-		items.add(new Item(color, text));
+	public void addLegendItem(Color color, String text, IChartSymbol symbol, boolean drawLine) {
+		items.add(new Item(color, text, symbol, drawLine));
 	}
 	
 	public boolean isVisible() {
@@ -131,14 +157,11 @@ public class Legend {
 	 * Calculates the position and size of the legend and its items.
 	 * Returns the remaining space.
 	 */
-	//FIXME Tomi: the only problem is, here we don't know yet what the final position/size of the 
-	// plotArea will be, so whatever "bounds" we calculate here should be treated as some
-	// first approximation at the best... There should be a separate setLayout(canvasBounds, plotArea)
-	// call to communicate final plotArea size/position to the Legend.
-	// 
 	public Rectangle layout(GC gc, Rectangle parent) {
 		if (!visible)
 			return parent;
+		
+		//System.out.println("Parent rect: " + parent);
 		
 		gc.setFont(font);
 		
@@ -147,13 +170,16 @@ public class Legend {
 			items.get(i).calculateSize(gc);
 		
 		// position items and calculate size
-		boolean horizontal = position != LegendPosition.Left && position != LegendPosition.Right;
+		boolean horizontal = position == LegendPosition.Above || position == LegendPosition.Below ||
+					position == LegendPosition.Inside && (anchor == LegendAnchor.North || anchor == LegendAnchor.South);
 		Point maxSize = new Point(parent.width, parent.height);
 		if (horizontal)
 			maxSize.y = parent.height / 2;
 		else
 			maxSize.x = parent.width / 2;
 		positionItems(maxSize, horizontal);
+		
+		//System.out.println("Bounds: "+bounds+", Max: "+maxSize);
 		
 		bounds.width = Math.min(bounds.width, maxSize.x);
 		bounds.height = Math.min(bounds.height, maxSize.y);
@@ -208,6 +234,34 @@ public class Legend {
 		
 		return new Rectangle(left, top, right - left, bottom - top);
 	}
+	
+	/**
+	 * Second pass of the layout, which is called when the final position/size of the 
+	 * plotArea is known.
+	 */
+	public void layoutSecondPass(Rectangle plotArea) {
+		if (position != LegendPosition.Inside)
+			return;
+		
+		int dx, dy;
+		switch (anchor) {
+		case North:		dx = 0; dy = -1; break;
+		case NorthEast:	dx = 1; dy = -1; break; 
+		case East:		dx = 1; dy = 0; break;
+		case SouthEast:	dx = 1; dy = 1; break;
+		case South:		dx = 0; dy = 1; break;
+		case SouthWest:	dx = -1; dy = 1; break;
+		case West:		dx = -1; dy = 0; break;
+		case NorthWest:	dx = -1; dy = -1; break;
+		default: throw new IllegalStateException();
+		}
+		
+		bounds.width = Math.min(bounds.width, Math.max(0, plotArea.width - 2 * horizontalMargin));
+		bounds.height = Math.min(bounds.height, Math.max(0, plotArea.height - 2 * verticalMargin));
+		bounds.x = plotArea.x + horizontalMargin + (plotArea.width - bounds.width - 2 * horizontalMargin) * (dx + 1) / 2;
+		bounds.y = plotArea.y + verticalMargin + (plotArea.height - bounds.height - 2 * verticalMargin) * (dy + 1) / 2;
+		updateVisibleItemCount();
+	}
 
 	private void positionItems(Point maxSize, boolean horizontal) {
 		if (horizontal) {
@@ -251,26 +305,35 @@ public class Legend {
 
 				// position children
 				visibleItemCount = 0;
-				x = horizontalMargin;
-				int y = verticalMargin;
+				x = horizontalPadding;
+				int y = verticalPadding;
 				for (int i = 0; i < items.size(); ++i) {
 					Item item = items.get(i);
 					int row = i / columns;
 					int col = i % columns;
 					
+					if (col == 0) {
+						if(y + rowHeights[row] + verticalPadding > maxSize.y) {
+							bounds.height = y + verticalPadding;
+							break;
+						}
+						if (row > 0)
+							y += verticalSpacing;
+					}
+					else { // col > 0
+						x += horizontalSpacing;
+					}
+					
 					item.x = x;
 					item.y = y;
-
+					
 					if (col == columns - 1) {
-						x = horizontalMargin;
-						y += rowHeights[row] + verticalSpacing;
+						x = horizontalPadding;
+						y += rowHeights[row];
 					}
 					else {
-						x += columnWidths[col] + horizontalSpacing;
+						x += columnWidths[col];
 					}
-
-					if (y > maxSize.y)
-						break;
 
 					++visibleItemCount;
 				}
@@ -281,19 +344,43 @@ public class Legend {
 		else { // vertical
 			bounds = new Rectangle(0, 0, 0, 0);
 			visibleItemCount = 0;
-			int x = horizontalMargin;
-			int y = verticalMargin;
-			
-			for (int i = 0; i < items.size() && y < maxSize.y; ++i) {
+			int x = horizontalPadding;
+			int y = verticalPadding;
+			for (int i = 0; i < items.size(); ++i) {
 				Item item = items.get(i);
+				
+				if (y + item.height + verticalPadding > maxSize.y) {
+					break;
+				}
+				
 				item.x = x;
 				item.y = y;
-				bounds.width = Math.max(bounds.width, item.width + 2 * horizontalMargin);
-				bounds.height = Math.max(bounds.height, y + item.height + verticalMargin);
+				
+				bounds.width = Math.max(bounds.width, item.width + 2 * horizontalPadding);
+				bounds.height = Math.max(bounds.height, y + item.height + verticalPadding);
 				
 				y += item.height + verticalSpacing;
 				++visibleItemCount;
 			}
+		}
+	}
+	
+	public void updateVisibleItemCount() {
+		int count = 0;
+		Item lastVisibleItem = null;
+		for (Item item : items) {
+			if (count == visibleItemCount || item.y + item.height + verticalPadding > bounds.height)
+				break;
+			count++;
+			lastVisibleItem = item;
+		}
+		
+		if (count != visibleItemCount) {
+			visibleItemCount = count;
+			if (lastVisibleItem == null)
+				bounds.height = 2 * verticalPadding;
+			else
+				bounds.height = Math.max(0, lastVisibleItem.y + lastVisibleItem.height + verticalPadding);
 		}
 	}
 	

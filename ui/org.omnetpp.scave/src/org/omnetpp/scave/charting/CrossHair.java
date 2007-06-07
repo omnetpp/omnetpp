@@ -242,7 +242,7 @@ class CrossHair {
 				Color color = props.getColor();
 				String text = getText(dp);
 				IChartSymbol symbol = props.getSymbol();
-				String imageFile = SymbolImageFactory.getImageFile(color, symbol);
+				String imageFile = SymbolImageFactory.getImageFile(color, symbol, true);
 				sb.append("<tr>");
 				sb.append("<td>");
 				if (imageFile != null)

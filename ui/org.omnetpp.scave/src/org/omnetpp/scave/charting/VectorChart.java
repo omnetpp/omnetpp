@@ -368,8 +368,8 @@ public class VectorChart extends ChartCanvas {
 					Color color = props.getColor();
 					String key = props.getLineId();
 					IChartSymbol symbol = props.getSymbol();
-					legend.addLegendItem(color, key);
-					legendTooltip.addItem(color, key, symbol);
+					legend.addLegendItem(color, key, symbol, true);
+					legendTooltip.addItem(color, key, symbol, true);
 				}
 			}
 		}
@@ -610,6 +610,7 @@ public class VectorChart extends ChartCanvas {
 			yAxis.setLayout(mainArea, insetsToMainArea);
 			plotArea = mainArea.getCopy().crop(insetsToMainArea);
 			crosshair.layout(gc, plotArea);
+			legend.layoutSecondPass(plotArea);
 			//FIXME how to handle it when plotArea.height/width comes out negative??
 			setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
 

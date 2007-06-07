@@ -354,14 +354,12 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		{
 			Color color;
 			String label;
-			IChartSymbol symbol;
 			String imageFile;
 
-			public Item(Color color, String label, IChartSymbol symbol) {
+			public Item(Color color, String label, IChartSymbol symbol, boolean drawLine) {
 				this.color = color;
 				this.label = label;
-				this.symbol = symbol;
-				this.imageFile = SymbolImageFactory.getImageFile(color, symbol);
+				this.imageFile = SymbolImageFactory.getImageFile(color, symbol, drawLine);
 			}
 		}
 		
@@ -379,8 +377,8 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			items.clear();
 		}
 		
-		public void addItem(Color color, String label, IChartSymbol symbol) {
-			items.add(new Item(color, label, symbol));
+		public void addItem(Color color, String label, IChartSymbol symbol, boolean drawLine) {
+			items.add(new Item(color, label, symbol, drawLine));
 		}
 		
 		public Rectangle layout(GC gc, Rectangle rect) {
@@ -391,7 +389,6 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		}
 		
 		public void draw(GC gc) {
-			System.out.println("Legend tooltip: " + rect);
 			Graphics graphics = new SWTGraphics(gc);
 			graphics.pushState();
 			graphics.drawImage(icon, rect.x, rect.y);
