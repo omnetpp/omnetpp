@@ -1,5 +1,6 @@
 package org.omnetpp.sequencechart.widgets;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -14,6 +15,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -61,6 +63,7 @@ import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.common.util.Base64Serializer;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.virtualtable.IVirtualContentWidget;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
@@ -73,7 +76,6 @@ import org.omnetpp.eventlog.engine.IMessageDependency;
 import org.omnetpp.eventlog.engine.Int64Vector;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
-import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.sequencechart.editors.SequenceChartContributor;
 import org.omnetpp.sequencechart.widgets.axisorder.AxisOrderByModuleId;
 import org.omnetpp.sequencechart.widgets.axisorder.AxisOrderByModuleName;
@@ -106,6 +108,8 @@ public class SequenceChart
 	/*************************************************************************************
 	 * DRAWING PARAMETERS
 	 */
+
+	private final QualifiedName SEQUENCE_CHART_STATE_PROPERTY = new QualifiedName("SequenceChart", "State");
 
 	private static final Color CHART_BACKGROUND_COLOR = ColorFactory.WHITE;
 	private static final Color LABEL_COLOR = ColorFactory.BLACK;
@@ -205,7 +209,7 @@ public class SequenceChart
 	private boolean followSelection = true;
 
 	private ArrayList<SelectionListener> selectionListenerList = new ArrayList<SelectionListener>(); // SWT selection listeners
-	private List<IEvent> selectedEvents = new ArrayList<IEvent>(); // the selection
+	private List<IEvent> selectionEvents = new ArrayList<IEvent>(); // the selection
     private ListenerList selectionChangedListeners = new ListenerList(); // list of selection change listeners (type ISelectionChangedListener).
 	private MenuManager menuManager;
 
@@ -224,7 +228,7 @@ public class SequenceChart
 	public enum TimelineMode {
 		LINEAR,
 		STEP,
-		NON_LINEAR
+		NONLINEAR
 	}
 
 	/**
@@ -267,8 +271,10 @@ public class SequenceChart
 		
 		addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
-				if (eventLogInput != null)
+				if (eventLogInput != null) {
+					storeState(eventLogInput.getFile());
 					eventLogInput.removeEventLogChangedListener(SequenceChart.this);
+				}
 			}
 		});
 
@@ -867,7 +873,7 @@ public class SequenceChart
 	}
 
 	/*************************************************************************************
-	 * MISC
+	 * MISC & EVENT LOG NOTIFICATIONS
 	 */
 	
 	/**
@@ -876,49 +882,92 @@ public class SequenceChart
 	public EventLogInput getInput() {
 		return eventLogInput;
 	}
+	
+	/**
+	 * The event log (data) to be displayed in the chart
+	 */
+	public IEventLog getEventLog() {
+		return eventLog;
+	}
 
 	/**
 	 * Sets a new EventLogInput to be displayed.
 	 */
-	public void setInput(EventLogInput eventLogInput) {
-		boolean firstTime = (this.eventLogInput == null);
-		
-		if (!firstTime)
-			this.eventLogInput.removeEventLogChangedListener(this);
-
-		this.eventLogInput = eventLogInput;
-		this.eventLog = eventLogInput.getEventLog();
-		this.sequenceChartFacade = eventLogInput.getSequenceChartFacade();
-
-		double[] leftRightSimulationTimes = null;
-
-		if (!firstTime)
-			leftRightSimulationTimes = getViewportSimulationTimeRange();
-
-		TimelineMode timelineMode = getTimelineMode();
-		sequenceChartFacade.setTimelineMode(timelineMode.ordinal());
-		
-		if (!eventLog.isEmpty() && sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() == -1)
-			sequenceChartFacade.relocateTimelineCoordinateSystem(eventLog.getFirstEvent());
-			
-		axisModulePositions = null;
-		invalidVirtualSize = true;
-		axisModuleYs = null;
-
-		selectedEvents.clear();
-		fireSelectionChanged();
-
-		setAxisModules(getAllAxisModules(eventLogInput));
-		calculateAxisYs();
-		
-		if (!firstTime) {
-			calculatePixelPerTimelineUnit();
-			setViewportSimulationTimeRange(leftRightSimulationTimes);
+	public void setInput(EventLogInput input) {
+		// store current settings
+		if (eventLogInput != null) {
+			eventLogInput.removeEventLogChangedListener(this);
+			storeState(eventLogInput.getFile());
 		}
-		
-		eventLogInput.addEventLogChangedListener(this);
 
-		clearCanvasCacheAndRedraw();
+		// remember input
+		eventLogInput = input;
+		eventLog = eventLogInput == null ? null : eventLogInput.getEventLog();
+		sequenceChartFacade = eventLogInput.getSequenceChartFacade();
+
+		// clear state
+		axisModules = null;
+		axisModulePositions = null;
+		axisModuleYs = null;
+		invalidVirtualSize = true;
+		clearSelection();
+
+		// restore last known settings
+		if (eventLogInput != null) {
+			eventLogInput.addEventLogChangedListener(this);
+			
+			if (!restoreState(eventLogInput.getFile())) {
+				if (!eventLog.isEmpty() && sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() == -1) {
+					sequenceChartFacade.relocateTimelineCoordinateSystem(eventLog.getFirstEvent());
+					fixPointViewportCoordinate = 0;
+				}
+			}
+
+			setAxisModules(getAllAxisModules(eventLogInput));
+			calculateAxisYs();
+			calculatePixelPerTimelineUnit();
+			configureScrollBars();
+			adjustHorizontalScrollBar();
+		}
+
+		clearCanvasCache();
+	}
+	
+	public boolean restoreState(IResource resource) {
+		try {
+			String propertyValue = resource.getPersistentProperty(SEQUENCE_CHART_STATE_PROPERTY);
+			SequenceChartState sequenceChartState = (SequenceChartState)Base64Serializer.deserialize(propertyValue, getClass().getClassLoader());
+			
+			if (sequenceChartState != null) {
+				IEvent fixPointEvent = eventLog.getEventForEventNumber(sequenceChartState.fixPointEventNumber);
+				
+				if (fixPointEvent != null) {
+					setPixelPerTimelineCoordinate(sequenceChartState.pixelPerTimelineCoordinate);
+					relocateFixPoint(fixPointEvent, sequenceChartState.fixPointViewportCoordinate);
+	
+					return true;
+				}
+			}
+
+			return false;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void storeState(IResource resource) {
+		try {
+			SequenceChartState sequenceChartState = new SequenceChartState();
+			sequenceChartState.fixPointEventNumber = sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber();
+			sequenceChartState.fixPointViewportCoordinate = fixPointViewportCoordinate;
+			sequenceChartState.pixelPerTimelineCoordinate = pixelPerTimelineCoordinate;
+
+			resource.setPersistentProperty(SEQUENCE_CHART_STATE_PROPERTY,  Base64Serializer.serialize(sequenceChartState));
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public void eventLogAppended() {
@@ -982,20 +1031,6 @@ public class SequenceChart
 		menuManager = new MenuManager();
 		sequenceChartContributor.contributeToPopupMenu(menuManager);
 		setMenu(menuManager.createContextMenu(this));
-	}
-	
-	/**
-	 * Sets event log and axis modules and vector data.
-	 * Tries to keep the simulation time range of the canvas.
-	 */
-	public void setParameters(IEventLog eventLog, ArrayList<ModuleTreeItem> axisModules, ArrayList<XYArray> axisVectors) {
-	}
-	
-	/**
-	 * The event log (data) to be displayed in the chart
-	 */
-	public IEventLog getEventLog() {
-		return eventLog;
 	}
 	
 	public ArrayList<ModuleTreeItem> getAxisModules() {
@@ -1114,15 +1149,15 @@ public class SequenceChart
 	 */
 	private void calculatePixelPerTimelineUnit() {
 		if (pixelPerTimelineCoordinate == -1) {
-			int distance = Math.min(50, eventLog.getApproximateNumberOfEvents());
+			int distance = Math.min(20, eventLog.getApproximateNumberOfEvents());
 
 			if (distance > 0) {
 				IEvent firstEvent = eventLog.getFirstEvent();
 				double firstEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(firstEvent);
 				double otherEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(eventLog.getNeighbourEvent(firstEvent, distance - 1));
 				double timelineCoordinateDelta = otherEventTimelineCoordinate - firstEventTimelineCoordinate;
-				double value = getViewportWidth() / timelineCoordinateDelta;
-				setPixelPerTimelineCoordinate(Double.isInfinite(value) ? 1 : value);
+				double value = timelineCoordinateDelta / getViewportWidth();
+				setPixelPerTimelineCoordinate(value);
 			}
 		}
 	}
@@ -1619,11 +1654,11 @@ public class SequenceChart
 			graphics.setAntialias(SWT.ON);
 	
 			// draw event selection marks
-			if (selectedEvents != null) {
+			if (selectionEvents != null) {
 				graphics.setLineStyle(SWT.LINE_SOLID);
 			    graphics.setForegroundColor(EVENT_SELECTION_COLOR);
 	
-			    for (IEvent selectedEvent : selectedEvents) {
+			    for (IEvent selectedEvent : selectionEvents) {
 			    	if (startEventNumber <= selectedEvent.getEventNumber() && selectedEvent.getEventNumber() <= endEventNumber)
 			    	{
 			    		int x = getEventXViewportCoordinate(selectedEvent.getCPtr());
@@ -2398,11 +2433,11 @@ public class SequenceChart
 
 				if (messageDependencies.size() == 1)
 					zoomToMessageDependency(messageDependencies.get(0));
-				if (eventListEquals(selectedEvents, events)) {
+				if (eventListEquals(selectionEvents, events)) {
 					fireSelection(true);
 				}
 				else {
-					selectedEvents = events;
+					selectionEvents = events;
 					fireSelection(true);
 					fireSelectionChanged();
 					redraw();
@@ -2425,16 +2460,16 @@ public class SequenceChart
 						ArrayList<IEvent> events = new ArrayList<IEvent>();
 	
 						if ((me.stateMask & SWT.CTRL)!=0) // CTRL key extends selection
-							for (IEvent e : selectedEvents) 
+							for (IEvent e : selectionEvents) 
 								events.add(e);
 	
 						collectStuffUnderMouse(me.x, me.y, events, null);
 						
-						if (eventListEquals(selectedEvents, events)) {
+						if (eventListEquals(selectionEvents, events)) {
 							fireSelection(false);
 						}
 						else {
-							selectedEvents = events;
+							selectionEvents = events;
 							fireSelection(false);
 							fireSelectionChanged();
 							redraw();
@@ -2855,7 +2890,7 @@ public class SequenceChart
 		if (eventLogInput == null)
 			return null;
 		else
-			return new EventLogSelection(eventLogInput, selectedEvents);
+			return new EventLogSelection(eventLogInput, selectionEvents);
 	}
 
 	/**
@@ -2879,17 +2914,28 @@ public class SequenceChart
 			}
 	
 			// if new selection differs from existing one, take over its contents
-			if (!eventListEquals(newEventLogSelection.getEvents(), selectedEvents)) {
-				selectedEvents.clear();
+			if (!eventListEquals(newEventLogSelection.getEvents(), selectionEvents)) {
+				selectionEvents.clear();
 				for (IEvent e : newEventLogSelection.getEvents()) 
-					selectedEvents.add(e);
+					selectionEvents.add(e);
 	
 				// go to the time of the first event selected
-				if (selectedEvents.size() > 0)
-					gotoElement(selectedEvents.get(0));
+				if (selectionEvents.size() > 0)
+					gotoElement(selectionEvents.get(0));
 	
 				redraw();
 			}
+		}
+	}
+	
+	/**
+	 * Removes all selection events.
+	 */
+	public void clearSelection() {
+		if (selectionEvents != null && selectionEvents.size() != 0) {
+			selectionEvents.clear();
+	
+			fireSelectionChanged();
 		}
 	}
 
@@ -2897,19 +2943,19 @@ public class SequenceChart
 	 * Returns the current selection.
 	 */
 	public IEvent getSelectionEvent() {
-		if (selectedEvents != null && selectedEvents.size() != 0)
-			return selectedEvents.get(0);
+		if (selectionEvents != null && selectionEvents.size() != 0)
+			return selectionEvents.get(0);
 		else
 			return null;
 	}
 	
 	public List<IEvent> getSelectionEvents() {
-		return selectedEvents;
+		return selectionEvents;
 	}
 	
 	public void setSelectionEvent(IEvent event) {
-		selectedEvents.clear();
-		selectedEvents.add(event);
+		selectionEvents.clear();
+		selectionEvents.add(event);
 		fireSelectionChanged();
 		redraw();
 	}
@@ -2998,4 +3044,11 @@ public class SequenceChart
 			return -1;
 		}
 	}
+}
+
+class SequenceChartState implements Serializable {
+	private static final long serialVersionUID = 1L;
+	public int fixPointEventNumber;
+	public int fixPointViewportCoordinate;
+	public double pixelPerTimelineCoordinate;
 }

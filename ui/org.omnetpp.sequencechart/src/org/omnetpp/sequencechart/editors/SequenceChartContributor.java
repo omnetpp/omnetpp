@@ -325,7 +325,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 					protected void createMenu(Menu menu) {
 						addSubMenuItem(menu, "Linear", SequenceChart.TimelineMode.LINEAR);
 						addSubMenuItem(menu, "Step", SequenceChart.TimelineMode.STEP);
-						addSubMenuItem(menu, "Nonlinear", SequenceChart.TimelineMode.NON_LINEAR);
+						addSubMenuItem(menu, "Nonlinear", SequenceChart.TimelineMode.NONLINEAR);
 					}
 
 					private void addSubMenuItem(Menu menu, String text, final SequenceChart.TimelineMode timelineMode) {
