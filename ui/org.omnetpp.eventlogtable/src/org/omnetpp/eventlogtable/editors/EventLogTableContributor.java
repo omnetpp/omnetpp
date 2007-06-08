@@ -81,7 +81,15 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		eventLogTable.addSelectionChangedListener(this);
 	}
 	
+	@Override
+	public void dispose() {
+		super.dispose();
+		singleton = null;
+	}
+
 	public static EventLogTableContributor getDefault() {
+		Assert.isTrue(singleton != null);
+
 		return singleton;
 	}
 	
@@ -110,12 +118,15 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	
 	@Override
 	public void setActiveEditor(IEditorPart targetEditor) {
-		if (eventLogTable != null)
-			eventLogTable.removeSelectionChangedListener(this);
-		eventLogTable = ((EventLogTableEditor)targetEditor).getEventLogTable();
-		eventLogTable.addSelectionChangedListener(this);
+		if (targetEditor instanceof EventLogTableEditor) {
+			if (eventLogTable != null)
+				eventLogTable.removeSelectionChangedListener(this);
 
-		update();
+			eventLogTable = ((EventLogTableEditor)targetEditor).getEventLogTable();
+			eventLogTable.addSelectionChangedListener(this);
+	
+			update();
+		}
 	}
 
 	public void selectionChanged(SelectionChangedEvent event) {
