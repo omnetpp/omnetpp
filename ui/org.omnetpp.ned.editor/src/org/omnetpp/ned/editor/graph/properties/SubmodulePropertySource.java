@@ -26,7 +26,7 @@ public class SubmodulePropertySource extends MergedPropertySource {
             super(model);
             this.model = model;
             setDisplayString(model.getDisplayString());
-            supportedProperties.addAll( EnumSet.range(DisplayString.Prop.X, 
+            supportedProperties.addAll( EnumSet.range(DisplayString.Prop.X,
             										  DisplayString.Prop.TOOLTIP));
         }
 
@@ -50,7 +50,8 @@ public class SubmodulePropertySource extends MergedPropertySource {
         mergePropertySource(new DelegatingPropertySource(
                 new ParameterListPropertySource(submoduleNodeModel),
                 ParameterListPropertySource.CATEGORY,
-                ParameterListPropertySource.DESCRIPTION));
+                ParameterListPropertySource.DESCRIPTION,
+                new ParameterListPropertySource.CellEditor(submoduleNodeModel)));
         // gates
         mergePropertySource(new DelegatingPropertySource(
                 new GateListPropertySource(submoduleNodeModel),

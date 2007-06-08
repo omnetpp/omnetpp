@@ -2,8 +2,13 @@ package org.omnetpp.ned.editor.graph.properties.util;
 
 import java.util.Map;
 
+import org.eclipse.jface.viewers.DialogCellEditor;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
+
+import org.omnetpp.ned.editor.graph.misc.ParametersDialog;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.ParamNodeEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
@@ -14,6 +19,26 @@ import org.omnetpp.ned.model.interfaces.IHasParameters;
  * @author rhornig
  */
 public class ParameterListPropertySource extends NotifiedPropertySource {
+    // inner class to activate a dialog cell editor
+    public static class CellEditor extends DialogCellEditor {
+        IHasParameters model;
+
+        public CellEditor(IHasParameters model) {
+            this.model = model;
+        }
+
+        @Override
+        protected Object openDialogBox(Control cellEditorWindow) {
+            ParametersDialog dialog =
+                new ParametersDialog(Display.getDefault().getActiveShell(), model);
+
+            // if the dialog is cancelled, the command is not executable
+            dialog.open();
+            // execute(dialog.getResultCommand());
+            return null;
+        }
+    }
+
     public final static String CATEGORY = "parameters";
     public final static String DESCRIPTION = "List of parameters (direct and inherited)";
     protected IHasParameters model;
@@ -51,7 +76,7 @@ public class ParameterListPropertySource extends NotifiedPropertySource {
 
     @Override
     public Object getEditableValue() {
-        // yust a little summary - show the number of submodules
+        // just a little summary - show the number of submodules
         String summary = "";
         // if the property descriptor is not yet build, build it now
         if (pdesc == null)
@@ -68,7 +93,7 @@ public class ParameterListPropertySource extends NotifiedPropertySource {
             return getEditableValue();
         Map<String, INEDElement> paramValues = model.getParamValues();
         ParamNodeEx paramDefNode = (ParamNodeEx)id;
-        ParamNodeEx paramValueNode = ((ParamNodeEx)paramValues.get(paramDefNode.getName()));
+        ParamNodeEx paramValueNode = (ParamNodeEx)paramValues.get(paramDefNode.getName());
         String valueString = paramValueNode== null ? "" :paramValueNode.getValue();
         return valueString;
     }

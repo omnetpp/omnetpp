@@ -1,11 +1,13 @@
 package org.omnetpp.ned.editor.graph.properties.util;
 
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 
 /**
- * A property source that delagates all functions to another, except that provides its own
+ * A property source that delegates all functions to another, except that provides its own
  * descriptor, and as a value provides the other property source
  *
  * @author rhornig
@@ -16,10 +18,23 @@ public class DelegatingPropertySource implements IPropertySource2 {
         protected IPropertySource2 delegateTo;
 
         public DelegatingPropertySource(IPropertySource2 delegateTo, String name, String descr) {
+            this(delegateTo, name, descr, null);
+        }
+
+        public DelegatingPropertySource(IPropertySource2 delegateTo, String name, String descr, final CellEditor cellEditor) {
             this.delegateTo = delegateTo;
 
-
-            PropertyDescriptor propDesc = new PropertyDescriptor(this, name);
+            PropertyDescriptor propDesc = new PropertyDescriptor(this, name) {
+                @Override
+                public CellEditor createPropertyEditor(Composite parent) {
+                    if (cellEditor != null ) {
+                        cellEditor.create(parent);
+                        if (getValidator() != null)
+                            cellEditor.setValidator(getValidator());
+                    }
+                    return cellEditor;
+                }
+            };
             propDesc.setCategory(MergedPropertySource.BASE_CATEGORY);
             propDesc.setDescription(descr);
 
@@ -27,7 +42,7 @@ public class DelegatingPropertySource implements IPropertySource2 {
         }
 
         public Object getEditableValue() {
-            return null;
+            return delegateTo.getEditableValue();
         }
 
         public IPropertyDescriptor[] getPropertyDescriptors() {
