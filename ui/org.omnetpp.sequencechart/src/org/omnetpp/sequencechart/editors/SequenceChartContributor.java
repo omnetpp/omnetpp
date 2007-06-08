@@ -53,6 +53,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
@@ -64,6 +65,7 @@ import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.ModuleTreeDialog;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
@@ -189,7 +191,15 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		this.sequenceChart = sequenceChart;
 	}
 	
+	@Override
+	public void dispose() {
+		super.dispose();
+		singleton = null;
+	}
+
 	public static SequenceChartContributor getDefault() {
+		Assert.isTrue(singleton != null);
+
 		return singleton;
 	}
 	
@@ -293,16 +303,18 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	
 	@Override
 	public void setActiveEditor(IEditorPart targetEditor) {
-		sequenceChart = ((SequenceChartEditor)targetEditor).getSequenceChart();
-		timelineModeAction.update();
-		filterAction.update();
-		axisOrderingModeAction.update();
-		showEventNumbersAction.update();
-		showMessageNamesAction.update();
-		showReuseMessagesAction.update();
-		showArrowHeadsAction.update();
-		timelineModeStatus.update();
-		filterStatus.update();
+		if (targetEditor instanceof SequenceChartEditor) {
+			sequenceChart = ((SequenceChartEditor)targetEditor).getSequenceChart();
+			timelineModeAction.update();
+			filterAction.update();
+			axisOrderingModeAction.update();
+			showEventNumbersAction.update();
+			showMessageNamesAction.update();
+			showReuseMessagesAction.update();
+			showArrowHeadsAction.update();
+			timelineModeStatus.update();
+			filterStatus.update();
+		}
 	}
 
 	private SequenceChartMenuAction createTimelineModeAction() {
@@ -327,6 +339,143 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 						addSubMenuItem(menu, "Linear", SequenceChart.TimelineMode.LINEAR);
 						addSubMenuItem(menu, "Step", SequenceChart.TimelineMode.STEP);
 						addSubMenuItem(menu, "Nonlinear", SequenceChart.TimelineMode.NONLINEAR);
+
+						MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
+						subMenuItem.setText("Custom...");
+						subMenuItem.addSelectionListener( new SelectionAdapter() {
+							public void widgetSelected(SelectionEvent e) {
+								TitleAreaDialog dialog = new TitleAreaDialog(Display.getCurrent().getActiveShell()) {
+									private SequenceChartFacade sequenceChartFacade;
+
+									private double oldNonLinearMinimumTimelineCoordinateDelta;
+
+									private double oldNonLinearFocus;
+									
+									private double[] oldLeftRightSimulationTimeRange;
+									
+									private Label minimumLabel;
+
+									private Label focusLabel;
+									
+									private Scale minimum;
+
+									private Scale focus;
+
+									@Override
+									protected Control createDialogArea(Composite parent) {
+										sequenceChartFacade = sequenceChart.getInput().getSequenceChartFacade();
+										oldLeftRightSimulationTimeRange = sequenceChart.getViewportSimulationTimeRange();
+										oldNonLinearMinimumTimelineCoordinateDelta = sequenceChartFacade.getNonLinearMinimumTimelineCoordinateDelta();
+										oldNonLinearFocus = sequenceChartFacade.getNonLinearFocus();
+
+										setHelpAvailable(false);
+										setTitle("Custom nonlinear timeline mode");
+										setMessage("Please select appropriate nonlinearity factors");
+
+										Composite container = new Composite((Composite)super.createDialogArea(parent), SWT.NONE);
+										container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+										container.setLayout(new GridLayout());
+
+										minimumLabel = new Label(container, SWT.NONE);
+										minimumLabel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+
+										minimum = new Scale(container, SWT.NONE);
+										minimum.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+										minimum.setMinimum(0);
+										minimum.setMaximum(1000);
+										minimum.addSelectionListener(new SelectionAdapter() {
+											@Override
+											public void widgetSelected(SelectionEvent e) {
+												setNonLinearMinimumTimelineCoordinateDeltaText();
+												apply();
+											}
+										});
+										minimum.setSelection(getNonLinearMinimumTimelineCoordinateDeltaScale());
+										setNonLinearMinimumTimelineCoordinateDeltaText();
+
+										focusLabel = new Label(container, SWT.NONE);
+										focusLabel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+										
+										focus = new Scale(container, SWT.NONE);
+										focus.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+										focus.setMinimum(0);
+										focus.setMaximum(1000);
+										focus.addSelectionListener(new SelectionAdapter() {
+											@Override
+											public void widgetSelected(SelectionEvent e) {
+												setNonLinearFocusText();
+												apply();
+											}
+										});
+										focus.setSelection(getNonLinearFocusScale());
+										setNonLinearFocusText();
+
+										return container;
+									}
+									
+									@Override
+									protected void configureShell(Shell newShell) {
+										newShell.setText("Custom nonlinear timeline mode");
+										super.configureShell(newShell);
+									}
+
+									@Override
+									protected void okPressed() {
+										apply();
+										super.okPressed();
+									}
+									
+									@Override
+									protected void cancelPressed() {
+										sequenceChartFacade.setNonLinearMinimumTimelineCoordinateDelta(oldNonLinearMinimumTimelineCoordinateDelta);
+										sequenceChartFacade.setNonLinearFocus(oldNonLinearFocus);
+
+										redrawSequenceChart();
+										
+										super.cancelPressed();
+									}
+
+									private void apply() {
+										sequenceChartFacade.setNonLinearFocus(getNonLinearFocus());
+										sequenceChartFacade.setNonLinearMinimumTimelineCoordinateDelta(getNonLinearMinimumTimelineCoordinateDelta());
+										
+										redrawSequenceChart();
+									}
+									
+									private void redrawSequenceChart() {
+										sequenceChartFacade.relocateTimelineCoordinateSystem(sequenceChartFacade.getTimelineCoordinateSystemOriginEvent());
+										sequenceChart.setViewportSimulationTimeRange(oldLeftRightSimulationTimeRange);
+									}
+									
+									private void setNonLinearMinimumTimelineCoordinateDeltaText() {
+										minimumLabel.setText("Relative minimum distance to maximum distance: " + 100 * getNonLinearMinimumTimelineCoordinateDelta() + "%");
+									}
+
+									private int getNonLinearMinimumTimelineCoordinateDeltaScale() {
+										return (int)(1000 * sequenceChartFacade.getNonLinearMinimumTimelineCoordinateDelta());
+									}
+
+									private double getNonLinearMinimumTimelineCoordinateDelta() {
+										return (double)minimum.getSelection() / 1000;
+									}
+									
+									private int getNonLinearFocusScale() {
+										return (int)((Math.log10(sequenceChartFacade.getNonLinearFocus()) + 18) * 40);
+									}
+
+									private double getNonLinearFocus() {
+										return Math.pow(10, ((double)focus.getSelection() / 40) - 18);
+									}
+
+									private void setNonLinearFocusText() {
+										focusLabel.setText("Nonlinear simulation time focus: " + TimeUtils.secondsToTimeString(getNonLinearFocus()));
+									}
+								};
+								
+								if (dialog.open() == Window.OK) {
+								}
+							}
+						});
 					}
 
 					private void addSubMenuItem(Menu menu, String text, final SequenceChart.TimelineMode timelineMode) {
@@ -502,7 +651,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 
 	private SequenceChartAction createShowEventNumbersAction() {
-		return new SequenceChartAction(null, Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_EVENT_NUMBERS)) {
+		return new SequenceChartAction("Show Event Numbers", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_EVENT_NUMBERS)) {
 			@Override
 			public void run() {
 				sequenceChart.setShowEventNumbers(!sequenceChart.getShowEventNumbers());
@@ -513,13 +662,12 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			public void update() {
 				boolean showEventNumbers = sequenceChart.getShowEventNumbers();
 				setChecked(showEventNumbers);
-				setText("Show Event Numbers");
 			}
 		};
 	}
 
 	private SequenceChartAction createShowMessageNamesAction() {
-		return new SequenceChartAction(null, Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_MESSAGE_NAMES)) {
+		return new SequenceChartAction("Show Message Names", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_MESSAGE_NAMES)) {
 			@Override
 			public void run() {
 				sequenceChart.setShowMessageNames(!sequenceChart.getShowMessageNames());
@@ -530,13 +678,12 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			public void update() {
 				boolean showMessageNames = sequenceChart.getShowMessageNames();
 				setChecked(showMessageNames);
-				setText("Show Message Names");
 			}
 		};
 	}
 	
 	private SequenceChartAction createShowReuseMessagesAction() {
-		return new SequenceChartAction(null, Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_REUSE_MESSAGES)) {
+		return new SequenceChartAction("Show Reuse Messages", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_REUSE_MESSAGES)) {
 			@Override
 			public void run() {
 				sequenceChart.setShowReuseMessages(!sequenceChart.getShowReuseMessages());
@@ -547,13 +694,12 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			public void update() {
 				boolean showReuseMessage = sequenceChart.getShowReuseMessages();
 				setChecked(showReuseMessage);
-				setText("Show Reuse Messages");
 			}
 		};
 	}
 	
 	private SequenceChartAction createShowArrowHeadsAction() {
-		return new SequenceChartAction(null, Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_ARROW_HEADS)) {
+		return new SequenceChartAction("Show Arrowheads", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_ARROW_HEADS)) {
 			@Override
 			public void run() {
 				sequenceChart.setShowArrowHeads(!sequenceChart.getShowArrowHeads());
@@ -564,7 +710,6 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 			public void update() {
 				boolean showArrowHeads = sequenceChart.getShowArrowHeads();
 				setChecked(showArrowHeads);
-				setText("Show Arrowheads");
 			}
 		};
 	}
