@@ -3,23 +3,27 @@ package org.omnetpp.ned.editor.graph.misc;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
+import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -52,7 +56,7 @@ import org.omnetpp.ned.model.pojo.ParametersNode;
  * Dialog for editing parameters in a module or channel.
  * @author rhornig
  */
-public class EditParametersDialog extends TitleAreaDialog {
+public class ParametersDialog extends TitleAreaDialog {
     private static final String COL_TYPE = "type";
     private static final String COL_NAME = "name";
     private static final String COL_VALUE = "value";
@@ -64,7 +68,7 @@ public class EditParametersDialog extends TitleAreaDialog {
     private static final int DELETE_ID = 501;
 
 	private final String title;
-	private final List<ParamLine> paramLines = new ArrayList<EditParametersDialog.ParamLine>();
+	private final List<ParamLine> paramLines = new ArrayList<ParametersDialog.ParamLine>();
 	// widgets
     private TableViewer listViewer;
     private Command resultCommand = UnexecutableCommand.INSTANCE;
@@ -74,7 +78,8 @@ public class EditParametersDialog extends TitleAreaDialog {
     private final static int SIZING_SELECTION_WIDGET_HEIGHT = 114;
     private final static int SIZING_SELECTION_WIDGET_WIDTH = 480;
 
-    private final class ColorTableLabelProvider extends TableLabelProvider implements ITableColorProvider {
+    private final class ParametersTableLabelProvider extends TableLabelProvider
+                            implements ITableFontProvider, ITableColorProvider {
         @Override
         public String getColumnText(Object element, int columnIndex) {
             ParamLine paramLine = (ParamLine)element;
@@ -98,14 +103,26 @@ public class EditParametersDialog extends TitleAreaDialog {
 
         public Color getForeground(Object element, int columnIndex) {
             ParamLine paramLine = (ParamLine)element;
-            boolean isGray = false;
+            boolean isEditable = false;
             switch (columnIndex) {
-                case 0: isGray = paramLine.type.isGray;
-                case 1: isGray = paramLine.name.isGray;
-                case 2: isGray = paramLine.value.isGray;
-                case 3: isGray = paramLine.comment.isGray;
+                case 0: isEditable = paramLine.type.isEditable; break;
+                case 1: isEditable = paramLine.name.isEditable; break;
+                case 2: isEditable = paramLine.value.isEditable; break;
+                case 3: isEditable = paramLine.comment.isEditable; break;
             }
-            return isGray ? ColorFactory.GREY50 : null;
+            return isEditable ? null : ColorFactory.GREY50;
+        }
+
+        public Font getFont(Object element, int columnIndex) {
+            ParamLine paramLine = (ParamLine)element;
+            boolean isInherited = false;
+            switch (columnIndex) {
+                case 0: isInherited = paramLine.type.isItalic; break;
+                case 1: isInherited = paramLine.name.isItalic; break;
+                case 2: isInherited = paramLine.value.isItalic; break;
+                case 3: isInherited = paramLine.comment.isItalic; break;
+            }
+            return isInherited ? JFaceResources.getFontRegistry().getItalic(JFaceResources.DIALOG_FONT) : null;
         }
     }
 
@@ -113,8 +130,12 @@ public class EditParametersDialog extends TitleAreaDialog {
     protected static class ParamLine {
         protected static class Cell {
             String value;
-            boolean isGray;
-            boolean isEditable;
+            String originalValue;
+            boolean isEditable = true;
+            boolean isItalic = false;
+            boolean isDirty() {
+                return !ObjectUtils.equals(value, originalValue);
+            }
         }
         protected ParamNodeEx param;
         protected Cell type = new Cell();
@@ -131,7 +152,6 @@ public class EditParametersDialog extends TitleAreaDialog {
                 comment.value = "";
                 return;
             }
-
         }
 
         public ParamNodeEx getOriginalParamNode() {
@@ -144,6 +164,11 @@ public class EditParametersDialog extends TitleAreaDialog {
         public ParamNodeEx getChangedParamNode() {
             ParamNodeEx result = null;
 
+            // do not include a value assignment for this node if no value or comment was given
+            if (StringUtils.isEmpty(value.value) && StringUtils.isEmpty(comment.value) && !type.isEditable ||
+                    !value.isDirty() && !comment.isDirty())
+                return null;
+
             if (param != null)
                 result =  (ParamNodeEx)param.deepDup(null);
             else
@@ -153,12 +178,15 @@ public class EditParametersDialog extends TitleAreaDialog {
 
             result.setName(name.value);
             result.setValue(value.value);
-            // FIXME set the type only if it was a declaration
-            String baseType = StringUtils.strip(StringUtils.removeStart(StringUtils.strip(type.value), VOLATILE));
-            result.setAttribute(ParamNodeEx.ATT_TYPE, baseType);
-            result.setIsVolatile(StringUtils.strip(type.value).startsWith(VOLATILE));
             setComment(result, comment.value);
-
+            if (type.isEditable) {
+                String baseType = StringUtils.strip(StringUtils.removeStart(StringUtils.strip(type.value), VOLATILE));
+                result.setAttribute(ParamNodeEx.ATT_TYPE, baseType);
+                result.setIsVolatile(StringUtils.strip(type.value).startsWith(VOLATILE));
+            } else {
+                result.setAttribute(ParamNodeEx.ATT_TYPE, "");
+                result.setIsVolatile(false);
+            }
             return result;
         }
 
@@ -183,7 +211,7 @@ public class EditParametersDialog extends TitleAreaDialog {
     /**
      * Creates the dialog.
      */
-    public EditParametersDialog(Shell parentShell, IHasParameters module) {
+    public ParametersDialog(Shell parentShell, IHasParameters module) {
         super(parentShell);
         setShellStyle(getShellStyle() | SWT.MAX | SWT.RESIZE);
         this.title = "Edit Parameters";
@@ -194,28 +222,29 @@ public class EditParametersDialog extends TitleAreaDialog {
     protected void buildTable() {
         // build ParamLine list (value objects) for dialog editing
         for(INEDElement element : module.getParams().values()) {
-            // the param decl of the node
+            // the param declaration of the node
             ParamNodeEx paramDecl = (ParamNodeEx)element;
             // get the the value of the parameter
             ParamNodeEx paramValue = (ParamNodeEx)module.getParamValues().get(paramDecl.getName());
-            ParamLine paramLine = new ParamLine(paramDecl);
+            ParamLine paramLine = new ParamLine(paramValue);
             boolean isDeclLocal = paramDecl.getParent().getParent() == module;
             boolean isValueLocal = paramValue != null && paramValue.getParent().getParent() == module;
-            paramLine.type.isGray = !isDeclLocal;
+            paramLine.type.isItalic = !isDeclLocal;
             paramLine.type.isEditable = isDeclLocal;
-            paramLine.name.isGray = !isDeclLocal && ! isValueLocal;
+            paramLine.name.isItalic = !isDeclLocal && !isValueLocal;
             paramLine.name.isEditable = isDeclLocal;
-            paramLine.value.isGray = paramLine.comment.isGray = !isValueLocal;
+            paramLine.value.isItalic = paramLine.comment.isItalic = !isValueLocal;
             paramLine.value.isEditable = paramLine.comment.isEditable = true;
 
             // fill the values
-            paramLine.type.value = paramDecl.getAttribute(ParamNodeEx.ATT_TYPE);
-            if (paramDecl.getIsVolatile())
-                paramLine.type.value = VOLATILE+" "+paramLine.type.value;
-            paramLine.name.value = paramDecl.getName();
-            paramLine.value.value = paramValue.getValue();
+            paramLine.type.value = paramLine.type.originalValue =
+                                        (paramDecl.getIsVolatile() ? VOLATILE+" " : "")
+                                        + paramDecl.getAttribute(ParamNodeEx.ATT_TYPE);
+            paramLine.name.value = paramLine.name.originalValue = paramDecl.getName();
+            paramLine.value.value = paramLine.value.originalValue = paramValue.getValue();
             // FIXME remove // from each line
-            paramLine.comment.value = StringUtils.strip(StringUtils.removeStart(getComment(paramValue), "//"));
+            paramLine.comment.value = paramLine.comment.originalValue =
+                StringUtils.strip(StringUtils.removeStart(getComment(paramValue), "//"));
 
             paramLines.add(paramLine);
         }
@@ -350,7 +379,7 @@ public class EditParametersDialog extends TitleAreaDialog {
 
         // set up tableViewer, content and label providers
         tableViewer.setContentProvider(new ArrayContentProvider());
-        tableViewer.setLabelProvider(new ColorTableLabelProvider());
+        tableViewer.setLabelProvider(new ParametersTableLabelProvider());
 
         // edit support
         tableViewer.setColumnProperties(COLUMNS);
@@ -425,8 +454,10 @@ public class EditParametersDialog extends TitleAreaDialog {
                paramNode.removeFromParent();
 
        // add the new nodes
-       for(EditParametersDialog.ParamLine paramLine : paramLines) {
-           newParamsNode.appendChild(paramLine.getChangedParamNode());
+       for(ParametersDialog.ParamLine paramLine : paramLines) {
+           ParamNodeEx param = paramLine.getChangedParamNode();
+           if (param != null)
+               newParamsNode.appendChild(param);
        }
 
        // create a replace / compound command

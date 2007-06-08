@@ -5,7 +5,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPart;
 
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.ned.editor.graph.misc.EditParametersDialog;
+import org.omnetpp.ned.editor.graph.misc.ParametersDialog;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 
@@ -18,7 +18,7 @@ public class ParametersDialogAction extends org.eclipse.gef.ui.actions.Selection
     public static final String ID = "Parameters";
     public static final String MENUNAME = "Edit Parameters...";
     public static final String TOOLTIP = "Edit the module parameters";
-    public static final ImageDescriptor IMAGE = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_CHOOSEICON);
+    public static final ImageDescriptor IMAGE = ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_PARAM);
 
     public ParametersDialogAction(IWorkbenchPart part) {
         super(part);
@@ -38,8 +38,8 @@ public class ParametersDialogAction extends org.eclipse.gef.ui.actions.Selection
     @Override
     public void run() {
         IHasParameters paramsParent = (IHasParameters)((IModelProvider)getSelectedObjects().get(0)).getNEDModel();
-        EditParametersDialog dialog =
-            new EditParametersDialog(Display.getDefault().getActiveShell(), paramsParent);
+        ParametersDialog dialog =
+            new ParametersDialog(Display.getDefault().getActiveShell(), paramsParent);
 
         // if the dialog is cancelled, the command is not executable
         dialog.open();
