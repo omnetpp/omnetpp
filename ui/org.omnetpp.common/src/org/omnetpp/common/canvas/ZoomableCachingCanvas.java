@@ -1,8 +1,10 @@
 package org.omnetpp.common.canvas;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 /**
@@ -20,6 +22,8 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 	private double minY = 0, maxY = 1;
 
 	private int numCoordinateOverflows;
+	
+	private ListenerList zoomListeners = new ListenerList();
 	
 	/**
      * Constructor.
@@ -178,9 +182,11 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 		double newZoomX = Math.max(zoomX, minZoomX);
 		if (newZoomX != this.zoomX) {
 			double oldX = getViewportCenterCoordX();
+			double oldZoomX = this.zoomX;
 			this.zoomX = newZoomX;
 			updateVirtualSize(); // includes clearCache + redraw
 			centerXOn(oldX);
+			fireZoomLevelChange(SWT.HORIZONTAL, oldZoomX, newZoomX);
 			System.out.println("zoomX set to "+zoomX);
 		}
 	}
@@ -195,9 +201,11 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 		double newZoomY = Math.max(zoomY, minZoomY);
 		if (newZoomY != this.zoomY) {
 			double oldY = getViewportCenterCoordY();
+			double oldZoomY = this.zoomY;
 			this.zoomY = newZoomY;
 			updateVirtualSize(); // includes clearCache + redraw
 			centerYOn(oldY);
+			fireZoomLevelChange(SWT.VERTICAL, oldZoomY, newZoomY);
 			System.out.println("zoomY set to "+zoomY);
 		}
 	}
@@ -398,5 +406,19 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 		Assert.isTrue(fromCanvasDistY(r.height)==mapping.fromCanvasDistY(r.height));
 	
 		return mapping;
+	}
+	
+	public void addZoomListener(IZoomLevelChangeListener listener) {
+		zoomListeners.add(listener);
+	}
+	
+	public void removeZoomListener(IZoomLevelChangeListener listener) {
+		zoomListeners.remove(listener);
+	}
+	
+	protected void fireZoomLevelChange(int direction, double oldLevel, double newLevel) {
+		ZoomLevelChangeEvent event = new ZoomLevelChangeEvent(this, direction, oldLevel, newLevel);
+		for (Object listener : zoomListeners.getListeners())
+			((IZoomLevelChangeListener)listener).zoomLevelChanged(event);
 	}
 }
