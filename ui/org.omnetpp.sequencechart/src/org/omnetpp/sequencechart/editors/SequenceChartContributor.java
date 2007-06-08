@@ -627,7 +627,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 					double[] leftRightSimulationTimes = sequenceChart.getViewportSimulationTimeRange();
 
 					EventLogInput eventLogInput = sequenceChart.getInput();
-					eventLogInput.addFilter(moduleIds);
+					eventLogInput.filter(moduleIds);
 
 					sequenceChart.setInput(eventLogInput);
 					sequenceChart.setAxisModules(selectedAxisModules);

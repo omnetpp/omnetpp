@@ -1068,6 +1068,7 @@ public class SequenceChart
 	}
 	
 	public void eventLogFiltered() {
+		eventLog = eventLogInput.getEventLog();
 		int timelineCoordinateSystemOriginEventNumber = sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber();
 
 		if (timelineCoordinateSystemOriginEventNumber != -1) {
@@ -1085,6 +1086,10 @@ public class SequenceChart
 		}
 
 		redraw();
+	}
+	
+	public void eventLogFilterRemoved() {
+		eventLog = eventLogInput.getEventLog();
 	}
 
 	private ModuleTreeItem getAxisModule(String moduleFullPath) {
