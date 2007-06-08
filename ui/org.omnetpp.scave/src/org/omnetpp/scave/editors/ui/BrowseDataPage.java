@@ -158,17 +158,19 @@ public class BrowseDataPage extends ScaveEditorPage {
 		// populate the popup menu of the panel
 		IMenuManager contextMenuManager = panel.getTable().getContextMenuManager();
 		ScaveEditorContributor editorContributor = ScaveEditorContributor.getDefault();
-		contextMenuManager.add(editorContributor.getCreateTempChartAction());
-		contextMenuManager.add(new Separator());
-		contextMenuManager.add(editorContributor.getAddFilterToDatasetAction());
-		contextMenuManager.add(editorContributor.getAddSelectedToDatasetAction());
-		contextMenuManager.add(new Separator());
-		contextMenuManager.add(editorContributor.createExportMenu());
-		contextMenuManager.add(editorContributor.getCopyToClipboardAction());
-		contextMenuManager.add(new Separator());
-		contextMenuManager.add(new ChooseTableColumnsAction(panel.getTable()));
-		contextMenuManager.add(new Separator());
-		contextMenuManager.add(editorContributor.getShowVectorBrowserViewAction());
+		if (editorContributor != null) {
+			contextMenuManager.add(editorContributor.getCreateTempChartAction());
+			contextMenuManager.add(new Separator());
+			contextMenuManager.add(editorContributor.getAddFilterToDatasetAction());
+			contextMenuManager.add(editorContributor.getAddSelectedToDatasetAction());
+			contextMenuManager.add(new Separator());
+			contextMenuManager.add(editorContributor.createExportMenu());
+			contextMenuManager.add(editorContributor.getCopyToClipboardAction());
+			contextMenuManager.add(new Separator());
+			contextMenuManager.add(new ChooseTableColumnsAction(panel.getTable()));
+			contextMenuManager.add(new Separator());
+			contextMenuManager.add(editorContributor.getShowVectorBrowserViewAction());
+		}
 	}
 
 	private void hookListeners() {
@@ -202,7 +204,8 @@ public class BrowseDataPage extends ScaveEditorPage {
 				@Override
 				public void widgetDefaultSelected(SelectionEvent e) {
 					ScaveEditorContributor editorContributor = ScaveEditorContributor.getDefault();
-					editorContributor.getCreateTempChartAction().run();
+					if (editorContributor != null)
+						editorContributor.getCreateTempChartAction().run();
 				}
 			};
 			vectorsPanel.getTable().addSelectionListener(selectionChangeListener);

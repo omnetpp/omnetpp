@@ -722,10 +722,12 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 		modelViewer.getTree().addSelectionListener(new SelectionAdapter() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
-				if (contributor.getOpenAction().isEnabled())
-					contributor.getOpenAction().run();
-				else if (contributor.getEditAction().isEnabled())
-					contributor.getEditAction().run();
+				if (contributor != null) {
+					if (contributor.getOpenAction().isEnabled())
+						contributor.getOpenAction().run();
+					else if (contributor.getEditAction().isEnabled())
+						contributor.getEditAction().run();
+				}
 			}
 		});
 		

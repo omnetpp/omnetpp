@@ -161,6 +161,8 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
         undoRetargetAction.dispose();
         redoRetargetAction.dispose();
         deleteRetargetAction.dispose();
+        
+        instance = null;
     }
 
 	public void contributeToMenu(IMenuManager manager) {

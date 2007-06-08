@@ -77,6 +77,20 @@ public abstract class AbstractScaveAction extends Action implements IScaveAction
 	}
 	
 	/**
+	 * Updates the Enabled property of this action.
+	 * To be called when some state changed which the enabled property
+	 * the action depends on.
+	 */
+	public void updateEnabled() {
+		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		IEditorPart editor = page.getActiveEditor();
+		ISelection selection = viewer != null ? viewer.getSelection() : page.getSelection();
+		boolean isApplicable = editor instanceof ScaveEditor && selection instanceof IStructuredSelection && isApplicable((ScaveEditor)editor, (IStructuredSelection)selection);
+		if (isEnabled()!=isApplicable)
+			setEnabled(isApplicable);
+	}
+	
+	/**
 	 * Redefine this method to control when the action should be enabled.
 	 */
 	abstract protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection);

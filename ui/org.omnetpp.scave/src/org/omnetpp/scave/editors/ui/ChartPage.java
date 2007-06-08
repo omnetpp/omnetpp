@@ -158,28 +158,30 @@ public class ChartPage extends ScaveEditorPage {
 
 	protected void updateContextMenu() {
 		ScaveEditorContributor editorContributor = ScaveEditorContributor.getDefault();
-		contextMenuManager.add(editorContributor.getZoomInAction());
-		contextMenuManager.add(editorContributor.getZoomOutAction());
-		contextMenuManager.add(new Separator());
-		contextMenuManager.add(new EditAction("Chart...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_MAIN)));
-		contextMenuManager.add(new EditAction("Lines...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, LineChartEditForm.TAB_LINES)));
-		contextMenuManager.add(new EditAction("Axes...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_AXES)));
-		contextMenuManager.add(new EditAction("Title...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_TITLES)));
-		contextMenuManager.add(new EditAction("Legend...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_LEGEND)));
-		contextMenuManager.add(new Separator());
-		contextMenuManager.add(editorContributor.getCopyChartToClipboardAction());
-		contextMenuManager.add(new Separator());
-		contextMenuManager.add(createProcessingSubmenu(true));  // "Apply" submenu
-		contextMenuManager.add(createProcessingSubmenu(false)); // "Compute" submenu
-		contextMenuManager.add(createRemoveProcessingSubmenu()); // "Remove" submenu
-		contextMenuManager.add(editorContributor.getGotoChartDefinitionAction());
-		contextMenuManager.add(new Separator());
-		contextMenuManager.add(editorContributor.getUndoRetargetAction());
-		contextMenuManager.add(editorContributor.getRedoRetargetAction());
-		contextMenuManager.add(new Separator());
-		contextMenuManager.add(editorContributor.getCreateChartTemplateAction());
-		contextMenuManager.add(new Separator());
-		contextMenuManager.add(editorContributor.getRefreshChartAction());
+		if (editorContributor != null) {
+			contextMenuManager.add(editorContributor.getZoomInAction());
+			contextMenuManager.add(editorContributor.getZoomOutAction());
+			contextMenuManager.add(new Separator());
+			contextMenuManager.add(new EditAction("Chart...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_MAIN)));
+			contextMenuManager.add(new EditAction("Lines...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, LineChartEditForm.TAB_LINES)));
+			contextMenuManager.add(new EditAction("Axes...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_AXES)));
+			contextMenuManager.add(new EditAction("Title...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_TITLES)));
+			contextMenuManager.add(new EditAction("Legend...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_LEGEND)));
+			contextMenuManager.add(new Separator());
+			contextMenuManager.add(editorContributor.getCopyChartToClipboardAction());
+			contextMenuManager.add(new Separator());
+			contextMenuManager.add(createProcessingSubmenu(true));  // "Apply" submenu
+			contextMenuManager.add(createProcessingSubmenu(false)); // "Compute" submenu
+			contextMenuManager.add(createRemoveProcessingSubmenu()); // "Remove" submenu
+			contextMenuManager.add(editorContributor.getGotoChartDefinitionAction());
+			contextMenuManager.add(new Separator());
+			contextMenuManager.add(editorContributor.getUndoRetargetAction());
+			contextMenuManager.add(editorContributor.getRedoRetargetAction());
+			contextMenuManager.add(new Separator());
+			contextMenuManager.add(editorContributor.getCreateChartTemplateAction());
+			contextMenuManager.add(new Separator());
+			contextMenuManager.add(editorContributor.getRefreshChartAction());
+		}
 	}
 
 	protected IMenuManager createProcessingSubmenu(boolean isApply) {

@@ -38,6 +38,7 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -48,6 +49,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.omnetpp.common.canvas.IZoomLevelChangeListener;
+import org.omnetpp.common.canvas.ZoomLevelChangeEvent;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.image.ImageConverter;
@@ -56,10 +59,12 @@ import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.charting.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.ChartProperties.LegendPosition;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
+import org.omnetpp.scave.editors.ScaveEditorContributor;
 
 /**
  * Base class for all chart widgets.
@@ -92,11 +97,23 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		mouseSupport = new ZoomableCanvasMouseSupport(this); // add mouse handling; may be made optional
 		
 		addControlListener(new ControlAdapter() {
-			@Override
 			public void controlResized(ControlEvent e) {
 				layoutChart();
 			}
 		});
+		
+		ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
+		if (contributor != null) {
+			IAction action = contributor.getZoomOutAction();
+			if (action instanceof ZoomChartAction) {
+				final ZoomChartAction zoomOutAction = (ZoomChartAction)action;
+				addZoomListener(new IZoomLevelChangeListener() {
+					public void zoomLevelChanged(ZoomLevelChangeEvent event) {
+						zoomOutAction.updateEnabled();
+					}
+				});
+			}
+		}
 	}
 
 	/**
