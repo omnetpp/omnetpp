@@ -48,6 +48,7 @@ class EVENTLOG_API EventLogTableFacade : public EventLogFacade
         int lastNumMatchingEventLogEntries;
         EventLogTableDisplayMode displayMode;
         EventLogTableFilterMode filterMode;
+        std::string customFilter;
         MatchExpression matchExpression;
 
     public:
@@ -62,7 +63,8 @@ class EVENTLOG_API EventLogTableFacade : public EventLogFacade
         void setFilterMode(EventLogTableFilterMode filterMode);
         bool matchesFilter(EventLogEntry *eventLogEntry);
         int getNumMatchingEventLogEntries(IEvent *event);
-        void setCustomFilter(const char *pattern) { matchExpression.setPattern((std::string("E or (") + pattern + ")").c_str(), false, true, false); }
+        void setCustomFilter(const char *pattern) { customFilter = pattern; matchExpression.setPattern((std::string("E or (") + customFilter + ")").c_str(), false, true, false); }
+        const char *getCustomFilter() { return customFilter.c_str(); }
 
         EventLogEntry *getEventLogEntry(long eventNumber, int eventLogEntryIndex);
 		EventLogEntry *getFirstEntry();

@@ -38,7 +38,7 @@ class EVENTLOG_API EventLogFacade
         EventLogFacade(IEventLog *eventLog);
         virtual ~EventLogFacade() {}
 
-        void setEventLog(IEventLog *eventLog) { this->eventLog = eventLog; }
+        void setEventLog(IEventLog *eventLog) { Assert(eventLog); this->eventLog = eventLog; }
         virtual void synchronize();
 
         IEvent* Event_getEvent(int64 ptr);

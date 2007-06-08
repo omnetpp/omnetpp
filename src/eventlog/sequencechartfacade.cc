@@ -32,6 +32,10 @@ SequenceChartFacade::SequenceChartFacade(IEventLog *eventLog) : EventLogFacade(e
     timelineCoordinateSystemVersion = -1;
     timelineCoordinateOriginEventNumber = timelineCoordinateRangeStartEventNumber = timelineCoordinateRangeEndEventNumber = -1;
     timelineCoordinateOriginSimulationTime = -1;
+
+    nonLinearMinimumTimelineCoordinateDelta = 0.1;
+    double totalSimulationTimeDelta = eventLog->getLastEvent()->getSimulationTime().dbl() - eventLog->getFirstEvent()->getSimulationTime().dbl();
+    nonLinearFocus = totalSimulationTimeDelta / eventLog->getApproximateNumberOfEvents() / 10;
 }
 
 void SequenceChartFacade::synchronize()
@@ -40,6 +44,18 @@ void SequenceChartFacade::synchronize()
 
     if (timelineCoordinateOriginEventNumber != -1)
         relocateTimelineCoordinateSystem(eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber));
+}
+
+void SequenceChartFacade::setNonLinearMinimumTimelineCoordinateDelta(double value)
+{
+    Assert(value >= 0);
+    nonLinearMinimumTimelineCoordinateDelta = value;
+}
+
+void SequenceChartFacade::setNonLinearFocus(double nonLinearFocus)
+{
+    Assert(0 <= nonLinearFocus);
+    this->nonLinearFocus = nonLinearFocus;
 }
 
 void SequenceChartFacade::relocateTimelineCoordinateSystem(IEvent *event)
@@ -69,10 +85,7 @@ double SequenceChartFacade::Event_getTimelineCoordinate(int64 ptr)
 
 double SequenceChartFacade::getNonLinearTimelineCoordinateDelta(double simulationTimeDelta)
 {
-    double totalSimulationTimeDelta = eventLog->getLastEvent()->getSimulationTime().dbl() - eventLog->getFirstEvent()->getSimulationTime().dbl();
-    double nonLinearFocus = totalSimulationTimeDelta / eventLog->getApproximateNumberOfEvents() / 10;
-
-    return 0.1 + 0.9 * atan(abs(simulationTimeDelta) / nonLinearFocus) / PI * 2;
+    return nonLinearMinimumTimelineCoordinateDelta + (1 - nonLinearMinimumTimelineCoordinateDelta) * atan(abs(simulationTimeDelta) / nonLinearFocus) / PI * 2;
 }
 
 double SequenceChartFacade::getTimelineCoordinate(int64 ptr, double lowerTimelineCoordinateCalculationLimit, double upperTimelineCoordinateCalculationLimit)

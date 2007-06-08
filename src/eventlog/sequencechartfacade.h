@@ -38,6 +38,8 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
         long timelineCoordinateRangeStartEventNumber;
         long timelineCoordinateRangeEndEventNumber;
         TimelineMode timelineMode;
+        double nonLinearMinimumTimelineCoordinateDelta;
+        double nonLinearFocus;
 
     public:
         SequenceChartFacade(IEventLog *eventLog);
@@ -47,6 +49,11 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
 
         TimelineMode getTimelineMode() { return timelineMode; }
         void setTimelineMode(TimelineMode timelineMode);
+
+        double getNonLinearMinimumTimelineCoordinateDelta() { return nonLinearMinimumTimelineCoordinateDelta; }
+        void setNonLinearMinimumTimelineCoordinateDelta(double value);
+        double getNonLinearFocus() { return nonLinearFocus; }
+        void setNonLinearFocus(double nonLinearFocus);
 
         IEvent *getTimelineCoordinateSystemOriginEvent() { return eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber); }
         long getTimelineCoordinateSystemOriginEventNumber() { return timelineCoordinateOriginEventNumber; }
@@ -81,7 +88,6 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
         std::vector<int> getApproximateMessageDependencyCountAdjacencyMatrix(std::map<int, int> *moduleIdToAxisIdMap, int numberOfSamples);
 
     protected:
-
         void extractSimulationTimesAndTimelineCoordinates(
             IEvent *event, IEvent *&nextEvent,
             double &eventSimulationTime, double &eventTimelineCoordinate,
