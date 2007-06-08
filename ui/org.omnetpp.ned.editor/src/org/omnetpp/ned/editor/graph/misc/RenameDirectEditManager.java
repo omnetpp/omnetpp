@@ -69,7 +69,7 @@ public class RenameDirectEditManager extends DirectEditManager {
         };
         text.addVerifyListener(verifyListener);
 
-        // set the initial content from themodel
+        // set the initial content from the model
         if (sourcePart.getModel() instanceof IHasName)
             getCellEditor().setValue(((IHasName)sourcePart.getModel()).getName());
 

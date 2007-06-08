@@ -183,7 +183,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
          * the setActionBars method. Once it is fixed remove this method.
          * @return The private cell editor handler, so it is possible to override set action bars.
          */
-        public CellEditorActionHandler getCellEditorActionHandler() {
+        private CellEditorActionHandler getCellEditorActionHandler() {
             CellEditorActionHandler result = null;
             try {
                 // get it with reflection

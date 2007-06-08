@@ -1,6 +1,7 @@
 package org.omnetpp.ned.editor.graph.properties.util;
 
 import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.DialogCellEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
@@ -17,16 +18,17 @@ public class DelegatingPropertySource implements IPropertySource2 {
         protected IPropertyDescriptor[] descriptors;
         protected IPropertySource2 delegateTo;
 
-        public DelegatingPropertySource(IPropertySource2 delegateTo, String name, String descr) {
-            this(delegateTo, name, descr, null);
-        }
-
-        public DelegatingPropertySource(IPropertySource2 delegateTo, String name, String descr, final CellEditor cellEditor) {
+        public DelegatingPropertySource(final IPropertySource2 delegateTo, String name, String descr) {
             this.delegateTo = delegateTo;
 
             PropertyDescriptor propDesc = new PropertyDescriptor(this, name) {
+                // if the property source we delegate to provides cell editor
+                // we should use it as the current cell editor
                 @Override
                 public CellEditor createPropertyEditor(Composite parent) {
+                    if (!(delegateTo instanceof IDialogCellEditorProvider))
+                        return null;
+                    DialogCellEditor cellEditor = ((IDialogCellEditorProvider)delegateTo).getCellEditor();
                     if (cellEditor != null ) {
                         cellEditor.create(parent);
                         if (getValidator() != null)

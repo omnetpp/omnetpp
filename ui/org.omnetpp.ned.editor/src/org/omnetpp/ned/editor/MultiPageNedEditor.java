@@ -384,4 +384,12 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
     public ShowInContext getShowInContext() {
         return new ShowInContext(getEditorInput(), getSite().getSelectionProvider().getSelection());
     }
+
+    public GraphicalNedEditor getGraphEditor() {
+        return graphEditor;
+    }
+
+    public TextualNedEditor getTextEditor() {
+        return textEditor;
+    }
 }

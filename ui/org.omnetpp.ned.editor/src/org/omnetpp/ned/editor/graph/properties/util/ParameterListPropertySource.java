@@ -5,9 +5,12 @@ import java.util.Map;
 import org.eclipse.jface.viewers.DialogCellEditor;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 
+import org.omnetpp.ned.editor.MultiPageNedEditor;
 import org.omnetpp.ned.editor.graph.misc.ParametersDialog;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.ParamNodeEx;
@@ -18,15 +21,10 @@ import org.omnetpp.ned.model.interfaces.IHasParameters;
  * Property source to display all parameters for a given component
  * @author rhornig
  */
-public class ParameterListPropertySource extends NotifiedPropertySource {
+public class ParameterListPropertySource extends NotifiedPropertySource
+                            implements IDialogCellEditorProvider {
     // inner class to activate a dialog cell editor
-    public static class CellEditor extends DialogCellEditor {
-        IHasParameters model;
-
-        public CellEditor(IHasParameters model) {
-            this.model = model;
-        }
-
+    class CellEditor extends DialogCellEditor {
         @Override
         protected Object openDialogBox(Control cellEditorWindow) {
             ParametersDialog dialog =
@@ -34,7 +32,13 @@ public class ParameterListPropertySource extends NotifiedPropertySource {
 
             // if the dialog is cancelled, the command is not executable
             dialog.open();
-            // execute(dialog.getResultCommand());
+            // execute the command in the active editors command stack
+            // this is a little hack because we cannot access the command stack from the UndoablePropertySheetEntry
+            IEditorPart activeEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+            if (activeEditor instanceof MultiPageNedEditor) {
+                MultiPageNedEditor mpNedEditor = (MultiPageNedEditor) activeEditor;
+                mpNedEditor.getGraphEditor().getEditDomain().getCommandStack().execute(dialog.getResultCommand());
+            }
             return null;
         }
     }
@@ -78,7 +82,7 @@ public class ParameterListPropertySource extends NotifiedPropertySource {
     public Object getEditableValue() {
         // just a little summary - show the number of submodules
         String summary = "";
-        // if the property descriptor is not yet build, build it now
+        // if the property descriptor is not yet built, build it now
         if (pdesc == null)
             getPropertyDescriptors();
 
@@ -114,6 +118,10 @@ public class ParameterListPropertySource extends NotifiedPropertySource {
 
     @Override
     public void setPropertyValue(Object id, Object value) {
+    }
+
+    public DialogCellEditor getCellEditor() {
+        return new CellEditor();
     }
 
 }

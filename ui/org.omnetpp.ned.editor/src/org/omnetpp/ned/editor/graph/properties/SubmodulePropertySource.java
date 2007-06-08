@@ -50,8 +50,7 @@ public class SubmodulePropertySource extends MergedPropertySource {
         mergePropertySource(new DelegatingPropertySource(
                 new ParameterListPropertySource(submoduleNodeModel),
                 ParameterListPropertySource.CATEGORY,
-                ParameterListPropertySource.DESCRIPTION,
-                new ParameterListPropertySource.CellEditor(submoduleNodeModel)));
+                ParameterListPropertySource.DESCRIPTION));
         // gates
         mergePropertySource(new DelegatingPropertySource(
                 new GateListPropertySource(submoduleNodeModel),
