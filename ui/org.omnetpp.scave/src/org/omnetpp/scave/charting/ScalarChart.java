@@ -375,6 +375,7 @@ public class ScalarChart extends ChartCanvas {
 		legend.draw(gc);
 		valueAxis.drawAxis(gc);
 		domainAxis.draw(gc);
+		drawRubberband(gc);
 		legendTooltip.draw(gc);
 		drawStatusText(gc);
 	}

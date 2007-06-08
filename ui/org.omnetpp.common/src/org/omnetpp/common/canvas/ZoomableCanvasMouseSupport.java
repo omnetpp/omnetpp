@@ -5,6 +5,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -163,6 +164,10 @@ public class ZoomableCanvasMouseSupport {
 				}
 			}
 		});
+	}
+	
+	public void drawRubberband(GC gc) {
+		rubberBand.drawRubberband(gc);
 	}
 
 }

@@ -384,6 +384,10 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			gc.drawText(getStatusText(), rect.x+10, rect.y+10);
 		}
 	}
+	
+	protected void drawRubberband(GC gc) {
+		mouseSupport.drawRubberband(gc);
+	}
 
 	protected static class PlotArea {
 		public double minX;

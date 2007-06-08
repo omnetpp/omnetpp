@@ -7,6 +7,7 @@ import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * Adds rubber-band selection support to a canvas. When the user drags out
@@ -20,6 +21,10 @@ public abstract class RubberbandSupport {
 	private int modifierKeys = 0; // modifier key that needs to be held down for rubber-band (e.g. SWT.CTRL)
 	private Rectangle rubberBand = null;
 	private Rectangle rubberBandBounds = null; // rubberbandable area; null means "whole canvas"
+	
+	// If true then the rubberband is drawn from the mouse listener
+	// otherwise the drawRubberBand() function should be called from the paint listener of the canvas.
+	private boolean drawRubberBand = false;
 
 	public RubberbandSupport(Canvas canvas, int modifierKeys) {
 		this.canvas = canvas;
@@ -77,8 +82,12 @@ public abstract class RubberbandSupport {
 	    		{
 					// start selection
 					rubberBand = new Rectangle(e.x, e.y, 0, 0);
-					GC gc = new GC(canvas);
-					drawRubberBand(gc, rubberBand);
+					if (drawRubberBand) {
+						GC gc = new GC(canvas);
+						drawRubberBand(gc, rubberBand);
+					}
+					else
+						canvas.redraw();
 				}
 	    		if (rubberBand!=null && e.button!=1) {
 	    			// cancel selection
@@ -107,24 +116,40 @@ public abstract class RubberbandSupport {
 		canvas.addMouseMoveListener(new MouseMoveListener() {
 			public void mouseMove(MouseEvent e) {
 				if (rubberBand!=null) {
-					// erase, then draw new with updated coordinates
-					GC gc = new GC(canvas);
-					gc.setForeground(canvas.getDisplay().getSystemColor(SWT.COLOR_RED));
-					drawRubberBand(gc, rubberBand);
+					Rectangle origRect = new Rectangle(rubberBand.x, rubberBand.y, rubberBand.width, rubberBand.height);
 					rubberBand.width = e.x - rubberBand.x;
 					rubberBand.height = e.y - rubberBand.y;
 					clipToBounds(rubberBand, rubberBandBounds==null ? canvas.getClientArea() : rubberBandBounds);
-					drawRubberBand(gc, rubberBand);
+					
+					// erase, then draw new with updated coordinates
+					if (drawRubberBand) {
+						GC gc = new GC(canvas);
+						gc.setForeground(canvas.getDisplay().getSystemColor(SWT.COLOR_RED));
+						drawRubberBand(gc, origRect); // XXX how does it erase the old rect ???
+						drawRubberBand(gc, rubberBand);
+					}
+					else
+						canvas.redraw();
 				}
 			}
 	    });
 	}
 
 	private static void drawRubberBand(GC gc, Rectangle rect) {
-		// needed because gc.drawFocus() doesn't accept negative width/height
+		System.out.println("rubberBand="+rect);
 		Rectangle r = new Rectangle(rect.x, rect.y, rect.width, rect.height);
+		// needed because gc.drawFocus() doesn't accept negative width/height
 		fixNegativeSizes(r);
+		gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_GRAY));	// used if drawFocus() is not supported by the OS 
 		gc.drawFocus(r.x, r.y, r.width, r.height);
+	}
+	
+	/**
+	 * To be called from the Paint handler of the canvas if draw == false.
+	 */
+	public void drawRubberband(GC gc) {
+		if (rubberBand != null)
+			drawRubberBand(gc, rubberBand);
 	}
 
 	private static void fixNegativeSizes(Rectangle r) {

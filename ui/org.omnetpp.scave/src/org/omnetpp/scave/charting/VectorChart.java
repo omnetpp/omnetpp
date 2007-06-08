@@ -675,6 +675,7 @@ public class VectorChart extends ChartCanvas {
 
 	@Override
 	protected void paintNoncachableLayer(GC gc) {
+		System.out.println("paintNoncachableLayer()");
 		resetDrawingStylesAndColors(gc);
 		gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
 
@@ -686,6 +687,7 @@ public class VectorChart extends ChartCanvas {
 		legendTooltip.draw(gc);
 		drawStatusText(gc);
 		drawSelection(gc);
+		drawRubberband(gc);
 		crosshair.draw(gc);
 	}
 	
