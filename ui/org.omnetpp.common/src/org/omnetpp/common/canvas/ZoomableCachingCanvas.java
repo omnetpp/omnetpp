@@ -168,9 +168,13 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 		scrollVerticalTo(toVirtualY(yCoord) - getViewportHeight()/2);
 	}
 	
-	public void setZoomX(double zoomX) {
+	public double getMinZoomX() {
 		checkAreaAndViewPort();
-		double minZoomX = getViewportWidth() / (maxX - minX);
+		return getViewportWidth() / (maxX - minX);
+	}
+	
+	public void setZoomX(double zoomX) {
+		double minZoomX = getMinZoomX();
 		double newZoomX = Math.max(zoomX, minZoomX);
 		if (newZoomX != this.zoomX) {
 			double oldX = getViewportCenterCoordX();
@@ -180,10 +184,14 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 			System.out.println("zoomX set to "+zoomX);
 		}
 	}
+	
+	public double getMinZoomY() {
+		checkAreaAndViewPort();
+		return getViewportHeight() / (maxY - minY);
+	}
 
 	public void setZoomY(double zoomY) {
-		checkAreaAndViewPort();
-		double minZoomY = getViewportHeight() / (maxY - minY);
+		double minZoomY = getMinZoomY();
 		double newZoomY = Math.max(zoomY, minZoomY);
 		if (newZoomY != this.zoomY) {
 			double oldY = getViewportCenterCoordY();
