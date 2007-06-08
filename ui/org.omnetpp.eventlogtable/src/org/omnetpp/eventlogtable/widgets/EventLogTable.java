@@ -34,7 +34,7 @@ public class EventLogTable
 
 	private static final String STATE_PROPERTY = "EventLogTableState";
 
-	private boolean followEnd = false; // when the event log changes should we follow it or not?
+	private boolean followEnd = false; // when the event log chan ges should we follow it or not?
 
 	private EventLogInput eventLogInput;
 	
@@ -232,6 +232,8 @@ public class EventLogTable
 	}
 	
 	public void eventLogFiltered() {
+		eventLog = eventLogInput.getEventLog();
+
 		if (fixPointElement != null) {
 			FilteredEventLog filteredEventLog = (FilteredEventLog)eventLog;
 			IEvent closestEvent = filteredEventLog.getMatchingEventInDirection(fixPointElement.getEventNumber(), false);
@@ -247,6 +249,10 @@ public class EventLogTable
 		}
 
 		redraw();
+	}
+	
+	public void eventLogFilterRemoved() {
+		eventLog = eventLogInput.getEventLog();
 	}
 
 	/*************************************************************************************

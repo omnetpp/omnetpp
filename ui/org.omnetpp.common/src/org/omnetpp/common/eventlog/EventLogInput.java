@@ -128,7 +128,6 @@ public class EventLogInput {
 		return modules;
 	}
 
-
 	public void removeFilter() {
 		// remove filter
 		if (eventLog instanceof FilteredEventLog)
@@ -143,9 +142,11 @@ public class EventLogInput {
 		// update coordinate system
 		if (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() != -1)
 			sequenceChartFacade.relocateTimelineCoordinateSystem(sequenceChartFacade.getTimelineCoordinateSystemOriginEvent());
+		
+		eventLogFilterRemoved();
 	}
 	
-	public void addFilter(IntVector moduleIds) {
+	public void filter(IntVector moduleIds) {
 		// remove old filter
 		if (eventLog instanceof FilteredEventLog)
 			eventLog = ((FilteredEventLog)eventLog).getEventLog();
@@ -178,7 +179,7 @@ public class EventLogInput {
 			eventLogWatcher.stop();
 	}
 
-	public void eventLogAppended() {
+	private void eventLogAppended() {
 		for (IEventLogChangeListener listener : eventLogChangeListeners)
 			listener.eventLogAppended();
 	}
@@ -186,6 +187,11 @@ public class EventLogInput {
 	private void eventLogFiltered() {
 		for (IEventLogChangeListener listener : eventLogChangeListeners)
 			listener.eventLogFiltered();
+	}
+
+	private void eventLogFilterRemoved() {
+		for (IEventLogChangeListener listener : eventLogChangeListeners)
+			listener.eventLogFilterRemoved();
 	}
 
 	public void checkEventLogForChanges() {

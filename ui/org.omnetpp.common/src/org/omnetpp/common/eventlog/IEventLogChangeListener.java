@@ -10,4 +10,9 @@ public interface IEventLogChangeListener {
 	 * Called when the event log has been filtered.
 	 */
 	public void eventLogFiltered();
+	
+	/**
+	 * Called when the event log filter has been removed.
+	 */
+	public void eventLogFilterRemoved();
 }
