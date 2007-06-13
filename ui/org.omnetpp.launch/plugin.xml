@@ -28,5 +28,17 @@
             id="org.omnetpp.launch.standaloneLaunchConfigurationTypeImage">
       </launchConfigurationTypeImage>
    </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabs">
+      <tab
+            class="org.omnetpp.launch.tabs.SimulationTab"
+            group="org.eclipse.cdt.launch.localRunLaunchTabGroup"
+            id="org.omnetpp.launch.omnetppmain"
+            name="Simulation">
+         <placement
+               after="org.eclipse.debug.ui.environmentTab">
+         </placement>
+      </tab>
+   </extension>
 
 </plugin>
