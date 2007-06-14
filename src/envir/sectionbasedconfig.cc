@@ -154,6 +154,7 @@ void SectionBasedConfiguration::doActivateConfig(int sectionId)
 
 void SectionBasedConfiguration::doActivateScenario(int sectionId, int runNumber)
 {
+/*FIXME
     std::string section = ini->getSectionName(sectionId);
 
     // extract all iteration specs from values within this section
@@ -209,6 +210,7 @@ void SectionBasedConfiguration::doActivateScenario(int sectionId, int runNumber)
     for (int i=0; i<sectionChain.size(); i++)
         for (int j=0; j<ini->getNumEntries(sectionChain[i]); j++)
             addEntry(convert(ini->getEntry(sectionChain[i], j)));
+*/
 }
 
 std::string SectionBasedConfiguration::getConfigDescription(const char *scenarioOrConfigName) const
