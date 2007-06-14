@@ -43,7 +43,7 @@ S  [ \t\v\n\r\f]
 %{
 #include <string.h>
 #include "expressionyydefs.h"
-#include "cexception.h"
+#include "exception.h"
 #include "expression.tab.h"
 
 #define yylval expressionyylval
@@ -64,7 +64,7 @@ static char textbuf[TEXTBUF_LEN];
 // buffer to collect characters during extendCount()
 static std::string extendbuf;
 
-#include "util.h"  // opp_strdup()
+#include "stringutil.h"  // opp_clonestr()
 %}
 
 %%
@@ -85,11 +85,11 @@ static std::string extendbuf;
 "index"                  { count(); return INDEX_; }
 "xmldoc"                 { count(); return XMLDOC_; }
 
-{L}({L}|{D})*            { count(); yylval = opp_strdup(yytext); return NAME; }
-{D}+                     { count(); yylval = opp_strdup(yytext); return INTCONSTANT; }
-0[xX]{X}+                { count(); yylval = opp_strdup(yytext); return INTCONSTANT; }
-{D}+{E}                  { count(); yylval = opp_strdup(yytext); return REALCONSTANT; }
-{D}*"."{D}+({E})?        { count(); yylval = opp_strdup(yytext); return REALCONSTANT; }
+{L}({L}|{D})*            { count(); yylval = opp_clonestr(yytext); return NAME; }
+{D}+                     { count(); yylval = opp_clonestr(yytext); return INTCONSTANT; }
+0[xX]{X}+                { count(); yylval = opp_clonestr(yytext); return INTCONSTANT; }
+{D}+{E}                  { count(); yylval = opp_clonestr(yytext); return REALCONSTANT; }
+{D}*"."{D}+({E})?        { count(); yylval = opp_clonestr(yytext); return REALCONSTANT; }
 
 \"                       { BEGIN(stringliteral); count(); }
 <stringliteral>{
@@ -98,7 +98,7 @@ static std::string extendbuf;
       \\\"               { extendCount(); /* qouted quote */ }
       \\[^\n\"]          { extendCount(); /* qouted char */ }
       [^\\\n\"]+         { extendCount(); /* character inside string literal */ }
-      \"                 { extendCount(); yylval = opp_strdup(extendbuf.c_str()); BEGIN(INITIAL); return STRINGCONSTANT; /* closing quote */ }
+      \"                 { extendCount(); yylval = opp_clonestr(extendbuf.c_str()); BEGIN(INITIAL); return STRINGCONSTANT; /* closing quote */ }
 }
 
 ","                      { count(); return ','; }

@@ -156,6 +156,14 @@ std::string opp_vstringf(const char *fmt, va_list& args)
     return buf;
 }
 
+char *opp_clonestr(const char *s)
+{
+    if (s==NULL) return NULL;
+    char *p = new char[strlen(s)+1];
+    strcpy(p,s);
+    return p;
+}
+
 int strdictcmp(const char *s1, const char *s2)
 {
     int casediff = 0;

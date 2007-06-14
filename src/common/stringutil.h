@@ -76,6 +76,12 @@ COMMON_API std::string opp_stringf(const char *fmt, ...);
 COMMON_API std::string opp_vstringf(const char *fmt, va_list& args);
 
 /**
+ * Duplicates a string, the result should be freed with delete[].
+ * Named so in order to avoid clash with the simkernel's opp_strdup().
+ */
+COMMON_API char *opp_clonestr(const char *s);
+
+/**
  * Dictionary-compare two strings, the main difference from stricmp()
  * being that integers embedded in the strings are compared in
  * numerical order.

@@ -17,7 +17,6 @@
 #include <math.h>
 #include "expression.h"
 #include "expressionyydefs.h"
-#include "stringutil.h"
 
 
 #define eESTKOFLOW   "Stack overflow"
@@ -34,7 +33,7 @@ void Expression::Elem::operator=(const Elem& other)
     memcpy(this, &other, sizeof(Elem));
 
     if (type==STR)
-        {char *tmp=new char[strlen(s)+1]; strcpy(tmp,s); s=tmp;}
+        s = opp_clonestr(s);
     else if (type==FUNCTOR)
         fu = (Functor *) fu->dup();
 }

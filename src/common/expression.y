@@ -44,7 +44,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "expryydefs.h"
+#include "expressionyydefs.h"
 
 #define YYDEBUG 1           /* allow debugging */
 #define YYDEBUGGING_ON 0    /* turn on/off debugging */
@@ -71,14 +71,8 @@ void yyerror (const char *s);
 LineColumn xpos, xprevpos;
 
 
-#include "cdynamicexpression.h"
-#include "cpar.h"
-#include "cxmlelement.h"
-#include "cexception.h"
-#include "globals.h"
-#include "cfunction.h"
-#include "cnedfunction.h"
-#include "nedsupport.h"
+#include "expression.h"
+#include "exception.h"
 #include "stringutil.h"
 #include "unitconversion.h"
 

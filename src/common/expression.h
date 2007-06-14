@@ -20,6 +20,7 @@
 #include <string>
 #include "commondefs.h"
 #include "commonutil.h"
+#include "stringutil.h"
 
 
 /**
@@ -123,7 +124,7 @@ class COMMON_API Expression
          * Effect during evaluation of the expression: pushes the given string
          * to the evaluation stack.
          */
-        void operator=(const char *_s)  {type=STR; Assert(_s); s=new char[strlen(_s)+1]; strcpy(s,_s);}
+        void operator=(const char *_s)  {type=STR; Assert(_s); s=opp_clonestr(_s);}
 
         /**
          * Function object, with an interface not unlike cNEDFunction.
@@ -171,6 +172,7 @@ class COMMON_API Expression
     {
       public:
         virtual ~Functor() {}
+        virtual Functor *dup() const = 0;
         virtual const char *name() const = 0;
         virtual const char *argTypes() const = 0;
         virtual int numArgs() const {return strlen(argTypes());}
