@@ -10,5 +10,6 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.debug.core,
  org.eclipse.debug.ui,
  org.omnetpp.inifile.editor,
- org.eclipse.ui.ide
+ org.eclipse.ui.ide,
+ org.omnetpp.common
 Eclipse-LazyStart: true

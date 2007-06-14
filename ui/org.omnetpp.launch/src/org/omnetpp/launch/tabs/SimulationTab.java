@@ -2,11 +2,13 @@ package org.omnetpp.launch.tabs;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -26,7 +28,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -36,6 +37,7 @@ import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
 
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.inifile.editor.model.ParseException;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
@@ -46,30 +48,29 @@ import org.omnetpp.launch.LaunchPluging;
  */
 public class SimulationTab extends AbstractLaunchConfigurationTab implements
             SelectionListener, ModifyListener {
+    protected static final String EMPTY_STRING = ""; //$NON-NLS-1$
 
-	// Ini UI widgets
+	// UI widgets
 	protected Text fInifileText;
-	protected Button fBrowseInifileButton;
-
-	// Config class UI widgets
 	protected Combo fConfigCombo;
-
-    // Run UI widgets
     protected Text fRunText;
-
-    // Environment UI widgets
     protected Button fDefaultEnvButton;
     protected Button fCmdEnvButton;
     protected Button fTkEnvButton;
     protected Button fOtherEnvButton;
     protected Text fOtherText;
+    // config we are working on
     private ILaunchConfiguration config;
 
+    /**
+     * Reads the ini file and enumerates all config sections. resolves include directives recursively
+     * @author rhornig
+     */
     protected class ConfigEnumeratorCallback extends InifileParser.ParserAdapter {
         IFile currentFile;
-        List<String> result;
+        Collection<String> result;
 
-        public ConfigEnumeratorCallback(IFile file, List<String> result) {
+        public ConfigEnumeratorCallback(IFile file, Collection<String> result) {
             this.currentFile = file;
             this.result = result;
         }
@@ -92,14 +93,35 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
 
         @Override
         public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String comment) {
-            result.add(sectionName);
+            if ("General".equals(sectionName) || sectionName.startsWith("Config")) {
+                result.add(StringUtils.removeStart(sectionName, "Config "));
+            }
         }
     }
 
-    protected static final String EMPTY_STRING = ""; //$NON-NLS-1$
+    /**
+     * A workbench content provider that returns only files with a given extension
+     * @author rhornig
+     */
+    protected class FilteredWorkbenchContentProvider extends WorkbenchContentProvider {
+        private final String extension;
 
-	public SimulationTab() {
-	}
+        public FilteredWorkbenchContentProvider(String extension) {
+            super();
+            this.extension = extension;
+        }
+
+        @Override
+        public Object[] getChildren(Object element) {
+            List<Object> filteredChildren = new ArrayList<Object>();
+            for(Object child : super.getChildren(element)) {
+                if (child instanceof IFile && extension.equals(((IFile)child).getFileExtension())
+                                || getChildren(child).length > 0)
+                        filteredChildren.add(child);
+            }
+            return filteredChildren.toArray();
+        }
+    };
 
 	/*
 	 * (non-Javadoc)
@@ -107,24 +129,20 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#createControl(org.eclipse.swt.widgets.Composite)
 	 */
 	public void createControl(Composite parent) {
-		Composite comp = new Composite(parent, SWT.NONE);
-		setControl(comp);
-
-		GridLayout topLayout = new GridLayout();
-		comp.setLayout(topLayout);
-
+		Composite comp = SWTFactory.createComposite(parent, 1, 1, GridData.FILL_HORIZONTAL);
 		createIniGroup(comp, 1);
         createConfigGroup(comp, 1);
         createUIGroup(comp, 1);
+        setControl(comp);
 	}
 
 	protected void createIniGroup(Composite parent, int colSpan) {
 		Composite iniComp = SWTFactory.createComposite(parent, 3, colSpan, GridData.FILL_HORIZONTAL);
 
-		SWTFactory.createLabel(iniComp, "Initialization file:", 1);
+		SWTFactory.createLabel(iniComp, "Initialization file(s):", 1);
 
 		fInifileText = SWTFactory.createSingleText(iniComp, 1);
-		fInifileText.setToolTipText("The INI file defining parameters and configuration blocks (default: omnetpp.ini)");
+		fInifileText.setToolTipText("The INI file(s) defining parameters and configuration blocks (default: omnetpp.ini)");
 		fInifileText.addModifyListener(this);
 		fInifileText.addFocusListener(new FocusAdapter() {
             @Override
@@ -133,8 +151,8 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
             }
 		});
 
-		fBrowseInifileButton = createPushButton(iniComp, "Browse...", null);
-		fBrowseInifileButton.addSelectionListener(new SelectionAdapter() {
+		Button browseInifileButton = SWTFactory.createPushButton(iniComp, "Browse...", null);
+		browseInifileButton.addSelectionListener(new SelectionAdapter() {
 			@Override
             public void widgetSelected(SelectionEvent evt) {
 				handleBrowseInifileButtonSelected();
@@ -165,20 +183,20 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
 
         SWTFactory.createLabel(runComp, "User interface:", 5);
 
-        fDefaultEnvButton = createRadioButton(runComp, "Default");
+        fDefaultEnvButton = SWTFactory.createRadioButton(runComp, "Default");
         fDefaultEnvButton.setSelection(true);
         fDefaultEnvButton.addSelectionListener(this);
 
-        fCmdEnvButton = createRadioButton(runComp, "Command line");
+        fCmdEnvButton = SWTFactory.createRadioButton(runComp, "Command line");
         fCmdEnvButton.addSelectionListener(this);
 
-        fTkEnvButton = createRadioButton(runComp, "Tcl/TK");
+        fTkEnvButton = SWTFactory.createRadioButton(runComp, "Tcl/Tk");
         fTkEnvButton.addSelectionListener(this);
 
-        fOtherEnvButton = createRadioButton(runComp, "Other:");
+        fOtherEnvButton = SWTFactory.createRadioButton(runComp, "Other:");
         fOtherEnvButton.addSelectionListener(this);
 
-        fOtherText = SWTFactory.createText(runComp, SWT.SINGLE | SWT.BORDER, 1, GridData.FILL_HORIZONTAL);
+        fOtherText = SWTFactory.createSingleText(runComp, 1);
         fOtherText.setToolTipText("Specify the custom environment name");
         fOtherText.addModifyListener(this);
     }
@@ -190,114 +208,96 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
 	 */
 	public void initializeFrom(ILaunchConfiguration config) {
 	    this.config = config;
-		updateInifileFromConfig(config);
-		IFile inifile = getInifile(config);
-		if (inifile != null)
-		    fConfigCombo.setItems(getConfigNames(inifile));
-		updateConfigFromConfig(config);
-	}
-
-    protected void updateConfigCombo() {
-        IFile inifile = getInifile(config);
-        fConfigCombo.setItems(new String[] {});
-        if (inifile != null)
-            fConfigCombo.setItems(getConfigNames(inifile));
-    }
-
-	protected void updateInifileFromConfig(ILaunchConfiguration config) {
-        String inifileName = EMPTY_STRING;
         try {
-            inifileName = config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, EMPTY_STRING);
+            String guardedArg = "-inifiles "+config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, EMPTY_STRING)+" -";
+            fInifileText.setText(StringUtils.trimToEmpty(StringUtils.substringBetween(guardedArg, "-inifiles ", " -")));
+            fConfigCombo.setText(StringUtils.trimToEmpty(StringUtils.substringBetween(guardedArg, "-c ", " -")));
+            fRunText.setText(StringUtils.trimToEmpty(StringUtils.substringBetween(guardedArg, "-r ", " -")));
+            String userEnv = StringUtils.trimToEmpty(StringUtils.substringBetween(guardedArg, "-u ", " -"));
+            fOtherText.setText("");
+            if ("".equals(userEnv)) {
+                fDefaultEnvButton.setSelection(true);
+            } else {
+                fDefaultEnvButton.setSelection(false);
+                if ("cmdenv".equals(userEnv))
+                    fCmdEnvButton.setSelection(true);
+                else if ("tkenv".equals(userEnv))
+                    fTkEnvButton.setSelection(true);
+                else {
+                    fOtherEnvButton.setSelection(true);
+                    fOtherText.setText(userEnv);
+                }
+            }
+            fOtherText.setEnabled(fOtherEnvButton.getSelection());
+
+            updateConfigCombo();
         } catch (CoreException ce) {
             LaunchPluging.logError(ce);
         }
-        fInifileText.setText(inifileName);
 	}
 
-	protected void updateConfigFromConfig(ILaunchConfiguration config) {
-	}
+    protected void updateConfigCombo() {
+        IFile[] inifiles = getInifiles();
+        String currentSelection = fConfigCombo.getText();
+        fConfigCombo.setItems(new String[] {});
+        if (inifiles != null)
+            fConfigCombo.setItems(getConfigNames(inifiles));
+        fConfigCombo.setText(currentSelection);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#performApply(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
-	 */
 	public void performApply(ILaunchConfigurationWorkingCopy config) {
-        config.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, fInifileText.getText());
+        String arg = fInifileText.getText();
+        if (!"".equals(fConfigCombo.getText()))
+            arg += " -c "+fConfigCombo.getText();
+        if (!"".equals(fRunText.getText()))
+            arg += " -r "+fRunText.getText();
+        if (fCmdEnvButton.getSelection())
+            arg += " -u cmdenv";
+        if (fTkEnvButton.getSelection())
+            arg += " -u tkenv";
+        if (fOtherEnvButton.getSelection())
+            arg += " -u "+fOtherText.getText();
+        config.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, arg);
 	}
 
 	protected void handleBrowseInifileButtonSelected() {
-        ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(), new WorkbenchContentProvider() {
-            // filter out the non INI files
-            @Override
-            public Object[] getChildren(Object element) {
-                List<Object> filteredChildren = new ArrayList<Object>();
-                for(Object child : super.getChildren(element)) {
-                    if (!(child instanceof IFile) || "ini".equals(((IFile)child).getFileExtension()))
-                            filteredChildren.add(child);
-                }
-                return filteredChildren.toArray();
-            }
-        });
-        dialog.setTitle("Select an ini file");
-        dialog.setMessage("Select an initialization file for the simulation");
-        dialog.setInput(getProject(config));
+        ElementTreeSelectionDialog dialog
+            = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(),
+                                                         new FilteredWorkbenchContentProvider("ini"));
+        dialog.setTitle("Select one or more ini file");
+        dialog.setMessage("Select the initialization file(s) for the simulation");
+        dialog.setInput(getProject());
         dialog.setComparator(new ResourceComparator(ResourceComparator.NAME));
         if (dialog.open() == IDialogConstants.OK_ID) {
-            IResource resource = (IResource) dialog.getFirstResult();
-            String arg = resource.getFullPath().toString();
-//            String fileLoc = VariablesPlugin.getDefault().getStringVariableManager().generateVariableExpression("workspace_loc", arg); //$NON-NLS-1$
-            // FIXME strip the leading project name make it project relative
-            fInifileText.setText(arg);
+            String inifiles = "";
+            for (Object resource : dialog.getResult()) {
+                if (resource instanceof IFile)
+                    inifiles += ((IFile)resource).getProjectRelativePath().toString()+" ";
+            }
+            fInifileText.setText(inifiles);
+            updateConfigCombo();
         }
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#isValid(org.eclipse.debug.core.ILaunchConfiguration)
-	 */
 	@Override
     public boolean isValid(ILaunchConfiguration config) {
 
 		setErrorMessage(null);
 		setMessage(null);
 
-		IProject project = null;
-		try {
-            project = ResourcesPlugin.getWorkspace().getRoot().getProject(config.getAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, EMPTY_STRING));
-        } catch (CoreException e) {}
-        if (project == null || !project.isOpen()) {
+        if (getProject() == null) {
             setErrorMessage("Project must be opened");
             return false;
         }
 
-        String name = fInifileText.getText().trim();
-        if (EMPTY_STRING.equals(name))
-            return true;
-
-        IPath iniPath = new Path(name);
-        if (!iniPath.isAbsolute()) {
-            if (!project.getFile(name).exists()) {
-                setErrorMessage("Initialization file does not exist");
-                return false;
-            }
-            iniPath = project.getFile(name).getLocation();
-        } else {
-            if (!iniPath.toFile().exists()) {
-                setErrorMessage("Initialization file does not exist");
-                return false;
-            }
+        if (getInifiles() == null) {
+            setErrorMessage("Initialization file does not exist");
+            return false;
         }
 
 		return true;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#setDefaults(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
-	 */
 	public void setDefaults(ILaunchConfigurationWorkingCopy config) {
 	}
 
@@ -306,11 +306,6 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
 	    return LaunchPluging.getImage("/icons/full/ctool16/omnetsim.gif");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#getName()
-	 */
 	public String getName() {
 		return "Simulation";
 	}
@@ -320,6 +315,10 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
     }
 
     public void widgetSelected(SelectionEvent e) {
+        if (!fOtherEnvButton.getSelection())
+            fOtherText.setText("");
+        fOtherText.setEnabled(fOtherEnvButton.getSelection());
+
         updateLaunchConfigurationDialog();
     }
 
@@ -330,7 +329,7 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
     /**
      * @return The selected project if exist and open otherwise NULL
      */
-    private IProject getProject(ILaunchConfiguration config) {
+    private IProject getProject() {
         IProject project = null;
         try {
             project = ResourcesPlugin.getWorkspace().getRoot().getProject(config.getAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, EMPTY_STRING));
@@ -342,47 +341,59 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
 
     /**
      * @param config
-     * @return The selected ini file (omnetpp.ini) if the inifile editor is empty
+     * @return The selected ini files or (omnetpp.ini) if the inifile text line is empty
+     * on error it returns NULL
      */
-    private IFile getInifile(ILaunchConfiguration config) {
-        // FIXME take it from the config instead of the control
+    private IFile[] getInifiles() {
         // FIXME lookup the inifile relative to the working directory not to the project
-        String name =  fInifileText.getText().trim();
-        IProject project = getProject(config);
+        List<IFile> result = new ArrayList<IFile>();
+        String names[] =  StringUtils.split(fInifileText.getText().trim());
+        IProject project = getProject();
         if (project == null)
             return null;
         // default ini file is omnetpp ini
-        if (EMPTY_STRING.equals(name))
-            name = "omnetpp.ini";
+        if (names.length == 0)
+            names = new String[] {"omnetpp.ini"};
 
+        for(String name : names) {
         IPath iniPath = new Path(name);
-        if (!iniPath.isAbsolute()) {
-            if (!project.getFile(name).exists())
+            if (!iniPath.isAbsolute()) {
+                if (!project.getFile(name).exists())
+                    return null;
+                result.add(project.getFile(name));
+            } else {
+                if (!iniPath.toFile().exists())
+                    return null;
+                IFile[] ifiles = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(iniPath);
+                if (ifiles.length == 1)
+                    result.add(ifiles[0]);
                 return null;
-            return project.getFile(name);
-        } else {
-            if (!iniPath.toFile().exists())
-                return null;
-            IFile[] ifiles = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(iniPath);
-            if (ifiles.length == 1)
-                return ifiles[0];
-            return null;
+            }
         }
+        return result.toArray(new IFile[result.size()]);
     }
 
-    private String [] getConfigNames(IFile inifile) {
-        List<String> result = new ArrayList<String>();
+
+    /**
+     * @param inifiles
+     * @return All the configuration names found in the supplied inifiles
+     */
+    private String [] getConfigNames(IFile[] inifiles) {
+        Set<String> result = new LinkedHashSet<String>();
         result.add("");
-        InifileParser iparser = new InifileParser();
-        try {
-            iparser.parse(inifile, new ConfigEnumeratorCallback(inifile, result));
-        } catch (ParseException e) {
-            setErrorMessage("Error reading inifile: "+e.getMessage());
-        } catch (CoreException e) {
-            setErrorMessage("Error reading inifile: "+e.getMessage());
-        } catch (IOException e) {
-            setErrorMessage("Error reading inifile: "+e.getMessage());
-        }
+        if (inifiles != null)
+            for(IFile inifile : inifiles) {
+                InifileParser iparser = new InifileParser();
+                try {
+                    iparser.parse(inifile, new ConfigEnumeratorCallback(inifile, result));
+                } catch (ParseException e) {
+                    setErrorMessage("Error reading inifile: "+e.getMessage());
+                } catch (CoreException e) {
+                    setErrorMessage("Error reading inifile: "+e.getMessage());
+                } catch (IOException e) {
+                    setErrorMessage("Error reading inifile: "+e.getMessage());
+                }
+            }
         return result.toArray(new String[] {});
     }
 
