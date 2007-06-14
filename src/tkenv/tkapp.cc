@@ -79,29 +79,30 @@ extern "C" TKENV_API void tkenv_lib() {}
 #define SPEEDOMETER_UPDATEMILLISECS 1000
 
 
-Register_GlobalConfigEntry(CFGID_TKENV_EXTRA_STACK_KB, "tkenv-extra-stack-kb", "Tkenv", CFG_INT,  TKENV_EXTRASTACK_KB, "Specifies the extra amount of stack (in kilobytes) that is reserved for each activity() simple module when the simulation is run under Tkenv.");
-Register_GlobalConfigEntry(CFGID_DEFAULT_RUN, "default-run",  "Tkenv", CFG_INT,  0, "Specifies which run Tkenv should set up automatically on startup. The default is to ask the user.");
-Register_GlobalConfigEntry(CFGID_SLOWEXEC_DELAY, "slowexec-delay",  "Tkenv", CFG_TIME,  0.3, "Delay between steps when you slow-execute the simulation.");
-Register_GlobalConfigEntry(CFGID_UPDATE_FREQ_FAST, "update-freq-fast",  "Tkenv", CFG_INT,  50, "Number of events executed between two display updates when in Fast execution mode.");
-Register_GlobalConfigEntry(CFGID_UPDATE_FREQ_EXPRESS, "update-freq-express",  "Tkenv", CFG_INT,  10000 , "Number of events executed between two display updates when in Express execution mode.");
-Register_GlobalConfigEntry(CFGID_ANIMATION_ENABLED, "animation-enabled",  "Tkenv", CFG_BOOL,  true , "Enables/disables animation.");
-Register_GlobalConfigEntry(CFGID_NEXT_EVENT_MARKERS, "next-event-markers",  "Tkenv", CFG_BOOL,  true , "Whether to display the next event marker (red rectange).");
-Register_GlobalConfigEntry(CFGID_SENDDIRECT_ARROWS, "senddirect-arrows",  "Tkenv", CFG_BOOL,  true , "Whether to display arrows during animation of sendDirect() calls.");
-Register_GlobalConfigEntry(CFGID_ANIM_METHODCALLS, "anim-methodcalls",  "Tkenv", CFG_BOOL,  true , "Whether to animate method calls across modules. Only calls to methods which contain Enter_Method() can be animated.");
-Register_GlobalConfigEntry(CFGID_METHODCALLS_DELAY, "methodcalls-delay",  "Tkenv", CFG_TIME,  0.2, "Sets delay after method call animation.");
-Register_GlobalConfigEntry(CFGID_ANIMATION_MSGNAMES, "animation-msgnames",  "Tkenv", CFG_BOOL,  true , "Enables/disables displaying message names during message flow animation.");
-Register_GlobalConfigEntry(CFGID_ANIMATION_MSGCLASSNAMES, "animation-msgclassnames",  "Tkenv", CFG_BOOL,  true , "Enables/disables displaying the C++ class name of messages during animation.");
-Register_GlobalConfigEntry(CFGID_ANIMATION_MSGCOLORS, "animation-msgcolors",  "Tkenv", CFG_BOOL,  true , "Enables/disables using different colors for each message kind during message flow animation.");
-Register_GlobalConfigEntry(CFGID_PENGUIN_MODE, "penguin-mode",  "Tkenv", CFG_BOOL,  false , "Surprise surprise.");
-Register_GlobalConfigEntry(CFGID_SHOW_LAYOUTING, "show-layouting",  "Tkenv", CFG_BOOL,  false, "Show layouting process of network graphics.");
-Register_GlobalConfigEntry(CFGID_USE_NEW_LAYOUTER, "use-new-layouter",  "Tkenv", CFG_BOOL,  false, "Selects between the new and the old (3.x) network layouting algorithms.");
-Register_GlobalConfigEntry(CFGID_SHOW_BUBBLES, "show-bubbles",  "Tkenv", CFG_BOOL,  true , "Whether to honor the bubble() calls during animation.");
-Register_GlobalConfigEntry(CFGID_ANIMATION_SPEED, "animation-speed",  "Tkenv", CFG_DOUBLE,  1.5, "Controls the speed of the animation; values in the range 0..3 are accepted.");
-Register_GlobalConfigEntry(CFGID_PRINT_BANNERS, "print-banners",  "Tkenv", CFG_BOOL,  true , "Enables/disables printing banners for each event.");
-Register_GlobalConfigEntry(CFGID_USE_MAINWINDOW, "use-mainwindow",  "Tkenv", CFG_BOOL,  true , "Enables/disables writing ev output to the Tkenv main window.");
-Register_GlobalConfigEntry(CFGID_EXPRESSMODE_AUTOUPDATE, "expressmode-autoupdate",  "Tkenv", CFG_BOOL,  true , "Enables/disables updating the inspectors during Express mode.");
-Register_GlobalConfigEntry(CFGID_IMAGE_PATH, "image-path",  "Tkenv", CFG_FILENAME,  "", "Specifies the path for loading module icons.");
-Register_GlobalConfigEntry(CFGID_PLUGIN_PATH, "plugin-path",  "Tkenv", CFG_FILENAME,  "", "Specifies the search path for Tkenv plugins. Tkenv plugins are .tcl files that get evaluated on startup.");
+Register_GlobalConfigEntry(CFGID_TKENV_EXTRA_STACK_KB, "tkenv-extra-stack-kb", CFG_INT, "48", "Specifies the extra amount of stack (in kilobytes) that is reserved for each activity() simple module when the simulation is run under Tkenv.");
+Register_GlobalConfigEntry(CFGID_DEFAULT_CONFIG, "tkenv-default-config", CFG_STRING, NULL, "Specifies which config Tkenv should set up automatically on startup. The default is to ask the user.");
+Register_GlobalConfigEntry(CFGID_DEFAULT_RUN, "tkenv-default-run", CFG_INT, "0", "Specifies which run (of the default config, see tkenv-default-config) Tkenv should set up automatically on startup. The default is to ask the user.");
+Register_GlobalConfigEntry(CFGID_SLOWEXEC_DELAY, "tkenv-slowexec-delay", CFG_TIME, "0.3", "Delay between steps when you slow-execute the simulation.");
+Register_GlobalConfigEntry(CFGID_UPDATE_FREQ_FAST, "tkenv-update-freq-fast", CFG_INT, "50", "Number of events executed between two display updates when in Fast execution mode.");
+Register_GlobalConfigEntry(CFGID_UPDATE_FREQ_EXPRESS, "tkenv-update-freq-express",  CFG_INT, "10000" , "Number of events executed between two display updates when in Express execution mode.");
+Register_GlobalConfigEntry(CFGID_ANIMATION_ENABLED, "tkenv-animation-enabled", CFG_BOOL, "true", "Enables/disables animation.");
+Register_GlobalConfigEntry(CFGID_NEXT_EVENT_MARKERS, "tkenv-next-event-markers", CFG_BOOL, "true", "Whether to display the next event marker (red rectange).");
+Register_GlobalConfigEntry(CFGID_SENDDIRECT_ARROWS, "tkenv-senddirect-arrows", CFG_BOOL, "true", "Whether to display arrows during animation of sendDirect() calls.");
+Register_GlobalConfigEntry(CFGID_ANIM_METHODCALLS, "tkenv-anim-methodcalls", CFG_BOOL, "true", "Whether to animate method calls across modules. Only calls to methods which contain Enter_Method() can be animated.");
+Register_GlobalConfigEntry(CFGID_METHODCALLS_DELAY, "tkenv-methodcalls-delay", CFG_TIME, "0.2", "Sets delay after method call animation.");
+Register_GlobalConfigEntry(CFGID_ANIMATION_MSGNAMES, "tkenv-animation-msgnames", CFG_BOOL, "true", "Enables/disables displaying message names during message flow animation.");
+Register_GlobalConfigEntry(CFGID_ANIMATION_MSGCLASSNAMES, "tkenv-animation-msgclassnames", CFG_BOOL, "true", "Enables/disables displaying the C++ class name of messages during animation.");
+Register_GlobalConfigEntry(CFGID_ANIMATION_MSGCOLORS, "tkenv-animation-msgcolors", CFG_BOOL, "true", "Enables/disables using different colors for each message kind during message flow animation.");
+Register_GlobalConfigEntry(CFGID_PENGUIN_MODE, "tkenv-penguin-mode", CFG_BOOL, "false", "Surprise surprise.");
+Register_GlobalConfigEntry(CFGID_SHOW_LAYOUTING, "tkenv-show-layouting", CFG_BOOL, "false", "Show layouting process of network graphics.");
+Register_GlobalConfigEntry(CFGID_USE_NEW_LAYOUTER, "tkenv-use-new-layouter", CFG_BOOL, "false", "Selects between the new and the old (3.x) network layouting algorithms.");
+Register_GlobalConfigEntry(CFGID_SHOW_BUBBLES, "tkenv-show-bubbles", CFG_BOOL, "true", "Whether to honor the bubble() calls during animation.");
+Register_GlobalConfigEntry(CFGID_ANIMATION_SPEED, "tkenv-animation-speed", CFG_DOUBLE, "1.5", "Controls the speed of the animation; values in the range 0..3 are accepted.");
+Register_GlobalConfigEntry(CFGID_PRINT_BANNERS, "tkenv-print-banners", CFG_BOOL, "true", "Enables/disables printing banners for each event.");
+Register_GlobalConfigEntry(CFGID_USE_MAINWINDOW, "tkenv-use-mainwindow", CFG_BOOL, "true", "Enables/disables writing ev output to the Tkenv main window.");
+Register_GlobalConfigEntry(CFGID_EXPRESSMODE_AUTOUPDATE, "tkenv-expressmode-autoupdate", CFG_BOOL, "true", "Enables/disables updating the inspectors during Express mode.");
+Register_GlobalConfigEntry(CFGID_IMAGE_PATH, "tkenv-image-path", CFG_FILENAME, "", "Specifies the path for loading module icons.");
+Register_GlobalConfigEntry(CFGID_PLUGIN_PATH, "tkenv-plugin-path", CFG_FILENAME, "", "Specifies the search path for Tkenv plugins. Tkenv plugins are .tcl files that get evaluated on startup.");
 
 
 // utility function
@@ -126,6 +127,7 @@ TOmnetTkApp::TOmnetTkApp(ArgList *args, cConfiguration *config) :
     stopsimulation_flag = false;
     animating = false;
     hasmessagewindow = false;
+    isconfigrun = false;
 
     // The opt_* vars will be set by readOptions()
 }
@@ -273,23 +275,28 @@ void TOmnetTkApp::shutdown()
 void TOmnetTkApp::printUISpecificHelp()
 {
     ev << "Tkenv-specific options:\n";
-    ev << "  -r <run>      Set up the given run, specified in a [Run n] section of\n";
-    ev << "                the ini file.\n";
+    ev << "  -c <configname-or-scenarioname>\n";
+    ev << "                Select a given configuration or scenario for execution. With\n";
+    ev << "                inifile-based configuration, this means the [Scenario <name>] or\n";
+    ev << "                [Config <name>] sections; the default is the [General] section.\n";
+    ev << "                See also: -r.\n";
+    ev << "  -r <run>      Set up the specified run in the scenario selected with the -c\n";
+    ev << "                option\n";
     ev << "\n";
 }
 
 void TOmnetTkApp::rebuildSim()
 {
-    if (getConfig()->getRunNumber()>0)
-         newRun(getConfig()->getRunNumber());
+    if (isconfigrun)
+         newRun(getConfig()->getActiveConfigName(), getConfig()->getActiveRunNumber());
     else if (simulation.networkType()!=NULL)
-         newNetwork( simulation.networkType()->name() );
+         newNetwork(simulation.networkType()->name());
     else
          CHK(Tcl_VarEval(interp,"messagebox {Confirm} {",
                                 "Choose File|New Network or File|New Run.",
                                 "} info ok",NULL));
     if (simulation.systemModule())
-         inspect( simulation.systemModule(),INSP_DEFAULT,"",NULL);
+         inspect(simulation.systemModule(),INSP_DEFAULT,"",NULL);
 }
 
 void TOmnetTkApp::doOneStep()
@@ -675,11 +682,11 @@ void TOmnetTkApp::newNetwork(const char *network_name)
 
         CHK(Tcl_VarEval(interp, "clear_windows", NULL));
 
-        // set up new network with runNumber==0. This means that run-specific
-        // sections of the ini file will be ignored.
-        getConfig()->setRunNumber(0);
+        // set up new network with config General.
+        isconfigrun = false;
+        getConfig()->activateConfig("General", 0);
         readPerRunOptions();
-        opt_network_name = network->name();
+        opt_network_name = network->name();  // override config setting
         simulation.setupNetwork(network);
         startRun();
         if (feventlog)
@@ -701,7 +708,7 @@ void TOmnetTkApp::newNetwork(const char *network_name)
     updateInspectors();
 }
 
-void TOmnetTkApp::newRun(int runnumber)
+void TOmnetTkApp::newRun(const char *configname, int runnumber)
 {
     try
     {
@@ -714,8 +721,15 @@ void TOmnetTkApp::newRun(int runnumber)
         }
 
         // set up new network
-        getConfig()->setRunNumber(runnumber);
+        isconfigrun = true;
+        getConfig()->activateConfig(configname, runnumber);
         readPerRunOptions();
+
+        if (opt_network_name.empty())
+        {
+            CHK(Tcl_VarEval(interp,"messagebox {Confirm} {No network specified in the configuration.} info ok",NULL));
+            return;
+        }
 
         cModuleType *network = cModuleType::find(opt_network_name.c_str());
         //FIXME check if it can be instantiated as network
@@ -857,10 +871,10 @@ void TOmnetTkApp::updateNetworkRunDisplay()
     char runnr[10];
     const char *networkname;
 
-    if (getConfig()->getRunNumber())
+    if (getConfig()->getActiveRunNumber())
         sprintf(runnr, "?");
     else
-        sprintf(runnr, "%d", getConfig()->getRunNumber());
+        sprintf(runnr, "%d", getConfig()->getActiveRunNumber());
 
     if (simulation.networkType()==NULL)
         networkname = "(no network)";
@@ -1011,13 +1025,13 @@ void TOmnetTkApp::readOptions()
 
     opt_extrastack_kb = cfg->getAsInt(CFGID_TKENV_EXTRA_STACK_KB);
 
-    const char *r = args->optionValue('r');
-    if (r)
-        opt_default_run = atoi(r);
-    else
-        opt_default_run = cfg->getAsInt(CFGID_DEFAULT_RUN);
+    const char *s = args->optionValue('c');
+    opt_default_config = s ? s : cfg->getAsString(CFGID_DEFAULT_CONFIG);
 
-    // Note: most entries below should be obsoleted (with .tkenvrc taking over)
+    const char *r = args->optionValue('r');
+    opt_default_run = r ? atoi(r) : cfg->getAsInt(CFGID_DEFAULT_RUN);
+
+    // Note: most entries below should be obsoleted (because .tkenvrc overrides them anyway)
     opt_stepdelay = long(1000*cfg->getAsDouble(CFGID_SLOWEXEC_DELAY));
     opt_updatefreq_fast = cfg->getAsInt(CFGID_UPDATE_FREQ_FAST);
     opt_updatefreq_express = cfg->getAsInt(CFGID_UPDATE_FREQ_EXPRESS);
@@ -1115,7 +1129,7 @@ void TOmnetTkApp::simulationEvent(cMessage *msg)
     }
 }
 
-void TOmnetTkApp::messageSent_OBSOLETE(cMessage *msg, cGate *directToGate)
+void TOmnetTkApp::messageSent_OBSOLETE(cMessage *msg, cGate *directToGate) //FIXME needed?
 {
     // display in message window
     if (hasmessagewindow)
@@ -1195,7 +1209,7 @@ void TOmnetTkApp::componentMethodBegin(cComponent *fromComp, cComponent *toComp,
         return;
 
     if (!fromComp->isModule() || !toComp->isModule())
-        return; // not yet handled
+        return; // not yet animated
 
     updateGraphicalInspectorsBeforeAnimation();
 

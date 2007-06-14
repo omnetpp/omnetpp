@@ -9,7 +9,8 @@ include ../../Makefile.inc
 #
 COPTS=$(CFLAGS) $(AKAROA_CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../sim -I../common -DBUILDING_ENVIR -DHAVE_DLOPEN=$(HAVE_DLOPEN)
 
-OBJS=args.o cenvir.o cinifile.o main.o omnetapp.o fsutils.o \
+OBJS=args.o cenvir.o main.o omnetapp.o fsutils.o \
+     sectionbasedconfig.o inifilereader.o valueiterator.o \
      speedmtr.o filemgrs.o akoutvectormgr.o matchableobject.o \
      akaroarng.o cxmldoccache.o ivfilemgr.o eventlogwriter.o objectprinter.o
 

@@ -26,10 +26,10 @@
 #define _I64_MAX_DIGITS 19
 
 /**
- * BigDecimal stores a decimal value as an 64 bit integer and a scale.
+ * BigDecimal stores a decimal value as a 64-bit integer and a scale.
  * Arithmetic operations are performed by converting the values
  * to double and converting the result to BigDecimal, so they
- * may loose precision.
+ * may lose precision.
  */
 class COMMON_API BigDecimal
 {
@@ -37,7 +37,7 @@ class COMMON_API BigDecimal
     /*
      * The value of the number is intVal * 10^scale.
      * If two decimal is equal then they have the same intVal and scale (see normalize()).
-     * Special values (NaN, +-infinity, Nil) uses the scale INT_MAX.
+     * Special values (NaN, +-infinity, Nil) use the scale INT_MAX.
      */
     int64 intVal; // stores digits of the decimal number (up to 18 digits can be stored)
     int scale;    // stores the position of the decimal point, must be in the [0,-18] range
@@ -57,37 +57,48 @@ class COMMON_API BigDecimal
      * If x and y equal decimals, then x.intVal==y.intVal and x.scale==y.scale after normalization.
      */
     void normalize();
+
     /*
      * Returns digits of the decimal number from place-values in [scale,scale+numDigits) as an int64.
      */
     int64 getDigits(int scale, int numDigits) const;
 
   public:
+    /** @name Constants */
+    //@{
     static BigDecimal Zero;
     static BigDecimal NaN;
     static BigDecimal PositiveInfinity;
     static BigDecimal NegativeInfinity;
     static BigDecimal Nil;
+    //@}
 
-    /** Constructors. */
+    /** @name Constructors. */
+    //@{
     BigDecimal() {intVal=_I64_MAX; scale=INT_MAX;} // == Nil
     BigDecimal(int64 intVal, int scale) : intVal(intVal), scale(scale) { normalize(); }
     BigDecimal(const BigDecimal &x) {operator=(x);}
     BigDecimal(double d) {operator=(d);}
+    //@}
 
-    /** Special values */
+    /** @name Testing for special values */
+    //@{
     bool isNaN() const { return scale == INT_MAX && intVal == 0; }
     bool isNil() const { return *this == Nil; }
     bool isPositiveInfinity() const {return *this==PositiveInfinity;}
     bool isNegativeInfinity() const {return *this==NegativeInfinity;}
     bool isInfinity() const {return isPositiveInfinity() || isNegativeInfinity();}
     bool isSpecial() const { return scale == INT_MAX; }
+    //@}
 
-    /** Assignments */
+    /** @name Assignments */
+    //@{
     const BigDecimal& operator=(double d);
     const BigDecimal& operator=(const BigDecimal& x) {intVal=x.intVal; scale=x.scale; return *this;}
+    //@}
 
-    /** Arithmetic operations */
+    /** @name Arithmetic operations */
+    //@{
     const BigDecimal& operator+=(const BigDecimal& x) {*this=BigDecimal(dbl()+x.dbl()); return *this;}
     const BigDecimal& operator-=(const BigDecimal& x) {*this=BigDecimal(dbl()-x.dbl()); return *this;}
     const BigDecimal& operator*=(double d) {*this=BigDecimal(dbl()*d); return *this;}
@@ -109,7 +120,10 @@ class COMMON_API BigDecimal
     friend const BigDecimal operator*(double d, const BigDecimal& x);
     friend const BigDecimal operator/(const BigDecimal& x, double d);
     friend const BigDecimal operator/(const BigDecimal& x, const BigDecimal& y);
+    //@}
 
+    /** @name Conversions */
+    //@{
     /**
      * Converts big decimal to double. Note that conversion to and from
      * double may lose precision.
@@ -173,6 +187,7 @@ class COMMON_API BigDecimal
      * *somewhere* into the buffer, but NOT necessarily at the beginning.
      */
     static char *ttoa(char *buf, const BigDecimal &x, char *&endp);
+    //@}
 };
 
 

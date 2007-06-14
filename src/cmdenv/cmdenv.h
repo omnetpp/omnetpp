@@ -24,15 +24,15 @@
 #include <signal.h>
 
 
-#define CMDENV_EXTRASTACK_KB  8
-
-//==========================================================================
-// TCmdenvApp: command line user interface.
-
+/**
+ * Command line user interface.
+ */
 class TCmdenvApp : public TOmnetApp
 {
    protected:
      // new simulation options:
+     opp_string opt_printnumruns;
+     opp_string opt_configname;
      opp_string opt_runstoexec;
      unsigned opt_extrastack_kb;
      opp_string opt_outputfile;

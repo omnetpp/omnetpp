@@ -23,8 +23,6 @@
 
 #include "omnetapp.h"
 
-#define TKENV_EXTRASTACK_KB   48
-
 class Speedometer;
 class TInspector;
 
@@ -67,7 +65,8 @@ class TOmnetTkApp : public TOmnetApp
 
    public:
       // options
-      int  opt_default_run;        // automatically set up this run at startup
+      opp_string opt_default_config; // automatically set up this config at startup
+      int  opt_default_run;        // automatically set up this run (of the default config) at startup
       bool opt_print_banners;      // print event banners
       bool opt_use_mainwindow;     // dump modules' ev << ... stuff into main window
       bool opt_animation_enabled;  // msg animation
@@ -101,6 +100,7 @@ class TOmnetTkApp : public TOmnetApp
 
       opp_string tkenv_dir;        // directory of Tkenv's *.tcl files
 
+      bool isconfigrun;            // true after newRun(), and false after newConfig()
       eState simstate;             // state of the simulation run
       int runmode;                 // the current mode the simulation is executing under
       simtime_t rununtil_time;     // time limit in current "Run Until" execution, or zero
@@ -157,12 +157,12 @@ class TOmnetTkApp : public TOmnetApp
 
       virtual bool idle();
 
-      // if using Tkenv, activity() modules need extra stack
+      // with Tkenv, activity() modules need extra stack
       virtual unsigned extraStackForEnvir();
 
       // New functions:
       void newNetwork(const char *networkname);
-      void newRun(int runnumber);
+      void newRun(const char *configname, int runnumber);
       void createSnapshot(const char *label);
 
       void rebuildSim();
@@ -210,7 +210,7 @@ class TOmnetTkApp : public TOmnetApp
 
       void findDirectPath(cModule *frommodule, cModule *tomodule, PathVec& pathvec);
 
-      const char *getIniFileName()       {return getConfig()->fileName();}
+      const char *getIniFileName()       {return getConfig()->getFileName();}
       const char *getOutVectorFileName() {return outvectmgr->fileName();}
       const char *getOutScalarFileName() {return outscalarmgr->fileName();}
       const char *getSnapshotFileName()  {return snapshotmgr->fileName();}

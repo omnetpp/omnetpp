@@ -24,6 +24,7 @@
  *
  * @ingroup Internals
  */
+//XXX rename to cSetting? cConfigurationSetting? cSettingDeclaration? cConfigDeclaration?
 class SIM_API cConfigEntry : public cNoncopyableOwnedObject
 {
   public:
@@ -40,9 +41,8 @@ class SIM_API cConfigEntry : public cNoncopyableOwnedObject
     };
 
     // note: entry name (e.g. "sim-time-limit") is stored in object's name field
-    std::string section_;      // e.g. "General"
-    mutable std::string fullname_; // concatenated from section and name
-    bool isGlobal_;            // if true, it cannot occur in [Run X] sections
+    bool isPerObject_;         // if true, keys must be in <object-full-path>.config-name format
+    bool isGlobal_;            // if true, entry may only occur in the [General] section
     Type type_;                // entry type
     std::string unit_;         // if numeric, its unit ("s") or empty string
     std::string defaultValue_; // the default value in string form
@@ -54,26 +54,57 @@ class SIM_API cConfigEntry : public cNoncopyableOwnedObject
     /**
      * Constructor.
      */
-    cConfigEntry(const char *name, const char *section, bool isGlobal, Type type,
-                 const char *unit, const char *defaultValue, const char *description);
+    cConfigEntry(const char *name, bool isPerObject, bool isGlobal, Type type, const char *unit,
+                 const char *defaultValue, const char *description);
     //@}
 
     /** @name Redefined cObject methods */
     //@{
-    virtual const char *fullName() const;
     virtual std::string info() const;
     //@}
 
     /** @name Getter methods */
     //@{
-    //XXX comments
-    const char *section()  {return section_.c_str();}
-    bool isGlobal()  {return isGlobal_;}
-    Type type()  {return type_;}
+    /**
+     * Returns whether this is a per-object configuration. Per-object
+     * configuration entries take the form of
+     * <object-full-path>.<configname> = <value> in the inifile,
+     * instead of <configname> = <value>
+     */
+    bool isPerObject() const {return isPerObject_;}
+
+    /**
+     * Returns whether this is a global setting. Global settings may only
+     * occur in the [General] section.
+     */
+    bool isGlobal() const  {return isGlobal_;}
+
+    /**
+     * Data type of the entry.
+     */
+    Type type() const  {return type_;}
+
+    /**
+     * Returns the human-readable name of an entry data type.
+     */
     static const char *typeName(Type type);
-    const char *unit()  {return unit_.empty() ? NULL : unit_.c_str();}
-    const char *defaultValue()  {return defaultValue_.empty() ? NULL : defaultValue_.c_str();}
-    const char *description()  {return description_.c_str();}
+
+    /**
+     * Returns the unit of the entry (e.g. "s" for seconds, "b" for bytes, etc),
+     * or NULL if the entry does not have a unit.
+     */
+    const char *unit() const  {return unit_.empty() ? NULL : unit_.c_str();}
+
+    /**
+     * Returns the default value in string form, or NULL if there is no default.
+     */
+    const char *defaultValue() const  {return defaultValue_.empty() ? NULL : defaultValue_.c_str();}
+
+    /**
+     * Returns a brief textual description of the entry, which can be used as
+     * help text or hint.
+     */
+    const char *description() const  {return description_.c_str();}
     //@}
 };
 

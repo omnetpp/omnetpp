@@ -23,7 +23,9 @@
 
 #include "args.h"
 #include "distrib.h"
-#include "cinifile.h"
+#include "cconfigentry.h"
+#include "inifilereader.h"
+#include "sectionbasedconfig.h"
 #include "cenvir.h"
 #include "omnetapp.h"
 #include "appreg.h"
@@ -52,9 +54,9 @@ cRegistrationList omnetapps("omnetapps");
 #define ENVIR_TEXTBUF_LEN 1024
 static char buffer[ENVIR_TEXTBUF_LEN];
 
-Register_GlobalConfigEntry(CFGID_LOAD_LIBS, "load-libs", "General", CFG_FILENAMES, "", "Specifies dyamic libraries to be loaded on startup. The libraries should be given without the `.dll' or `.so' suffix -- that will be automatically appended.");
-Register_GlobalConfigEntry(CFGID_CONFIGURATION_CLASS, "configuration-class", "General", CFG_STRING, "", "Part of the Envir plugin mechanism: selects the class from which all configuration will be obtained. This option lets you replace omnetpp.ini with some other implementation, e.g. database input. The simulation program still has to bootstrap from an omnetpp.ini (which contains the configuration-class setting). The class has to implement the cConfiguration interface.");
-Register_GlobalConfigEntry(CFGID_USER_INTERFACE, "user-interface", "General", CFG_STRING, "", "Selects the user interface to be started. Possible values are Cmdenv and Tkenv, provided the simulation executable contains the respective libraries or loads them dynamically.");
+Register_GlobalConfigEntry(CFGID_LOAD_LIBS, "load-libs", CFG_FILENAMES, "", "Specifies dyamic libraries to be loaded on startup. The libraries should be given without the `.dll' or `.so' suffix -- that will be automatically appended.");
+Register_GlobalConfigEntry(CFGID_CONFIGURATION_CLASS, "configuration-class", CFG_STRING, "", "Part of the Envir plugin mechanism: selects the class from which all configuration will be obtained. This option lets you replace omnetpp.ini with some other implementation, e.g. database input. The simulation program still has to bootstrap from an omnetpp.ini (which contains the configuration-class setting). The class has to implement the cConfiguration interface.");
+Register_GlobalConfigEntry(CFGID_USER_INTERFACE, "user-interface", CFG_STRING, "", "Selects the user interface to be started. Possible values are Cmdenv and Tkenv, provided the simulation executable contains the respective libraries or loads them dynamically.");
 
 // helper macro
 #define CREATE_BY_CLASSNAME(var,classname,baseclass,description) \
@@ -100,16 +102,6 @@ cEnvir::~cEnvir()
 {
 }
 
-static void loadLibs(const char *libs)
-{
-    // "libs" may contain quoted filenames, so use FilenamesListTokenizer to parse it
-    if (!libs) libs = "";
-    FilenamesListTokenizer tokenizer(libs);
-    const char *lib;
-    while ((lib = tokenizer.nextToken())!=NULL)
-        loadExtensionLibrary(lib);
-}
-
 static void verifyIntTypes()
 {
 #define VERIFY(t,size) if (sizeof(t)!=size) {printf("INTERNAL ERROR: sizeof(%s)!=%d, please check typedefs in include/inttypes.h, and report this bug!", #t, size); exit(1);}
@@ -128,7 +120,7 @@ static void verifyIntTypes()
 void cEnvir::setup(int argc, char *argv[])
 {
     ArgList *args = NULL;
-    cIniFile *inifile = NULL;
+    SectionBasedConfiguration *bootconfig = NULL;
     try
     {
         simulation.init();
@@ -140,7 +132,7 @@ void cEnvir::setup(int argc, char *argv[])
         verifyIntTypes();
 
         // args
-        args = new ArgList(argc, argv, "hf:u:l:r:p:q:");
+        args = new ArgList(argc, argv, "hf:u:l:n:c:r:p:q:");
         args->checkArgs();
 
         //
@@ -151,7 +143,7 @@ void cEnvir::setup(int argc, char *argv[])
         if (!fname) fname = args->argument(0);   // first argument
         if (!fname) fname = "omnetpp.ini";   // or default filename
 
-        inifile = new cIniFile();
+        InifileReader *inifile = new InifileReader();
         inifile->readFile(fname);
 
         // process additional '-f filename' options or arguments if there are any
@@ -159,6 +151,11 @@ void cEnvir::setup(int argc, char *argv[])
             inifile->readFile(fname);
         for (int k=(args->optionValue('f',0) ? 0 : 1); (fname=args->argument(k))!=NULL; k++)
             inifile->readFile(fname);
+
+        // activate [General] section so that we can read global settings from it
+        bootconfig = new SectionBasedConfiguration();
+        bootconfig->setConfigurationReader(inifile);
+        bootconfig->activateConfig("General", 0);
 
         //
         // Load all libraries specified on the command line or in the ini file.
@@ -171,29 +168,31 @@ void cEnvir::setup(int argc, char *argv[])
             loadExtensionLibrary(libname);
 
         // load shared libs given in [General]/load-libs=
-        std::string libs = inifile->getAsFilenames(CFGID_LOAD_LIBS);
-        loadLibs(libs.c_str());
+        std::vector<std::string> libs = bootconfig->getAsFilenames(CFGID_LOAD_LIBS);
+        for (int k=0; k<libs.size(); k++)
+            loadExtensionLibrary(libs[k].c_str());
 
         //
         // Create custom configuration object, if needed.
         //
-        const char *configclass = inifile->getAsString(CFGID_CONFIGURATION_CLASS);
+        std::string configclass = bootconfig->getAsString(CFGID_CONFIGURATION_CLASS);
         cConfiguration *configobject = NULL;
-        if (!configclass)
+        if (configclass.empty())
         {
-            configobject = inifile;
+            configobject = bootconfig;
         }
         else
         {
             // create custom configuration object
-            CREATE_BY_CLASSNAME(configobject, configclass, cConfiguration, "configuration");
-            configobject->initializeFrom(inifile);
-            delete inifile;
-            inifile = NULL;
+            CREATE_BY_CLASSNAME(configobject, configclass.c_str(), cConfiguration, "configuration");
+            configobject->initializeFrom(bootconfig);
+            delete bootconfig;
+            bootconfig = NULL;
 
             // load libs from this config as well
-            std::string libs = configobject->getAsFilenames(CFGID_LOAD_LIBS);
-            loadLibs(libs.c_str());
+            std::vector<std::string> libs = configobject->getAsFilenames(CFGID_LOAD_LIBS);
+            for (int k=0; k<libs.size(); k++)
+                loadExtensionLibrary(libs[k].c_str());
         }
 
 
@@ -203,26 +202,25 @@ void cEnvir::setup(int argc, char *argv[])
         //
 
         // was it specified explicitly which one to use?
-        const char *appname = args->optionValue('u',0);  // 1st '-u name' option
-        if (!appname)
+        std::string appname = opp_nulltoempty(args->optionValue('u',0));  // 1st '-u name' option
+        if (appname.empty())
             appname = configobject->getAsString(CFGID_USER_INTERFACE);
 
         cOmnetAppRegistration *appreg = NULL;
-        if (appname && appname[0])
+        if (!appname.empty())
         {
-            // try to look up specified user interface; if we don't have it already,
-            // try to load dynamically...
-            appreg = static_cast<cOmnetAppRegistration *>(omnetapps.instance()->lookup(appname));
+            // look up specified user interface
+            appreg = static_cast<cOmnetAppRegistration *>(omnetapps.instance()->lookup(appname.c_str()));
             if (!appreg)
             {
                 ::printf("\n"
                          "User interface '%s' not found (not linked in or loaded dynamically).\n"
-                         "Available ones are:\n", appname);
+                         "Available ones are:\n", appname.c_str());
                 cSymTable *a = omnetapps.instance();
                 for (int i=0; i<a->size(); i++)
                     ::printf("  %s : %s\n", a->get(i)->name(), a->get(i)->info().c_str());
 
-                throw cRuntimeError("Could not start user interface '%s'",appname);
+                throw cRuntimeError("Could not start user interface '%s'", appname.c_str());
             }
         }
         else
@@ -250,7 +248,7 @@ void cEnvir::setup(int argc, char *argv[])
            app = NULL;
         }
         delete args;
-        delete inifile;
+        delete bootconfig;
     }
 }
 

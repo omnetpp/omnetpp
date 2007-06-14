@@ -332,11 +332,6 @@ cModule *cSimulation::moduleByPath(const char *path) const
     return modp;  // NULL if not found
 }
 
-int cSimulation::runNumber() const
-{
-    return ev.config()->getRunNumber();
-}
-
 void cSimulation::setupNetwork(cModuleType *network)
 {
 #ifdef DEVELOPER_DEBUG

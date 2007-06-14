@@ -50,8 +50,9 @@ using std::string;
 // Command functions:
 int newNetwork_cmd(ClientData, Tcl_Interp *, int, const char **);
 int newRun_cmd(ClientData, Tcl_Interp *, int, const char **);
-int getIniSectionNames_cmd(ClientData, Tcl_Interp *, int, const char **);
-int getIniEntryAsString_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getConfigNames_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getConfigDescription_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getNumRunsInScenario_cmd(ClientData, Tcl_Interp *, int, const char **);
 int createSnapshot_cmd(ClientData, Tcl_Interp *, int, const char **);
 int exitOmnetpp_cmd(ClientData, Tcl_Interp *, int, const char **);
 
@@ -66,7 +67,8 @@ int startAll_cmd(ClientData, Tcl_Interp *, int, const char **);
 int finishSimulation_cmd(ClientData, Tcl_Interp *, int, const char **);
 int loadLib_cmd(ClientData, Tcl_Interp *, int, const char **);
 
-int getRunNumber_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getActiveConfigName_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getActiveRunNumber_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getNetworkType_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getFileName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectFullName_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -155,10 +157,12 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_finish_simulation",finishSimulation_cmd}, // args: -
    { "opp_loadlib",          loadLib_cmd        }, // args: <fname>
    // Utility commands
-   { "opp_getrunnumber",     getRunNumber_cmd         }, // args: -  ret: current run
+   { "opp_getactiveconfigname",getActiveConfigName_cmd}, // args: -  ret: current config name
+   { "opp_getactiverunnumber", getActiveRunNumber_cmd }, // args: -  ret: current run number
    { "opp_getnetworktype",   getNetworkType_cmd       }, // args: -  ret: type of current network
-   { "opp_getinisectionnames",getIniSectionNames_cmd  }, // args: -
-   { "opp_getinientryasstring",getIniEntryAsString_cmd}, // args: <section> <key>  ret: value
+   { "opp_getconfignames",   getConfigNames_cmd       }, // args: -
+   { "opp_getconfigdescription",getConfigDescription_cmd}, // args: <configname>
+   { "opp_getnumrunsinscenario",getNumRunsInScenario_cmd}, // args: <configname>
    { "opp_getfilename",      getFileName_cmd          }, // args: <filetype>  ret: filename
    { "opp_getobjectfullname",getObjectFullName_cmd    }, // args: <pointer>  ret: fullName()
    { "opp_getobjectfullpath",getObjectFullPath_cmd    }, // args: <pointer>  ret: fullPath()
@@ -244,50 +248,69 @@ int exitOmnetpp_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 
 int newNetwork_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
+   E_TRY
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    TOmnetTkApp *app = getTkApplication();
    app->newNetwork( argv[1] );
    return TCL_OK;
+   E_CATCH
 }
 
 int newRun_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   E_TRY
+   if (argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    TOmnetTkApp *app = getTkApplication();
 
-   int runnr = atoi( argv[1] );
+   const char *configname = argv[1];
+   int runnumber = atoi(argv[2]);
 
-   app->newRun( runnr );
+   app->newRun(configname, runnumber);
    return TCL_OK;
+   E_CATCH
 }
 
-int getIniSectionNames_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+int getConfigNames_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    TOmnetTkApp *app = getTkApplication();
 
    cConfiguration *cfg = app->getConfig();
-   int n = cfg->getNumSections();
-   const char **sections = new const char *[n];
-   for (int i=0; i<n; i++)
-       sections[i] = cfg->getSectionName(i);
-   char *buf = Tcl_Merge(n,const_cast<char **>(sections));
-   delete [] sections;
-   Tcl_SetResult(interp, buf, TCL_DYNAMIC);
+   std::vector<std::string> confignames = cfg->getConfigNames();
+
+   Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
+   for (int i=0; i<confignames.size(); i++)
+       Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(const_cast<char *>(confignames[i].c_str()), -1));
+   Tcl_SetObjResult(interp, listobj);
    return TCL_OK;
 }
 
-int getIniEntryAsString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+int getConfigDescription_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   E_TRY
+   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    TOmnetTkApp *app = getTkApplication();
-   const char *section = argv[1];
-   const char *key = argv[2];
+   const char *configname = argv[1];
 
    cConfiguration *cfg = app->getConfig();
-   const char *value = cfg->getAsString(section, key, "");
-   Tcl_SetResult(interp, TCLCONST(value), TCL_VOLATILE);
+   std::string desc = cfg->getConfigDescription(configname);
+   Tcl_SetResult(interp, TCLCONST(desc.c_str()), TCL_VOLATILE);
    return TCL_OK;
+   E_CATCH
+}
+
+int getNumRunsInScenario_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   E_TRY
+   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   TOmnetTkApp *app = getTkApplication();
+   const char *configname = argv[1];
+
+   cConfiguration *cfg = app->getConfig();
+   int n = cfg->getNumRunsInScenario(configname);
+   Tcl_SetObjResult(interp, Tcl_NewIntObj(n));
+   return TCL_OK;
+   E_CATCH
 }
 
 int createSnapshot_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
@@ -452,12 +475,20 @@ int loadLib_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
 //--------------
 
-int getRunNumber_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
+int getActiveConfigName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
+{
+   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   TOmnetTkApp *app = getTkApplication();
+   Tcl_SetResult(interp, TCLCONST(app->getConfig()->getActiveConfigName()), TCL_VOLATILE);
+   return TCL_OK;
+}
+
+int getActiveRunNumber_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    char buf[16];
    TOmnetTkApp *app = getTkApplication();
-   sprintf(buf, "%d", app->getConfig()->getRunNumber());
+   sprintf(buf, "%d", app->getConfig()->getActiveRunNumber());
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
    return TCL_OK;
 }
@@ -824,10 +855,11 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    TOmnetTkApp *app = getTkApplication();
 
-   char buf[32];
-   if (0==strcmp(argv[1], "stepdelay"))
-      sprintf(buf,"%lu ms", app->opt_stepdelay);
-   else if (0==strcmp(argv[1], "default-run"))
+   char buffer[32];
+   char *buf = buffer;
+   if (0==strcmp(argv[1], "default_config"))
+      buf = const_cast<char *>(app->opt_default_config.c_str());
+   else if (0==strcmp(argv[1], "default_run"))
       sprintf(buf,"%d", app->opt_default_run);
    else if (0==strcmp(argv[1], "animation_enabled"))
       sprintf(buf,"%d", app->opt_animation_enabled);
@@ -855,6 +887,8 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       sprintf(buf,"%d", app->opt_bubbles);
    else if (0==strcmp(argv[1], "animation_speed"))
       sprintf(buf,"%g", app->opt_animation_speed);
+   else if (0==strcmp(argv[1], "stepdelay"))
+      sprintf(buf,"%lu ms", app->opt_stepdelay);
    else if (0==strcmp(argv[1], "print_banners"))
       sprintf(buf,"%d", app->opt_print_banners);
    else if (0==strcmp(argv[1], "use_mainwindow"))

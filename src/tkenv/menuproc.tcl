@@ -224,50 +224,14 @@ proc new_run {} {
 
     if [check_running] return
 
-    # compile list of runs
-    set sectionlist [opp_getinisectionnames]
-    set runlist {General}
-    foreach section $sectionlist {
-       if {[regexp -nocase -- {^(Run *)?([0-9]+) *$} $section dummy dummy1 runno]} {
-           set descr [opp_getinientryasstring $section "description"]
-           if {$descr != ""}  {
-               lappend runlist "Run $runno: $descr"
-           } else {
-               lappend runlist "Run $runno"
-           }
-       }
-    }
-
-    # determine default run to be offered
-    set runno [opp_getrunnumber]
-    if {$runno==0} {
-        if {[llength $runlist]>1} {
-            set run [lindex $runlist 1]
-        } else {
-            set run "General"
-        }
-    } else {
-        set descr [opp_getinientryasstring "Run $runno" "description"]
-        if {$descr != ""}  {
-            set run "Run $runno: $descr"
-        } else {
-            set run "Run $runno"
-        }
-    }
+    set configname [opp_getactiveconfigname]
+    set runnumber  [opp_getactiverunnumber]
 
     # pop up selection dialog
-    set ok [comboSelectionDialog "Set up new Run" "Set up one of the runs defined in omnetpp.ini." {Select run:} run $runlist]
+    set ok [runSelectionDialog configname runnumber]
     if {$ok == 1} {
-       if {$run == "General"} {
-           set runno "-1"
-       } elseif {[regexp -nocase -- {^(Run *)?([0-9]+)(:.*)?$} $run dummy dummy1 runno]} {
-           # OK -- regexp matched
-       } else {
-           messagebox "Error" "Which run do you mean by '$run'?" info ok
-           return;
-       }
        busy "Setting up network..."
-       opp_newrun $runno
+       opp_newrun $configname $runnumber
        busy
 
        if {[opp_object_systemmodule] != [opp_null]} {

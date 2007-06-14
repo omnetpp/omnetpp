@@ -615,19 +615,21 @@ proc generic_bindings {} {
 }
 
 proc startup_commands {} {
+    set configname [opp_getsimoption default_config]
+    set runnumber [opp_getsimoption default_run]
 
-    set run [opp_getsimoption default-run]
-    if {$run>0} {
-        opp_newrun $run
+    if {$configname != ""} {
+        opp_newrun $configname $runnumber
         if {[opp_object_systemmodule] != [opp_null]} {
             opp_inspect [opp_object_systemmodule] (default)
             notifyPlugins newNetwork
         }
     } else {
-        if {[lsearch -regexp [opp_getinisectionnames] {^Run [0-9]+$}]!=-1} {
-            new_run
-        } else {
+        set confignames [opp_getconfignames]
+        if {$confignames=={} || $confignames=={General}} {
             new_network
+        } else {
+            new_run
         }
     }
 }

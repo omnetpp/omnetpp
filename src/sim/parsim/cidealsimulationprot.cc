@@ -34,12 +34,11 @@
 
 Register_Class(cIdealSimulationProtocol);
 
-Register_GlobalConfigEntry(CFGID_PARSIM_IDEALSIMULATIONPROTOCOL_TABLESIZE, "parsim-idealsimulationprotocol-tablesize", "General", CFG_INT, TABLESIZE, "When cIdealSimulationProtocol is selected as parsim synchronization class: specifies the memory buffer size for reading the ISP event trace file.");
-extern cConfigEntry *CFGID_PARSIM_DEBUG; // registered in cparsimpartition.cc
-
-
 // load 100,000 values from eventlog at once (~800K allocated memory)
-#define TABLESIZE   100000
+#define TABLESIZE   "100000"
+
+Register_GlobalConfigEntry(CFGID_PARSIM_IDEALSIMULATIONPROTOCOL_TABLESIZE, "parsim-idealsimulationprotocol-tablesize", CFG_INT, TABLESIZE, "When cIdealSimulationProtocol is selected as parsim synchronization class: specifies the memory buffer size for reading the ISP event trace file.");
+extern cConfigEntry *CFGID_PARSIM_DEBUG; // registered in cparsimpartition.cc
 
 
 cIdealSimulationProtocol::cIdealSimulationProtocol() : cParsimProtocolBase()

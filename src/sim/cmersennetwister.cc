@@ -24,34 +24,41 @@
 
 Register_Class(cMersenneTwister);
 
+//XXX "seed-X-mt", etc needs to be registered, otherwise it will be an error!
 
 void cMersenneTwister::initialize(int runNumber, int rngId, int numRngs,
                                   int parsimProcId, int parsimNumPartitions,
                                   cConfiguration *cfg)
 {
-    char section[16], entry[40], entry2[40];
-    sprintf(section, "Run %d", runNumber);
-    sprintf(entry, "seed-%d-mt", rngId);
-    sprintf(entry2, "seed-%d-mt-p%d", rngId, parsimProcId);
+    //XXX runNumber is unused (??)
+    char key[40], key2[40];
+    sprintf(key, "seed-%d-mt", rngId);
+    sprintf(key2, "seed-%d-mt-p%d", rngId, parsimProcId);
 
     unsigned long seed;
     if (parsimNumPartitions>1)
     {
         // with parallel simulation, every partition should get distinct streams
-        seed = cfg->getAsInt2(section, "General", entry2);
-        if (cfg->notFound())
+        const char *value = cfg->getConfigValue(key2);
+        if (value!=NULL)
         {
-            if (cfg->exists2(section, "General", entry))
-                ev << "Warning: cMersenneTwister: ignoring config entry " << entry << "=<seed>"
+            seed = cConfiguration::parseLong(value, 0);
+        }
+        else
+        {
+            if (cfg->getConfigValue(key)!=NULL)
+                ev << "Warning: cMersenneTwister: ignoring config key " << key << "=<seed>"
                    << " for parallel simulation -- please use partition-specific variant "
-                   << entry2 << "=<seed>\n";
+                   << key2 << "=<seed>\n";
             seed = (runNumber*numRngs + rngId)*MAX_PARSIM_PARTITIONS + parsimProcId;
         }
     }
     else
     {
-        seed = cfg->getAsInt2(section, "General", entry);
-        if (cfg->notFound())
+        const char *value = cfg->getConfigValue(key);
+        if (value!=NULL)
+            seed = cConfiguration::parseLong(value, 0);
+        else
             seed = runNumber*numRngs + rngId;
     }
 

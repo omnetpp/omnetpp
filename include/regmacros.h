@@ -190,15 +190,6 @@
  */
 //@{
 
-//XXX
-#include <sstream>
-template<typename T> std::string __tostring(T x)
-{
-    std::stringstream out;
-    out << x;
-    return out.str();
-}
-
 // internal
 #define __Register_ConfigEntry(ID, ARGLIST) \
   cConfigEntry *ID; \
@@ -208,29 +199,44 @@ template<typename T> std::string __tostring(T x)
  * Generic, with unit==NULL.
  * @hideinitializer
  */
-#define Register_GlobalConfigEntry(ID, NAME, SECTION, TYPE, DEFAULTVALUE, DESCRIPTION) \
-  __Register_ConfigEntry(ID, (NAME, SECTION, true, cConfigEntry::TYPE, NULL, __tostring(DEFAULTVALUE).c_str(), DESCRIPTION))
+#define Register_GlobalConfigEntry(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION) \
+  __Register_ConfigEntry(ID, (NAME, false, true, cConfigEntry::TYPE, NULL, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * Generic, with unit==NULL.
  * @hideinitializer
  */
-#define Register_PerRunConfigEntry(ID, NAME, SECTION, TYPE, DEFAULTVALUE, DESCRIPTION) \
-  __Register_ConfigEntry(ID, (NAME, SECTION, false, cConfigEntry::TYPE, NULL, __tostring(DEFAULTVALUE).c_str(), DESCRIPTION))
+#define Register_PerRunConfigEntry(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION) \
+  __Register_ConfigEntry(ID, (NAME, false, false, cConfigEntry::TYPE, NULL, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * For type==CFG_DOUBLE and a unit.
  * @hideinitializer
  */
-#define Register_GlobalConfigEntryU(ID, NAME, SECTION, UNIT, DEFAULTVALUE, DESCRIPTION) \
-  __Register_ConfigEntry(ID, (NAME, SECTION, true, cConfigEntry::CFG_DOUBLE, UNIT, __tostring(DEFAULTVALUE).c_str(), DESCRIPTION))
+#define Register_GlobalConfigEntryU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION) \
+  __Register_ConfigEntry(ID, (NAME, false, true, cConfigEntry::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * For type==CFG_DOUBLE and a unit.
  * @hideinitializer
  */
-#define Register_PerRunConfigEntryU(ID, NAME, SECTION, UNIT, DEFAULTVALUE, DESCRIPTION) \
-  __Register_ConfigEntry(ID, (NAME, SECTION, false, cConfigEntry::CFG_DOUBLE, UNIT, __tostring(DEFAULTVALUE).c_str(), DESCRIPTION))
+#define Register_PerRunConfigEntryU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION) \
+  __Register_ConfigEntry(ID, (NAME, false, false, cConfigEntry::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
+
+/**
+ * Per-object entry (can be configured per run), with unit==NULL.
+ * @hideinitializer
+ */
+#define Register_PerObjectConfigEntry(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION) \
+  __Register_ConfigEntry(ID, (NAME, true, false, cConfigEntry::TYPE, NULL, DEFAULTVALUE, DESCRIPTION))
+
+/**
+ * Per-object entry (can be configured per run), for type==CFG_DOUBLE and a unit.
+ * @hideinitializer
+ */
+#define Register_PerObjectConfigEntryU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION) \
+  __Register_ConfigEntry(ID, (NAME, true, false, cConfigEntry::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
+
 //@}
 
 #endif

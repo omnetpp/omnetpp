@@ -251,11 +251,6 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     cModuleType *networkType() const  {return networktype;}
 
     /**
-     * Delegates to <tt>ev.config()->getRunNumber()</tt>.
-     */
-    int runNumber() const;
-
-    /**
      * WARNING: INTERNAL USE ONLY. This method should NEVER be invoked from
      * simulation models, only from scheduler classes subclassed from
      * cScheduler.

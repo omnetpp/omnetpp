@@ -25,7 +25,6 @@
 #include "envirext.h"
 #include "util.h"
 
-#define DEFAULT_PRECISION 14
 
 /**
  * A cOutputVectorManager that uses a line-oriented text file as output.
@@ -38,12 +37,12 @@ class cFileOutputVectorManager : public cOutputVectorManager
 {
   protected:
     struct sRunData {
-       bool initialised;        // true if the other fields are valid
+       bool initialized;        // true if the other fields are valid
        opp_string runId;        // id of the run
        opp_string_map attributes;    // attributes of the run
        opp_string_map moduleParams;  // module parameters in the current run
 
-       sRunData() : initialised(false) {}
+       sRunData() : initialized(false) {}
     };
 
     struct sVectorData {
@@ -51,7 +50,7 @@ class cFileOutputVectorManager : public cOutputVectorManager
        opp_string modulename; // module of cOutVector object
        opp_string vectorname; // cOutVector object name
        opp_string_map attributes; // vector attributes
-       bool initialised;    // true if the vector declaration has been written out
+       bool initialized;    // true if the vector declaration has been written out
        bool enabled;        // write to the output file can be enabled/disabled
        simtime_t starttime; // write begins at starttime
        simtime_t stoptime;  // write stops at stoptime

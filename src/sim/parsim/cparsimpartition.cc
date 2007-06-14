@@ -35,7 +35,7 @@
 
 Register_Class(cParsimPartition);
 
-Register_GlobalConfigEntry(CFGID_PARSIM_DEBUG, "parsim-debug", "General", CFG_BOOL,  true, "With parallel-simulation=true: turns on printing of log messages from the parallel simulation code.");
+Register_GlobalConfigEntry(CFGID_PARSIM_DEBUG, "parsim-debug", CFG_BOOL, "true", "With parallel-simulation=true: turns on printing of log messages from the parallel simulation code.");
 
 cParsimPartition::cParsimPartition()
 {

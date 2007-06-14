@@ -1,5 +1,5 @@
 //==========================================================================
-//   CDYNAMICEXPRESSION.CC  - part of
+//   NEDSUPPORT.CC  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //

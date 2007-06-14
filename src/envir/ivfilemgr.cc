@@ -23,6 +23,7 @@
 #include <errno.h> // SGI
 #include <algorithm>
 #include <sys/stat.h>
+#include "cconfigentry.h"
 #include "timeutil.h"
 #include "platmisc.h"
 #include "cenvir.h"
@@ -39,7 +40,9 @@ using std::ostream;
 using std::ofstream;
 using std::ios;
 
-Register_PerRunConfigEntryU(CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, "output-vectors-memory-limit", "General", "B", DEFAULT_MEMORY_LIMIT, "Total memory that can be used for buffering output vectors. Larger values produce less fragmented vector files (i.e. cause vector data to be grouped into larger chunks), and therefore allow more efficient processing later.");
+Register_PerRunConfigEntryU(CFGID_OUTPUTVECTOR_MEMORY_LIMIT, "output-vectors-memory-limit", "B", DEFAULT_MEMORY_LIMIT, "Total memory that can be used for buffering output vectors. Larger values produce less fragmented vector files (i.e. cause vector data to be grouped into larger chunks), and therefore allow more efficient processing later.");
+Register_PerObjectConfigEntry(CFGID_OUTVECTOR_MAX_BUFFERED_SAMPLES, "max-buffered-samples", CFG_INT, NULL, "Maximum number of values to cache (FIXME TODO finish docu)");
+
 
 #ifdef CHECK
 #undef CHECK
@@ -65,7 +68,7 @@ cIndexedFileOutputVectorManager::cIndexedFileOutputVectorManager()
     fi = NULL;
     memoryUsed = 0;
 
-    long d = (long) ev.config()->getAsDouble(CFGID_OUTPUT_VECTORS_MEMORY_LIMIT);
+    long d = (long) ev.config()->getAsDouble(CFGID_OUTPUTVECTOR_MEMORY_LIMIT);
     maxMemoryUsed = max(d, MIN_BUFFER_MEMORY);
 }
 
@@ -134,9 +137,7 @@ void cIndexedFileOutputVectorManager::endRun()
 void *cIndexedFileOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
 {
     sVector *vp = (sVector *)cFileOutputVectorManager::registerVector(modulename, vectorname);
-    static char param[1024];
-    sprintf(param, "%s.%s.max-buffered-samples", modulename, vectorname);
-    vp->maxBufferedSamples = ev.config()->getAsInt2(NULL, "OutVectors", param, -1);
+    vp->maxBufferedSamples = ev.config()->getAsInt(modulename, CFGID_OUTVECTOR_MAX_BUFFERED_SAMPLES);
     if (vp->maxBufferedSamples > 0)
         vp->allocateBuffer(vp->maxBufferedSamples);
 
@@ -177,7 +178,7 @@ bool cIndexedFileOutputVectorManager::record(void *vectorhandle, simtime_t t, do
 
     if (t>=vp->starttime && (vp->stoptime==0.0 || t<=vp->stoptime))
     {
-        if (!vp->initialised)
+        if (!vp->initialized)
             initVector(vp);
 
         sBlock &currentBlock = vp->blocks.back();

@@ -23,6 +23,7 @@
 #include <string.h>
 #include <fstream>
 #include <errno.h> // SGI
+#include "cconfigentry.h"
 #include "timeutil.h"
 #include "platmisc.h"
 #include "cenvir.h"
@@ -44,11 +45,15 @@ using std::ios;
 
 Register_Class(cFileOutputVectorManager);
 
-Register_GlobalConfigEntry(CFGID_OUTPUT_VECTOR_FILE, "output-vector-file", "General", CFG_FILENAME,  "omnetpp.vec", "Name for the output vector file."); //XXX desc: what macros are expanded in the filename
-Register_GlobalConfigEntry(CFGID_OUTPUT_VECTOR_PRECISION, "output-vector-precision", "General", CFG_INT,  DEFAULT_PRECISION, "Adjusts the number of significant digits for recording numbers into the output vector file.");
-Register_GlobalConfigEntry(CFGID_OUTPUT_SCALAR_FILE, "output-scalar-file", "General", CFG_FILENAME,  "omnetpp.sca", "Name for the output scalar file."); //XXX desc: what macros are expanded in the filename
-Register_GlobalConfigEntry(CFGID_OUTPUT_SCALAR_PRECISION, "output-scalar-precision", "General", CFG_INT,  DEFAULT_PRECISION, "Adjusts the number of significant digits for recording numbers into the output scalar file.");
-Register_GlobalConfigEntry(CFGID_SNAPSHOT_FILE, "snapshot-file", "General", CFG_FILENAME,  "omnetpp.sna", "Name of the snapshot file.");
+#define DEFAULT_PRECISION  "14"
+
+Register_GlobalConfigEntry(CFGID_OUTPUT_VECTOR_FILE, "output-vector-file", CFG_FILENAME, "omnetpp.vec", "Name for the output vector file."); //XXX desc: what macros are expanded in the filename
+Register_GlobalConfigEntry(CFGID_OUTPUT_VECTOR_PRECISION, "output-vector-precision", CFG_INT, DEFAULT_PRECISION, "Adjusts the number of significant digits for recording numbers into the output vector file.");
+Register_GlobalConfigEntry(CFGID_OUTPUT_SCALAR_FILE, "output-scalar-file", CFG_FILENAME, "omnetpp.sca", "Name for the output scalar file."); //XXX desc: what macros are expanded in the filename
+Register_GlobalConfigEntry(CFGID_OUTPUT_SCALAR_PRECISION, "output-scalar-precision", CFG_INT, DEFAULT_PRECISION, "Adjusts the number of significant digits for recording numbers into the output scalar file.");
+Register_GlobalConfigEntry(CFGID_SNAPSHOT_FILE, "snapshot-file", CFG_FILENAME, "omnetpp.sna", "Name of the snapshot file.");
+
+Register_PerObjectConfigEntry(CFGID_OUTVECTOR_EVENT_NUMBERS, "record-event-numbers", CFG_BOOL, "true", "Whether to record event numbers for an output vector. Simulation time and value are always recorded. Event numbers are needed by the Sequence Chart Tool, for example.");
 
 #ifdef CHECK
 #undef CHECK
@@ -92,8 +97,9 @@ void cFileOutputVectorManager::closeFile()
 
 void cFileOutputVectorManager::initRun()
 {
-    if (!run.initialised)
+    if (!run.initialized)
     {
+/*XXX FIXME temporarily commented out -- update to new config api, and put back!
         // Collect the attributes and module parameters of the current run
         // from the configuration.
         //
@@ -104,7 +110,7 @@ void cFileOutputVectorManager::initRun()
         cConfiguration *config = ev.config();
         const char *section = config->getPerRunSectionName();
         run.runId = ev.app->getRunId();
-        const char *inifile = config->fileName();
+        const char *inifile = config->getFileName();
         if (inifile)
         {
             run.attributes["inifile"] = inifile;
@@ -143,8 +149,8 @@ void cFileOutputVectorManager::initRun()
                 }
             }
         }
-
-        run.initialised = true;
+*/
+        run.initialized = true;
     }
 }
 
@@ -169,7 +175,7 @@ void cFileOutputVectorManager::initVector(sVectorData *vp)
         if (!f) return;
     }
 
-    if (!run.initialised)
+    if (!run.initialized)
     {
         // this is the first vector written in this run, write out run attributes
         initRun();
@@ -181,7 +187,7 @@ void cFileOutputVectorManager::initVector(sVectorData *vp)
     for (opp_string_map::iterator it=vp->attributes.begin(); it!=vp->attributes.end(); it++)
         CHECK(fprintf(f,"attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
 
-    vp->initialised = true;
+    vp->initialized = true;
 }
 
 void cFileOutputVectorManager::startRun()
@@ -193,7 +199,7 @@ void cFileOutputVectorManager::startRun()
     removeFile(fname.c_str(), "old output vector file");
 
     // clear run data
-    run.initialised = false;
+    run.initialized = false;
     run.attributes.clear();
     run.moduleParams.clear();
 }
@@ -207,14 +213,12 @@ void *cFileOutputVectorManager::registerVector(const char *modulename, const cha
 {
     sVectorData *vp = createVectorData();
     vp->id = nextid++;
-    vp->initialised = false;
+    vp->initialized = false;
     vp->modulename = modulename;
     vp->vectorname = vectorname;
     ev.app->getOutVectorConfig(modulename, vectorname, vp->enabled, vp->starttime, vp->stoptime);
 
-    static char param[1024];
-    sprintf(param, "%s.%s.record-event-numbers", modulename, vectorname);
-    vp->recordEventNumbers = ev.config()->getAsBool2(NULL, "OutVectors", param, true);
+    vp->recordEventNumbers = ev.config()->getAsBool(modulename, CFGID_OUTVECTOR_EVENT_NUMBERS);
 
     return vp;
 }
@@ -247,7 +251,7 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
 
     if (t>=vp->starttime && (vp->stoptime==0.0 || t<=vp->stoptime))
     {
-        if (!vp->initialised)
+        if (!vp->initialized)
             initVector(vp);
         assert(f!=NULL);
         if (vp->recordEventNumbers)

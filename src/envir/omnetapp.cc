@@ -68,12 +68,12 @@
 
 #ifdef USE_PORTABLE_COROUTINES /* coroutine stacks reside in main stack area */
 
-# define TOTAL_STACK_KB     2048
+# define TOTAL_STACK_KB    "2048"
 # define MAIN_STACK_KB       128  // for MSVC+Tkenv, 64K is not enough
 
 #else /* nonportable coroutines, stacks are allocated on heap */
 
-# define TOTAL_STACK_KB        0  // dummy value
+# define TOTAL_STACK_KB       "0" // dummy value
 # define MAIN_STACK_KB         0  // dummy value
 
 #endif
@@ -91,32 +91,36 @@ static char buffer[1024];
      if (!var) \
          throw cRuntimeError("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
 
-Register_GlobalConfigEntry(CFGID_INI_WARNINGS, "ini-warnings",  "General", CFG_BOOL,  false, "Currently ignored. Accepted for backward compatibility.");
-Register_GlobalConfigEntry(CFGID_PRELOAD_NED_FILES, "preload-ned-files", "General", CFG_FILENAMES, "", "NED files to be loaded dynamically. Wildcards, @ and @@ listfiles accepted.");
-Register_GlobalConfigEntry(CFGID_TOTAL_STACK_KB, "total-stack-kb",  "General", CFG_INT,  TOTAL_STACK_KB, "Specifies the maximum memory for activity() simple module stacks in kilobytes. You need to increase this value if you get a ``Cannot allocate coroutine stack'' error.");
-Register_GlobalConfigEntry(CFGID_PARALLEL_SIMULATION, "parallel-simulation", "General", CFG_BOOL,  false, "Enables parallel distributed simulation.");
-Register_GlobalConfigEntry(CFGID_SCHEDULER_CLASS, "scheduler-class", "General", CFG_STRING,  "cSequentialScheduler", "Part of the Envir plugin mechanism: selects the scheduler class. This plugin interface allows for implementing real-time, hardware-in-the-loop, distributed and distributed parallel simulation. The class has to implement the cScheduler interface.");
-Register_GlobalConfigEntry(CFGID_PARSIM_COMMUNICATIONS_CLASS, "parsim-communications-class", "General", CFG_STRING,  "cFileCommunications", "If parallel-simulation=true, it selects the class that implements communication between partitions. The class must implement the cParsimCommunications interface.");
-Register_GlobalConfigEntry(CFGID_PARSIM_SYNCHRONIZATION_CLASS, "parsim-synchronization-class", "General", CFG_STRING,  "cNullMessageProtocol", "If parallel-simulation=true, it selects the parallel simulation algorithm. The class must implement the cParsimSynchronizer interface.");
-Register_GlobalConfigEntry(CFGID_NUM_RNGS, "num-rngs", "General", CFG_INT, 1, "Number of the random number generators.");
-Register_GlobalConfigEntry(CFGID_RNG_CLASS, "rng-class", "General", CFG_STRING,  "cMersenneTwister", "The random number generator class to be used. It can be `cMersenneTwister', `cLCG32', `cAkaroaRNG', or you can use your own RNG class (it must be subclassed from cRNG).");
-Register_GlobalConfigEntry(CFGID_OUTPUTVECTORMANAGER_CLASS, "outputvectormanager-class", "General", CFG_STRING,  "cIndexedFileOutputVectorManager", "Part of the Envir plugin mechanism: selects the output vector manager class to be used to record data from output vectors. The class has to implement the cOutputVectorManager interface.");
-Register_GlobalConfigEntry(CFGID_OUTPUTSCALARMANAGER_CLASS, "outputscalarmanager-class", "General", CFG_STRING,  "cFileOutputScalarManager", "Part of the Envir plugin mechanism: selects the output scalar manager class to be used to record data passed to recordScalar(). The class has to implement the cOutputScalarManager interface.");
-Register_GlobalConfigEntry(CFGID_SNAPSHOTMANAGER_CLASS, "snapshotmanager-class", "General", CFG_STRING,  "cFileSnapshotManager", "Part of the Envir plugin mechanism: selects the class to handle streams to which snapshot() writes its output. The class has to implement the cSnapshotManager interface.");
-Register_GlobalConfigEntry(CFGID_FNAME_APPEND_HOST, "fname-append-host", "General", CFG_BOOL, false, "Turning it on will cause the host name and process Id to be appended to the names of output files (e.g. omnetpp.vec, omnetpp.sca). This is especially useful with distributed simulation.");
-Register_GlobalConfigEntry(CFGID_DEBUG_ON_ERRORS, "debug-on-errors", "General", CFG_BOOL,  false, "When set to true, runtime errors will cause the simulation program to break into the C++ debugger (if the simulation is running under one, or just-in-time debugging is activated). Once in the debugger, you can view the stack trace or examine variables.");
-Register_GlobalConfigEntry(CFGID_PERFORM_GC, "perform-gc", "General", CFG_BOOL,  false, "Whether the simulation kernel should delete on network cleanup the simulation objects not deleted by simple module destructors. Not recommended.");
-Register_GlobalConfigEntry(CFGID_PRINT_UNDISPOSED, "print-undisposed", "General", CFG_BOOL,  true, "Whether to report objects left (that is, not deallocated by simple module destructors) after network cleanup.");
-Register_GlobalConfigEntry(CFGID_SIMTIME_SCALE, "simtime-scale", "General", CFG_INT,  -12, "Sets the scale exponent, and thus the resolution of time for the 64-bit fixed-point simulation time representation. Accepted values are -18..0; for example, -6 selects microsecond resolution. -12 means picosecond resolution, with a maximum simtime of ~110 days.");
+Register_GlobalConfigEntry(CFGID_INI_WARNINGS, "ini-warnings", CFG_BOOL, "false", "Currently ignored. Accepted for backward compatibility.");
+Register_GlobalConfigEntry(CFGID_PRELOAD_NED_FILES, "preload-ned-files", CFG_FILENAMES, "", "NED files to be loaded dynamically. Wildcards, @ and @@ listfiles accepted.");
+Register_GlobalConfigEntry(CFGID_TOTAL_STACK_KB, "total-stack-kb", CFG_INT, TOTAL_STACK_KB, "Specifies the maximum memory for activity() simple module stacks in kilobytes. You need to increase this value if you get a ``Cannot allocate coroutine stack'' error.");
+Register_GlobalConfigEntry(CFGID_PARALLEL_SIMULATION, "parallel-simulation", CFG_BOOL, "false", "Enables parallel distributed simulation.");
+Register_GlobalConfigEntry(CFGID_SCHEDULER_CLASS, "scheduler-class", CFG_STRING, "cSequentialScheduler", "Part of the Envir plugin mechanism: selects the scheduler class. This plugin interface allows for implementing real-time, hardware-in-the-loop, distributed and distributed parallel simulation. The class has to implement the cScheduler interface.");
+Register_GlobalConfigEntry(CFGID_PARSIM_COMMUNICATIONS_CLASS, "parsim-communications-class", CFG_STRING, "cFileCommunications", "If parallel-simulation=true, it selects the class that implements communication between partitions. The class must implement the cParsimCommunications interface.");
+Register_GlobalConfigEntry(CFGID_PARSIM_SYNCHRONIZATION_CLASS, "parsim-synchronization-class", CFG_STRING, "cNullMessageProtocol", "If parallel-simulation=true, it selects the parallel simulation algorithm. The class must implement the cParsimSynchronizer interface.");
+Register_GlobalConfigEntry(CFGID_NUM_RNGS, "num-rngs", CFG_INT, "1", "Number of the random number generators.");
+Register_GlobalConfigEntry(CFGID_RNG_CLASS, "rng-class", CFG_STRING, "cMersenneTwister", "The random number generator class to be used. It can be `cMersenneTwister', `cLCG32', `cAkaroaRNG', or you can use your own RNG class (it must be subclassed from cRNG).");
+Register_GlobalConfigEntry(CFGID_OUTPUTVECTORMANAGER_CLASS, "outputvectormanager-class", CFG_STRING, "cIndexedFileOutputVectorManager", "Part of the Envir plugin mechanism: selects the output vector manager class to be used to record data from output vectors. The class has to implement the cOutputVectorManager interface.");
+Register_GlobalConfigEntry(CFGID_OUTPUTSCALARMANAGER_CLASS, "outputscalarmanager-class", CFG_STRING, "cFileOutputScalarManager", "Part of the Envir plugin mechanism: selects the output scalar manager class to be used to record data passed to recordScalar(). The class has to implement the cOutputScalarManager interface.");
+Register_GlobalConfigEntry(CFGID_SNAPSHOTMANAGER_CLASS, "snapshotmanager-class", CFG_STRING, "cFileSnapshotManager", "Part of the Envir plugin mechanism: selects the class to handle streams to which snapshot() writes its output. The class has to implement the cSnapshotManager interface.");
+Register_GlobalConfigEntry(CFGID_FNAME_APPEND_HOST, "fname-append-host", CFG_BOOL, "false", "Turning it on will cause the host name and process Id to be appended to the names of output files (e.g. omnetpp.vec, omnetpp.sca). This is especially useful with distributed simulation.");
+Register_GlobalConfigEntry(CFGID_DEBUG_ON_ERRORS, "debug-on-errors", CFG_BOOL, "false", "When set to true, runtime errors will cause the simulation program to break into the C++ debugger (if the simulation is running under one, or just-in-time debugging is activated). Once in the debugger, you can view the stack trace or examine variables.");
+Register_GlobalConfigEntry(CFGID_PERFORM_GC, "perform-gc", CFG_BOOL, "false", "Whether the simulation kernel should delete on network cleanup the simulation objects not deleted by simple module destructors. Not recommended.");
+Register_GlobalConfigEntry(CFGID_PRINT_UNDISPOSED, "print-undisposed", CFG_BOOL, "true", "Whether to report objects left (that is, not deallocated by simple module destructors) after network cleanup.");
+Register_GlobalConfigEntry(CFGID_SIMTIME_SCALE, "simtime-scale", CFG_INT, "-12", "Sets the scale exponent, and thus the resolution of time for the 64-bit fixed-point simulation time representation. Accepted values are -18..0; for example, -6 selects microsecond resolution. -12 means picosecond resolution, with a maximum simtime of ~110 days.");
 
-Register_PerRunConfigEntry(CFGID_DESCRIPTION, "description", "General", CFG_STRING, "", "Descriptive name for the given simulation configuration. Descriptions get displayed in the run selection dialog.");
-Register_PerRunConfigEntry(CFGID_NETWORK, "network",  "General", CFG_STRING,  "default", "The name of the network to be simulated.");
-Register_PerRunConfigEntry(CFGID_WARNINGS, "warnings",  "General", CFG_BOOL,  true, "Enables warnings.");
-Register_PerRunConfigEntry(CFGID_SIM_TIME_LIMIT, "sim-time-limit",  "General", CFG_TIME,  0.0, "Stops the simulation when simulation time reaches the given limit. The default is no limit.");
-Register_PerRunConfigEntry(CFGID_CPU_TIME_LIMIT, "cpu-time-limit",  "General", CFG_TIME,  0.0, "Stops the simulation when CPU usage has reached the given limit. The default is no limit.");
-Register_PerRunConfigEntry(CFGID_FINGERPRINT, "fingerprint",  "General", CFG_STRING,  "", "The expected fingerprint, suitable for crude regression tests. If present, the actual fingerprint is calculated during simulation, and compared against the expected one.");
-Register_PerRunConfigEntry(CFGID_EVENTLOG_FILE, "eventlog-file",  "General", CFG_FILENAME,  "", "Name of the event log file to generate. If emtpy, no file is generated.");
-Register_GlobalConfigEntry(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-message-detail-pattern", "General", CFG_CUSTOM, "", "A list of patterns separated by '|' character which will be used to write message detail information into the event log for each message sent during the simulation. The message detail will be presented in the sequence chart tool. Each pattern starts with an object pattern optionally followed by ':' character and a comma separated list of field name patterns. In the object pattern and/or/not/* and various field matcher expressions can be used. The field pattern contains a wildcard expressions matched against field names.");
+Register_PerRunConfigEntry(CFGID_DESCRIPTION, "description", CFG_STRING, NULL, "Descriptive name for the given simulation configuration. Descriptions get displayed in the run selection dialog.");
+Register_PerRunConfigEntry(CFGID_NETWORK, "network", CFG_STRING, NULL, "The name of the network to be simulated.");
+Register_PerRunConfigEntry(CFGID_WARNINGS, "warnings", CFG_BOOL, "true", "Enables warnings.");
+Register_PerRunConfigEntry(CFGID_SIM_TIME_LIMIT, "sim-time-limit", CFG_TIME, NULL, "Stops the simulation when simulation time reaches the given limit. The default is no limit.");
+Register_PerRunConfigEntry(CFGID_CPU_TIME_LIMIT, "cpu-time-limit", CFG_TIME, NULL, "Stops the simulation when CPU usage has reached the given limit. The default is no limit.");
+Register_PerRunConfigEntry(CFGID_FINGERPRINT, "fingerprint", CFG_STRING, NULL, "The expected fingerprint, suitable for crude regression tests. If present, the actual fingerprint is calculated during simulation, and compared against the expected one.");
+Register_PerRunConfigEntry(CFGID_EVENTLOG_FILE, "eventlog-file", CFG_FILENAME, NULL, "Name of the event log file to generate. If emtpy, no file is generated.");
+Register_GlobalConfigEntry(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-message-detail-pattern", CFG_CUSTOM, NULL, "A list of patterns separated by '|' character which will be used to write message detail information into the event log for each message sent during the simulation. The message detail will be presented in the sequence chart tool. Each pattern starts with an object pattern optionally followed by ':' character and a comma separated list of field name patterns. In the object pattern and/or/not/* and various field matcher expressions can be used. The field pattern contains a wildcard expressions matched against field names.");
+
+Register_PerObjectConfigEntry(CFGID_OUTVECTOR_ENABLED, "enable-recording", CFG_BOOL, "true", "Whether data written into an output vector should be recorded.");
+Register_PerObjectConfigEntry(CFGID_OUTVECTOR_INTERVAL, "recording-interval", CFG_CUSTOM, NULL, "Recording interval for an output vector. Syntax: [<from>]..[<to>]. Examples: 100..200, 100.., ..200");
+
 
 //-------------------------------------------------------------
 
@@ -282,16 +286,14 @@ void TOmnetApp::setup()
          }
 
          // preload NED files
-         std::string nedfiles = getConfig()->getAsFilenames(CFGID_PRELOAD_NED_FILES);
+         std::vector<std::string> nedfiles = getConfig()->getAsFilenames(CFGID_PRELOAD_NED_FILES);
          if (!nedfiles.empty())
          {
              // iterate through file names
              ev.printf("\n");
-
-             FilenamesListTokenizer tokenizer(nedfiles.c_str());
-             const char *fname;
-             while ((fname = tokenizer.nextToken())!=NULL)
+             for (int i=0; i<nedfiles.size(); i++)
              {
+                 const char *fname = nedfiles[i].c_str();
                  if (fname[0]=='@' && fname[1]=='@')
                      globAndLoadListFile(fname+2, true);
                  else if (fname[0]=='@')
@@ -350,12 +352,13 @@ void TOmnetApp::dumpComponentList(const char *category)
             cConfigEntry *obj = dynamic_cast<cConfigEntry *>(table->get(i));
             ASSERT(obj);
             if (!printDescriptions) ev << "  ";
-            ev << "[" << obj->section() << "] " << obj->name() << "=";
+            if (obj->isPerObject()) ev << "<object-full-path>.";
+            ev << obj->name() << "=";
             ev << "<" << cConfigEntry::typeName(obj->type()) << ">";
             if (obj->unit())
                 ev << ", unit=\"" << obj->unit() << "\"";
             if (obj->defaultValue())
-                ev << ", default=\"" << obj->defaultValue() << "\"";
+                ev << ", default:" << obj->defaultValue() << "";
             ev << "; " << (obj->isGlobal() ? "global" : "per-run") << " setting";
             ev << "\n";
             if (printDescriptions && obj->description() && obj->description()[0])
@@ -512,7 +515,6 @@ void TOmnetApp::generateRunId()
     // generates and stores a new run Id of the following format:
     // "<networkname>-<datetime>-<pid>"
 
-    int runNumber = getConfig()->getRunNumber();
     const char *networkname = simulation.networkType() ? simulation.networkType()->name() : "n/a";
     int pid = getpid();
 
@@ -530,9 +532,14 @@ void TOmnetApp::generateRunId()
 
 //-------------------------------------------------------------
 
-std::string TOmnetApp::getParameter(const char *parname)
+void TOmnetApp::readParameter(cPar *par)
 {
-    const char *str = getConfig()->getAsCustom2(NULL, "Parameters", parname, "");
+    // get it from the ini file
+    std::string moduleFullPath = par->owner()->fullPath();
+    const char *str = getConfig()->getParameterValue(moduleFullPath.c_str(), par->name(), par->hasValue());
+
+/* XXX hack to use base directory for resolving xml files location has been commented out
+ * FIXME a solution needs to be worked out!
     if (str[0]=='x' && !strncmp(str,"xmldoc",6) && !isalnum(str[6]))
     {
         // Make XML file location relative to the ini file in which it occurs.
@@ -550,35 +557,18 @@ std::string TOmnetApp::getParameter(const char *parname)
         const char *baseDir = getConfig()->getBaseDirectoryFor(NULL, "Parameters", parname);
         fname = tidyFilename(concatDirAndFile(baseDir, fname.c_str()).c_str(),true);
         std::string ret = std::string(str, begQuote-str+1) + fname + endQuote;
-        return ret;
+        //XXX use "ret" further!!!
     }
-    else
+*/
+
+    if (str && str[0])
     {
-        return std::string(str);
-    }
-}
-
-bool TOmnetApp::getParameterUseDefault(const char *parname)
-{
-    std::string entry = parname;
-    entry += ".use-default";
-    return getConfig()->getAsBool2(NULL, "Parameters", entry.c_str(), false);
-}
-
-void TOmnetApp::readParameter(cPar *par)
-{
-    // get it from ini file
-    std::string parfullpath = par->fullPath();
-    std::string str = getParameter(parfullpath.c_str());
-
-    if (!str.empty())
-    {
-        par->parse(str.c_str());
+        par->parse(str);
         return;
     }
 
     // maybe we should use default value
-    if (par->hasValue() && getParameterUseDefault(parfullpath.c_str()))
+    if (par->hasValue() && str && !str[0])  // str=="" stands for apply-default=true
     {
         par->acceptDefault();
         return;
@@ -595,7 +585,7 @@ void TOmnetApp::readParameter(cPar *par)
         if (!prompt.empty())
             reply = ev.gets(prompt.c_str(), par->toString().c_str());
         else
-            reply = ev.gets((std::string("Enter parameter `")+parfullpath+"':").c_str(), par->toString().c_str());
+            reply = ev.gets((std::string("Enter parameter `")+par->fullPath()+"':").c_str(), par->toString().c_str());
         //FIXME any chance to cancel?
 
         try
@@ -645,17 +635,10 @@ bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index
 void TOmnetApp::getOutVectorConfig(const char *modname,const char *vecname, /*input*/
                                    bool& enabled, simtime_t& starttime, simtime_t& stoptime /*output*/ )
 {
-    // prepare section name and entry name
-    sprintf(buffer, "%s.%s.", modname?modname:"", vecname?vecname:"");
-    char *end = buffer+strlen(buffer);
-
-    // get 'module.vector.disabled=' entry
-    strcpy(end, "enabled");
-    enabled = getConfig()->getAsBool2(NULL, "OutVectors", buffer, true);
+    enabled = getConfig()->getAsBool(modname, CFGID_OUTVECTOR_ENABLED);
 
     // get 'module.vector.interval=' entry
-    strcpy(end, "interval");
-    const char *s = getConfig()->getAsString2(NULL, "OutVectors", buffer, NULL);
+    const char *s = getConfig()->getAsCustom(modname, CFGID_OUTVECTOR_INTERVAL);
     if (!s)
     {
        starttime = 0;
@@ -958,20 +941,6 @@ void TOmnetApp::readOptions()
 
     opt_fname_append_host = cfg->getAsBool(CFGID_FNAME_APPEND_HOST);
 
-    // warn for obsolete RNG seed entries
-    bool found = false;
-    for (int k=0; k<cfg->getNumSections(); k++)
-        if (cfg->exists(cfg->getSectionName(k), "random-seed") ||
-            cfg->exists(cfg->getSectionName(k), "gen0-seed") ||
-            cfg->exists(cfg->getSectionName(k), "gen1-seed") ||
-            cfg->exists(cfg->getSectionName(k), "gen2-seed") ||
-            cfg->exists(cfg->getSectionName(k), "gen3-seed"))
-            found = true;
-    if (found)
-        ev.printfmsg("Warning: config entries random-seed= and genX-seed= are obsolete!\n"
-                     "THE SEEDS YOU SPECIFIED ARE NOT USED. "
-                     "Please update your ini file to the OMNeT++ 3.0 Random Number Architecture.");
-
     ev.debug_on_errors = cfg->getAsBool(CFGID_DEBUG_ON_ERRORS);
     cDefaultList::doGC = cfg->getAsBool(CFGID_PERFORM_GC);
     opt_print_undisposed = cfg->getAsBool(CFGID_PRINT_UNDISPOSED);
@@ -1019,7 +988,7 @@ void TOmnetApp::readPerRunOptions()
         cRNG *rng;
         CREATE_BY_CLASSNAME(rng, opt_rng_class.c_str(), cRNG, "random number generator");
         rngs[i] = rng;
-        rngs[i]->initialize(cfg->getRunNumber(), i, num_rngs, getParsimProcId(), getParsimNumPartitions(), getConfig());
+        rngs[i]->initialize(cfg->getActiveRunNumber(), i, num_rngs, getParsimProcId(), getParsimNumPartitions(), getConfig());
     }
 
     // init nextuniquenumber -- startRun() is too late because simple module ctors have run by then
@@ -1123,8 +1092,9 @@ cRNG *TOmnetApp::rng(int k)
 
 void TOmnetApp::getRNGMappingFor(cComponent *component)
 {
+/*XXX FIXME get it working and put it back!!!!
     cConfiguration *cfg = getConfig();
-    std::vector<opp_string> entries = cfg->getEntriesWithPrefix("General", component->fullPath().c_str(), ".rng-");
+    std::vector<opp_string> entries = cfg->getEntriesWithPrefix(component->fullPath().c_str(), ".rng-");
     if (entries.size()==0)
         return;
 
@@ -1167,6 +1137,7 @@ void TOmnetApp::getRNGMappingFor(cComponent *component)
         memcpy(map, tmpmap, mapsize*sizeof(int));
         component->setRNGMap(mapsize, map);
     }
+*/
 }
 
 //-------------------------------------------------------------

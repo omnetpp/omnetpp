@@ -13,10 +13,6 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
-#------
-# Parts of this file were created using Stewart Allen's Visual Tcl (vtcl)
-#------
-
 #===================================================================
 #    HELPER/GUI PROCEDURES
 #===================================================================
@@ -72,6 +68,74 @@ proc comboSelectionDialog {title text label variable list} {
     }
     destroy $w
     return 0
+}
+
+#
+# For selecting config and run number.
+#
+proc runSelectionDialog {configname_var runnumber_var} {
+    set w .runseldialog
+    createOkCancelDialog $w "Set up Run"
+
+    upvar $configname_var configname
+    upvar $runnumber_var  runnumber
+
+    set configlist {}
+    foreach name [opp_getconfignames] {
+        set desc [opp_getconfigdescription $name]
+        set runs [opp_getnumrunsinscenario $name]
+        set s $name
+        # NOTE: if you change this, change proc runSelectionDialog:extractConfigName too
+        if {$desc != ""} {append s " -- $desc"}
+        if {$runs > 1}   {append s " ($runs runs)"}
+        lappend configlist $s
+    }
+
+    label $w.f.m -anchor w -justify left -text "Set up one of the runs defined in omnetpp.ini."
+    label-combo $w.f.c "Config or scenario:" $configlist $configname
+    label-combo $w.f.c2 "Run number:" {} $runnumber
+    pack $w.f.m -fill x -padx 2 -pady 2 -side top
+    pack $w.f.c -fill x -padx 2 -pady 2 -side top
+    pack $w.f.c2 -fill x -padx 2 -pady 2 -side top
+    focus $w.f.c.e
+
+    $w.f.c.e config -width 30
+    $w.f.c2.e config -width 10
+
+    combo-onchange $w.f.c.e [list runSelectionDialog:update $w]
+
+    if [execOkCancelDialog $w] {
+        set configname [runSelectionDialog:extractConfigName [$w.f.c.e cget -value]]
+        set runnumber  [$w.f.c2.e cget -value]
+        # FIXME validate!  messagebox "Error" "Run number must be numeric" info ok
+        destroy $w
+        return 1
+    }
+    destroy $w
+    return 0
+}
+
+proc runSelectionDialog:extractConfigName {s} {
+    set s [regsub " -- .*\$" $s ""]
+    set s [regsub " \\(\[0-9\]+ runs\\)\$" $s ""]
+    return $s
+}
+
+proc runSelectionDialog:update {w} {
+    # fill run number combo with runs of the selected config
+    set configname [runSelectionDialog:extractConfigName [$w.f.c.e cget -value]]
+    set n 0
+    catch {set n [opp_getnumrunsinscenario $configname]}
+    $w.f.c2.e list delete 0 end
+    for {set i 0} {$i<$n} {incr i} {
+        $w.f.c2.e list insert end $i
+    }
+
+    # ensure run number is in the valid range
+    set runnumber  [$w.f.c2.e cget -value]
+    if {$runnumber >= $n} {
+        $w.f.c2.e config -value ""
+    }
 }
 
 proc display_stopdialog {} {

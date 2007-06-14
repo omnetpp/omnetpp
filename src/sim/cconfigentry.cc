@@ -19,11 +19,11 @@
 #include "cconfigentry.h"
 
 
-cConfigEntry::cConfigEntry(const char *name, const char *section, bool isGlobal, Type type,
-                           const char *unit, const char *defaultValue, const char *description) :
+cConfigEntry::cConfigEntry(const char *name, bool isPerObject, bool isGlobal, Type type, const char *unit,
+                           const char *defaultValue, const char *description) :
 cNoncopyableOwnedObject(name)
 {
-    section_ = section;
+    isPerObject_ = isPerObject;
     isGlobal_ = isGlobal;
     if (type==CFG_TIME) {
         type_ = CFG_DOUBLE;
@@ -38,15 +38,10 @@ cNoncopyableOwnedObject(name)
     description_ = description ? description : "";
 }
 
-const char *cConfigEntry::fullName() const
-{
-    fullname_ = section_ + "::" + name();
-    return fullname_.c_str();
-}
-
 std::string cConfigEntry::info() const
 {
     std::stringstream out;
+    out << (isPerObject_ ? "per-object " : "");
     out << (isGlobal_ ? "global" : "per-run");
     out << ", type=" << typeName(type_);
     if (!unit_.empty()) out << ", unit=\"" << unit_ << "\"";
@@ -69,4 +64,3 @@ const char *cConfigEntry::typeName(Type type)
         default:            return "???";
     }
 }
-

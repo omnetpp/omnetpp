@@ -52,6 +52,11 @@ class SIM_API opp_string
     opp_string(const char *s)  {str = opp_strdup(s);}
 
     /**
+     * Constructor.
+     */
+    opp_string(const std::string& s)  {str = opp_strdup(s.c_str());}
+
+    /**
      * Copy constructor.
      */
     opp_string(const opp_string& s)  {str = opp_strdup(s.str);}
@@ -92,10 +97,17 @@ class SIM_API opp_string
     /**
      * Assignment.
      */
-    opp_string& operator=(const opp_string& s)  {delete[] str;str=opp_strdup(s.str);return *this;}
+    opp_string& operator=(const opp_string& s)  {operator=(s.str); return *this;}
 
+    /**
+     * Assignment.
+     */
+    opp_string& operator=(const std::string& s)  {operator=(s.c_str()); return *this;}
+
+    /**
+     * Comparison.
+     */
     bool operator<(const opp_string& s) const  {return opp_strcmp(str,s.str) < 0;}
-
 };
 
 inline std::ostream& operator<<(std::ostream& out, const opp_string& s)

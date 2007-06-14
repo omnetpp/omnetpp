@@ -116,10 +116,6 @@ class ENVIR_API TOmnetApp
 
   protected:
     // internal
-    virtual std::string getParameter(const char *parname);
-    // internal
-    virtual bool getParameterUseDefault(const char *parname);
-    // internal
     virtual void generateRunId();
 
   public:

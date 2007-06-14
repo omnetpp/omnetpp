@@ -160,8 +160,14 @@ export.obj: export.cc \
   scavedefs.h \
   ../common/bigdecimal.h \
   xyarray.h \
+  resultfilemanager.h \
+  datasorter.h \
   ../common/commondefs.h \
-  ../common/exception.h
+  ../common/exception.h \
+  idlist.h \
+  enumtype.h \
+  ../common/commonutil.h \
+  ../common/patternmatcher.h
 filewriter.obj: filewriter.cc \
   channel.h \
   filewriter.h \
@@ -324,6 +330,7 @@ scavetool.obj: scavetool.cc \
   arraybuilder.h \
   export.h \
   ../common/stringutil.h \
+  scaveutils.h \
   idlist.h \
   enumtype.h \
   ../common/exception.h \
@@ -336,7 +343,9 @@ scavetool.obj: scavetool.cc \
   ../common/filereader.h \
   ../common/linetokenizer.h \
   commonnodes.h \
-  xyarray.h
+  xyarray.h \
+  datasorter.h \
+  ../common/patternmatcher.h
 scaveutils.obj: scaveutils.cc \
   scaveutils.h \
   scavedefs.h \

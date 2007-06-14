@@ -54,6 +54,7 @@ cmdenv.obj: cmdenv.cc \
   ../../include/csimplemodule.h \
   ../../include/ccomponenttype.h \
   ../../include/cmessage.h \
+  ../../include/cconfigentry.h \
   ../../include/simkerneldefs.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \

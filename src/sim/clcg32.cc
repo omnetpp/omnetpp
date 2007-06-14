@@ -23,6 +23,8 @@
 
 Register_Class(cLCG32);
 
+//XXX "seed-X-lcg32" needs to be registered, otherwise it will be an error!
+//XXX how to use runNumber?
 
 void cLCG32::initialize(int runNumber, int rngId, int numRngs,
                         int /*parsimProcId*/, int parsimNumPartitions,
@@ -33,12 +35,10 @@ void cLCG32::initialize(int runNumber, int rngId, int numRngs,
                             "because of its short cycle -- please select cMersenneTwister "
                             "in the configuration instead");
 
-    char section[16], entry[32];
-    sprintf(section, "Run %d", runNumber);
-    sprintf(entry, "seed-%d-lcg32", rngId);
-
-    seed = cfg->getAsInt2(section, "General", entry);
-    if (cfg->notFound())
+    char key[32];
+    sprintf(key,  "seed-%d-lcg32", rngId);
+    const char *value = cfg->getConfigValue(key);
+    if (value==NULL)
     {
         int autoSeedIndex = runNumber*numRngs + rngId;
         if (autoSeedIndex>=256)
@@ -48,9 +48,11 @@ void cLCG32::initialize(int runNumber, int rngId, int numRngs,
         autoSeedIndex = autoSeedIndex % 256;
         seed = autoSeeds[autoSeedIndex];
     }
-    else if (seed==0)
+    else
     {
-        throw cRuntimeError("cLCG32: zero is not allowed as seed in %s config file entry", entry);
+        seed = cConfiguration::parseLong(value, 0);
+        if (seed==0)
+            throw cRuntimeError("cLCG32: zero is not allowed as seed in %s config file entry", key);
     }
 }
 

@@ -31,19 +31,23 @@
 #include "args.h"
 #include "speedmtr.h"
 #include "timeutil.h"
+#include "cconfigentry.h"
 
+#define CMDENV_EXTRASTACK_KB  "8"
 
-Register_GlobalConfigEntry(CFGID_RUNS_TO_EXECUTE, "runs-to-execute", "Cmdenv", CFG_STRING,  "", "Specifies which simulation runs should be executed. It accepts a comma-separated list of run numbers or run number ranges, e.g. 1,3-4,7-9. If the value is missing, Cmdenv executes all runs that have ini file sections; if no runs are specified in the ini file, Cmdenv does one run. The -r command line option overrides this setting.")
-Register_GlobalConfigEntry(CFGID_CMDENV_EXTRA_STACK_KB, "cmdenv-extra-stack-kb", "Cmdenv", CFG_INT,  CMDENV_EXTRASTACK_KB, "Specifies the extra amount of stack (in kilobytes) that is reserved for each activity() simple module when the simulation is run under Cmdenv.")
-Register_GlobalConfigEntry(CFGID_OUTPUT_FILE, "output-file", "Cmdenv", CFG_FILENAME,  "", "When a filename is specified, Cmdenv redirects standard output into the given file. This is especially useful with parallel simulation. See `fname-append-host' option as well.")
-Register_PerRunConfigEntry(CFGID_EXPRESS_MODE, "express-mode", "Cmdenv", CFG_BOOL,  true, "Selects ``normal'' (debug/trace) or ``express'' mode.")
-Register_PerRunConfigEntry(CFGID_AUTOFLUSH, "autoflush", "Cmdenv", CFG_BOOL,  false, "Call fflush(stdout) after each event banner or status update; affects both express and normal mode. Turning on autoflush can be useful with printf-style debugging for tracking down program crashes.")
-Register_PerRunConfigEntry(CFGID_MODULE_MESSAGES, "module-messages", "Cmdenv", CFG_BOOL,  true, "When express-mode=false: turns printing module ev<< output on/off.")
-Register_PerRunConfigEntry(CFGID_EVENT_BANNERS, "event-banners", "Cmdenv", CFG_BOOL,  true, "When express-mode=false: turns printing event banners on/off.")
-Register_PerRunConfigEntry(CFGID_EVENT_BANNER_DETAILS, "event-banner-details", "Cmdenv", CFG_BOOL,  false, "When express-mode=false: print extra information after event banners.")
-Register_PerRunConfigEntry(CFGID_MESSAGE_TRACE, "message-trace", "Cmdenv", CFG_BOOL,  false, "When express-mode=false: print a line per message sending (by send(),scheduleAt(), etc) and delivery on the standard output.")
-Register_PerRunConfigEntry(CFGID_STATUS_FREQUENCY, "status-frequency", "Cmdenv", CFG_INT,  100000, "When express-mode=true: print status update every n events. Typical values are 100,000...1,000,000.")
-Register_PerRunConfigEntry(CFGID_PERFORMANCE_DISPLAY, "performance-display", "Cmdenv", CFG_BOOL,  true, "When express-mode=true: print detailed performance information. Turning it on results in a 3-line entry printed on each update, containing ev/sec, simsec/sec, ev/simsec, number of messages created/still present/currently scheduled in FES.")
+Register_GlobalConfigEntry(CFGID_RUNS_TO_EXECUTE, "cmdenv-runs-to-execute", CFG_STRING, NULL, "Specifies which simulation runs should be executed. It accepts a comma-separated list of run numbers or run number ranges, e.g. 1,3-4,7-9. If the value is missing, Cmdenv executes all runs that have ini file sections; if no runs are specified in the ini file, Cmdenv does one run. The -r command line option overrides this setting.")
+Register_GlobalConfigEntry(CFGID_CMDENV_EXTRA_STACK_KB, "cmdenv-extra-stack-kb", CFG_INT,  CMDENV_EXTRASTACK_KB, "Specifies the extra amount of stack (in kilobytes) that is reserved for each activity() simple module when the simulation is run under Cmdenv.")
+Register_GlobalConfigEntry(CFGID_OUTPUT_FILE, "cmdenv-output-file", CFG_FILENAME, NULL, "When a filename is specified, Cmdenv redirects standard output into the given file. This is especially useful with parallel simulation. See `fname-append-host' option as well.")
+Register_PerRunConfigEntry(CFGID_EXPRESS_MODE, "cmdenv-express-mode", CFG_BOOL, "true", "Selects ``normal'' (debug/trace) or ``express'' mode.")
+Register_PerRunConfigEntry(CFGID_AUTOFLUSH, "cmdenv-autoflush", CFG_BOOL, "false", "Call fflush(stdout) after each event banner or status update; affects both express and normal mode. Turning on autoflush can be useful with printf-style debugging for tracking down program crashes.")
+Register_PerRunConfigEntry(CFGID_MODULE_MESSAGES, "cmdenv-module-messages", CFG_BOOL, "true", "When express-mode=false: turns printing module ev<< output on/off.")
+Register_PerRunConfigEntry(CFGID_EVENT_BANNERS, "cmdenv-event-banners", CFG_BOOL, "true", "When express-mode=false: turns printing event banners on/off.")
+Register_PerRunConfigEntry(CFGID_EVENT_BANNER_DETAILS, "cmdenv-event-banner-details", CFG_BOOL, "false", "When express-mode=false: print extra information after event banners.")
+Register_PerRunConfigEntry(CFGID_MESSAGE_TRACE, "cmdenv-message-trace", CFG_BOOL, "false", "When express-mode=false: print a line per message sending (by send(),scheduleAt(), etc) and delivery on the standard output.")
+Register_PerRunConfigEntry(CFGID_STATUS_FREQUENCY, "cmdenv-status-frequency", CFG_INT, "100000", "When express-mode=true: print status update every n events. Typical values are 100,000...1,000,000.")
+Register_PerRunConfigEntry(CFGID_PERFORMANCE_DISPLAY, "cmdenv-performance-display", CFG_BOOL, "true", "When express-mode=true: print detailed performance information. Turning it on results in a 3-line entry printed on each update, containing ev/sec, simsec/sec, ev/simsec, number of messages created/still present/currently scheduled in FES.")
+
+Register_PerObjectConfigEntry(CFGID_CMDENV_EV_OUTPUT, "cmdenv-ev-output", CFG_BOOL, "true", "FIXME XXX write docu")
 
 
 //
@@ -135,30 +139,16 @@ void TCmdenvApp::setup()
     if (!initialized)
         return;
 
-    // '-r' option: specifies runs to execute; overrides ini file setting
-    const char *r = args->optionValue('r');
-    if (r)
-       opt_runstoexec = r;
+    // '-n' option: print number of runs in the given scenario, and exit
+    opt_printnumruns = args->optionValue('n');
 
-    // If the list of runs is not given explicitly, must execute all runs
-    // that have an ini file section; if no runs have ini file sections,
-    // must do one run.
-    if (opt_runstoexec.empty())
-    {
-       buffer[0]='\0';
-       cConfiguration *cfg = getConfig();
-       for (int i=0; i<cfg->getNumSections(); i++)
-       {
-          if (strncmp(cfg->getSectionName(i),"Run ",4)==0)
-          {
-              strcat(buffer,cfg->getSectionName(i)+4); // FIXME danger of buffer overrun here
-              strcat(buffer,",");
-          }
-       }
-       if (buffer[0]=='\0')
-          strcpy(buffer,"1");
-       opt_runstoexec = buffer;
-    }
+    // '-c' option: specifies configuration or scenario to activate
+    opt_configname = args->optionValue('c');
+    if (opt_configname.empty())
+        opt_configname = "General";
+
+    // '-r' option: specifies runs to execute; overrides ini file setting
+    opt_runstoexec = args->optionValue('r');
 }
 
 void TCmdenvApp::signalHandler(int signum)
@@ -184,32 +174,52 @@ void TCmdenvApp::shutdown()
 
 int TCmdenvApp::run()
 {
+    //FIXME: check if wrong configname! check if runnumber out of range!
     if (!initialized)
         return 1;
 
     setupSignals();
 
-    EnumStringIterator run_nr( opt_runstoexec.c_str() );
-    if (run_nr.error())
+    cConfiguration *cfg = getConfig();
+
+    if (!opt_printnumruns.empty())
     {
-        ev.printfmsg("Error parsing list of runs to execute: `%s'",
-                     opt_runstoexec.c_str() );
+        ev.printfmsg("Scenario: %s\n", opt_printnumruns.c_str());
+        ev.printfmsg("Number of runs: %d\n", cfg->getNumRunsInScenario(opt_printnumruns.c_str()));
+        return 0;
+    }
+
+    // if the list of runs is not given explicitly, must execute all runs
+    if (opt_runstoexec.empty())
+    {
+        int n = cfg->getNumRunsInScenario(opt_configname.c_str());
+        char buf[32];
+        sprintf(buf, (n==0 ? "" : n==1 ? "%d" : "0-%d"), n-1);
+        opt_runstoexec = buf;
+    }
+
+    EnumStringIterator runiterator(opt_runstoexec.c_str());
+    if (runiterator.error())
+    {
+        ev.printfmsg("Error parsing list of runs to execute: `%s'", opt_runstoexec.c_str());
         return 1;
     }
 
     // we'll return nonzero exitcode if any run was terminated with error
     bool had_error = false;
 
-    for (; run_nr()!=-1; run_nr++)
+    for (; runiterator()!=-1; runiterator++)
     {
+        int runnumber = runiterator();
         bool setupnetwork_done = false;
         bool startrun_done = false;
         try
         {
-            ::fprintf(fout, "\nPreparing for Run #%d...\n", run_nr());
+            ::fprintf(fout, "\nPreparing for Run #%d...\n", runnumber);
             ::fflush(fout);
 
-            getConfig()->setRunNumber(run_nr());
+            cfg->activateConfig(opt_configname.c_str(), runnumber);
+
             readPerRunOptions();
 
             // find network
@@ -239,7 +249,7 @@ int TCmdenvApp::run()
             // finish() should not be called.
             simulate();
 
-            ::fprintf(fout, "\nCalling finish() at end of Run #%d...\n", run_nr());
+            ::fprintf(fout, "\nCalling finish() at end of Run #%d...\n", runnumber);
             ::fflush(fout);
             simulation.callFinish();
             ev.flushlastline();
@@ -490,8 +500,7 @@ void TCmdenvApp::moduleCreated(cModule *mod)
 {
     TOmnetApp::moduleCreated(mod);
 
-    std::string entryname = mod->fullPath() + ".ev-output";
-    bool ev_enabled = ev.config()->getAsBool("Cmdenv", entryname.c_str(), true);
+    bool ev_enabled = ev.config()->getAsBool(mod->fullPath().c_str(), CFGID_CMDENV_EV_OUTPUT);
     mod->setEvEnabled(ev_enabled);
 }
 
@@ -520,9 +529,17 @@ void TCmdenvApp::simulationEvent(cMessage *msg)
 void TCmdenvApp::printUISpecificHelp()
 {
     ev << "Cmdenv-specific options:\n";
-    ev << "  -r <runs>     Execute the specified runs in the ini file.\n";
-    ev << "                <runs> is a comma-separated list of run numbers or\n";
-    ev << "                run number ranges, for example 1,2,5-10.\n" ;
+    ev << "  -n <scenarioname>\n";
+    ev << "                Print the number of runs in the given scenario, and exit.\n";
+    ev << "  -c <configname-or-scenarioname>\n";
+    ev << "                Select a given configuration or scenario for execution. With\n";
+    ev << "                inifile-based configuration, this means the [Scenario <name>] or\n";
+    ev << "                [Config <name>] sections; the default is the [General] section.\n";
+    ev << "                See also: -r.\n";
+    ev << "  -r <runs>     Execute the specified runs in the scenario selected with the\n";
+    ev << "                -c option. <runs> is a comma-separated list of run numbers or\n";
+    ev << "                run number ranges, for example 1,2,5-10. When not present, all\n" ;
+    ev << "                runs will be executed.\n" ;
     ev << "\n";
 }
 
