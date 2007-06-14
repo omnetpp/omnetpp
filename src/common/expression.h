@@ -19,10 +19,18 @@
 
 #include <string>
 #include "commondefs.h"
+#include "commonutil.h"
 
 
 /**
  * FIXME revise docu in the whole class!!!!!!
+ *
+ * This is a variant of the simkernel's expression evaluator, with several
+ * simplifications:
+ *   - no dependence on simkernel classes (cPar, cComponent, cRuntimeError, etc)
+ *   - fewer data types (cXMLElement support removed)
+ *   - "unit" of numeric values removed
+ *   - doesn't use stringpool
  */
 class COMMON_API Expression
 {
@@ -55,16 +63,15 @@ class COMMON_API Expression
         // Types:
         //  - bool
         //  - double (there's no long -- we calculate everything in double)
-        //  - string (values point into the stringpool)
+        //  - string
         //  - math operator (+-*/%^...)
         //  - functor
         //
         enum Type {UNDEF, BOOL, DBL, STR, FUNCTOR, OP} type;
-        static StringPool stringPool;
         union {
             bool b;
-            struct {double d; const char *unit;} d;
-            const char *s;
+            double d;
+            char *s;
             Functor *fu;
             OpType op;
         };
@@ -92,43 +99,37 @@ class COMMON_API Expression
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(int _i)  {type=DBL; d.d=_i; d.unit=NULL;}
+        void operator=(int _i)  {type=DBL; d=_i;}
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(short _i)  {type=DBL; d.d=_i; d.unit=NULL;}
+        void operator=(short _i)  {type=DBL; d=_i;}
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(long _l)  {type=DBL; d.d=_l; d.unit=NULL;}
+        void operator=(long _l)  {type=DBL; d=_l;}
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * to the evaluation stack.
          */
-        void operator=(double _d)  {type=DBL; d.d=_d; d.unit=NULL;}
-
-        /**
-         * Sets the unit of an Elem previously set to a double value.
-         * The type must already be DBL, or an error gets thrown.
-         */
-        void setUnit(const char *s)  {ASSERT(type==DBL); d.unit = stringPool.get(s);}
+        void operator=(double _d)  {type=DBL; d=_d;}
 
         /**
          * Effect during evaluation of the expression: pushes the given string
          * to the evaluation stack.
          */
-        void operator=(const char *_s)  {type=STR; s = stringPool.get(_s);}
+        void operator=(const char *_s)  {type=STR; Assert(_s); s=new char[strlen(_s)+1]; strcpy(s,_s);}
 
         /**
          * Function object, with an interface not unlike cNEDFunction.
          * This object will be deleted by expression's destructor.
          */
-        void operator=(Functor *_f)  {type=FUNCTOR; ASSERT(_f); fu=_f;}
+        void operator=(Functor *_f)  {type=FUNCTOR; Assert(_f); fu=_f;}
 
         /**
          * Unary, binary or tertiary (?: only) operations.
@@ -265,11 +266,6 @@ class COMMON_API Expression
      * like "2+2").
      */
     virtual bool isAConstant() const;
-
-    /**
-     * Returns the unit of the expression if it can be determined, or NULL.
-     */
-    virtual const char *unit() const;
     //@}
 };
 

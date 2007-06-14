@@ -19,14 +19,12 @@
 #include "expressionyydefs.h"
 #include "stringutil.h"
 
-StringPool Expression::Elem::stringPool;
 
 #define eESTKOFLOW   "Stack overflow"
 #define eESTKUFLOW   "Stack underflow"
 #define eEBADARGS    "Wrong arguments for '%s'"
 #define eBADEXP      "Malformed expression"
 #define eECANTCAST   "Cannot cast to %s"
-
 
 
 void Expression::Elem::operator=(const Elem& other)
@@ -36,9 +34,7 @@ void Expression::Elem::operator=(const Elem& other)
     memcpy(this, &other, sizeof(Elem));
 
     if (type==STR)
-        s = stringPool.get(s);
-    else if (type==DBL)
-        d.unit = stringPool.get(d.unit);
+        {char *tmp=new char[strlen(s)+1]; strcpy(tmp,s); s=tmp;}
     else if (type==FUNCTOR)
         fu = (Functor *) fu->dup();
 }
@@ -51,9 +47,7 @@ Expression::Elem::~Elem()
 void Expression::Elem::deleteOld()
 {
     if (type==STR)
-        stringPool.release(s);
-    else if (type==DBL)
-        stringPool.release(d.unit);
+        delete [] s;
     else if (type==FUNCTOR)
         delete fu;
 }
@@ -125,7 +119,7 @@ Expression::StkValue Expression::evaluate() const
            case Elem::DBL:
              if (tos>=stksize-1)
                  throw opp_runtime_error(eESTKOFLOW);
-             stk[++tos] = e.d.d;
+             stk[++tos] = e.d;
              break;
 
            case Elem::STR:
@@ -388,7 +382,7 @@ std::string Expression::toString() const
                  if (tos>=stksize-1)
                      throw opp_runtime_error(eESTKOFLOW);
                  char buf[32];
-                 sprintf(buf, "%g", e.d.d);
+                 sprintf(buf, "%g", e.d);
                  strstk[++tos] = buf;
                  pristk[tos] = 0;
                  }
@@ -533,11 +527,4 @@ bool Expression::isAConstant() const
     return true;
 }
 
-const char *Expression::unit() const
-{
-    // this can be made more sophisticated, like unit of (3*5s) is still "s"
-    if (nelems==1 && elems[0].type==Elem::DBL)
-        return elems[0].d.unit;
-    return NULL;
-}
 
