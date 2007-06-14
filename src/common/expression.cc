@@ -501,10 +501,10 @@ std::string Expression::toString() const
     }
 }
 
-void Expression::parse(const char *text)
+void Expression::parse(const char *text, Resolver *resolver)
 {
-    // throws exception if something goes wrong
-    ::doParseExpression(text, elems, nelems);
+    // fills elems[]; throws exception if something goes wrong
+    ::doParseExpression(text, resolver, elems, nelems);
 }
 
 bool Expression::isAConstant() const

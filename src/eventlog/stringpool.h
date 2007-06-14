@@ -21,6 +21,10 @@
 /**
  * For saving memory on the storage of (largely) constant strings that occur in
  * many instances. (See Flyweight GoF pattern.)
+ *
+ * Note: this variant doesn't do reference counting, so strings don't need
+ * to be released. The downside is that they will only be deallocated in the
+ * stringpool object's destructor.
  */
 class EVENTLOG_API StringPool
 {

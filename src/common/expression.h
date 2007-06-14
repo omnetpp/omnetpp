@@ -24,14 +24,18 @@
 
 
 /**
- * FIXME revise docu in the whole class!!!!!!
+ * This is an extensible arithmetic expression evaluator class. Supports the
+ * following data types: long, double, string, bool.
  *
- * This is a variant of the simkernel's expression evaluator, with several
- * simplifications:
+ * The code is based on the simkernel's expression evaluator, with a number of
+ * modifications:
  *   - no dependence on simkernel classes (cPar, cComponent, cRuntimeError, etc)
- *   - fewer data types (cXMLElement support removed)
- *   - "unit" of numeric values removed
+ *   - no support for NED constructs (sizeof(), index, this, default(), etc)
+ *   - no support for xmldoc() and the XML data type
+ *   - "unit" support for numeric values removed
  *   - doesn't use stringpool
+ *   - added resolver
+ *   - $ and @ accepted in identifier names
  */
 class COMMON_API Expression
 {
@@ -181,6 +185,22 @@ class COMMON_API Expression
         virtual std::string toString(std::string args[], int numargs) = 0;
     };
 
+    /**
+     * Abstract base class for variable and function resolvers. A resolver
+     * is used during parsing, and tells the parser how to convert variable
+     * references and functions into Functor objects for the stored
+     * expression. Methods should throw an exception with a human-readable
+     * description when the variable or function cannot be resolved; this will
+     * be converted to an error message.
+     */
+    class Resolver
+    {
+      public:
+        virtual ~Resolver() {}
+        virtual Functor *resolveVariable(const char *varname) = 0;
+        virtual Functor *resolveFunction(const char *funcname, int argcount) = 0;
+    };
+
   protected:
     Elem *elems;
     int nelems;
@@ -259,9 +279,11 @@ class COMMON_API Expression
     virtual std::string toString() const;
 
     /**
-     * Interprets the string as an expression, and stores it.
+     * Interprets the string as an expression, and stores it. Resolver
+     * is used for translating variable and function references during
+     * parsing.
      */
-    virtual void parse(const char *text);
+    virtual void parse(const char *text, Resolver *resolver);
 
     /**
      * Returns true if the expression is just a literal (or equivalent to one,

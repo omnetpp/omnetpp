@@ -14,6 +14,7 @@ COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)/platdep" -I. -DBUILDING_COMMON /Fd"common
 
 OBJS= lcgrandom.obj filereader.obj linetokenizer.obj \
       stringtokenizer.obj fnamelisttokenizer.obj \
+      expression.obj lex.expressionyy.obj expression.tab.obj \
       matchexpression.obj lex.matchexpressionyy.obj matchexpression.tab.obj \
       patternmatcher.obj unitconversion.obj displaystring.obj fileglobber.obj \
       fileutil.obj stringutil.obj commonutil.obj exception.obj bigdecimal.obj
@@ -42,6 +43,17 @@ common.dll : $(OBJS)
 	$(SHLIB_LD) /out:common.dll /subsystem:console $(OBJS)
 	copy common.dll $(OMNETPP_BIN_DIR:/=\)
 	copy common.lib $(OMNETPP_LIB_DIR:/=\)
+
+expression.tab.h expression.tab.cc : expression.y
+	$(YACC:/=\) -p expressionyy -b expression -d expression.y
+	copy expression.tab.c expression.tab.cc
+	del expression.tab.c
+
+lex.expressionyy.cc: expression.lex expression.tab.h
+	$(LEX:/=\) -Pexpressionyy expression.lex
+	$(FIXFLEX) lex.expressionyy.c
+	copy lex.expressionyy.c lex.expressionyy.cc
+	del lex.expressionyy.c
 
 matchexpression.tab.h matchexpression.tab.cc : matchexpression.y
 	$(YACC:/=\) -p matchexpressionyy -b matchexpression -d matchexpression.y

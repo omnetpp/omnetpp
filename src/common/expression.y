@@ -1,7 +1,7 @@
 /*===============================================================
  * File: expression.y
  *
- *  Grammar for OMNeT++ NED-2 expressions.
+ *  Grammar for generic arithmetic expressions.
  *
  *  Author: Andras Varga
  *
@@ -15,8 +15,8 @@
 *--------------------------------------------------------------*/
 
 /* Reserved words */
-%token DOUBLETYPE INTTYPE STRINGTYPE BOOLTYPE XMLTYPE
-%token TRUE_ FALSE_ THIS_ DEFAULT_ CONST_ SIZEOF_ INDEX_ XMLDOC_
+%token DOUBLETYPE INTTYPE STRINGTYPE BOOLTYPE
+%token TRUE_ FALSE_
 
 /* Other tokens: identifiers, numeric literals, operators etc */
 %token NAME INTCONSTANT REALCONSTANT STRINGCONSTANT
@@ -78,6 +78,7 @@ LineColumn xpos, xprevpos;
 
 
 static Expression::Elem *e;
+static Expression::Resolver *resolver;
 
 static char *expryyconcat(char *s1, char *s2, char *s3=NULL)
 {
@@ -92,30 +93,21 @@ static char *expryyconcat(char *s1, char *s2, char *s3=NULL)
 
 static void addFunction(const char *funcname, int numargs)
 {
-    cMathFunction *f = cMathFunction::find(funcname, numargs);
-    if (f)
-    {
-        *e++ = f;
-        return;
-    }
-    cNEDFunction *af = cNEDFunction::find(funcname, numargs);
-    if (af)
-    {
-        *e++ = af;
-        return;
-    }
-    yyerror(opp_stringf("function `%s' not found (Define_Function() missing from C++ code?)", funcname).c_str());
-}
-
-static double parseQuantity(const char *text, std::string& unit)
-{
     try {
-        // evaluate quantities like "5s 230ms"
-        return UnitConversion::parseQuantity(text, unit);
+        *e++ = resolver->resolveFunction(funcname, numargs);
     }
     catch (std::exception& e) {
         yyerror(e.what());
-        return 0;
+    }
+}
+
+static void addVariableRef(const char *varname)
+{
+    try {
+        *e++ = resolver->resolveVariable(varname);
+    }
+    catch (std::exception& e) {
+        yyerror(e.what());
     }
 }
 
@@ -125,23 +117,11 @@ static double parseQuantity(const char *text, std::string& unit)
 
 expression
         : expr
-        | xmldocvalue
-        | DEFAULT_ '(' expr ')'
-                { yyerror("default() is not supported here"); }
-        ;
-
-xmldocvalue
-        : XMLDOC_ '(' expr ')'
-                { *e++ = new NEDSupport::XMLDoc(false); }
-        | XMLDOC_ '(' expr ',' expr ')'
-                { *e++ = new NEDSupport::XMLDoc(true); }
         ;
 
 expr
         : simple_expr
         | '(' expr ')'
-        | CONST_ '(' expr ')'
-                { yyerror("const() is not supported here"); }
 
         | expr '+' expr
                 { *e++ = Expression::ADD; }
@@ -215,34 +195,12 @@ expr
 
 simple_expr
         : identifier
-        | special_expr
         | literal
         ;
 
 identifier
         : NAME
-                { *e++ = new NEDSupport::ParameterRef($1, true, false); delete [] $1; }
-        | THIS_ '.' NAME
-                { *e++ = new NEDSupport::ParameterRef($3, false, true); delete [] $3; }
-        | NAME '.' NAME
-                { *e++ = new NEDSupport::SiblingModuleParameterRef($1, $3, true, false); delete [] $1; delete [] $3; }
-        | NAME '[' expression ']' '.' NAME
-                { *e++ = new NEDSupport::SiblingModuleParameterRef($1, $6, true, true); delete [] $1; delete [] $6; }
-        ;
-
-special_expr
-        : INDEX_
-                { *e++ = new NEDSupport::ModuleIndex(); }
-        | INDEX_ '(' ')'
-                { *e++ = new NEDSupport::ModuleIndex(); }
-        | SIZEOF_ '(' NAME ')'
-                { *e++ = new NEDSupport::Sizeof($3, true, false); delete [] $3; }
-        | SIZEOF_ '(' THIS_ '.' NAME ')'
-                { *e++ = new NEDSupport::Sizeof($5, false, false); delete [] $5; }
-        | SIZEOF_ '(' NAME '.' NAME ')'
-                { delete [] $3; delete [] $5; yyerror("sizeof(submodule.gate) notation not supported here"); }
-        | SIZEOF_ '(' NAME '[' expression ']' '.' NAME ')'
-                { delete [] $3; delete [] $8; yyerror("sizeof(submodule[index].gate) notation not supported here"); }
+                { addVariableRef($1); delete [] $1; }
         ;
 
 literal
@@ -268,32 +226,13 @@ numliteral
                 { *e++ = strtol($1,NULL,10); delete [] $1; }
         | REALCONSTANT
                 { *e++ = strtod($1,NULL); delete [] $1; }
-        | quantity
-                {
-                  std::string unit;
-                  *e++ = parseQuantity($1, unit);
-                  if (!unit.empty())
-                      (e-1)->setUnit(unit.c_str());
-                  delete [] $1;
-                }
-        ;
-
-quantity
-        : quantity INTCONSTANT NAME
-                { $$ = expryyconcat($1,$2,$3); }
-        | quantity REALCONSTANT NAME
-                { $$ = expryyconcat($1,$2,$3); }
-        | INTCONSTANT NAME
-                { $$ = expryyconcat($1,$2); }
-        | REALCONSTANT NAME
-                { $$ = expryyconcat($1,$2); }
         ;
 
 %%
 
 //----------------------------------------------------------------------
 
-void doParseExpression(const char *nedtext, Expression::Elem *&elems, int& nelems)
+void doParseExpression(const char *text, Expression::Resolver *res, Expression::Elem *&elems, int& nelems)
 {
     elems = NULL;
     nelems = 0;
@@ -307,12 +246,13 @@ void doParseExpression(const char *nedtext, Expression::Elem *&elems, int& nelem
     yyout = stderr; // not used anyway
 
     // alloc buffer
-    struct yy_buffer_state *handle = yy_scan_string(nedtext);
+    struct yy_buffer_state *handle = yy_scan_string(text);
     if (!handle)
         throw std::runtime_error("parser is unable to allocate work memory");
 
     Expression::Elem *v = new Expression::Elem[100]; // overestimate for now; XXX danger of overrun
     e = v;
+    resolver = res;
 
     // parse
     int ret;

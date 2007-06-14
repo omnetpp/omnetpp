@@ -445,9 +445,17 @@ void SectionBasedConfiguration::splitKey(const char *key, std::string& outOwnerN
     }
 
     const char *lastDotPos = strrchr(key, '.');
-    assert(lastDotPos!=NULL);
-    outOwnerName.assign(key, lastDotPos - key);
-    outGroupName.assign(lastDotPos+1);
+    if (!lastDotPos) {
+        // like "**.apply-default": group is "**", and owner is empty
+        //FIXME DOES NOT WORK
+        outOwnerName = "";
+        outGroupName = key;
+    }
+    else {
+        // normal case: group is the part after the last dot
+        outOwnerName.assign(key, lastDotPos - key);
+        outGroupName.assign(lastDotPos+1);
+    }
 }
 
 SectionBasedConfiguration::KeyValue1 SectionBasedConfiguration::convert(const ConfigurationReader::KeyValue& e)

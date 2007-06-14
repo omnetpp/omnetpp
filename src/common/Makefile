@@ -11,6 +11,7 @@ COPTS=$(CFLAGS) -I. -I$(OMNETPP_INCL_DIR)/platdep
 
 OBJS= lcgrandom.o filereader.o linetokenizer.o \
       stringtokenizer.o fnamelisttokenizer.o \
+      expression.o lex.expressionyy.o expression.tab.o \
       matchexpression.o lex.matchexpressionyy.o matchexpression.tab.o \
       patternmatcher.o unitconversion.o displaystring.o fileglobber.o \
       fileutil.o stringutil.o commonutil.o exception.o bigdecimal.o
@@ -36,6 +37,14 @@ libcommon$(A_LIB_SUFFIX) : $(OBJS)
 libcommon$(SO_LIB_SUFFIX) : $(OBJS)
 	$(SHLIB_LD) -o libcommon$(SO_LIB_SUFFIX) $(OBJS)
 	../utils/install-lib libcommon$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libcommon$(SO_LIB_SUFFIX)
+
+expression.tab.h expression.tab.cc : expression.y
+	$(YACC) -p expressionyy -b expression -d expression.y
+	mv expression.tab.c expression.tab.cc
+
+lex.expressionyy.cc: expression.lex expression.tab.h
+	$(LEX) -Pexpressionyy expression.lex
+	mv lex.expressionyy.c lex.expressionyy.cc
 
 matchexpression.tab.h matchexpression.tab.cc : matchexpression.y
 	$(YACC) -p matchexpressionyy -b matchexpression -d matchexpression.y

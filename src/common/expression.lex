@@ -1,7 +1,7 @@
 /*==================================================
  * File: expression.lex
  *
- *  Lexical analyser for OMNeT++ NED-2 expressions.
+ *  Lexical analyser for generic arithmetic expressions.
  *
  *  Author: Andras Varga
  *
@@ -29,7 +29,7 @@
  */
 
 D  [0-9]
-L  [a-zA-Z_]
+L  [$@a-zA-Z_]
 X  [0-9a-fA-F]
 E  [Ee][+-]?{D}+
 S  [ \t\v\n\r\f]
@@ -74,16 +74,9 @@ static std::string extendbuf;
 "int"                    { count(); return INTTYPE; }
 "string"                 { count(); return STRINGTYPE; }
 "bool"                   { count(); return BOOLTYPE; }
-"xml"                    { count(); return XMLTYPE; }
 
 "true"                   { count(); return TRUE_; }
 "false"                  { count(); return FALSE_; }
-"this"                   { count(); return THIS_; }
-"default"                { count(); return DEFAULT_; }
-"const"                  { count(); return CONST_; }
-"sizeof"                 { count(); return SIZEOF_; }
-"index"                  { count(); return INDEX_; }
-"xmldoc"                 { count(); return XMLDOC_; }
 
 {L}({L}|{D})*            { count(); yylval = opp_clonestr(yytext); return NAME; }
 {D}+                     { count(); yylval = opp_clonestr(yytext); return INTCONSTANT; }
