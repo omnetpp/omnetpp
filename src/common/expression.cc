@@ -533,7 +533,7 @@ bool Expression::isAConstant() const
 #define F2(name)   {#name, (double(*)(...)) (double(*)(double,double))name, 2}
 #define F3(name)   {#name, (double(*)(...)) (double(*)(double,double,double))name, 3}
 
-MathFunction::FuncDesc functable[] = {
+MathFunction::FuncDesc MathFunction::functable[] = {
     F1(acos),
     F1(asin),
     F1(atan),
@@ -614,7 +614,7 @@ Expression::StkValue MathFunction::evaluate(Expression::StkValue args[], int num
         case 1: return f(args[0].dbl);
         case 2: return f(args[0].dbl, args[1].dbl);
         case 3: return f(args[0].dbl, args[1].dbl, args[2].dbl);
-        default: throw new opp_runtime_error("too many args");
+        default: throw opp_runtime_error("too many args");
     }
 }
 

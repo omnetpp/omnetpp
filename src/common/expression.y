@@ -54,11 +54,11 @@
 #include <string.h>         /* YYVERBOSE needs it */
 #endif
 
-#define yyin expryyin
-#define yyout expryyout
-#define yyrestart expryyrestart
-#define yy_scan_string expryy_scan_string
-#define yy_delete_buffer expryy_delete_buffer
+#define yyin expressionyyin
+#define yyout expressionyyout
+#define yyrestart expressionyyrestart
+#define yy_scan_string expressionyy_scan_string
+#define yy_delete_buffer expressionyy_delete_buffer
 extern FILE *yyin;
 extern FILE *yyout;
 struct yy_buffer_state;
