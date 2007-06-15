@@ -22,6 +22,15 @@
 /**
  * Processing node which evaluates an arbitrary expression entered
  * by the user.
+ *
+ * TODO:
+ *  - support parameters: $windowsize or $(windowsize) in the expression
+ *    would prompt user to enter a value for windowsize;
+ *  - extend the expression syntax into a mini imperative language to allow
+ *    for writing more powerful filters: introduce variables and assigment operator
+ *    (=, +=, *=, ++, --, etc); allow several expressions separated by semicolon;
+ *    implement 'for', 'while', 'if'; filternode to keep a variables table;
+ *    possibly implement array variables as well.
  */
 class SCAVE_API CustomFilterNode : public FilterNode
 {

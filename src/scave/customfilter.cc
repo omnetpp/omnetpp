@@ -30,12 +30,21 @@ class Resolver : public Expression::Resolver
 
 Expression::Functor *Resolver::resolveVariable(const char *varname)
 {
-    throw opp_runtime_error("not supported");  //XXX
+    if (strcmp(varname, "x")==0)
+        return NULL; //XXX
+    else if (strcmp(varname, "y")==0)
+        return NULL; //XXX
+    else
+        throw opp_runtime_error("Unrecognized variable: %s", varname);
 }
 
 Expression::Functor *Resolver::resolveFunction(const char *funcname, int argcount)
 {
-    throw opp_runtime_error("not supported");  //XXX
+    //FIXME check argcount!
+    if (MathFunction::supports(funcname))
+        return new MathFunction(funcname);
+    else
+        throw opp_runtime_error("Unrecognized function: %s()", funcname);
 }
 
 CustomFilterNode::CustomFilterNode(const char *text)
