@@ -293,6 +293,30 @@ class COMMON_API Expression
     //@}
 };
 
+
+/**
+ * Function object to implement all math.h functions.
+ */
+class MathFunction : public Expression::Functor
+{
+  private:
+    std::string funcname;
+    double (*f)(...);
+    int argcount;
+  private:
+    static int argCountFor(const char *name);
+  public:
+    static bool supports(const char *name);
+    MathFunction(const char *name);
+    virtual ~MathFunction();
+    virtual Functor *dup() const;
+    virtual const char *name() const;
+    virtual const char *argTypes() const;
+    virtual char returnType() const;
+    virtual Expression::StkValue evaluate(Expression::StkValue args[], int numargs);
+    virtual std::string toString(std::string args[], int numargs);
+};
+
 #endif
 
 

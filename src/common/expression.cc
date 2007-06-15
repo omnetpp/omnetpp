@@ -526,4 +526,85 @@ bool Expression::isAConstant() const
     return true;
 }
 
+//----------------------
+
+static struct FuncDesc {const char *name; int argcount;} functable[] = {
+    {"acos",  1 },
+    {"asin",  1 },
+    {"atan",  1 },
+    {"atan2", 2 },
+    {"sin",   1 },
+    {"cos",   1 },
+    {"tan",   1 },
+    {"ceil",  1 },
+    {"floor", 1 },
+    {"exp",   1 },
+    {"pow",   2 },
+    {"sqrt",  1 },
+    {"fabs",  1 },
+    {"fmod",  2 },
+    {"hypot", 2 },
+    {"log",   1 },
+    {"log10", 1 },
+    {NULL,    0 }
+};
+
+MathFunction::MathFunction(const char *name)
+{
+}
+
+MathFunction::~MathFunction()
+{
+}
+
+Expression::Functor *MathFunction::dup() const
+{
+}
+
+const char *MathFunction::name() const
+{
+     return funcname.c_str();
+}
+
+int MathFunction::argCountFor(const char *name)
+{
+    for (FuncDesc *f = functable; f->name!=NULL; f++)
+        if (strcmp(f->name, name)==0)
+            return f->argcount;
+    return -1;
+}
+
+bool MathFunction::supports(const char *name)
+{
+    return argCountFor(name)>=0;
+}
+
+const char *MathFunction::argTypes() const
+{
+    int n = argCountFor(funcname.c_str());
+    const char *ddd = "DDDDDDDDDDDDDDDDDD";
+    return ddd+strlen(ddd)-n;
+}
+
+char MathFunction::returnType() const
+{
+    return Expression::StkValue::DBL;
+}
+
+StkValue MathFunction::evaluate(StkValue args[], int numargs)
+{
+    Assert(numargs==argcount);
+    switch (numargs)
+    {
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        default: throw new cRuntimeError("Too many args");
+    }
+}
+
+std::string MathFunction::toString(std::string args[], int numargs)
+{
+}
 
