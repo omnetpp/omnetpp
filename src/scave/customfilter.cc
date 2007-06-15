@@ -20,6 +20,35 @@
 #include "channel.h"
 #include "customfilter.h"
 
+class Resolver : public Expression::Resolver
+{
+  public:
+    virtual ~Resolver() {};
+    virtual Expression::Functor *resolveVariable(const char *varname);
+    virtual Expression::Functor *resolveFunction(const char *funcname, int argcount);
+};
+
+Expression::Functor *Resolver::resolveVariable(const char *varname)
+{
+    throw opp_runtime_error("not supported");  //XXX
+}
+
+Expression::Functor *Resolver::resolveFunction(const char *funcname, int argcount)
+{
+    throw opp_runtime_error("not supported");  //XXX
+}
+
+CustomFilterNode::CustomFilterNode(const char *text)
+{
+    expr = new Expression();
+    Resolver resolver;
+    expr->parse(text, &resolver);
+}
+
+CustomFilterNode::~CustomFilterNode()
+{
+    delete expr;
+}
 
 bool CustomFilterNode::isReady() const
 {
@@ -33,6 +62,7 @@ void CustomFilterNode::process()
     {
         Datum d;
         in()->read(&d,1);
+        d.y = expr->doubleValue();
         out()->write(&d,1);
     }
 }
@@ -53,7 +83,7 @@ Node *CustomFilterNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 {
     checkAttrNames(attrs);
 
-    Node *node = new CustomFilterNode();
+    Node *node = new CustomFilterNode(attrs["expression"].c_str());
     node->setNodeType(this);
     mgr->addNode(node);
     return node;

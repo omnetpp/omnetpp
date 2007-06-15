@@ -25,9 +25,11 @@
  */
 class SCAVE_API CustomFilterNode : public FilterNode
 {
+    private:
+        Expression *expr;
     public:
-        CustomFilterNode()  {}
-        virtual ~CustomFilterNode() {}
+        CustomFilterNode(const char *expression);
+        virtual ~CustomFilterNode();
         virtual bool isReady() const;
         virtual void process();
 };
