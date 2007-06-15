@@ -126,18 +126,23 @@ Node *NodeTypeRegistry::createNode(const char *filterSpec, DataflowManager *mgr)
 
     // check number of args match
     StringMap attrs;
-    nodeType->getAttrDefaults(attrs);
+    nodeType->getAttributes(attrs);
     if (attrs.size()!=args.size())
         throw opp_runtime_error("error in filter spec `%s' -- %s expects %d parameters", filterSpec, name.c_str(), attrs.size());
 
     // fill in args map
+    //FIXME this is completely unsafe! it would be better to match them by name, since ordering in Map is undefined...
+    StringMap attrValues;
+    for (StringMap::iterator it=attrs.begin(); it!=attrs.end(); ++it)
+        attrValues[it->first] = ""; // initialize
+    nodeType->getAttrDefaults(attrValues);
     int i=0;
-    for (StringMap::iterator it=attrs.begin(); it!=attrs.end(); ++it, ++i)
+    for (StringMap::iterator it=attrValues.begin(); it!=attrValues.end(); ++it, ++i)
         if (!args[i].empty())
             it->second = args[i];
 
     // create filter
-    return nodeType->create(mgr, attrs);
+    return nodeType->create(mgr, attrValues);
 }
 
 void NodeTypeRegistry::parseFilterSpec(const char *filterSpec, std::string& name, std::vector<std::string>& args)

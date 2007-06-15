@@ -162,6 +162,7 @@ int filterCommand(int argc, char **argv)
                 fprintf(stdout, "Exception: %s\n", e.what());
             }
         }
+        if (opt_verbose) printf("%d file(s) loaded\n", resultFileManager.getFiles().size());
 
         // filter statistics
         IDList vectorIDList = resultFileManager.filterIDList(resultFileManager.getAllVectors(), opt_filterExpression.c_str());

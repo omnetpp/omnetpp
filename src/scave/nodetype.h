@@ -60,7 +60,8 @@ class SCAVE_API NodeType
         virtual bool isHidden() const = 0;
 
         /**
-         * Fills the string map with attribute names and their descriptions.
+         * Fills the string map with the names of all accepted attributes
+         * and their descriptions.
          */
         virtual void getAttributes(StringMap& attrs) const = 0;
 

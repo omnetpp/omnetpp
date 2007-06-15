@@ -76,9 +76,9 @@ void CustomFilterNode::process()
     for (int i=0; i<n; i++)
     {
         Datum d;
-        in()->read(&d,1);
-        d.y = expr->doubleValue();
-        out()->write(&d,1);
+        in()->read(&currentDatum,1);
+        currentDatum.y = expr->doubleValue();
+        out()->write(&currentDatum,1);
     }
 }
 
