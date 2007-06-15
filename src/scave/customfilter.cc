@@ -21,32 +21,16 @@
 #include "customfilter.h"
 
 
+
 /**
- * Function object to implement all math.h functions.
+ * Resolves variables (x, y) and functions (sin, fabs, etc) in CustomFilter expressions.
  */
-class NodeVar : public Expression::Functor
+class Resolver : public Expression::Resolver
 {
   private:
     CustomFilterNode *hostnode;
-    std::string varname;
   public:
-    NodeVar(CustomFilterNode *node, const char *name) {hostnode = node; varname = name;}
-    virtual ~NodeVar() {}
-    virtual Expression::Functor *dup() const {return new NodeVar(hostnode, varname.c_str());}
-    virtual const char *name() const {return varname.c_str();}
-    virtual const char *argTypes() const {return "";}
-    virtual char returnType() const {return Expression::StkValue::DBL;}
-    virtual Expression::StkValue evaluate(Expression::StkValue args[], int numargs) {
-        return 3.14; //FIXME
-    }
-    virtual std::string toString(std::string args[], int numargs) {return varname.c_str();}
-};
-
-
-
-class Resolver : public Expression::Resolver
-{
-  public:
+    Resolver(CustomFilterNode *node) {hostnode = node;}
     virtual ~Resolver() {};
     virtual Expression::Functor *resolveVariable(const char *varname);
     virtual Expression::Functor *resolveFunction(const char *funcname, int argcount);
@@ -54,10 +38,8 @@ class Resolver : public Expression::Resolver
 
 Expression::Functor *Resolver::resolveVariable(const char *varname)
 {
-    if (strcmp(varname, "x")==0)
-        return NULL; //XXX
-    else if (strcmp(varname, "y")==0)
-        return NULL; //XXX
+    if (strcmp(varname, "x")==0 || strcmp(varname, "y")==0)
+        return new CustomFilterNode::NodeVar(hostnode, varname);
     else
         throw opp_runtime_error("Unrecognized variable: %s", varname);
 }
@@ -74,7 +56,7 @@ Expression::Functor *Resolver::resolveFunction(const char *funcname, int argcoun
 CustomFilterNode::CustomFilterNode(const char *text)
 {
     expr = new Expression();
-    Resolver resolver;
+    Resolver resolver(this);
     expr->parse(text, &resolver);
 }
 
@@ -98,6 +80,16 @@ void CustomFilterNode::process()
         d.y = expr->doubleValue();
         out()->write(&d,1);
     }
+}
+
+double CustomFilterNode::getVariable(const char *varname)
+{
+    if (varname[0]=='x' && varname[1]==0)
+        return currentDatum.x;
+    else if (varname[0]=='y' && varname[1]==0)
+        return currentDatum.y;
+    else
+        return 0.0;
 }
 
 //--

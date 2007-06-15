@@ -30,6 +30,7 @@
 #include "mergernodes.h"
 #include "xyplotnode.h"
 #include "diffquot.h"
+#include "customfilter.h"
 #include "stddev.h"
 
 
@@ -82,6 +83,8 @@ NodeTypeRegistry::NodeTypeRegistry()
     add(new CropNodeType());
     add(new MeanNodeType());
     add(new RemoveRepeatsNodeType());
+
+    add(new CustomFilterNodeType());
 }
 
 NodeTypeRegistry::~NodeTypeRegistry()

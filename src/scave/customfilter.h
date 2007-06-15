@@ -35,13 +35,32 @@
  */
 class SCAVE_API CustomFilterNode : public FilterNode
 {
+    public:
+        class NodeVar : public Expression::Functor
+        {
+          private:
+            CustomFilterNode *hostnode;
+            std::string varname;
+          public:
+            NodeVar(CustomFilterNode *node, const char *name) {hostnode = node; varname = name;}
+            virtual ~NodeVar() {}
+            virtual Expression::Functor *dup() const {return new NodeVar(hostnode, varname.c_str());}
+            virtual const char *name() const {return varname.c_str();}
+            virtual const char *argTypes() const {return "";}
+            virtual char returnType() const {return Expression::StkValue::DBL;}
+            virtual Expression::StkValue evaluate(Expression::StkValue args[], int numargs)
+                {return hostnode->getVariable(varname.c_str());}
+            virtual std::string toString(std::string args[], int numargs) {return name();}
+        };
     private:
         Expression *expr;
+        Datum currentDatum;
     public:
         CustomFilterNode(const char *expression);
         virtual ~CustomFilterNode();
         virtual bool isReady() const;
         virtual void process();
+        double getVariable(const char *varname);
 };
 
 class SCAVE_API CustomFilterNodeType : public FilterNodeType
