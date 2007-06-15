@@ -20,6 +20,30 @@
 #include "channel.h"
 #include "customfilter.h"
 
+
+/**
+ * Function object to implement all math.h functions.
+ */
+class NodeVar : public Expression::Functor
+{
+  private:
+    CustomFilterNode *hostnode;
+    std::string varname;
+  public:
+    NodeVar(CustomFilterNode *node, const char *name) {hostnode = node; varname = name;}
+    virtual ~NodeVar() {}
+    virtual Expression::Functor *dup() const {return new NodeVar(hostnode, varname.c_str());}
+    virtual const char *name() const {return varname.c_str();}
+    virtual const char *argTypes() const {return "";}
+    virtual char returnType() const {return Expression::StkValue::DBL;}
+    virtual Expression::StkValue evaluate(Expression::StkValue args[], int numargs) {
+        return 3.14; //FIXME
+    }
+    virtual std::string toString(std::string args[], int numargs) {return varname.c_str();}
+};
+
+
+
 class Resolver : public Expression::Resolver
 {
   public:
