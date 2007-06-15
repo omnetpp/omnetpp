@@ -2,11 +2,11 @@ package org.omnetpp.launch.tabs;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -58,19 +58,38 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
     protected Button fCmdEnvButton;
     protected Button fTkEnvButton;
     protected Button fOtherEnvButton;
-    protected Text fOtherText;
+    protected Text fOtherEnvText;
+    protected Text fLibraryText;
+    protected Text fAdditionalText;
     // config we are working on
-    private ILaunchConfiguration config;
+    protected ILaunchConfiguration config;
+
 
     /**
      * Reads the ini file and enumerates all config sections. resolves include directives recursively
      * @author rhornig
      */
     protected class ConfigEnumeratorCallback extends InifileParser.ParserAdapter {
+        class Section {
+            String name;
+            boolean isScenario = false;
+            String network;
+            String extnds;
+            String descr;
+            @Override
+            public String toString() {
+                String additional = (StringUtils.isEmpty(descr)? "" : " "+descr)+
+                                    (isScenario ? " (scenario)" : "")+
+                                    (StringUtils.isEmpty(extnds)? "" : " (extends: "+extnds+")")+
+                                    (StringUtils.isEmpty(network)? "" : " (network: "+network+")");
+                return name +(StringUtils.isEmpty(additional) ? "" : " --"+additional);
+            }
+        }
         IFile currentFile;
-        Collection<String> result;
+        String currentSectionName;
+        Map<String, Section> result;
 
-        public ConfigEnumeratorCallback(IFile file, Collection<String> result) {
+        public ConfigEnumeratorCallback(IFile file, Map<String, Section> result) {
             this.currentFile = file;
             this.result = result;
         }
@@ -92,10 +111,38 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
         }
 
         @Override
-        public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String comment) {
-            if ("General".equals(sectionName) || sectionName.startsWith("Config")) {
-                result.add(StringUtils.removeStart(sectionName, "Config "));
+        public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String comment) {
+            if("extends".equals(key)){
+                getSectionForName(currentSectionName).extnds = value;
             }
+            if("description".equals(key)){
+                getSectionForName(currentSectionName).descr = value;
+            }
+            if("network".equals(key)){
+                getSectionForName(currentSectionName).network = value;
+            }
+        }
+
+        @Override
+        public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String comment) {
+            currentSectionName = StringUtils.removeStart(sectionName,"Config ");
+            currentSectionName = StringUtils.removeStart(currentSectionName,"Scenario ");
+            getSectionForName(currentSectionName).isScenario = sectionName.startsWith("Scenario");
+        }
+
+        /**
+         * @param name
+         * @return The section with a given name (if not present in the map, adds it)
+         */
+        private Section getSectionForName(String name) {
+            Section currSection = result.get(name);
+            // if it still not in the
+            if (currSection == null) {
+                currSection = new Section();
+                currSection.name = name;
+                result.put(name, currSection);
+            }
+            return currSection;
         }
     }
 
@@ -104,18 +151,21 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
      * @author rhornig
      */
     protected class FilteredWorkbenchContentProvider extends WorkbenchContentProvider {
-        private final String extension;
+        private final String regexp;
 
-        public FilteredWorkbenchContentProvider(String extension) {
+        /**
+         * @param regexp The regular expression where matches should be displayed
+         */
+        public FilteredWorkbenchContentProvider(String regexp) {
             super();
-            this.extension = extension;
+            this.regexp = regexp;
         }
 
         @Override
         public Object[] getChildren(Object element) {
             List<Object> filteredChildren = new ArrayList<Object>();
             for(Object child : super.getChildren(element)) {
-                if (child instanceof IFile && extension.equals(((IFile)child).getFileExtension())
+                if (child instanceof IFile && ((IFile)child).getName().matches(regexp)
                                 || getChildren(child).length > 0)
                         filteredChildren.add(child);
             }
@@ -133,6 +183,8 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
 		createIniGroup(comp, 1);
         createConfigGroup(comp, 1);
         createUIGroup(comp, 1);
+        createLibraryGroup(comp, 1);
+        createAdditionalGroup(comp, 1);
         setControl(comp);
 	}
 
@@ -196,39 +248,111 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
         fOtherEnvButton = SWTFactory.createRadioButton(runComp, "Other:");
         fOtherEnvButton.addSelectionListener(this);
 
-        fOtherText = SWTFactory.createSingleText(runComp, 1);
-        fOtherText.setToolTipText("Specify the custom environment name");
-        fOtherText.addModifyListener(this);
+        fOtherEnvText = SWTFactory.createSingleText(runComp, 1);
+        fOtherEnvText.setToolTipText("Specify the custom environment name");
+        fOtherEnvText.addModifyListener(this);
     }
 
+    protected void createLibraryGroup(Composite parent, int colSpan) {
+        Composite iniComp = SWTFactory.createComposite(parent, 3, colSpan, GridData.FILL_HORIZONTAL);
+
+        SWTFactory.createLabel(iniComp, "Dynamically loaded libraries:", 1);
+
+        fLibraryText = SWTFactory.createSingleText(iniComp, 1);
+        fLibraryText.setToolTipText("DLLs or shared libraries to load (without extension)");
+        fLibraryText.addModifyListener(this);
+
+        Button browseLibrariesButton = SWTFactory.createPushButton(iniComp, "Browse...", null);
+        browseLibrariesButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent evt) {
+                handleBrowseLibrariesButtonSelected();
+                updateLaunchConfigurationDialog();
+            }
+        });
+    }
+
+    protected void createAdditionalGroup(Composite parent, int colSpan) {
+        Composite iniComp = SWTFactory.createComposite(parent, 2, colSpan, GridData.FILL_HORIZONTAL);
+        SWTFactory.createLabel(iniComp, "Additional arguments:", 1);
+        fAdditionalText = SWTFactory.createSingleText(iniComp, 1);
+        fAdditionalText.setToolTipText("Specify additonal command line arguments");
+        fAdditionalText.addModifyListener(this);
+    }
 	/*
 	 * (non-Javadoc)
 	 *
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#initializeFrom(org.eclipse.debug.core.ILaunchConfiguration)
 	 */
+    private enum ArgType {INI, CONFIG, RUN, UI, LIB, UNKNOWN};
 	public void initializeFrom(ILaunchConfiguration config) {
 	    this.config = config;
         try {
-            String guardedArg = "-inifiles "+config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, EMPTY_STRING)+" -";
-            fInifileText.setText(StringUtils.trimToEmpty(StringUtils.substringBetween(guardedArg, "-inifiles ", " -")));
-            fConfigCombo.setText(StringUtils.trimToEmpty(StringUtils.substringBetween(guardedArg, "-c ", " -")));
-            fRunText.setText(StringUtils.trimToEmpty(StringUtils.substringBetween(guardedArg, "-r ", " -")));
-            String userEnv = StringUtils.trimToEmpty(StringUtils.substringBetween(guardedArg, "-u ", " -"));
-            fOtherText.setText("");
-            if ("".equals(userEnv)) {
+            ArgType nextType = ArgType.UNKNOWN;
+            String args[] = StringUtils.split(config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, EMPTY_STRING));
+            String restArgs = "";        // the rest of the arguments we cannot recognize
+            String iniArgs = "", libArgs = "", configArg="", runArg="", uiArg ="";
+            for(int i=0; i<args.length; ++i) {
+                switch (nextType) {
+                    case INI:
+                        iniArgs += args[i]+" ";
+                        nextType = ArgType.UNKNOWN;
+                        continue;
+                    case LIB:
+                        libArgs += args[i]+" ";
+                        nextType = ArgType.UNKNOWN;
+                        continue;
+                    case CONFIG:
+                        configArg = args[i];
+                        nextType = ArgType.UNKNOWN;
+                        continue;
+                    case RUN:
+                        runArg = args[i];
+                        nextType = ArgType.UNKNOWN;
+                        continue;
+                    case UI:
+                        uiArg = args[i];
+                        nextType = ArgType.UNKNOWN;
+                        continue;
+                }
+
+                if("-f".equals(args[i]))
+                    nextType = ArgType.INI;
+                else if ("-c".equals(args[i]))
+                    nextType = ArgType.CONFIG;
+                else if ("-r".equals(args[i]))
+                    nextType = ArgType.RUN;
+                else if ("-u".equals(args[i]))
+                    nextType = ArgType.UI;
+                else if ("-l".equals(args[i]))
+                    nextType = ArgType.LIB;
+                else {
+                    nextType = ArgType.UNKNOWN;
+                    restArgs += args[i]+" ";
+                }
+            }
+
+            // set the controls
+            fInifileText.setText(iniArgs);
+            setConfigName(configArg);
+            fRunText.setText(runArg);
+            fLibraryText.setText(libArgs);
+            fAdditionalText.setText(restArgs);
+            fOtherEnvText.setText("");
+            if ("".equals(uiArg)) {
                 fDefaultEnvButton.setSelection(true);
             } else {
                 fDefaultEnvButton.setSelection(false);
-                if ("cmdenv".equals(userEnv))
+                if ("cmdenv".equals(uiArg))
                     fCmdEnvButton.setSelection(true);
-                else if ("tkenv".equals(userEnv))
+                else if ("tkenv".equals(uiArg))
                     fTkEnvButton.setSelection(true);
                 else {
                     fOtherEnvButton.setSelection(true);
-                    fOtherText.setText(userEnv);
+                    fOtherEnvText.setText(uiArg);
                 }
             }
-            fOtherText.setEnabled(fOtherEnvButton.getSelection());
+            fOtherEnvText.setEnabled(fOtherEnvButton.getSelection());
 
             updateConfigCombo();
         } catch (CoreException ce) {
@@ -238,34 +362,46 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
 
     protected void updateConfigCombo() {
         IFile[] inifiles = getInifiles();
-        String currentSelection = fConfigCombo.getText();
-        fConfigCombo.setItems(new String[] {});
-        if (inifiles != null)
-            fConfigCombo.setItems(getConfigNames(inifiles));
-        fConfigCombo.setText(currentSelection);
+        if (inifiles == null)
+            fConfigCombo.setItems(new String[] {});
+        else {
+            String currentSelection = getConfigName();
+            String newConfigNames[] = getConfigNames(inifiles);
+            if(!ObjectUtils.equals(StringUtils.join(fConfigCombo.getItems()," - "),
+                                   StringUtils.join(newConfigNames," - "))) {
+                fConfigCombo.setItems(newConfigNames);
+                setConfigName(currentSelection);
+            }
+        }
     }
 
 	public void performApply(ILaunchConfigurationWorkingCopy config) {
-        String arg = fInifileText.getText();
-        if (!"".equals(fConfigCombo.getText()))
-            arg += " -c "+fConfigCombo.getText();
+        String arg = "";
+        if (!"".equals(fInifileText.getText()))
+            arg += "-f "+ StringUtils.join(StringUtils.split(fInifileText.getText())," -f ")+" ";
+        if (!"".equals(fLibraryText.getText()))
+            arg += "-l "+ StringUtils.join(StringUtils.split(fLibraryText.getText())," -l ")+" ";
+        if (!"".equals(getConfigName()))
+            arg += "-c "+getConfigName()+" ";
         if (!"".equals(fRunText.getText()))
-            arg += " -r "+fRunText.getText();
+            arg += "-r "+fRunText.getText()+" ";
         if (fCmdEnvButton.getSelection())
-            arg += " -u cmdenv";
+            arg += "-u cmdenv ";
         if (fTkEnvButton.getSelection())
-            arg += " -u tkenv";
+            arg += "-u tkenv ";
         if (fOtherEnvButton.getSelection())
-            arg += " -u "+fOtherText.getText();
+            arg += "-u "+fOtherEnvText.getText()+" ";
+        arg += fAdditionalText.getText();
         config.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, arg);
 	}
 
 	protected void handleBrowseInifileButtonSelected() {
         ElementTreeSelectionDialog dialog
             = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(),
-                                                         new FilteredWorkbenchContentProvider("ini"));
-        dialog.setTitle("Select one or more ini file");
-        dialog.setMessage("Select the initialization file(s) for the simulation");
+                                                         new FilteredWorkbenchContentProvider(".*\\.ini"));
+        dialog.setTitle("Select INI Files");
+        dialog.setMessage("Select the initialization file(s) for the simulation.\n" +
+        		          "Multiple files can be selected.");
         dialog.setInput(getProject());
         dialog.setComparator(new ResourceComparator(ResourceComparator.NAME));
         if (dialog.open() == IDialogConstants.OK_ID) {
@@ -278,6 +414,33 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
             updateConfigCombo();
         }
 	}
+
+	protected void handleBrowseLibrariesButtonSelected() {
+	    String extensionRegexp = ".*\\.";
+	    if (SWT.getPlatform().equals("win32"))
+	        extensionRegexp += "dll";
+	    else if (SWT.getPlatform().equals("carbon"))
+            extensionRegexp += "dylib";
+	    else
+            extensionRegexp += "so";
+	    ElementTreeSelectionDialog dialog
+	        = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(),
+	            new FilteredWorkbenchContentProvider(extensionRegexp));
+	    dialog.setTitle("Select Shared Libraries");
+	    dialog.setMessage("Select the library file(s) you want to load at the beginning of the simulation.\n" +
+	    		          "Multiple files can be selected.");
+	    dialog.setInput(getProject());
+	    dialog.setComparator(new ResourceComparator(ResourceComparator.NAME));
+	    if (dialog.open() == IDialogConstants.OK_ID) {
+	        String libfiles = "";
+	        for (Object resource : dialog.getResult()) {
+	            if (resource instanceof IFile)
+	                libfiles += ((IFile)resource).getProjectRelativePath().removeFileExtension().toString()+" ";
+	        }
+	        fLibraryText.setText(libfiles);
+	    }
+
+    }
 
 	@Override
     public boolean isValid(ILaunchConfiguration config) {
@@ -316,14 +479,20 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
 
     public void widgetSelected(SelectionEvent e) {
         if (!fOtherEnvButton.getSelection())
-            fOtherText.setText("");
-        fOtherText.setEnabled(fOtherEnvButton.getSelection());
+            fOtherEnvText.setText("");
+        fOtherEnvText.setEnabled(fOtherEnvButton.getSelection());
 
         updateLaunchConfigurationDialog();
     }
 
     public void modifyText(ModifyEvent e) {
         updateLaunchConfigurationDialog();
+        // enable/disable runs if config combo box has changed
+        if (e.widget == fConfigCombo) {
+            fRunText.setEnabled(isScenario());
+            if(!isScenario())
+                fRunText.setText("");
+        }
     }
 
     /**
@@ -379,13 +548,12 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
      * @return All the configuration names found in the supplied inifiles
      */
     private String [] getConfigNames(IFile[] inifiles) {
-        Set<String> result = new LinkedHashSet<String>();
-        result.add("");
+        Map<String,ConfigEnumeratorCallback.Section> sections = new LinkedHashMap<String, ConfigEnumeratorCallback.Section>();
         if (inifiles != null)
             for(IFile inifile : inifiles) {
                 InifileParser iparser = new InifileParser();
                 try {
-                    iparser.parse(inifile, new ConfigEnumeratorCallback(inifile, result));
+                    iparser.parse(inifile, new ConfigEnumeratorCallback(inifile, sections));
                 } catch (ParseException e) {
                     setErrorMessage("Error reading inifile: "+e.getMessage());
                 } catch (CoreException e) {
@@ -394,7 +562,37 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
                     setErrorMessage("Error reading inifile: "+e.getMessage());
                 }
             }
+        List<String> result = new ArrayList<String>();
+        result.add("");
+        for(ConfigEnumeratorCallback.Section sec : sections.values())
+            result.add(sec.toString());
         return result.toArray(new String[] {});
     }
 
+    /**
+     * @return Whether the currently selected line in the config combo is a scenario
+     */
+    private boolean isScenario() {
+        return fConfigCombo.getText().contains("(scenario)");
+    }
+
+    /**
+     * @return The currently selected config name (after stripping the comments an other stuff)
+     */
+    private String getConfigName() {
+        return StringUtils.substringBefore(fConfigCombo.getText(), "--").trim();
+    }
+
+    /**
+     * @param name The config name that should be selected from the drop down. If no match found
+     * the first empty line will be selected
+     */
+    private void setConfigName(String name) {
+        fConfigCombo.setText("");
+        for(String line : fConfigCombo.getItems())
+            if (line.startsWith(name)) {
+                fConfigCombo.setText(line);
+                return;
+            }
+    }
 }
