@@ -30,6 +30,7 @@
  *    for writing more powerful filters: introduce variables and assigment operator
  *    (=, +=, *=, ++, --, etc); allow several expressions separated by semicolon;
  *    implement 'for', 'while', 'if'; filternode to keep a variables table;
+ *    "init-expression" attr where user could initialize variables;
  *    possibly implement array variables as well.
  */
 class SCAVE_API CustomFilterNode : public FilterNode
