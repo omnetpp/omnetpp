@@ -303,8 +303,11 @@ class MathFunction : public Expression::Functor
     std::string funcname;
     double (*f)(...);
     int argcount;
+  public:
+    struct FuncDesc {const char *name; double (*f)(...); int argcount;};
   private:
-    static int argCountFor(const char *name);
+    static FuncDesc functable[];
+    static FuncDesc *lookup(const char *name);
   public:
     static bool supports(const char *name);
     MathFunction(const char *name);

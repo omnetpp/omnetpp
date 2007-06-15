@@ -528,29 +528,40 @@ bool Expression::isAConstant() const
 
 //----------------------
 
-static struct FuncDesc {const char *name; int argcount;} functable[] = {
-    {"acos",  1 },
-    {"asin",  1 },
-    {"atan",  1 },
-    {"atan2", 2 },
-    {"sin",   1 },
-    {"cos",   1 },
-    {"tan",   1 },
-    {"ceil",  1 },
-    {"floor", 1 },
-    {"exp",   1 },
-    {"pow",   2 },
-    {"sqrt",  1 },
-    {"fabs",  1 },
-    {"fmod",  2 },
-    {"hypot", 2 },
-    {"log",   1 },
-    {"log10", 1 },
-    {NULL,    0 }
+#define F0(name)   {#name, (double(*)(...)) (double(*)())name, 0}
+#define F1(name)   {#name, (double(*)(...)) (double(*)(double))name, 1}
+#define F2(name)   {#name, (double(*)(...)) (double(*)(double,double))name, 2}
+#define F3(name)   {#name, (double(*)(...)) (double(*)(double,double,double))name, 3}
+
+MathFunction::FuncDesc functable[] = {
+    F1(acos),
+    F1(asin),
+    F1(atan),
+    F2(atan2),
+    F1(sin),
+    F1(cos),
+    F1(tan),
+    F1(ceil),
+    F1(floor),
+    F1(exp),
+    F2(pow),
+    F1(sqrt),
+    F1(fabs),
+    F2(fmod),
+    F2(hypot),
+    F1(log),
+    F1(log10),
+    {NULL, NULL, 0}
 };
 
 MathFunction::MathFunction(const char *name)
 {
+    funcname = name;
+    FuncDesc *fd = lookup(funcname.c_str());
+    if (!fd)
+        throw opp_runtime_error("unrecognized function %s", name);
+    f = fd->f;
+    argcount = fd->argcount;
 }
 
 MathFunction::~MathFunction()
@@ -559,6 +570,7 @@ MathFunction::~MathFunction()
 
 Expression::Functor *MathFunction::dup() const
 {
+    return new MathFunction(name());
 }
 
 const char *MathFunction::name() const
@@ -566,22 +578,24 @@ const char *MathFunction::name() const
      return funcname.c_str();
 }
 
-int MathFunction::argCountFor(const char *name)
+MathFunction::FuncDesc *MathFunction::lookup(const char *name)
 {
     for (FuncDesc *f = functable; f->name!=NULL; f++)
         if (strcmp(f->name, name)==0)
-            return f->argcount;
-    return -1;
+            return f;
+    return NULL;
 }
 
 bool MathFunction::supports(const char *name)
 {
-    return argCountFor(name)>=0;
+    return lookup(name)!=NULL;
 }
 
 const char *MathFunction::argTypes() const
 {
-    int n = argCountFor(funcname.c_str());
+    Assert(Expression::StkValue::DBL == 'D');
+    FuncDesc *fd = lookup(funcname.c_str());
+    int n = fd==NULL ? 0 : fd->argcount;
     const char *ddd = "DDDDDDDDDDDDDDDDDD";
     return ddd+strlen(ddd)-n;
 }
@@ -591,20 +605,25 @@ char MathFunction::returnType() const
     return Expression::StkValue::DBL;
 }
 
-StkValue MathFunction::evaluate(StkValue args[], int numargs)
+Expression::StkValue MathFunction::evaluate(Expression::StkValue args[], int numargs)
 {
     Assert(numargs==argcount);
     switch (numargs)
     {
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-        default: throw new cRuntimeError("Too many args");
+        case 0: return f();
+        case 1: return f(args[0].dbl);
+        case 2: return f(args[0].dbl, args[1].dbl);
+        case 3: return f(args[0].dbl, args[1].dbl, args[2].dbl);
+        default: throw new opp_runtime_error("too many args");
     }
 }
 
 std::string MathFunction::toString(std::string args[], int numargs)
 {
+    std::string s = funcname+"(";
+    for (int i=0; i<numargs; i++)
+        s += (i==0 ? "" : ", ") + args[i];
+    s += ")";
+    return s;
 }
 
