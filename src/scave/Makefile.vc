@@ -15,7 +15,7 @@ IMPLIBS=../common/common.lib $(XML_LIBS)
 
 OBJS= arraybuilder.obj channel.obj commonnodes.obj compoundfilter.obj \
       dataflowmanager.obj datasorter.obj diffquot.obj \
-      filewriter.obj filternodes.obj stddev.obj \
+      filewriter.obj filternodes.obj customfilter.obj stddev.obj \
       idlist.obj mergernodes.obj nodetype.obj nodetyperegistry.obj \
       resultfilemanager.obj slidingwinavg.obj \
       vectorfilereader.obj vectorfilewriter.obj windowavg.obj \
@@ -113,6 +113,20 @@ compoundfilter.obj: compoundfilter.cc \
   channel.h \
   scavedefs.h \
   ../common/bigdecimal.h
+customfilter.obj: customfilter.cc \
+  channel.h \
+  customfilter.h \
+  ../common/commonutil.h \
+  node.h \
+  ../common/commondefs.h \
+  ../common/exception.h \
+  scavedefs.h \
+  ../common/bigdecimal.h \
+  commonnodes.h \
+  ../common/expression.h \
+  nodetype.h \
+  dataflowmanager.h \
+  ../common/stringutil.h
 dataflowmanager.obj: dataflowmanager.cc \
   channel.h \
   nodetype.h \

@@ -11,7 +11,7 @@ COPTS=$(CFLAGS) $(XML_CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR)/platdep
 
 OBJS= arraybuilder.o channel.o commonnodes.o compoundfilter.o \
       dataflowmanager.o datasorter.o diffquot.o \
-      filewriter.o filternodes.o stddev.o \
+      filewriter.o filternodes.o customfilter.o stddev.o \
       idlist.o mergernodes.o nodetype.o nodetyperegistry.o \
       resultfilemanager.o slidingwinavg.o \
       vectorfilereader.o vectorfilewriter.o windowavg.o \
