@@ -251,14 +251,14 @@ std::string SectionBasedConfiguration::unrollScenario(const char *scenarioName) 
 {
     int sectionId = resolveConfigName(scenarioName);
     if (sectionId == -1)
-        throw new cRuntimeError("No such scenarion: %s", scenarioName);
+        throw cRuntimeError("No such scenario: %s", scenarioName);
 
     // extract all iteration specs from values within this section
     std::vector<IterationSpec> v = collectIterationSpecs(sectionId);
     validateIterations(v);
 
     // see if there's a condition given
-    int conditionEntryId = internalFindEntry(sectionId, "condition");
+    int conditionEntryId = internalFindEntry(sectionId, "condition"); //XXX use constant (multiple places here!)
     const char *condition = conditionEntryId!=-1 ? ini->getEntry(sectionId, conditionEntryId).getValue() : NULL;
     return Scenario(v, condition).unroll();
 }
@@ -357,7 +357,7 @@ void SectionBasedConfiguration::validateIterations(const std::vector<IterationSp
         if (!loc.varname.empty() && !loc.value.empty())
         {
             if (varnames.find(loc.varname) != varnames.end())
-                throw new cRuntimeError("Iteration variable $%s defined multiple times in the configuration", loc.varname.c_str());
+                throw cRuntimeError("Iteration variable $%s defined multiple times in the configuration", loc.varname.c_str());
             varnames.insert(loc.varname);
         }
     }

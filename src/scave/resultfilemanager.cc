@@ -115,7 +115,7 @@ VectorResult::InterpolationMode VectorResult::getInterpolationMode() const
         else if (mode == "linear")
             return LINEAR;
         else
-            throw new opp_runtime_error("Unknown interpolation mode: %s", mode.c_str());
+            throw opp_runtime_error("Unknown interpolation mode: %s", mode.c_str());
     }
     else
     {

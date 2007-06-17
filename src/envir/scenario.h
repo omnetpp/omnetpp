@@ -21,6 +21,7 @@
 #include <string>
 #include "expression.h"
 #include "sectionbasedconfig.h"
+#include "valueiterator.h"
 
 
 /**
@@ -32,33 +33,43 @@ class Scenario
     typedef SectionBasedConfiguration::IterationSpec IterationSpec;
 
   private:
+    // the input
     const std::vector<IterationSpec>& iterspecs;
     Expression *condition;
+
+    // the iteration variables, named (${x=1..5}) and unnamed (${1..5})
+    std::vector<ValueIterator> itervars; // indices correspond to iterspecs[]
+    std::map<std::string, ValueIterator*> namedvars;
+
+  private:
+    bool resetVariables(); // false if there's no valid config at all
+    bool next();
+    bool inc();
 
   public:
     /**
      * Used in resolving and generating scenarios, it implements a $x iteration variable.
      * Currently just delegates SectonBasedConfiguration::getIterationVariable().
      */
-    class NodeVar : public Expression::Functor
+    class IterationVariable : public Expression::Functor
     {
       private:
         Scenario *hostnode;
         std::string varname;
       public:
-        NodeVar(Scenario *node, const char *name) {hostnode = node; varname = name;}
-        virtual ~NodeVar() {}
-        virtual Expression::Functor *dup() const {return new NodeVar(hostnode, varname.c_str());}
+        IterationVariable(Scenario *node, const char *name) {hostnode = node; varname = name;}
+        virtual ~IterationVariable() {}
+        virtual Expression::Functor *dup() const {return new IterationVariable(hostnode, varname.c_str());}
         virtual const char *name() const {return varname.c_str();}
         virtual const char *argTypes() const {return "";}
         virtual char returnType() const {return Expression::StkValue::DBL;}
         virtual Expression::StkValue evaluate(Expression::StkValue args[], int numargs)
-            {return hostnode->getVariable(varname.c_str());}
+            {return hostnode->getIterationVariable(varname.c_str());}
         virtual std::string toString(std::string args[], int numargs) {return name();}
     };
 
   protected:
-    Expression::StkValue getVariable(const char *varname);
+    Expression::StkValue getIterationVariable(const char *varname);
 
   public:
     Scenario(const std::vector<IterationSpec>& iterationSpecs, const char *condition);

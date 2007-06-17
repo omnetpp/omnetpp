@@ -88,7 +88,7 @@ class ValueIterator
     /**
      * Restarts the iteration.
      */
-    void reset();
+    void restart();
 
     /**
      * Moves the iterator to the next element.
@@ -99,7 +99,12 @@ class ValueIterator
      * Returns the current element. Result is undefined when the iteration is
      * over (end() returns true).
      */
-    std::string operator()();
+    std::string get();
+
+    /**
+     * Same as get().
+     */
+    std::string operator()()  {return get();}
 
     /**
      * Returns true when the iteration is over, that is, after invoking

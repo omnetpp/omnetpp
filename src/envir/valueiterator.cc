@@ -44,8 +44,7 @@ void ValueIterator::parse(const char *s)
         item.n = item.isNumeric ? std::max(0, (int)floor((item.to - item.from + item.step) / item.step)) : 1;
         items.push_back(item);
     }
-    itemIndex = k = 0;
-    while (items[++itemIndex].n == 0);
+    restart();
 }
 
 static const char *PARSEERROR = "Error in numeric range syntax `%s', <number>..<number> or <number>..<number> step <number> expected";
@@ -110,7 +109,7 @@ int ValueIterator::length() const
 std::string ValueIterator::get(int index) const
 {
     if (index<0 || index>length())
-        throw new cRuntimeError("ValueIterator: index %d out of bounds", index);
+        throw cRuntimeError("ValueIterator: index %d out of bounds", index);
 
     int k = 0;
     for (int i=0; i<items.size(); i++)
@@ -135,10 +134,10 @@ std::string ValueIterator::get(int index) const
     Assert(false);
 }
 
-void ValueIterator::reset()
+void ValueIterator::restart()
 {
     itemIndex = k = 0;
-    while (items[++itemIndex].n == 0);
+    while (itemIndex < items.size() && items[itemIndex].n == 0) itemIndex++;
 }
 
 void ValueIterator::operator++(int)
@@ -151,14 +150,23 @@ void ValueIterator::operator++(int)
     }
     else {
         k = 0;
-        while (items[++itemIndex].n == 0);
+        while (++itemIndex < items.size() && items[itemIndex].n == 0);
     }
 }
 
-std::string ValueIterator::operator()()
+std::string ValueIterator::get()
 {
-    //XXX
-    return "";
+    if (itemIndex >= items.size())
+        return "";
+    const Item& item = items[itemIndex];
+    if (!item.isNumeric) {
+        return item.text;
+    }
+    else {
+        char buf[32];
+        sprintf(buf, "%g", item.from + item.step*k);
+        return buf;
+    }
 }
 
 bool ValueIterator::end() const

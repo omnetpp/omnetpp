@@ -183,7 +183,7 @@ bool RunData::parseLine(char **tokens, int numTokens, const char *filename, int 
 }
 
 #undef CHECK
-#define CHECK(fprintf)    if (fprintf<0) throw new opp_runtime_error("Cannot write output file `%s'", filename)
+#define CHECK(fprintf)    if (fprintf<0) throw opp_runtime_error("Cannot write output file `%s'", filename)
 
 void RunData::writeToFile(FILE *file, const char *filename) const
 {

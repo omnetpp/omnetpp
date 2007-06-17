@@ -34,6 +34,10 @@ struct my_yyltype {
 #define YYLTYPE  struct my_yyltype
 #define YYSTYPE  char*
 
+
+#define xpos     expressionxpos
+#define xprevpos expressionxprevpos
+
 typedef struct {int li; int co;} LineColumn;
 extern LineColumn xpos, xprevpos;
 

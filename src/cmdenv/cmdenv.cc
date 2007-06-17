@@ -182,17 +182,21 @@ int TCmdenvApp::run()
 
     cConfiguration *cfg = getConfig();
 
+try{ //XXX just temp
     if (!opt_printnumruns.empty())
     {
-        ev.printfmsg("Scenario: %s\n", opt_printnumruns.c_str());
-        ev.printfmsg("Number of runs: %d\n", cfg->getNumRunsInScenario(opt_printnumruns.c_str()));
+        //XXX anything may throw exception here
+        ev.printf("Scenario: %s\n", opt_printnumruns.c_str());
+        ev.printf("Number of runs: %d\n", cfg->getNumRunsInScenario(opt_printnumruns.c_str()));
+        ::printf("\n%s\n", cfg->unrollScenario(opt_printnumruns.c_str()).c_str()); //FIXME only for debugging -- remove it
         return 0;
     }
+}catch (std::exception& e) {displayError(e);} //XXX just temp; maybe surround the whole run() with try/catch? maybe in cenvir.cc?
 
     // if the list of runs is not given explicitly, must execute all runs
     if (opt_runstoexec.empty())
     {
-        int n = cfg->getNumRunsInScenario(opt_configname.c_str());
+        int n = cfg->getNumRunsInScenario(opt_configname.c_str());  //XXX may throw exception
         char buf[32];
         sprintf(buf, (n==0 ? "" : n==1 ? "%d" : "0-%d"), n-1);
         opt_runstoexec = buf;

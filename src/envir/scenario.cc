@@ -19,6 +19,17 @@
 #include "valueiterator.h"
 #include "cexception.h"
 
+//FIXME something is wrong!
+// like output is garbage for this:
+//
+//   [Scenario test2]
+//   a = ${x=1..10}
+//   b = ${y=1..10}
+//   condition = $x < $y
+//
+// maybe string comparison takes place????
+//
+
 
 /**
  * Resolves variables ($x, $y) and functions (sin, fabs, etc) in expressions.
@@ -36,7 +47,7 @@ class Resolver : public Expression::Resolver
 
 Expression::Functor *Resolver::resolveVariable(const char *varname)
 {
-    return new Scenario::NodeVar(hostobject, varname);
+    return new Scenario::IterationVariable(hostobject, varname);
 }
 
 Expression::Functor *Resolver::resolveFunction(const char *funcname, int argcount)
@@ -45,7 +56,7 @@ Expression::Functor *Resolver::resolveFunction(const char *funcname, int argcoun
     if (MathFunction::supports(funcname))
         return new MathFunction(funcname);
     else
-        throw opp_runtime_error("Unrecognized function: %s()", funcname);
+        throw opp_runtime_error("Scenario generator: unrecognized function: %s()", funcname);
 }
 
 //----
@@ -53,6 +64,7 @@ Expression::Functor *Resolver::resolveFunction(const char *funcname, int argcoun
 Scenario::Scenario(const std::vector<IterationSpec>& iterationSpecs, const char *conditionText) :
 iterspecs(iterationSpecs)
 {
+    // store the condition
     condition = NULL;
     if (conditionText)
     {
@@ -60,33 +72,129 @@ iterspecs(iterationSpecs)
         Resolver resolver(this);
         condition->parse(conditionText, &resolver);
     }
+
+    // fill the variable tables
+    itervars.resize(iterspecs.size());
+    for (int i=0; i<iterspecs.size(); i++)
+    {
+        if (!iterspecs[i].value.empty())
+            itervars[i].parse(iterspecs[i].value.c_str());
+        if (!iterspecs[i].varname.empty() && !iterspecs[i].value.empty())
+            namedvars[iterspecs[i].varname] = &itervars[i];
+    }
 }
 
 Scenario::~Scenario()
 {
 }
 
+Expression::StkValue Scenario::getIterationVariable(const char *varname)
+{
+    if (varname[0]=='$')
+        varname++;
+    std::map<std::string,ValueIterator*>::iterator it = namedvars.find(varname);
+    if (it==namedvars.end())
+        throw cRuntimeError("Scenario generator: unknown iteration variable: %s", varname);
+    std::string value = it->second->get();
+    if (value[0]=='"')
+        ; //XXX strip quotes and return as string
+    else
+        ; //XXX convert to double!!!!
+    return value; //FIXME remove this line!!!!
+}
+
 int Scenario::getNumRuns()
 {
-    // and calculate Cartesian product
-    double count = 1; // we use double to eliminate risk of overflow
-    //XXX
+    if (!resetVariables())
+        return 0;
+    int count = 1;
+    while (next())
+        count++;  //XXX set some maximum!
+    return count;
+}
 
-    if (count > 1000000000)
-        throw cRuntimeError("Scenario generates too many runs: %g", count);
-    return (int) count;
+bool Scenario::resetVariables()
+{
+    // reset all iterators. If all of them are immediately at end(), there's no
+    // valid state and we must return false
+    bool ok = false;
+    for (int i=0; i<itervars.size(); i++)
+    {
+        itervars[i].restart();
+        if (!itervars[i].end())
+            ok = true;
+    }
+    if (ok==false)
+        return false;
+
+    // if there's a condition, make sure it holds
+    while (condition && condition->boolValue()==false)
+        if (!inc()) return false;
+    return true;
+}
+
+bool Scenario::next()
+{
+    if (!inc()) return false;
+
+    // if there's a condition, make sure it holds
+    while (condition && condition->boolValue()==false)
+        if (!inc()) return false;
+    return true;
+}
+
+bool Scenario::inc()
+{
+    // try incrementing the last iteration variable first
+    for (int k=itervars.size()-1; k>=0; k--)
+    {
+        itervars[k]++;
+        if (!itervars[k].end())
+            return true; // if incrementing was OK, we're done
+        else
+            itervars[k].restart(); // reset this counter, and go on incrementing the (k-1)th one
+    }
+    return false; // no variable could be incremented
 }
 
 std::vector<std::string> Scenario::generate(int runNumber)
 {
-    //XXX
-    return std::vector<std::string>();
+    // spin the iteration variables to the given run number
+    if (!resetVariables())
+        throw cRuntimeError("Scenario generator: iterators or condition too restrictive: not even one run can be generated");
+    for (int i=0; i<runNumber; i++)
+        if (!next())
+            throw cRuntimeError("Scenario generator: run number %d is out of range", runNumber);
+
+    // collect and return variables
+    std::vector<std::string> result(itervars.size());
+    for (int i=0; i<itervars.size(); i++)
+        result[i] = itervars[i].get();
+    return result;
 }
 
 std::string Scenario::unroll()
 {
-    //XXX
-    return "";
+    std::stringstream out;
+    if (!resetVariables())
+        return "No runs can be generated\n";
+    for (int runNumber=0; ; runNumber++)
+    {
+        out << "Run " << runNumber << ": ";
+        for (int i=0; i<itervars.size(); i++)
+            if (!itervars[i].get().empty()) {
+                out << (i>0 ? ", " : "");
+                if (iterspecs[i].varname.empty())
+                    out << "$" << i;
+                else
+                    out << "$" << iterspecs[i].varname;
+                out << "=" << itervars[i].get();
+            }
+        out << "\n";
+        if (!next())
+            break;
+    }
+    return out.str();
 }
 
 
