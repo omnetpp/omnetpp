@@ -23,7 +23,8 @@
 
 
 /**
- * Resolves variables (x, y) and functions (sin, fabs, etc) in CustomFilter expressions.
+ * Resolves variables (x, y) and functions (sin, fabs, etc) in
+ * CustomFilterNode expressions.
  */
 class Resolver : public Expression::Resolver
 {
@@ -89,7 +90,7 @@ double CustomFilterNode::getVariable(const char *varname)
     else if (varname[0]=='y' && varname[1]==0)
         return currentDatum.y;
     else
-        return 0.0;
+        return 0.0;  // cannot happen, as validation has already taken place in Resolver
 }
 
 //--

@@ -36,6 +36,10 @@
 class SCAVE_API CustomFilterNode : public FilterNode
 {
     public:
+        /**
+         * Implements a variable in the expression. Currently just delegates
+         * to CustomFilterNode::getVariable().
+         */
         class NodeVar : public Expression::Functor
         {
           private:
