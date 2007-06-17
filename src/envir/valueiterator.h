@@ -34,18 +34,23 @@
  * ValueIterator v;
  * v.parse("1, 2, foo, bar, 5..8, 10..100 step 10, 10..1 step -1, 1.2e8..1.6e8 step 1e+7");
  * v.dump();
- * v.dump();
  * </pre>
  */
 class ValueIterator
 {
   private:
+    // the parsed iteration spec
     struct Item {
         bool isNumeric; // discriminator between the following two
         std::string text;
         double from, to, step;
+        int n; // number of steps, calculated from (from,to,step)
     };
     std::vector<Item> items;
+
+    // iteration state
+    int itemIndex;  // index into items[]
+    int k;          // index within the item
 
   private:
     void parseAsNumericRegion(Item& item);
@@ -68,20 +73,44 @@ class ValueIterator
     void parse(const char *s);
 
     /**
-     * The length of the sequence, with numeric ranges expanded.
+     * Stateless access: returns the length of the sequence, with numeric
+     * ranges expanded. Does not change the state of the iterator.
      */
-    int length();
+    int length() const;
 
     /**
-     * Returns the ith value in the sequence. If i<0 or i>=length(),
-     * an error is thrown.
+     * Stateless access: returns the ith value in the sequence.
+     * If i<0 or i>=length(), an error is thrown.
+     * Does not change the state of the iterator.
      */
-    std::string get(int k);
+    std::string get(int k) const;
+
+    /**
+     * Restarts the iteration.
+     */
+    void reset();
+
+    /**
+     * Moves the iterator to the next element.
+     */
+    void operator++(int);
+
+    /**
+     * Returns the current element. Result is undefined when the iteration is
+     * over (end() returns true).
+     */
+    std::string operator()();
+
+    /**
+     * Returns true when the iteration is over, that is, after invoking
+     * operator++() after the last element.
+     */
+    bool end() const;
 
     /**
      * For debugging purposes
      */
-    void dump();
+    void dump() const;
 };
 
 #endif

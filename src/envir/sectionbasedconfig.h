@@ -12,8 +12,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef INIFILE_H_
-#define INIFILE_H_
+#ifndef SECTIONBASEDCONFIG_H_
+#define SECTIONBASEDCONFIG_H_
 
 #include <map>
 #include <vector>
@@ -62,13 +62,6 @@ class SectionBasedConfiguration : public cConfiguration
     // config entries (i.e. keys not containing a dot or wildcard)
     std::map<std::string,KeyValue1> config;  //XXX use const char * and StringPool
 
-    /* For storing the location of a "${...}" entry */
-    struct IterationSpecLocation {
-        int entryId;
-        int startPos;
-        int length;
-    };
-
     class KeyValue2 : public KeyValue1 {
       public:
         PatternMatcher *ownerPattern; // key without the group name (and without ".apply-default")
@@ -115,6 +108,20 @@ class SectionBasedConfiguration : public cConfiguration
     // getConfigEntry() etc return a reference to this object when the requested key is not found
     KeyValue1 blank;
 
+  public:
+    /**
+     * Used during scenario resulution: stores the location of an iteration
+     * spec "${...}" in the configuration. An iteration spec may be in
+     * one of the following forms: ${1,2,5,10}; ${x=1,2,5,10}; $x or ${x}.
+     */
+    struct IterationSpec {
+        int entryId;
+        int startPos;
+        int length;
+        std::string varname; // "x"; may be empty
+        std::string value;   // "1,2,5,10"; may be empty
+    };
+
   private:
     void clear();
     int internalFindSection(const char *section) const;
@@ -126,7 +133,8 @@ class SectionBasedConfiguration : public cConfiguration
     void addEntry(const KeyValue1& entry);
     static void splitKey(const char *key, std::string& outOwnerName, std::string& outGroupName, bool& outIsApplyDefault);
     void validateConfig() const;
-    std::vector<IterationSpecLocation> collectIterationSpecs(int sectionId) const;
+    std::vector<IterationSpec> collectIterationSpecs(int sectionId) const;
+    void validateIterations(const std::vector<IterationSpec>& list) const;
     KeyValue1 convert(const ConfigurationReader::KeyValue& e);
     void doActivateConfig(int sectionId);
     void doActivateScenario(int sectionId, int runNumber);

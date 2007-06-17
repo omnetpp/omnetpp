@@ -23,7 +23,8 @@
 
 ValueIterator::ValueIterator(const char *s)
 {
-    if (s!=NULL)
+    itemIndex = k = 0;
+    if (s)
         parse(s);
 }
 
@@ -40,8 +41,11 @@ void ValueIterator::parse(const char *s)
         Item item;
         item.text = tokenizer.nextToken();
         parseAsNumericRegion(item);
+        item.n = item.isNumeric ? std::max(0, (int)floor((item.to - item.from + item.step) / item.step)) : 1;
         items.push_back(item);
     }
+    itemIndex = k = 0;
+    while (items[++itemIndex].n == 0);
 }
 
 static const char *PARSEERROR = "Error in numeric range syntax `%s', <number>..<number> or <number>..<number> step <number> expected";
@@ -95,21 +99,15 @@ void ValueIterator::parseAsNumericRegion(Item& item)
     item.step = step;
 }
 
-int ValueIterator::length()
+int ValueIterator::length() const
 {
     int n = 0;
     for (int i=0; i<items.size(); i++)
-    {
-        Item& item = items[i];
-        if (!item.isNumeric)
-            n++;
-        else if (item.step > 0 ? item.to >= item.from : item.to <= item.from)
-            n += (int) floor((item.to - item.from + item.step) / item.step);
-    }
+        n += items[i].n;
     return n;
 }
 
-std::string ValueIterator::get(int index)
+std::string ValueIterator::get(int index) const
 {
     if (index<0 || index>length())
         throw new cRuntimeError("ValueIterator: index %d out of bounds", index);
@@ -117,33 +115,63 @@ std::string ValueIterator::get(int index)
     int k = 0;
     for (int i=0; i<items.size(); i++)
     {
-        Item& item = items[i];
+        const Item& item = items[i];
         if (!item.isNumeric)
         {
             if (k==index)
                 return item.text;
             k++;
         }
-        else if (item.step > 0 ? item.to >= item.from : item.to <= item.from)
+        else if (item.n > 0)
         {
-            int n = (int) floor((item.to - item.from + item.step) / item.step);
-            if (k <= index && index < k+n) {
+            if (k <= index && index < k+item.n) {
                 char buf[32];
                 sprintf(buf, "%g", item.from + item.step*(index-k));
                 return buf;
             }
-            k += n;
+            k += item.n;
         }
     }
     Assert(false);
 }
 
-void ValueIterator::dump()
+void ValueIterator::reset()
+{
+    itemIndex = k = 0;
+    while (items[++itemIndex].n == 0);
+}
+
+void ValueIterator::operator++(int)
+{
+    if (itemIndex >= items.size())
+        return;
+    const Item& item = items[itemIndex];
+    if (k < item.n-1) {
+        k++;
+    }
+    else {
+        k = 0;
+        while (items[++itemIndex].n == 0);
+    }
+}
+
+std::string ValueIterator::operator()()
+{
+    //XXX
+    return "";
+}
+
+bool ValueIterator::end() const
+{
+    return itemIndex >= items.size();
+}
+
+void ValueIterator::dump() const
 {
     printf("parsed form: ");
     for (int i=0; i<items.size(); i++)
     {
-        Item& item = items[i];
+        const Item& item = items[i];
         if (i>0) printf(", ");
         if (!item.isNumeric)
             printf("\"%s\"", item.text.c_str());
