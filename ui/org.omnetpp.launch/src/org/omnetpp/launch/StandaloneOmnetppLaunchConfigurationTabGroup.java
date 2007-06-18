@@ -11,13 +11,13 @@ import org.omnetpp.launch.tabs.OmnetppMainTab;
 public class StandaloneOmnetppLaunchConfigurationTabGroup extends AbstractLaunchConfigurationTabGroup {
 
     public StandaloneOmnetppLaunchConfigurationTabGroup() {
-        // TODO Auto-generated constructor stub
     }
 
     public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
         ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
                 new OmnetppMainTab(),
                 new EnvironmentTab(),
+//                new CArgumentsTab(),
                 new CommonTab()
             };
             setTabs(tabs);

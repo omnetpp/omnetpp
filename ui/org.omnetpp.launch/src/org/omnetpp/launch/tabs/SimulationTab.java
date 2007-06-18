@@ -16,7 +16,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.internal.ui.SWTFactory;
-import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
@@ -28,6 +27,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -41,14 +41,13 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.inifile.editor.model.ParseException;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
-import org.omnetpp.launch.LaunchPluging;
+import org.omnetpp.launch.LaunchPlugin;
 
 /**
  * A launch configuration tab that displays and edits omnetpp project
  */
-public class SimulationTab extends AbstractLaunchConfigurationTab implements
+public class SimulationTab extends OmnetppLaunchTab implements
             SelectionListener, ModifyListener {
-    protected static final String EMPTY_STRING = ""; //$NON-NLS-1$
 
 	// UI widgets
 	protected Text fInifileText;
@@ -61,8 +60,6 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
     protected Text fOtherEnvText;
     protected Text fLibraryText;
     protected Text fAdditionalText;
-    // config we are working on
-    protected ILaunchConfiguration config;
 
 
     /**
@@ -180,20 +177,22 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
 	 */
 	public void createControl(Composite parent) {
 		Composite comp = SWTFactory.createComposite(parent, 1, 1, GridData.FILL_HORIZONTAL);
+		createLibraryGroup(comp, 1);
 		createIniGroup(comp, 1);
         createConfigGroup(comp, 1);
         createUIGroup(comp, 1);
-        createLibraryGroup(comp, 1);
         createAdditionalGroup(comp, 1);
         setControl(comp);
 	}
 
 	protected void createIniGroup(Composite parent, int colSpan) {
-		Composite iniComp = SWTFactory.createComposite(parent, 3, colSpan, GridData.FILL_HORIZONTAL);
+		Composite comp = SWTFactory.createComposite(parent, 3, colSpan, GridData.FILL_HORIZONTAL);
+        GridLayout ld = (GridLayout)comp.getLayout();
+        ld.marginHeight = 1;
 
-		SWTFactory.createLabel(iniComp, "Initialization file(s):", 1);
+		SWTFactory.createLabel(comp, "Initialization file(s):", 1);
 
-		fInifileText = SWTFactory.createSingleText(iniComp, 1);
+		fInifileText = SWTFactory.createSingleText(comp, 1);
 		fInifileText.setToolTipText("The INI file(s) defining parameters and configuration blocks (default: omnetpp.ini)");
 		fInifileText.addModifyListener(this);
 		fInifileText.addFocusListener(new FocusAdapter() {
@@ -203,7 +202,7 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
             }
 		});
 
-		Button browseInifileButton = SWTFactory.createPushButton(iniComp, "Browse...", null);
+		Button browseInifileButton = SWTFactory.createPushButton(comp, "Browse...", null);
 		browseInifileButton.addSelectionListener(new SelectionAdapter() {
 			@Override
             public void widgetSelected(SelectionEvent evt) {
@@ -214,55 +213,57 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
 	}
 
     protected void createConfigGroup(Composite parent, int colSpan) {
-		Composite confComp = SWTFactory.createGroup(parent, "Configuration", 2, colSpan, GridData.FILL_HORIZONTAL);
+		Composite comp = SWTFactory.createGroup(parent, "Configuration", 2, colSpan, GridData.FILL_HORIZONTAL);
 
-        SWTFactory.createLabel(confComp, "Configuration name:",1);
+        SWTFactory.createLabel(comp, "Configuration name:",1);
 
-        fConfigCombo = SWTFactory.createCombo(confComp, SWT.BORDER | SWT.READ_ONLY, 1, new String[] {});
+        fConfigCombo = SWTFactory.createCombo(comp, SWT.BORDER | SWT.READ_ONLY, 1, new String[] {});
 		fConfigCombo.setToolTipText("The configuration from the INI file that should be executed");
 		fConfigCombo.setVisibleItemCount(10);
 		fConfigCombo.addModifyListener(this);
 
-		SWTFactory.createLabel(confComp, "Run number:",1);
+		SWTFactory.createLabel(comp, "Run number:",1);
 
-        fRunText = SWTFactory.createSingleText(confComp, 1);
+        fRunText = SWTFactory.createSingleText(comp, 1);
         fRunText.setToolTipText("The run number that should be executed");
         fRunText.addModifyListener(this);
 	}
 
     protected void createUIGroup(Composite parent, int colSpan) {
-        Composite runComp = SWTFactory.createComposite(parent, 5, colSpan, GridData.FILL_HORIZONTAL);
+        Composite comp = SWTFactory.createComposite(parent, 6, colSpan, GridData.FILL_HORIZONTAL);
 
-        SWTFactory.createLabel(runComp, "User interface:", 5);
+        SWTFactory.createLabel(comp, "User interface:", 1);
 
-        fDefaultEnvButton = SWTFactory.createRadioButton(runComp, "Default");
+        fDefaultEnvButton = SWTFactory.createRadioButton(comp, "Default");
         fDefaultEnvButton.setSelection(true);
         fDefaultEnvButton.addSelectionListener(this);
 
-        fCmdEnvButton = SWTFactory.createRadioButton(runComp, "Command line");
+        fCmdEnvButton = SWTFactory.createRadioButton(comp, "Command line");
         fCmdEnvButton.addSelectionListener(this);
 
-        fTkEnvButton = SWTFactory.createRadioButton(runComp, "Tcl/Tk");
+        fTkEnvButton = SWTFactory.createRadioButton(comp, "Tcl/Tk");
         fTkEnvButton.addSelectionListener(this);
 
-        fOtherEnvButton = SWTFactory.createRadioButton(runComp, "Other:");
+        fOtherEnvButton = SWTFactory.createRadioButton(comp, "Other:");
         fOtherEnvButton.addSelectionListener(this);
 
-        fOtherEnvText = SWTFactory.createSingleText(runComp, 1);
+        fOtherEnvText = SWTFactory.createSingleText(comp, 1);
         fOtherEnvText.setToolTipText("Specify the custom environment name");
         fOtherEnvText.addModifyListener(this);
     }
 
     protected void createLibraryGroup(Composite parent, int colSpan) {
-        Composite iniComp = SWTFactory.createComposite(parent, 3, colSpan, GridData.FILL_HORIZONTAL);
+        Composite comp = SWTFactory.createComposite(parent, 3, colSpan, GridData.FILL_HORIZONTAL);
+        GridLayout ld = (GridLayout)comp.getLayout();
+        ld.marginHeight = 1;
 
-        SWTFactory.createLabel(iniComp, "Dynamically loaded libraries:", 1);
+        SWTFactory.createLabel(comp, "Dynamically loaded libraries:", 1);
 
-        fLibraryText = SWTFactory.createSingleText(iniComp, 1);
+        fLibraryText = SWTFactory.createSingleText(comp, 1);
         fLibraryText.setToolTipText("DLLs or shared libraries to load (without extension)");
         fLibraryText.addModifyListener(this);
 
-        Button browseLibrariesButton = SWTFactory.createPushButton(iniComp, "Browse...", null);
+        Button browseLibrariesButton = SWTFactory.createPushButton(comp, "Browse...", null);
         browseLibrariesButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent evt) {
@@ -273,9 +274,12 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
     }
 
     protected void createAdditionalGroup(Composite parent, int colSpan) {
-        Composite iniComp = SWTFactory.createComposite(parent, 2, colSpan, GridData.FILL_HORIZONTAL);
-        SWTFactory.createLabel(iniComp, "Additional arguments:", 1);
-        fAdditionalText = SWTFactory.createSingleText(iniComp, 1);
+        Composite comp = SWTFactory.createComposite(parent, 2, colSpan, GridData.FILL_HORIZONTAL);
+        GridLayout ld = (GridLayout)comp.getLayout();
+        ld.marginHeight = 1;
+
+        SWTFactory.createLabel(comp, "Additional arguments:", 1);
+        fAdditionalText = SWTFactory.createSingleText(comp, 1);
         fAdditionalText.setToolTipText("Specify additonal command line arguments");
         fAdditionalText.addModifyListener(this);
     }
@@ -285,8 +289,9 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#initializeFrom(org.eclipse.debug.core.ILaunchConfiguration)
 	 */
     private enum ArgType {INI, CONFIG, RUN, UI, LIB, UNKNOWN};
-	public void initializeFrom(ILaunchConfiguration config) {
-	    this.config = config;
+	@Override
+    public void initializeFrom(ILaunchConfiguration config) {
+	    super.initializeFrom(config);
         try {
             ArgType nextType = ArgType.UNKNOWN;
             String args[] = StringUtils.split(config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, EMPTY_STRING));
@@ -356,7 +361,7 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
 
             updateConfigCombo();
         } catch (CoreException ce) {
-            LaunchPluging.logError(ce);
+            LaunchPlugin.logError(ce);
         }
 	}
 
@@ -439,7 +444,6 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
 	        }
 	        fLibraryText.setText(libfiles);
 	    }
-
     }
 
 	@Override
@@ -466,7 +470,7 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
 
 	@Override
 	public Image getImage() {
-	    return LaunchPluging.getImage("/icons/full/ctool16/omnetsim.gif");
+	    return LaunchPlugin.getImage("/icons/full/ctool16/omnetsim.gif");
 	}
 
 	public String getName() {
@@ -498,11 +502,13 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
     /**
      * @return The selected project if exist and open otherwise NULL
      */
-    private IProject getProject() {
+    protected IProject getProject() {
         IProject project = null;
         try {
-            project = ResourcesPlugin.getWorkspace().getRoot().getProject(config.getAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, EMPTY_STRING));
-        } catch (CoreException e) {}
+            String projectName = getCurrentLaunchConfiguration().getAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, EMPTY_STRING);
+            if (StringUtils.isNotEmpty(projectName))
+                project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+        } catch (Exception e) {}
         if (project == null || !project.isOpen())
             return null;
         return project;
@@ -594,5 +600,10 @@ public class SimulationTab extends AbstractLaunchConfigurationTab implements
                 fConfigCombo.setText(line);
                 return;
             }
+    }
+
+    @Override
+    public String getId() {
+        return "org.omnetpp.launch.simulationTab";
     }
 }

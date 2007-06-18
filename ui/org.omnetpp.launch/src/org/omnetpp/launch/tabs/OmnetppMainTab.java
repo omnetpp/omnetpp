@@ -1,5 +1,9 @@
 package org.omnetpp.launch.tabs;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -7,100 +11,101 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
+import org.eclipse.debug.internal.ui.SWTFactory;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
+import org.eclipse.ui.model.WorkbenchContentProvider;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.eclipse.ui.views.navigator.ResourceComparator;
 
 import org.omnetpp.launch.IOmnetppLaunchConstants;
-import org.omnetpp.launch.LaunchPluging;
+import org.omnetpp.launch.LaunchPlugin;
 
 /**
  * A launch configuration tab that displays and edits omnetpp project
  */
-public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
+public class OmnetppMainTab extends SimulationTab {
 
 	// Project UI widgets
-	protected Label fProjLabel;
 	protected Text fProjText;
-	protected Button fProjButton;
 
 	// Main class UI widgets
-	protected Label fProgLabel;
 	protected Text fProgText;
-	protected Button fSearchButton;
 
-	private final boolean dontCheckProgram;
-	protected static final String EMPTY_STRING = ""; //$NON-NLS-1$
+    /**
+     * Content provider displaying possible projects in the workspace
+     * @author rhornig
+     */
+    protected class ProjectWorkbenchContentProvider extends WorkbenchContentProvider {
+        @Override
+        public Object[] getChildren(Object element) {
+            List<Object> filteredChildren = new ArrayList<Object>();
+            for(Object child : super.getChildren(element)) {
+                if (child instanceof IProject && ((IProject)child).isAccessible())
+                    filteredChildren.add(child);
+            }
+            return filteredChildren.toArray();
+        }
+    };
 
-	public static final int DONT_CHECK_PROGRAM = 2;
-
-	public OmnetppMainTab() {
-		this(0);
-	}
-
-
-	public OmnetppMainTab(int flags) {
-		dontCheckProgram = (flags & DONT_CHECK_PROGRAM) != 0;
-	}
-
+    /**
+     * A workbench content provider that returns only executable files
+     * @author rhornig
+     */
+    protected class ExecutableWorkbenchContentProvider extends WorkbenchContentProvider {
+        @Override
+        public Object[] getChildren(Object element) {
+            List<Object> filteredChildren = new ArrayList<Object>();
+            for(Object child : super.getChildren(element)) {
+                if (child instanceof IFile &&
+                        (((IFile)child).getResourceAttributes().isExecutable() ||
+                                "exe".equals(((IFile)child).getFileExtension()) && SWT.getPlatform().equals("win32"))
+                        || getChildren(child).length > 0)
+                        filteredChildren.add(child);
+            }
+            return filteredChildren.toArray();
+        }
+    };
 	/*
 	 * (non-Javadoc)
 	 *
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#createControl(org.eclipse.swt.widgets.Composite)
 	 */
-	public void createControl(Composite parent) {
-		Composite comp = new Composite(parent, SWT.NONE);
-		setControl(comp);
-
-		GridLayout topLayout = new GridLayout();
-		comp.setLayout(topLayout);
-
-		createVerticalSpacer(comp, 1);
-		createProjectGroup(comp, 1);
-		createExeFileGroup(comp, 1);
-		createVerticalSpacer(comp, 1);
-	}
+	@Override
+    public void createControl(Composite parent) {
+        Composite comp = SWTFactory.createComposite(parent, 1, 1, GridData.FILL_HORIZONTAL);
+        createProjectGroup(comp, 1);
+        createExeFileGroup(comp, 1);
+        createLibraryGroup(comp, 1);
+        createIniGroup(comp, 1);
+        createConfigGroup(comp, 1);
+        createUIGroup(comp, 1);
+        createAdditionalGroup(comp, 1);
+        WorkingDirectoryBlock wb = new WorkingDirectoryBlock();
+        wb.createControl(comp);
+        setControl(comp);
+    }
 
 	protected void createProjectGroup(Composite parent, int colSpan) {
-		Composite projComp = new Composite(parent, SWT.NONE);
-		GridLayout projLayout = new GridLayout();
-		projLayout.numColumns = 2;
-		projLayout.marginHeight = 0;
-		projLayout.marginWidth = 0;
-		projComp.setLayout(projLayout);
-		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalSpan = colSpan;
-		projComp.setLayoutData(gd);
+		Composite projComp = SWTFactory.createComposite(parent, 3,colSpan,GridData.FILL_HORIZONTAL);
+		GridLayout ld = (GridLayout)projComp.getLayout();
+		ld.marginHeight = 1;
 
-		fProjLabel = new Label(projComp, SWT.NONE);
-		fProjLabel.setText("Simulation Project"); //$NON-NLS-1$
-		gd = new GridData();
-		gd.horizontalSpan = 2;
-		fProjLabel.setLayoutData(gd);
+		SWTFactory.createLabel(projComp, "Simulation Project:",1);
 
-		fProjText = new Text(projComp, SWT.SINGLE | SWT.BORDER);
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		fProjText.setLayoutData(gd);
-		fProjText.addModifyListener(new ModifyListener() {
+		fProjText = SWTFactory.createSingleText(projComp, 1);
+		fProjText.addModifyListener(this);
 
-			public void modifyText(ModifyEvent evt) {
-				updateLaunchConfigurationDialog();
-			}
-		});
-
-		fProjButton = createPushButton(projComp, "Browse...", null);
+		Button fProjButton = SWTFactory.createPushButton(projComp, "Browse...", null);
 		fProjButton.addSelectionListener(new SelectionAdapter() {
-
 			@Override
             public void widgetSelected(SelectionEvent evt) {
 				handleProjectButtonSelected();
@@ -110,40 +115,16 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
 	}
 
 	protected void createExeFileGroup(Composite parent, int colSpan) {
-		Composite mainComp = new Composite(parent, SWT.NONE);
-		GridLayout mainLayout = new GridLayout();
-		mainLayout.numColumns = 3;
-		mainLayout.marginHeight = 0;
-		mainLayout.marginWidth = 0;
-		mainComp.setLayout(mainLayout);
-		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalSpan = colSpan;
-		mainComp.setLayoutData(gd);
-		fProgLabel = new Label(mainComp, SWT.NONE);
-		fProgLabel.setText("Simulation Program");
-		gd = new GridData();
-		gd.horizontalSpan = 3;
-		fProgLabel.setLayoutData(gd);
-		fProgText = new Text(mainComp, SWT.SINGLE | SWT.BORDER);
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		fProgText.setLayoutData(gd);
-		fProgText.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent evt) {
-				updateLaunchConfigurationDialog();
-			}
-		});
+		Composite mainComp =  SWTFactory.createComposite(parent, 3,colSpan,GridData.FILL_HORIZONTAL);
+        GridLayout ld = (GridLayout)mainComp.getLayout();
+        ld.marginHeight = 1;
 
-		fSearchButton = createPushButton(mainComp, "Search Project...", null); //$NON-NLS-1$
-		fSearchButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-            public void widgetSelected(SelectionEvent evt) {
-				handleSearchButtonSelected();
-				updateLaunchConfigurationDialog();
-			}
-		});
+		SWTFactory.createLabel(mainComp, "Simulation Program:",1);
 
-		Button fBrowseForBinaryButton;
-		fBrowseForBinaryButton = createPushButton(mainComp, "Browse...", null); //$NON-NLS-1$
+		fProgText = SWTFactory.createSingleText(mainComp, 1);
+		fProgText.addModifyListener(this);
+
+		Button fBrowseForBinaryButton = SWTFactory.createPushButton(mainComp, "Browse...", null); //$NON-NLS-1$
 		fBrowseForBinaryButton.addSelectionListener(new SelectionAdapter() {
 			@Override
             public void widgetSelected(SelectionEvent evt) {
@@ -153,47 +134,20 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
 		});
 	}
 
-	protected void createTerminalOption(Composite parent, int colSpan) {
-		Composite mainComp = new Composite(parent, SWT.NONE);
-		GridLayout mainLayout = new GridLayout();
-		mainLayout.numColumns = 1;
-		mainLayout.marginHeight = 0;
-		mainLayout.marginWidth = 0;
-		mainComp.setLayout(mainLayout);
-		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalSpan = colSpan;
-		mainComp.setLayoutData(gd);
-
-	}
-
 	/*
 	 * (non-Javadoc)
 	 *
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#initializeFrom(org.eclipse.debug.core.ILaunchConfiguration)
 	 */
-	public void initializeFrom(ILaunchConfiguration config) {
-		updateProjectFromConfig(config);
-		updateProgramFromConfig(config);
-	}
-
-	protected void updateProjectFromConfig(ILaunchConfiguration config) {
-		String projectName = EMPTY_STRING;
-		try {
-			projectName = config.getAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, EMPTY_STRING);
-		} catch (CoreException ce) {
-            LaunchPluging.logError(ce);
-		}
-		fProjText.setText(projectName);
-	}
-
-	protected void updateProgramFromConfig(ILaunchConfiguration config) {
-		String programName = EMPTY_STRING;
-		try {
-			programName = config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, EMPTY_STRING);
-		} catch (CoreException ce) {
-			LaunchPluging.logError(ce);
-		}
-		fProgText.setText(programName);
+	@Override
+    public void initializeFrom(ILaunchConfiguration config) {
+	    super.initializeFrom(config);
+        try {
+            fProjText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, EMPTY_STRING));
+            fProgText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, EMPTY_STRING));
+        } catch (CoreException ce) {
+            LaunchPlugin.logError(ce);
+        }
 	}
 
 	/*
@@ -201,15 +155,11 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
 	 *
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#performApply(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
 	 */
-	public void performApply(ILaunchConfigurationWorkingCopy config) {
+	@Override
+    public void performApply(ILaunchConfigurationWorkingCopy config) {
+	    super.performApply(config);
         config.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, fProjText.getText());
         config.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, fProgText.getText());
-	}
-
-	/**
-	 * Show a dialog that lists all main types
-	 */
-	protected void handleSearchButtonSelected() {
 	}
 
 	/**
@@ -218,6 +168,18 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
 	 * the specified project.
 	 */
 	protected void handleBinaryBrowseButtonSelected() {
+        ElementTreeSelectionDialog dialog
+            = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(),
+                                                         new ExecutableWorkbenchContentProvider());
+        dialog.setAllowMultiple(false);
+        dialog.setTitle("Select Executable File");
+        dialog.setMessage("Select the executable file that should be started.\n");
+        dialog.setInput(getProject());
+        dialog.setComparator(new ResourceComparator(ResourceComparator.NAME));
+        if (dialog.open() == IDialogConstants.OK_ID && dialog.getFirstResult() instanceof IFile) {
+            String exefile = ((IFile)dialog.getFirstResult()).getProjectRelativePath().toString();
+            fProgText.setText(exefile);
+        }
 	}
 
 	/**
@@ -226,21 +188,30 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
 	 * the specified project.
 	 */
 	protected void handleProjectButtonSelected() {
+        ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(getShell(),
+                new WorkbenchLabelProvider(),
+                new ProjectWorkbenchContentProvider());
+        dialog.setAllowMultiple(false);
+        dialog.setTitle("Select a Project");
+        dialog.setMessage("Select an open project where the exectuable file is located\n");
+        dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
+        dialog.setComparator(new ResourceComparator(ResourceComparator.NAME));
+        if (dialog.open() == IDialogConstants.OK_ID && dialog.getFirstResult() instanceof IProject) {
+            String projectname = ((IProject) dialog.getFirstResult()).getFullPath().toString();
+            fProjText.setText(projectname);
+        }
 	}
 
 	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#isValid(org.eclipse.debug.core.ILaunchConfiguration)
-	 */
+     * (non-Javadoc)
+     *
+     * @see org.eclipse.debug.ui.ILaunchConfigurationTab#isValid(org.eclipse.debug.core.ILaunchConfiguration)
+     */
 	@Override
     public boolean isValid(ILaunchConfiguration config) {
 
-		setErrorMessage(null);
-		setMessage(null);
-
-		if (dontCheckProgram)
-			return true;
+	    if (!super.isValid(config))
+	        return false;
 
 		String name = fProjText.getText().trim();
 		if (name.length() == 0) {
@@ -283,26 +254,13 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
 		return true;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#setDefaults(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
-	 */
-	public void setDefaults(ILaunchConfigurationWorkingCopy config) {
-	}
+    @Override
+    public String getName() {
+        return "Main";
+    }
 
-	@Override
-	public Image getImage() {
-	    return LaunchPluging.getImage("/icons/full/ctool16/omnetsim.gif");
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#getName()
-	 */
-	public String getName() {
-		return "Simulation";
-	}
-
+    @Override
+    public String getId() {
+        return "org.omnetpp.launch.mainTab";
+    }
 }
