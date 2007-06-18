@@ -28,7 +28,7 @@ static double NaN = zero / zero;
 
 SequenceChartFacade::SequenceChartFacade(IEventLog *eventLog) : EventLogFacade(eventLog)
 {
-    timelineMode = NON_LINEAR;
+    timelineMode = NONLINEAR;
     timelineCoordinateSystemVersion = -1;
     timelineCoordinateOriginEventNumber = timelineCoordinateRangeStartEventNumber = timelineCoordinateRangeEndEventNumber = -1;
     timelineCoordinateOriginSimulationTime = -1;
@@ -83,9 +83,12 @@ double SequenceChartFacade::Event_getTimelineCoordinate(int64 ptr)
     return getTimelineCoordinate((IEvent*)ptr);
 }
 
-double SequenceChartFacade::getNonLinearTimelineCoordinateDelta(double simulationTimeDelta)
+double SequenceChartFacade::getTimelineCoordinateDelta(double simulationTimeDelta)
 {
-    return nonLinearMinimumTimelineCoordinateDelta + (1 - nonLinearMinimumTimelineCoordinateDelta) * atan(abs(simulationTimeDelta) / nonLinearFocus) / PI * 2;
+    if (timelineMode == STEP)
+        return 1;
+    else
+        return nonLinearMinimumTimelineCoordinateDelta + (1 - nonLinearMinimumTimelineCoordinateDelta) * atan(abs(simulationTimeDelta) / nonLinearFocus) / PI * 2;
 }
 
 double SequenceChartFacade::getTimelineCoordinate(int64 ptr, double lowerTimelineCoordinateCalculationLimit, double upperTimelineCoordinateCalculationLimit)
@@ -104,13 +107,14 @@ double SequenceChartFacade::getTimelineCoordinate(IEvent *event, double lowerTim
         double timelineCoordinate;
 
         switch (timelineMode) {
-            case LINEAR:
+            case SIMULATION_TIME:
                 timelineCoordinate = event->getSimulationTime().dbl() - timelineCoordinateOriginSimulationTime;
                 break;
-            case STEP:
+            case EVENT_NUMBER:
                 timelineCoordinate = event->getEventNumber() - timelineCoordinateOriginEventNumber;
                 break;
-            case NON_LINEAR:
+            case STEP:
+            case NONLINEAR:
                 {
                     IEvent *previousEvent = NULL;
                     bool forward = event->getEventNumber() > timelineCoordinateRangeEndEventNumber;
@@ -127,7 +131,7 @@ double SequenceChartFacade::getTimelineCoordinate(IEvent *event, double lowerTim
                         double previousSimulationTime = previousEvent->getSimulationTime().dbl();
                         double previousTimelineCoordinate = previousEvent->cachedTimelineCoordinate;
                         double simulationTime = currentEvent->getSimulationTime().dbl();
-                        double timelineCoordinateDelta = getNonLinearTimelineCoordinateDelta(simulationTime - previousSimulationTime);
+                        double timelineCoordinateDelta = getTimelineCoordinateDelta(simulationTime - previousSimulationTime);
 
                         if (forward) {
                             timelineCoordinate = previousTimelineCoordinate + timelineCoordinateDelta;
@@ -209,9 +213,9 @@ IEvent *SequenceChartFacade::getLastEventNotAfterTimelineCoordinate(double timel
         return NULL;
 
     switch (timelineMode) {
-        case LINEAR:
+        case SIMULATION_TIME:
             return eventLog->getLastEventNotAfterSimulationTime(getSimulationTimeForTimelineCoordinate(timelineCoordinate));
-        case STEP:
+        case EVENT_NUMBER:
             {
                 long eventNumber = (long)floor(timelineCoordinate) + timelineCoordinateOriginEventNumber;
 
@@ -220,7 +224,8 @@ IEvent *SequenceChartFacade::getLastEventNotAfterTimelineCoordinate(double timel
                 else
                     return eventLog->getLastEventNotAfterEventNumber(eventNumber);
             }
-        case NON_LINEAR:
+        case STEP:
+        case NONLINEAR:
             {
                 bool forward;
                 IEvent *currentEvent = getEventForNonLinearTimelineCoordinate(timelineCoordinate, forward);
@@ -240,9 +245,9 @@ IEvent *SequenceChartFacade::getFirstEventNotBeforeTimelineCoordinate(double tim
         return NULL;
 
     switch (timelineMode) {
-        case LINEAR:
+        case SIMULATION_TIME:
             return eventLog->getFirstEventNotBeforeSimulationTime(getSimulationTimeForTimelineCoordinate(timelineCoordinate));
-        case STEP:
+        case EVENT_NUMBER:
             {
                 long eventNumber = (long)floor(timelineCoordinate) + timelineCoordinateOriginEventNumber;
 
@@ -251,7 +256,8 @@ IEvent *SequenceChartFacade::getFirstEventNotBeforeTimelineCoordinate(double tim
                 else
                     return eventLog->getFirstEventNotBeforeEventNumber(eventNumber);
             }
-        case NON_LINEAR:
+        case STEP:
+        case NONLINEAR:
             {
                 bool forward;
                 IEvent *currentEvent = getEventForNonLinearTimelineCoordinate(timelineCoordinate, forward);
@@ -281,10 +287,10 @@ void SequenceChartFacade::extractSimulationTimesAndTimelineCoordinates(
         IEvent *firstEvent = eventLog->getFirstEvent();
         eventTimelineCoordinate = getTimelineCoordinate(firstEvent);
 
-        if (timelineMode == STEP)
+        if (timelineMode == EVENT_NUMBER)
             eventTimelineCoordinate -= 1;
         else
-            eventTimelineCoordinate -= getNonLinearTimelineCoordinateDelta(firstEvent->getSimulationTime().dbl());
+            eventTimelineCoordinate -= getTimelineCoordinateDelta(firstEvent->getSimulationTime().dbl());
     }
 
     // linear approximation between two enclosing events
@@ -308,14 +314,15 @@ double SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double timeli
 
     switch (timelineMode)
     {
-        case LINEAR:
+        case SIMULATION_TIME:
             {
                 double lastEventSimulationTime = eventLog->getLastEvent()->getSimulationTime().dbl();
                 simulationTime = std::max(0.0, std::min(lastEventSimulationTime, timelineCoordinate + timelineCoordinateOriginSimulationTime));
             }
             break;
+        case EVENT_NUMBER:
         case STEP:
-        case NON_LINEAR:
+        case NONLINEAR:
             {
                 IEvent *nextEvent;
                 double eventSimulationTime, eventTimelineCoordinate;
@@ -366,11 +373,12 @@ double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simula
 
     switch (timelineMode)
     {
-        case LINEAR:
+        case SIMULATION_TIME:
             timelineCoordinate = simulationTime - timelineCoordinateOriginSimulationTime;
             break;
+        case EVENT_NUMBER:
         case STEP:
-        case NON_LINEAR:
+        case NONLINEAR:
             {
                 IEvent *nextEvent;
                 double eventSimulationTime, eventTimelineCoordinate;

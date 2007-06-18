@@ -72,9 +72,10 @@ enum MatchKind
 };
 
 enum TimelineMode {
-	LINEAR,
-	STEP,
-	NON_LINEAR
+	SIMULATION_TIME,
+    EVENT_NUMBER,
+    STEP,
+	NONLINEAR
 };
 
 #endif
