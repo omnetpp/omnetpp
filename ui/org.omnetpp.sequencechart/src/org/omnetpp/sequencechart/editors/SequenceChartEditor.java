@@ -65,8 +65,11 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
 
 	@Override
 	public void dispose() {
-		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
-		getSite().getPage().removeSelectionListener(selectionListener);
+		if (resourceChangeListener != null)
+			ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
+		
+		if (selectionListener != null)
+			getSite().getPage().removeSelectionListener(selectionListener);
 	}
 
 	@Override

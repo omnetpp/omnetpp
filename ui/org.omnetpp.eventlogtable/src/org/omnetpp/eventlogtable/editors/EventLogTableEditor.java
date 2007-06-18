@@ -52,7 +52,8 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 
 	@Override
 	public void dispose() {
-		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
+		if (resourceChangeListener != null)
+			ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
 	}
 
 	@Override

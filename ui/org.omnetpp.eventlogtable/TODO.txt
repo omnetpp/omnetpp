@@ -46,7 +46,7 @@ Features:
    ...
  + navigation history
  + toolbar
- - property view
+ - property view for event log lines
  + viewer/editor mode
  + remember event log table position for the corresponding sequence chart,
    so when activating the sequence chart again then the event log viewer can show the last visited position

@@ -7,6 +7,7 @@ Features:
    + linear
    + step
    + non-linear
+   + parameterized non-linear
  - sort axis by:
    + user specified manual order
    + module id
@@ -27,13 +28,13 @@ Features:
    - display simulation time gutter
    - display info
    - display zero simulation time ranges
- + display simulation time for horizontal mouse position on gutter
+ + display simulation time for horizontal mouse position on the gutter
  + show multiple tooltip information:
    + event information
    + message send information
    + axis information
  - in memory filtering based on:
-   + event's processing compound or simple module selected from the module tree
+   + simple modules selected from the module tree
    - trace selected event
  + increase and decrease spacing between axis
  + mouse wheel
@@ -42,7 +43,7 @@ Features:
    + holding shift scrolls horizontally
  - context menu:
    + axis
-     + split space among axis evently
+     + split space among axis evenly
      + make axis dense
      + center axis
      + fit axis state value to window
@@ -58,13 +59,13 @@ Features:
  + double click traces the selected event and switches to filered view
  + toggle bookmark on selected event
  + switch back to unfiltered view
- + support specifying a vector from a vector file to be displayed on the axis
+ + support attaching and detaching a vector from a vector file to be displayed on the axis
  - display a separator where the timeline is filtered (timeline is not linear to pixel coordinates not even on the small scale)
  + make sequence chart horizontal scrollbar virtual (can't tell the exact size of the canvas)
  + scrolling with the horizontal scroll bar arrows and click near the thumb
  - write key frames during simulation to avoid linear search for reusing messages
  + toolbar icons
- - setup mouse gestures for easy navigation
+ + setup mouse gestures for easy navigation along the message dependencies
  + follow log file changes
  + event numbers on the bottom axis are not visible when axes are balanced
  + SVG export
@@ -73,5 +74,4 @@ Features:
 Known bugs:
  - hierarchical sorting sequence chart axes based on crossing arrows is broken
  - tracing events sometimes kills eclipse
- - attaching vector data does not balance axes in balanced mode
  

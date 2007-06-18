@@ -222,7 +222,7 @@ public class SequenceChart
 	private MenuManager menuManager;
 
 	/*************************************************************************************
-	 * INNER TYPES
+	 * PUBLIC INNER TYPES
 	 */
 	
 	public enum AxisSpacingMode {
@@ -232,9 +232,13 @@ public class SequenceChart
 
 	/**
 	 * Timeline mode determines the horizontal coordinate system in the sequence chart.
+	 * Simulation time and event number based means proportional to distance measured in pixels.
+	 * Step means subsequent events follow in a constant distance.
+	 * Nonlinear mode means distance measured in pixels is proportional to a nonlinear function of simulation time deltas.
 	 */
 	public enum TimelineMode {
-		LINEAR,
+		SIMULATION_TIME,
+		EVENT_NUMBER,
 		STEP,
 		NONLINEAR
 	}
@@ -291,9 +295,7 @@ public class SequenceChart
 				if (eventLogInput != null) {
 					org.eclipse.swt.graphics.Rectangle r = getClientArea();
 					setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(r.x, r.y + GUTTER_HEIGHT, r.width, r.height - GUTTER_HEIGHT * 2));
-	
-					if (axisSpacingMode == AxisSpacingMode.AUTO)
-						balanceAxisSpacing();
+					calculateAxisSpacing();
 				}
 			}
 		});
@@ -349,8 +351,6 @@ public class SequenceChart
 	 * Returns chart scale, that is, the number of pixels a "timeline unit" maps to.
      *
 	 * The meaning of "timeline unit" depends on the timeline mode (see enum TimelineMode).
-	 * For LINEAR mode it is <i>second</i> (simulation time), for STEP mode it is <i>event</i>,
-	 * and for NON_LINEAR mode it is calculated as a nonlinear function of simulation time deltas.
 	 */
 	public double getPixelPerTimelineCoordinate() {
 		return pixelPerTimelineCoordinate;	
@@ -388,9 +388,7 @@ public class SequenceChart
 	
 	public void setAxisSpacingMode(AxisSpacingMode axisSpacingMode) {
 		this.axisSpacingMode = axisSpacingMode;
-		
-		if (axisSpacingMode == AxisSpacingMode.AUTO)
-			balanceAxisSpacing();
+		calculateAxisSpacing();
 	}
 
 	/**
@@ -457,6 +455,7 @@ public class SequenceChart
 	 * Returns the current timeline mode.
 	 */
 	public TimelineMode getTimelineMode() {
+		
 		return TimelineMode.values()[sequenceChartFacade.getTimelineMode()];
 	}
 
@@ -892,7 +891,7 @@ public class SequenceChart
 	}
 	
 	/**
-	 * The event log (data) to be displayed in the chart
+	 * The event log (data) to be displayed in the chart.
 	 */
 	public IEventLog getEventLog() {
 		return eventLog;
@@ -1121,12 +1120,11 @@ public class SequenceChart
 		this.axisModules = axisModules;
 		this.axisRenderers = new IAxisRenderer[axisModules.size()];
 
-		for (ModuleTreeItem axisModule : axisModules)
-			setAxisRenderer(axisModule, new AxisLineRenderer(this));
-		calculateAxisModuleIndices();
+		for (int i = 0; i < axisRenderers.length; i++)
+			axisRenderers[i] = new AxisLineRenderer(this);
 
-		if (axisSpacingMode == AxisSpacingMode.AUTO)
-			balanceAxisSpacing();
+		calculateAxisModuleIndices();
+		calculateAxisSpacing();
 
 		axisModuleYs = null;
 		invalidVirtualSize = true;
@@ -1134,7 +1132,11 @@ public class SequenceChart
 		calculateAxisModuleIndices();
 		clearCanvasCacheAndRedraw();
 	}
-	
+
+	public IAxisRenderer getAxisRenderer(ModuleTreeItem axisModule) {
+		return axisRenderers[axisModules.indexOf(axisModule)];
+	}
+
 	/**
 	 * Associates the axis renderer with the given axis.
 	 */
@@ -1142,6 +1144,7 @@ public class SequenceChart
 		axisRenderers[axisModules.indexOf(axisModule)] = axisRenderer;
 		axisModuleYs = null;
 		invalidVirtualSize = true;
+		calculateAxisSpacing();
 		clearCanvasCacheAndRedraw();
 	}
 	
@@ -1178,8 +1181,7 @@ public class SequenceChart
 	}
 
 	/**
-	 * Calculates top y coordinates of axis bounding boxes based on height returned
-	 * by each axis.
+	 * Calculates top y coordinates of axis bounding boxes based on height returned by each axis.
 	 */
 	private void calculateAxisYs() {
 		axisModuleYs = new int[axisModules.size()];
@@ -1193,16 +1195,6 @@ public class SequenceChart
 
 			axisModuleYs[i] = (int)Math.round((AXIS_OFFSET + axisSpacing + y));
 		}
-	}
-	
-	/**
-	 * Distributes window space among axes evenly.
-	 */
-	private void balanceAxisSpacing() {
-		if (axisModules.size() == 0)
-			setAxisSpacing(0);
-		else
-			setAxisSpacing(Math.max(MINIMUM_AXIS_SPACING_TO_DISPLAY_LABELS, (double)(getViewportHeight() - AXIS_OFFSET * 2 - getSumAxesHeight()) / axisModules.size()));
 	}
 
 	/**
@@ -1239,26 +1231,25 @@ public class SequenceChart
 	}
 
 	/**
-	 * Calculates virtual size of canvas based on the last event's timeline coordinate.
+	 * Calculates virtual size of the canvas. The width is an approximation while height is precise.
 	 */
 	private void calculateVirtualSize() {
 		int height = getSumAxesHeight() + (int)Math.round(axisModules.size() * axisSpacing) + AXIS_OFFSET * 2;
 		setVirtualSize(getViewportWidth() * eventLog.getApproximateNumberOfEvents(), height);
+
 		invalidVirtualSize = false;
 	}
 
-	private int getSumAxesHeight() {
-		int height = 0;
-
-		for (IAxisRenderer axisRenderer : axisRenderers)
-			height += axisRenderer.getHeight();
-		
-		return height;
-	}
-
-	public void clearCanvasCacheAndRedraw() {
-		clearCanvasCache();
-		redraw();
+	/**
+	 * Distributes available window space among axes evenly if auto axis spacing mode is turned on.
+	 */
+	private void calculateAxisSpacing() {
+		if (axisSpacingMode == AxisSpacingMode.AUTO) {
+			if (axisModules.size() == 0)
+				setAxisSpacing(0);
+			else
+				setAxisSpacing(Math.max(MINIMUM_AXIS_SPACING_TO_DISPLAY_LABELS, (double)(getViewportHeight() - AXIS_OFFSET * 2 - getSumAxesHeight()) / axisModules.size()));
+		}
 	}
 
 	private void calculateStuff() {
@@ -1276,10 +1267,24 @@ public class SequenceChart
 
 		calculateTicks(getViewportWidth());
 	}
+
+	private int getSumAxesHeight() {
+		int height = 0;
+
+		for (IAxisRenderer axisRenderer : axisRenderers)
+			height += axisRenderer.getHeight();
+		
+		return height;
+	}
 	
 	/*************************************************************************************
 	 * DRAWING
 	 */
+
+	public void clearCanvasCacheAndRedraw() {
+		clearCanvasCache();
+		redraw();
+	}
 
 	@Override
 	protected void paint(GC gc) {
@@ -2203,7 +2208,7 @@ public class SequenceChart
 		BigDecimal rightSimulationTime = calculateTick(viewportWidth, 1);
 		tickPrefix = TimeUtils.commonPrefix(leftSimulationTime, rightSimulationTime);
 
-		if (getTimelineMode() == TimelineMode.LINEAR) {
+		if (getTimelineMode() == TimelineMode.SIMULATION_TIME) {
 			// puts ticks to constant distance from each other measured in timeline units
 			int tickScale = (int)Math.ceil(Math.log10(TICK_SPACING / pixelPerTimelineCoordinate));
 			BigDecimal tickSpacing = BigDecimal.valueOf(TICK_SPACING / pixelPerTimelineCoordinate);
@@ -2767,8 +2772,10 @@ public class SequenceChart
 	 */
 	public void collectStuffUnderMouse(int mouseX, int mouseY, List<IEvent> events, List<IMessageDependency> msgs) {
 		if (eventLog != null) {
-			mouseY -= GUTTER_HEIGHT;
 			long startMillis = System.currentTimeMillis();
+
+			mouseY -= GUTTER_HEIGHT;
+			calculateStuff();
 		
 			// determine start/end event numbers
 			int width = getViewportWidth();

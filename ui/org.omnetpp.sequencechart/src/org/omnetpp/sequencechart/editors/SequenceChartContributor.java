@@ -82,6 +82,7 @@ import org.omnetpp.sequencechart.SequenceChartPlugin;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
 import org.omnetpp.sequencechart.widgets.VectorFileUtil;
 import org.omnetpp.sequencechart.widgets.SequenceChart.AxisSpacingMode;
+import org.omnetpp.sequencechart.widgets.axisrenderer.AxisLineRenderer;
 import org.omnetpp.sequencechart.widgets.axisrenderer.AxisVectorBarRenderer;
 
 
@@ -247,7 +248,12 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 
 					subMenuManager.add(createCenterAxisAction(axisModule));
 					subMenuManager.add(createZoomToAxisValueAction(axisModule, p.x));
-					subMenuManager.add(createAttachVectorToAxisAction(axisModule));
+					
+					if (sequenceChart.getAxisRenderer(axisModule) instanceof AxisLineRenderer)
+						subMenuManager.add(createAttachVectorToAxisAction(axisModule));
+					else
+						subMenuManager.add(createDetachVectorFromAxisAction(axisModule));
+
 					menuManager.add(separatorAction);
 				}
 
@@ -336,12 +342,13 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 				return new AbstractMenuCreator() {
 					@Override
 					protected void createMenu(Menu menu) {
-						addSubMenuItem(menu, "Linear", SequenceChart.TimelineMode.LINEAR);
+						addSubMenuItem(menu, "Linear", SequenceChart.TimelineMode.SIMULATION_TIME);
+						addSubMenuItem(menu, "Event number", SequenceChart.TimelineMode.EVENT_NUMBER);
 						addSubMenuItem(menu, "Step", SequenceChart.TimelineMode.STEP);
 						addSubMenuItem(menu, "Nonlinear", SequenceChart.TimelineMode.NONLINEAR);
 
 						MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
-						subMenuItem.setText("Custom...");
+						subMenuItem.setText("Custom nonlinear...");
 						subMenuItem.addSelectionListener( new SelectionAdapter() {
 							public void widgetSelected(SelectionEvent e) {
 								TitleAreaDialog dialog = new TitleAreaDialog(Display.getCurrent().getActiveShell()) {
@@ -934,6 +941,16 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		};
 	}
 
+	private SequenceChartAction createDetachVectorFromAxisAction(final ModuleTreeItem axisModule) {
+		return new SequenceChartAction("Detach Vector from Axis", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_ATTACH_VECTOR_TO_AXIS)) {
+			@Override
+			public void run() {
+				sequenceChart.setAxisRenderer(axisModule, new AxisLineRenderer(sequenceChart));
+			}
+		};
+	}
+
+	
 	private SequenceChartAction createToggleBookmarkAction() {
 		return new SequenceChartAction("Toggle bookmark", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_TOGGLE_BOOKMARK)) {
 			@Override
