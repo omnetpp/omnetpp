@@ -309,7 +309,7 @@ void TimeDiffNode::process()
         Datum d;
         in()->read(&d,1);
 
-        d.y -= d.x - prevx;
+        d.y = d.x - prevx;
         prevx = d.x;
 
         out()->write(&d,1);
