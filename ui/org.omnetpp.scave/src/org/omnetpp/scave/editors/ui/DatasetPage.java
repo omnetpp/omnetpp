@@ -1,6 +1,8 @@
 package org.omnetpp.scave.editors.ui;
 
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -15,6 +17,7 @@ import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ScaveModelPackage;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 //FIXME close this page when dataset gets deleted
 public class DatasetPage extends ScaveEditorPage {
@@ -80,5 +83,18 @@ public class DatasetPage extends ScaveEditorPage {
 		notifier.removeListener(modelChangeListener);
 
 		super.dispose();
+	}
+
+	@Override
+	public boolean gotoObject(Object object) {
+		if (object instanceof EObject) {
+			EObject eobject = (EObject)object;
+			if (EcoreUtil.isAncestor(dataset, eobject)) {
+				if (getDatasetTreeViewer() != null)
+					getDatasetTreeViewer().reveal(object);
+				return true;
+			}
+		}
+		return false;
 	}
 }

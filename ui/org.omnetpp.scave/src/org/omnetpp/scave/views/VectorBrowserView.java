@@ -154,6 +154,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 				gotoEventAction.setEnabled(hasEventNumbers);
 				setEventNumberColumnVisible(hasEventNumbers);
 			}
+			viewer.redraw();
 		}
 	}
 	

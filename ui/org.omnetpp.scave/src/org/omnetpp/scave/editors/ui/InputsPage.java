@@ -1,5 +1,6 @@
 package org.omnetpp.scave.editors.ui;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -26,6 +27,8 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Analysis;
+import org.omnetpp.scave.model.InputFile;
+import org.omnetpp.scave.model.Inputs;
 
 public class InputsPage extends ScaveEditorPage {
 
@@ -197,5 +200,19 @@ public class InputsPage extends ScaveEditorPage {
 		configureViewerDefaultAction(
 				dataPanel.getLogicalTreeViewer(),
 				new SetFilterAction());
+	}
+
+	@Override
+	public boolean gotoObject(Object object) {
+		if (object instanceof InputFile) {
+			TreeViewer viewer = getInputFilesTreeViewer();
+			viewer.reveal(object);
+			return true;
+		}
+		else if (object instanceof Inputs) {
+			return true;
+		}
+			
+		return false;
 	}
 }

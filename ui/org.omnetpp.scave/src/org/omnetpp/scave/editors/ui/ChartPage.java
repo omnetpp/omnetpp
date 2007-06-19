@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -239,5 +240,16 @@ public class ChartPage extends ScaveEditorPage {
 		Map<String,Object> map = new HashMap<String, Object>();
 		map.put(key1, value1);
 		return map;
+	}
+
+	@Override
+	public boolean gotoObject(Object object) {
+		if (object instanceof EObject) {
+			EObject eobject = (EObject)object;
+			if (EcoreUtil.isAncestor(chart, eobject)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

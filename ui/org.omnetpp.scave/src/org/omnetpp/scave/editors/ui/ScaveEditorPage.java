@@ -306,5 +306,8 @@ public class ScaveEditorPage extends ScrolledForm {
 	 */
 	public void pageSelected() {
 	}
-
+	
+	public boolean gotoObject(Object object) {
+		return false;
+	}
 }

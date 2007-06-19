@@ -572,7 +572,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 				editorSelection = selection;
 				 // FIXME notifying the view about IDListSelections would remove the selection from the editor!
 				if (!(selection instanceof IDListSelection)) {
-					setViewerSelectionNoNotify(contentOutlineViewer, selection);
+					//setViewerSelectionNoNotify(contentOutlineViewer, selection);
 					updateStatusLineManager(contentOutlineStatusLineManager, selection);
 				}
 				updateStatusLineManager(getActionBars().getStatusLineManager(), selection);
@@ -772,7 +772,8 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 					contentOutlineViewer.setLabelProvider(
 							new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(adapterFactory)));
 					initializeContentOutlineViewer(contentOutlineViewer); // should call setInput()
-
+					contentOutlineViewer.expandToLevel(3);
+					
 					// Make sure our popups work.
 					//
 					createContextMenuFor(contentOutlineViewer);

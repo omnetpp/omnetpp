@@ -1,5 +1,7 @@
 package org.omnetpp.scave.editors.ui;
 
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.edit.provider.DelegatingWrapperItemProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -14,6 +16,9 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.CustomSashForm;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Analysis;
+import org.omnetpp.scave.model.ChartSheets;
+import org.omnetpp.scave.model.Datasets;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * Scave page which displays datasets and chart sheets.
@@ -106,6 +111,27 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 		//chartSheetsSection.setExpanded(true); XXX SWT bug: must be after setText() if present, otherwise text won't appear!
 		chartSheetsTreeViewer = new TreeViewer(formToolkit.createTree(chartSheetsSection, SWT.BORDER | SWT.MULTI));
 		chartSheetsSection.setClient(chartSheetsTreeViewer.getTree());
+	}
+
+	@Override
+	public boolean gotoObject(Object object) {
+		if (object instanceof EObject) {
+			EObject eobject = (EObject)object;
+			if (ScaveModelUtil.findEnclosingOrSelf(eobject, Datasets.class) != null) {
+				getDatasetsTreeViewer().reveal(eobject);
+				return true;
+			}
+			else if (ScaveModelUtil.findEnclosingOrSelf(eobject, ChartSheets.class) != null) {
+				getChartSheetsTreeViewer().reveal(eobject);
+				return true;
+			}
+		}
+		else if (object instanceof DelegatingWrapperItemProvider) {
+			DelegatingWrapperItemProvider wrapper = (DelegatingWrapperItemProvider)object;
+			getChartSheetsTreeViewer().reveal(wrapper);
+			return true;
+		}
+		return false;
 	}
 }
 

@@ -24,6 +24,8 @@ import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Control;
@@ -31,6 +33,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.editors.ui.ChartPage;
@@ -263,12 +266,18 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 
 	public ScaveEditorPage getActiveEditorPage() {
 		int i = getActivePage();
-		if (i >= 0) {
-			Control page = getControl(i);
-			if (page instanceof ScaveEditorPage)
-				return (ScaveEditorPage)page;
-		}
-		return null;
+		if (i >= 0)
+			return getEditorPage(i);
+		else
+			return null;
+	}
+	
+	public ScaveEditorPage getEditorPage(int pageIndex) {
+		Control page = getControl(pageIndex);
+		if (page instanceof ScaveEditorPage)
+			return (ScaveEditorPage)page;
+		else
+			return null;
 	}
 
 	/**
@@ -350,13 +359,38 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	public void showDatasetsPage() {
 		showPage(getDatasetsPage());
 	}
-
-
+	
 	public void showPage(ScaveEditorPage page) {
 		int pageIndex = findPage(page);
 		if (pageIndex >= 0)
 			setActivePage(pageIndex);
 	}
+
+	public void gotoObject(Object object) {
+		if (object instanceof EObject) {
+			EObject eobject = (EObject)object;
+			if (getAnalysis() == null || eobject.eResource() != getAnalysis().eResource())
+				return;
+		}
+		
+		ScaveEditorPage activePage = getActiveEditorPage();
+		if (activePage != null) {
+			if (activePage.gotoObject(object))
+				return;
+		}
+		int activePageIndex = -1;
+		for (int pageIndex = getPageCount()-1; pageIndex >= 0; --pageIndex) {
+			ScaveEditorPage page = getEditorPage(pageIndex);
+			if (page != null && page.gotoObject(object)) {
+				activePageIndex = pageIndex;
+				break;
+			}
+		}
+		if (activePageIndex >= 0) {
+			setActivePage(activePageIndex);
+		}
+	}
+	
 
 	public void setPageTitle(ScaveEditorPage page, String title) {
 		int pageIndex = findPage(page);
@@ -437,6 +471,30 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 			if (page instanceof DatasetPage) {
 				setViewerSelectionNoNotify(((DatasetPage)page).getDatasetTreeViewer(), selection);
 			}
+		}
+		
+	}
+
+	
+	@Override
+	public IContentOutlinePage getContentOutlinePage() {
+		if (contentOutlinePage == null) {
+			super.getContentOutlinePage();
+			contentOutlinePage.addSelectionChangedListener(new ISelectionChangedListener() {
+				public void selectionChanged(SelectionChangedEvent event) {
+					contentOutlineSelectionChanged(event.getSelection());
+				}
+			});
+		}
+		return contentOutlinePage;
+	}
+
+	protected void contentOutlineSelectionChanged(ISelection selection) {
+		if (selection instanceof IStructuredSelection) {
+			Object object = ((IStructuredSelection)selection).getFirstElement();
+			//System.out.println("Selected: "+object);
+			if (object != null)
+				gotoObject(object);
 		}
 	}
 

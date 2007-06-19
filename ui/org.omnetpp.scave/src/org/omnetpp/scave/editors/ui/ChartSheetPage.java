@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
@@ -124,5 +125,21 @@ public class ChartSheetPage extends ScaveEditorPage {
 
 	private static String getChartSheetName(ChartSheet chartSheet) {
 		return chartSheet.getName() != null ? chartSheet.getName() : "<unnamed>";
+	}
+
+	@Override
+	public boolean gotoObject(Object object) {
+		if (object == chartsheet) {
+			return true;
+		}
+		if (object instanceof EObject) {
+			EObject eobject = (EObject)object;
+			for (Chart chart : chartsheet.getCharts())
+				if (chart == eobject) {
+					// TODO scroll to chart
+					return true;
+				}
+		}
+		return false;
 	}
 }
