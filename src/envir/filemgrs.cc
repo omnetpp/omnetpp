@@ -47,11 +47,11 @@ Register_Class(cFileOutputVectorManager);
 
 #define DEFAULT_PRECISION  "14"
 
-Register_GlobalConfigEntry(CFGID_OUTPUT_VECTOR_FILE, "output-vector-file", CFG_FILENAME, "omnetpp.vec", "Name for the output vector file."); //XXX desc: what macros are expanded in the filename
-Register_GlobalConfigEntry(CFGID_OUTPUT_VECTOR_PRECISION, "output-vector-precision", CFG_INT, DEFAULT_PRECISION, "Adjusts the number of significant digits for recording numbers into the output vector file.");
-Register_GlobalConfigEntry(CFGID_OUTPUT_SCALAR_FILE, "output-scalar-file", CFG_FILENAME, "omnetpp.sca", "Name for the output scalar file."); //XXX desc: what macros are expanded in the filename
-Register_GlobalConfigEntry(CFGID_OUTPUT_SCALAR_PRECISION, "output-scalar-precision", CFG_INT, DEFAULT_PRECISION, "Adjusts the number of significant digits for recording numbers into the output scalar file.");
-Register_GlobalConfigEntry(CFGID_SNAPSHOT_FILE, "snapshot-file", CFG_FILENAME, "omnetpp.sna", "Name of the snapshot file.");
+Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_FILE, "output-vector-file", CFG_FILENAME, "omnetpp.vec", "Name for the output vector file."); //XXX desc: what macros are expanded in the filename
+Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_PRECISION, "output-vector-precision", CFG_INT, DEFAULT_PRECISION, "Adjusts the number of significant digits for recording numbers into the output vector file.");
+Register_PerRunConfigEntry(CFGID_OUTPUT_SCALAR_FILE, "output-scalar-file", CFG_FILENAME, "omnetpp.sca", "Name for the output scalar file."); //XXX desc: what macros are expanded in the filename
+Register_PerRunConfigEntry(CFGID_OUTPUT_SCALAR_PRECISION, "output-scalar-precision", CFG_INT, DEFAULT_PRECISION, "Adjusts the number of significant digits for recording numbers into the output scalar file.");
+Register_PerRunConfigEntry(CFGID_SNAPSHOT_FILE, "snapshot-file", CFG_FILENAME, "omnetpp.sna", "Name of the snapshot file.");
 
 Register_PerObjectConfigEntry(CFGID_OUTVECTOR_EVENT_NUMBERS, "record-event-numbers", CFG_BOOL, "true", "Whether to record event numbers for an output vector. Simulation time and value are always recorded. Event numbers are needed by the Sequence Chart Tool, for example.");
 
@@ -83,7 +83,7 @@ void cFileOutputVectorManager::openFile()
 {
     f = fopen(fname.c_str(),"a");
     if (f==NULL)
-        throw cRuntimeError("Cannot open output file `%s'",fname.c_str());
+        throw cRuntimeError("Cannot open output vector file `%s'",fname.c_str());
 }
 
 void cFileOutputVectorManager::closeFile()
@@ -303,7 +303,7 @@ void cFileOutputScalarManager::openFile()
 {
     f = fopen(fname.c_str(),"a");
     if (f==NULL)
-        throw cRuntimeError("Cannot open output file `%s'",fname.c_str());
+        throw cRuntimeError("Cannot open output scalar file `%s'",fname.c_str());
 }
 
 void cFileOutputScalarManager::closeFile()

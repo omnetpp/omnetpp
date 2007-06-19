@@ -53,6 +53,14 @@ class ConfigurationReader
     virtual const char *getFileName() const = 0;
 
     /**
+     * Returns the directory defaulted filenames should be understood to be
+     * relative to. For example, if the name of the output vector file is
+     * not explicitly configured, it defaults to "omnetpp.vec" in the
+     * default base directory.
+     */
+    virtual const char *getDefaultBaseDirectory() const = 0;
+
+    /**
      * Returns the number of sections in the configuration.
      */
     virtual int getNumSections() const = 0;

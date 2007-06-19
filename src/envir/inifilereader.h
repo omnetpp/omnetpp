@@ -49,6 +49,7 @@ class InifileReader : public ConfigurationReader
     };
 
     std::string rootfilename;  // name of "root" ini file read
+    std::string defaultbasedir; // the default base directory
 
     typedef std::set<std::string> StringSet;
     StringSet filenames; // stores ini file names (absolute paths)
@@ -75,6 +76,7 @@ class InifileReader : public ConfigurationReader
     /** @name Methods implementing ConfigurationReader */
     //@{
     virtual const char *getFileName() const;
+    virtual const char *getDefaultBaseDirectory() const;
     virtual int getNumSections() const;
     virtual const char *getSectionName(int sectionId) const;
     virtual int getNumEntries(int sectionId) const;

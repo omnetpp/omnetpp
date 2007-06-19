@@ -105,8 +105,19 @@ class SectionBasedConfiguration : public cConfiguration
     std::map<std::string,Group> groups;
     Group wildcardGroup;
 
-    // getConfigEntry() etc return a reference to this object when the requested key is not found
-    KeyValue1 blank;
+    // getConfigEntry() etc return a reference to nullEntry when the
+    // requested key is not found
+    class NullKeyValue : public cConfiguration::KeyValue
+    {
+      private:
+        std::string defaultBasedir;
+      public:
+        void setBaseDirectory(const char *s) {defaultBasedir = s;}
+        virtual const char *getKey() const   {return NULL;}
+        virtual const char *getValue() const {return NULL;}
+        virtual const char *getBaseDirectory() const {return defaultBasedir.c_str();}
+    };
+    NullKeyValue nullEntry;
 
   public:
     /**

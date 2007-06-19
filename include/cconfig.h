@@ -162,7 +162,8 @@ class ENVIR_API cConfiguration : public cObject
     /**
      * Like getConfigValue(), but this one returns information about the
      * whole inifile entry, not just the value string.
-     * Returns a blank object if the key is not found.
+     * If the key is not found, a special KeyValue object is returned
+     * where both key and value are NULL.
      *
      * Lifetime of the returned object might be limited, so clients
      * should not store references to it.
@@ -188,7 +189,8 @@ class ENVIR_API cConfiguration : public cObject
     /**
      * Like getParameterValue(), but this one returns information about the
      * whole inifile entry, not just the value string.
-     * Returns a blank object if the key is not found.
+     * If the key is not found, a special KeyValue object is returned
+     * where both key and value are NULL.
      *
      * Lifetime of the returned object might be limited, so clients
      * should not store references to it.
@@ -204,7 +206,8 @@ class ENVIR_API cConfiguration : public cObject
     /**
      * Like getPerObjectConfigValue(), but this one returns information about the
      * whole inifile entry, not just the value string.
-     * Returns a blank object if the key is not found.
+     * If the key is not found, a special KeyValue object is returned
+     * where both key and value are NULL.
      *
      * Lifetime of the returned object might be limited, so clients
      * should not store references to it.

@@ -48,6 +48,7 @@ void SectionBasedConfiguration::setConfigurationReader(ConfigurationReader *ini)
 {
     clear();
     this->ini = ini;
+    nullEntry.setBaseDirectory(ini->getDefaultBaseDirectory());
     validateConfig();
 }
 
@@ -209,10 +210,6 @@ void SectionBasedConfiguration::doActivateScenario(int sectionId, int runNumber)
         actualEntry.value = actualValue;
         addEntry(actualEntry);
     }
-
-    // scenario is based on its "extends=" config, so add those entries as well
-    int extendsEntryId = internalFindEntry(section.c_str(), "extends");
-    const char *extends = extendsEntryId == -1 ? NULL : ini->getEntry(sectionId, extendsEntryId).getValue();
 
     // determine the list of sections, from this one up to [General]
     std::vector<int> sectionChain = resolveSectionChain(section.c_str());
@@ -588,7 +585,7 @@ const char *SectionBasedConfiguration::getConfigValue(const char *key) const
 const cConfiguration::KeyValue& SectionBasedConfiguration::getConfigEntry(const char *key) const
 {
     std::map<std::string,KeyValue1>::const_iterator it = config.find(key);
-    return it==config.end() ? blank : it->second;
+    return it==config.end() ? (KeyValue&)nullEntry : (KeyValue&)it->second;
 }
 
 std::vector<const char *> SectionBasedConfiguration::getMatchingConfigKeys(const char *pattern) const
@@ -607,7 +604,7 @@ const char *SectionBasedConfiguration::getParameterValue(const char *moduleFullP
 {
     const SectionBasedConfiguration::KeyValue2& entry = (KeyValue2&) getParameterEntry(moduleFullPath, paramName, hasDefaultValue);
     // NULL ==> not found,   "" ==> apply the default value
-    return (&entry==&blank) ? NULL : entry.isApplyDefault ? "" : entry.value.c_str();
+    return entry.getKey()==NULL ? NULL : entry.isApplyDefault ? "" : entry.value.c_str();
 }
 
 const cConfiguration::KeyValue& SectionBasedConfiguration::getParameterEntry(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const
@@ -636,13 +633,13 @@ const cConfiguration::KeyValue& SectionBasedConfiguration::getParameterEntry(con
                 return entry;  // found value
         }
     }
-    return blank; // not found
+    return nullEntry; // not found
 }
 
 const char *SectionBasedConfiguration::getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const
 {
     const SectionBasedConfiguration::KeyValue2& entry = (KeyValue2&) getPerObjectConfigEntry(objectFullPath, keySuffix);
-    return (&entry==&blank) ? NULL : entry.value.c_str();
+    return entry.getKey()==NULL ? NULL : entry.value.c_str();
 }
 
 const cConfiguration::KeyValue& SectionBasedConfiguration::getPerObjectConfigEntry(const char *objectFullPath, const char *keySuffix) const
@@ -658,7 +655,7 @@ const cConfiguration::KeyValue& SectionBasedConfiguration::getPerObjectConfigEnt
         if (entry.ownerPattern->matches(objectFullPath) && (entry.groupPattern==NULL || entry.groupPattern->matches(keySuffix)))
             return entry;  // found value
     }
-    return blank; // not found
+    return nullEntry; // not found
 }
 
 static const char *partAfterLastDot(const char *s)

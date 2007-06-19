@@ -112,7 +112,7 @@ void TCmdenvApp::readOptions()
         ::printf("Cmdenv: redirecting output to file `%s'...\n",opt_outputfile.c_str());
         FILE *out = fopen(opt_outputfile.c_str(), "w");
         if (!out)
-            throw cRuntimeError("Cannot open output file `%s'",opt_outputfile.c_str());
+            throw cRuntimeError("Cannot open output redirection file `%s'",opt_outputfile.c_str());
         fout = out;
     }
 }

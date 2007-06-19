@@ -37,6 +37,11 @@ const char *InifileReader::getFileName() const
     return rootfilename.c_str();
 }
 
+const char *InifileReader::getDefaultBaseDirectory() const
+{
+    return defaultbasedir.c_str();
+}
+
 int InifileReader::getNumSections() const
 {
     return sections.size();
@@ -72,6 +77,8 @@ const InifileReader::Section& InifileReader::getSection(int sectionId) const
 void InifileReader::readFile(const char *filename)
 {
     rootfilename = filename;
+    defaultbasedir = directoryOf(rootfilename.c_str());
+
     internalReadFile(filename);
 }
 
