@@ -321,9 +321,9 @@ std::vector<SectionBasedConfiguration::IterationSpec> SectionBasedConfiguration:
 
                 pos = endPos;
             }
-            else if (isalpha(*(pos+1)))
+            else if (isalpha(*(pos+1)) && strcmp(entry.getKey(), "condition")==0)
             {
-                // $x syntax
+                // $x syntax, only recognized within the condition=... entry
                 const char *endPos = pos+2;
                 while (isalnum(*endPos)) endPos++;
 
