@@ -61,7 +61,14 @@ iterspecs(iterationSpecs)
     {
         condition = new Expression();
         Resolver resolver(this);
-        condition->parse(conditionText, &resolver);
+        try
+        {
+            condition->parse(conditionText, &resolver);
+        }
+        catch (std::exception& e)
+        {
+            throw cRuntimeError("Scenario generator: Cannot parse condition expression: %s", e.what());
+        }
     }
 
     // fill the variable tables
@@ -85,7 +92,7 @@ Expression::StkValue Scenario::getIterationVariable(const char *varname)
         varname++;
     std::map<std::string,ValueIterator*>::iterator it = namedvars.find(varname);
     if (it==namedvars.end())
-        throw cRuntimeError("Scenario generator: unknown iteration variable: $%s", varname);
+        throw cRuntimeError("Scenario generator: Unknown iteration variable: $%s", varname);
     std::string value = it->second->get();
     try
     {
@@ -100,7 +107,7 @@ Expression::StkValue Scenario::getIterationVariable(const char *varname)
     }
     catch (std::exception& e)
     {
-        throw cRuntimeError("Wrong value for iteration variable $%s: %s", varname, e.what());
+        throw cRuntimeError("Scenario generator: Wrong value for iteration variable $%s: %s", varname, e.what());
     }
 }
 
@@ -132,7 +139,7 @@ bool Scenario::resetVariables()
         return false;
 
     // if there's a condition, make sure it holds
-    while (condition && condition->boolValue()==false)
+    while (condition && evaluateCondition()==false)
         if (!inc()) return false;
     return true;
 }
@@ -142,7 +149,7 @@ bool Scenario::next()
     if (!inc()) return false;
 
     // if there's a condition, make sure it holds
-    while (condition && condition->boolValue()==false)
+    while (condition && evaluateCondition()==false)
         if (!inc()) return false;
     return true;
 }
@@ -161,14 +168,26 @@ bool Scenario::inc()
     return false; // no variable could be incremented
 }
 
+bool Scenario::evaluateCondition()
+{
+    try
+    {
+        return condition->boolValue();
+    }
+    catch (std::exception& e)
+    {
+        throw cRuntimeError("Scenario generator: Cannot evaluate condition expression: %s", e.what());
+    }
+}
+
 std::vector<std::string> Scenario::generate(int runNumber)
 {
     // spin the iteration variables to the given run number
     if (!resetVariables())
-        throw cRuntimeError("Scenario generator: iterators or condition too restrictive: not even one run can be generated");
+        throw cRuntimeError("Scenario generator: Iterators or condition too restrictive: not even one run can be generated");
     for (int i=0; i<runNumber; i++)
         if (!next())
-            throw cRuntimeError("Scenario generator: run number %d is out of range", runNumber);
+            throw cRuntimeError("Scenario generator: Run number %d is out of range", runNumber);
 
     // collect and return variables
     std::vector<std::string> result(itervars.size());

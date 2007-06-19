@@ -45,6 +45,7 @@ class Scenario
     bool resetVariables(); // false if there's no valid config at all
     bool next();
     bool inc();
+    bool evaluateCondition();
 
   public:
     /**
