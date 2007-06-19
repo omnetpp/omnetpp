@@ -122,12 +122,15 @@ static bool moduleContains(cModule *potentialparent, cModule *mod)
 TOmnetTkApp::TOmnetTkApp(ArgList *args, cConfiguration *config) :
   TOmnetApp(args, config)
 {
-    interp = 0;  // Tcl/Tk not set up yet
+    interp = NULL;  // Tcl/Tk not set up yet
     simstate = SIM_NONET;
     stopsimulation_flag = false;
     animating = false;
     hasmessagewindow = false;
     isconfigrun = false;
+
+    // set the name here, to prevent warning from cStringPool on shutdown when Cmdenv runs
+    inspectorfactories.instance()->setName("inspectorfactories");
 
     // The opt_* vars will be set by readOptions()
 }
@@ -241,16 +244,13 @@ int TOmnetTkApp::run()
         return 1;
 
     CHK(Tcl_Eval(interp,"startup_commands"));
-    runTk( interp );
+    runTk(interp);
 
     return 0;
 }
 
 void TOmnetTkApp::shutdown()
 {
-    //XXXif (!initialized)   --FIXME wonder what purpose this served... affected objects are initialized in TOmnetTkApp already!
-    //XXX    return;
-
     // close all inspectors before exiting
     for(;;)
     {

@@ -18,6 +18,8 @@
 #include "scenario.h"
 #include "valueiterator.h"
 #include "cexception.h"
+#include "stringutil.h"
+#include "unitconversion.h"
 
 //FIXME something is wrong!
 // like output is garbage for this:
@@ -96,11 +98,21 @@ Expression::StkValue Scenario::getIterationVariable(const char *varname)
     if (it==namedvars.end())
         throw cRuntimeError("Scenario generator: unknown iteration variable: %s", varname);
     std::string value = it->second->get();
-    if (value[0]=='"')
-        ; //XXX strip quotes and return as string
-    else
-        ; //XXX convert to double!!!!
-    return value; //FIXME remove this line!!!!
+    try
+    {
+        if (value[0]=='"')
+            return opp_parsequotedstr(value.c_str());  // strips quotes
+        else if (strcmp(value.c_str(), "true")==0)
+            return true;
+        else if (strcmp(value.c_str(), "false")==0)
+            return false;
+        else
+            return UnitConversion::parseQuantity(value.c_str()); // converts to double
+    }
+    catch (std::exception& e)
+    {
+        throw cRuntimeError("Wrong value for iteration variable $%s: %s", varname, e.what());
+    }
 }
 
 int Scenario::getNumRuns()

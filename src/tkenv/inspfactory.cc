@@ -27,7 +27,7 @@
 #include "inspfactory.h"
 
 
-cRegistrationList inspectorfactories("inspectorfactories");
+cRegistrationList inspectorfactories;
 
 
 cInspectorFactory *findInspectorFactoryFor(cObject *obj, int type)

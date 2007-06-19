@@ -67,6 +67,8 @@ class SIM_API cDynamicExpression : public cExpression
         //  - cMathFunction: function with 0/1/2/3/4 double arguments
         //  - cNEDFunction: function taking/returning StkValue (NEDFunction)
         //  - math operator (+-*/%^...)
+        //  - functor
+        //  - constant subexpression
         //
         enum Type {UNDEF, BOOL, DBL, STR, XML, CPAR, MATHFUNC, NEDFUNC, FUNCTOR, OP, CONSTSUBEXPR} type;
         static cStringPool stringPool;
@@ -172,12 +174,12 @@ class SIM_API cDynamicExpression : public cExpression
         void operator=(Functor *_f)  {type=FUNCTOR; ASSERT(_f); fu=_f;}
 
         /**
-         * Unary, binary or tertiary (?: only) operations.
+         * Unary, binary or tertiary (?:) operations.
          */
         void operator=(OpType _op)  {type=OP; op=_op;}
 
         /**
-         * Unary, binary or tertiary (?: only) operations.
+         * Constant subexpression.
          */
         void operator=(cExpression *_expr)  {type=CONSTSUBEXPR; constexpr=_expr;}
     };
@@ -202,14 +204,14 @@ class SIM_API cDynamicExpression : public cExpression
         StkValue(long l)  {*this=l;}
         StkValue(double d)  {*this=d;}
         StkValue(const char *s)  {*this=s;}
-        StkValue(std::string s)  {*this=s;}
+        StkValue(const std::string& s)  {*this=s;}
         StkValue(cXMLElement *x)  {*this=x;}
         StkValue(const cPar& par) {*this=par;}
         void operator=(bool b)  {type=BOOL; bl=b;}
         void operator=(long l)  {type=DBL; dbl=l;}
         void operator=(double d)  {type=DBL; dbl=d;}
         void operator=(const char *s)  {type=STR; str=s?s:"";}
-        void operator=(std::string s)  {type=STR; str=s;}
+        void operator=(const std::string& s)  {type=STR; str=s;}
         void operator=(cXMLElement *x)  {type=XML; xml=x;}
         void operator=(const cPar& par);
         std::string toString();
@@ -223,8 +225,8 @@ class SIM_API cDynamicExpression : public cExpression
     class Functor : public cObject
     {
       public:
-        int numArgs() {return strlen(argTypes());}
         virtual const char *argTypes() const = 0;
+        virtual int numArgs() const {return strlen(argTypes());}
         virtual char returnType() const = 0;
         virtual StkValue evaluate(cComponent *context, StkValue args[], int numargs) = 0;
         virtual std::string toString(std::string args[], int numargs) = 0;

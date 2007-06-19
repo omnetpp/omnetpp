@@ -127,6 +127,7 @@ class SIM_API cRegistrationList
     cSymTable *inst;
     const char *tmpname;
   public:
+    cRegistrationList();
     cRegistrationList(const char *name);
     ~cRegistrationList();
     cSymTable *instance();

@@ -165,6 +165,12 @@ cOwnedObject *cSymTable::lookup(const char *name, const char *contextNamespace)
 
 //----
 
+cRegistrationList::cRegistrationList()
+{
+    tmpname = NULL;
+    inst = NULL;
+}
+
 cRegistrationList::cRegistrationList(const char *name)
 {
     tmpname = name;
