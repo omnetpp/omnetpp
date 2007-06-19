@@ -219,7 +219,8 @@ void SectionBasedConfiguration::doActivateScenario(int sectionId, int runNumber)
 
     // walk the list of fallback sections, and add entries to out tables (config[] and params[]).
     // Entries added first will have precedence over those added later.
-    for (int i=0; i<sectionChain.size(); i++)
+    // NOTE: Loop goes from 1, so we skip the Scenario section we already processed above.
+    for (int i=1; i<sectionChain.size(); i++)
         for (int j=0; j<ini->getNumEntries(sectionChain[i]); j++)
             addEntry(convert(ini->getEntry(sectionChain[i], j)));
 }

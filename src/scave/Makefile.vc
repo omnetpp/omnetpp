@@ -284,6 +284,7 @@ nodetyperegistry.obj: nodetyperegistry.cc \
   mergernodes.h \
   xyplotnode.h \
   diffquot.h \
+  customfilter.h \
   stddev.h \
   ../common/commondefs.h \
   ../common/exception.h \
@@ -300,7 +301,9 @@ nodetyperegistry.obj: nodetyperegistry.cc \
   resultfilemanager.h \
   idlist.h \
   enumtype.h \
-  indexfile.h
+  indexfile.h \
+  ../common/expression.h \
+  ../common/stringutil.h
 octaveexport.obj: octaveexport.cc \
   octaveexport.h \
   scavedefs.h \

@@ -144,6 +144,11 @@ class ENVIR_API cConfiguration : public cObject
      * activateScenario(), or 0 if activateConfig() was called.
      */
     virtual int getActiveRunNumber() const = 0;
+
+    /**
+     * For debugging.
+     */
+    virtual void dump() const = 0;
     //@}
 
     /** @name Getting values from the currently active configuration or scenario */
@@ -318,6 +323,7 @@ class ENVIR_API cConfiguration : public cObject
      * (see KeyValue::getBaseDirectory()).
      */
     virtual std::vector<std::string> getAsFilenames(const char *objectFullPath, cConfigEntry *entry);
+
     //@}
 };
 

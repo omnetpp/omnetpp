@@ -191,7 +191,7 @@ try{ //XXX just temp
         ::printf("\n%s\n", cfg->unrollScenario(opt_printnumruns.c_str()).c_str()); //FIXME only for debugging -- remove it
         return 0;
     }
-}catch (std::exception& e) {displayError(e);} //XXX just temp; maybe surround the whole run() with try/catch? maybe in cenvir.cc?
+}catch (std::exception& e) {displayError(e);return 0;} //XXX just temp; maybe surround the whole run() with try/catch? maybe in cenvir.cc?
 
     // if the list of runs is not given explicitly, must execute all runs
     if (opt_runstoexec.empty())
@@ -223,6 +223,7 @@ try{ //XXX just temp
             ::fflush(fout);
 
             cfg->activateConfig(opt_configname.c_str(), runnumber);
+            cfg->dump(); //XXX remove
 
             readPerRunOptions();
 

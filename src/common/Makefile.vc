@@ -91,6 +91,21 @@ displaystring.obj: displaystring.cc \
 exception.obj: exception.cc \
   exception.h \
   commondefs.h
+expression.obj: expression.cc \
+  expression.h \
+  expressionyydefs.h \
+  commondefs.h \
+  commonutil.h \
+  stringutil.h \
+  exception.h
+expression.tab.obj: expression.tab.cc \
+  expressionyydefs.h \
+  expression.h \
+  exception.h \
+  stringutil.h \
+  unitconversion.h \
+  commondefs.h \
+  commonutil.h
 fileglobber.obj: fileglobber.cc \
   fileglobber.h \
   commondefs.h
@@ -110,6 +125,14 @@ fnamelisttokenizer.obj: fnamelisttokenizer.cc \
 lcgrandom.obj: lcgrandom.cc \
   lcgrandom.h \
   commondefs.h
+lex.expressionyy.obj: lex.expressionyy.cc \
+  expressionyydefs.h \
+  exception.h \
+  expression.tab.h \
+  stringutil.h \
+  expression.h \
+  commondefs.h \
+  commonutil.h
 lex.matchexpressionyy.obj: lex.matchexpressionyy.cc \
   stringutil.h \
   matchexpression.tab.h \
