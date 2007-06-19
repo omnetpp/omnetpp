@@ -1,3 +1,27 @@
+2007-06-08
+----------
+
+Additions:
+
+   + Data points can be selected on charts. Vector Browser view shows the selected vector.
+
+   + Lines of vector charts can be shown/hidden individually
+
+Fixes:
+
+   + Fix NullPointerExceptions when symbol = None selected for a line chart.
+
+   + Layout and symbols of the legend are improved.
+
+   + Zoom level is kept when the chart is refreshed.
+
+   + Chart bounds (minX, maxX, minY, maxY) are kept when the chart is closed and reopened.
+
+   + "Zoom out" action is disabled, when no more zooming possible.
+
+   + Rubber band is visible.
+
+
 2007-05-25
 ----------
 

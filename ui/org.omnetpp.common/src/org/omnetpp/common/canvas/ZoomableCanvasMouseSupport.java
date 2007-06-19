@@ -1,6 +1,9 @@
 package org.omnetpp.common.canvas;
 
+import org.eclipse.draw2d.Cursors;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -9,6 +12,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.omnetpp.common.ui.CustomCursors;
 
 /**
  * Adds mouse bindings to a ZoomableCachingCanvas for zooming and panning.
@@ -42,8 +46,8 @@ public class ZoomableCanvasMouseSupport {
 	protected ZoomableCachingCanvas canvas;
 
 	// mouse pointers
-	protected static final Cursor PAN_CURSOR = new Cursor(null, SWT.CURSOR_HAND);
-	protected static final Cursor ZOOM_CURSOR = new Cursor(null, SWT.CURSOR_SIZEALL);
+	protected static final Cursor PAN_CURSOR = Cursors.SIZEALL;
+	protected static final Cursor ZOOM_CURSOR = CustomCursors.ZOOMIN;
 
 	protected RubberbandSupport rubberBand;
 	
@@ -82,10 +86,27 @@ public class ZoomableCanvasMouseSupport {
 
 	public void setMouseMode(int mouseMode) {
 		this.mouseMode = mouseMode;
+		canvas.setCursor(mouseMode == ZOOM_MODE ? ZOOM_CURSOR : null);
 		rubberBand.setModifierKeys(mouseMode==ZOOM_MODE ? SWT.NONE : SWT.CTRL);
 	}
 
 	protected void setupMouseHandling() {
+		// ctrl key
+		canvas.addKeyListener(new KeyListener() {
+			public void keyPressed(KeyEvent e) {
+				if (e.keyCode == SWT.CTRL) {
+					System.out.println("Ctrl pressed.");
+					canvas.setCursor(mouseMode == PAN_MODE ? ZOOM_CURSOR : PAN_CURSOR);
+				}
+			}
+
+			public void keyReleased(KeyEvent e) {
+				if (e.keyCode == SWT.CTRL) {
+					System.out.println("Ctrl released.");
+					setMouseMode(mouseMode == PAN_MODE ? PAN_MODE : ZOOM_MODE);
+				}
+			}
+		});
 		// wheel
 		canvas.addListener(SWT.MouseWheel, new Listener() {
 			public void handleEvent(Event event) {
@@ -111,14 +132,16 @@ public class ZoomableCanvasMouseSupport {
 				canvas.setFocus();
 				activeMouseButton = event.button;
 				if (event.button == 1) {
-					canvas.setCursor(mouseMode==ZOOM_MODE ? ZOOM_CURSOR : PAN_CURSOR);
+					int modifier = event.stateMask & SWT.MODIFIER_MASK;
+					canvas.setCursor((mouseMode==ZOOM_MODE && modifier==SWT.NONE) || (mouseMode==PAN_MODE && modifier==SWT.CTRL)
+										? ZOOM_CURSOR : PAN_CURSOR);
 					dragPrevX = event.x;
 					dragPrevY = event.y;
 					mousedMoved = false;
 				}
 			}
 			public void mouseUp(MouseEvent event) {
-				canvas.setCursor(null); // restore cursor at end of drag
+				canvas.setCursor(mouseMode==ZOOM_MODE ? ZOOM_CURSOR : null); // restore cursor at end of drag
 				dragPrevX = dragPrevY = -1;
 				activeMouseButton = 0;
 				if (!mousedMoved) {  // just a click
@@ -147,7 +170,9 @@ public class ZoomableCanvasMouseSupport {
 					// restore cursor at end of drag. (It is not enough to do it in the 
 					// "mouse released" event, because we don't receive it if user 
 					// releases mouse outside the canvas!)
-					canvas.setCursor(null);  
+					canvas.setCursor(mouseMode == ZOOM_MODE && (modifier & SWT.CTRL) == 0 ?
+							ZOOM_CURSOR :
+								null);  
 				}
 			}
 

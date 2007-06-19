@@ -21,8 +21,6 @@ import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_MIN;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_X_LABELS_ROTATE_BY;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_MAX;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_MIN;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_TITLE;
 
 import java.util.ArrayList;

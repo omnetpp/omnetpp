@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -94,6 +96,14 @@ class CrossHair {
 //		});			
 
 		final VectorChart finalChart = chart;
+		// add key listener to restore the cross cursor, after other cursor is turned off
+		// (by ZoomableCanvasMouseSupport for example)
+		chart.addKeyListener(new KeyAdapter() {
+			public void keyReleased(KeyEvent e) {
+				if (finalChart.getCursor() == null)
+					finalChart.setCursor(CROSS_CURSOR);
+			}
+		});
 		chart.addMouseMoveListener(new MouseMoveListener() {
 			public void mouseMove(MouseEvent e) {
 				if ((e.stateMask & SWT.BUTTON_MASK) != 0) {
@@ -109,8 +119,10 @@ class CrossHair {
 				finalChart.redraw();  //XXX this is killer if canvas is not cached. unfortunately, gc.setXORMode() cannot be used
 
 				// set cursor
-				if (plotArea != null && plotArea.contains(x,y))
-					finalChart.setCursor(CROSS_CURSOR);
+				if (plotArea != null && plotArea.contains(x,y)) {
+					if (finalChart.getCursor() == null)
+						finalChart.setCursor(CROSS_CURSOR);
+				}
 				else
 					finalChart.setCursor(null);
 			}
@@ -139,6 +151,9 @@ class CrossHair {
 			}
 
 			public void mouseUp(MouseEvent e) {
+				if (finalChart.getCursor() == null)
+					finalChart.setCursor(CROSS_CURSOR);
+
 				x = e.x;
 				y = e.y;
 				detailedTooltip = false;

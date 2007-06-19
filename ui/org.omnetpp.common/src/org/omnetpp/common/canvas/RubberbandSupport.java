@@ -1,5 +1,11 @@
 package org.omnetpp.common.canvas;
 
+import static org.eclipse.draw2d.PositionConstants.EAST;
+import static org.eclipse.draw2d.PositionConstants.NORTH;
+import static org.eclipse.draw2d.PositionConstants.SOUTH;
+import static org.eclipse.draw2d.PositionConstants.WEST;
+
+import org.eclipse.draw2d.Cursors;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -120,6 +126,12 @@ public abstract class RubberbandSupport {
 					rubberBand.width = e.x - rubberBand.x;
 					rubberBand.height = e.y - rubberBand.y;
 					clipToBounds(rubberBand, rubberBandBounds==null ? canvas.getClientArea() : rubberBandBounds);
+					
+					if ((e.stateMask & SWT.MODIFIER_MASK) == modifierKeys) {
+						int direction = (rubberBand.width >= 0 ? EAST : WEST) |
+										(rubberBand.height >= 0 ? SOUTH : NORTH);
+						canvas.setCursor(Cursors.getDirectionalCursor(direction));
+					}
 					
 					// erase, then draw new with updated coordinates
 					if (drawRubberBand) {
