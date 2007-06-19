@@ -5,13 +5,12 @@ Bundle-SymbolicName: org.omnetpp.launch;singleton:=true
 Bundle-Version: 4.0.0
 Bundle-Activator: org.omnetpp.launch.LaunchPlugin
 Bundle-Vendor: OpenSim Ltd.
-Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime,
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.eclipse.ui.ide,
  org.eclipse.debug.core,
  org.eclipse.debug.ui,
- org.omnetpp.inifile.editor,
- org.eclipse.ui.ide,
+ org.eclipse.core.variables,
  org.omnetpp.common,
- org.eclipse.jdt.debug.ui,
- org.eclipse.core.variables
+ org.omnetpp.inifile.editor
 Eclipse-LazyStart: true

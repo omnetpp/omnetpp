@@ -7,7 +7,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
@@ -32,13 +31,13 @@ import org.omnetpp.launch.LaunchPlugin;
 /**
  * A launch configuration tab that displays and edits omnetpp project
  */
-public class OmnetppMainTab extends SimulationTab {
+public class OmnetppMainTab extends OmnetppLaunchTab {
 
-	// Project UI widgets
-	protected Text fProjText;
+	// UI widgets
+	protected Text progText;
 
-	// Main class UI widgets
-	protected Text fProgText;
+    private final WorkingDirectoryBlock workingDirBlock = new WorkingDirectoryBlock(this);
+    private final SimulationTab simulationBlock = new SimulationTab(this);
 
     /**
      * Content provider displaying possible projects in the workspace
@@ -74,45 +73,26 @@ public class OmnetppMainTab extends SimulationTab {
             return filteredChildren.toArray();
         }
     };
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#createControl(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-    public void createControl(Composite parent) {
-        Composite comp = SWTFactory.createComposite(parent, 1, 1, GridData.FILL_HORIZONTAL);
-        createProjectGroup(comp, 1);
-        createExeFileGroup(comp, 1);
-        createLibraryGroup(comp, 1);
-        createIniGroup(comp, 1);
-        createConfigGroup(comp, 1);
-        createUIGroup(comp, 1);
-        createAdditionalGroup(comp, 1);
-        WorkingDirectoryBlock wb = new WorkingDirectoryBlock();
-        wb.createControl(comp);
-        setControl(comp);
+
+
+    public OmnetppMainTab() {
+        super();
     }
 
-	protected void createProjectGroup(Composite parent, int colSpan) {
-		Composite projComp = SWTFactory.createComposite(parent, 3,colSpan,GridData.FILL_HORIZONTAL);
-		GridLayout ld = (GridLayout)projComp.getLayout();
-		ld.marginHeight = 1;
+    public OmnetppMainTab(OmnetppLaunchTab embeddingTab) {
+        super(embeddingTab);
+    }
 
-		SWTFactory.createLabel(projComp, "Simulation Project:",1);
+    public void createControl(Composite parent) {
+        Composite comp = SWTFactory.createComposite(parent, 1, 1, GridData.FILL_HORIZONTAL);
+        createExeFileGroup(comp, 1);
+        simulationBlock.createControl(comp);
+        GridLayout ld = (GridLayout)((Composite)simulationBlock.getControl()).getLayout();
+        ld.marginWidth = ld.marginHeight = 0;
 
-		fProjText = SWTFactory.createSingleText(projComp, 1);
-		fProjText.addModifyListener(this);
-
-		Button fProjButton = SWTFactory.createPushButton(projComp, "Browse...", null);
-		fProjButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-            public void widgetSelected(SelectionEvent evt) {
-				handleProjectButtonSelected();
-				updateLaunchConfigurationDialog();
-			}
-		});
-	}
+        workingDirBlock.createControl(comp);
+        setControl(comp);
+    }
 
 	protected void createExeFileGroup(Composite parent, int colSpan) {
 		Composite mainComp =  SWTFactory.createComposite(parent, 3,colSpan,GridData.FILL_HORIZONTAL);
@@ -121,8 +101,8 @@ public class OmnetppMainTab extends SimulationTab {
 
 		SWTFactory.createLabel(mainComp, "Simulation Program:",1);
 
-		fProgText = SWTFactory.createSingleText(mainComp, 1);
-		fProgText.addModifyListener(this);
+		progText = SWTFactory.createSingleText(mainComp, 1);
+		progText.addModifyListener(this);
 
 		Button fBrowseForBinaryButton = SWTFactory.createPushButton(mainComp, "Browse...", null); //$NON-NLS-1$
 		fBrowseForBinaryButton.addSelectionListener(new SelectionAdapter() {
@@ -134,127 +114,58 @@ public class OmnetppMainTab extends SimulationTab {
 		});
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#initializeFrom(org.eclipse.debug.core.ILaunchConfiguration)
-	 */
 	@Override
     public void initializeFrom(ILaunchConfiguration config) {
 	    super.initializeFrom(config);
         try {
-            fProjText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, EMPTY_STRING));
-            fProgText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, EMPTY_STRING));
+            progText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, EMPTY_STRING));
         } catch (CoreException ce) {
             LaunchPlugin.logError(ce);
         }
+        simulationBlock.initializeFrom(config);
+        workingDirBlock.initializeFrom(config);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#performApply(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
-	 */
-	@Override
     public void performApply(ILaunchConfigurationWorkingCopy config) {
-	    super.performApply(config);
-        config.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, fProjText.getText());
-        config.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, fProgText.getText());
+        config.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, progText.getText());
+        simulationBlock.performApply(config);
+        workingDirBlock.performApply(config);
 	}
 
-	/**
-	 * Show a dialog that lets the user select a project. This in turn provides context for the main
-	 * type, allowing the user to key a main type name, or constraining the search for main types to
-	 * the specified project.
-	 */
-	protected void handleBinaryBrowseButtonSelected() {
-        ElementTreeSelectionDialog dialog
-            = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(),
-                                                         new ExecutableWorkbenchContentProvider());
-        dialog.setAllowMultiple(false);
-        dialog.setTitle("Select Executable File");
-        dialog.setMessage("Select the executable file that should be started.\n");
-        dialog.setInput(getProject());
-        dialog.setComparator(new ResourceComparator(ResourceComparator.NAME));
-        if (dialog.open() == IDialogConstants.OK_ID && dialog.getFirstResult() instanceof IFile) {
-            String exefile = ((IFile)dialog.getFirstResult()).getProjectRelativePath().toString();
-            fProgText.setText(exefile);
-        }
-	}
+    public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
+        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, (String)null);
+        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, (String)null);
+        simulationBlock.setDefaults(configuration);
+        workingDirBlock.setDefaults(configuration);
+    }
 
-	/**
-	 * Show a dialog that lets the user select a project. This in turn provides context for the main
-	 * type, allowing the user to key a main type name, or constraining the search for main types to
-	 * the specified project.
-	 */
-	protected void handleProjectButtonSelected() {
-        ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(getShell(),
-                new WorkbenchLabelProvider(),
-                new ProjectWorkbenchContentProvider());
-        dialog.setAllowMultiple(false);
-        dialog.setTitle("Select a Project");
-        dialog.setMessage("Select an open project where the exectuable file is located\n");
-        dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
-        dialog.setComparator(new ResourceComparator(ResourceComparator.NAME));
-        if (dialog.open() == IDialogConstants.OK_ID && dialog.getFirstResult() instanceof IProject) {
-            String projectname = ((IProject) dialog.getFirstResult()).getFullPath().toString();
-            fProjText.setText(projectname);
-        }
-	}
-
-	/*
+   	/*
      * (non-Javadoc)
      *
      * @see org.eclipse.debug.ui.ILaunchConfigurationTab#isValid(org.eclipse.debug.core.ILaunchConfiguration)
      */
 	@Override
     public boolean isValid(ILaunchConfiguration config) {
-
 	    if (!super.isValid(config))
 	        return false;
+        if (!simulationBlock.isValid(config))
+            return false;
+        if (!workingDirBlock.isValid(config))
+            return false;
 
-		String name = fProjText.getText().trim();
-		if (name.length() == 0) {
-			setErrorMessage("Project is not specified");
-			return false;
-		}
-		if (!ResourcesPlugin.getWorkspace().getRoot().getProject(name).exists()) {
-			setErrorMessage("Project does not exist");
-			return false;
-		}
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(name);
-		if (!project.isOpen()) {
-			setErrorMessage("Project must be opened");
-			return false;
-		}
-
-		name = fProgText.getText().trim();
+		String name = progText.getText().trim();
 		if (name.length() == 0) {
 			setErrorMessage("Simulation program not specified");
 			return false;
 		}
-		if (name.equals(".") || name.equals("..")) {
-			setErrorMessage("Simulation program does not exist");
-			return false;
+        IFile exefile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(name));
+		if (exefile == null || !exefile.isAccessible()) {
+		    setErrorMessage("Simulation program does not exist or not accessible in workspace");
+		    return false;
 		}
-		IPath exePath = new Path(name);
-		if (!exePath.isAbsolute()) {
-			if (!project.getFile(name).exists()) {
-				setErrorMessage("Simulation program does not exist");
-				return false;
-			}
-			exePath = project.getFile(name).getLocation();
-		} else {
-			if (!exePath.toFile().exists()) {
-				setErrorMessage("Simulation program does not exist");
-				return false;
-			}
-		}
-
 		return true;
 	}
 
-    @Override
     public String getName() {
         return "Main";
     }
@@ -262,5 +173,25 @@ public class OmnetppMainTab extends SimulationTab {
     @Override
     public String getId() {
         return "org.omnetpp.launch.mainTab";
+    }
+
+    /**
+     * Show a dialog that lets the user select a project. This in turn provides context for the main
+     * type, allowing the user to key a main type name, or constraining the search for main types to
+     * the specified project.
+     */
+    protected void handleBinaryBrowseButtonSelected() {
+        ElementTreeSelectionDialog dialog
+            = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(),
+                                                         new ExecutableWorkbenchContentProvider());
+        dialog.setAllowMultiple(false);
+        dialog.setTitle("Select Executable File");
+        dialog.setMessage("Select the executable file that should be started.\n");
+        dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
+        dialog.setComparator(new ResourceComparator(ResourceComparator.NAME));
+        if (dialog.open() == IDialogConstants.OK_ID && dialog.getFirstResult() instanceof IFile) {
+            String exefile = ((IFile)dialog.getFirstResult()).getFullPath().toString();
+            progText.setText(exefile);
+        }
     }
 }

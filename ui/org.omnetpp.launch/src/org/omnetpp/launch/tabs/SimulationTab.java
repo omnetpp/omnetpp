@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -21,10 +20,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -46,8 +43,7 @@ import org.omnetpp.launch.LaunchPlugin;
 /**
  * A launch configuration tab that displays and edits omnetpp project
  */
-public class SimulationTab extends OmnetppLaunchTab implements
-            SelectionListener, ModifyListener {
+public class SimulationTab extends OmnetppLaunchTab  {
 
 	// UI widgets
 	protected Text fInifileText;
@@ -170,12 +166,17 @@ public class SimulationTab extends OmnetppLaunchTab implements
         }
     };
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#createControl(org.eclipse.swt.widgets.Composite)
-	 */
-	public void createControl(Composite parent) {
+
+
+    public SimulationTab() {
+        super();
+    }
+
+    public SimulationTab(OmnetppLaunchTab embeddingTab) {
+        super(embeddingTab);
+    }
+
+    public void createControl(Composite parent) {
 		Composite comp = SWTFactory.createComposite(parent, 1, 1, GridData.FILL_HORIZONTAL);
 		createLibraryGroup(comp, 1);
 		createIniGroup(comp, 1);
@@ -338,23 +339,23 @@ public class SimulationTab extends OmnetppLaunchTab implements
             }
 
             // set the controls
-            fInifileText.setText(iniArgs);
-            setConfigName(configArg);
-            fRunText.setText(runArg);
-            fLibraryText.setText(libArgs);
-            fAdditionalText.setText(restArgs);
+            fInifileText.setText(iniArgs.trim());
+            setConfigName(configArg.trim());
+            fRunText.setText(runArg.trim());
+            fLibraryText.setText(libArgs.trim());
+            fAdditionalText.setText(restArgs.trim());
             fOtherEnvText.setText("");
             if ("".equals(uiArg)) {
                 fDefaultEnvButton.setSelection(true);
             } else {
                 fDefaultEnvButton.setSelection(false);
-                if ("cmdenv".equals(uiArg))
+                if ("Cmdenv".equals(uiArg))
                     fCmdEnvButton.setSelection(true);
-                else if ("tkenv".equals(uiArg))
+                else if ("Tkenv".equals(uiArg))
                     fTkEnvButton.setSelection(true);
                 else {
                     fOtherEnvButton.setSelection(true);
-                    fOtherEnvText.setText(uiArg);
+                    fOtherEnvText.setText(uiArg.trim());
                 }
             }
             fOtherEnvText.setEnabled(fOtherEnvButton.getSelection());
@@ -366,7 +367,7 @@ public class SimulationTab extends OmnetppLaunchTab implements
 	}
 
     protected void updateConfigCombo() {
-        IFile[] inifiles = getInifiles();
+        IFile[] inifiles = getIniFiles();
         if (inifiles == null)
             fConfigCombo.setItems(new String[] {});
         else {
@@ -391,9 +392,9 @@ public class SimulationTab extends OmnetppLaunchTab implements
         if (!"".equals(fRunText.getText()))
             arg += "-r "+fRunText.getText()+" ";
         if (fCmdEnvButton.getSelection())
-            arg += "-u cmdenv ";
+            arg += "-u Cmdenv ";
         if (fTkEnvButton.getSelection())
-            arg += "-u tkenv ";
+            arg += "-u Tkenv ";
         if (fOtherEnvButton.getSelection())
             arg += "-u "+fOtherEnvText.getText()+" ";
         arg += fAdditionalText.getText();
@@ -407,15 +408,16 @@ public class SimulationTab extends OmnetppLaunchTab implements
         dialog.setTitle("Select INI Files");
         dialog.setMessage("Select the initialization file(s) for the simulation.\n" +
         		          "Multiple files can be selected.");
-        dialog.setInput(getProject());
+        dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
         dialog.setComparator(new ResourceComparator(ResourceComparator.NAME));
         if (dialog.open() == IDialogConstants.OK_ID) {
             String inifiles = "";
             for (Object resource : dialog.getResult()) {
                 if (resource instanceof IFile)
-                    inifiles += ((IFile)resource).getProjectRelativePath().toString()+" ";
+                        inifiles += makeRelativePathTo(((IFile)resource).getRawLocation(),
+                                                       getWorkingDirectoryPath()).toString()+" ";
             }
-            fInifileText.setText(inifiles);
+            fInifileText.setText(inifiles.trim());
             updateConfigCombo();
         }
 	}
@@ -434,33 +436,45 @@ public class SimulationTab extends OmnetppLaunchTab implements
 	    dialog.setTitle("Select Shared Libraries");
 	    dialog.setMessage("Select the library file(s) you want to load at the beginning of the simulation.\n" +
 	    		          "Multiple files can be selected.");
-	    dialog.setInput(getProject());
+	    dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
 	    dialog.setComparator(new ResourceComparator(ResourceComparator.NAME));
 	    if (dialog.open() == IDialogConstants.OK_ID) {
 	        String libfiles = "";
 	        for (Object resource : dialog.getResult()) {
 	            if (resource instanceof IFile)
-	                libfiles += ((IFile)resource).getProjectRelativePath().removeFileExtension().toString()+" ";
+                    libfiles += makeRelativePathTo(((IFile)resource).getRawLocation(),
+                            getWorkingDirectoryPath()).toString()+" ";
 	        }
-	        fLibraryText.setText(libfiles);
+	        fLibraryText.setText(libfiles.trim());
 	    }
     }
 
 	@Override
     public boolean isValid(ILaunchConfiguration config) {
-
 		setErrorMessage(null);
 		setMessage(null);
 
-        if (getProject() == null) {
-            setErrorMessage("Project must be opened");
+		IFile ifiles[] = getIniFiles();
+        if ( ifiles == null) {
+            setErrorMessage("Initialization file does not exist, or not accessible in workspace");
             return false;
         }
+        for (IFile ifile : ifiles)
+            if (!ifile.isAccessible()) {
+                setErrorMessage("Initialization file "+ifile.getName()+" does not exist, or not accessible in workspace");
+                return false;
+            }
 
-        if (getInifiles() == null) {
-            setErrorMessage("Initialization file does not exist");
+        IFile libfiles[] = getLibFiles();
+        if ( libfiles == null) {
+            setErrorMessage("Library file does not exist, or not accessible in workspace");
             return false;
         }
+        for (IFile ifile : libfiles)
+            if (!ifile.isAccessible()) {
+                setErrorMessage("Library file "+ifile.getName()+" does not exist, or not accessible in workspace");
+                return false;
+            }
 
 		return true;
 	}
@@ -477,8 +491,13 @@ public class SimulationTab extends OmnetppLaunchTab implements
 		return "Simulation";
 	}
 
+    @Override
+    public String getId() {
+        return "org.omnetpp.launch.simulationTab";
+    }
+
     public void widgetDefaultSelected(SelectionEvent e) {
-        updateLaunchConfigurationDialog();
+        super.widgetDefaultSelected(e);
     }
 
     public void widgetSelected(SelectionEvent e) {
@@ -486,68 +505,59 @@ public class SimulationTab extends OmnetppLaunchTab implements
             fOtherEnvText.setText("");
         fOtherEnvText.setEnabled(fOtherEnvButton.getSelection());
 
-        updateLaunchConfigurationDialog();
+        super.widgetSelected(e);
     }
 
     public void modifyText(ModifyEvent e) {
-        updateLaunchConfigurationDialog();
         // enable/disable runs if config combo box has changed
         if (e.widget == fConfigCombo) {
             fRunText.setEnabled(isScenario());
             if(!isScenario())
                 fRunText.setText("");
         }
+        super.modifyText(e);
     }
 
     /**
-     * @return The selected project if exist and open otherwise NULL
+     * @return The selected library files
+     * on error it returns NULL
      */
-    protected IProject getProject() {
-        IProject project = null;
-        try {
-            String projectName = getCurrentLaunchConfiguration().getAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, EMPTY_STRING);
-            if (StringUtils.isNotEmpty(projectName))
-                project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-        } catch (Exception e) {}
-        if (project == null || !project.isOpen())
-            return null;
-        return project;
+    private IFile[] getLibFiles() {
+        List<IFile> result = new ArrayList<IFile>();
+        String names[] =  StringUtils.split(fLibraryText.getText().trim());
+
+        for(String name : names) {
+            IPath iniPath = getWorkingDirectoryPath().append(name).makeAbsolute();
+            IFile[] ifiles = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(iniPath);
+            if (ifiles.length == 1)
+                result.add(ifiles[0]);
+            else
+                return null;
+        }
+        return result.toArray(new IFile[result.size()]);
     }
 
     /**
-     * @param config
      * @return The selected ini files or (omnetpp.ini) if the inifile text line is empty
      * on error it returns NULL
      */
-    private IFile[] getInifiles() {
-        // FIXME lookup the inifile relative to the working directory not to the project
+    private IFile[] getIniFiles() {
         List<IFile> result = new ArrayList<IFile>();
         String names[] =  StringUtils.split(fInifileText.getText().trim());
-        IProject project = getProject();
-        if (project == null)
-            return null;
         // default ini file is omnetpp ini
         if (names.length == 0)
             names = new String[] {"omnetpp.ini"};
 
         for(String name : names) {
-        IPath iniPath = new Path(name);
-            if (!iniPath.isAbsolute()) {
-                if (!project.getFile(name).exists())
-                    return null;
-                result.add(project.getFile(name));
-            } else {
-                if (!iniPath.toFile().exists())
-                    return null;
-                IFile[] ifiles = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(iniPath);
-                if (ifiles.length == 1)
-                    result.add(ifiles[0]);
+            IPath iniPath = getWorkingDirectoryPath().append(name).makeAbsolute();
+            IFile[] ifiles = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(iniPath);
+            if (ifiles.length == 1)
+                result.add(ifiles[0]);
+            else
                 return null;
-            }
         }
         return result.toArray(new IFile[result.size()]);
     }
-
 
     /**
      * @param inifiles
@@ -602,8 +612,4 @@ public class SimulationTab extends OmnetppLaunchTab implements
             }
     }
 
-    @Override
-    public String getId() {
-        return "org.omnetpp.launch.simulationTab";
-    }
 }

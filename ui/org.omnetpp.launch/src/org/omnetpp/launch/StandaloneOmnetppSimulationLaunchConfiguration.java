@@ -11,7 +11,16 @@ public class StandaloneOmnetppSimulationLaunchConfiguration extends LaunchConfig
     public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
             throws CoreException {
 //        DebugPlugin.exec(cmdLine, workingDirectory)
-        System.out.println("Simulation launched");
+        System.out.println("Simulation launched. ");
+        String wdAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, "");
+        String projAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, "");
+        String progAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, "");
+        String argAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, "");
+        System.out.println("WD: "+wdAttr);
+        System.out.println("Project: "+projAttr);
+        System.out.println("Program: "+progAttr);
+        System.out.println("Arguments: "+argAttr);
+        System.out.println("========== exetuting ==========");
 
     }
 

@@ -15,9 +15,6 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.internal.ui.SWTFactory;
 import org.eclipse.debug.ui.StringVariableSelectionDialog;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
@@ -30,6 +27,10 @@ import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
 import org.omnetpp.launch.LaunchPlugin;
 
+/**
+ * A little modified version of the JDT-s working block code
+ * @author rhornig
+ */
 public class WorkingDirectoryBlock extends OmnetppLaunchTab {
 
     // Local directory
@@ -43,46 +44,13 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
     private Text fOtherWorkingText = null;
     private Text fWorkingDirText;
 
-    /**
-     * The last launch config this tab was initialized from
-     */
-    private ILaunchConfiguration fLaunchConfiguration;
-
-    /**
-     * A listener to update for text changes and widget selection
-     */
-    private class WidgetListener extends SelectionAdapter implements ModifyListener {
-        public void modifyText(ModifyEvent e) {
-            updateLaunchConfigurationDialog();
-        }
-        @Override
-        public void widgetSelected(SelectionEvent e) {
-            Object source= e.getSource();
-            if (source == fWorkspaceButton) {
-                handleWorkspaceDirBrowseButtonSelected();
-            }
-            else if (source == fFileSystemButton) {
-                handleWorkingDirBrowseButtonSelected();
-            }
-            else if (source == fVariablesButton) {
-                handleWorkingDirVariablesButtonSelected();
-            }
-            else if(source == fUseDefaultDirButton) {
-                //only perform the action if this is the button that was selected
-                if(fUseDefaultDirButton.getSelection()) {
-                    setDefaultWorkingDir();
-                }
-            }
-            else if(source == fUseOtherDirButton) {
-                //only perform the action if this is the button that was selected
-                if(fUseOtherDirButton.getSelection()) {
-                    handleUseOtherWorkingDirButtonSelected();
-                }
-            }
-        }
+    public WorkingDirectoryBlock() {
+        super();
     }
 
-    private final WidgetListener fListener = new WidgetListener();
+    public WorkingDirectoryBlock(OmnetppLaunchTab embeddingTab) {
+        super(embeddingTab);
+    }
 
     /* (non-Javadoc)
      * @see org.eclipse.debug.ui.ILaunchConfigurationTab#createControl(org.eclipse.swt.widgets.Composite)
@@ -92,22 +60,22 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
         setControl(group);
     //default choice
         fUseDefaultDirButton = SWTFactory.createRadioButton(group, "Default:");
-        fUseDefaultDirButton.addSelectionListener(fListener);
+        fUseDefaultDirButton.addSelectionListener(this);
         fWorkingDirText = SWTFactory.createSingleText(group, 4);
-        fWorkingDirText.addModifyListener(fListener);
+        fWorkingDirText.addModifyListener(this);
         fWorkingDirText.setEnabled(false);
     //user enter choice
         fUseOtherDirButton = SWTFactory.createRadioButton(group, "Other:");
-        fUseOtherDirButton.addSelectionListener(fListener);
+        fUseOtherDirButton.addSelectionListener(this);
         fOtherWorkingText = SWTFactory.createSingleText(group, 1);
-        fOtherWorkingText.addModifyListener(fListener);
+        fOtherWorkingText.addModifyListener(this);
     //buttons
         fWorkspaceButton = createPushButton(group, "Workspace...", null);
-        fWorkspaceButton.addSelectionListener(fListener);
+        fWorkspaceButton.addSelectionListener(this);
         fFileSystemButton = createPushButton(group, "File System...", null);
-        fFileSystemButton.addSelectionListener(fListener);
+        fFileSystemButton.addSelectionListener(this);
         fVariablesButton = createPushButton(group, "Variables...", null);
-        fVariablesButton.addSelectionListener(fListener);
+        fVariablesButton.addSelectionListener(this);
     }
 
     /**
@@ -280,7 +248,7 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
      */
     @Override
     public void initializeFrom(ILaunchConfiguration configuration) {
-        setLaunchConfiguration(configuration);
+        super.initializeFrom(configuration);
         try {
             String wd = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, (String)null);
             setDefaultWorkingDir();
@@ -352,21 +320,6 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
     }
 
     /**
-     * Sets the java project currently specified by the
-     * given launch config, if any.
-     */
-    protected void setLaunchConfiguration(ILaunchConfiguration config) {
-        fLaunchConfiguration = config;
-    }
-
-    /**
-     * Returns the current java project context
-     */
-    protected ILaunchConfiguration getLaunchConfiguration() {
-        return fLaunchConfiguration;
-    }
-
-    /**
      * Allows this entire block to be enabled/disabled
      * @param enabled whether to enable it or not
      */
@@ -382,6 +335,33 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
         // in the case where the 'other' text is selected and we want to enable
         if(fUseOtherDirButton.getSelection() && enabled == true) {
             fOtherWorkingText.setEnabled(enabled);
+        }
+    }
+
+    @Override
+    public void widgetSelected(SelectionEvent e) {
+        super.widgetSelected(e);
+        Object source= e.getSource();
+        if (source == fWorkspaceButton) {
+            handleWorkspaceDirBrowseButtonSelected();
+        }
+        else if (source == fFileSystemButton) {
+            handleWorkingDirBrowseButtonSelected();
+        }
+        else if (source == fVariablesButton) {
+            handleWorkingDirVariablesButtonSelected();
+        }
+        else if(source == fUseDefaultDirButton) {
+            //only perform the action if this is the button that was selected
+            if(fUseDefaultDirButton.getSelection()) {
+                setDefaultWorkingDir();
+            }
+        }
+        else if(source == fUseOtherDirButton) {
+            //only perform the action if this is the button that was selected
+            if(fUseOtherDirButton.getSelection()) {
+                handleUseOtherWorkingDirButtonSelected();
+            }
         }
     }
 
