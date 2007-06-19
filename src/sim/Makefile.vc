@@ -22,7 +22,7 @@ OBJS_STD=\
     cenum.obj cexception.obj cfsm.obj cfunction.obj cgate.obj chist.obj \
     cksplit.obj clcg32.obj cllist.obj clongpar.obj cmersennetwister.obj \
     cmessage.obj cmsgpar.obj cmodule.obj cmsgheap.obj chasher.obj \
-    cnedfunction.obj cobject.obj coutvect.obj cnamedobject.obj \
+    cnedfunction.obj cobject.obj coutvector.obj cnamedobject.obj \
     cpar.obj cparvalue.obj cownedobject.obj cproperties.obj cproperty.obj \
     cpsquare.obj cqueue.obj cscheduler.obj csimplemodule.obj \
     csimulation.obj cstat.obj cstlwatch.obj cstringpar.obj \
@@ -1142,9 +1142,9 @@ cobject.obj: cobject.cc \
   ../../include/cenvir.h \
   ../../include/cnamedobject.h \
   ../../include/cstringpool.h
-coutvect.obj: coutvect.cc \
+coutvector.obj: coutvector.cc \
   ../../include/globals.h \
-  ../../include/coutvect.h \
+  ../../include/coutvector.h \
   ../../include/cmodule.h \
   ../../include/csimulation.h \
   ../../include/cenvir.h \
@@ -1975,7 +1975,7 @@ sim_std_m.obj: sim_std_m.cc \
   ../../include/cobject.h \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
-  ../../include/coutvect.h \
+  ../../include/coutvector.h \
   ../../include/cpar.h \
   ../../include/cparvalue.h \
   ../../include/cparsimcomm.h \

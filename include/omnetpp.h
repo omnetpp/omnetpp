@@ -59,7 +59,7 @@
 #include "cobject.h"
 #include "cnamedobject.h"
 #include "cownedobject.h"
-#include "coutvect.h"
+#include "coutvector.h"
 #include "cpar.h"
 #include "cparvalue.h"
 #include "cparsimcomm.h"

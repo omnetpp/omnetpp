@@ -17,7 +17,7 @@ OBJS_STD=\
     cenum.o cexception.o cfsm.o cfunction.o cgate.o chist.o \
     cksplit.o clcg32.o cllist.o clongpar.o cmersennetwister.o \
     cmessage.o cmsgpar.o cmodule.o cmsgheap.o chasher.o \
-    cnedfunction.o cobject.o coutvect.o cnamedobject.o \
+    cnedfunction.o cobject.o coutvector.o cnamedobject.o \
     cpar.o cparvalue.o cownedobject.o cproperties.o cproperty.o \
     cpsquare.o cqueue.o cscheduler.o csimplemodule.o \
     csimulation.o cstat.o cstlwatch.o cstringpar.o \
@@ -1115,9 +1115,9 @@ cobject.o: cobject.cc \
   ../../include/cenvir.h \
   ../../include/cnamedobject.h \
   ../../include/cstringpool.h
-coutvect.o: coutvect.cc \
+coutvector.o: coutvector.cc \
   ../../include/globals.h \
-  ../../include/coutvect.h \
+  ../../include/coutvector.h \
   ../../include/cmodule.h \
   ../../include/csimulation.h \
   ../../include/cenvir.h \

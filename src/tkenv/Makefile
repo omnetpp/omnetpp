@@ -106,7 +106,7 @@ inspector.o: inspector.cc \
   ../../include/cobject.h \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
-  ../../include/coutvect.h \
+  ../../include/coutvector.h \
   ../../include/cpar.h \
   ../../include/cparvalue.h \
   ../../include/cparsimcomm.h \
@@ -201,7 +201,7 @@ inspfactory.o: inspfactory.cc \
   ../../include/cobject.h \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
-  ../../include/coutvect.h \
+  ../../include/coutvector.h \
   ../../include/cpar.h \
   ../../include/cparvalue.h \
   ../../include/cparsimcomm.h \
@@ -260,7 +260,7 @@ layouterenv.o: layouterenv.cc \
   ../../include/cmessage.h \
   ../../include/cpar.h \
   ../../include/carray.h \
-  ../../include/coutvect.h \
+  ../../include/coutvector.h \
   ../../include/cstat.h \
   ../../include/cdensity.h \
   ../../include/cqueue.h \
@@ -317,7 +317,7 @@ modinsp.o: modinsp.cc \
   ../../include/cmessage.h \
   ../../include/cpar.h \
   ../../include/carray.h \
-  ../../include/coutvect.h \
+  ../../include/coutvector.h \
   ../../include/cstat.h \
   ../../include/cdensity.h \
   ../../include/cdisplaystring.h \
@@ -411,7 +411,7 @@ objinsp.o: objinsp.cc \
   ../../include/cobject.h \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
-  ../../include/coutvect.h \
+  ../../include/coutvector.h \
   ../../include/cpar.h \
   ../../include/cparvalue.h \
   ../../include/cparsimcomm.h \
@@ -464,7 +464,7 @@ statinsp.o: statinsp.cc \
   ../../include/cmessage.h \
   ../../include/cpar.h \
   ../../include/carray.h \
-  ../../include/coutvect.h \
+  ../../include/coutvector.h \
   ../../include/cstat.h \
   ../../include/cdensity.h \
   tkapp.h \
@@ -562,7 +562,7 @@ tkapp.o: tkapp.cc \
   ../../include/cconfiguration.h \
   tkutil.h \
   ../../include/cchannel.h \
-  ../../include/coutvect.h \
+  ../../include/coutvector.h \
   ../../include/cstat.h \
   ../../include/cdensity.h \
   ../../include/cdisplaystring.h \
@@ -584,7 +584,7 @@ tkcmd.o: tkcmd.cc \
   ../../include/cclassdescriptor.h \
   ../../include/cdisplaystring.h \
   ../../include/cqueue.h \
-  ../../include/coutvect.h \
+  ../../include/coutvector.h \
   ../../include/cenum.h \
   tkapp.h \
   tklib.h \
@@ -704,7 +704,7 @@ visitor.o: visitor.cc \
   ../../include/cmessage.h \
   ../../include/cqueue.h \
   ../../include/cstat.h \
-  ../../include/coutvect.h \
+  ../../include/coutvector.h \
   ../../include/cwatch.h \
   ../../include/cfsm.h \
   ../../include/cpar.h \

@@ -1,5 +1,5 @@
 //==========================================================================
-//  COUTVECT.H - part of
+//  COUTVECTOR.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __COUTVECT_H
-#define __COUTVECT_H
+#ifndef __COUTVECTOR_H
+#define __COUTVECTOR_H
 
 #include <stdio.h>
 #include "cownedobject.h"

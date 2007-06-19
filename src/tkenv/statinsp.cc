@@ -20,7 +20,7 @@
 #include "cmessage.h"
 #include "cpar.h"
 #include "carray.h"
-#include "coutvect.h"
+#include "coutvector.h"
 #include "cstat.h"
 #include "cdensity.h"
 

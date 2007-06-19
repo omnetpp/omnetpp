@@ -238,7 +238,7 @@ inline void evSetup(const char *inifile) { //XXX
 //%include "cvarhist.h"
 //%include "cpsquare.h"
 //%include "cksplit.h"
-//%include "coutvect.h"
+//%include "coutvector.h"
 //%include "cdetect.h"
 //%include "ctopo.h"
 //%include "cfsm.h"

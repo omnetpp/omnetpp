@@ -110,10 +110,12 @@ void InifileReader::internalReadFile(const char *filename)
     std::string rawLine;
     while (readLineInto(rawLine, file))
     {
+        ASSERT(rawLine.empty() || (*(rawLine.end()-1)!='\r' && *(rawLine.end()-1)!='\n'));
+
         // join continued lines
         lineNumber++;
         std::string lineBuf = rawLine;
-        if (*(rawLine.end()-1) == '\\')
+        if (!rawLine.empty() && *(rawLine.end()-1) == '\\')
         {
             while (true)
             {
@@ -121,7 +123,7 @@ void InifileReader::internalReadFile(const char *filename)
                 lineNumber++;
                 lineBuf.resize(lineBuf.size()-1); // cut off backslash from previous line
                 lineBuf += rawLine;
-                if (*(rawLine.end()-1) != '\\')
+                if (rawLine.empty() || *(rawLine.end()-1) != '\\')
                     break;
             }
         }
@@ -210,10 +212,11 @@ bool InifileReader::readLineInto(std::string& line, FILE *file)
     char buffer[512+1];
     while (fgets(buffer, 512, file)!=NULL)
     {
-        const char *endBuffer = buffer + strlen(buffer) - 1;
-        bool eolReached = *endBuffer=='\n' || *endBuffer=='\r';
-        while (endBuffer>buffer && isspace(*endBuffer)) endBuffer--;
-        line.append(buffer, endBuffer - buffer + 1);
+        const char *endBuffer = buffer + strlen(buffer);
+        if (buffer==endBuffer) break; // should not happen
+        bool eolReached = *(endBuffer-1)=='\n' || *(endBuffer-1)=='\r';
+        while (endBuffer>buffer && isspace(*(endBuffer-1))) endBuffer--;
+        line.append(buffer, endBuffer - buffer);
         if (eolReached)
             break;
     }

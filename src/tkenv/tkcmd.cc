@@ -31,7 +31,7 @@
 #include "cclassdescriptor.h"
 #include "cdisplaystring.h"
 #include "cqueue.h"
-#include "coutvect.h"
+#include "coutvector.h"
 #include "cenum.h"
 
 #include "tkapp.h"

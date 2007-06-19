@@ -20,7 +20,7 @@
 
 #include <string.h>   // strlen
 #include "globals.h"
-#include "coutvect.h"
+#include "coutvector.h"
 #include "cmodule.h"
 #include "csimulation.h"
 #include "cenvir.h"
