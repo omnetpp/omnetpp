@@ -487,7 +487,7 @@ public class SectionsPage extends FormPage {
 
 	@Override
 	public void gotoSection(String section) {
-		treeViewer.setSelection(new StructuredSelection(new GenericTreeNode(new SectionData(section, false))));
+		treeViewer.setSelection(new StructuredSelection(new GenericTreeNode(new SectionData(section, false))), true);
 	}
 
 	@Override
