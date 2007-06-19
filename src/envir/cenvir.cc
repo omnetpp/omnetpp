@@ -254,9 +254,17 @@ void cEnvir::setup(int argc, char *argv[])
 
 int cEnvir::run()
 {
-    if (app)
-        return app->run();
-    return 1;
+    try
+    {
+        if (app)
+            return app->run();
+        return 1;
+    }
+    catch (std::exception& e)
+    {
+        printfmsg("%s", e.what());
+        return 1;
+    }
 }
 
 void cEnvir::shutdown()

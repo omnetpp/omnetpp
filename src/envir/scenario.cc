@@ -21,17 +21,6 @@
 #include "stringutil.h"
 #include "unitconversion.h"
 
-//FIXME something is wrong!
-// like output is garbage for this:
-//
-//   [Scenario test2]
-//   a = ${x=1..10}
-//   b = ${y=1..10}
-//   condition = $x < $y
-//
-// maybe string comparison takes place????
-//
-
 
 /**
  * Resolves variables ($x, $y) and functions (sin, fabs, etc) in expressions.
@@ -96,7 +85,7 @@ Expression::StkValue Scenario::getIterationVariable(const char *varname)
         varname++;
     std::map<std::string,ValueIterator*>::iterator it = namedvars.find(varname);
     if (it==namedvars.end())
-        throw cRuntimeError("Scenario generator: unknown iteration variable: %s", varname);
+        throw cRuntimeError("Scenario generator: unknown iteration variable: $%s", varname);
     std::string value = it->second->get();
     try
     {
@@ -127,6 +116,9 @@ int Scenario::getNumRuns()
 
 bool Scenario::resetVariables()
 {
+    if (itervars.size()==0)
+        return true;  // it is valid to have no iterations at all
+
     // reset all iterators. If all of them are immediately at end(), there's no
     // valid state and we must return false
     bool ok = false;
