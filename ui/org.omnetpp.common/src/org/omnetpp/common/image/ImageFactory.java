@@ -33,6 +33,7 @@ public class ImageFactory {
     private final static String MODEL_IMAGE_DIR = INTERNAL_DIR + "model/";
     private final static String DECORATORS_IMAGE_DIR = INTERNAL_DIR + "decorators/";
     public final static String EVENTLOG_IMAGE_DIR = INTERNAL_DIR + "eventlog/";
+    public final static String CURSOR_IMAGE_DIR = INTERNAL_DIR + "cursor/";
 
     public final static String EVENLOG_IMAGE_BUBBLE = EVENTLOG_IMAGE_DIR + "Bubble";
     public final static String EVENLOG_IMAGE_EVENT_LOG_MESSAGE = EVENTLOG_IMAGE_DIR + "EventLogMessage";
@@ -100,6 +101,8 @@ public class ImageFactory {
     public final static String DECORATOR_IMAGE_ERROR = DECORATORS_IMAGE_DIR + "error";
     public final static String DECORATOR_IMAGE_WARNING = DECORATORS_IMAGE_DIR + "warning";
 
+    public final static String CURSOR_IMAGE_ZOOMIN = CURSOR_IMAGE_DIR + "ZoomIn";
+    
     public final static String UNKNOWN = INTERNAL_DIR + "unknown";
     public final static String DEFAULT = INTERNAL_DIR + "default";
 
