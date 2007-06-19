@@ -1,0 +1,16 @@
+%description:
+Tests the inifile reader
+
+%global:
+
+#include "inifilereader.h"
+
+%activity:
+
+//TODO
+
+ev << ".\n";
+
+
+%contains: stdout
+.
