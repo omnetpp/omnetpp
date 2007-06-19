@@ -10,8 +10,13 @@ import org.omnetpp.scave.charting.dataset.IXYDataset;
  * 
  * @author Andras
  */
-//TODO: backward-sample-hold
 public class SampleHoldVectorPlotter extends VectorPlotter {
+	
+	boolean backward;
+	
+	public SampleHoldVectorPlotter(boolean backward) {
+		this.backward = backward;
+	}
 
 	public void plot(IXYDataset dataset, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
 		int n = dataset.getItemCount(series);
@@ -39,6 +44,9 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		int[] dots = new int[] {1,2};
 		gc.setLineDash(dots);
 		//gc.setLineStyle(SWT.LINE_DOT);  // faster, but doesn't look as good
+		
+		if (!prevIsNaN && backward)
+			gc.drawPoint(prevX, prevY);
 
 		for (int i = first+1; i <= last; i++) {
 			double value = dataset.getY(series, i);
@@ -55,14 +63,25 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 			//if (i%5==1) x = prevX;
 			
 			if (x != prevX) {
-				if (!prevIsNaN) {
+				if (!isNaN && backward) {
+					gc.setLineStyle(SWT.LINE_SOLID);
+					gc.drawLine(prevX, y, x, y); // horizontal
+
+					gc.setLineDash(dots);
+					if (!prevIsNaN) {
+						gc.drawLine(prevX, prevY, prevX, y); // vertical
+					}
+				}
+				else if (!prevIsNaN && !backward) { // forward
 					gc.setLineStyle(SWT.LINE_SOLID);
 					gc.drawLine(prevX, prevY, x, prevY); // horizontal
 
 					gc.setLineDash(dots);
-					if (!isNaN)
+					if (!isNaN) {
 						gc.drawLine(x, prevY, x, y); // vertical
+					}
 				}
+				
 				minY = maxY = y;
 			}
 			else if (!isNaN) {
@@ -84,7 +103,7 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 			prevIsNaN = isNaN;
 		}
 
-		if (!prevIsNaN)
+		if (!prevIsNaN && !backward)
 			gc.drawPoint(prevX, prevY);
 
 		// draw symbols
