@@ -48,4 +48,8 @@ public class LineID {
 	public ResultItem getResultItem() {
 		return id != -1 && manager != null ? manager.getItem(id) : null;
 	}
+	
+	public String toString() {
+		return "Line \""+key+"\"";
+	}
 }
