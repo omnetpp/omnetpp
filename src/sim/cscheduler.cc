@@ -23,7 +23,7 @@
 #include "cmsgheap.h"
 #include "globals.h"
 #include "cenvir.h"
-#include "cconfig.h"
+#include "cconfiguration.h"
 #include "cconfigentry.h"
 #include "platmisc.h" // usleep
 

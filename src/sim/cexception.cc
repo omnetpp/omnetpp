@@ -26,7 +26,7 @@
 #include "ccomponent.h"
 #include "cmodule.h"
 #include "cenvir.h"
-#include "cconfig.h"
+#include "cconfiguration.h"
 
 
 #define BUFLEN 1024

@@ -16,7 +16,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cconfig.h"
+#include "cconfiguration.h"
 #include "cmodule.h"
 #include "cclassdescriptor.h"
 #include "commonutil.h"

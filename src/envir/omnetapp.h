@@ -26,7 +26,7 @@
 #include "args.h"
 #include "envdefs.h"
 #include "envirext.h"
-#include "cconfig.h"
+#include "cconfiguration.h"
 #include "timeutil.h"
 
 

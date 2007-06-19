@@ -21,7 +21,7 @@
 #include "simkerneldefs.h"
 #include "globals.h"
 #include "crng.h"
-#include "cconfig.h"
+#include "cconfiguration.h"
 
 
 #define LCG32_MAX  0x7ffffffeL  /* = 2^31-2 */

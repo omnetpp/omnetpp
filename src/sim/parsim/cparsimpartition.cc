@@ -30,7 +30,7 @@
 #include "creceivedexception.h"
 #include "messagetags.h"
 #include "cenvir.h"
-#include "cconfig.h"
+#include "cconfiguration.h"
 #include "macros.h"
 
 Register_Class(cParsimPartition);

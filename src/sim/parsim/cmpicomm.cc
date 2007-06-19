@@ -23,7 +23,7 @@
 #include "cmpicommbuffer.h"
 #include "macros.h"
 #include "cenvir.h"
-#include "cconfig.h"
+#include "cconfiguration.h"
 #include "platmisc.h"
 
 Register_Class(cMPICommunications);

@@ -26,7 +26,7 @@
 #include "globals.h"
 #include "cfunction.h"
 #include "cxmlelement.h"
-#include "cconfig.h"
+#include "cconfiguration.h"
 #include "cenvir.h"
 #include "cexception.h"
 #include "csimulation.h"

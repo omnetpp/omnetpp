@@ -34,7 +34,7 @@
 #include "cexception.h"
 #include "cparvalue.h"
 #include "chasher.h"
-#include "cconfig.h"
+#include "cconfiguration.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"

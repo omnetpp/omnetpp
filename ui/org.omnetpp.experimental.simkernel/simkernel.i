@@ -258,7 +258,7 @@ inline void evSetup(const char *inifile) { //XXX
 //%include "cstlwatch.h" -- no need to wrap
 //%include "onstartup.h" -- no need to wrap
 //%include "envirext.h" -- no need to wrap
-//%include "cconfig.h" -- no need to wrap
+//%include "cconfiguration.h" -- no need to wrap
 //%include "cstrtokenizer.h" -- no need to wrap
 //%include "cscheduler.h" -- no need to wrap
 //%include "compat.h" -- no need to wrap

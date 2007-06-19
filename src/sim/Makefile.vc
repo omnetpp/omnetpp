@@ -16,7 +16,7 @@ IMPLIBS=../envir/envir.lib ../common/common.lib
 
 OBJS_STD=\
     carray.obj cbasicchannel.obj cboolpar.obj cchannel.obj \
-    cclassfactory.obj ccomponent.obj ccomponenttype.obj cconfig.obj cconfigentry.obj \
+    cclassfactory.obj ccomponent.obj ccomponenttype.obj cconfiguration.obj cconfigentry.obj \
     ccompoundmodule.obj ccoroutine.obj cdefaultlist.obj cdensity.obj \
     cdetect.obj cdisplaystring.obj cdoublepar.obj cdynamicexpression.obj \
     cenum.obj cexception.obj cfsm.obj cfunction.obj cgate.obj chist.obj \
@@ -418,24 +418,6 @@ ccompoundmodule.obj: ccompoundmodule.cc \
   ../../include/cparvalue.h \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h
-cconfig.obj: cconfig.cc \
-  ../../include/cconfig.h \
-  ../../include/cconfigentry.h \
-  ../../include/simkerneldefs.h \
-  ../../include/cobject.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h \
-  ../../include/util.h \
-  ../../include/cvisitor.h \
-  ../../include/regmacros.h \
-  ../../include/errmsg.h \
-  ../../include/cownedobject.h \
-  ../../include/cenvir.h \
-  ../../include/cnamedobject.h \
-  ../../include/cexception.h \
-  ../../include/opp_string.h \
-  ../../include/cstringpool.h
 cconfigentry.obj: cconfigentry.cc \
   ../../include/cconfigentry.h \
   ../../include/cownedobject.h \
@@ -453,6 +435,24 @@ cconfigentry.obj: cconfigentry.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h
+cconfiguration.obj: cconfiguration.cc \
+  ../../include/cconfiguration.h \
+  ../../include/cconfigentry.h \
+  ../../include/simkerneldefs.h \
+  ../../include/cobject.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/util.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/errmsg.h \
+  ../../include/cownedobject.h \
+  ../../include/cenvir.h \
+  ../../include/cnamedobject.h \
+  ../../include/cexception.h \
+  ../../include/opp_string.h \
+  ../../include/cstringpool.h
 ccoroutine.obj: ccoroutine.cc \
   ../../include/ccoroutine.h \
   task.h \
@@ -650,7 +650,7 @@ cexception.obj: cexception.cc \
   ../../include/ccomponent.h \
   ../../include/cmodule.h \
   ../../include/cenvir.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/simkerneldefs.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
@@ -861,7 +861,7 @@ clcg32.obj: clcg32.cc \
   ../../include/simkerneldefs.h \
   ../../include/globals.h \
   ../../include/crng.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
@@ -936,7 +936,7 @@ cmersennetwister.obj: cmersennetwister.cc \
   ../../include/errmsg.h \
   ../../include/globals.h \
   ../../include/crng.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/mersennetwister.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
@@ -1058,7 +1058,7 @@ cmsgpar.obj: cmsgpar.cc \
   ../../include/globals.h \
   ../../include/cfunction.h \
   ../../include/cxmlelement.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/csimulation.h \
@@ -1393,7 +1393,7 @@ cscheduler.obj: cscheduler.cc \
   ../../include/cmsgheap.h \
   ../../include/globals.h \
   ../../include/cenvir.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/cconfigentry.h \
   ../../include/cobject.h \
   ../../include/platdep/timeutil.h \
@@ -1462,7 +1462,7 @@ csimulation.obj: csimulation.cc \
   ../../include/cexception.h \
   ../../include/cparvalue.h \
   ../../include/chasher.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/ccommbuffer.h \
   netbuilder/cnedloader.h \
   ../../include/ccomponent.h \
@@ -1942,7 +1942,7 @@ sim_std_m.obj: sim_std_m.cc \
   ../../include/ccomponent.h \
   ../../include/ccomponenttype.h \
   ../../include/ccompoundmodule.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/ccoroutine.h \
   ../../include/cdefaultlist.h \
   ../../include/cdensity.h \
@@ -2079,7 +2079,7 @@ util.obj: util.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/mersennetwister.h \
   ../../include/cdensity.h \
   ../../include/cstat.h
@@ -2389,7 +2389,7 @@ parsim/cfilecomm.obj: parsim/cfilecomm.cc \
   parsim/cfilecomm.h \
   parsim/cfilecommbuffer.h \
   ../../include/cenvir.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   parsim/parsimutil.h \
   ../../include/simkerneldefs.h \
   ../../include/errmsg.h \
@@ -2428,7 +2428,7 @@ parsim/cidealsimulationprot.obj: parsim/cidealsimulationprot.cc \
   ../../include/cmodule.h \
   ../../include/cgate.h \
   ../../include/cenvir.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   parsim/cidealsimulationprot.h \
   parsim/cplaceholdermod.h \
   parsim/cparsimpartition.h \
@@ -2577,7 +2577,7 @@ parsim/cmpicomm.obj: parsim/cmpicomm.cc \
   parsim/cmpicomm.h \
   parsim/cmpicommbuffer.h \
   ../../include/cenvir.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/cparsimcomm.h \
   ../../include/cobject.h \
   ../../include/simkerneldefs.h \
@@ -2609,7 +2609,7 @@ parsim/cnamedpipecomm-win.obj: parsim/cnamedpipecomm-win.cc \
   ../../include/cexception.h \
   parsim/cmemcommbuffer.h \
   ../../include/cenvir.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   parsim/parsimutil.h \
   ../../include/util.h \
   ../../include/opp_string.h \
@@ -2629,7 +2629,7 @@ parsim/cnamedpipecomm.obj: parsim/cnamedpipecomm.cc \
   ../../include/cexception.h \
   parsim/cmemcommbuffer.h \
   ../../include/cenvir.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   parsim/parsimutil.h \
   ../../include/util.h \
   ../../include/opp_string.h \
@@ -2690,7 +2690,7 @@ parsim/cnullmessageprot.obj: parsim/cnullmessageprot.cc \
   ../../include/cmodule.h \
   ../../include/cgate.h \
   ../../include/cenvir.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   parsim/cnullmessageprot.h \
   parsim/clinkdelaylookahead.h \
   parsim/cparsimpartition.h \
@@ -2747,7 +2747,7 @@ parsim/cparsimpartition.obj: parsim/cparsimpartition.cc \
   parsim/creceivedexception.h \
   parsim/messagetags.h \
   ../../include/cenvir.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/cownedobject.h \
   ../../include/carray.h \
   ../../include/cmsgpar.h \

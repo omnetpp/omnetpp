@@ -22,7 +22,7 @@
 #include "cmodule.h"
 #include "cgate.h"
 #include "cenvir.h"
-#include "cconfig.h"
+#include "cconfiguration.h"
 #include "cidealsimulationprot.h"
 #include "cplaceholdermod.h"
 #include "cparsimpartition.h"

@@ -75,7 +75,7 @@ cmdenv.o: cmdenv.cc \
   ../../include/regmacros.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/cconfigentry.h \
   ../../include/cmodule.h \
   ../../include/ccomponent.h \

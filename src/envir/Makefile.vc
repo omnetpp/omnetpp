@@ -77,7 +77,7 @@ akaroarng.obj: akaroarng.cc \
   ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   ../../include/crng.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/cobject.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h
@@ -100,7 +100,7 @@ akoutvectormgr.obj: akoutvectormgr.cc \
   args.h \
   envdefs.h \
   ../../include/envirext.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/cownedobject.h \
   ../../include/cnamedobject.h \
   ../../include/cobject.h \
@@ -165,8 +165,8 @@ cenvir.obj: cenvir.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/opp_string.h \
-  configreader.h \
-  ../../include/cconfig.h \
+  ../../include/cconfigreader.h \
+  ../../include/cconfiguration.h \
   ../../include/envirext.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
@@ -232,7 +232,7 @@ filemgrs.obj: filemgrs.cc \
   args.h \
   envdefs.h \
   ../../include/envirext.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
@@ -266,7 +266,7 @@ inifilereader.obj: inifilereader.cc \
   inifilereader.h \
   fsutils.h \
   ../../include/cexception.h \
-  configreader.h \
+  ../../include/cconfigreader.h \
   ../../include/util.h \
   ../../include/opp_string.h \
   ../../include/simkerneldefs.h \
@@ -301,7 +301,7 @@ ivfilemgr.obj: ivfilemgr.cc \
   args.h \
   envdefs.h \
   ../../include/envirext.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
@@ -348,7 +348,7 @@ matchableobject.obj: matchableobject.cc \
   ../../include/opp_string.h \
   ../../include/cstringpool.h
 objectprinter.obj: objectprinter.cc \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/cmodule.h \
   ../../include/cclassdescriptor.h \
   objectprinter.h \
@@ -415,7 +415,7 @@ omnetapp.obj: omnetapp.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/envirext.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/cownedobject.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
@@ -442,8 +442,8 @@ scenario.obj: scenario.cc \
   valueiterator.h \
   ../../include/cexception.h \
   sectionbasedconfig.h \
-  ../../include/cconfig.h \
-  configreader.h \
+  ../../include/cconfiguration.h \
+  ../../include/cconfigreader.h \
   ../../include/simkerneldefs.h \
   ../../include/cobject.h \
   ../../include/platdep/platdefs.h \
@@ -456,11 +456,11 @@ scenario.obj: scenario.cc \
   ../../include/opp_string.h
 sectionbasedconfig.obj: sectionbasedconfig.cc \
   sectionbasedconfig.h \
-  configreader.h \
+  ../../include/cconfigreader.h \
   valueiterator.h \
   ../../include/cexception.h \
   scenario.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/simkerneldefs.h \
   ../../include/cobject.h \
   ../../include/platdep/platdefs.h \

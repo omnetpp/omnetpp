@@ -21,7 +21,7 @@
 #include "simkerneldefs.h"
 #include "globals.h"
 #include "crng.h"
-#include "cconfig.h"
+#include "cconfiguration.h"
 #include "mersennetwister.h"
 
 

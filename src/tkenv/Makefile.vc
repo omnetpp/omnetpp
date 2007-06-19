@@ -88,7 +88,7 @@ inspector.obj: inspector.cc \
   ../../include/ccomponent.h \
   ../../include/ccomponenttype.h \
   ../../include/ccompoundmodule.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/ccoroutine.h \
   ../../include/cdefaultlist.h \
   ../../include/cdensity.h \
@@ -180,7 +180,7 @@ inspfactory.obj: inspfactory.cc \
   ../../include/ccomponent.h \
   ../../include/ccomponenttype.h \
   ../../include/ccompoundmodule.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/ccoroutine.h \
   ../../include/cdefaultlist.h \
   ../../include/cdensity.h \
@@ -375,7 +375,7 @@ objinsp.obj: objinsp.cc \
   ../../include/ccomponent.h \
   ../../include/ccomponenttype.h \
   ../../include/ccompoundmodule.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/ccoroutine.h \
   ../../include/cdefaultlist.h \
   ../../include/cdensity.h \

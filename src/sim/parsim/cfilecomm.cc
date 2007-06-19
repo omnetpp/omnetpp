@@ -28,7 +28,7 @@
 #include "cfilecommbuffer.h"
 #include "macros.h"
 #include "cenvir.h"
-#include "cconfig.h"
+#include "cconfiguration.h"
 #include "parsimutil.h"
 #include "fileglobber.h"
 #include "platmisc.h"

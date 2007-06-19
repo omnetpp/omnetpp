@@ -19,15 +19,15 @@
 #include <vector>
 #include <set>
 #include <string>
-#include "cconfig.h"
-#include "configreader.h"
+#include "cconfiguration.h"
+#include "cconfigreader.h"
 
 class PatternMatcher;
 
 
 /**
- * Wraps an ConfigurationReader, and presents the contents of an inifile
- * on a higher level towards the simulation.
+ * Wraps a cConfigurationReader (usually an InifileReader), and presents
+ * its contents on a higher level towards the simulation.
  *
  * This object "flattens out" the configuration with respect to an
  * active section, i.e. the section fallback sequence ("extends") is
@@ -36,7 +36,7 @@ class PatternMatcher;
 class SectionBasedConfiguration : public cConfiguration
 {
   private:
-    // if we make our own copy, we only need ConfigurationReader for initialization, and after that it can be disposed of
+    // if we make our own copy, we only need cConfigurationReader for initialization, and after that it can be disposed of
     class KeyValue1 : public cConfiguration::KeyValue {
       public:
         static std::string nullbasedir;
@@ -52,7 +52,7 @@ class SectionBasedConfiguration : public cConfiguration
         virtual const char *getBaseDirectory() const {return basedirRef->c_str();}
     };
 
-    ConfigurationReader *ini;
+    cConfigurationReader *ini;
     std::string activeConfig;
     int activeRunNumber;
 
@@ -146,7 +146,7 @@ class SectionBasedConfiguration : public cConfiguration
     void validateConfig() const;
     std::vector<IterationSpec> collectIterationSpecs(int sectionId) const;
     void validateIterations(const std::vector<IterationSpec>& list) const;
-    KeyValue1 convert(const ConfigurationReader::KeyValue& e);
+    KeyValue1 convert(const cConfigurationReader::KeyValue& e);
     void doActivateConfig(int sectionId);
     void doActivateScenario(int sectionId, int runNumber);
     int internalGetNumRunsInScenario(int sectionId) const;
@@ -158,7 +158,7 @@ class SectionBasedConfiguration : public cConfiguration
     /**
      *XXX
      */
-    virtual void setConfigurationReader(ConfigurationReader *ini);
+    virtual void setConfigurationReader(cConfigurationReader *ini);
 
     /** @name Methods that implement the cConfiguration interface. */
     //@{

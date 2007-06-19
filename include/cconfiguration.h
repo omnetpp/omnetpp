@@ -1,5 +1,5 @@
 //==========================================================================
-//  CCONFIG.H - part of
+//  CCONFIGURATION.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CCONFIG_H
-#define __CCONFIG_H
+#ifndef __CCONFIGURATION_H
+#define __CCONFIGURATION_H
 
 #include <vector>
 #include "simkerneldefs.h"

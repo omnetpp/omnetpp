@@ -16,7 +16,7 @@
 #include <algorithm>
 #include <sstream>
 #include "sectionbasedconfig.h"
-#include "configreader.h"
+#include "cconfigreader.h"
 #include "patternmatcher.h"
 #include "valueiterator.h"
 #include "cexception.h"
@@ -44,7 +44,7 @@ SectionBasedConfiguration::~SectionBasedConfiguration()
     delete ini;
 }
 
-void SectionBasedConfiguration::setConfigurationReader(ConfigurationReader *ini)
+void SectionBasedConfiguration::setConfigurationReader(cConfigurationReader *ini)
 {
     clear();
     this->ini = ini;
@@ -190,7 +190,7 @@ void SectionBasedConfiguration::doActivateScenario(int sectionId, int runNumber)
     // substituting the iteration values
     for (int entryId=0; entryId<ini->getNumEntries(sectionId); entryId++)
     {
-        const ConfigurationReader::KeyValue& entry = ini->getEntry(sectionId, entryId);
+        const cConfigurationReader::KeyValue& entry = ini->getEntry(sectionId, entryId);
         std::string actualValue = entry.getValue();
 
         // substitute iteration values
@@ -266,7 +266,7 @@ std::vector<SectionBasedConfiguration::IterationSpec> SectionBasedConfiguration:
     std::vector<IterationSpec> v;
     for (int i=0; i<ini->getNumEntries(sectionId); i++)
     {
-        const ConfigurationReader::KeyValue& entry = ini->getEntry(sectionId, i);
+        const cConfigurationReader::KeyValue& entry = ini->getEntry(sectionId, i);
         const char *text = entry.getValue();
         const char *pos = text;
         while ((pos = strchr(pos, '$')) != NULL)
@@ -478,7 +478,7 @@ void SectionBasedConfiguration::splitKey(const char *key, std::string& outOwnerN
     }
 }
 
-SectionBasedConfiguration::KeyValue1 SectionBasedConfiguration::convert(const ConfigurationReader::KeyValue& e)
+SectionBasedConfiguration::KeyValue1 SectionBasedConfiguration::convert(const cConfigurationReader::KeyValue& e)
 {
     StringSet::iterator it = basedirs.find(e.getBaseDirectory());
     if (it == basedirs.end()) {

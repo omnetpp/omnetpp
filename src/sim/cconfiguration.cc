@@ -16,7 +16,7 @@
 *--------------------------------------------------------------*/
 
 
-#include "cconfig.h"
+#include "cconfiguration.h"
 #include "cconfigentry.h"
 #include "unitconversion.h"
 #include "stringutil.h"

@@ -61,7 +61,7 @@ akaroarng.o: akaroarng.cc \
   ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   ../../include/crng.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/cobject.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
@@ -88,7 +88,7 @@ akoutvectormgr.o: akoutvectormgr.cc \
   args.h \
   envdefs.h \
   ../../include/envirext.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/cownedobject.h \
   ../../include/cnamedobject.h \
   ../../include/cobject.h \
@@ -152,7 +152,7 @@ cenvir.o: cenvir.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/opp_string.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/cconfigentry.h \
   ../../include/envirext.h \
   ../../include/ccomponent.h \
@@ -175,7 +175,7 @@ cinifile.o: cinifile.cc \
   ../../include/util.h \
   ../../include/errmsg.h \
   envdefs.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/cobject.h \
   ../../include/cconfigentry.h \
   ../../include/cvisitor.h \
@@ -227,7 +227,7 @@ filemgrs.o: filemgrs.cc \
   args.h \
   envdefs.h \
   ../../include/envirext.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/cownedobject.h \
   ../../include/cnamedobject.h \
   ../../include/cobject.h \
@@ -285,7 +285,7 @@ ivfilemgr.o: ivfilemgr.cc \
   args.h \
   envdefs.h \
   ../../include/envirext.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/cownedobject.h \
   ../../include/cnamedobject.h \
   ../../include/cobject.h \
@@ -370,7 +370,7 @@ omnetapp.o: omnetapp.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/envirext.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/cownedobject.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \

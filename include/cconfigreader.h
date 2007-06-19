@@ -1,5 +1,5 @@
 //==========================================================================
-//  CONFIGREADER.H - part of
+//  CCONFIGREADER.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -12,8 +12,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef CONFIGREADER_H_
-#define CONFIGREADER_H_
+#ifndef CCONFIGREADER_H_
+#define CCONFIGREADER_H_
 
 
 /**
@@ -24,7 +24,7 @@
  * The default implementation is InifileReader, but other variants (e.g. those
  * reading the configuration from a database) can also be implemented.
  */
-class ConfigurationReader
+class cConfigurationReader
 {
   public:
     /**
@@ -44,7 +44,7 @@ class ConfigurationReader
     /**
      * Virtual destructor
      */
-    virtual ~ConfigurationReader() {}
+    virtual ~cConfigurationReader() {}
 
     /**
      * Returns the name of the configuration file. Returns NULL if this object is

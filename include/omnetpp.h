@@ -26,7 +26,7 @@
 #include "ccomponent.h"
 #include "ccomponenttype.h"
 #include "ccompoundmodule.h"
-#include "cconfig.h"
+#include "cconfiguration.h"
 #include "ccoroutine.h"
 #include "cdefaultlist.h"
 #include "cdensity.h"

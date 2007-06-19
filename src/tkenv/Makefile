@@ -73,7 +73,7 @@ inspector.o: inspector.cc \
   ../../include/ccomponent.h \
   ../../include/ccomponenttype.h \
   ../../include/ccompoundmodule.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/ccoroutine.h \
   ../../include/cdefaultlist.h \
   ../../include/cdensity.h \
@@ -168,7 +168,7 @@ inspfactory.o: inspfactory.cc \
   ../../include/ccomponent.h \
   ../../include/ccomponenttype.h \
   ../../include/ccompoundmodule.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/ccoroutine.h \
   ../../include/cdefaultlist.h \
   ../../include/cdensity.h \
@@ -302,7 +302,7 @@ layouterenv.o: layouterenv.cc \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/cconfigentry.h
 modinsp.o: modinsp.cc \
   modinsp.h \
@@ -361,7 +361,7 @@ modinsp.o: modinsp.cc \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/cconfigentry.h
 objinsp.o: objinsp.cc \
   ../../include/omnetpp.h \
@@ -378,7 +378,7 @@ objinsp.o: objinsp.cc \
   ../../include/ccomponent.h \
   ../../include/ccomponenttype.h \
   ../../include/ccompoundmodule.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/ccoroutine.h \
   ../../include/cdefaultlist.h \
   ../../include/cdensity.h \
@@ -502,7 +502,7 @@ statinsp.o: statinsp.cc \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/cconfigentry.h \
   inspector.h \
   tkutil.h \
@@ -559,7 +559,7 @@ tkapp.o: tkapp.cc \
   ../envir/omnetapp.h \
   ../envir/args.h \
   ../../include/envirext.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   tkutil.h \
   ../../include/cchannel.h \
   ../../include/coutvect.h \
@@ -624,7 +624,7 @@ tkcmd.o: tkcmd.cc \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/cconfigentry.h \
   tkutil.h \
   tkdefs.h \
@@ -640,7 +640,7 @@ tklib.o: tklib.cc \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/cownedobject.h \
   ../../include/simkerneldefs.h \
   ../../include/util.h \
@@ -693,7 +693,7 @@ tkutil.o: tkutil.cc \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/cconfigentry.h \
   ../envir/matchableobject.h \
   tkdefs.h
@@ -745,5 +745,5 @@ visitor.o: visitor.cc \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
-  ../../include/cconfig.h \
+  ../../include/cconfiguration.h \
   ../../include/cconfigentry.h

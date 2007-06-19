@@ -17,14 +17,14 @@
 
 #include <string>
 #include <vector>
-#include "configreader.h"
+#include "cconfigreader.h"
 
 /**
  * Low-level inifile reading, including the resolution of includes.
  * Inifile contents is presented as key-value pairs grouped into sections.
  * This class does not try to make sense of section/key names.
  */
-class InifileReader : public ConfigurationReader
+class InifileReader : public cConfigurationReader
 {
   protected:
     class KeyValue1 : public KeyValue {
@@ -73,7 +73,7 @@ class InifileReader : public ConfigurationReader
     virtual ~InifileReader();
     virtual void readFile(const char *filename);
 
-    /** @name Methods implementing ConfigurationReader */
+    /** @name Methods implementing cConfigurationReader */
     //@{
     virtual const char *getFileName() const;
     virtual const char *getDefaultBaseDirectory() const;
