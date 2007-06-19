@@ -129,6 +129,7 @@ public class LineChartEditForm extends ChartEditForm {
 			previewCanvas.setBackground(ColorFactory.WHITE);
 			
 			selectLine(getSelectedLineKey());
+			updateLinePropertyEditFields((VectorChartProperties)properties);
 		}
 	}
 	

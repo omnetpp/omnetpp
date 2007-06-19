@@ -610,7 +610,7 @@ public class ChartProperties extends PropertySource {
 		Enum<?> defaultValue = propertyValue == null ? null : getDefaultEnumProperty(propertyName, propertyValue.getClass());
 		if (defaultValue != null && defaultValue.equals(propertyValue))
 			propertyValue = null;
-		doSetProperty(propertyName, propertyValue == null ? null : String.valueOf(propertyValue));
+		doSetProperty(propertyName, propertyValue == null ? null : propertyValue.name());
 	}
 
 	public void setProperty(String propertyName, FontData propertyValue) {

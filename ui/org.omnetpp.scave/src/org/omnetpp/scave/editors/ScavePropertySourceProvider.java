@@ -6,8 +6,10 @@ import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySourceProvider;
 import org.omnetpp.common.properties.PropertySource;
 import org.omnetpp.scave.charting.ChartProperties;
+import org.omnetpp.scave.charting.ChartProperties.VectorChartProperties;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model2.LineID;
 
 /**
  * Provides properties of scave model objects and charts.
@@ -25,13 +27,17 @@ public class ScavePropertySourceProvider implements IPropertySourceProvider {
 	}
 
 	public IPropertySource getPropertySource(Object object) {
-		IPropertySource propertySource;
 		if (object instanceof Chart)
-			propertySource = ChartProperties.createPropertySource((Chart)object, manager);
+			return ChartProperties.createPropertySource((Chart)object, manager);
 		else if (object instanceof PropertySource)
-			propertySource = (PropertySource)object;
-		else
-			propertySource = delegate.getPropertySource(object);
-		return propertySource;
+			return (PropertySource)object;
+		else if (object instanceof LineID) {
+			LineID lineID = (LineID)object;
+			ChartProperties properties = ChartProperties.createPropertySource(lineID.getChart(), manager); 
+			if (properties instanceof VectorChartProperties)
+				return ((VectorChartProperties)properties).getLineProperties(lineID.getKey());
+		}
+	
+		return delegate.getPropertySource(object);
 	}
 }

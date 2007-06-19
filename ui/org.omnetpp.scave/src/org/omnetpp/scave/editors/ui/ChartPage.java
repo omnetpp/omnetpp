@@ -136,9 +136,9 @@ public class ChartPage extends ScaveEditorPage {
 					if (selection instanceof VectorChart.LineSelection) {
 						VectorChart.LineSelection lineSelection = (VectorChart.LineSelection)selection;
 						ResultFileManager manager = updater.getResultFileManager();
-						long id = lineSelection.getSelectedID(); // XXX store these in the selection too
+						long id = lineSelection.getSelectedID();
 						String key = lineSelection.getSelectedKey();
-						LineID lineID = new LineID(key, id, manager);
+						LineID lineID = new LineID(chart, key, id, manager);
 						scaveEditor.setSelection(new TreeSelection(new TreePath(new Object[] {chart, lineID})));
 					}
 					else {

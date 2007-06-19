@@ -50,7 +50,7 @@ public class EnumPropertyDescriptor extends PropertyDescriptor {
 			Object[] enumValues = enumType.getEnumConstants();
 			for (Object value : enumValues) {
 				values.add(value);
-				names.add(((Enum<?>)value).name());
+				names.add(((Enum<?>)value).toString());
 			}
 		}
 		else { // typesafe enum pattern class
