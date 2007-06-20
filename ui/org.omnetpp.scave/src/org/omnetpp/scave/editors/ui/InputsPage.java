@@ -1,6 +1,5 @@
 package org.omnetpp.scave.editors.ui;
 
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;

@@ -20,13 +20,9 @@ import static org.omnetpp.scave.charting.ChartProperties.PROP_XY_INVERT;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_X_LABELS_ROTATE_BY;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_MAX;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_MIN;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_TITLE;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.draw2d.Graphics;
@@ -52,7 +48,6 @@ import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GeomUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
-import org.omnetpp.scave.charting.VectorChart.LineSelection;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.ScalarDataset;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;

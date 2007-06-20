@@ -17,9 +17,7 @@ import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ScaveModelPackage;
-import org.omnetpp.scave.model2.ScaveModelUtil;
 
-//FIXME close this page when dataset gets deleted
 public class DatasetPage extends ScaveEditorPage {
 	private TreeViewer datasetTreeViewer;
 	private Dataset dataset; // backreference to the model object we operate on

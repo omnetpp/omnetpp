@@ -3,13 +3,19 @@ package org.omnetpp.scave.editors;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.emf.edit.ui.action.DeleteAction;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISharedImages;
@@ -18,6 +24,8 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.RetargetAction;
+import org.eclipse.ui.part.IPage;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.scave.actions.AddFilterToDatasetAction;
 import org.omnetpp.scave.actions.AddSelectedToDatasetAction;
@@ -33,6 +41,7 @@ import org.omnetpp.scave.actions.GroupAction;
 import org.omnetpp.scave.actions.IScaveAction;
 import org.omnetpp.scave.actions.OpenAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
+import org.omnetpp.scave.actions.RemoveAction;
 import org.omnetpp.scave.actions.ShowVectorBrowserViewAction;
 import org.omnetpp.scave.actions.UngroupAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
@@ -63,7 +72,8 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	private IAction editAction;
 	private IAction groupAction;
 	private IAction ungroupAction;
-
+	private IScaveAction deleteAction; // action handler of deleteRetargetAction
+	
 	// ChartPage actions
 //XXX
 //	private IAction zoomInXAction;
@@ -101,6 +111,11 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
         groupAction = registerAction(page, new GroupAction());
         ungroupAction = registerAction(page, new UngroupAction());
 
+        // replacement of the inherited deleteAction 
+        ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
+        deleteAction = registerAction(page, new RemoveAction());
+        deleteAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
+
         // ChartPage actions
 //XXX
 //        zoomInXAction = registerAction(page, new ZoomChartAction(true, false, 1.5));
@@ -137,6 +152,8 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 //		createDatasetAction = registerAction(page, new CreateDatasetAction());
 //		createChartAction = registerAction(page, new CreateChartAction());
         super.init(bars, page);
+        
+        bars.setGlobalActionHandler(ActionFactory.DELETE.getId(), deleteAction);
 	}
 
 	private IScaveAction registerAction(IWorkbenchPage page, final IScaveAction action) {
@@ -220,6 +237,21 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	public void menuAboutToShow(IMenuManager menuManager) {
 		// This is called for context menus of the model tree viewers
 		super.menuAboutToShow(menuManager);
+		// replace the inherited deleteAction with ours, that handle references and temp obects well
+		IContributionItem deleteActionItem = null;
+		for (IContributionItem item : menuManager.getItems())
+			if (item instanceof ActionContributionItem) {
+				ActionContributionItem acItem = (ActionContributionItem)item;
+				if (acItem.getAction() == super.deleteAction) {
+					deleteActionItem = item;
+					break;
+				}
+			}
+		if (deleteActionItem != null) {
+			menuManager.remove(deleteActionItem);
+			menuManager.insertBefore("additions-end", deleteAction);
+		}
+		
 		menuManager.insertBefore("additions", openAction);
 		menuManager.insertBefore("additions", editAction);
 		
@@ -227,6 +259,34 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 		menuManager.insertBefore("edit", ungroupAction);
 		menuManager.insertBefore("edit", new Separator());
 		menuManager.insertBefore("edit", createExportMenu());
+	}
+
+	public void shareGlobalActions(IPage page, IActionBars actionBars)
+	{
+		super.shareGlobalActions(page, actionBars);
+		
+		// replace inherited deleteAction
+		if (!(page instanceof IPropertySheetPage))
+			actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(), deleteAction);
+	}
+	
+	public void update()
+	{
+		super.update();
+		
+		ISelectionProvider selectionProvider = 
+			activeEditor instanceof ISelectionProvider ?
+				(ISelectionProvider)activeEditor :
+					activeEditor.getEditorSite().getSelectionProvider();
+
+		if (selectionProvider != null)
+		{
+			ISelection selection = selectionProvider.getSelection();
+			IStructuredSelection structuredSelection =
+				selection instanceof IStructuredSelection ?  (IStructuredSelection)selection : StructuredSelection.EMPTY;
+
+			deleteAction.selectionChanged(structuredSelection);
+		}
 	}
 	
 	public IAction getOpenAction() {

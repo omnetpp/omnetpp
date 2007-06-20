@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CompoundCommand;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.command.DeleteCommand;
 import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
@@ -18,8 +19,8 @@ import org.omnetpp.scave.editors.ScaveEditor;
  */
 public class RemoveAction extends AbstractScaveAction {
 	public RemoveAction() {
-		setText("Remove");
-		setToolTipText("Remove selected items");
+		setText("Delete");
+		setToolTipText("Delete selected items");
 	}
 
 	@Override
@@ -30,9 +31,18 @@ public class RemoveAction extends AbstractScaveAction {
 		scaveEditor.getEditingDomain().getCommandStack().execute(command);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		return !selection.isEmpty();
+		if (selection.isEmpty())
+			return false;
+		Iterator<Object> elements = selection.iterator();
+		while (elements.hasNext()) {
+			Object element = elements.next();
+			if (!(element instanceof EObject) || editor.isTemporaryObject((EObject)element))
+				return false;
+		}
+		return true; // only non-temporary EObjects selected
 	}
 
 	/**
