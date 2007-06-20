@@ -75,9 +75,25 @@ class Scenario
   public:
     Scenario(const std::vector<IterationSpec>& iterationSpecs, const char *condition);
     ~Scenario();
+
+    /**
+     * Counts the number of runs this scenario generates.
+     */
     int getNumRuns();
+
+    /**
+     * Returns the values of the iteration variables for the given run.
+     * The returned vector is the same size as the input iterationSpecs,
+     * and each element contains the value for the corresponding iteration
+     * variable.
+     */
     std::vector<std::string> generate(int runNumber);
-    std::string unroll();
+
+    /**
+     * Generates all runs in the given scenario, and returns them as multi-line
+     * strings. This is the method that implements cConfiguration::unroll().
+     */
+    std::vector<std::string> unroll();
 };
 
 #endif

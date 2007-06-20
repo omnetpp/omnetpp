@@ -34,6 +34,7 @@ class TCmdenvApp : public TOmnetApp
      opp_string opt_printnumruns;
      opp_string opt_configname;
      opp_string opt_runstoexec;
+     bool opt_printconfigdetails;
      unsigned opt_extrastack_kb;
      opp_string opt_outputfile;
 

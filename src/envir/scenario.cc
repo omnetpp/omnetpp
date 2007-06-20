@@ -196,15 +196,17 @@ std::vector<std::string> Scenario::generate(int runNumber)
     return result;
 }
 
-std::string Scenario::unroll()
+std::vector<std::string> Scenario::unroll()
 {
-    std::stringstream out;
+    std::vector<std::string> result;
     if (!resetVariables())
-        return "No runs can be generated\n";
+        return result;
+
     for (int runNumber=0; ; runNumber++)
     {
-        out << "Run " << runNumber << ": ";
+        std::stringstream out;
         for (int i=0; i<itervars.size(); i++)
+        {
             if (!itervars[i].get().empty()) {
                 out << (i>0 ? ", " : "");
                 if (iterspecs[i].varname.empty())
@@ -213,11 +215,13 @@ std::string Scenario::unroll()
                     out << "$" << iterspecs[i].varname;
                 out << "=" << itervars[i].get();
             }
-        out << "\n";
+        }
+        result.push_back(out.str());
+
         if (!next())
             break;
     }
-    return out.str();
+    return result;
 }
 
 

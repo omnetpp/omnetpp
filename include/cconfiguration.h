@@ -124,15 +124,24 @@ class ENVIR_API cConfiguration : public cObject
     virtual std::string getConfigDescription(const char *scenarioOrConfigName) const = 0;
 
     /**
+     * Returns the name of the config the given configuration or scenario extends.
+     * Only names of *existing* configuration names are returned (that is,
+     * if "extends" is bogus and refers to a nonexistent configuration,
+     * this method returns the empty string; also, "General" is only returned
+     * if such configuration actually exists.)
+     */
+    virtual std::string getBaseConfig(const char *scenarioOrConfigName) const = 0;
+
+    /**
      * Generates Cartesian product of all iterations within the scenario, and counts them.
      */
     virtual int getNumRunsInScenario(const char *scenarioName) const = 0;
 
     /**
-     * Generate all runs in the given scenario, and print them on the
-     * standard output. Primarily for debugging purposes.
+     * Generates all runs in the given scenario, and returns them as multi-line
+     * strings. Primarily for debugging purposes.
      */
-    virtual std::string unrollScenario(const char *scenarioName) const = 0;
+    virtual std::vector<std::string> unrollScenario(const char *scenarioName) const = 0;
 
     /**
      * Returns the name of the currently active configuration or scenario.

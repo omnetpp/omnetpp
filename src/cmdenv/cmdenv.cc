@@ -149,6 +149,9 @@ void TCmdenvApp::setup()
 
     // '-r' option: specifies runs to execute; overrides ini file setting
     opt_runstoexec = args->optionValue('r');
+
+    // '-g' option: modifies -n or -c: prints unrolled scenario, scenario variables, etc as well
+    opt_printconfigdetails = args->optionGiven('g');
 }
 
 void TCmdenvApp::signalHandler(int signum)
@@ -186,7 +189,12 @@ int TCmdenvApp::run()
     {
         ev.printf("Scenario: %s\n", opt_printnumruns.c_str());
         ev.printf("Number of runs: %d\n", cfg->getNumRunsInScenario(opt_printnumruns.c_str()));
-        ::printf("\n%s\n", cfg->unrollScenario(opt_printnumruns.c_str()).c_str()); //FIXME only for debugging -- remove it
+        if (opt_printconfigdetails)
+        {
+            std::vector<std::string> runs = cfg->unrollScenario(opt_printnumruns.c_str());
+            for (int i=0; i<runs.size(); i++)
+                ev.printf("Run %d:  %s\n", i, runs[i].c_str());
+        }
         return 0;
     }
 
@@ -220,7 +228,10 @@ int TCmdenvApp::run()
             ::fflush(fout);
 
             cfg->activateConfig(opt_configname.c_str(), runnumber);
-            cfg->dump(); //XXX remove
+            if (opt_printconfigdetails)
+            {
+                cfg->dump(); //XXX refine!
+            }
 
             readPerRunOptions();
 
@@ -542,6 +553,8 @@ void TCmdenvApp::printUISpecificHelp()
     ev << "                -c option. <runs> is a comma-separated list of run numbers or\n";
     ev << "                run number ranges, for example 1,2,5-10. When not present, all\n" ;
     ev << "                runs will be executed.\n" ;
+    ev << "  -g            Modifies -n or -c: additionally, print unrolled scenario,\n";
+    ev << "                scenario variables, etc.\n";
     ev << "\n";
 }
 

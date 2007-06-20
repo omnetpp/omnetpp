@@ -52,6 +52,7 @@ int newNetwork_cmd(ClientData, Tcl_Interp *, int, const char **);
 int newRun_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getConfigNames_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getConfigDescription_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getBaseConfig_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getNumRunsInScenario_cmd(ClientData, Tcl_Interp *, int, const char **);
 int createSnapshot_cmd(ClientData, Tcl_Interp *, int, const char **);
 int exitOmnetpp_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -162,6 +163,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getnetworktype",   getNetworkType_cmd       }, // args: -  ret: type of current network
    { "opp_getconfignames",   getConfigNames_cmd       }, // args: -
    { "opp_getconfigdescription",getConfigDescription_cmd}, // args: <configname>
+   { "opp_getbaseconfig",    getBaseConfig_cmd        }, // args: <configname>
    { "opp_getnumrunsinscenario",getNumRunsInScenario_cmd}, // args: <configname>
    { "opp_getfilename",      getFileName_cmd          }, // args: <filetype>  ret: filename
    { "opp_getobjectfullname",getObjectFullName_cmd    }, // args: <pointer>  ret: fullName()
@@ -295,6 +297,20 @@ int getConfigDescription_cmd(ClientData, Tcl_Interp *interp, int argc, const cha
    cConfiguration *cfg = app->getConfig();
    std::string desc = cfg->getConfigDescription(configname);
    Tcl_SetResult(interp, TCLCONST(desc.c_str()), TCL_VOLATILE);
+   return TCL_OK;
+   E_CATCH
+}
+
+int getBaseConfig_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   E_TRY
+   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   TOmnetTkApp *app = getTkApplication();
+   const char *configname = argv[1];
+
+   cConfiguration *cfg = app->getConfig();
+   std::string result = cfg->getBaseConfig(configname);
+   Tcl_SetResult(interp, TCLCONST(result.c_str()), TCL_VOLATILE);
    return TCL_OK;
    E_CATCH
 }

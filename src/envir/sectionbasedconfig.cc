@@ -125,6 +125,19 @@ std::string SectionBasedConfiguration::getConfigDescription(const char *scenario
     return "";
 }
 
+std::string SectionBasedConfiguration::getBaseConfig(const char *scenarioOrConfigName) const
+{
+    int sectionId = resolveConfigName(scenarioOrConfigName);
+    if (sectionId == -1)
+        throw cRuntimeError("No such config or scenario: %s", scenarioOrConfigName);
+    int entryId = internalFindEntry(sectionId, "extends");
+    std::string extends = entryId==-1 ? "" : ini->getEntry(sectionId, entryId).getValue();
+    if (extends.empty())
+        extends = "General";
+    int baseSectionId = resolveConfigName(extends.c_str());
+    return baseSectionId==-1 ? "" : extends;
+}
+
 int SectionBasedConfiguration::resolveConfigName(const char *scenarioOrConfigName) const
 {
     if (!scenarioOrConfigName || !scenarioOrConfigName[0])
@@ -245,7 +258,7 @@ int SectionBasedConfiguration::internalGetNumRunsInScenario(int sectionId) const
     return Scenario(v, condition).getNumRuns();
 }
 
-std::string SectionBasedConfiguration::unrollScenario(const char *scenarioName) const
+std::vector<std::string> SectionBasedConfiguration::unrollScenario(const char *scenarioName) const
 {
     int sectionId = resolveConfigName(scenarioName);
     if (sectionId == -1)
