@@ -83,8 +83,6 @@ public class VectorChart extends ChartCanvas {
 	
 	private int layoutDepth = 0; // how many layoutChart() calls are on the stack
 
-	private IChartSelection selection;
-	
 	public class LineSelection implements IChartSelection {
 		private long vectorID;
 		private int series;
@@ -372,16 +370,6 @@ public class VectorChart extends ChartCanvas {
 				}
 			}
 		}
-	}
-	
-	public IChartSelection getSelection() {
-		return selection;
-	}
-	
-	public void setSelection(IChartSelection selection) {
-		this.selection = selection;
-		chartChanged();
-		fireChartSelectionChange(selection);
 	}
 	
 	/*==================================

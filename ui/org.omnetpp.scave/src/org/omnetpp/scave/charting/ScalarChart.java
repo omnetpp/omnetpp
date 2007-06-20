@@ -24,7 +24,9 @@ import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_MAX;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_MIN;
 import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_TITLE;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.draw2d.Graphics;
@@ -34,6 +36,7 @@ import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackAdapter;
@@ -49,6 +52,7 @@ import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GeomUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
+import org.omnetpp.scave.charting.VectorChart.LineSelection;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.ScalarDataset;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
@@ -74,9 +78,19 @@ public class ScalarChart extends ChartCanvas {
 		RGB color;
 	}
 	
+	static class BarSelection implements IChartSelection {
+		// TODO
+	}
+	
 	public ScalarChart(Composite parent, int style) {
 		super(parent, style);
 		new Tooltip();
+		
+		this.addMouseListener(new MouseAdapter() {
+			public void mouseDown(MouseEvent e) {
+				setSelection(new BarSelection());
+			}
+		});
 	}
 
 	@Override

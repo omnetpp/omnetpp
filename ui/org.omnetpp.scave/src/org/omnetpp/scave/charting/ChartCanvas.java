@@ -88,6 +88,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	private Color insetsBackgroundColor = DEFAULT_INSETS_BACKGROUND_COLOR;
 	private Color insetsLineColor = DEFAULT_INSETS_LINE_COLOR;
 	
+	protected IChartSelection selection;
 	private ListenerList listeners = new ListenerList();
 	
 	public ChartCanvas(Composite parent, int style) {
@@ -126,6 +127,16 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	 * Calculate positions of chart elements such as title, legend, axis labels, plot area. 
 	 */
 	abstract protected void layoutChart();
+	
+	public IChartSelection getSelection() {
+		return selection;
+	}
+	
+	public void setSelection(IChartSelection selection) {
+		this.selection = selection;
+		chartChanged();
+		fireChartSelectionChange(selection);
+	}
 	
 	public void addChartSelectionListener(IChartSelectionListener listener) {
 		listeners.add(listener);
