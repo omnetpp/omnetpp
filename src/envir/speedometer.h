@@ -1,5 +1,5 @@
 //==========================================================================
-//  SPEEDMTR.H - part of
+//  SPEEDOMETER.H - part of
 //                     OMNeT++/OMNEST
 //             Discrete System Simulation in C++
 //
@@ -16,17 +16,17 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __SPEEDMTR_H
-#define __SPEEDMTR_H
+#ifndef __SPEEDOMETER_H
+#define __SPEEDOMETER_H
 
 #include "simkerneldefs.h"
 #include "envdefs.h"
 #include "timeutil.h"
 
 
-//
-// Speedometer: utility class to measure simulation speed
-//
+/**
+ * Speedometer: utility class to measure simulation speed
+ */
 class ENVIR_API Speedometer
 {
   private:

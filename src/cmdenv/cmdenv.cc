@@ -29,7 +29,7 @@
 #include "ccomponenttype.h"
 #include "cmessage.h"
 #include "args.h"
-#include "speedmtr.h"
+#include "speedometer.h"
 #include "timeutil.h"
 #include "cconfigentry.h"
 

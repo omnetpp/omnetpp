@@ -3,10 +3,6 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//
-//  Declaration of the following classes:
-//    cClassDescriptor : meta-info about structures
-//
 //==========================================================================
 
 /*--------------------------------------------------------------*
@@ -42,9 +38,7 @@ static bool defaultRecurseInto(void *object, cClassDescriptor *descriptor, int f
         strcmp(fieldName, "className");
 }
 
-/****************************************************************************************
- * ObjectPrinter
- */
+//----
 
 ObjectPrinter::ObjectPrinter(std::vector<MatchExpression> *objectMatchExpressions,
                              std::vector<std::vector<PatternMatcher> > *fieldNamePatternMatchersList,

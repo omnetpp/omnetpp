@@ -47,7 +47,7 @@ Expression::Functor *Resolver::resolveFunction(const char *funcname, int argcoun
     if (MathFunction::supports(funcname))
         return new MathFunction(funcname);
     else
-        throw opp_runtime_error("Scenario generator: unrecognized function: %s()", funcname);
+        throw opp_runtime_error("Unrecognized function: %s()", funcname);
 }
 
 //----
@@ -67,7 +67,7 @@ iterspecs(iterationSpecs)
         }
         catch (std::exception& e)
         {
-            throw cRuntimeError("Scenario generator: Cannot parse condition expression: %s", e.what());
+            throw cRuntimeError("Cannot parse condition expression `%s': %s", conditionText, e.what());
         }
     }
 
@@ -102,7 +102,7 @@ Expression::StkValue Scenario::getIterationVariable(const char *varname)
     }
     catch (std::exception& e)
     {
-        throw cRuntimeError("Scenario generator: Wrong value for iteration variable %s: %s", varname, e.what());
+        throw cRuntimeError("Wrong value for iteration variable %s: %s", varname, e.what());
     }
 }
 
@@ -171,7 +171,7 @@ bool Scenario::evaluateCondition()
     }
     catch (std::exception& e)
     {
-        throw cRuntimeError("Scenario generator: Cannot evaluate condition expression: %s", e.what());
+        throw cRuntimeError("Cannot evaluate condition expression: %s", e.what());
     }
 }
 
@@ -179,10 +179,10 @@ std::vector<std::string> Scenario::generate(int runNumber)
 {
     // spin the iteration variables to the given run number
     if (!restart())
-        throw cRuntimeError("Scenario generator: Iterators or condition too restrictive: not even one run can be generated");
+        throw cRuntimeError("Iterators or condition too restrictive: not even one run can be generated");
     for (int i=0; i<runNumber; i++)
         if (!next())
-            throw cRuntimeError("Scenario generator: Run number %d is out of range", runNumber);
+            throw cRuntimeError("Run number %d is out of range", runNumber);
 
     // then collect and return the variables
     return get();
@@ -192,7 +192,7 @@ std::string Scenario::getVar(const char *varname) const
 {
     std::map<std::string,ValueIterator*>::const_iterator it = namedvars.find(varname);
     if (it==namedvars.end())
-        throw cRuntimeError("Scenario generator: Unknown iteration variable: %s", varname);
+        throw cRuntimeError("Unknown iteration variable: %s", varname);
     return it->second->get();
 }
 

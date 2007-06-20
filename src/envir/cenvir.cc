@@ -33,7 +33,7 @@
 #include "fsutils.h"
 #include "fnamelisttokenizer.h"
 
-#include "speedmtr.h"       // env_dummy_function()
+#include "speedometer.h"       // env_dummy_function()
 #include "filemgrs.h"       // env_dummy_function()
 #include "akaroarng.h"      // env_dummy_function()
 #include "akoutvectormgr.h" // env_dummy_function()

@@ -11,7 +11,7 @@ COPTS=$(CFLAGS) $(AKAROA_CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/pla
 
 OBJS=args.o cenvir.o main.o omnetapp.o fsutils.o \
      sectionbasedconfig.o inifilereader.o scenario.o valueiterator.o \
-     speedmtr.o filemgrs.o akoutvectormgr.o matchableobject.o \
+     speedometer.o filemgrs.o akoutvectormgr.o matchableobject.o \
      akaroarng.o cxmldoccache.o ivfilemgr.o eventlogwriter.o objectprinter.o
 
 #
@@ -123,7 +123,7 @@ cenvir.o: cenvir.cc \
   appreg.h \
   ../../include/cmodule.h \
   fsutils.h \
-  speedmtr.h \
+  speedometer.h \
   filemgrs.h \
   akaroarng.h \
   akoutvectormgr.h \
@@ -391,8 +391,8 @@ omnetapp.o: omnetapp.cc \
   ../../include/cparvalue.h \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h
-speedmtr.o: speedmtr.cc \
-  speedmtr.h \
+speedometer.o: speedometer.cc \
+  speedometer.h \
   ../../include/simkerneldefs.h \
   envdefs.h \
   ../../include/platdep/platdefs.h \

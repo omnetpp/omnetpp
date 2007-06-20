@@ -26,7 +26,7 @@
 #include "cenvir.h"
 #include "csimplemodule.h"
 #include "cmessage.h"
-#include "speedmtr.h"
+#include "speedometer.h"
 #include "cscheduler.h"
 #include "ccomponenttype.h"
 #include "csimulation.h"

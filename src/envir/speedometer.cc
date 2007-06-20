@@ -1,5 +1,5 @@
 //==========================================================================
-//  SPEEDMTR.CC - part of
+//  SPEEDOMETER.CC - part of
 //                     OMNeT++/OMNEST
 //             Discrete System Simulation in C++
 //
@@ -16,7 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include <assert.h>
-#include "speedmtr.h"
+#include "speedometer.h"
 
 
 Speedometer::Speedometer()

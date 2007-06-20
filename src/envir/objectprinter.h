@@ -27,6 +27,10 @@
 
 extern bool defaultRecurseInto(void *object, cClassDescriptor *descriptor, int fieldIndex,  void *fieldValue, int level);
 
+/**
+ * A utility class to serialize an object in text form. It is currently used
+ * to record message data into the event log file.
+ */
 class ObjectPrinter
 {
     protected:
@@ -36,6 +40,9 @@ class ObjectPrinter
         std::vector<std::vector<PatternMatcher> > *fieldNamePatternMatchersList;
 
     public:
+        /**
+         * FIXME Levy: parameters and operation need to be documented!
+         */
         ObjectPrinter(std::vector<MatchExpression> *objectMatchExpressions,
                       std::vector<std::vector<PatternMatcher> > *fieldNamePatternMatchersList,
                       int indentSize);

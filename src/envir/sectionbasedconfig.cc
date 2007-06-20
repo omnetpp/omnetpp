@@ -24,10 +24,8 @@
 
 
 //XXX optimize storage (now keys with wildcard groupName are stored multiple times, in several groups)
-//XXX xmldoc() in parameter names: hack path into it!
 //XXX repetitions=10
-//XXX condition = $a==10 || $b>1.3
-//XXX how to access seed-0-mt=, seed-1-mt= ...? maybe: prohibit wildcards for config entries, and implement getMatchingConfigEntries(patter) ?
+//XXX make samples/database work again!
 
 std::string SectionBasedConfiguration::KeyValue1::nullbasedir;
 
@@ -54,7 +52,6 @@ void SectionBasedConfiguration::setConfigurationReader(cConfigurationReader *ini
 
 void SectionBasedConfiguration::clear()
 {
-    //XXX refine
     // note: this gets called between activateConfig() calls, so "ini" must NOT be NULL'ed out here
     activeConfig = "";
     activeRunNumber = 0;
@@ -197,7 +194,12 @@ void SectionBasedConfiguration::doActivateScenario(int sectionId, int runNumber)
     const char *condition = conditionEntryId!=-1 ? ini->getEntry(sectionId, conditionEntryId).getValue() : NULL;
 
     // determine the values to substitute into the iteration specs (${...})
-    std::vector<std::string> values = Scenario(iterspecs, condition).generate(runNumber);
+    std::vector<std::string> values;
+    try {
+        values = Scenario(iterspecs, condition).generate(runNumber);
+    } catch (std::exception& e) {
+        throw cRuntimeError("Scenario generator: %s", e.what());
+    }
 
     // add the resulting entries into the tables (config[], params[]),
     // substituting the iteration values
@@ -244,7 +246,11 @@ int SectionBasedConfiguration::internalGetNumRunsInScenario(int sectionId) const
     // see if there's a condition given
     int conditionEntryId = internalFindEntry(sectionId, "condition");
     const char *condition = conditionEntryId!=-1 ? ini->getEntry(sectionId, conditionEntryId).getValue() : NULL;
-    return Scenario(v, condition).getNumRuns();
+    try {
+        return Scenario(v, condition).getNumRuns();
+    } catch (std::exception& e) {
+        throw cRuntimeError("Scenario generator: %s", e.what());
+    }
 }
 
 std::vector<std::string> SectionBasedConfiguration::unrollScenario(const char *scenarioName, bool detailed) const
@@ -272,39 +278,44 @@ std::vector<std::string> SectionBasedConfiguration::unrollScenario(const char *s
     }
 
     // iterate over all runs in the scenario
-    Scenario scenario(iterspecs, condition);
-    std::vector<std::string> result;
-    if (scenario.restart())
-    {
-        for (;;)
+    try {
+        Scenario scenario(iterspecs, condition);
+        std::vector<std::string> result;
+        if (scenario.restart())
         {
-            // generate a string for the current run
-            std::string runstring;
-            if (!detailed)
+            for (;;)
             {
-                runstring = scenario.str();
-            }
-            else
-            {
-                std::vector<std::string> values = scenario.get();
-                runstring += std::string("\t# ") + scenario.str() + "\n";
-                for (int i=0; i<entryIds.size(); i++)
+                // generate a string for the current run
+                std::string runstring;
+                if (!detailed)
                 {
-                    int entryId = entryIds[i];
-                    const cConfigurationReader::KeyValue& entry = ini->getEntry(sectionId, entryId);
-                    std::string value = entry.getValue();
-                    std::string actualValue = substitute(value, entryId, iterspecs, values);
-                    runstring += std::string("\t") + entry.getKey() + " = " + actualValue + "\n";
+                    runstring = scenario.str();
                 }
-            }
-            result.push_back(runstring);
+                else
+                {
+                    std::vector<std::string> values = scenario.get();
+                    runstring += std::string("\t# ") + scenario.str() + "\n";
+                    for (int i=0; i<entryIds.size(); i++)
+                    {
+                        int entryId = entryIds[i];
+                        const cConfigurationReader::KeyValue& entry = ini->getEntry(sectionId, entryId);
+                        std::string value = entry.getValue();
+                        std::string actualValue = substitute(value, entryId, iterspecs, values);
+                        runstring += std::string("\t") + entry.getKey() + " = " + actualValue + "\n";
+                    }
+                }
+                result.push_back(runstring);
 
-            // move to the next run
-            if (!scenario.next())
-                break;
+                // move to the next run
+                if (!scenario.next())
+                    break;
+            }
         }
+        return result;
     }
-    return result;
+    catch (std::exception& e) {
+        throw cRuntimeError("Scenario generator: %s", e.what());
+    }
 }
 
 std::vector<SectionBasedConfiguration::IterationSpec> SectionBasedConfiguration::collectIterationSpecs(int sectionId) const
@@ -432,12 +443,6 @@ std::vector<int> SectionBasedConfiguration::resolveSectionChain(const char *sect
         if (sectionId == -1)
             break; // wrong config name
     }
-
-    //XXX debug code
-    printf("section chain for %s: ",sectionName);
-    for (int i=0; i<sectionChain.size(); i++)
-        printf(" %d", sectionChain[i]);
-    printf("\n");
 
     return sectionChain;
 }

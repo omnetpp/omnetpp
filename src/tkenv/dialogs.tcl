@@ -124,7 +124,7 @@ proc runSelectionDialog {configname_var runnumber_var} {
             set configname [runSelectionDialog:extractConfigName [$w.f.c.e cget -value]]
             set runnumber  [$w.f.c2.e cget -value]
             if ![string is integer $runnumber] {
-                messagebox "Error" "Run number must be numeric" info ok
+                messagebox "Error" "Run number must be numeric." info ok
                 set runnumber 0
             } else {
                 set ok 1

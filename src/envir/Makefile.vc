@@ -19,7 +19,7 @@ IMPLIBS=../sim/sim_std.lib ../nedxml/nedxml.lib ../common/common.lib
 
 OBJS=args.obj cenvir.obj main.obj omnetapp.obj fsutils.obj \
      sectionbasedconfig.obj inifilereader.obj scenario.obj valueiterator.obj \
-     speedmtr.obj filemgrs.obj akoutvectormgr.obj matchableobject.obj \
+     speedometer.obj filemgrs.obj akoutvectormgr.obj matchableobject.obj \
      akaroarng.obj cxmldoccache.obj ivfilemgr.obj eventlogwriter.obj objectprinter.obj
 
 
@@ -136,7 +136,7 @@ cenvir.obj: cenvir.cc \
   appreg.h \
   ../../include/cmodule.h \
   fsutils.h \
-  speedmtr.h \
+  speedometer.h \
   filemgrs.h \
   akaroarng.h \
   akoutvectormgr.h \
@@ -471,8 +471,8 @@ sectionbasedconfig.obj: sectionbasedconfig.cc \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h
-speedmtr.obj: speedmtr.cc \
-  speedmtr.h \
+speedometer.obj: speedometer.cc \
+  speedometer.h \
   ../../include/simkerneldefs.h \
   envdefs.h \
   ../../include/platdep/platdefs.h \

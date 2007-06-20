@@ -49,7 +49,7 @@ cmdenv.o: cmdenv.cc \
   ../../include/ccomponenttype.h \
   ../../include/cmessage.h \
   ../envir/args.h \
-  ../envir/speedmtr.h \
+  ../envir/speedometer.h \
   ../../include/simkerneldefs.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \

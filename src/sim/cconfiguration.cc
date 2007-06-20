@@ -59,7 +59,7 @@ double cConfiguration::parseDouble(const char *s, const char *unit, const char *
 {
     if (!s)
         s = defaultValue;
-    if (!defaultValue)
+    if (!s)
         return fallbackValue;
     return UnitConversion::parseQuantity(s, unit);
 }

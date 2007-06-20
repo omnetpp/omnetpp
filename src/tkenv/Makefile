@@ -512,7 +512,7 @@ tkapp.o: tkapp.cc \
   ../../include/cenvir.h \
   ../../include/csimplemodule.h \
   ../../include/cmessage.h \
-  ../envir/speedmtr.h \
+  ../envir/speedometer.h \
   ../../include/cscheduler.h \
   ../../include/ccomponenttype.h \
   ../../include/csimulation.h \
