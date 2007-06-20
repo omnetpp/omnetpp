@@ -12,10 +12,8 @@ import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engine.ScalarFields;
 import org.omnetpp.scave.engine.ScaveExport;
-import org.omnetpp.scave.engine.VectorResult;
-import org.omnetpp.scave.engine.XYArray;
+import org.omnetpp.scave.jobs.ExportJob;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.model.ResultType;
@@ -34,6 +32,7 @@ public abstract class AbstractExportWizard extends Wizard implements IExportWiza
 	protected IDList selectedHistograms = IDList.EMPTY;
 	protected ResultFileManager manager;
 	protected ExportWizardPage page;
+	
 	
 	protected AbstractExportWizard() {
 		setWindowTitle("Export");
@@ -88,14 +87,13 @@ public abstract class AbstractExportWizard extends Wizard implements IExportWiza
 		if (page != null && manager != null) {
 			try {
 				// export the data
-				String fileName = page.getFileName();
 				ScaveExport exporter = createExporter();
 				exporter.setPrecision(page.getPrecision());
-				fileName = exporter.makeFileName(fileName);
-				exporter.open(fileName); // TODO: file exists: overwite/append
-				exportVectors(exporter);
-				exportScalars(exporter);
-				exporter.close();
+				String fileName = exporter.makeFileName(page.getFileName());
+				ExportJob job = new ExportJob(fileName, exporter, 
+						selectedScalars, selectedVectors, selectedHistograms,
+						page.getGroupBy(), manager);
+				job.schedule();
 				// save the control values before the dialog gets closed
 				saveDialogSettings();
 				return true;
@@ -108,26 +106,6 @@ public abstract class AbstractExportWizard extends Wizard implements IExportWiza
 	}
 	
 	protected abstract ScaveExport createExporter();
-	
-	protected void exportScalars(ScaveExport exporter) {
-		if (selectedScalars.size() > 0) {
-			ScalarFields groupedBy = page.getGroupBy();
-			exporter.saveScalars("scalars", "", selectedScalars, groupedBy, manager);
-		}
-	}
-
-	protected void exportVectors(ScaveExport exporter) {
-		for (int i = 0; i < selectedVectors.size(); ++i) {
-			long id = selectedVectors.get(i);
-			VectorResult vector = manager.getVector(id);
-			XYArray data = DatasetManager.getDataOfVector(manager, id);
-			exporter.saveVector(vector.getName(), "", data);
-		}
-	}
-
-	protected void exportHistograms(ScaveExport exporter) {
-		// TODO
-	}
 	
 	protected void saveDialogSettings() {
 		if (page != null)
