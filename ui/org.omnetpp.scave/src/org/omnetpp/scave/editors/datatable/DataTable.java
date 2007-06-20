@@ -469,7 +469,7 @@ public class DataTable extends Table {
 	}
 
 	public void copySelectionToClipboard() {
-		CsvWriter writer = new CsvWriter();
+		CsvWriter writer = new CsvWriter('\t');
 		// add header
 		for (Column column : visibleColumns)
 			writer.addField(column.text);

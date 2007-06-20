@@ -11,7 +11,11 @@ public class CsvWriter {
 	StringBuffer buffer;
 	
 	public CsvWriter() {
-		this(',', System.getProperty("line.separator"));
+		this(',');
+	}
+	
+	public CsvWriter(char separator) {
+		this(separator, System.getProperty("line.separator"));
 	}
 	
 	public CsvWriter(char separator, String delimiter) {
