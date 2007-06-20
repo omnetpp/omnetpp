@@ -88,8 +88,6 @@ Scenario::~Scenario()
 
 Expression::StkValue Scenario::getIterationVariable(const char *varname)
 {
-    if (varname[0]=='$')
-        varname++;
     std::string value = getVar(varname);
     try
     {
@@ -104,7 +102,7 @@ Expression::StkValue Scenario::getIterationVariable(const char *varname)
     }
     catch (std::exception& e)
     {
-        throw cRuntimeError("Scenario generator: Wrong value for iteration variable $%s: %s", varname, e.what());
+        throw cRuntimeError("Scenario generator: Wrong value for iteration variable %s: %s", varname, e.what());
     }
 }
 
@@ -194,7 +192,7 @@ std::string Scenario::getVar(const char *varname) const
 {
     std::map<std::string,ValueIterator*>::const_iterator it = namedvars.find(varname);
     if (it==namedvars.end())
-        throw cRuntimeError("Scenario generator: Unknown iteration variable: $%s", varname);
+        throw cRuntimeError("Scenario generator: Unknown iteration variable: %s", varname);
     return it->second->get();
 }
 

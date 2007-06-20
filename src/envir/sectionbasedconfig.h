@@ -170,7 +170,7 @@ class SectionBasedConfiguration : public cConfiguration
     virtual std::string getConfigDescription(const char *scenarioOrConfigName) const;
     virtual std::string getBaseConfig(const char *scenarioOrConfigName) const;
     virtual int getNumRunsInScenario(const char *scenarioName) const;
-    virtual std::vector<std::string> unrollScenario(const char *scenarioName) const;
+    virtual std::vector<std::string> unrollScenario(const char *scenarioName, bool detailed) const;
     virtual const char *getActiveConfigName() const;
     virtual int getActiveRunNumber() const;
     virtual const char *getConfigValue(const char *key) const;

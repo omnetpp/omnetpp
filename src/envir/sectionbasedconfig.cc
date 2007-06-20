@@ -247,7 +247,7 @@ int SectionBasedConfiguration::internalGetNumRunsInScenario(int sectionId) const
     return Scenario(v, condition).getNumRuns();
 }
 
-std::vector<std::string> SectionBasedConfiguration::unrollScenario(const char *scenarioName) const
+std::vector<std::string> SectionBasedConfiguration::unrollScenario(const char *scenarioName, bool detailed) const
 {
     int sectionId = resolveConfigName(scenarioName);
     if (sectionId == -1)
@@ -280,15 +280,22 @@ std::vector<std::string> SectionBasedConfiguration::unrollScenario(const char *s
         {
             // generate a string for the current run
             std::string runstring;
-            std::vector<std::string> values = scenario.get();
-            runstring += std::string("\t# ") + scenario.str() + "\n";
-            for (int i=0; i<entryIds.size(); i++)
+            if (!detailed)
             {
-                int entryId = entryIds[i];
-                const cConfigurationReader::KeyValue& entry = ini->getEntry(sectionId, entryId);
-                std::string value = entry.getValue();
-                std::string actualValue = substitute(value, entryId, iterspecs, values);
-                runstring += std::string("\t") + entry.getKey() + " = " + actualValue + "\n";
+                runstring = scenario.str();
+            }
+            else
+            {
+                std::vector<std::string> values = scenario.get();
+                runstring += std::string("\t# ") + scenario.str() + "\n";
+                for (int i=0; i<entryIds.size(); i++)
+                {
+                    int entryId = entryIds[i];
+                    const cConfigurationReader::KeyValue& entry = ini->getEntry(sectionId, entryId);
+                    std::string value = entry.getValue();
+                    std::string actualValue = substitute(value, entryId, iterspecs, values);
+                    runstring += std::string("\t") + entry.getKey() + " = " + actualValue + "\n";
+                }
             }
             result.push_back(runstring);
 
@@ -312,9 +319,12 @@ std::vector<SectionBasedConfiguration::IterationSpec> SectionBasedConfiguration:
         {
             if (*(pos+1)=='{')
             {
+                if (strcmp(entry.getKey(), "condition")==0)
+                    throw cRuntimeError("Scenario generator: the ${...} syntax cannot be used within the condition= entry");
+
                 const char *endPos = strchr(pos, '}');
                 if (!endPos)
-                    throw cRuntimeError("missing '}' for '${' in entry %s = %s", entry.getKey(), entry.getValue());
+                    throw cRuntimeError("Scenario generator: missing '}' for '${' in entry %s = %s", entry.getKey(), entry.getValue());
 
                 // parse what's inside the ${...}
                 const char *varbegin = NULL;
@@ -358,22 +368,6 @@ std::vector<SectionBasedConfiguration::IterationSpec> SectionBasedConfiguration:
 
                 pos = endPos;
             }
-            else if (isalpha(*(pos+1)) && strcmp(entry.getKey(), "condition")==0)
-            {
-                // $x syntax, only recognized within the condition=... entry
-                const char *endPos = pos+2;
-                while (isalnum(*endPos)) endPos++;
-
-                // fill in the struct
-                IterationSpec loc;
-                loc.entryId = i;
-                loc.startPos = pos - text;
-                loc.length = endPos - pos;
-                loc.varname.assign(pos+1, endPos-pos-1);
-                v.push_back(loc);
-
-                pos = endPos;
-            }
             else
             {
                 // nothing here, skip this '$' sign
@@ -394,7 +388,7 @@ void SectionBasedConfiguration::validateIterations(const std::vector<IterationSp
         if (!loc.varname.empty() && !loc.value.empty())
         {
             if (varnames.find(loc.varname) != varnames.end())
-                throw cRuntimeError("Iteration variable $%s defined multiple times in the configuration", loc.varname.c_str());
+                throw cRuntimeError("Scenario generator: iteration variable ${%s} defined multiple times in the configuration", loc.varname.c_str());
             varnames.insert(loc.varname);
         }
     }

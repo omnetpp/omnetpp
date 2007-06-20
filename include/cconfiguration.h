@@ -138,10 +138,13 @@ class ENVIR_API cConfiguration : public cObject
     virtual int getNumRunsInScenario(const char *scenarioName) const = 0;
 
     /**
-     * Generates all runs in the given scenario, and returns them as multi-line
-     * strings. Primarily for debugging purposes.
+     * Generates all runs in the given scenario, and returns a string for each.
+     * When detailed==false, each run will generate a one-line string with the
+     * iteration variables; with detailed==true, each run generates a multi-line
+     * string containing the config entries that contain iterations or iteration
+     * variable references. This method is primarily for debugging purposes.
      */
-    virtual std::vector<std::string> unrollScenario(const char *scenarioName) const = 0;
+    virtual std::vector<std::string> unrollScenario(const char *scenarioName, bool detailed=true) const = 0;
 
     /**
      * Returns the name of the currently active configuration or scenario.

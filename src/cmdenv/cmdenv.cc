@@ -150,8 +150,9 @@ void TCmdenvApp::setup()
     // '-r' option: specifies runs to execute; overrides ini file setting
     opt_runstoexec = args->optionValue('r');
 
-    // '-g' option: modifies -n or -c: prints unrolled scenario, scenario variables, etc as well
+    // '-g'/'-G' options: modifies -n or -c: prints unrolled scenario, scenario variables, etc as well
     opt_printconfigdetails = args->optionGiven('g');
+    opt_printconfigdetails2 = args->optionGiven('G');
 }
 
 void TCmdenvApp::signalHandler(int signum)
@@ -189,11 +190,15 @@ int TCmdenvApp::run()
     {
         ev.printf("Scenario: %s\n", opt_printnumruns.c_str());
         ev.printf("Number of runs: %d\n", cfg->getNumRunsInScenario(opt_printnumruns.c_str()));
-        if (opt_printconfigdetails)
+
+        if (opt_printconfigdetails || opt_printconfigdetails2)
         {
-            std::vector<std::string> runs = cfg->unrollScenario(opt_printnumruns.c_str());
+            std::vector<std::string> runs = cfg->unrollScenario(opt_printnumruns.c_str(), opt_printconfigdetails2);
             for (int i=0; i<runs.size(); i++)
-                ev.printf("Run %d:\n%s", i, runs[i].c_str());
+                if (opt_printconfigdetails2)
+                    ev.printf("Run %d:\n%s", i, runs[i].c_str());  // -G: detailed
+                else
+                    ev.printf("Run %d: %s\n", i, runs[i].c_str());  // -g:  brief
         }
         return 0;
     }
@@ -553,8 +558,8 @@ void TCmdenvApp::printUISpecificHelp()
     ev << "                -c option. <runs> is a comma-separated list of run numbers or\n";
     ev << "                run number ranges, for example 1,2,5-10. When not present, all\n" ;
     ev << "                runs will be executed.\n" ;
-    ev << "  -g            Modifies -n or -c: additionally, print unrolled scenario,\n";
-    ev << "                scenario variables, etc.\n";
+    ev << "  -g, -G        Modifies -n or -c: additionally, print unrolled scenario,\n";
+    ev << "                scenario variables, etc. -G provides more details.\n";
     ev << "\n";
 }
 
