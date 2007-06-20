@@ -1,9 +1,11 @@
 package org.omnetpp.launch.tabs;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.variables.VariablesPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.swt.events.ModifyEvent;
@@ -96,22 +98,31 @@ public abstract class OmnetppLaunchTab extends AbstractLaunchConfigurationTab im
      * resolved location does not point to an existing directory in the local
      * file system
      */
-    protected IPath getWorkingDirectoryPath(){
-        String location;
+    public IPath getWorkingDirectoryPath(){
+        return LaunchPlugin.getWorkingDirectoryPath(getCurrentLaunchConfiguration());
+    }
+
+    /**
+     * @return The currently selected exe file (or null if none selected)
+     */
+    protected IFile getExeFile() {
+        IFile exefile = null;
+        String name;
         try {
-            location = getCurrentLaunchConfiguration().getAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY,
-                    "${workspace_loc:"+getCurrentLaunchConfiguration().getAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME,"")+"}");
-            if (location != null) {
-                String expandedLocation = VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(location);
-                if (expandedLocation.length() > 0) {
-                    IPath newPath = new Path(expandedLocation);
-                    return newPath.makeAbsolute();
-                }
-            }
+            name = getCurrentLaunchConfiguration().getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, EMPTY_STRING);
+            exefile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(name));
         } catch (CoreException e) {
-            LaunchPlugin.logError("Error getting working directory from configuration", e);
+            LaunchPlugin.logError("Error getting program name from configuration", e);
         }
-        return new Path("${workspace_loc}");
+        return exefile;
+    }
+
+    /**
+     * @return The project in which the currently selected exe file is located
+     */
+    protected IProject getProject() {
+        IFile exeFile = getExeFile();
+        return exeFile != null ? exeFile.getProject() : null;
     }
 
     /**
@@ -128,5 +139,12 @@ public abstract class OmnetppLaunchTab extends AbstractLaunchConfigurationTab im
             resultPath = resultPath.append("../");
         // add the rest of the path (non common part)
         return resultPath.append(path.removeFirstSegments(path.matchingFirstSegments(relativeTo))).makeRelative();
+    }
+
+    @Override
+    protected void setErrorMessage(String errorMessage) {
+        super.setErrorMessage(errorMessage);
+        if (embeddingTab != null)
+            embeddingTab.setErrorMessage(errorMessage);
     }
 }

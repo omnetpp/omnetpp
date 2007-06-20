@@ -340,7 +340,6 @@ public class SimulationTab extends OmnetppLaunchTab  {
 
             // set the controls
             fInifileText.setText(iniArgs.trim());
-            setConfigName(configArg.trim());
             fRunText.setText(runArg.trim());
             fLibraryText.setText(libArgs.trim());
             fAdditionalText.setText(restArgs.trim());
@@ -361,6 +360,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
             fOtherEnvText.setEnabled(fOtherEnvButton.getSelection());
 
             updateConfigCombo();
+            setConfigName(configArg.trim());
         } catch (CoreException ce) {
             LaunchPlugin.logError(ce);
         }
@@ -451,8 +451,8 @@ public class SimulationTab extends OmnetppLaunchTab  {
 
 	@Override
     public boolean isValid(ILaunchConfiguration config) {
-		setErrorMessage(null);
-		setMessage(null);
+	    setErrorMessage(null);
+	    setMessage(null);
 
 		IFile ifiles[] = getIniFiles();
         if ( ifiles == null) {

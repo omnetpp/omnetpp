@@ -185,18 +185,7 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
      * Sets the default working directory
      */
     protected void setDefaultWorkingDir() {
-//        try {
-//            ILaunchConfiguration config = getLaunchConfiguration();
-//            if (config != null) {
-//                IJavaProject javaProject = JavaRuntime.getJavaProject(config);
-//                if (javaProject != null) {
-//                    setDefaultWorkingDirectoryText("${workspace_loc:" + javaProject.getPath().makeRelative().toOSString() + "}");  //$NON-NLS-1$//$NON-NLS-2$
-//                    return;
-//                }
-//            }
-//        }
-//        catch (CoreException ce) {}
-        setDefaultWorkingDirectoryText(System.getProperty("user.dir")); //$NON-NLS-1$
+        setDefaultWorkingDirectoryText("${project_loc}");
     }
 
     /* (non-Javadoc)

@@ -146,11 +146,11 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
      */
 	@Override
     public boolean isValid(ILaunchConfiguration config) {
+	    if (!workingDirBlock.isValid(config))
+	        return false;
 	    if (!super.isValid(config))
 	        return false;
         if (!simulationBlock.isValid(config))
-            return false;
-        if (!workingDirBlock.isValid(config))
             return false;
 
 		String name = progText.getText().trim();
