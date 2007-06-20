@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.ColorDialog;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
@@ -189,7 +190,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	protected void populateTabItem(TabItem item) {
 		Group group;
 		String name = item.getText();
-		Composite panel = (Composite)item.getControl();
+		final Composite panel = (Composite)item.getControl();
 		
 		if (TAB_MAIN.equals(name)) {
 			nameText = createTextField("Name:", panel);
@@ -231,6 +232,12 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			legendFontText = createTextField("Legend font:", group);
 			legendPositionRadios = createRadioGroup("Position", panel, 3, LegendPosition.class, false);
 			legendAnchorRadios = createRadioGroup("Anchoring", panel, 4, LegendAnchor.class, false);
+			displayLegendCheckbox.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					boolean enabled = displayLegendCheckbox.getSelection();
+					setEnabledDescendants(panel, enabled, displayLegendCheckbox);
+				}
+			});
 		}
 	}
 
@@ -506,6 +513,10 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		legendFontText.setText(props.getStringProperty(PROP_LEGEND_FONT)); // XXX font
 		setSelection(legendPositionRadios, props.getLegendPosition());
 		setSelection(legendAnchorRadios, props.getLegendAnchoring());
+		setEnabledDescendants(
+				displayLegendCheckbox.getParent(),
+				displayLegendCheckbox.getSelection(),
+				displayLegendCheckbox);
 	}
 
 	/**
@@ -514,5 +525,18 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	protected static void setSelection(Button[] radios, Enum<?> value) {
 		for (int i = 0; i < radios.length; ++i)
 			radios[i].setSelection(radios[i].getData(USER_DATA_KEY) == value);
+	}
+	
+	/**
+	 * Sets the enabled state of the controls under {@code composite}
+	 * except the given {@code control} to {@code enabled}.
+	 */
+	protected void setEnabledDescendants(Composite composite, boolean enabled, Control except) {
+		for (Control child : composite.getChildren()) {
+			if (child != except)
+				child.setEnabled(enabled);
+			if (child instanceof Composite)
+				setEnabledDescendants((Composite)child, enabled, except);
+		}
 	}
 }
