@@ -80,50 +80,62 @@ proc runSelectionDialog {configname_var runnumber_var} {
     upvar $configname_var configname
     upvar $runnumber_var  runnumber
 
-    set sortedconfignames [runSelectionDialog:groupAndSortConfigNames]
+    set ok 0
 
-    set configlist {}
-    set isbase 0
-    foreach name $sortedconfignames {
-        if {$name == ""} {set isbase 1; continue}
+    if {[catch {
+        set sortedconfignames [runSelectionDialog:groupAndSortConfigNames]
 
-        set desc [opp_getconfigdescription $name]
-        set runs [opp_getnumrunsinscenario $name]
-        # NOTE: if you change this, change proc runSelectionDialog:extractConfigName too
-        #if {$isbase} {append name " -- base config"}
-        if {$isbase} {set name "($name)"}
-        if {$desc != ""} {append name " -- $desc"}
-        if {$runs == 0}   {append name " (invalid scenario, generates 0 runs)"}
-        if {$runs > 1}   {append name " (scenario with $runs runs)"}
-        lappend configlist $name
-    }
+        set configlist {}
+        set isbase 0
+        foreach name $sortedconfignames {
+            if {$name == ""} {set isbase 1; continue}
 
-    if {($configname=="" || $configname=="General") && $configlist!={}} {
-        set configname [lindex $configlist 0]
-    }
+            set desc [opp_getconfigdescription $name]
+            set runs [opp_getnumrunsinscenario $name]
+            # NOTE: if you change this, change proc runSelectionDialog:extractConfigName too
+            #if {$isbase} {append name " -- base config"}
+            if {$isbase} {set name "($name)"}
+            if {$desc != ""} {append name " -- $desc"}
+            if {$runs == 0}   {append name " (invalid scenario, generates 0 runs)"}
+            if {$runs > 1}   {append name " (scenario with $runs runs)"}
+            lappend configlist $name
+        }
 
-    label $w.f.m -anchor w -justify left -text "Set up one of the runs defined in omnetpp.ini."
-    label-combo $w.f.c "Config or scenario:" $configlist $configname
-    label-combo $w.f.c2 "Run number:" {} $runnumber
-    pack $w.f.m -fill x -padx 2 -pady 2 -side top
-    pack $w.f.c -fill x -padx 2 -pady 2 -side top
-    pack $w.f.c2 -fill x -padx 2 -pady 2 -side top
-    focus $w.f.c.e
+        if {($configname=="" || $configname=="General") && $configlist!={}} {
+            set configname [lindex $configlist 0]
+        }
 
-    $w.f.c.e config -width 30
-    $w.f.c2.e config -width 10
+        label $w.f.m -anchor w -justify left -text "Set up one of the runs defined in omnetpp.ini."
+        label-combo $w.f.c "Config or scenario:" $configlist $configname
+        label-combo $w.f.c2 "Run number:" {} $runnumber
+        pack $w.f.m -fill x -padx 2 -pady 2 -side top
+        pack $w.f.c -fill x -padx 2 -pady 2 -side top
+        pack $w.f.c2 -fill x -padx 2 -pady 2 -side top
+        focus $w.f.c.e
 
-    combo-onchange $w.f.c.e [list runSelectionDialog:update $w]
+        $w.f.c.e config -width 30
+        $w.f.c2.e config -width 10
 
-    if [execOkCancelDialog $w] {
-        set configname [runSelectionDialog:extractConfigName [$w.f.c.e cget -value]]
-        set runnumber  [$w.f.c2.e cget -value]
-        # FIXME validate!  messagebox "Error" "Run number must be numeric" info ok
-        destroy $w
-        return 1
+        combo-onchange $w.f.c.e [list runSelectionDialog:update $w]
+
+        runSelectionDialog:update $w
+
+        if [execOkCancelDialog $w] {
+            set configname [runSelectionDialog:extractConfigName [$w.f.c.e cget -value]]
+            set runnumber  [$w.f.c2.e cget -value]
+            if ![string is integer $runnumber] {
+                messagebox "Error" "Run number must be numeric" info ok
+                set runnumber 0
+            } else {
+                set ok 1
+            }
+        }
+
+    } err]} {
+        messagebox "Error" $err error ok
     }
     destroy $w
-    return 0
+    return $ok
 }
 
 proc runSelectionDialog:groupAndSortConfigNames {} {
