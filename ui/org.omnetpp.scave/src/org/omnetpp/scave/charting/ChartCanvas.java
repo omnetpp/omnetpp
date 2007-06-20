@@ -1,8 +1,10 @@
 package org.omnetpp.scave.charting;
 
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_ANTIALIAS;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_BACKGROUND_COLOR;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_CANVAS_CACHING;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_DISPLAY_LEGEND;
+import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_FOREGROUND_COLOR;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_INSETS_BACKGROUND_COLOR;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_INSETS_LINE_COLOR;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LEGEND_ANCHOR;
@@ -33,7 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.ListenerList;
-import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Insets;
@@ -92,7 +93,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	public ChartCanvas(Composite parent, int style) {
 		super(parent, style);
 		setCaching(DEFAULT_CANVAS_CACHING);
-		setBackground(ColorConstants.white);
+		setBackground(DEFAULT_BACKGROUND_COLOR);
 
 		mouseSupport = new ZoomableCanvasMouseSupport(this); // add mouse handling; may be made optional
 		
@@ -310,11 +311,11 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	public static void resetDrawingStylesAndColors(GC gc) {
 		gc.setAntialias(SWT.DEFAULT);
 		gc.setAlpha(255);
-		gc.setBackground(ColorConstants.white);
+		gc.setBackground(DEFAULT_BACKGROUND_COLOR);
 		gc.setBackgroundPattern(null);
 		//gc.setFillRule();
 		gc.setFont(null);
-		gc.setForeground(ColorConstants.black);
+		gc.setForeground(DEFAULT_FOREGROUND_COLOR);
 		gc.setForegroundPattern(null);
 		gc.setInterpolation(SWT.DEFAULT);
 		//gc.setLineCap();

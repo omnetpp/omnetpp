@@ -26,6 +26,7 @@ import java.util.Map;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
 import org.omnetpp.scave.charting.ChartProperties.LegendAnchor;
@@ -47,10 +48,11 @@ public class ChartDefaults {
 	public static final String DEFAULT_TITLE = "";
 	public static final Font DEFAULT_TITLE_FONT = new Font(null, "Arial", 10, SWT.NORMAL);
 
-	// background colors
+	// colors
 	public static final Color DEFAULT_BACKGROUND_COLOR = ColorFactory.WHITE;
-	public static final Color DEFAULT_INSETS_BACKGROUND_COLOR = new Color(null, 236, 233, 216);
-	public static final Color DEFAULT_INSETS_LINE_COLOR = new Color(null, 0, 0, 0);
+	public static final Color DEFAULT_FOREGROUND_COLOR = ColorFactory.BLACK;
+	public static final Color DEFAULT_INSETS_BACKGROUND_COLOR = Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
+	public static final Color DEFAULT_INSETS_LINE_COLOR = ColorFactory.BLACK;
 
 	// legend
 	public static final boolean DEFAULT_DISPLAY_LEGEND = false;
