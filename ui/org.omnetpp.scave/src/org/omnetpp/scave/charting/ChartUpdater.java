@@ -7,11 +7,13 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.Property;
+import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
@@ -57,6 +59,9 @@ public class ChartUpdater {
 		// add/remove chart property 
 		if (notifier instanceof Chart) {
 			switch (notification.getFeatureID(Chart.class)) {
+			case ScaveModelPackage.CHART__FILTERS:
+				scheduleDatasetUpdate();
+				break;
 			case ScaveModelPackage.CHART__PROPERTIES:
 				Property property;
 				switch (notification.getEventType()) {
@@ -80,6 +85,21 @@ public class ChartUpdater {
 					break;
 				}
 				break;
+			}
+			if (notifier instanceof BarChart) {
+				switch (notification.getFeatureID(BarChart.class)) {
+				case ScaveModelPackage.BAR_CHART__GROUP_BY:
+					scheduleDatasetUpdate();
+					break;
+				}
+			}
+			else if (notifier instanceof ScatterChart) {
+				switch (notification.getFeatureID(ScatterChart.class)) {
+				case ScaveModelPackage.SCATTER_CHART__MODULE_NAME:
+				case ScaveModelPackage.SCATTER_CHART__DATA_NAME:
+					scheduleDatasetUpdate();
+					break;
+				}
 			}
 		}
 		// change chart property
