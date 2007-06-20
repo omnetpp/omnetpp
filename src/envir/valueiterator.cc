@@ -154,7 +154,7 @@ void ValueIterator::operator++(int)
     }
 }
 
-std::string ValueIterator::get()
+std::string ValueIterator::get() const
 {
     if (itemIndex >= items.size())
         return "";

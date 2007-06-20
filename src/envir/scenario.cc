@@ -113,7 +113,7 @@ Expression::StkValue Scenario::getIterationVariable(const char *varname)
 
 int Scenario::getNumRuns()
 {
-    if (!resetVariables())
+    if (!restart())
         return 0;
     int count = 1;
     while (next())
@@ -121,7 +121,7 @@ int Scenario::getNumRuns()
     return count;
 }
 
-bool Scenario::resetVariables()
+bool Scenario::restart()
 {
     if (itervars.size()==0)
         return true;  // it is valid to have no iterations at all
@@ -183,45 +183,40 @@ bool Scenario::evaluateCondition()
 std::vector<std::string> Scenario::generate(int runNumber)
 {
     // spin the iteration variables to the given run number
-    if (!resetVariables())
+    if (!restart())
         throw cRuntimeError("Scenario generator: Iterators or condition too restrictive: not even one run can be generated");
     for (int i=0; i<runNumber; i++)
         if (!next())
             throw cRuntimeError("Scenario generator: Run number %d is out of range", runNumber);
 
-    // collect and return variables
+    // then collect and return the variables
+    return get();
+}
+
+std::vector<std::string> Scenario::get() const
+{
     std::vector<std::string> result(itervars.size());
     for (int i=0; i<itervars.size(); i++)
         result[i] = itervars[i].get();
     return result;
 }
 
-std::vector<std::string> Scenario::unroll()
+std::string Scenario::str() const
 {
-    std::vector<std::string> result;
-    if (!resetVariables())
-        return result;
-
-    for (int runNumber=0; ; runNumber++)
+    std::stringstream out;
+    for (int i=0; i<itervars.size(); i++)
     {
-        std::stringstream out;
-        for (int i=0; i<itervars.size(); i++)
-        {
-            if (!itervars[i].get().empty()) {
-                out << (i>0 ? ", " : "");
-                if (iterspecs[i].varname.empty())
-                    out << "$" << i;
-                else
-                    out << "$" << iterspecs[i].varname;
-                out << "=" << itervars[i].get();
-            }
+        if (!itervars[i].get().empty()) {
+            out << (i>0 ? ", " : "");
+            if (iterspecs[i].varname.empty())
+                out << "$" << i;
+            else
+                out << "$" << iterspecs[i].varname;
+            out << "=" << itervars[i].get();
         }
-        result.push_back(out.str());
-
-        if (!next())
-            break;
     }
-    return result;
+    return out.str();
 }
+
 
 

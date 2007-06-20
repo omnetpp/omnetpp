@@ -26,6 +26,7 @@
 
 /**
  * Helper class for SectionBasedConfiguration: Resolves iterations in a scenario.
+ * May be used as an iterator as well.
  */
 class Scenario
 {
@@ -42,8 +43,6 @@ class Scenario
     std::map<std::string, ValueIterator*> namedvars;
 
   private:
-    bool resetVariables(); // false if there's no valid config at all
-    bool next();
     bool inc();
     bool evaluateCondition();
 
@@ -78,6 +77,8 @@ class Scenario
 
     /**
      * Counts the number of runs this scenario generates.
+     *
+     * The current iteration state is NOT preserved.
      */
     int getNumRuns();
 
@@ -86,14 +87,39 @@ class Scenario
      * The returned vector is the same size as the input iterationSpecs,
      * and each element contains the value for the corresponding iteration
      * variable.
+     *
+     * The current iteration state is NOT preserved.
      */
     std::vector<std::string> generate(int runNumber);
 
     /**
-     * Generates all runs in the given scenario, and returns them as multi-line
-     * strings. This is the method that implements cConfiguration::unroll().
+     * Generates all runs in the given scenario, and returns them as strings.
+     * The current iteration state is NOT preserved.
      */
     std::vector<std::string> unroll();
+
+    /**
+     * Restarts the iteration. Returns false if there's no valid config at all,
+     * that is, get() and next() may not be called.
+     */
+    bool restart();
+
+    /**
+     * Advances to the next valid run. When it returns false, that means the
+     * the iteration finished, and get() and next() may not be invoked any more.
+     */
+    bool next();
+
+    /**
+     * During iteration (see restart() and next()), it returns the values
+     * for the current run.
+     */
+    std::vector<std::string> get() const;
+
+    /**
+     * Returns the current iteration state as a string ("$x=100, $y=3, $2=.4")
+     */
+    std::string str() const;
 };
 
 #endif

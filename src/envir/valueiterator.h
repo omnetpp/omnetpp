@@ -99,12 +99,12 @@ class ValueIterator
      * Returns the current element. Result is undefined when the iteration is
      * over (end() returns true).
      */
-    std::string get();
+    std::string get() const;
 
     /**
      * Same as get().
      */
-    std::string operator()()  {return get();}
+    std::string operator()() const  {return get();}
 
     /**
      * Returns true when the iteration is over, that is, after invoking

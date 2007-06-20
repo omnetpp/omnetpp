@@ -146,6 +146,7 @@ class SectionBasedConfiguration : public cConfiguration
     void validateConfig() const;
     std::vector<IterationSpec> collectIterationSpecs(int sectionId) const;
     void validateIterations(const std::vector<IterationSpec>& list) const;
+    static std::string substitute(const std::string& value, int entryId, const std::vector<IterationSpec>& iterspecs, const std::vector<std::string>& values);
     KeyValue1 convert(const cConfigurationReader::KeyValue& e);
     void doActivateConfig(int sectionId);
     void doActivateScenario(int sectionId, int runNumber);

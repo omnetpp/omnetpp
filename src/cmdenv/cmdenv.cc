@@ -193,7 +193,7 @@ int TCmdenvApp::run()
         {
             std::vector<std::string> runs = cfg->unrollScenario(opt_printnumruns.c_str());
             for (int i=0; i<runs.size(); i++)
-                ev.printf("Run %d:  %s\n", i, runs[i].c_str());
+                ev.printf("Run %d:\n%s", i, runs[i].c_str());
         }
         return 0;
     }
