@@ -130,7 +130,7 @@ class SectionBasedConfiguration : public cConfiguration
         int startPos;
         int length;
         std::string varname; // "x"; may be empty
-        std::string value;   // "1,2,5,10"; may be empty
+        std::string value;   // "1,2,5..10"; may be empty
     };
 
   private:

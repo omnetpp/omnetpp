@@ -45,6 +45,7 @@ class Scenario
   private:
     bool inc();
     bool evaluateCondition();
+    std::string getVar(const char *varname) const;
 
   public:
     /**

@@ -90,10 +90,7 @@ Expression::StkValue Scenario::getIterationVariable(const char *varname)
 {
     if (varname[0]=='$')
         varname++;
-    std::map<std::string,ValueIterator*>::iterator it = namedvars.find(varname);
-    if (it==namedvars.end())
-        throw cRuntimeError("Scenario generator: Unknown iteration variable: $%s", varname);
-    std::string value = it->second->get();
+    std::string value = getVar(varname);
     try
     {
         if (value[0]=='"')
@@ -193,11 +190,19 @@ std::vector<std::string> Scenario::generate(int runNumber)
     return get();
 }
 
+std::string Scenario::getVar(const char *varname) const
+{
+    std::map<std::string,ValueIterator*>::const_iterator it = namedvars.find(varname);
+    if (it==namedvars.end())
+        throw cRuntimeError("Scenario generator: Unknown iteration variable: $%s", varname);
+    return it->second->get();
+}
+
 std::vector<std::string> Scenario::get() const
 {
-    std::vector<std::string> result(itervars.size());
-    for (int i=0; i<itervars.size(); i++)
-        result[i] = itervars[i].get();
+    std::vector<std::string> result(iterspecs.size());
+    for (int i=0; i<iterspecs.size(); i++)
+        result[i] = !iterspecs[i].value.empty() ? itervars[i].get() : !iterspecs[i].varname.empty() ? getVar(iterspecs[i].varname.c_str()) : "";
     return result;
 }
 
