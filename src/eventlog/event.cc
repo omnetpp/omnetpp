@@ -178,7 +178,7 @@ EventLogMessageEntry *Event::getEventLogMessage(int index)
     throw opp_runtime_error("index out of range");
 }
 
-bool Event::isSelfEvent()
+bool Event::isSelfMessageProcessingEvent()
 {
     BeginSendEntry *beginSendEntry = getCauseBeginSendEntry();
     return beginSendEntry && dynamic_cast<EndSendEntry *>(getCauseEvent()->getEventLogEntry(beginSendEntry->getIndex() + 1));

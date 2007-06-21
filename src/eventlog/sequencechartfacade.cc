@@ -120,8 +120,6 @@ double SequenceChartFacade::getTimelineCoordinate(IEvent *event, double lowerTim
                     bool forward = event->getEventNumber() > timelineCoordinateRangeEndEventNumber;
                     IEvent *currentEvent = eventLog->getEventForEventNumber(forward ? timelineCoordinateRangeEndEventNumber : timelineCoordinateRangeStartEventNumber);
 
-                    // TODO: when switching to a filtered event log the timeline coordinate cache becomes invalid
-                    // TODO: what else?
                     Assert(event->getEventNumber() < timelineCoordinateRangeStartEventNumber || timelineCoordinateRangeEndEventNumber < event->getEventNumber()); 
 
                     do {

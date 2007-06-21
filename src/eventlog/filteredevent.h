@@ -68,7 +68,7 @@ class EVENTLOG_API FilteredEvent : public IEvent
         virtual long getMessageId() { return getEvent()->getMessageId(); }
         virtual long getCauseEventNumber() { return getEvent()->getCauseEventNumber(); }
 
-        virtual bool isSelfEvent() { return getEvent()->isSelfEvent(); }
+        virtual bool isSelfMessageProcessingEvent() { return getEvent()->isSelfMessageProcessingEvent(); }
         virtual FilteredEvent *getPreviousEvent();
         virtual FilteredEvent *getNextEvent();
 

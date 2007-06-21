@@ -39,9 +39,12 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         long tracedEventNumber; // the event number from which causes and consequences are followed or -1
         long firstEventNumber; // the first event to be considered by the filter or -1
         long lastEventNumber; // the last event to be considered by the filter or -1
+
+        // TODO: use object matcher (merge params) for modules and cache result in a map
         std::vector<PatternMatcher> moduleNames;
         std::vector<PatternMatcher> moduleTypes;
         std::vector<int> moduleIds; // events outside these modules will be filtered out, NULL means include all
+
         std::vector<PatternMatcher> messageNames;
         std::vector<PatternMatcher> messageTypes;
         std::vector<long> messageIds;
@@ -50,6 +53,8 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         std::vector<long> messageEncapsulationTreeIds;
         bool traceCauses; // only when tracedEventNumber is given, includes events which cause the traced event even if through a chain of filtered events
         bool traceConsequences; // only when tracedEventNumber is given
+        bool traceMessageReuses;
+        bool traceSelfMessages;
         int maximumCauseDepth; // maximum depth of message dependencies considered when collecting causes
         int maximumNumberOfCauses; // maximum number of message dependencies collected
         int maximumConsequenceDepth; // maximum depth of message dependencies considered when collecting consequences
@@ -82,6 +87,8 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         void setTracedEventNumber(long tracedEventNumber) { this->tracedEventNumber = tracedEventNumber; }
         void setTraceCauses(bool traceCauses) { this->traceCauses = traceCauses; }
         void setTraceConsequences(bool traceConsequences) { this->traceConsequences = traceConsequences; }
+        void setTraceSelfMessages(bool traceSelfMessages) { this->traceSelfMessages = traceSelfMessages; }
+        void setTraceMessageReuses(bool traceMessageReuses) { this->traceMessageReuses = traceMessageReuses; }
         void setFirstEventNumber(long firstEventNumber) { this->firstEventNumber = firstEventNumber; }
         void setLastEventNumber(long lastEventNumber) { this->lastEventNumber = lastEventNumber; }
 

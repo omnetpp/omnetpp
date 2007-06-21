@@ -117,7 +117,7 @@ class EVENTLOG_API IEvent
         /**
          * Returns true if the received message was a self message.
          */
-        virtual bool isSelfEvent() = 0;
+        virtual bool isSelfMessageProcessingEvent() = 0;
 
         /**
          * Used to maintain the double linked list.

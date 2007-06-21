@@ -86,7 +86,7 @@ class EVENTLOG_API Event : public IEvent
         virtual long getMessageId() { return eventEntry->messageId; }
         virtual long getCauseEventNumber() { return eventEntry->causeEventNumber; }
 
-        virtual bool isSelfEvent();
+        virtual bool isSelfMessageProcessingEvent();
         virtual Event *getPreviousEvent();
         virtual Event *getNextEvent();
 

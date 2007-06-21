@@ -24,6 +24,8 @@ FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
     lastEventNumber = -1;
     traceCauses = true;
     traceConsequences = true;
+    traceMessageReuses = false;
+    traceSelfMessages = true;
 
     approximateNumberOfEvents = -1;
     approximateMatchingEventRatio = -1;
@@ -154,7 +156,7 @@ bool FilteredEventLog::matchesFilter(IEvent *event)
 
     //printf("*** Matching filter to event: %ld\n", event->getEventNumber());
 
-    bool matches = matchesEvent(event) & matchesDependency(event);
+    bool matches = matchesEvent(event) && matchesDependency(event);
     eventNumberToFilterMatchesFlagMap[event->getEventNumber()] = matches;
     return matches;
 }
@@ -428,7 +430,9 @@ bool FilteredEventLog::isCauseOfTracedEvent(IEvent *cause)
         IMessageDependency *messageDependency = *it;
         IEvent *consequenceEvent = messageDependency->getConsequenceEvent();
 
-        if (consequenceEvent)
+        if (consequenceEvent &&
+            (traceSelfMessages || !consequenceEvent->isSelfMessageProcessingEvent()) && 
+            (traceMessageReuses || !messageDependency->getIsReuse()))
         {
             // if we reached the consequence event, we're done
             if (tracedEventNumber == consequenceEvent->getEventNumber())
@@ -448,6 +452,9 @@ bool FilteredEventLog::isCauseOfTracedEvent(IEvent *cause)
 
 bool FilteredEventLog::isConsequenceOfTracedEvent(IEvent *consequence)
 {
+    if (!traceSelfMessages && consequence->isSelfMessageProcessingEvent())
+        return false;
+
     EventNumberToBooleanMap::iterator it = eventNumberToTraceableEventFlagMap.find(consequence->getEventNumber());
 
     // check cache
@@ -465,7 +472,7 @@ bool FilteredEventLog::isConsequenceOfTracedEvent(IEvent *consequence)
         IMessageDependency *messageDependency = *it;
         IEvent *causeEvent = messageDependency->getCauseEvent();
 
-        if (causeEvent)
+        if (causeEvent && (traceMessageReuses || !messageDependency->getIsReuse()))
         {
             // if we reached the cause event, we're done
             if (tracedEventNumber == causeEvent->getEventNumber())

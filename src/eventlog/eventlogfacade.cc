@@ -88,10 +88,10 @@ int64 EventLogFacade::Event_getConsequence(int64 ptr, int index)
     return (int64)((IEvent*)ptr)->getConsequences()->at(index);
 }
 
-bool EventLogFacade::Event_isSelfEvent(int64 ptr)
+bool EventLogFacade::Event_isSelfMessageProcessingEvent(int64 ptr)
 {
     EVENT_PTR(ptr);
-    return ((IEvent*)ptr)->isSelfEvent();
+    return ((IEvent*)ptr)->isSelfMessageProcessingEvent();
 }
 
 IMessageDependency *EventLogFacade::MessageDependency_getMessageDependency(int64 ptr)
