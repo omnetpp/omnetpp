@@ -16,6 +16,9 @@
 #ifndef __CMYSQLCONFIG_H
 #define __CMYSQLCONFIG_H
 
+
+//FIXME obsolete file -- remove!!!
+
 #include <omnetpp.h>
 #include <mysql.h>
 

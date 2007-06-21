@@ -21,6 +21,7 @@
 #include "cinifile.h" // for dumpConfig(); TODO eliminate dependency
 #include "oppmysqlutils.h"
 
+//FIXME obsolete file -- remove!!!
 
 Register_Class(cMySQLConfiguration);
 
