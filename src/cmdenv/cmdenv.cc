@@ -233,7 +233,7 @@ int TCmdenvApp::run()
             ::fflush(fout);
 
             cfg->activateConfig(opt_configname.c_str(), runnumber);
-            if (opt_printconfigdetails)
+            if (opt_printconfigdetails || opt_printconfigdetails2)
             {
                 cfg->dump(); //XXX refine!
             }

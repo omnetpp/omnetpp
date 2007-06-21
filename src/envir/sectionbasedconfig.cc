@@ -628,6 +628,7 @@ void SectionBasedConfiguration::validateConfig() const
     //FIXME warn if "Config" and "Scenario" names overlap
     //FIXME warn for section circularity
     //FIXME config name should  not contain space
+    //FIXME boolean entries should be true/false (yes/no is no longer accepted!)
 
 }
 
