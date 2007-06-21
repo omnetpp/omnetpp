@@ -278,10 +278,17 @@ void cIndexedFileOutputVectorManager::writeRecords(sVector *vp)
 
 void cIndexedFileOutputVectorManager::writeIndex(sVector *vp)
 {
+    assert(f!=NULL);
+    assert(fi!=NULL);
+
     static char buff1[64], buff2[64];
 
     if (vp->count > 0)
     {
+        // make sure that the offsets refered by the index file are exists in the vector file
+        // so the index can be used to access the vector file while it is being written
+        fflush(f);
+
         // vector
         CHECK(fprintf(fi,"vector %d  %s  %s  %s  %ld  %ld  %.*g  %.*g  %.*g  %.*g\n",
                       vp->id, QUOTE(vp->modulename.c_str()), QUOTE(vp->vectorname.c_str()),
@@ -322,6 +329,8 @@ void cIndexedFileOutputVectorManager::writeIndex(sVector *vp)
                 }
             }
         }
+
+        fflush(fi);
         vp->blocks.clear();
         vp->blocks.push_back(sBlock());
     }

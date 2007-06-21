@@ -266,6 +266,10 @@ bool IndexFile::isIndexFileUpToDate(const char *filename)
     IndexFileReader reader(indexFileName.c_str());
     VectorFileIndex *index = reader.readFingerprint();
 
+    // when the fingerprint not found assume the index file is being written therefore it is up to date
+    if (!index)
+        return true;
+
     struct stat s;
     bool uptodate = false;
     if (stat(vectorFileName.c_str(), &s) == 0)
@@ -351,7 +355,9 @@ VectorFileIndex *IndexFileReader::readFingerprint()
             break;
     }
 
-    CHECK(index, "missing fingerprint", -1);
+    // missing fingerprint: possible if the writing of the index file is in progress
+    // CHECK(index, "missing fingerprint", -1);
+
     return index;
 }
 

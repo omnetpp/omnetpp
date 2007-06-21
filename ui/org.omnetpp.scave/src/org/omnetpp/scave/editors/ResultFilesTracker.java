@@ -26,6 +26,7 @@ import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.omnetpp.scave.ContentTypes;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.ResultFile;
+import org.omnetpp.scave.engineext.IndexFile;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.jobs.VectorFileIndexerJob;
 import org.omnetpp.scave.model.InputFile;
@@ -40,6 +41,8 @@ import org.omnetpp.scave.model.Inputs;
  * @author andras, tomi
  */
 public class ResultFilesTracker implements INotifyChangedListener, IResourceChangeListener {
+	
+	private static final boolean debug = true;
 
 	private ResultFileManagerEx manager; //backreference to the manager it operates on, the manager is owned by the editor
 	private Inputs inputs; // backreference to the Inputs element we watch
@@ -108,23 +111,26 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			IFile file = (IFile)resource;
 			switch (delta.getKind()) {
 			case IResourceDelta.ADDED:
+					if (debug) System.out.format("File added: %s%n", file);
 					if (isResultFile(file)) {
 						if (inputsMatches(file))
 							loadFile(file);
 					}
-//					else if (isIndexFile(file))
-//						reloadFile(getVectorFile(file));
+					else if (IndexFile.isIndexFile(file))
+						reloadFile(IndexFile.getVectorFileFor(file));
 					break;
 			case IResourceDelta.REMOVED:
+					if (debug) System.out.format("File removed: %s%n", file);
 					if (isResultFile(file))
 						unloadFile(file);
 					break;
 			case IResourceDelta.CHANGED:
+					if (debug) System.out.format("File changed: %s%n", file);
 					if ((delta.getFlags() & ~IResourceDelta.MARKERS) != 0) {
 						if (isResultFile(file))
 							reloadFile(file);
-//						else if (isIndexFile(file))
-//							reloadFile(getVectorFileName(file));
+						else if (IndexFile.isIndexFile(file))
+							reloadFile(IndexFile.getVectorFileFor(file));
 					}
 					break;
 			}
@@ -140,7 +146,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		if (manager == null)
 			return;
 		
-		System.out.println("ResultFileTracker.synchronize()");
+		if (debug) System.out.println("ResultFileTracker.synchronize()");
 		//XXX also: must unload files which have been removed from Inputs
 		//FIXME for now, a primitive solution, TO BE REPLACED: unload everything
 		for (ResultFile file : manager.getFiles().toArray())
@@ -218,10 +224,13 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	 * When not, it generates the index first and then loads it from the index.
 	 */
 	private void loadFile(final IFile file) {
-		System.out.println("loadFile: "+file);
+		if (debug) System.out.format("  loadFile: %s ", file);
 		synchronized (lock) {
-		if (isResultFile(file) && file.getLocation().toFile().exists()) {
-			loadFileInternal(file);
+		if (isResultFile(file)) {
+			if (file.getLocation().toFile().exists()) {
+				loadFileInternal(file);
+				if (debug) System.out.println("done");
+			}
 		}
 		else
 			throw new RuntimeException("wrong file type:"+file.getFullPath()); //XXX proper error handling (e.g. remove file from Inputs?)
@@ -233,10 +242,12 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	 * Has no effect when the file was not loaded.
 	 */
 	private void unloadFile(IFile file) {
-		System.out.println("unloadFile: "+file);
+		if (debug) System.out.format("  unloadFile: %s%n ", file);
 		ResultFile resultFile = manager.getFile(file.getFullPath().toString());
-		if (resultFile != null)
+		if (resultFile != null) {
 			manager.unloadFile(resultFile);
+			if (debug) System.out.println("done");
+		}
 	}
 
 	/**
@@ -244,7 +255,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	 * Has no effect when the file was not loaded.
 	 */
 	private void reloadFile(IFile file) {
-		System.out.println("reloadFile: "+file);
+		if (debug) System.out.format("  reloadFile: %s ", file);
 		if (isResultFile(file)) {
 			String resourcePath = file.getFullPath().toString();
 			ResultFile resultFile = manager.getFile(resourcePath);
@@ -252,9 +263,14 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 				try {
 					manager.unloadFile(resultFile);
 					loadFileInternal(file);
+					if (debug) System.out.println("done");
 				} catch (Exception e) {
 					ScavePlugin.logError("Could not reload file: " + file.getLocation().toOSString(), e);
+					if (debug) System.out.format("exception %s%n", e);
 				}
+			}
+			else {
+				if (debug) System.out.println("skip");
 			}
 		}
 	}
@@ -274,7 +290,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 				// for ~100MB files.
 				// Create or update the index file first, and try again.
 				if (isVectorFile(file) && !isIndexFileUpToDate(file)) {
-					System.out.println("indexing: "+file);
+					if (debug) System.out.format("indexing: %s%n", file);
 					VectorFileIndexerJob indexer = new VectorFileIndexerJob("Indexing "+file, new IFile[] {file}, lock);
 					indexer.setPriority(Job.LONG);
 					indexer.addJobChangeListener(new JobChangeAdapter() {
@@ -298,6 +314,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			}
 		} catch (Exception e) {
 			ScavePlugin.logError("Could not load file: " + file.getLocation().toOSString(), e);
+			if (debug) System.out.format("exception: %s ", e);
 		}
 	}
 
