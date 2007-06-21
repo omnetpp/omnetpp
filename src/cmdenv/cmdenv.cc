@@ -478,6 +478,7 @@ bool TCmdenvApp::gets(const char *promptstr, char *buf, int len)
 {
     ::fprintf(fout, "%s", promptstr);
     if (buf[0]) ::fprintf(fout, "(default: %s) ",buf);
+    ::fflush(fout);
 
     ::fgets(buffer,512,stdin);
     buffer[strlen(buffer)-1] = '\0'; // chop LF
@@ -498,6 +499,7 @@ int TCmdenvApp::askYesNo(const char *question )
     for(;;)
     {
         ::fprintf(fout, "%s (y/n) ", question);
+        ::fflush(fout);
         ::fgets(buffer,512,stdin);
         buffer[strlen(buffer)-1] = '\0'; // chop LF
         if (toupper(buffer[0])=='Y' && !buffer[1])
