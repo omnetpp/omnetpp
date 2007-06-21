@@ -22,6 +22,7 @@
 #include <mysql.h>
 #include "cconfigreader.h"
 
+//FIXME code is incomplete, and won't even compile
 
 /**
  * Configuration class which reads data from a MYSQL database. The two
