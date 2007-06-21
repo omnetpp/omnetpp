@@ -708,7 +708,7 @@ const cConfiguration::KeyValue& SectionBasedConfiguration::getPerObjectConfigEnt
     for (int i=0; i<group->entries.size(); i++)
     {
         const KeyValue2& entry = group->entries[i];
-        if (entry.ownerPattern->matches(objectFullPath) && (entry.groupPattern==NULL || entry.groupPattern->matches(keySuffix)))
+        if (!entry.isApplyDefault && entry.ownerPattern->matches(objectFullPath) && (entry.groupPattern==NULL || entry.groupPattern->matches(keySuffix)))
             return entry;  // found value
     }
     return nullEntry; // not found
@@ -738,7 +738,7 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
             for (int i=0; i<group.entries.size(); i++)
             {
                 const KeyValue2& entry = group.entries[i];
-                if (entry.ownerPattern->matches(objectFullPath) && (entry.groupPattern==NULL || matcher.matches(partAfterLastDot(entry.key.c_str())) || entry.groupPattern->matches(keySuffixPattern)))
+                if (!entry.isApplyDefault && entry.ownerPattern->matches(objectFullPath) && (entry.groupPattern==NULL || matcher.matches(partAfterLastDot(entry.key.c_str())) || entry.groupPattern->matches(keySuffixPattern)))
                     result.push_back(entry.key.c_str());
             }
         }
