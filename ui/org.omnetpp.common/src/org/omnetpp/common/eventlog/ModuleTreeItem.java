@@ -147,4 +147,17 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	public int compareTo(ModuleTreeItem item) {
 		return moduleName.compareTo(item.getModuleName());
 	}
+
+	public ModuleTreeItem findDescendantModule(final int id) {
+		final ModuleTreeItem[] descendant = new ModuleTreeItem[1];
+
+		visitLeaves(new IModuleTreeItemVisitor() {
+			public void visit(ModuleTreeItem treeItem) {
+				if (treeItem.getModuleId() == id)
+					descendant[0] = treeItem;
+			}
+		});
+
+		return descendant[0];
+	}
 }

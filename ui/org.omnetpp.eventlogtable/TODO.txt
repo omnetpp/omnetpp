@@ -43,7 +43,6 @@ Features:
  - configuration
    - events are collapsed by default
    - goto line puts line to a predefined position in the visible area (maybe 1/3)
-   ...
  + navigation history
  + toolbar
  - property view for event log lines
@@ -59,5 +58,6 @@ Features:
  - expand/collapse events (isExpandedInEventLogTable)
  + follow log file changes
  + store and restore last known settings and position per file
+ - timeout support
 
 Known bugs:

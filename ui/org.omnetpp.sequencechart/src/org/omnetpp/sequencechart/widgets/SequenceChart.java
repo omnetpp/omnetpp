@@ -111,7 +111,7 @@ public class SequenceChart
 	extends CachingCanvas
 	implements IVirtualContentWidget<IEvent>, ISelectionProvider, IEventLogChangeListener
 {
-	private static final boolean debug = true;
+	private static final boolean debug = false;
 
 	private static final String STATE_PROPERTY = "SequenceChartState";
 
@@ -929,7 +929,7 @@ public class SequenceChart
 					fixPointViewportCoordinate = 0;
 				}
 
-				setAxisModules(eventLogInput.getAllModules());
+				setAxisModules(eventLogInput.getSelectedModules());
 			}
 
 			calculateAxisYs();
@@ -952,8 +952,7 @@ public class SequenceChart
 				if (fixPointEvent != null) {
 					setPixelPerTimelineCoordinate(sequenceChartState.pixelPerTimelineCoordinate);
 
-					// TODO: filter if necessary
-					setAxisModules(eventLogInput.getAllModules());
+					setAxisModules(eventLogInput.getSelectedModules());
 
 					if (sequenceChartState.axisStates != null) {
 						ResultFileManager resultFileManager = new ResultFileManager();
@@ -1074,6 +1073,8 @@ public class SequenceChart
 			FilteredEventLog filteredEventLog = (FilteredEventLog)eventLogInput.getEventLog();
 			IEvent closestEvent = filteredEventLog.getMatchingEventInDirection(timelineCoordinateSystemOriginEventNumber, false);
 			
+			setAxisModules(eventLogInput.getFilterParameters().getSelectedModules());
+			
 			if (closestEvent != null)
 				sequenceChartFacade.relocateTimelineCoordinateSystem(closestEvent);
 			else {
@@ -1089,6 +1090,9 @@ public class SequenceChart
 	
 	public void eventLogFilterRemoved() {
 		eventLog = eventLogInput.getEventLog();
+
+		if (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() != -1)
+			sequenceChartFacade.relocateTimelineCoordinateSystem(sequenceChartFacade.getTimelineCoordinateSystemOriginEvent());
 	}
 
 	private ModuleTreeItem getAxisModule(String moduleFullPath) {
@@ -1443,7 +1447,7 @@ public class SequenceChart
 			long endEventPtr = eventPtrRange[1];
 			
 			if (debug && !eventLog.isEmpty())
-				System.out.println("redrawing events from: " + sequenceChartFacade.Event_getEventNumber(startEventPtr) + " to: " + sequenceChartFacade.Event_getEventNumber(endEventPtr));
+				System.out.println("Redrawing events from: " + sequenceChartFacade.Event_getEventNumber(startEventPtr) + " to: " + sequenceChartFacade.Event_getEventNumber(endEventPtr));
 
 			drawZeroSimulationTimeRegions(graphics, startEventPtr, endEventPtr);
 			drawAxes(graphics, startSimulationTime, endSimulationTime);
@@ -1572,7 +1576,7 @@ public class SequenceChart
 	}
 
 	private void drawEvent(Graphics graphics, long eventPtr, int x, int y) {
-		if (sequenceChartFacade.Event_isSelfEvent(eventPtr)) {
+		if (sequenceChartFacade.Event_isSelfMessageProcessingEvent(eventPtr)) {
 			graphics.setForegroundColor(SELF_EVENT_BORDER_COLOR);
 			graphics.setBackgroundColor(SELF_EVENT_BACKGROUND_COLOR);
 		}

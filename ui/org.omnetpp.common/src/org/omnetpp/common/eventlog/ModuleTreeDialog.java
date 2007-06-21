@@ -1,17 +1,9 @@
 package org.omnetpp.common.eventlog;
 
-import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
-import org.eclipse.jface.viewers.ICheckStateListener;
-import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.ILabelProviderListener;
-import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -26,8 +18,9 @@ import org.eclipse.ui.dialogs.SelectionDialog;
  */
 public class ModuleTreeDialog extends SelectionDialog {
 
-	private CheckboxTreeViewer treeViewer;
-	private Object input;
+	private CheckboxTreeViewer moduleTreeViewer;
+
+	private ModuleTreeItem root;
 	
 	/**
 	 * This method initializes the dialog
@@ -37,7 +30,7 @@ public class ModuleTreeDialog extends SelectionDialog {
 		setShellStyle(getShellStyle()|SWT.RESIZE);
         setTitle("Choose Modules");
         setMessage("Choose Modules For Axes"); // XXX this does not appear anywhere on the GUI 
-        input = moduleItemTree;
+        root = moduleItemTree;
         setInitialElementSelections(checkedModuleItems);
 	}
 
@@ -49,98 +42,28 @@ public class ModuleTreeDialog extends SelectionDialog {
 
     @Override
     protected Control createDialogArea(Composite parent) {
-        Composite composite = (Composite) super.createDialogArea(parent);
-
-        Label label = new Label(composite, SWT.NONE);
+		Composite composite = (Composite) super.createDialogArea(parent);
+        
+		Label label = new Label(composite, SWT.NONE);
         label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         label.setText("Choose modules for chart axes:");
 
-        treeViewer = new CheckboxTreeViewer(composite, SWT.CHECK | SWT.BORDER);
         GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
         gridData.widthHint = 500;
         gridData.heightHint = 400;
-        treeViewer.getTree().setLayoutData(gridData);
+        moduleTreeViewer.getTree().setLayoutData(gridData);
 
-        treeViewer.setContentProvider(new ITreeContentProvider() {
-			public void dispose() { }
-			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) { }
-			public Object[] getChildren(Object parentElement) {
-				ModuleTreeItem[] submods = ((ModuleTreeItem)parentElement).getSubmodules(); 
-				Arrays.sort(submods, 0, submods.length);
-				return submods;
-			}
-			public Object getParent(Object element) {
-				return ((ModuleTreeItem)element).getParentModule();
-			}
-			public boolean hasChildren(Object element) {
-				return ((ModuleTreeItem)element).getSubmodules().length>0;
-			}
-			public Object[] getElements(Object inputElement) {
-				return getChildren(inputElement);
-			}
-        });
-        
-        treeViewer.setLabelProvider(new ILabelProvider() {
-			public void addListener(ILabelProviderListener listener) { }
-			public void removeListener(ILabelProviderListener listener) { }
-			public void dispose() { }
-			public boolean isLabelProperty(Object element, String property) {
-				return false;
-			}
-			public Image getImage(Object element) {
-				return null;
-			}
-			public String getText(Object element) {
-				ModuleTreeItem mod = (ModuleTreeItem)element;
-				String text = mod.getModuleName();
-				text += " -";
-				if (mod.getModuleClassName()!=null)
-					text += " ("+mod.getModuleClassName()+")";
-				text += " "+mod.getModuleFullPath();
-				if (mod.getModuleId()!=-1)
-					text += " (id="+mod.getModuleId()+")";
-				return text;
-			}
-        	
-        });
-
-        // configure checkbox behaviour
-        treeViewer.addCheckStateListener(new ICheckStateListener() {
-			public void checkStateChanged(CheckStateChangedEvent event) {
-				if (event.getChecked()) {
-			        // when a compound module is checked, uncheck its subtree and all parents up to the root  
-					ModuleTreeItem e = (ModuleTreeItem)event.getElement();
-					treeViewer.setSubtreeChecked(e, false);
-					treeViewer.setChecked(e, true);
-					// all parents should be unchecked
-				    for (ModuleTreeItem current=e.getParentModule(); current!=null; current=current.getParentModule())
-				    	treeViewer.setChecked(current, false);
-				}
-				else {
-					// when unchecked, expand and check all submodules
-					ModuleTreeItem e = (ModuleTreeItem)event.getElement();
-					treeViewer.setSubtreeChecked(e, false);
-					treeViewer.setExpandedState(e, true);
-					for (ModuleTreeItem i : e.getSubmodules())
-						treeViewer.setChecked(i, true);
-				}
-			}
-        });
-        
-        treeViewer.setInput(input);
-        treeViewer.expandAll();
-        if (((ModuleTreeItem)input).getSubmodules().length>0)
-        	treeViewer.reveal(((ModuleTreeItem)input).getSubmodules()[0]); // scroll to top
+        moduleTreeViewer = new ModuleTreeViewer(composite, root);
 
         // set initial selection
-        if (getInitialElementSelections()!=null) 
-        	treeViewer.setCheckedElements(getInitialElementSelections().toArray());
-        return composite;
+        if (getInitialElementSelections() != null) 
+        	moduleTreeViewer.setCheckedElements(getInitialElementSelections().toArray());
 
+        return composite;
     }
     
     protected void okPressed() {
-		Object[] checkedItems = treeViewer.getCheckedElements();
+		Object[] checkedItems = moduleTreeViewer.getCheckedElements();
 		setSelectionResult(checkedItems);
         super.okPressed();
     }

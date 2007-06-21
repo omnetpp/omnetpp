@@ -61,8 +61,9 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.eclipse.ui.texteditor.StatusLineContributionItem;
+import org.omnetpp.common.eventlog.EventLogFilterParameters;
 import org.omnetpp.common.eventlog.EventLogInput;
-import org.omnetpp.common.eventlog.ModuleTreeDialog;
+import org.omnetpp.common.eventlog.FilterEventLogDialog;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.TimeUtils;
@@ -70,7 +71,6 @@ import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.IMessageDependency;
-import org.omnetpp.eventlog.engine.IntVector;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
 import org.omnetpp.scave.engine.EnumType;
 import org.omnetpp.scave.engine.IDList;
@@ -556,9 +556,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 				if (isFilteredEventLog())
 					removeFilter();
 				else
-					filterModules();
-				filterStatus.update();
-				update();
+					filter();
 			}
 
 			@Override
@@ -585,7 +583,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 						});
 						addSubMenuItem(menu, "Filter...", new Runnable() {
 							public void run() {
-								filterModules();
+								filter();
 							}
 						});
 					}
@@ -615,30 +613,24 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 
 				sequenceChart.setInput(eventLogInput);
 				sequenceChart.setViewportSimulationTimeRange(leftRightSimulationTimes);
+
+				update();
 			}
 
-			private void filterModules() {
-				ModuleTreeDialog dialog = new ModuleTreeDialog(null, sequenceChart.getInput().getModuleTreeRoot(), sequenceChart.getAxisModules());
-				dialog.open();
+			private void filter() {
+				EventLogInput eventLogInput = sequenceChart.getInput();
+				EventLogFilterParameters filterParameters = eventLogInput.getFilterParameters();
+				FilterEventLogDialog dialog = new FilterEventLogDialog(Display.getCurrent().getActiveShell(), eventLogInput, filterParameters);
 
-				Object[] selectedModules = dialog.getResult(); 
-				if (selectedModules != null) { // not cancelled
-					IntVector moduleIds = new IntVector();
-					ArrayList<ModuleTreeItem> selectedAxisModules = new ArrayList<ModuleTreeItem>();
-					for (Object selected : selectedModules) {
-						ModuleTreeItem selectedModule = (ModuleTreeItem)selected;
-						selectedAxisModules.add(selectedModule);
-						moduleIds.add(selectedModule.getModuleId());
-					}
-
+				if (dialog.open() == Window.OK) {
 					double[] leftRightSimulationTimes = sequenceChart.getViewportSimulationTimeRange();
 
-					EventLogInput eventLogInput = sequenceChart.getInput();
-					eventLogInput.filter(moduleIds);
-
+					eventLogInput.filter();
+					
 					sequenceChart.setInput(eventLogInput);
-					sequenceChart.setAxisModules(selectedAxisModules);
 					sequenceChart.setViewportSimulationTimeRange(leftRightSimulationTimes);
+
+					update();
 				}
 			}
 		};
@@ -800,22 +792,14 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 		return new SequenceChartAction("Filter Causes/Consequences", Action.AS_PUSH_BUTTON) {
 			@Override
 			public void run() {
-				// TODO: factor out filtering code
 				double[] leftRightSimulationTimes = sequenceChart.getViewportSimulationTimeRange();
-				EventLogInput eventLogInput = sequenceChart.getInput();
-				IEventLog eventLog = eventLogInput.getEventLog();
-				if (eventLog instanceof FilteredEventLog)
-					eventLog = ((FilteredEventLog)eventLog).getEventLog();
 
-				eventLog.disown();
-				FilteredEventLog filteredEventLog = new FilteredEventLog(eventLog);
-				filteredEventLog.setTracedEventNumber(event.getEventNumber());
-				eventLogInput.setEventLog(filteredEventLog);
-				
-				SequenceChartFacade sequenceChartFacade = eventLogInput.getSequenceChartFacade();
-				sequenceChartFacade.setEventLog(filteredEventLog);
-				IEvent closestEvent = filteredEventLog.getMatchingEventInDirection(sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber(), true);
-				sequenceChartFacade.relocateTimelineCoordinateSystem(closestEvent);
+				EventLogInput eventLogInput = sequenceChart.getInput();
+				EventLogFilterParameters filterParameters = eventLogInput.getFilterParameters();
+				filterParameters.enableTraceFilter = true;
+				filterParameters.tracedEventNumber = event.getEventNumber();
+
+				eventLogInput.filter();
 
 				sequenceChart.setInput(eventLogInput);
 				sequenceChart.setViewportSimulationTimeRange(leftRightSimulationTimes);

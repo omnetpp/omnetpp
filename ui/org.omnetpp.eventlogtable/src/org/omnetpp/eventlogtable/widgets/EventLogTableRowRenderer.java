@@ -179,12 +179,12 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 							if (beginSendEntry != null) {
 								drawText(" on arrival of ", CONSTANT_TEXT_COLOR);
 								
-								if (event.isSelfEvent())
+								if (event.isSelfMessageProcessingEvent())
 									drawText("self ", CONSTANT_TEXT_COLOR);
 
 								drawMessageDescription(beginSendEntry);
 
-								if (!event.isSelfEvent()) {
+								if (!event.isSelfMessageProcessingEvent()) {
 									drawText(" from ", CONSTANT_TEXT_COLOR);
 									drawModuleDescription(beginSendEntry.getContextModuleId());
 								}
@@ -448,7 +448,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 	private Image getEventLogEntryImage(EventLogEntry eventLogEntry) {
 		String className = eventLogEntry.getClassName();
 		
-		if (eventLogEntry instanceof EventEntry && eventLogEntry.getEvent().isSelfEvent())
+		if (eventLogEntry instanceof EventEntry && eventLogEntry.getEvent().isSelfMessageProcessingEvent())
 			return ImageFactory.getImage(ImageFactory.EVENLOG_IMAGE_SELF_EVENT);
 		else if (eventLogEntry instanceof BeginSendEntry) {
 			EventLogEntry nextEventLogEntry = eventLogEntry.getEvent().getEventLogEntry(eventLogEntry.getIndex() + 1);

@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IInputValidator;
@@ -23,26 +24,36 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.EditorActionBarContributor;
+import org.eclipse.ui.texteditor.StatusLineContributionItem;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
+import org.omnetpp.common.eventlog.EventLogFilterParameters;
 import org.omnetpp.common.eventlog.EventLogInput;
+import org.omnetpp.common.eventlog.FilterEventLogDialog;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
 import org.omnetpp.eventlog.engine.EventLogEntry;
+import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.IMessageDependency;
 import org.omnetpp.eventlog.engine.IMessageDependencyList;
 import org.omnetpp.eventlog.engine.MatchKind;
+import org.omnetpp.eventlogtable.EventLogTablePlugin;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 
 
 public class EventLogTableContributor extends EditorActionBarContributor implements ISelectionChangedListener {
 	private static EventLogTableContributor singleton;
+
+    public final static String TOOLIMAGE_DIR = "icons/full/etool16/";
+
+    public final static String IMAGE_FILTER_BY_MODULES = TOOLIMAGE_DIR + "filterbymod.png";
 
 	protected EventLogTable eventLogTable;
 
@@ -67,17 +78,34 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	protected EventLogTableMenuAction filterModeAction;
 
 	protected EventLogTableMenuAction displayModeAction;
+
+	protected EventLogTableAction filterAction;
 	
+	protected StatusLineContributionItem filterStatus;
+
 	public EventLogTableContributor() {
-		createActions();
+		this.separatorAction = new Separator();
+		this.searchTextAction = createSearchTextAction();
+		this.gotoEventAction = createGotoEventAction();
+		this.gotoSimulationTimeAction = createGotoSimulationTimeAction();
+		this.gotoEventCauseAction = createGotoEventCauseAction();
+		this.gotoMessageArrivalAction = createGotoMessageArrivalAction();
+		this.gotoMessageOriginAction = createGotoMessageOriginAction();
+		this.gotoMessageReuseAction = createGotoMessageReuseAction();
+		this.toggleBookmarkAction = createToggleBookmarkAction();
+		this.filterModeAction = createFilterModeAction();
+		this.displayModeAction = createDisplayModeAction();
+		this.filterAction = createFilterAction();
+
+		this.filterStatus = createFilterStatus();
 
 		if (singleton == null)
 			singleton = this;
 	}
 
 	public EventLogTableContributor(EventLogTable eventLogTable) {
+		this();
 		this.eventLogTable = eventLogTable;
-		createActions();
 		eventLogTable.addSelectionChangedListener(this);
 	}
 	
@@ -113,8 +141,13 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
 		toolBarManager.add(filterModeAction);
-		toolBarManager.add(displayModeAction);		
+		toolBarManager.add(displayModeAction);
+		toolBarManager.add(filterAction);
 	}
+
+	public void contributeToStatusLine(IStatusLineManager statusLineManager) {
+    	statusLineManager.add(filterStatus);
+    }
 	
 	@Override
 	public void setActiveEditor(IEditorPart targetEditor) {
@@ -124,27 +157,13 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 			eventLogTable = ((EventLogTableEditor)targetEditor).getEventLogTable();
 			eventLogTable.addSelectionChangedListener(this);
-	
+
 			update();
 		}
 	}
 
 	public void selectionChanged(SelectionChangedEvent event) {
 		update();
-	}
-
-	private void createActions() {
-		separatorAction = new Separator();
-		searchTextAction = createSearchTextAction();
-		gotoEventAction = createGotoEventAction();
-		gotoSimulationTimeAction = createGotoSimulationTimeAction();
-		gotoEventCauseAction = createGotoEventCauseAction();
-		gotoMessageArrivalAction = createGotoMessageArrivalAction();
-		gotoMessageOriginAction = createGotoMessageOriginAction();
-		gotoMessageReuseAction = createGotoMessageReuseAction();
-		toggleBookmarkAction = createToggleBookmarkAction();
-		filterModeAction = createFilterModeAction();
-		displayModeAction = createDisplayModeAction();
 	}
 
 	private void update() {
@@ -162,6 +181,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		separatorAction.update();
 		filterModeAction.update();
 		displayModeAction.update();
+		filterStatus.update();
 	}
 
 	private IEventLog getEventLog() {
@@ -588,7 +608,101 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			}
 		};
 	}
-	
+
+	private EventLogTableAction createFilterAction() {
+		return new EventLogTableMenuAction("Filter", Action.AS_DROP_DOWN_MENU, EventLogTablePlugin.getImageDescriptor(IMAGE_FILTER_BY_MODULES)) {
+			@Override
+			public void run() {
+				if (isFilteredEventLog())
+					removeFilter();
+				else
+					filter();
+			}
+
+			@Override
+			protected int getMenuIndex() {
+				if (isFilteredEventLog())
+					return 1;
+				else
+					return 0;
+			}
+
+			private boolean isFilteredEventLog() {
+				return eventLogTable.getEventLog() instanceof FilteredEventLog;
+			}
+			
+			@Override
+			public IMenuCreator getMenuCreator() {
+				return new AbstractMenuCreator() {
+					@Override
+					protected void createMenu(Menu menu) {
+						addSubMenuItem(menu, "Show All", new Runnable() {
+							public void run() {
+								removeFilter();
+							}
+						});
+						addSubMenuItem(menu, "Filter...", new Runnable() {
+							public void run() {
+								filter();
+							}
+						});
+					}
+
+					private void addSubMenuItem(Menu menu, String text, final Runnable runnable) {
+						MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
+						subMenuItem.setText(text);
+						subMenuItem.addSelectionListener( new SelectionAdapter() {
+							public void widgetSelected(SelectionEvent e) {
+								MenuItem menuItem = (MenuItem)e.widget;
+								
+								if (menuItem.getSelection()) {
+									runnable.run();
+									update();
+								}
+							}
+						});
+					}
+				};
+			}
+
+			private void removeFilter() {
+				EventLogInput eventLogInput = eventLogTable.getEventLogInput();
+				eventLogInput.removeFilter();
+
+				eventLogTable.setInput(eventLogInput);
+
+				update();
+			}
+
+			private void filter() {
+				EventLogInput eventLogInput = eventLogTable.getEventLogInput();
+				EventLogFilterParameters filterParameters = eventLogInput.getFilterParameters();
+				FilterEventLogDialog dialog = new FilterEventLogDialog(Display.getCurrent().getActiveShell(), eventLogInput, filterParameters);
+
+				if (dialog.open() == Window.OK) {
+					eventLogInput.filter();
+					
+					eventLogTable.setInput(eventLogInput);
+
+					update();
+				}
+			}
+		};
+	}
+
+	private StatusLineContributionItem createFilterStatus() {
+		return new StatusLineContributionItem("Filter") {
+			@Override
+		    public void update() {
+				setText(isFilteredEventLog() ? "Filtered" : "Unfiltered");
+		    }
+
+			private boolean isFilteredEventLog() {
+				return eventLogTable.getEventLog() instanceof FilteredEventLog;
+			}
+		};
+	}
+
 	private abstract class EventLogTableAction extends Action {
 		public EventLogTableAction(String text) {
 			super(text);

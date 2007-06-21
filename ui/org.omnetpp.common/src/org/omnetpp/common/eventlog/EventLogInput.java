@@ -3,12 +3,15 @@ package org.omnetpp.common.eventlog;
 import java.util.ArrayList;
 
 import org.eclipse.core.resources.IFile;
+import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.util.PersistentResourcePropertyManager;
 import org.omnetpp.common.util.RecurringJob;
 import org.omnetpp.eventlog.engine.EventLogTableFacade;
 import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.IntVector;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
+import org.omnetpp.eventlog.engine.PStringVector;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
 
 /**
@@ -16,6 +19,8 @@ import org.omnetpp.eventlog.engine.SequenceChartFacade;
  */
 public class EventLogInput {
 	private static final boolean debug = true;
+
+	private static final String STATE_PROPERTY = "EventLogInputState";
 
 	/**
 	 * The event log file.
@@ -26,6 +31,11 @@ public class EventLogInput {
 	 * The C++ wrapper around the event log reader.
 	 */
 	protected IEventLog eventLog;
+	
+	/**
+	 * The filter parameters applied to the event log last time.
+	 */
+	protected EventLogFilterParameters eventLogFilterParameters;
 	
 	/**
 	 * A C++ wrapper around a helpful facade.
@@ -55,34 +65,32 @@ public class EventLogInput {
 	 */
 	protected RecurringJob eventLogWatcher;
 	
-	public EventLogInput() {
-		eventLogWatcher = new RecurringJob(1000) {
+	public EventLogInput(IFile file, IEventLog eventLog) {
+		this.eventLog = eventLog;
+		this.file = file;
+		this.eventLogWatcher = new RecurringJob(1000) {
 			public void run() {
 				checkEventLogForChanges();
 			}
 		};
-	}
 
-	public EventLogInput(IFile file, IEventLog eventLog) {
-		this();
-		this.file = file;
-		this.eventLog = eventLog;
+		restoreState();
 	}
 	
 	public IFile getFile() {
 		return file;
 	}
 
-	public void setFile(IFile file) {
-		this.file = file;
-	}
-
 	public IEventLog getEventLog() {
 		return eventLog;
 	}
 
-	public void setEventLog(IEventLog eventLog) {
-		this.eventLog = eventLog;
+	public EventLogFilterParameters getFilterParameters() {
+		if (eventLogFilterParameters == null) {
+			eventLogFilterParameters = new EventLogFilterParameters(this);
+		}
+
+		return eventLogFilterParameters;
 	}
 	
 	public EventLogTableFacade getEventLogTableFacade() {
@@ -128,25 +136,29 @@ public class EventLogInput {
 		return modules;
 	}
 
-	public void removeFilter() {
-		// remove filter
+	public ArrayList<ModuleTreeItem> getSelectedModules() {
 		if (eventLog instanceof FilteredEventLog)
+			return eventLogFilterParameters.getSelectedModules();
+		else
+			return getAllModules();
+	}
+
+	public void removeFilter() {
+		if (eventLog instanceof FilteredEventLog) {
 			eventLog = ((FilteredEventLog)eventLog).getEventLog();
-		eventLog.own();
+			eventLog.own();
+	
+			/// store event log
+			getEventLogTableFacade().setEventLog(eventLog);
+			getSequenceChartFacade().setEventLog(eventLog);
+			
+			eventLogFilterRemoved();
 
-		/// store event log
-		getEventLogTableFacade().setEventLog(eventLog);
-		getSequenceChartFacade().setEventLog(eventLog);
-
-		// TODO: move to SequenceChart
-		// update coordinate system
-		if (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() != -1)
-			sequenceChartFacade.relocateTimelineCoordinateSystem(sequenceChartFacade.getTimelineCoordinateSystemOriginEvent());
-		
-		eventLogFilterRemoved();
+			storeState();
+		}
 	}
 	
-	public void filter(IntVector moduleIds) {
+	public void filter() {
 		// remove old filter
 		if (eventLog instanceof FilteredEventLog)
 			eventLog = ((FilteredEventLog)eventLog).getEventLog();
@@ -154,7 +166,31 @@ public class EventLogInput {
 
 		// create new filter
 		FilteredEventLog filteredEventLog = new FilteredEventLog(eventLog);
-		filteredEventLog.setModuleIds(moduleIds);
+
+		filteredEventLog.setFirstEventNumber(eventLogFilterParameters.getFirstEventNumber());
+		filteredEventLog.setLastEventNumber(eventLogFilterParameters.getLastEventNumber());
+
+		if (eventLogFilterParameters.enableTraceFilter) {
+			filteredEventLog.setTracedEventNumber(eventLogFilterParameters.tracedEventNumber);
+			filteredEventLog.setTraceCauses(eventLogFilterParameters.traceCauses);
+			filteredEventLog.setTraceConsequences(eventLogFilterParameters.traceConsequences);
+		}
+
+		if (eventLogFilterParameters.enableModuleFilter) {
+			if (eventLogFilterParameters.moduleIds != null) {
+				IntVector moduleIds = new IntVector();
+				for (int id : eventLogFilterParameters.moduleIds)
+					moduleIds.add(id);
+				filteredEventLog.setModuleIds(moduleIds);
+			}
+	
+			if (eventLogFilterParameters.moduleTypes != null) {
+				PStringVector moduleTypes = new PStringVector();
+				for (String moduleType : eventLogFilterParameters.moduleTypes)
+					moduleTypes.add(moduleType);			
+				filteredEventLog.setModuleTypes(moduleTypes);
+			}
+		}
 
 		// store event log
 		eventLog = filteredEventLog;
@@ -162,6 +198,40 @@ public class EventLogInput {
 		getSequenceChartFacade().setEventLog(filteredEventLog);
 		
 		eventLogFiltered();
+
+		storeState();
+	}
+	
+	private void restoreState() {
+		PersistentResourcePropertyManager manager = new PersistentResourcePropertyManager(CommonPlugin.PLUGIN_ID, getClass().getClassLoader());
+
+		try {
+			if (manager.hasProperty(file, STATE_PROPERTY)) {
+				eventLogFilterParameters = (EventLogFilterParameters)manager.getProperty(file, STATE_PROPERTY);
+				eventLogFilterParameters.setEventLogInput(this);
+				filter();
+			}
+		}
+		catch (Exception e) {
+			manager.removeProperty(file, STATE_PROPERTY);
+
+			throw new RuntimeException(e);
+		}
+	}
+	
+	private void storeState() {
+		try {
+			PersistentResourcePropertyManager manager = new PersistentResourcePropertyManager(CommonPlugin.PLUGIN_ID);
+
+			if (eventLogFilterParameters == null)
+				manager.removeProperty(file, STATE_PROPERTY);
+			else {
+				manager.setProperty(file, STATE_PROPERTY, eventLogFilterParameters);
+			}
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public void addEventLogChangedListener(IEventLogChangeListener listener) {

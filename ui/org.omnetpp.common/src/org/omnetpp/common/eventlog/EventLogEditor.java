@@ -53,12 +53,11 @@ public abstract class EventLogEditor extends EditorPart implements INavigationLo
 		setInput(input);
 		setPartName(input.getName());
 		
-		eventLogInput = new EventLogInput();
-
+		IFile file = null;
 		String logFileName;
 		if (input instanceof IFileEditorInput) {
 			IFileEditorInput fileInput = (IFileEditorInput)input;
-			eventLogInput.setFile(fileInput.getFile());
+			file = fileInput.getFile();
 			logFileName = fileInput.getFile().getLocation().toFile().getAbsolutePath();
 		}
 		else if (input instanceof IPathEditorInput) {
@@ -68,7 +67,8 @@ public abstract class EventLogEditor extends EditorPart implements INavigationLo
 		else 
 			throw new PartInitException("Unsupported input type");
 
-		eventLogInput.setEventLog(new EventLog(new FileReader(logFileName, /* EventLog will delete it */false)));
+		IEventLog eventLog = new EventLog(new FileReader(logFileName, /* EventLog will delete it */false));
+		eventLogInput = new EventLogInput(file, eventLog);
 	}
 
 	protected void addLocationProviderPaintListener(Control control) {
