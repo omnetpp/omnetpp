@@ -120,6 +120,7 @@ Register_GlobalConfigEntry(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-mess
 
 Register_PerObjectConfigEntry(CFGID_OUTVECTOR_ENABLED, "enable-recording", CFG_BOOL, "true", "Whether data written into an output vector should be recorded.");
 Register_PerObjectConfigEntry(CFGID_OUTVECTOR_INTERVAL, "recording-interval", CFG_CUSTOM, NULL, "Recording interval for an output vector. Syntax: [<from>]..[<to>]. Examples: 100..200, 100.., ..200");
+Register_PerObjectConfigEntry(CFGID_PARTITION_ID, "partition-id", CFG_INT, NULL, "With parallel simulation: in which partition the module should be instantiated.");
 
 
 //-------------------------------------------------------------
@@ -613,15 +614,15 @@ bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index
     // find out if this module is (or has any submodules that are) on this partition
     char parname[MAX_OBJECTFULLPATH];
     if (index<0)
-        sprintf(parname,"%s.%s.partition-id", parentmod->fullPath().c_str(), modname);
+        sprintf(parname,"%s.%s", parentmod->fullPath().c_str(), modname);
     else
-        sprintf(parname,"%s.%s[%d].partition-id", parentmod->fullPath().c_str(), modname, index);
-    int procId = getConfig()->getAsInt2(NULL, "Partitioning", parname, -1);
+        sprintf(parname,"%s.%s[%d]", parentmod->fullPath().c_str(), modname, index);
+    int procId = getConfig()->getAsInt(parname, CFGID_PARTITION_ID, -1);
     if (procId<0)
         throw cRuntimeError("incomplete or wrong partitioning: missing or invalid value for '%s'",parname);
     if (procId>=parsimcomm->getNumPartitions())
         throw cRuntimeError("wrong partitioning: value %d too large for '%s' (total partitions=%d)",
-                                procId,parname,parsimcomm->getNumPartitions());
+                            procId, parname, parsimcomm->getNumPartitions());
     // FIXME This solution is not entirely correct. Rather, we'd have to check if
     // myProcId is CONTAINED in the set of procIds defined for the children of this
     // module.

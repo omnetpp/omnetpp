@@ -35,6 +35,9 @@
 Register_Class(cAkOutputVectorManager);
 
 
+Register_PerObjectConfigEntry(CFGID_WITH_AKAROA, "with-akaroa", CFG_BOOL, "false", "Whether to the output vector should be under Akaroa control.");
+
+
 cAkOutputVectorManager::cAkOutputVectorManager()
 {
     ak_declared = false;
@@ -50,10 +53,8 @@ void *cAkOutputVectorManager::registerVector(const char *modulename, const char 
     sAkVectorData *vp = (sAkVectorData *)cFileOutputVectorManager::registerVector(modulename, vectorname);
 
     // see if this vector needs Akaroa control
-    opp_string inientry;
-    inientry.reserve(opp_strlen(modulename)+1+opp_strlen(vectorname)+sizeof(".akaroa")+1);
-    sprintf(inientry.buffer(),"%s.%s.akaroa", modulename, vectorname);
-    vp->ak_controlled = ev.app->getConfig()->getAsBool2(NULL, "General", inientry.c_str(), true);
+    std::string objectfullpath = std::string(modulename) + "." + vectorname;
+    vp->ak_controlled = ev.config()->getAsBool(objectfullpath.c_str(), CFGID_WITH_AKAROA);
 
     if (vp->ak_controlled)
     {
