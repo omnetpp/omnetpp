@@ -18,6 +18,7 @@
 #include <float.h>
 #include <map>
 #include "scavedefs.h"
+#include "commonutil.h"
 
 /**
  * Statistical data collected per block and per vector.
@@ -76,6 +77,7 @@ class SCAVE_API Statistics
  */
 struct Block {
     long startOffset;
+    long size;
     long startSerial;
     long startEventNum;
     long endEventNum;
@@ -83,8 +85,8 @@ struct Block {
     simultime_t endTime;
     Statistics stat;
 
-    Block() : startOffset(-1), startSerial(-1), startEventNum(-1), endEventNum(-1),
-        startTime(0.0), endTime(0.0), stat() {}
+    Block() : startOffset(-1), size(0), startSerial(-1), startEventNum(-1), endEventNum(-1),
+        startTime(0.0), endTime(0.0) {}
 
     long count() const { return stat.count(); }
     double min() const { return stat.min(); }
@@ -129,9 +131,9 @@ struct VectorData {
     /**
      * Creates an index entry for a vector.
      */
-    VectorData() {}
+    VectorData() : vectorId(-1), blockSize(0) {}
     VectorData(int vectorId, std::string moduleName, std::string name, std::string columns, long blockSize)
-        : vectorId(vectorId), moduleName(moduleName), name(name), columns(columns), blockSize(blockSize), stat() {}
+        : vectorId(vectorId), moduleName(moduleName), name(name), columns(columns), blockSize(blockSize) {}
 
     long count() const { return stat.count(); }
     double min() const { return stat.min(); }
@@ -142,7 +144,12 @@ struct VectorData {
     /**
      * Adds the block statistics to the vector statistics.
      */
-    void collect(const Block &block) { stat.adjoin(block.stat); }
+    void collect(const Block &block)
+    {
+        stat.adjoin(block.stat);
+        if (block.size > blockSize)
+            blockSize = block.size;
+    }
 
     void addBlock(const Block &block) { blocks.push_back(block); collect(block); }
 
@@ -222,12 +229,41 @@ struct VectorFileIndex {
     std::string vectorFileName;
     FingerPrint fingerprint;
     RunData run;
+private:
     Vectors vectors;
+    typedef std::map<int,int> VectorIdToIndexMap;
+    VectorIdToIndexMap map; // maps vectorId to index in the vectors array
 
-    int getNumberOfVectors() const { return vectors.size(); };
-    void addVector(const VectorData &vector) { vectors.push_back(vector); }
-    const VectorData *getVectorAt(int index) const { return &vectors[index]; };
-    VectorData *getVector(int vectorId);
+public:
+
+    int getNumberOfVectors() const 
+    {
+        return vectors.size(); 
+    }
+    
+    void addVector(const VectorData &vector)
+    {
+        map[vector.vectorId] = vectors.size();
+        vectors.push_back(vector);
+    }
+    
+    const VectorData *getVectorAt(int index) const
+    {
+        Assert(0 <= index && index < vectors.size());
+        return &vectors[index];
+    }
+
+    VectorData *getVectorAt(int index)
+    {
+        Assert(0 <= index && index < vectors.size());
+        return &vectors[index];
+    }
+    
+    VectorData *getVectorById(int vectorId)
+    {
+        VectorIdToIndexMap::const_iterator entry = map.find(vectorId);
+        return entry!=map.end() ? getVectorAt(entry->second) : NULL;
+    }
 };
 
 /**
@@ -276,7 +312,7 @@ class SCAVE_API IndexFileReader
         /**
          * Parse one line of the index file.
          */
-        void parseLine(char **tokens, int numTokens, VectorFileIndex *index, long &numOfEntries, int lineNum);
+        void parseLine(char **tokens, int numTokens, VectorFileIndex *index, int lineNum);
 };
 
 /**

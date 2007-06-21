@@ -69,7 +69,7 @@ class cFileOutputVectorManager : public cOutputVectorManager
     void openFile();
     void closeFile();
     void initRun();
-    void initVector(sVectorData *vp);
+    virtual void initVector(sVectorData *vp);
     virtual sVectorData *createVectorData();
     virtual void writeRunData();
 

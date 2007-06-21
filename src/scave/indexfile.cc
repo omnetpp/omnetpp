@@ -138,17 +138,6 @@ Blocks::size_type VectorData::getBlocksInEventnumInterval(long startEventNum, lo
 
 //=========================================================================
 
-VectorData *VectorFileIndex::getVector(int vectorId)
-{
-    for (Vectors::iterator it=vectors.begin(); it != vectors.end(); ++it)
-    {
-        if (it->vectorId == vectorId)
-            return &(*it);
-    }
-    return NULL;
-}
-//=========================================================================
-
 #ifdef CHECK
 #undef CHECK
 #endif
@@ -316,14 +305,13 @@ VectorFileIndex *IndexFileReader::readAll()
     char *line, **tokens;
 
     VectorFileIndex *index = new VectorFileIndex();
-    long numOfEntries = 0;
     while ((line=reader.getNextLineBufferPointer())!=NULL)
     {
         int lineNum = reader.getNumReadLines();
         int len=reader.getLastLineLength();
         numTokens=tokenizer.tokenize(line, len);
         tokens=tokenizer.tokens();
-        parseLine(tokens, numTokens, index, numOfEntries, lineNum);
+        parseLine(tokens, numTokens, index, lineNum);
     }
     return index;
 }
@@ -347,9 +335,8 @@ VectorFileIndex *IndexFileReader::readFingerprint()
             continue;
         else if (tokens[0][0] == 'f' && strcmp(tokens[0], "file") == 0)
         {
-            long dummy=0;
             index = new VectorFileIndex();
-            parseLine(tokens, numTokens, index, dummy, lineNum);
+            parseLine(tokens, numTokens, index, lineNum);
         }
         else
             break;
@@ -362,7 +349,7 @@ VectorFileIndex *IndexFileReader::readFingerprint()
 }
 
 
-void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *index, long& numOfEntries, int lineNum)
+void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *index, int lineNum)
 {
     if (numTokens == 0 || tokens[0][0] == '#')
         return;
@@ -376,26 +363,21 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
 
     if (tokens[0][0] == 'v' && strcmp(tokens[0], "vector") == 0)
     {
-        CHECK(numTokens >= 11, "invalid vector declaration", lineNum);
+        CHECK(numTokens >= 5, "invalid vector declaration", lineNum);
 
         VectorData vector;
         CHECK(parseInt(tokens[1], vector.vectorId), "invalid vector id", lineNum);
         vector.moduleName = tokens[2];
         vector.name = tokens[3];
         vector.columns = tokens[4];
-        CHECK(parseLong(tokens[5], vector.blockSize) && parseLong(tokens[6], count) &&
-              parseDouble(tokens[7], min) && parseDouble(tokens[8], max) &&
-              parseDouble(tokens[9], sum) && parseDouble(tokens[10], sumSqr),
-              "invalid vector declaration", lineNum);
-        vector.stat = Statistics(count, min, max, sum, sumSqr);
 
-        index->vectors.push_back(vector);
-        numOfEntries = 0;
+        index->addVector(vector);
     }
-    else if (tokens[0][0] == 'a' && strcmp(tokens[0], "attr") == 0 && index->vectors.size() > 0) // vector attr
+    else if (tokens[0][0] == 'a' && strcmp(tokens[0], "attr") == 0 && index->getNumberOfVectors() > 0) // vector attr
     {
         CHECK(numTokens == 3, "malformed vector attribute", lineNum);
-        index->vectors.back().attributes[tokens[1]] = tokens[2];
+        VectorData *lastVector = index->getVectorAt(index->getNumberOfVectors()-1);
+        lastVector->attributes[tokens[1]] = tokens[2];
     }
     else if (tokens[0][0] == 'f' && strcmp(tokens[0], "file") == 0)
     {
@@ -412,36 +394,35 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
     }
     else // blocks
     {
-        CHECK(index->vectors.size() > 0, "missing vector definition", lineNum);
-        CHECK(numTokens >= 9, "missing fields from block", lineNum);
+        CHECK(numTokens >= 10, "missing fields from block", lineNum);
 
-        VectorData &vector = index->vectors.back();
         int id;
-        CHECK(parseInt(tokens[0], id) && id==vector.vectorId, "unexpected vector id", lineNum);
+        CHECK(parseInt(tokens[0], id), "malformed vector id", lineNum);
+        VectorData *vector = index->getVectorById(id);
+        CHECK(vector, "missing vector definition", lineNum);
 
         Block block;
+        block.startSerial = vector->blocks.size() > 0 ? vector->blocks.back().endSerial() : 0;
         int i = 1; // column index
-        block.startSerial = numOfEntries;
         CHECK(parseLong(tokens[i++], block.startOffset), "invalid file offset", lineNum);
-        if (vector.hasColumn('E'))
+        CHECK(parseLong(tokens[i++], block.size), "invalid block size", lineNum);
+        if (vector->hasColumn('E'))
         {
             CHECK(parseLong(tokens[i++], block.startEventNum) && parseLong(tokens[i++], block.endEventNum),
                 "invalid event numbers", lineNum);
         }
-        if (vector.hasColumn('T'))
+        if (vector->hasColumn('T'))
         {
             CHECK(parseSimtime(tokens[i++], block.startTime) && parseSimtime(tokens[i++], block.endTime),
                 "invalid simulation time", lineNum);
         }
-        if (vector.hasColumn('V'))
+        if (vector->hasColumn('V'))
         {
             CHECK(parseLong(tokens[i++], count) && parseDouble(tokens[i++], min) && parseDouble(tokens[i++], max) &&
                     parseDouble(tokens[i++], sum) && parseDouble(tokens[i++], sumSqr), "invalid statistics data", lineNum);
             block.stat = Statistics(count, min, max, sum, sumSqr);
         }
-
-        vector.blocks.push_back(block);
-        numOfEntries += block.count();
+        vector->addBlock(block);
     }
 }
 
@@ -471,8 +452,10 @@ void IndexFileWriter::writeAll(const VectorFileIndex& index)
     writeFingerprint(index.vectorFileName);
     writeRun(index.run);
 
-    for (Vectors::const_iterator vectorRef = index.vectors.begin(); vectorRef != index.vectors.end(); ++vectorRef)
+    int numOfVectors = index.getNumberOfVectors();
+    for (int i = 0; i < numOfVectors; ++i)
     {
+        const VectorData *vectorRef = index.getVectorAt(i);
         writeVector(*vectorRef);
     }
 
@@ -519,10 +502,8 @@ void IndexFileWriter::writeVector(const VectorData &vector)
 
 void IndexFileWriter::writeVectorDeclaration(const VectorData &vector)
 {
-    CHECK(fprintf(file, "vector %d  %s  %s  %s  %ld  %ld  %.*g  %.*g  %.*g  %.*g\n",
-          vector.vectorId, QUOTE(vector.moduleName.c_str()), QUOTE(vector.name.c_str()), vector.columns.c_str(),
-          vector.blockSize, vector.count(), precision, vector.min(), precision, vector.max(),
-          precision, vector.sum(), precision, vector.sumSqr()));
+    CHECK(fprintf(file, "vector %d  %s  %s  %s\n",
+          vector.vectorId, QUOTE(vector.moduleName.c_str()), QUOTE(vector.name.c_str()), vector.columns.c_str()));
 
 }
 
@@ -541,7 +522,7 @@ void IndexFileWriter::writeBlock(const VectorData &vector, const Block &block)
 
     if (block.count() > 0)
     {
-        CHECK(fprintf(file, "%d\t%ld", vector.vectorId, block.startOffset));
+        CHECK(fprintf(file, "%d\t%ld %ld", vector.vectorId, block.startOffset, block.size));
         if (vector.hasColumn('E')) { CHECK(fprintf(file, " %ld %ld", block.startEventNum, block.endEventNum)); }
         if (vector.hasColumn('T')) { CHECK(fprintf(file, " %s %s",
                                                         BigDecimal::ttoa(buff1, block.startTime, e),

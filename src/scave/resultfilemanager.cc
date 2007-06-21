@@ -1043,9 +1043,12 @@ void ResultFileManager::loadVectorsFromIndex(const char *filename, ResultFile *f
     runRef->moduleParams = index->run.moduleParams;
     FileRun *fileRunRef = addFileRun(fileRef, runRef);
 
-    Vectors &vectors = index->vectors;
-    for (Vectors::iterator vectorRef = vectors.begin(); vectorRef != vectors.end(); ++vectorRef)
+    int numOfVectors = index->getNumberOfVectors();
+    for (int i = 0; i < numOfVectors; ++i)
     {
+        const VectorData *vectorRef = index->getVectorAt(i);
+        assert(vectorRef);
+
         VectorResult vectorResult;
         vectorResult.fileRunRef = fileRunRef;
         vectorResult.attributes = StringMap(vectorRef->attributes);

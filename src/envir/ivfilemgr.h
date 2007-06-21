@@ -40,6 +40,7 @@ class cIndexedFileOutputVectorManager : public cFileOutputVectorManager
   protected:
     struct sBlock {
       long offset;          // file offset of the block
+      long size;            // size of the block
       long startEventNum;   // event number of the first sample in the block
       long endEventNum;     // event number of the last sample in the block
       simtime_t startTime;  // simulation time of the first sample in the block
@@ -50,7 +51,8 @@ class cIndexedFileOutputVectorManager : public cFileOutputVectorManager
       double sum;           // sum of values of the samples
       double sumSqr;        // sum of squares of values
 
-      sBlock() : offset(-1), count(0), min(DBL_MAX), max(DBL_MIN), sum(0.0), sumSqr(0.0) {}
+      sBlock() { reset(); }
+      void reset() { offset=-1; size=0; count=0; min=DBL_MAX; sum=0.0; sumSqr=0.0; }
     };
 
     typedef std::vector<sBlock> Blocks;
@@ -67,16 +69,10 @@ class cIndexedFileOutputVectorManager : public cFileOutputVectorManager
 
     struct sVector : sVectorData {
       std::vector<sSample> buffer; // buffer holding recorded data not yet written to the file
-      long maxBufferedSamples; // maximum number of samples gathered in the buffer
-      long count;              // number of samples written into the vector
-      double min;              // minimum of samples written into the vector
-      double max;              // maximum of samples written into the vector
-      double sum;              // sum of samples written into the vector
-      double sumsqr;           // sum of squares of samples written into the vector
-      long maxBlockSize;       // maximum size of the blocks in bytes
-      std::vector<sBlock> blocks; // attributes of the chunks written into the file
+      long maxBufferedSamples;     // maximum number of samples gathered in the buffer
+      sBlock currentBlock;
 
-      sVector() : buffer(), maxBufferedSamples(0), count(0), min(DBL_MAX), max(DBL_MIN), sum(0.0), sumsqr(0.0), maxBlockSize(0), blocks() {}
+      sVector() : buffer(), maxBufferedSamples(0) {}
       void allocateBuffer(long count) { buffer.reserve(count); }
     };
 
@@ -92,11 +88,12 @@ class cIndexedFileOutputVectorManager : public cFileOutputVectorManager
     virtual sVectorData *createVectorData();
     void openIndexFile();
     void closeIndexFile();
+    virtual void initVector(sVectorData *vp);
     virtual void finalizeVector(sVector *vector);
     virtual void writeRunData();
     virtual void writeRecords();
-    virtual void writeRecords(sVector *vector);
-    virtual void writeIndex(sVector *vector);
+    virtual void writeBlock(sVector *vector);
+    virtual void writeBlockToIndexFile(sVector *vector);
   public:
     /** @name Constructors, destructor */
     //@{

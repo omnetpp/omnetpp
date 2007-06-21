@@ -19,7 +19,6 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * This class listens on changes in the model, and refreshes the chart accordingly.
- * Currently it only listens on chart property changes. 
  * 
  * @author tomi
  */

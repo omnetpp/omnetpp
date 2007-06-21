@@ -100,7 +100,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName)
             vector.blockSize = 0;
 
             index.addVector(vector);
-            lastVectorDecl = &index.vectors.back();
+            lastVectorDecl = index.getVectorAt(index.getNumberOfVectors() - 1);
         }
         else // data line
         {
@@ -119,15 +119,15 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName)
             {
                 if (currentVectorRef != NULL)
                 {
-                    long blockSize = (long)(reader.getLastLineStartOffset() - currentBlock.startOffset);
-                    if (blockSize > currentVectorRef->blockSize)
-                        currentVectorRef->blockSize = blockSize;
+                    currentBlock.size = (long)(reader.getLastLineStartOffset() - currentBlock.startOffset);
+                    if (currentBlock.size > currentVectorRef->blockSize)
+                        currentVectorRef->blockSize = currentBlock.size;
                     currentVectorRef->addBlock(currentBlock);
                 }
 
                 currentBlock = Block();
                 currentBlock.startOffset = reader.getLastLineStartOffset();
-                currentVectorRef = index.getVector(vectorId);
+                currentVectorRef = index.getVectorById(vectorId);
                 if (currentVectorRef == NULL)
                     throw ResultFileFormatException("vector file indexer: missing vector declaration", vectorFileName, lineNo);
             }
@@ -164,9 +164,9 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName)
     if (currentBlock.count() > 0)
     {
         assert(currentVectorRef != NULL);
-        long blockSize = (long)(reader.getFileSize() - currentBlock.startOffset);
-        if (blockSize > currentVectorRef->blockSize)
-            currentVectorRef->blockSize = blockSize;
+        currentBlock.size = (long)(reader.getFileSize() - currentBlock.startOffset);
+        if (currentBlock.size > currentVectorRef->blockSize)
+            currentVectorRef->blockSize = currentBlock.size;
         currentVectorRef->addBlock(currentBlock);
     }
 

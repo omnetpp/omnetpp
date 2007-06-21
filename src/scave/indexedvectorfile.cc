@@ -32,7 +32,7 @@ IndexedVectorFileReader::IndexedVectorFileReader(const char *filename, long vect
     std::string ifname = IndexFile::getIndexFileName(filename);
     IndexFileReader indexReader(ifname.c_str());
     index = indexReader.readAll(); // XXX do not read whole index
-    vector = index->getVector(vectorId);
+    vector = index->getVectorById(vectorId);
 }
 
 IndexedVectorFileReader::~IndexedVectorFileReader()
@@ -463,7 +463,6 @@ Node *IndexedVectorFileWriterNodeType::create(DataflowManager *mgr, StringMap& a
     const char *indexFileName = attrs["indexfilename"].c_str();
     int blockSize = atoi(attrs["blocksize"].c_str());
     std::string header = attrs["fileheader"];
-
 
     IndexedVectorFileWriterNode *node = new IndexedVectorFileWriterNode(fileName, indexFileName, blockSize);
     node->setHeader(header);
