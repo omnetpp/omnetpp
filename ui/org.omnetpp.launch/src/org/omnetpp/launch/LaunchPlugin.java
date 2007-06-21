@@ -105,13 +105,16 @@ public class LaunchPlugin extends AbstractUIPlugin {
      * file system
      */
     public static IPath getWorkingDirectoryPath(ILaunchConfiguration config){
-        String location;
+        String location = "${workspace_loc}";
         try {
             // get the working directory. the default will be the project root of the currently selected exe file
-            location = config.getAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY,"");
-            if (StringUtils.isEmpty(location))
-                    location = "${project_loc:/"+config.getAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME,"")+"/"
-                           +config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME,"")+"}";
+            String projname = config.getAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, "");
+            String progname = config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, "");
+            if (StringUtils.isNotBlank(projname) && StringUtils.isNotBlank(progname))
+                location = "${project_loc:/"+projname+"/"+progname+"}";
+            if (StringUtils.isBlank(projname) && StringUtils.isNotBlank(progname))
+                location = "${project_loc:/"+progname+"}";
+            location = config.getAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, location);
 
             if (location != null) {
                 String expandedLocation = VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(location);
@@ -123,6 +126,6 @@ public class LaunchPlugin extends AbstractUIPlugin {
         } catch (CoreException e) {
             LaunchPlugin.logError("Error getting working directory from configuration", e);
         }
-        return new Path("${workspace_loc}");
+        return new Path(location);
     }
 }
