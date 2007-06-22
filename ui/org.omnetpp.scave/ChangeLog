@@ -1,3 +1,42 @@
+2007-06-22
+----------
+
+Additions:
+
+  + Mouse pointer changes according to the zoom mode and pressed keys.
+
+  + Backward Sample-Hold plotter is implemented.
+
+  + The editor switches to the page showing the object selected in the Outline view.
+  
+
+Fixes:
+
+  + Timediff filter is fixed.
+
+  + Show only the line properties on the Property Sheet when there is a line selection.
+
+  + Fix the cases when the Edit dialog did not appear because of the opened Outline view.
+
+  + Export is executed in the background (as a job).
+
+  + Data table rows are copied as TAB separated values to the clipboard (was comma separated).
+
+  + Forbid deleting temporary datasets and charts.
+
+  + Refresh scalar charts when the grouping of the scalars changes.
+
+  + Disable/enable controls depending on "Display legend" chackbox in the Edit dialog of charts.
+
+  + Use system background color on the Chart pages.
+
+  + Newly created files added to the dataset automatically when they are matching with the Inputs.
+    When the files are modified in the background (e.g. by a running simulation), the dataset is
+    updated.
+
+  + Use better column names in exported CSV files.
+
+
 2007-06-08
 ----------
 
