@@ -1,0 +1,23 @@
+%description:
+Test LCGRandom
+
+%global:
+#include "lcgrandom.h"
+
+%activity:
+
+LCGRandom rng;
+
+for (int k=0; k<1000000; k++)
+    rng.next01();
+
+ev << rng.getSeed() << "\n";
+ev << ".\n";
+
+%exitcode: 0
+
+%contains: stdout
+1792147615
+.
+
+

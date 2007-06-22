@@ -101,7 +101,7 @@ std::string opp_parsequotedstr(const char *txt, const char *&endp)
 
 std::string opp_quotestr(const char *txt)
 {
-    char *buf = new char[2*strlen(txt)+3];  // a conservative guess
+    char *buf = new char[4*strlen(txt)+3];  // a conservative guess
     char *d = buf;
     *d++ = '"';
     const char *s = txt;
@@ -116,7 +116,7 @@ std::string opp_quotestr(const char *txt)
             case '\t': *d++ = '\\'; *d++ = 't'; s++; break;
             case '"':  *d++ = '\\'; *d++ = '"'; s++; break;
             case '\\': *d++ = '\\'; *d++ = '\\'; s++; break;
-            default: if (*s<32) {*d++='\\'; *d++='x'; sprintf(d,"%2.2X",*s++); d+=2;}
+            default: if (*s>=0 && *s<32) {*d++='\\'; *d++='x'; sprintf(d,"%2.2X",*s++); d+=2;}
                      else {*d++ = *s++;}
         }
     }
@@ -133,7 +133,7 @@ bool opp_needsquotes(const char *txt)
     if (!txt[0])
         return true;
     for (const char *s = txt; *s; s++)
-        if (isspace(*s) || *s=='\\' || *s=='"')
+        if (isspace(*s) || *s=='\\' || *s=='"' || (*s>=0 && *s<32))
             return true;
     return false;
 }

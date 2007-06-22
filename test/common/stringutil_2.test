@@ -1,0 +1,44 @@
+%description:
+Test string quoting/parsing by converting random strings back and forth
+
+%global:
+#include "stringutil.h"
+#include "lcgrandom.h"
+
+%activity:
+
+LCGRandom rng;
+
+bool ok = true;
+for (int k=0; k<10000; k++)
+{
+    // generate random string
+    char txt[32];
+    int len = (int)(rng.next01()*15);
+    for (int i=0; i<len; i++)
+        txt[i] = (int)(rng.next01()*254) + 1;
+    txt[len] = 0;
+
+    // quote and re-parse it
+    std::string quoted = opp_quotestr(txt);
+    std::string back   = opp_parsequotedstr(quoted.c_str());
+    if (back != txt) {
+        ev << "FAILED on: " << txt << "\n";
+        ok = false;
+    }
+
+    if (opp_needsquotes(txt)==false && quoted.substr(1,quoted.size()-2) != txt) {
+        ev << "opp_needsquotes FAILED on: " << txt << "\n";
+        ok = false;
+    }
+}
+
+if (ok)
+    ev << "OK\n";
+
+%exitcode: 0
+
+%contains: stdout
+OK
+
+

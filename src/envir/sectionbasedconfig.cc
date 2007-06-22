@@ -26,6 +26,8 @@
 //XXX optimize storage (now keys with wildcard groupName are stored multiple times, in several groups)
 //XXX repetitions=10
 //XXX make samples/database work again!
+//XXX check behavior of keys which don't contain a dot! or: forbid them?
+//XXX the likes of: **.apply-default, **whatever.apply=default, whatever**.apply-default!!! make them illegal?
 
 std::string SectionBasedConfiguration::KeyValue1::nullbasedir;
 

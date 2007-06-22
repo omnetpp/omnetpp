@@ -37,6 +37,9 @@ class cPar;
  * operation, without floating-point or int64 multiplication.
  *
  * The underlying raw 64-bit integer is also made accessible.
+ *
+ * FIXME add warning about integer overflows! conversions from double etc may overflow
+ * XXX also: add (optional) overflow checks? at least to conversion from double...
  */
 class SIM_API SimTime
 {
