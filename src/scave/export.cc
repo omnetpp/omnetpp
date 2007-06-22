@@ -106,7 +106,7 @@ ScalarDataTable::ScalarDataTable(const std::string name, const std::string descr
             const ScalarResult &scalar = manager.getScalar(id);
             string name;
             if (!groupBy.hasField(ScalarFields::FILE))   name += scalar.fileRunRef->fileRef->filePath+"_";
-            if (!groupBy.hasField(ScalarFields::RUN))    name += scalar.fileRunRef->runRef->runName+"+";
+            if (!groupBy.hasField(ScalarFields::RUN))    name += scalar.fileRunRef->runRef->runName+"_";
             if (!groupBy.hasField(ScalarFields::MODULE)) name += *scalar.moduleNameRef+"_";
             if (!groupBy.hasField(ScalarFields::NAME))   name += *scalar.nameRef+"_";
             if (!name.empty()) name.erase(name.end()-1); // remove last '_'

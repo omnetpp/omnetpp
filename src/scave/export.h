@@ -209,7 +209,7 @@ class SCAVE_API OctaveTextExport : public MatlabStructExport
 };
 
 /**
- * Export data in CSV format.
+ * Export data in various CSV formats.
  * With default parameters the format is the same as described in RFC 4180.
  */
 class SCAVE_API CsvExport : public ScaveExport
