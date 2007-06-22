@@ -1,0 +1,32 @@
+%description:
+Tests the ValueIterator class in envir
+
+%global:
+#include "valueiterator.h"
+
+static void expand(const char *txt)
+{
+    ev << "'" << txt << "' -> ";
+    try {
+        ValueIterator it(txt);
+        ev << "len=" << it.length() << ":";
+        for (; !it.end(); it++)
+            ev << " '" << it.get() << "'";
+        ev << "\n";
+    }
+    catch (std::exception& e) {
+        ev << "exception\n";  // e.what() << "\n";
+    }
+}
+
+%activity:
+expand("1,2, foo, bar");
+//...
+ev << ".\n";
+
+%exitcode: 0
+
+%contains: stdout
+rewrewrwe
+.
+
