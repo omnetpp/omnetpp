@@ -137,7 +137,7 @@ public class EventLogInput {
 	}
 
 	public ArrayList<ModuleTreeItem> getSelectedModules() {
-		if (eventLog instanceof FilteredEventLog)
+		if (eventLog instanceof FilteredEventLog && eventLogFilterParameters.enableModuleFilter)
 			return eventLogFilterParameters.getSelectedModules();
 		else
 			return getAllModules();
@@ -209,7 +209,9 @@ public class EventLogInput {
 			if (manager.hasProperty(file, STATE_PROPERTY)) {
 				eventLogFilterParameters = (EventLogFilterParameters)manager.getProperty(file, STATE_PROPERTY);
 				eventLogFilterParameters.setEventLogInput(this);
-				filter();
+				// TODO: we should not filter unconditionally
+				// TODO: what if filter is broken? (e.g. timeout) rather let the user decide
+				// filter();
 			}
 		}
 		catch (Exception e) {

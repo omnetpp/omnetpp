@@ -170,6 +170,8 @@ public class SequenceChart
 	/*************************************************************************************
 	 * INTERNAL STATE
 	 */
+	
+	private boolean timeoutReached;
 
 	private IEventLog eventLog; // contains the data to be displayed
 	private EventLogInput eventLogInput;
@@ -1073,7 +1075,7 @@ public class SequenceChart
 			FilteredEventLog filteredEventLog = (FilteredEventLog)eventLogInput.getEventLog();
 			IEvent closestEvent = filteredEventLog.getMatchingEventInDirection(timelineCoordinateSystemOriginEventNumber, false);
 			
-			setAxisModules(eventLogInput.getFilterParameters().getSelectedModules());
+			setAxisModules(eventLogInput.getSelectedModules());
 			
 			if (closestEvent != null)
 				sequenceChartFacade.relocateTimelineCoordinateSystem(closestEvent);
@@ -1284,29 +1286,57 @@ public class SequenceChart
 	/*************************************************************************************
 	 * DRAWING
 	 */
-
+	
+	private Graphics createGraphics(GC gc) {
+		Graphics graphics = new SWTGraphics(gc);
+		graphics.setAntialias(antiAlias ? SWT.ON : SWT.OFF);
+		graphics.setTextAntialias(SWT.ON);
+		return graphics;
+	}
+	
 	public void clearCanvasCacheAndRedraw() {
 		clearCanvasCache();
 		redraw();
 	}
 
 	@Override
+	public void clearCanvasCache() {
+		super.clearCanvasCache();
+		timeoutReached = false;
+	}
+
+	@Override
 	protected void paint(GC gc) {
-		if (eventLogInput != null)
-			calculateStuff();
+		try {
+			if (eventLog != null)
+				eventLog.setNextTimeoutFromNow(10);
 
-		super.paint(gc);
+			if (eventLogInput != null)
+				calculateStuff();
 
-		if (eventLogInput != null && debug)
-			System.out.println("Read " + eventLog.getFileReader().getNumReadBytes() + " bytes, " + eventLog.getFileReader().getNumReadLines() + " lines, " + eventLog.getNumParsedEvents() + " events from " + eventLogInput.getFile().getName());
+			super.paint(gc);
+
+			if (eventLogInput != null && debug)
+				System.out.println("Read " + eventLog.getFileReader().getNumReadBytes() + " bytes, " + eventLog.getFileReader().getNumReadLines() + " lines, " + eventLog.getNumParsedEvents() + " events from " + eventLogInput.getFile().getName());
+		}
+		catch (RuntimeException e) {
+			if (e.getMessage() != null && e.getMessage().contains("Timeout"))
+				timeoutReached = true;
+			else
+				throw e;
+		}
+
+		if (timeoutReached) {
+			Graphics graphics = createGraphics(gc);
+			drawTimeoutWarning(graphics);
+			graphics.dispose();
+		}
 	}
 
 	@Override
 	protected void paintCachableLayer(GC gc) {
 		if (eventLogInput != null) {
-			Graphics graphics = new SWTGraphics(gc);
-			graphics.setAntialias(antiAlias ? SWT.ON : SWT.OFF);
-			graphics.setTextAntialias(SWT.ON);
+			Graphics graphics = createGraphics(gc);
 			graphics.translate(0, GUTTER_HEIGHT);
 
 			drawSequenceChart(graphics);
@@ -1319,9 +1349,7 @@ public class SequenceChart
 	@Override
 	protected void paintNoncachableLayer(GC gc) {
 		if (eventLogInput != null) {
-			Graphics graphics = new SWTGraphics(gc);
-			graphics.setAntialias(antiAlias ? SWT.ON : SWT.OFF);
-			graphics.setTextAntialias(SWT.ON);
+			Graphics graphics = createGraphics(gc);
 			graphics.translate(0, GUTTER_HEIGHT);
 
 			drawAxisLabels(graphics);
@@ -1361,10 +1389,10 @@ public class SequenceChart
         graphics.translate(0, GUTTER_HEIGHT);
     }
 
-	protected Point getTextExtent(Graphics graphics, String timeString) {
+	protected Point getTextExtent(Graphics graphics, String string) {
 		if (graphics instanceof GraphicsSVG) {
 			java.awt.Graphics g = ((GraphicsSVG)graphics).getSVGGraphics2D();
-			java.awt.geom.Rectangle2D r = g.getFontMetrics().getStringBounds(timeString, g);
+			java.awt.geom.Rectangle2D r = g.getFontMetrics().getStringBounds(string, g);
 			
 			return new Point((int)Math.ceil(r.getWidth()), (int)Math.ceil(r.getHeight()));
 		}
@@ -1377,12 +1405,26 @@ public class SequenceChart
 				GC gc = (GC)field.get(g);
 				// TODO: what a hack to send the font down to GC?!
 				g.drawText("", 0, 0);
-				return gc.textExtent(timeString);
+				return gc.textExtent(string);
 			}
 			catch (Exception e) {
 				throw new RuntimeException(e);
 			}
 		}
+	}
+
+	private void drawTimeoutWarning(Graphics graphics) {
+		graphics.setForegroundColor(ColorFactory.RED4);
+		graphics.setBackgroundColor(ColorFactory.WHITE);
+		graphics.setFont(font);
+		int y = getViewportHeight() / 2;
+		int x = getViewportWidth() / 2;
+		String text = "Timeout reached during drawing, therefore the chart may be incomplete.";
+		Point p = getTextExtent(graphics, text);
+		graphics.fillString(text, x - p.x / 2, y - 10);
+		text = "Either try changing the timeout value or the filter parameters or select refresh from the menu. Sorry for your inconvenience.";
+		p = getTextExtent(graphics, text);
+		graphics.fillString(text, x - p.x / 2, y + 10);
 	}
 
 	/**

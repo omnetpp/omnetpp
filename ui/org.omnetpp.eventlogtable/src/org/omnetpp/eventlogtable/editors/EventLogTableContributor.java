@@ -53,7 +53,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
     public final static String TOOLIMAGE_DIR = "icons/full/etool16/";
 
-    public final static String IMAGE_FILTER_BY_MODULES = TOOLIMAGE_DIR + "filterbymod.png";
+    public final static String IMAGE_FILTER = TOOLIMAGE_DIR + "filter.png";
 
 	protected EventLogTable eventLogTable;
 
@@ -610,7 +610,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	}
 
 	private EventLogTableAction createFilterAction() {
-		return new EventLogTableMenuAction("Filter", Action.AS_DROP_DOWN_MENU, EventLogTablePlugin.getImageDescriptor(IMAGE_FILTER_BY_MODULES)) {
+		return new EventLogTableMenuAction("Event filter", Action.AS_DROP_DOWN_MENU, EventLogTablePlugin.getImageDescriptor(IMAGE_FILTER)) {
 			@Override
 			public void run() {
 				if (isFilteredEventLog())

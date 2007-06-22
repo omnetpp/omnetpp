@@ -117,7 +117,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	
     public final static String IMAGE_REFRESH = TOOLIMAGE_DIR + "refresh.gif";
 	
-    public final static String IMAGE_FILTER_BY_MODULES = TOOLIMAGE_DIR + "filterbymod.png";
+    public final static String IMAGE_FILTER = TOOLIMAGE_DIR + "filter.png";
 	
 	private static SequenceChartContributor singleton;
 
@@ -550,7 +550,7 @@ public class SequenceChartContributor extends EditorActionBarContributor {
 	}
 	
 	private SequenceChartAction createFilterAction() {
-		return new SequenceChartMenuAction("Filter", Action.AS_DROP_DOWN_MENU, SequenceChartPlugin.getImageDescriptor(IMAGE_FILTER_BY_MODULES)) {
+		return new SequenceChartMenuAction("Filter", Action.AS_DROP_DOWN_MENU, SequenceChartPlugin.getImageDescriptor(IMAGE_FILTER)) {
 			@Override
 			public void run() {
 				if (isFilteredEventLog())

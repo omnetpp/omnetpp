@@ -10,6 +10,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
@@ -33,6 +34,8 @@ public class EventLogTable
 	private static final boolean debug = true;
 
 	private static final String STATE_PROPERTY = "EventLogTableState";
+
+	private boolean timeoutReached;
 
 	private boolean followEnd = false; // when the event log chan ges should we follow it or not?
 
@@ -83,6 +86,33 @@ public class EventLogTable
 	/*************************************************************************************
 	 * OVERRIDING BEHAVIOR
 	 */
+	
+	@Override
+	protected void paint(GC gc)
+	{
+		try {
+			if (eventLog != null)
+				eventLog.setNextTimeoutFromNow(10);
+			
+			super.paint(gc);
+		}
+		catch (RuntimeException e) {
+			if (e.getMessage() != null && e.getMessage().contains("Timeout"))
+				timeoutReached = true;
+			else
+				throw e;
+		}
+		
+		if (timeoutReached) {
+			// TODO: handle timeout reached
+		}
+	}
+	
+	@Override
+	public void redraw() {
+		super.redraw();
+		timeoutReached = false;
+	}
 
 	@Override
 	public ISelection getSelection() {

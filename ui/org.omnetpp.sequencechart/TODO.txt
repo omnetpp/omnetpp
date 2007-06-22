@@ -33,23 +33,23 @@ Features:
    + event information
    + message send information
    + axis information
- - in memory filtering based on:
+ + in memory filtering based on:
    + simple modules selected from the module tree
-   - trace selected event
+   + trace selected event
  + increase and decrease spacing between axis
  + mouse wheel
    + scrolls up and down among axis
    + holding control increases and decreases zoom level
    + holding shift scrolls horizontally
- - context menu:
+ + context menu:
    + axis
      + split space among axis evenly
      + make axis dense
      + center axis
      + fit axis state value to window
-   - event
+   + event
      + center on window
-     - trace
+     + trace
    + message send 
      + fit to window
      + go to source
@@ -70,7 +70,7 @@ Features:
  + event numbers on the bottom axis are not visible when axes are balanced
  + SVG export
  + store and restore last known settings and position per file
- - timeout support
+ + timeout support
 
 Known bugs:
  - hierarchical sorting sequence chart axes based on crossing arrows is broken
