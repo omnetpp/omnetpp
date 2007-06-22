@@ -687,7 +687,9 @@ void SectionBasedConfiguration::validateConfig() const
                     const char *value = ini->getEntry(i, j).getValue();
                     if (configNames.find(value)==configNames.end())
                         throw cRuntimeError("No such config or scenario: %s", value);
-                    //FIXME warn for section circularity
+
+                    // check for section circularity
+                    resolveSectionChain(section);  //XXX move that check here?
                 }
             }
             else
@@ -697,7 +699,15 @@ void SectionBasedConfiguration::validateConfig() const
                 std::string groupName;
                 bool isApplyDefault;
                 splitKey(key, ownerName, groupName, isApplyDefault);
-                //FIXME if groupName contains '-'...; must not contain wildcard etc
+                bool containsHyphen = strchr(groupName.c_str(), '-')!=NULL;
+                if (containsHyphen)
+                {
+                    // this is a per-object config
+                    //XXX groupName (probably) should not contain wildcard
+                    cConfigEntry *e = (cConfigEntry *) configEntries.instance()->lookup(groupName.c_str());
+                    if (!e || !e->isPerObject())
+                        throw cRuntimeError("Unknown per-object configuration key `%s' in %s", groupName.c_str(), key);
+                }
             }
         }
     }
