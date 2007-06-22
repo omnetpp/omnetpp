@@ -33,6 +33,13 @@ class EVENTLOG_API IEventLog
         virtual ~IEventLog() {}
 
         /**
+         * Sets the next timeout relative from now.
+         * If the timeout expires event log operations will abort with an exception.
+         * Setting it to -1 disables the timeout.
+         */
+        virtual void setNextTimeoutFromNow(double seconds) = 0;
+
+        /**
          * Synchorizes state when the underlying log file changes (new events are appended).
          */
         virtual void synchronize();

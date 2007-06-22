@@ -79,6 +79,8 @@ ModuleCreatedEntry *Event::getModuleCreatedEntry()
 
 file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
 {
+    eventLog->checkNextTimeoutElapsed();
+
     Assert(offset >= 0);
     Assert(!eventEntry);
 
@@ -300,6 +302,7 @@ IMessageDependencyList *Event::getConsequences()
 
 Event *Event::getReuserEvent(int &beginSendEntryNumber)
 {
+    eventLog->checkNextTimeoutElapsed();
     Event *current = this;
 
     // TODO: the result of this calculation should be put into an index file lazily

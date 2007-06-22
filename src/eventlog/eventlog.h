@@ -15,6 +15,7 @@
 #ifndef __EVENTLOG_H_
 #define __EVENTLOG_H_
 
+#include <time.h>
 #include <sstream>
 #include <set>
 #include <map>
@@ -39,6 +40,7 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
     protected:
         long numParsedEvents;
         long approximateNumberOfEvents;
+        long nextTimeoutClock; // as returned by clock()
 
         typedef std::vector<EventLogEntry *> EventLogEntryList;
         EventLogEntryList initializationLogEntries; // all entries from the beginning of the file to the first event
@@ -55,6 +57,10 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
     public:
         EventLog(FileReader *index);
         ~EventLog();
+
+        long getNextTimeoutClock() { return nextTimeoutClock; }
+        void setNextTimeoutFromNow(double seconds);
+        void checkNextTimeoutElapsed() { if (nextTimeoutClock > 0 && clock() > nextTimeoutClock) throw opp_runtime_error("Timeout reached"); }
 
         void parseInitializationLogEntries();
 

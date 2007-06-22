@@ -123,6 +123,7 @@ double SequenceChartFacade::getTimelineCoordinate(IEvent *event, double lowerTim
                     Assert(event->getEventNumber() < timelineCoordinateRangeStartEventNumber || timelineCoordinateRangeEndEventNumber < event->getEventNumber()); 
 
                     do {
+                        Assert(currentEvent);
                         previousEvent = currentEvent;
                         currentEvent = forward ? currentEvent->getNextEvent() : currentEvent->getPreviousEvent();
 

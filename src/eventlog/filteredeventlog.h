@@ -101,6 +101,7 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         FilteredEvent *getMatchingEventInDirection(long startEventNumber, long stopEventNumber, bool forward);
 
         // IEventLog interface
+        virtual void setNextTimeoutFromNow(double seconds) { eventLog->setNextTimeoutFromNow(seconds); }
         virtual void synchronize();
         virtual FileReader *getFileReader() { return eventLog->getFileReader(); }
         virtual long getNumParsedEvents() { return eventLog->getNumParsedEvents(); }

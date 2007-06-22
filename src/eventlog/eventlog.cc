@@ -22,6 +22,7 @@ EventLog::EventLog(FileReader *reader) : EventLogIndex(reader)
 {
     numParsedEvents = 0;
     approximateNumberOfEvents = -1;
+    nextTimeoutClock = -1;
     parseInitializationLogEntries();
 }
 
@@ -32,6 +33,14 @@ EventLog::~EventLog()
 
     for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
         delete it->second;
+}
+
+void EventLog::setNextTimeoutFromNow(double seconds)
+{
+    if (seconds == -1)
+        nextTimeoutClock = -1;
+    else
+        nextTimeoutClock = clock() + (long)(seconds * CLOCKS_PER_SEC);
 }
 
 void EventLog::synchronize()
